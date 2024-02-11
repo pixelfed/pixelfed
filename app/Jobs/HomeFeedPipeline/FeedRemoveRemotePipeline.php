@@ -2,28 +2,30 @@
 
 namespace App\Jobs\HomeFeedPipeline;
 
+use App\Services\FollowerService;
+use App\Services\HomeTimelineService;
 use Illuminate\Bus\Queueable;
-use Illuminate\Contracts\Queue\ShouldBeUnique;
+use Illuminate\Contracts\Queue\ShouldBeUniqueUntilProcessing;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
 use Illuminate\Queue\InteractsWithQueue;
-use Illuminate\Queue\SerializesModels;
 use Illuminate\Queue\Middleware\WithoutOverlapping;
-use Illuminate\Contracts\Queue\ShouldBeUniqueUntilProcessing;
-use App\Services\FollowerService;
-use App\Services\StatusService;
-use App\Services\HomeTimelineService;
+use Illuminate\Queue\SerializesModels;
 
-class FeedRemoveRemotePipeline implements ShouldQueue, ShouldBeUniqueUntilProcessing
+class FeedRemoveRemotePipeline implements ShouldBeUniqueUntilProcessing, ShouldQueue
 {
     use Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
 
     protected $sid;
+
     protected $pid;
 
     public $timeout = 900;
+
     public $tries = 3;
+
     public $maxExceptions = 1;
+
     public $failOnTimeout = true;
 
     /**
@@ -38,7 +40,7 @@ class FeedRemoveRemotePipeline implements ShouldQueue, ShouldBeUniqueUntilProces
      */
     public function uniqueId(): string
     {
-        return 'hts:feed:remove:remote:sid:' . $this->sid;
+        return 'hts:feed:remove:remote:sid:'.$this->sid;
     }
 
     /**
@@ -67,7 +69,7 @@ class FeedRemoveRemotePipeline implements ShouldQueue, ShouldBeUniqueUntilProces
     {
         $ids = FollowerService::localFollowerIds($this->pid);
 
-        foreach($ids as $id) {
+        foreach ($ids as $id) {
             HomeTimelineService::rem($id, $this->sid);
         }
     }

@@ -17,9 +17,9 @@ class Avatar extends Model
     protected $casts = [
         'deleted_at' => 'datetime',
         'last_fetched_at' => 'datetime',
-        'last_processed_at' => 'datetime'
+        'last_processed_at' => 'datetime',
     ];
-    
+
     protected $guarded = [];
 
     protected $visible = [
@@ -31,6 +31,6 @@ class Avatar extends Model
 
     public function profile()
     {
-    	return $this->belongsTo(Profile::class);
+        return $this->belongsTo(Profile::class);
     }
 }

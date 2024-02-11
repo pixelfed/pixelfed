@@ -8,34 +8,37 @@ use Storage;
 
 class LiveStream extends Model
 {
-	use HasFactory;
+    use HasFactory;
 
-	public function getHlsUrl()
-	{
-		$path = Storage::url("live-hls/{$this->stream_id}/index.m3u8");
-		return url($path);
-	}
+    public function getHlsUrl()
+    {
+        $path = Storage::url("live-hls/{$this->stream_id}/index.m3u8");
 
-	public function getStreamServer()
-	{
-		$proto = 'rtmp://';
-		$host = config('livestreaming.server.host');
-		$port = ':' . config('livestreaming.server.port');
-		$path = '/' . config('livestreaming.server.path');
-		return $proto . $host . $port . $path;
-	}
+        return url($path);
+    }
 
-	public function getStreamKeyUrl()
-	{
-		$path = $this->getStreamServer() . '?';
-		$query = http_build_query([
-			'name' => $this->stream_key,
-		]);
-		return $path . $query;
-	}
+    public function getStreamServer()
+    {
+        $proto = 'rtmp://';
+        $host = config('livestreaming.server.host');
+        $port = ':'.config('livestreaming.server.port');
+        $path = '/'.config('livestreaming.server.path');
 
-	public function getStreamRtmpUrl()
-	{
-		return $this->getStreamServer() . '/' . $this->stream_id;
-	}
+        return $proto.$host.$port.$path;
+    }
+
+    public function getStreamKeyUrl()
+    {
+        $path = $this->getStreamServer().'?';
+        $query = http_build_query([
+            'name' => $this->stream_key,
+        ]);
+
+        return $path.$query;
+    }
+
+    public function getStreamRtmpUrl()
+    {
+        return $this->getStreamServer().'/'.$this->stream_id;
+    }
 }

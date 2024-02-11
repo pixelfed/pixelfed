@@ -2,8 +2,8 @@
 
 namespace App\Http\Controllers;
 
-use Illuminate\Http\Request;
 use App\Services\UserRoleService;
+use Illuminate\Http\Request;
 
 class UserRolesController extends Controller
 {
@@ -15,7 +15,7 @@ class UserRolesController extends Controller
     public function getRoles(Request $request)
     {
         $this->validate($request, [
-            'id' => 'required'
+            'id' => 'required',
         ]);
 
         return UserRoleService::getRoles($request->user()->id);

@@ -9,8 +9,8 @@
 
 namespace App\Util\Lexer;
 
-use Illuminate\Support\Str;
 use App\Services\AutolinkService;
+use Illuminate\Support\Str;
 
 /**
  * Twitter Autolink Class.
@@ -146,12 +146,11 @@ class Autolink extends Regex
      */
     protected $autolinkActiveUsersOnly = false;
 
-
     /**
      * Provides fluent method chaining.
      *
-     * @param string $tweet       The tweet to be converted.
-     * @param bool   $full_encode Whether to encode all special characters.
+     * @param  string  $tweet  The tweet to be converted.
+     * @param  bool  $full_encode  Whether to encode all special characters.
      *
      * @see  __construct()
      *
@@ -170,13 +169,13 @@ class Autolink extends Regex
      *
      * @see  htmlspecialchars()
      *
-     * @param string $tweet       The tweet to be converted.
-     * @param bool   $escape      Whether to escape the tweet (default: true).
-     * @param bool   $full_encode Whether to encode all special characters.
+     * @param  string  $tweet  The tweet to be converted.
+     * @param  bool  $escape  Whether to escape the tweet (default: true).
+     * @param  bool  $full_encode  Whether to encode all special characters.
      */
     public function __construct($tweet = null, $escape = true, $full_encode = false)
     {
-        if ($escape && !empty($tweet)) {
+        if ($escape && ! empty($tweet)) {
             if ($full_encode) {
                 parent::__construct(htmlentities($tweet, ENT_QUOTES, 'UTF-8', false));
             } else {
@@ -194,26 +193,29 @@ class Autolink extends Regex
 
     public function setBaseUserPath($path = '/')
     {
-        $this->url_base_user = config('app.url') . $path;
+        $this->url_base_user = config('app.url').$path;
         $this->target = null;
         $this->external = null;
+
         return $this;
     }
 
     public function setBaseHashPath($path = '/discover/tags/')
     {
-        $this->url_base_hash = config('app.url') . $path;
+        $this->url_base_hash = config('app.url').$path;
         $this->target = null;
         $this->external = null;
+
         return $this;
     }
 
     public function setAutolinkActiveUsersOnly($active)
     {
-    	$this->autolinkActiveUsersOnly = $active;
-    	$this->target = null;
+        $this->autolinkActiveUsersOnly = $active;
+        $this->target = null;
         $this->external = null;
-    	return $this;
+
+        return $this;
     }
 
     /**
@@ -229,8 +231,7 @@ class Autolink extends Regex
     /**
      * CSS class for auto-linked URLs.
      *
-     * @param string $v CSS class for URL links.
-     *
+     * @param  string  $v  CSS class for URL links.
      * @return Autolink Fluid method chaining.
      */
     public function setURLClass($v)
@@ -253,8 +254,7 @@ class Autolink extends Regex
     /**
      * CSS class for auto-linked username URLs.
      *
-     * @param string $v CSS class for username links.
-     *
+     * @param  string  $v  CSS class for username links.
      * @return Autolink Fluid method chaining.
      */
     public function setUsernameClass($v)
@@ -277,8 +277,7 @@ class Autolink extends Regex
     /**
      * CSS class for auto-linked username/list URLs.
      *
-     * @param string $v CSS class for username/list links.
-     *
+     * @param  string  $v  CSS class for username/list links.
      * @return Autolink Fluid method chaining.
      */
     public function setListClass($v)
@@ -301,8 +300,7 @@ class Autolink extends Regex
     /**
      * CSS class for auto-linked hashtag URLs.
      *
-     * @param string $v CSS class for hashtag links.
-     *
+     * @param  string  $v  CSS class for hashtag links.
      * @return Autolink Fluid method chaining.
      */
     public function setHashtagClass($v)
@@ -325,8 +323,7 @@ class Autolink extends Regex
     /**
      * CSS class for auto-linked cashtag URLs.
      *
-     * @param string $v CSS class for cashtag links.
-     *
+     * @param  string  $v  CSS class for cashtag links.
      * @return Autolink Fluid method chaining.
      */
     public function setCashtagClass($v)
@@ -349,8 +346,7 @@ class Autolink extends Regex
     /**
      * Whether to include the value 'nofollow' in the 'rel' attribute.
      *
-     * @param bool $v The value to add to the 'target' attribute.
-     *
+     * @param  bool  $v  The value to add to the 'target' attribute.
      * @return Autolink Fluid method chaining.
      */
     public function setNoFollow($v)
@@ -383,8 +379,7 @@ class Autolink extends Regex
      * been undeprecated and thus the 'target' attribute can be used.  If this is
      * set to false then the 'target' attribute will be output.
      *
-     * @param bool $v The value to add to the 'target' attribute.
-     *
+     * @param  bool  $v  The value to add to the 'target' attribute.
      * @return Autolink Fluid method chaining.
      */
     public function setExternal($v)
@@ -415,8 +410,7 @@ class Autolink extends Regex
      * since been reinstated in HTML 5.  To output the 'target' attribute you
      * must disable the adding of the string 'external' to the 'rel' attribute.
      *
-     * @param string $v The value to add to the 'target' attribute.
-     *
+     * @param  string  $v  The value to add to the 'target' attribute.
      * @return Autolink Fluid method chaining.
      */
     public function setTarget($v)
@@ -429,9 +423,8 @@ class Autolink extends Regex
     /**
      * Autolink with entities.
      *
-     * @param string $tweet
-     * @param array  $entities
-     *
+     * @param  string  $tweet
+     * @param  array  $entities
      * @return string
      *
      * @since 1.1.0
@@ -446,7 +439,7 @@ class Autolink extends Regex
         $beginIndex = 0;
         foreach ($entities as $entity) {
             if (isset($entity['screen_name'])) {
-                if(Str::startsWith($entity['screen_name'], '@')) {
+                if (Str::startsWith($entity['screen_name'], '@')) {
                     $text .= StringUtils::substr($tweet, $beginIndex, $entity['indices'][0] - $beginIndex);
                 } else {
                     $text .= StringUtils::substr($tweet, $beginIndex, $entity['indices'][0] - $beginIndex);
@@ -476,7 +469,6 @@ class Autolink extends Regex
      *
      * @param  string The tweet to be converted
      * @param  mixed  The entities info
-     *
      * @return string that auto-link HTML added
      *
      * @since 1.1.0
@@ -496,7 +488,7 @@ class Autolink extends Regex
 
         // map JSON entity to twitter-text entity
         foreach ($entities as $idx => $entity) {
-            if (!empty($entity['text'])) {
+            if (! empty($entity['text'])) {
                 $entities[$idx]['hashtag'] = $entity['text'];
             }
         }
@@ -509,8 +501,7 @@ class Autolink extends Regex
     /**
      * convert Object to Array.
      *
-     * @param mixed $obj
-     *
+     * @param  mixed  $obj
      * @return array
      */
     protected function object2array($obj)
@@ -529,7 +520,6 @@ class Autolink extends Regex
      * Auto-link hashtags, URLs, usernames and lists.
      *
      * @param  string The tweet to be converted
-     *
      * @return string that auto-link HTML added
      *
      * @since 1.1.0
@@ -560,12 +550,12 @@ class Autolink extends Regex
         }
         $entities = $this->extractor->extractMentionsOrListsWithIndices($tweet);
 
-        if($this->autolinkActiveUsersOnly == true) {
-        	$entities = collect($entities)
-        		->filter(function($entity) {
-        			return AutolinkService::mentionedUsernameExists($entity['screen_name']);
-        		})
-        		->toArray();
+        if ($this->autolinkActiveUsersOnly == true) {
+            $entities = collect($entities)
+                ->filter(function ($entity) {
+                    return AutolinkService::mentionedUsernameExists($entity['screen_name']);
+                })
+                ->toArray();
         }
 
         return $this->autoLinkEntities($tweet, $entities);
@@ -628,13 +618,13 @@ class Autolink extends Regex
 
     public function linkToUrl($entity)
     {
-        if (!empty($this->class_url)) {
+        if (! empty($this->class_url)) {
             $attributes['class'] = $this->class_url;
         }
         $attributes['href'] = $entity['url'];
         $linkText = $this->escapeHTML($entity['url']);
 
-        if (!empty($entity['display_url']) && !empty($entity['expanded_url'])) {
+        if (! empty($entity['display_url']) && ! empty($entity['expanded_url'])) {
             // Goal: If a user copies and pastes a tweet containing t.co'ed link, the resulting paste
             // should contain the full original URL (expanded_url), not the display URL.
             //
@@ -695,7 +685,7 @@ class Autolink extends Regex
                 $linkText = $entity['display_url'];
             }
             $attributes['title'] = $entity['expanded_url'];
-        } elseif (!empty($entity['display_url'])) {
+        } elseif (! empty($entity['display_url'])) {
             $linkText = $entity['display_url'];
         }
 
@@ -703,9 +693,8 @@ class Autolink extends Regex
     }
 
     /**
-     * @param array  $entity
-     * @param string $tweet
-     *
+     * @param  array  $entity
+     * @param  string  $tweet
      * @return string
      *
      * @since 1.1.0
@@ -723,13 +712,13 @@ class Autolink extends Regex
 
         $attributes['href'] = $this->url_base_hash.$entity['hashtag'].'?src=hash';
         $attributes['title'] = '#'.$entity['hashtag'];
-        if (!empty($this->class_hash)) {
+        if (! empty($this->class_hash)) {
             $class[] = $this->class_hash;
         }
         if (preg_match(self::$patterns['rtl_chars'], $linkText)) {
             $class[] = 'rtl';
         }
-        if (!empty($class)) {
+        if (! empty($class)) {
             $attributes['class'] = implode(' ', $class);
         }
 
@@ -737,8 +726,7 @@ class Autolink extends Regex
     }
 
     /**
-     * @param array $entity
-     *
+     * @param  array  $entity
      * @return string
      *
      * @since 1.1.0
@@ -748,13 +736,13 @@ class Autolink extends Regex
         $attributes = [];
         $screen_name = $entity['screen_name'];
 
-        if($this->autolinkActiveUsersOnly == true) {
-        	if(!AutolinkService::mentionedUsernameExists($screen_name)) {
-        		return Str::of($screen_name)->startsWith('@') ? $screen_name : "@{$screen_name}";
-        	}
+        if ($this->autolinkActiveUsersOnly == true) {
+            if (! AutolinkService::mentionedUsernameExists($screen_name)) {
+                return Str::of($screen_name)->startsWith('@') ? $screen_name : "@{$screen_name}";
+            }
         }
 
-        if (!empty($entity['list_slug'])) {
+        if (! empty($entity['list_slug'])) {
             // Replace the list and username
             $linkText = Str::startsWith($screen_name, '@') ? $screen_name : '@'.$screen_name;
             $class = $this->class_list;
@@ -763,9 +751,9 @@ class Autolink extends Regex
             // Replace the username
             $linkText = Str::startsWith($screen_name, '@') ? $screen_name : '@'.$screen_name;
             $class = $this->class_user;
-            $url = $this->url_base_user . $screen_name;
+            $url = $this->url_base_user.$screen_name;
         }
-        if (!empty($class)) {
+        if (! empty($class)) {
             $attributes['class'] = $class;
         }
         $attributes['href'] = $url;
@@ -774,9 +762,8 @@ class Autolink extends Regex
     }
 
     /**
-     * @param array  $entity
-     * @param string $tweet
-     *
+     * @param  array  $entity
+     * @param  string  $tweet
      * @return string
      *
      * @since 1.1.0
@@ -791,7 +778,7 @@ class Autolink extends Regex
         $linkText = $doller.$entity['cashtag'];
         $attributes['href'] = $this->url_base_cash.$entity['cashtag'];
         $attributes['title'] = $linkText;
-        if (!empty($this->class_cash)) {
+        if (! empty($this->class_cash)) {
             $attributes['class'] = $this->class_cash;
         }
 
@@ -799,10 +786,8 @@ class Autolink extends Regex
     }
 
     /**
-     * @param array  $entity
-     * @param string $text
-     * @param array  $attributes
-     *
+     * @param  string  $text
+     * @param  array  $attributes
      * @return string
      *
      * @since 1.1.0
@@ -819,7 +804,7 @@ class Autolink extends Regex
         if ($this->noopener) {
             $rel[] = 'noopener';
         }
-        if (!empty($rel)) {
+        if (! empty($rel)) {
             $attributes['rel'] = implode(' ', $rel);
         }
         if ($this->target) {
@@ -837,8 +822,7 @@ class Autolink extends Regex
     /**
      * html escape.
      *
-     * @param string $text
-     *
+     * @param  string  $text
      * @return string
      */
     protected function escapeHTML($text)

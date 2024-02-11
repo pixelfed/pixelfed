@@ -1,10 +1,8 @@
 <?php
 
-use Illuminate\Http\Request;
-use App\Http\Middleware\DeprecatedEndpoint;
 use App\Http\Controllers\Api\V1\TagsController;
 
-$middleware = ['auth:api','validemail'];
+$middleware = ['auth:api', 'validemail'];
 
 Route::post('/f/inbox', 'FederationController@sharedInbox');
 Route::post('/users/{username}/inbox', 'FederationController@userInbox');
@@ -20,9 +18,9 @@ Route::redirect('.well-known/change-password', '/settings/password');
 Route::get('api/nodeinfo/2.0.json', 'FederationController@nodeinfo');
 Route::get('api/service/health-check', 'HealthCheckController@get');
 
-Route::group(['prefix' => 'api'], function() use($middleware) {
+Route::group(['prefix' => 'api'], function () use ($middleware) {
 
-    Route::group(['prefix' => 'v1'], function() use($middleware) {
+    Route::group(['prefix' => 'v1'], function () use ($middleware) {
         Route::post('apps', 'Api\ApiV1Controller@apps');
         Route::get('apps/verify_credentials', 'Api\ApiV1Controller@getApp')->middleware($middleware);
         Route::get('instance', 'Api\ApiV1Controller@instance');
@@ -103,17 +101,17 @@ Route::group(['prefix' => 'api'], function() use($middleware) {
         Route::put('statuses/{id}', 'StatusEditController@store')->middleware($middleware);
     });
 
-    Route::group(['prefix' => 'v2'], function() use($middleware) {
+    Route::group(['prefix' => 'v2'], function () use ($middleware) {
         Route::get('search', 'Api\ApiV2Controller@search')->middleware($middleware);
         Route::post('media', 'Api\ApiV2Controller@mediaUploadV2')->middleware($middleware);
         Route::get('streaming/config', 'Api\ApiV2Controller@getWebsocketConfig');
         Route::get('instance', 'Api\ApiV2Controller@instance');
     });
 
-    Route::group(['prefix' => 'v1.1'], function() use($middleware) {
+    Route::group(['prefix' => 'v1.1'], function () use ($middleware) {
         Route::post('report', 'Api\ApiV1Dot1Controller@report')->middleware($middleware);
 
-        Route::group(['prefix' => 'accounts'], function () use($middleware) {
+        Route::group(['prefix' => 'accounts'], function () use ($middleware) {
             Route::get('timelines/home', 'Api\ApiV1Controller@timelineHome')->middleware($middleware);
             Route::delete('avatar', 'Api\ApiV1Dot1Controller@deleteAvatar')->middleware($middleware);
             Route::get('{id}/posts', 'Api\ApiV1Dot1Controller@accountPosts')->middleware($middleware);
@@ -125,7 +123,7 @@ Route::group(['prefix' => 'api'], function() use($middleware) {
             Route::get('mutuals/{id}', 'Api\ApiV1Dot1Controller@getMutualAccounts')->middleware($middleware);
         });
 
-        Route::group(['prefix' => 'collections'], function () use($middleware) {
+        Route::group(['prefix' => 'collections'], function () use ($middleware) {
             Route::get('accounts/{id}', 'CollectionController@getUserCollections')->middleware($middleware);
             Route::get('items/{id}', 'CollectionController@getItems')->middleware($middleware);
             Route::get('view/{id}', 'CollectionController@getCollection')->middleware($middleware);
@@ -135,7 +133,7 @@ Route::group(['prefix' => 'api'], function() use($middleware) {
             Route::post('remove', 'CollectionController@deleteId')->middleware($middleware);
         });
 
-        Route::group(['prefix' => 'direct'], function () use($middleware) {
+        Route::group(['prefix' => 'direct'], function () use ($middleware) {
             Route::get('thread', 'DirectMessageController@thread')->middleware($middleware);
             Route::post('thread/send', 'DirectMessageController@create')->middleware($middleware);
             Route::delete('thread/message', 'DirectMessageController@delete')->middleware($middleware);
@@ -146,17 +144,17 @@ Route::group(['prefix' => 'api'], function() use($middleware) {
             Route::post('lookup', 'DirectMessageController@composeLookup')->middleware($middleware);
         });
 
-        Route::group(['prefix' => 'archive'], function () use($middleware) {
+        Route::group(['prefix' => 'archive'], function () use ($middleware) {
             Route::post('add/{id}', 'Api\ApiV1Dot1Controller@archive')->middleware($middleware);
             Route::post('remove/{id}', 'Api\ApiV1Dot1Controller@unarchive')->middleware($middleware);
             Route::get('list', 'Api\ApiV1Dot1Controller@archivedPosts')->middleware($middleware);
         });
 
-        Route::group(['prefix' => 'places'], function () use($middleware) {
+        Route::group(['prefix' => 'places'], function () use ($middleware) {
             Route::get('posts/{id}/{slug}', 'Api\ApiV1Dot1Controller@placesById')->middleware($middleware);
         });
 
-        Route::group(['prefix' => 'stories'], function () use($middleware) {
+        Route::group(['prefix' => 'stories'], function () use ($middleware) {
             Route::get('carousel', 'Stories\StoryApiV1Controller@carousel')->middleware($middleware);
             Route::post('add', 'Stories\StoryApiV1Controller@add')->middleware($middleware);
             Route::post('publish', 'Stories\StoryApiV1Controller@publish')->middleware($middleware);
@@ -165,22 +163,22 @@ Route::group(['prefix' => 'api'], function() use($middleware) {
             Route::post('comment', 'Stories\StoryApiV1Controller@comment')->middleware($middleware);
         });
 
-        Route::group(['prefix' => 'compose'], function () use($middleware) {
+        Route::group(['prefix' => 'compose'], function () use ($middleware) {
             Route::get('search/location', 'ComposeController@searchLocation')->middleware($middleware);
             Route::get('settings', 'ComposeController@composeSettings')->middleware($middleware);
         });
 
-        Route::group(['prefix' => 'discover'], function () use($middleware) {
+        Route::group(['prefix' => 'discover'], function () use ($middleware) {
             Route::get('accounts/popular', 'Api\ApiV1Controller@discoverAccountsPopular')->middleware($middleware);
             Route::get('posts/trending', 'DiscoverController@trendingApi')->middleware($middleware);
             Route::get('posts/hashtags', 'DiscoverController@trendingHashtags')->middleware($middleware);
         });
 
-        Route::group(['prefix' => 'directory'], function () use($middleware) {
+        Route::group(['prefix' => 'directory'], function () {
             Route::get('listing', 'PixelfedDirectoryController@get');
         });
 
-        Route::group(['prefix' => 'auth'], function () use($middleware) {
+        Route::group(['prefix' => 'auth'], function () {
             Route::get('iarpfc', 'Api\ApiV1Dot1Controller@inAppRegistrationPreFlightCheck');
             Route::post('iar', 'Api\ApiV1Dot1Controller@inAppRegistration');
             Route::post('iarc', 'Api\ApiV1Dot1Controller@inAppRegistrationConfirm');
@@ -192,7 +190,7 @@ Route::group(['prefix' => 'api'], function() use($middleware) {
         });
     });
 
-    Route::group(['prefix' => 'live'], function() use($middleware) {
+    Route::group(['prefix' => 'live'], function () {
         // Route::post('create_stream', 'LiveStreamController@createStream')->middleware($middleware);
         // Route::post('stream/edit', 'LiveStreamController@editStream')->middleware($middleware);
         // Route::get('active/list', 'LiveStreamController@getActiveStreams')->middleware($middleware);
@@ -210,7 +208,7 @@ Route::group(['prefix' => 'api'], function() use($middleware) {
         // Route::post('broadcast/finish', 'LiveStreamController@clientBroadcastFinish')->middleware($middleware);
     });
 
-    Route::group(['prefix' => 'admin'], function() use($middleware) {
+    Route::group(['prefix' => 'admin'], function () use ($middleware) {
         Route::post('moderate/post/{id}', 'Api\ApiV1Dot1Controller@moderatePost')->middleware($middleware);
         Route::get('supported', 'Api\AdminApiController@supported')->middleware($middleware);
         Route::get('stats', 'Api\AdminApiController@getStats')->middleware($middleware);
@@ -231,15 +229,15 @@ Route::group(['prefix' => 'api'], function() use($middleware) {
         Route::get('instance/stats', 'Api\AdminApiController@getAllStats')->middleware($middleware);
     });
 
-    Route::group(['prefix' => 'landing/v1'], function() use($middleware) {
+    Route::group(['prefix' => 'landing/v1'], function () {
         Route::get('directory', 'LandingController@getDirectoryApi');
     });
 
-    Route::group(['prefix' => 'pixelfed'], function() use($middleware) {
-        Route::group(['prefix' => 'v1'], function() use($middleware) {
+    Route::group(['prefix' => 'pixelfed'], function () use ($middleware) {
+        Route::group(['prefix' => 'v1'], function () use ($middleware) {
             Route::post('report', 'Api\ApiV1Dot1Controller@report')->middleware($middleware);
 
-            Route::group(['prefix' => 'accounts'], function () use($middleware) {
+            Route::group(['prefix' => 'accounts'], function () use ($middleware) {
                 Route::get('timelines/home', 'Api\ApiV1Controller@timelineHome')->middleware($middleware);
                 Route::delete('avatar', 'Api\ApiV1Dot1Controller@deleteAvatar')->middleware($middleware);
                 Route::get('{id}/posts', 'Api\ApiV1Dot1Controller@accountPosts')->middleware($middleware);
@@ -250,13 +248,13 @@ Route::group(['prefix' => 'api'], function() use($middleware) {
                 Route::get('apps-and-applications', 'Api\ApiV1Dot1Controller@accountApps')->middleware($middleware);
             });
 
-            Route::group(['prefix' => 'archive'], function () use($middleware) {
+            Route::group(['prefix' => 'archive'], function () use ($middleware) {
                 Route::post('add/{id}', 'Api\ApiV1Dot1Controller@archive')->middleware($middleware);
                 Route::post('remove/{id}', 'Api\ApiV1Dot1Controller@unarchive')->middleware($middleware);
                 Route::get('list', 'Api\ApiV1Dot1Controller@archivedPosts')->middleware($middleware);
             });
 
-            Route::group(['prefix' => 'collections'], function () use($middleware) {
+            Route::group(['prefix' => 'collections'], function () use ($middleware) {
                 Route::get('accounts/{id}', 'CollectionController@getUserCollections')->middleware($middleware);
                 Route::get('items/{id}', 'CollectionController@getItems')->middleware($middleware);
                 Route::get('view/{id}', 'CollectionController@getCollection')->middleware($middleware);
@@ -266,12 +264,12 @@ Route::group(['prefix' => 'api'], function() use($middleware) {
                 Route::post('remove', 'CollectionController@deleteId')->middleware($middleware);
             });
 
-            Route::group(['prefix' => 'compose'], function () use($middleware) {
+            Route::group(['prefix' => 'compose'], function () use ($middleware) {
                 Route::get('search/location', 'ComposeController@searchLocation')->middleware($middleware);
                 Route::get('settings', 'ComposeController@composeSettings')->middleware($middleware);
             });
 
-            Route::group(['prefix' => 'direct'], function () use($middleware) {
+            Route::group(['prefix' => 'direct'], function () use ($middleware) {
                 Route::get('thread', 'DirectMessageController@thread')->middleware($middleware);
                 Route::post('thread/send', 'DirectMessageController@create')->middleware($middleware);
                 Route::delete('thread/message', 'DirectMessageController@delete')->middleware($middleware);
@@ -282,17 +280,17 @@ Route::group(['prefix' => 'api'], function() use($middleware) {
                 Route::post('lookup', 'DirectMessageController@composeLookup')->middleware($middleware);
             });
 
-            Route::group(['prefix' => 'discover'], function () use($middleware) {
+            Route::group(['prefix' => 'discover'], function () use ($middleware) {
                 Route::get('accounts/popular', 'Api\ApiV1Controller@discoverAccountsPopular')->middleware($middleware);
                 Route::get('posts/trending', 'DiscoverController@trendingApi')->middleware($middleware);
                 Route::get('posts/hashtags', 'DiscoverController@trendingHashtags')->middleware($middleware);
             });
 
-            Route::group(['prefix' => 'directory'], function () use($middleware) {
+            Route::group(['prefix' => 'directory'], function () {
                 Route::get('listing', 'PixelfedDirectoryController@get');
             });
 
-            Route::group(['prefix' => 'places'], function () use($middleware) {
+            Route::group(['prefix' => 'places'], function () use ($middleware) {
                 Route::get('posts/{id}/{slug}', 'Api\ApiV1Dot1Controller@placesById')->middleware($middleware);
             });
 
@@ -301,7 +299,7 @@ Route::group(['prefix' => 'api'], function() use($middleware) {
             Route::get('app/settings', 'UserAppSettingsController@get')->middleware($middleware);
             Route::post('app/settings', 'UserAppSettingsController@store')->middleware($middleware);
 
-            Route::group(['prefix' => 'stories'], function () use($middleware) {
+            Route::group(['prefix' => 'stories'], function () use ($middleware) {
                 Route::get('carousel', 'Stories\StoryApiV1Controller@carousel')->middleware($middleware);
                 Route::get('self-carousel', 'Stories\StoryApiV1Controller@selfCarousel')->middleware($middleware);
                 Route::post('add', 'Stories\StoryApiV1Controller@add')->middleware($middleware);

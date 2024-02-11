@@ -2,44 +2,33 @@
 
 namespace App\Http\Controllers\Api;
 
-use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
+use App\Jobs\ImageOptimizePipeline\ImageOptimize;
+use App\Jobs\MediaPipeline\MediaDeletePipeline;
+use App\Jobs\VideoPipeline\VideoThumbnail;
 use App\Media;
-use App\UserSetting;
-use App\User;
-use Illuminate\Support\Facades\Cache;
 use App\Services\AccountService;
-use App\Services\BouncerService;
 use App\Services\InstanceService;
 use App\Services\MediaBlocklistService;
 use App\Services\MediaPathService;
 use App\Services\SearchApiV2Service;
-use App\Util\Media\Filter;
-use App\Jobs\MediaPipeline\MediaDeletePipeline;
-use App\Jobs\VideoPipeline\{
-    VideoOptimize,
-    VideoPostProcess,
-    VideoThumbnail
-};
-use App\Jobs\ImageOptimizePipeline\ImageOptimize;
-use League\Fractal;
-use League\Fractal\Serializer\ArraySerializer;
-use League\Fractal\Pagination\IlluminatePaginatorAdapter;
-use App\Transformer\Api\Mastodon\v1\{
-    AccountTransformer,
-    MediaTransformer,
-    NotificationTransformer,
-    StatusTransformer,
-};
+use App\Services\UserRoleService;
+use App\Transformer\Api\Mastodon\v1\MediaTransformer;
 use App\Transformer\Api\{
     RelationshipTransformer,
 };
+use App\User;
+use App\UserSetting;
+use App\Util\Media\Filter;
 use App\Util\Site\Nodeinfo;
-use App\Services\UserRoleService;
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Cache;
+use League\Fractal;
+use League\Fractal\Serializer\ArraySerializer;
 
 class ApiV2Controller extends Controller
 {
-    const PF_API_ENTITY_KEY = "_pe";
+    const PF_API_ENTITY_KEY = '_pe';
 
     public function json($res, $code = 200, $headers = [])
     {
@@ -49,10 +38,11 @@ class ApiV2Controller extends Controller
     public function instance(Request $request)
     {
         $contact = Cache::remember('api:v1:instance-data:contact', 604800, function () {
-            if(config_cache('instance.admin.pid')) {
+            if (config_cache('instance.admin.pid')) {
                 return AccountService::getMastodon(config_cache('instance.admin.pid'), true);
             }
             $admin = User::whereIsAdmin(true)->first();
+
             return $admin && isset($admin->profile_id) ?
                 AccountService::getMastodon($admin->profile_id, true) :
                 null;
@@ -61,14 +51,15 @@ class ApiV2Controller extends Controller
         $rules = Cache::remember('api:v1:instance-data:rules', 604800, function () {
             return config_cache('app.rules') ?
                 collect(json_decode(config_cache('app.rules'), true))
-                ->map(function($rule, $key) {
-                    $id = $key + 1;
-                    return [
-                        'id' => "{$id}",
-                        'text' => $rule
-                    ];
-                })
-                ->toArray() : [];
+                    ->map(function ($rule, $key) {
+                        $id = $key + 1;
+
+                        return [
+                            'id' => "{$id}",
+                            'text' => $rule,
+                        ];
+                    })
+                    ->toArray() : [];
         });
 
         $res = [
@@ -79,22 +70,22 @@ class ApiV2Controller extends Controller
             'description' => config_cache('app.short_description'),
             'usage' => [
                 'users' => [
-                    'active_month' => (int) Nodeinfo::activeUsersMonthly()
-                ]
+                    'active_month' => (int) Nodeinfo::activeUsersMonthly(),
+                ],
             ],
             'thumbnail' => [
                 'url' => config_cache('app.banner_image') ?? url(Storage::url('public/headers/default.jpg')),
                 'blurhash' => InstanceService::headerBlurhash(),
                 'versions' => [
                     '@1x' => config_cache('app.banner_image') ?? url(Storage::url('public/headers/default.jpg')),
-                    '@2x' => config_cache('app.banner_image') ?? url(Storage::url('public/headers/default.jpg'))
-                ]
+                    '@2x' => config_cache('app.banner_image') ?? url(Storage::url('public/headers/default.jpg')),
+                ],
             ],
             'languages' => [config('app.locale')],
             'configuration' => [
                 'urls' => [
-                    'streaming' => 'wss://' . config('pixelfed.domain.app'),
-                    'status' => null
+                    'streaming' => 'wss://'.config('pixelfed.domain.app'),
+                    'status' => null,
                 ],
                 'vapid' => [
                     'public_key' => config('webpush.vapid.public_key'),
@@ -105,7 +96,7 @@ class ApiV2Controller extends Controller
                 'statuses' => [
                     'max_characters' => (int) config('pixelfed.max_caption_length'),
                     'max_media_attachments' => (int) config_cache('pixelfed.max_album_length'),
-                    'characters_reserved_per_url' => 23
+                    'characters_reserved_per_url' => 23,
                 ],
                 'media_attachments' => [
                     'supported_mime_types' => explode(',', config_cache('pixelfed.media_types')),
@@ -113,7 +104,7 @@ class ApiV2Controller extends Controller
                     'image_matrix_limit' => 3686400,
                     'video_size_limit' => config_cache('pixelfed.max_photo_size') * 1024,
                     'video_frame_rate_limit' => 240,
-                    'video_matrix_limit' => 3686400
+                    'video_matrix_limit' => 3686400,
                 ],
                 'polls' => [
                     'max_options' => 4,
@@ -128,13 +119,13 @@ class ApiV2Controller extends Controller
             'registrations' => [
                 'enabled' => (bool) config_cache('pixelfed.open_registration'),
                 'approval_required' => false,
-                'message' => null
+                'message' => null,
             ],
             'contact' => [
                 'email' => config('instance.email'),
-                'account' => $contact
+                'account' => $contact,
             ],
-            'rules' => $rules
+            'rules' => $rules,
         ];
 
         return response()->json($res, 200, [], JSON_UNESCAPED_SLASHES);
@@ -148,7 +139,7 @@ class ApiV2Controller extends Controller
      */
     public function search(Request $request)
     {
-        abort_if(!$request->user() || !$request->user()->token(), 403);
+        abort_if(! $request->user() || ! $request->user()->token(), 403);
         abort_unless($request->user()->tokenCan('read'), 403);
 
         $this->validate($request, [
@@ -161,18 +152,19 @@ class ApiV2Controller extends Controller
             'resolve' => 'nullable',
             'limit' => 'nullable|integer|max:40',
             'offset' => 'nullable|integer',
-            'following' => 'nullable'
+            'following' => 'nullable',
         ]);
 
-        if($request->user()->has_roles && !UserRoleService::can('can-view-discover', $request->user()->id)) {
+        if ($request->user()->has_roles && ! UserRoleService::can('can-view-discover', $request->user()->id)) {
             return [
                 'accounts' => [],
                 'hashtags' => [],
-                'statuses' => []
+                'statuses' => [],
             ];
         }
 
-        $mastodonMode = !$request->has('_pe');
+        $mastodonMode = ! $request->has('_pe');
+
         return $this->json(SearchApiV2Service::query($request, $mastodonMode));
     }
 
@@ -188,7 +180,7 @@ class ApiV2Controller extends Controller
             'host' => config('broadcasting.connections.pusher.options.host'),
             'port' => config('broadcasting.connections.pusher.options.port'),
             'key' => config('broadcasting.connections.pusher.key'),
-            'cluster' => config('broadcasting.connections.pusher.options.cluster')
+            'cluster' => config('broadcasting.connections.pusher.options.cluster'),
         ] : [];
     }
 
@@ -200,39 +192,39 @@ class ApiV2Controller extends Controller
      */
     public function mediaUploadV2(Request $request)
     {
-        abort_if(!$request->user() || !$request->user()->token(), 403);
+        abort_if(! $request->user() || ! $request->user()->token(), 403);
         abort_unless($request->user()->tokenCan('write'), 403);
 
         $this->validate($request, [
             'file.*' => [
                 'required_without:file',
-                'mimetypes:' . config_cache('pixelfed.media_types'),
-                'max:' . config_cache('pixelfed.max_photo_size'),
+                'mimetypes:'.config_cache('pixelfed.media_types'),
+                'max:'.config_cache('pixelfed.max_photo_size'),
             ],
             'file' => [
                 'required_without:file.*',
-                'mimetypes:' . config_cache('pixelfed.media_types'),
-                'max:' . config_cache('pixelfed.max_photo_size'),
+                'mimetypes:'.config_cache('pixelfed.media_types'),
+                'max:'.config_cache('pixelfed.max_photo_size'),
             ],
-          'filter_name' => 'nullable|string|max:24',
-          'filter_class' => 'nullable|alpha_dash|max:24',
-          'description' => 'nullable|string|max:' . config_cache('pixelfed.max_altext_length'),
-          'replace_id' => 'sometimes'
+            'filter_name' => 'nullable|string|max:24',
+            'filter_class' => 'nullable|alpha_dash|max:24',
+            'description' => 'nullable|string|max:'.config_cache('pixelfed.max_altext_length'),
+            'replace_id' => 'sometimes',
         ]);
 
         $user = $request->user();
 
-        if($user->last_active_at == null) {
+        if ($user->last_active_at == null) {
             return [];
         }
 
-        if(empty($request->file('file'))) {
+        if (empty($request->file('file'))) {
             return response('', 422);
         }
 
-        $limitKey = 'compose:rate-limit:media-upload:' . $user->id;
+        $limitKey = 'compose:rate-limit:media-upload:'.$user->id;
         $limitTtl = now()->addMinutes(15);
-        $limitReached = Cache::remember($limitKey, $limitTtl, function() use($user) {
+        $limitReached = Cache::remember($limitKey, $limitTtl, function () use ($user) {
             $dailyLimit = Media::whereUserId($user->id)->where('created_at', '>', now()->subDays(1))->count();
 
             return $dailyLimit >= 1250;
@@ -241,13 +233,13 @@ class ApiV2Controller extends Controller
 
         $profile = $user->profile;
 
-        if(config_cache('pixelfed.enforce_account_limit') == true) {
-            $size = Cache::remember($user->storageUsedKey(), now()->addDays(3), function() use($user) {
+        if (config_cache('pixelfed.enforce_account_limit') == true) {
+            $size = Cache::remember($user->storageUsedKey(), now()->addDays(3), function () use ($user) {
                 return Media::whereUserId($user->id)->sum('size') / 1000;
             });
             $limit = (int) config_cache('pixelfed.max_account_size');
             if ($size >= $limit) {
-               abort(403, 'Account size limit reached.');
+                abort(403, 'Account size limit reached.');
             }
         }
 
@@ -257,7 +249,7 @@ class ApiV2Controller extends Controller
         $photo = $request->file('file');
 
         $mimes = explode(',', config_cache('pixelfed.media_types'));
-        if(in_array($photo->getMimeType(), $mimes) == false) {
+        if (in_array($photo->getMimeType(), $mimes) == false) {
             abort(403, 'Invalid or unsupported mime type.');
         }
 
@@ -269,24 +261,24 @@ class ApiV2Controller extends Controller
 
         $settings = UserSetting::whereUserId($user->id)->first();
 
-        if($settings && !empty($settings->compose_settings)) {
+        if ($settings && ! empty($settings->compose_settings)) {
             $compose = $settings->compose_settings;
 
-            if(isset($compose['default_license']) && $compose['default_license'] != 1) {
+            if (isset($compose['default_license']) && $compose['default_license'] != 1) {
                 $license = $compose['default_license'];
             }
         }
 
         abort_if(MediaBlocklistService::exists($hash) == true, 451);
 
-        if($request->has('replace_id')) {
+        if ($request->has('replace_id')) {
             $rpid = $request->input('replace_id');
             $removeMedia = Media::whereNull('status_id')
                 ->whereUserId($user->id)
                 ->whereProfileId($profile->id)
                 ->where('created_at', '>', now()->subHours(2))
                 ->find($rpid);
-            if($removeMedia) {
+            if ($removeMedia) {
                 MediaDeletePipeline::dispatch($removeMedia)
                     ->onQueue('mmo')
                     ->delay(now()->addMinutes(15));
@@ -304,7 +296,7 @@ class ApiV2Controller extends Controller
         $media->caption = $request->input('description');
         $media->filter_class = $filterClass;
         $media->filter_name = $filterName;
-        if($license) {
+        if ($license) {
             $media->license = $license;
         }
         $media->save();
@@ -327,8 +319,9 @@ class ApiV2Controller extends Controller
         $fractal->setSerializer(new ArraySerializer());
         $resource = new Fractal\Resource\Item($media, new MediaTransformer());
         $res = $fractal->createData($resource)->toArray();
-        $res['preview_url'] = $media->url(). '?v=' . time();
+        $res['preview_url'] = $media->url().'?v='.time();
         $res['url'] = null;
+
         return $this->json($res, 202);
     }
 }

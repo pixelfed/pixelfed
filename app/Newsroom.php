@@ -7,19 +7,20 @@ use Illuminate\Database\Eloquent\Model;
 class Newsroom extends Model
 {
     protected $table = 'newsroom';
+
     protected $fillable = ['title'];
 
     protected $casts = [
-    	'published_at' => 'datetime'
+        'published_at' => 'datetime',
     ];
 
     public function permalink()
     {
-    	$year = $this->published_at->year;
-    	$month = $this->published_at->format('m');
-    	$slug = $this->slug;
+        $year = $this->published_at->year;
+        $month = $this->published_at->format('m');
+        $slug = $this->slug;
 
-    	return url("/site/newsroom/{$year}/{$month}/{$slug}");
+        return url("/site/newsroom/{$year}/{$month}/{$slug}");
     }
 
     public function editUrl()

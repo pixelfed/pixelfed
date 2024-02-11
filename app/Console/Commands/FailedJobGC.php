@@ -2,8 +2,8 @@
 
 namespace App\Console\Commands;
 
-use Illuminate\Console\Command;
 use App\FailedJob;
+use Illuminate\Console\Command;
 
 class FailedJobGC extends Command
 {
@@ -38,9 +38,9 @@ class FailedJobGC extends Command
      */
     public function handle()
     {
-        FailedJob::chunk(50, function($jobs) {
-            foreach($jobs as $job) {
-                if($job->failed_at->lt(now()->subHours(48))) {
+        FailedJob::chunk(50, function ($jobs) {
+            foreach ($jobs as $job) {
+                if ($job->failed_at->lt(now()->subHours(48))) {
                     $job->delete();
                 }
             }

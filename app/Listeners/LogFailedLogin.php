@@ -3,9 +3,6 @@
 namespace App\Listeners;
 
 use App\AccountLog;
-use App\User;
-use Illuminate\Queue\InteractsWithQueue;
-use Illuminate\Contracts\Queue\ShouldQueue;
 
 class LogFailedLogin
 {
@@ -30,10 +27,10 @@ class LogFailedLogin
         $user = $event->user;
         $request = request();
 
-        if(!$user) {
+        if (! $user) {
             return;
         }
-        
+
         $log = new AccountLog();
         $log->user_id = $user->id;
         $log->item_id = $user->id;

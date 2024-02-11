@@ -2,24 +2,28 @@
 
 namespace App\Jobs\AvatarPipeline;
 
-use Illuminate\Bus\Queueable;
-use Illuminate\Contracts\Queue\ShouldQueue;
-use Illuminate\Contracts\Queue\ShouldBeUniqueUntilProcessing;
-use Illuminate\Foundation\Bus\Dispatchable;
-use Illuminate\Queue\InteractsWithQueue;
-use Illuminate\Queue\SerializesModels;
-use Illuminate\Queue\Middleware\WithoutOverlapping;
 use App\Avatar;
 use App\Profile;
+use Illuminate\Bus\Queueable;
+use Illuminate\Contracts\Queue\ShouldBeUniqueUntilProcessing;
+use Illuminate\Contracts\Queue\ShouldQueue;
+use Illuminate\Foundation\Bus\Dispatchable;
+use Illuminate\Queue\InteractsWithQueue;
+use Illuminate\Queue\Middleware\WithoutOverlapping;
+use Illuminate\Queue\SerializesModels;
 
-class CreateAvatar implements ShouldQueue, ShouldBeUniqueUntilProcessing
+class CreateAvatar implements ShouldBeUniqueUntilProcessing, ShouldQueue
 {
     use Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
 
     public $profile;
+
     public $tries = 3;
+
     public $maxExceptions = 3;
+
     public $timeout = 900;
+
     public $failOnTimeout = true;
 
     /**
@@ -41,7 +45,7 @@ class CreateAvatar implements ShouldQueue, ShouldBeUniqueUntilProcessing
      */
     public function uniqueId(): string
     {
-        return 'avatar:create:' . $this->profile->id;
+        return 'avatar:create:'.$this->profile->id;
     }
 
     /**
@@ -53,7 +57,7 @@ class CreateAvatar implements ShouldQueue, ShouldBeUniqueUntilProcessing
     {
         return [(new WithoutOverlapping("avatar-create:{$this->profile->id}"))->shared()->dontRelease()];
     }
-    
+
     /**
      * Create a new job instance.
      *
@@ -82,7 +86,7 @@ class CreateAvatar implements ShouldQueue, ShouldBeUniqueUntilProcessing
                 'media_path' => $path,
                 'change_count' => 0,
                 'is_remote' => $isRemote,
-                'last_processed_at' => now()
+                'last_processed_at' => now(),
             ]
         );
     }

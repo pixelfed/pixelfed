@@ -44,10 +44,7 @@ return [
         'storage' => [
             'cloud' => [
                 'enabled' => env('PF_IMPORT_IG_CLOUD_STORAGE', env('PF_ENABLE_CLOUD', false)),
-            ]
-        ]
-    ]
+            ],
+        ],
+    ],
 ];
-
-
-

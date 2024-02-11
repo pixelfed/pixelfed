@@ -2,10 +2,10 @@
 
 return [
 
-	'compose' => [
-		'invalid' => [
-			'album' => 'Metu unu foton aŭ videon, aŭ multajn fotojn.',
-		],
-	],
+    'compose' => [
+        'invalid' => [
+            'album' => 'Metu unu foton aŭ videon, aŭ multajn fotojn.',
+        ],
+    ],
 
 ];

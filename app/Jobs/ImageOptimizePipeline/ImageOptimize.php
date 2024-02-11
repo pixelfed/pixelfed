@@ -41,16 +41,18 @@ class ImageOptimize implements ShouldQueue
     {
         $media = $this->media;
         $path = storage_path('app/'.$media->media_path);
-        if (!is_file($path) || $media->skip_optimize) {
+        if (! is_file($path) || $media->skip_optimize) {
             return;
         }
 
-        if(config('pixelfed.optimize_image') == false) {
-        	ImageThumbnail::dispatch($media)->onQueue('mmo');
-    		return;
-    	} else {
-        	ImageResize::dispatch($media)->onQueue('mmo');
-    		return;
-    	}
+        if (config('pixelfed.optimize_image') == false) {
+            ImageThumbnail::dispatch($media)->onQueue('mmo');
+
+            return;
+        } else {
+            ImageResize::dispatch($media)->onQueue('mmo');
+
+            return;
+        }
     }
 }

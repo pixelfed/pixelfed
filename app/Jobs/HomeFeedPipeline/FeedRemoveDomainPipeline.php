@@ -2,28 +2,31 @@
 
 namespace App\Jobs\HomeFeedPipeline;
 
+use App\Services\HomeTimelineService;
+use App\Services\StatusService;
 use Illuminate\Bus\Batchable;
 use Illuminate\Bus\Queueable;
-use Illuminate\Contracts\Queue\ShouldBeUnique;
+use Illuminate\Contracts\Queue\ShouldBeUniqueUntilProcessing;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
 use Illuminate\Queue\InteractsWithQueue;
-use Illuminate\Queue\SerializesModels;
 use Illuminate\Queue\Middleware\WithoutOverlapping;
-use Illuminate\Contracts\Queue\ShouldBeUniqueUntilProcessing;
-use App\Services\StatusService;
-use App\Services\HomeTimelineService;
+use Illuminate\Queue\SerializesModels;
 
-class FeedRemoveDomainPipeline implements ShouldQueue, ShouldBeUniqueUntilProcessing
+class FeedRemoveDomainPipeline implements ShouldBeUniqueUntilProcessing, ShouldQueue
 {
     use Batchable, Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
 
     protected $pid;
+
     protected $domain;
 
     public $timeout = 900;
+
     public $tries = 3;
+
     public $maxExceptions = 1;
+
     public $failOnTimeout = true;
 
     /**
@@ -38,7 +41,7 @@ class FeedRemoveDomainPipeline implements ShouldQueue, ShouldBeUniqueUntilProces
      */
     public function uniqueId(): string
     {
-        return 'hts:feed:remove:domain:' . $this->pid . ':d-' . $this->domain;
+        return 'hts:feed:remove:domain:'.$this->pid.':d-'.$this->domain;
     }
 
     /**
@@ -65,7 +68,7 @@ class FeedRemoveDomainPipeline implements ShouldQueue, ShouldBeUniqueUntilProces
      */
     public function handle(): void
     {
-        if(!config('exp.cached_home_timeline')) {
+        if (! config('exp.cached_home_timeline')) {
             return;
         }
 
@@ -73,24 +76,25 @@ class FeedRemoveDomainPipeline implements ShouldQueue, ShouldBeUniqueUntilProces
             return;
         }
 
-        if(!$this->pid || !$this->domain) {
+        if (! $this->pid || ! $this->domain) {
             return;
         }
         $domain = strtolower($this->domain);
         $pid = $this->pid;
         $posts = HomeTimelineService::get($pid, '0', '-1');
 
-        foreach($posts as $post) {
+        foreach ($posts as $post) {
             $status = StatusService::get($post, false);
-            if(!$status || !isset($status['url'])) {
+            if (! $status || ! isset($status['url'])) {
                 HomeTimelineService::rem($pid, $post);
+
                 continue;
             }
             $host = strtolower(parse_url($status['url'], PHP_URL_HOST));
-            if($host === strtolower(config('pixelfed.domain.app')) || !$host) {
+            if ($host === strtolower(config('pixelfed.domain.app')) || ! $host) {
                 continue;
             }
-            if($host === $domain) {
+            if ($host === $domain) {
                 HomeTimelineService::rem($pid, $status['id']);
             }
         }

@@ -2,29 +2,32 @@
 
 namespace App\Jobs\ProfilePipeline;
 
+use App\Notification;
+use App\Services\NotificationService;
+use DB;
 use Illuminate\Bus\Batchable;
 use Illuminate\Bus\Queueable;
-use Illuminate\Contracts\Queue\ShouldBeUnique;
+use Illuminate\Contracts\Queue\ShouldBeUniqueUntilProcessing;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
 use Illuminate\Queue\InteractsWithQueue;
-use Illuminate\Queue\SerializesModels;
 use Illuminate\Queue\Middleware\WithoutOverlapping;
-use Illuminate\Contracts\Queue\ShouldBeUniqueUntilProcessing;
-use App\Notification;
-use DB;
-use App\Services\NotificationService;
+use Illuminate\Queue\SerializesModels;
 
-class ProfilePurgeNotificationsByDomain implements ShouldQueue, ShouldBeUniqueUntilProcessing
+class ProfilePurgeNotificationsByDomain implements ShouldBeUniqueUntilProcessing, ShouldQueue
 {
     use Batchable, Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
 
     protected $pid;
+
     protected $domain;
 
     public $timeout = 900;
+
     public $tries = 3;
+
     public $maxExceptions = 1;
+
     public $failOnTimeout = true;
 
     /**
@@ -39,7 +42,7 @@ class ProfilePurgeNotificationsByDomain implements ShouldQueue, ShouldBeUniqueUn
      */
     public function uniqueId(): string
     {
-        return 'notify:v1:purge-by-domain:' . $this->pid . ':d-' . $this->domain;
+        return 'notify:v1:purge-by-domain:'.$this->pid.':d-'.$this->domain;
     }
 
     /**
@@ -80,8 +83,8 @@ class ProfilePurgeNotificationsByDomain implements ShouldQueue, ShouldBeUniqueUn
             AND profiles.domain = ?';
         $params = [$pid, $domain];
 
-        foreach(DB::cursor($query, $params) as $n) {
-            if(!$n || !$n->id) {
+        foreach (DB::cursor($query, $params) as $n) {
+            if (! $n || ! $n->id) {
                 continue;
             }
             Notification::where('id', $n->id)->delete();

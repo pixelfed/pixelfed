@@ -12,6 +12,6 @@ return [
     |
      */
 
-    'failed'      =>    'Ces informations d\'identification ne correspondent à aucune se trouvant dans notre base de données.',
-    'throttle'    =>    'Trop de tentatives de connexion ont été effectuées. Veuillez réessayer dans :seconds secondes.',
+    'failed' => 'Ces informations d\'identification ne correspondent à aucune se trouvant dans notre base de données.',
+    'throttle' => 'Trop de tentatives de connexion ont été effectuées. Veuillez réessayer dans :seconds secondes.',
 ];

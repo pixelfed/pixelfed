@@ -4,9 +4,9 @@ namespace App\Http\Controllers\Auth;
 
 use App\AccountLog;
 use App\Http\Controllers\Controller;
+use App\Services\BouncerService;
 use App\User;
 use Illuminate\Foundation\Auth\AuthenticatesUsers;
-use App\Services\BouncerService;
 use Illuminate\Http\Request;
 use Illuminate\Validation\ValidationException;
 
@@ -33,6 +33,7 @@ class LoginController extends Controller
     protected $redirectTo = '/i/web';
 
     protected $maxAttempts = 5;
+
     protected $decayMinutes = 60;
 
     /**
@@ -47,9 +48,9 @@ class LoginController extends Controller
 
     public function showLoginForm()
     {
-		if(config('pixelfed.bouncer.cloud_ips.ban_logins')) {
-			abort_if(BouncerService::checkIp(request()->ip()), 404);
-		}
+        if (config('pixelfed.bouncer.cloud_ips.ban_logins')) {
+            abort_if(BouncerService::checkIp(request()->ip()), 404);
+        }
 
         return view('auth.login');
     }
@@ -57,30 +58,29 @@ class LoginController extends Controller
     /**
      * Validate the user login request.
      *
-     * @param \Illuminate\Http\Request $request
-     *
+     * @param  \Illuminate\Http\Request  $request
      * @return void
      */
     public function validateLogin($request)
     {
-    	if(config('pixelfed.bouncer.cloud_ips.ban_logins')) {
-			abort_if(BouncerService::checkIp($request->ip()), 404);
-		}
+        if (config('pixelfed.bouncer.cloud_ips.ban_logins')) {
+            abort_if(BouncerService::checkIp($request->ip()), 404);
+        }
 
         $rules = [
             $this->username() => 'required|email',
-            'password'        => 'required|string|min:6',
+            'password' => 'required|string|min:6',
         ];
         $messages = [];
 
-        if(
-        	config('captcha.enabled') ||
-        	config('captcha.active.login') ||
-        	(
-				config('captcha.triggers.login.enabled') &&
-				request()->session()->has('login_attempts') &&
-				request()->session()->get('login_attempts') >= config('captcha.triggers.login.attempts')
-			)
+        if (
+            config('captcha.enabled') ||
+            config('captcha.active.login') ||
+            (
+                config('captcha.triggers.login.enabled') &&
+                request()->session()->has('login_attempts') &&
+                request()->session()->get('login_attempts') >= config('captcha.triggers.login.attempts')
+            )
         ) {
             $rules['h-captcha-response'] = 'required|filled|captcha|min:5';
             $messages['h-captcha-response.required'] = 'The captcha must be filled';
@@ -91,14 +91,13 @@ class LoginController extends Controller
     /**
      * The user has been authenticated.
      *
-     * @param \Illuminate\Http\Request $request
-     * @param mixed                    $user
-     *
+     * @param  \Illuminate\Http\Request  $request
+     * @param  mixed  $user
      * @return mixed
      */
     protected function authenticated($request, $user)
     {
-        if($user->status == 'deleted') {
+        if ($user->status == 'deleted') {
             return;
         }
 
@@ -117,21 +116,20 @@ class LoginController extends Controller
     /**
      * Get the failed login response instance.
      *
-     * @param  \Illuminate\Http\Request  $request
      * @return \Symfony\Component\HttpFoundation\Response
      *
      * @throws \Illuminate\Validation\ValidationException
      */
     protected function sendFailedLoginResponse(Request $request)
     {
-    	if(config('captcha.triggers.login.enabled')) {
-			if ($request->session()->has('login_attempts')) {
-				$ct = $request->session()->get('login_attempts');
-				$request->session()->put('login_attempts', $ct + 1);
-			} else {
-				$request->session()->put('login_attempts', 1);
-			}
-    	}
+        if (config('captcha.triggers.login.enabled')) {
+            if ($request->session()->has('login_attempts')) {
+                $ct = $request->session()->get('login_attempts');
+                $request->session()->put('login_attempts', $ct + 1);
+            } else {
+                $request->session()->put('login_attempts', 1);
+            }
+        }
 
         throw ValidationException::withMessages([
             $this->username() => [trans('auth.failed')],

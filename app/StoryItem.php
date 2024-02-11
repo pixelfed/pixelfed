@@ -8,33 +8,33 @@ use Storage;
 
 class StoryItem extends Model
 {
-	use HasSnowflakePrimary;
+    use HasSnowflakePrimary;
 
-	/**
-	* Indicates if the IDs are auto-incrementing.
-	*
-	* @var bool
-	*/
-	public $incrementing = false;
+    /**
+     * Indicates if the IDs are auto-incrementing.
+     *
+     * @var bool
+     */
+    public $incrementing = false;
 
-	/**
-	* The attributes that should be mutated to dates.
-	*
-	* @var array
-	*/
-	protected $casts = [
-		'expires_at' => 'datetime'
-	];
+    /**
+     * The attributes that should be mutated to dates.
+     *
+     * @var array
+     */
+    protected $casts = [
+        'expires_at' => 'datetime',
+    ];
 
-	protected $visible = ['id'];
+    protected $visible = ['id'];
 
-	public function story()
-	{
-		return $this->belongsTo(Story::class);
-	}
+    public function story()
+    {
+        return $this->belongsTo(Story::class);
+    }
 
-	public function url()
-	{
-		return url(Storage::url($this->media_path));
-	}
+    public function url()
+    {
+        return url(Storage::url($this->media_path));
+    }
 }

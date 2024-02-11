@@ -2,10 +2,10 @@
 
 namespace App\Console\Commands;
 
-use Illuminate\Console\Command;
 use App\Media;
 use App\Services\MediaStorageService;
 use App\Util\Lexer\PrettyNumber;
+use Illuminate\Console\Command;
 use Illuminate\Support\Facades\Storage;
 use Symfony\Component\HttpFoundation\File\Exception\FileNotFoundException;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
@@ -36,16 +36,18 @@ class CloudMediaMigrate extends Command
     public function handle()
     {
         $enabled = config('pixelfed.cloud_storage');
-        if(!$enabled) {
+        if (! $enabled) {
             $this->error('Cloud storage not enabled. Exiting...');
+
             return;
         }
 
         $limit = $this->option('limit');
         $hugeMode = $this->option('huge');
 
-        if($limit > 500 && !$hugeMode) {
+        if ($limit > 500 && ! $hugeMode) {
             $this->error('Max limit exceeded, use a limit lower than 500 or run again with the --huge flag');
+
             return;
         }
 
@@ -60,19 +62,22 @@ class CloudMediaMigrate extends Command
             ->orderByDesc('size')
             ->take($limit)
             ->get()
-            ->each(function($media) use($bar) {
-                if(Storage::disk('local')->exists($media->media_path)) {
+            ->each(function ($media) use ($bar) {
+                if (Storage::disk('local')->exists($media->media_path)) {
                     $this->totalSize = $this->totalSize + $media->size;
                     try {
                         MediaStorageService::store($media);
                     } catch (FileNotFoundException $e) {
-                        $this->error('Error migrating media ' . $media->id . ' to cloud storage: ' . $e->getMessage());
+                        $this->error('Error migrating media '.$media->id.' to cloud storage: '.$e->getMessage());
+
                         return;
                     } catch (NotFoundHttpException $e) {
-                        $this->error('Error migrating media ' . $media->id . ' to cloud storage: ' . $e->getMessage());
+                        $this->error('Error migrating media '.$media->id.' to cloud storage: '.$e->getMessage());
+
                         return;
                     } catch (\Exception $e) {
-                        $this->error('Error migrating media ' . $media->id . ' to cloud storage: ' . $e->getMessage());
+                        $this->error('Error migrating media '.$media->id.' to cloud storage: '.$e->getMessage());
+
                         return;
                     }
                 }
@@ -82,11 +87,12 @@ class CloudMediaMigrate extends Command
         $bar->finish();
         $this->line(' ');
         $this->info('Finished!');
-        if($this->totalSize) {
-            $this->info('Uploaded ' . PrettyNumber::size($this->totalSize) . ' of media to cloud storage!');
+        if ($this->totalSize) {
+            $this->info('Uploaded '.PrettyNumber::size($this->totalSize).' of media to cloud storage!');
             $this->line(' ');
             $this->info('These files are still stored locally, and will be automatically removed.');
         }
+
         return Command::SUCCESS;
     }
 }

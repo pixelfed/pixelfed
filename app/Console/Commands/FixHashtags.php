@@ -2,13 +2,8 @@
 
 namespace App\Console\Commands;
 
+use App\StatusHashtag;
 use Illuminate\Console\Command;
-use DB;
-use App\{
-    Hashtag,
-    Status,
-    StatusHashtag
-};
 
 class FixHashtags extends Command
 {
@@ -51,18 +46,18 @@ class FixHashtags extends Command
         $this->info('   /_/   /_/_/|_|\___/_/_/  \___/\__,_/     ');
         $this->info(' ');
         $this->info(' ');
-        $this->info('Pixelfed version: ' . config('pixelfed.version'));
+        $this->info('Pixelfed version: '.config('pixelfed.version'));
         $this->info(' ');
         $this->info('Running Fix Hashtags command');
         $this->info(' ');
 
         $missingCount = StatusHashtag::doesntHave('profile')->doesntHave('status')->count();
-        if($missingCount > 0) {
+        if ($missingCount > 0) {
             $this->info("Found {$missingCount} orphaned StatusHashtag records to delete ...");
             $this->info(' ');
             $bar = $this->output->createProgressBar($missingCount);
             $bar->start();
-            foreach(StatusHashtag::doesntHave('profile')->doesntHave('status')->get() as $tag) {
+            foreach (StatusHashtag::doesntHave('profile')->doesntHave('status')->get() as $tag) {
                 $tag->delete();
                 $bar->advance();
             }
@@ -72,17 +67,17 @@ class FixHashtags extends Command
             $this->info(' ');
             $this->info('Found no orphaned hashtags to delete!');
         }
-        
 
         $this->info(' ');
 
         $count = StatusHashtag::whereNull('status_visibility')->count();
-        if($count > 0) {
+        if ($count > 0) {
             $this->info("Found {$count} hashtags to fix ...");
             $this->info(' ');
         } else {
             $this->info('Found no hashtags to fix!');
             $this->info(' ');
+
             return;
         }
 
@@ -90,17 +85,17 @@ class FixHashtags extends Command
         $bar->start();
 
         StatusHashtag::with('status')
-        ->whereNull('status_visibility')
-        ->chunk(50, function($tags) use($bar) {
-            foreach($tags as $tag) {
-                if(!$tag->status || !$tag->status->scope) {
-                    continue;
+            ->whereNull('status_visibility')
+            ->chunk(50, function ($tags) use ($bar) {
+                foreach ($tags as $tag) {
+                    if (! $tag->status || ! $tag->status->scope) {
+                        continue;
+                    }
+                    $tag->status_visibility = $tag->status->scope;
+                    $tag->save();
+                    $bar->advance();
                 }
-                $tag->status_visibility = $tag->status->scope;
-                $tag->save();
-                $bar->advance();
-            }
-        });
+            });
 
         $bar->finish();
         $this->info(' ');

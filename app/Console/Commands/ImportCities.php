@@ -1,9 +1,10 @@
 <?php
+
 namespace App\Console\Commands;
 
-use Illuminate\Console\Command;
 use App\Place;
 use DB;
+use Illuminate\Console\Command;
 use Illuminate\Support\Str;
 
 class ImportCities extends Command
@@ -24,7 +25,6 @@ class ImportCities extends Command
 
     /**
      * Checksum of city dataset.
-     *
      */
     const CHECKSUM = 'e203c0247538788b2a91166c7cf4b95f58291d998f514e9306d315aa72b09e48bfd3ddf310bf737afc4eefadca9083b8ff796c67796c6bd8e882a3d268bd16af';
 
@@ -54,7 +54,7 @@ class ImportCities extends Command
         'TZ' => 'Tanzania',
         'US' => 'USA',
         'VE' => 'Venezuela',
-        'XK' => 'Kosovo'
+        'XK' => 'Kosovo',
     ];
 
     /**
@@ -78,16 +78,18 @@ class ImportCities extends Command
         ini_set('memory_limit', '256M');
         $path = storage_path('app/cities.json');
 
-        if(hash_file('sha512', $path) !== self::CHECKSUM) {
+        if (hash_file('sha512', $path) !== self::CHECKSUM) {
             $this->error('Invalid or corrupt storage/app/cities.json data.');
             $this->line('');
             $this->info('Run the following command to fix:');
             $this->info('git checkout storage/app/cities.json');
+
             return;
         }
 
-        if (!is_file($path)) {
+        if (! is_file($path)) {
             $this->error('Missing storage/app/cities.json file!');
+
             return;
         }
 
@@ -103,20 +105,20 @@ class ImportCities extends Command
         $this->line('');
         $this->info("Found {$cityCount} cities to insert ...");
         $this->line('');
-        
+
         $bar = $this->output->createProgressBar($cityCount);
         $bar->start();
-        
+
         $buffer = [];
         $count = 0;
-        
+
         foreach ($cities as $city) {
             $buffer[] = [
-                "name" => $city->name, 
-                "slug" => Str::slug($city->name), 
-                "country" => $this->codeToCountry($city->country), 
-                "lat" => $city->lat, 
-                "long" => $city->lng
+                'name' => $city->name,
+                'slug' => Str::slug($city->name),
+                'country' => $this->codeToCountry($city->country),
+                'lat' => $city->lat,
+                'long' => $city->lng,
             ];
 
             $count++;
@@ -135,10 +137,10 @@ class ImportCities extends Command
 
         $this->line('');
         $this->line('');
-        $this->info('Successfully imported ' . $cityCount . ' entries!');
+        $this->info('Successfully imported '.$cityCount.' entries!');
         $this->line('');
         ini_set('memory_limit', $old_memory_limit);
-        return;
+
     }
 
     private function insertBuffer($buffer)
@@ -149,12 +151,13 @@ class ImportCities extends Command
     private function codeToCountry($code)
     {
         $countries = $this->countries;
-        if(isset($countries[$code])) {
+        if (isset($countries[$code])) {
             return $countries[$code];
         }
 
         $country = (new \League\ISO3166\ISO3166)->alpha2($code);
         $this->countries[$code] = $country['name'];
+
         return $this->countries[$code];
     }
 }

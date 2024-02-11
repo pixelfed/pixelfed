@@ -23,7 +23,7 @@ class AdminHashtag extends JsonResource
             'is_nsfw' => (bool) $this->is_nsfw,
             'is_banned' => (bool) $this->is_banned,
             'cached_count' => $this->cached_count ?? 0,
-            'created_at' => $this->created_at
+            'created_at' => $this->created_at,
         ];
     }
 }

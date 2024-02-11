@@ -17,7 +17,7 @@ class Like extends Model
      * @var array
      */
     protected $casts = [
-    	'deleted_at' => 'datetime'
+        'deleted_at' => 'datetime',
     ];
 
     protected $fillable = ['profile_id', 'status_id', 'status_profile_id'];

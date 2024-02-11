@@ -10,6 +10,7 @@ class UserRoleService
     {
         $default = self::defaultRoles();
         $roles = self::get($id);
+
         return
             in_array($action, array_keys($roles)) ?
                 $roles[$action] :
@@ -18,11 +19,11 @@ class UserRoleService
                         $default[$action] :
                         false
                 );
-        }
+    }
 
     public static function get($id)
     {
-        if($roles = UserRoles::whereUserId($id)->first()) {
+        if ($roles = UserRoles::whereUserId($id)->first()) {
             return $roles->roles;
         }
 
@@ -66,11 +67,13 @@ class UserRoleService
     {
         $myRoles = self::get($id);
         $roleData = collect(self::roleData())
-            ->map(function($role, $k) use($myRoles) {
+            ->map(function ($role, $k) use ($myRoles) {
                 $role['value'] = $myRoles[$k];
+
                 return $role;
             })
             ->toArray();
+
         return $roleData;
     }
 
@@ -79,72 +82,72 @@ class UserRoleService
         return [
             'account-force-private' => [
                 'title' => 'Force Private Account',
-                'action' => 'Prevent changing account from private'
+                'action' => 'Prevent changing account from private',
             ],
             'account-ignore-follow-requests' => [
                 'title' => 'Ignore Follow Requests',
-                'action' => 'Hide follow requests and associated notifications'
+                'action' => 'Hide follow requests and associated notifications',
             ],
             'can-view-public-feed' => [
                 'title' => 'Hide Public Feed',
-                'action' => 'Hide the public feed timeline'
+                'action' => 'Hide the public feed timeline',
             ],
             'can-view-network-feed' => [
                 'title' => 'Hide Network Feed',
-                'action' => 'Hide the network feed timeline'
+                'action' => 'Hide the network feed timeline',
             ],
             'can-view-discover' => [
                 'title' => 'Hide Discover',
-                'action' => 'Hide the discover feature'
+                'action' => 'Hide the discover feature',
             ],
             'can-post' => [
                 'title' => 'Can post',
-                'action' => 'Allows new posts to be shared'
+                'action' => 'Allows new posts to be shared',
             ],
             'can-comment' => [
                 'title' => 'Can comment',
-                'action' => 'Allows new comments to be posted'
+                'action' => 'Allows new comments to be posted',
             ],
             'can-like' => [
                 'title' => 'Can Like',
-                'action' => 'Allows the ability to like posts and comments'
+                'action' => 'Allows the ability to like posts and comments',
             ],
             'can-share' => [
                 'title' => 'Can Share',
-                'action' => 'Allows the ability to share posts and comments'
+                'action' => 'Allows the ability to share posts and comments',
             ],
             'can-follow' => [
                 'title' => 'Can Follow',
-                'action' => 'Allows the ability to follow accounts'
+                'action' => 'Allows the ability to follow accounts',
             ],
             'can-make-public' => [
                 'title' => 'Can make account public',
-                'action' => 'Allows the ability to make account public'
+                'action' => 'Allows the ability to make account public',
             ],
 
             'can-direct-message' => [
                 'title' => '',
-                'action' => ''
+                'action' => '',
             ],
             'can-use-stories' => [
                 'title' => '',
-                'action' => ''
+                'action' => '',
             ],
             'can-view-sensitive' => [
                 'title' => '',
-                'action' => ''
+                'action' => '',
             ],
             'can-bookmark' => [
                 'title' => '',
-                'action' => ''
+                'action' => '',
             ],
             'can-collections' => [
                 'title' => '',
-                'action' => ''
+                'action' => '',
             ],
             'can-federation' => [
                 'title' => '',
-                'action' => ''
+                'action' => '',
             ],
         ];
     }
@@ -179,11 +182,12 @@ class UserRoleService
         ];
 
         foreach ($map as $key => $value) {
-            if(!isset($data[$value]) && !isset($data[substr($value, 1)])) {
+            if (! isset($data[$value]) && ! isset($data[substr($value, 1)])) {
                 $map[$key] = false;
+
                 continue;
             }
-            $map[$key] = str_starts_with($value, '!') ? !$data[substr($value, 1)] : $data[$value];
+            $map[$key] = str_starts_with($value, '!') ? ! $data[substr($value, 1)] : $data[$value];
         }
 
         return $map;
@@ -218,11 +222,12 @@ class UserRoleService
         ];
 
         foreach ($map as $key => $value) {
-            if(!isset($data[$value]) && !isset($data[substr($value, 1)])) {
+            if (! isset($data[$value]) && ! isset($data[substr($value, 1)])) {
                 $res[$key] = false;
+
                 continue;
             }
-            $res[$key] = str_starts_with($value, '!') ? !$data[substr($value, 1)] : $data[$value];
+            $res[$key] = str_starts_with($value, '!') ? ! $data[substr($value, 1)] : $data[$value];
         }
 
         return $res;

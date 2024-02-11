@@ -2,29 +2,31 @@
 
 namespace App\Jobs\HomeFeedPipeline;
 
-use Illuminate\Bus\Queueable;
-use Illuminate\Contracts\Queue\ShouldBeUnique;
-use Illuminate\Contracts\Queue\ShouldQueue;
-use Illuminate\Foundation\Bus\Dispatchable;
-use Illuminate\Queue\InteractsWithQueue;
-use Illuminate\Queue\SerializesModels;
-use Illuminate\Queue\Middleware\WithoutOverlapping;
-use Illuminate\Contracts\Queue\ShouldBeUniqueUntilProcessing;
-use App\Services\AccountService;
 use App\Services\HomeTimelineService;
 use App\Services\SnowflakeService;
 use App\Status;
+use Illuminate\Bus\Queueable;
+use Illuminate\Contracts\Queue\ShouldBeUniqueUntilProcessing;
+use Illuminate\Contracts\Queue\ShouldQueue;
+use Illuminate\Foundation\Bus\Dispatchable;
+use Illuminate\Queue\InteractsWithQueue;
+use Illuminate\Queue\Middleware\WithoutOverlapping;
+use Illuminate\Queue\SerializesModels;
 
-class FeedFollowPipeline implements ShouldQueue, ShouldBeUniqueUntilProcessing
+class FeedFollowPipeline implements ShouldBeUniqueUntilProcessing, ShouldQueue
 {
     use Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
 
     protected $actorId;
+
     protected $followingId;
 
     public $timeout = 900;
+
     public $tries = 3;
+
     public $maxExceptions = 1;
+
     public $failOnTimeout = true;
 
     /**
@@ -39,7 +41,7 @@ class FeedFollowPipeline implements ShouldQueue, ShouldBeUniqueUntilProcessing
      */
     public function uniqueId(): string
     {
-        return 'hts:feed:insert:follows:aid:' . $this->actorId . ':fid:' . $this->followingId;
+        return 'hts:feed:insert:follows:aid:'.$this->actorId.':fid:'.$this->followingId;
     }
 
     /**
@@ -75,12 +77,12 @@ class FeedFollowPipeline implements ShouldQueue, ShouldBeUniqueUntilProcessing
             ->where('profile_id', $followingId)
             ->whereNull(['in_reply_to_id', 'reblog_of_id'])
             ->whereIn('type', ['photo', 'photo:album', 'video', 'video:album', 'photo:video:album'])
-            ->whereIn('visibility',['public', 'unlisted', 'private'])
+            ->whereIn('visibility', ['public', 'unlisted', 'private'])
             ->orderByDesc('id')
             ->limit(HomeTimelineService::FOLLOWER_FEED_POST_LIMIT)
             ->pluck('id');
 
-        foreach($ids as $id) {
+        foreach ($ids as $id) {
             HomeTimelineService::add($actorId, $id);
         }
     }

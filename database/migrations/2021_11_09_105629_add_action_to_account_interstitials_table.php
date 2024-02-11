@@ -14,7 +14,7 @@ class AddActionToAccountInterstitialsTable extends Migration
     public function up()
     {
         Schema::table('account_interstitials', function (Blueprint $table) {
-        	$table->tinyInteger('severity_index')->unsigned()->nullable()->index();
+            $table->tinyInteger('severity_index')->unsigned()->nullable()->index();
             $table->boolean('is_spam')->nullable()->index()->after('item_type');
             $table->boolean('in_violation')->nullable()->index()->after('is_spam');
             $table->unsignedInteger('violation_id')->nullable()->index()->after('in_violation');

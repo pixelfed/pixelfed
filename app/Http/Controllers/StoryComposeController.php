@@ -2,59 +2,52 @@
 
 namespace App\Http\Controllers;
 
-use Illuminate\Http\Request;
-use Illuminate\Support\Str;
-use App\Media;
-use App\Profile;
-use App\Report;
 use App\DirectMessage;
-use App\Notification;
-use App\Status;
-use App\Story;
-use App\StoryView;
-use App\Models\Poll;
-use App\Models\PollVote;
-use App\Services\ProfileService;
-use App\Services\StoryService;
-use Cache, Storage;
-use Image as Intervention;
-use App\Services\FollowerService;
-use App\Services\MediaPathService;
-use FFMpeg;
-use FFMpeg\Coordinate\Dimension;
-use FFMpeg\Format\Video\X264;
+use App\Jobs\StoryPipeline\StoryDelete;
+use App\Jobs\StoryPipeline\StoryFanout;
 use App\Jobs\StoryPipeline\StoryReactionDeliver;
 use App\Jobs\StoryPipeline\StoryReplyDeliver;
-use App\Jobs\StoryPipeline\StoryFanout;
-use App\Jobs\StoryPipeline\StoryDelete;
-use ImageOptimizer;
 use App\Models\Conversation;
+use App\Models\Poll;
+use App\Models\PollVote;
+use App\Notification;
+use App\Report;
+use App\Services\FollowerService;
+use App\Services\MediaPathService;
+use App\Services\StoryService;
 use App\Services\UserRoleService;
+use App\Status;
+use App\Story;
+use FFMpeg;
+use Illuminate\Http\Request;
+use Illuminate\Support\Str;
+use Image as Intervention;
+use Storage;
 
 class StoryComposeController extends Controller
 {
     public function apiV1Add(Request $request)
     {
-        abort_if(!config_cache('instance.stories.enabled') || !$request->user(), 404);
+        abort_if(! config_cache('instance.stories.enabled') || ! $request->user(), 404);
 
         $this->validate($request, [
-            'file' => function() {
+            'file' => function () {
                 return [
                     'required',
                     'mimetypes:image/jpeg,image/png,video/mp4',
-                    'max:' . config_cache('pixelfed.max_photo_size'),
+                    'max:'.config_cache('pixelfed.max_photo_size'),
                 ];
             },
         ]);
 
         $user = $request->user();
-        abort_if($user->has_roles && !UserRoleService::can('can-use-stories', $user->id), 403, 'Invalid permissions for this action');
+        abort_if($user->has_roles && ! UserRoleService::can('can-use-stories', $user->id), 403, 'Invalid permissions for this action');
         $count = Story::whereProfileId($user->profile_id)
             ->whereActive(true)
             ->where('expires_at', '>', now())
             ->count();
 
-        if($count >= Story::MAX_PER_DAY) {
+        if ($count >= Story::MAX_PER_DAY) {
             abort(418, 'You have reached your limit for new Stories today.');
         }
 
@@ -64,7 +57,7 @@ class StoryComposeController extends Controller
         $story = new Story();
         $story->duration = 3;
         $story->profile_id = $user->profile_id;
-        $story->type = Str::endsWith($photo->getMimeType(), 'mp4') ? 'video' :'photo';
+        $story->type = Str::endsWith($photo->getMimeType(), 'mp4') ? 'video' : 'photo';
         $story->mime = $photo->getMimeType();
         $story->path = $path;
         $story->local = true;
@@ -77,21 +70,22 @@ class StoryComposeController extends Controller
 
         $res = [
             'code' => 200,
-            'msg'  => 'Successfully added',
+            'msg' => 'Successfully added',
             'media_id' => (string) $story->id,
-            'media_url' => url(Storage::url($url)) . '?v=' . time(),
-            'media_type' => $story->type
+            'media_url' => url(Storage::url($url)).'?v='.time(),
+            'media_type' => $story->type,
         ];
 
-        if($story->type === 'video') {
+        if ($story->type === 'video') {
             $video = FFMpeg::open($path);
             $duration = $video->getDurationInSeconds();
             $res['media_duration'] = $duration;
-            if($duration > 500) {
+            if ($duration > 500) {
                 Storage::delete($story->path);
                 $story->delete();
+
                 return response()->json([
-                    'message' => 'Video duration cannot exceed 60 seconds'
+                    'message' => 'Video duration cannot exceed 60 seconds',
                 ], 422);
             }
         }
@@ -102,37 +96,39 @@ class StoryComposeController extends Controller
     protected function storePhoto($photo, $user)
     {
         $mimes = explode(',', config_cache('pixelfed.media_types'));
-        if(in_array($photo->getMimeType(), [
+        if (in_array($photo->getMimeType(), [
             'image/jpeg',
             'image/png',
-            'video/mp4'
+            'video/mp4',
         ]) == false) {
             abort(400, 'Invalid media type');
+
             return;
         }
 
         $storagePath = MediaPathService::story($user->profile);
-        $path = $photo->storePubliclyAs($storagePath, Str::random(random_int(2, 12)) . '_' . Str::random(random_int(32, 35)) . '_' . Str::random(random_int(1, 14)) . '.' . $photo->extension());
-        if(in_array($photo->getMimeType(), ['image/jpeg','image/png'])) {
-            $fpath = storage_path('app/' . $path);
+        $path = $photo->storePubliclyAs($storagePath, Str::random(random_int(2, 12)).'_'.Str::random(random_int(32, 35)).'_'.Str::random(random_int(1, 14)).'.'.$photo->extension());
+        if (in_array($photo->getMimeType(), ['image/jpeg', 'image/png'])) {
+            $fpath = storage_path('app/'.$path);
             $img = Intervention::make($fpath);
             $img->orientate();
             $img->save($fpath, config_cache('pixelfed.image_quality'));
             $img->destroy();
         }
+
         return $path;
     }
 
     public function cropPhoto(Request $request)
     {
-        abort_if(!config_cache('instance.stories.enabled') || !$request->user(), 404);
+        abort_if(! config_cache('instance.stories.enabled') || ! $request->user(), 404);
 
         $this->validate($request, [
             'media_id' => 'required|integer|min:1',
             'width' => 'required',
             'height' => 'required',
             'x' => 'required',
-            'y' => 'required'
+            'y' => 'required',
         ]);
 
         $user = $request->user();
@@ -144,13 +140,13 @@ class StoryComposeController extends Controller
 
         $story = Story::whereProfileId($user->profile_id)->findOrFail($id);
 
-        $path = storage_path('app/' . $story->path);
+        $path = storage_path('app/'.$story->path);
 
-        if(!is_file($path)) {
+        if (! is_file($path)) {
             abort(400, 'Invalid or missing media.');
         }
 
-        if($story->type === 'photo') {
+        if ($story->type === 'photo') {
             $img = Intervention::make($path);
             $img->crop($width, $height, $x, $y);
             $img->resize(1080, 1920, function ($constraint) {
@@ -161,24 +157,24 @@ class StoryComposeController extends Controller
 
         return [
             'code' => 200,
-            'msg'  => 'Successfully cropped',
+            'msg' => 'Successfully cropped',
         ];
     }
 
     public function publishStory(Request $request)
     {
-        abort_if(!config_cache('instance.stories.enabled') || !$request->user(), 404);
+        abort_if(! config_cache('instance.stories.enabled') || ! $request->user(), 404);
 
         $this->validate($request, [
             'media_id' => 'required',
             'duration' => 'required|integer|min:3|max:120',
             'can_reply' => 'required|boolean',
-            'can_react' => 'required|boolean'
+            'can_react' => 'required|boolean',
         ]);
 
         $id = $request->input('media_id');
         $user = $request->user();
-        abort_if($user->has_roles && !UserRoleService::can('can-use-stories', $user->id), 403, 'Invalid permissions for this action');
+        abort_if($user->has_roles && ! UserRoleService::can('can-use-stories', $user->id), 403, 'Invalid permissions for this action');
         $story = Story::whereProfileId($user->profile_id)
             ->findOrFail($id);
 
@@ -194,13 +190,13 @@ class StoryComposeController extends Controller
 
         return [
             'code' => 200,
-            'msg'  => 'Successfully published',
+            'msg' => 'Successfully published',
         ];
     }
 
     public function apiV1Delete(Request $request, $id)
     {
-        abort_if(!config_cache('instance.stories.enabled') || !$request->user(), 404);
+        abort_if(! config_cache('instance.stories.enabled') || ! $request->user(), 404);
 
         $user = $request->user();
 
@@ -213,40 +209,40 @@ class StoryComposeController extends Controller
 
         return [
             'code' => 200,
-            'msg'  => 'Successfully deleted'
+            'msg' => 'Successfully deleted',
         ];
     }
 
     public function compose(Request $request)
     {
-        abort_if(!config_cache('instance.stories.enabled') || !$request->user(), 404);
+        abort_if(! config_cache('instance.stories.enabled') || ! $request->user(), 404);
         $user = $request->user();
-        abort_if($user->has_roles && !UserRoleService::can('can-use-stories', $user->id), 403, 'Invalid permissions for this action');
+        abort_if($user->has_roles && ! UserRoleService::can('can-use-stories', $user->id), 403, 'Invalid permissions for this action');
 
         return view('stories.compose');
     }
 
     public function createPoll(Request $request)
     {
-        abort_if(!config_cache('instance.stories.enabled') || !$request->user(), 404);
-        abort_if(!config_cache('instance.polls.enabled'), 404);
+        abort_if(! config_cache('instance.stories.enabled') || ! $request->user(), 404);
+        abort_if(! config_cache('instance.polls.enabled'), 404);
 
         return $request->all();
     }
 
     public function publishStoryPoll(Request $request)
     {
-        abort_if(!config_cache('instance.stories.enabled') || !$request->user(), 404);
+        abort_if(! config_cache('instance.stories.enabled') || ! $request->user(), 404);
 
         $this->validate($request, [
             'question' => 'required|string|min:6|max:140',
             'options' => 'required|array|min:2|max:4',
             'can_reply' => 'required|boolean',
-            'can_react' => 'required|boolean'
+            'can_react' => 'required|boolean',
         ]);
 
         $user = $request->user();
-        abort_if($user->has_roles && !UserRoleService::can('can-use-stories', $user->id), 403, 'Invalid permissions for this action');
+        abort_if($user->has_roles && ! UserRoleService::can('can-use-stories', $user->id), 403, 'Invalid permissions for this action');
         $pid = $request->user()->profile_id;
 
         $count = Story::whereProfileId($pid)
@@ -254,7 +250,7 @@ class StoryComposeController extends Controller
             ->where('expires_at', '>', now())
             ->count();
 
-        if($count >= Story::MAX_PER_DAY) {
+        if ($count >= Story::MAX_PER_DAY) {
             abort(418, 'You have reached your limit for new Stories today.');
         }
 
@@ -262,7 +258,7 @@ class StoryComposeController extends Controller
         $story->type = 'poll';
         $story->story = json_encode([
             'question' => $request->input('question'),
-            'options' => $request->input('options')
+            'options' => $request->input('options'),
         ]);
         $story->public = false;
         $story->local = true;
@@ -278,7 +274,7 @@ class StoryComposeController extends Controller
         $poll->profile_id = $pid;
         $poll->poll_options = $request->input('options');
         $poll->expires_at = $story->expires_at;
-        $poll->cached_tallies = collect($poll->poll_options)->map(function($o) {
+        $poll->cached_tallies = collect($poll->poll_options)->map(function ($o) {
             return 0;
         })->toArray();
         $poll->save();
@@ -290,23 +286,23 @@ class StoryComposeController extends Controller
 
         return [
             'code' => 200,
-            'msg'  => 'Successfully published',
+            'msg' => 'Successfully published',
         ];
     }
 
     public function storyPollVote(Request $request)
     {
-        abort_if(!config_cache('instance.stories.enabled') || !$request->user(), 404);
+        abort_if(! config_cache('instance.stories.enabled') || ! $request->user(), 404);
 
         $this->validate($request, [
             'sid' => 'required',
-            'ci' => 'required|integer|min:0|max:3'
+            'ci' => 'required|integer|min:0|max:3',
         ]);
 
         $pid = $request->user()->profile_id;
         $ci = $request->input('ci');
         $story = Story::findOrFail($request->input('sid'));
-        abort_if(!FollowerService::follows($pid, $story->profile_id), 403);
+        abort_if(! FollowerService::follows($pid, $story->profile_id), 403);
         $poll = Poll::whereStoryId($story->id)->firstOrFail();
 
         $vote = new PollVote;
@@ -318,7 +314,7 @@ class StoryComposeController extends Controller
         $vote->save();
 
         $poll->votes_count = $poll->votes_count + 1;
-        $poll->cached_tallies = collect($poll->getTallies())->map(function($tally, $key) use($ci) {
+        $poll->cached_tallies = collect($poll->getTallies())->map(function ($tally, $key) use ($ci) {
             return $ci == $key ? $tally + 1 : $tally;
         })->toArray();
         $poll->save();
@@ -328,15 +324,15 @@ class StoryComposeController extends Controller
 
     public function storeReport(Request $request)
     {
-        abort_if(!config_cache('instance.stories.enabled') || !$request->user(), 404);
+        abort_if(! config_cache('instance.stories.enabled') || ! $request->user(), 404);
 
         $this->validate($request, [
-            'type'  => 'required|alpha_dash',
-            'id'    => 'required|integer|min:1',
+            'type' => 'required|alpha_dash',
+            'id' => 'required|integer|min:1',
         ]);
 
         $user = $request->user();
-        abort_if($user->has_roles && !UserRoleService::can('can-use-stories', $user->id), 403, 'Invalid permissions for this action');
+        abort_if($user->has_roles && ! UserRoleService::can('can-use-stories', $user->id), 403, 'Invalid permissions for this action');
 
         $pid = $request->user()->profile_id;
         $sid = $request->input('id');
@@ -353,24 +349,24 @@ class StoryComposeController extends Controller
             'copyright',
             'impersonation',
             'scam',
-            'terrorism'
+            'terrorism',
         ];
 
-        abort_if(!in_array($type, $types), 422, 'Invalid story report type');
+        abort_if(! in_array($type, $types), 422, 'Invalid story report type');
 
         $story = Story::findOrFail($sid);
 
         abort_if($story->profile_id == $pid, 422, 'Cannot report your own story');
-        abort_if(!FollowerService::follows($pid, $story->profile_id), 422, 'Cannot report a story from an account you do not follow');
+        abort_if(! FollowerService::follows($pid, $story->profile_id), 422, 'Cannot report a story from an account you do not follow');
 
-        if( Report::whereProfileId($pid)
+        if (Report::whereProfileId($pid)
             ->whereObjectType('App\Story')
             ->whereObjectId($story->id)
             ->exists()
         ) {
             return response()->json(['error' => [
                 'code' => 409,
-                'message' => 'Cannot report the same story again'
+                'message' => 'Cannot report the same story again',
             ]], 409);
         }
 
@@ -389,18 +385,18 @@ class StoryComposeController extends Controller
 
     public function react(Request $request)
     {
-        abort_if(!config_cache('instance.stories.enabled') || !$request->user(), 404);
+        abort_if(! config_cache('instance.stories.enabled') || ! $request->user(), 404);
         $this->validate($request, [
             'sid' => 'required',
-            'reaction' => 'required|string'
+            'reaction' => 'required|string',
         ]);
         $pid = $request->user()->profile_id;
         $text = $request->input('reaction');
         $user = $request->user();
-        abort_if($user->has_roles && !UserRoleService::can('can-use-stories', $user->id), 403, 'Invalid permissions for this action');
+        abort_if($user->has_roles && ! UserRoleService::can('can-use-stories', $user->id), 403, 'Invalid permissions for this action');
         $story = Story::findOrFail($request->input('sid'));
 
-        abort_if(!$story->can_react, 422);
+        abort_if(! $story->can_react, 422);
         abort_if(StoryService::reactCounter($story->id, $pid) >= 5, 422, 'You have already reacted to this story');
 
         $status = new Status;
@@ -413,7 +409,7 @@ class StoryComposeController extends Controller
         $status->in_reply_to_profile_id = $story->profile_id;
         $status->entities = json_encode([
             'story_id' => $story->id,
-            'reaction' => $text
+            'reaction' => $text,
         ]);
         $status->save();
 
@@ -427,24 +423,24 @@ class StoryComposeController extends Controller
             'story_actor_username' => $request->user()->username,
             'story_id' => $story->id,
             'story_media_url' => url(Storage::url($story->path)),
-            'reaction' => $text
+            'reaction' => $text,
         ]);
         $dm->save();
 
         Conversation::updateOrInsert(
             [
                 'to_id' => $story->profile_id,
-                'from_id' => $pid
+                'from_id' => $pid,
             ],
             [
                 'type' => 'story:react',
                 'status_id' => $status->id,
                 'dm_id' => $dm->id,
-                'is_hidden' => false
+                'is_hidden' => false,
             ]
         );
 
-        if($story->local) {
+        if ($story->local) {
             // generate notification
             $n = new Notification;
             $n->profile_id = $dm->to_id;
@@ -464,18 +460,18 @@ class StoryComposeController extends Controller
 
     public function comment(Request $request)
     {
-        abort_if(!config_cache('instance.stories.enabled') || !$request->user(), 404);
+        abort_if(! config_cache('instance.stories.enabled') || ! $request->user(), 404);
         $this->validate($request, [
             'sid' => 'required',
-            'caption' => 'required|string'
+            'caption' => 'required|string',
         ]);
         $pid = $request->user()->profile_id;
         $text = $request->input('caption');
         $user = $request->user();
-        abort_if($user->has_roles && !UserRoleService::can('can-use-stories', $user->id), 403, 'Invalid permissions for this action');
+        abort_if($user->has_roles && ! UserRoleService::can('can-use-stories', $user->id), 403, 'Invalid permissions for this action');
         $story = Story::findOrFail($request->input('sid'));
 
-        abort_if(!$story->can_reply, 422);
+        abort_if(! $story->can_reply, 422);
 
         $status = new Status;
         $status->type = 'story:reply';
@@ -486,7 +482,7 @@ class StoryComposeController extends Controller
         $status->visibility = 'direct';
         $status->in_reply_to_profile_id = $story->profile_id;
         $status->entities = json_encode([
-            'story_id' => $story->id
+            'story_id' => $story->id,
         ]);
         $status->save();
 
@@ -500,24 +496,24 @@ class StoryComposeController extends Controller
             'story_actor_username' => $request->user()->username,
             'story_id' => $story->id,
             'story_media_url' => url(Storage::url($story->path)),
-            'caption' => $text
+            'caption' => $text,
         ]);
         $dm->save();
 
         Conversation::updateOrInsert(
             [
                 'to_id' => $story->profile_id,
-                'from_id' => $pid
+                'from_id' => $pid,
             ],
             [
                 'type' => 'story:comment',
                 'status_id' => $status->id,
                 'dm_id' => $dm->id,
-                'is_hidden' => false
+                'is_hidden' => false,
             ]
         );
 
-        if($story->local) {
+        if ($story->local) {
             // generate notification
             $n = new Notification;
             $n->profile_id = $dm->to_id;

@@ -51,7 +51,7 @@ return [
              *   abusing this
              */
             'enabled' => env('PF_LOGIN_WITH_MASTODON_ENFORCE_MAX_USES', true),
-            'limit' => env('PF_LOGIN_WITH_MASTODON_MAX_USES_LIMIT', 3)
-        ]
+            'limit' => env('PF_LOGIN_WITH_MASTODON_MAX_USES_LIMIT', 3),
+        ],
     ],
 ];

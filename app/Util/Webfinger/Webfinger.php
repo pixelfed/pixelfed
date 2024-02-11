@@ -5,8 +5,11 @@ namespace App\Util\Webfinger;
 class Webfinger
 {
     protected $user;
+
     protected $subject;
+
     protected $aliases;
+
     protected $links;
 
     public function __construct($user)
@@ -30,17 +33,17 @@ class Webfinger
         ];
         $this->links = [
             [
-                'rel'  => 'http://webfinger.net/rel/profile-page',
+                'rel' => 'http://webfinger.net/rel/profile-page',
                 'type' => 'text/html',
                 'href' => $user->url(),
             ],
             [
-                'rel'  => 'http://schemas.google.com/g/2010#updates-from',
+                'rel' => 'http://schemas.google.com/g/2010#updates-from',
                 'type' => 'application/atom+xml',
                 'href' => $user->permalink('.atom'),
             ],
             [
-                'rel'  => 'self',
+                'rel' => 'self',
                 'type' => 'application/activity+json',
                 'href' => $user->permalink(),
             ],
@@ -57,7 +60,7 @@ class Webfinger
         return [
             'subject' => $this->subject,
             'aliases' => $this->aliases,
-            'links'   => $this->links,
+            'links' => $this->links,
         ];
     }
 }

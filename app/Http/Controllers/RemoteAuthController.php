@@ -2,22 +2,20 @@
 
 namespace App\Http\Controllers;
 
-use Illuminate\Support\Str;
-use Illuminate\Http\Request;
-use App\Services\Account\RemoteAuthService;
 use App\Models\RemoteAuth;
-use App\Profile;
-use App\Instance;
-use App\User;
-use Purify;
-use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\Hash;
-use Illuminate\Auth\Events\Registered;
-use App\Util\Lexer\RestrictedNames;
+use App\Services\Account\RemoteAuthService;
 use App\Services\EmailService;
 use App\Services\MediaStorageService;
+use App\User;
 use App\Util\ActivityPub\Helpers;
+use App\Util\Lexer\RestrictedNames;
+use Illuminate\Auth\Events\Registered;
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Str;
 use InvalidArgumentException;
+use Purify;
 
 class RemoteAuthController extends Controller
 {
@@ -30,9 +28,10 @@ class RemoteAuthController extends Controller
             config('remote-auth.mastodon.ignore_closed_state') &&
             config('remote-auth.mastodon.enabled')
         ), 404);
-        if($request->user()) {
+        if ($request->user()) {
             return redirect('/');
         }
+
         return view('auth.remote.start');
     }
 
@@ -51,25 +50,27 @@ class RemoteAuthController extends Controller
             config('remote-auth.mastodon.enabled')
         ), 404);
 
-        if(config('remote-auth.mastodon.domains.only_custom')) {
+        if (config('remote-auth.mastodon.domains.only_custom')) {
             $res = config('remote-auth.mastodon.domains.custom');
-            if(!$res || !strlen($res)) {
+            if (! $res || ! strlen($res)) {
                 return [];
             }
             $res = explode(',', $res);
+
             return response()->json($res);
         }
 
-        if( config('remote-auth.mastodon.domains.custom') &&
-            !config('remote-auth.mastodon.domains.only_default') &&
+        if (config('remote-auth.mastodon.domains.custom') &&
+            ! config('remote-auth.mastodon.domains.only_default') &&
             strlen(config('remote-auth.mastodon.domains.custom')) > 3 &&
             strpos(config('remote-auth.mastodon.domains.custom'), '.') > -1
         ) {
             $res = config('remote-auth.mastodon.domains.custom');
-            if(!$res || !strlen($res)) {
+            if (! $res || ! strlen($res)) {
                 return [];
             }
             $res = explode(',', $res);
+
             return response()->json($res);
         }
 
@@ -93,57 +94,62 @@ class RemoteAuthController extends Controller
 
         $domain = $request->input('domain');
 
-        if(str_starts_with(strtolower($domain), 'http')) {
+        if (str_starts_with(strtolower($domain), 'http')) {
             $res = [
                 'domain' => $domain,
                 'ready' => false,
-                'action' => 'incompatible_domain'
+                'action' => 'incompatible_domain',
             ];
+
             return response()->json($res);
         }
 
-        $validateInstance = Helpers::validateUrl('https://' . $domain . '/?block-check=' . time());
+        $validateInstance = Helpers::validateUrl('https://'.$domain.'/?block-check='.time());
 
-        if(!$validateInstance) {
-             $res = [
+        if (! $validateInstance) {
+            $res = [
                 'domain' => $domain,
                 'ready' => false,
-                'action' => 'blocked_domain'
+                'action' => 'blocked_domain',
             ];
+
             return response()->json($res);
         }
 
         $compatible = RemoteAuthService::isDomainCompatible($domain);
 
-        if(!$compatible) {
+        if (! $compatible) {
             $res = [
                 'domain' => $domain,
                 'ready' => false,
-                'action' => 'incompatible_domain'
+                'action' => 'incompatible_domain',
             ];
+
             return response()->json($res);
         }
 
-        if(config('remote-auth.mastodon.domains.only_default')) {
+        if (config('remote-auth.mastodon.domains.only_default')) {
             $defaultDomains = explode(',', config('remote-auth.mastodon.domains.default'));
-            if(!in_array($domain, $defaultDomains)) {
+            if (! in_array($domain, $defaultDomains)) {
                 $res = [
                     'domain' => $domain,
                     'ready' => false,
-                    'action' => 'incompatible_domain'
+                    'action' => 'incompatible_domain',
                 ];
+
                 return response()->json($res);
             }
         }
 
-        if(config('remote-auth.mastodon.domains.only_custom') && config('remote-auth.mastodon.domains.custom')) {
+        if (config('remote-auth.mastodon.domains.only_custom') && config('remote-auth.mastodon.domains.custom')) {
             $customDomains = explode(',', config('remote-auth.mastodon.domains.custom'));
-            if(!in_array($domain, $customDomains)) {
+            if (! in_array($domain, $customDomains)) {
                 $res = [
                     'domain' => $domain,
                     'ready' => false,
-                    'action' => 'incompatible_domain'
+                    'action' => 'incompatible_domain',
                 ];
+
                 return response()->json($res);
             }
         }
@@ -163,13 +169,13 @@ class RemoteAuthController extends Controller
             'state' => $state,
         ]);
 
-        $request->session()->put('oauth_redirect_to', 'https://' . $domain . '/oauth/authorize?' . $query);
+        $request->session()->put('oauth_redirect_to', 'https://'.$domain.'/oauth/authorize?'.$query);
 
         $dsh = Str::random(17);
         $res = [
             'domain' => $domain,
             'ready' => true,
-            'dsh' => $dsh
+            'dsh' => $dsh,
         ];
 
         return response()->json($res);
@@ -185,7 +191,7 @@ class RemoteAuthController extends Controller
             config('remote-auth.mastodon.enabled')
         ), 404);
 
-        if(!$request->filled('d') || !$request->filled('dsh') || !$request->session()->exists('oauth_redirect_to')) {
+        if (! $request->filled('d') || ! $request->filled('dsh') || ! $request->session()->exists('oauth_redirect_to')) {
             return redirect('/login');
         }
 
@@ -204,7 +210,7 @@ class RemoteAuthController extends Controller
 
         $domain = $request->session()->get('oauth_domain');
 
-        if($request->filled('code')) {
+        if ($request->filled('code')) {
             $code = $request->input('code');
             $state = $request->session()->pull('state');
 
@@ -216,12 +222,14 @@ class RemoteAuthController extends Controller
 
             $res = RemoteAuthService::getToken($domain, $code);
 
-            if(!$res || !isset($res['access_token'])) {
+            if (! $res || ! isset($res['access_token'])) {
                 $request->session()->regenerate();
+
                 return redirect('/login');
             }
 
             $request->session()->put('oauth_remote_session_token', $res['access_token']);
+
             return redirect('/auth/mastodon/getting-started');
         }
 
@@ -237,9 +245,10 @@ class RemoteAuthController extends Controller
             config('remote-auth.mastodon.ignore_closed_state') &&
             config('remote-auth.mastodon.enabled')
         ), 404);
-        if($request->user()) {
+        if ($request->user()) {
             return redirect('/');
         }
+
         return view('auth.remote.onboarding');
     }
 
@@ -261,36 +270,36 @@ class RemoteAuthController extends Controller
 
         $res = RemoteAuthService::getVerifyCredentials($domain, $token);
 
-        abort_if(!$res || !isset($res['acct']), 403, 'Invalid credentials');
+        abort_if(! $res || ! isset($res['acct']), 403, 'Invalid credentials');
 
-        $webfinger = strtolower('@' . $res['acct'] . '@' . $domain);
+        $webfinger = strtolower('@'.$res['acct'].'@'.$domain);
         $request->session()->put('oauth_masto_webfinger', $webfinger);
 
-        if(config('remote-auth.mastodon.max_uses.enabled')) {
+        if (config('remote-auth.mastodon.max_uses.enabled')) {
             $limit = config('remote-auth.mastodon.max_uses.limit');
             $uses = RemoteAuthService::lookupWebfingerUses($webfinger);
-            if($uses >= $limit) {
+            if ($uses >= $limit) {
                 return response()->json([
                     'code' => 200,
                     'msg' => 'Success!',
-                    'action' => 'max_uses_reached'
+                    'action' => 'max_uses_reached',
                 ]);
             }
         }
 
         $exists = RemoteAuth::whereDomain($domain)->where('webfinger', $webfinger)->whereNotNull('user_id')->first();
-        if($exists && $exists->user_id) {
+        if ($exists && $exists->user_id) {
             return response()->json([
                 'code' => 200,
                 'msg' => 'Success!',
-                'action' => 'redirect_existing_user'
+                'action' => 'redirect_existing_user',
             ]);
         }
 
         return response()->json([
             'code' => 200,
             'msg' => 'Success!',
-            'action' => 'onboard'
+            'action' => 'onboard',
         ]);
     }
 
@@ -311,7 +320,7 @@ class RemoteAuthController extends Controller
         $token = $request->session()->get('oauth_remote_session_token');
 
         $res = RemoteAuthService::getVerifyCredentials($domain, $token);
-        $res['_webfinger'] = strtolower('@' . $res['acct'] . '@' . $domain);
+        $res['_webfinger'] = strtolower('@'.$res['acct'].'@'.$domain);
         $res['_domain'] = strtolower($domain);
         $request->session()->put('oauth_remasto_id', $res['id']);
 
@@ -324,7 +333,7 @@ class RemoteAuthController extends Controller
             'bearer_token' => $token,
             'verify_credentials' => $res,
             'last_verify_credentials_at' => now(),
-            'last_successful_login_at' => now()
+            'last_successful_login_at' => now(),
         ]);
 
         $request->session()->put('oauth_masto_raid', $ra->id);
@@ -355,24 +364,24 @@ class RemoteAuthController extends Controller
                     $underscore = substr_count($value, '_');
                     $period = substr_count($value, '.');
 
-                    if(ends_with($value, ['.php', '.js', '.css'])) {
+                    if (ends_with($value, ['.php', '.js', '.css'])) {
                         return $fail('Username is invalid.');
                     }
 
-                    if(($dash + $underscore + $period) > 1) {
+                    if (($dash + $underscore + $period) > 1) {
                         return $fail('Username is invalid. Can only contain one dash (-), period (.) or underscore (_).');
                     }
 
-                    if (!ctype_alnum($value[0])) {
+                    if (! ctype_alnum($value[0])) {
                         return $fail('Username is invalid. Must start with a letter or number.');
                     }
 
-                    if (!ctype_alnum($value[strlen($value) - 1])) {
+                    if (! ctype_alnum($value[strlen($value) - 1])) {
                         return $fail('Username is invalid. Must end with a letter or number.');
                     }
 
                     $val = str_replace(['_', '.', '-'], '', $value);
-                    if(!ctype_alnum($val)) {
+                    if (! ctype_alnum($val)) {
                         return $fail('Username is invalid. Username must be alpha-numeric and may contain dashes (-), periods (.) and underscores (_).');
                     }
 
@@ -380,8 +389,8 @@ class RemoteAuthController extends Controller
                     if (in_array(strtolower($value), array_map('strtolower', $restricted))) {
                         return $fail('Username cannot be used.');
                     }
-                }
-            ]
+                },
+            ],
         ]);
         $username = strtolower($request->input('username'));
 
@@ -390,7 +399,7 @@ class RemoteAuthController extends Controller
         return response()->json([
             'code' => 200,
             'username' => $username,
-            'exists' => $exists
+            'exists' => $exists,
         ]);
     }
 
@@ -411,7 +420,7 @@ class RemoteAuthController extends Controller
             'email' => [
                 'required',
                 'email:strict,filter_unicode,dns,spoof',
-            ]
+            ],
         ]);
 
         $email = $request->input('email');
@@ -422,7 +431,7 @@ class RemoteAuthController extends Controller
             'code' => 200,
             'email' => $email,
             'exists' => $exists,
-            'banned' => $banned
+            'banned' => $banned,
         ]);
     }
 
@@ -445,18 +454,18 @@ class RemoteAuthController extends Controller
 
         $res = RemoteAuthService::getFollowing($domain, $token, $id);
 
-        if(!$res) {
+        if (! $res) {
             return response()->json([
                 'code' => 200,
-                'following' => []
+                'following' => [],
             ]);
         }
 
-        $res = collect($res)->filter(fn($acct) => Helpers::validateUrl($acct['url']))->values()->toArray();
+        $res = collect($res)->filter(fn ($acct) => Helpers::validateUrl($acct['url']))->values()->toArray();
 
         return response()->json([
             'code' => 200,
-            'following' => $res
+            'following' => $res,
         ]);
     }
 
@@ -487,24 +496,24 @@ class RemoteAuthController extends Controller
                     $underscore = substr_count($value, '_');
                     $period = substr_count($value, '.');
 
-                    if(ends_with($value, ['.php', '.js', '.css'])) {
+                    if (ends_with($value, ['.php', '.js', '.css'])) {
                         return $fail('Username is invalid.');
                     }
 
-                    if(($dash + $underscore + $period) > 1) {
+                    if (($dash + $underscore + $period) > 1) {
                         return $fail('Username is invalid. Can only contain one dash (-), period (.) or underscore (_).');
                     }
 
-                    if (!ctype_alnum($value[0])) {
+                    if (! ctype_alnum($value[0])) {
                         return $fail('Username is invalid. Must start with a letter or number.');
                     }
 
-                    if (!ctype_alnum($value[strlen($value) - 1])) {
+                    if (! ctype_alnum($value[strlen($value) - 1])) {
                         return $fail('Username is invalid. Must end with a letter or number.');
                     }
 
                     $val = str_replace(['_', '.', '-'], '', $value);
-                    if(!ctype_alnum($val)) {
+                    if (! ctype_alnum($val)) {
                         return $fail('Username is invalid. Username must be alpha-numeric and may contain dashes (-), periods (.) and underscores (_).');
                     }
 
@@ -512,10 +521,10 @@ class RemoteAuthController extends Controller
                     if (in_array(strtolower($value), array_map('strtolower', $restricted))) {
                         return $fail('Username cannot be used.');
                     }
-                }
+                },
             ],
             'password' => 'required|string|min:8|confirmed',
-            'name' => 'nullable|max:30'
+            'name' => 'nullable|max:30',
         ]);
 
         $email = $request->input('email');
@@ -527,7 +536,7 @@ class RemoteAuthController extends Controller
             'name' => $name,
             'username' => $username,
             'password' => $password,
-            'email' => $email
+            'email' => $email,
         ]);
 
         $raid = $request->session()->pull('oauth_masto_raid');
@@ -541,7 +550,7 @@ class RemoteAuthController extends Controller
         return [
             'code' => 200,
             'msg' => 'Success',
-            'token' => $token
+            'token' => $token,
         ];
     }
 
@@ -585,7 +594,7 @@ class RemoteAuthController extends Controller
         abort_unless($request->session()->exists('oauth_remasto_id'), 403);
 
         $this->validate($request, [
-            'account' => 'required|url'
+            'account' => 'required|url',
         ]);
 
         $account = $request->input('account');
@@ -594,10 +603,10 @@ class RemoteAuthController extends Controller
         $host = strtolower(config('pixelfed.domain.app'));
         $domain = strtolower(parse_url($account, PHP_URL_HOST));
 
-        if($domain == $host) {
+        if ($domain == $host) {
             $username = Str::of($account)->explode('/')->last();
             $user = User::where('username', $username)->first();
-            if($user) {
+            if ($user) {
                 return ['id' => (string) $user->profile_id];
             } else {
                 return [];
@@ -605,7 +614,7 @@ class RemoteAuthController extends Controller
         } else {
             try {
                 $profile = Helpers::profileFetch($account);
-                if($profile) {
+                if ($profile) {
                     return ['id' => (string) $profile->id];
                 } else {
                     return [];
@@ -635,7 +644,7 @@ class RemoteAuthController extends Controller
         $user = $request->user();
         $profile = $user->profile;
 
-        abort_if(!$profile->avatar, 404, 'Missing avatar');
+        abort_if(! $profile->avatar, 404, 'Missing avatar');
 
         $avatar = $profile->avatar;
         $avatar->remote_url = $request->input('avatar_url');
@@ -657,7 +666,7 @@ class RemoteAuthController extends Controller
         ), 404);
         abort_unless($request->user(), 404);
 
-        $currentWebfinger = '@' . $request->user()->username . '@' . config('pixelfed.domain.app');
+        $currentWebfinger = '@'.$request->user()->username.'@'.config('pixelfed.domain.app');
         $ra = RemoteAuth::where('user_id', $request->user()->id)->firstOrFail();
         RemoteAuthService::submitToBeagle(
             $ra->webfinger,
@@ -691,19 +700,20 @@ class RemoteAuthController extends Controller
         $user = User::findOrFail($ra->user_id);
         abort_if($user->is_admin || $user->status != null, 422, 'Invalid auth action');
         Auth::loginUsingId($ra->user_id);
+
         return [200];
     }
 
     protected function createUser($data)
     {
         event(new Registered($user = User::create([
-            'name'     => Purify::clean($data['name']),
+            'name' => Purify::clean($data['name']),
             'username' => $data['username'],
-            'email'    => $data['email'],
+            'email' => $data['email'],
             'password' => Hash::make($data['password']),
             'email_verified_at' => config('remote-auth.mastodon.contraints.skip_email_verification') ? now() : null,
             'app_register_ip' => request()->ip(),
-            'register_source' => 'mastodon'
+            'register_source' => 'mastodon',
         ])));
 
         $this->guarder()->login($user);

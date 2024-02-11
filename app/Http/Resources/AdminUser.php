@@ -2,8 +2,8 @@
 
 namespace App\Http\Resources;
 
-use Illuminate\Http\Resources\Json\JsonResource;
 use App\Services\AccountService;
+use Illuminate\Http\Resources\Json\JsonResource;
 
 class AdminUser extends JsonResource
 {
@@ -32,7 +32,7 @@ class AdminUser extends JsonResource
             'created_at' => $this->created_at,
         ];
 
-        if($account) {
+        if ($account) {
             $res['avatar'] = $account['avatar'];
             $res['bio'] = $account['note_text'];
             $res['statuses_count'] = $account['statuses_count'];

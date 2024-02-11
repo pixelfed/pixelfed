@@ -2,13 +2,14 @@
 
 namespace App\Console\Commands;
 
-use Illuminate\Console\Command;
-use App\User;
 use App\Models\DefaultDomainBlock;
 use App\Models\UserDomainBlock;
-use function Laravel\Prompts\text;
+use App\User;
+use Illuminate\Console\Command;
+
 use function Laravel\Prompts\confirm;
 use function Laravel\Prompts\progress;
+use function Laravel\Prompts\text;
 
 class AddUserDomainBlock extends Command
 {
@@ -34,42 +35,44 @@ class AddUserDomainBlock extends Command
         $domain = text('Enter domain you want to block');
         $domain = strtolower($domain);
         $domain = $this->validateDomain($domain);
-        if(!$domain || empty($domain)) {
+        if (! $domain || empty($domain)) {
             $this->error('Invalid domain');
+
             return;
         }
         $this->processBlocks($domain);
-        return;
+
     }
 
     protected function validateDomain($domain)
     {
-        if(!strpos($domain, '.')) {
+        if (! strpos($domain, '.')) {
             return;
         }
 
-        if(str_starts_with($domain, 'https://')) {
+        if (str_starts_with($domain, 'https://')) {
             $domain = str_replace('https://', '', $domain);
         }
 
-        if(str_starts_with($domain, 'http://')) {
+        if (str_starts_with($domain, 'http://')) {
             $domain = str_replace('http://', '', $domain);
         }
 
-        $domain = strtolower(parse_url('https://' . $domain, PHP_URL_HOST));
+        $domain = strtolower(parse_url('https://'.$domain, PHP_URL_HOST));
 
-        $valid = filter_var($domain, FILTER_VALIDATE_DOMAIN, FILTER_FLAG_HOSTNAME|FILTER_NULL_ON_FAILURE);
-        if(!$valid) {
+        $valid = filter_var($domain, FILTER_VALIDATE_DOMAIN, FILTER_FLAG_HOSTNAME | FILTER_NULL_ON_FAILURE);
+        if (! $valid) {
             return;
         }
 
-        if($domain === config('pixelfed.domain.app')) {
+        if ($domain === config('pixelfed.domain.app')) {
             $this->error('Invalid domain');
+
             return;
         }
 
-        $confirmed = confirm('Are you sure you want to block ' . $domain . '?');
-        if(!$confirmed) {
+        $confirmed = confirm('Are you sure you want to block '.$domain.'?');
+        if (! $confirmed) {
             return;
         }
 
@@ -79,7 +82,7 @@ class AddUserDomainBlock extends Command
     protected function processBlocks($domain)
     {
         DefaultDomainBlock::updateOrCreate([
-            'domain' => $domain
+            'domain' => $domain,
         ]);
         progress(
             label: 'Updating user domain blocks...',
@@ -90,17 +93,17 @@ class AddUserDomainBlock extends Command
 
     protected function performTask($user, $domain)
     {
-        if(!$user->profile_id || $user->delete_after) {
+        if (! $user->profile_id || $user->delete_after) {
             return;
         }
 
-        if($user->status != null && $user->status != 'disabled') {
+        if ($user->status != null && $user->status != 'disabled') {
             return;
         }
 
         UserDomainBlock::updateOrCreate([
             'profile_id' => $user->profile_id,
-            'domain' => $domain
+            'domain' => $domain,
         ]);
     }
 }

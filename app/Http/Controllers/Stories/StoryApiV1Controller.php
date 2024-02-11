@@ -2,54 +2,56 @@
 
 namespace App\Http\Controllers\Stories;
 
-use App\Http\Controllers\Controller;
-use Illuminate\Http\Request;
-use Illuminate\Support\Str;
-use Illuminate\Support\Facades\Cache;
-use Illuminate\Support\Facades\Storage;
-use App\Models\Conversation;
 use App\DirectMessage;
-use App\Notification;
-use App\Story;
-use App\Status;
-use App\StoryView;
+use App\Http\Controllers\Controller;
+use App\Http\Resources\StoryView as StoryViewResource;
 use App\Jobs\StoryPipeline\StoryDelete;
 use App\Jobs\StoryPipeline\StoryFanout;
 use App\Jobs\StoryPipeline\StoryReplyDeliver;
 use App\Jobs\StoryPipeline\StoryViewDeliver;
+use App\Models\Conversation;
+use App\Notification;
 use App\Services\AccountService;
 use App\Services\MediaPathService;
 use App\Services\StoryService;
-use App\Http\Resources\StoryView as StoryViewResource;
+use App\Status;
+use App\Story;
+use App\StoryView;
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Cache;
+use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Str;
 
 class StoryApiV1Controller extends Controller
 {
     const RECENT_KEY = 'pf:stories:recent-by-id:';
+
     const RECENT_TTL = 300;
 
     public function carousel(Request $request)
     {
-        abort_if(!config_cache('instance.stories.enabled') || !$request->user(), 404);
+        abort_if(! config_cache('instance.stories.enabled') || ! $request->user(), 404);
         $pid = $request->user()->profile_id;
 
-        if(config('database.default') == 'pgsql') {
-            $s = Cache::remember(self::RECENT_KEY . $pid, self::RECENT_TTL, function() use($pid) {
+        if (config('database.default') == 'pgsql') {
+            $s = Cache::remember(self::RECENT_KEY.$pid, self::RECENT_TTL, function () use ($pid) {
                 return Story::select('stories.*', 'followers.following_id')
                     ->leftJoin('followers', 'followers.following_id', 'stories.profile_id')
                     ->where('followers.profile_id', $pid)
                     ->where('stories.active', true)
-                    ->map(function($s) {
-                        $r  = new \StdClass;
+                    ->map(function ($s) {
+                        $r = new \StdClass;
                         $r->id = $s->id;
                         $r->profile_id = $s->profile_id;
                         $r->type = $s->type;
                         $r->path = $s->path;
+
                         return $r;
                     })
                     ->unique('profile_id');
             });
         } else {
-            $s = Cache::remember(self::RECENT_KEY . $pid, self::RECENT_TTL, function() use($pid) {
+            $s = Cache::remember(self::RECENT_KEY.$pid, self::RECENT_TTL, function () use ($pid) {
                 return Story::select('stories.*', 'followers.following_id')
                     ->leftJoin('followers', 'followers.following_id', 'stories.profile_id')
                     ->where('followers.profile_id', $pid)
@@ -59,9 +61,9 @@ class StoryApiV1Controller extends Controller
             });
         }
 
-        $nodes = $s->map(function($s) use($pid) {
+        $nodes = $s->map(function ($s) use ($pid) {
             $profile = AccountService::get($s->profile_id, true);
-            if(!$profile || !isset($profile['id'])) {
+            if (! $profile || ! isset($profile['id'])) {
                 return false;
             }
 
@@ -72,50 +74,51 @@ class StoryApiV1Controller extends Controller
                 'src' => url(Storage::url($s->path)),
                 'duration' => $s->duration ?? 3,
                 'seen' => StoryService::hasSeen($pid, $s->id),
-                'created_at' => $s->created_at->format('c')
+                'created_at' => $s->created_at->format('c'),
             ];
         })
-        ->filter()
-        ->groupBy('pid')
-        ->map(function($item) use($pid) {
-            $profile = AccountService::get($item[0]['pid'], true);
-            $url = $profile['local'] ? url("/stories/{$profile['username']}") :
-                url("/i/rs/{$profile['id']}");
-            return [
-                'id' => 'pfs:' . $profile['id'],
-                'user' => [
-                    'id' => (string) $profile['id'],
-                    'username' => $profile['username'],
-                    'username_acct' => $profile['acct'],
-                    'avatar' => $profile['avatar'],
-                    'local' => $profile['local'],
-                    'is_author' => $profile['id'] == $pid
-                ],
-                'nodes' => $item,
-                'url' => $url,
-                'seen' => StoryService::hasSeen($pid, StoryService::latest($profile['id'])),
-            ];
-        })
-        ->sortBy('seen')
-        ->values();
+            ->filter()
+            ->groupBy('pid')
+            ->map(function ($item) use ($pid) {
+                $profile = AccountService::get($item[0]['pid'], true);
+                $url = $profile['local'] ? url("/stories/{$profile['username']}") :
+                    url("/i/rs/{$profile['id']}");
+
+                return [
+                    'id' => 'pfs:'.$profile['id'],
+                    'user' => [
+                        'id' => (string) $profile['id'],
+                        'username' => $profile['username'],
+                        'username_acct' => $profile['acct'],
+                        'avatar' => $profile['avatar'],
+                        'local' => $profile['local'],
+                        'is_author' => $profile['id'] == $pid,
+                    ],
+                    'nodes' => $item,
+                    'url' => $url,
+                    'seen' => StoryService::hasSeen($pid, StoryService::latest($profile['id'])),
+                ];
+            })
+            ->sortBy('seen')
+            ->values();
 
         $res = [
             'self' => [],
             'nodes' => $nodes,
         ];
 
-        if(Story::whereProfileId($pid)->whereActive(true)->exists()) {
+        if (Story::whereProfileId($pid)->whereActive(true)->exists()) {
             $selfStories = Story::whereProfileId($pid)
                 ->whereActive(true)
                 ->get()
-                ->map(function($s) use($pid) {
+                ->map(function ($s) {
                     return [
                         'id' => (string) $s->id,
                         'type' => $s->type,
                         'src' => url(Storage::url($s->path)),
                         'duration' => $s->duration,
                         'seen' => true,
-                        'created_at' => $s->created_at->format('c')
+                        'created_at' => $s->created_at->format('c'),
                     ];
                 })
                 ->sortBy('id')
@@ -127,38 +130,40 @@ class StoryApiV1Controller extends Controller
                     'username' => $selfProfile['acct'],
                     'avatar' => $selfProfile['avatar'],
                     'local' => $selfProfile['local'],
-                    'is_author' => true
+                    'is_author' => true,
                 ],
 
                 'nodes' => $selfStories,
             ];
         }
-        return response()->json($res, 200, [], JSON_PRETTY_PRINT|JSON_UNESCAPED_SLASHES);
+
+        return response()->json($res, 200, [], JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES);
     }
 
     public function selfCarousel(Request $request)
     {
-        abort_if(!config_cache('instance.stories.enabled') || !$request->user(), 404);
+        abort_if(! config_cache('instance.stories.enabled') || ! $request->user(), 404);
         $pid = $request->user()->profile_id;
 
-        if(config('database.default') == 'pgsql') {
-            $s = Cache::remember(self::RECENT_KEY . $pid, self::RECENT_TTL, function() use($pid) {
+        if (config('database.default') == 'pgsql') {
+            $s = Cache::remember(self::RECENT_KEY.$pid, self::RECENT_TTL, function () use ($pid) {
                 return Story::select('stories.*', 'followers.following_id')
                     ->leftJoin('followers', 'followers.following_id', 'stories.profile_id')
                     ->where('followers.profile_id', $pid)
                     ->where('stories.active', true)
-                    ->map(function($s) {
-                        $r  = new \StdClass;
+                    ->map(function ($s) {
+                        $r = new \StdClass;
                         $r->id = $s->id;
                         $r->profile_id = $s->profile_id;
                         $r->type = $s->type;
                         $r->path = $s->path;
+
                         return $r;
                     })
                     ->unique('profile_id');
             });
         } else {
-            $s = Cache::remember(self::RECENT_KEY . $pid, self::RECENT_TTL, function() use($pid) {
+            $s = Cache::remember(self::RECENT_KEY.$pid, self::RECENT_TTL, function () use ($pid) {
                 return Story::select('stories.*', 'followers.following_id')
                     ->leftJoin('followers', 'followers.following_id', 'stories.profile_id')
                     ->where('followers.profile_id', $pid)
@@ -168,9 +173,9 @@ class StoryApiV1Controller extends Controller
             });
         }
 
-        $nodes = $s->map(function($s) use($pid) {
+        $nodes = $s->map(function ($s) use ($pid) {
             $profile = AccountService::get($s->profile_id, true);
-            if(!$profile || !isset($profile['id'])) {
+            if (! $profile || ! isset($profile['id'])) {
                 return false;
             }
 
@@ -181,32 +186,33 @@ class StoryApiV1Controller extends Controller
                 'src' => url(Storage::url($s->path)),
                 'duration' => $s->duration ?? 3,
                 'seen' => StoryService::hasSeen($pid, $s->id),
-                'created_at' => $s->created_at->format('c')
+                'created_at' => $s->created_at->format('c'),
             ];
         })
-        ->filter()
-        ->groupBy('pid')
-        ->map(function($item) use($pid) {
-            $profile = AccountService::get($item[0]['pid'], true);
-            $url = $profile['local'] ? url("/stories/{$profile['username']}") :
-                url("/i/rs/{$profile['id']}");
-            return [
-                'id' => 'pfs:' . $profile['id'],
-                'user' => [
-                    'id' => (string) $profile['id'],
-                    'username' => $profile['username'],
-                    'username_acct' => $profile['acct'],
-                    'avatar' => $profile['avatar'],
-                    'local' => $profile['local'],
-                    'is_author' => $profile['id'] == $pid
-                ],
-                'nodes' => $item,
-                'url' => $url,
-                'seen' => StoryService::hasSeen($pid, StoryService::latest($profile['id'])),
-            ];
-        })
-        ->sortBy('seen')
-        ->values();
+            ->filter()
+            ->groupBy('pid')
+            ->map(function ($item) use ($pid) {
+                $profile = AccountService::get($item[0]['pid'], true);
+                $url = $profile['local'] ? url("/stories/{$profile['username']}") :
+                    url("/i/rs/{$profile['id']}");
+
+                return [
+                    'id' => 'pfs:'.$profile['id'],
+                    'user' => [
+                        'id' => (string) $profile['id'],
+                        'username' => $profile['username'],
+                        'username_acct' => $profile['acct'],
+                        'avatar' => $profile['avatar'],
+                        'local' => $profile['local'],
+                        'is_author' => $profile['id'] == $pid,
+                    ],
+                    'nodes' => $item,
+                    'url' => $url,
+                    'seen' => StoryService::hasSeen($pid, StoryService::latest($profile['id'])),
+                ];
+            })
+            ->sortBy('seen')
+            ->values();
 
         $selfProfile = AccountService::get($pid, true);
         $res = [
@@ -216,7 +222,7 @@ class StoryApiV1Controller extends Controller
                     'username' => $selfProfile['acct'],
                     'avatar' => $selfProfile['avatar'],
                     'local' => $selfProfile['local'],
-                    'is_author' => true
+                    'is_author' => true,
                 ],
 
                 'nodes' => [],
@@ -224,40 +230,41 @@ class StoryApiV1Controller extends Controller
             'nodes' => $nodes,
         ];
 
-        if(Story::whereProfileId($pid)->whereActive(true)->exists()) {
+        if (Story::whereProfileId($pid)->whereActive(true)->exists()) {
             $selfStories = Story::whereProfileId($pid)
                 ->whereActive(true)
                 ->get()
-                ->map(function($s) use($pid) {
+                ->map(function ($s) {
                     return [
                         'id' => (string) $s->id,
                         'type' => $s->type,
                         'src' => url(Storage::url($s->path)),
                         'duration' => $s->duration,
                         'seen' => true,
-                        'created_at' => $s->created_at->format('c')
+                        'created_at' => $s->created_at->format('c'),
                     ];
                 })
                 ->sortBy('id')
                 ->values();
             $res['self']['nodes'] = $selfStories;
         }
-        return response()->json($res, 200, [], JSON_PRETTY_PRINT|JSON_UNESCAPED_SLASHES);
+
+        return response()->json($res, 200, [], JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES);
     }
 
     public function add(Request $request)
     {
-        abort_if(!config_cache('instance.stories.enabled') || !$request->user(), 404);
+        abort_if(! config_cache('instance.stories.enabled') || ! $request->user(), 404);
 
         $this->validate($request, [
-            'file' => function() {
+            'file' => function () {
                 return [
                     'required',
                     'mimetypes:image/jpeg,image/png,video/mp4',
-                    'max:' . config_cache('pixelfed.max_photo_size'),
+                    'max:'.config_cache('pixelfed.max_photo_size'),
                 ];
             },
-            'duration' => 'sometimes|integer|min:0|max:30'
+            'duration' => 'sometimes|integer|min:0|max:30',
         ]);
 
         $user = $request->user();
@@ -267,7 +274,7 @@ class StoryApiV1Controller extends Controller
             ->where('expires_at', '>', now())
             ->count();
 
-        if($count >= Story::MAX_PER_DAY) {
+        if ($count >= Story::MAX_PER_DAY) {
             abort(418, 'You have reached your limit for new Stories today.');
         }
 
@@ -277,7 +284,7 @@ class StoryApiV1Controller extends Controller
         $story = new Story();
         $story->duration = $request->input('duration', 3);
         $story->profile_id = $user->profile_id;
-        $story->type = Str::endsWith($photo->getMimeType(), 'mp4') ? 'video' :'photo';
+        $story->type = Str::endsWith($photo->getMimeType(), 'mp4') ? 'video' : 'photo';
         $story->mime = $photo->getMimeType();
         $story->path = $path;
         $story->local = true;
@@ -290,10 +297,10 @@ class StoryApiV1Controller extends Controller
 
         $res = [
             'code' => 200,
-            'msg'  => 'Successfully added',
+            'msg' => 'Successfully added',
             'media_id' => (string) $story->id,
-            'media_url' => url(Storage::url($url)) . '?v=' . time(),
-            'media_type' => $story->type
+            'media_url' => url(Storage::url($url)).'?v='.time(),
+            'media_type' => $story->type,
         ];
 
         return $res;
@@ -301,13 +308,13 @@ class StoryApiV1Controller extends Controller
 
     public function publish(Request $request)
     {
-        abort_if(!config_cache('instance.stories.enabled') || !$request->user(), 404);
+        abort_if(! config_cache('instance.stories.enabled') || ! $request->user(), 404);
 
         $this->validate($request, [
             'media_id' => 'required',
             'duration' => 'required|integer|min:0|max:30',
             'can_reply' => 'required|boolean',
-            'can_react' => 'required|boolean'
+            'can_react' => 'required|boolean',
         ]);
 
         $id = $request->input('media_id');
@@ -327,13 +334,13 @@ class StoryApiV1Controller extends Controller
 
         return [
             'code' => 200,
-            'msg'  => 'Successfully published',
+            'msg' => 'Successfully published',
         ];
     }
 
     public function delete(Request $request, $id)
     {
-        abort_if(!config_cache('instance.stories.enabled') || !$request->user(), 404);
+        abort_if(! config_cache('instance.stories.enabled') || ! $request->user(), 404);
 
         $user = $request->user();
 
@@ -346,16 +353,16 @@ class StoryApiV1Controller extends Controller
 
         return [
             'code' => 200,
-            'msg'  => 'Successfully deleted'
+            'msg' => 'Successfully deleted',
         ];
     }
 
     public function viewed(Request $request)
     {
-        abort_if(!config_cache('instance.stories.enabled') || !$request->user(), 404);
+        abort_if(! config_cache('instance.stories.enabled') || ! $request->user(), 404);
 
         $this->validate($request, [
-            'id'    => 'required|min:1',
+            'id' => 'required|min:1',
         ]);
         $id = $request->input('id');
 
@@ -367,44 +374,45 @@ class StoryApiV1Controller extends Controller
 
         $profile = $story->profile;
 
-        if($story->profile_id == $authed->id) {
+        if ($story->profile_id == $authed->id) {
             return [];
         }
 
         $publicOnly = (bool) $profile->followedBy($authed);
-        abort_if(!$publicOnly, 403);
+        abort_if(! $publicOnly, 403);
 
         $v = StoryView::firstOrCreate([
             'story_id' => $id,
-            'profile_id' => $authed->id
+            'profile_id' => $authed->id,
         ]);
 
-        if($v->wasRecentlyCreated) {
+        if ($v->wasRecentlyCreated) {
             Story::findOrFail($story->id)->increment('view_count');
 
-            if($story->local == false) {
+            if ($story->local == false) {
                 StoryViewDeliver::dispatch($story, $authed)->onQueue('story');
             }
         }
 
-        Cache::forget('stories:recent:by_id:' . $authed->id);
+        Cache::forget('stories:recent:by_id:'.$authed->id);
         StoryService::addSeen($authed->id, $story->id);
+
         return ['code' => 200];
     }
 
     public function comment(Request $request)
     {
-        abort_if(!config_cache('instance.stories.enabled') || !$request->user(), 404);
+        abort_if(! config_cache('instance.stories.enabled') || ! $request->user(), 404);
         $this->validate($request, [
             'sid' => 'required',
-            'caption' => 'required|string'
+            'caption' => 'required|string',
         ]);
         $pid = $request->user()->profile_id;
         $text = $request->input('caption');
 
         $story = Story::findOrFail($request->input('sid'));
 
-        abort_if(!$story->can_reply, 422);
+        abort_if(! $story->can_reply, 422);
 
         $status = new Status;
         $status->type = 'story:reply';
@@ -415,7 +423,7 @@ class StoryApiV1Controller extends Controller
         $status->visibility = 'direct';
         $status->in_reply_to_profile_id = $story->profile_id;
         $status->entities = json_encode([
-            'story_id' => $story->id
+            'story_id' => $story->id,
         ]);
         $status->save();
 
@@ -429,24 +437,24 @@ class StoryApiV1Controller extends Controller
             'story_actor_username' => $request->user()->username,
             'story_id' => $story->id,
             'story_media_url' => url(Storage::url($story->path)),
-            'caption' => $text
+            'caption' => $text,
         ]);
         $dm->save();
 
         Conversation::updateOrInsert(
             [
                 'to_id' => $story->profile_id,
-                'from_id' => $pid
+                'from_id' => $pid,
             ],
             [
                 'type' => 'story:comment',
                 'status_id' => $status->id,
                 'dm_id' => $dm->id,
-                'is_hidden' => false
+                'is_hidden' => false,
             ]
         );
 
-        if($story->local) {
+        if ($story->local) {
             $n = new Notification;
             $n->profile_id = $dm->to_id;
             $n->actor_id = $dm->from_id;
@@ -460,33 +468,35 @@ class StoryApiV1Controller extends Controller
 
         return [
             'code' => 200,
-            'msg'  => 'Sent!'
+            'msg' => 'Sent!',
         ];
     }
 
     protected function storeMedia($photo, $user)
     {
         $mimes = explode(',', config_cache('pixelfed.media_types'));
-        if(in_array($photo->getMimeType(), [
+        if (in_array($photo->getMimeType(), [
             'image/jpeg',
             'image/png',
-            'video/mp4'
+            'video/mp4',
         ]) == false) {
             abort(400, 'Invalid media type');
+
             return;
         }
 
         $storagePath = MediaPathService::story($user->profile);
-        $path = $photo->storePubliclyAs($storagePath, Str::random(random_int(2, 12)) . '_' . Str::random(random_int(32, 35)) . '_' . Str::random(random_int(1, 14)) . '.' . $photo->extension());
+        $path = $photo->storePubliclyAs($storagePath, Str::random(random_int(2, 12)).'_'.Str::random(random_int(32, 35)).'_'.Str::random(random_int(1, 14)).'.'.$photo->extension());
+
         return $path;
     }
 
     public function viewers(Request $request)
     {
-        abort_if(!config_cache('instance.stories.enabled') || !$request->user(), 404);
+        abort_if(! config_cache('instance.stories.enabled') || ! $request->user(), 404);
 
         $this->validate($request, [
-            'sid' => 'required|string|min:1|max:50'
+            'sid' => 'required|string|min:1|max:50',
         ]);
 
         $pid = $request->user()->profile_id;

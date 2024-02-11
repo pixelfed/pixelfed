@@ -19,7 +19,7 @@ class Instance extends Model
         'banned',
         'auto_cw',
         'unlisted',
-        'notes'
+        'notes',
     ];
 
     public function profiles()

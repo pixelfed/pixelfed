@@ -4,21 +4,17 @@ namespace App\Http\Controllers\Settings;
 
 use App\AccountLog;
 use App\EmailVerification;
+use App\Mail\PasswordChange;
 use App\Media;
-use App\Profile;
-use App\User;
-use App\UserFilter;
+use App\Services\AccountService;
+use App\Services\PronounService;
 use App\Util\Lexer\Autolink;
 use App\Util\Lexer\PrettyNumber;
 use Auth;
 use Cache;
-use DB;
+use Illuminate\Http\Request;
 use Mail;
 use Purify;
-use App\Mail\PasswordChange;
-use Illuminate\Http\Request;
-use App\Services\AccountService;
-use App\Services\PronounService;
 
 trait HomeSettings
 {
@@ -40,11 +36,11 @@ trait HomeSettings
     public function homeUpdate(Request $request)
     {
         $this->validate($request, [
-            'name'    => 'nullable|string|max:'.config('pixelfed.max_name_length'),
-            'bio'     => 'nullable|string|max:'.config('pixelfed.max_bio_length'),
+            'name' => 'nullable|string|max:'.config('pixelfed.max_name_length'),
+            'bio' => 'nullable|string|max:'.config('pixelfed.max_bio_length'),
             'website' => 'nullable|url',
             'language' => 'nullable|string|min:2|max:5',
-            'pronouns' => 'nullable|array|max:4'
+            'pronouns' => 'nullable|array|max:4',
         ]);
 
         $changes = false;
@@ -57,14 +53,14 @@ trait HomeSettings
         $pronouns = $request->input('pronouns');
         $existingPronouns = PronounService::get($profile->id);
         $layout = $request->input('profile_layout');
-        if($layout) {
-            $layout = !in_array($layout, ['metro', 'moment']) ? 'metro' : $layout;
+        if ($layout) {
+            $layout = ! in_array($layout, ['metro', 'moment']) ? 'metro' : $layout;
         }
 
         $enforceEmailVerification = config_cache('pixelfed.enforce_email_verification');
 
         // Only allow email to be updated if not yet verified
-        if (!$enforceEmailVerification || !$changes && $user->email_verified_at) {
+        if (! $enforceEmailVerification || ! $changes && $user->email_verified_at) {
             if ($profile->name != $name) {
                 $changes = true;
                 $user->name = $name;
@@ -81,7 +77,7 @@ trait HomeSettings
                 $profile->bio = Autolink::create()->autolink($bio);
             }
 
-            if($user->language != $language &&
+            if ($user->language != $language &&
                 in_array($language, \App\Util\Localization\Localization::languages())
             ) {
                 $changes = true;
@@ -89,8 +85,8 @@ trait HomeSettings
                 session()->put('locale', $language);
             }
 
-            if($existingPronouns != $pronouns) {
-                if($pronouns && in_array('Select Pronoun(s)', $pronouns)) {
+            if ($existingPronouns != $pronouns) {
+                if ($pronouns && in_array('Select Pronoun(s)', $pronouns)) {
                     PronounService::clear($profile->id);
                 } else {
                     PronounService::put($profile->id, $pronouns);
@@ -103,6 +99,7 @@ trait HomeSettings
             $profile->save();
             Cache::forget('user:account:id:'.$user->id);
             AccountService::del($profile->id);
+
             return redirect('/settings/home')->with('status', 'Profile successfully updated!');
         }
 
@@ -117,10 +114,10 @@ trait HomeSettings
     public function passwordUpdate(Request $request)
     {
         $this->validate($request, [
-        'current'                => 'required|string',
-        'password'               => 'required|string',
-        'password_confirmation'  => 'required|string',
-      ]);
+            'current' => 'required|string',
+            'password' => 'required|string',
+            'password_confirmation' => 'required|string',
+        ]);
 
         $current = $request->input('current');
         $new = $request->input('password');
@@ -144,6 +141,7 @@ trait HomeSettings
             $log->save();
 
             Mail::to($request->user())->send(new PasswordChange($user));
+
             return redirect('/settings/home')->with('status', 'Password successfully updated!');
         } else {
             return redirect()->back()->with('error', 'There was an error with your request! Please try again.');
@@ -159,7 +157,7 @@ trait HomeSettings
     public function emailUpdate(Request $request)
     {
         $this->validate($request, [
-            'email'   => 'required|email|unique:users,email',
+            'email' => 'required|email|unique:users,email',
         ]);
         $changes = false;
         $email = $request->input('email');

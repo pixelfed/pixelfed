@@ -3,8 +3,8 @@
 namespace App\Http\Controllers\Auth;
 
 use App\Http\Controllers\Controller;
-use Illuminate\Foundation\Auth\SendsPasswordResetEmails;
 use App\Services\BouncerService;
+use Illuminate\Foundation\Auth\SendsPasswordResetEmails;
 use Illuminate\Http\Request;
 
 class ForgotPasswordController extends Controller
@@ -39,11 +39,11 @@ class ForgotPasswordController extends Controller
      */
     public function showLinkRequestForm()
     {
-		if(config('pixelfed.bouncer.cloud_ips.ban_logins')) {
-			abort_if(BouncerService::checkIp(request()->ip()), 404);
-		}
+        if (config('pixelfed.bouncer.cloud_ips.ban_logins')) {
+            abort_if(BouncerService::checkIp(request()->ip()), 404);
+        }
 
-		usleep(random_int(100000, 300000));
+        usleep(random_int(100000, 300000));
 
         return view('auth.passwords.email');
     }
@@ -51,37 +51,35 @@ class ForgotPasswordController extends Controller
     /**
      * Validate the email for the given request.
      *
-     * @param  \Illuminate\Http\Request  $request
      * @return void
      */
     public function validateEmail(Request $request)
     {
-		if(config('pixelfed.bouncer.cloud_ips.ban_logins')) {
-			abort_if(BouncerService::checkIp($request->ip()), 404);
-		}
+        if (config('pixelfed.bouncer.cloud_ips.ban_logins')) {
+            abort_if(BouncerService::checkIp($request->ip()), 404);
+        }
 
-		usleep(random_int(100000, 3000000));
+        usleep(random_int(100000, 3000000));
 
-    	if(config('captcha.enabled')) {
+        if (config('captcha.enabled')) {
             $rules = [
-	    		'email' => 'required|email',
-            	'h-captcha-response' => 'required|captcha'
+                'email' => 'required|email',
+                'h-captcha-response' => 'required|captcha',
             ];
         } else {
-	    	$rules = [
-	    		'email' => 'required|email'
-	    	];
+            $rules = [
+                'email' => 'required|email',
+            ];
         }
 
         $request->validate($rules, [
-        	'h-captcha-response' => 'Failed to validate the captcha.',
+            'h-captcha-response' => 'Failed to validate the captcha.',
         ]);
     }
 
     /**
      * Get the response for a failed password reset link.
      *
-     * @param  \Illuminate\Http\Request  $request
      * @param  string  $response
      * @return \Illuminate\Http\RedirectResponse
      *
@@ -98,7 +96,7 @@ class ForgotPasswordController extends Controller
         return back()
             ->withInput($request->only('email'))
             ->withErrors([
-            	'email' => trans($response),
+                'email' => trans($response),
             ]);
     }
 }

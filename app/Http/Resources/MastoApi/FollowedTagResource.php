@@ -2,10 +2,8 @@
 
 namespace App\Http\Resources\MastoApi;
 
-use Illuminate\Http\Resources\Json\JsonResource;
-use Illuminate\Http\JsonResponse;
-use Cache;
 use App\Services\HashtagService;
+use Illuminate\Http\Resources\Json\JsonResource;
 
 class FollowedTagResource extends JsonResource
 {
@@ -17,17 +15,17 @@ class FollowedTagResource extends JsonResource
      */
     public function toArray($request)
     {
-    	$tag = HashtagService::get($this->hashtag_id);
+        $tag = HashtagService::get($this->hashtag_id);
 
-    	if(!$tag || !isset($tag['name'])) {
-    		return [];
-    	}
+        if (! $tag || ! isset($tag['name'])) {
+            return [];
+        }
 
-    	return [
-    		'name' => $tag['name'],
-    		'url' => config('app.url') . '/i/web/hashtag/' . $tag['slug'],
-    		'history' => [],
-    		'following' => true,
-    	];
+        return [
+            'name' => $tag['name'],
+            'url' => config('app.url').'/i/web/hashtag/'.$tag['slug'],
+            'history' => [],
+            'following' => true,
+        ];
     }
 }

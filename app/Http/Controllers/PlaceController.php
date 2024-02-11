@@ -2,33 +2,31 @@
 
 namespace App\Http\Controllers;
 
+use App\Place;
+use App\Status;
 use Illuminate\Http\Request;
-use App\{
-	Place,
-	Status
-};
 
 class PlaceController extends Controller
 {
-	public function __construct()
-	{
-		$this->middleware('auth');
-	}
+    public function __construct()
+    {
+        $this->middleware('auth');
+    }
 
     public function show(Request $request, $id, $slug)
     {
         $this->validate($request, [
-            'page' => 'sometimes|max:10'
+            'page' => 'sometimes|max:10',
         ]);
 
-    	$place = Place::whereSlug($slug)->findOrFail($id);
-    	$posts = Status::wherePlaceId($place->id)
+        $place = Place::whereSlug($slug)->findOrFail($id);
+        $posts = Status::wherePlaceId($place->id)
             ->whereNull('uri')
-    		->whereScope('public')
-    		->orderByDesc('created_at')
-    		->simplePaginate(10);
+            ->whereScope('public')
+            ->orderByDesc('created_at')
+            ->simplePaginate(10);
 
-    	return view('discover.places.show', compact('place', 'posts'));
+        return view('discover.places.show', compact('place', 'posts'));
     }
 
     public function directoryHome(Request $request)

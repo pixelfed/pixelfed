@@ -47,6 +47,7 @@
 	"require-dev": {
 		"brianium/paratest": "^6.1",
 		"fakerphp/faker": "^1.20",
+		"laravel/pint": "^1.13",
 		"laravel/telescope": "^4.14",
 		"mockery/mockery": "^1.0",
 		"nunomaduro/collision": "^6.1",

@@ -2,24 +2,27 @@
 
 namespace App\Jobs\DirectPipeline;
 
+use App\Util\ActivityPub\Helpers;
 use Illuminate\Bus\Queueable;
-use Illuminate\Contracts\Queue\ShouldBeUnique;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
-use App\Util\ActivityPub\Helpers;
 
 class DirectDeliverPipeline implements ShouldQueue
 {
     use Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
 
     public $timeout = 900;
+
     public $tries = 3;
+
     public $maxExceptions = 1;
 
     protected $profile;
+
     protected $url;
+
     protected $payload;
 
     /**

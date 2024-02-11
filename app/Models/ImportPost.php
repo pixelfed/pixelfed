@@ -2,9 +2,9 @@
 
 namespace App\Models;
 
+use App\Status;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
-use App\Status;
 
 class ImportPost extends Model
 {
@@ -13,7 +13,7 @@ class ImportPost extends Model
     protected $casts = [
         'media' => 'array',
         'creation_date' => 'datetime',
-        'metadata' => 'json'
+        'metadata' => 'json',
     ];
 
     public function status()

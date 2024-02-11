@@ -10,10 +10,10 @@ class StatusEdit extends Model
     use HasFactory;
 
     protected $casts = [
-		'ordered_media_attachment_ids' => 'array',
-		'media_descriptions' => 'array',
-		'poll_options' => 'array'
-	];
+        'ordered_media_attachment_ids' => 'array',
+        'media_descriptions' => 'array',
+        'poll_options' => 'array',
+    ];
 
-	protected $guarded = [];
+    protected $guarded = [];
 }

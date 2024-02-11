@@ -14,9 +14,9 @@ return [
     */
 
     'password' => 'Le password devono essere almeno lunghe 6 caratteri e corrispondere.',
-    'reset'    => 'La tua password è stata reimpostata!',
-    'sent'     => 'Ti abbiamo inviato via e-mail il link per reimpostare la tua password!',
-    'token'    => 'Questo codice di reimpostazione della password non è valido.',
-    'user'     => "Non riusciamo a trovare un utente con questo indirizzo e-mail.",
+    'reset' => 'La tua password è stata reimpostata!',
+    'sent' => 'Ti abbiamo inviato via e-mail il link per reimpostare la tua password!',
+    'token' => 'Questo codice di reimpostazione della password non è valido.',
+    'user' => 'Non riusciamo a trovare un utente con questo indirizzo e-mail.',
 
 ];

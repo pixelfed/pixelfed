@@ -4,26 +4,27 @@ namespace App\Util\Blurhash;
 
 use InvalidArgumentException;
 
-class Blurhash {
-
-    public static function encode(array $image, int $components_x = 4, int $components_y = 4, bool $linear = false): string {
+class Blurhash
+{
+    public static function encode(array $image, int $components_x = 4, int $components_y = 4, bool $linear = false): string
+    {
         if (($components_x < 1 || $components_x > 9) || ($components_y < 1 || $components_y > 9)) {
-            throw new InvalidArgumentException("x and y component counts must be between 1 and 9 inclusive.");
+            throw new InvalidArgumentException('x and y component counts must be between 1 and 9 inclusive.');
         }
         $height = count($image);
-        $width  = count($image[0]);
+        $width = count($image[0]);
 
         $image_linear = $image;
-        if (!$linear) {
+        if (! $linear) {
             $image_linear = [];
             for ($y = 0; $y < $height; $y++) {
                 $line = [];
                 for ($x = 0; $x < $width; $x++) {
-                    $pixel  = $image[$y][$x];
+                    $pixel = $image[$y][$x];
                     $line[] = [
                         Color::toLinear($pixel[0]),
                         Color::toLinear($pixel[1]),
-                        Color::toLinear($pixel[2])
+                        Color::toLinear($pixel[2]),
                     ];
                 }
                 $image_linear[] = $line;
@@ -52,7 +53,7 @@ class Blurhash {
                 $components[] = [
                     $r * $scale,
                     $g * $scale,
-                    $b * $scale
+                    $b * $scale,
                 ];
             }
         }
@@ -62,7 +63,7 @@ class Blurhash {
         $max_ac_component = 0;
         foreach ($components as $component) {
             $component[] = $max_ac_component;
-            $max_ac_component = max ($component);
+            $max_ac_component = max($component);
         }
 
         $quant_max_ac_component = (int) max(0, min(82, floor($max_ac_component * 166 - 0.5)));
@@ -73,7 +74,7 @@ class Blurhash {
             $ac_values[] = AC::encode($component, $ac_component_norm_factor);
         }
 
-        $blurhash  = Base83::encode($components_x - 1 + ($components_y - 1) * 9, 1);
+        $blurhash = Base83::encode($components_x - 1 + ($components_y - 1) * 9, 1);
         $blurhash .= Base83::encode($quant_max_ac_component, 1);
         $blurhash .= Base83::encode($dc_value, 4);
         foreach ($ac_values as $ac_value) {
@@ -83,9 +84,10 @@ class Blurhash {
         return $blurhash;
     }
 
-    public static function decode (string $blurhash, int $width, int $height, float $punch = 1.0, bool $linear = false): array {
+    public static function decode(string $blurhash, int $width, int $height, float $punch = 1.0, bool $linear = false): array
+    {
         if (empty($blurhash) || strlen($blurhash) < 6) {
-            throw new InvalidArgumentException("Blurhash string must be at least 6 characters");
+            throw new InvalidArgumentException('Blurhash string must be at least 6 characters');
         }
 
         $size_info = Base83::decode($blurhash[0]);
@@ -128,7 +130,7 @@ class Blurhash {
                 $row[] = $linear ? [$r, $g, $b] : [
                     Color::toSRGB($r),
                     Color::toSRGB($g),
-                    Color::toSRGB($b)
+                    Color::toSRGB($b),
                 ];
             }
             $pixels[] = $row;

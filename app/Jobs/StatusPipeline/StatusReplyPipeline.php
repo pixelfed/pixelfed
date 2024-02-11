@@ -3,6 +3,8 @@
 namespace App\Jobs\StatusPipeline;
 
 use App\Notification;
+use App\Services\NotificationService;
+use App\Services\StatusService;
 use App\Status;
 use Cache;
 use DB;
@@ -11,66 +13,64 @@ use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
-use Illuminate\Support\Facades\Redis;
-use App\Services\NotificationService;
-use App\Services\StatusService;
 
 class StatusReplyPipeline implements ShouldQueue
 {
-	use Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
+    use Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
 
-	protected $status;
+    protected $status;
 
-	/**
-	 * Delete the job if its models no longer exist.
-	 *
-	 * @var bool
-	 */
-	public $deleteWhenMissingModels = true;
+    /**
+     * Delete the job if its models no longer exist.
+     *
+     * @var bool
+     */
+    public $deleteWhenMissingModels = true;
 
-	public $timeout = 60;
-	public $tries = 2;
+    public $timeout = 60;
 
-	/**
-	 * Create a new job instance.
-	 *
-	 * @return void
-	 */
-	public function __construct(Status $status)
-	{
-		$this->status = $status;
-	}
+    public $tries = 2;
 
-		/**
-	 * Execute the job.
-	 *
-	 * @return void
-	 */
-	public function handle()
-	{
-		$status = $this->status;
-		$actor = $status->profile;
-		$reply = Status::find($status->in_reply_to_id);
+    /**
+     * Create a new job instance.
+     *
+     * @return void
+     */
+    public function __construct(Status $status)
+    {
+        $this->status = $status;
+    }
 
-		if(!$actor || !$reply) {
-			return 1;
-		}
+    /**
+     * Execute the job.
+     *
+     * @return void
+     */
+    public function handle()
+    {
+        $status = $this->status;
+        $actor = $status->profile;
+        $reply = Status::find($status->in_reply_to_id);
 
-		$target = $reply->profile;
+        if (! $actor || ! $reply) {
+            return 1;
+        }
 
-		$exists = Notification::whereProfileId($target->id)
-                  ->whereActorId($actor->id)
-                  ->whereIn('action', ['mention', 'comment'])
-                  ->whereItemId($status->id)
-                  ->whereItemType('App\Status')
-                  ->count();
+        $target = $reply->profile;
+
+        $exists = Notification::whereProfileId($target->id)
+            ->whereActorId($actor->id)
+            ->whereIn('action', ['mention', 'comment'])
+            ->whereItemId($status->id)
+            ->whereItemType('App\Status')
+            ->count();
 
         if ($actor->id === $target || $exists !== 0) {
             return 1;
         }
 
-        if(config('database.default') === 'mysql') {
-        	// todo: refactor
+        if (config('database.default') === 'mysql') {
+            // todo: refactor
             // $exp = DB::raw("select id, in_reply_to_id from statuses, (select @pv := :kid) initialisation where id > @pv and find_in_set(in_reply_to_id, @pv) > 0 and @pv := concat(@pv, ',', id)");
             // $expQuery = $exp->getValue(DB::connection()->getQueryGrammar());
             // $count = DB::select($expQuery, [ 'kid' => $reply->id ]);
@@ -84,11 +84,11 @@ class StatusReplyPipeline implements ShouldQueue
 
         StatusService::del($reply->id);
         StatusService::del($status->id);
-        Cache::forget('status:replies:all:' . $reply->id);
-        Cache::forget('status:replies:all:' . $status->id);
+        Cache::forget('status:replies:all:'.$reply->id);
+        Cache::forget('status:replies:all:'.$status->id);
 
-        if($target->user_id && $target->domain === null) {
-            DB::transaction(function() use($target, $actor, $status) {
+        if ($target->user_id && $target->domain === null) {
+            DB::transaction(function () use ($target, $actor, $status) {
                 $notification = new Notification();
                 $notification->profile_id = $target->id;
                 $notification->actor_id = $actor->id;
@@ -102,16 +102,15 @@ class StatusReplyPipeline implements ShouldQueue
             });
         }
 
-        if($exists = Cache::get('status:replies:all:' . $reply->id)) {
-        	if($exists && $exists->count() == 3) {
-        	} else {
-        		Cache::forget('status:replies:all:' . $reply->id);
-        	}
+        if ($exists = Cache::get('status:replies:all:'.$reply->id)) {
+            if ($exists && $exists->count() == 3) {
+            } else {
+                Cache::forget('status:replies:all:'.$reply->id);
+            }
         } else {
-        	Cache::forget('status:replies:all:' . $reply->id);
+            Cache::forget('status:replies:all:'.$reply->id);
         }
 
         return 1;
-	}
-
+    }
 }

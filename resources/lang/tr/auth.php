@@ -13,7 +13,7 @@ return [
     |
     */
 
-    'failed'   => 'Kayıtlarımızda böyle bir kimlik bilgisi yok',
+    'failed' => 'Kayıtlarımızda böyle bir kimlik bilgisi yok',
     'throttle' => 'Çok fazla giriş denemesinde bulundunuz. Lütfen :seconds saniye sonra tekrar deneyiniz.',
 
 ];

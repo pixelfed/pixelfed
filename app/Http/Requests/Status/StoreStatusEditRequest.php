@@ -2,10 +2,10 @@
 
 namespace App\Http\Requests\Status;
 
-use Illuminate\Foundation\Http\FormRequest;
 use App\Media;
 use App\Status;
 use Closure;
+use Illuminate\Foundation\Http\FormRequest;
 
 class StoreStatusEditRequest extends FormRequest
 {
@@ -14,24 +14,25 @@ class StoreStatusEditRequest extends FormRequest
      */
     public function authorize(): bool
     {
-    	$profile = $this->user()->profile;
-    	if($profile->status != null) {
-    		return false;
-    	}
-    	if($profile->unlisted == true && $profile->cw == true) {
-    		return false;
-    	}
-    	$types = [
-			"photo",
-			"photo:album",
-			"photo:video:album",
-			"reply",
-			"text",
-			"video",
-			"video:album"
-    	];
-    	$scopes = ['public', 'unlisted', 'private'];
-    	$status = Status::whereNull('reblog_of_id')->whereIn('type', $types)->whereIn('scope', $scopes)->find($this->route('id'));
+        $profile = $this->user()->profile;
+        if ($profile->status != null) {
+            return false;
+        }
+        if ($profile->unlisted == true && $profile->cw == true) {
+            return false;
+        }
+        $types = [
+            'photo',
+            'photo:album',
+            'photo:video:album',
+            'reply',
+            'text',
+            'video',
+            'video:album',
+        ];
+        $scopes = ['public', 'unlisted', 'private'];
+        $status = Status::whereNull('reblog_of_id')->whereIn('type', $types)->whereIn('scope', $scopes)->find($this->route('id'));
+
         return $status && $this->user()->profile_id === $status->profile_id;
     }
 
@@ -47,18 +48,18 @@ class StoreStatusEditRequest extends FormRequest
             'spoiler_text' => 'nullable|string|max:140',
             'sensitive' => 'sometimes|boolean',
             'media_ids' => [
-            	'nullable',
-            	'required_without:status',
-            	'array',
-            	'max:' . config('pixelfed.max_album_length'),
-				function (string $attribute, mixed $value, Closure $fail) {
-					Media::whereProfileId($this->user()->profile_id)
-						->where(function($query) {
-							return $query->whereNull('status_id')
-							->orWhere('status_id', '=', $this->route('id'));
-						})
-						->findOrFail($value);
-				},
+                'nullable',
+                'required_without:status',
+                'array',
+                'max:'.config('pixelfed.max_album_length'),
+                function (string $attribute, mixed $value, Closure $fail) {
+                    Media::whereProfileId($this->user()->profile_id)
+                        ->where(function ($query) {
+                            return $query->whereNull('status_id')
+                                ->orWhere('status_id', '=', $this->route('id'));
+                        })
+                        ->findOrFail($value);
+                },
             ],
             'location' => 'sometimes|nullable',
             'location.id' => 'sometimes|integer|min:1|max:128769',

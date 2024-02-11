@@ -2,30 +2,33 @@
 
 namespace App\Jobs\HomeFeedPipeline;
 
-use Illuminate\Bus\Queueable;
-use Illuminate\Contracts\Queue\ShouldBeUnique;
-use Illuminate\Contracts\Queue\ShouldQueue;
-use Illuminate\Foundation\Bus\Dispatchable;
-use Illuminate\Queue\InteractsWithQueue;
-use Illuminate\Queue\SerializesModels;
-use Illuminate\Queue\Middleware\WithoutOverlapping;
-use Illuminate\Contracts\Queue\ShouldBeUniqueUntilProcessing;
-use App\UserFilter;
 use App\Models\UserDomainBlock;
 use App\Services\FollowerService;
 use App\Services\HomeTimelineService;
 use App\Services\StatusService;
+use App\UserFilter;
+use Illuminate\Bus\Queueable;
+use Illuminate\Contracts\Queue\ShouldBeUniqueUntilProcessing;
+use Illuminate\Contracts\Queue\ShouldQueue;
+use Illuminate\Foundation\Bus\Dispatchable;
+use Illuminate\Queue\InteractsWithQueue;
+use Illuminate\Queue\Middleware\WithoutOverlapping;
+use Illuminate\Queue\SerializesModels;
 
-class FeedInsertPipeline implements ShouldQueue, ShouldBeUniqueUntilProcessing
+class FeedInsertPipeline implements ShouldBeUniqueUntilProcessing, ShouldQueue
 {
     use Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
 
     protected $sid;
+
     protected $pid;
 
     public $timeout = 900;
+
     public $tries = 3;
+
     public $maxExceptions = 1;
+
     public $failOnTimeout = true;
 
     /**
@@ -40,7 +43,7 @@ class FeedInsertPipeline implements ShouldQueue, ShouldBeUniqueUntilProcessing
      */
     public function uniqueId(): string
     {
-        return 'hts:feed:insert:sid:' . $this->sid;
+        return 'hts:feed:insert:sid:'.$this->sid;
     }
 
     /**
@@ -70,11 +73,11 @@ class FeedInsertPipeline implements ShouldQueue, ShouldBeUniqueUntilProcessing
         $sid = $this->sid;
         $status = StatusService::get($sid, false);
 
-        if(!$status || !isset($status['account']) || !isset($status['account']['id'], $status['url'])) {
+        if (! $status || ! isset($status['account']) || ! isset($status['account']['id'], $status['url'])) {
             return;
         }
 
-        if(!in_array($status['pf_type'], ['photo', 'photo:album', 'video', 'video:album', 'photo:video:album'])) {
+        if (! in_array($status['pf_type'], ['photo', 'photo:album', 'video', 'video:album', 'photo:video:album'])) {
             return;
         }
 
@@ -82,14 +85,14 @@ class FeedInsertPipeline implements ShouldQueue, ShouldBeUniqueUntilProcessing
 
         $ids = FollowerService::localFollowerIds($this->pid);
 
-        if(!$ids || !count($ids)) {
+        if (! $ids || ! count($ids)) {
             return;
         }
 
         $domain = strtolower(parse_url($status['url'], PHP_URL_HOST));
         $skipIds = [];
 
-        if(strtolower(config('pixelfed.domain.app')) !== $domain) {
+        if (strtolower(config('pixelfed.domain.app')) !== $domain) {
             $skipIds = UserDomainBlock::where('domain', $domain)->pluck('profile_id')->toArray();
         }
 
@@ -99,14 +102,14 @@ class FeedInsertPipeline implements ShouldQueue, ShouldBeUniqueUntilProcessing
             ->pluck('user_id')
             ->toArray();
 
-        if($filters && count($filters)) {
+        if ($filters && count($filters)) {
             $skipIds = array_merge($skipIds, $filters);
         }
 
         $skipIds = array_unique(array_values($skipIds));
 
-        foreach($ids as $id) {
-            if(!in_array($id, $skipIds)) {
+        foreach ($ids as $id) {
+            if (! in_array($id, $skipIds)) {
                 HomeTimelineService::add($id, $this->sid);
             }
         }

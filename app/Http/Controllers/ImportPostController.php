@@ -2,13 +2,12 @@
 
 namespace App\Http\Controllers;
 
-use Illuminate\Http\Request;
+use App\Follower;
+use App\Http\Resources\ImportStatus;
 use App\Models\ImportPost;
 use App\Services\ImportService;
-use App\Services\StatusService;
-use App\Http\Resources\ImportStatus;
-use App\Follower;
 use App\User;
+use Illuminate\Http\Request;
 
 class ImportPostController extends Controller
 {
@@ -36,7 +35,7 @@ class ImportPostController extends Controller
                 'min_follower_count' => config('import.instagram.permissions.min_follower_count'),
             ],
 
-            'allowed' => $this->checkPermissions($request, false)
+            'allowed' => $this->checkPermissions($request, false),
         ];
     }
 
@@ -85,7 +84,7 @@ class ImportPostController extends Controller
 
     public function formatHashtags($val = false)
     {
-        if(!$val || !strlen($val)) {
+        if (! $val || ! strlen($val)) {
             return null;
         }
 
@@ -101,19 +100,20 @@ class ImportPostController extends Controller
 
         $uid = $request->user()->id;
         $pid = $request->user()->profile_id;
-        foreach($request->input('files') as $file) {
+        foreach ($request->input('files') as $file) {
             $media = $file['media'];
             $c = collect($media);
             $postHash = hash('sha256', $c->toJson());
-            $exts = $c->map(function($m) {
+            $exts = $c->map(function ($m) {
                 $fn = last(explode('/', $m['uri']));
+
                 return last(explode('.', $fn));
             });
             $postType = 'photo';
 
-            if($exts->count() > 1) {
-                if($exts->contains('mp4')) {
-                    if($exts->contains('jpg', 'png')) {
+            if ($exts->count() > 1) {
+                if ($exts->contains('mp4')) {
+                    if ($exts->contains('jpg', 'png')) {
                         $postType = 'photo:video:album';
                     } else {
                         $postType = 'video:album';
@@ -122,9 +122,9 @@ class ImportPostController extends Controller
                     $postType = 'photo:album';
                 }
             } else {
-                if(in_array($exts[0], ['jpg', 'png'])) {
+                if (in_array($exts[0], ['jpg', 'png'])) {
                     $postType = 'photo';
-                } else if(in_array($exts[0], ['mp4'])) {
+                } elseif (in_array($exts[0], ['mp4'])) {
                     $postType = 'video';
                 }
             }
@@ -136,19 +136,19 @@ class ImportPostController extends Controller
             $ip->service = 'instagram';
             $ip->post_type = $postType;
             $ip->media_count = $c->count();
-            $ip->media = $c->map(function($m) {
+            $ip->media = $c->map(function ($m) {
                 return [
                     'uri' => $m['uri'],
                     'title' => $this->formatHashtags($m['title']),
-                    'creation_timestamp' => $m['creation_timestamp']
+                    'creation_timestamp' => $m['creation_timestamp'],
                 ];
             })->toArray();
             $ip->caption = $c->count() > 1 ? $this->formatHashtags($file['title']) : $this->formatHashtags($ip->media[0]['title']);
             $ip->filename = last(explode('/', $ip->media[0]['uri']));
-            $ip->metadata = $c->map(function($m) {
+            $ip->metadata = $c->map(function ($m) {
                 return [
                     'uri' => $m['uri'],
-                    'media_metadata' => isset($m['media_metadata']) ? $m['media_metadata'] : null
+                    'media_metadata' => isset($m['media_metadata']) ? $m['media_metadata'] : null,
                 ];
             })->toArray();
             $ip->creation_date = $c->count() > 1 ? now()->parse($file['creation_timestamp']) : now()->parse($media[0]['creation_timestamp']);
@@ -160,8 +160,9 @@ class ImportPostController extends Controller
             ImportService::getImportedFiles($pid, true);
             ImportService::getPostCount($pid, true);
         }
+
         return [
-            'msg' => 'Success'
+            'msg' => 'Success',
         ];
     }
 
@@ -179,19 +180,19 @@ class ImportPostController extends Controller
                 'required',
                 'file',
                 $mimes,
-                'max:' . config('pixelfed.max_photo_size')
-            ]
+                'max:'.config('pixelfed.max_photo_size'),
+            ],
         ]);
 
-        foreach($request->file('file') as $file) {
+        foreach ($request->file('file') as $file) {
             $fileName = $file->getClientOriginalName();
-            $file->storeAs('imports/' . $request->user()->id . '/', $fileName);
+            $file->storeAs('imports/'.$request->user()->id.'/', $fileName);
         }
 
         ImportService::getImportedFiles($request->user()->profile_id, true);
 
         return [
-            'msg' => 'Success'
+            'msg' => 'Success',
         ];
     }
 
@@ -199,12 +200,12 @@ class ImportPostController extends Controller
     {
         $user = $request->user();
 
-        if($abortOnFail) {
+        if ($abortOnFail) {
             abort_unless(config('import.instagram.enabled'), 404);
         }
 
-        if($user->is_admin) {
-            if(!$abortOnFail) {
+        if ($user->is_admin) {
+            if (! $abortOnFail) {
                 return true;
             } else {
                 return;
@@ -213,96 +214,96 @@ class ImportPostController extends Controller
 
         $admin = User::whereIsAdmin(true)->first();
 
-        if(config('import.instagram.permissions.admins_only')) {
-            if($abortOnFail) {
+        if (config('import.instagram.permissions.admins_only')) {
+            if ($abortOnFail) {
                 abort_unless($user->is_admin, 404, 'Only admins can use this feature.');
             } else {
-                if(!$user->is_admin) {
+                if (! $user->is_admin) {
                     return false;
                 }
             }
         }
 
-        if(config('import.instagram.permissions.admin_follows_only')) {
+        if (config('import.instagram.permissions.admin_follows_only')) {
             $exists = Follower::whereProfileId($admin->profile_id)
-                    ->whereFollowingId($user->profile_id)
-                    ->exists();
-            if($abortOnFail) {
+                ->whereFollowingId($user->profile_id)
+                ->exists();
+            if ($abortOnFail) {
                 abort_unless(
                     $exists,
                     404,
                     'Only admins, and accounts they follow can use this feature'
                 );
             } else {
-                if(!$exists) {
+                if (! $exists) {
                     return false;
                 }
             }
         }
 
-        if(config('import.instagram.permissions.min_account_age')) {
+        if (config('import.instagram.permissions.min_account_age')) {
             $res = $user->created_at->lt(
                 now()->subDays(config('import.instagram.permissions.min_account_age'))
             );
-            if($abortOnFail) {
+            if ($abortOnFail) {
                 abort_unless(
                     $res,
                     404,
                     'Your account is too new to use this feature'
                 );
             } else {
-                if(!$res) {
+                if (! $res) {
                     return false;
                 }
             }
         }
 
-        if(config('import.instagram.permissions.min_follower_count')) {
+        if (config('import.instagram.permissions.min_follower_count')) {
             $res = Follower::whereFollowingId($user->profile_id)->count() >= config('import.instagram.permissions.min_follower_count');
-            if($abortOnFail) {
+            if ($abortOnFail) {
                 abort_unless(
                     $res,
                     404,
                     'You don\'t have enough followers to use this feature'
                 );
             } else {
-                if(!$res) {
+                if (! $res) {
                     return false;
                 }
             }
         }
 
-        if(intval(config('import.instagram.limits.max_posts')) > 0) {
+        if (intval(config('import.instagram.limits.max_posts')) > 0) {
             $res = ImportService::getPostCount($user->profile_id) >= intval(config('import.instagram.limits.max_posts'));
-            if($abortOnFail) {
+            if ($abortOnFail) {
                 abort_if(
                     $res,
                     404,
                     'You have reached the limit of post imports and cannot import any more posts'
                 );
             } else {
-                if($res) {
+                if ($res) {
                     return false;
                 }
             }
         }
 
-        if(intval(config('import.instagram.limits.max_attempts')) > 0) {
+        if (intval(config('import.instagram.limits.max_attempts')) > 0) {
             $res = ImportService::getAttempts($user->profile_id) >= intval(config('import.instagram.limits.max_attempts'));
-            if($abortOnFail) {
+            if ($abortOnFail) {
                 abort_if(
                     $res,
                     404,
                     'You have reached the limit of post import attempts and cannot import any more posts'
                 );
             } else {
-                if($res) {
+                if ($res) {
                     return false;
                 }
             }
         }
 
-        if(!$abortOnFail) {
+        if (! $abortOnFail) {
             return true;
         }
     }

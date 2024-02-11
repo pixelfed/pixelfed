@@ -59,11 +59,11 @@ return [
              */
 
             'mysql' => [
-                  'dump' => [
-                       'useSingleTransaction' => true,
-                       'useQuick' => true
-                   ],
-             ],
+                'dump' => [
+                    'useSingleTransaction' => true,
+                    'useQuick' => true,
+                ],
+            ],
 
             'databases' => [
                 'mysql',

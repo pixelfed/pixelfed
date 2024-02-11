@@ -2,12 +2,12 @@
 
 namespace App\Console\Commands;
 
-use Illuminate\Console\Command;
-use Storage;
+use App\Instance;
 use App\Profile;
 use App\User;
-use App\Instance;
 use App\Util\ActivityPub\Helpers;
+use Illuminate\Console\Command;
+use Storage;
 use Symfony\Component\HttpKernel\Exception\HttpException;
 
 class SendUpdateActor extends Command
@@ -35,33 +35,35 @@ class SendUpdateActor extends Command
     {
         $totalUserCount = Profile::whereNotNull('user_id')->count();
         $totalInstanceCount = Instance::count();
-        $this->info('Found ' . $totalUserCount . ' local accounts and ' . $totalInstanceCount . ' remote instances');
+        $this->info('Found '.$totalUserCount.' local accounts and '.$totalInstanceCount.' remote instances');
 
         $task = $this->choice(
             'What do you want to do?',
             [
                 'View top instances',
-                'Send updates to an instance'
+                'Send updates to an instance',
             ],
             0
         );
 
-        if($task === 'View top instances') {
+        if ($task === 'View top instances') {
             $this->table(
                 ['domain', 'user_count', 'last_synced'],
                 Instance::orderByDesc('user_count')->take(20)->get(['domain', 'user_count', 'actors_last_synced_at'])->toArray()
             );
+
             return Command::SUCCESS;
         } else {
             $domain = $this->anticipate('Enter the instance domain', function ($input) {
-                return Instance::where('domain', 'like', '%' . $input . '%')->pluck('domain')->toArray();
+                return Instance::where('domain', 'like', '%'.$input.'%')->pluck('domain')->toArray();
             });
-            if(!$this->confirm('Are you sure you want to send actor updates to ' . $domain . '?')) {
+            if (! $this->confirm('Are you sure you want to send actor updates to '.$domain.'?')) {
                 return;
             }
-            if($cur = Instance::whereDomain($domain)->whereNotNull('actors_last_synced_at')->first()) {
-                if(!$this->option('force')) {
-                    $this->error('ERROR: Cannot re-sync this instance, it was already synced on ' . $cur->actors_last_synced_at);
+            if ($cur = Instance::whereDomain($domain)->whereNotNull('actors_last_synced_at')->first()) {
+                if (! $this->option('force')) {
+                    $this->error('ERROR: Cannot re-sync this instance, it was already synced on '.$cur->actors_last_synced_at);
+
                     return;
                 }
             }
@@ -69,25 +71,27 @@ class SendUpdateActor extends Command
             $this->line(' ');
             $this->error('Keep this window open during this process or it will not complete!');
             $sharedInbox = Profile::whereDomain($domain)->whereNotNull('sharedInbox')->first();
-            if(!$sharedInbox) {
-                $this->error('ERROR: Cannot find the sharedInbox of ' . $domain);
+            if (! $sharedInbox) {
+                $this->error('ERROR: Cannot find the sharedInbox of '.$domain);
+
                 return;
             }
             $url = $sharedInbox->sharedInbox;
             $this->line(' ');
-            $this->info('Found sharedInbox: ' . $url);
+            $this->info('Found sharedInbox: '.$url);
             $bar = $this->output->createProgressBar($totalUserCount);
             $bar->start();
 
             $startCache = $this->getStorageCache($domain);
-            User::whereNull('status')->when($startCache, function($query, $startCache) use($bar) {
+            User::whereNull('status')->when($startCache, function ($query, $startCache) use ($bar) {
                 $bar->advance($startCache);
+
                 return $query->where('id', '>', $startCache);
-            })->chunk(50, function($users) use($bar, $url, $domain) {
-                foreach($users as $user) {
+            })->chunk(50, function ($users) use ($bar, $url, $domain) {
+                foreach ($users as $user) {
                     $this->updateStorageCache($domain, $user->id);
                     $profile = Profile::find($user->profile_id);
-                    if(!$profile) {
+                    if (! $profile) {
                         continue;
                     }
                     $body = $this->updateObject($profile);
@@ -105,6 +109,7 @@ class SendUpdateActor extends Command
             $instance->actors_last_synced_at = now();
             $instance->save();
             $this->info('Finished!');
+
             return Command::SUCCESS;
         }
 
@@ -121,61 +126,63 @@ class SendUpdateActor extends Command
                     'manuallyApprovesFollowers' => 'as:manuallyApprovesFollowers',
                 ],
             ],
-            'id' => $profile->permalink('#updates/' . time()),
+            'id' => $profile->permalink('#updates/'.time()),
             'actor' => $profile->permalink(),
             'type' => 'Update',
-            'object' => $this->actorObject($profile)
+            'object' => $this->actorObject($profile),
         ];
     }
 
     protected function touchStorageCache($domain)
     {
-        $path = 'actor-update-cache/' . $domain;
-        if(!Storage::exists($path)) {
-            Storage::put($path, "");
+        $path = 'actor-update-cache/'.$domain;
+        if (! Storage::exists($path)) {
+            Storage::put($path, '');
         }
     }
 
     protected function getStorageCache($domain)
     {
-        $path = 'actor-update-cache/' . $domain;
+        $path = 'actor-update-cache/'.$domain;
+
         return Storage::get($path);
     }
 
     protected function updateStorageCache($domain, $value)
     {
-        $path = 'actor-update-cache/' . $domain;
+        $path = 'actor-update-cache/'.$domain;
         Storage::put($path, $value);
     }
 
     protected function actorObject($profile)
     {
         $permalink = $profile->permalink();
+
         return [
-            'id'                        => $permalink,
-            'type'                      => 'Person',
-            'following'                 => $permalink . '/following',
-            'followers'                 => $permalink . '/followers',
-            'inbox'                     => $permalink . '/inbox',
-            'outbox'                    => $permalink . '/outbox',
-            'preferredUsername'         => $profile->username,
-            'name'                      => $profile->name,
-            'summary'                   => $profile->bio,
-            'url'                       => $profile->url(),
+            'id' => $permalink,
+            'type' => 'Person',
+            'following' => $permalink.'/following',
+            'followers' => $permalink.'/followers',
+            'inbox' => $permalink.'/inbox',
+            'outbox' => $permalink.'/outbox',
+            'preferredUsername' => $profile->username,
+            'name' => $profile->name,
+            'summary' => $profile->bio,
+            'url' => $profile->url(),
             'manuallyApprovesFollowers' => (bool) $profile->is_private,
             'publicKey' => [
-                'id'           => $permalink . '#main-key',
-                'owner'        => $permalink,
+                'id' => $permalink.'#main-key',
+                'owner' => $permalink,
                 'publicKeyPem' => $profile->public_key,
             ],
             'icon' => [
-                'type'      => 'Image',
+                'type' => 'Image',
                 'mediaType' => 'image/jpeg',
-                'url'       => $profile->avatarUrl(),
+                'url' => $profile->avatarUrl(),
             ],
             'endpoints' => [
-                'sharedInbox' => config('app.url') . '/f/inbox'
-            ]
+                'sharedInbox' => config('app.url').'/f/inbox',
+            ],
         ];
     }
 }

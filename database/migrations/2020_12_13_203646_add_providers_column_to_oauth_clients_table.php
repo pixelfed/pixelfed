@@ -14,7 +14,7 @@ class AddProvidersColumnToOauthClientsTable extends Migration
     public function up()
     {
         Schema::table('oauth_clients', function (Blueprint $table) {
-            if(Schema::hasTable('oauth_clients') && Schema::hasColumn('oauth_clients', 'provider') == false) {
+            if (Schema::hasTable('oauth_clients') && Schema::hasColumn('oauth_clients', 'provider') == false) {
                 $table->string('provider')->after('secret')->nullable();
             }
         });
@@ -27,10 +27,10 @@ class AddProvidersColumnToOauthClientsTable extends Migration
      */
     public function down()
     {
-    	if(Schema::hasTable('oauth_clients')) {
-	        Schema::table('oauth_clients', function (Blueprint $table) {
-	            $table->dropColumn('provider');
-	        });
-    	}
+        if (Schema::hasTable('oauth_clients')) {
+            Schema::table('oauth_clients', function (Blueprint $table) {
+                $table->dropColumn('provider');
+            });
+        }
     }
 }

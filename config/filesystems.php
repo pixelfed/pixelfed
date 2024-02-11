@@ -45,7 +45,7 @@ return [
 
         'local' => [
             'driver' => 'local',
-            'root'   => storage_path('app'),
+            'root' => storage_path('app'),
             'permissions' => [
                 'file' => [
                     'public' => 0644,
@@ -59,49 +59,49 @@ return [
         ],
 
         'public' => [
-            'driver'     => 'local',
-            'root'       => storage_path('app/public'),
-            'url'        => env('APP_URL').'/storage',
+            'driver' => 'local',
+            'root' => storage_path('app/public'),
+            'url' => env('APP_URL').'/storage',
             'visibility' => 'public',
             'throw' => true,
         ],
 
         's3' => [
-            'driver'   => 's3',
-            'key'      => env('AWS_ACCESS_KEY_ID'),
-            'secret'   => env('AWS_SECRET_ACCESS_KEY'),
-            'region'   => env('AWS_DEFAULT_REGION'),
-            'bucket'   => env('AWS_BUCKET'),
+            'driver' => 's3',
+            'key' => env('AWS_ACCESS_KEY_ID'),
+            'secret' => env('AWS_SECRET_ACCESS_KEY'),
+            'region' => env('AWS_DEFAULT_REGION'),
+            'bucket' => env('AWS_BUCKET'),
             'visibility' => 'public',
-            'url'      => env('AWS_URL'),
+            'url' => env('AWS_URL'),
             'endpoint' => env('AWS_ENDPOINT'),
             'use_path_style_endpoint' => env('AWS_USE_PATH_STYLE_ENDPOINT', false),
             'throw' => true,
         ],
 
         'alt-primary' => [
-            'enabled'  => env('ALT_PRI_ENABLED', false),
-            'driver'   => 's3',
-            'key'      => env('ALT_PRI_AWS_ACCESS_KEY_ID'),
-            'secret'   => env('ALT_PRI_AWS_SECRET_ACCESS_KEY'),
-            'region'   => env('ALT_PRI_AWS_DEFAULT_REGION'),
-            'bucket'   => env('ALT_PRI_AWS_BUCKET'),
+            'enabled' => env('ALT_PRI_ENABLED', false),
+            'driver' => 's3',
+            'key' => env('ALT_PRI_AWS_ACCESS_KEY_ID'),
+            'secret' => env('ALT_PRI_AWS_SECRET_ACCESS_KEY'),
+            'region' => env('ALT_PRI_AWS_DEFAULT_REGION'),
+            'bucket' => env('ALT_PRI_AWS_BUCKET'),
             'visibility' => 'public',
-            'url'      => env('ALT_PRI_AWS_URL'),
+            'url' => env('ALT_PRI_AWS_URL'),
             'endpoint' => env('ALT_PRI_AWS_ENDPOINT'),
             'use_path_style_endpoint' => env('ALT_PRI_AWS_USE_PATH_STYLE_ENDPOINT', false),
             'throw' => true,
         ],
 
         'alt-secondary' => [
-            'enabled'  => env('ALT_SEC_ENABLED', false),
-            'driver'   => 's3',
-            'key'      => env('ALT_SEC_AWS_ACCESS_KEY_ID'),
-            'secret'   => env('ALT_SEC_AWS_SECRET_ACCESS_KEY'),
-            'region'   => env('ALT_SEC_AWS_DEFAULT_REGION'),
-            'bucket'   => env('ALT_SEC_AWS_BUCKET'),
+            'enabled' => env('ALT_SEC_ENABLED', false),
+            'driver' => 's3',
+            'key' => env('ALT_SEC_AWS_ACCESS_KEY_ID'),
+            'secret' => env('ALT_SEC_AWS_SECRET_ACCESS_KEY'),
+            'region' => env('ALT_SEC_AWS_DEFAULT_REGION'),
+            'bucket' => env('ALT_SEC_AWS_BUCKET'),
             'visibility' => 'public',
-            'url'      => env('ALT_SEC_AWS_URL'),
+            'url' => env('ALT_SEC_AWS_URL'),
             'endpoint' => env('ALT_SEC_AWS_ENDPOINT'),
             'use_path_style_endpoint' => env('ALT_SEC_AWS_USE_PATH_STYLE_ENDPOINT', false),
             'throw' => true,
@@ -116,9 +116,9 @@ return [
             'bucket' => env('DO_SPACES_BUCKET'),
             'visibility' => 'public',
             'options' => [
-                'CacheControl' => 'max-age=31536000'
+                'CacheControl' => 'max-age=31536000',
             ],
-            'root' => env('DO_SPACES_ROOT',''),
+            'root' => env('DO_SPACES_ROOT', ''),
             'throw' => true,
             'url' => env('AWS_URL'),
         ],
@@ -128,7 +128,7 @@ return [
             'visibility' => 'private',
             'root' => env('PF_BACKUP_DRIVER', 'local') == 'local' ?
                 storage_path('app/backups/') :
-                env('PF_BACKUP_ROOT','/'),
+                env('PF_BACKUP_ROOT', '/'),
             'key' => env('PF_BACKUP_KEY'),
             'secret' => env('PF_BACKUP_SECRET'),
             'endpoint' => env('PF_BACKUP_ENDPOINT'),

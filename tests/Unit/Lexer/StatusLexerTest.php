@@ -10,7 +10,9 @@ use Tests\TestCase;
 class StatusLexerTest extends TestCase
 {
     public $status;
+
     public $entities;
+
     public $autolink;
 
     public function setUp(): void
@@ -49,8 +51,8 @@ class StatusLexerTest extends TestCase
                         0,
                         9,
                     ],
-                ]
-            ]
+                ],
+            ],
         ];
 
         $this->assertEquals($this->entities, $expected);
@@ -125,7 +127,6 @@ class StatusLexerTest extends TestCase
         $count = count($entities['hashtags']);
         $this->assertEquals(Status::MAX_HASHTAGS, $count);
     }
-
 
     /** @test * */
     public function linkLimit()

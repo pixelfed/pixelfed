@@ -6,27 +6,27 @@ use Illuminate\Support\Facades\Schema;
 
 class AddMoreSettingsToUserSettingsTable extends Migration
 {
-	/**
-	 * Run the migrations.
-	 *
-	 * @return void
-	 */
-	public function up()
-	{
-		Schema::table('user_settings', function (Blueprint $table) {
-			$table->json('other')->nullable();
-		});
-	}
+    /**
+     * Run the migrations.
+     *
+     * @return void
+     */
+    public function up()
+    {
+        Schema::table('user_settings', function (Blueprint $table) {
+            $table->json('other')->nullable();
+        });
+    }
 
-	/**
-	 * Reverse the migrations.
-	 *
-	 * @return void
-	 */
-	public function down()
-	{
-		Schema::table('user_settings', function (Blueprint $table) {
-			$table->dropColumn('other');
-		});
-	}
+    /**
+     * Reverse the migrations.
+     *
+     * @return void
+     */
+    public function down()
+    {
+        Schema::table('user_settings', function (Blueprint $table) {
+            $table->dropColumn('other');
+        });
+    }
 }

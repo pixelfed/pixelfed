@@ -11,7 +11,7 @@ class StoreUserAppSettings extends FormRequest
      */
     public function authorize(): bool
     {
-        if(!$this->user() || $this->user()->status) {
+        if (! $this->user() || $this->user()->status) {
             return false;
         }
 
@@ -37,6 +37,7 @@ class StoreUserAppSettings extends FormRequest
             'common.appearance.theme' => 'required|string|in:light,dark,system',
         ];
     }
+
     /**
      * Prepare inputs for validation.
      *
@@ -51,7 +52,7 @@ class StoreUserAppSettings extends FormRequest
                     'timelines' => [
                         'show_public' => $this->toBoolean($this->input('common.timelines.show_public')),
                         'show_network' => $this->toBoolean($this->input('common.timelines.show_network')),
-                        'hide_likes_shares' => $this->toBoolean($this->input('common.timelines.hide_likes_shares'))
+                        'hide_likes_shares' => $this->toBoolean($this->input('common.timelines.hide_likes_shares')),
                     ],
 
                     'media' => [
@@ -63,17 +64,16 @@ class StoreUserAppSettings extends FormRequest
                     'appearance' => [
                         'links_use_in_app_browser' => $this->toBoolean($this->input('common.appearance.links_use_in_app_browser')),
                         'theme' => $this->input('common.appearance.theme'),
-                    ]
+                    ],
                 ]
-            )
+            ),
         ]);
     }
 
     /**
      * Convert to boolean
      *
-     * @param $booleable
-     * @return boolean
+     * @return bool
      */
     private function toBoolean($booleable)
     {

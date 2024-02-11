@@ -26,7 +26,7 @@ return new class extends Migration
 
         Schema::table('user_roles', function (Blueprint $table) {
             $schemaManager = Schema::getConnection()->getDoctrineSchemaManager();
-            $indexesFound  = $schemaManager->listTableIndexes('user_roles');
+            $indexesFound = $schemaManager->listTableIndexes('user_roles');
             if (array_key_exists('user_roles_profile_id_unique', $indexesFound)) {
                 $table->dropUnique('user_roles_profile_id_unique');
             }
@@ -43,7 +43,7 @@ return new class extends Migration
 
         Schema::table('user_roles', function (Blueprint $table) {
             $schemaManager = Schema::getConnection()->getDoctrineSchemaManager();
-            $indexesFound  = $schemaManager->listTableIndexes('user_roles');
+            $indexesFound = $schemaManager->listTableIndexes('user_roles');
             if (array_key_exists('user_roles_profile_id_unique', $indexesFound)) {
                 $table->dropUnique('user_roles_profile_id_unique');
             }

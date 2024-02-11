@@ -20,11 +20,10 @@ class StringUtils
     /**
      * alias of mb_substr.
      *
-     * @param string $str
-     * @param int    $start
-     * @param int    $length
-     * @param string $encoding
-     *
+     * @param  string  $str
+     * @param  int  $start
+     * @param  int  $length
+     * @param  string  $encoding
      * @return string
      */
     public static function substr($str, $start, $length = null, $encoding = 'UTF-8')
@@ -40,9 +39,8 @@ class StringUtils
     /**
      * alias of mb_strlen.
      *
-     * @param string $str
-     * @param string $encoding
-     *
+     * @param  string  $str
+     * @param  string  $encoding
      * @return int
      */
     public static function strlen($str, $encoding = 'UTF-8')
@@ -53,11 +51,10 @@ class StringUtils
     /**
      * alias of mb_strpos.
      *
-     * @param string $haystack
-     * @param string $needle
-     * @param int    $offset
-     * @param string $encoding
-     *
+     * @param  string  $haystack
+     * @param  string  $needle
+     * @param  int  $offset
+     * @param  string  $encoding
      * @return int
      */
     public static function strpos($haystack, $needle, $offset = 0, $encoding = 'UTF-8')
@@ -68,12 +65,11 @@ class StringUtils
     /**
      * A multibyte-aware substring replacement function.
      *
-     * @param string $string      The string to modify.
-     * @param string $replacement The replacement string.
-     * @param int    $start       The start of the replacement.
-     * @param int    $length      The number of characters to replace.
-     * @param string $encoding    The encoding of the string.
-     *
+     * @param  string  $string  The string to modify.
+     * @param  string  $replacement  The replacement string.
+     * @param  int  $start  The start of the replacement.
+     * @param  int  $length  The number of characters to replace.
+     * @param  string  $encoding  The encoding of the string.
      * @return string The modified string.
      *
      * @see http://www.php.net/manual/en/function.substr-replace.php#90146

@@ -8,13 +8,21 @@ use Tests\TestCase;
 class AnnounceTest extends TestCase
 {
     protected array $validAnnounce;
+
     protected array $invalidAnnounce;
+
     protected array $invalidDate;
+
     protected array $contextMissing;
+
     protected array $audienceMissing;
+
     protected array $audienceMissing2;
+
     protected array $invalidActor;
+
     protected array $invalidActor2;
+
     protected array $mastodonAnnounce;
 
     public function setUp(): void
@@ -28,11 +36,11 @@ class AnnounceTest extends TestCase
             'actor' => 'https://example.org/users/alice',
             'published' => '2018-12-31T23:59:59Z',
             'to' => [
-                'https://www.w3.org/ns/activitystreams#Public'
+                'https://www.w3.org/ns/activitystreams#Public',
             ],
             'cc' => [
                 'https://example.org/users/bob',
-                'https://example.org/users/alice/followers'
+                'https://example.org/users/alice/followers',
             ],
             'object' => 'https://example.org/p/bob/100000000000000',
         ];
@@ -44,11 +52,11 @@ class AnnounceTest extends TestCase
             'actor' => 'https://example.org/users/alice',
             'published' => '2018-12-31T23:59:59Z',
             'to' => [
-                'https://www.w3.org/ns/activitystreams#Public'
+                'https://www.w3.org/ns/activitystreams#Public',
             ],
             'cc' => [
                 'https://example.org/users/bob',
-                'https://example.org/users/alice/followers'
+                'https://example.org/users/alice/followers',
             ],
             'object' => 'https://example.org/p/bob/100000000000000',
         ];
@@ -59,11 +67,11 @@ class AnnounceTest extends TestCase
             'actor' => 'https://example.org/users/alice',
             'published' => '2018-12-31T23:59:59Z',
             'to' => [
-                'https://www.w3.org/ns/activitystreams#Public'
+                'https://www.w3.org/ns/activitystreams#Public',
             ],
             'cc' => [
                 'https://example.org/users/bob',
-                'https://example.org/users/alice/followers'
+                'https://example.org/users/alice/followers',
             ],
             'object' => 'https://example.org/p/bob/100000000000000',
         ];
@@ -75,11 +83,11 @@ class AnnounceTest extends TestCase
             'actor' => '10000',
             'published' => '2018-12-31T23:59:59Z',
             'to' => [
-                'https://www.w3.org/ns/activitystreams#Public'
+                'https://www.w3.org/ns/activitystreams#Public',
             ],
             'cc' => [
                 'https://example.org/users/bob',
-                'https://example.org/users/alice/followers'
+                'https://example.org/users/alice/followers',
             ],
             'object' => 'https://example.org/p/bob/100000000000000',
         ];
@@ -90,11 +98,11 @@ class AnnounceTest extends TestCase
             'type' => 'Announce',
             'published' => '2018-12-31T23:59:59Z',
             'to' => [
-                'https://www.w3.org/ns/activitystreams#Public'
+                'https://www.w3.org/ns/activitystreams#Public',
             ],
             'cc' => [
                 'https://example.org/users/bob',
-                'https://example.org/users/alice/followers'
+                'https://example.org/users/alice/followers',
             ],
             'object' => 'https://example.org/p/bob/100000000000000',
         ];

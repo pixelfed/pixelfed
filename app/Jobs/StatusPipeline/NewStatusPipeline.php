@@ -3,20 +3,18 @@
 namespace App\Jobs\StatusPipeline;
 
 use App\Status;
-use Cache;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
-use Illuminate\Support\Facades\Redis;
 
 class NewStatusPipeline implements ShouldQueue
 {
     use Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
 
     protected $status;
-    
+
     /**
      * Delete the job if its models no longer exist.
      *
@@ -25,8 +23,9 @@ class NewStatusPipeline implements ShouldQueue
     public $deleteWhenMissingModels = true;
 
     public $timeout = 5;
+
     public $tries = 1;
-    
+
     /**
      * Create a new job instance.
      *

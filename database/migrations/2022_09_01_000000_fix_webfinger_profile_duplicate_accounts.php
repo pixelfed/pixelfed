@@ -1,10 +1,8 @@
 <?php
 
-use Illuminate\Database\Migrations\Migration;
-use Illuminate\Database\Schema\Blueprint;
-use Illuminate\Support\Facades\Schema;
-use App\Profile;
 use App\Jobs\DeletePipeline\DeleteRemoteProfilePipeline;
+use App\Profile;
+use Illuminate\Database\Migrations\Migration;
 
 class FixWebfingerProfileDuplicateAccounts extends Migration
 {
@@ -15,16 +13,16 @@ class FixWebfingerProfileDuplicateAccounts extends Migration
      */
     public function up()
     {
-        if(Profile::count() === 0) {
+        if (Profile::count() === 0) {
             return;
         }
 
         Profile::whereNotNull('domain')
             ->where('username', 'not like', '@%')
-            ->chunk(200, function($profiles) {
-                foreach($profiles as $profile) {
+            ->chunk(200, function ($profiles) {
+                foreach ($profiles as $profile) {
                     $exists = Profile::whereUsername("@{$profile->username}@{$profile->domain}")->first();
-                    if($exists) {
+                    if ($exists) {
                         $exists->username = null;
                         $exists->domain = null;
                         $exists->webfinger = null;
@@ -32,13 +30,13 @@ class FixWebfingerProfileDuplicateAccounts extends Migration
                         DeleteRemoteProfilePipeline::dispatch($exists);
 
                         $profile->username = "@{$profile->username}@{$profile->domain}";
-                        if(!$profile->webfinger) {
+                        if (! $profile->webfinger) {
                             $profile->webfinger = "@{$profile->username}@{$profile->domain}";
                         }
                         $profile->save();
                     } else {
                         $profile->username = "@{$profile->username}@{$profile->domain}";
-                        if(!$profile->webfinger) {
+                        if (! $profile->webfinger) {
                             $profile->webfinger = "@{$profile->username}@{$profile->domain}";
                         }
                         $profile->save();

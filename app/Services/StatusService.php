@@ -2,15 +2,11 @@
 
 namespace App\Services;
 
-use Illuminate\Support\Facades\Cache;
-use Illuminate\Support\Facades\Redis;
-use DB;
 use App\Status;
 use App\Transformer\Api\StatusStatelessTransformer;
-use App\Transformer\Api\StatusTransformer;
+use Illuminate\Support\Facades\Cache;
 use League\Fractal;
 use League\Fractal\Serializer\ArraySerializer;
-use League\Fractal\Pagination\IlluminatePaginatorAdapter;
 
 class StatusService
 {
@@ -19,18 +15,19 @@ class StatusService
     public static function key($id, $publicOnly = true)
     {
         $p = $publicOnly ? 'pub:' : 'all:';
-        return self::CACHE_KEY . $p . $id;
+
+        return self::CACHE_KEY.$p.$id;
     }
 
     public static function get($id, $publicOnly = true, $mastodonMode = false)
     {
-        $res = Cache::remember(self::key($id, $publicOnly), 21600, function() use($id, $publicOnly) {
-            if($publicOnly) {
+        $res = Cache::remember(self::key($id, $publicOnly), 21600, function () use ($id, $publicOnly) {
+            if ($publicOnly) {
                 $status = Status::whereScope('public')->find($id);
             } else {
                 $status = Status::whereIn('scope', ['public', 'private', 'unlisted', 'group'])->find($id);
             }
-            if(!$status) {
+            if (! $status) {
                 return null;
             }
             $fractal = new Fractal\Manager();
@@ -38,32 +35,34 @@ class StatusService
             $resource = new Fractal\Resource\Item($status, new StatusStatelessTransformer());
             $res = $fractal->createData($resource)->toArray();
             $res['_pid'] = isset($res['account']) && isset($res['account']['id']) ? $res['account']['id'] : null;
-            if(isset($res['_pid'])) {
+            if (isset($res['_pid'])) {
                 unset($res['account']);
             }
+
             return $res;
         });
-        if($res && isset($res['_pid'])) {
+        if ($res && isset($res['_pid'])) {
             $res['account'] = $mastodonMode === true ? AccountService::getMastodon($res['_pid'], true) : AccountService::get($res['_pid'], true);
             unset($res['_pid']);
         }
+
         return $res;
     }
 
     public static function getMastodon($id, $publicOnly = true)
     {
         $status = self::get($id, $publicOnly, true);
-        if(!$status) {
+        if (! $status) {
             return null;
         }
 
-        if(!isset($status['account'])) {
+        if (! isset($status['account'])) {
             return null;
         }
 
         $status['replies_count'] = $status['reply_count'];
 
-        if(config('exp.emc') == false) {
+        if (config('exp.emc') == false) {
             return $status;
         }
 
@@ -113,28 +112,29 @@ class StatusService
     {
         $status = self::get($id, false);
 
-        if(!$status) {
+        if (! $status) {
             return [
                 'liked' => false,
                 'shared' => false,
-                'bookmarked' => false
+                'bookmarked' => false,
             ];
         }
 
         return [
             'liked' => LikeService::liked($pid, $id),
             'shared' => self::isShared($id, $pid),
-            'bookmarked' => self::isBookmarked($id, $pid)
+            'bookmarked' => self::isBookmarked($id, $pid),
         ];
     }
 
     public static function getFull($id, $pid, $publicOnly = true)
     {
         $res = self::get($id, $publicOnly);
-        if(!$res || !isset($res['account']) || !isset($res['account']['id'])) {
+        if (! $res || ! isset($res['account']) || ! isset($res['account']['id'])) {
             return $res;
         }
         $res['relationship'] = RelationshipService::get($pid, $res['account']['id']);
+
         return $res;
     }
 
@@ -142,31 +142,33 @@ class StatusService
     {
         $status = Status::whereScope('direct')->find($id);
 
-        if(!$status) {
+        if (! $status) {
             return null;
         }
 
         $fractal = new Fractal\Manager();
         $fractal->setSerializer(new ArraySerializer());
         $resource = new Fractal\Resource\Item($status, new StatusStatelessTransformer());
+
         return $fractal->createData($resource)->toArray();
     }
 
     public static function del($id, $purge = false)
     {
-        if($purge) {
+        if ($purge) {
             $status = self::get($id);
-            if($status && isset($status['account']) && isset($status['account']['id'])) {
-                Cache::forget('profile:embed:' . $status['account']['id']);
+            if ($status && isset($status['account']) && isset($status['account']['id'])) {
+                Cache::forget('profile:embed:'.$status['account']['id']);
             }
-            Cache::forget('status:transformer:media:attachments:' . $id);
+            Cache::forget('status:transformer:media:attachments:'.$id);
             MediaService::del($id);
-            Cache::forget('pf:services:sh:id:' . $id);
+            Cache::forget('pf:services:sh:id:'.$id);
             PublicTimelineService::rem($id);
             NetworkTimelineService::rem($id);
         }
 
         Cache::forget(self::key($id, false));
+
         return Cache::forget(self::key($id));
     }
 

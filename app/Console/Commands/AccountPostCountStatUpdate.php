@@ -2,11 +2,11 @@
 
 namespace App\Console\Commands;
 
-use Illuminate\Console\Command;
-use App\Services\AccountService;
-use App\Services\Account\AccountStatService;
-use App\Status;
 use App\Profile;
+use App\Services\Account\AccountStatService;
+use App\Services\AccountService;
+use App\Status;
+use Illuminate\Console\Command;
 
 class AccountPostCountStatUpdate extends Command
 {
@@ -30,20 +30,22 @@ class AccountPostCountStatUpdate extends Command
     public function handle()
     {
         $ids = AccountStatService::getAllPostCountIncr();
-        if(!$ids || !count($ids)) {
+        if (! $ids || ! count($ids)) {
             return;
         }
-        foreach($ids as $id) {
+        foreach ($ids as $id) {
             $acct = AccountService::get($id, true);
-            if(!$acct) {
+            if (! $acct) {
                 AccountStatService::removeFromPostCount($id);
+
                 continue;
             }
             $statusCount = Status::whereProfileId($id)->count();
-            if($statusCount != $acct['statuses_count']) {
+            if ($statusCount != $acct['statuses_count']) {
                 $profile = Profile::find($id);
-                if(!$profile) {
+                if (! $profile) {
                     AccountStatService::removeFromPostCount($id);
+
                     continue;
                 }
                 $profile->status_count = $statusCount;
@@ -52,6 +54,6 @@ class AccountPostCountStatUpdate extends Command
             }
             AccountStatService::removeFromPostCount($id);
         }
-        return;
+
     }
 }

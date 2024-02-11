@@ -22,7 +22,7 @@ return [
      * Example: ['api/*']
      */
     'paths' => [
-        '.well-known/*'
+        '.well-known/*',
     ],
 
     /*

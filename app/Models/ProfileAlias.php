@@ -2,9 +2,9 @@
 
 namespace App\Models;
 
+use App\Profile;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
-use App\Profile;
 
 class ProfileAlias extends Model
 {

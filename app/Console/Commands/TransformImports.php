@@ -2,17 +2,17 @@
 
 namespace App\Console\Commands;
 
-use Illuminate\Console\Command;
-use App\Models\ImportPost;
-use App\Services\ImportService;
 use App\Media;
+use App\Models\ImportPost;
 use App\Profile;
-use App\Status;
-use Storage;
 use App\Services\AccountService;
+use App\Services\ImportService;
 use App\Services\MediaPathService;
-use Illuminate\Support\Str;
+use App\Status;
 use App\Util\Lexer\Autolink;
+use Illuminate\Console\Command;
+use Illuminate\Support\Str;
+use Storage;
 
 class TransformImports extends Command
 {
@@ -35,23 +35,24 @@ class TransformImports extends Command
      */
     public function handle()
     {
-        if(!config('import.instagram.enabled')) {
+        if (! config('import.instagram.enabled')) {
             return;
         }
 
         $ips = ImportPost::whereNull('status_id')->where('skip_missing_media', '!=', true)->take(500)->get();
 
-        if(!$ips->count()) {
+        if (! $ips->count()) {
             return;
         }
 
-        foreach($ips as $ip) {
+        foreach ($ips as $ip) {
             $id = $ip->user_id;
             $pid = $ip->profile_id;
             $profile = Profile::find($pid);
-            if(!$profile) {
+            if (! $profile) {
                 $ip->skip_missing_media = true;
                 $ip->save();
+
                 continue;
             }
 
@@ -63,39 +64,43 @@ class TransformImports extends Command
                 ->where('creation_day', $ip->creation_day)
                 ->exists();
 
-            if($exists == true) {
+            if ($exists == true) {
                 $ip->skip_missing_media = true;
                 $ip->save();
+
                 continue;
             }
 
             $idk = ImportService::getId($ip->user_id, $ip->creation_year, $ip->creation_month, $ip->creation_day);
-            if(!$idk) {
+            if (! $idk) {
                 $ip->skip_missing_media = true;
                 $ip->save();
+
                 continue;
             }
 
-            if(Storage::exists('imports/' . $id . '/' . $ip->filename) === false) {
+            if (Storage::exists('imports/'.$id.'/'.$ip->filename) === false) {
                 ImportService::clearAttempts($profile->id);
                 ImportService::getPostCount($profile->id, true);
                 $ip->skip_missing_media = true;
                 $ip->save();
+
                 continue;
             }
 
             $missingMedia = false;
-            foreach($ip->media as $ipm) {
+            foreach ($ip->media as $ipm) {
                 $fileName = last(explode('/', $ipm['uri']));
-                $og = 'imports/' . $id . '/' . $fileName;
-                if(!Storage::exists($og)) {
+                $og = 'imports/'.$id.'/'.$fileName;
+                if (! Storage::exists($og)) {
                     $missingMedia = true;
                 }
             }
 
-            if($missingMedia === true) {
+            if ($missingMedia === true) {
                 $ip->skip_missing_media = true;
                 $ip->save();
+
                 continue;
             }
 
@@ -112,20 +117,21 @@ class TransformImports extends Command
             $status->created_at = now()->parse($ip->creation_date);
             $status->save();
 
-            foreach($ip->media as $ipm) {
+            foreach ($ip->media as $ipm) {
                 $fileName = last(explode('/', $ipm['uri']));
                 $ext = last(explode('.', $fileName));
                 $basePath = MediaPathService::get($profile);
-                $og = 'imports/' . $id . '/' . $fileName;
-                if(!Storage::exists($og)) {
+                $og = 'imports/'.$id.'/'.$fileName;
+                if (! Storage::exists($og)) {
                     $ip->skip_missing_media = true;
                     $ip->save();
+
                     continue;
                 }
                 $size = Storage::size($og);
                 $mime = Storage::mimeType($og);
-                $newFile = Str::random(40) . '.' . $ext;
-                $np = $basePath . '/' . $newFile;
+                $newFile = Str::random(40).'.'.$ext;
+                $np = $basePath.'/'.$newFile;
                 Storage::move($og, $np);
                 $media = new Media;
                 $media->profile_id = $pid;

@@ -2,30 +2,31 @@
 
 namespace App\Jobs\HomeFeedPipeline;
 
-use Illuminate\Bus\Queueable;
-use Illuminate\Contracts\Queue\ShouldBeUnique;
-use Illuminate\Contracts\Queue\ShouldQueue;
-use Illuminate\Foundation\Bus\Dispatchable;
-use Illuminate\Queue\InteractsWithQueue;
-use Illuminate\Queue\SerializesModels;
-use App\Hashtag;
-use App\StatusHashtag;
 use App\Services\HashtagFollowService;
 use App\Services\HomeTimelineService;
 use App\Services\StatusService;
-use Illuminate\Queue\Middleware\WithoutOverlapping;
+use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldBeUniqueUntilProcessing;
+use Illuminate\Contracts\Queue\ShouldQueue;
+use Illuminate\Foundation\Bus\Dispatchable;
+use Illuminate\Queue\InteractsWithQueue;
+use Illuminate\Queue\Middleware\WithoutOverlapping;
+use Illuminate\Queue\SerializesModels;
 
-class HashtagRemoveFanoutPipeline implements ShouldQueue, ShouldBeUniqueUntilProcessing
+class HashtagRemoveFanoutPipeline implements ShouldBeUniqueUntilProcessing, ShouldQueue
 {
     use Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
 
     protected $sid;
+
     protected $hid;
 
     public $timeout = 900;
+
     public $tries = 3;
+
     public $maxExceptions = 1;
+
     public $failOnTimeout = true;
 
     /**
@@ -40,7 +41,7 @@ class HashtagRemoveFanoutPipeline implements ShouldQueue, ShouldBeUniqueUntilPro
      */
     public function uniqueId(): string
     {
-        return 'hfp:hashtag:fanout:remove:' . $this->hid . ':' . $this->sid;
+        return 'hfp:hashtag:fanout:remove:'.$this->hid.':'.$this->sid;
     }
 
     /**
@@ -71,21 +72,21 @@ class HashtagRemoveFanoutPipeline implements ShouldQueue, ShouldBeUniqueUntilPro
         $hid = $this->hid;
         $status = StatusService::get($sid, false);
 
-        if(!$status || !isset($status['account']) || !isset($status['account']['id'])) {
+        if (! $status || ! isset($status['account']) || ! isset($status['account']['id'])) {
             return;
         }
 
-        if(!in_array($status['pf_type'], ['photo', 'photo:album', 'video', 'video:album', 'photo:video:album'])) {
+        if (! in_array($status['pf_type'], ['photo', 'photo:album', 'video', 'video:album', 'photo:video:album'])) {
             return;
         }
 
         $ids = HashtagFollowService::getPidByHid($hid);
 
-        if(!$ids || !count($ids)) {
+        if (! $ids || ! count($ids)) {
             return;
         }
 
-        foreach($ids as $id) {
+        foreach ($ids as $id) {
             HomeTimelineService::rem($id, $sid);
         }
     }

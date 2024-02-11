@@ -1,4 +1,5 @@
 <?php
+
 return [
     /*
     |--------------------------------------------------------------------------
@@ -10,6 +11,6 @@ return [
     | these language lines according to your application's requirements.
     |
     */
-    'failed'   => 'Aquestes dades d\'accés no coincideixen amb els nostres registres.',
+    'failed' => 'Aquestes dades d\'accés no coincideixen amb els nostres registres.',
     'throttle' => 'Massa intents d\'iniciar sessió. Si us plau, torneu-ho a provar d\'aquí a :seconds segons.',
 ];

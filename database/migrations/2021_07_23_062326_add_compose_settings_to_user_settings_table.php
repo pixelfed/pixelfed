@@ -18,10 +18,10 @@ class AddComposeSettingsToUserSettingsTable extends Migration
         });
 
         Schema::table('media', function (Blueprint $table) {
-        	$table->text('caption')->change();
-        	$table->index('profile_id');
-        	$table->index('mime');
-        	$table->index('license');
+            $table->text('caption')->change();
+            $table->index('profile_id');
+            $table->index('mime');
+            $table->index('license');
         });
     }
 
@@ -42,7 +42,7 @@ class AddComposeSettingsToUserSettingsTable extends Migration
             $table->string('caption')->change();
 
             $schemaManager = Schema::getConnection()->getDoctrineSchemaManager();
-            $indexesFound  = $schemaManager->listTableIndexes('media');
+            $indexesFound = $schemaManager->listTableIndexes('media');
             if (array_key_exists('media_profile_id_index', $indexesFound)) {
                 $table->dropIndex('media_profile_id_index');
             }

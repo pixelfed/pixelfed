@@ -14,9 +14,9 @@ return [
     */
 
     'password' => 'Parolanız en az altı karakter olmak zorundadır.',
-    'reset'    => 'Parolanız sıfırlandı!',
-    'sent'     => 'Kayıtlı eposta hesabınıza birkaç dakika içinde parola yenileme bağlantısı gelecektir. Eğer eposta ulaşmaz ise spam klasörünü kontrol ediniz.',
-    'token'    => 'Parola sıfırlama kodu geçersiz.',
-    'user'     => 'Kayıtlı eposta hesabınıza birkaç dakika içinde parola yenileme bağlantısı gelecektir. Eğer eposta ulaşmaz ise spam klasörünü kontrol ediniz.',
+    'reset' => 'Parolanız sıfırlandı!',
+    'sent' => 'Kayıtlı eposta hesabınıza birkaç dakika içinde parola yenileme bağlantısı gelecektir. Eğer eposta ulaşmaz ise spam klasörünü kontrol ediniz.',
+    'token' => 'Parola sıfırlama kodu geçersiz.',
+    'user' => 'Kayıtlı eposta hesabınıza birkaç dakika içinde parola yenileme bağlantısı gelecektir. Eğer eposta ulaşmaz ise spam klasörünü kontrol ediniz.',
 
 ];

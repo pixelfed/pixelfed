@@ -2,30 +2,30 @@
 
 namespace App\Http\Controllers;
 
-use Illuminate\Http\Request;
 use App\Media;
+use Illuminate\Http\Request;
 
 class MediaController extends Controller
 {
-	public function index(Request $request)
-	{
-		//return view('settings.drive.index');
-	}
+    public function index(Request $request)
+    {
+        //return view('settings.drive.index');
+    }
 
-	public function composeUpdate(Request $request, $id)
-	{
+    public function composeUpdate(Request $request, $id)
+    {
         abort(400, 'Endpoint deprecated');
-	}	
+    }
 
-	public function fallbackRedirect(Request $request, $pid, $mhash, $uhash, $f)
-	{
-		abort_if(!config_cache('pixelfed.cloud_storage'), 404);
-		$path = 'public/m/_v2/' . $pid . '/' . $mhash . '/' . $uhash . '/' . $f;
-		$media = Media::whereProfileId($pid)
-			->whereMediaPath($path)
-			->whereNotNull('cdn_url')
-			->firstOrFail();
+    public function fallbackRedirect(Request $request, $pid, $mhash, $uhash, $f)
+    {
+        abort_if(! config_cache('pixelfed.cloud_storage'), 404);
+        $path = 'public/m/_v2/'.$pid.'/'.$mhash.'/'.$uhash.'/'.$f;
+        $media = Media::whereProfileId($pid)
+            ->whereMediaPath($path)
+            ->whereNotNull('cdn_url')
+            ->firstOrFail();
 
-		return redirect()->away($media->cdn_url);
-	}
+        return redirect()->away($media->cdn_url);
+    }
 }

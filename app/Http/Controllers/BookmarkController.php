@@ -3,12 +3,11 @@
 namespace App\Http\Controllers;
 
 use App\Bookmark;
-use App\Status;
-use Auth;
-use Illuminate\Http\Request;
 use App\Services\BookmarkService;
 use App\Services\FollowerService;
 use App\Services\UserRoleService;
+use App\Status;
+use Illuminate\Http\Request;
 
 class BookmarkController extends Controller
 {
@@ -26,14 +25,14 @@ class BookmarkController extends Controller
         $user = $request->user();
         $status = Status::findOrFail($request->input('item'));
 
-        abort_if($user->has_roles && !UserRoleService::can('can-bookmark', $user->id), 403, 'Invalid permissions for this action');
+        abort_if($user->has_roles && ! UserRoleService::can('can-bookmark', $user->id), 403, 'Invalid permissions for this action');
         abort_if($status->in_reply_to_id || $status->reblog_of_id, 404);
-        abort_if(!in_array($status->scope, ['public', 'unlisted', 'private']), 404);
-        abort_if(!in_array($status->type, ['photo','photo:album', 'video', 'video:album', 'photo:video:album']), 404);
+        abort_if(! in_array($status->scope, ['public', 'unlisted', 'private']), 404);
+        abort_if(! in_array($status->type, ['photo', 'photo:album', 'video', 'video:album', 'photo:video:album']), 404);
 
-        if($status->scope == 'private') {
-            if($user->profile_id !== $status->profile_id && !FollowerService::follows($user->profile_id, $status->profile_id)) {
-                if($exists = Bookmark::whereStatusId($status->id)->whereProfileId($user->profile_id)->first()) {
+        if ($status->scope == 'private') {
+            if ($user->profile_id !== $status->profile_id && ! FollowerService::follows($user->profile_id, $status->profile_id)) {
+                if ($exists = Bookmark::whereStatusId($status->id)->whereProfileId($user->profile_id)->first()) {
                     BookmarkService::del($user->profile_id, $status->id);
                     $exists->delete();
 
@@ -51,7 +50,7 @@ class BookmarkController extends Controller
             ['status_id' => $status->id], ['profile_id' => $user->profile_id]
         );
 
-        if (!$bookmark->wasRecentlyCreated) {
+        if (! $bookmark->wasRecentlyCreated) {
             BookmarkService::del($user->profile_id, $status->id);
             $bookmark->delete();
         } else {

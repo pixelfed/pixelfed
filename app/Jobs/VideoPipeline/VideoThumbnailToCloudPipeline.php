@@ -2,34 +2,36 @@
 
 namespace App\Jobs\VideoPipeline;
 
+use App\Media;
+use App\Services\MediaService;
+use App\Services\ResilientMediaStorageService;
+use App\Services\StatusService;
+use App\Util\Media\Blurhash;
+use Cache;
+use FFMpeg;
 use Illuminate\Bus\Queueable;
+use Illuminate\Contracts\Queue\ShouldBeUniqueUntilProcessing;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
 use Illuminate\Queue\InteractsWithQueue;
-use Illuminate\Queue\SerializesModels;
 use Illuminate\Queue\Middleware\WithoutOverlapping;
-use Illuminate\Contracts\Queue\ShouldBeUniqueUntilProcessing;
-use Illuminate\Http\File;
-use Cache;
-use FFMpeg;
+use Illuminate\Queue\SerializesModels;
 use Storage;
-use App\Media;
-use App\Jobs\MediaPipeline\MediaStoragePipeline;
-use App\Util\Media\Blurhash;
-use App\Services\MediaService;
-use App\Services\StatusService;
-use App\Services\ResilientMediaStorageService;
 
-class VideoThumbnailToCloudPipeline implements ShouldQueue, ShouldBeUniqueUntilProcessing
+class VideoThumbnailToCloudPipeline implements ShouldBeUniqueUntilProcessing, ShouldQueue
 {
     use Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
 
     protected $media;
 
     public $timeout = 900;
+
     public $tries = 3;
+
     public $maxExceptions = 1;
+
     public $failOnTimeout = true;
+
     public $deleteWhenMissingModels = true;
 
     /**
@@ -44,7 +46,7 @@ class VideoThumbnailToCloudPipeline implements ShouldQueue, ShouldBeUniqueUntilP
      */
     public function uniqueId(): string
     {
-        return 'media:video-thumb-to-cloud:id-' . $this->media->id;
+        return 'media:video-thumb-to-cloud:id-'.$this->media->id;
     }
 
     /**
@@ -70,21 +72,21 @@ class VideoThumbnailToCloudPipeline implements ShouldQueue, ShouldBeUniqueUntilP
      */
     public function handle(): void
     {
-        if((bool) config_cache('pixelfed.cloud_storage') === false) {
+        if ((bool) config_cache('pixelfed.cloud_storage') === false) {
             return;
         }
 
         $media = $this->media;
 
-        if($media->mime != 'video/mp4') {
+        if ($media->mime != 'video/mp4') {
             return;
         }
 
-        if($media->profile_id === null || $media->status_id === null) {
+        if ($media->profile_id === null || $media->status_id === null) {
             return;
         }
 
-        if($media->thumbnail_url) {
+        if ($media->thumbnail_url) {
             return;
         }
 
@@ -99,12 +101,12 @@ class VideoThumbnailToCloudPipeline implements ShouldQueue, ShouldBeUniqueUntilP
             $path[$i] = $t;
             $save = implode('/', $path);
             $video = FFMpeg::open($base)
-            ->getFrameFromSeconds(1)
-            ->export()
-            ->toDisk('local')
-            ->save($save);
+                ->getFrameFromSeconds(1)
+                ->export()
+                ->toDisk('local')
+                ->save($save);
 
-            if(!$save) {
+            if (! $save) {
                 return;
             }
 
@@ -114,33 +116,33 @@ class VideoThumbnailToCloudPipeline implements ShouldQueue, ShouldBeUniqueUntilP
             $pt = explode('/', $save);
             $thumbname = array_pop($pt);
             $storagePath = implode('/', $p);
-            $thumb = storage_path('app/' . $save);
+            $thumb = storage_path('app/'.$save);
             $thumbUrl = ResilientMediaStorageService::store($storagePath, $thumb, $thumbname);
             $media->thumbnail_url = $thumbUrl;
             $media->save();
 
             $blurhash = Blurhash::generate($media);
-            if($blurhash) {
+            if ($blurhash) {
                 $media->blurhash = $blurhash;
                 $media->save();
             }
 
-            if(str_starts_with($save, 'public/m/_v2/') && str_ends_with($save, '.jpeg')) {
+            if (str_starts_with($save, 'public/m/_v2/') && str_ends_with($save, '.jpeg')) {
                 Storage::delete($save);
             }
 
-            if(str_starts_with($media->media_path, 'public/m/_v2/') && str_ends_with($media->media_path, '.mp4')) {
+            if (str_starts_with($media->media_path, 'public/m/_v2/') && str_ends_with($media->media_path, '.mp4')) {
                 Storage::disk('local')->delete($media->media_path);
             }
         } catch (Exception $e) {
         }
 
-        if($media->status_id) {
-            Cache::forget('status:transformer:media:attachments:' . $media->status_id);
+        if ($media->status_id) {
+            Cache::forget('status:transformer:media:attachments:'.$media->status_id);
             MediaService::del($media->status_id);
-            Cache::forget('status:thumb:nsfw0' . $media->status_id);
-            Cache::forget('status:thumb:nsfw1' . $media->status_id);
-            Cache::forget('pf:services:sh:id:' . $media->status_id);
+            Cache::forget('status:thumb:nsfw0'.$media->status_id);
+            Cache::forget('status:thumb:nsfw1'.$media->status_id);
+            Cache::forget('pf:services:sh:id:'.$media->status_id);
             StatusService::del($media->status_id);
         }
     }

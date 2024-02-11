@@ -1,8 +1,8 @@
 <?php
 
-use Illuminate\Support\Facades\Schema;
-use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Database\Migrations\Migration;
+use Illuminate\Database\Schema\Blueprint;
+use Illuminate\Support\Facades\Schema;
 
 class AddLayoutToProfilesTable extends Migration
 {
@@ -32,7 +32,7 @@ class AddLayoutToProfilesTable extends Migration
     public function down()
     {
         Schema::table('profiles', function (Blueprint $table) {
-            $table->dropColumn(['profile_layout','post_layout']);
+            $table->dropColumn(['profile_layout', 'post_layout']);
         });
     }
 }

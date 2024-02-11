@@ -20,7 +20,7 @@ class AudienceScopeTest extends TestCase
             'published' => '',
             'to' => ['test'],
             'cc' => 'test',
-            'object' => 'test'
+            'object' => 'test',
         ];
 
         $this->mastodon = json_decode('{"@context":["https://www.w3.org/ns/activitystreams","https://w3id.org/security/v1",{"manuallyApprovesFollowers":"as:manuallyApprovesFollowers","sensitive":"as:sensitive","movedTo":{"@id":"as:movedTo","@type":"@id"},"Hashtag":"as:Hashtag","ostatus":"http://ostatus.org#","atomUri":"ostatus:atomUri","inReplyToAtomUri":"ostatus:inReplyToAtomUri","conversation":"ostatus:conversation","toot":"http://joinmastodon.org/ns#","Emoji":"toot:Emoji","focalPoint":{"@container":"@list","@id":"toot:focalPoint"},"featured":{"@id":"toot:featured","@type":"@id"},"schema":"http://schema.org#","PropertyValue":"schema:PropertyValue","value":"schema:value"}],"id":"https://mastodon.social/users/dansup/statuses/100784657480587830/activity","type":"Announce","actor":"https://mastodon.social/users/dansup","published":"2018-09-25T05:03:49Z","to":["https://www.w3.org/ns/activitystreams#Public"],"cc":["https://pleroma.site/users/pixeldev","https://mastodon.social/users/dansup/followers"],"object":"https://pleroma.site/objects/68b5c876-f52b-4819-8d81-de6839d73fbc","atomUri":"https://mastodon.social/users/dansup/statuses/100784657480587830/activity"}', true);
@@ -79,7 +79,7 @@ class AudienceScopeTest extends TestCase
         $actual = [
             'to' => [],
             'cc' => [],
-            'scope' => 'private'
+            'scope' => 'private',
         ];
         $this->assertEquals($scope, $actual);
     }

@@ -8,9 +8,13 @@ use Tests\TestCase;
 class NoteAttachmentTest extends TestCase
 {
     protected array $pixelfed;
+
     protected array $pleroma;
+
     protected array $mastodon;
+
     protected array $invalidType;
+
     protected array $invalidMime;
 
     public function setUp(): void
@@ -52,4 +56,3 @@ class NoteAttachmentTest extends TestCase
         $this->assertFalse($valid);
     }
 }
-

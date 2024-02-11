@@ -2,7 +2,6 @@
 
 namespace App\Services\Account;
 
-use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Redis;
 
 class AccountStatService

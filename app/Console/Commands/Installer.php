@@ -4,7 +4,7 @@ namespace App\Console\Commands;
 
 use Illuminate\Console\Command;
 use Illuminate\Support\Facades\Redis;
-use \PDO;
+use PDO;
 
 class Installer extends Command
 {
@@ -55,7 +55,7 @@ class Installer extends Command
         $this->info('    Welcome to the Pixelfed Installer!');
         $this->info(' ');
         $this->info(' ');
-        $this->info('Pixelfed version: ' . config('pixelfed.version'));
+        $this->info('Pixelfed version: '.config('pixelfed.version'));
         $this->line(' ');
         $this->installerSteps();
     }
@@ -102,7 +102,7 @@ class Installer extends Command
     {
         if (file_exists(base_path('.env')) &&
             filesize(base_path('.env')) !== 0 &&
-            !$this->option('dangerously-overwrite-env')
+            ! $this->option('dangerously-overwrite-env')
         ) {
             $this->line('');
             $this->error('Existing .env File Found - Installation Aborted');
@@ -116,7 +116,7 @@ class Installer extends Command
     {
         $this->line('');
         $this->info('Creating .env if required');
-        if (!file_exists(app()->environmentFilePath())) {
+        if (! file_exists(app()->environmentFilePath())) {
             exec('cp .env.example .env');
         }
     }
@@ -211,9 +211,9 @@ class Installer extends Command
         ];
 
         foreach ($paths as $path) {
-            if (is_writeable($path) == false) {
-                $this->error("- Invalid permission found! Aborting installation.");
-                $this->error("  Please make the following path writeable by the web server:");
+            if (is_writable($path) == false) {
+                $this->error('- Invalid permission found! Aborting installation.');
+                $this->error('  Please make the following path writeable by the web server:');
                 $this->error("  $path");
                 exit;
             } else {
@@ -310,7 +310,7 @@ class Installer extends Command
         }
 
         $this->updateEnvFile('APP_NAME', $name);
-        $this->updateEnvFile('APP_URL', 'https://' . $domain);
+        $this->updateEnvFile('APP_URL', 'https://'.$domain);
         $this->updateEnvFile('APP_DOMAIN', $domain);
         $this->updateEnvFile('ADMIN_DOMAIN', $domain);
         $this->updateEnvFile('SESSION_DOMAIN', $domain);
@@ -320,11 +320,11 @@ class Installer extends Command
     {
         $this->line('');
         $this->info('Laravel Settings (Defaults are recommended):');
-        $session = $this->choice('Select session driver', ["database", "file", "cookie", "redis", "memcached", "array"], 0);
-        $cache = $this->choice('Select cache driver', ["redis", "apc", "array", "database", "file", "memcached"], 0);
-        $queue = $this->choice('Select queue driver', ["redis", "database", "sync", "beanstalkd", "sqs", "null"], 0);
-        $broadcast = $this->choice('Select broadcast driver', ["log", "redis", "pusher", "null"], 0);
-        $log = $this->choice('Select Log Channel', ["stack", "single", "daily", "stderr", "syslog", "null"], 0);
+        $session = $this->choice('Select session driver', ['database', 'file', 'cookie', 'redis', 'memcached', 'array'], 0);
+        $cache = $this->choice('Select cache driver', ['redis', 'apc', 'array', 'database', 'file', 'memcached'], 0);
+        $queue = $this->choice('Select queue driver', ['redis', 'database', 'sync', 'beanstalkd', 'sqs', 'null'], 0);
+        $broadcast = $this->choice('Select broadcast driver', ['log', 'redis', 'pusher', 'null'], 0);
+        $log = $this->choice('Select Log Channel', ['stack', 'single', 'daily', 'stderr', 'syslog', 'null'], 0);
         $horizon = $this->ask('Set Horizon Prefix [ex: horizon-]', 'horizon-');
 
         $this->updateEnvFile('SESSION_DRIVER', $session);
@@ -442,14 +442,14 @@ class Installer extends Command
 
     protected function validateEnv()
     {
-        $this->checkEnvKeys('APP_KEY', "key:generate failed?");
-        $this->checkEnvKeys('APP_ENV', "APP_ENV value should be production");
-        $this->checkEnvKeys('APP_DEBUG', "APP_DEBUG value should be false");
+        $this->checkEnvKeys('APP_KEY', 'key:generate failed?');
+        $this->checkEnvKeys('APP_ENV', 'APP_ENV value should be production');
+        $this->checkEnvKeys('APP_DEBUG', 'APP_DEBUG value should be false');
     }
 
-#####
-    # Installer Functions
-    #####
+    //####
+    // Installer Functions
+    //####
 
     protected function checkEnvKeys($key, $error)
     {
@@ -471,7 +471,7 @@ class Installer extends Command
             $payload = str_replace("{$key}={$existing}", "{$key}=\"{$value}\"", $payload);
             $this->storeEnv($payload);
         } else {
-            $payload = $payload . "\n{$key}=\"{$value}\"\n";
+            $payload = $payload."\n{$key}=\"{$value}\"\n";
             $this->storeEnv($payload);
         }
     }
@@ -482,6 +482,7 @@ class Installer extends Command
         if ($matches && count($matches)) {
             return substr($matches[0], strlen($needle) + 1);
         }
+
         return false;
     }
 

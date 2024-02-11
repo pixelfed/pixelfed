@@ -2,11 +2,11 @@
 
 namespace App\Console\Commands;
 
-use Illuminate\Console\Command;
-use Cache;
-use Storage;
 use App\Avatar;
 use App\Jobs\AvatarPipeline\AvatarStorageCleanup;
+use Cache;
+use Illuminate\Console\Command;
+use Storage;
 
 class AvatarStorageDeepClean extends Command
 {
@@ -25,6 +25,7 @@ class AvatarStorageDeepClean extends Command
     protected $description = 'Cleanup avatar storage';
 
     protected $shouldKeepRunning = true;
+
     protected $counter = 0;
 
     /**
@@ -45,30 +46,30 @@ class AvatarStorageDeepClean extends Command
 
         $storage = [
             'cloud' => boolval(config_cache('pixelfed.cloud_storage')),
-            'local' => boolval(config_cache('federation.avatars.store_local'))
+            'local' => boolval(config_cache('federation.avatars.store_local')),
         ];
 
-        if(!$storage['cloud'] && !$storage['local']) {
+        if (! $storage['cloud'] && ! $storage['local']) {
             $this->error('Remote avatars are not cached locally, there is nothing to purge. Aborting...');
             exit;
         }
 
         $start = 0;
 
-        if(!$this->confirm('Are you sure you want to proceed?')) {
+        if (! $this->confirm('Are you sure you want to proceed?')) {
             $this->error('Aborting...');
             exit;
         }
 
-        if(!$this->activeCheck()) {
+        if (! $this->activeCheck()) {
             $this->info('Found existing deep cleaning job');
-            if(!$this->confirm('Do you want to continue where you left off?')) {
+            if (! $this->confirm('Do you want to continue where you left off?')) {
                 $this->error('Aborting...');
                 exit;
             } else {
                 $start = Cache::has('cmd:asdp') ? (int) Cache::get('cmd:asdp') : (int) Storage::get('avatar-deep-clean.json');
 
-                if($start && $start < 1 || $start > PHP_INT_MAX) {
+                if ($start && $start < 1 || $start > PHP_INT_MAX) {
                     $this->error('Error fetching cached value');
                     $this->error('Aborting...');
                     exit;
@@ -79,7 +80,7 @@ class AvatarStorageDeepClean extends Command
         $count = Avatar::whereNotNull('cdn_url')->where('is_remote', true)->where('id', '>', $start)->count();
         $bar = $this->output->createProgressBar($count);
 
-        foreach(Avatar::whereNotNull('cdn_url')->where('is_remote', true)->where('id', '>', $start)->lazyById(10, 'id') as $avatar) {
+        foreach (Avatar::whereNotNull('cdn_url')->where('is_remote', true)->where('id', '>', $start)->lazyById(10, 'id') as $avatar) {
             usleep(random_int(50, 1000));
             $this->counter++;
             $this->handleAvatar($avatar);
@@ -91,14 +92,14 @@ class AvatarStorageDeepClean extends Command
     protected function updateCache($id)
     {
         Cache::put('cmd:asdp', $id);
-        if($this->counter % 5 === 0) {
+        if ($this->counter % 5 === 0) {
             Storage::put('avatar-deep-clean.json', $id);
         }
     }
 
     protected function activeCheck()
     {
-        if(Storage::exists('avatar-deep-clean.json') || Cache::has('cmd:asdp')) {
+        if (Storage::exists('avatar-deep-clean.json') || Cache::has('cmd:asdp')) {
             return false;
         }
 

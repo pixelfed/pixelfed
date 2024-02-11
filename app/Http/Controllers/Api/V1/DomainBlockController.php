@@ -2,17 +2,16 @@
 
 namespace App\Http\Controllers\Api\V1;
 
-use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
+use App\Jobs\HomeFeedPipeline\FeedRemoveDomainPipeline;
+use App\Jobs\ProfilePipeline\ProfilePurgeFollowersByDomain;
+use App\Jobs\ProfilePipeline\ProfilePurgeNotificationsByDomain;
 use App\Models\UserDomainBlock;
-use App\Util\ActivityPub\Helpers;
 use App\Services\UserFilterService;
-use Illuminate\Bus\Batch;
+use App\Util\ActivityPub\Helpers;
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Bus;
 use Illuminate\Support\Facades\Cache;
-use App\Jobs\HomeFeedPipeline\FeedRemoveDomainPipeline;
-use App\Jobs\ProfilePipeline\ProfilePurgeNotificationsByDomain;
-use App\Jobs\ProfilePipeline\ProfilePurgeFollowersByDomain;
 
 class DomainBlockController extends Controller
 {
@@ -23,10 +22,10 @@ class DomainBlockController extends Controller
 
     public function index(Request $request)
     {
-        abort_if(!$request->user(), 403);
+        abort_if(! $request->user(), 403);
 
         $this->validate($request, [
-            'limit' => 'sometimes|integer|min:1|max:200'
+            'limit' => 'sometimes|integer|min:1|max:200',
         ]);
         $limit = $request->input('limit', 100);
         $id = $request->user()->profile_id;
@@ -34,36 +33,37 @@ class DomainBlockController extends Controller
         $links = null;
         $headers = [];
 
-        if($filters->nextCursor()) {
+        if ($filters->nextCursor()) {
             $links .= '<'.$filters->nextPageUrl().'&limit='.$limit.'>; rel="next"';
         }
 
-        if($filters->previousCursor()) {
-            if($links != null) {
+        if ($filters->previousCursor()) {
+            if ($links != null) {
                 $links .= ', ';
             }
             $links .= '<'.$filters->previousPageUrl().'&limit='.$limit.'>; rel="prev"';
         }
 
-        if($links) {
+        if ($links) {
             $headers = ['Link' => $links];
         }
+
         return $this->json($filters->pluck('domain'), 200, $headers);
     }
 
     public function store(Request $request)
     {
-        abort_if(!$request->user(), 403);
+        abort_if(! $request->user(), 403);
 
         $this->validate($request, [
-            'domain' => 'required|active_url|min:1|max:120'
+            'domain' => 'required|active_url|min:1|max:120',
         ]);
 
         $pid = $request->user()->profile_id;
 
         $domain = trim($request->input('domain'));
 
-        if(Helpers::validateUrl($domain) == false) {
+        if (Helpers::validateUrl($domain) == false) {
             return abort(500, 'Invalid domain or already blocked by server admins');
         }
 
@@ -73,25 +73,25 @@ class DomainBlockController extends Controller
 
         $existingCount = UserDomainBlock::whereProfileId($pid)->count();
         $maxLimit = config('instance.user_filters.max_domain_blocks');
-        $errorMsg =  __('profile.block.domain.max', ['max' => $maxLimit]);
+        $errorMsg = __('profile.block.domain.max', ['max' => $maxLimit]);
 
         abort_if($existingCount >= $maxLimit, 400, $errorMsg);
 
         $block = UserDomainBlock::updateOrCreate([
             'profile_id' => $pid,
-            'domain' => $domain
+            'domain' => $domain,
         ]);
 
-        if($block->wasRecentlyCreated) {
+        if ($block->wasRecentlyCreated) {
             Bus::batch([
                 [
                     new FeedRemoveDomainPipeline($pid, $domain),
                     new ProfilePurgeNotificationsByDomain($pid, $domain),
-                    new ProfilePurgeFollowersByDomain($pid, $domain)
-                ]
+                    new ProfilePurgeFollowersByDomain($pid, $domain),
+                ],
             ])->allowFailures()->onQueue('feed')->dispatch();
 
-            Cache::forget('profile:following:' . $pid);
+            Cache::forget('profile:following:'.$pid);
             UserFilterService::domainBlocks($pid, true);
         }
 
@@ -100,10 +100,10 @@ class DomainBlockController extends Controller
 
     public function delete(Request $request)
     {
-        abort_if(!$request->user(), 403);
+        abort_if(! $request->user(), 403);
 
         $this->validate($request, [
-            'domain' => 'required|min:1|max:120'
+            'domain' => 'required|min:1|max:120',
         ]);
 
         $pid = $request->user()->profile_id;

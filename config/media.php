@@ -56,5 +56,5 @@ return [
         'tracker' => env('MEDIA_HLS_P2P_TRACKER', 'wss://tracker.webtorrent.dev'),
 
         'ice' => env('MEDIA_HLS_P2P_ICE_SERVER', 'stun:stun.l.google.com:19302'),
-    ]
+    ],
 ];

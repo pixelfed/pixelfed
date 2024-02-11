@@ -11,7 +11,6 @@ class BearerTokenResponse extends \League\OAuth2\Server\ResponseTypes\BearerToke
      * AuthorizationServer::getResponseType() to pull in your version of
      * this class rather than the default.
      *
-     * @param AccessTokenEntityInterface $accessToken
      *
      * @return array
      */

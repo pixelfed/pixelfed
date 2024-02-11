@@ -3,27 +3,30 @@
 namespace App\Jobs\MediaPipeline;
 
 use App\Media;
+use App\Services\Media\MediaHlsService;
 use Illuminate\Bus\Queueable;
+use Illuminate\Contracts\Queue\ShouldBeUniqueUntilProcessing;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
 use Illuminate\Queue\InteractsWithQueue;
-use Illuminate\Queue\SerializesModels;
-use Illuminate\Support\Facades\Redis;
-use Illuminate\Support\Facades\Storage;
-use App\Services\Media\MediaHlsService;
 use Illuminate\Queue\Middleware\WithoutOverlapping;
-use Illuminate\Contracts\Queue\ShouldBeUniqueUntilProcessing;
+use Illuminate\Queue\SerializesModels;
+use Illuminate\Support\Facades\Storage;
 
-class MediaDeletePipeline implements ShouldQueue, ShouldBeUniqueUntilProcessing
+class MediaDeletePipeline implements ShouldBeUniqueUntilProcessing, ShouldQueue
 {
-	use Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
+    use Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
 
-	protected $media;
+    protected $media;
 
     public $timeout = 300;
+
     public $tries = 3;
+
     public $maxExceptions = 1;
+
     public $failOnTimeout = true;
+
     public $deleteWhenMissingModels = true;
 
     /**
@@ -38,7 +41,7 @@ class MediaDeletePipeline implements ShouldQueue, ShouldBeUniqueUntilProcessing
      */
     public function uniqueId(): string
     {
-        return 'media:purge-job:id-' . $this->media->id;
+        return 'media:purge-job:id-'.$this->media->id;
     }
 
     /**
@@ -51,58 +54,58 @@ class MediaDeletePipeline implements ShouldQueue, ShouldBeUniqueUntilProcessing
         return [(new WithoutOverlapping("media:purge-job:id-{$this->media->id}"))->shared()->dontRelease()];
     }
 
-	public function __construct(Media $media)
-	{
-		$this->media = $media;
-	}
+    public function __construct(Media $media)
+    {
+        $this->media = $media;
+    }
 
-	public function handle()
-	{
-		$media = $this->media;
-		$path = $media->media_path;
-		$thumb = $media->thumbnail_path;
+    public function handle()
+    {
+        $media = $this->media;
+        $path = $media->media_path;
+        $thumb = $media->thumbnail_path;
 
-		if(!$path) {
-			return 1;
-		}
+        if (! $path) {
+            return 1;
+        }
 
-		$e = explode('/', $path);
-		array_pop($e);
-		$i = implode('/', $e);
+        $e = explode('/', $path);
+        array_pop($e);
+        $i = implode('/', $e);
 
-		if(config_cache('pixelfed.cloud_storage') == true) {
-			$disk = Storage::disk(config('filesystems.cloud'));
+        if (config_cache('pixelfed.cloud_storage') == true) {
+            $disk = Storage::disk(config('filesystems.cloud'));
 
-			if($path && $disk->exists($path)) {
-				$disk->delete($path);
-			}
+            if ($path && $disk->exists($path)) {
+                $disk->delete($path);
+            }
 
-			if($thumb && $disk->exists($thumb)) {
-				$disk->delete($thumb);
-			}
-		}
+            if ($thumb && $disk->exists($thumb)) {
+                $disk->delete($thumb);
+            }
+        }
 
-		$disk = Storage::disk(config('filesystems.local'));
+        $disk = Storage::disk(config('filesystems.local'));
 
-		if($path && $disk->exists($path)) {
-			$disk->delete($path);
-		}
+        if ($path && $disk->exists($path)) {
+            $disk->delete($path);
+        }
 
-		if($thumb && $disk->exists($thumb)) {
-			$disk->delete($thumb);
-		}
+        if ($thumb && $disk->exists($thumb)) {
+            $disk->delete($thumb);
+        }
 
-		if($media->hls_path != null) {
+        if ($media->hls_path != null) {
             $files = MediaHlsService::allFiles($media);
-            if($files && count($files)) {
-                foreach($files as $file) {
+            if ($files && count($files)) {
+                foreach ($files as $file) {
                     $disk->delete($file);
                 }
             }
-		}
+        }
 
-		$media->delete();
+        $media->delete();
 
-		return 1;
-	}
+        return 1;
+    }
 }

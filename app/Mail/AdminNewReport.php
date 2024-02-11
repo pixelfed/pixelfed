@@ -2,14 +2,13 @@
 
 namespace App\Mail;
 
+use App\Services\AccountService;
+use App\Services\StatusService;
 use Illuminate\Bus\Queueable;
-use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Mail\Mailable;
 use Illuminate\Mail\Mailables\Content;
 use Illuminate\Mail\Mailables\Envelope;
 use Illuminate\Queue\SerializesModels;
-use App\Services\AccountService;
-use App\Services\StatusService;
 
 class AdminNewReport extends Mailable
 {
@@ -34,11 +33,12 @@ class AdminNewReport extends Mailable
      */
     public function envelope()
     {
-    	$type = $this->report->type;
-    	$id = $this->report->id;
-    	$object_type = last(explode("\\", $this->report->object_type));
+        $type = $this->report->type;
+        $id = $this->report->id;
+        $object_type = last(explode('\\', $this->report->object_type));
+
         return new Envelope(
-            subject: '[' . config('pixelfed.domain.app') . '] ' . $object_type . ' Report (Ref: report-' . $id . '-' . $type . ')',
+            subject: '['.config('pixelfed.domain.app').'] '.$object_type.' Report (Ref: report-'.$id.'-'.$type.')',
         );
     }
 
@@ -49,38 +49,38 @@ class AdminNewReport extends Mailable
      */
     public function content()
     {
-    	$report = $this->report;
-    	$object_type = last(explode("\\", $this->report->object_type));
-    	$reporter = AccountService::get($report->profile_id, true);
-    	$reported = AccountService::get($report->reported_profile_id, true);
-    	$title = 'New ' . $object_type . ' Report (#' . $report->id . ')';
-    	$reportUrl = url('/i/admin/reports/show/' . $report->id . '?ref=email');
-    	$data = [
-    		'report' => $report,
-    		'object_type' => $object_type,
-    		'title' => $title,
-    		'reporter' => $reporter,
-    		'reported' => $reported,
-    		'url' => $reportUrl,
-    		'message' => 'You have a new moderation report.'
-    	];
+        $report = $this->report;
+        $object_type = last(explode('\\', $this->report->object_type));
+        $reporter = AccountService::get($report->profile_id, true);
+        $reported = AccountService::get($report->reported_profile_id, true);
+        $title = 'New '.$object_type.' Report (#'.$report->id.')';
+        $reportUrl = url('/i/admin/reports/show/'.$report->id.'?ref=email');
+        $data = [
+            'report' => $report,
+            'object_type' => $object_type,
+            'title' => $title,
+            'reporter' => $reporter,
+            'reported' => $reported,
+            'url' => $reportUrl,
+            'message' => 'You have a new moderation report.',
+        ];
 
-    	if($object_type === 'Status') {
-    		$data['reported_status'] = StatusService::get($report['object_id'], false);
-    		if($reporter && $reported) {
-    			$data['message'] = '<a href="' .  url('/i/web/profile/' . $reporter['id']) . '">@' .
-	    			$reporter['acct'] . '</a> reported a post by <a href="' . url('/i/web/profile/' . $reported['id']) .
-	    			'">@' . $reported['acct'] . '</a> as ' . $report->type . '.';
-    		}
-    	}
+        if ($object_type === 'Status') {
+            $data['reported_status'] = StatusService::get($report['object_id'], false);
+            if ($reporter && $reported) {
+                $data['message'] = '<a href="'.url('/i/web/profile/'.$reporter['id']).'">@'.
+                    $reporter['acct'].'</a> reported a post by <a href="'.url('/i/web/profile/'.$reported['id']).
+                    '">@'.$reported['acct'].'</a> as '.$report->type.'.';
+            }
+        }
 
-    	if($object_type === 'Profile') {
-    		if($reporter && $reported) {
-    		$data['message'] = '<a href="' .  url('/i/web/profile/' . $reporter['id']) . '">@' .
-    			$reporter['acct'] . '</a> reported <a href="' . url('/i/web/profile/' . $reported['id']) .
-    			'">@' . $reported['acct'] . '</a>\'s profile as ' . $report->type . '.';
-    		}
-    	}
+        if ($object_type === 'Profile') {
+            if ($reporter && $reported) {
+                $data['message'] = '<a href="'.url('/i/web/profile/'.$reporter['id']).'">@'.
+                    $reporter['acct'].'</a> reported <a href="'.url('/i/web/profile/'.$reported['id']).
+                    '">@'.$reported['acct'].'</a>\'s profile as '.$report->type.'.';
+            }
+        }
 
         return new Content(
             markdown: 'emails.admin.new_report',

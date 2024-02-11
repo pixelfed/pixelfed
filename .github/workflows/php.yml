@@ -138,11 +138,8 @@ jobs:
           path: vendor/
           key: composer-8.3-${{ hashFiles('composer.lock') }}
 
-      - name: Install laravel/pint
-        run: php composer.phar require laravel/pint --dev
-
       - name: Install composer dependencies
         run: php composer.phar install --no-interaction --prefer-dist
 
       - name: Run laravel/pint
-        run: ./vendor/bin/pint --test
+        run: ./vendor/bin/pint --test --verbose

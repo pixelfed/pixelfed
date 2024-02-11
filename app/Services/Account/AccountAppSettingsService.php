@@ -2,8 +2,6 @@
 
 namespace App\Services\Account;
 
-use App\Models\UserAppSettings;
-
 class AccountAppSettingsService
 {
     public static function default()
@@ -37,7 +35,7 @@ class AccountAppSettingsService
 
                 // App theme, can be 'light', 'dark' or 'system'
                 'theme' => 'system',
-            ]
+            ],
         ];
     }
 }

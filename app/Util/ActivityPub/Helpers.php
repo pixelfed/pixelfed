@@ -2,49 +2,34 @@
 
 namespace App\Util\ActivityPub;
 
-use DB, Cache, Purify, Storage, Request, Validator;
-use App\{
-    Activity,
-    Follower,
-    Instance,
-    Like,
-    Media,
-    Notification,
-    Profile,
-    Status
-};
-use Zttp\Zttp;
-use Carbon\Carbon;
-use GuzzleHttp\Client;
-use Illuminate\Http\File;
-use Illuminate\Validation\Rule;
-use App\Jobs\AvatarPipeline\CreateAvatar;
-use App\Jobs\RemoteFollowPipeline\RemoteFollowImportRecent;
-use App\Jobs\ImageOptimizePipeline\{ImageOptimize,ImageThumbnail};
-use App\Jobs\StatusPipeline\NewStatusPipeline;
-use App\Jobs\StatusPipeline\StatusReplyPipeline;
-use App\Jobs\StatusPipeline\StatusTagsPipeline;
-use App\Util\ActivityPub\HttpSignature;
-use Illuminate\Support\Str;
-use App\Services\ActivityPubFetchService;
-use App\Services\ActivityPubDeliveryService;
-use App\Services\CustomEmojiService;
-use App\Services\InstanceService;
-use App\Services\MediaPathService;
-use App\Services\MediaStorageService;
-use App\Services\NetworkTimelineService;
-use App\Jobs\MediaPipeline\MediaStoragePipeline;
+use App\Instance;
 use App\Jobs\AvatarPipeline\RemoteAvatarFetch;
 use App\Jobs\HomeFeedPipeline\FeedInsertRemotePipeline;
-use App\Util\Media\License;
+use App\Jobs\MediaPipeline\MediaStoragePipeline;
+use App\Jobs\StatusPipeline\StatusReplyPipeline;
+use App\Jobs\StatusPipeline\StatusTagsPipeline;
+use App\Media;
 use App\Models\Poll;
-use Illuminate\Contracts\Cache\LockTimeoutException;
-use App\Services\DomainService;
-use App\Services\UserFilterService;
+use App\Profile;
 use App\Services\Account\AccountStatService;
+use App\Services\ActivityPubDeliveryService;
+use App\Services\ActivityPubFetchService;
+use App\Services\DomainService;
+use App\Services\InstanceService;
+use App\Services\MediaPathService;
+use App\Services\NetworkTimelineService;
+use App\Services\UserFilterService;
+use App\Status;
+use App\Util\Media\License;
+use Cache;
+use Carbon\Carbon;
+use Illuminate\Support\Str;
+use Illuminate\Validation\Rule;
+use Purify;
+use Validator;
 
-class Helpers {
-
+class Helpers
+{
     public static function validateObject($data)
     {
         $verbs = ['Create', 'Announce', 'Like', 'Follow', 'Delete', 'Accept', 'Reject', 'Undo', 'Tombstone'];
@@ -53,14 +38,14 @@ class Helpers {
             'type' => [
                 'required',
                 'string',
-                Rule::in($verbs)
+                Rule::in($verbs),
             ],
             'id' => 'required|string',
             'actor' => 'required|string|url',
             'object' => 'required',
             'object.type' => 'required_if:type,Create',
             'object.attributedTo' => 'required_if:type,Create|url',
-            'published' => 'required_if:type,Create|date'
+            'published' => 'required_if:type,Create|date',
         ])->passes();
 
         return $valid;
@@ -68,8 +53,8 @@ class Helpers {
 
     public static function verifyAttachments($data)
     {
-        if(!isset($data['object']) || empty($data['object'])) {
-            $data = ['object'=>$data];
+        if (! isset($data['object']) || empty($data['object'])) {
+            $data = ['object' => $data];
         }
 
         $activity = $data['object'];
@@ -80,7 +65,7 @@ class Helpers {
         // Peertube
         // $mediaTypes = in_array('video/mp4', $mimeTypes) ? ['Document', 'Image', 'Video', 'Link'] : ['Document', 'Image'];
 
-        if(!isset($activity['attachment']) || empty($activity['attachment'])) {
+        if (! isset($activity['attachment']) || empty($activity['attachment'])) {
             return false;
         }
 
@@ -100,13 +85,13 @@ class Helpers {
             '*.type' => [
                 'required',
                 'string',
-                Rule::in($mediaTypes)
+                Rule::in($mediaTypes),
             ],
             '*.url' => 'required|url',
-            '*.mediaType'  => [
+            '*.mediaType' => [
                 'required',
                 'string',
-                Rule::in($mimeTypes)
+                Rule::in($mimeTypes),
             ],
             '*.name' => 'sometimes|nullable|string',
             '*.blurhash' => 'sometimes|nullable|string|min:6|max:164',
@@ -119,7 +104,7 @@ class Helpers {
 
     public static function normalizeAudience($data, $localOnly = true)
     {
-        if(!isset($data['to'])) {
+        if (! isset($data['to'])) {
             return;
         }
 
@@ -128,32 +113,35 @@ class Helpers {
         $audience['cc'] = [];
         $scope = 'private';
 
-        if(is_array($data['to']) && !empty($data['to'])) {
+        if (is_array($data['to']) && ! empty($data['to'])) {
             foreach ($data['to'] as $to) {
-                if($to == 'https://www.w3.org/ns/activitystreams#Public') {
+                if ($to == 'https://www.w3.org/ns/activitystreams#Public') {
                     $scope = 'public';
+
                     continue;
                 }
                 $url = $localOnly ? self::validateLocalUrl($to) : self::validateUrl($to);
-                if($url != false) {
+                if ($url != false) {
                     array_push($audience['to'], $url);
                 }
             }
         }
 
-        if(is_array($data['cc']) && !empty($data['cc'])) {
+        if (is_array($data['cc']) && ! empty($data['cc'])) {
             foreach ($data['cc'] as $cc) {
-                if($cc == 'https://www.w3.org/ns/activitystreams#Public') {
+                if ($cc == 'https://www.w3.org/ns/activitystreams#Public') {
                     $scope = 'unlisted';
+
                     continue;
                 }
                 $url = $localOnly ? self::validateLocalUrl($cc) : self::validateUrl($cc);
-                if($url != false) {
+                if ($url != false) {
                     array_push($audience['cc'], $url);
                 }
             }
         }
         $audience['scope'] = $scope;
+
         return $audience;
     }
 
@@ -161,56 +149,57 @@ class Helpers {
     {
         $audience = self::normalizeAudience($data);
         $url = $profile->permalink();
+
         return in_array($url, $audience['to']) || in_array($url, $audience['cc']);
     }
 
     public static function validateUrl($url)
     {
-        if(is_array($url)) {
+        if (is_array($url)) {
             $url = $url[0];
         }
 
         $hash = hash('sha256', $url);
         $key = "helpers:url:valid:sha256-{$hash}";
 
-        $valid = Cache::remember($key, 900, function() use($url) {
+        $valid = Cache::remember($key, 900, function () use ($url) {
             $localhosts = [
-                '127.0.0.1', 'localhost', '::1'
+                '127.0.0.1', 'localhost', '::1',
             ];
 
-            if(strtolower(mb_substr($url, 0, 8)) !== 'https://') {
+            if (strtolower(mb_substr($url, 0, 8)) !== 'https://') {
                 return false;
             }
 
-            if(substr_count($url, '://') !== 1) {
+            if (substr_count($url, '://') !== 1) {
                 return false;
             }
 
-            if(mb_substr($url, 0, 8) !== 'https://') {
-                $url = 'https://' . substr($url, 8);
+            if (mb_substr($url, 0, 8) !== 'https://') {
+                $url = 'https://'.substr($url, 8);
             }
 
             $valid = filter_var($url, FILTER_VALIDATE_URL);
 
-            if(!$valid) {
+            if (! $valid) {
                 return false;
             }
 
             $host = parse_url($valid, PHP_URL_HOST);
 
-            if(in_array($host, $localhosts)) {
+            if (in_array($host, $localhosts)) {
                 return false;
             }
 
-            if(config('security.url.verify_dns')) {
-                if(DomainService::hasValidDns($host) === false) {
+            if (config('security.url.verify_dns')) {
+                if (DomainService::hasValidDns($host) === false) {
                     return false;
                 }
             }
 
-            if(app()->environment() === 'production') {
+            if (app()->environment() === 'production') {
                 $bannedInstances = InstanceService::getBannedDomains();
-                if(in_array($host, $bannedInstances)) {
+                if (in_array($host, $bannedInstances)) {
                     return false;
                 }
             }
@@ -224,12 +213,14 @@ class Helpers {
     public static function validateLocalUrl($url)
     {
         $url = self::validateUrl($url);
-        if($url == true) {
+        if ($url == true) {
             $domain = config('pixelfed.domain.app');
             $host = parse_url($url, PHP_URL_HOST);
             $url = strtolower($domain) === strtolower($host) ? $url : false;
+
             return $url;
         }
+
         return false;
     }
 
@@ -237,15 +228,16 @@ class Helpers {
     {
         $version = config('pixelfed.version');
         $url = config('app.url');
+
         return [
-            'Accept'     => 'application/activity+json',
+            'Accept' => 'application/activity+json',
             'User-Agent' => "(Pixelfed/{$version}; +{$url})",
         ];
     }
 
     public static function fetchFromUrl($url = false)
     {
-        if(self::validateUrl($url) == false) {
+        if (self::validateUrl($url) == false) {
             return;
         }
 
@@ -253,13 +245,13 @@ class Helpers {
         $key = "helpers:url:fetcher:sha256-{$hash}";
         $ttl = now()->addMinutes(15);
 
-        return Cache::remember($key, $ttl, function() use($url) {
+        return Cache::remember($key, $ttl, function () use ($url) {
             $res = ActivityPubFetchService::get($url);
-            if(!$res || empty($res)) {
+            if (! $res || empty($res)) {
                 return false;
             }
             $res = json_decode($res, true, 8);
-            if(json_last_error() == JSON_ERROR_NONE) {
+            if (json_last_error() == JSON_ERROR_NONE) {
                 return $res;
             } else {
                 return false;
@@ -274,12 +266,12 @@ class Helpers {
 
     public static function pluckval($val)
     {
-        if(is_string($val)) {
+        if (is_string($val)) {
             return $val;
         }
 
-        if(is_array($val)) {
-            return !empty($val) ? head($val) : null;
+        if (is_array($val)) {
+            return ! empty($val) ? head($val) : null;
         }
 
         return null;
@@ -288,34 +280,35 @@ class Helpers {
     public static function statusFirstOrFetch($url, $replyTo = false)
     {
         $url = self::validateUrl($url);
-        if($url == false) {
+        if ($url == false) {
             return;
         }
 
         $host = parse_url($url, PHP_URL_HOST);
         $local = config('pixelfed.domain.app') == $host ? true : false;
 
-        if($local) {
+        if ($local) {
             $id = (int) last(explode('/', $url));
-            return Status::whereNotIn('scope', ['draft','archived'])->findOrFail($id);
+
+            return Status::whereNotIn('scope', ['draft', 'archived'])->findOrFail($id);
         }
 
-        $cached = Status::whereNotIn('scope', ['draft','archived'])
+        $cached = Status::whereNotIn('scope', ['draft', 'archived'])
             ->whereUri($url)
             ->orWhere('object_url', $url)
             ->first();
 
-        if($cached) {
+        if ($cached) {
             return $cached;
         }
 
         $res = self::fetchFromUrl($url);
 
-        if(!$res || empty($res) || isset($res['error']) || !isset($res['@context']) || !isset($res['published']) ) {
+        if (! $res || empty($res) || isset($res['error']) || ! isset($res['@context']) || ! isset($res['published'])) {
             return;
         }
 
-        if(isset($res['object'])) {
+        if (isset($res['object'])) {
             $activity = $res;
         } else {
             $activity = ['object' => $res];
@@ -325,37 +318,37 @@ class Helpers {
 
         $cw = isset($res['sensitive']) ? (bool) $res['sensitive'] : false;
 
-        if(isset($res['to']) == true) {
-            if(is_array($res['to']) && in_array('https://www.w3.org/ns/activitystreams#Public', $res['to'])) {
+        if (isset($res['to']) == true) {
+            if (is_array($res['to']) && in_array('https://www.w3.org/ns/activitystreams#Public', $res['to'])) {
                 $scope = 'public';
             }
-            if(is_string($res['to']) && 'https://www.w3.org/ns/activitystreams#Public' == $res['to']) {
+            if (is_string($res['to']) && $res['to'] == 'https://www.w3.org/ns/activitystreams#Public') {
                 $scope = 'public';
             }
         }
 
-        if(isset($res['cc']) == true) {
-            if(is_array($res['cc']) && in_array('https://www.w3.org/ns/activitystreams#Public', $res['cc'])) {
+        if (isset($res['cc']) == true) {
+            if (is_array($res['cc']) && in_array('https://www.w3.org/ns/activitystreams#Public', $res['cc'])) {
                 $scope = 'unlisted';
             }
-            if(is_string($res['cc']) && 'https://www.w3.org/ns/activitystreams#Public' == $res['cc']) {
+            if (is_string($res['cc']) && $res['cc'] == 'https://www.w3.org/ns/activitystreams#Public') {
                 $scope = 'unlisted';
             }
         }
 
-        if(config('costar.enabled') == true) {
+        if (config('costar.enabled') == true) {
             $blockedKeywords = config('costar.keyword.block');
-            if($blockedKeywords !== null) {
+            if ($blockedKeywords !== null) {
                 $keywords = config('costar.keyword.block');
-                foreach($keywords as $kw) {
-                    if(Str::contains($res['content'], $kw) == true) {
+                foreach ($keywords as $kw) {
+                    if (Str::contains($res['content'], $kw) == true) {
                         return;
                     }
                 }
             }
 
             $unlisted = config('costar.domain.unlisted');
-            if(in_array(parse_url($url, PHP_URL_HOST), $unlisted) == true) {
+            if (in_array(parse_url($url, PHP_URL_HOST), $unlisted) == true) {
                 $unlisted = true;
                 $scope = 'unlisted';
             } else {
@@ -363,7 +356,7 @@ class Helpers {
             }
 
             $cwDomains = config('costar.domain.cw');
-            if(in_array(parse_url($url, PHP_URL_HOST), $cwDomains) == true) {
+            if (in_array(parse_url($url, PHP_URL_HOST), $cwDomains) == true) {
                 $cw = true;
             }
         }
@@ -372,11 +365,11 @@ class Helpers {
         $idDomain = parse_url($id, PHP_URL_HOST);
         $urlDomain = parse_url($url, PHP_URL_HOST);
 
-        if(!self::validateUrl($id)) {
+        if (! self::validateUrl($id)) {
             return;
         }
 
-        if(!isset($activity['object']['attributedTo'])) {
+        if (! isset($activity['object']['attributedTo'])) {
             return;
         }
 
@@ -384,39 +377,38 @@ class Helpers {
             $activity['object']['attributedTo'] :
             (is_array($activity['object']['attributedTo']) ?
                 collect($activity['object']['attributedTo'])
-                    ->filter(function($o) {
+                    ->filter(function ($o) {
                         return $o && isset($o['type']) && $o['type'] == 'Person';
                     })
                     ->pluck('id')
                     ->first() : null
             );
 
-        if($attributedTo) {
+        if ($attributedTo) {
             $actorDomain = parse_url($attributedTo, PHP_URL_HOST);
-            if(!self::validateUrl($attributedTo) ||
+            if (! self::validateUrl($attributedTo) ||
                 $idDomain !== $actorDomain ||
                 $actorDomain !== $urlDomain
-            )
-            {
+            ) {
                 return;
             }
         }
 
-        if($idDomain !== $urlDomain) {
+        if ($idDomain !== $urlDomain) {
             return;
         }
 
         $profile = self::profileFirstOrNew($attributedTo);
 
-        if(!$profile) {
+        if (! $profile) {
             return;
         }
 
-        if(isset($activity['object']['inReplyTo']) && !empty($activity['object']['inReplyTo']) || $replyTo == true) {
+        if (isset($activity['object']['inReplyTo']) && ! empty($activity['object']['inReplyTo']) || $replyTo == true) {
             $reply_to = self::statusFirstOrFetch(self::pluckval($activity['object']['inReplyTo']), false);
-            if($reply_to) {
+            if ($reply_to) {
                 $blocks = UserFilterService::blocks($reply_to->profile_id);
-                if(in_array($profile->id, $blocks)) {
+                if (in_array($profile->id, $blocks)) {
                     return;
                 }
             }
@@ -426,15 +418,15 @@ class Helpers {
         }
         $ts = self::pluckval($res['published']);
 
-        if($scope == 'public' && in_array($urlDomain, InstanceService::getUnlistedDomains())) {
+        if ($scope == 'public' && in_array($urlDomain, InstanceService::getUnlistedDomains())) {
             $scope = 'unlisted';
         }
 
-        if(in_array($urlDomain, InstanceService::getNsfwDomains())) {
+        if (in_array($urlDomain, InstanceService::getNsfwDomains())) {
             $cw = true;
         }
 
-        if($res['type'] === 'Question') {
+        if ($res['type'] === 'Question') {
             $status = self::storePoll(
                 $profile,
                 $res,
@@ -445,6 +437,7 @@ class Helpers {
                 $scope,
                 $id
             );
+
             return $status;
         } else {
             $status = self::storeStatus($url, $profile, $res);
@@ -459,7 +452,7 @@ class Helpers {
         $url = isset($activity['url']) && is_string($activity['url']) ? self::pluckval($activity['url']) : self::pluckval($id);
         $idDomain = parse_url($id, PHP_URL_HOST);
         $urlDomain = parse_url($url, PHP_URL_HOST);
-        if(!self::validateUrl($id) || !self::validateUrl($url)) {
+        if (! self::validateUrl($id) || ! self::validateUrl($url)) {
             return;
         }
 
@@ -470,21 +463,21 @@ class Helpers {
         $cw = self::getSensitive($activity, $url);
         $pid = is_object($profile) ? $profile->id : (is_array($profile) ? $profile['id'] : null);
         $isUnlisted = is_object($profile) ? $profile->unlisted : (is_array($profile) ? $profile['unlisted'] : false);
-        $commentsDisabled = isset($activity['commentsEnabled']) ? !boolval($activity['commentsEnabled']) : false;
+        $commentsDisabled = isset($activity['commentsEnabled']) ? ! boolval($activity['commentsEnabled']) : false;
 
-        if(!$pid) {
+        if (! $pid) {
             return;
         }
 
-        if($scope == 'public') {
-            if($isUnlisted == true) {
+        if ($scope == 'public') {
+            if ($isUnlisted == true) {
                 $scope = 'unlisted';
             }
         }
 
         $status = Status::updateOrCreate(
             [
-                'uri' => $url
+                'uri' => $url,
             ], [
                 'profile_id' => $pid,
                 'url' => $url,
@@ -499,24 +492,24 @@ class Helpers {
                 'visibility' => $scope,
                 'cw_summary' => ($cw == true && isset($activity['summary']) ?
                     Purify::clean(strip_tags($activity['summary'])) : null),
-                'comments_disabled' => $commentsDisabled
+                'comments_disabled' => $commentsDisabled,
             ]
         );
 
-        if($reply_to == null) {
+        if ($reply_to == null) {
             self::importNoteAttachment($activity, $status);
         } else {
-            if(isset($activity['attachment']) && !empty($activity['attachment'])) {
+            if (isset($activity['attachment']) && ! empty($activity['attachment'])) {
                 self::importNoteAttachment($activity, $status);
             }
             StatusReplyPipeline::dispatch($status);
         }
 
-        if(isset($activity['tag']) && is_array($activity['tag']) && !empty($activity['tag'])) {
+        if (isset($activity['tag']) && is_array($activity['tag']) && ! empty($activity['tag'])) {
             StatusTagsPipeline::dispatch($activity, $status);
         }
 
-        if( config('instance.timeline.network.cached') &&
+        if (config('instance.timeline.network.cached') &&
             $status->in_reply_to_id === null &&
             $status->reblog_of_id === null &&
             in_array($status->type, ['photo', 'photo:album', 'video', 'video:album', 'photo:video:album']) &&
@@ -528,8 +521,8 @@ class Helpers {
                 ->unique()
                 ->values()
                 ->toArray();
-            if(!in_array($urlDomain, $filteredDomains)) {
-                if(!$isUnlisted) {
+            if (! in_array($urlDomain, $filteredDomains)) {
+                if (! $isUnlisted) {
                     NetworkTimelineService::add($status->id);
                 }
             }
@@ -537,7 +530,7 @@ class Helpers {
 
         AccountStatService::incrementPostCount($pid);
 
-        if( $status->in_reply_to_id === null &&
+        if ($status->in_reply_to_id === null &&
             in_array($status->type, ['photo', 'photo:album', 'video', 'video:album', 'photo:video:album'])
         ) {
             FeedInsertRemotePipeline::dispatch($status->id, $pid)->onQueue('feed');
@@ -548,14 +541,14 @@ class Helpers {
 
     public static function getSensitive($activity, $url)
     {
-        if(!$url || !strlen($url)) {
+        if (! $url || ! strlen($url)) {
             return true;
         }
 
         $urlDomain = parse_url($url, PHP_URL_HOST);
         $cw = isset($activity['sensitive']) ? (bool) $activity['sensitive'] : false;
 
-        if(in_array($urlDomain, InstanceService::getNsfwDomains())) {
+        if (in_array($urlDomain, InstanceService::getNsfwDomains())) {
             $cw = true;
         }
 
@@ -565,13 +558,13 @@ class Helpers {
     public static function getReplyTo($activity)
     {
         $reply_to = null;
-        $inReplyTo = isset($activity['inReplyTo']) && !empty($activity['inReplyTo']) ?
+        $inReplyTo = isset($activity['inReplyTo']) && ! empty($activity['inReplyTo']) ?
             self::pluckval($activity['inReplyTo']) :
             false;
 
-        if($inReplyTo) {
+        if ($inReplyTo) {
             $reply_to = self::statusFirstOrFetch($inReplyTo);
-            if($reply_to) {
+            if ($reply_to) {
                 $reply_to = optional($reply_to)->id;
             }
         } else {
@@ -588,25 +581,25 @@ class Helpers {
         $urlDomain = parse_url(self::pluckval($url), PHP_URL_HOST);
         $scope = 'private';
 
-        if(isset($activity['to']) == true) {
-            if(is_array($activity['to']) && in_array('https://www.w3.org/ns/activitystreams#Public', $activity['to'])) {
+        if (isset($activity['to']) == true) {
+            if (is_array($activity['to']) && in_array('https://www.w3.org/ns/activitystreams#Public', $activity['to'])) {
                 $scope = 'public';
             }
-            if(is_string($activity['to']) && 'https://www.w3.org/ns/activitystreams#Public' == $activity['to']) {
+            if (is_string($activity['to']) && $activity['to'] == 'https://www.w3.org/ns/activitystreams#Public') {
                 $scope = 'public';
             }
         }
 
-        if(isset($activity['cc']) == true) {
-            if(is_array($activity['cc']) && in_array('https://www.w3.org/ns/activitystreams#Public', $activity['cc'])) {
+        if (isset($activity['cc']) == true) {
+            if (is_array($activity['cc']) && in_array('https://www.w3.org/ns/activitystreams#Public', $activity['cc'])) {
                 $scope = 'unlisted';
             }
-            if(is_string($activity['cc']) && 'https://www.w3.org/ns/activitystreams#Public' == $activity['cc']) {
+            if (is_string($activity['cc']) && $activity['cc'] == 'https://www.w3.org/ns/activitystreams#Public') {
                 $scope = 'unlisted';
             }
         }
 
-        if($scope == 'public' && in_array($urlDomain, InstanceService::getUnlistedDomains())) {
+        if ($scope == 'public' && in_array($urlDomain, InstanceService::getUnlistedDomains())) {
             $scope = 'unlisted';
         }
 
@@ -615,15 +608,15 @@ class Helpers {
 
     private static function storePoll($profile, $res, $url, $ts, $reply_to, $cw, $scope, $id)
     {
-        if(!isset($res['endTime']) || !isset($res['oneOf']) || !is_array($res['oneOf']) || count($res['oneOf']) > 4) {
+        if (! isset($res['endTime']) || ! isset($res['oneOf']) || ! is_array($res['oneOf']) || count($res['oneOf']) > 4) {
             return;
         }
 
-        $options = collect($res['oneOf'])->map(function($option) {
+        $options = collect($res['oneOf'])->map(function ($option) {
             return $option['name'];
         })->toArray();
 
-        $cachedTallies = collect($res['oneOf'])->map(function($option) {
+        $cachedTallies = collect($res['oneOf'])->map(function ($option) {
             return $option['replies']['totalItems'] ?? 0;
         })->toArray();
 
@@ -669,9 +662,10 @@ class Helpers {
 
     public static function importNoteAttachment($data, Status $status)
     {
-        if(self::verifyAttachments($data) == false) {
+        if (self::verifyAttachments($data) == false) {
             // \Log::info('importNoteAttachment::failedVerification.', [$data['id']]);
             $status->viewType();
+
             return;
         }
         $attachments = isset($data['object']) ? $data['object']['attachment'] : $data['attachment'];
@@ -684,11 +678,11 @@ class Helpers {
         $storagePath = MediaPathService::get($user, 2);
         $allowed = explode(',', config_cache('pixelfed.media_types'));
 
-        foreach($attachments as $key => $media) {
+        foreach ($attachments as $key => $media) {
             $type = $media['mediaType'];
             $url = $media['url'];
             $valid = self::validateUrl($url);
-            if(in_array($type, $allowed) == false || $valid == false) {
+            if (in_array($type, $allowed) == false || $valid == false) {
                 continue;
             }
             $blurhash = isset($media['blurhash']) ? $media['blurhash'] : null;
@@ -707,50 +701,52 @@ class Helpers {
             $media->remote_url = $url;
             $media->caption = $caption;
             $media->order = $key + 1;
-            if($width) {
+            if ($width) {
                 $media->width = $width;
             }
-            if($height) {
+            if ($height) {
                 $media->height = $height;
             }
-            if($license) {
+            if ($license) {
                 $media->license = $license;
             }
             $media->mime = $type;
             $media->version = 3;
             $media->save();
 
-            if(config_cache('pixelfed.cloud_storage') == true) {
+            if (config_cache('pixelfed.cloud_storage') == true) {
                 MediaStoragePipeline::dispatch($media);
             }
         }
 
         $status->viewType();
-        return;
+
     }
 
     public static function profileFirstOrNew($url)
     {
         $url = self::validateUrl($url);
-        if($url == false) {
+        if ($url == false) {
             return;
         }
 
         $host = parse_url($url, PHP_URL_HOST);
         $local = config('pixelfed.domain.app') == $host ? true : false;
 
-        if($local == true) {
+        if ($local == true) {
             $id = last(explode('/', $url));
+
             return Profile::whereNull('status')
                 ->whereNull('domain')
                 ->whereUsername($id)
                 ->firstOrFail();
         }
 
-        if($profile = Profile::whereRemoteUrl($url)->first()) {
-            if($profile->last_fetched_at && $profile->last_fetched_at->lt(now()->subHours(24))) {
+        if ($profile = Profile::whereRemoteUrl($url)->first()) {
+            if ($profile->last_fetched_at && $profile->last_fetched_at->lt(now()->subHours(24))) {
                 return self::profileUpdateOrCreate($url);
             }
+
             return $profile;
         }
 
@@ -760,38 +756,38 @@ class Helpers {
     public static function profileUpdateOrCreate($url)
     {
         $res = self::fetchProfileFromUrl($url);
-        if(!$res || isset($res['id']) == false) {
+        if (! $res || isset($res['id']) == false) {
             return;
         }
         $domain = parse_url($res['id'], PHP_URL_HOST);
-        if(!isset($res['preferredUsername']) && !isset($res['nickname'])) {
+        if (! isset($res['preferredUsername']) && ! isset($res['nickname'])) {
             return;
         }
         // skip invalid usernames
-        if(!ctype_alnum($res['preferredUsername'])) {
+        if (! ctype_alnum($res['preferredUsername'])) {
             $tmpUsername = str_replace(['_', '.', '-'], '', $res['preferredUsername']);
-            if(!ctype_alnum($tmpUsername)) {
+            if (! ctype_alnum($tmpUsername)) {
                 return;
             }
         }
         $username = (string) Purify::clean($res['preferredUsername'] ?? $res['nickname']);
-        if(empty($username)) {
+        if (empty($username)) {
             return;
         }
         $remoteUsername = $username;
         $webfinger = "@{$username}@{$domain}";
 
-        if(!self::validateUrl($res['inbox'])) {
+        if (! self::validateUrl($res['inbox'])) {
             return;
         }
-        if(!self::validateUrl($res['id'])) {
+        if (! self::validateUrl($res['id'])) {
             return;
         }
 
         $instance = Instance::updateOrCreate([
-            'domain' => $domain
+            'domain' => $domain,
         ]);
-        if($instance->wasRecentlyCreated == true) {
+        if ($instance->wasRecentlyCreated == true) {
             \App\Jobs\InstancePipeline\FetchNodeinfoPipeline::dispatch($instance)->onQueue('low');
         }
 
@@ -814,13 +810,14 @@ class Helpers {
             ]
         );
 
-        if( $profile->last_fetched_at == null ||
+        if ($profile->last_fetched_at == null ||
             $profile->last_fetched_at->lt(now()->subMonths(3))
         ) {
             RemoteAvatarFetch::dispatch($profile);
         }
         $profile->last_fetched_at = now();
         $profile->save();
+
         return $profile;
     }
 

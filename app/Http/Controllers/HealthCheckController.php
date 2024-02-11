@@ -10,7 +10,7 @@ class HealthCheckController extends Controller
     {
         return response('OK')->withHeaders([
             'Content-Type' => 'text/plain',
-            'Cache-Control' => 'max-age=0, must-revalidate, no-cache, no-store'
+            'Cache-Control' => 'max-age=0, must-revalidate, no-cache, no-store',
         ]);
     }
 }

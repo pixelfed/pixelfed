@@ -2,16 +2,16 @@
 
 namespace App;
 
-use Laravel\Passport\HasApiTokens;
-use Illuminate\Notifications\Notifiable;
+use App\Services\AvatarService;
+use App\Util\RateLimit\User as UserRateLimit;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Foundation\Auth\User as Authenticatable;
-use App\Util\RateLimit\User as UserRateLimit;
-use App\Services\AvatarService;
+use Illuminate\Notifications\Notifiable;
+use Laravel\Passport\HasApiTokens;
 
 class User extends Authenticatable
 {
-    use Notifiable, SoftDeletes, HasApiTokens, UserRateLimit;
+    use HasApiTokens, Notifiable, SoftDeletes, UserRateLimit;
 
     /**
      * The attributes that should be mutated to dates.
@@ -38,7 +38,7 @@ class User extends Authenticatable
         'app_register_ip',
         'email_verified_at',
         'last_active_at',
-        'register_source'
+        'register_source',
     ];
 
     /**
@@ -50,7 +50,7 @@ class User extends Authenticatable
         'email', 'password', 'is_admin', 'remember_token',
         'email_verified_at', '2fa_enabled', '2fa_secret',
         '2fa_backup_codes', '2fa_setup_at', 'deleted_at',
-        'updated_at'
+        'updated_at',
     ];
 
     public function profile()
@@ -93,7 +93,7 @@ class User extends Authenticatable
 
     public function storageUsedKey()
     {
-        return 'profile:storage:used:' . $this->id;
+        return 'profile:storage:used:'.$this->id;
     }
 
     public function accountLog()
@@ -108,11 +108,10 @@ class User extends Authenticatable
 
     public function avatarUrl()
     {
-        if(!$this->profile_id || $this->status) {
-            return config('app.url') . '/storage/avatars/default.jpg';
+        if (! $this->profile_id || $this->status) {
+            return config('app.url').'/storage/avatars/default.jpg';
         }
 
         return AvatarService::get($this->profile_id);
     }
-
 }

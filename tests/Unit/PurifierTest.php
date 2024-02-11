@@ -10,11 +10,11 @@ class PurifierTest extends TestCase
     /** @test */
     public function puckTest()
     {
-        $actual = Purify::clean("<span class=\"fa-spin fa\">catgirl spinning around in the interblag</span>");
+        $actual = Purify::clean('<span class="fa-spin fa">catgirl spinning around in the interblag</span>');
         $expected = '<span>catgirl spinning around in the interblag</span>';
         $this->assertEquals($expected, $actual);
 
-        $actual = Purify::clean("<p class=\"fa-spin fa\">catgirl spinning around in the interblag</p>");
+        $actual = Purify::clean('<p class="fa-spin fa">catgirl spinning around in the interblag</p>');
         $expected = '<p>catgirl spinning around in the interblag</p>';
         $this->assertEquals($expected, $actual);
 

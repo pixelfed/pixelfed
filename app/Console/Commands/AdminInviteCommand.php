@@ -2,8 +2,8 @@
 
 namespace App\Console\Commands;
 
-use Illuminate\Console\Command;
 use App\Models\AdminInvite;
+use Illuminate\Console\Command;
 use Illuminate\Support\Str;
 
 class AdminInviteCommand extends Command
@@ -46,27 +46,27 @@ class AdminInviteCommand extends Command
                 'Create invite',
                 'View invites',
                 'Expire invite',
-                'Cancel'
+                'Cancel',
             ],
             3
         );
 
-        switch($action) {
+        switch ($action) {
             case 'Create invite':
                 return $this->create();
-            break;
+                break;
 
             case 'View invites':
                 return $this->view();
-            break;
+                break;
 
             case 'Expire invite':
                 return $this->expire();
-            break;
+                break;
 
             case 'Cancel':
                 return;
-            break;
+                break;
         }
     }
 
@@ -91,24 +91,24 @@ class AdminInviteCommand extends Command
             [
                 'No - invite never expires',
                 'Yes - expire after 24 hours',
-                'Custom - let me pick an expiry date'
+                'Custom - let me pick an expiry date',
             ],
             0
         );
-        switch($shouldExpire) {
+        switch ($shouldExpire) {
             case 'No - invite never expires':
                 $expires = null;
-            break;
+                break;
 
             case 'Yes - expire after 24 hours':
                 $expires = now()->addHours(24);
-            break;
+                break;
 
             case 'Custom - let me pick an expiry date':
                 $this->info('Set custom expiry date in days');
                 $customExpiry = $this->ask('Custom Expiry', 14);
                 $expires = now()->addDays($customExpiry);
-            break;
+                break;
         }
 
         $this->info('Skip email verification for invitees?');
@@ -121,7 +121,7 @@ class AdminInviteCommand extends Command
         $invite->max_uses = $max_uses;
         $invite->skip_email_verification = $skipEmailVerification === 'Yes';
         $invite->expires_at = $expires;
-        $invite->invite_code = Str::uuid() . Str::random(random_int(1,6));
+        $invite->invite_code = Str::uuid().Str::random(random_int(1, 6));
         $invite->save();
 
         $this->info('####################');
@@ -129,6 +129,7 @@ class AdminInviteCommand extends Command
         $this->line(' ');
         $this->info($invite->url());
         $this->line(' ');
+
         return Command::SUCCESS;
     }
 
@@ -136,18 +137,19 @@ class AdminInviteCommand extends Command
     {
         $this->info('View Invites');
         $this->line('=============');
-        if(AdminInvite::count() == 0) {
+        if (AdminInvite::count() == 0) {
             $this->line(' ');
             $this->error('No invites found!');
+
             return;
         }
         $this->table(
             ['Invite Code', 'Uses Left', 'Expires'],
-            AdminInvite::all(['invite_code', 'max_uses', 'uses', 'expires_at'])->map(function($invite) {
+            AdminInvite::all(['invite_code', 'max_uses', 'uses', 'expires_at'])->map(function ($invite) {
                 return [
                     'invite_code' => $invite->invite_code,
                     'uses_left' => $invite->max_uses ? ($invite->max_uses - $invite->uses) : '∞',
-                    'expires_at' => $invite->expires_at ? $invite->expires_at->diffForHumans() : 'never'
+                    'expires_at' => $invite->expires_at ? $invite->expires_at->diffForHumans() : 'never',
                 ];
             })->toArray()
         );
@@ -155,25 +157,28 @@ class AdminInviteCommand extends Command
 
     protected function expire()
     {
-        $token = $this->anticipate('Enter invite code to expire', function($val) {
-            if(!$val || empty($val)) {
+        $token = $this->anticipate('Enter invite code to expire', function ($val) {
+            if (! $val || empty($val)) {
                 return [];
             }
-            return AdminInvite::where('invite_code', 'like', '%' . $val . '%')->pluck('invite_code')->toArray();
+
+            return AdminInvite::where('invite_code', 'like', '%'.$val.'%')->pluck('invite_code')->toArray();
         });
 
-        if(!$token || empty($token)) {
+        if (! $token || empty($token)) {
             $this->error('Invalid invite code');
+
             return;
         }
         $invite = AdminInvite::whereInviteCode($token)->first();
-        if(!$invite) {
+        if (! $invite) {
             $this->error('Invalid invite code');
+
             return;
         }
         $invite->max_uses = 1;
         $invite->expires_at = now()->subHours(2);
         $invite->save();
-        $this->info('Expired the following invite: ' . $invite->url());
+        $this->info('Expired the following invite: '.$invite->url());
     }
 }

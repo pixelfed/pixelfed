@@ -2,16 +2,13 @@
 
 namespace App\Jobs\CommentPipeline;
 
-use App\{
-    Notification,
-    Status,
-    UserFilter
-};
+use App\Notification;
 use App\Services\NotificationService;
 use App\Services\StatusService;
-use DB, Cache, Log;
-use Illuminate\Support\Facades\Redis;
-
+use App\Status;
+use App\UserFilter;
+use Cache;
+use DB;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
@@ -23,6 +20,7 @@ class CommentPipeline implements ShouldQueue
     use Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
 
     protected $status;
+
     protected $comment;
 
     /**
@@ -33,8 +31,9 @@ class CommentPipeline implements ShouldQueue
     public $deleteWhenMissingModels = true;
 
     public $timeout = 5;
+
     public $tries = 1;
-    
+
     /**
      * Create a new job instance.
      *
@@ -59,8 +58,8 @@ class CommentPipeline implements ShouldQueue
         $target = $status->profile;
         $actor = $comment->profile;
 
-        if(config('database.default') === 'mysql') {
-        	// todo: refactor
+        if (config('database.default') === 'mysql') {
+            // todo: refactor
             // $exp = DB::raw("select id, in_reply_to_id from statuses, (select @pv := :kid) initialisation where id > @pv and find_in_set(in_reply_to_id, @pv) > 0 and @pv := concat(@pv, ',', id)");
             // $expQuery = $exp->getValue(DB::connection()->getQueryGrammar());
             // $count = DB::select($expQuery, [ 'kid' => $status->id ]);
@@ -74,25 +73,25 @@ class CommentPipeline implements ShouldQueue
 
         StatusService::del($comment->id);
         StatusService::del($status->id);
-        Cache::forget('status:replies:all:' . $comment->id);
-        Cache::forget('status:replies:all:' . $status->id);
+        Cache::forget('status:replies:all:'.$comment->id);
+        Cache::forget('status:replies:all:'.$status->id);
 
         if ($actor->id === $target->id || $status->comments_disabled == true) {
             return true;
         }
-        
+
         $filtered = UserFilter::whereUserId($target->id)
             ->whereFilterableType('App\Profile')
             ->whereIn('filter_type', ['mute', 'block'])
             ->whereFilterableId($actor->id)
             ->exists();
 
-        if($filtered == true) {
+        if ($filtered == true) {
             return;
         }
 
-        if($target->user_id && $target->domain === null) {
-            DB::transaction(function() use($target, $actor, $comment) {
+        if ($target->user_id && $target->domain === null) {
+            DB::transaction(function () use ($target, $actor, $comment) {
                 $notification = new Notification();
                 $notification->profile_id = $target->id;
                 $notification->actor_id = $actor->id;
@@ -107,13 +106,13 @@ class CommentPipeline implements ShouldQueue
             });
         }
 
-        if($exists = Cache::get('status:replies:all:' . $status->id)) {
-        	if($exists && $exists->count() == 3) {
-        	} else {
-        		Cache::forget('status:replies:all:' . $status->id);
-        	}
+        if ($exists = Cache::get('status:replies:all:'.$status->id)) {
+            if ($exists && $exists->count() == 3) {
+            } else {
+                Cache::forget('status:replies:all:'.$status->id);
+            }
         } else {
-        	Cache::forget('status:replies:all:' . $status->id);
+            Cache::forget('status:replies:all:'.$status->id);
         }
     }
 }

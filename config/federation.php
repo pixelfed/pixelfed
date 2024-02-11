@@ -23,8 +23,8 @@ return [
             'concurrency' => env('ACTIVITYPUB_DELIVERY_CONCURRENCY', 10),
             'logger' => [
                 'enabled' => env('AP_LOGGER_ENABLED', false),
-                'driver' => 'log'
-            ]
+                'driver' => 'log',
+            ],
         ],
 
         'ingest' => [
@@ -45,7 +45,7 @@ return [
     ],
 
     'webfinger' => [
-        'enabled' => env('WEBFINGER', true)
+        'enabled' => env('WEBFINGER', true),
     ],
 
     'network_timeline' => env('PF_NETWORK_TIMELINE', true),

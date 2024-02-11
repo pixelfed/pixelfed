@@ -2,270 +2,273 @@
 
 namespace App\Http\Controllers;
 
-use App\AccountLog;
-use App\Following;
-use App\ProfileSponsor;
-use App\Report;
-use App\UserFilter;
-use App\UserSetting;
-use Auth, Cookie, DB, Cache, Purify;
-use Illuminate\Support\Facades\Redis;
-use Carbon\Carbon;
-use Illuminate\Http\Request;
-use Illuminate\Support\Str;
-use App\Http\Controllers\Settings\{
-	ExportSettings,
-	LabsSettings,
-	HomeSettings,
-	PrivacySettings,
-	RelationshipSettings,
-	SecuritySettings
-};
+use App\Http\Controllers\Settings\ExportSettings;
+use App\Http\Controllers\Settings\HomeSettings;
+use App\Http\Controllers\Settings\LabsSettings;
+use App\Http\Controllers\Settings\PrivacySettings;
+use App\Http\Controllers\Settings\RelationshipSettings;
+use App\Http\Controllers\Settings\SecuritySettings;
 use App\Jobs\DeletePipeline\DeleteAccountPipeline;
 use App\Jobs\MediaPipeline\MediaSyncLicensePipeline;
+use App\ProfileSponsor;
 use App\Services\AccountService;
+use App\UserSetting;
+use Auth;
+use Cache;
+use Carbon\Carbon;
+use Cookie;
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Redis;
+use Illuminate\Support\Str;
 
 class SettingsController extends Controller
 {
-	use ExportSettings,
-	LabsSettings,
-	HomeSettings,
-	PrivacySettings,
-	RelationshipSettings,
-	SecuritySettings;
+    use ExportSettings,
+        HomeSettings,
+        LabsSettings,
+        PrivacySettings,
+        RelationshipSettings,
+        SecuritySettings;
 
-	public function __construct()
-	{
-		$this->middleware('auth');
-	}
+    public function __construct()
+    {
+        $this->middleware('auth');
+    }
 
-	public function accessibility()
-	{
-		$settings = Auth::user()->settings;
+    public function accessibility()
+    {
+        $settings = Auth::user()->settings;
 
-		return view('settings.accessibility', compact('settings'));
-	}
+        return view('settings.accessibility', compact('settings'));
+    }
 
-	public function accessibilityStore(Request $request)
-	{
-		$settings = Auth::user()->settings;
-		$fields = [
-		  'compose_media_descriptions',
-		  'reduce_motion',
-		  'optimize_screen_reader',
-		  'high_contrast_mode',
-		  'video_autoplay',
-		];
-		foreach ($fields as $field) {
-			$form = $request->input($field);
-			if ($form == 'on') {
-				$settings->{$field} = true;
-			} else {
-				$settings->{$field} = false;
-			}
-			$settings->save();
-		}
+    public function accessibilityStore(Request $request)
+    {
+        $settings = Auth::user()->settings;
+        $fields = [
+            'compose_media_descriptions',
+            'reduce_motion',
+            'optimize_screen_reader',
+            'high_contrast_mode',
+            'video_autoplay',
+        ];
+        foreach ($fields as $field) {
+            $form = $request->input($field);
+            if ($form == 'on') {
+                $settings->{$field} = true;
+            } else {
+                $settings->{$field} = false;
+            }
+            $settings->save();
+        }
 
-		return redirect(route('settings.accessibility'))->with('status', 'Settings successfully updated!');
-	}
+        return redirect(route('settings.accessibility'))->with('status', 'Settings successfully updated!');
+    }
 
-	public function notifications()
-	{
-		return view('settings.notifications');
-	}
+    public function notifications()
+    {
+        return view('settings.notifications');
+    }
 
-	public function applications()
-	{
-		return view('settings.applications');
-	}
+    public function applications()
+    {
+        return view('settings.applications');
+    }
 
-	public function dataImport()
-	{
-		return view('settings.import.home');
-	}
+    public function dataImport()
+    {
+        return view('settings.import.home');
+    }
 
-	public function dataImportInstagram()
-	{
-		abort(404);
-	}
+    public function dataImportInstagram()
+    {
+        abort(404);
+    }
 
-	public function developers()
-	{
-		return view('settings.developers');
-	}
+    public function developers()
+    {
+        return view('settings.developers');
+    }
 
-	public function removeAccountTemporary(Request $request)
-	{
-		$user = Auth::user();
-		abort_if(!config('pixelfed.account_deletion'), 403);
-		abort_if($user->is_admin, 403);
+    public function removeAccountTemporary(Request $request)
+    {
+        $user = Auth::user();
+        abort_if(! config('pixelfed.account_deletion'), 403);
+        abort_if($user->is_admin, 403);
 
-		return view('settings.remove.temporary');
-	}
+        return view('settings.remove.temporary');
+    }
 
-	public function removeAccountTemporarySubmit(Request $request)
-	{
-		$user = Auth::user();
-		abort_if(!config('pixelfed.account_deletion'), 403);
-		abort_if($user->is_admin, 403);
-		$profile = $user->profile;
-		$user->status = 'disabled';
-		$profile->status = 'disabled';
-		$user->save();
-		$profile->save();
-		Auth::logout();
-		Cache::forget('profiles:private');
-		return redirect('/');
-	}
+    public function removeAccountTemporarySubmit(Request $request)
+    {
+        $user = Auth::user();
+        abort_if(! config('pixelfed.account_deletion'), 403);
+        abort_if($user->is_admin, 403);
+        $profile = $user->profile;
+        $user->status = 'disabled';
+        $profile->status = 'disabled';
+        $user->save();
+        $profile->save();
+        Auth::logout();
+        Cache::forget('profiles:private');
 
-	public function removeAccountPermanent(Request $request)
-	{
-		$user = Auth::user();
-		abort_if($user->is_admin, 403);
-		return view('settings.remove.permanent');
-	}
+        return redirect('/');
+    }
 
-	public function removeAccountPermanentSubmit(Request $request)
-	{
-		if(config('pixelfed.account_deletion') == false) {
-			abort(404);
-		}
-		$user = Auth::user();
-		abort_if(!config('pixelfed.account_deletion'), 403);
-		abort_if($user->is_admin, 403);
-		$profile = $user->profile;
-		$ts = Carbon::now()->addMonth();
-		$user->email = $user->id;
-		$user->password = '';
-		$user->status = 'delete';
-		$profile->status = 'delete';
-		$user->delete_after = $ts;
-		$profile->delete_after = $ts;
-		$user->save();
-		$profile->save();
-		Cache::forget('profiles:private');
-		AccountService::del($profile->id);
-		Auth::logout();
-		DeleteAccountPipeline::dispatch($user)->onQueue('low');
-		return redirect('/');
-	}
+    public function removeAccountPermanent(Request $request)
+    {
+        $user = Auth::user();
+        abort_if($user->is_admin, 403);
 
-	public function requestFullExport(Request $request)
-	{
-		$user = Auth::user();
-		return view('settings.export.show');
-	}
+        return view('settings.remove.permanent');
+    }
 
-	public function metroDarkMode(Request $request)
-	{
-		$this->validate($request, [
-			'mode' => 'required|string|in:light,dark'
-		]);
+    public function removeAccountPermanentSubmit(Request $request)
+    {
+        if (config('pixelfed.account_deletion') == false) {
+            abort(404);
+        }
+        $user = Auth::user();
+        abort_if(! config('pixelfed.account_deletion'), 403);
+        abort_if($user->is_admin, 403);
+        $profile = $user->profile;
+        $ts = Carbon::now()->addMonth();
+        $user->email = $user->id;
+        $user->password = '';
+        $user->status = 'delete';
+        $profile->status = 'delete';
+        $user->delete_after = $ts;
+        $profile->delete_after = $ts;
+        $user->save();
+        $profile->save();
+        Cache::forget('profiles:private');
+        AccountService::del($profile->id);
+        Auth::logout();
+        DeleteAccountPipeline::dispatch($user)->onQueue('low');
 
-		$mode = $request->input('mode');
+        return redirect('/');
+    }
 
-		if($mode == 'dark') {
-			$cookie = Cookie::make('dark-mode', 'true', 43800);
-		} else {
-			$cookie = Cookie::forget('dark-mode');
-		}
+    public function requestFullExport(Request $request)
+    {
+        $user = Auth::user();
 
-		return response()->json([200])->cookie($cookie);
-	}
+        return view('settings.export.show');
+    }
 
-	public function sponsor()
-	{
-		$default = [
-			'patreon' => null,
-			'liberapay' => null,
-			'opencollective' => null
-		];
-		$sponsors = ProfileSponsor::whereProfileId(Auth::user()->profile->id)->first();
-		$sponsors = $sponsors ? json_decode($sponsors->sponsors, true) : $default;
-		return view('settings.sponsor', compact('sponsors'));
-	}
-
-	public function sponsorStore(Request $request)
-	{
-		$this->validate($request, [
-			'patreon' => 'nullable|string',
-			'liberapay' => 'nullable|string',
-			'opencollective' => 'nullable|string'
-		]);
-
-		$patreon = Str::startsWith($request->input('patreon'), 'https://') ?
-			substr($request->input('patreon'), 8) :
-			$request->input('patreon');
-
-		$liberapay = Str::startsWith($request->input('liberapay'), 'https://') ?
-			substr($request->input('liberapay'), 8) :
-			$request->input('liberapay');
-
-		$opencollective = Str::startsWith($request->input('opencollective'), 'https://') ?
-			substr($request->input('opencollective'), 8) :
-			$request->input('opencollective');
-
-		$patreon = Str::startsWith($patreon, 'patreon.com/') ? e($patreon) : null;
-		$liberapay = Str::startsWith($liberapay, 'liberapay.com/') ? e($liberapay) : null;
-		$opencollective = Str::startsWith($opencollective, 'opencollective.com/') ? e($opencollective) : null;
-
-		if(empty($patreon) && empty($liberapay) && empty($opencollective)) {
-			return redirect(route('settings'))->with('error', 'An error occured. Please try again later.');
-		}
-
-		$res = [
-			'patreon' => $patreon,
-			'liberapay' => $liberapay,
-			'opencollective' => $opencollective
-		];
-
-		$sponsors = ProfileSponsor::firstOrCreate([
-			'profile_id' => Auth::user()->profile_id ?? Auth::user()->profile->id
-		]);
-		$sponsors->sponsors = json_encode($res);
-		$sponsors->save();
-		$sponsors = $res;
-		return redirect(route('settings'))->with('status', 'Sponsor settings successfully updated!');
-	}
-
-	public function timelineSettings(Request $request)
-	{
-        $uid = $request->user()->id;
-		$pid = $request->user()->profile_id;
-		$top = Redis::zscore('pf:tl:top', $pid) != false;
-		$replies = Redis::zscore('pf:tl:replies', $pid) != false;
-        $userSettings = UserSetting::firstOrCreate([
-            'user_id' => $uid
+    public function metroDarkMode(Request $request)
+    {
+        $this->validate($request, [
+            'mode' => 'required|string|in:light,dark',
         ]);
-        if(!$userSettings || !$userSettings->other) {
+
+        $mode = $request->input('mode');
+
+        if ($mode == 'dark') {
+            $cookie = Cookie::make('dark-mode', 'true', 43800);
+        } else {
+            $cookie = Cookie::forget('dark-mode');
+        }
+
+        return response()->json([200])->cookie($cookie);
+    }
+
+    public function sponsor()
+    {
+        $default = [
+            'patreon' => null,
+            'liberapay' => null,
+            'opencollective' => null,
+        ];
+        $sponsors = ProfileSponsor::whereProfileId(Auth::user()->profile->id)->first();
+        $sponsors = $sponsors ? json_decode($sponsors->sponsors, true) : $default;
+
+        return view('settings.sponsor', compact('sponsors'));
+    }
+
+    public function sponsorStore(Request $request)
+    {
+        $this->validate($request, [
+            'patreon' => 'nullable|string',
+            'liberapay' => 'nullable|string',
+            'opencollective' => 'nullable|string',
+        ]);
+
+        $patreon = Str::startsWith($request->input('patreon'), 'https://') ?
+            substr($request->input('patreon'), 8) :
+            $request->input('patreon');
+
+        $liberapay = Str::startsWith($request->input('liberapay'), 'https://') ?
+            substr($request->input('liberapay'), 8) :
+            $request->input('liberapay');
+
+        $opencollective = Str::startsWith($request->input('opencollective'), 'https://') ?
+            substr($request->input('opencollective'), 8) :
+            $request->input('opencollective');
+
+        $patreon = Str::startsWith($patreon, 'patreon.com/') ? e($patreon) : null;
+        $liberapay = Str::startsWith($liberapay, 'liberapay.com/') ? e($liberapay) : null;
+        $opencollective = Str::startsWith($opencollective, 'opencollective.com/') ? e($opencollective) : null;
+
+        if (empty($patreon) && empty($liberapay) && empty($opencollective)) {
+            return redirect(route('settings'))->with('error', 'An error occured. Please try again later.');
+        }
+
+        $res = [
+            'patreon' => $patreon,
+            'liberapay' => $liberapay,
+            'opencollective' => $opencollective,
+        ];
+
+        $sponsors = ProfileSponsor::firstOrCreate([
+            'profile_id' => Auth::user()->profile_id ?? Auth::user()->profile->id,
+        ]);
+        $sponsors->sponsors = json_encode($res);
+        $sponsors->save();
+        $sponsors = $res;
+
+        return redirect(route('settings'))->with('status', 'Sponsor settings successfully updated!');
+    }
+
+    public function timelineSettings(Request $request)
+    {
+        $uid = $request->user()->id;
+        $pid = $request->user()->profile_id;
+        $top = Redis::zscore('pf:tl:top', $pid) != false;
+        $replies = Redis::zscore('pf:tl:replies', $pid) != false;
+        $userSettings = UserSetting::firstOrCreate([
+            'user_id' => $uid,
+        ]);
+        if (! $userSettings || ! $userSettings->other) {
             $userSettings = [
                 'enable_reblogs' => false,
-                'photo_reblogs_only' => false
+                'photo_reblogs_only' => false,
             ];
         } else {
             $userSettings = array_merge([
                 'enable_reblogs' => false,
-                'photo_reblogs_only' => false
+                'photo_reblogs_only' => false,
             ],
-            $userSettings->other);
+                $userSettings->other);
         }
-		return view('settings.timeline', compact('top', 'replies', 'userSettings'));
-	}
 
-	public function updateTimelineSettings(Request $request)
-	{
+        return view('settings.timeline', compact('top', 'replies', 'userSettings'));
+    }
+
+    public function updateTimelineSettings(Request $request)
+    {
         $pid = $request->user()->profile_id;
-		$uid = $request->user()->id;
+        $uid = $request->user()->id;
         $this->validate($request, [
             'enable_reblogs' => 'sometimes',
-            'photo_reblogs_only' => 'sometimes'
+            'photo_reblogs_only' => 'sometimes',
         ]);
-		Redis::zrem('pf:tl:top', $pid);
-		Redis::zrem('pf:tl:replies', $pid);
+        Redis::zrem('pf:tl:top', $pid);
+        Redis::zrem('pf:tl:replies', $pid);
         $userSettings = UserSetting::firstOrCreate([
-            'user_id' => $uid
+            'user_id' => $uid,
         ]);
-		if($userSettings->other) {
+        if ($userSettings->other) {
             $other = $userSettings->other;
             $other['enable_reblogs'] = $request->has('enable_reblogs');
             $other['photo_reblogs_only'] = $request->has('photo_reblogs_only');
@@ -275,72 +278,74 @@ class SettingsController extends Controller
         }
         $userSettings->other = $other;
         $userSettings->save();
-		return redirect(route('settings'))->with('status', 'Timeline settings successfully updated!');
-	}
 
-	public function mediaSettings(Request $request)
-	{
-		$setting = UserSetting::whereUserId($request->user()->id)->firstOrFail();
-		$compose = $setting->compose_settings ? (
-			is_string($setting->compose_settings) ? json_decode($setting->compose_settings, true) : $setting->compose_settings
-			) : [
-			'default_license' => null,
-			'media_descriptions' => false
-		];
-		return view('settings.media', compact('compose'));
-	}
+        return redirect(route('settings'))->with('status', 'Timeline settings successfully updated!');
+    }
 
-	public function updateMediaSettings(Request $request)
-	{
-		$this->validate($request, [
-			'default' => 'required|int|min:1|max:16',
-			'sync' => 'nullable',
-			'media_descriptions' => 'nullable'
-		]);
+    public function mediaSettings(Request $request)
+    {
+        $setting = UserSetting::whereUserId($request->user()->id)->firstOrFail();
+        $compose = $setting->compose_settings ? (
+            is_string($setting->compose_settings) ? json_decode($setting->compose_settings, true) : $setting->compose_settings
+        ) : [
+            'default_license' => null,
+            'media_descriptions' => false,
+        ];
 
-		$license = $request->input('default');
-		$sync = $request->input('sync') == 'on';
-		$media_descriptions = $request->input('media_descriptions') == 'on';
-		$uid = $request->user()->id;
+        return view('settings.media', compact('compose'));
+    }
 
-		$setting = UserSetting::whereUserId($uid)->firstOrFail();
-		$compose = is_string($setting->compose_settings) ? json_decode($setting->compose_settings, true) : $setting->compose_settings;
-		$changed = false;
+    public function updateMediaSettings(Request $request)
+    {
+        $this->validate($request, [
+            'default' => 'required|int|min:1|max:16',
+            'sync' => 'nullable',
+            'media_descriptions' => 'nullable',
+        ]);
 
-		if($sync) {
-			$key = 'pf:settings:mls_recently:'.$uid;
-			if(Cache::get($key) == 2) {
-				$msg = 'You can only sync licenses twice per 24 hours. Try again later.';
-				return redirect(route('settings'))
-					->with('error', $msg);
-			}
-		}
+        $license = $request->input('default');
+        $sync = $request->input('sync') == 'on';
+        $media_descriptions = $request->input('media_descriptions') == 'on';
+        $uid = $request->user()->id;
 
-		if(!isset($compose['default_license']) || $compose['default_license'] !== $license) {
-			$compose['default_license'] = (int) $license;
-			$changed = true;
-		}
+        $setting = UserSetting::whereUserId($uid)->firstOrFail();
+        $compose = is_string($setting->compose_settings) ? json_decode($setting->compose_settings, true) : $setting->compose_settings;
+        $changed = false;
 
-		if(!isset($compose['media_descriptions']) || $compose['media_descriptions'] !== $media_descriptions) {
-			$compose['media_descriptions'] = $media_descriptions;
-			$changed = true;
-		}
+        if ($sync) {
+            $key = 'pf:settings:mls_recently:'.$uid;
+            if (Cache::get($key) == 2) {
+                $msg = 'You can only sync licenses twice per 24 hours. Try again later.';
 
-		if($changed) {
-			$setting->compose_settings = $compose;
-			$setting->save();
-			Cache::forget('profile:compose:settings:' . $request->user()->id);
-		}
+                return redirect(route('settings'))
+                    ->with('error', $msg);
+            }
+        }
 
-		if($sync) {
-			$val = Cache::has($key) ? 2 : 1;
-			Cache::put($key, $val, 86400);
-			MediaSyncLicensePipeline::dispatch($uid, $license);
-			return redirect(route('settings'))->with('status', 'Media licenses successfully synced! It may take a few minutes to take effect for every post.');
-		}
+        if (! isset($compose['default_license']) || $compose['default_license'] !== $license) {
+            $compose['default_license'] = (int) $license;
+            $changed = true;
+        }
 
-		return redirect(route('settings'))->with('status', 'Media settings successfully updated!');
-	}
+        if (! isset($compose['media_descriptions']) || $compose['media_descriptions'] !== $media_descriptions) {
+            $compose['media_descriptions'] = $media_descriptions;
+            $changed = true;
+        }
 
+        if ($changed) {
+            $setting->compose_settings = $compose;
+            $setting->save();
+            Cache::forget('profile:compose:settings:'.$request->user()->id);
+        }
+
+        if ($sync) {
+            $val = Cache::has($key) ? 2 : 1;
+            Cache::put($key, $val, 86400);
+            MediaSyncLicensePipeline::dispatch($uid, $license);
+
+            return redirect(route('settings'))->with('status', 'Media licenses successfully synced! It may take a few minutes to take effect for every post.');
+        }
+
+        return redirect(route('settings'))->with('status', 'Media settings successfully updated!');
+    }
 }
-
