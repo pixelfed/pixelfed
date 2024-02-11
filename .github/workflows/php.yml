@@ -55,7 +55,7 @@ jobs:
       # NOTE: we lint PHP files before composer to avoid wasting time
       # linting everything in vendor/
       - name: Lint PHP files
-        run: find . -name '*.php' -exec php -l {} \; > /dev/null
+        run: find . -name '*.php' -exec php --syntax-check {} \; > /dev/null
 
       - name: Download mlocati/docker-php-extension-installer
         uses: robinraju/release-downloader@v1.9
