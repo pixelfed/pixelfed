@@ -27,6 +27,7 @@
 		"laravel/passport": "^11.0",
 		"laravel/tinker": "^2.0",
 		"laravel/ui": "^4.2",
+		"lcobucci/clock": "^3.2",
 		"league/flysystem-aws-s3-v3": "^3.0",
 		"league/iso3166": "^2.1|^4.0",
 		"pbmedia/laravel-ffmpeg": "^8.0",
