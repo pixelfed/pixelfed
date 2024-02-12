@@ -2523,6 +2523,7 @@ class ApiV1Controller extends Controller
         $napi = $request->has(self::PF_API_ENTITY_KEY);
         $min = $request->input('min_id');
         $max = $request->input('max_id');
+        $minOrMax = $request->anyFilled(['max_id', 'min_id']);
         $limit = $request->input('limit') ?? 20;
         $user = $request->user();
 
@@ -2535,6 +2536,8 @@ class ApiV1Controller extends Controller
         $filtered = $user ? UserFilterService::filters($user->profile_id) : [];
         AccountService::setLastActive($user->id);
         $domainBlocks = UserFilterService::domainBlocks($user->profile_id);
+        $hideNsfw = config('instance.hide_nsfw_on_public_feeds');
+        $amin = SnowflakeService::byDate(now()->subDays(config('federation.network_timeline_days_falloff')));
 
         if($remote) {
             if(config('instance.timeline.network.cached')) {
@@ -2554,35 +2557,79 @@ class ApiV1Controller extends Controller
             } else {
                 $feed = Status::select(
                     'id',
-                    'profile_id',
+                    'uri',
                     'type',
-                    'visibility',
+                    'scope',
+                    'local',
+                    'created_at',
+                    'profile_id',
                     'in_reply_to_id',
                     'reblog_of_id'
-                )
-                ->whereIn('type', ['photo', 'photo:album', 'video', 'video:album', 'photo:video:album'])
-                ->where('visibility', 'public')
-                ->whereLocal(false)
-                ->orderByDesc('id')
-                ->take(($limit * 2))
-                ->pluck('id');
+                  )
+                  ->when($minOrMax, function($q, $minOrMax) use($min, $max) {
+                    $dir = $min ? '>' : '<';
+                    $id = $min ?? $max;
+                    return $q->where('id', $dir, $id);
+                  })
+                  ->whereNull(['in_reply_to_id', 'reblog_of_id'])
+                  ->when($hideNsfw, function($q, $hideNsfw) {
+                    return $q->where('is_nsfw', false);
+                  })
+                  ->whereIn('type', ['photo', 'photo:album', 'video', 'video:album', 'photo:video:album'])
+                  ->whereLocal(false)
+                  ->whereScope('public')
+                  ->where('id', '>', $amin)
+                  ->orderByDesc('id')
+                  ->limit(($limit * 2))
+                  ->pluck('id')
+                  ->values()
+                  ->toArray();
             }
+        } else {
+            if(config('instance.timeline.local.cached')) {
+                Cache::remember('api:v1:timelines:public:cache_check', 10368000, function() {
+                    if(PublicTimelineService::count() == 0) {
+                        PublicTimelineService::warmCache(true, 400);
+                    }
+                });
 
-        }
-
-        if($local || !$remote && !$local) {
-            Cache::remember('api:v1:timelines:public:cache_check', 10368000, function() {
-                if(PublicTimelineService::count() == 0) {
-                    PublicTimelineService::warmCache(true, 400);
+                if ($max) {
+                    $feed = PublicTimelineService::getRankedMaxId($max, $limit + 5);
+                } else if ($min) {
+                    $feed = PublicTimelineService::getRankedMinId($min, $limit + 5);
+                } else {
+                    $feed = PublicTimelineService::get(0, $limit + 5);
                 }
-            });
-
-            if ($max) {
-                $feed = PublicTimelineService::getRankedMaxId($max, $limit + 5);
-            } else if ($min) {
-                $feed = PublicTimelineService::getRankedMinId($min, $limit + 5);
             } else {
-                $feed = PublicTimelineService::get(0, $limit + 5);
+                $feed = Status::select(
+                    'id',
+                    'uri',
+                    'type',
+                    'scope',
+                    'local',
+                    'created_at',
+                    'profile_id',
+                    'in_reply_to_id',
+                    'reblog_of_id'
+                  )
+                  ->when($minOrMax, function($q, $minOrMax) use($min, $max) {
+                    $dir = $min ? '>' : '<';
+                    $id = $min ?? $max;
+                    return $q->where('id', $dir, $id);
+                  })
+                  ->whereNull(['in_reply_to_id', 'reblog_of_id'])
+                  ->when($hideNsfw, function($q, $hideNsfw) {
+                    return $q->where('is_nsfw', false);
+                  })
+                  ->whereIn('type', ['photo', 'photo:album', 'video', 'video:album', 'photo:video:album'])
+                  ->whereLocal(true)
+                  ->whereScope('public')
+                  ->where('id', '>', $amin)
+                  ->orderByDesc('id')
+                  ->limit(($limit * 2))
+                  ->pluck('id')
+                  ->values()
+                  ->toArray();
             }
         }
 

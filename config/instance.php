@@ -29,6 +29,7 @@ return [
 		],
 
 		'local' => [
+			'cached' => env('INSTANCE_PUBLIC_TIMELINE_CACHED', false),
 			'is_public' => env('INSTANCE_PUBLIC_LOCAL_TIMELINE', false)
 		],
 
