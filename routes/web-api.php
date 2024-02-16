@@ -1,11 +1,17 @@
 <?php
 
+use App\Http\Controllers\SoftwareUpdateController;
+
 Route::domain(config('pixelfed.domain.app'))->middleware(['validemail', 'twofactor', 'localization'])->group(function () {
     Route::group(['prefix' => 'api'], function () {
         Route::get('search', 'SearchController@searchAPI');
         Route::post('status/view', 'StatusController@storeView');
         Route::get('v1/polls/{id}', 'PollController@getPoll');
         Route::post('v1/polls/{id}/votes', 'PollController@vote');
+
+        Route::group(['prefix' => 'web-admin'], function() {
+            Route::get('software-update/check', [SoftwareUpdateController::class, 'getSoftwareUpdateCheck']);
+        });
 
         Route::group(['prefix' => 'compose'], function() {
             Route::group(['prefix' => 'v0'], function() {
