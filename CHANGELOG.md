@@ -2,6 +2,9 @@
 
 ## [Unreleased](https://github.com/pixelfed/pixelfed/compare/v0.11.11...dev)
 
+### Features
+- Autospam Live Filters - block remote activities based on comma separated keywords ([40b45b2a](https://github.com/pixelfed/pixelfed/commit/40b45b2a))
+
 ### Updated
 
 - Update ApiV1Controller, fix network timeline ([0faf59e3](https://github.com/pixelfed/pixelfed/commit/0faf59e3))
