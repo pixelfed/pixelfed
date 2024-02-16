@@ -4,6 +4,7 @@
 
 ### Features
 - Autospam Live Filters - block remote activities based on comma separated keywords ([40b45b2a](https://github.com/pixelfed/pixelfed/commit/40b45b2a))
+- Added Software Update banner to admin home feeds ([b0fb1988](https://github.com/pixelfed/pixelfed/commit/b0fb1988))
 
 ### Updated
 
