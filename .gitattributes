@@ -3,3 +3,10 @@
 *.scss linguist-vendored
 *.js linguist-vendored
 CHANGELOG.md export-ignore
+
+# Collapse diffs for generated files:
+public/**/*.js text -diff
+public/**/*.json text -diff
+public/**/*.css text -diff
+public/img/* binary -diff
+public/fonts/* binary -diff
