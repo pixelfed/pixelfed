@@ -321,11 +321,11 @@ class Helpers {
                 $filters = array_map('trim', explode(',', $filters));
                 $content = $res['content'];
                 foreach($filters as $filter) {
-                    $filter = trim($filter);
+                    $filter = trim(strtolower($filter));
                     if(!$filter || !strlen($filter)) {
                         continue;
                     }
-                    if(str_contains($content, $filter)) {
+                    if(str_contains(strtolower($content), $filter)) {
                         return;
                     }
                 }
