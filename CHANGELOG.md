@@ -8,6 +8,7 @@
 - Update public/network timelines, fix non-redis response and fix reblogs in home feed ([8b4ac5cc](https://github.com/pixelfed/pixelfed/commit/8b4ac5cc))
 - Update Federation, use proper Content-Type headers for following/follower collections ([fb0bb9a3](https://github.com/pixelfed/pixelfed/commit/fb0bb9a3))
 - Update ActivityPubFetchService, enforce stricter Content-Type validation ([1232cfc8](https://github.com/pixelfed/pixelfed/commit/1232cfc8))
+- Update status view, fix unlisted/private scope bug ([0f3ca194](https://github.com/pixelfed/pixelfed/commit/0f3ca194))
 -  ([](https://github.com/pixelfed/pixelfed/commit/))
 
 ## [v0.11.11 (2024-02-09)](https://github.com/pixelfed/pixelfed/compare/v0.11.10...v0.11.11)
