@@ -253,7 +253,7 @@ class FederationController extends Controller
             'type'     => 'OrderedCollection',
             'totalItems' => $account['following_count'] ?? 0,
         ];
-        return response()->json($obj);
+        return response()->json($obj)->header('Content-Type', 'application/activity+json');
     }
 
     public function userFollowers(Request $request, $username)
@@ -269,6 +269,6 @@ class FederationController extends Controller
             'type'     => 'OrderedCollection',
             'totalItems' => $account['followers_count'] ?? 0,
         ];
-        return response()->json($obj);
+        return response()->json($obj)->header('Content-Type', 'application/activity+json');
     }
 }
