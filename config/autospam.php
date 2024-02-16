@@ -33,5 +33,10 @@ return [
     'nlp' => [
     	'enabled' => false,
     	'spam_sample_limit' => env('PF_AUTOSPAM_NLP_SPAM_SAMPLE_LIMIT', 200),
+    ],
+
+    'live_filters' => [
+        'enabled' => env('PF_AUTOSPAM_LIVE_FILTERS_ENABLED', false),
+        'filters' => env('PF_AUTOSPAM_LIVE_FILTERS_CSV', ''),
     ]
 ];

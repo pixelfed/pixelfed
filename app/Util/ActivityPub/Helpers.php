@@ -315,6 +315,23 @@ class Helpers {
             return;
         }
 
+        if(config('autospam.live_filters.enabled')) {
+            $filters = config('autospam.live_filters.filters');
+            if(!empty($filters) && isset($res['content']) && !empty($res['content']) && strlen($filters) > 3) {
+                $filters = array_map('trim', explode(',', $filters));
+                $content = $res['content'];
+                foreach($filters as $filter) {
+                    $filter = trim($filter);
+                    if(!$filter || !strlen($filter)) {
+                        continue;
+                    }
+                    if(str_contains($content, $filter)) {
+                        return;
+                    }
+                }
+            }
+        }
+
         if(isset($res['object'])) {
             $activity = $res;
         } else {
