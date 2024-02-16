@@ -197,6 +197,22 @@ class Inbox
     public function handleCreateActivity()
     {
         $activity = $this->payload['object'];
+        if(config('autospam.live_filters.enabled')) {
+            $filters = config('autospam.live_filters.filters');
+            if(!empty($filters) && isset($activity['content']) && !empty($activity['content']) && strlen($filters) > 3) {
+                $filters = array_map('trim', explode(',', $filters));
+                $content = $activity['content'];
+                foreach($filters as $filter) {
+                    $filter = trim($filter);
+                    if(!$filter || !strlen($filter)) {
+                        continue;
+                    }
+                    if(str_contains($content, $filter)) {
+                        return;
+                    }
+                }
+            }
+        }
         $actor = $this->actorFirstOrCreate($this->payload['actor']);
         if(!$actor || $actor->domain == null) {
             return;
