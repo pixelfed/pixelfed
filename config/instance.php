@@ -140,5 +140,9 @@ return [
             'max_children' => env('INSTANCE_PARENTAL_CONTROLS_MAX_CHILDREN', 1),
             'auto_verify_email' => true,
         ],
-    ]
+    ],
+
+    'software-update' => [
+        'disable_failed_warning' => env('INSTANCE_SOFTWARE_UPDATE_DISABLE_FAILED_WARNING', false)
+    ],
 ];
