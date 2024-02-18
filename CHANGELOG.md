@@ -1,6 +1,11 @@
 # Release Notes
 
 ## [Unreleased](https://github.com/pixelfed/pixelfed/compare/v0.11.12...dev)
+
+### Updates
+
+- Update Inbox, cast live filters to lowercase ([d835e0ad](https://github.com/pixelfed/pixelfed/commit/d835e0ad))
+- Update federation config, increase default timeline days falloff to 90 days from 2 days. Fixes #4905 ([011834f4](https://github.com/pixelfed/pixelfed/commit/011834f4))
 -  ([](https://github.com/pixelfed/pixelfed/commit/))
 
 ## [v0.11.12 (2024-02-16)](https://github.com/pixelfed/pixelfed/compare/v0.11.11...v0.11.12)
@@ -9,7 +14,7 @@
 - Autospam Live Filters - block remote activities based on comma separated keywords ([40b45b2a](https://github.com/pixelfed/pixelfed/commit/40b45b2a))
 - Added Software Update banner to admin home feeds ([b0fb1988](https://github.com/pixelfed/pixelfed/commit/b0fb1988))
 
-### Updated
+### Updates
 
 - Update ApiV1Controller, fix network timeline ([0faf59e3](https://github.com/pixelfed/pixelfed/commit/0faf59e3))
 - Update public/network timelines, fix non-redis response and fix reblogs in home feed ([8b4ac5cc](https://github.com/pixelfed/pixelfed/commit/8b4ac5cc))
