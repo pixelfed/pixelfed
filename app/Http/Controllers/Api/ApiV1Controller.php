@@ -496,9 +496,12 @@ class ApiV1Controller extends Controller
         abort_if(!$account, 404);
         $pid = $request->user()->profile_id;
         $this->validate($request, [
-            'limit' => 'sometimes|integer|min:1|max:80'
+            'limit' => 'sometimes|integer|min:1'
         ]);
         $limit = $request->input('limit', 10);
+        if($limit > 80) {
+            $limit = 80;
+        }
         $napi = $request->has(self::PF_API_ENTITY_KEY);
 
         if($account && strpos($account['acct'], '@') != -1) {
@@ -594,9 +597,12 @@ class ApiV1Controller extends Controller
         abort_if(!$account, 404);
         $pid = $request->user()->profile_id;
         $this->validate($request, [
-            'limit' => 'sometimes|integer|min:1|max:80'
+            'limit' => 'sometimes|integer|min:1'
         ]);
         $limit = $request->input('limit', 10);
+        if($limit > 80) {
+            $limit = 80;
+        }
         $napi = $request->has(self::PF_API_ENTITY_KEY);
 
         if($account && strpos($account['acct'], '@') != -1) {
@@ -698,7 +704,7 @@ class ApiV1Controller extends Controller
             'max_id' => 'nullable|integer|min:0|max:' . PHP_INT_MAX,
             'since_id' => 'nullable|integer|min:0|max:' . PHP_INT_MAX,
             'min_id' => 'nullable|integer|min:0|max:' . PHP_INT_MAX,
-            'limit' => 'nullable|integer|min:1|max:100'
+            'limit' => 'nullable|integer|min:1'
         ]);
 
         $napi = $request->has(self::PF_API_ENTITY_KEY);
@@ -713,7 +719,10 @@ class ApiV1Controller extends Controller
             abort_if(in_array($domain, InstanceService::getBannedDomains()), 404);
         }
 
-        $limit = $request->limit ?? 20;
+        $limit = $request->input('limit') ?? 20;
+        if($limit > 40) {
+            $limit = 40;
+        }
         $max_id = $request->max_id;
         $min_id = $request->min_id;
 
@@ -959,12 +968,16 @@ class ApiV1Controller extends Controller
         abort_if(!$request->user(), 403);
 
         $this->validate($request, [
-            'id'    => 'required|array|min:1|max:20',
+            'id'    => 'required|array|min:1',
             'id.*'  => 'required|integer|min:1|max:' . PHP_INT_MAX
         ]);
+        $ids = $request->input('id');
+        if(count($ids) > 20) {
+            $ids = collect($ids)->take(20)->toArray();
+        }
         $napi = $request->has(self::PF_API_ENTITY_KEY);
         $pid = $request->user()->profile_id ?? $request->user()->profile->id;
-        $res = collect($request->input('id'))
+        $res = collect($ids)
             ->filter(function($id) use($pid) {
                 return intval($id) !== intval($pid);
             })
@@ -989,8 +1002,8 @@ class ApiV1Controller extends Controller
         abort_unless($request->user()->tokenCan('read'), 403);
 
         $this->validate($request, [
-            'q'         => 'required|string|min:1|max:255',
-            'limit'     => 'nullable|integer|min:1|max:40',
+            'q'         => 'required|string|min:1|max:30',
+            'limit'     => 'nullable|integer|min:1',
             'resolve'   => 'nullable'
         ]);
 
@@ -1000,22 +1013,23 @@ class ApiV1Controller extends Controller
         AccountService::setLastActive($user->id);
         $query = $request->input('q');
         $limit = $request->input('limit') ?? 20;
-        $resolve = (bool) $request->input('resolve', false);
-        $q = '%' . $query . '%';
+        if($limit > 20) {
+            $limit = 20;
+        }
+        $resolve = $request->boolean('resolve', false);
+        $q = $query . '%';
 
-        $profiles = Cache::remember('api:v1:accounts:search:' . sha1($query) . ':limit:' . $limit, 86400, function() use($q, $limit) {
-            return Profile::whereNull('status')
-                ->where('username', 'like', $q)
-                ->orWhere('name', 'like', $q)
-                ->limit($limit)
-                ->pluck('id')
-                ->map(function($id) {
-                    return AccountService::getMastodon($id);
-                })
-                ->filter(function($account) {
-                    return $account && isset($account['id']);
-                });
-        });
+        $profiles = Profile::where('username', 'like', $q)
+            ->orderByDesc('followers_count')
+            ->limit($limit)
+            ->pluck('id')
+            ->map(function($id) {
+                return AccountService::getMastodon($id);
+            })
+            ->filter(function($account) {
+                return $account && isset($account['id']);
+            })
+            ->values();
 
         return $this->json($profiles);
     }
@@ -1033,20 +1047,25 @@ class ApiV1Controller extends Controller
         abort_unless($request->user()->tokenCan('read'), 403);
 
         $this->validate($request, [
-            'limit'     => 'nullable|integer|min:1|max:40',
-            'page'      => 'nullable|integer|min:1|max:10'
+            'limit'     => 'sometimes|integer|min:1',
+            'page'      => 'sometimes|integer|min:1'
         ]);
 
         $user = $request->user();
         $limit = $request->input('limit') ?? 40;
+        if($limit > 80) {
+            $limit = 80;
+        }
 
-        $blocked = UserFilter::select('filterable_id','filterable_type','filter_type','user_id')
+        $blocks = UserFilter::select('filterable_id','filterable_type','filter_type','user_id')
             ->whereUserId($user->profile_id)
             ->whereFilterableType('App\Profile')
             ->whereFilterType('block')
             ->orderByDesc('id')
             ->simplePaginate($limit)
-            ->pluck('filterable_id')
+            ->withQueryString();
+
+        $res = $blocks->pluck('filterable_id')
             ->map(function($id) {
                 return AccountService::get($id, true);
             })
@@ -1055,7 +1074,23 @@ class ApiV1Controller extends Controller
             })
             ->values();
 
-        return $this->json($blocked);
+        $baseUrl = config('app.url') . '/api/v1/blocks?limit=' . $limit . '&';
+        $next = $blocks->nextPageUrl();
+        $prev = $blocks->previousPageUrl();
+
+        if($next && !$prev) {
+            $link = '<'.$next.'>; rel="next"';
+        }
+
+        if(!$next && $prev) {
+            $link = '<'.$prev.'>; rel="prev"';
+        }
+
+        if($next && $prev) {
+            $link = '<'.$next.'>; rel="next",<'.$prev.'>; rel="prev"';
+        }
+        $headers = isset($link) ? ['Link' => $link] : [];
+        return $this->json($res, 200, $headers);
     }
 
     /**
@@ -1247,13 +1282,16 @@ class ApiV1Controller extends Controller
         abort_unless($request->user()->tokenCan('read'), 403);
 
         $this->validate($request, [
-            'limit' => 'sometimes|integer|min:1|max:40'
+            'limit' => 'sometimes|integer|min:1'
         ]);
 
         $user = $request->user();
         $maxId = $request->input('max_id');
         $minId = $request->input('min_id');
         $limit = $request->input('limit') ?? 10;
+        if($limit > 40) {
+            $limit = 40;
+        }
 
         $res = Like::whereProfileId($user->profile_id)
             ->when($maxId, function($q, $maxId) {
@@ -1620,7 +1658,7 @@ class ApiV1Controller extends Controller
                 'thumbnail' => config_cache('app.banner_image') ?? url(Storage::url('public/headers/default.jpg')),
                 'languages' => [config('app.locale')],
                 'registrations' => (bool) config_cache('pixelfed.open_registration'),
-                'approval_required' => false,
+                'approval_required' => false, // (bool) config_cache('instance.curated_registration.enabled'),
                 'contact_account' => $contact,
                 'rules' => $rules,
                 'configuration' => [
@@ -2049,18 +2087,23 @@ class ApiV1Controller extends Controller
         abort_unless($request->user()->tokenCan('read'), 403);
 
         $this->validate($request, [
-            'limit' => 'nullable|integer|min:1|max:40'
+            'limit' => 'sometimes|integer|min:1'
         ]);
 
         $user = $request->user();
         $limit = $request->input('limit', 40);
+        if($limit > 80) {
+            $limit = 80;
+        }
 
         $mutes = UserFilter::whereUserId($user->profile_id)
             ->whereFilterableType('App\Profile')
             ->whereFilterType('mute')
             ->orderByDesc('id')
             ->simplePaginate($limit)
-            ->pluck('filterable_id')
+            ->withQueryString();
+
+        $res = $mutes->pluck('filterable_id')
             ->map(function($id) {
                 return AccountService::get($id, true);
             })
@@ -2069,7 +2112,23 @@ class ApiV1Controller extends Controller
             })
             ->values();
 
-        return $this->json($mutes);
+        $baseUrl = config('app.url') . '/api/v1/mutes?limit=' . $limit . '&';
+        $next = $mutes->nextPageUrl();
+        $prev = $mutes->previousPageUrl();
+
+        if($next && !$prev) {
+            $link = '<'.$next.'>; rel="next"';
+        }
+
+        if(!$next && $prev) {
+            $link = '<'.$prev.'>; rel="prev"';
+        }
+
+        if($next && $prev) {
+            $link = '<'.$next.'>; rel="next",<'.$prev.'>; rel="prev"';
+        }
+        $headers = isset($link) ? ['Link' => $link] : [];
+        return $this->json($res, 200, $headers);
     }
 
     /**
@@ -2181,7 +2240,7 @@ class ApiV1Controller extends Controller
         abort_unless($request->user()->tokenCan('read'), 403);
 
         $this->validate($request, [
-            'limit' => 'nullable|integer|min:1|max:100',
+            'limit' => 'sometimes|integer|min:1',
             'min_id' => 'nullable|integer|min:1|max:'.PHP_INT_MAX,
             'max_id' => 'nullable|integer|min:1|max:'.PHP_INT_MAX,
             'since_id' => 'nullable|integer|min:1|max:'.PHP_INT_MAX,
@@ -2191,6 +2250,9 @@ class ApiV1Controller extends Controller
 
         $pid = $request->user()->profile_id;
         $limit = $request->input('limit', 20);
+        if($limit > 40) {
+            $limit = 40;
+        }
 
         $since = $request->input('since_id');
         $min = $request->input('min_id');
@@ -2198,6 +2260,10 @@ class ApiV1Controller extends Controller
 
         if(!$since && !$min && !$max) {
             $min = 1;
+        }
+
+        if($since) {
+            $min = $since + 1;
         }
 
         $types = $request->input('types');
@@ -2261,7 +2327,7 @@ class ApiV1Controller extends Controller
             'page'        => 'sometimes|integer|max:40',
             'min_id'      => 'sometimes|integer|min:0|max:' . PHP_INT_MAX,
             'max_id'      => 'sometimes|integer|min:0|max:' . PHP_INT_MAX,
-            'limit'       => 'sometimes|integer|min:1|max:40',
+            'limit'       => 'sometimes|integer|min:1',
             'include_reblogs' => 'sometimes',
         ]);
 
@@ -2270,6 +2336,9 @@ class ApiV1Controller extends Controller
         $min = $request->input('min_id');
         $max = $request->input('max_id');
         $limit = $request->input('limit') ?? 20;
+        if($limit > 40) {
+            $limit = 40;
+        }
         $pid = $request->user()->profile_id;
         $includeReblogs = $request->filled('include_reblogs') ? $request->boolean('include_reblogs') : false;
         $nullFields = $includeReblogs ?
@@ -2515,7 +2584,7 @@ class ApiV1Controller extends Controller
         $this->validate($request,[
           'min_id'      => 'nullable|integer|min:0|max:' . PHP_INT_MAX,
           'max_id'      => 'nullable|integer|min:0|max:' . PHP_INT_MAX,
-          'limit'       => 'nullable|integer|max:100',
+          'limit'       => 'sometimes|integer|min:1',
           'remote'      => 'sometimes',
           'local'       => 'sometimes'
         ]);
@@ -2525,6 +2594,9 @@ class ApiV1Controller extends Controller
         $max = $request->input('max_id');
         $minOrMax = $request->anyFilled(['max_id', 'min_id']);
         $limit = $request->input('limit') ?? 20;
+        if($limit > 40) {
+            $limit = 40;
+        }
         $user = $request->user();
 
         $remote = $request->has('remote');
@@ -3043,10 +3115,13 @@ class ApiV1Controller extends Controller
         abort_unless($request->user()->tokenCan('read'), 403);
 
         $this->validate($request, [
-            'limit' => 'nullable|integer|min:1|max:80'
+            'limit' => 'sometimes|integer|min:1'
         ]);
 
-        $limit = $request->input('limit', 10);
+        $limit = $request->input('limit', 40);
+        if($limit > 80) {
+            $limit = 80;
+        }
         $user = $request->user();
         $pid = $user->profile_id;
         $status = Status::findOrFail($id);
@@ -3485,7 +3560,7 @@ class ApiV1Controller extends Controller
           'page'        => 'nullable|integer|max:40',
           'min_id'      => 'nullable|integer|min:0|max:' . PHP_INT_MAX,
           'max_id'      => 'nullable|integer|min:0|max:' . PHP_INT_MAX,
-          'limit'       => 'nullable|integer|max:100',
+          'limit'       => 'sometimes|integer|min:1',
           'only_media'  => 'sometimes|boolean',
           '_pe'         => 'sometimes'
         ]);
@@ -3518,6 +3593,9 @@ class ApiV1Controller extends Controller
         $min = $request->input('min_id');
         $max = $request->input('max_id');
         $limit = $request->input('limit', 20);
+        if($limit > 40) {
+            $limit = 40;
+        }
         $onlyMedia = $request->input('only_media', true);
         $pe = $request->has(self::PF_API_ENTITY_KEY);
         $pid = $request->user()->profile_id;
@@ -3547,7 +3625,7 @@ class ApiV1Controller extends Controller
             ->whereStatusVisibility('public')
             ->where('status_id', $dir, $id)
             ->orderBy('status_id', 'desc')
-            ->limit($limit)
+            ->limit(100)
             ->pluck('status_id')
             ->map(function ($i) use($pe) {
                 return $pe ? StatusService::get($i) : StatusService::getMastodon($i);
@@ -3565,6 +3643,7 @@ class ApiV1Controller extends Controller
                 $domain = strtolower(parse_url($i['url'], PHP_URL_HOST));
                 return !in_array($i['account']['id'], $filters) && !in_array($domain, $domainBlocks);
             })
+            ->take($limit)
             ->values()
             ->toArray();
 
@@ -3584,7 +3663,7 @@ class ApiV1Controller extends Controller
         abort_unless($request->user()->tokenCan('read'), 403);
 
         $this->validate($request, [
-            'limit' => 'nullable|integer|min:1|max:40',
+            'limit' => 'sometimes|integer|min:1',
             'max_id' => 'nullable|integer|min:0',
             'since_id' => 'nullable|integer|min:0',
             'min_id' => 'nullable|integer|min:0'
@@ -3593,6 +3672,9 @@ class ApiV1Controller extends Controller
         $pe = $request->has('_pe');
         $pid = $request->user()->profile_id;
         $limit = $request->input('limit') ?? 20;
+        if($limit > 40) {
+            $limit = 40;
+        }
         $max_id = $request->input('max_id');
         $since_id = $request->input('since_id');
         $min_id = $request->input('min_id');
@@ -3758,11 +3840,14 @@ class ApiV1Controller extends Controller
         abort_if(!$request->user(), 403);
 
         $this->validate($request, [
-            'limit' => 'int|min:1|max:10',
+            'limit' => 'sometimes|integer|min:1',
             'sort' => 'in:all,newest,popular'
         ]);
 
         $limit = $request->input('limit', 3);
+        if($limit > 10) {
+            $limit = 10;
+        }
         $pid = $request->user()->profile_id;
         $status = StatusService::getMastodon($id, false);
 
