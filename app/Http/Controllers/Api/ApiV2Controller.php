@@ -141,6 +141,7 @@ class ApiV2Controller extends Controller
         });
 
         $res['registrations']['enabled'] = (bool) config_cache('pixelfed.open_registration');
+        $res['registrations']['approval_required'] = (bool) config_cache('instance.curated_registration.enabled');
         return response()->json($res, 200, [], JSON_UNESCAPED_SLASHES);
     }
 

@@ -48,13 +48,15 @@ class LandingService
 				->toArray() : [];
 		});
 
+		$openReg = (bool) config_cache('pixelfed.open_registration') || (bool) config_cache('instance.curated_registration.enabled') && config('instance.curated_registration.state.fallback_on_closed_reg');
+
 		$res = [
 			'name' => config_cache('app.name'),
 			'url' => config_cache('app.url'),
 			'domain' => config('pixelfed.domain.app'),
 			'show_directory' => config_cache('instance.landing.show_directory'),
 			'show_explore_feed' => config_cache('instance.landing.show_explore'),
-			'open_registration' => config_cache('pixelfed.open_registration') == 1,
+			'open_registration' => (bool) $openReg,
 			'version' => config('pixelfed.version'),
 			'about' => [
 				'banner_image' => config_cache('app.banner_image') ?? url('/storage/headers/default.jpg'),

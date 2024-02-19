@@ -111,7 +111,7 @@
                     </form>
                     @endif
 
-                    @if(config_cache('pixelfed.open_registration'))
+                    @if((bool) config_cache('pixelfed.open_registration') || (bool) config_cache('instance.curated_registration.enabled'))
                     <hr>
 
                     <p class="text-center font-weight-bold mb-0">

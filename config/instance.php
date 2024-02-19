@@ -145,4 +145,35 @@ return [
     'software-update' => [
         'disable_failed_warning' => env('INSTANCE_SOFTWARE_UPDATE_DISABLE_FAILED_WARNING', false)
     ],
+
+    'notifications' => [
+        'gc' => [
+            'enabled' => env('INSTANCE_NOTIFY_AUTO_GC', false),
+            'delete_after_days' => env('INSTANCE_NOTIFY_AUTO_GC_DEL_AFTER_DAYS', 365)
+        ]
+    ],
+
+    'curated_registration' => [
+        'enabled' => env('INSTANCE_CUR_REG', false),
+
+        'resend_confirmation_limit' => env('INSTANCE_CUR_REG_RESEND_LIMIT', 5),
+
+        'captcha_enabled' => env('INSTANCE_CUR_REG_CAPTCHA', env('CAPTCHA_ENABLED', false)),
+
+        'state' => [
+            'fallback_on_closed_reg' => true,
+            'only_enabled_on_closed_reg' => env('INSTANCE_CUR_REG_STATE_ONLY_ON_CLOSED', true),
+        ],
+
+        'notify' => [
+            'admin' => [
+                'on_verify_email' => [
+                    'enabled' => env('INSTANCE_CUR_REG_NOTIFY_ADMIN_ON_VERIFY', false),
+                    'bundle' => env('INSTANCE_CUR_REG_NOTIFY_ADMIN_ON_VERIFY_BUNDLE', false),
+                    'max_per_day' => env('INSTANCE_CUR_REG_NOTIFY_ADMIN_ON_VERIFY_MPD', 10),
+                ],
+                'on_user_response' => env('INSTANCE_CUR_REG_NOTIFY_ADMIN_ON_USER_RESPONSE', false),
+            ]
+        ],
+    ],
 ];

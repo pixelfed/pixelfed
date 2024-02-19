@@ -29,16 +29,18 @@ Route::domain(config('pixelfed.domain.app'))->middleware(['validemail', 'twofact
     Route::get('auth/pci/{id}/{code}', 'ParentalControlsController@inviteRegister');
     Route::post('auth/pci/{id}/{code}', 'ParentalControlsController@inviteRegisterStore');
 
-    // Route::get('auth/sign_up', 'CuratedRegisterController@index');
-    // Route::post('auth/sign_up', 'CuratedRegisterController@proceed');
-    // Route::get('auth/sign_up/concierge/response-sent', 'CuratedRegisterController@conciergeResponseSent');
-    // Route::get('auth/sign_up/concierge', 'CuratedRegisterController@concierge');
-    // Route::post('auth/sign_up/concierge', 'CuratedRegisterController@conciergeStore');
-    // Route::get('auth/sign_up/concierge/form', 'CuratedRegisterController@conciergeFormShow');
-    // Route::post('auth/sign_up/concierge/form', 'CuratedRegisterController@conciergeFormStore');
-    // Route::get('auth/sign_up/confirm', 'CuratedRegisterController@confirmEmail');
-    // Route::post('auth/sign_up/confirm', 'CuratedRegisterController@confirmEmailHandle');
-    // Route::get('auth/sign_up/confirmed', 'CuratedRegisterController@emailConfirmed');
+    Route::get('auth/sign_up', 'CuratedRegisterController@index')->name('auth.curated-onboarding');
+    Route::post('auth/sign_up', 'CuratedRegisterController@proceed');
+    Route::get('auth/sign_up/concierge/response-sent', 'CuratedRegisterController@conciergeResponseSent');
+    Route::get('auth/sign_up/concierge', 'CuratedRegisterController@concierge');
+    Route::post('auth/sign_up/concierge', 'CuratedRegisterController@conciergeStore');
+    Route::get('auth/sign_up/concierge/form', 'CuratedRegisterController@conciergeFormShow');
+    Route::post('auth/sign_up/concierge/form', 'CuratedRegisterController@conciergeFormStore');
+    Route::get('auth/sign_up/confirm', 'CuratedRegisterController@confirmEmail');
+    Route::post('auth/sign_up/confirm', 'CuratedRegisterController@confirmEmailHandle');
+    Route::get('auth/sign_up/confirmed', 'CuratedRegisterController@emailConfirmed');
+    Route::get('auth/sign_up/resend-confirmation', 'CuratedRegisterController@resendConfirmation');
+    Route::post('auth/sign_up/resend-confirmation', 'CuratedRegisterController@resendConfirmationProcess');
     Route::get('auth/forgot/email', 'UserEmailForgotController@index')->name('email.forgot');
     Route::post('auth/forgot/email', 'UserEmailForgotController@store')->middleware('throttle:10,900,forgotEmail');
 
@@ -306,7 +308,7 @@ Route::domain(config('pixelfed.domain.app'))->middleware(['validemail', 'twofact
             Route::view('import', 'site.help.import')->name('help.import');
             Route::view('parental-controls', 'site.help.parental-controls');
             // Route::view('email-confirmation-issues', 'site.help.email-confirmation-issues')->name('help.email-confirmation-issues');
-            // Route::view('curated-onboarding', 'site.help.curated-onboarding')->name('help.curated-onboarding');
+            Route::view('curated-onboarding', 'site.help.curated-onboarding')->name('help.curated-onboarding');
         });
         Route::get('newsroom/{year}/{month}/{slug}', 'NewsroomController@show');
         Route::get('newsroom/archive', 'NewsroomController@archive');
