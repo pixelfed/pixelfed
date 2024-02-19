@@ -33,6 +33,13 @@
       <li class="nav-item {{request()->is('*/import')?'active':''}}">
         <a class="nav-link font-weight-light text-muted" href="{{route('help.import')}}">Instagram Import</a>
       </li>
+      @if((bool) config_cache('instance.curated_registration.enabled'))
+      <li class="nav-item {{request()->is('*/curated-onboarding')?'active':''}}">
+        <a class="nav-link font-weight-light text-muted" href="{{route('help.curated-onboarding')}}">
+          Curated Onboarding
+        </a>
+      </li>
+      @endif
       <li class="nav-item">
         <hr>
       </li>
