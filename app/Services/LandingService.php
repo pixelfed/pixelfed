@@ -48,7 +48,7 @@ class LandingService
 				->toArray() : [];
 		});
 
-		$openReg = (bool) config_cache('pixelfed.open_registration') || (bool) config_cache('instance.curated_registration.enabled') && config('instance.curated_registration.state.fallback_on_closed_reg');
+		$openReg = (bool) config_cache('pixelfed.open_registration');
 
 		$res = [
 			'name' => config_cache('app.name'),
@@ -57,6 +57,7 @@ class LandingService
 			'show_directory' => config_cache('instance.landing.show_directory'),
 			'show_explore_feed' => config_cache('instance.landing.show_explore'),
 			'open_registration' => (bool) $openReg,
+			'curated_onboarding' => (bool) config_cache('instance.curated_registration.enabled'),
 			'version' => config('pixelfed.version'),
 			'about' => [
 				'banner_image' => config_cache('app.banner_image') ?? url('/storage/headers/default.jpg'),
