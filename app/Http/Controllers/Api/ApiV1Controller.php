@@ -1652,13 +1652,13 @@ class ApiV1Controller extends Controller
                 'email' => config('instance.email'),
                 'version' => '3.5.3 (compatible; Pixelfed ' . config('pixelfed.version') .')',
                 'urls' => [
-                    'streaming_api' => 'wss://' . config('pixelfed.domain.app')
+                    'streaming_api' => null,
                 ],
                 'stats' => $stats,
                 'thumbnail' => config_cache('app.banner_image') ?? url(Storage::url('public/headers/default.jpg')),
                 'languages' => [config('app.locale')],
                 'registrations' => (bool) config_cache('pixelfed.open_registration'),
-                'approval_required' => false, // (bool) config_cache('instance.curated_registration.enabled'),
+                'approval_required' => (bool) config_cache('instance.curated_registration.enabled'),
                 'contact_account' => $contact,
                 'rules' => $rules,
                 'configuration' => [

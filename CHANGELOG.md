@@ -2,6 +2,10 @@
 
 ## [Unreleased](https://github.com/pixelfed/pixelfed/compare/v0.11.12...dev)
 
+### Features
+
+- Curated Onboarding ([8dac2caf](https://github.com/pixelfed/pixelfed/commit/8dac2caf))
+
 ### Updates
 
 - Update Inbox, cast live filters to lowercase ([d835e0ad](https://github.com/pixelfed/pixelfed/commit/d835e0ad))
