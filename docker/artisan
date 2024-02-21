@@ -1,0 +1,6 @@
+#!/bin/bash
+
+declare service="${PF_SERVICE:=worker}"
+declare user="${PF_USER:=www-data}"
+
+exec docker compose exec --user "${user}" "${service}" php artisan "${@}"
