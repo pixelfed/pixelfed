@@ -112,9 +112,9 @@ services:
     container_name: "${DOCKER_ALL_CONTAINER_NAME_PREFIX}-worker"
     command: gosu www-data php artisan horizon
     restart: unless-stopped
-    stop_signal: SIGTERM
     profiles:
       - ${DOCKER_WORKER_PROFILE:-}
+    stop_signal: SIGTERM
     build:
       target: ${DOCKER_APP_RUNTIME}-runtime
       args:
@@ -182,6 +182,8 @@ services:
     image: redis:${DOCKER_REDIS_VERSION}
     container_name: "${DOCKER_ALL_CONTAINER_NAME_PREFIX}-redis"
     restart: unless-stopped
+    profiles:
+      - ${DOCKER_REDIS_PROFILE:-}
     command: "${DOCKER_REDIS_CONFIG_FILE:-} --requirepass '${REDIS_PASSWORD:-}'"
     environment:
       TZ: "${TZ:?error}"
