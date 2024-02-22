@@ -20,7 +20,7 @@ indent_size = 4
 shell_variant      = bash  # like -ln=bash
 binary_next_line   = true  # like -bn
 switch_case_indent = true  # like -ci
-space_redirects    = false # like -sr
+space_redirects    = true # like -sr
 keep_padding       = false  # like -kp
 function_next_line = true  # like -fn
 never_split        = true  # like -ns
