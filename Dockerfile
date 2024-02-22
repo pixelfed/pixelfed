@@ -21,7 +21,7 @@ ARG FOREGO_VERSION="0.17.2"
 ARG GOMPLATE_VERSION="v3.11.6"
 
 # See: https://github.com/jippi/dottie
-ARG DOTTIE_VERSION="v0.8.0"
+ARG DOTTIE_VERSION="v0.9.3"
 
 ###
 # PHP base configuration
@@ -142,6 +142,7 @@ ENV APT_PACKAGES_EXTRA=${APT_PACKAGES_EXTRA}
 
 # Install and configure base layer
 COPY docker/shared/root/docker/install/base.sh /docker/install/base.sh
+
 RUN --mount=type=cache,id=pixelfed-apt-${PHP_VERSION}-${PHP_DEBIAN_RELEASE}-${TARGETPLATFORM},sharing=locked,target=/var/lib/apt \
     --mount=type=cache,id=pixelfed-apt-cache-${PHP_VERSION}-${PHP_DEBIAN_RELEASE}-${TARGETPLATFORM},sharing=locked,target=/var/cache/apt \
     /docker/install/base.sh
