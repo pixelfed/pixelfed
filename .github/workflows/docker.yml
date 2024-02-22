@@ -173,6 +173,27 @@ jobs:
         env:
           DOCKER_METADATA_ANNOTATIONS_LEVELS: manifest,index
 
+      - name: Docker meta (Cache))
+        uses: docker/metadata-action@v5
+        id: cache
+        with:
+          images: |
+            name=ghcr.io/${{ github.repository }}-cache,enable=true
+            name=${{ env.DOCKER_HUB_ORGANISATION }}/${{ env.DOCKER_HUB_REPO }}-cache,enable=${{ env.HAS_DOCKER_HUB_CONFIGURED }}
+          flavor: |
+            latest=auto
+            suffix=-${{ matrix.target_runtime }}-${{ matrix.php_version }}
+          tags: |
+            type=raw,value=dev,enable=${{ github.ref == format('refs/heads/{0}', 'dev') }}
+            type=raw,value=staging,enable=${{ github.ref == format('refs/heads/{0}', 'staging') }}
+            type=pep440,pattern={{raw}}
+            type=pep440,pattern=v{{major}}.{{minor}}
+            type=ref,event=branch,prefix=branch-
+            type=ref,event=pr,prefix=pr-
+            type=ref,event=tag
+        env:
+          DOCKER_METADATA_ANNOTATIONS_LEVELS: manifest,index
+
       - name: Build and push Docker image
         uses: docker/build-push-action@v5
         with:
@@ -193,7 +214,7 @@ jobs:
             type=gha,scope=${{ matrix.target_runtime }}-${{ matrix.php_base }}-${{ matrix.php_version }}
           cache-to: |
             type=gha,mode=max,scope=${{ matrix.target_runtime }}-${{ matrix.php_base }}-${{ matrix.php_version }}
-            type=registry,ref=ghcr.io/${{ github.repository }}-cache:${{ steps.meta.outputs.tags }}
+            ${{ steps.cache.outputs.tags }}
 
       # goss validate the image
       #
