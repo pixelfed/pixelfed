@@ -42,7 +42,6 @@ class AdminCuratedRegisterController extends Controller
                     return $q->whereIsClosed(true)->whereIsRejected(true);
                 }
             })
-            ->latest()
             ->paginate(10);
         return view('admin.curated-register.index', compact('records', 'filter'));
     }
