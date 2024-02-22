@@ -1,13 +1,23 @@
 .DS_Store
-/.composer/
+/.bash_history
+/.bash_profile
+/.bashrc
+/.composer
 /.env
+/.env.dottie-backup
 /.git
+/.git-credentials
 /.gitconfig
 /.gitignore
+/.idea
+/.vagrant
 /bootstrap/cache
 /docker-compose-state/
+/Homestead.json
+/Homestead.yaml
 /node_modules
 /npm-debug.log
+/public/hot
 /public/storage
 /public/vendor/horizon
 /storage/*.key
@@ -15,6 +25,6 @@
 /vendor
 /yarn-error.log
 
-# exceptions - these *MUST* be last
+# Exceptions - these *MUST* be last
 !/bootstrap/cache/.gitignore
 !/public/vendor/horizon/.gitignore
