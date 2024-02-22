@@ -51,7 +51,7 @@ find "${ENTRYPOINT_TEMPLATE_DIR}" -follow -type f -print | while read -r templat
 
     # Render the template
     log-info "Running [gomplate] on [${template_file}] --> [${output_file_path}]"
-    gomplate < "${template_file}" > "${output_file_path}"
+    gomplate <"${template_file}" >"${output_file_path}"
 
     # Show the diff from the envsubst command
     if is-true "${ENTRYPOINT_SHOW_TEMPLATE_DIFF}"; then
