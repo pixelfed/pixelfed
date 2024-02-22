@@ -78,10 +78,11 @@ class PixelfedDirectoryController extends Controller
             $res['community_guidelines'] = json_decode($guidelines->v, true);
         }
 
-        $openRegistration = ConfigCache::whereK('pixelfed.open_registration')->first();
-        if($openRegistration) {
-            $res['open_registration'] = (bool) $openRegistration;
-        }
+        $openRegistration = (bool) config_cache('pixelfed.open_registration');
+        $res['open_registration'] = $openRegistration;
+
+        $curatedOnboarding = (bool) config_cache('instance.curated_registration.enabled');
+        $res['curated_onboarding'] = $curatedOnboarding;
 
         $oauthEnabled = ConfigCache::whereK('pixelfed.oauth_enabled')->first();
         if($oauthEnabled) {
