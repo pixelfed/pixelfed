@@ -91,20 +91,29 @@ function run-command-as()
 
     log-info-stderr "${notice_message_color}👷 Running [${*}] as [${target_user}]${color_clear}"
 
+    # disable error on exit behavior temporarily while we run the command
+    set +e
+
     if [[ ${target_user} != "root" ]]; then
         stream-prefix-command-output su --preserve-environment "${target_user}" --shell /bin/bash --command "${*}"
     else
         stream-prefix-command-output "${@}"
     fi
 
+    # capture exit code
     exit_code=$?
+
+    # re-enable exit code handling
+    set -e
 
     if [[ $exit_code != 0 ]]; then
         log-error "${error_message_color}❌ Error!${color_clear}"
+
         return "$exit_code"
     fi
 
     log-info-stderr "${success_message_color}✅ OK!${color_clear}"
+
     return "$exit_code"
 }
 
