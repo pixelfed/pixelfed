@@ -1,4 +1,20 @@
-.env
-.git
-.gitignore
+.DS_Store
+/.composer/
+/.env
+/.git
+/.gitconfig
+/.gitignore
+/bootstrap/cache
 /docker-compose-state/
+/node_modules
+/npm-debug.log
+/public/storage
+/public/vendor/horizon
+/storage/*.key
+/storage/docker
+/vendor
+/yarn-error.log
+
+# exceptions - these *MUST* be last
+!/bootstrap/cache/.gitignore
+!/public/vendor/horizon/.gitignore
