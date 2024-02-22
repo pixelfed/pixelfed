@@ -74,6 +74,8 @@ services:
       - ${DOCKER_WEB_PROFILE:-}
     build:
       target: ${DOCKER_APP_RUNTIME}-runtime
+      cache_from:
+        - "type=registry,ref=${DOCKER_APP_IMAGE}-cache:${DOCKER_APP_TAG}"
       args:
         APT_PACKAGES_EXTRA: "${DOCKER_APP_APT_PACKAGES_EXTRA:-}"
         PHP_BASE_TYPE: "${DOCKER_APP_BASE_TYPE}"
@@ -117,6 +119,8 @@ services:
     stop_signal: SIGTERM
     build:
       target: ${DOCKER_APP_RUNTIME}-runtime
+      cache_from:
+        - "type=registry,ref=${DOCKER_APP_IMAGE}-cache:${DOCKER_APP_TAG}"
       args:
         APT_PACKAGES_EXTRA: "${DOCKER_APP_APT_PACKAGES_EXTRA:-}"
         PHP_BASE_TYPE: "${DOCKER_APP_BASE_TYPE}"
