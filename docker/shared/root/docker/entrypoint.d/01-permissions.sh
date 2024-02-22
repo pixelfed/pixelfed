@@ -6,7 +6,7 @@ source "${ENTRYPOINT_ROOT}/helpers.sh"
 
 entrypoint-set-script-name "$0"
 
-# Ensure the two Docker volumes and dot-env files are owned by the runtime user as other scripts
+# Ensure the Docker volumes and required files are owned by the runtime user as other scripts
 # will be writing to these
 run-as-current-user chown --verbose "${RUNTIME_UID}:${RUNTIME_GID}" "./.env"
 run-as-current-user chown --verbose "${RUNTIME_UID}:${RUNTIME_GID}" "./bootstrap/cache"
