@@ -25,6 +25,8 @@ services:
     restart: unless-stopped
     profiles:
       - ${DOCKER_PROXY_PROFILE:-}
+    environment:
+      DOCKER_SERVICE_NAME: "proxy"
     volumes:
       - "${DOCKER_PROXY_HOST_DOCKER_SOCKET_PATH}:/tmp/docker.sock:ro"
       - "${DOCKER_ALL_HOST_CONFIG_ROOT_PATH}/proxy/conf.d:/etc/nginx/conf.d"
@@ -83,17 +85,23 @@ services:
         PHP_EXTENSIONS_EXTRA: "${DOCKER_APP_PHP_EXTENSIONS_EXTRA:-}"
         PHP_PECL_EXTENSIONS_EXTRA: "${DOCKER_APP_PHP_PECL_EXTENSIONS_EXTRA:-}"
         PHP_VERSION: "${DOCKER_APP_PHP_VERSION:?error}"
-    volumes:
-      - "./.env:/var/www/.env"
-      - "${DOCKER_APP_HOST_CACHE_PATH}:/var/www/bootstrap/cache"
-      - "${DOCKER_APP_HOST_STORAGE_PATH}:/var/www/storage"
-      - "${DOCKER_APP_HOST_OVERRIDES_PATH}:/docker/overrides:ro"
     environment:
+      # Used by Pixelfed Docker init script
+      DOCKER_SERVICE_NAME: "web"
+      DOCKER_APP_ENTRYPOINT_DEBUG: ${DOCKER_APP_ENTRYPOINT_DEBUG:-0}
+      ENTRYPOINT_SKIP_SCRIPTS: ${ENTRYPOINT_SKIP_SCRIPTS:-}
+      # Used by [proxy] service
       LETSENCRYPT_HOST: "${DOCKER_PROXY_LETSENCRYPT_HOST:?error}"
       LETSENCRYPT_EMAIL: "${DOCKER_PROXY_LETSENCRYPT_EMAIL:?error}"
       LETSENCRYPT_TEST: "${DOCKER_PROXY_LETSENCRYPT_TEST:-}"
       VIRTUAL_HOST: "${APP_DOMAIN}"
       VIRTUAL_PORT: "80"
+    volumes:
+      - "./.env:/var/www/.env"
+      - "${DOCKER_ALL_HOST_CONFIG_ROOT_PATH}/proxy/conf.d:/docker/shared/proxy/conf.d"
+      - "${DOCKER_APP_HOST_CACHE_PATH}:/var/www/bootstrap/cache"
+      - "${DOCKER_APP_HOST_OVERRIDES_PATH}:/docker/overrides:ro"
+      - "${DOCKER_APP_HOST_STORAGE_PATH}:/var/www/storage"
     labels:
       com.github.nginx-proxy.nginx-proxy.keepalive: 30
       com.github.nginx-proxy.nginx-proxy.http2.enable: true
@@ -114,9 +122,9 @@ services:
     container_name: "${DOCKER_ALL_CONTAINER_NAME_PREFIX}-worker"
     command: gosu www-data php artisan horizon
     restart: unless-stopped
+    stop_signal: SIGTERM
     profiles:
       - ${DOCKER_WORKER_PROFILE:-}
-    stop_signal: SIGTERM
     build:
       target: ${DOCKER_APP_RUNTIME}-runtime
       cache_from:
@@ -128,11 +136,17 @@ services:
         PHP_EXTENSIONS_EXTRA: "${DOCKER_APP_PHP_EXTENSIONS_EXTRA:-}"
         PHP_PECL_EXTENSIONS_EXTRA: "${DOCKER_APP_PHP_PECL_EXTENSIONS_EXTRA:-}"
         PHP_VERSION: "${DOCKER_APP_PHP_VERSION:?error}"
+    environment:
+      # Used by Pixelfed Docker init script
+      DOCKER_SERVICE_NAME: "worker"
+      DOCKER_APP_ENTRYPOINT_DEBUG: ${DOCKER_APP_ENTRYPOINT_DEBUG:-0}
+      ENTRYPOINT_SKIP_SCRIPTS: ${ENTRYPOINT_SKIP_SCRIPTS:-}
     volumes:
       - "./.env:/var/www/.env"
+      - "${DOCKER_ALL_HOST_CONFIG_ROOT_PATH}/proxy/conf.d:/docker/shared/proxy/conf.d"
       - "${DOCKER_APP_HOST_CACHE_PATH}:/var/www/bootstrap/cache"
-      - "${DOCKER_APP_HOST_STORAGE_PATH}:/var/www/storage"
       - "${DOCKER_APP_HOST_OVERRIDES_PATH}:/docker/overrides:ro"
+      - "${DOCKER_APP_HOST_STORAGE_PATH}:/var/www/storage"
     depends_on:
       - db
       - redis
@@ -186,9 +200,9 @@ services:
     image: redis:${DOCKER_REDIS_VERSION}
     container_name: "${DOCKER_ALL_CONTAINER_NAME_PREFIX}-redis"
     restart: unless-stopped
+    command: "${DOCKER_REDIS_CONFIG_FILE:-} --requirepass '${REDIS_PASSWORD:-}'"
     profiles:
       - ${DOCKER_REDIS_PROFILE:-}
-    command: "${DOCKER_REDIS_CONFIG_FILE:-} --requirepass '${REDIS_PASSWORD:-}'"
     environment:
       TZ: "${TZ:?error}"
       REDISCLI_AUTH: ${REDIS_PASSWORD:-}
