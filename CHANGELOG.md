@@ -15,6 +15,7 @@
 - Update api v1/v2 instance endpoints, bump mastoapi version from 2.7.2 to 3.5.3 ([545f7d5e](https://github.com/pixelfed/pixelfed/commit/545f7d5e))
 - Update ApiV1Controller, implement better limit logic to gracefully handle requests with limits that exceed the max ([1f74a95d](https://github.com/pixelfed/pixelfed/commit/1f74a95d))
 - Update AdminCuratedRegisterController, show oldest applications first ([c4dde641](https://github.com/pixelfed/pixelfed/commit/c4dde641))
+- Update Directory logic, add curated onboarding support ([59c70239](https://github.com/pixelfed/pixelfed/commit/59c70239))
 -  ([](https://github.com/pixelfed/pixelfed/commit/))
 
 ## [v0.11.12 (2024-02-16)](https://github.com/pixelfed/pixelfed/compare/v0.11.11...v0.11.12)
