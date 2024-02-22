@@ -193,7 +193,7 @@ jobs:
             type=gha,scope=${{ matrix.target_runtime }}-${{ matrix.php_base }}-${{ matrix.php_version }}
           cache-to: |
             type=gha,mode=max,scope=${{ matrix.target_runtime }}-${{ matrix.php_base }}-${{ matrix.php_version }}
-            type=registry,ref=${{ matrix.target_runtime }}-${{ matrix.php_base }}-${{ matrix.php_version }}-cache
+            type=registry,ref=ghcr.io/${{ github.repository }}-cache:${{ matrix.target_runtime }}-${{ matrix.php_base }}-${{ matrix.php_version }}
 
       # goss validate the image
       #
