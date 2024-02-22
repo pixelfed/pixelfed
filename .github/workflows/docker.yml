@@ -189,8 +189,11 @@ jobs:
           build-args: |
             PHP_VERSION=${{ matrix.php_version }}
             PHP_BASE_TYPE=${{ matrix.php_base }}
-          cache-from: type=gha,scope=${{ matrix.target_runtime }}-${{ matrix.php_base }}-${{ matrix.php_version }}
-          cache-to: type=gha,mode=max,scope=${{ matrix.target_runtime }}-${{ matrix.php_base }}-${{ matrix.php_version }}
+          cache-from: |
+            type=gha,scope=${{ matrix.target_runtime }}-${{ matrix.php_base }}-${{ matrix.php_version }}
+          cache-to: |
+            type=gha,mode=max,scope=${{ matrix.target_runtime }}-${{ matrix.php_base }}-${{ matrix.php_version }}
+            type=registry,ref=${{ matrix.target_runtime }}-${{ matrix.php_base }}-${{ matrix.php_version }}-cache
 
       # goss validate the image
       #
