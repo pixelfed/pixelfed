@@ -173,7 +173,7 @@ jobs:
         env:
           DOCKER_METADATA_ANNOTATIONS_LEVELS: manifest,index
 
-      - name: Docker meta (Cache))
+      - name: Docker meta (Cache)
         uses: docker/metadata-action@v5
         id: cache
         with:
