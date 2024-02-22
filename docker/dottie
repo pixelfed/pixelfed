@@ -1,16 +1,17 @@
 #!/bin/bash
 
-declare root="${PWD}"
+declare project_root="${PWD}"
 
 if command -v git &>/dev/null; then
-    root=$(git rev-parse --show-toplevel)
+    project_root=$(git rev-parse --show-toplevel)
 fi
 
 exec docker run \
     --rm \
     --interactive \
     --tty \
-    --volume "${root}:/var/www" \
+    --volume "${project_root}:/var/www" \
+    --volume "/tmp:/tmp" \
     --workdir /var/www \
     ghcr.io/jippi/dottie \
     "$@"
