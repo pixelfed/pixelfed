@@ -17,6 +17,7 @@
 - Update AdminCuratedRegisterController, show oldest applications first ([c4dde641](https://github.com/pixelfed/pixelfed/commit/c4dde641))
 - Update Directory logic, add curated onboarding support ([59c70239](https://github.com/pixelfed/pixelfed/commit/59c70239))
 - Update Inbox and StatusObserver, fix silently rejected direct messages due to saveQuietly which failed to generate a snowflake id ([089ba3c4](https://github.com/pixelfed/pixelfed/commit/089ba3c4))
+- Update Curated Onboarding dashboard, improve application filtering and make it easier to distinguish response state ([2b5d7235](https://github.com/pixelfed/pixelfed/commit/2b5d7235))
 -  ([](https://github.com/pixelfed/pixelfed/commit/))
 
 ## [v0.11.12 (2024-02-16)](https://github.com/pixelfed/pixelfed/compare/v0.11.11...v0.11.12)
