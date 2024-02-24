@@ -22,28 +22,43 @@ class AdminCuratedRegisterController extends Controller
     public function index(Request $request)
     {
         $this->validate($request, [
-            'filter' => 'sometimes|in:open,all,awaiting,approved,rejected'
+            'filter' => 'sometimes|in:open,all,awaiting,approved,rejected,responses',
+            'sort' => 'sometimes|in:asc,desc'
         ]);
         $filter = $request->input('filter', 'open');
+        $sort = $request->input('sort', 'asc');
         $records = CuratedRegister::when($filter, function($q, $filter) {
                 if($filter === 'open') {
                     return $q->where('is_rejected', false)
+                    ->where(function($query) {
+                        return $query->where('user_has_responded', true)->orWhere('is_awaiting_more_info', false);
+                    })
                     ->whereNotNull('email_verified_at')
                     ->whereIsClosed(false);
                 } else if($filter === 'all') {
                     return $q;
+                } else if($filter === 'responses') {
+                    return $q->whereIsClosed(false)
+                        ->whereNotNull('email_verified_at')
+                        ->where('user_has_responded', true)
+                        ->where('is_awaiting_more_info', true);
                 } elseif ($filter === 'awaiting') {
                     return $q->whereIsClosed(false)
-                        ->whereNull('is_rejected')
-                        ->whereNull('is_approved');
+                        ->where('is_rejected', false)
+                        ->where('is_approved', false)
+                        ->where('user_has_responded', false)
+                        ->where('is_awaiting_more_info', true);
                 } elseif ($filter === 'approved') {
                     return $q->whereIsClosed(true)->whereIsApproved(true);
                 } elseif ($filter === 'rejected') {
                     return $q->whereIsClosed(true)->whereIsRejected(true);
                 }
             })
-            ->latest()
-            ->paginate(10);
+            ->when($sort, function($query, $sort) {
+                return $query->orderBy('id', $sort);
+            })
+            ->paginate(10)
+            ->withQueryString();
         return view('admin.curated-register.index', compact('records', 'filter'));
     }
 
@@ -161,6 +176,7 @@ class AdminCuratedRegisterController extends Controller
         $activity->message = $request->input('message');
         $activity->save();
         $record->is_awaiting_more_info = true;
+        $record->user_has_responded = false;
         $record->save();
         Mail::to($record->email)->send(new CuratedRegisterRequestDetailsFromUser($record, $activity));
         return $request->all();

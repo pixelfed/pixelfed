@@ -18,16 +18,19 @@
                 <a class="nav-link {{request()->has('filter') ? '':'active'}}" href="/i/admin/curated-onboarding/home">Open Applications</a>
             </li>
             <li class="nav-item">
-                <a class="nav-link {{request()->has('filter') && request()->filter == 'all' ? 'active':''}}" href="/i/admin/curated-onboarding/home?filter=all">All Applications</a>
+                <a class="nav-link {{request()->has('filter') && request()->filter == 'responses' ? 'active':''}}" href="/i/admin/curated-onboarding/home?filter=responses">User Response Replies</a>
             </li>
             <li class="nav-item">
-                <a class="nav-link {{request()->has('filter') && request()->filter == 'awaiting' ? 'active':''}}" href="/i/admin/curated-onboarding/home?filter=awaiting">Awaiting Info</a>
+                <a class="nav-link {{request()->has('filter') && request()->filter == 'awaiting' ? 'active':''}}" href="/i/admin/curated-onboarding/home?filter=awaiting">Awaiting User Response</a>
             </li>
             <li class="nav-item">
-                <a class="nav-link {{request()->has('filter') && request()->filter == 'approved' ? 'active':''}}" href="/i/admin/curated-onboarding/home?filter=approved">Approved Applications</a>
+                <a class="nav-link {{request()->has('filter') && request()->filter == 'approved' ? 'active':''}}" href="/i/admin/curated-onboarding/home?filter=approved&sort=desc">Approved Applications</a>
             </li>
             <li class="nav-item">
-                <a class="nav-link {{request()->has('filter') && request()->filter == 'rejected' ? 'active':''}}" href="/i/admin/curated-onboarding/home?filter=rejected">Rejected Applications</a>
+                <a class="nav-link {{request()->has('filter') && request()->filter == 'rejected' ? 'active':''}}" href="/i/admin/curated-onboarding/home?filter=rejected&sort=desc">Rejected Applications</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link {{request()->has('filter') && request()->filter == 'all' ? 'active':''}}" href="/i/admin/curated-onboarding/home?filter=all&sort=desc">All Applications</a>
             </li>
         </ul>
     </div>

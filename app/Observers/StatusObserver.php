@@ -38,6 +38,10 @@ class StatusObserver
      */
     public function updated(Status $status)
     {
+        if(!in_array($status->scope, ['public', 'unlisted', 'private'])) {
+            return;
+        }
+
         if(config('instance.timeline.home.cached')) {
             Cache::forget('pf:timelines:home:' . $status->profile_id);
         }
@@ -55,6 +59,10 @@ class StatusObserver
      */
     public function deleted(Status $status)
     {
+        if(!in_array($status->scope, ['public', 'unlisted', 'private'])) {
+            return;
+        }
+
         if(config('instance.timeline.home.cached')) {
             Cache::forget('pf:timelines:home:' . $status->profile_id);
         }
