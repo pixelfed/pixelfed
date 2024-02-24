@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "00f283796faf6517a8d98f9080440b7f",
+    "content-hash": "57bb452a3c9527c1876d829a9deaa1ba",
     "packages": [
         {
             "name": "aws/aws-crt-php",
@@ -11058,6 +11058,7 @@
                     "type": "patreon"
                 }
             ],
+            "abandoned": "web-token/jwt-library",
             "time": "2022-08-04T21:04:09+00:00"
         },
         {
@@ -11136,6 +11137,7 @@
                     "type": "patreon"
                 }
             ],
+            "abandoned": "web-token/jwt-library",
             "time": "2023-02-02T17:25:26+00:00"
         },
         {
@@ -11213,6 +11215,7 @@
                     "type": "patreon"
                 }
             ],
+            "abandoned": "web-token/jwt-library",
             "time": "2023-02-02T17:25:26+00:00"
         },
         {
@@ -11283,6 +11286,7 @@
                     "type": "patreon"
                 }
             ],
+            "abandoned": "web-token/jwt-library",
             "time": "2022-08-04T21:04:09+00:00"
         },
         {
@@ -11356,6 +11360,7 @@
                     "type": "patreon"
                 }
             ],
+            "abandoned": "web-token/jwt-library",
             "time": "2024-01-02T17:55:33+00:00"
         },
         {
