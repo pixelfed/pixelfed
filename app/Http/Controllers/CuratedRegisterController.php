@@ -105,6 +105,7 @@ class CuratedRegisterController extends Controller
             'action_required' => true,
         ]);
 
+        CuratedRegister::findOrFail($crid)->update(['user_has_responded' => true]);
         $request->session()->pull('cur-reg-con');
         $request->session()->pull('cur-reg-con-attempt');
 

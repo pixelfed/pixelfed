@@ -26,7 +26,7 @@
                     <tr>
                         <th scope="col">ID</th>
                         <th scope="col">Username</th>
-                        @if(in_array($filter, ['all', 'open']))
+                        @if(in_array($filter, ['all', 'open', 'awaiting', 'responses']))
                         <th scope="col">Status</th>
                         @endif
                         <th scope="col">Reason for Joining</th>
@@ -47,7 +47,7 @@
                                 &commat;{{ $record->username }}
                             </p>
                         </td>
-                        @if(in_array($filter, ['all', 'open']))
+                        @if(in_array($filter, ['all', 'open', 'awaiting', 'responses']))
                         <td class="align-middle">
                             {!! $record->adminStatusLabel() !!}
                         </td>
