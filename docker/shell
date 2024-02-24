@@ -9,4 +9,9 @@ if [[ $# -ge 1 ]]; then
     command=("$@")
 fi
 
-exec docker compose exec --user "${user}" "${service}" "${command[@]}"
+exec docker compose exec \
+    --user "${user}" \
+    --env TERM \
+    --env COLORTERM \
+    "${service}" \
+    "${command[@]}"
