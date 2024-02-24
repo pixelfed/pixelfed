@@ -16,6 +16,7 @@
 - Update ApiV1Controller, implement better limit logic to gracefully handle requests with limits that exceed the max ([1f74a95d](https://github.com/pixelfed/pixelfed/commit/1f74a95d))
 - Update AdminCuratedRegisterController, show oldest applications first ([c4dde641](https://github.com/pixelfed/pixelfed/commit/c4dde641))
 - Update Directory logic, add curated onboarding support ([59c70239](https://github.com/pixelfed/pixelfed/commit/59c70239))
+- Update Inbox and StatusObserver, fix silently rejected direct messages due to saveQuietly which failed to generate a snowflake id ([089ba3c4](https://github.com/pixelfed/pixelfed/commit/089ba3c4))
 -  ([](https://github.com/pixelfed/pixelfed/commit/))
 
 ## [v0.11.12 (2024-02-16)](https://github.com/pixelfed/pixelfed/compare/v0.11.11...v0.11.12)
