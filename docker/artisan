@@ -3,4 +3,9 @@
 declare service="${PF_SERVICE:=worker}"
 declare user="${PF_USER:=www-data}"
 
-exec docker compose exec --user "${user}" "${service}" php artisan "${@}"
+exec docker compose exec \
+    --user "${user}" \
+    --env TERM \
+    --env COLORTERM \
+    "${service}" \
+    php artisan "${@}"
