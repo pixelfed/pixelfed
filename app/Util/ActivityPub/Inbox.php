@@ -423,7 +423,7 @@ class Inbox
         $status->uri = $activity['id'];
         $status->object_url = $activity['id'];
         $status->in_reply_to_profile_id = $profile->id;
-        $status->saveQuietly();
+        $status->save();
 
         $dm = new DirectMessage;
         $dm->to_id = $profile->id;
