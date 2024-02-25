@@ -98,8 +98,8 @@ FROM ghcr.io/jippi/dottie:${DOTTIE_VERSION} AS dottie-image
 # It's in its own layer so it can be fetched in parallel with other build steps
 FROM php:${PHP_VERSION}-${PHP_BASE_TYPE}-${PHP_DEBIAN_RELEASE} AS gomplate-image
 
-ARG BUILDARCH
-ARG BUILDOS
+ARG TARGETARCH
+ARG TARGETOS
 ARG GOMPLATE_VERSION
 
 RUN set -ex \
@@ -108,7 +108,7 @@ RUN set -ex \
         --show-error \
         --location \
         --output /usr/local/bin/gomplate \
-        https://github.com/hairyhenderson/gomplate/releases/download/${GOMPLATE_VERSION}/gomplate_${BUILDOS}-${BUILDARCH} \
+        https://github.com/hairyhenderson/gomplate/releases/download/${GOMPLATE_VERSION}/gomplate_${TARGETOS}-${TARGETARCH} \
     && chmod +x /usr/local/bin/gomplate \
     && /usr/local/bin/gomplate --version
 
@@ -220,9 +220,6 @@ COPY --chown=${RUNTIME_UID}:${RUNTIME_GID} . /var/www/
 
 FROM php-extensions AS shared-runtime
 
-ARG BUILDARCH
-ARG BUILDOS
-ARG GOMPLATE_VERSION
 ARG RUNTIME_GID
 ARG RUNTIME_UID
 
