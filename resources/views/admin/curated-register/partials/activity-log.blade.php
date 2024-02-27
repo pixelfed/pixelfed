@@ -46,6 +46,21 @@
                     <p class="lead font-weight-bold text-center">Request Additional Details</p>
                     <p class="text-muted">Use this form to request additional details. Once you press Send, we'll send the potential user an email with a special link they can visit with a form that they can provide additional details with. You can also Preview the email before it's sent.</p>
 
+                    <div v-if="responseTemplates && responseTemplates.length" class="my-3">
+                        <p class="small font-weight-bold mb-1">Template Responses</p>
+
+                        <div class="d-grid">
+                            <template v-for="tmpl in responseTemplates">
+                                <button
+                                    class="btn btn-lighter btn-sm py-1 font-weight-bold rounded-lg text-dark border border-muted px-3"
+                                    style="font-size: 13px;"
+                                    @click="useTemplate(tmpl)">
+                                    <i class="far fa-plus mr-1 text-muted"></i> @{{ tmpl.name.slice(0, 25) }}
+                                </button>
+                            </template>
+                        </div>
+                    </div>
+
                     <div class="request-form">
                         <div class="form-group">
                             <label for="requestDetailsMessageInput" class="small text-muted">Your Message:</label>
@@ -60,7 +75,7 @@
                             <p class="help-text small text-right">
                                 <span>@{{ composeMessage && composeMessage.length ? composeMessage.length : 0 }}</span>
                                 <span>/</span>
-                                <span>500</span>
+                                <span>2000</span>
                             </p>
                         </div>
                         <div class="d-flex">
@@ -76,6 +91,12 @@
                                 target="_blank">
                                 Preview
                             </a>
+                            <a
+                                v-if="composeMessage && composeMessage.length"
+                                class="btn btn-outline-danger text-danger rounded-pill btn-sm px-4"
+                                @click="composeMessage = null">
+                                Clear
+                            </a>
                         </div>
                     </div>
                 </div>
@@ -89,6 +110,21 @@
                 <div class="card-body pt-0">
                     <p class="lead font-weight-bold text-center">Send Message</p>
                     <p class="text-muted">Use this form to send a message to the applicant. Once you press Send, we'll send the potential user an email with your message. You can also Preview the email before it's sent.</p>
+
+                    <div v-if="responseTemplates && responseTemplates.length" class="my-3">
+                        <p class="small font-weight-bold mb-1">Template Responses</p>
+
+                        <div class="d-grid">
+                            <template v-for="tmpl in responseTemplates">
+                                <button
+                                    class="btn btn-lighter btn-sm py-1 font-weight-bold rounded-lg text-dark border border-muted px-3"
+                                    style="font-size: 13px;"
+                                    @click="useTemplateMessage(tmpl)">
+                                    <i class="far fa-plus mr-1 text-muted"></i> @{{ tmpl.name.slice(0, 25) }}
+                                </button>
+                            </template>
+                        </div>
+                    </div>
 
                     <div class="request-form">
                         <div class="form-group">
@@ -187,11 +223,13 @@
                 messageFormOpen: false,
                 composeMessage: null,
                 messageBody: null,
+                responseTemplates: [],
             }
         },
 
         mounted() {
             setTimeout(() => {
+                this.fetchResponseTemplates();
                 this.fetchActivities();
             }, 1000)
         },
@@ -233,10 +271,16 @@
                 return str;
             },
 
+            fetchResponseTemplates() {
+                axios.get('/i/admin/api/curated-onboarding/templates/get')
+                .then(res => {
+                    this.responseTemplates = res.data;
+                })
+            },
+
             fetchActivities() {
                 axios.get('/i/admin/api/curated-onboarding/show/{{$id}}/activity-log')
                 .then(res => {
-                    console.log(res.data);
                     this.activities = res.data;
                 })
                 .finally(() => {
@@ -379,7 +423,15 @@
 
             openUserResponse(activity) {
                 swal('User Response', activity.user_response.message)
-            }
+            },
+
+            useTemplate(tmpl) {
+                this.composeMessage = tmpl.content;
+            },
+
+            useTemplateMessage(tmpl) {
+                this.messageBody = tmpl.content;
+            },
         }
     });
 
