@@ -15,7 +15,7 @@
     <div class="col-12">
         <ul class="nav nav-pills">
             <li class="nav-item">
-                <a class="nav-link {{request()->has('filter') ? '':'active'}}" href="/i/admin/curated-onboarding/home">Open Applications</a>
+                <a class="nav-link {{!request()->is('*home') || request()->has('filter') ? '':'active'}}" href="/i/admin/curated-onboarding/home">Open Applications</a>
             </li>
             <li class="nav-item">
                 <a class="nav-link {{request()->has('filter') && request()->filter == 'responses' ? 'active':''}}" href="/i/admin/curated-onboarding/home?filter=responses">User Response Replies</a>
@@ -31,6 +31,9 @@
             </li>
             <li class="nav-item">
                 <a class="nav-link {{request()->has('filter') && request()->filter == 'all' ? 'active':''}}" href="/i/admin/curated-onboarding/home?filter=all&sort=desc">All Applications</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link {{ request()->is('*templates*') ? 'active' : ''}}" href="/i/admin/curated-onboarding/templates">Templates</a>
             </li>
         </ul>
     </div>

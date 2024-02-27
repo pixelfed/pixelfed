@@ -106,6 +106,12 @@ Route::domain(config('pixelfed.domain.admin'))->prefix('i/admin')->group(functio
     Route::get('asf/home', 'AdminShadowFilterController@home');
     Route::redirect('curated-onboarding/', 'curated-onboarding/home');
     Route::get('curated-onboarding/home', 'AdminCuratedRegisterController@index')->name('admin.curated-onboarding');
+    Route::get('curated-onboarding/templates', 'AdminCuratedRegisterController@templates')->name('admin.curated-onboarding.templates');
+    Route::get('curated-onboarding/templates/create', 'AdminCuratedRegisterController@templateCreate')->name('admin.curated-onboarding.create-template');
+    Route::post('curated-onboarding/templates/create', 'AdminCuratedRegisterController@templateStore');
+    Route::get('curated-onboarding/templates/edit/{id}', 'AdminCuratedRegisterController@templateEdit');
+    Route::post('curated-onboarding/templates/edit/{id}', 'AdminCuratedRegisterController@templateEditStore');
+    Route::delete('curated-onboarding/templates/edit/{id}', 'AdminCuratedRegisterController@templateDelete');
     Route::get('curated-onboarding/show/{id}/preview-details-message', 'AdminCuratedRegisterController@previewDetailsMessageShow');
     Route::get('curated-onboarding/show/{id}/preview-message', 'AdminCuratedRegisterController@previewMessageShow');
     Route::get('curated-onboarding/show/{id}', 'AdminCuratedRegisterController@show');
@@ -162,5 +168,6 @@ Route::domain(config('pixelfed.domain.admin'))->prefix('i/admin')->group(functio
         Route::post('curated-onboarding/show/{id}/message/send', 'AdminCuratedRegisterController@apiMessageSendStore');
         Route::post('curated-onboarding/show/{id}/reject', 'AdminCuratedRegisterController@apiHandleReject');
         Route::post('curated-onboarding/show/{id}/approve', 'AdminCuratedRegisterController@apiHandleApprove');
+        Route::get('curated-onboarding/templates/get', 'AdminCuratedRegisterController@getActiveTemplates');
     });
 });
