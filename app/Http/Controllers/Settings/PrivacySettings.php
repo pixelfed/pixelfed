@@ -84,14 +84,17 @@ trait PrivacySettings
             }
             $settings->save();
         }
-        Cache::forget('profile:settings:' . $profile->id);
+        $pid = $profile->id;
+        Cache::forget('profile:settings:' . $pid);
         Cache::forget('user:account:id:' . $profile->user_id);
-        Cache::forget('profile:follower_count:' . $profile->id);
-        Cache::forget('profile:following_count:' . $profile->id);
-        Cache::forget('profile:atom:enabled:' . $profile->id);
-        Cache::forget('profile:embed:' . $profile->id);
-        Cache::forget('pf:acct:settings:hidden-followers:' . $profile->id);
-        Cache::forget('pf:acct:settings:hidden-following:' . $profile->id);
+        Cache::forget('profile:follower_count:' . $pid);
+        Cache::forget('profile:following_count:' . $pid);
+        Cache::forget('profile:atom:enabled:' . $pid);
+        Cache::forget('profile:embed:' . $pid);
+        Cache::forget('pf:acct:settings:hidden-followers:' . $pid);
+        Cache::forget('pf:acct:settings:hidden-following:' . $pid);
+        Cache::forget('pf:acct-trans:hideFollowing:' . $pid);
+        Cache::forget('pf:acct-trans:hideFollowers:' . $pid);
         return redirect(route('settings.privacy'))->with('status', 'Settings successfully updated!');
     }
 
