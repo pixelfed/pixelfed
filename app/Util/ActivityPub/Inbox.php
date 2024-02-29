@@ -1283,7 +1283,7 @@ class Inbox
             }
         }
 
-        if(!$accountId || !$objects->count()) {
+        if(!$accountId && !$objects->count()) {
             return;
         }
 
