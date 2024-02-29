@@ -307,7 +307,7 @@ Route::domain(config('pixelfed.domain.app'))->middleware(['validemail', 'twofact
             Route::view('instance-max-users-limit', 'site.help.instance-max-users')->name('help.instance-max-users-limit');
             Route::view('import', 'site.help.import')->name('help.import');
             Route::view('parental-controls', 'site.help.parental-controls');
-            // Route::view('email-confirmation-issues', 'site.help.email-confirmation-issues')->name('help.email-confirmation-issues');
+            Route::view('email-confirmation-issues', 'site.help.email-confirmation-issues')->name('help.email-confirmation-issues');
             Route::view('curated-onboarding', 'site.help.curated-onboarding')->name('help.curated-onboarding');
         });
         Route::get('newsroom/{year}/{month}/{slug}', 'NewsroomController@show');
