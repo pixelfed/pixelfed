@@ -103,6 +103,21 @@
                                 </span>
                             </a>
                         </li>
+                        <li class="nav-item">
+                            <a
+                                :class="['nav-link d-flex align-items-center', { active: tabIndex == 3}]"
+                                href="#"
+                                @click.prevent="toggleTab(3)">
+
+                                <span>Remote Reports</span>
+                                <span
+                                    v-if="stats.remote_open"
+                                    class="badge badge-sm badge-floating badge-danger border-white ml-2"
+                                    style="background-color: red;color:white;font-size:11px;">
+                                    {{prettyCount(stats.remote_open)}}
+                                </span>
+                            </a>
+                        </li>
                         <li class="d-none d-md-block nav-item">
                             <a
                                 :class="['nav-link d-flex align-items-center', { active: tabIndex == 1}]"
@@ -191,7 +206,11 @@
                                 </a>
                             </td>
                             <td class="align-middle">
-                                <a :href="`/i/web/profile/${report.reporter.id}`" target="_blank" class="text-white">
+                                <a
+                                    v-if="report && report.reporter && report.reporter.id"
+                                    :href="`/i/web/profile/${report.reporter.id}`"
+                                    target="_blank"
+                                    class="text-white">
                                     <div class="d-flex align-items-center" style="gap:0.61rem;">
                                         <img
                                             :src="report.reporter.avatar"
@@ -320,6 +339,85 @@
                     Next
                 </button>
             </div>
+
+            <div v-if="this.tabIndex === 3" class="table-responsive rounded">
+                <table v-if="reports && reports.length" class="table table-dark">
+                    <thead class="thead-dark">
+                        <tr>
+                            <th scope="col">ID</th>
+                            <th scope="col">Instance</th>
+                            <th scope="col">Reported Account</th>
+                            <th scope="col">Comment</th>
+                            <th scope="col">Created</th>
+                            <th scope="col">View Report</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr
+                            v-for="(report, idx) in reports"
+                            :key="`remote-reports-${report.id}-${idx}`">
+                            <td class="font-weight-bold text-monospace text-muted align-middle">
+                                <a href="#" @click.prevent="showRemoteReport(report)">
+                                    {{ report.id }}
+                                </a>
+                            </td>
+                            <td class="align-middle">
+                                <p class="font-weight-bold mb-0">{{ report.instance }}</p>
+                            </td>
+                            <td class="align-middle">
+                                <a v-if="report.reported && report.reported.id" :href="`/i/web/profile/${report.reported.id}`" target="_blank" class="text-white">
+                                    <div class="d-flex align-items-center" style="gap:0.61rem;">
+                                        <img
+                                            :src="report.reported.avatar"
+                                            width="30"
+                                            height="30"
+                                            style="object-fit: cover;border-radius:30px;"
+                                            onerror="this.src='/storage/avatars/default.png';this.error=null;">
+
+                                        <div class="d-flex flex-column">
+                                            <p class="font-weight-bold mb-0" style="font-size: 14px;">@{{report.reported.username}}</p>
+                                            <div class="d-flex small text-muted mb-0" style="gap: 0.5rem;">
+                                                <span>{{report.reported.followers_count}} Followers</span>
+                                                <span>·</span>
+                                                <span>Joined {{ timeAgo(report.reported.created_at) }}</span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </a>
+                            </td>
+                            <td class="align-middle">
+                                <p class="small mb-0 text-wrap" style="max-width: 300px;word-break: break-all;">{{ report.message && report.message.length > 120 ? report.message.slice(0, 120) + '...' : report.message }}</p>
+                            </td>
+                            <td class="font-weight-bold align-middle">{{ timeAgo(report.created_at) }}</td>
+                            <td class="align-middle"><a href="#" class="btn btn-primary btn-sm">View</a></td>
+                        </tr>
+                    </tbody>
+                </table>
+
+                <div v-else>
+                    <div class="card card-body p-5">
+                        <div class="d-flex justify-content-between align-items-center flex-column">
+                            <p class="mt-3 mb-0"><i class="far fa-check-circle fa-5x text-success"></i></p>
+                            <p class="lead">{{ tabIndex === 0 ? 'No Active Reports Found!' : 'No Closed Reports Found!' }}</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div v-if="this.tabIndex === 3 && remoteReportsLoaded && reports && reports.length" class="d-flex align-items-center justify-content-center">
+                <button
+                    class="btn btn-primary rounded-pill"
+                    :disabled="!pagination.prev"
+                    @click="remoteReportPaginate('prev')">
+                    Prev
+                </button>
+                <button
+                    class="btn btn-primary rounded-pill"
+                    :disabled="!pagination.next"
+                    @click="remoteReportPaginate('next')">
+                    Next
+                </button>
+            </div>
         </div>
     </div>
 
@@ -372,7 +470,7 @@
                 <div v-if="viewingReport && viewingReport.reporter" class="list-group-item d-flex align-items-center justify-content-between flex-column flex-grow-1" style="gap:0.4rem;">
                     <div class="text-muted small font-weight-bold mt-n1">Reporter Account</div>
 
-                    <a v-if="viewingReport.reporter && viewingReport.reporter.id" :href="`/i/web/profile/${viewingReport.reporter.id}`" target="_blank" class="text-primary">
+                    <a v-if="viewingReport.reporter && viewingReport.reporter?.id" :href="`/i/web/profile/${viewingReport.reporter?.id}`" target="_blank" class="text-primary">
                         <div class="d-flex align-items-center" style="gap:0.61rem;">
                             <img
                                 :src="viewingReport.reporter.avatar"
@@ -650,11 +748,25 @@
             </div>
         </template>
     </b-modal>
+
+    <template v-if="showRemoteReportModal">
+        <admin-report-modal
+            :open="showRemoteReportModal"
+            :model="remoteReportModalModel"
+            v-on:close="handleCloseRemoteReportModal()"
+            v-on:refresh="refreshRemoteReports()" />
+    </template>
 </div>
 </template>
 
 <script type="text/javascript">
+    import AdminRemoteReportModal from "./partial/AdminRemoteReportModal.vue";
+
     export default {
+        components: {
+            "admin-report-modal": AdminRemoteReportModal
+        },
+
         data() {
             return {
                 loaded: false,
@@ -664,6 +776,7 @@
                     closed: 0,
                     autospam: 0,
                     autospam_open: 0,
+                    remote_open: 0,
                 },
                 tabIndex: 0,
                 reports: [],
@@ -676,7 +789,10 @@
                 autospamLoaded: false,
                 showSpamReportModal: false,
                 viewingSpamReport: undefined,
-                viewingSpamReportLoading: false
+                viewingSpamReportLoading: false,
+                remoteReportsLoaded: false,
+                showRemoteReportModal: undefined,
+                remoteReportModalModel: {}
             }
         },
 
@@ -711,6 +827,10 @@
 
                     case 2:
                         this.fetchStats(null, '/i/admin/api/reports/spam/all');
+                    break;
+
+                    case 3:
+                        this.fetchRemoteReports();
                     break;
                 }
                 window.history.pushState(null, null, '/i/admin/reports');
@@ -783,6 +903,43 @@
                 .finally(() => {
                     this.loaded = true;
                 });
+            },
+
+            fetchRemoteReports(url = '/i/admin/api/reports/remote') {
+                axios.get(url)
+                .then(res => {
+                    this.reports = res.data.data;
+                    this.pagination = {
+                        next: res.data.links.next,
+                        prev: res.data.links.prev
+                    };
+                })
+                .finally(() => {
+                    this.loaded = true;
+                    this.remoteReportsLoaded = true;
+                });
+            },
+
+            remoteReportPaginate(dir) {
+                event.currentTarget.blur();
+                let url = dir == 'next' ? this.pagination.next : this.pagination.prev;
+                this.fetchRemoteReports(url);
+            },
+
+            handleCloseRemoteReportModal() {
+                this.showRemoteReportModal = false;
+            },
+
+            showRemoteReport(report) {
+                this.remoteReportModalModel = report;
+                this.showRemoteReportModal = true;
+            },
+
+            refreshRemoteReports() {
+                this.fetchStats('');
+                this.$nextTick(() => {
+                    this.toggleTab(3);
+                })
             },
 
             paginate(dir) {
