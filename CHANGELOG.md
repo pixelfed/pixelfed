@@ -24,6 +24,8 @@
 - Update AdminReportController, add story report support ([a16309ac](https://github.com/pixelfed/pixelfed/commit/a16309ac))
 - Update kb, add email confirmation issues page ([2f48df8c](https://github.com/pixelfed/pixelfed/commit/2f48df8c))
 - Update AdminCuratedRegisterController, filter confirmation activities from activitylog ([ab9ecb6e](https://github.com/pixelfed/pixelfed/commit/ab9ecb6e))
+- Update Inbox, fix flag validation condition, allow profile reports ([402a4607](https://github.com/pixelfed/pixelfed/commit/402a4607))
+- Update AccountTransformer, fix follower/following count visibility bug ([542d1106](https://github.com/pixelfed/pixelfed/commit/542d1106))
 -  ([](https://github.com/pixelfed/pixelfed/commit/))
 
 ## [v0.11.12 (2024-02-16)](https://github.com/pixelfed/pixelfed/compare/v0.11.11...v0.11.12)

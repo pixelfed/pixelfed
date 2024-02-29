@@ -409,6 +409,7 @@ class ApiV1Controller extends Controller
             if($settings->show_profile_follower_count != $show_profile_follower_count) {
                 $settings->show_profile_follower_count = $show_profile_follower_count;
                 $changes = true;
+                Cache::forget('pf:acct-trans:hideFollowers:' . $profile->id);
             }
         }
 
@@ -417,6 +418,7 @@ class ApiV1Controller extends Controller
             if($settings->show_profile_following_count != $show_profile_following_count) {
                 $settings->show_profile_following_count = $show_profile_following_count;
                 $changes = true;
+                Cache::forget('pf:acct-trans:hideFollowing:' . $profile->id);
             }
         }
 
