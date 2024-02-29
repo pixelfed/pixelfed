@@ -5,6 +5,8 @@
 ### Features
 
 - Curated Onboarding ([#4946](https://github.com/pixelfed/pixelfed/pull/4946)) ([8dac2caf](https://github.com/pixelfed/pixelfed/commit/8dac2caf))
+- Add Curated Onboarding Templates ([071163b4](https://github.com/pixelfed/pixelfed/commit/071163b4))
+- Add Remote Reports to Admin Dashboard Reports page ([ef0ff78e](https://github.com/pixelfed/pixelfed/commit/ef0ff78e))
 
 ### Updates
 
@@ -18,6 +20,10 @@
 - Update Directory logic, add curated onboarding support ([59c70239](https://github.com/pixelfed/pixelfed/commit/59c70239))
 - Update Inbox and StatusObserver, fix silently rejected direct messages due to saveQuietly which failed to generate a snowflake id ([089ba3c4](https://github.com/pixelfed/pixelfed/commit/089ba3c4))
 - Update Curated Onboarding dashboard, improve application filtering and make it easier to distinguish response state ([2b5d7235](https://github.com/pixelfed/pixelfed/commit/2b5d7235))
+- Update AdminReports, add story reports and fix cs ([767522a8](https://github.com/pixelfed/pixelfed/commit/767522a8))
+- Update AdminReportController, add story report support ([a16309ac](https://github.com/pixelfed/pixelfed/commit/a16309ac))
+- Update kb, add email confirmation issues page ([2f48df8c](https://github.com/pixelfed/pixelfed/commit/2f48df8c))
+- Update AdminCuratedRegisterController, filter confirmation activities from activitylog ([ab9ecb6e](https://github.com/pixelfed/pixelfed/commit/ab9ecb6e))
 -  ([](https://github.com/pixelfed/pixelfed/commit/))
 
 ## [v0.11.12 (2024-02-16)](https://github.com/pixelfed/pixelfed/compare/v0.11.11...v0.11.12)

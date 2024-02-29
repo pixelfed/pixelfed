@@ -146,6 +146,8 @@ Route::domain(config('pixelfed.domain.admin'))->prefix('i/admin')->group(functio
         Route::post('instances/import-data', 'AdminController@importBackup');
         Route::get('reports/stats', 'AdminController@reportsStats');
         Route::get('reports/all', 'AdminController@reportsApiAll');
+        Route::get('reports/remote', 'AdminController@reportsApiRemote');
+        Route::post('reports/remote/handle', 'AdminController@reportsApiRemoteHandle');
         Route::get('reports/get/{id}', 'AdminController@reportsApiGet');
         Route::post('reports/handle', 'AdminController@reportsApiHandle');
         Route::get('reports/spam/all', 'AdminController@reportsApiSpamAll');
