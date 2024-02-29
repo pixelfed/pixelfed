@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Admin;
 
 use App\AccountInterstitial;
 use App\Http\Resources\AdminReport;
+use App\Http\Resources\AdminRemoteReport;
 use App\Http\Resources\AdminSpamReport;
 use App\Jobs\DeletePipeline\DeleteAccountPipeline;
 use App\Jobs\DeletePipeline\DeleteRemoteProfilePipeline;
@@ -13,6 +14,7 @@ use App\Jobs\StoryPipeline\StoryDelete;
 use App\Notification;
 use App\Profile;
 use App\Report;
+use App\Models\RemoteReport;
 use App\Services\AccountService;
 use App\Services\ModLogService;
 use App\Services\NetworkTimelineService;
@@ -23,6 +25,7 @@ use App\Status;
 use App\Story;
 use App\User;
 use Cache;
+use Storage;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
@@ -640,6 +643,7 @@ trait AdminReportController
             'autospam' => AccountInterstitial::whereType('post.autospam')->count(),
             'autospam_open' => AccountInterstitial::whereType('post.autospam')->whereNull(['appeal_handled_at'])->count(),
             'appeals' => AccountInterstitial::whereNotNull('appeal_requested_at')->whereNull('appeal_handled_at')->count(),
+            'remote_open' => RemoteReport::whereNull('action_taken_at')->count(),
             'email_verification_requests' => Redis::scard('email:manual'),
         ];
 
@@ -658,6 +662,24 @@ trait AdminReportController
                     $q->whereNotNull('admin_seen');
                 })
                 ->groupBy(['id', 'object_id', 'object_type', 'profile_id'])
+                ->cursorPaginate(6)
+                ->withQueryString()
+        );
+
+        return $reports;
+    }
+
+    public function reportsApiRemote(Request $request)
+    {
+        $filter = $request->input('filter') == 'closed' ? 'closed' : 'open';
+
+        $reports = AdminRemoteReport::collection(
+            RemoteReport::orderBy('id', 'desc')
+                ->when($filter, function ($q, $filter) {
+                    return $filter == 'open' ?
+                    $q->whereNull('action_taken_at') :
+                    $q->whereNotNull('action_taken_at');
+                })
                 ->cursorPaginate(6)
                 ->withQueryString()
         );
@@ -1326,5 +1348,174 @@ trait AdminReportController
         $report = AccountInterstitial::findOrFail($id);
 
         return new AdminSpamReport($report);
+    }
+
+    public function reportsApiRemoteHandle(Request $request)
+    {
+        $this->validate($request, [
+            'id' => 'required|exists:remote_reports,id',
+            'action' => 'required|in:mark-read,cw-posts,unlist-posts,delete-posts,private-posts,mark-all-read-by-domain,mark-all-read-by-username,cw-all-posts,private-all-posts,unlist-all-posts'
+        ]);
+
+        $report = RemoteReport::findOrFail($request->input('id'));
+        $user = User::whereProfileId($report->account_id)->first();
+        $ogPublicStatuses = [];
+        $ogUnlistedStatuses = [];
+        $ogNonCwStatuses = [];
+
+        switch ($request->input('action')) {
+            case 'mark-read':
+                $report->action_taken_at = now();
+                $report->save();
+                break;
+            case 'mark-all-read-by-domain':
+                RemoteReport::whereInstanceId($report->instance_id)->update(['action_taken_at' => now()]);
+                break;
+            case 'cw-posts':
+                $statuses = Status::find($report->status_ids);
+                foreach($statuses as $status) {
+                    if($report->account_id != $status->profile_id) {
+                        continue;
+                    }
+                    if(!$status->is_nsfw) {
+                        $ogNonCwStatuses[] = $status->id;
+                    }
+                    $status->is_nsfw = true;
+                    $status->saveQuietly();
+                    StatusService::del($status->id);
+                }
+                $report->action_taken_at = now();
+                $report->save();
+                break;
+            case 'cw-all-posts':
+                foreach(Status::whereProfileId($report->account_id)->lazyById(50, 'id') as $status) {
+                    if($status->is_nsfw || $status->reblog_of_id) {
+                        continue;
+                    }
+                    if(!$status->is_nsfw) {
+                        $ogNonCwStatuses[] = $status->id;
+                    }
+                    $status->is_nsfw = true;
+                    $status->saveQuietly();
+                    StatusService::del($status->id);
+                }
+                break;
+            case 'unlist-posts':
+                $statuses = Status::find($report->status_ids);
+                foreach($statuses as $status) {
+                    if($report->account_id != $status->profile_id) {
+                        continue;
+                    }
+                    if($status->scope === 'public') {
+                        $ogPublicStatuses[] = $status->id;
+                        $status->scope = 'unlisted';
+                        $status->visibility = 'unlisted';
+                        $status->saveQuietly();
+                        StatusService::del($status->id);
+                    }
+                }
+                $report->action_taken_at = now();
+                $report->save();
+                break;
+            case 'unlist-all-posts':
+                foreach(Status::whereProfileId($report->account_id)->lazyById(50, 'id') as $status) {
+                    if($status->visibility !== 'public' || $status->reblog_of_id) {
+                        continue;
+                    }
+                    $ogPublicStatuses[] = $status->id;
+                    $status->visibility = 'unlisted';
+                    $status->scope = 'unlisted';
+                    $status->saveQuietly();
+                    StatusService::del($status->id);
+                }
+                break;
+            case 'private-posts':
+                $statuses = Status::find($report->status_ids);
+                foreach($statuses as $status) {
+                    if($report->account_id != $status->profile_id) {
+                        continue;
+                    }
+                    if(in_array($status->scope, ['public', 'unlisted', 'private'])) {
+                        if($status->scope === 'public') {
+                            $ogPublicStatuses[] = $status->id;
+                        }
+                        $status->scope = 'private';
+                        $status->visibility = 'private';
+                        $status->saveQuietly();
+                        StatusService::del($status->id);
+                    }
+                }
+                $report->action_taken_at = now();
+                $report->save();
+                break;
+            case 'private-all-posts':
+                foreach(Status::whereProfileId($report->account_id)->lazyById(50, 'id') as $status) {
+                    if(!in_array($status->visibility, ['public', 'unlisted']) || $status->reblog_of_id) {
+                        continue;
+                    }
+                    if($status->visibility === 'public') {
+                        $ogPublicStatuses[] = $status->id;
+                    } else if($status->visibility === 'unlisted') {
+                        $ogUnlistedStatuses[] = $status->id;
+                    }
+                    $status->visibility = 'private';
+                    $status->scope = 'private';
+                    $status->saveQuietly();
+                    StatusService::del($status->id);
+                }
+                break;
+            case 'delete-posts':
+                $statuses = Status::find($report->status_ids);
+                foreach($statuses as $status) {
+                    if($report->account_id != $status->profile_id) {
+                        continue;
+                    }
+                    StatusDelete::dispatch($status);
+                }
+                $report->action_taken_at = now();
+                $report->save();
+                break;
+            case 'mark-all-read-by-username':
+                RemoteReport::whereNull('action_taken_at')->whereAccountId($report->account_id)->update(['action_taken_at' => now()]);
+                break;
+
+            default:
+                abort(404);
+                break;
+        }
+
+        if($ogPublicStatuses && count($ogPublicStatuses)) {
+            Storage::disk('local')->put('mod-log-cache/' . $report->account_id . '/' . now()->format('Y-m-d') . '-og-public-statuses.json', json_encode($ogPublicStatuses, JSON_PRETTY_PRINT|JSON_UNESCAPED_SLASHES));
+        }
+
+        if($ogNonCwStatuses && count($ogNonCwStatuses)) {
+            Storage::disk('local')->put('mod-log-cache/' . $report->account_id . '/' . now()->format('Y-m-d') . '-og-noncw-statuses.json', json_encode($ogNonCwStatuses, JSON_PRETTY_PRINT|JSON_UNESCAPED_SLASHES));
+        }
+
+        if($ogUnlistedStatuses && count($ogUnlistedStatuses)) {
+            Storage::disk('local')->put('mod-log-cache/' . $report->account_id . '/' . now()->format('Y-m-d') . '-og-unlisted-statuses.json', json_encode($ogUnlistedStatuses, JSON_PRETTY_PRINT|JSON_UNESCAPED_SLASHES));
+        }
+
+        ModLogService::boot()
+            ->user(request()->user())
+            ->objectUid($user ? $user->id : null)
+            ->objectId($report->id)
+            ->objectType('App\Report::class')
+            ->action('admin.report.moderate')
+            ->metadata([
+                'action' => $request->input('action'),
+                'duration_active' => now()->parse($report->created_at)->diffForHumans()
+            ])
+            ->accessLevel('admin')
+            ->save();
+
+        if($report->status_ids) {
+            foreach($report->status_ids as $sid) {
+                RemoteReport::whereNull('action_taken_at')
+                    ->whereJsonContains('status_ids', [$sid])
+                    ->update(['action_taken_at' => now()]);
+            }
+        }
+        return [200];
     }
 }

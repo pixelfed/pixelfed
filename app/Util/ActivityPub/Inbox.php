@@ -1243,7 +1243,14 @@ class Inbox
             return;
         }
 
-        $content = isset($this->payload['content']) ? Purify::clean($this->payload['content']) : null;
+        $content = null;
+        if(isset($this->payload['content'])) {
+            if(strlen($this->payload['content']) > 5000) {
+                $content = Purify::clean(substr($this->payload['content'], 0, 5000) . ' ... (truncated message due to exceeding max length)');
+            } else {
+                $content = Purify::clean($this->payload['content']);
+            }
+        }
         $object = $this->payload['object'];
 
         if(empty($object) || (!is_array($object) && !is_string($object))) {
@@ -1259,7 +1266,7 @@ class Inbox
 
         foreach($object as $objectUrl) {
             if(!Helpers::validateLocalUrl($objectUrl)) {
-                continue;
+                return;
             }
 
             if(str_contains($objectUrl, '/users/')) {
@@ -1278,6 +1285,23 @@ class Inbox
 
         if(!$accountId || !$objects->count()) {
             return;
+        }
+
+        if($objects->count()) {
+            $obc = $objects->count();
+            if($obc > 25) {
+                if($obc > 30) {
+                    return;
+                } else {
+                    $objLimit = $objects->take(20);
+                    $objects = collect($objLimit->all());
+                    $obc = $objects->count();
+                }
+            }
+            $count = Status::whereProfileId($accountId)->find($objects)->count();
+            if($obc !== $count) {
+                return;
+            }
         }
 
         $instanceHost = parse_url($id, PHP_URL_HOST);

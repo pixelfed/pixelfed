@@ -104,6 +104,10 @@ class AdminCuratedRegisterController extends Controller
 
         foreach ($activities as $activity) {
             $idx++;
+
+            if ($activity->type === 'user_resend_email_confirmation') {
+                continue;
+            }
             if ($activity->from_user) {
                 $userResponses->push($activity);
 
