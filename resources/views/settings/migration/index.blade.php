@@ -34,9 +34,16 @@
                         Back to Settings
                     </a>
                 </div>
-
                 <hr />
-
+            </div>
+            <div>
+                @if($hasExistingMigration)
+                <div class="row">
+                    <div class="col-12 mt-5">
+                        <p class="lead mb-0 text-center">You have migrated your account already.</p>
+                    </div>
+                </div>
+                @else
                 <div class="row">
                     <div class="col-12">
                         <p class="lead">If you want to move this account to another account, please read the following carefully.</p>
@@ -88,6 +95,7 @@
                         </form>
                     </div>
                 </div>
+                @endif
             </div>
           </div>
         </div>
