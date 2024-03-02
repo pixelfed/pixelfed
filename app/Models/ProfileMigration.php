@@ -6,7 +6,7 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use App\Profile;
 
-class ProfileAlias extends Model
+class ProfileMigration extends Model
 {
     use HasFactory;
 
@@ -14,6 +14,6 @@ class ProfileAlias extends Model
 
     public function profile()
     {
-        return $this->belongsTo(Profile::class);
+        return $this->belongsTo(Profile::class, 'profile_id');
     }
 }

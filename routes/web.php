@@ -266,6 +266,11 @@ Route::domain(config('pixelfed.domain.app'))->middleware(['validemail', 'twofact
             Route::post('manage', 'ProfileAliasController@store');
             Route::post('manage/delete', 'ProfileAliasController@delete');
         });
+
+        Route::group(['prefix' => 'account/migration', 'middleware' => 'dangerzone'], function() {
+            Route::get('manage', 'ProfileMigrationController@index');
+            Route::post('manage', 'ProfileMigrationController@store');
+        });
     });
 
     Route::group(['prefix' => 'site'], function () {
