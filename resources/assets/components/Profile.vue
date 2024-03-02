@@ -1,7 +1,40 @@
 <template>
     <div class="profile-timeline-component">
         <div v-if="isLoaded" class="container-fluid mt-3">
-            <div class="row">
+            <div v-if="profile && profile.hasOwnProperty('moved') && profile.moved.hasOwnProperty('id') && !showMoved">
+                <div class="row justify-content-center">
+                    <div class="col-12 col-md-6">
+                        <div class="card shadow-none border card-body mt-5 mb-3 ft-std" style="border-radius: 20px;">
+                            <p class="lead font-weight-bold text-center mb-0"><i class="far fa-exclamation-triangle mr-2"></i>This account has indicated their new account is:</p>
+                        </div>
+                        <div class="card shadow-none border" style="border-radius: 20px;">
+                            <div class="card-body ft-std">
+                                <div class="d-flex justify-content-between align-items-center" style="gap: 1rem;">
+                                    <div class="d-flex align-items-center flex-shrink-1" style="gap: 1rem;">
+                                        <img :src="profile.moved.avatar" width="50" height="50" class="rounded-circle">
+                                        <p class="h3 font-weight-light mb-0 text-break">&commat;{{ profile.moved.acct }}</p>
+                                    </div>
+
+                                    <div class="d-flex flex-grow-1 justify-content-end" style="min-width: 200px;">
+                                        <router-link
+                                            :to="`/i/web/profile/${profile.moved.id}`"
+                                            class="btn btn-outline-primary rounded-pill font-weight-bold"
+                                            >View New Account</router-link>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <hr>
+                        <p class="lead text-center ft-std">
+                            <a
+                                href="#"
+                                class="btn btn-primary btn-lg rounded-pill font-weight-bold px-5"
+                                @click.prevent="showMoved = true">Proceed</a>
+                        </p>
+                    </div>
+                </div>
+            </div>
+            <div v-else class="row">
                 <div class="col-md-3 d-md-block px-md-3 px-xl-5">
                     <profile-sidebar
                         :profile="profile"
@@ -72,7 +105,8 @@
                 curUser: undefined,
                 tab: "index",
                 profile: undefined,
-                relationship: undefined
+                relationship: undefined,
+                showMoved: false,
             }
         },
 

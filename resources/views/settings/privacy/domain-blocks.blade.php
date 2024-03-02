@@ -208,7 +208,9 @@
                         swal.stopLoading()
                         swal.close()
                         this.index = 0
-                        this.blocks.unshift(parsedUrl.hostname)
+                        if(this.blocks.indexOf(parsedUrl.hostname) === -1) {
+                            this.blocks.unshift(parsedUrl.hostname)
+                        }
                         this.buildList()
                     })
                     .catch(err => {

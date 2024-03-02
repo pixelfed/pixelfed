@@ -10,7 +10,7 @@
 	},
 	"devDependencies": {
 		"acorn": "^8.7.1",
-		"axios": "^0.21.1",
+		"axios": ">=1.6.0",
 		"bootstrap": "^4.5.2",
 		"cross-env": "^5.2.1",
 		"jquery": "^3.6.0",

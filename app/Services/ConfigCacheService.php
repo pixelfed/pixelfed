@@ -72,6 +72,8 @@ class ConfigCacheService
 				'instance.banner.blurhash',
 
 				'autospam.nlp.enabled',
+
+				'instance.curated_registration.enabled',
 				// 'system.user_mode'
 			];
 

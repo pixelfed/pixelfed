@@ -75,6 +75,7 @@ trait AdminDirectoryController
         }
 
         $res['community_guidelines'] = config_cache('app.rules') ? json_decode(config_cache('app.rules'), true) : [];
+        $res['curated_onboarding'] = (bool) config_cache('instance.curated_registration.enabled');
         $res['open_registration'] = (bool) config_cache('pixelfed.open_registration');
         $res['oauth_enabled'] = (bool) config_cache('pixelfed.oauth_enabled') && file_exists(storage_path('oauth-public.key')) && file_exists(storage_path('oauth-private.key'));
 
@@ -124,7 +125,7 @@ trait AdminDirectoryController
 
         $res['requirements_validator'] = $validator->errors();
 
-        $res['is_eligible'] = $res['open_registration'] &&
+        $res['is_eligible'] = ($res['open_registration'] || $res['curated_onboarding']) &&
             $res['oauth_enabled'] &&
             $res['activitypub_enabled'] &&
             count($res['requirements_validator']) === 0 &&
@@ -227,7 +228,7 @@ trait AdminDirectoryController
             ->each(function($name) {
                 Storage::delete($name);
             });
-            $path = $request->file('banner_image')->store('public/headers');
+            $path = $request->file('banner_image')->storePublicly('public/headers');
             $res['banner_image'] = $path;
             ConfigCacheService::put('app.banner_image', url(Storage::url($path)));
 
@@ -249,7 +250,8 @@ trait AdminDirectoryController
     {
         $reqs = [];
         $reqs['feature_config'] = [
-            'open_registration' => config_cache('pixelfed.open_registration'),
+            'open_registration' => (bool) config_cache('pixelfed.open_registration'),
+            'curated_onboarding' => (bool) config_cache('instance.curated_registration.enabled'),
             'activitypub_enabled' => config_cache('federation.activitypub.enabled'),
             'oauth_enabled' => config_cache('pixelfed.oauth_enabled'),
             'media_types' => Str::of(config_cache('pixelfed.media_types'))->explode(','),
@@ -265,7 +267,8 @@ trait AdminDirectoryController
         ];
 
         $validator = Validator::make($reqs['feature_config'], [
-            'open_registration' => 'required|accepted',
+            'open_registration' => 'required_unless:curated_onboarding,true',
+            'curated_onboarding' => 'required_unless:open_registration,true',
             'activitypub_enabled' => 'required|accepted',
             'oauth_enabled' => 'required|accepted',
             'media_types' => [

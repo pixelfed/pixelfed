@@ -1,6 +1,46 @@
 # Release Notes
 
-## [Unreleased](https://github.com/pixelfed/pixelfed/compare/v0.11.11...dev)
+## [Unreleased](https://github.com/pixelfed/pixelfed/compare/v0.11.12...dev)
+
+### Features
+
+- Curated Onboarding ([#4946](https://github.com/pixelfed/pixelfed/pull/4946)) ([8dac2caf](https://github.com/pixelfed/pixelfed/commit/8dac2caf))
+- Add Curated Onboarding Templates ([071163b4](https://github.com/pixelfed/pixelfed/commit/071163b4))
+- Add Remote Reports to Admin Dashboard Reports page ([ef0ff78e](https://github.com/pixelfed/pixelfed/commit/ef0ff78e))
+
+### Updates
+
+- Update Inbox, cast live filters to lowercase ([d835e0ad](https://github.com/pixelfed/pixelfed/commit/d835e0ad))
+- Update federation config, increase default timeline days falloff to 90 days from 2 days. Fixes #4905 ([011834f4](https://github.com/pixelfed/pixelfed/commit/011834f4))
+- Update cache config, use predis as default redis driver client ([ea6b1623](https://github.com/pixelfed/pixelfed/commit/ea6b1623))
+- Update .gitattributes to collapse diffs on generated files ([ThisIsMissEm](https://github.com/pixelfed/pixelfed/commit/9978b2b9))
+- Update api v1/v2 instance endpoints, bump mastoapi version from 2.7.2 to 3.5.3 ([545f7d5e](https://github.com/pixelfed/pixelfed/commit/545f7d5e))
+- Update ApiV1Controller, implement better limit logic to gracefully handle requests with limits that exceed the max ([1f74a95d](https://github.com/pixelfed/pixelfed/commit/1f74a95d))
+- Update AdminCuratedRegisterController, show oldest applications first ([c4dde641](https://github.com/pixelfed/pixelfed/commit/c4dde641))
+- Update Directory logic, add curated onboarding support ([59c70239](https://github.com/pixelfed/pixelfed/commit/59c70239))
+- Update Inbox and StatusObserver, fix silently rejected direct messages due to saveQuietly which failed to generate a snowflake id ([089ba3c4](https://github.com/pixelfed/pixelfed/commit/089ba3c4))
+- Update Curated Onboarding dashboard, improve application filtering and make it easier to distinguish response state ([2b5d7235](https://github.com/pixelfed/pixelfed/commit/2b5d7235))
+- Update AdminReports, add story reports and fix cs ([767522a8](https://github.com/pixelfed/pixelfed/commit/767522a8))
+- Update AdminReportController, add story report support ([a16309ac](https://github.com/pixelfed/pixelfed/commit/a16309ac))
+- Update kb, add email confirmation issues page ([2f48df8c](https://github.com/pixelfed/pixelfed/commit/2f48df8c))
+- Update AdminCuratedRegisterController, filter confirmation activities from activitylog ([ab9ecb6e](https://github.com/pixelfed/pixelfed/commit/ab9ecb6e))
+- Update Inbox, fix flag validation condition, allow profile reports ([402a4607](https://github.com/pixelfed/pixelfed/commit/402a4607))
+- Update AccountTransformer, fix follower/following count visibility bug ([542d1106](https://github.com/pixelfed/pixelfed/commit/542d1106))
+-  ([](https://github.com/pixelfed/pixelfed/commit/))
+
+## [v0.11.12 (2024-02-16)](https://github.com/pixelfed/pixelfed/compare/v0.11.11...v0.11.12)
+
+### Features
+- Autospam Live Filters - block remote activities based on comma separated keywords ([40b45b2a](https://github.com/pixelfed/pixelfed/commit/40b45b2a))
+- Added Software Update banner to admin home feeds ([b0fb1988](https://github.com/pixelfed/pixelfed/commit/b0fb1988))
+
+### Updates
+
+- Update ApiV1Controller, fix network timeline ([0faf59e3](https://github.com/pixelfed/pixelfed/commit/0faf59e3))
+- Update public/network timelines, fix non-redis response and fix reblogs in home feed ([8b4ac5cc](https://github.com/pixelfed/pixelfed/commit/8b4ac5cc))
+- Update Federation, use proper Content-Type headers for following/follower collections ([fb0bb9a3](https://github.com/pixelfed/pixelfed/commit/fb0bb9a3))
+- Update ActivityPubFetchService, enforce stricter Content-Type validation ([1232cfc8](https://github.com/pixelfed/pixelfed/commit/1232cfc8))
+- Update status view, fix unlisted/private scope bug ([0f3ca194](https://github.com/pixelfed/pixelfed/commit/0f3ca194))
 
 ## [v0.11.11 (2024-02-09)](https://github.com/pixelfed/pixelfed/compare/v0.11.10...v0.11.11)
 
@@ -27,7 +67,6 @@
 ### Federation
 - Update Privacy Settings, add support for Mastodon `indexable` search flag ([fc24630e](https://github.com/pixelfed/pixelfed/commit/fc24630e))
 - Update AP Helpers, consume actor `indexable` attribute ([fbdcdd9d](https://github.com/pixelfed/pixelfed/commit/fbdcdd9d))
--  ([](https://github.com/pixelfed/pixelfed/commit/))
 
 ### Updates
 - Update FollowerService, add forget method to RelationshipService call to reduce load when mass purging ([347e4f59](https://github.com/pixelfed/pixelfed/commit/347e4f59))
@@ -112,7 +151,6 @@
 - Update PublicApiController, consume InstanceService blocked domains for account and statuses endpoints ([01b33fb3](https://github.com/pixelfed/pixelfed/commit/01b33fb3))
 - Update ApiV1Controller, enforce blocked instance domain logic ([5b284cac](https://github.com/pixelfed/pixelfed/commit/5b284cac))
 - Update ApiV2Controller, add vapid key to instance object. Thanks thisismissem! ([4d02d6f1](https://github.com/pixelfed/pixelfed/commit/4d02d6f1))
--  ([](https://github.com/pixelfed/pixelfed/commit/))
 
 ## [v0.11.9 (2023-08-21)](https://github.com/pixelfed/pixelfed/compare/v0.11.8...v0.11.9)
 

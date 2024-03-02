@@ -109,12 +109,20 @@
                                             <div class="card text-left">
                                                 <div class="list-group list-group-flush">
                                                     <div class="list-group-item">
-                                                        <i
-                                                            class="far"
-                                                            :class="[ requirements.open_registration ? 'fa-check-circle text-success' : 'fa-exclamation-circle text-danger']"></i>
-                                                        <span class="ml-2 font-weight-bold">
-                                                            {{ requirements.open_registration ? 'Open' : 'Closed' }} account registration
-                                                        </span>
+                                                        <template v-if="requirements.curated_onboarding === true">
+                                                            <i class="far fa-exclamation-circle text-success"></i>
+                                                            <span class="ml-2 font-weight-bold">
+                                                                Curated account registration
+                                                            </span>
+                                                        </template>
+                                                        <template v-else>
+                                                            <i
+                                                                class="far"
+                                                                :class="[ requirements.open_registration ? 'fa-check-circle text-success' : 'fa-exclamation-circle text-danger']"></i>
+                                                            <span class="ml-2 font-weight-bold">
+                                                                {{ requirements.open_registration ? 'Open' : 'Closed' }} account registration
+                                                            </span>
+                                                        </template>
                                                     </div>
 
                                                     <div class="list-group-item">
@@ -895,6 +903,7 @@
                     activitypub_enabled: undefined,
                     open_registration: undefined,
                     oauth_enabled: undefined,
+                    curated_onboarding: undefined,
                 },
                 feature_config: [],
                 requirements_validator: [],
@@ -949,6 +958,10 @@
 
                     if(res.data.open_registration) {
                         this.requirements.open_registration = res.data.open_registration;
+                    }
+
+                    if(res.data.curated_onboarding) {
+                        this.requirements.curated_onboarding = res.data.curated_onboarding;
                     }
 
                     if(res.data.oauth_enabled) {

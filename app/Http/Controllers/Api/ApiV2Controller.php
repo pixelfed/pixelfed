@@ -71,72 +71,77 @@ class ApiV2Controller extends Controller
                 ->toArray() : [];
         });
 
-        $res = [
-            'domain' => config('pixelfed.domain.app'),
-            'title' => config_cache('app.name'),
-            'version' => config('pixelfed.version'),
-            'source_url' => 'https://github.com/pixelfed/pixelfed',
-            'description' => config_cache('app.short_description'),
-            'usage' => [
-                'users' => [
-                    'active_month' => (int) Nodeinfo::activeUsersMonthly()
-                ]
-            ],
-            'thumbnail' => [
-                'url' => config_cache('app.banner_image') ?? url(Storage::url('public/headers/default.jpg')),
-                'blurhash' => InstanceService::headerBlurhash(),
-                'versions' => [
-                    '@1x' => config_cache('app.banner_image') ?? url(Storage::url('public/headers/default.jpg')),
-                    '@2x' => config_cache('app.banner_image') ?? url(Storage::url('public/headers/default.jpg'))
-                ]
-            ],
-            'languages' => [config('app.locale')],
-            'configuration' => [
-                'urls' => [
-                    'streaming' => 'wss://' . config('pixelfed.domain.app'),
-                    'status' => null
+        $res = Cache::remember('api:v2:instance-data-response-v2', 1800, function () use($contact, $rules) {
+            return [
+                'domain' => config('pixelfed.domain.app'),
+                'title' => config_cache('app.name'),
+                'version' => '3.5.3 (compatible; Pixelfed ' . config('pixelfed.version') .')',
+                'source_url' => 'https://github.com/pixelfed/pixelfed',
+                'description' => config_cache('app.short_description'),
+                'usage' => [
+                    'users' => [
+                        'active_month' => (int) Nodeinfo::activeUsersMonthly()
+                    ]
                 ],
-                'vapid' => [
-                    'public_key' => config('webpush.vapid.public_key'),
+                'thumbnail' => [
+                    'url' => config_cache('app.banner_image') ?? url(Storage::url('public/headers/default.jpg')),
+                    'blurhash' => InstanceService::headerBlurhash(),
+                    'versions' => [
+                        '@1x' => config_cache('app.banner_image') ?? url(Storage::url('public/headers/default.jpg')),
+                        '@2x' => config_cache('app.banner_image') ?? url(Storage::url('public/headers/default.jpg'))
+                    ]
                 ],
-                'accounts' => [
-                    'max_featured_tags' => 0,
+                'languages' => [config('app.locale')],
+                'configuration' => [
+                    'urls' => [
+                        'streaming' => null,
+                        'status' => null
+                    ],
+                    'vapid' => [
+                        'public_key' => config('webpush.vapid.public_key'),
+                    ],
+                    'accounts' => [
+                        'max_featured_tags' => 0,
+                    ],
+                    'statuses' => [
+                        'max_characters' => (int) config('pixelfed.max_caption_length'),
+                        'max_media_attachments' => (int) config_cache('pixelfed.max_album_length'),
+                        'characters_reserved_per_url' => 23
+                    ],
+                    'media_attachments' => [
+                        'supported_mime_types' => explode(',', config_cache('pixelfed.media_types')),
+                        'image_size_limit' => config_cache('pixelfed.max_photo_size') * 1024,
+                        'image_matrix_limit' => 3686400,
+                        'video_size_limit' => config_cache('pixelfed.max_photo_size') * 1024,
+                        'video_frame_rate_limit' => 240,
+                        'video_matrix_limit' => 3686400
+                    ],
+                    'polls' => [
+                        'max_options' => 0,
+                        'max_characters_per_option' => 0,
+                        'min_expiration' => 0,
+                        'max_expiration' => 0,
+                    ],
+                    'translation' => [
+                        'enabled' => false,
+                    ],
                 ],
-                'statuses' => [
-                    'max_characters' => (int) config('pixelfed.max_caption_length'),
-                    'max_media_attachments' => (int) config_cache('pixelfed.max_album_length'),
-                    'characters_reserved_per_url' => 23
+                'registrations' => [
+                    'enabled' => null,
+                    'approval_required' => false,
+                    'message' => null,
+                    'url' => null,
                 ],
-                'media_attachments' => [
-                    'supported_mime_types' => explode(',', config_cache('pixelfed.media_types')),
-                    'image_size_limit' => config_cache('pixelfed.max_photo_size') * 1024,
-                    'image_matrix_limit' => 3686400,
-                    'video_size_limit' => config_cache('pixelfed.max_photo_size') * 1024,
-                    'video_frame_rate_limit' => 240,
-                    'video_matrix_limit' => 3686400
+                'contact' => [
+                    'email' => config('instance.email'),
+                    'account' => $contact
                 ],
-                'polls' => [
-                    'max_options' => 4,
-                    'max_characters_per_option' => 50,
-                    'min_expiration' => 300,
-                    'max_expiration' => 2629746,
-                ],
-                'translation' => [
-                    'enabled' => false,
-                ],
-            ],
-            'registrations' => [
-                'enabled' => (bool) config_cache('pixelfed.open_registration'),
-                'approval_required' => false,
-                'message' => null
-            ],
-            'contact' => [
-                'email' => config('instance.email'),
-                'account' => $contact
-            ],
-            'rules' => $rules
-        ];
+                'rules' => $rules
+            ];
+        });
 
+        $res['registrations']['enabled'] = (bool) config_cache('pixelfed.open_registration');
+        $res['registrations']['approval_required'] = (bool) config_cache('instance.curated_registration.enabled');
         return response()->json($res, 200, [], JSON_UNESCAPED_SLASHES);
     }
 
