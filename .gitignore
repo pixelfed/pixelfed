@@ -24,6 +24,7 @@
 /storage/docker
 /vendor
 /yarn-error.log
+/public/build
 
 # Exceptions - these *MUST* be last
 !/bootstrap/cache/.gitignore
