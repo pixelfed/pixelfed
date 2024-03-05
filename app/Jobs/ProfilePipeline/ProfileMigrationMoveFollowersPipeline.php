@@ -2,21 +2,58 @@
 
 namespace App\Jobs\ProfilePipeline;
 
-use Illuminate\Bus\Queueable;
-use Illuminate\Contracts\Queue\ShouldQueue;
-use Illuminate\Foundation\Bus\Dispatchable;
-use Illuminate\Queue\InteractsWithQueue;
-use Illuminate\Queue\SerializesModels;
 use App\Follower;
 use App\Profile;
 use App\Services\AccountService;
+use Illuminate\Bus\Batchable;
+use Illuminate\Bus\Queueable;
+use Illuminate\Contracts\Queue\ShouldBeUniqueUntilProcessing;
+use Illuminate\Contracts\Queue\ShouldQueue;
+use Illuminate\Foundation\Bus\Dispatchable;
+use Illuminate\Queue\InteractsWithQueue;
+use Illuminate\Queue\Middleware\WithoutOverlapping;
+use Illuminate\Queue\SerializesModels;
 
-class ProfileMigrationMoveFollowersPipeline implements ShouldQueue
+class ProfileMigrationMoveFollowersPipeline implements ShouldBeUniqueUntilProcessing, ShouldQueue
 {
-    use Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
+    use Batchable, Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
 
     public $oldPid;
+
     public $newPid;
+
+    public $timeout = 1400;
+
+    public $tries = 3;
+
+    public $maxExceptions = 1;
+
+    public $failOnTimeout = true;
+
+    /**
+     * The number of seconds after which the job's unique lock will be released.
+     *
+     * @var int
+     */
+    public $uniqueFor = 3600;
+
+    /**
+     * Get the unique ID for the job.
+     */
+    public function uniqueId(): string
+    {
+        return 'profile:migration:move-followers:oldpid-'.$this->oldPid.':newpid-'.$this->newPid;
+    }
+
+    /**
+     * Get the middleware the job should pass through.
+     *
+     * @return array<int, object>
+     */
+    public function middleware(): array
+    {
+        return [(new WithoutOverlapping('profile:migration:move-followers:oldpid-'.$this->oldPid.':newpid-'.$this->newPid))->shared()->dontRelease()];
+    }
 
     /**
      * Create a new job instance.
@@ -32,9 +69,12 @@ class ProfileMigrationMoveFollowersPipeline implements ShouldQueue
      */
     public function handle(): void
     {
+        if ($this->batch()->cancelled()) {
+            return;
+        }
         $og = Profile::find($this->oldPid);
         $ne = Profile::find($this->newPid);
-        if(!$og || !$ne || $og == $ne) {
+        if (! $og || ! $ne || $og == $ne) {
             return;
         }
         $ne->followers_count = $og->followers_count;
