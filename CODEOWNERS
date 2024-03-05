@@ -1,0 +1,18 @@
+# See: https://docs.github.com/en/repositories/managing-your-repositorys-settings-and-features/customizing-your-repository/about-code-owners
+
+# These owners will be the default owners for everything in
+# the repo. Unless a later match takes precedence,
+*           @dansup
+
+# Docker related files
+.editorconfig               @jippi @dansup
+.env                        @jippi @dansup
+.env.*                      @jippi @dansup
+.hadolint.yaml              @jippi @dansup
+.shellcheckrc               @jippi @dansup
+/.github/                   @jippi @dansup
+/docker/                    @jippi @dansup
+/tests/                     @jippi @dansup
+docker-compose.migrate.yml  @jippi @dansup
+docker-compose.yml          @jippi @dansup
+goss.yaml                   @jippi @dansup

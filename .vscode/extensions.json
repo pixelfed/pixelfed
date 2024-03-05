@@ -1,0 +1,14 @@
+{
+    "recommendations": [
+        "foxundermoon.shell-format",
+        "timonwong.shellcheck",
+        "jetmartin.bats",
+        "aaron-bond.better-comments",
+        "streetsidesoftware.code-spell-checker",
+        "editorconfig.editorconfig",
+        "github.vscode-github-actions",
+        "bmewburn.vscode-intelephense-client",
+        "redhat.vscode-yaml",
+        "ms-azuretools.vscode-docker"
+    ]
+}

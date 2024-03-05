@@ -1,0 +1,17 @@
+#!/bin/bash
+
+declare service="${PF_SERVICE:=worker}"
+declare user="${PF_USER:=www-data}"
+
+declare -a command=("bash")
+
+if [[ $# -ge 1 ]]; then
+    command=("$@")
+fi
+
+exec docker compose exec \
+    --user "${user}" \
+    --env TERM \
+    --env COLORTERM \
+    "${service}" \
+    "${command[@]}"

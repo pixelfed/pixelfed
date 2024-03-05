@@ -1,82 +1,218 @@
 ---
-version: '3'
+# Require 3.8 to ensure people use a recent version of Docker + Compose
+version: "3.8"
 
-# In order to set configuration, please use a .env file in
-# your compose project directory (the same directory as your
-# docker-compose.yml), and set database options, application
-# name, key, and other settings there.
-# A list of available settings is available in .env.example
-#
-# The services should scale properly across a swarm cluster
-# if the volumes are properly shared between cluster members.
+###############################################################
+# Please see docker/README.md for usage information
+###############################################################
 
 services:
-## App and Worker
-  app:
-    # Comment to use dockerhub image
-    image: pixelfed/pixelfed:latest
+  # HTTP/HTTPS proxy
+  #
+  # Sits in front of the *real* webserver and manages SSL and (optionally)
+  # load-balancing between multiple web servers
+  #
+  # You can disable this service by setting [DOCKER_PROXY_PROFILE="disabled"]
+  # in your [.env] file - the setting is near the bottom of the file.
+  #
+  # This also disables the [proxy-acme] service, if this is not desired, change the
+  # [DOCKER_PROXY_ACME_PROFILE] setting to an empty string [""]
+  #
+  # See: https://github.com/nginx-proxy/nginx-proxy/tree/main/docs
+  proxy:
+    image: nginxproxy/nginx-proxy:1.4
+    container_name: "${DOCKER_ALL_CONTAINER_NAME_PREFIX}-proxy"
     restart: unless-stopped
-    env_file:
-      - .env.docker
+    profiles:
+      - ${DOCKER_PROXY_PROFILE:-}
+    environment:
+      DOCKER_SERVICE_NAME: "proxy"
     volumes:
-      - app-storage:/var/www/storage
-      - app-bootstrap:/var/www/bootstrap
-      - "./.env.docker:/var/www/.env"
-    networks:
-      - external
-      - internal
+      - "${DOCKER_PROXY_HOST_DOCKER_SOCKET_PATH}:/tmp/docker.sock:ro"
+      - "${DOCKER_ALL_HOST_CONFIG_ROOT_PATH}/proxy/conf.d:/etc/nginx/conf.d"
+      - "${DOCKER_ALL_HOST_CONFIG_ROOT_PATH}/proxy/vhost.d:/etc/nginx/vhost.d"
+      - "${DOCKER_ALL_HOST_CONFIG_ROOT_PATH}/proxy/certs:/etc/nginx/certs"
+      - "${DOCKER_ALL_HOST_DATA_ROOT_PATH}/proxy/html:/usr/share/nginx/html"
     ports:
-      - "8080:80"
+      - "${DOCKER_PROXY_HOST_PORT_HTTP}:80"
+      - "${DOCKER_PROXY_HOST_PORT_HTTPS}:443"
+    healthcheck:
+      test: "curl --fail https://${APP_DOMAIN}/api/service/health-check"
+      interval: "${DOCKER_PROXY_HEALTHCHECK_INTERVAL}"
+      retries: 2
+      timeout: 5s
+
+  # Proxy companion for managing letsencrypt SSL certificates
+  #
+  # You can disable this service by setting [DOCKER_PROXY_ACME_PROFILE="disabled"]
+  # in your [.env] file - the setting is near the bottom of the file.
+  #
+  # See: https://github.com/nginx-proxy/acme-companion/tree/main/docs
+  proxy-acme:
+    image: nginxproxy/acme-companion
+    container_name: "${DOCKER_ALL_CONTAINER_NAME_PREFIX}-proxy-acme"
+    restart: unless-stopped
+    profiles:
+      - ${DOCKER_PROXY_ACME_PROFILE:-}
+    environment:
+      DEBUG: 0
+      DEFAULT_EMAIL: "${DOCKER_PROXY_LETSENCRYPT_EMAIL:?error}"
+      NGINX_PROXY_CONTAINER: "${DOCKER_ALL_CONTAINER_NAME_PREFIX}-proxy"
+    depends_on:
+      - proxy
+    volumes:
+      - "${DOCKER_ALL_HOST_CONFIG_ROOT_PATH}/proxy-acme:/etc/acme.sh"
+      - "${DOCKER_ALL_HOST_CONFIG_ROOT_PATH}/proxy/certs:/etc/nginx/certs"
+      - "${DOCKER_ALL_HOST_CONFIG_ROOT_PATH}/proxy/conf.d:/etc/nginx/conf.d"
+      - "${DOCKER_ALL_HOST_CONFIG_ROOT_PATH}/proxy/vhost.d:/etc/nginx/vhost.d"
+      - "${DOCKER_ALL_HOST_DATA_ROOT_PATH}/proxy/html:/usr/share/nginx/html"
+      - "${DOCKER_PROXY_HOST_DOCKER_SOCKET_PATH}:/var/run/docker.sock:ro"
+
+  web:
+    image: "${DOCKER_APP_IMAGE}:${DOCKER_APP_TAG}"
+    container_name: "${DOCKER_ALL_CONTAINER_NAME_PREFIX}-web"
+    restart: unless-stopped
+    profiles:
+      - ${DOCKER_WEB_PROFILE:-}
+    build:
+      target: ${DOCKER_APP_RUNTIME}-runtime
+      cache_from:
+        - "type=registry,ref=${DOCKER_APP_IMAGE}-cache:${DOCKER_APP_TAG}"
+      args:
+        APT_PACKAGES_EXTRA: "${DOCKER_APP_APT_PACKAGES_EXTRA:-}"
+        PHP_BASE_TYPE: "${DOCKER_APP_BASE_TYPE}"
+        PHP_DEBIAN_RELEASE: "${DOCKER_APP_DEBIAN_RELEASE}"
+        PHP_EXTENSIONS_EXTRA: "${DOCKER_APP_PHP_EXTENSIONS_EXTRA:-}"
+        PHP_PECL_EXTENSIONS_EXTRA: "${DOCKER_APP_PHP_PECL_EXTENSIONS_EXTRA:-}"
+        PHP_VERSION: "${DOCKER_APP_PHP_VERSION:?error}"
+    environment:
+      # Used by Pixelfed Docker init script
+      DOCKER_SERVICE_NAME: "web"
+      DOCKER_APP_ENTRYPOINT_DEBUG: ${DOCKER_APP_ENTRYPOINT_DEBUG:-0}
+      ENTRYPOINT_SKIP_SCRIPTS: ${ENTRYPOINT_SKIP_SCRIPTS:-}
+      # Used by [proxy] service
+      LETSENCRYPT_HOST: "${DOCKER_PROXY_LETSENCRYPT_HOST:?error}"
+      LETSENCRYPT_EMAIL: "${DOCKER_PROXY_LETSENCRYPT_EMAIL:?error}"
+      LETSENCRYPT_TEST: "${DOCKER_PROXY_LETSENCRYPT_TEST:-}"
+      VIRTUAL_HOST: "${APP_DOMAIN}"
+      VIRTUAL_PORT: "80"
+    volumes:
+      - "./.env:/var/www/.env"
+      - "${DOCKER_ALL_HOST_CONFIG_ROOT_PATH}/proxy/conf.d:/shared/proxy/conf.d"
+      - "${DOCKER_APP_HOST_CACHE_PATH}:/var/www/bootstrap/cache"
+      - "${DOCKER_APP_HOST_OVERRIDES_PATH}:/docker/overrides:ro"
+      - "${DOCKER_APP_HOST_STORAGE_PATH}:/var/www/storage"
+    labels:
+      com.github.nginx-proxy.nginx-proxy.keepalive: 30
+      com.github.nginx-proxy.nginx-proxy.http2.enable: true
+      com.github.nginx-proxy.nginx-proxy.http3.enable: true
+    ports:
+      - "${DOCKER_WEB_PORT_EXTERNAL_HTTP}:80"
     depends_on:
       - db
       - redis
+    healthcheck:
+      test: 'curl --header "Host: ${APP_DOMAIN}" --fail http://localhost/api/service/health-check'
+      interval: "${DOCKER_WEB_HEALTHCHECK_INTERVAL}"
+      retries: 2
+      timeout: 5s
 
   worker:
-    image: pixelfed/pixelfed:latest
-    restart: unless-stopped
-    env_file:
-      - .env.docker
-    volumes:
-      - app-storage:/var/www/storage
-      - app-bootstrap:/var/www/bootstrap
-    networks:
-      - external
-      - internal
+    image: "${DOCKER_APP_IMAGE}:${DOCKER_APP_TAG}"
+    container_name: "${DOCKER_ALL_CONTAINER_NAME_PREFIX}-worker"
     command: gosu www-data php artisan horizon
+    restart: unless-stopped
+    stop_signal: SIGTERM
+    profiles:
+      - ${DOCKER_WORKER_PROFILE:-}
+    build:
+      target: ${DOCKER_APP_RUNTIME}-runtime
+      cache_from:
+        - "type=registry,ref=${DOCKER_APP_IMAGE}-cache:${DOCKER_APP_TAG}"
+      args:
+        APT_PACKAGES_EXTRA: "${DOCKER_APP_APT_PACKAGES_EXTRA:-}"
+        PHP_BASE_TYPE: "${DOCKER_APP_BASE_TYPE}"
+        PHP_DEBIAN_RELEASE: "${DOCKER_APP_DEBIAN_RELEASE}"
+        PHP_EXTENSIONS_EXTRA: "${DOCKER_APP_PHP_EXTENSIONS_EXTRA:-}"
+        PHP_PECL_EXTENSIONS_EXTRA: "${DOCKER_APP_PHP_PECL_EXTENSIONS_EXTRA:-}"
+        PHP_VERSION: "${DOCKER_APP_PHP_VERSION:?error}"
+    environment:
+      # Used by Pixelfed Docker init script
+      DOCKER_SERVICE_NAME: "worker"
+      DOCKER_APP_ENTRYPOINT_DEBUG: ${DOCKER_APP_ENTRYPOINT_DEBUG:-0}
+      ENTRYPOINT_SKIP_SCRIPTS: ${ENTRYPOINT_SKIP_SCRIPTS:-}
+    volumes:
+      - "./.env:/var/www/.env"
+      - "${DOCKER_ALL_HOST_CONFIG_ROOT_PATH}/proxy/conf.d:/shared/proxy/conf.d"
+      - "${DOCKER_APP_HOST_CACHE_PATH}:/var/www/bootstrap/cache"
+      - "${DOCKER_APP_HOST_OVERRIDES_PATH}:/docker/overrides:ro"
+      - "${DOCKER_APP_HOST_STORAGE_PATH}:/var/www/storage"
     depends_on:
       - db
       - redis
+    healthcheck:
+      test: gosu www-data php artisan horizon:status | grep running
+      interval: "${DOCKER_WORKER_HEALTHCHECK_INTERVAL:?error}"
+      timeout: 5s
+      retries: 2
 
-## DB and Cache
   db:
-    image: mariadb:jammy
+    image: ${DOCKER_DB_IMAGE:?error}
+    container_name: "${DOCKER_ALL_CONTAINER_NAME_PREFIX}-db"
+    command: ${DOCKER_DB_COMMAND:-}
     restart: unless-stopped
-    networks:
-      - internal
-    command: --default-authentication-plugin=mysql_native_password
-    env_file:
-      - .env.docker
+    profiles:
+      - ${DOCKER_DB_PROFILE:-}
+    environment:
+      TZ: "${TZ:?error}"
+      # MySQL (Oracle) - "Environment Variables" at https://hub.docker.com/_/mysql
+      MYSQL_ROOT_PASSWORD: "${DB_PASSWORD:?error}"
+      MYSQL_USER: "${DB_USERNAME:?error}"
+      MYSQL_PASSWORD: "${DB_PASSWORD:?error}"
+      MYSQL_DATABASE: "${DB_DATABASE:?error}"
+      # MySQL (MariaDB) - "Start a mariadb server instance with user, password and database" at https://hub.docker.com/_/mariadb
+      MARIADB_ROOT_PASSWORD: "${DB_PASSWORD:?error}"
+      MARIADB_USER: "${DB_USERNAME:?error}"
+      MARIADB_PASSWORD: "${DB_PASSWORD:?error}"
+      MARIADB_DATABASE: "${DB_DATABASE:?error}"
+      # PostgreSQL - "Environment Variables" at https://hub.docker.com/_/postgres
+      POSTGRES_USER: "${DB_USERNAME:?error}"
+      POSTGRES_PASSWORD: "${DB_PASSWORD:?error}"
+      POSTGRES_DB: "${DB_DATABASE:?error}"
     volumes:
-      - "db-data:/var/lib/mysql"
+      - "${DOCKER_DB_HOST_DATA_PATH:?error}:${DOCKER_DB_CONTAINER_DATA_PATH:?error}"
+    ports:
+      - "${DOCKER_DB_HOST_PORT:?error}:${DOCKER_DB_CONTAINER_PORT:?error}"
+    healthcheck:
+      test:
+        [
+          "CMD",
+          "healthcheck.sh",
+          "--su-mysql",
+          "--connect",
+          "--innodb_initialized",
+        ]
+      interval: "${DOCKER_DB_HEALTHCHECK_INTERVAL:?error}"
+      retries: 2
+      timeout: 5s
 
   redis:
-    image: redis:5-alpine
+    image: redis:${DOCKER_REDIS_VERSION}
+    container_name: "${DOCKER_ALL_CONTAINER_NAME_PREFIX}-redis"
     restart: unless-stopped
-    env_file:
-      - .env.docker
+    command: "${DOCKER_REDIS_CONFIG_FILE:-} --requirepass '${REDIS_PASSWORD:-}'"
+    profiles:
+      - ${DOCKER_REDIS_PROFILE:-}
+    environment:
+      TZ: "${TZ:?error}"
+      REDISCLI_AUTH: ${REDIS_PASSWORD:-}
     volumes:
-      - "redis-data:/data"
-    networks:
-      - internal
-
-volumes:
-  db-data:
-  redis-data:
-  app-storage:
-  app-bootstrap:
-
-networks:
-  internal:
-    internal: true
-  external:
-    driver: bridge
+      - "${DOCKER_ALL_HOST_CONFIG_ROOT_PATH}/redis:/etc/redis"
+      - "${DOCKER_REDIS_HOST_DATA_PATH}:/data"
+    ports:
+      - "${DOCKER_REDIS_HOST_PORT}:6379"
+    healthcheck:
+      test: ["CMD", "redis-cli", "-p", "6379", "ping"]
+      interval: "${DOCKER_REDIS_HEALTHCHECK_INTERVAL:?error}"
+      retries: 2
+      timeout: 5s

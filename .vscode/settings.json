@@ -1,0 +1,21 @@
+{
+    "shellformat.useEditorConfig": true,
+    "[shellscript]": {
+        "files.eol": "\n",
+        "editor.defaultFormatter": "foxundermoon.shell-format"
+    },
+    "[yaml]": {
+        "editor.defaultFormatter": "redhat.vscode-yaml"
+    },
+    "[dockercompose]": {
+        "editor.defaultFormatter": "redhat.vscode-yaml",
+        "editor.autoIndent": "advanced",
+    },
+    "yaml.schemas": {
+        "https://json.schemastore.org/composer": "https://raw.githubusercontent.com/compose-spec/compose-spec/master/schema/compose-spec.json"
+    },
+    "files.associations": {
+        ".env": "shellscript",
+        ".env.*": "shellscript"
+    }
+}
