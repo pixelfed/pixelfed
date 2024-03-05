@@ -36,6 +36,9 @@
 - Update ApiV1Controller, fix public timeline scope, properly support both local + remote parameters ([d6eac655](https://github.com/pixelfed/pixelfed/commit/d6eac655))
 - Update ApiV1Controller, handle public feed parameter bug to gracefully fallback to min_id=1 when max_id=0 ([e3826c58](https://github.com/pixelfed/pixelfed/commit/e3826c58))
 - Update ApiV1Controller, fix hashtag feed to include private posts from accounts you follow or your own, and your own unlisted posts ([3b5500b3](https://github.com/pixelfed/pixelfed/commit/3b5500b3))
+- Update checkpoint view, improve input autocomplete. Fixes ([#4959](https://github.com/pixelfed/pixelfed/pull/4959)) ([d18824e7](https://github.com/pixelfed/pixelfed/commit/d18824e7))
+- Update navbar.vue, removes the 50px limit ([#4969](https://github.com/pixelfed/pixelfed/pull/4969)) ([7fd5599](https://github.com/pixelfed/pixelfed/commit/7fd5599))
+- Update ComposeModal.vue, add an informative UI error message when trying to create a mixed media album ([#4886](https://github.com/pixelfed/pixelfed/pull/4886)) ([fd4f41a](https://github.com/pixelfed/pixelfed/commit/fd4f41a))
 
 ## [v0.11.12 (2024-02-16)](https://github.com/pixelfed/pixelfed/compare/v0.11.11...v0.11.12)
 
