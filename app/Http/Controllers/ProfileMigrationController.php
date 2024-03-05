@@ -23,6 +23,9 @@ class ProfileMigrationController extends Controller
     public function index(Request $request)
     {
         abort_if((bool) config_cache('federation.activitypub.enabled') === false, 404);
+        if ((bool) config_cache('federation.migration') === false) {
+            return redirect(route('help.account-migration'));
+        }
         $hasExistingMigration = ProfileMigration::whereProfileId($request->user()->profile_id)
             ->where('created_at', '>', now()->subDays(30))
             ->exists();

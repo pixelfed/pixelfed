@@ -40,7 +40,8 @@
                 @if($hasExistingMigration)
                 <div class="row">
                     <div class="col-12 mt-5">
-                        <p class="lead mb-0 text-center">You have migrated your account already.</p>
+                        <p class="lead text-center">You have migrated your account already.</p>
+                        <p>You can only migrate your account once per 30 days. If you want to migrate your followers back to this account, follow this process in reverse.</p>
                     </div>
                 </div>
                 @else

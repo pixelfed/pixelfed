@@ -15,6 +15,10 @@ class ProfileMigrationStoreRequest extends FormRequest
      */
     public function authorize(): bool
     {
+        if ((bool) config_cache('federation.activitypub.enabled') === false ||
+            (bool) config_cache('federation.migration') === false) {
+            return false;
+        }
         if (! $this->user() || $this->user()->status) {
             return false;
         }

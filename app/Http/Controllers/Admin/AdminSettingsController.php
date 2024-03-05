@@ -2,18 +2,18 @@
 
 namespace App\Http\Controllers\Admin;
 
-use Artisan, Cache, DB;
-use Illuminate\Http\Request;
-use Carbon\Carbon;
-use App\{Comment, Like, Media, Page, Profile, Report, Status, User};
-use App\Models\InstanceActor;
-use App\Http\Controllers\Controller;
-use App\Util\Lexer\PrettyNumber;
 use App\Models\ConfigCache;
+use App\Models\InstanceActor;
+use App\Page;
+use App\Profile;
 use App\Services\AccountService;
 use App\Services\ConfigCacheService;
+use App\User;
 use App\Util\Site\Config;
-use Illuminate\Support\Str;
+use Artisan;
+use Cache;
+use DB;
+use Illuminate\Http\Request;
 
 trait AdminSettingsController
 {
@@ -21,7 +21,7 @@ trait AdminSettingsController
     {
         $cloud_storage = ConfigCacheService::get('pixelfed.cloud_storage');
         $cloud_disk = config('filesystems.cloud');
-        $cloud_ready = !empty(config('filesystems.disks.' . $cloud_disk . '.key')) && !empty(config('filesystems.disks.' . $cloud_disk . '.secret'));
+        $cloud_ready = ! empty(config('filesystems.disks.'.$cloud_disk.'.key')) && ! empty(config('filesystems.disks.'.$cloud_disk.'.secret'));
         $types = explode(',', ConfigCacheService::get('pixelfed.media_types'));
         $rules = ConfigCacheService::get('app.rules') ? json_decode(ConfigCacheService::get('app.rules'), true) : null;
         $jpeg = in_array('image/jpg', $types) || in_array('image/jpeg', $types);
@@ -35,6 +35,7 @@ trait AdminSettingsController
         $openReg = (bool) config_cache('pixelfed.open_registration');
         $curOnboarding = (bool) config_cache('instance.curated_registration.enabled');
         $regState = $openReg ? 'open' : ($curOnboarding ? 'filtered' : 'closed');
+        $accountMigration = (bool) config_cache('federation.migration');
 
         return view('admin.settings.home', compact(
             'jpeg',
@@ -48,7 +49,8 @@ trait AdminSettingsController
             'cloud_ready',
             'availableAdmins',
             'currentAdmin',
-            'regState'
+            'regState',
+            'accountMigration'
         ));
     }
 
@@ -67,41 +69,42 @@ trait AdminSettingsController
             'type_mp4' => 'nullable',
             'type_webp' => 'nullable',
             'admin_account_id' => 'nullable',
-            'regs' => 'required|in:open,filtered,closed'
+            'regs' => 'required|in:open,filtered,closed',
+            'account_migration' => 'nullable',
         ]);
 
         $orb = false;
         $cob = false;
-        switch($request->input('regs')) {
+        switch ($request->input('regs')) {
             case 'open':
                 $orb = true;
                 $cob = false;
-            break;
+                break;
 
             case 'filtered':
                 $orb = false;
                 $cob = true;
-            break;
+                break;
 
             case 'closed':
                 $orb = false;
                 $cob = false;
-            break;
+                break;
         }
 
         ConfigCacheService::put('pixelfed.open_registration', (bool) $orb);
         ConfigCacheService::put('instance.curated_registration.enabled', (bool) $cob);
 
-        if($request->filled('admin_account_id')) {
+        if ($request->filled('admin_account_id')) {
             ConfigCacheService::put('instance.admin.pid', $request->admin_account_id);
             Cache::forget('api:v1:instance-data:contact');
             Cache::forget('api:v1:instance-data-response-v1');
         }
-        if($request->filled('rule_delete')) {
+        if ($request->filled('rule_delete')) {
             $index = (int) $request->input('rule_delete');
             $rules = ConfigCacheService::get('app.rules');
             $json = json_decode($rules, true);
-            if(!$rules || empty($json)) {
+            if (! $rules || empty($json)) {
                 return;
             }
             unset($json[$index]);
@@ -109,6 +112,7 @@ trait AdminSettingsController
             ConfigCacheService::put('app.rules', $json);
             Cache::forget('api:v1:instance-data:rules');
             Cache::forget('api:v1:instance-data-response-v1');
+
             return 200;
         }
 
@@ -124,8 +128,8 @@ trait AdminSettingsController
         ];
 
         foreach ($mimes as $key => $value) {
-            if($request->input($key) == 'on') {
-                if(!in_array($value, $media_types)) {
+            if ($request->input($key) == 'on') {
+                if (! in_array($value, $media_types)) {
                     array_push($media_types, $value);
                 }
             } else {
@@ -133,7 +137,7 @@ trait AdminSettingsController
             }
         }
 
-        if($media_types !== $media_types_original) {
+        if ($media_types !== $media_types_original) {
             ConfigCacheService::put('pixelfed.media_types', implode(',', array_unique($media_types)));
         }
 
@@ -147,15 +151,15 @@ trait AdminSettingsController
             'account_limit' => 'pixelfed.max_account_size',
             'custom_css' => 'uikit.custom.css',
             'custom_js' => 'uikit.custom.js',
-            'about_title' => 'about.title'
+            'about_title' => 'about.title',
         ];
 
         foreach ($keys as $key => $value) {
             $cc = ConfigCache::whereK($value)->first();
             $val = $request->input($key);
-            if($cc && $cc->v != $val) {
+            if ($cc && $cc->v != $val) {
                 ConfigCacheService::put($value, $val);
-            } else if(!empty($val)) {
+            } elseif (! empty($val)) {
                 ConfigCacheService::put($value, $val);
             }
         }
@@ -175,33 +179,34 @@ trait AdminSettingsController
             'account_autofollow' => 'account.autofollow',
             'show_directory' => 'instance.landing.show_directory',
             'show_explore_feed' => 'instance.landing.show_explore',
+            'account_migration' => 'federation.migration',
         ];
 
         foreach ($bools as $key => $value) {
             $active = $request->input($key) == 'on';
 
-            if($key == 'activitypub' && $active && !InstanceActor::exists()) {
+            if ($key == 'activitypub' && $active && ! InstanceActor::exists()) {
                 Artisan::call('instance:actor');
             }
 
-            if( $key == 'mobile_apis' &&
+            if ($key == 'mobile_apis' &&
                 $active &&
-                !file_exists(storage_path('oauth-public.key')) &&
-                !file_exists(storage_path('oauth-private.key'))
+                ! file_exists(storage_path('oauth-public.key')) &&
+                ! file_exists(storage_path('oauth-private.key'))
             ) {
                 Artisan::call('passport:keys');
                 Artisan::call('route:cache');
             }
 
-            if(config_cache($value) !== $active) {
+            if (config_cache($value) !== $active) {
                 ConfigCacheService::put($value, (bool) $active);
             }
         }
 
-        if($request->filled('new_rule')) {
+        if ($request->filled('new_rule')) {
             $rules = ConfigCacheService::get('app.rules');
             $val = $request->input('new_rule');
-            if(!$rules) {
+            if (! $rules) {
                 ConfigCacheService::put('app.rules', json_encode([$val]));
             } else {
                 $json = json_decode($rules, true);
@@ -212,13 +217,13 @@ trait AdminSettingsController
             Cache::forget('api:v1:instance-data-response-v1');
         }
 
-        if($request->filled('account_autofollow_usernames')) {
+        if ($request->filled('account_autofollow_usernames')) {
             $usernames = explode(',', $request->input('account_autofollow_usernames'));
             $names = [];
 
-            foreach($usernames as $n) {
+            foreach ($usernames as $n) {
                 $p = Profile::whereUsername($n)->first();
-                if(!$p) {
+                if (! $p) {
                     continue;
                 }
                 array_push($names, $p->username);
@@ -236,6 +241,7 @@ trait AdminSettingsController
     {
         $path = storage_path('app/'.config('app.name'));
         $files = is_dir($path) ? new \DirectoryIterator($path) : [];
+
         return view('admin.settings.backups', compact('files'));
     }
 
@@ -247,6 +253,7 @@ trait AdminSettingsController
     public function settingsStorage(Request $request)
     {
         $storage = [];
+
         return view('admin.settings.storage', compact('storage'));
     }
 
@@ -258,6 +265,7 @@ trait AdminSettingsController
     public function settingsPages(Request $request)
     {
         $pages = Page::orderByDesc('updated_at')->paginate(10);
+
         return view('admin.pages.home', compact('pages'));
     }
 
@@ -275,30 +283,31 @@ trait AdminSettingsController
         ];
         switch (config('database.default')) {
             case 'pgsql':
-            $exp = DB::raw('select version();');
-            $expQuery = $exp->getValue(DB::connection()->getQueryGrammar());
-            $sys['database'] = [
-                'name' => 'Postgres',
-                'version' => explode(' ', DB::select($expQuery)[0]->version)[1]
-            ];
-            break;
+                $exp = DB::raw('select version();');
+                $expQuery = $exp->getValue(DB::connection()->getQueryGrammar());
+                $sys['database'] = [
+                    'name' => 'Postgres',
+                    'version' => explode(' ', DB::select($expQuery)[0]->version)[1],
+                ];
+                break;
 
             case 'mysql':
-            $exp = DB::raw('select version()');
-            $expQuery = $exp->getValue(DB::connection()->getQueryGrammar());
-            $sys['database'] = [
-                'name' => 'MySQL',
-                'version' => DB::select($expQuery)[0]->{'version()'}
-            ];
-            break;
+                $exp = DB::raw('select version()');
+                $expQuery = $exp->getValue(DB::connection()->getQueryGrammar());
+                $sys['database'] = [
+                    'name' => 'MySQL',
+                    'version' => DB::select($expQuery)[0]->{'version()'},
+                ];
+                break;
 
             default:
-            $sys['database'] = [
-                'name' => 'Unknown',
-                'version' => '?'
-            ];
-            break;
+                $sys['database'] = [
+                    'name' => 'Unknown',
+                    'version' => '?',
+                ];
+                break;
         }
+
         return view('admin.settings.system', compact('sys'));
     }
 }
