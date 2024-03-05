@@ -88,6 +88,7 @@
 			</div>
 		</div>
 
+        @if((bool) config_cache('federation.activitypub.enabled'))
         <div class="form-group row">
             <label for="aliases" class="col-sm-3 col-form-label font-weight-bold">Account Aliases</label>
             <div class="col-sm-9" id="aliases">
@@ -95,6 +96,17 @@
                 <p class="help-text text-muted small">To move from another account to this one, first you need to create an alias.</p>
             </div>
         </div>
+
+        @if((bool) config_cache('federation.migration'))
+        <div class="form-group row">
+            <label for="aliases" class="col-sm-3 col-form-label font-weight-bold">Account Migrate</label>
+            <div class="col-sm-9" id="aliases">
+                <a class="font-weight-bold" href="/settings/account/migration/manage">Migrate to another account</a>
+                <p class="help-text text-muted small">To redirect this account to a different one (where supported).</p>
+            </div>
+        </div>
+        @endif
+        @endif
 		@if(config_cache('pixelfed.enforce_account_limit'))
 		<div class="pt-3">
 			<p class="font-weight-bold text-muted text-center">Storage Usage</p>

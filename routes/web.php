@@ -266,6 +266,11 @@ Route::domain(config('pixelfed.domain.app'))->middleware(['validemail', 'twofact
             Route::post('manage', 'ProfileAliasController@store');
             Route::post('manage/delete', 'ProfileAliasController@delete');
         });
+
+        Route::group(['prefix' => 'account/migration', 'middleware' => 'dangerzone'], function() {
+            Route::get('manage', 'ProfileMigrationController@index');
+            Route::post('manage', 'ProfileMigrationController@store');
+        });
     });
 
     Route::group(['prefix' => 'site'], function () {
@@ -309,6 +314,7 @@ Route::domain(config('pixelfed.domain.app'))->middleware(['validemail', 'twofact
             Route::view('parental-controls', 'site.help.parental-controls');
             Route::view('email-confirmation-issues', 'site.help.email-confirmation-issues')->name('help.email-confirmation-issues');
             Route::view('curated-onboarding', 'site.help.curated-onboarding')->name('help.curated-onboarding');
+            Route::view('account-migration', 'site.help.account-migration')->name('help.account-migration');
         });
         Route::get('newsroom/{year}/{month}/{slug}', 'NewsroomController@show');
         Route::get('newsroom/archive', 'NewsroomController@archive');

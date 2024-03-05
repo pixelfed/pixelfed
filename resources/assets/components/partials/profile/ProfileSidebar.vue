@@ -150,6 +150,19 @@
                     </a>
 				</div>
 
+                <div v-else-if="profile.hasOwnProperty('moved') && profile.moved.id" style="flex-grow: 1;">
+                    <div class="card shadow-none rounded-lg mb-3 bg-danger">
+                        <div class="card-body">
+                            <div class="d-flex align-items-center ft-std text-white mb-2">
+                                <i class="far fa-exclamation-triangle mr-2 text-white"></i>
+                                Account has moved to:
+                            </div>
+                            <p class="mb-0 lead ft-std text-white text-break">
+                                <router-link :to="`/i/web/profile/${profile.moved.id}`" class="btn btn-outline-light btn-block rounded-pill font-weight-bold">&commat;{{truncate(profile.moved.acct)}}</router-link>
+                            </p>
+                        </div>
+                    </div>
+                </div>
 				<div v-else-if="profile.locked" style="flex-grow: 1;">
 					<template v-if="!relationship.following && !relationship.requested">
 						<button
@@ -374,6 +387,16 @@
 					return dn;
 				}
 			},
+
+            truncate(str) {
+                if(!str) {
+                    return;
+                }
+                if(str.length > 15) {
+                    return str.slice(0, 15) + '...';
+                }
+                return str;
+            },
 
 			formatCount(val) {
 				return App.util.format.count(val);

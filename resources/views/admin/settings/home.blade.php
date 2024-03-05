@@ -103,6 +103,16 @@
 				</div>
 				<p class="mb-4 small">ActivityPub federation, compatible with Pixelfed, Mastodon and other projects.</p>
 
+                <div class="custom-control custom-checkbox mt-2">
+                    <input type="checkbox" name="account_migration" class="custom-control-input" id="ap_mig" {{(bool)config_cache('federation.migration') ? 'checked' : ''}} {{(bool) config_cache('federation.activitypub.enabled') ? '' : 'disabled="disabled"'}}>
+                    <label class="custom-control-label font-weight-bold" for="ap_mig">Account Migration</label>
+                </div>
+                @if((bool) config_cache('federation.activitypub.enabled'))
+                <p class="mb-4 small">Allow local accounts to migrate to other local or remote accounts.</p>
+                @else
+                <p class="mb-4 small text-muted"><strong>ActivityPub Required</strong> Allow local accounts to migrate to other local or remote accounts.</p>
+                @endif
+
 				{{-- <div class="custom-control custom-checkbox mt-2">
 					<input type="checkbox" name="open_registration" class="custom-control-input" id="openReg" {{config_cache('pixelfed.open_registration') ? 'checked' : ''}}>
 					<label class="custom-control-label font-weight-bold" for="openReg">Open Registrations</label>
