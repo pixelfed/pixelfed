@@ -1,6 +1,10 @@
 # Release Notes
 
 ## [Unreleased](https://github.com/pixelfed/pixelfed/compare/v0.11.13...dev)
+
+### Updates
+
+- Update SoftwareUpdateService, add command to refresh latest versions ([632f2cb6](https://github.com/pixelfed/pixelfed/commit/632f2cb6))
 -  ([](https://github.com/pixelfed/pixelfed/commit/))
 
 ## [v0.11.13 (2024-03-05)](https://github.com/pixelfed/pixelfed/compare/v0.11.12...v0.11.13)
