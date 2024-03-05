@@ -30,7 +30,7 @@
 - Update ApiV1Controller, update Notifications endpoint to filter notifications with missing activities ([a933615b](https://github.com/pixelfed/pixelfed/commit/a933615b))
 - Update ApiV1Controller, fix public timeline scope, properly support both local + remote parameters ([d6eac655](https://github.com/pixelfed/pixelfed/commit/d6eac655))
 - Update ApiV1Controller, handle public feed parameter bug to gracefully fallback to min_id=1 when max_id=0 ([e3826c58](https://github.com/pixelfed/pixelfed/commit/e3826c58))
--  ([](https://github.com/pixelfed/pixelfed/commit/))
+- Update ApiV1Controller, fix hashtag feed to include private posts from accounts you follow or your own, and your own unlisted posts ([3b5500b3](https://github.com/pixelfed/pixelfed/commit/3b5500b3))
 -  ([](https://github.com/pixelfed/pixelfed/commit/))
 -  ([](https://github.com/pixelfed/pixelfed/commit/))
 
