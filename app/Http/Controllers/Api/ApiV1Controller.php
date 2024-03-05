@@ -2298,6 +2298,14 @@ class ApiV1Controller extends Controller
             $minId = null;
         }
 
+        $res = collect($res)->filter(function($n) {
+            if(in_array($n['type'], ['mention', 'reblog', 'favourite'])) {
+                return isset($n['status'], $n['status']['id']);
+            }
+
+            return isset($n['account'], $n['account']['id']);
+        })->values();
+
         if($maxId) {
             $link = '<'.$baseUrl.'max_id='.$minId.'>; rel="next"';
         }
