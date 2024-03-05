@@ -1,9 +1,13 @@
 # Release Notes
 
-## [Unreleased](https://github.com/pixelfed/pixelfed/compare/v0.11.12...dev)
+## [Unreleased](https://github.com/pixelfed/pixelfed/compare/v0.11.13...dev)
+-  ([](https://github.com/pixelfed/pixelfed/commit/))
+
+## [v0.11.13 (2024-03-05)](https://github.com/pixelfed/pixelfed/compare/v0.11.12...v0.11.13)
 
 ### Features
 
+- Account Migrations ([#4968](https://github.com/pixelfed/pixelfed/pull/4968)) ([4a6be6212](https://github.com/pixelfed/pixelfed/pull/4968/commits/4a6be6212))
 - Curated Onboarding ([#4946](https://github.com/pixelfed/pixelfed/pull/4946)) ([8dac2caf](https://github.com/pixelfed/pixelfed/commit/8dac2caf))
 - Add Curated Onboarding Templates ([071163b4](https://github.com/pixelfed/pixelfed/commit/071163b4))
 - Add Remote Reports to Admin Dashboard Reports page ([ef0ff78e](https://github.com/pixelfed/pixelfed/commit/ef0ff78e))
@@ -31,8 +35,6 @@
 - Update ApiV1Controller, fix public timeline scope, properly support both local + remote parameters ([d6eac655](https://github.com/pixelfed/pixelfed/commit/d6eac655))
 - Update ApiV1Controller, handle public feed parameter bug to gracefully fallback to min_id=1 when max_id=0 ([e3826c58](https://github.com/pixelfed/pixelfed/commit/e3826c58))
 - Update ApiV1Controller, fix hashtag feed to include private posts from accounts you follow or your own, and your own unlisted posts ([3b5500b3](https://github.com/pixelfed/pixelfed/commit/3b5500b3))
--  ([](https://github.com/pixelfed/pixelfed/commit/))
--  ([](https://github.com/pixelfed/pixelfed/commit/))
 
 ## [v0.11.12 (2024-02-16)](https://github.com/pixelfed/pixelfed/compare/v0.11.11...v0.11.12)
 
