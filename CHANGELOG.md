@@ -26,6 +26,8 @@
 - Update AdminCuratedRegisterController, filter confirmation activities from activitylog ([ab9ecb6e](https://github.com/pixelfed/pixelfed/commit/ab9ecb6e))
 - Update Inbox, fix flag validation condition, allow profile reports ([402a4607](https://github.com/pixelfed/pixelfed/commit/402a4607))
 - Update AccountTransformer, fix follower/following count visibility bug ([542d1106](https://github.com/pixelfed/pixelfed/commit/542d1106))
+- Update ProfileMigration model, add target relation ([3f053997](https://github.com/pixelfed/pixelfed/commit/3f053997))
+- Update ApiV1Controller, update Notifications endpoint to filter notifications with missing activities ([a933615b](https://github.com/pixelfed/pixelfed/commit/a933615b))
 -  ([](https://github.com/pixelfed/pixelfed/commit/))
 
 ## [v0.11.12 (2024-02-16)](https://github.com/pixelfed/pixelfed/compare/v0.11.11...v0.11.12)
