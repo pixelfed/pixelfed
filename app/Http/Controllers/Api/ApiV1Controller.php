@@ -3635,7 +3635,7 @@ class ApiV1Controller extends Controller
             'min_id' => 'nullable|integer|min:0|max:'.PHP_INT_MAX,
             'max_id' => 'nullable|integer|min:0|max:'.PHP_INT_MAX,
             'limit' => 'sometimes|integer|min:1',
-            'only_media' => 'sometimes|boolean',
+            'only_media' => 'sometimes',
             '_pe' => 'sometimes',
         ]);
 
@@ -3670,7 +3670,7 @@ class ApiV1Controller extends Controller
         if ($limit > 40) {
             $limit = 40;
         }
-        $onlyMedia = $request->input('only_media', true);
+        $onlyMedia = $request->boolean('only_media', true);
         $pe = $request->has(self::PF_API_ENTITY_KEY);
         $pid = $request->user()->profile_id;
 
@@ -3696,20 +3696,32 @@ class ApiV1Controller extends Controller
         }
 
         $res = StatusHashtag::whereHashtagId($tag->id)
-            ->whereStatusVisibility('public')
+            ->whereIn('status_visibility', ['public', 'private', 'unlisted'])
             ->where('status_id', $dir, $id)
             ->orderBy('status_id', 'desc')
             ->limit(100)
             ->pluck('status_id')
             ->map(function ($i) use ($pe) {
-                return $pe ? StatusService::get($i) : StatusService::getMastodon($i);
+                return $pe ? StatusService::get($i, false) : StatusService::getMastodon($i, false);
             })
-            ->filter(function ($i) use ($onlyMedia) {
-                if (! $i) {
+            ->filter(function ($i) use ($onlyMedia, $pid) {
+                if (! $i || ! isset($i['account'], $i['account']['id'])) {
                     return false;
                 }
-                if ($onlyMedia && ! isset($i['media_attachments']) || ! count($i['media_attachments'])) {
-                    return false;
+                if ($i['visibility'] === 'unlisted') {
+                    if ((int) $i['account']['id'] !== $pid) {
+                        return false;
+                    }
+                }
+                if ($i['visibility'] === 'private') {
+                    if ((int) $i['account']['id'] !== $pid) {
+                        return FollowerService::follows($pid, $i['account']['id'], true);
+                    }
+                }
+                if ($onlyMedia == true) {
+                    if (! isset($i['media_attachments']) || ! count($i['media_attachments'])) {
+                        return false;
+                    }
                 }
 
                 return $i && isset($i['account'], $i['url']);
