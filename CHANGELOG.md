@@ -11,6 +11,7 @@
 - Curated Onboarding ([#4946](https://github.com/pixelfed/pixelfed/pull/4946)) ([8dac2caf](https://github.com/pixelfed/pixelfed/commit/8dac2caf))
 - Add Curated Onboarding Templates ([071163b4](https://github.com/pixelfed/pixelfed/commit/071163b4))
 - Add Remote Reports to Admin Dashboard Reports page ([ef0ff78e](https://github.com/pixelfed/pixelfed/commit/ef0ff78e))
+- Improved Docker Support ([#4844](https://github.com/pixelfed/pixelfed/pull/4844)) ([d92cf7f](https://github.com/pixelfed/pixelfed/commit/d92cf7f))
 
 ### Updates
 
