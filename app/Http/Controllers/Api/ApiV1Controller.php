@@ -2247,7 +2247,8 @@ class ApiV1Controller extends Controller
             'max_id' => 'nullable|integer|min:1|max:'.PHP_INT_MAX,
             'since_id' => 'nullable|integer|min:1|max:'.PHP_INT_MAX,
             'types[]' => 'sometimes|array',
-            'type' => 'sometimes|string|in:mention,reblog,follow,favourite'
+            'type' => 'sometimes|string|in:mention,reblog,follow,favourite',
+            '_pe' => 'sometimes',
         ]);
 
         $pid = $request->user()->profile_id;
@@ -2259,6 +2260,7 @@ class ApiV1Controller extends Controller
         $since = $request->input('since_id');
         $min = $request->input('min_id');
         $max = $request->input('max_id');
+        $pe = $request->filled('_pe');
 
         if(!$since && !$min && !$max) {
             $min = 1;
@@ -2298,12 +2300,39 @@ class ApiV1Controller extends Controller
             $minId = null;
         }
 
-        $res = collect($res)->filter(function($n) {
+        $res = collect($res)
+        ->map(function($n) use($pe) {
+            if(!$pe) {
+                if($n['type'] == 'comment') {
+                    $n['type'] = 'mention';
+                    return $n;
+                }
+
+                return $n;
+            }
+            return $n;
+        })
+        ->filter(function($n) use($pe) {
             if(in_array($n['type'], ['mention', 'reblog', 'favourite'])) {
                 return isset($n['status'], $n['status']['id']);
             }
 
-            return isset($n['account'], $n['account']['id']);
+            if(!$pe) {
+                if(in_array($n['type'], [
+                    'tagged',
+                    'modlog',
+                    'story:react',
+                    'story:comment',
+                    'group:comment',
+                    'group:join:approved',
+                    'group:join:rejected',
+                ])) {
+                    return false;
+                }
+                return isset($n['account'], $n['account']['id']);
+            }
+
+            return true;
         })->values();
 
         if($maxId) {

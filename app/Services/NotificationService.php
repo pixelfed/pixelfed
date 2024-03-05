@@ -2,298 +2,324 @@
 
 namespace App\Services;
 
+use App\Jobs\InternalPipeline\NotificationEpochUpdatePipeline;
+use App\Notification;
+use App\Transformer\Api\NotificationTransformer;
 use Cache;
 use Illuminate\Support\Facades\Redis;
-use App\{
-	Notification,
-	Profile
-};
-use App\Transformer\Api\NotificationTransformer;
 use League\Fractal;
 use League\Fractal\Serializer\ArraySerializer;
-use League\Fractal\Pagination\IlluminatePaginatorAdapter;
-use App\Jobs\InternalPipeline\NotificationEpochUpdatePipeline;
 
-class NotificationService {
+class NotificationService
+{
+    const CACHE_KEY = 'pf:services:notifications:ids:';
 
-	const CACHE_KEY = 'pf:services:notifications:ids:';
-	const EPOCH_CACHE_KEY = 'pf:services:notifications:epoch-id:by-months:';
-	const ITEM_CACHE_TTL = 86400;
-	const MASTODON_TYPES = [
-		'follow',
-		'follow_request',
-		'mention',
-		'reblog',
-		'favourite',
-		'poll',
-		'status'
-	];
+    const EPOCH_CACHE_KEY = 'pf:services:notifications:epoch-id:by-months:';
 
-	public static function get($id, $start = 0, $stop = 400)
-	{
-		$res = collect([]);
-		$key = self::CACHE_KEY . $id;
-		$stop = $stop > 400 ? 400 : $stop;
-		$ids = Redis::zrangebyscore($key, $start, $stop);
-		if(empty($ids)) {
-			$ids = self::coldGet($id, $start, $stop);
-		}
-		foreach($ids as $id) {
-			$n = self::getNotification($id);
-			if($n != null) {
-				$res->push($n);
-			}
-		}
-		return $res;
-	}
+    const ITEM_CACHE_TTL = 86400;
 
-	public static function getEpochId($months = 6)
-	{
-		$epoch = Cache::get(self::EPOCH_CACHE_KEY . $months);
-		if(!$epoch) {
-			NotificationEpochUpdatePipeline::dispatch();
-			return 1;
-		}
-		return $epoch;
-	}
+    const MASTODON_TYPES = [
+        'follow',
+        'follow_request',
+        'mention',
+        'reblog',
+        'favourite',
+        'poll',
+        'status',
+    ];
 
-	public static function coldGet($id, $start = 0, $stop = 400)
-	{
-		$stop = $stop > 400 ? 400 : $stop;
-		$ids = Notification::where('id', '>', self::getEpochId())
-			->where('profile_id', $id)
-			->orderByDesc('id')
-			->skip($start)
-			->take($stop)
-			->pluck('id');
-		foreach($ids as $key) {
-			self::set($id, $key);
-		}
-		return $ids;
-	}
+    public static function get($id, $start = 0, $stop = 400)
+    {
+        $res = collect([]);
+        $key = self::CACHE_KEY.$id;
+        $stop = $stop > 400 ? 400 : $stop;
+        $ids = Redis::zrangebyscore($key, $start, $stop);
+        if (empty($ids)) {
+            $ids = self::coldGet($id, $start, $stop);
+        }
+        foreach ($ids as $id) {
+            $n = self::getNotification($id);
+            if ($n != null) {
+                $res->push($n);
+            }
+        }
 
-	public static function getMax($id = false, $start = 0, $limit = 10)
-	{
-		$ids = self::getRankedMaxId($id, $start, $limit);
+        return $res;
+    }
 
-		if(empty($ids)) {
-			return [];
-		}
+    public static function getEpochId($months = 6)
+    {
+        $epoch = Cache::get(self::EPOCH_CACHE_KEY.$months);
+        if (! $epoch) {
+            NotificationEpochUpdatePipeline::dispatch();
 
-		$res = collect([]);
-		foreach($ids as $id) {
-			$n = self::getNotification($id);
-			if($n != null) {
-				$res->push($n);
-			}
-		}
-		return $res->toArray();
-	}
+            return 1;
+        }
 
-	public static function getMin($id = false, $start = 0, $limit = 10)
-	{
-		$ids = self::getRankedMinId($id, $start, $limit);
+        return $epoch;
+    }
 
-		if(empty($ids)) {
-			return [];
-		}
+    public static function coldGet($id, $start = 0, $stop = 400)
+    {
+        $stop = $stop > 400 ? 400 : $stop;
+        $ids = Notification::where('id', '>', self::getEpochId())
+            ->where('profile_id', $id)
+            ->orderByDesc('id')
+            ->skip($start)
+            ->take($stop)
+            ->pluck('id');
+        foreach ($ids as $key) {
+            self::set($id, $key);
+        }
 
-		$res = collect([]);
-		foreach($ids as $id) {
-			$n = self::getNotification($id);
-			if($n != null) {
-				$res->push($n);
-			}
-		}
-		return $res->toArray();
-	}
+        return $ids;
+    }
 
+    public static function getMax($id = false, $start = 0, $limit = 10)
+    {
+        $ids = self::getRankedMaxId($id, $start, $limit);
 
-	public static function getMaxMastodon($id = false, $start = 0, $limit = 10)
-	{
-		$ids = self::getRankedMaxId($id, $start, $limit);
+        if (empty($ids)) {
+            return [];
+        }
 
-		if(empty($ids)) {
-			return [];
-		}
+        $res = collect([]);
+        foreach ($ids as $id) {
+            $n = self::getNotification($id);
+            if ($n != null) {
+                $res->push($n);
+            }
+        }
 
-		$res = collect([]);
-		foreach($ids as $id) {
-			$n = self::rewriteMastodonTypes(self::getNotification($id));
-			if($n != null && in_array($n['type'], self::MASTODON_TYPES)) {
-				if(isset($n['account'])) {
-					$n['account'] = AccountService::getMastodon($n['account']['id']);
-				}
+        return $res->toArray();
+    }
 
-				if(isset($n['relationship'])) {
-					unset($n['relationship']);
-				}
+    public static function getMin($id = false, $start = 0, $limit = 10)
+    {
+        $ids = self::getRankedMinId($id, $start, $limit);
 
-				if(isset($n['status'])) {
-					$n['status'] = StatusService::getMastodon($n['status']['id'], false);
-				}
+        if (empty($ids)) {
+            return [];
+        }
 
-				$res->push($n);
-			}
-		}
-		return $res->toArray();
-	}
+        $res = collect([]);
+        foreach ($ids as $id) {
+            $n = self::getNotification($id);
+            if ($n != null) {
+                $res->push($n);
+            }
+        }
 
-	public static function getMinMastodon($id = false, $start = 0, $limit = 10)
-	{
-		$ids = self::getRankedMinId($id, $start, $limit);
+        return $res->toArray();
+    }
 
-		if(empty($ids)) {
-			return [];
-		}
+    public static function getMaxMastodon($id = false, $start = 0, $limit = 10)
+    {
+        $ids = self::getRankedMaxId($id, $start, $limit);
 
-		$res = collect([]);
-		foreach($ids as $id) {
-			$n = self::rewriteMastodonTypes(self::getNotification($id));
-			if($n != null && in_array($n['type'], self::MASTODON_TYPES)) {
-				if(isset($n['account'])) {
-					$n['account'] = AccountService::getMastodon($n['account']['id']);
-				}
+        if (empty($ids)) {
+            return [];
+        }
 
-				if(isset($n['relationship'])) {
-					unset($n['relationship']);
-				}
+        $res = collect([]);
+        foreach ($ids as $id) {
+            $n = self::rewriteMastodonTypes(self::getNotification($id));
+            if ($n != null && in_array($n['type'], self::MASTODON_TYPES)) {
+                if (isset($n['account'])) {
+                    $n['account'] = AccountService::getMastodon($n['account']['id']);
+                }
 
-				if(isset($n['status'])) {
-					$n['status'] = StatusService::getMastodon($n['status']['id'], false);
-				}
+                if (isset($n['relationship'])) {
+                    unset($n['relationship']);
+                }
 
-				$res->push($n);
-			}
-		}
-		return $res->toArray();
-	}
+                if ($n['type'] === 'mention' && isset($n['tagged'], $n['tagged']['status_id'])) {
+                    $n['status'] = StatusService::getMastodon($n['tagged']['status_id'], false);
+                    unset($n['tagged']);
+                }
 
-	public static function getRankedMaxId($id = false, $start = null, $limit = 10)
-	{
-		if(!$start || !$id) {
-			return [];
-		}
+                if (isset($n['status'])) {
+                    $n['status'] = StatusService::getMastodon($n['status']['id'], false);
+                }
 
-		return array_keys(Redis::zrevrangebyscore(self::CACHE_KEY.$id, $start, '-inf', [
-			'withscores' => true,
-			'limit' => [1, $limit]
-		]));
-	}
+                $res->push($n);
+            }
+        }
 
-	public static function getRankedMinId($id = false, $end = null, $limit = 10)
-	{
-		if(!$end || !$id) {
-			return [];
-		}
+        return $res->toArray();
+    }
 
-		return array_keys(Redis::zrevrangebyscore(self::CACHE_KEY.$id, '+inf', $end, [
-			'withscores' => true,
-			'limit' => [0, $limit]
-		]));
-	}
+    public static function getMinMastodon($id = false, $start = 0, $limit = 10)
+    {
+        $ids = self::getRankedMinId($id, $start, $limit);
 
-	public static function rewriteMastodonTypes($notification)
-	{
-		if(!$notification || !isset($notification['type'])) {
-			return $notification;
-		}
+        if (empty($ids)) {
+            return [];
+        }
 
-		if($notification['type'] === 'comment') {
-			$notification['type'] = 'mention';
-		}
+        $res = collect([]);
+        foreach ($ids as $id) {
+            $n = self::rewriteMastodonTypes(self::getNotification($id));
+            if ($n != null && in_array($n['type'], self::MASTODON_TYPES)) {
+                if (isset($n['account'])) {
+                    $n['account'] = AccountService::getMastodon($n['account']['id']);
+                }
 
-		if($notification['type'] === 'share') {
-			$notification['type'] = 'reblog';
-		}
+                if (isset($n['relationship'])) {
+                    unset($n['relationship']);
+                }
 
-		return $notification;
-	}
+                if ($n['type'] === 'mention' && isset($n['tagged'], $n['tagged']['status_id'])) {
+                    $n['status'] = StatusService::getMastodon($n['tagged']['status_id'], false);
+                    unset($n['tagged']);
+                }
 
-	public static function set($id, $val)
-	{
-		if(self::count($id) > 400) {
-			Redis::zpopmin(self::CACHE_KEY . $id);
-		}
-		return Redis::zadd(self::CACHE_KEY . $id, $val, $val);
-	}
+                if (isset($n['status'])) {
+                    $n['status'] = StatusService::getMastodon($n['status']['id'], false);
+                }
 
-	public static function del($id, $val)
-	{
-		Cache::forget('service:notification:' . $val);
-		return Redis::zrem(self::CACHE_KEY . $id, $val);
-	}
+                $res->push($n);
+            }
+        }
 
-	public static function add($id, $val)
-	{
-		return self::set($id, $val);
-	}
+        return $res->toArray();
+    }
 
-	public static function rem($id, $val)
-	{
-		return self::del($id, $val);
-	}
+    public static function getRankedMaxId($id = false, $start = null, $limit = 10)
+    {
+        if (! $start || ! $id) {
+            return [];
+        }
 
-	public static function count($id)
-	{
-		return Redis::zcount(self::CACHE_KEY . $id, '-inf', '+inf');
-	}
+        return array_keys(Redis::zrevrangebyscore(self::CACHE_KEY.$id, $start, '-inf', [
+            'withscores' => true,
+            'limit' => [1, $limit],
+        ]));
+    }
 
-	public static function getNotification($id)
-	{
-		$notification = Cache::remember('service:notification:'.$id, self::ITEM_CACHE_TTL, function() use($id) {
-			$n = Notification::with('item')->find($id);
+    public static function getRankedMinId($id = false, $end = null, $limit = 10)
+    {
+        if (! $end || ! $id) {
+            return [];
+        }
 
-			if(!$n) {
-				return null;
-			}
+        return array_keys(Redis::zrevrangebyscore(self::CACHE_KEY.$id, '+inf', $end, [
+            'withscores' => true,
+            'limit' => [0, $limit],
+        ]));
+    }
 
-			$account = AccountService::get($n->actor_id, true);
+    public static function rewriteMastodonTypes($notification)
+    {
+        if (! $notification || ! isset($notification['type'])) {
+            return $notification;
+        }
 
-			if(!$account) {
-				return null;
-			}
+        if ($notification['type'] === 'comment') {
+            $notification['type'] = 'mention';
+        }
 
-			$fractal = new Fractal\Manager();
-			$fractal->setSerializer(new ArraySerializer());
-			$resource = new Fractal\Resource\Item($n, new NotificationTransformer());
-			return $fractal->createData($resource)->toArray();
-		});
+        if ($notification['type'] === 'share') {
+            $notification['type'] = 'reblog';
+        }
 
-		if(!$notification) {
-			return;
-		}
+        if ($notification['type'] === 'tagged') {
+            $notification['type'] = 'mention';
+        }
 
-		if(isset($notification['account'])) {
-			$notification['account'] = AccountService::get($notification['account']['id'], true);
-		}
+        return $notification;
+    }
 
-		return $notification;
-	}
+    public static function set($id, $val)
+    {
+        if (self::count($id) > 400) {
+            Redis::zpopmin(self::CACHE_KEY.$id);
+        }
 
-	public static function setNotification(Notification $notification)
-	{
-		return Cache::remember('service:notification:'.$notification->id, self::ITEM_CACHE_TTL, function() use($notification) {
-			$fractal = new Fractal\Manager();
-			$fractal->setSerializer(new ArraySerializer());
-			$resource = new Fractal\Resource\Item($notification, new NotificationTransformer());
-			return $fractal->createData($resource)->toArray();
-		});
-	}
+        return Redis::zadd(self::CACHE_KEY.$id, $val, $val);
+    }
 
-	public static function warmCache($id, $stop = 400, $force = false)
-	{
-		if(self::count($id) == 0 || $force == true) {
-			$ids = Notification::where('profile_id', $id)
-				->where('id', '>', self::getEpochId())
-				->orderByDesc('id')
-				->limit($stop)
-				->pluck('id');
-			foreach($ids as $key) {
-				self::set($id, $key);
-			}
-			return 1;
-		}
-		return 0;
-	}
+    public static function del($id, $val)
+    {
+        Cache::forget('service:notification:'.$val);
+
+        return Redis::zrem(self::CACHE_KEY.$id, $val);
+    }
+
+    public static function add($id, $val)
+    {
+        return self::set($id, $val);
+    }
+
+    public static function rem($id, $val)
+    {
+        return self::del($id, $val);
+    }
+
+    public static function count($id)
+    {
+        return Redis::zcount(self::CACHE_KEY.$id, '-inf', '+inf');
+    }
+
+    public static function getNotification($id)
+    {
+        $notification = Cache::remember('service:notification:'.$id, self::ITEM_CACHE_TTL, function () use ($id) {
+            $n = Notification::with('item')->find($id);
+
+            if (! $n) {
+                return null;
+            }
+
+            $account = AccountService::get($n->actor_id, true);
+
+            if (! $account) {
+                return null;
+            }
+
+            $fractal = new Fractal\Manager();
+            $fractal->setSerializer(new ArraySerializer());
+            $resource = new Fractal\Resource\Item($n, new NotificationTransformer());
+
+            return $fractal->createData($resource)->toArray();
+        });
+
+        if (! $notification) {
+            return;
+        }
+
+        if (isset($notification['account'])) {
+            $notification['account'] = AccountService::get($notification['account']['id'], true);
+        }
+
+        return $notification;
+    }
+
+    public static function setNotification(Notification $notification)
+    {
+        return Cache::remember('service:notification:'.$notification->id, self::ITEM_CACHE_TTL, function () use ($notification) {
+            $fractal = new Fractal\Manager();
+            $fractal->setSerializer(new ArraySerializer());
+            $resource = new Fractal\Resource\Item($notification, new NotificationTransformer());
+
+            return $fractal->createData($resource)->toArray();
+        });
+    }
+
+    public static function warmCache($id, $stop = 400, $force = false)
+    {
+        if (self::count($id) == 0 || $force == true) {
+            $ids = Notification::where('profile_id', $id)
+                ->where('id', '>', self::getEpochId())
+                ->orderByDesc('id')
+                ->limit($stop)
+                ->pluck('id');
+            foreach ($ids as $key) {
+                self::set($id, $key);
+            }
+
+            return 1;
+        }
+
+        return 0;
+    }
 }
