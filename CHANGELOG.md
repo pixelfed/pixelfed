@@ -28,6 +28,10 @@
 - Update AccountTransformer, fix follower/following count visibility bug ([542d1106](https://github.com/pixelfed/pixelfed/commit/542d1106))
 - Update ProfileMigration model, add target relation ([3f053997](https://github.com/pixelfed/pixelfed/commit/3f053997))
 - Update ApiV1Controller, update Notifications endpoint to filter notifications with missing activities ([a933615b](https://github.com/pixelfed/pixelfed/commit/a933615b))
+- Update ApiV1Controller, fix public timeline scope, properly support both local + remote parameters ([d6eac655](https://github.com/pixelfed/pixelfed/commit/d6eac655))
+- Update ApiV1Controller, handle public feed parameter bug to gracefully fallback to min_id=1 when max_id=0 ([e3826c58](https://github.com/pixelfed/pixelfed/commit/e3826c58))
+-  ([](https://github.com/pixelfed/pixelfed/commit/))
+-  ([](https://github.com/pixelfed/pixelfed/commit/))
 -  ([](https://github.com/pixelfed/pixelfed/commit/))
 
 ## [v0.11.12 (2024-02-16)](https://github.com/pixelfed/pixelfed/compare/v0.11.11...v0.11.12)
