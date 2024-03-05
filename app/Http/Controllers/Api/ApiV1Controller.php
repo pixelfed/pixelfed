@@ -2634,8 +2634,8 @@ class ApiV1Controller extends Controller
         }
         $user = $request->user();
 
-        $remote = $request->has('remote');
-        $local = $request->has('local');
+        $remote = $request->has('remote') && $request->boolean('remote');
+        $local = $request->boolean('local');
         $userRoleKey = $remote ? 'can-view-network-feed' : 'can-view-public-feed';
         if ($user->has_roles && ! UserRoleService::can($userRoleKey, $user->id)) {
             return [];
@@ -2646,7 +2646,36 @@ class ApiV1Controller extends Controller
         $hideNsfw = config('instance.hide_nsfw_on_public_feeds');
         $amin = SnowflakeService::byDate(now()->subDays(config('federation.network_timeline_days_falloff')));
 
-        if ($remote) {
+        if ($local && $remote) {
+            $feed = Status::select(
+                'id',
+                'uri',
+                'type',
+                'scope',
+                'created_at',
+                'profile_id',
+                'in_reply_to_id',
+                'reblog_of_id'
+            )
+                ->when($minOrMax, function ($q, $minOrMax) use ($min, $max) {
+                    $dir = $min ? '>' : '<';
+                    $id = $min ?? $max;
+
+                    return $q->where('id', $dir, $id);
+                })
+                ->whereNull(['in_reply_to_id', 'reblog_of_id'])
+                ->when($hideNsfw, function ($q, $hideNsfw) {
+                    return $q->where('is_nsfw', false);
+                })
+                ->whereIn('type', ['photo', 'photo:album', 'video', 'video:album', 'photo:video:album'])
+                ->whereScope('public')
+                ->where('id', '>', $amin)
+                ->orderByDesc('id')
+                ->limit(($limit * 2))
+                ->pluck('id')
+                ->values()
+                ->toArray();
+        } elseif ($remote && ! $local) {
             if (config('instance.timeline.network.cached')) {
                 Cache::remember('api:v1:timelines:network:cache_check', 10368000, function () {
                     if (NetworkTimelineService::count() == 0) {
@@ -2798,6 +2827,9 @@ class ApiV1Controller extends Controller
         $baseUrl = config('app.url').'/api/v1/timelines/public?limit='.$limit.'&';
         if ($remote) {
             $baseUrl .= 'remote=1&';
+        }
+        if ($local) {
+            $baseUrl .= 'local=1&';
         }
         $minId = $res->map(function ($s) {
             return ['id' => $s['id']];
