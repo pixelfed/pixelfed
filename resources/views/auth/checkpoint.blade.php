@@ -38,7 +38,7 @@
 	                                	name="code"
 	                                	placeholder="{{__('Two-Factor Authentication Code')}}"
 	                                	required
-	                                	autocomplete="new-password"
+	                                	autocomplete="one-time-code"
 	                                	autofocus=""
 	                                	inputmode="numeric"
 	                                	minlength="6">

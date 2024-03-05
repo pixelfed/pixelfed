@@ -4,4 +4,4 @@
 ## Usage: redis-cli [flags] [args]
 ## Example: "redis-cli KEYS *" or "ddev redis-cli INFO" or "ddev redis-cli --version"
 
-redis-cli -p 6379 -h redis $@
+exec redis-cli -p 6379 -h redis "$@"

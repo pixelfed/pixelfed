@@ -7,3 +7,21 @@ end_of_line = lf
 charset = utf-8
 trim_trailing_whitespace = true
 insert_final_newline = true
+
+[*.{yml,yaml}]
+indent_style = space
+indent_size = 2
+
+[*.{sh,envsh,env,env*}]
+indent_style = space
+indent_size = 4
+
+# ShellCheck config
+shell_variant      = bash  # like -ln=bash
+binary_next_line   = true  # like -bn
+switch_case_indent = true  # like -ci
+space_redirects    = false # like -sr
+keep_padding       = false # like -kp
+function_next_line = true  # like -fn
+never_split        = true  # like -ns
+simplify           = true
