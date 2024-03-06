@@ -8,12 +8,6 @@ indent_style = space
 insert_final_newline = true
 trim_trailing_whitespace = true
 
-[*.md]
-trim_trailing_whitespace = false
-
-[docker-compose.yml]
-indent_size = 4
-
 [*.{yml,yaml}]
 indent_style = space
 indent_size = 2
