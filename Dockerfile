@@ -188,6 +188,7 @@ RUN --mount=type=cache,id=pixelfed-pear-${PHP_VERSION}-${PHP_DEBIAN_RELEASE}-${T
 FROM --platform=${BUILDARCH} node:lts AS frontend-build
 
 ARG BUILDARCH
+ARG BUILD_FRONTEND=0
 ARG RUNTIME_UID
 
 ARG NODE_ENV=production
@@ -199,16 +200,28 @@ WORKDIR /var/www/
 RUN --mount=type=cache,id=pixelfed-node-${BUILDARCH},sharing=locked,target=/tmp/cache \
     --mount=type=bind,source=package.json,target=/var/www/package.json \
     --mount=type=bind,source=package-lock.json,target=/var/www/package-lock.json \
-    npm install \
-        --cache /tmp/cache \
-        --no-save \
-        --dev
+    <<EOF bash
+    if [[ $BUILD_FRONTEND -eq 1 ]]; then
+        npm install \
+            --cache /tmp/cache \
+            --no-save \
+            --dev
+    else
+        echo "Skipping [npm install] as --build-arg [BUILD_FRONTEND] is not set to '1'"
+    fi
+EOF
 
 # Copy the frontend source into the image before building
 COPY --chown=${RUNTIME_UID}:${RUNTIME_GID} . /var/www
 
 # Build the frontend with "mix" (See package.json)
-RUN npm run production
+RUN <<EOF bash
+    if [[ $BUILD_FRONTEND -eq 1 ]]; then
+        npm run production
+    else
+        echo "Skipping [npm run production] as --build-arg [BUILD_FRONTEND] is not set to '1'"
+    fi
+EOF
 
 #######################################################
 # PHP: composer and source code
