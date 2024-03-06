@@ -1,5 +1,6 @@
 ignored:
   - DL3002 # warning: Last USER should not be root
   - DL3008 # warning: Pin versions in apt get install. Instead of `apt-get install <package>` use `apt-get install <package>=<version>`
+  - DL3029 # warning: Do not use --platform flag with FROM
   - SC2046 # warning: Quote this to prevent word splitting.
   - SC2086 # info: Double quote to prevent globbing and word splitting.
