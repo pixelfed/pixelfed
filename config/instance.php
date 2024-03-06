@@ -29,11 +29,12 @@ return [
 		],
 
 		'local' => [
+			'cached' => env('INSTANCE_PUBLIC_TIMELINE_CACHED', false),
 			'is_public' => env('INSTANCE_PUBLIC_LOCAL_TIMELINE', false)
 		],
 
 		'network' => [
-			'cached' => env('PF_NETWORK_TIMELINE') ? env('INSTANCE_NETWORK_TIMELINE_CACHED', true) : false,
+			'cached' => env('PF_NETWORK_TIMELINE') ? env('INSTANCE_NETWORK_TIMELINE_CACHED', false) : false,
 			'cache_dropoff' => env('INSTANCE_NETWORK_TIMELINE_CACHE_DROPOFF', 100),
 			'max_hours_old' => env('INSTANCE_NETWORK_TIMELINE_CACHE_MAX_HOUR_INGEST', 6)
 		]
@@ -139,5 +140,40 @@ return [
             'max_children' => env('INSTANCE_PARENTAL_CONTROLS_MAX_CHILDREN', 1),
             'auto_verify_email' => true,
         ],
-    ]
+    ],
+
+    'software-update' => [
+        'disable_failed_warning' => env('INSTANCE_SOFTWARE_UPDATE_DISABLE_FAILED_WARNING', false)
+    ],
+
+    'notifications' => [
+        'gc' => [
+            'enabled' => env('INSTANCE_NOTIFY_AUTO_GC', false),
+            'delete_after_days' => env('INSTANCE_NOTIFY_AUTO_GC_DEL_AFTER_DAYS', 365)
+        ]
+    ],
+
+    'curated_registration' => [
+        'enabled' => env('INSTANCE_CUR_REG', false),
+
+        'resend_confirmation_limit' => env('INSTANCE_CUR_REG_RESEND_LIMIT', 5),
+
+        'captcha_enabled' => env('INSTANCE_CUR_REG_CAPTCHA', env('CAPTCHA_ENABLED', false)),
+
+        'state' => [
+            'fallback_on_closed_reg' => true,
+            'only_enabled_on_closed_reg' => env('INSTANCE_CUR_REG_STATE_ONLY_ON_CLOSED', true),
+        ],
+
+        'notify' => [
+            'admin' => [
+                'on_verify_email' => [
+                    'enabled' => env('INSTANCE_CUR_REG_NOTIFY_ADMIN_ON_VERIFY', false),
+                    'bundle' => env('INSTANCE_CUR_REG_NOTIFY_ADMIN_ON_VERIFY_BUNDLE', false),
+                    'max_per_day' => env('INSTANCE_CUR_REG_NOTIFY_ADMIN_ON_VERIFY_MPD', 10),
+                ],
+                'on_user_response' => env('INSTANCE_CUR_REG_NOTIFY_ADMIN_ON_USER_RESPONSE', false),
+            ]
+        ],
+    ],
 ];

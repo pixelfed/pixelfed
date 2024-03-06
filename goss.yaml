@@ -1,0 +1,123 @@
+# See: https://github.com/goss-org/goss/blob/master/docs/manual.md#goss-manual
+
+package:
+  curl: { installed: true }
+  ffmpeg: { installed: true }
+  gifsicle: { installed: true }
+  gosu: { installed: true }
+  jpegoptim: { installed: true }
+  locales-all: { installed: true }
+  locales: { installed: true }
+  mariadb-client: { installed: true }
+  nano: { installed: true }
+  optipng: { installed: true }
+  pngquant: { installed: true }
+  postgresql-client: { installed: true }
+  unzip: { installed: true }
+  wget: { installed: true }
+  zip: { installed: true }
+
+user:
+  www-data:
+    exists: true
+    uid: 33
+    gid: 33
+    groups:
+      - www-data
+    home: /var/www
+    shell: /usr/sbin/nologin
+
+command:
+  php-version:
+    exit-status: 0
+    exec: 'php -v'
+    stdout:
+      - PHP {{ .Env.EXPECTED_PHP_VERSION }}
+    stderr: []
+
+  php-extensions:
+    exit-status: 0
+    exec: 'php -m'
+    stdout:
+      - bcmath
+      - Core
+      - ctype
+      - curl
+      - date
+      - dom
+      - exif
+      - fileinfo
+      - filter
+      - gd
+      - hash
+      - iconv
+      - imagick
+      - intl
+      - json
+      - libxml
+      - mbstring
+      - mysqlnd
+      - openssl
+      - pcntl
+      - pcre
+      - PDO
+      - pdo_mysql
+      - pdo_pgsql
+      - pdo_sqlite
+      - Phar
+      - posix
+      - readline
+      - redis
+      - Reflection
+      - session
+      - SimpleXML
+      - sodium
+      - SPL
+      - sqlite3
+      - standard
+      - tokenizer
+      - xml
+      - xmlreader
+      - xmlwriter
+      - zip
+      - zlib
+    stderr: []
+
+  forego-version:
+    exit-status: 0
+    exec: 'forego version'
+    stdout:
+      - dev
+    stderr: []
+
+  gomplate-version:
+    exit-status: 0
+    exec: 'gomplate -v'
+    stdout:
+      - gomplate version
+    stderr: []
+
+  gosu-version:
+    exit-status: 0
+    exec: 'gosu -v'
+    stdout:
+      - '1.12'
+    stderr: []
+
+{{ if eq .Env.PHP_BASE_TYPE "nginx" }}
+  nginx-version:
+    exit-status: 0
+    exec: 'nginx -v'
+    stdout: []
+    stderr:
+      - 'nginx version: nginx'
+{{ end }}
+
+{{ if eq .Env.PHP_BASE_TYPE "apache" }}
+  apache-version:
+    exit-status: 0
+    exec: 'apachectl -v'
+    stdout:
+      - 'Server version: Apache/'
+    stderr: []
+{{ end }}

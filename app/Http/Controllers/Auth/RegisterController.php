@@ -174,7 +174,7 @@ class RegisterController extends Controller
 	 */
 	public function showRegistrationForm()
 	{
-		if(config_cache('pixelfed.open_registration')) {
+		if((bool) config_cache('pixelfed.open_registration')) {
 			if(config('pixelfed.bouncer.cloud_ips.ban_signups')) {
 				abort_if(BouncerService::checkIp(request()->ip()), 404);
 			}
@@ -191,7 +191,11 @@ class RegisterController extends Controller
 				return view('auth.register');
 			}
 		} else {
-			abort(404);
+			if((bool) config_cache('instance.curated_registration.enabled') && config('instance.curated_registration.state.fallback_on_closed_reg')) {
+				return redirect('/auth/sign_up');
+			} else {
+				abort(404);
+			}
 		}
 	}
 

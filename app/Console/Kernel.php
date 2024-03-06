@@ -25,31 +25,32 @@ class Kernel extends ConsoleKernel
      */
     protected function schedule(Schedule $schedule)
     {
-        $schedule->command('media:optimize')->hourlyAt(40);
-        $schedule->command('media:gc')->hourlyAt(5);
-        $schedule->command('horizon:snapshot')->everyFiveMinutes();
-        $schedule->command('story:gc')->everyFiveMinutes();
-        $schedule->command('gc:failedjobs')->dailyAt(3);
-        $schedule->command('gc:passwordreset')->dailyAt('09:41');
-        $schedule->command('gc:sessions')->twiceDaily(13, 23);
+        $schedule->command('media:optimize')->hourlyAt(40)->onOneServer();
+        $schedule->command('media:gc')->hourlyAt(5)->onOneServer();
+        $schedule->command('horizon:snapshot')->everyFiveMinutes()->onOneServer();
+        $schedule->command('story:gc')->everyFiveMinutes()->onOneServer();
+        $schedule->command('gc:failedjobs')->dailyAt(3)->onOneServer();
+        $schedule->command('gc:passwordreset')->dailyAt('09:41')->onOneServer();
+        $schedule->command('gc:sessions')->twiceDaily(13, 23)->onOneServer();
 
-        if(in_array(config_cache('pixelfed.cloud_storage'), ['1', true, 'true']) && config('media.delete_local_after_cloud')) {
+        if (in_array(config_cache('pixelfed.cloud_storage'), ['1', true, 'true']) && config('media.delete_local_after_cloud')) {
             $schedule->command('media:s3gc')->hourlyAt(15);
         }
 
-        if(config('import.instagram.enabled')) {
-            $schedule->command('app:transform-imports')->everyTenMinutes();
-            $schedule->command('app:import-upload-garbage-collection')->hourlyAt(51);
-            $schedule->command('app:import-remove-deleted-accounts')->hourlyAt(37);
-            $schedule->command('app:import-upload-clean-storage')->twiceDailyAt(1, 13, 32);
+        if (config('import.instagram.enabled')) {
+            $schedule->command('app:transform-imports')->everyTenMinutes()->onOneServer();
+            $schedule->command('app:import-upload-garbage-collection')->hourlyAt(51)->onOneServer();
+            $schedule->command('app:import-remove-deleted-accounts')->hourlyAt(37)->onOneServer();
+            $schedule->command('app:import-upload-clean-storage')->twiceDailyAt(1, 13, 32)->onOneServer();
 
-            if(config('import.instagram.storage.cloud.enabled') && (bool) config_cache('pixelfed.cloud_storage')) {
-                $schedule->command('app:import-upload-media-to-cloud-storage')->hourlyAt(39);
+            if (config('import.instagram.storage.cloud.enabled') && (bool) config_cache('pixelfed.cloud_storage')) {
+                $schedule->command('app:import-upload-media-to-cloud-storage')->hourlyAt(39)->onOneServer();
             }
         }
-        $schedule->command('app:notification-epoch-update')->weeklyOn(1, '2:21');
-        $schedule->command('app:hashtag-cached-count-update')->hourlyAt(25);
-        $schedule->command('app:account-post-count-stat-update')->everySixHours(25);
+
+        $schedule->command('app:notification-epoch-update')->weeklyOn(1, '2:21')->onOneServer();
+        $schedule->command('app:hashtag-cached-count-update')->hourlyAt(25)->onOneServer();
+        $schedule->command('app:account-post-count-stat-update')->everySixHours(25)->onOneServer();
     }
 
     /**
@@ -59,7 +60,7 @@ class Kernel extends ConsoleKernel
      */
     protected function commands()
     {
-        $this->load(__DIR__.'/Commands');
+        $this->load(__DIR__ . '/Commands');
 
         require base_path('routes/console.php');
     }

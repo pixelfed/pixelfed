@@ -77,6 +77,18 @@
 		<div class="form-group mb-0">
 			<div class="ml-n4 mr-n2 p-3 border-top border-bottom">
 				<label class="font-weight-bold text-muted">Features</label>
+
+				<div class="form-group row mb-5">
+					<label for="staticEmail" class="col-sm-12 col-form-label font-weight-bold">Registration Status</label>
+					<div class="col-sm-4">
+						<select class="custom-select" name="regs">
+							<option value="open" {{ $regState === 'open' ? 'selected' : '' }}>Open - Anyone can register</option>
+							<option value="filtered" {{ $regState === 'filtered' ? 'selected' : '' }}>Filtered - Anyone can apply (Curated Onboarding)</option>
+							<option value="closed" {{ $regState === 'closed' ? 'selected' : '' }}>Closed - Nobody can register</option>
+						</select>
+					</div>
+				</div>
+
 				@if($cloud_ready)
 				<div class="custom-control custom-checkbox mt-2">
 					<input type="checkbox" name="cloud_storage" class="custom-control-input" id="cls1" {{config_cache('pixelfed.cloud_storage') ? 'checked' : ''}}>
@@ -91,11 +103,28 @@
 				</div>
 				<p class="mb-4 small">ActivityPub federation, compatible with Pixelfed, Mastodon and other projects.</p>
 
-				<div class="custom-control custom-checkbox mt-2">
+                <div class="custom-control custom-checkbox mt-2">
+                    <input type="checkbox" name="account_migration" class="custom-control-input" id="ap_mig" {{(bool)config_cache('federation.migration') ? 'checked' : ''}} {{(bool) config_cache('federation.activitypub.enabled') ? '' : 'disabled="disabled"'}}>
+                    <label class="custom-control-label font-weight-bold" for="ap_mig">Account Migration</label>
+                </div>
+                @if((bool) config_cache('federation.activitypub.enabled'))
+                <p class="mb-4 small">Allow local accounts to migrate to other local or remote accounts.</p>
+                @else
+                <p class="mb-4 small text-muted"><strong>ActivityPub Required</strong> Allow local accounts to migrate to other local or remote accounts.</p>
+                @endif
+
+				{{-- <div class="custom-control custom-checkbox mt-2">
 					<input type="checkbox" name="open_registration" class="custom-control-input" id="openReg" {{config_cache('pixelfed.open_registration') ? 'checked' : ''}}>
 					<label class="custom-control-label font-weight-bold" for="openReg">Open Registrations</label>
 				</div>
-				<p class="mb-4 small">Allow new user registrations.</p>
+				<p class="mb-4 small">Allow new user registrations.</p> --}}
+
+
+                {{-- <div class="custom-control custom-checkbox mt-2">
+                    <input type="checkbox" name="registration_approvals" class="custom-control-input" id="openRegApproval" {{config_cache('pixelfed.registration_approvals') ? 'checked' : ''}}>
+                    <label class="custom-control-label font-weight-bold" for="openRegApproval">Registration Approval Mode</label>
+                </div>
+                <p class="mb-4 small">Manually review new account registration applications.</p> --}}
 
 				<div class="custom-control custom-checkbox mt-2">
 					<input type="checkbox" name="mobile_apis" class="custom-control-input" id="cf2" {{config_cache('pixelfed.oauth_enabled') ? 'checked' : ''}}>

@@ -187,7 +187,7 @@
                 forceUpdateIdx: 0,
                 showReblogBanner: false,
                 enablingReblogs: false,
-                baseApi: '/api/v1/pixelfed/timelines/',
+                baseApi: '/api/v1/timelines/',
             }
         },
 
@@ -204,7 +204,7 @@
             }
             if(window.App.config.ab.hasOwnProperty('cached_home_timeline')) {
                 const cht = window.App.config.ab.cached_home_timeline == true;
-                this.baseApi = cht ? '/api/v1/timelines/' : '/api/pixelfed/v1/timelines/';
+                this.baseApi = cht ? '/api/v1/timelines/' : '/api/v1/timelines/';
             }
             this.fetchSettings();
         },
@@ -261,10 +261,19 @@
                     }
                 } else {
                     url = this.baseApi + this.getScope();
-                    params = {
-                        max_id: this.max_id,
-                        limit: 6,
-                        '_pe': 1,
+
+                    if(this.max_id === 0) {
+                        params = {
+                            min_id: 1,
+                            limit: 6,
+                            '_pe': 1,
+                        }
+                    } else {
+                        params = {
+                            max_id: this.max_id,
+                            limit: 6,
+                            '_pe': 1,
+                        }
                     }
                 }
                 if(this.getScope() === 'network') {

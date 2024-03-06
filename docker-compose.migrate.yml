@@ -1,0 +1,42 @@
+---
+version: "3"
+
+services:
+  migrate:
+    image: "secoresearch/rsync"
+    entrypoint: ""
+    working_dir: /migrate
+    command: 'bash -c "exit 1"'
+    restart: never
+    volumes:
+      ################################
+      # Storage volume
+      ################################
+      # OLD
+      - "app-storage:/migrate/app-storage/old"
+      # NEW
+      - "${DOCKER_APP_HOST_STORAGE_PATH}:/migrate/app-storage/new"
+
+      ################################
+      # MySQL/DB volume
+      ################################
+      # OLD
+      - "db-data:/migrate/db-data/old"
+      # NEW
+      - "${DOCKER_DB_HOST_DATA_PATH}:/migrate/db-data/new"
+
+      ################################
+      # Redis volume
+      ################################
+      # OLD
+      - "redis-data:/migrate/redis-data/old"
+      # NEW
+      - "${DOCKER_REDIS_HOST_DATA_PATH}:/migrate/redis-data/new"
+
+# Volumes from the old [docker-compose.yml] file
+# https://github.com/pixelfed/pixelfed/blob/b1ff44ca2f75c088a11576fb03b5bad2fbed4d5c/docker-compose.yml#L72-L76
+volumes:
+  db-data:
+  redis-data:
+  app-storage:
+  app-bootstrap:

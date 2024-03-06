@@ -4,7 +4,7 @@
 ])
 
 @php
-$s = \App\Services\StatusService::get($status->id);
+$s = \App\Services\StatusService::get($status->id, false);
 $displayName = $s && $s['account'] ? $s['account']['display_name'] : false;
 $captionPreview = false;
 $domain = $displayName ? '@' . parse_url($s['account']['url'], PHP_URL_HOST) : '';

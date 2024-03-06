@@ -197,8 +197,17 @@
                     <div class="list-group">
                         <div class="list-group-item d-flex justify-content-between align-items-center">
                             <p class="text-center font-weight-bold mb-0">Media #{{idx + 1}}</p>
-                            <img :src="getFileNameUrl(media.uri)" width="30" height="30" style="object-fit: cover; border-radius: 5px;">
+                            <template v-if="media.uri.endsWith('.jpg') || media.uri.endsWith('.png')">
+                                <img :src="getFileNameUrl(media.uri)" width="30" height="30" style="object-fit: cover; border-radius: 5px;">
+                            </template>
                         </div>
+                        <template v-if="media.uri.endsWith('.mp4')">
+                            <div class="list-group-item">
+                                <div class="embed-responsive embed-responsive-4by3">
+                                    <video :src="getFileNameUrl(media.uri)" controls></video>
+                                </div>
+                            </div>
+                        </template>
                         <div class="list-group-item">
                             <p class="small text-muted">Caption</p>
                             <p class="mb-0 small read-more" style="font-size: 12px;overflow-y: hidden;">{{ media.title ? media.title : modalData.title }}</p>
