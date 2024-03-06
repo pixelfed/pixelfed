@@ -166,12 +166,12 @@ services:
     environment:
       TZ: "${TZ:?error}"
       # MySQL (Oracle) - "Environment Variables" at https://hub.docker.com/_/mysql
-      MYSQL_ROOT_PASSWORD: "${DB_PASSWORD:?error}"
+      MYSQL_ROOT_PASSWORD: "${DOCKER_DB_ROOT_PASSWORD:?error}"
       MYSQL_USER: "${DB_USERNAME:?error}"
       MYSQL_PASSWORD: "${DB_PASSWORD:?error}"
       MYSQL_DATABASE: "${DB_DATABASE:?error}"
       # MySQL (MariaDB) - "Start a mariadb server instance with user, password and database" at https://hub.docker.com/_/mariadb
-      MARIADB_ROOT_PASSWORD: "${DB_PASSWORD:?error}"
+      MARIADB_ROOT_PASSWORD: "${DOCKER_DB_ROOT_PASSWORD:?error}"
       MARIADB_USER: "${DB_USERNAME:?error}"
       MARIADB_PASSWORD: "${DB_PASSWORD:?error}"
       MARIADB_DATABASE: "${DB_DATABASE:?error}"
