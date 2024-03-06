@@ -24,10 +24,10 @@ return [
 		'other' => '其它',
 		'readMore' => '阅读更多',
 		'success' => '成功',
-		'proceed' => 'Proceed',
-		'next' => 'Next',
-		'close' => 'Close',
-		'clickHere' => 'click here',
+		'proceed' => '继续',
+		'next' => '下一个',
+		'close' => '关闭',
+		'clickHere' => '点击此处',
 
 		'sensitive' => '敏感的',
 		'sensitiveContent' => '敏感内容',
@@ -57,7 +57,7 @@ return [
 
 		// Self links
 		'profile' => '个人资料',
-		'drive' => '云端硬盘',
+		'drive' => '网盘',
 		'settings' => '设置',
 		'compose' => '创建',
 		'logout' => '登出',
@@ -82,7 +82,7 @@ return [
 	'notifications' => [
 		'liked' => '赞了你的',
 		'commented' => '评论了你的',
-		'reacted' => '回应了您的',
+		'reacted' => '回应了你的',
 		'shared' => '转发了你的',
 		'tagged' => '在帖子中标记了你',
 
@@ -95,20 +95,20 @@ return [
 
 		'yourApplication' => '您想要加入',
 		'applicationApproved' => '的申请被批准了！',
-		'applicationRejected' => '被拒绝。您可以在 6 个月后重新申请加入。',
+		'applicationRejected' => '的申请被拒绝。您可以在 6 个月后重新申请加入。',
 
 		'dm' => '私信',
 		'groupPost' => '群组帖子',
 		'modlog' => '模组日志',
 		'post' => '帖子',
 		'story' => '故事',
-		'noneFound' => 'No notifications found',
+		'noneFound' => '暂无通知',
 	],
 
 	'post' => [
 		'shareToFollowers' => '分享给关注者',
 		'shareToOther' => '与他人分享',
-		'noLikes' => '尚未得到点赞',
+		'noLikes' => '尚无点赞',
 		'uploading' => '上传中',
 	],
 
@@ -185,10 +185,10 @@ return [
 		'peopleYouMayKnow' => '您可能认识的人',
 
 		'onboarding' => [
-			'welcome' => 'Welcome',
-			'thisIsYourHomeFeed' => 'This is your home feed, a chronological feed of posts from accounts you follow.',
-			'letUsHelpYouFind' => 'Let us help you find some interesting people to follow',
-			'refreshFeed' => 'Refresh my feed',
+			'welcome' => '欢迎',
+			'thisIsYourHomeFeed' => '这是你的主页时间线，它会按时间顺序排列你所关注的账户的帖子。',
+			'letUsHelpYouFind' => '让我们帮你找一些有趣的人来关注',
+			'refreshFeed' => '刷新动态列表',
 		],
 	],
 
@@ -197,12 +197,12 @@ return [
 	],
 
 	'report' => [
-		'report' => 'Report',
-		'selectReason' => 'Select a reason',
-		'reported' => 'Reported',
-		'sendingReport' => 'Sending report',
-		'thanksMsg' => 'Thanks for the report, people like you help keep our community safe!',
-		'contactAdminMsg' => 'If you\'d like to contact an administrator about this post or report',
+		'report' => '举报',
+		'selectReason' => '选择理由',
+		'reported' => '已举报',
+		'sendingReport' => '正在提交举报',
+		'thanksMsg' => '感谢你的举报，这有助于维护我们社区的安全！',
+		'contactAdminMsg' => '如果你想就这个帖子联系管理员或管理员举报',
 	],
 
 ];
