@@ -196,7 +196,7 @@ ENV NODE_ENV=$NODE_ENV
 
 WORKDIR /var/www/
 
-SHELL [ "bash", "-c" ]
+SHELL [ "/usr/bin/bash", "-c" ]
 
 # Install NPM dependencies
 RUN --mount=type=cache,id=pixelfed-node-${BUILDARCH},sharing=locked,target=/tmp/cache \
