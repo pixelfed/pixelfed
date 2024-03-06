@@ -196,16 +196,16 @@ ENV NODE_ENV=$NODE_ENV
 
 WORKDIR /var/www/
 
+SHELL [ "bash", "-c" ]
+
 # Install NPM dependencies
 RUN --mount=type=cache,id=pixelfed-node-${BUILDARCH},sharing=locked,target=/tmp/cache \
     --mount=type=bind,source=package.json,target=/var/www/package.json \
     --mount=type=bind,source=package-lock.json,target=/var/www/package-lock.json \
-    <<EOF bash
-    if [[ $BUILD_FRONTEND -eq 1 ]]; then
-        npm install \
-            --cache /tmp/cache \
-            --no-save \
-            --dev
+<<EOF
+    if [[ $BUILD_FRONTEND -eq 1 ]];
+    then
+        npm install --cache /tmp/cache --no-save --dev
     else
         echo "Skipping [npm install] as --build-arg [BUILD_FRONTEND] is not set to '1'"
     fi
@@ -215,8 +215,10 @@ EOF
 COPY --chown=${RUNTIME_UID}:${RUNTIME_GID} . /var/www
 
 # Build the frontend with "mix" (See package.json)
-RUN <<EOF bash
-    if [[ $BUILD_FRONTEND -eq 1 ]]; then
+RUN \
+<<EOF
+    if [[ $BUILD_FRONTEND -eq 1 ]];
+    then
         npm run production
     else
         echo "Skipping [npm run production] as --build-arg [BUILD_FRONTEND] is not set to '1'"
