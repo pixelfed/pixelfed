@@ -2,28 +2,26 @@
 
 namespace App\Services;
 
-use Cache;
-use Illuminate\Support\Facades\Redis;
-use App\{Hashtag, Profile, Status};
+use App\Hashtag;
+use App\Profile;
+use App\Status;
 use App\Transformer\Api\AccountTransformer;
-use App\Transformer\Api\StatusTransformer;
-use League\Fractal;
-use League\Fractal\Serializer\ArraySerializer;
-use League\Fractal\Pagination\IlluminatePaginatorAdapter;
 use App\Util\ActivityPub\Helpers;
 use Illuminate\Support\Str;
-use App\Services\AccountService;
-use App\Services\HashtagService;
-use App\Services\StatusService;
+use League\Fractal;
+use League\Fractal\Serializer\ArraySerializer;
+
 
 class SearchApiV2Service
 {
     private $query;
-    static $mastodonMode = false;
+
+    public static $mastodonMode = false;
 
     public static function query($query, $mastodonMode = false)
     {
         self::$mastodonMode = $mastodonMode;
+
         return (new self)->run($query);
     }
 
@@ -32,51 +30,51 @@ class SearchApiV2Service
         $this->query = $query;
         $q = urldecode($query->input('q'));
 
-        if($query->has('resolve') &&
-            ( Str::startsWith($q, 'https://') ||
+        if ($query->has('resolve') &&
+            (Str::startsWith($q, 'https://') ||
               Str::substrCount($q, '@') >= 1)
         ) {
             return $this->resolveQuery();
         }
 
-        if($query->has('type')) {
+        if ($query->has('type')) {
             switch ($query->input('type')) {
                 case 'accounts':
                     return [
                         'accounts' => $this->accounts(),
                         'hashtags' => [],
-                        'statuses' => []
+                        'statuses' => [],
                     ];
                     break;
                 case 'hashtags':
                     return [
                         'accounts' => [],
                         'hashtags' => $this->hashtags(),
-                        'statuses' => []
+                        'statuses' => [],
                     ];
                     break;
                 case 'statuses':
                     return [
                         'accounts' => [],
                         'hashtags' => [],
-                        'statuses' => $this->statuses()
+                        'statuses' => $this->statuses(),
                     ];
                     break;
             }
         }
 
-        if($query->has('account_id')) {
+        if ($query->has('account_id')) {
             return [
                 'accounts' => [],
                 'hashtags' => [],
-                'statuses' => $this->statusesById()
+                'statuses' => $this->statusesById(),
             ];
         }
 
         return [
             'accounts' => $this->accounts(),
             'hashtags' => $this->hashtags(),
-            'statuses' => $this->statuses()
+            'statuses' => $this->statuses(),
         ];
     }
 
@@ -87,17 +85,17 @@ class SearchApiV2Service
         $limit = $this->query->input('limit') ?? 20;
         $offset = $this->query->input('offset') ?? 0;
         $rawQuery = $initalQuery ? $initalQuery : $this->query->input('q');
-        $query = $rawQuery . '%';
+        $query = $rawQuery.'%';
         $webfingerQuery = $query;
-        if(Str::substrCount($rawQuery, '@') == 1 && substr($rawQuery, 0, 1) !== '@') {
-            $query = '@' . $query;
+        if (Str::substrCount($rawQuery, '@') == 1 && substr($rawQuery, 0, 1) !== '@') {
+            $query = '@'.$query;
         }
-        if(substr($webfingerQuery, 0, 1) !== '@') {
-            $webfingerQuery = '@' . $webfingerQuery;
+        if (substr($webfingerQuery, 0, 1) !== '@') {
+            $webfingerQuery = '@'.$webfingerQuery;
         }
         $banned = InstanceService::getBannedDomains() ?? [];
         $domainBlocks = UserFilterService::domainBlocks($user->profile_id);
-        if($domainBlocks && count($domainBlocks)) {
+        if ($domainBlocks && count($domainBlocks)) {
             $banned = array_unique(
                 array_values(
                     array_merge($banned, $domainBlocks)
@@ -112,15 +110,15 @@ class SearchApiV2Service
             ->offset($offset)
             ->limit($limit)
             ->get()
-            ->filter(function($profile) use ($banned) {
+            ->filter(function ($profile) use ($banned) {
                 return in_array($profile->domain, $banned) == false;
             })
-            ->map(function($res) use($mastodonMode) {
+            ->map(function ($res) use ($mastodonMode) {
                 return $mastodonMode ?
                 AccountService::getMastodon($res['id']) :
                 AccountService::get($res['id']);
             })
-            ->filter(function($account) {
+            ->filter(function ($account) {
                 return $account && isset($account['id']);
             })
             ->values();
@@ -134,31 +132,31 @@ class SearchApiV2Service
         $q = $this->query->input('q');
         $limit = $this->query->input('limit') ?? 20;
         $offset = $this->query->input('offset') ?? 0;
-        $query = Str::startsWith($q, '#') ? '%' . substr($q, 1) . '%' : '%' . $q . '%';
+        $query = Str::startsWith($q, '#') ? substr($q, 1).'%' : $q;
         $operator = config('database.default') === 'pgsql' ? 'ilike' : 'like';
+
         return Hashtag::where('name', $operator, $query)
-            ->orWhere('slug', $operator, $query)
-            ->where(function($q) {
-                return $q->where('can_search', true)
-                        ->orWhereNull('can_search');
-            })
             ->orderByDesc('cached_count')
             ->offset($offset)
             ->limit($limit)
             ->get()
-            ->map(function($tag) use($mastodonMode) {
+            ->filter(function ($tag) {
+                return $tag->can_search != false;
+            })
+            ->map(function ($tag) use ($mastodonMode) {
                 $res = [
                     'name' => $tag->name,
-                    'url'  => $tag->url()
+                    'url' => $tag->url(),
                 ];
 
-                if(!$mastodonMode) {
+                if (! $mastodonMode) {
                     $res['history'] = [];
-                    $res['count'] = HashtagService::count($tag->id);
+                    $res['count'] = $tag->cached_count ?? 0;
                 }
 
                 return $res;
-            });
+            })
+            ->values();
     }
 
     protected function statuses()
@@ -175,7 +173,7 @@ class SearchApiV2Service
 
     protected function resolveQuery()
     {
-        $default =  [
+        $default = [
             'accounts' => [],
             'hashtags' => [],
             'statuses' => [],
@@ -185,73 +183,77 @@ class SearchApiV2Service
         $query = urldecode($this->query->input('q'));
         $banned = InstanceService::getBannedDomains();
         $domainBlocks = UserFilterService::domainBlocks($user->profile_id);
-        if($domainBlocks && count($domainBlocks)) {
+        if ($domainBlocks && count($domainBlocks)) {
             $banned = array_unique(
                 array_values(
                     array_merge($banned, $domainBlocks)
                 )
             );
         }
-        if(substr($query, 0, 1) === '@' && !Str::contains($query, '.')) {
+        if (substr($query, 0, 1) === '@' && ! Str::contains($query, '.')) {
             $default['accounts'] = $this->accounts(substr($query, 1));
+
             return $default;
         }
-        if(Helpers::validateLocalUrl($query)) {
-            if(Str::contains($query, '/p/') || Str::contains($query, 'i/web/post/')) {
+        if (Helpers::validateLocalUrl($query)) {
+            if (Str::contains($query, '/p/') || Str::contains($query, 'i/web/post/')) {
                 return $this->resolveLocalStatus();
-            }  else if(Str::contains($query, 'i/web/profile/')) {
+            } elseif (Str::contains($query, 'i/web/profile/')) {
                 return $this->resolveLocalProfileId();
             } else {
                 return $this->resolveLocalProfile();
             }
         } else {
-            if(!Helpers::validateUrl($query) && strpos($query, '@') == -1) {
+            if (! Helpers::validateUrl($query) && strpos($query, '@') == -1) {
                 return $default;
             }
 
-            if(!Str::startsWith($query, 'http') && Str::substrCount($query, '@') == 1 && strpos($query, '@') !== 0) {
+            if (! Str::startsWith($query, 'http') && Str::substrCount($query, '@') == 1 && strpos($query, '@') !== 0) {
                 try {
-                    $res = WebfingerService::lookup('@' . $query, $mastodonMode);
+                    $res = WebfingerService::lookup('@'.$query, $mastodonMode);
                 } catch (\Exception $e) {
                     return $default;
                 }
-                if($res && isset($res['id'], $res['url'])) {
+                if ($res && isset($res['id'], $res['url'])) {
                     $domain = strtolower(parse_url($res['url'], PHP_URL_HOST));
-                    if(in_array($domain, $banned)) {
+                    if (in_array($domain, $banned)) {
                         return $default;
                     }
                     $default['accounts'][] = $res;
+
                     return $default;
                 } else {
                     return $default;
                 }
             }
 
-            if(Str::substrCount($query, '@') == 2) {
+            if (Str::substrCount($query, '@') == 2) {
                 try {
                     $res = WebfingerService::lookup($query, $mastodonMode);
                 } catch (\Exception $e) {
                     return $default;
                 }
-                if($res && isset($res['id'])) {
+                if ($res && isset($res['id'])) {
                     $domain = strtolower(parse_url($res['url'], PHP_URL_HOST));
-                    if(in_array($domain, $banned)) {
+                    if (in_array($domain, $banned)) {
                         return $default;
                     }
                     $default['accounts'][] = $res;
+
                     return $default;
                 } else {
                     return $default;
                 }
             }
 
-            if($sid = Status::whereUri($query)->first()) {
+            if ($sid = Status::whereUri($query)->first()) {
                 $s = StatusService::get($sid->id, false);
-                if(!$s) {
+                if (! $s) {
                     return $default;
                 }
-                if(in_array($s['visibility'], ['public', 'unlisted'])) {
+                if (in_array($s['visibility'], ['public', 'unlisted'])) {
                     $default['statuses'][] = $s;
+
                     return $default;
                 }
             }
@@ -259,10 +261,10 @@ class SearchApiV2Service
             try {
                 $res = ActivityPubFetchService::get($query);
 
-                if($res) {
+                if ($res) {
                     $json = json_decode($res, true);
 
-                    if(!$json || !isset($json['@context']) || !isset($json['type']) || !in_array($json['type'], ['Note', 'Person'])) {
+                    if (! $json || ! isset($json['@context']) || ! isset($json['type']) || ! in_array($json['type'], ['Note', 'Person'])) {
                         return [
                             'accounts' => [],
                             'hashtags' => [],
@@ -270,38 +272,40 @@ class SearchApiV2Service
                         ];
                     }
 
-                    switch($json['type']) {
+                    switch ($json['type']) {
                         case 'Note':
                             $obj = Helpers::statusFetch($query);
-                            if(!$obj || !isset($obj['id'])) {
+                            if (! $obj || ! isset($obj['id'])) {
                                 return $default;
                             }
                             $note = $mastodonMode ?
                                 StatusService::getMastodon($obj['id'], false) :
                                 StatusService::get($obj['id'], false);
-                            if(!$note) {
+                            if (! $note) {
                                 return $default;
                             }
-                            if(!isset($note['visibility']) || !in_array($note['visibility'], ['public', 'unlisted'])) {
+                            if (! isset($note['visibility']) || ! in_array($note['visibility'], ['public', 'unlisted'])) {
                                 return $default;
                             }
                             $default['statuses'][] = $note;
+
                             return $default;
-                        break;
+                            break;
 
                         case 'Person':
                             $obj = Helpers::profileFetch($query);
-                            if(!$obj) {
+                            if (! $obj) {
                                 return $default;
                             }
-                            if(in_array($obj['domain'], $banned)) {
+                            if (in_array($obj['domain'], $banned)) {
                                 return $default;
                             }
                             $default['accounts'][] = $mastodonMode ?
                                 AccountService::getMastodon($obj['id'], true) :
                                 AccountService::get($obj['id'], true);
+
                             return $default;
-                        break;
+                            break;
 
                         default:
                             return [
@@ -309,7 +313,7 @@ class SearchApiV2Service
                                 'hashtags' => [],
                                 'statuses' => [],
                             ];
-                        break;
+                            break;
                     }
                 }
             } catch (\Exception $e) {
@@ -329,18 +333,18 @@ class SearchApiV2Service
         $query = urldecode($this->query->input('q'));
         $query = last(explode('/', parse_url($query, PHP_URL_PATH)));
         $status = StatusService::getMastodon($query, false);
-        if(!$status || !in_array($status['visibility'], ['public', 'unlisted'])) {
+        if (! $status || ! in_array($status['visibility'], ['public', 'unlisted'])) {
             return [
                 'accounts' => [],
                 'hashtags' => [],
-                'statuses' => []
+                'statuses' => [],
             ];
         }
 
         $res = [
             'accounts' => [],
             'hashtags' => [],
-            'statuses' => [$status]
+            'statuses' => [$status],
         ];
 
         return $res;
@@ -355,21 +359,22 @@ class SearchApiV2Service
             ->whereUsername($query)
             ->first();
 
-        if(!$profile) {
+        if (! $profile) {
             return [
                 'accounts' => [],
                 'hashtags' => [],
-                'statuses' => []
+                'statuses' => [],
             ];
         }
 
         $fractal = new Fractal\Manager();
         $fractal->setSerializer(new ArraySerializer());
         $resource = new Fractal\Resource\Item($profile, new AccountTransformer());
+
         return [
             'accounts' => [$fractal->createData($resource)->toArray()],
             'hashtags' => [],
-            'statuses' => []
+            'statuses' => [],
         ];
     }
 
@@ -380,22 +385,22 @@ class SearchApiV2Service
         $profile = Profile::whereNull('status')
             ->find($query);
 
-        if(!$profile) {
+        if (! $profile) {
             return [
                 'accounts' => [],
                 'hashtags' => [],
-                'statuses' => []
+                'statuses' => [],
             ];
         }
 
         $fractal = new Fractal\Manager();
         $fractal->setSerializer(new ArraySerializer());
         $resource = new Fractal\Resource\Item($profile, new AccountTransformer());
+
         return [
             'accounts' => [$fractal->createData($resource)->toArray()],
             'hashtags' => [],
-            'statuses' => []
+            'statuses' => [],
         ];
     }
-
 }

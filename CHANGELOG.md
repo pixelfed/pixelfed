@@ -5,6 +5,11 @@
 ### Updates
 
 - Update SoftwareUpdateService, add command to refresh latest versions ([632f2cb6](https://github.com/pixelfed/pixelfed/commit/632f2cb6))
+- Update Post.vue, fix cache bug ([3a27e637](https://github.com/pixelfed/pixelfed/commit/3a27e637))
+- Update StatusHashtagService, use more efficient cached count ([592c8412](https://github.com/pixelfed/pixelfed/commit/592c8412))
+- Update DiscoverController, handle discover hashtag redirects ([18382e8a](https://github.com/pixelfed/pixelfed/commit/18382e8a))
+- Update ApiV1Controller, use admin filter service ([94503a1c](https://github.com/pixelfed/pixelfed/commit/94503a1c))
+- Update SearchApiV2Service, use more efficient query ([cee618e8](https://github.com/pixelfed/pixelfed/commit/cee618e8))
 -  ([](https://github.com/pixelfed/pixelfed/commit/))
 
 ## [v0.11.13 (2024-03-05)](https://github.com/pixelfed/pixelfed/compare/v0.11.12...v0.11.13)

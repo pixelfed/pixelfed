@@ -171,7 +171,7 @@
 			}
 		},
 
-		beforeMount() {
+		created() {
 			this.init();
 		},
 
@@ -181,20 +181,7 @@
 
 		methods: {
 			init() {
-				if(this.cachedStatus && this.cachedProfile) {
-					this.post = this.cachedStatus;
-					this.media = this.post.media_attachments;
-					this.profile = this.post.account;
-					this.user = this.cachedProfile;
-					if(this.post.in_reply_to_id) {
-						this.fetchReply();
-					} else {
-						this.isReply = false;
-						this.fetchRelationship();
-					}
-				} else {
-					this.fetchSelf();
-				}
+				this.fetchSelf();
 			},
 
 			fetchSelf() {

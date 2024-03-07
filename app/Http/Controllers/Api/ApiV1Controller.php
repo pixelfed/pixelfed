@@ -37,6 +37,7 @@ use App\Models\Conversation;
 use App\Notification;
 use App\Profile;
 use App\Services\AccountService;
+use App\Services\AdminShadowFilterService;
 use App\Services\BookmarkService;
 use App\Services\BouncerService;
 use App\Services\CollectionService;
@@ -2648,7 +2649,7 @@ class ApiV1Controller extends Controller
         $domainBlocks = UserFilterService::domainBlocks($user->profile_id);
         $hideNsfw = config('instance.hide_nsfw_on_public_feeds');
         $amin = SnowflakeService::byDate(now()->subDays(config('federation.network_timeline_days_falloff')));
-
+        $asf = AdminShadowFilterService::getHideFromPublicFeedsList();
         if ($local && $remote) {
             $feed = Status::select(
                 'id',
@@ -2823,6 +2824,21 @@ class ApiV1Controller extends Controller
                 $domain = strtolower(parse_url($s['url'], PHP_URL_HOST));
 
                 return ! in_array($domain, $domainBlocks);
+            })
+            ->filter(function ($s) use ($asf, $user) {
+                if (! $asf || count($asf) === 0) {
+                    return true;
+                }
+
+                if (in_array($s['account']['id'], $asf)) {
+                    if ($user->profile_id == $s['account']['id']) {
+                        return true;
+                    }
+
+                    return false;
+                }
+
+                return true;
             })
             ->take($limit)
             ->values();
