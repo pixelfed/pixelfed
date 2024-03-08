@@ -65,7 +65,10 @@ class ProfileTransformer extends Fractal\TransformerAbstract
             }
 
             if ($profile->moved_to_profile_id) {
-                $res['movedTo'] = AccountService::get($profile->moved_to_profile_id)['url'];
+                $movedTo = AccountService::get($profile->moved_to_profile_id);
+                if ($movedTo && isset($movedTo['url'], $movedTo['id'])) {
+                    $res['movedTo'] = $movedTo['url'];
+                }
             }
         }
 
