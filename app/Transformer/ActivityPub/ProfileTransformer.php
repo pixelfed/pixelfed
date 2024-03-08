@@ -59,6 +59,11 @@ class ProfileTransformer extends Fractal\TransformerAbstract
 
         if ($profile->status === 'delete' || $profile->deleted_at != null) {
             $res['suspended'] = true;
+            $res['name'] = '';
+            unset($res['icon']);
+            $res['summary'] = '';
+            $res['indexable'] = false;
+            $res['manuallyApprovesFollowers'] = false;
         } else {
             if ($profile->aliases->count()) {
                 $res['alsoKnownAs'] = $profile->aliases->map(fn ($alias) => $alias->uri);
