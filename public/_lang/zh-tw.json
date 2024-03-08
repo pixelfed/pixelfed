@@ -131,7 +131,7 @@
         "modCWSuccess": "成功增加內容警告",
         "modRemoveCWConfirm": "您確定要刪除此貼文上的內容警告嗎？",
         "modRemoveCWSuccess": "已成功刪除內容警告",
-        "modUnlistConfirm": 您確定要取消列出此貼文嗎？",
+        "modUnlistConfirm": "您確定要取消列出此貼文嗎？",
         "modUnlistSuccess": "成功取消列出貼文",
         "modMarkAsSpammerConfirm": "您確定要將此使用者標記為垃圾郵件發送者嗎？所有現有和未來的貼文將在時間表上不列出，並將應用內容警告。",
         "modMarkAsSpammerSuccess": "已成功將帳號標記為垃圾郵件發送者",
