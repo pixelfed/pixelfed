@@ -95,6 +95,8 @@ trait PrivacySettings
         Cache::forget('pf:acct:settings:hidden-following:' . $pid);
         Cache::forget('pf:acct-trans:hideFollowing:' . $pid);
         Cache::forget('pf:acct-trans:hideFollowers:' . $pid);
+        Cache::forget('pfc:cached-user:wt:' . strtolower($profile->username));
+        Cache::forget('pfc:cached-user:wot:' . strtolower($profile->username));
         return redirect(route('settings.privacy'))->with('status', 'Settings successfully updated!');
     }
 

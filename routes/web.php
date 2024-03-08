@@ -29,7 +29,7 @@ Route::domain(config('pixelfed.domain.app'))->middleware(['validemail', 'twofact
     Route::get('auth/pci/{id}/{code}', 'ParentalControlsController@inviteRegister');
     Route::post('auth/pci/{id}/{code}', 'ParentalControlsController@inviteRegisterStore');
 
-    Route::get('auth/sign_up', 'CuratedRegisterController@index')->name('auth.curated-onboarding');
+    Route::get('auth/sign_up', 'SiteController@curatedOnboarding')->name('auth.curated-onboarding');
     Route::post('auth/sign_up', 'CuratedRegisterController@proceed');
     Route::get('auth/sign_up/concierge/response-sent', 'CuratedRegisterController@conciergeResponseSent');
     Route::get('auth/sign_up/concierge', 'CuratedRegisterController@concierge');
