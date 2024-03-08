@@ -25,7 +25,7 @@
             <hr class="border-dark">
             <p>From our Admins:</p>
             <div class="card card-body mb-1 bg-dark border border-secondary" style="border-style: dashed !important;">
-                <p class="lead mb-0" style="white-space: pre; opacity: 0.8">{{ $activity->message }}</p>
+                <p class="lead mb-0" style="white-space: pre-wrap; opacity: 0.8;">{{ $activity->message }}</p>
             </div>
             <p class="mb-3 small text-muted">If you don't understand this request, or need additional context you should request clarification from the admin team.</p>
             {{-- <hr class="border-dark"> --}}
