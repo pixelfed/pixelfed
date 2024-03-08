@@ -693,7 +693,7 @@ class PublicApiController extends Controller
         $limit = $request->limit ?? 9;
         $max_id = $request->max_id;
         $min_id = $request->min_id;
-        $scope = ['photo', 'photo:album', 'video', 'video:album'];
+        $scope = ['photo', 'photo:album', 'video', 'video:album', 'photo:video:album'];
         $onlyMedia = $request->input('only_media', true);
 
         if(!$min_id && !$max_id) {
