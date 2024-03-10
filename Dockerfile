@@ -177,6 +177,55 @@ RUN --mount=type=cache,id=pixelfed-pear-${PHP_VERSION}-${PHP_DEBIAN_RELEASE}-${T
     /docker/install/php-extensions.sh
 
 #######################################################
+# Node: Build frontend
+#######################################################
+
+# NOTE: Since the nodejs build is CPU architecture agnostic,
+# we only want to build once and cache it for other architectures.
+# We force the (CPU) [--platform] here to be architecture
+# of the "builder"/"server" and not the *target* CPU architecture
+# (e.g.) building the ARM version of Pixelfed on AMD64.
+FROM --platform=${BUILDARCH} node:lts AS frontend-build
+
+ARG BUILDARCH
+ARG BUILD_FRONTEND=0
+ARG RUNTIME_UID
+
+ARG NODE_ENV=production
+ENV NODE_ENV=$NODE_ENV
+
+WORKDIR /var/www/
+
+SHELL [ "/usr/bin/bash", "-c" ]
+
+# Install NPM dependencies
+RUN --mount=type=cache,id=pixelfed-node-${BUILDARCH},sharing=locked,target=/tmp/cache \
+    --mount=type=bind,source=package.json,target=/var/www/package.json \
+    --mount=type=bind,source=package-lock.json,target=/var/www/package-lock.json \
+<<EOF
+    if [[ $BUILD_FRONTEND -eq 1 ]];
+    then
+        npm install --cache /tmp/cache --no-save --dev
+    else
+        echo "Skipping [npm install] as --build-arg [BUILD_FRONTEND] is not set to '1'"
+    fi
+EOF
+
+# Copy the frontend source into the image before building
+COPY --chown=${RUNTIME_UID}:${RUNTIME_GID} . /var/www
+
+# Build the frontend with "mix" (See package.json)
+RUN \
+<<EOF
+    if [[ $BUILD_FRONTEND -eq 1 ]];
+    then
+        npm run production
+    else
+        echo "Skipping [npm run production] as --build-arg [BUILD_FRONTEND] is not set to '1'"
+    fi
+EOF
+
+#######################################################
 # PHP: composer and source code
 #######################################################
 
@@ -231,6 +280,7 @@ COPY --link --from=dottie-image /dottie /usr/local/bin/dottie
 COPY --link --from=gomplate-image /usr/local/bin/gomplate /usr/local/bin/gomplate
 COPY --link --from=composer-image /usr/bin/composer /usr/bin/composer
 COPY --link --from=composer-and-src --chown=${RUNTIME_UID}:${RUNTIME_GID} /var/www /var/www
+COPY --link --from=frontend-build --chown=${RUNTIME_UID}:${RUNTIME_GID} /var/www/public /var/www/public
 
 #! Changing user to runtime user
 USER ${RUNTIME_UID}:${RUNTIME_GID}
