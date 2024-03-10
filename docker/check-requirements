@@ -8,7 +8,6 @@ set -e -o errexit -o nounset -o pipefail
 
 declare -r RED="\e[31m"
 declare -r GREEN="\e[32m"
-declare -r YELLOW="\e[33m"
 declare -r BLUE="\e[34m"
 declare -r NO_COLOR="\e[0m"
 
@@ -25,17 +24,8 @@ function action_start() {
     echo -en "⚙️ $1: "
 }
 
-function action_start_newline() {
-    action_start "$1"
-    echo
-}
-
 function action_ok() {
     echo -e "\n\t✅ ${GREEN}${*}${NO_COLOR}\n"
-}
-
-function action_warn() {
-    echo -e "⚠️ ${YELLOW}${*}${NO_COLOR}"
 }
 
 function action_error() {
