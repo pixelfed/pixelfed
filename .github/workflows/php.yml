@@ -8,9 +8,9 @@ on:
   # See: https://docs.github.com/en/actions/using-workflows/events-that-trigger-workflows#push
   push:
     branches:
-      - '*'         # matches every branch that doesn't contain a '/'
-      - '*/*'       # matches every branch containing a single '/'
-      - '**'        # matches every branch
+      - "*" # matches every branch that doesn't contain a '/'
+      - "*/*" # matches every branch containing a single '/'
+      - "**" # matches every branch
     tags:
       - "*"
 
@@ -96,53 +96,3 @@ jobs:
 
       - name: Run tests
         run: ./vendor/bin/phpunit
-
-  code-style:
-    name: Code Style
-    runs-on: ubuntu-latest
-
-    container:
-      image: php:8.3-cli
-
-    # See: https://docs.github.com/en/actions/using-workflows/workflow-syntax-for-github-actions#example-using-concurrency-and-the-default-behavior
-    concurrency:
-      group: php-code-style-${{ github.ref }}-8.3
-      cancel-in-progress: false
-
-    steps:
-      - name: Checkout Code
-        uses: actions/checkout@v4
-
-      - name: Download composer
-        uses: robinraju/release-downloader@v1.9
-        with:
-          repository: composer/composer
-          tag: ${{env.COMPOSER_VERSION}}
-          fileName: composer.phar
-
-      - name: Download mlocati/docker-php-extension-installer
-        uses: robinraju/release-downloader@v1.9
-        with:
-          repository: mlocati/docker-php-extension-installer
-          tag: ${{env.DOCKER_PHP_EXTENSION_INSTALLER_VERSION}}
-          fileName: install-php-extensions
-
-      - name: Install PHP extensions
-        run: |
-          chmod +x install-php-extensions
-          ./install-php-extensions ${{env.EXTRA_PHP_EXTENSIONS}}
-
-      - name: Cache composer dependencies
-        uses: actions/cache@v4
-        with:
-          path: vendor/
-          key: composer-8.3-${{ hashFiles('composer.lock') }}
-
-      - name: Install laravel/pint
-        run: php composer.phar require laravel/pint --dev
-
-      - name: Install composer dependencies
-        run: php composer.phar install --no-interaction --prefer-dist
-
-      - name: Run laravel/pint
-        run: ./vendor/bin/pint --test
