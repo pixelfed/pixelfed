@@ -94,21 +94,21 @@ echo -e "${NO_COLOR}"
 # git installed?
 action_start "Checking if [$(highlight "git")] command is available"
 command -v git >/dev/null 2>&1 || {
-    action_error_exit "I require the 'git' command, but it's not installed"
+    action_error_exit "Pixelfed require the 'git' command, but it's not installed"
 }
 action_ok "git is installed"
 
 # docker installed?
 action_start "Checking if [$(highlight "docker")] command is available"
 command -v docker >/dev/null 2>&1 || {
-    action_error_exit "I require the 'docker' command, but it's not installed. ${DOCKER_HELP}"
+    action_error_exit "Pixelfed require the 'docker' command, but it's not installed. ${DOCKER_HELP}"
 }
 action_ok "docker is installed"
 
 # docker compose installed?
 action_start "Checking if [$(highlight "docker compose")] command is available"
 docker compose >/dev/null 2>&1 || {
-    action_error_exit "I require the 'docker compose' command, but it's not installed. ${DOCKER_HELP}"
+    action_error_exit "Pixelfed require the 'docker compose' command, but it's not installed. ${DOCKER_HELP}"
 }
 action_ok "docker compose is installed"
 
@@ -121,14 +121,14 @@ IFS="." read -r -a compose_version_arr <<<"$compose_version"
 ## major version
 action_start "Checking if [$(highlight "docker compose version")] major version (${min_docker_compose_version_arr[0]}) is acceptable"
 [[ ${compose_version_arr[0]} -eq ${min_docker_compose_version_arr[0]} ]] || {
-    action_error_exit "I require minimum Docker Compose major version ${min_docker_compose_version_arr[0]}.x.x - found ${compose_version}.${DOCKER_HELP}"
+    action_error_exit "Pixelfed require minimum Docker Compose major version ${min_docker_compose_version_arr[0]}.x.x - found ${compose_version}.${DOCKER_HELP}"
 }
 action_ok "You're using major version ${compose_version_arr[0]}"
 
 ## minor version
 action_start "Checking if [$(highlight "docker compose version")] minor version (${min_docker_compose_version_arr[1]}) is acceptable"
 [[ ${compose_version_arr[1]} -ge ${min_docker_compose_version_arr[1]} ]] || {
-    action_error_exit "I require minimum Docker Compose minor version ${min_docker_compose_version_arr[0]}.${min_docker_compose_version_arr[1]} - found ${compose_version}.${DOCKER_HELP}"
+    action_error_exit "Pixelfed require minimum Docker Compose minor version ${min_docker_compose_version_arr[0]}.${min_docker_compose_version_arr[1]} - found ${compose_version}.${DOCKER_HELP}"
 }
 action_ok "You're using minor version ${compose_version_arr[1]}"
 
