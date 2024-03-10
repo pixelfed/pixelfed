@@ -104,7 +104,7 @@ class ApiV2Controller extends Controller
                         'max_featured_tags' => 0,
                     ],
                     'statuses' => [
-                        'max_characters' => (int) config('pixelfed.max_caption_length'),
+                        'max_characters' => (int) config_cache('pixelfed.max_caption_length'),
                         'max_media_attachments' => (int) config_cache('pixelfed.max_album_length'),
                         'characters_reserved_per_url' => 23
                     ],
