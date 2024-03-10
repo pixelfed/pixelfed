@@ -1664,7 +1664,7 @@ class ApiV1Controller extends Controller
                     ],
                     'statuses' => [
                         'characters_reserved_per_url' => 23,
-                        'max_characters' => (int) config('pixelfed.max_caption_length'),
+                        'max_characters' => (int) config_cache('pixelfed.max_caption_length'),
                         'max_media_attachments' => (int) config('pixelfed.max_album_length'),
                     ],
                 ],
@@ -3308,7 +3308,7 @@ class ApiV1Controller extends Controller
         abort_unless($request->user()->tokenCan('write'), 403);
 
         $this->validate($request, [
-            'status' => 'nullable|string',
+            'status' => 'nullable|string|max:' . config_cache('pixelfed.max_caption_length'),
             'in_reply_to_id' => 'nullable',
             'media_ids' => 'sometimes|array|max:'.config_cache('pixelfed.max_album_length'),
             'sensitive' => 'nullable',
