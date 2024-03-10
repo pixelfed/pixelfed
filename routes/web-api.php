@@ -115,7 +115,7 @@ Route::domain(config('pixelfed.domain.app'))->middleware(['validemail', 'twofact
                 Route::post('discover/admin/features', 'DiscoverController@updateFeatures');
             });
 
-            Route::get('discover/accounts/popular', 'Api\ApiV1Controller@discoverAccountsPopular');
+            Route::get('discover/accounts/popular', 'DiscoverController@discoverAccountsPopular');
             Route::post('web/change-language.json', 'SpaController@updateLanguage');
         });
 

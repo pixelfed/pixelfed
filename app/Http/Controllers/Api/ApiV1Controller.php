@@ -4066,7 +4066,7 @@ class ApiV1Controller extends Controller
 
         $pid = $request->user()->profile_id;
 
-        $ids = Cache::remember('api:v1.1:discover:accounts:popular', 3600, function () {
+        $ids = Cache::remember('api:v1.1:discover:accounts:popular', 14400, function () {
             return DB::table('profiles')
                 ->where('is_private', false)
                 ->whereNull('status')
@@ -4075,6 +4075,7 @@ class ApiV1Controller extends Controller
                 ->get();
         });
         $filters = UserFilterService::filters($pid);
+        $asf = AdminShadowFilterService::getHideFromPublicFeedsList();
         $ids = $ids->map(function ($profile) {
             return AccountService::get($profile->id, true);
         })
@@ -4086,6 +4087,9 @@ class ApiV1Controller extends Controller
             })
             ->filter(function ($profile) use ($pid) {
                 return ! FollowerService::follows($pid, $profile['id'], true);
+            })
+            ->filter(function ($profile) use ($asf) {
+                return ! in_array($profile['id'], $asf);
             })
             ->filter(function ($profile) use ($filters) {
                 return ! in_array($profile['id'], $filters);
