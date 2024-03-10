@@ -32,7 +32,7 @@ class Config
                 'uploader' => [
                     'max_photo_size' => (int) config('pixelfed.max_photo_size'),
                     'max_caption_length' => (int) config_cache('pixelfed.max_caption_length'),
-                    'max_altext_length' => (int) config('pixelfed.max_altext_length', 150),
+                    'max_altext_length' => (int) config_cache('pixelfed.max_altext_length', 150),
                     'album_limit' => (int) config_cache('pixelfed.max_album_length'),
                     'image_quality' => (int) config_cache('pixelfed.image_quality'),
 
@@ -100,6 +100,12 @@ class Config
                 ],
             ];
         });
+    }
+
+    public static function refresh()
+    {
+        Cache::forget(self::CACHE_KEY);
+        return self::get();
     }
 
     public static function json()
