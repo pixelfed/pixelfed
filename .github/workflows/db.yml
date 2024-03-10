@@ -7,12 +7,6 @@ on:
 
   # See: https://docs.github.com/en/actions/using-workflows/events-that-trigger-workflows#push
   push:
-    branches:
-      - '*'         # matches every branch that doesn't contain a '/'
-      - '*/*'       # matches every branch containing a single '/'
-      - '**'        # matches every branch
-    tags:
-      - "*"
 
   # See: https://docs.github.com/en/actions/using-workflows/events-that-trigger-workflows#pull_request
   pull_request:
