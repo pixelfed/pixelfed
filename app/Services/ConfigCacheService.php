@@ -87,6 +87,8 @@ class ConfigCacheService
                 'pixelfed.app_registration_rate_limit_decay',
                 'pixelfed.app_registration_confirm_rate_limit_attempts',
                 'pixelfed.app_registration_confirm_rate_limit_decay',
+                'instance.embed.profile',
+                'instance.embed.post',
                 // 'system.user_mode'
             ];
 

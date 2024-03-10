@@ -332,7 +332,7 @@ class ProfileController extends Controller
     {
         $res = view('profile.embed-removed');
 
-        if (! config('instance.embed.profile')) {
+        if (! (bool) config_cache('instance.embed.profile')) {
             return response($res)->withHeaders(['X-Frame-Options' => 'ALLOWALL']);
         }
 
