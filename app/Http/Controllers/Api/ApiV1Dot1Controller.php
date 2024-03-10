@@ -473,15 +473,15 @@ class ApiV1Dot1Controller extends Controller
 	{
 		return [
 			'open' => (bool) config_cache('pixelfed.open_registration'),
-			'iara' => config('pixelfed.allow_app_registration')
+			'iara' => (bool) config_cache('pixelfed.allow_app_registration'),
 		];
 	}
 
 	public function inAppRegistration(Request $request)
 	{
 		abort_if($request->user(), 404);
-		abort_unless(config_cache('pixelfed.open_registration'), 404);
-		abort_unless(config('pixelfed.allow_app_registration'), 404);
+		abort_unless((bool) config_cache('pixelfed.open_registration'), 404);
+		abort_unless((bool) config_cache('pixelfed.allow_app_registration'), 404);
 		abort_unless($request->hasHeader('X-PIXELFED-APP'), 403);
 		if(config('pixelfed.bouncer.cloud_ips.ban_signups')) {
 			abort_if(BouncerService::checkIp($request->ip()), 404);
@@ -609,8 +609,8 @@ class ApiV1Dot1Controller extends Controller
 	public function inAppRegistrationConfirm(Request $request)
 	{
 		abort_if($request->user(), 404);
-		abort_unless(config_cache('pixelfed.open_registration'), 404);
-		abort_unless(config('pixelfed.allow_app_registration'), 404);
+		abort_unless((bool) config_cache('pixelfed.open_registration'), 404);
+		abort_unless((bool) config_cache('pixelfed.allow_app_registration'), 404);
 		abort_unless($request->hasHeader('X-PIXELFED-APP'), 403);
 		if(config('pixelfed.bouncer.cloud_ips.ban_signups')) {
 			abort_if(BouncerService::checkIp($request->ip()), 404);

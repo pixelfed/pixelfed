@@ -37,6 +37,7 @@ use App\Models\Conversation;
 use App\Notification;
 use App\Profile;
 use App\Services\AccountService;
+use App\Services\AdminShadowFilterService;
 use App\Services\BookmarkService;
 use App\Services\BouncerService;
 use App\Services\CollectionService;
@@ -1663,7 +1664,7 @@ class ApiV1Controller extends Controller
                     ],
                     'statuses' => [
                         'characters_reserved_per_url' => 23,
-                        'max_characters' => (int) config('pixelfed.max_caption_length'),
+                        'max_characters' => (int) config_cache('pixelfed.max_caption_length'),
                         'max_media_attachments' => (int) config('pixelfed.max_album_length'),
                     ],
                 ],
@@ -2648,7 +2649,7 @@ class ApiV1Controller extends Controller
         $domainBlocks = UserFilterService::domainBlocks($user->profile_id);
         $hideNsfw = config('instance.hide_nsfw_on_public_feeds');
         $amin = SnowflakeService::byDate(now()->subDays(config('federation.network_timeline_days_falloff')));
-
+        $asf = AdminShadowFilterService::getHideFromPublicFeedsList();
         if ($local && $remote) {
             $feed = Status::select(
                 'id',
@@ -2823,6 +2824,21 @@ class ApiV1Controller extends Controller
                 $domain = strtolower(parse_url($s['url'], PHP_URL_HOST));
 
                 return ! in_array($domain, $domainBlocks);
+            })
+            ->filter(function ($s) use ($asf, $user) {
+                if (! $asf || count($asf) === 0) {
+                    return true;
+                }
+
+                if (in_array($s['account']['id'], $asf)) {
+                    if ($user->profile_id == $s['account']['id']) {
+                        return true;
+                    }
+
+                    return false;
+                }
+
+                return true;
             })
             ->take($limit)
             ->values();
@@ -3292,7 +3308,7 @@ class ApiV1Controller extends Controller
         abort_unless($request->user()->tokenCan('write'), 403);
 
         $this->validate($request, [
-            'status' => 'nullable|string',
+            'status' => 'nullable|string|max:' . config_cache('pixelfed.max_caption_length'),
             'in_reply_to_id' => 'nullable',
             'media_ids' => 'sometimes|array|max:'.config_cache('pixelfed.max_album_length'),
             'sensitive' => 'nullable',
@@ -4050,7 +4066,7 @@ class ApiV1Controller extends Controller
 
         $pid = $request->user()->profile_id;
 
-        $ids = Cache::remember('api:v1.1:discover:accounts:popular', 3600, function () {
+        $ids = Cache::remember('api:v1.1:discover:accounts:popular', 14400, function () {
             return DB::table('profiles')
                 ->where('is_private', false)
                 ->whereNull('status')
@@ -4059,6 +4075,7 @@ class ApiV1Controller extends Controller
                 ->get();
         });
         $filters = UserFilterService::filters($pid);
+        $asf = AdminShadowFilterService::getHideFromPublicFeedsList();
         $ids = $ids->map(function ($profile) {
             return AccountService::get($profile->id, true);
         })
@@ -4070,6 +4087,9 @@ class ApiV1Controller extends Controller
             })
             ->filter(function ($profile) use ($pid) {
                 return ! FollowerService::follows($pid, $profile['id'], true);
+            })
+            ->filter(function ($profile) use ($asf) {
+                return ! in_array($profile['id'], $asf);
             })
             ->filter(function ($profile) use ($filters) {
                 return ! in_array($profile['id'], $filters);

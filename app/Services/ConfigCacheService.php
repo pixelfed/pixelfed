@@ -75,6 +75,20 @@ class ConfigCacheService
                 'instance.curated_registration.enabled',
 
                 'federation.migration',
+
+                'pixelfed.max_caption_length',
+                'pixelfed.max_bio_length',
+                'pixelfed.max_name_length',
+                'pixelfed.min_password_length',
+                'pixelfed.max_avatar_size',
+                'pixelfed.max_altext_length',
+                'pixelfed.allow_app_registration',
+                'pixelfed.app_registration_rate_limit_attempts',
+                'pixelfed.app_registration_rate_limit_decay',
+                'pixelfed.app_registration_confirm_rate_limit_attempts',
+                'pixelfed.app_registration_confirm_rate_limit_decay',
+                'instance.embed.profile',
+                'instance.embed.post',
                 // 'system.user_mode'
             ];
 
