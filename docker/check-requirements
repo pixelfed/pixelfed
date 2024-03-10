@@ -67,11 +67,18 @@ DOCKER_HELP="
 \tWe recommend installing Docker (and Compose) directly from Docker.com instead of your Operation System package registry.
 \tPlease see $(highlight "https://docs.docker.com/engine/install/")${RED} for information on how to install Docker on your system.
 
+\tA convinience script is provided by Docker to automate the installation that should work on all supported platforms:
+
+\t\t ${GREEN}\$${BLUE} curl -fsSL https://get.docker.com -o get-docker.sh
+\t\t ${GREEN}\$${BLUE} sudo sh ./get-docker.sh
+${RED}
+\tPlease see $(highlight "https://docs.docker.com/engine/install/ubuntu/#install-using-the-convenience-script")${RED} for more information
+
 \tAlternatively, you can update *JUST* the Compose plugin by following the guide here:
-\t$(highlight "https://docs.docker.com/compose/install/linux/#install-the-plugin-manually")${RED}.
+\t$(highlight "https://docs.docker.com/compose/install/linux/#install-the-plugin-manually")${RED}
 
 \tLearn more about Docker compose release history here:
-\t$(highlight "https://docs.docker.com/compose/release-notes/")${RED}.${NO_COLOR}"
+\t$(highlight "https://docs.docker.com/compose/release-notes/")${RED}${NO_COLOR}"
 declare -r DOCKER_HELP
 
 #
