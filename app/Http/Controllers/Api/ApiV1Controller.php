@@ -1650,11 +1650,11 @@ class ApiV1Controller extends Controller
                 'configuration' => [
                     'media_attachments' => [
                         'image_matrix_limit' => 16777216,
-                        'image_size_limit' => config('pixelfed.max_photo_size') * 1024,
+                        'image_size_limit' => config_cache('pixelfed.max_photo_size') * 1024,
                         'supported_mime_types' => explode(',', config('pixelfed.media_types')),
                         'video_frame_rate_limit' => 120,
                         'video_matrix_limit' => 2304000,
-                        'video_size_limit' => config('pixelfed.max_photo_size') * 1024,
+                        'video_size_limit' => config_cache('pixelfed.max_photo_size') * 1024,
                     ],
                     'polls' => [
                         'max_characters_per_option' => 50,
