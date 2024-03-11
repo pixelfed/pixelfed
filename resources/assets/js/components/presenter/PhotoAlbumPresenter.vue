@@ -22,7 +22,7 @@
 			:alt="altText(status)"/>
 	</div>
 	<div v-else class="w-100 h-100 p-0 album-wrapper">
-		<carousel ref="carousel" :centerMode="true" :loop="false" :per-page="1" :paginationPosition="'bottom-overlay'" paginationActiveColor="#3897f0" paginationColor="#dbdbdb" class="p-0 m-0" :id="'carousel-' + status.id">
+		<carousel ref="carousel" :navigationEnabled="true" :centerMode="true" :loop="false" :per-page="1" :paginationPosition="'bottom-overlay'" paginationActiveColor="#3897f0" paginationColor="#dbdbdb" class="p-0 m-0" :id="'carousel-' + status.id">
 			<slide v-for="(img, index) in status.media_attachments" :key="'px-carousel-'+img.id + '-' + index" class="" style="background: #000; display: flex;align-items: center;" :title="img.description">
 
 				<img
@@ -185,4 +185,30 @@
   .album-wrapper {
 	position: relative;
   }
+</style>
+
+<style>
+.VueCarousel-navigation-button {
+  top: 0 !important;
+  width: 25%;
+  height: 100%;
+  color: white !important;
+  opacity: 0.0 !important;
+  transform: none !important;
+}
+
+.VueCarousel-navigation-button:hover:not(.VueCarousel-navigation--disabled) {
+  opacity: 0.5 !important;
+}
+
+.VueCarousel-navigation-button {
+  &.VueCarousel-navigation-prev {
+    left: 0;
+    text-align: left;
+  }
+  &.VueCarousel-navigation-next {
+    right: 0;
+    text-align: right;
+  }
+}
 </style>
