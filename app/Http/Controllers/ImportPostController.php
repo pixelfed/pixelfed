@@ -179,7 +179,7 @@ class ImportPostController extends Controller
                 'required',
                 'file',
                 $mimes,
-                'max:' . config('pixelfed.max_photo_size')
+                'max:' . config_cache('pixelfed.max_photo_size')
             ]
         ]);
 
