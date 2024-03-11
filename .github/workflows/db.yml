@@ -1,0 +1,250 @@
+---
+name: Database
+
+on:
+  # See: https://docs.github.com/en/actions/using-workflows/events-that-trigger-workflows#workflow_dispatch
+  workflow_dispatch:
+
+  # See: https://docs.github.com/en/actions/using-workflows/events-that-trigger-workflows#push
+  push:
+
+  # See: https://docs.github.com/en/actions/using-workflows/events-that-trigger-workflows#pull_request
+  pull_request:
+    types:
+      - opened
+      - reopened
+      - synchronize
+
+env:
+  EXTRA_PHP_EXTENSIONS: intl bcmath zip pcntl exif curl gd pdo_pgsql pdo_mysql pdo_sqlite
+  DOCKER_PHP_EXTENSION_INSTALLER_VERSION: 2.2.2
+  COMPOSER_VERSION: 2.7.1
+
+jobs:
+  migrations-mysql:
+    name: MySQL / MariaDB
+    runs-on: ubuntu-latest
+
+    strategy:
+      fail-fast: false
+
+      # See: https://docs.github.com/en/actions/using-jobs/using-a-matrix-for-your-jobs
+      matrix:
+        php_version:
+          - 8.3
+        db_version:
+          - mariadb:latest
+          - mariadb:11
+          - mariadb:10
+
+          - mysql:latest
+          - mysql:8.3
+          - mysql:8.0
+
+    container:
+      image: php:${{ matrix.php_version }}-cli
+
+    services:
+      db:
+        image: ${{ matrix.db_version }}
+        env:
+          MARIADB_ROOT_PASSWORD: password
+          MARIADB_PASSWORD: password
+          MARIADB_USER: pixelfed
+          MARIADB_DATABASE: pixelfed
+
+          MYSQL_ROOT_PASSWORD: "password"
+          MYSQL_USER: "pixelfed"
+          MYSQL_PASSWORD: "password"
+          MYSQL_DATABASE: "pixelfed"
+        ports:
+          - 33306:3306
+
+      redis:
+        image: redis:7.2
+        options: >-
+          --health-cmd "redis-cli ping"
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+
+    # See: https://docs.github.com/en/actions/using-workflows/workflow-syntax-for-github-actions#example-using-concurrency-and-the-default-behavior
+    concurrency:
+      group: db-migrations-${{ github.ref }}-${{ matrix.php_version }}-${{matrix.db_version}}
+      cancel-in-progress: true
+
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+
+      - name: Download mlocati/docker-php-extension-installer
+        uses: robinraju/release-downloader@v1.9
+        with:
+          repository: mlocati/docker-php-extension-installer
+          tag: ${{env.DOCKER_PHP_EXTENSION_INSTALLER_VERSION}}
+          fileName: install-php-extensions
+
+      - name: Download composer
+        uses: robinraju/release-downloader@v1.9
+        with:
+          repository: composer/composer
+          tag: ${{env.COMPOSER_VERSION}}
+          fileName: composer.phar
+
+      - name: Download jippi/dottie
+        uses: robinraju/release-downloader@v1.9
+        with:
+          repository: jippi/dottie
+          latest: true
+          fileName: "*_amd64.deb"
+
+      - name: Install dottie
+        run: |
+          dpkg -i *.deb
+          rm -f *.deb
+          dottie -v
+
+      - name: Install PHP extensions
+        run: |
+          chmod +x install-php-extensions
+          ./install-php-extensions ${{env.EXTRA_PHP_EXTENSIONS}}
+
+      - name: Cache composer dependencies
+        uses: actions/cache@v4
+        with:
+          path: vendor/
+          key: composer-${{matrix.php_version}}-${{ hashFiles('composer.lock') }}
+
+      - name: Install composer dependencies
+        run: php composer.phar install -n --prefer-dist
+
+      - name: Setup Environment
+        run: |
+          cp .env.testing .env
+
+          dottie set DB_CONNECTION=mysql
+          dottie set DB_HOST=db
+          dottie set DB_PORT=3306
+          dottie set DB_DATABASE=pixelfed
+          dottie set DB_USERNAME=pixelfed
+          dottie set DB_PASSWORD=password
+
+          dottie set REDIS_HOST=redis
+
+      - run: php artisan config:cache
+      - run: php artisan route:clear
+      - run: php artisan storage:link
+      - run: php artisan key:generate
+
+      - run: php artisan migrate --force
+
+  migrations-postgresql:
+    name: PostgreSQL
+    runs-on: ubuntu-latest
+
+    strategy:
+      fail-fast: false
+
+      # See: https://docs.github.com/en/actions/using-jobs/using-a-matrix-for-your-jobs
+      matrix:
+        php_version:
+          - 8.3
+        db_version:
+          - postgres:16
+          - postgres:15
+          - postgres:14
+
+    container:
+      image: php:${{ matrix.php_version }}-cli
+
+    services:
+      db:
+        image: ${{ matrix.db_version }}
+        env:
+          POSTGRES_USER: "pixelfed"
+          POSTGRES_PASSWORD: "password"
+          POSTGRES_DB: "pixelfed"
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+
+      redis:
+        image: redis:7.2
+        options: >-
+          --health-cmd "redis-cli ping"
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+
+    # See: https://docs.github.com/en/actions/using-workflows/workflow-syntax-for-github-actions#example-using-concurrency-and-the-default-behavior
+    concurrency:
+      group: db-migrations-${{ github.ref }}-${{ matrix.php_version }}-${{matrix.db_version}}
+      cancel-in-progress: true
+
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+
+      - name: Download mlocati/docker-php-extension-installer
+        uses: robinraju/release-downloader@v1.9
+        with:
+          repository: mlocati/docker-php-extension-installer
+          tag: ${{env.DOCKER_PHP_EXTENSION_INSTALLER_VERSION}}
+          fileName: install-php-extensions
+
+      - name: Download composer
+        uses: robinraju/release-downloader@v1.9
+        with:
+          repository: composer/composer
+          tag: ${{env.COMPOSER_VERSION}}
+          fileName: composer.phar
+
+      - name: Download jippi/dottie
+        uses: robinraju/release-downloader@v1.9
+        with:
+          repository: jippi/dottie
+          latest: true
+          fileName: "*_amd64.deb"
+
+      - name: Install dottie
+        run: |
+          dpkg -i *.deb
+          rm -f *.deb
+          dottie -v
+
+      - name: Install PHP extensions
+        run: |
+          chmod +x install-php-extensions
+          ./install-php-extensions ${{env.EXTRA_PHP_EXTENSIONS}}
+
+      - name: Cache composer dependencies
+        uses: actions/cache@v4
+        with:
+          path: vendor/
+          key: composer-${{matrix.php_version}}-${{ hashFiles('composer.lock') }}
+
+      - name: Install composer dependencies
+        run: php composer.phar install -n --prefer-dist
+
+      - name: Setup Environment
+        run: |
+          cp .env.testing .env
+
+          dottie set DB_CONNECTION=pgsql
+          dottie set DB_HOST=db
+          dottie set DB_PORT=5432
+          dottie set DB_DATABASE=pixelfed
+          dottie set DB_USERNAME=pixelfed
+          dottie set DB_PASSWORD=password
+          dottie set REDIS_HOST=redis
+
+      - run: php artisan config:cache
+      - run: php artisan route:clear
+      - run: php artisan storage:link
+      - run: php artisan key:generate
+
+      - run: php artisan migrate --force

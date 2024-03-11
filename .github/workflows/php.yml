@@ -1,0 +1,92 @@
+---
+name: PHP
+
+on:
+  # See: https://docs.github.com/en/actions/using-workflows/events-that-trigger-workflows#workflow_dispatch
+  workflow_dispatch:
+
+  # See: https://docs.github.com/en/actions/using-workflows/events-that-trigger-workflows#push
+  push:
+
+  # See: https://docs.github.com/en/actions/using-workflows/events-that-trigger-workflows#pull_request
+  pull_request:
+    types:
+      - opened
+      - reopened
+      - synchronize
+
+env:
+  EXTRA_PHP_EXTENSIONS: intl bcmath zip pcntl exif curl gd pdo_pgsql pdo_mysql pdo_sqlite
+  DOCKER_PHP_EXTENSION_INSTALLER_VERSION: 2.2.2
+  COMPOSER_VERSION: 2.7.1
+
+jobs:
+  test:
+    name: PHPUnit Tests
+    runs-on: ubuntu-latest
+
+    strategy:
+      fail-fast: false
+
+      # See: https://docs.github.com/en/actions/using-jobs/using-a-matrix-for-your-jobs
+      matrix:
+        php_version:
+          - 8.2
+          - 8.3
+
+    container:
+      image: php:${{ matrix.php_version }}-cli
+
+    # See: https://docs.github.com/en/actions/using-workflows/workflow-syntax-for-github-actions#example-using-concurrency-and-the-default-behavior
+    concurrency:
+      group: php-test-${{ github.ref }}-${{ matrix.php_version }}
+      cancel-in-progress: false
+
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+
+      # NOTE: we lint PHP files before composer to avoid wasting time
+      # linting everything in vendor/
+      - name: Lint PHP files
+        run: find . -name '*.php' -exec php --syntax-check {} \; > /dev/null
+
+      - name: Download mlocati/docker-php-extension-installer
+        uses: robinraju/release-downloader@v1.9
+        with:
+          repository: mlocati/docker-php-extension-installer
+          tag: ${{env.DOCKER_PHP_EXTENSION_INSTALLER_VERSION}}
+          fileName: install-php-extensions
+
+      - name: Download composer
+        uses: robinraju/release-downloader@v1.9
+        with:
+          repository: composer/composer
+          tag: ${{env.COMPOSER_VERSION}}
+          fileName: composer.phar
+
+      - name: Install PHP extensions
+        run: |
+          chmod +x install-php-extensions
+          ./install-php-extensions ${{env.EXTRA_PHP_EXTENSIONS}}
+
+      - name: Cache composer dependencies
+        uses: actions/cache@v4
+        with:
+          path: vendor/
+          key: composer-${{matrix.php_version}}-${{ hashFiles('composer.lock') }}
+
+      - name: Install composer dependencies
+        run: php composer.phar install --no-interaction --prefer-dist
+
+      - name: Setup Environment
+        run: |
+          cp .env.testing .env
+
+      - run: php artisan config:cache
+      - run: php artisan route:clear
+      - run: php artisan storage:link
+      - run: php artisan key:generate
+
+      - name: Run tests
+        run: ./vendor/bin/phpunit
