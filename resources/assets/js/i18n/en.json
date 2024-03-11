@@ -105,6 +105,8 @@
         "viewPost": "View Post",
         "viewProfile": "View Profile",
         "moderationTools": "Moderation Tools",
+        "muteUser": "Mute User",
+        "blockUser": "Block User",
         "report": "Report",
         "archive": "Archive",
         "unarchive": "Unarchive",

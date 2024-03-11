@@ -89,6 +89,7 @@
             :profile="profile"
             v-on:moderate="commitModeration"
             v-on:delete="deletePost"
+            v-on:delete-all-account="deleteAllAccount"
             v-on:report-modal="handleReport"
             v-on:edit="handleEdit"
         />
@@ -543,6 +544,12 @@
 
             deletePost() {
                 this.feed.splice(this.postIndex, 1);
+            },
+
+            deleteAllAccount(id) {
+                this.feed = this.feed.filter(p => {
+                    return p.account.id != id
+                });
             },
 
             counterChange(index, type) {

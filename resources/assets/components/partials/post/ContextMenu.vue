@@ -40,6 +40,20 @@
 
 				<div
 					v-if="status && status.account.id != profile.id"
+					class="list-group-item rounded cursor-pointer font-weight-bold"
+					@click="ctxMenuMuteUser">
+					{{ $t('menu.muteUser') }}
+				</div>
+
+				<div
+					v-if="status && status.account.id != profile.id"
+					class="list-group-item rounded cursor-pointer font-weight-bold"
+					@click="ctxMenuBlockUser">
+					{{ $t('menu.blockUser') }}
+				</div>
+
+				<div
+					v-if="status && status.account.id != profile.id"
 					class="list-group-item rounded cursor-pointer text-danger font-weight-bold"
 					@click="ctxMenuReportPost()">
 					{{ $t('menu.report') }}
@@ -383,6 +397,40 @@
 				this.profileUrl(status);
 				this.closeCtxMenu();
 				return;
+			},
+
+			ctxMenuMuteUser() {
+				this.$refs.ctxModal.hide();
+				axios.post('/i/mute', {
+					type: 'user',
+					item: this.status.account.id,
+				}).then(res => {
+					this.$emit('delete-all-account', this.status.account.id);
+					swal('Success', 'You have successfully muted ' + this.status.account.acct, 'success');
+				}).catch(err => {
+					if (err.response.status == 422) {
+						swal('Error', err.response.data.error, 'error');
+					} else {
+						swal('Error', 'Something went wrong. Please try again later.', 'error');
+					}
+				});
+			},
+
+			ctxMenuBlockUser() {
+				this.$refs.ctxModal.hide();
+				axios.post('/i/block', {
+					type: 'user',
+					item: this.status.account.id,
+				}).then(res => {
+					this.$emit('delete-all-account', this.status.account.id);
+					swal('Success', 'You have successfully blocked ' + this.status.account.acct, 'success');
+				}).catch(err => {
+					if (err.response.status == 422) {
+						swal('Error', err.response.data.error, 'error');
+					} else {
+						swal('Error', 'Something went wrong. Please try again later.', 'error');
+					}
+				});
 			},
 
 			ctxMenuReportPost() {
