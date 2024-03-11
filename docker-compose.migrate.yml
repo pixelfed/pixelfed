@@ -3,7 +3,7 @@ version: "3"
 
 services:
   migrate:
-    image: "secoresearch/rsync"
+    image: "servercontainers/rsync"
     entrypoint: ""
     working_dir: /migrate
     command: 'bash -c "exit 1"'
