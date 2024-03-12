@@ -133,9 +133,9 @@ return [
 		'viewProfile' => 'View Profile',
 		'moderationTools' => 'Moderation Tools',
 		'report' => '檢舉',
-		'archive' => 'Archive',
-		'unarchive' => 'Unarchive',
-		'embed' => 'Embed',
+		'archive' => '封存',
+		'unarchive' => '取消封存',
+		'embed' => '嵌入',
 
 		'selectOneOption' => '選擇以下選項之一',
 		'unlistFromTimelines' => '不在時間軸中上顯示',
@@ -173,22 +173,22 @@ return [
 		'embedConfirmText' => '使用此嵌入式內容即表示您同意我們的',
 
 		'deletePostConfirm' => '你確定要刪除此貼文？',
-		'archivePostConfirm' => 'Are you sure you want to archive this post?',
-		'unarchivePostConfirm' => 'Are you sure you want to unarchive this post?',
+		'archivePostConfirm' => '您確定要封存此貼文嗎？',
+		'unarchivePostConfirm' => '您確定要解除封存此貼文嗎？',
 	],
 
 	'story' => [
-		'add' => 'Add Story'
+		'add' => '新增故事'
 	],
 
 	'timeline' => [
 		'peopleYouMayKnow' => '你可能認識',
 
 		'onboarding' => [
-			'welcome' => 'Welcome',
+			'welcome' => '歡迎',
 			'thisIsYourHomeFeed' => 'This is your home feed, a chronological feed of posts from accounts you follow.',
 			'letUsHelpYouFind' => 'Let us help you find some interesting people to follow',
-			'refreshFeed' => 'Refresh my feed',
+			'refreshFeed' => '更新我的源',
 		],
 	],
 
