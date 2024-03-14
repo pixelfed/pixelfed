@@ -69,7 +69,7 @@ trait AdminSettingsController
             'type_mp4' => 'nullable',
             'type_webp' => 'nullable',
             'admin_account_id' => 'nullable',
-            'regs' => 'required|in:open,filtered,closed',
+            'regs' => 'nullable|in:open,filtered,closed',
             'account_migration' => 'nullable',
         ]);
 
