@@ -21,7 +21,8 @@ class Media extends Model
 
     protected $casts = [
         'srcset' => 'array',
-        'deleted_at' => 'datetime'
+        'deleted_at' => 'datetime',
+        'skip_optimize' => 'boolean'
     ];
 
     public function status()
@@ -91,7 +92,7 @@ class Media extends Model
             case 'audio':
                 $verb = 'Audio';
                 break;
-                
+
             case 'image':
                 $verb = 'Image';
                 break;
@@ -99,7 +100,7 @@ class Media extends Model
             case 'video':
                 $verb = 'Video';
                 break;
-            
+
             default:
                 $verb = 'Document';
                 break;

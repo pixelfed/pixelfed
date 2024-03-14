@@ -41,8 +41,8 @@ class CatchUnoptimizedMedia extends Command
     public function handle()
     {
         Media::whereNull('processed_at')
-            ->where('created_at', '>', now()->subHours(1))
-            ->where('skip_optimize', '!=', true)
+            // This is commented out because Instagram imported posts would not get uploaded to remote storage
+			// ->where('created_at', '>', now()->subHours(1))
             ->whereNull('remote_url')
             ->whereNotNull('status_id')
             ->whereNotNull('media_path')
@@ -52,6 +52,7 @@ class CatchUnoptimizedMedia extends Command
             ])
             ->chunk(50, function($medias) {
                 foreach ($medias as $media) {
+					if ($media->skip_optimize) continue;
                     ImageOptimize::dispatch($media);
                 }
             });
