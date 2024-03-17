@@ -22,7 +22,9 @@ return [
      * Example: ['api/*']
      */
     'paths' => [
-        '.well-known/*'
+        '.well-known/*',
+        'api/*',
+        'oauth/*'
     ],
 
     /*
@@ -48,7 +50,8 @@ return [
     /*
      * Sets the Access-Control-Expose-Headers response header with these headers.
      */
-    'exposed_headers' => [],
+    // TODO: Add support for rate-limit related headers
+    'exposed_headers' => ['Link'],
 
     /*
      * Sets the Access-Control-Max-Age response header when > 0.
