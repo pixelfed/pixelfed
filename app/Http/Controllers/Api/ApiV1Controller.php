@@ -3951,7 +3951,8 @@ class ApiV1Controller extends Controller
         abort_unless($request->user()->tokenCan('write'), 403);
 
         $status = Status::findOrFail($id);
-        $pid = $request->user()->profile_id;
+        $user = $request->user();
+        $pid = $user->profile_id;
         $account = AccountService::get($status->profile_id);
         abort_if(isset($account['moved'], $account['moved']['id']), 422, 'Cannot bookmark a post from an account that has migrated');
         abort_if($user->has_roles && ! UserRoleService::can('can-bookmark', $user->id), 403, 'Invalid permissions for this action');
@@ -3993,7 +3994,8 @@ class ApiV1Controller extends Controller
         abort_unless($request->user()->tokenCan('write'), 403);
 
         $status = Status::findOrFail($id);
-        $pid = $request->user()->profile_id;
+        $user = $request->user();
+        $pid = $user->profile_id;
 
         abort_if($user->has_roles && ! UserRoleService::can('can-bookmark', $user->id), 403, 'Invalid permissions for this action');
         abort_if($status->in_reply_to_id || $status->reblog_of_id, 404);
