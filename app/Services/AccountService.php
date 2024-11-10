@@ -24,13 +24,13 @@ class AccountService
     public static function get($id, $softFail = false)
     {
         $res = Cache::remember(self::CACHE_KEY.$id, 43200, function () use ($id) {
-            $fractal = new Fractal\Manager();
-            $fractal->setSerializer(new ArraySerializer());
+            $fractal = new Fractal\Manager;
+            $fractal->setSerializer(new ArraySerializer);
             $profile = Profile::find($id);
             if (! $profile || $profile->status === 'delete') {
                 return null;
             }
-            $resource = new Fractal\Resource\Item($profile, new AccountTransformer());
+            $resource = new Fractal\Resource\Item($profile, new AccountTransformer);
 
             return $fractal->createData($resource)->toArray();
         });
@@ -202,7 +202,7 @@ class AccountService
         }
 
         $count = Status::whereProfileId($id)
-            ->whereNull(['in_reply_to_id','reblog_of_id'])
+            ->whereNull(['in_reply_to_id', 'reblog_of_id'])
             ->whereIn('scope', ['public', 'unlisted', 'private'])
             ->count();
 
@@ -291,7 +291,6 @@ class AccountService
             $user->save();
             Cache::put($key, 1, 14400);
         }
-
     }
 
     public static function blocksDomain($pid, $domain = false)

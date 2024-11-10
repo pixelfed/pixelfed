@@ -456,7 +456,9 @@
 					// 	objDiv.scrollTop = objDiv.scrollHeight;
 					// }, 300);
 				}).catch(err => {
-					if(err.response.status == 403) {
+					if(err.response.status == 400) {
+						swal('Error', err.response.data.error, 'error');
+					} else if(err.response.status == 403) {
 						self.blocked = true;
 						swal('Profile Unavailable', 'You cannot message this profile at this time.', 'error');
 					}

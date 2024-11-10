@@ -19,7 +19,7 @@ class FollowerService
     const FOLLOWING_SYNC_KEY = 'pf:services:followers:sync-following:';
     const FOLLOWING_KEY = 'pf:services:follow:following:id:';
     const FOLLOWERS_KEY = 'pf:services:follow:followers:id:';
-    const FOLLOWERS_LOCAL_KEY = 'pf:services:follow:local-follower-ids:';
+    const FOLLOWERS_LOCAL_KEY = 'pf:services:follow:local-follower-ids:v1:';
     const FOLLOWERS_INTER_KEY = 'pf:services:follow:followers:inter:id:';
 
     public static function add($actor, $target, $refresh = true)
@@ -33,12 +33,16 @@ class FollowerService
         Redis::zadd(self::FOLLOWING_KEY . $actor, $ts, $target);
         Redis::zadd(self::FOLLOWERS_KEY . $target, $ts, $actor);
         Cache::forget('profile:following:' . $actor);
+        Cache::forget(self::FOLLOWERS_LOCAL_KEY . $actor);
+        Cache::forget(self::FOLLOWERS_LOCAL_KEY . $target);
     }
 
     public static function remove($actor, $target, $silent = false)
     {
         Redis::zrem(self::FOLLOWING_KEY . $actor, $target);
         Redis::zrem(self::FOLLOWERS_KEY . $target, $actor);
+        Cache::forget(self::FOLLOWERS_LOCAL_KEY . $actor);
+        Cache::forget(self::FOLLOWERS_LOCAL_KEY . $target);
         if($silent !== true) {
             AccountService::del($actor);
             AccountService::del($target);
@@ -151,18 +155,26 @@ class FollowerService
     protected function getAudienceInboxes($pid, $scope = null)
     {
         $key = 'pf:services:follower:audience:' . $pid;
-        $domains = Cache::remember($key, 432000, function() use($pid) {
+        $bannedDomains = InstanceService::getBannedDomains();
+        $domains = Cache::remember($key, 432000, function() use($pid, $bannedDomains) {
             $profile = Profile::whereNull(['status', 'domain'])->find($pid);
             if(!$profile) {
                 return [];
             }
-            return $profile
-                ->followers()
+            return DB::table('followers')
+                ->join('profiles', 'followers.profile_id', '=', 'profiles.id')
+                ->where('followers.following_id', $pid)
+                ->whereNotNull('profiles.inbox_url')
+                ->whereNull('profiles.deleted_at')
+                ->select('followers.profile_id', 'followers.following_id', 'profiles.id', 'profiles.user_id', 'profiles.deleted_at', 'profiles.sharedInbox', 'profiles.inbox_url')
                 ->get()
-                ->map(function($follow) {
-                    return $follow->sharedInbox ?? $follow->inbox_url;
+                ->map(function($r) {
+                    return $r->sharedInbox ?? $r->inbox_url;
                 })
-                ->filter()
+                ->filter(function($r) use($bannedDomains) {
+                    $domain = parse_url($r, PHP_URL_HOST);
+                    return $r && !in_array($domain, $bannedDomains);
+                })
                 ->unique()
                 ->values();
         });
@@ -241,7 +253,13 @@ class FollowerService
     {
         $key = self::FOLLOWERS_LOCAL_KEY . $pid;
         $res = Cache::remember($key, 7200, function() use($pid) {
-            return DB::table('followers')->whereFollowingId($pid)->whereLocalProfile(true)->pluck('profile_id')->sort();
+            return DB::table('followers')
+                ->join('profiles', 'followers.profile_id', '=', 'profiles.id')
+                ->where('followers.following_id', $pid)
+                ->whereNotNull('profiles.user_id')
+                ->whereNull('profiles.deleted_at')
+                ->select('followers.profile_id', 'followers.following_id', 'profiles.id', 'profiles.user_id', 'profiles.deleted_at')
+                ->pluck('followers.profile_id');
         });
         return $limit ?
             $res->take($limit)->values()->toArray() :

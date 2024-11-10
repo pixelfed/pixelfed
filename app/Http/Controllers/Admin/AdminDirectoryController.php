@@ -67,7 +67,9 @@ trait AdminDirectoryController
         $res['community_guidelines'] = config_cache('app.rules') ? json_decode(config_cache('app.rules'), true) : [];
         $res['curated_onboarding'] = (bool) config_cache('instance.curated_registration.enabled');
         $res['open_registration'] = (bool) config_cache('pixelfed.open_registration');
-        $res['oauth_enabled'] = (bool) config_cache('pixelfed.oauth_enabled') && file_exists(storage_path('oauth-public.key')) && file_exists(storage_path('oauth-private.key'));
+        $res['oauth_enabled'] = (bool) config_cache('pixelfed.oauth_enabled') &&
+            (file_exists(storage_path('oauth-public.key')) || config_cache('passport.public_key')) &&
+            (file_exists(storage_path('oauth-private.key')) || config_cache('passport.private_key'));
 
         $res['activitypub_enabled'] = (bool) config_cache('federation.activitypub.enabled');
 

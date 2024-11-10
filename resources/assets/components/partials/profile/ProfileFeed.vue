@@ -275,6 +275,7 @@
 						v-on:likes-modal="openLikesModal(index)"
 						v-on:shares-modal="openSharesModal(index)"
 						v-on:comment-likes-modal="openCommentLikesModal"
+						v-on:bookmark="handleBookmark(index)"
 						v-on:handle-report="handleReport" />
 				</div>
 
@@ -843,6 +844,32 @@
 						this.canLoadMoreArchives = true;
 					}
 				})
+			},
+
+			handleBookmark(index) {
+				let p = this.feed[index];
+
+				if(p.reblog) {
+					p = p.reblog;
+				}
+
+				axios.post('/i/bookmark', {
+					item: p.id
+				})
+				.then(res => {
+					if(this.feed[index].reblog) {
+						this.feed[index].reblog.bookmarked = !p.bookmarked;
+					} else {
+						this.feed[index].bookmarked = !p.bookmarked;
+					}
+				})
+				.catch(err => {
+					this.$bvToast.toast('Cannot bookmark post at this time.', {
+						title: 'Bookmark Error',
+						variant: 'danger',
+						autoHideDelay: 5000
+					});
+				});
 			},
 
 			formatCount(val) {

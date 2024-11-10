@@ -54,6 +54,7 @@ class Kernel extends HttpKernel
      * @var array
      */
     protected $routeMiddleware = [
+        'api.admin'     => \App\Http\Middleware\Api\Admin::class,
         'admin'         => \App\Http\Middleware\Admin::class,
         'auth'          => \Illuminate\Auth\Middleware\Authenticate::class,
         'auth.basic'    => \Illuminate\Auth\Middleware\AuthenticateWithBasicAuth::class,
@@ -68,6 +69,8 @@ class Kernel extends HttpKernel
         'twofactor'     => \App\Http\Middleware\TwoFactorAuth::class,
         'validemail'    => \App\Http\Middleware\EmailVerificationCheck::class,
         'interstitial'  => \App\Http\Middleware\AccountInterstitial::class,
+        'scopes'        => \Laravel\Passport\Http\Middleware\CheckScopes::class,
+        'scope'         => \Laravel\Passport\Http\Middleware\CheckForAnyScope::class,
         // 'restricted'    => \App\Http\Middleware\RestrictedAccess::class,
     ];
 }

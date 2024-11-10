@@ -14,8 +14,8 @@ class AddSnowflakeidsToUsersTable extends Migration
     public function up()
     {
         Schema::table('statuses', function (Blueprint $table) {
-            $table->dropPrimary('id');
             $table->bigInteger('id')->unsigned()->primary()->change();
+            $table->dropPrimary('id');
         });
     }
 

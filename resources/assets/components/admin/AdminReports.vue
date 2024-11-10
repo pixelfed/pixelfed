@@ -147,15 +147,10 @@
                         </li>
                         <li class="d-none d-md-block nav-item">
                             <a
-                                href="/i/admin/reports/appeals"
-                                class="nav-link d-flex align-items-center">
-                                <span>Appeal Requests</span>
-                                <span
-                                    v-if="stats.appeals"
-                                    class="badge badge-sm badge-floating badge-secondary border-white ml-2"
-                                    style="font-size:11px;">
-                                    {{ prettyCount(stats.appeals) }}
-                                </span>
+                                :class="['nav-link d-flex align-items-center', { active: tabIndex == 4}]"
+                                href="#"
+                                @click.prevent="toggleTab(4)">
+                                <span>Moderated Profiles</span>
                             </a>
                         </li>
                     </ul>
@@ -389,7 +384,7 @@
                                 <p class="small mb-0 text-wrap" style="max-width: 300px;word-break: break-all;">{{ report.message && report.message.length > 120 ? report.message.slice(0, 120) + '...' : report.message }}</p>
                             </td>
                             <td class="font-weight-bold align-middle">{{ timeAgo(report.created_at) }}</td>
-                            <td class="align-middle"><a href="#" class="btn btn-primary btn-sm">View</a></td>
+                            <td class="align-middle"><a href="#" class="btn btn-primary btn-sm" @click.prevent="showRemoteReport(report)">View</a></td>
                         </tr>
                     </tbody>
                 </table>
@@ -417,6 +412,114 @@
                     @click="remoteReportPaginate('next')">
                     Next
                 </button>
+            </div>
+
+            <div v-if="this.tabIndex === 4" class="table-responsive rounded">
+                <div class="d-flex justify-content-between align-items-center mb-3">
+                    <form class="navbar-search navbar-search-dark form-inline mr-sm-3" @submit.prevent="handleModeratedProfileSearch">
+                        <div class="form-group mb-0">
+                            <div class="input-group input-group-alternative input-group-merge">
+                                <div class="input-group-prepend">
+                                    <span class="input-group-text">
+                                        <i class="fas fa-search"></i>
+                                    </span>
+                                </div>
+                                <input
+                                    type="text"
+                                    name="username"
+                                    placeholder="Search by username"
+                                    class="form-control"
+                                    v-model="moderatedProfilesSearchInput">
+                            </div>
+                        </div>
+                    </form>
+                    <div class="d-flex gap-1">
+                        <button type="button" class="btn btn-outline-primary fw-bold" @click="exportModeratedProfiles()">Export</button>
+                        <button type="button" class="btn btn-primary fw-bold" @click.prevent="addModeratedProfile()">Add Moderated Profile</button>
+                    </div>
+                </div>
+
+                <table v-if="moderatedProfiles && moderatedProfiles.length" class="table table-dark">
+                    <thead class="thead-dark">
+                        <tr>
+                            <th scope="col">ID</th>
+                            <th scope="col">Username</th>
+                            <th scope="col">Moderation</th>
+                            <th scope="col">Comment</th>
+                            <th scope="col">Created</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr
+                            v-for="(report, idx) in moderatedProfiles"
+                            :key="`remote-reports-${report.id}-${idx}`">
+                            <td class="font-weight-bold text-monospace text-muted align-middle">
+                                <button class="btn btn-primary btn-sm" @click.prevent="openModeratedProfileModal(report)">
+                                    {{ report.id }}
+                                </button>
+                            </td>
+                            <td class="align-middle">
+                                <p v-if="report.profile.name" class="small mb-0 text-muted">
+                                    {{ truncateText(report.profile.name, 40) }}
+                                </p>
+                                <p
+                                    class="font-weight-bold mb-0"
+                                    data-toggle="tooltip"
+                                    data-placement="bottom"
+                                    :title="report.profile.username">
+                                    {{ truncateText(report.profile.username, 40) }}
+                                </p>
+                            </td>
+                            <td class="align-middle">
+                                <p class="mb-0" v-html="getModerationLabels(report)"></p>
+                            </td>
+                            <td class="align-middle">
+                                <p class="small mb-0 text-wrap" style="max-width: 200px;word-break: break-word;">{{ truncateText(report.note, 140) }}</p>
+                            </td>
+                            <td class="font-weight-bold align-middle">
+                                <span
+                                    data-toggle="tooltip"
+                                    data-placement="bottom"
+                                    :title="report.created_at">
+                                    {{ timeAgo(report.created_at) }}
+                                </span>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+
+                <div v-else>
+                    <div class="card card-body p-5">
+                        <div class="d-flex justify-content-between align-items-center flex-column">
+
+                            <template v-if="moderatedProfilesSearchInput">
+                                <p class="mt-3 mb-0"><i class="far fa-times fa-5x text-danger"></i></p>
+                                <p class="lead">No results found!</p>
+                                <button class="btn btn-primary" @click.prevent="clearModeratedProfileSearch()">Go back</button>
+                            </template>
+
+                            <template v-else>
+                                <p class="mt-3 mb-0"><i class="far fa-check-circle fa-5x text-success"></i></p>
+                                <p class="lead">No active moderation accounts found!</p>
+                            </template>
+                        </div>
+                    </div>
+                </div>
+
+                <div v-if="moderatedProfiles && moderatedProfiles.length && (moderatedProfilesPagination.prev || moderatedProfilesPagination.next)" class="mt-3 d-flex align-items-center justify-content-center">
+                    <button
+                        class="btn btn-primary rounded-pill"
+                        :disabled="!moderatedProfilesPagination.prev"
+                        @click="paginateModeratedAccounts('prev')">
+                        Prev
+                    </button>
+                    <button
+                        class="btn btn-primary rounded-pill"
+                        :disabled="!moderatedProfilesPagination.next"
+                        @click="paginateModeratedAccounts('next')">
+                        Next
+                    </button>
+                </div>
             </div>
         </div>
     </div>
@@ -756,6 +859,165 @@
             v-on:close="handleCloseRemoteReportModal()"
             v-on:refresh="refreshRemoteReports()" />
     </template>
+
+    <div
+        class="modal fade"
+        id="moderatedProfileView"
+        tabindex="-1"
+        role="dialog"
+        aria-labelledby="moderatedProfileViewLabel"
+        aria-hidden="true"
+        data-backdrop="static"
+        ref="moderatedProfileModal">
+      <div class="modal-dialog modal-dialog-centered" role="document">
+        <div v-if="modModalData" class="modal-content">
+          <div class="modal-header">
+            <div class="w-100 d-flex justify-content-between align-items-center">
+                <div class="flex-grow-1">
+                    <i class="far fa-shield-alt"></i>
+                </div>
+                <h5 class="mb-0 lead mt-0 font-weight-bold">Moderated Profile</h5>
+                <div class="flex-grow-1">
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close" @click="closeModeratedProfileModal()">
+                      <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+            </div>
+          </div>
+          <div class="modal-body">
+            <div class="card mb-0">
+                <div class="card-body bg-lighter text-dark p-3 font-weight-bold d-flex align-items-center justify-content-center flex-column">
+                    <p v-if="modModalData?.profile?.name" class="mb-0 small text-muted">{{ modModalData?.profile?.name }}</p>
+                    <p class="mb-0 font-weight-bold">
+                        {{ modModalData?.profile?.username }}
+                    </p>
+                </div>
+            </div>
+            <p v-if="modModalData?.profile?.remote_url" class="small text-muted text-right mb-1">
+                <a :href="modModalData?.profile?.remote_url" rel="noreferrer" target="_blank">
+                    View remote profile
+                </a>
+            </p>
+
+            <div class="list-group mpl-form">
+                <div class="list-group-item d-flex justify-content-between align-items-center">
+                    <div class="mp-form-label">
+                        <div class="d-flex flex-column">
+                            <p class="mb-0 font-weight-bold">
+                                Banned
+                            </p>
+                            <p class="mb-0 small text-muted">
+                                Ban any activities from this account.
+                            </p>
+                        </div>
+                    </div>
+                    <div class="custom-control custom-checkbox">
+                        <input type="checkbox" class="custom-control-input" id="mp-form-is_banned" v-model="modModalModel.is_banned">
+                        <label class="custom-control-label" for="mp-form-is_banned"></label>
+                    </div>
+                </div>
+
+                <div class="list-group-item d-none justify-content-between align-items-center">
+                    <div class="mp-form-label">
+                        <div class="d-flex flex-column">
+                            <p class="mb-0 font-weight-bold">
+                                No Autolink
+                            </p>
+                            <p class="mb-0 small text-muted">
+                                Disable hashtag, mention and url autolinking from this account.
+                            </p>
+                        </div>
+                    </div>
+                    <div class="custom-control custom-checkbox">
+                        <input type="checkbox" class="custom-control-input" id="mp-form-is_noautolink" v-model="modModalModel.is_noautolink">
+                        <label class="custom-control-label" for="mp-form-is_noautolink"></label>
+                    </div>
+                </div>
+
+                <div class="list-group-item d-none justify-content-between align-items-center">
+                    <div class="mp-form-label">
+                        <div class="d-flex flex-column">
+                            <p class="mb-0 font-weight-bold">
+                                No DMs
+                            </p>
+                            <p class="mb-0 small text-muted">
+                                Ignore DMs from this account.
+                            </p>
+                        </div>
+                    </div>
+                    <div class="custom-control custom-checkbox">
+                        <input type="checkbox" class="custom-control-input" id="mp-form-is_nodms" v-model="modModalModel.is_nodms">
+                        <label class="custom-control-label" for="mp-form-is_nodms"></label>
+                    </div>
+                </div>
+
+                <div class="list-group-item d-none justify-content-between align-items-center">
+                    <div class="mp-form-label">
+                        <div class="d-flex flex-column">
+                            <p class="mb-0 font-weight-bold">
+                                No Trending
+                            </p>
+                            <p class="mb-0 small text-muted">
+                                Prevent posts from this account from appearing in trending lists or feeds.
+                            </p>
+                        </div>
+                    </div>
+                    <div class="custom-control custom-checkbox">
+                        <input type="checkbox" class="custom-control-input" id="mp-form-is_notrending" v-model="modModalModel.is_notrending">
+                        <label class="custom-control-label" for="mp-form-is_notrending"></label>
+                    </div>
+                </div>
+
+                <div class="list-group-item d-none justify-content-between align-items-center">
+                    <div class="mp-form-label">
+                        <div class="d-flex flex-column">
+                            <p class="mb-0 font-weight-bold">
+                                Mark NSFW
+                            </p>
+                            <p class="mb-0 small text-muted">
+                                Mark all posts as sensitive, and apply CWs to future posts.
+                            </p>
+                        </div>
+                    </div>
+                    <div class="custom-control custom-checkbox">
+                        <input type="checkbox" class="custom-control-input" id="mp-form-is_nsfw" v-model="modModalModel.is_nsfw">
+                        <label class="custom-control-label" for="mp-form-is_nsfw"></label>
+                    </div>
+                </div>
+
+                <div class="list-group-item d-none justify-content-between align-items-center">
+                    <div class="mp-form-label">
+                        <div class="d-flex flex-column">
+                            <p class="mb-0 font-weight-bold">
+                                Mark Unlisted
+                            </p>
+                            <p class="mb-0 small text-muted">
+                                Mark all future posts as unlisted, hidden from global/tag feeds.
+                            </p>
+                        </div>
+                    </div>
+                    <div class="custom-control custom-checkbox">
+                        <input type="checkbox" class="custom-control-input" id="mp-form-is_unlisted" v-model="modModalModel.is_unlisted">
+                        <label class="custom-control-label" for="mp-form-is_unlisted"></label>
+                    </div>
+                </div>
+            </div>
+
+            <div class="py-3">
+                <label class="small text-muted">Account Notes (only visible to admins)</label>
+                <textarea class="form-control" v-model="modModalData.note" placeholder="Add an optional note" maxlength="500"></textarea>
+            </div>
+          </div>
+          <div class="modal-footer d-flex justify-content-between align-items-center">
+            <button type="button" class="btn btn-link text-dark" data-dismiss="modal" @click="closeModeratedProfileModal()">Close</button>
+            <div class="d-flex flex-grow-1 align-items-center gap-1">
+                <button type="button" class="btn btn-danger" @click.prevent="handleModProfileModalDelete()">Delete</button>
+                <button type="button" class="btn btn-primary btn-block" @click.prevent="handleModProfileModalUpdate()">Save</button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
 </div>
 </template>
 
@@ -792,13 +1054,34 @@
                 viewingSpamReportLoading: false,
                 remoteReportsLoaded: false,
                 showRemoteReportModal: undefined,
-                remoteReportModalModel: {}
+                remoteReportModalModel: {},
+                moderatedProfiles: [],
+                moderatedProfilesPagination: {},
+                moderatedProfilesSearchInput: undefined,
+                modModalData: undefined,
+                modModalModel: {},
             }
         },
 
         mounted() {
             let u = new URLSearchParams(window.location.search);
-            if(u.has('tab') && u.has('id') && u.get('tab') === 'autospam') {
+            if(u.has('tab') && u.get('tab') === 'moderated-profiles' && u.has('action') && u.has('id') && u.get('action') === 'view') {
+                this.tabIndex = 4;
+                this.fetchModeratedAccounts();
+                this.fetchModeratedProfile(u.get('id'));
+            } else if(u.has('tab') && u.get('tab') === 'autospam' && !u.has('id')) {
+                this.tabIndex = 2;
+                this.fetchStats(null, '/i/admin/api/reports/spam/all');
+            } else if(u.has('tab') && u.get('tab') === 'closed') {
+                this.tabIndex = 1;
+                this.fetchStats('/i/admin/api/reports/all?filter=closed')
+            } else if(u.has('tab') && u.get('tab') === 'closed') {
+                this.tabIndex = 3;
+                this.fetchStats('/i/admin/api/reports/all?filter=remote')
+            } else if(u.has('tab') && u.get('tab') === 'moderated-profiles') {
+                this.tabIndex = 4;
+                this.fetchModeratedAccounts();
+            } else if(u.has('tab') && u.has('id') && u.get('tab') === 'autospam') {
                 this.fetchStats(null, '/i/admin/api/reports/spam/all');
                 this.fetchSpamReport(u.get('id'));
             } else if(u.has('tab') && u.has('id') && u.get('tab') === 'report') {
@@ -819,21 +1102,29 @@
                 switch(idx) {
                     case 0:
                         this.fetchStats('/i/admin/api/reports/all');
+                        window.history.pushState(null, null, '/i/admin/reports');
                     break;
 
                     case 1:
                         this.fetchStats('/i/admin/api/reports/all?filter=closed')
+                        window.history.pushState(null, null, '/i/admin/reports?tab=closed');
                     break;
 
                     case 2:
                         this.fetchStats(null, '/i/admin/api/reports/spam/all');
+                        window.history.pushState(null, null, '/i/admin/reports?tab=autospam');
                     break;
 
                     case 3:
                         this.fetchRemoteReports();
+                        window.history.pushState(null, null, '/i/admin/reports?tab=remote');
+                    break;
+
+                    case 4:
+                        this.fetchModeratedAccounts();
+                        window.history.pushState(null, null, '/i/admin/reports?tab=moderated-profiles');
                     break;
                 }
-                window.history.pushState(null, null, '/i/admin/reports');
                 this.tabIndex = idx;
             },
 
@@ -889,6 +1180,27 @@
                     }
                     $('[data-toggle="tooltip"]').tooltip()
                 });
+            },
+
+            fetchModeratedAccounts(apiUrl = '/i/admin/api/reports/moderated-profiles') {
+                axios.get(apiUrl)
+                .then(res => {
+                    this.moderatedProfiles = res.data.data;
+                    this.moderatedProfilesPagination = {
+                        prev: res.data.links.prev,
+                        next: res.data.links.next
+                    };
+                })
+                .finally(() => {
+                    this.loaded = true;
+                    $('[data-toggle="tooltip"]').tooltip()
+                })
+            },
+
+            paginateModeratedAccounts(dir) {
+                event.currentTarget.blur();
+                let url = dir == 'next' ? this.moderatedProfilesPagination.next : this.moderatedProfilesPagination.prev;
+                this.fetchModeratedAccounts(url);
             },
 
             fetchReports(url = '/i/admin/api/reports/all') {
@@ -1149,7 +1461,226 @@
                     this.fetchStats();
                     window.history.pushState(null, null, '/i/admin/reports');
                 })
+            },
+
+            truncateText(text, maxLength, appendEllipsis = true) {
+                if(!text || !text.length) {
+                    return
+                }
+
+                if (text.length <= maxLength) {
+                    return text;
+                }
+
+                const truncated = text.slice(0, maxLength).trim();
+                return appendEllipsis ? truncated + '...' : truncated;
+            },
+
+            getModerationLabels(acct) {
+                if(acct.is_banned) {
+                    return `<span class="badge badge-danger">Banned</span>`
+                }
+
+                let labels = [];
+
+                if(acct.is_banned) labels.push('Banned')
+                if(acct.is_noautolink) labels.push('No Autolink')
+                if(acct.is_nodms) labels.push('No DMS')
+                if(acct.is_notrending) labels.push('No Trending')
+                if(acct.is_nsfw) labels.push('NSFW')
+                if(acct.is_unlisted) labels.push('Unlisted')
+
+                return labels.map((item, index) => {
+                    const colorClass = item === 'Banned' ? 'danger' : 'primary';
+                    return `<span class="badge badge-${colorClass}">${item}</span>`;
+                }).join(' ');
+            },
+
+            handleModeratedProfileSearch(event) {
+                event.currentTarget.blur()
+                let url = `/i/admin/api/reports/moderated-profiles?search=${this.moderatedProfilesSearchInput}`
+                this.fetchModeratedAccounts(url)
+            },
+
+            clearModeratedProfileSearch() {
+                this.moderatedProfilesSearchInput = undefined;
+                this.fetchModeratedAccounts();
+            },
+
+            openModeratedProfileModal(report) {
+                this.modModalData = report;
+                this.modModalModel = {
+                    is_banned: report.is_banned,
+                    is_noautolink: report.is_noautolink,
+                    is_nodms: report.is_nodms,
+                    is_notrending: report.is_notrending,
+                    is_nsfw: report.is_nsfw,
+                    is_unlisted: report.is_unlisted,
+                }
+                $(this.$refs.moderatedProfileModal).modal('show');
+                window.history.pushState(null, null, `/i/admin/reports?tab=moderated-profiles&action=view&id=${report.id}`)
+            },
+
+            handleModProfileModalUpdate() {
+                axios.post(
+                    '/i/admin/api/reports/moderated-profiles/update',
+                    {...this.modModalData, ...this.modModalModel}
+                ).then(res => {
+                    window.history.pushState(null, null, `/i/admin/reports?tab=moderated-profiles`)
+                    window.location.reload();
+                }).catch(error => {
+                    let errorMessage = 'An error occurred';
+                    if (error.response) {
+                        errorMessage = `Error ${error.response.status}: ${error.response.data.error || error.response.data.message || error.response.statusText}`;
+                    } else if (error.request) {
+                        errorMessage = 'No response received from server';
+                    } else {
+                        errorMessage = error.message;
+                    }
+                    swal('Error', errorMessage, 'error')
+                }).finally(() => {
+                    $(this.$refs.moderatedProfileModal).modal('hide');
+                })
+            },
+
+            handleModProfileModalDelete() {
+                swal({
+                    title: 'Confirm Delete',
+                    text: 'Are you sure you want to delete this moderated profile ruleset?',
+                    buttons: {
+                        cancel: "Cancel",
+                        danger: {
+                            text: "Delete",
+                            value: 'delete',
+                        }
+                    }
+                }).then((val) => {
+                    if(val === 'delete') {
+                        axios.post('/i/admin/api/reports/moderated-profiles/delete', { id: this.modModalData.id})
+                        .then(res => {
+                            window.history.pushState(null, null, '/i/admin/reports?tab=moderated-profiles');
+                            window.location.reload();
+                        })
+                    }
+                    $(this.$refs.moderatedProfileModal).modal('hide');
+                    swal.close()
+                })
+            },
+
+            fetchModeratedProfile(id) {
+                axios.get(`/i/admin/api/reports/moderated-profiles/show?id=${id}`)
+                .then(res => {
+                    this.modModalData = res.data.data;
+                    let report = res.data.data;
+
+                    this.modModalModel = {
+                        is_banned: report.is_banned,
+                        is_noautolink: report.is_noautolink,
+                        is_nodms: report.is_nodms,
+                        is_notrending: report.is_notrending,
+                        is_nsfw: report.is_nsfw,
+                        is_unlisted: report.is_unlisted,
+                    }
+
+                    $(this.$refs.moderatedProfileModal).modal('show');
+                }).catch(err => {
+                    window.history.pushState(null, null, '/i/admin/reports?tab=moderated-profiles');
+                    swal('Error', 'Invalid moderated profile id!', 'error');
+                })
+            },
+
+            addModeratedProfile() {
+                swal({
+                    text: 'Enter profile URL (ie: https://mastodon.social/@Mastodon)',
+                    content: "input",
+                    button: {
+                        text: "Add",
+                        closeModal: false,
+                    },
+                }).then(val => {
+                    if (!val) throw null;
+
+                    if(val.startsWith('@')) {
+                        swal('Error', 'Invalid URL, webfinger is not supported yet.', 'error');
+                        throw null;
+                    }
+
+                    if(!val.startsWith('http')) {
+                        swal('Error', 'Invalid URL', 'error');
+                        throw null;
+                    }
+
+                    if(val.indexOf('.') === -1) {
+                        swal('Error', 'Invalid URL', 'error');
+                        throw null;
+                    }
+
+                    let params = {
+                        url: val
+                    }
+
+                    return axios.post('/i/admin/api/reports/moderated-profiles/create', params);
+                }).then(json => {
+                    if(json && json.data && json.data?.id) {
+                        window.location.href = `/i/admin/reports?tab=moderated-profiles&action=view&id=${json.data?.id}`
+                        return;
+                    }
+                    swal.stopLoading();
+                    swal.close();
+                }).catch(err => {
+                    if (err) {
+                        if(err?.response?.data?.error) {
+                            swal("Error", err?.response?.data?.error, "error");
+                        } else {
+                            swal("Error", "Something went wrong!", "error");
+                        }
+                    } else {
+                        swal.stopLoading();
+                        swal.close();
+                    }
+                });
+            },
+
+            closeModeratedProfileModal() {
+                window.history.pushState(null, null, '/i/admin/reports?tab=moderated-profiles');
+            },
+
+            exportModeratedProfiles() {
+                axios.get('/i/admin/api/reports/moderated-profiles/export', {
+                    responseType: "blob"
+                })
+                .then(res => {
+                    let host = new URL(window.location.href)
+                    let date = new Date();
+                    let dateStamp = `${date.getMonth()}-${date.getDate()}-${date.getFullYear()}-${Date.now()}`;
+                    let filename = host.host + '-moderated-profiles-' + dateStamp + '.json';
+                    let el = document.createElement('a');
+                    el.setAttribute('download', filename)
+                    const href = URL.createObjectURL(res.data);
+                    el.href = href;
+                    el.setAttribute('target', '_blank');
+                    el.click();
+
+                    swal(
+                        'Success!',
+                        'You have successfully exported the moderated profile backup.',
+                        'success'
+                    )
+                })
             }
         }
     }
 </script>
+
+<style lang="scss" scoped>
+    .mpl-form {
+        p {
+            line-height: 1;
+
+            &:first-child {
+                font-size: 14px;
+                line-height: 1.6;
+            }
+        }
+    }
+</style>

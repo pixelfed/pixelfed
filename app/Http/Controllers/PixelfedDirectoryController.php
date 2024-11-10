@@ -90,7 +90,8 @@ class PixelfedDirectoryController extends Controller
 
         $oauthEnabled = ConfigCache::whereK('pixelfed.oauth_enabled')->first();
         if ($oauthEnabled) {
-            $keys = file_exists(storage_path('oauth-public.key')) && file_exists(storage_path('oauth-private.key'));
+            $keys = (file_exists(storage_path('oauth-public.key')) || config_cache('passport.public_key')) &&
+                (file_exists(storage_path('oauth-private.key')) || config_cache('passport.private_key'));
             $res['oauth_enabled'] = (bool) $oauthEnabled && $keys;
         }
 

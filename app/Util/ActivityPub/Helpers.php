@@ -9,6 +9,7 @@ use App\Jobs\MediaPipeline\MediaStoragePipeline;
 use App\Jobs\StatusPipeline\StatusReplyPipeline;
 use App\Jobs\StatusPipeline\StatusTagsPipeline;
 use App\Media;
+use App\Models\ModeratedProfile;
 use App\Models\Poll;
 use App\Profile;
 use App\Services\Account\AccountStatService;
@@ -25,6 +26,8 @@ use Cache;
 use Carbon\Carbon;
 use Illuminate\Support\Str;
 use Illuminate\Validation\Rule;
+use League\Uri\Exceptions\UriException;
+use League\Uri\Uri;
 use Purify;
 use Validator;
 
@@ -153,61 +156,74 @@ class Helpers
         return in_array($url, $audience['to']) || in_array($url, $audience['cc']);
     }
 
-    public static function validateUrl($url)
+    public static function validateUrl($url = null, $disableDNSCheck = false, $forceBanCheck = false)
     {
-        if (is_array($url)) {
+        if (is_array($url) && ! empty($url)) {
             $url = $url[0];
         }
+        if (! $url || strlen($url) === 0) {
+            return false;
+        }
+        try {
+            $uri = Uri::new($url);
 
-        $hash = hash('sha256', $url);
-        $key = "helpers:url:valid:sha256-{$hash}";
+            if (! $uri) {
+                return false;
+            }
 
-        $valid = Cache::remember($key, 900, function () use ($url) {
+            if ($uri->getScheme() !== 'https') {
+                return false;
+            }
+
+            $host = $uri->getHost();
+
+            if (! $host || $host === '') {
+                return false;
+            }
+
+            if (! filter_var($host, FILTER_VALIDATE_DOMAIN, FILTER_FLAG_HOSTNAME)) {
+                return false;
+            }
+
+            if (! str_contains($host, '.')) {
+                return false;
+            }
+
             $localhosts = [
-                '127.0.0.1', 'localhost', '::1',
+                'localhost',
+                '127.0.0.1',
+                '::1',
+                'broadcasthost',
+                'ip6-localhost',
+                'ip6-loopback',
             ];
-
-            if (strtolower(mb_substr($url, 0, 8)) !== 'https://') {
-                return false;
-            }
-
-            if (substr_count($url, '://') !== 1) {
-                return false;
-            }
-
-            if (mb_substr($url, 0, 8) !== 'https://') {
-                $url = 'https://'.substr($url, 8);
-            }
-
-            $valid = filter_var($url, FILTER_VALIDATE_URL);
-
-            if (! $valid) {
-                return false;
-            }
-
-            $host = parse_url($valid, PHP_URL_HOST);
 
             if (in_array($host, $localhosts)) {
                 return false;
             }
 
-            if (config('security.url.verify_dns')) {
-                if (DomainService::hasValidDns($host) === false) {
+            if ($disableDNSCheck !== true && app()->environment() === 'production' && (bool) config('security.url.verify_dns')) {
+                $hash = hash('sha256', $host);
+                $key = "helpers:url:valid-dns:sha256-{$hash}";
+                $domainValidDns = Cache::remember($key, 14440, function () use ($host) {
+                    return DomainService::hasValidDns($host);
+                });
+                if (! $domainValidDns) {
                     return false;
                 }
             }
 
-            if (app()->environment() === 'production') {
+            if ($forceBanCheck || $disableDNSCheck !== true && app()->environment() === 'production') {
                 $bannedInstances = InstanceService::getBannedDomains();
                 if (in_array($host, $bannedInstances)) {
                     return false;
                 }
             }
 
-            return $url;
-        });
-
-        return $valid;
+            return $uri->toString();
+        } catch (UriException $e) {
+            return false;
+        }
     }
 
     public static function validateLocalUrl($url)
@@ -215,7 +231,12 @@ class Helpers
         $url = self::validateUrl($url);
         if ($url == true) {
             $domain = config('pixelfed.domain.app');
-            $host = parse_url($url, PHP_URL_HOST);
+
+            $uri = Uri::new($url);
+            $host = $uri->getHost();
+            if (! $host || empty($host)) {
+                return false;
+            }
             $url = strtolower($domain) === strtolower($host) ? $url : false;
 
             return $url;
@@ -719,7 +740,7 @@ class Helpers
             $width = isset($media['width']) ? $media['width'] : false;
             $height = isset($media['height']) ? $media['height'] : false;
 
-            $media = new Media();
+            $media = new Media;
             $media->blurhash = $blurhash;
             $media->remote_media = true;
             $media->status_id = $status->id;
@@ -781,12 +802,24 @@ class Helpers
         return self::profileUpdateOrCreate($url);
     }
 
-    public static function profileUpdateOrCreate($url)
+    public static function profileUpdateOrCreate($url, $movedToCheck = false)
     {
+        $movedToPid = null;
         $res = self::fetchProfileFromUrl($url);
         if (! $res || isset($res['id']) == false) {
             return;
         }
+        if (! self::validateUrl($res['inbox'])) {
+            return;
+        }
+        if (! self::validateUrl($res['id'])) {
+            return;
+        }
+
+        if (ModeratedProfile::whereProfileUrl($res['id'])->whereIsBanned(true)->exists()) {
+            return;
+        }
+
         $urlDomain = parse_url($url, PHP_URL_HOST);
         $domain = parse_url($res['id'], PHP_URL_HOST);
         if (strtolower($urlDomain) !== strtolower($domain)) {
@@ -809,18 +842,18 @@ class Helpers
         $remoteUsername = $username;
         $webfinger = "@{$username}@{$domain}";
 
-        if (! self::validateUrl($res['inbox'])) {
-            return;
-        }
-        if (! self::validateUrl($res['id'])) {
-            return;
-        }
-
         $instance = Instance::updateOrCreate([
             'domain' => $domain,
         ]);
         if ($instance->wasRecentlyCreated == true) {
             \App\Jobs\InstancePipeline\FetchNodeinfoPipeline::dispatch($instance)->onQueue('low');
+        }
+
+        if (! $movedToCheck && isset($res['movedTo']) && Helpers::validateUrl($res['movedTo'])) {
+            $movedTo = self::profileUpdateOrCreate($res['movedTo'], true);
+            if ($movedTo) {
+                $movedToPid = $movedTo->id;
+            }
         }
 
         $profile = Profile::updateOrCreate(
@@ -839,6 +872,7 @@ class Helpers
                 'outbox_url' => isset($res['outbox']) ? $res['outbox'] : null,
                 'public_key' => $res['publicKey']['publicKeyPem'],
                 'indexable' => isset($res['indexable']) && is_bool($res['indexable']) ? $res['indexable'] : false,
+                'moved_to_profile_id' => $movedToPid,
             ]
         );
 
@@ -856,6 +890,11 @@ class Helpers
     public static function profileFetch($url)
     {
         return self::profileFirstOrNew($url);
+    }
+
+    public static function getSignedFetch($url)
+    {
+        return ActivityPubFetchService::get($url);
     }
 
     public static function sendSignedObject($profile, $url, $body)

@@ -7,7 +7,7 @@ use Illuminate\Support\Str;
 
 class Config
 {
-    const CACHE_KEY = 'api:site:configuration:_v0.8';
+    const CACHE_KEY = 'api:site:configuration:_v0.9';
 
     public static function get()
     {
@@ -97,6 +97,7 @@ class Config
                         ],
                     ],
                     'hls' => $hls,
+                    'groups' => (bool) config('groups.enabled'),
                 ],
             ];
         });

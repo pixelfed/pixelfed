@@ -83,6 +83,9 @@ class RestrictedNames
         'admin',
         'administrator',
 
+        // Federation
+        'authorize_interaction',
+
         // Static Assets
         'assets',
         'public',

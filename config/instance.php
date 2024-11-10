@@ -18,6 +18,7 @@ return [
         'tags' => [
             'is_public' => env('INSTANCE_PUBLIC_HASHTAGS', false),
         ],
+        'beagle_api' => env('PF_INSTANCE_USE_BEAGLE_API', true),
     ],
 
     'email' => env('INSTANCE_CONTACT_EMAIL'),
@@ -36,7 +37,7 @@ return [
         'network' => [
             'cached' => env('PF_NETWORK_TIMELINE') ? env('INSTANCE_NETWORK_TIMELINE_CACHED', false) : false,
             'cache_dropoff' => env('INSTANCE_NETWORK_TIMELINE_CACHE_DROPOFF', 100),
-            'max_hours_old' => env('INSTANCE_NETWORK_TIMELINE_CACHE_MAX_HOUR_INGEST', 6),
+            'max_hours_old' => env('INSTANCE_NETWORK_TIMELINE_CACHE_MAX_HOUR_INGEST', 2160),
         ],
     ],
 
@@ -151,6 +152,12 @@ return [
             'enabled' => env('INSTANCE_NOTIFY_AUTO_GC', false),
             'delete_after_days' => env('INSTANCE_NOTIFY_AUTO_GC_DEL_AFTER_DAYS', 365),
         ],
+
+        'nag' => [
+            'enabled' => (bool) env('INSTANCE_NOTIFY_APP_GATEWAY', true),
+            'api_key' => env('PIXELFED_PUSHGATEWAY_KEY', false),
+            'endpoint' => 'push.pixelfed.net',
+        ],
     ],
 
     'curated_registration' => [
@@ -171,6 +178,7 @@ return [
                     'enabled' => env('INSTANCE_CUR_REG_NOTIFY_ADMIN_ON_VERIFY', false),
                     'bundle' => env('INSTANCE_CUR_REG_NOTIFY_ADMIN_ON_VERIFY_BUNDLE', false),
                     'max_per_day' => env('INSTANCE_CUR_REG_NOTIFY_ADMIN_ON_VERIFY_MPD', 10),
+                    'cc_addresses' => env('INSTANCE_CUR_REG_NOTIFY_ADMIN_ON_VERIFY_CC'),
                 ],
                 'on_user_response' => env('INSTANCE_CUR_REG_NOTIFY_ADMIN_ON_USER_RESPONSE', false),
             ],

@@ -46,6 +46,7 @@ class ConfigCacheService
                     'pixelfed.oauth_enabled',
                     'pixelfed.import.instagram.enabled',
                     'pixelfed.bouncer.enabled',
+                    'federation.activitypub.authorized_fetch',
 
                     'pixelfed.enforce_email_verification',
                     'pixelfed.max_account_size',

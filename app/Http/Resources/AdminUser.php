@@ -2,8 +2,8 @@
 
 namespace App\Http\Resources;
 
-use Illuminate\Http\Resources\Json\JsonResource;
 use App\Services\AccountService;
+use Illuminate\Http\Resources\Json\JsonResource;
 
 class AdminUser extends JsonResource
 {
@@ -18,8 +18,8 @@ class AdminUser extends JsonResource
         $account = AccountService::get($this->profile_id, true);
 
         $res = [
-            'id' => $this->id,
-            'profile_id' => $this->profile_id,
+            'id' => (string) $this->id,
+            'profile_id' => (string) $this->profile_id,
             'name' => $this->name,
             'username' => $this->username,
             'is_admin' => (bool) $this->is_admin,
@@ -28,17 +28,18 @@ class AdminUser extends JsonResource
             'two_factor_enabled' => (bool) $this->{'2fa_enabled'},
             'register_source' => $this->register_source,
             'app_register_ip' => $this->app_register_ip,
+            'has_interstitial' => (bool) $this->has_interstitial,
             'last_active_at' => $this->last_active_at,
             'created_at' => $this->created_at,
         ];
 
-        if($account) {
+        if ($account) {
             $res['avatar'] = $account['avatar'];
             $res['bio'] = $account['note_text'];
-            $res['statuses_count'] = $account['statuses_count'];
-            $res['following_count'] = $account['following_count'];
-            $res['followers_count'] = $account['followers_count'];
-            $res['is_private'] = $account['locked'];
+            $res['statuses_count'] = (int) $account['statuses_count'];
+            $res['following_count'] = (int) $account['following_count'];
+            $res['followers_count'] = (int) $account['followers_count'];
+            $res['is_private'] = (bool) $account['locked'];
         }
 
         return $res;

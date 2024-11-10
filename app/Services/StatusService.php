@@ -30,9 +30,9 @@ class StatusService
             if (! $status) {
                 return null;
             }
-            $fractal = new Fractal\Manager();
-            $fractal->setSerializer(new ArraySerializer());
-            $resource = new Fractal\Resource\Item($status, new StatusStatelessTransformer());
+            $fractal = new Fractal\Manager;
+            $fractal->setSerializer(new ArraySerializer);
+            $resource = new Fractal\Resource\Item($status, new StatusStatelessTransformer);
             $res = $fractal->createData($resource)->toArray();
             $res['_pid'] = isset($res['account']) && isset($res['account']['id']) ? $res['account']['id'] : null;
             if (isset($res['_pid'])) {
@@ -112,7 +112,7 @@ class StatusService
     {
         $status = self::get($id, false);
 
-        if (! $status) {
+        if (! $status || ! $pid) {
             return [
                 'liked' => false,
                 'shared' => false,
@@ -146,9 +146,9 @@ class StatusService
             return null;
         }
 
-        $fractal = new Fractal\Manager();
-        $fractal->setSerializer(new ArraySerializer());
-        $resource = new Fractal\Resource\Item($status, new StatusStatelessTransformer());
+        $fractal = new Fractal\Manager;
+        $fractal->setSerializer(new ArraySerializer);
+        $resource = new Fractal\Resource\Item($status, new StatusStatelessTransformer);
 
         return $fractal->createData($resource)->toArray();
     }

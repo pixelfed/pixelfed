@@ -109,7 +109,7 @@ class RemoteStatusDelete implements ShouldQueue, ShouldBeUniqueUntilProcessing
         }
 
         StatusService::del($status->id, true);
-        AccountStatService::decrementPostCount($status->profile_id);
+        // AccountStatService::decrementPostCount($status->profile_id);
         return $this->unlinkRemoveMedia($status);
     }
 
@@ -176,10 +176,10 @@ class RemoteStatusDelete implements ShouldQueue, ShouldBeUniqueUntilProcessing
         StatusView::whereStatusId($status->id)->delete();
         Status::whereInReplyToId($status->id)->update(['in_reply_to_id' => null]);
 
-        $status->delete();
-
         StatusService::del($status->id, true);
         AccountService::del($status->profile_id);
+
+        $status->forceDelete();
 
         return 1;
     }

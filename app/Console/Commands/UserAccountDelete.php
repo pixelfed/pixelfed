@@ -74,14 +74,14 @@ class UserAccountDelete extends Command
         $activity = $fractal->createData($resource)->toArray();
 
         $audience = Instance::whereNotNull(['shared_inbox', 'nodeinfo_last_fetched'])
-            ->where('nodeinfo_last_fetched', '>', now()->subHours(12))
+            ->where('nodeinfo_last_fetched', '>', now()->subDays(14))
             ->distinct()
             ->pluck('shared_inbox');
 
         $payload = json_encode($activity);
 
         $client = new Client([
-            'timeout' => 10,
+            'timeout' => 5,
         ]);
 
         $version = config('pixelfed.version');

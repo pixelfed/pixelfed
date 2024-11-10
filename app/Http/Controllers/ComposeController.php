@@ -21,6 +21,7 @@ use App\Services\MediaStorageService;
 use App\Services\MediaTagService;
 use App\Services\SnowflakeService;
 use App\Services\UserRoleService;
+use App\Services\UserStorageService;
 use App\Status;
 use App\Transformer\Api\MediaTransformer;
 use App\UserFilter;
@@ -70,7 +71,7 @@ class ComposeController extends Controller
             'filter_class' => 'nullable|alpha_dash|max:24',
         ]);
 
-        $user = Auth::user();
+        $user = $request->user();
         $profile = $user->profile;
         abort_if($user->has_roles && ! UserRoleService::can('can-post', $user->id), 403, 'Invalid permissions for this action');
 
@@ -84,20 +85,21 @@ class ComposeController extends Controller
 
         abort_if($limitReached == true, 429);
 
-        if (config_cache('pixelfed.enforce_account_limit') == true) {
-            $size = Cache::remember($user->storageUsedKey(), now()->addDays(3), function () use ($user) {
-                return Media::whereUserId($user->id)->sum('size') / 1000;
-            });
+        $filterClass = in_array($request->input('filter_class'), Filter::classes()) ? $request->input('filter_class') : null;
+        $filterName = in_array($request->input('filter_name'), Filter::names()) ? $request->input('filter_name') : null;
+        $accountSize = UserStorageService::get($user->id);
+        abort_if($accountSize === -1, 403, 'Invalid request.');
+        $photo = $request->file('file');
+        $fileSize = $photo->getSize();
+        $sizeInKbs = (int) ceil($fileSize / 1000);
+        $updatedAccountSize = (int) $accountSize + (int) $sizeInKbs;
+
+        if ((bool) config_cache('pixelfed.enforce_account_limit') == true) {
             $limit = (int) config_cache('pixelfed.max_account_size');
-            if ($size >= $limit) {
+            if ($updatedAccountSize >= $limit) {
                 abort(403, 'Account size limit reached.');
             }
         }
-
-        $filterClass = in_array($request->input('filter_class'), Filter::classes()) ? $request->input('filter_class') : null;
-        $filterName = in_array($request->input('filter_name'), Filter::names()) ? $request->input('filter_name') : null;
-
-        $photo = $request->file('file');
 
         $mimes = explode(',', config_cache('pixelfed.media_types'));
 
@@ -117,10 +119,11 @@ class ComposeController extends Controller
         $media->media_path = $path;
         $media->original_sha256 = $hash;
         $media->size = $photo->getSize();
+        $media->caption = "";
         $media->mime = $mime;
         $media->filter_class = $filterClass;
         $media->filter_name = $filterName;
-        $media->version = 3;
+        $media->version = '3';
         $media->save();
 
         $preview_url = $media->url().'?v='.time();
@@ -142,6 +145,10 @@ class ComposeController extends Controller
             default:
                 break;
         }
+
+        $user->storage_used = (int) $updatedAccountSize;
+        $user->storage_used_updated_at = now();
+        $user->save();
 
         Cache::forget($limitKey);
         $resource = new Fractal\Resource\Item($media, new MediaTransformer());
@@ -198,6 +205,7 @@ class ComposeController extends Controller
         ];
         ImageOptimize::dispatch($media)->onQueue('mmo');
         Cache::forget($limitKey);
+        UserStorageService::recalculateUpdateStorageUsed($request->user()->id);
 
         return $res;
     }
@@ -217,6 +225,8 @@ class ComposeController extends Controller
             ->findOrFail($request->input('id'));
 
         MediaStorageService::delete($media, true);
+
+        UserStorageService::recalculateUpdateStorageUsed($request->user()->id);
 
         return response()->json([
             'msg' => 'Successfully deleted',
@@ -494,17 +504,17 @@ class ComposeController extends Controller
 
         $limitKey = 'compose:rate-limit:store:'.$user->id;
         $limitTtl = now()->addMinutes(15);
-        $limitReached = Cache::remember($limitKey, $limitTtl, function () use ($user) {
-            $dailyLimit = Status::whereProfileId($user->profile_id)
-                ->whereNull('in_reply_to_id')
-                ->whereNull('reblog_of_id')
-                ->where('created_at', '>', now()->subDays(1))
-                ->count();
+        // $limitReached = Cache::remember($limitKey, $limitTtl, function () use ($user) {
+        //     $dailyLimit = Status::whereProfileId($user->profile_id)
+        //         ->whereNull('in_reply_to_id')
+        //         ->whereNull('reblog_of_id')
+        //         ->where('created_at', '>', now()->subDays(1))
+        //         ->count();
 
-            return $dailyLimit >= 1000;
-        });
+        //     return $dailyLimit >= 1000;
+        // });
 
-        abort_if($limitReached == true, 429);
+        // abort_if($limitReached == true, 429);
 
         $license = in_array($request->input('license'), License::keys()) ? $request->input('license') : null;
 
@@ -626,7 +636,6 @@ class ComposeController extends Controller
         Cache::forget('_api:statuses:recent_9:'.$profile->id);
         Cache::forget('profile:status_count:'.$profile->id);
         Cache::forget('status:transformer:media:attachments:'.$status->id);
-        Cache::forget($user->storageUsedKey());
         Cache::forget('profile:embed:'.$status->profile_id);
         Cache::forget($limitKey);
 

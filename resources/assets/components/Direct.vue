@@ -112,14 +112,17 @@
 	import Sidebar from './partials/sidebar.vue';
 	import Placeholder from './partials/placeholders/DirectMessagePlaceholder.vue';
 	import Intersect from 'vue-intersect'
+	import Autocomplete from '@trevoreyre/autocomplete-vue'
+	import '@trevoreyre/autocomplete-vue/dist/style.css';
 
 	export default {
 		components: {
 			"drawer": Drawer,
-            "sidebar": Sidebar,
-            "intersect": Intersect,
-            "dm-placeholder": Placeholder
-        },
+			"sidebar": Sidebar,
+			"intersect": Intersect,
+			"dm-placeholder": Placeholder,
+			"autocomplete": Autocomplete
+		},
 
 		data() {
 			return {

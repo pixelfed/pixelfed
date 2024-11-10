@@ -5,6 +5,7 @@ Route::domain(config('pixelfed.domain.app'))->middleware(['validemail', 'twofact
     Route::redirect('/home', '/')->name('home');
     Route::get('web/directory', 'LandingController@directoryRedirect');
     Route::get('web/explore', 'LandingController@exploreRedirect');
+    Route::get('authorize_interaction', 'AuthorizeInteractionController@get');
 
     Auth::routes();
     Route::get('auth/raw/mastodon/start', 'RemoteAuthController@startRedirect');
@@ -67,7 +68,7 @@ Route::domain(config('pixelfed.domain.app'))->middleware(['validemail', 'twofact
         Route::get('lang/{locale}', 'SiteController@changeLocale');
         Route::get('restored', 'AccountController@accountRestored');
 
-        Route::get('verify-email', 'AccountController@verifyEmail');
+        Route::get('verify-email', 'AccountController@verifyEmail')->name('account.verify_email');
         Route::post('verify-email', 'AccountController@sendVerifyEmail');
         Route::get('verify-email/request', 'InternalApiController@requestEmailVerification');
         Route::post('verify-email/request', 'InternalApiController@requestEmailVerificationStore');
@@ -124,7 +125,8 @@ Route::domain(config('pixelfed.domain.app'))->middleware(['validemail', 'twofact
 
         Route::get('warning', 'AccountInterstitialController@get');
         Route::post('warning', 'AccountInterstitialController@read');
-        Route::get('my2020', 'SeasonalController@yearInReview');
+
+        Route::get('contact-admin-response/{id}', 'ContactController@showAdminResponse');
 
         Route::get('web/my-portfolio', 'PortfolioController@myRedirect');
         Route::get('web/hashtag/{tag}', 'SpaController@hashtagRedirect');
@@ -353,6 +355,32 @@ Route::domain(config('pixelfed.domain.app'))->middleware(['validemail', 'twofact
 
     Route::get('auth/invite/a/{code}', 'AdminInviteController@index');
     Route::post('api/v1.1/auth/invite/admin/re', 'AdminInviteController@apiRegister')->middleware('throttle:5,1440');
+
+    Route::redirect('groups/', '/groups/home');
+    Route::redirect('groups/home', '/groups/feed');
+
+    Route::prefix('groups')->group(function() {
+        // Route::get('feed', 'GroupController@index');
+        Route::get('{id}/invite/claim', 'GroupController@groupInviteClaim');
+        Route::get('{id}/invite', 'GroupController@groupInviteLanding');
+        Route::get('{id}/settings', 'GroupController@groupSettings');
+        Route::get('{gid}/topics/{topic}', 'Groups\GroupsTopicController@showTopicFeed');
+        Route::get('{gid}/p/{sid}.json', 'GroupController@getStatusObject');
+        Route::get('{gid}/p/{sid}', 'GroupController@showStatus');
+        Route::get('{id}/user/{pid}', 'GroupController@showProfile');
+        Route::get('{id}/un/{pid}', 'GroupController@showProfile');
+        Route::get('{id}/username/{pid}', 'GroupController@showProfileByUsername');
+        Route::get('{id}/{path}', 'GroupController@show');
+        Route::get('{id}.json', 'GroupController@getGroupObject');
+        Route::get('feed', 'GroupController@index');
+        Route::get('create', 'GroupController@index');
+        Route::get('discover', 'GroupController@index');
+        Route::get('search', 'GroupController@index');
+        Route::get('joins', 'GroupController@index');
+        Route::get('notifications', 'GroupController@index');
+        Route::get('{id}', 'GroupController@show');
+    });
+    Route::get('g/{hid}', 'GroupController@groupShortLinkRedirect');
 
     Route::get('storage/m/_v2/{pid}/{mhash}/{uhash}/{f}', 'MediaController@fallbackRedirect');
     Route::get('stories/{username}', 'ProfileController@stories');

@@ -29,7 +29,7 @@
 	                            	type="password"
 	                            	class="form-control{{ $errors->has('password') ? ' is-invalid' : '' }}"
 	                            	name="password"
-	                            	autocomplete="new-password"
+	                            	autocomplete="current-password"
 	                            	placeholder="{{__('Password')}}"
 	                            	required>
 

@@ -25,59 +25,8 @@ class ActivityPubFetchService
         $urlKey = hash('sha256', $url);
         $key = self::CACHE_KEY.$domainKey.':'.$urlKey;
 
-        return Cache::remember($key, 3600, function () use ($url) {
-            $baseHeaders = [
-                'Accept' => 'application/activity+json',
-            ];
-
-            $headers = HttpSignature::instanceActorSign($url, false, $baseHeaders, 'get');
-            $headers['Accept'] = 'application/activity+json';
-            $headers['User-Agent'] = 'PixelFedBot/1.0.0 (Pixelfed/'.config('pixelfed.version').'; +'.config('app.url').')';
-
-            try {
-                $res = Http::withOptions([
-                    'allow_redirects' => [
-                        'max' => 2,
-                        'protocols' => ['https'],
-                    ]])
-                    ->withHeaders($headers)
-                    ->timeout(30)
-                    ->connectTimeout(5)
-                    ->retry(3, 500)
-                    ->get($url);
-            } catch (RequestException $e) {
-                return;
-            } catch (ConnectionException $e) {
-                return;
-            } catch (Exception $e) {
-                return;
-            }
-
-            if (! $res->ok()) {
-                return;
-            }
-
-            if (! $res->hasHeader('Content-Type')) {
-                return;
-            }
-
-            $acceptedTypes = [
-                'application/activity+json; charset=utf-8',
-                'application/activity+json',
-                'application/ld+json; profile="https://www.w3.org/ns/activitystreams"',
-            ];
-
-            $contentType = $res->getHeader('Content-Type')[0];
-
-            if (! $contentType) {
-                return;
-            }
-
-            if (! in_array($contentType, $acceptedTypes)) {
-                return;
-            }
-
-            return $res->body();
+        return Cache::remember($key, 450, function () use ($url) {
+            return self::fetchRequest($url);
         });
     }
 
@@ -129,5 +78,61 @@ class ActivityPubFetchService
         }
 
         return $url;
+    }
+
+    public static function fetchRequest($url, $returnJsonFormat = false)
+    {
+        $baseHeaders = [
+            'Accept' => 'application/activity+json',
+        ];
+
+        $headers = HttpSignature::instanceActorSign($url, false, $baseHeaders, 'get');
+        $headers['Accept'] = 'application/activity+json';
+        $headers['User-Agent'] = 'PixelFedBot/1.0.0 (Pixelfed/'.config('pixelfed.version').'; +'.config('app.url').')';
+
+        try {
+            $res = Http::withOptions([
+                'allow_redirects' => [
+                    'max' => 2,
+                    'protocols' => ['https'],
+                ]])
+                ->withHeaders($headers)
+                ->timeout(30)
+                ->connectTimeout(5)
+                ->retry(3, 500)
+                ->get($url);
+        } catch (RequestException $e) {
+            return;
+        } catch (ConnectionException $e) {
+            return;
+        } catch (Exception $e) {
+            return;
+        }
+
+        if (! $res->ok()) {
+            return;
+        }
+
+        if (! $res->hasHeader('Content-Type')) {
+            return;
+        }
+
+        $acceptedTypes = [
+            'application/activity+json; charset=utf-8',
+            'application/activity+json',
+            'application/ld+json; profile="https://www.w3.org/ns/activitystreams"',
+        ];
+
+        $contentType = $res->getHeader('Content-Type')[0];
+
+        if (! $contentType) {
+            return;
+        }
+
+        if (! in_array($contentType, $acceptedTypes)) {
+            return;
+        }
+
+        return $returnJsonFormat ? $res->json() : $res->body();
     }
 }

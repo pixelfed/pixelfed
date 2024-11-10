@@ -369,6 +369,10 @@
             async filterPostMeta(media) {
             	let fbfix = await this.fixFacebookEncoding(media);
                 let json = JSON.parse(fbfix);
+                /* Sometimes the JSON isn't an array, when there's only one post */
+                if (!Array.isArray(json)) {
+                    json = new Array(json);
+                }
                 let res = json.filter(j => {
                     let ids = j.media.map(m => m.uri).filter(m => {
                         if(this.config.allow_video_posts == true) {

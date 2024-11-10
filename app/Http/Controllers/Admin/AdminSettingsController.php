@@ -195,7 +195,9 @@ trait AdminSettingsController
             if ($key == 'mobile_apis' &&
                 $active &&
                 ! file_exists(storage_path('oauth-public.key')) &&
-                ! file_exists(storage_path('oauth-private.key'))
+                ! config_cache('passport.public_key') &&
+                ! file_exists(storage_path('oauth-private.key')) &&
+                ! config_cache('passport.private_key')
             ) {
                 Artisan::call('passport:keys');
                 Artisan::call('route:cache');
@@ -531,6 +533,7 @@ trait AdminSettingsController
             'registration_status' => 'required|in:open,filtered,closed',
             'cloud_storage' => 'required',
             'activitypub_enabled' => 'required',
+            'authorized_fetch' => 'required',
             'account_migration' => 'required',
             'mobile_apis' => 'required',
             'stories' => 'required',
@@ -555,6 +558,7 @@ trait AdminSettingsController
                 }
             }
         }
+        ConfigCacheService::put('federation.activitypub.authorized_fetch', $request->boolean('authorized_fetch'));
         ConfigCacheService::put('federation.activitypub.enabled', $request->boolean('activitypub_enabled'));
         ConfigCacheService::put('federation.migration', $request->boolean('account_migration'));
         ConfigCacheService::put('pixelfed.oauth_enabled', $request->boolean('mobile_apis'));

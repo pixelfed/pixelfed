@@ -17,11 +17,11 @@ use App\Services\MediaService;
 use App\Services\StatusService;
 use App\Services\UserFilterService;
 use App\Services\UserRoleService;
+use App\Services\UserStorageService;
 use App\Services\WebfingerService;
 use App\Status;
 use App\UserFilter;
 use App\Util\ActivityPub\Helpers;
-use Cache;
 use Illuminate\Http\Request;
 use Illuminate\Support\Str;
 
@@ -602,16 +602,19 @@ class DirectMessageController extends Controller
             $hidden = false;
         }
 
-        if (config_cache('pixelfed.enforce_account_limit') == true) {
-            $size = Cache::remember($user->storageUsedKey(), now()->addDays(3), function () use ($user) {
-                return Media::whereUserId($user->id)->sum('size') / 1000;
-            });
+        $accountSize = UserStorageService::get($user->id);
+        abort_if($accountSize === -1, 403, 'Invalid request.');
+        $photo = $request->file('file');
+        $fileSize = $photo->getSize();
+        $sizeInKbs = (int) ceil($fileSize / 1000);
+        $updatedAccountSize = (int) $accountSize + (int) $sizeInKbs;
+
+        if ((bool) config_cache('pixelfed.enforce_account_limit') == true) {
             $limit = (int) config_cache('pixelfed.max_account_size');
-            if ($size >= $limit) {
+            if ($updatedAccountSize >= $limit) {
                 abort(403, 'Account size limit reached.');
             }
         }
-        $photo = $request->file('file');
 
         $mimes = explode(',', config_cache('pixelfed.media_types'));
         if (in_array($photo->getMimeType(), $mimes) == false) {
@@ -666,6 +669,10 @@ class DirectMessageController extends Controller
                 'is_hidden' => $hidden,
             ]
         );
+
+        $user->storage_used = (int) $updatedAccountSize;
+        $user->storage_used_updated_at = now();
+        $user->save();
 
         if ($recipient->domain) {
             $this->remoteDeliver($dm);

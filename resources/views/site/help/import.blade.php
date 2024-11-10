@@ -13,7 +13,7 @@
     <p class="text-center font-weight-bold">How to get your export data from Instagram:</p>
     <ol class="pb-4">
         <li class="mb-2">
-            <span>Follow the Instagram instructions on <strong>Downloading a copy of your data on Instagram</strong> on <a href="https://help.instagram.com/181231772500920" class="font-weight-bold">this page</a>. <strong class="text-danger small font-weight-bold">Make sure you select the JSON format</strong></span>
+            <span><strong>Download your information in Instagram's Accounts Center</strong> on <a href="https://www.instagram.com/download/request" class="font-weight-bold">this page</a>. <strong class="text-danger small font-weight-bold">Make sure you select the JSON format</strong></span>
         </li>
         <li class="mb-2">
             <span>Wait for the email from Instagram with your download link</span>

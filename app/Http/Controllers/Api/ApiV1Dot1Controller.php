@@ -5,27 +5,39 @@ namespace App\Http\Controllers\Api;
 use App\AccountLog;
 use App\EmailVerification;
 use App\Http\Controllers\Controller;
+use App\Http\Controllers\StatusController;
 use App\Http\Resources\StatusStateless;
+use App\Jobs\ImageOptimizePipeline\ImageOptimize;
 use App\Jobs\ReportPipeline\ReportNotifyAdminViaEmail;
+use App\Jobs\StatusPipeline\NewStatusPipeline;
 use App\Jobs\StatusPipeline\RemoteStatusDelete;
 use App\Jobs\StatusPipeline\StatusDelete;
+use App\Jobs\VideoPipeline\VideoThumbnail;
 use App\Mail\ConfirmAppEmail;
 use App\Mail\PasswordChange;
+use App\Media;
 use App\Place;
 use App\Profile;
 use App\Report;
+use App\Rules\ExpoPushTokenRule;
 use App\Services\AccountService;
 use App\Services\BouncerService;
 use App\Services\EmailService;
 use App\Services\FollowerService;
+use App\Services\MediaBlocklistService;
+use App\Services\MediaPathService;
 use App\Services\NetworkTimelineService;
+use App\Services\NotificationAppGatewayService;
 use App\Services\ProfileStatusService;
 use App\Services\PublicTimelineService;
+use App\Services\PushNotificationService;
 use App\Services\StatusService;
+use App\Services\UserStorageService;
 use App\Status;
 use App\StatusArchived;
 use App\User;
 use App\UserSetting;
+use App\Util\Lexer\Autolink;
 use App\Util\Lexer\RestrictedNames;
 use Cache;
 use DB;
@@ -44,8 +56,8 @@ class ApiV1Dot1Controller extends Controller
 
     public function __construct()
     {
-        $this->fractal = new Fractal\Manager();
-        $this->fractal->setSerializer(new ArraySerializer());
+        $this->fractal = new Fractal\Manager;
+        $this->fractal->setSerializer(new ArraySerializer);
     }
 
     public function json($res, $code = 200, $headers = [])
@@ -307,7 +319,7 @@ class ApiV1Dot1Controller extends Controller
         if (config('pixelfed.bouncer.cloud_ips.ban_signups')) {
             abort_if(BouncerService::checkIp($request->ip()), 404);
         }
-        $agent = new Agent();
+        $agent = new Agent;
         $currentIp = $request->ip();
 
         $activity = AccountLog::whereUserId($user->id)
@@ -487,8 +499,7 @@ class ApiV1Dot1Controller extends Controller
             abort_if(BouncerService::checkIp($request->ip()), 404);
         }
 
-        $rl = RateLimiter::attempt('pf:apiv1.1:iar:'.$request->ip(), config('pixelfed.app_registration_rate_limit_attempts', 3), function () {
-        }, config('pixelfed.app_registration_rate_limit_decay', 1800));
+        $rl = RateLimiter::attempt('pf:apiv1.1:iar:'.$request->ip(), config('pixelfed.app_registration_rate_limit_attempts', 3), function () {}, config('pixelfed.app_registration_rate_limit_decay', 1800));
         abort_if(! $rl, 400, 'Too many requests');
 
         $this->validate($request, [
@@ -566,7 +577,7 @@ class ApiV1Dot1Controller extends Controller
 
         $rtoken = Str::random(64);
 
-        $verify = new EmailVerification();
+        $verify = new EmailVerification;
         $verify->user_id = $user->id;
         $verify->email = $user->email;
         $verify->user_token = $user->app_register_token;
@@ -618,8 +629,7 @@ class ApiV1Dot1Controller extends Controller
             abort_if(BouncerService::checkIp($request->ip()), 404);
         }
 
-        $rl = RateLimiter::attempt('pf:apiv1.1:iarc:'.$request->ip(), config('pixelfed.app_registration_confirm_rate_limit_attempts', 20), function () {
-        }, config('pixelfed.app_registration_confirm_rate_limit_decay', 1800));
+        $rl = RateLimiter::attempt('pf:apiv1.1:iarc:'.$request->ip(), config('pixelfed.app_registration_confirm_rate_limit_attempts', 20), function () {}, config('pixelfed.app_registration_confirm_rate_limit_decay', 1800));
         abort_if(! $rl, 429, 'Too many requests');
 
         $request->validate([
@@ -929,7 +939,7 @@ class ApiV1Dot1Controller extends Controller
     public function getMutualAccounts(Request $request, $id)
     {
         abort_if(! $request->user() || ! $request->user()->token(), 403);
-        abort_unless($request->user()->tokenCan('follows'), 403);
+        abort_unless($request->user()->tokenCan('follow'), 403);
 
         $account = AccountService::get($id, true);
         if (! $account || ! isset($account['id'])) {
@@ -1009,5 +1019,356 @@ class ApiV1Dot1Controller extends Controller
         $account = AccountService::get($accountId);
 
         return $this->json($account, 200, $rateLimiting ? $limits : []);
+    }
+
+    public function getPushState(Request $request)
+    {
+        abort_unless($request->hasHeader('X-PIXELFED-APP'), 404, 'Not found');
+        abort_if(! $request->user() || ! $request->user()->token(), 403);
+        abort_unless($request->user()->tokenCan('push'), 403);
+        abort_unless(NotificationAppGatewayService::enabled(), 404, 'Push notifications are not supported on this server.');
+        $user = $request->user();
+        abort_if($user->status, 422, 'Cannot access this resource at this time');
+        $res = [
+            'version' => PushNotificationService::PUSH_GATEWAY_VERSION,
+            'username' => (string) $user->username,
+            'profile_id' => (string) $user->profile_id,
+            'notify_enabled' => (bool) $user->notify_enabled,
+            'has_token' => (bool) $user->expo_token,
+            'notify_like' => (bool) $user->notify_like,
+            'notify_follow' => (bool) $user->notify_follow,
+            'notify_mention' => (bool) $user->notify_mention,
+            'notify_comment' => (bool) $user->notify_comment,
+        ];
+
+        return $this->json($res);
+    }
+
+    public function disablePush(Request $request)
+    {
+        abort_unless($request->hasHeader('X-PIXELFED-APP'), 404, 'Not found');
+        abort_if(! $request->user() || ! $request->user()->token(), 403);
+        abort_unless($request->user()->tokenCan('push'), 403);
+        abort_unless(NotificationAppGatewayService::enabled(), 404, 'Push notifications are not supported on this server.');
+        abort_if($request->user()->status, 422, 'Cannot access this resource at this time');
+
+        $request->user()->update([
+            'notify_enabled' => false,
+            'expo_token' => null,
+            'notify_like' => false,
+            'notify_follow' => false,
+            'notify_mention' => false,
+            'notify_comment' => false,
+        ]);
+
+        PushNotificationService::removeMemberFromAll($request->user()->profile_id);
+
+        $user = $request->user();
+
+        return $this->json([
+            'version' => PushNotificationService::PUSH_GATEWAY_VERSION,
+            'username' => (string) $user->username,
+            'profile_id' => (string) $user->profile_id,
+            'notify_enabled' => (bool) $user->notify_enabled,
+            'has_token' => (bool) $user->expo_token,
+            'notify_like' => (bool) $user->notify_like,
+            'notify_follow' => (bool) $user->notify_follow,
+            'notify_mention' => (bool) $user->notify_mention,
+            'notify_comment' => (bool) $user->notify_comment,
+        ]);
+    }
+
+    public function comparePush(Request $request)
+    {
+        abort_unless($request->hasHeader('X-PIXELFED-APP'), 404, 'Not found');
+        abort_if(! $request->user() || ! $request->user()->token(), 403);
+        abort_unless($request->user()->tokenCan('push'), 403);
+        abort_unless(NotificationAppGatewayService::enabled(), 404, 'Push notifications are not supported on this server.');
+        abort_if($request->user()->status, 422, 'Cannot access this resource at this time');
+
+        $this->validate($request, [
+            'expo_token' => ['required', 'string', new ExpoPushTokenRule],
+        ]);
+
+        $user = $request->user();
+
+        if (empty($user->expo_token)) {
+            return $this->json([
+                'version' => PushNotificationService::PUSH_GATEWAY_VERSION,
+                'username' => (string) $user->username,
+                'profile_id' => (string) $user->profile_id,
+                'notify_enabled' => (bool) $user->notify_enabled,
+                'match' => false,
+                'has_existing' => false,
+            ]);
+        }
+
+        $token = $request->input('expo_token');
+        $knownToken = $user->expo_token;
+        $match = hash_equals($knownToken, $token);
+
+        return $this->json([
+            'version' => PushNotificationService::PUSH_GATEWAY_VERSION,
+            'username' => (string) $user->username,
+            'profile_id' => (string) $user->profile_id,
+            'notify_enabled' => (bool) $user->notify_enabled,
+            'match' => $match,
+            'has_existing' => true,
+        ]);
+    }
+
+    public function updatePush(Request $request)
+    {
+        abort_unless($request->hasHeader('X-PIXELFED-APP'), 404, 'Not found');
+        abort_if(! $request->user() || ! $request->user()->token(), 403);
+        abort_unless($request->user()->tokenCan('push'), 403);
+        abort_unless(NotificationAppGatewayService::enabled(), 404, 'Push notifications are not supported on this server.');
+        abort_if($request->user()->status, 422, 'Cannot access this resource at this time');
+
+        $this->validate($request, [
+            'notify_enabled' => 'required',
+            'token' => ['required', 'string', new ExpoPushTokenRule],
+            'notify_like' => 'sometimes',
+            'notify_follow' => 'sometimes',
+            'notify_mention' => 'sometimes',
+            'notify_comment' => 'sometimes',
+        ]);
+
+        $pid = $request->user()->profile_id;
+        abort_if(! $pid, 422, 'An error occured');
+        $expoToken = $request->input('token');
+
+        $existing = User::where('profile_id', '!=', $pid)->whereExpoToken($expoToken)->count();
+        abort_if($existing && $existing > 5, 400, 'Push token is already used by another account');
+
+        $request->user()->update([
+            'notify_enabled' => $request->boolean('notify_enabled'),
+            'expo_token' => $expoToken,
+        ]);
+
+        if ($request->filled('notify_like')) {
+            $request->user()->update(['notify_like' => (bool) $request->boolean('notify_like')]);
+            $request->boolean('notify_like') == true ?
+                PushNotificationService::set('like', $pid) :
+                PushNotificationService::removeMember('like', $pid);
+        }
+        if ($request->filled('notify_follow')) {
+            $request->user()->update(['notify_follow' => (bool) $request->boolean('notify_follow')]);
+            $request->boolean('notify_follow') == true ?
+                PushNotificationService::set('follow', $pid) :
+                PushNotificationService::removeMember('follow', $pid);
+        }
+        if ($request->filled('notify_mention')) {
+            $request->user()->update(['notify_mention' => (bool) $request->boolean('notify_mention')]);
+            $request->boolean('notify_mention') == true ?
+                PushNotificationService::set('mention', $pid) :
+                PushNotificationService::removeMember('mention', $pid);
+        }
+        if ($request->filled('notify_comment')) {
+            $request->user()->update(['notify_comment' => (bool) $request->boolean('notify_comment')]);
+            $request->boolean('notify_comment') == true ?
+                PushNotificationService::set('comment', $pid) :
+                PushNotificationService::removeMember('comment', $pid);
+        }
+
+        if ($request->boolean('notify_enabled') == false) {
+            PushNotificationService::removeMemberFromAll($request->user()->profile_id);
+        }
+
+        $user = $request->user();
+
+        $res = [
+            'version' => PushNotificationService::PUSH_GATEWAY_VERSION,
+            'notify_enabled' => (bool) $user->notify_enabled,
+            'has_token' => (bool) $user->expo_token,
+            'notify_like' => (bool) $user->notify_like,
+            'notify_follow' => (bool) $user->notify_follow,
+            'notify_mention' => (bool) $user->notify_mention,
+            'notify_comment' => (bool) $user->notify_comment,
+        ];
+
+        return $this->json($res);
+    }
+
+    /**
+     * POST /api/v1.1/status/create
+     *
+     *
+     * @return StatusTransformer
+     */
+    public function statusCreate(Request $request)
+    {
+        abort_if(! $request->user() || ! $request->user()->token(), 403);
+        abort_unless($request->user()->tokenCan('write'), 403);
+
+        $this->validate($request, [
+            'status' => 'nullable|string|max:'.(int) config_cache('pixelfed.max_caption_length'),
+            'file' => [
+                'required',
+                'file',
+                'mimetypes:'.config_cache('pixelfed.media_types'),
+                'max:'.config_cache('pixelfed.max_photo_size'),
+                function ($attribute, $value, $fail) {
+                    if (is_array($value) && count($value) > 1) {
+                        $fail('Only one file can be uploaded at a time.');
+                    }
+                },
+            ],
+            'sensitive' => 'nullable',
+            'visibility' => 'string|in:private,unlisted,public',
+            'spoiler_text' => 'sometimes|max:140',
+        ]);
+
+        if ($request->hasHeader('idempotency-key')) {
+            $key = 'pf:api:v1:status:idempotency-key:'.$request->user()->id.':'.hash('sha1', $request->header('idempotency-key'));
+            $exists = Cache::has($key);
+            abort_if($exists, 400, 'Duplicate idempotency key.');
+            Cache::put($key, 1, 3600);
+        }
+
+        if (config('costar.enabled') == true) {
+            $blockedKeywords = config('costar.keyword.block');
+            if ($blockedKeywords !== null && $request->status) {
+                $keywords = config('costar.keyword.block');
+                foreach ($keywords as $kw) {
+                    if (Str::contains($request->status, $kw) == true) {
+                        abort(400, 'Invalid object. Contains banned keyword.');
+                    }
+                }
+            }
+        }
+        $user = $request->user();
+
+        if ($user->has_roles) {
+            abort_if(! UserRoleService::can('can-post', $user->id), 403, 'Invalid permissions for this action');
+        }
+
+        $profile = $user->profile;
+
+        $limitKey = 'compose:rate-limit:media-upload:'.$user->id;
+        $photo = $request->file('file');
+        $fileSize = $photo->getSize();
+        $sizeInKbs = (int) ceil($fileSize / 1000);
+        $accountSize = UserStorageService::get($user->id);
+        abort_if($accountSize === -1, 403, 'Invalid request.');
+        $updatedAccountSize = (int) $accountSize + (int) $sizeInKbs;
+
+        if ((bool) config_cache('pixelfed.enforce_account_limit') == true) {
+            $limit = (int) config_cache('pixelfed.max_account_size');
+            if ($updatedAccountSize >= $limit) {
+                abort(403, 'Account size limit reached.');
+            }
+        }
+
+        $mimes = explode(',', config_cache('pixelfed.media_types'));
+        if (in_array($photo->getMimeType(), $mimes) == false) {
+            abort(403, 'Invalid or unsupported mime type.');
+        }
+
+        $storagePath = MediaPathService::get($user, 2);
+        $path = $photo->storePublicly($storagePath);
+        $hash = \hash_file('sha256', $photo);
+        $license = null;
+        $mime = $photo->getMimeType();
+
+        $settings = UserSetting::whereUserId($user->id)->first();
+
+        if ($settings && ! empty($settings->compose_settings)) {
+            $compose = $settings->compose_settings;
+
+            if (isset($compose['default_license']) && $compose['default_license'] != 1) {
+                $license = $compose['default_license'];
+            }
+        }
+
+        abort_if(MediaBlocklistService::exists($hash) == true, 451);
+
+        $visibility = $profile->is_private ? 'private' : (
+            $profile->unlisted == true &&
+            $request->input('visibility', 'public') == 'public' ?
+            'unlisted' :
+            $request->input('visibility', 'public'));
+
+        if ($user->last_active_at == null) {
+            return [];
+        }
+
+        $content = strip_tags($request->input('status'));
+        $rendered = Autolink::create()->autolink($content);
+        $cw = $user->profile->cw == true ? true : $request->boolean('sensitive', false);
+        $spoilerText = $cw && $request->filled('spoiler_text') ? $request->input('spoiler_text') : null;
+
+        $status = new Status;
+        $status->caption = $content;
+        $status->rendered = $rendered;
+        $status->profile_id = $user->profile_id;
+        $status->is_nsfw = $cw;
+        $status->cw_summary = $spoilerText;
+        $status->scope = $visibility;
+        $status->visibility = $visibility;
+        $status->type = StatusController::mimeTypeCheck([$mime]);
+        $status->save();
+
+        if (! $status) {
+            abort(500, 'An error occured.');
+        }
+
+        $media = new Media;
+        $media->status_id = $status->id;
+        $media->profile_id = $profile->id;
+        $media->user_id = $user->id;
+        $media->media_path = $path;
+        $media->original_sha256 = $hash;
+        $media->size = $photo->getSize();
+        $media->mime = $mime;
+        $media->order = 1;
+        $media->caption = $request->input('description');
+        if ($license) {
+            $media->license = $license;
+        }
+        $media->save();
+
+        switch ($media->mime) {
+            case 'image/jpeg':
+            case 'image/png':
+                ImageOptimize::dispatch($media)->onQueue('mmo');
+                break;
+
+            case 'video/mp4':
+                VideoThumbnail::dispatch($media)->onQueue('mmo');
+                $preview_url = '/storage/no-preview.png';
+                $url = '/storage/no-preview.png';
+                break;
+        }
+
+        $user->storage_used = (int) $updatedAccountSize;
+        $user->storage_used_updated_at = now();
+        $user->save();
+
+        NewStatusPipeline::dispatch($status);
+
+        Cache::forget('user:account:id:'.$user->id);
+        Cache::forget('_api:statuses:recent_9:'.$user->profile_id);
+        Cache::forget('profile:status_count:'.$user->profile_id);
+        Cache::forget($user->storageUsedKey());
+        Cache::forget('profile:embed:'.$status->profile_id);
+        Cache::forget($limitKey);
+
+        $res = StatusService::getMastodon($status->id, false);
+        $res['favourited'] = false;
+        $res['language'] = 'en';
+        $res['bookmarked'] = false;
+        $res['card'] = null;
+
+        return $this->json($res);
+    }
+
+    public function nagState(Request $request)
+    {
+        abort_unless((bool) config_cache('pixelfed.oauth_enabled'), 404);
+
+        return [
+            'active' => NotificationAppGatewayService::enabled(),
+        ];
     }
 }

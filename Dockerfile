@@ -194,6 +194,7 @@ FROM --platform=${BUILDARCH} node:lts AS frontend-build
 ARG BUILDARCH
 ARG BUILD_FRONTEND=0
 ARG RUNTIME_UID
+ARG RUNTIME_GID
 
 ARG NODE_ENV=production
 ENV NODE_ENV=$NODE_ENV
@@ -256,16 +257,25 @@ COPY --link --from=composer-image /usr/bin/composer /usr/bin/composer
 #! Changing user to runtime user
 USER ${RUNTIME_UID}:${RUNTIME_GID}
 
+
 # Install composer dependencies
 # NOTE: we skip the autoloader generation here since we don't have all files avaliable (yet)
-RUN --mount=type=cache,id=pixelfed-composer-${PHP_VERSION},sharing=locked,target=/cache/composer \
+RUN --mount=type=cache,id=pixelfed-composer-${PHP_VERSION},sharing=locked,uid=${RUNTIME_UID},gid=${RUNTIME_GID},target=/cache/composer \
     --mount=type=bind,source=composer.json,target=/var/www/composer.json \
     --mount=type=bind,source=composer.lock,target=/var/www/composer.lock \
     set -ex \
-    && composer install --prefer-dist --no-autoloader --ignore-platform-reqs
+    && composer install --prefer-dist --no-autoloader --ignore-platform-reqs --no-scripts
 
 # Copy all other files over
 COPY --chown=${RUNTIME_UID}:${RUNTIME_GID} . /var/www/
+
+# Generate optimized autoloader now that we have all files around
+RUN set -ex \
+    && ENABLE_CONFIG_CACHE=false composer dump-autoload --optimize
+
+# Now we can run the post-install scripts
+RUN set -ex \
+    && composer run-script post-update-cmd
 
 #######################################################
 # Runtime: base
@@ -285,13 +295,6 @@ COPY --link --from=gomplate-image /usr/local/bin/gomplate /usr/local/bin/gomplat
 COPY --link --from=composer-image /usr/bin/composer /usr/bin/composer
 COPY --link --from=composer-and-src --chown=${RUNTIME_UID}:${RUNTIME_GID} /var/www /var/www
 COPY --link --from=frontend-build --chown=${RUNTIME_UID}:${RUNTIME_GID} /var/www/public /var/www/public
-
-#! Changing user to runtime user
-USER ${RUNTIME_UID}:${RUNTIME_GID}
-
-# Generate optimized autoloader now that we have all files around
-RUN set -ex \
-    && ENABLE_CONFIG_CACHE=false composer dump-autoload --optimize
 
 USER root
 

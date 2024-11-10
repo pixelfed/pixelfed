@@ -45,8 +45,6 @@
     import Hls from 'hls.js';
     import "plyr/dist/plyr.css";
     import Plyr from 'plyr';
-    import { p2pml } from '@peertube/p2p-media-loader-core'
-    import { Engine, initHlsJsPlayer } from '@peertube/p2p-media-loader-hlsjs'
 
     export default {
         props: ['status', 'fixedHeight'],
@@ -72,8 +70,8 @@
         methods: {
             handleShouldPlay(){
                 this.shouldPlay = true;
-                this.isHlsSupported = this.hlsConfig.enabled && Hls.isSupported();
-                this.isP2PSupported = this.hlsConfig.enabled && this.hlsConfig.p2p && Engine.isSupported();
+                this.isHlsSupported = false;
+                this.isP2PSupported = false;
                 this.$nextTick(() => {
                     this.init();
                 })

@@ -121,7 +121,8 @@ class StatusController extends Controller
             ! $status ||
             ! isset($status['account'], $status['account']['id'], $status['local']) ||
             ! $status['local'] ||
-            strtolower($status['account']['username']) !== strtolower($username)
+            strtolower($status['account']['username']) !== strtolower($username) ||
+            isset($status['account']['moved'], $status['account']['moved']['id'])
         ) {
             $content = view('status.embed-removed');
 
@@ -220,10 +221,7 @@ class StatusController extends Controller
         return view('status.compose');
     }
 
-    public function store(Request $request)
-    {
-
-    }
+    public function store(Request $request) {}
 
     public function delete(Request $request)
     {
@@ -307,6 +305,8 @@ class StatusController extends Controller
         $profile = $user->profile;
         $status = Status::whereScope('public')
             ->findOrFail($request->input('item'));
+        $statusAccount = AccountService::get($status->profile_id);
+        abort_if(! $statusAccount || isset($statusAccount['moved'], $statusAccount['moved']['id']), 422, 'Account moved');
 
         $count = $status->reblogs_count;
 
@@ -323,7 +323,7 @@ class StatusController extends Controller
                 $count--;
             }
         } else {
-            $share = new Status();
+            $share = new Status;
             $share->profile_id = $profile->id;
             $share->reblog_of_id = $status->id;
             $share->in_reply_to_profile_id = $status->profile_id;
@@ -352,8 +352,8 @@ class StatusController extends Controller
 
         return Cache::remember($key, 3600, function () use ($status) {
             $status = Status::findOrFail($status['id']);
-            $object = $status->type == 'poll' ? new Question() : new Note();
-            $fractal = new Fractal\Manager();
+            $object = $status->type == 'poll' ? new Question : new Note;
+            $fractal = new Fractal\Manager;
             $resource = new Fractal\Resource\Item($status, $object);
             $res = $fractal->createData($resource)->toArray();
 

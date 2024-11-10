@@ -70,6 +70,8 @@ class PronounService {
 			'her',
 			'hers',
 			'hir',
+            'it',
+            'its',
 			'mer',
 			'mers',
 			'ne',

@@ -302,53 +302,6 @@
 								v-on:likeStatus="likeStatus" />
 
 						<comment-feed :status="status" class="mt-3" />
-						<!-- <div v-if="user.hasOwnProperty('id')" class="card card-body shadow-none border border-top-0 bg-light">
-								<div class="media">
-									<img src="/storage/avatars/default.png" class="rounded-circle mr-2" width="40" height="40">
-									<div class="media-body">
-											<div class="form-group mb-0" style="position:relative;">
-												  <input class="form-control rounded-pill" placeholder="Add a comment..." style="padding-right: 90px;">
-												  <div class="btn btn-primary btn-sm rounded-pill font-weight-bold px-3" style="position:absolute;top: 5px;right:6px;">Post</div>
-											</div>
-									</div>
-								</div>
-						</div>
-
-						<div v-if="user.hasOwnProperty('id')" v-for="(reply, index) in results" :key="'replies:'+index" class="card card-body shadow-none border border-top-0">
-							<div class="media">
-								<img :src="reply.account.avatar" class="rounded-circle border mr-3" width="32px" height="32px">
-									<div class="media-body">
-										<div v-if="reply.sensitive == true">
-											<span class="py-3">
-												<a class="text-dark font-weight-bold mr-3"  style="font-size: 13px;" :href="profileUrl(reply)" v-bind:title="reply.account.username">{{trimCaption(reply.account.username,15)}}</a>
-												<span class="text-break" style="font-size: 13px;">
-													<span class="font-italic text-muted">This comment may contain sensitive material</span>
-													<span class="text-primary cursor-pointer pl-1" @click="reply.sensitive = false;">Show</span>
-												</span>
-											</span>
-										</div>
-										<div v-else>
-											<p class="d-flex justify-content-between align-items-top read-more mb-0" style="overflow-y: hidden;">
-												<span class="mr-3" style="font-size: 13px;">
-													<a class="text-dark font-weight-bold mr-1 text-break" :href="profileUrl(reply)" v-bind:title="reply.account.username">{{trimCaption(reply.account.username,15)}}</a>
-													<span class="text-break comment-body" style="word-break: break-all;" v-html="reply.content"></span>
-												</span>
-												<span class="text-right" style="min-width: 30px;">
-													<span v-on:click="likeReply(reply, $event)"><i v-bind:class="[reply.favourited ? 'fas fa-heart fa-sm text-danger':'far fa-heart fa-sm text-lighter']"></i></span>
-													<span class="pl-2 text-lighter cursor-pointer" @click="ctxMenu(reply)">
-														<span class="fas fa-ellipsis-v text-lighter"></span>
-													</span>
-												</span>
-											</p>
-											<p class="mb-0">
-												<a v-once class="text-muted mr-3 text-decoration-none small" style="width: 20px;" v-text="timeAgo(reply.created_at)" :href="getStatusUrl(reply)"></a>
-												<span v-if="reply.favourites_count" class="text-muted comment-reaction font-weight-bold mr-3 small">{{reply.favourites_count == 1 ? '1 like' : reply.favourites_count + ' likes'}}</span>
-												<span class="small text-muted comment-reaction font-weight-bold cursor-pointer" v-on:click="replyFocus(reply, index, true)">Reply</span>
-											</p>
-										</div>
-									</div>
-							</div>
-						</div> -->
 					</div>
 				</div>
 			</div>
@@ -660,85 +613,85 @@ export default {
 		},
 
 		data() {
-				return {
-						config: window.App.config,
-						status: false,
-						media: {},
-						user: false,
-						reactions: {
-							liked: false,
-							shared: false
-						},
-						likes: [],
-						likesCursor: null,
-						likesCanLoadMore: true,
-						likedLoaded: false,
-						shares: [],
-						lightboxMedia: false,
-						replyText: '',
-						replyStatus: {},
-						replySensitive: false,
-						relationship: {},
-						results: [],
-						pagination: {},
-						min_id: 0,
-						max_id: 0,
-						reply_to_profile_id: 0,
-						thread: false,
-						showComments: false,
-						warning: false,
-						loaded: false,
-						loading: null,
-						replyingToId: this.statusId,
-						replyingToUsername: this.statusUsername,
-						replyToIndex: 0,
-						replySending: false,
-						emoji: window.App.util.emoji,
-						showReadMore: true,
-						showCaption: true,
-						ctxEmbedPayload: false,
-						copiedEmbed: false,
-						ctxEmbedShowCaption: true,
-						ctxEmbedShowLikes: false,
-						ctxEmbedCompactMode: false,
-						layout: this.profileLayout,
-						showProfileMorePosts: false,
-						profileMorePosts: [],
-						reactionBarLoading: true,
-						tributeSettings: {
-							collection: [
-								{
-									trigger: '@',
-									menuShowMinLength: 2,
-									values: (function (text, cb) {
-										let url = '/api/compose/v0/search/mention';
-										axios.get(url, { params: { q: text }})
-										.then(res => {
-											cb(res.data);
-										})
-										.catch(err => {
-											console.log(err);
-										})
+			return {
+					config: window.App.config,
+					status: false,
+					media: {},
+					user: false,
+					reactions: {
+						liked: false,
+						shared: false
+					},
+					likes: [],
+					likesCursor: null,
+					likesCanLoadMore: true,
+					likedLoaded: false,
+					shares: [],
+					lightboxMedia: false,
+					replyText: '',
+					replyStatus: {},
+					replySensitive: false,
+					relationship: {},
+					results: [],
+					pagination: {},
+					min_id: 0,
+					max_id: 0,
+					reply_to_profile_id: 0,
+					thread: false,
+					showComments: false,
+					warning: false,
+					loaded: false,
+					loading: null,
+					replyingToId: this.statusId,
+					replyingToUsername: this.statusUsername,
+					replyToIndex: 0,
+					replySending: false,
+					emoji: window.App.util.emoji,
+					showReadMore: true,
+					showCaption: true,
+					ctxEmbedPayload: false,
+					copiedEmbed: false,
+					ctxEmbedShowCaption: true,
+					ctxEmbedShowLikes: false,
+					ctxEmbedCompactMode: false,
+					layout: this.profileLayout,
+					showProfileMorePosts: false,
+					profileMorePosts: [],
+					reactionBarLoading: true,
+					tributeSettings: {
+						collection: [
+							{
+								trigger: '@',
+								menuShowMinLength: 2,
+								values: (function (text, cb) {
+									let url = '/api/compose/v0/search/mention';
+									axios.get(url, { params: { q: text }})
+									.then(res => {
+										cb(res.data);
 									})
-								},
-								{
-									trigger: '#',
-									menuShowMinLength: 2,
-									values: (function (text, cb) {
-										let url = '/api/compose/v0/search/hashtag';
-										axios.get(url, { params: { q: text }})
-										.then(res => {
-											cb(res.data);
-										})
-										.catch(err => {
-											console.log(err);
-										})
+									.catch(err => {
+										console.log(err);
 									})
-								}
-							]
-						},
-						content: undefined
-					}
+								})
+							},
+							{
+								trigger: '#',
+								menuShowMinLength: 2,
+								values: (function (text, cb) {
+									let url = '/api/compose/v0/search/hashtag';
+									axios.get(url, { params: { q: text }})
+									.then(res => {
+										cb(res.data);
+									})
+									.catch(err => {
+										console.log(err);
+									})
+								})
+							}
+						]
+					},
+					content: undefined
+			}
 		},
 		watch: {
 			ctxEmbedShowCaption: function (n,o) {
@@ -1424,7 +1377,15 @@ export default {
 			},
 
 			previewUrl(status) {
-				return status.sensitive ? '/storage/no-preview.png?v=' + new Date().getTime() : status.media_attachments[0].preview_url;
+                if(status.sensitive) {
+                    return '/storage/no-preview.png';
+                }
+
+                if(status.media_attachments[0]?.optimized_url) {
+                    return status.media_attachments[0]?.optimized_url;
+                }
+
+				return status.media_attachments[0].preview_url;
 			},
 
 			previewBackground(status) {

@@ -29,6 +29,11 @@ Vue.component(
 );
 
 Vue.component(
+    'profile-carousel',
+    require('./../components/ProfileCarousel.vue').default
+);
+
+Vue.component(
     'profile',
     require('./components/Profile.vue').default
 );

@@ -90,7 +90,10 @@ return [
         'redis:story' => 30,
         'redis:mmo' => 30,
         'redis:intbg' => 30,
+        'redis:adelete' => 30,
         'redis:groups' => 30,
+        'redis:move' => 30,
+        'redis:pushnotify' => 30,
     ],
 
     /*
@@ -174,7 +177,7 @@ return [
         'production' => [
             'supervisor-1' => [
                 'connection'    => 'redis',
-                'queue'         => ['high', 'default', 'follow', 'shared', 'inbox', 'feed', 'low', 'story', 'delete', 'mmo', 'intbg', 'groups'],
+                'queue'         => ['high', 'default', 'follow', 'shared', 'inbox', 'feed', 'low', 'story', 'delete', 'mmo', 'intbg', 'groups', 'adelete', 'move', 'pushnotify'],
                 'balance'       => env('HORIZON_BALANCE_STRATEGY', 'auto'),
                 'minProcesses'  => env('HORIZON_MIN_PROCESSES', 1),
                 'maxProcesses'  => env('HORIZON_MAX_PROCESSES', 20),
@@ -188,7 +191,7 @@ return [
         'local' => [
             'supervisor-1' => [
                 'connection'    => 'redis',
-                'queue'         => ['high', 'default', 'follow', 'shared', 'inbox', 'feed', 'low', 'story', 'delete', 'mmo', 'intbg', 'groups'],
+                'queue'         => ['high', 'default', 'follow', 'shared', 'inbox', 'feed', 'low', 'story', 'delete', 'mmo', 'intbg', 'groups', 'adelete', 'move', 'pushnotify'],
                 'balance'       => 'auto',
                 'minProcesses' => 1,
                 'maxProcesses'  => 20,

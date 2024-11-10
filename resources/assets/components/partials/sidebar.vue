@@ -132,12 +132,12 @@
 					</router-link>
 				</li>
 
-				<!-- <li class="nav-item">
-					<router-link class="nav-link" to="/i/web/groups">
+				<li v-if="hasGroups" class="nav-item">
+					<router-link class="nav-link" to="/groups/feed">
 						<span class="icon text-lighter"><i class="far fa-layer-group"></i></span>
 						{{ $t('navmenu.groups') }}
 					</router-link>
-				</li> -->
+				</li>
 
 				<li v-if="hasLiveStreams" class="nav-item">
 					<router-link class="nav-link d-flex justify-content-between align-items-center" to="/i/web/livestreams">
@@ -426,25 +426,20 @@
 				hasNetworkTimeline: false,
 				hasLiveStreams: false,
                 hasStories: false,
+                hasGroups: false,
 			}
 		},
 
 		mounted() {
 			if(window.App.config.features.hasOwnProperty('timelines')) {
 				this.hasLocalTimeline = App.config.features.timelines.local;
-				this.hasNetworkTimeline = App.config.features.timelines.network;
+                this.hasNetworkTimeline = App.config.features.timelines.network;
+				this.hasGroups = App.config.features.groups;
 				//this.hasLiveStreams = App.config.ab.hls == true;
 			}
             if(window.App.config.features.hasOwnProperty('stories')) {
                 this.hasStories = App.config.features.stories;
             }
-			// if(!this.user.username) {
-			// 	this.user = window._sharedData.user;
-			// }
-			// setTimeout(() => {
-			// 	this.user = window._sharedData.curUser;
-			// 	this.loaded = true;
-			// }, 300);
 		},
 
 		methods: {

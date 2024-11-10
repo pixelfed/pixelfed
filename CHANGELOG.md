@@ -3,6 +3,44 @@
 ## [Unreleased](https://github.com/pixelfed/pixelfed/compare/v0.12.3...dev)
 -  ([](https://github.com/pixelfed/pixelfed/commit/))
 
+## [v0.12.4 (2024-11-08)](https://github.com/pixelfed/pixelfed/compare/v0.12.4...dev)
+
+### Added
+- Implement Admin Domain Blocks API (Mastodon API Compatible) [ThisIsMissEm](https://github.com/ThisIsMissEm) ([#5021](https://github.com/pixelfed/pixelfed/pull/5021))
+- Authorize Interaction support (for handling remote interactions) ([4ca7c6c3](https://github.com/pixelfed/pixelfed/commit/4ca7c6c3))
+- Contact Form Admin Responses ([52cc6090](https://github.com/pixelfed/pixelfed/commit/52cc6090))
+- Profile Carousels ([8af77a3f](https://github.com/pixelfed/pixelfed/commit/8af77a3f))
+- Moderated Profiles ([39f16321](https://github.com/pixelfed/pixelfed/commit/39f16321))
+
+### Federation
+- Add ActiveSharedInboxService, for efficient sharedInbox caching ([1a6a3397](https://github.com/pixelfed/pixelfed/commit/1a6a3397))
+- Add MovePipeline queue jobs ([9904d05f](https://github.com/pixelfed/pixelfed/commit/9904d05f))
+- Add ActivityPub Move validator ([909a6c72](https://github.com/pixelfed/pixelfed/commit/909a6c72))
+- Add delay to move handler to allow for remote cache invalidation ([8a362c12](https://github.com/pixelfed/pixelfed/commit/8a362c12))
+
+### Updates
+- Update ApiV1Controller, add support for notification filter types ([f61159a1](https://github.com/pixelfed/pixelfed/commit/f61159a1))
+- Update ApiV1Dot1Controller, fix mutual api ([a8bb97b2](https://github.com/pixelfed/pixelfed/commit/a8bb97b2))
+- Update ApiV1Controller, fix /api/v1/favourits pagination ([72f68160](https://github.com/pixelfed/pixelfed/commit/72f68160))
+- Update RegisterController, update username constraints, require atleast one alpha char ([dd6e3cc2](https://github.com/pixelfed/pixelfed/commit/dd6e3cc2))
+- Update AdminUser, fix entity casting ([cb5620d4](https://github.com/pixelfed/pixelfed/commit/cb5620d4))
+- Update instance config, update network cache feed max_hours_old falloff to 90 days instead of 6 hours to allow for less active instances to have more results ([c042d135](https://github.com/pixelfed/pixelfed/commit/c042d135))
+- Update ApiV1Dot1Controller, add new single media status create endpoint ([b03f5cec](https://github.com/pixelfed/pixelfed/commit/b03f5cec))
+- Update AdminSettings component, add link to Custom CSS settings ([958daac4](https://github.com/pixelfed/pixelfed/commit/958daac4))
+- Update ApiV1Controller, fix v1/instance stats, force cast to int ([dcd95d68](https://github.com/pixelfed/pixelfed/commit/dcd95d68))
+- Update BeagleService, disable discovery if AP is disabled ([6cd1cbb4](https://github.com/pixelfed/pixelfed/commit/6cd1cbb4))
+- Update NodeinfoService, fix typo ([edad436d](https://github.com/pixelfed/pixelfed/commit/edad436d))
+- Update ActivityPubFetchService, reduce cache ttl from 1 hour to 7.5 mins and add uncached fetchRequest method ([21da2b64](https://github.com/pixelfed/pixelfed/commit/21da2b64))
+- Update UserAccountDelete command, increase sharedInbox ttl from 12h to 14d ([be02f48a](https://github.com/pixelfed/pixelfed/commit/be02f48a))
+- Update HttpSignature, add signRaw method and improve error checking ([d4cf9181](https://github.com/pixelfed/pixelfed/commit/d4cf9181))
+- Update AP helpers, add forceBanCheck param to validateUrl method ([42424028](https://github.com/pixelfed/pixelfed/commit/42424028))
+- Update layout, add og:logo ([4cc576e1](https://github.com/pixelfed/pixelfed/commit/4cc576e1))
+- Update ReblogService, fix cache sync issues ([3de8ceca](https://github.com/pixelfed/pixelfed/commit/3de8ceca))
+- Update config, allow Beagle discover service to be disabled ([de4ce3c8](https://github.com/pixelfed/pixelfed/commit/de4ce3c8))
+- Update ApiV1Dot1Controller, allow upto 5 similar push tokens ([7820b506](https://github.com/pixelfed/pixelfed/commit/7820b506))
+- Update AdminReports, add missing click handler. Fixes #5332 ([fe48b8ad](https://github.com/pixelfed/pixelfed/commit/fe48b8ad))
+- Improve media filtering by using OffscreenCanvas, if supported ([aea5392](https://github.com/pixelfed/pixelfed/commit/aea5392))
+
 ## [v0.12.3 (2024-07-01)](https://github.com/pixelfed/pixelfed/compare/v0.12.2...v0.12.3)
 
 ### Updates

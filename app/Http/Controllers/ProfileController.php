@@ -33,7 +33,7 @@ class ProfileController extends Controller
         }
 
         // redirect authed users to Metro 2.0
-        if ($request->user()) {
+        if ($request->user() && !$request->filled('carousel')) {
             // unless they force static view
             if (! $request->has('fs') || $request->input('fs') != '1') {
                 $pid = AccountService::usernameToId($username);
@@ -64,6 +64,7 @@ class ProfileController extends Controller
 
     protected function buildProfile(Request $request, $user)
     {
+        $carousel = (bool) $request->filled('carousel');
         $username = $user->username;
         $loggedIn = Auth::check();
         $isPrivate = false;
@@ -97,6 +98,9 @@ class ProfileController extends Controller
                 ],
             ];
 
+            if($carousel) {
+                return view('profile.show_carousel', compact('profile', 'settings'));
+            }
             return view('profile.show', compact('profile', 'settings'));
         } else {
             $key = 'profile:settings:'.$user->id;
@@ -135,7 +139,9 @@ class ProfileController extends Controller
                     'list' => $settings->show_profile_followers,
                 ],
             ];
-
+            if($carousel) {
+                return view('profile.show_carousel', compact('profile', 'settings'));
+            }
             return view('profile.show', compact('profile', 'settings'));
         }
     }

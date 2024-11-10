@@ -64,6 +64,13 @@
                                         />
 
                                         <checkbox
+                                            name="Authorized Fetch Mode"
+                                            :value="features.authorized_fetch"
+                                            description="Strictly enforce domain restrictions by enabling Authorized Fetch mode."
+                                            @change="handleChange($event, 'features', 'authorized_fetch')"
+                                        />
+
+                                        <checkbox
                                             name="Account Migration"
                                             :value="features.account_migration"
                                             description="Allow local accounts to migrate to other local or remote accounts."
@@ -92,6 +99,13 @@
                                             description="Enable users to use the <span class='font-weight-bold'>experimental</span> Instagram Import support."
                                             @change="handleChange($event, 'features', 'instagram_import')"
                                         />
+
+                                        <!-- <checkbox
+                                            name="Allowlist Mode"
+                                            :value="features.activitypub_enabled"
+                                            description="Permit interactions only with instances you specifically authorize, both for sending and receiving."
+                                            @change="handleChange($event, 'features', 'activitypub_enabled')"
+                                        /> -->
 
                                         <checkbox
                                             name="Spam detection"
@@ -154,9 +168,7 @@
                                                 The instance name used in titles, metadata and apis.
                                             </p>
                                         </div>
-                                    </div>
 
-                                    <div class="col-12 col-md-8">
                                         <div class="card shadow-none border card-body">
                                             <div class="form-group mb-1">
                                                 <label for="form-summary" class="font-weight-bold">Short Description</label>
@@ -184,6 +196,11 @@
                                                 Longer description of instance used on about page.
                                             </p>
                                         </div>
+                                    </div>
+                                    <div class="col-12 col-md-4">
+                                        <p>
+                                            <a class="btn btn-dark btn-block" href="/i/admin/settings/custom-css">Edit Custom CSS</a>
+                                        </p>
                                     </div>
                                 </div>
                             </div>
@@ -1268,6 +1285,7 @@
                     stories: this.features.stories,
                     instagram_import: this.features.instagram_import,
                     autospam_enabled: this.features.autospam_enabled,
+                    authorized_fetch: this.features.authorized_fetch,
                 }).then(res => {
                     this.isSubmitting = false;
                     this.isSubmittingTimeout = true;

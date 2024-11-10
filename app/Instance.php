@@ -22,6 +22,13 @@ class Instance extends Model
         'notes'
     ];
 
+    // To get all moderated instances, we need to search where (banned OR unlisted)
+    public function scopeModerated($query): void {
+        $query->where(function ($query) {
+            $query->where('banned', true)->orWhere('unlisted', true);
+        });
+    }
+
     public function profiles()
     {
         return $this->hasMany(Profile::class, 'domain', 'domain');

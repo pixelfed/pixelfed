@@ -7,7 +7,7 @@ jobs:
   build:
     docker:
       # Specify the version you desire here
-      - image: cimg/php:8.2.5
+      - image: cimg/php:8.3.8
 
       # Specify service dependencies here if necessary
       # CircleCI maintains a library of pre-built images

@@ -37,6 +37,7 @@ class AdminSettingsService
             'registration_status' => $regState,
             'cloud_storage' => $cloud_ready && $cloud_storage,
             'activitypub_enabled' => (bool) config_cache('federation.activitypub.enabled'),
+            'authorized_fetch' => (bool) config_cache('federation.activitypub.authorized_fetch'),
             'account_migration' => (bool) config_cache('federation.migration'),
             'mobile_apis' => (bool) config_cache('pixelfed.oauth_enabled'),
             'stories' => (bool) config_cache('instance.stories.enabled'),

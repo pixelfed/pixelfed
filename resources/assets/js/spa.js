@@ -134,7 +134,13 @@ const ChangelogComponent = () => import(/* webpackChunkName: "changelog.bundle" 
 // import SettingsComponent from "./../components/Settings.vue";
 // import ProfileComponent from "./components/ProfileNext.vue";
 // import VideosComponent from "./../components/Videos.vue";
-// import GroupsComponent from "./../components/Groups.vue";
+import GroupsComponent from "./../components/Groups.vue";
+import GroupFeedComponent from "./../components/GroupFeed.vue";
+import GroupDiscoverComponent from "./../components/GroupDiscover.vue";
+import GroupJoinsComponent from "./../components/GroupJoins.vue";
+import GroupNotificationsComponent from "./../components/GroupNotifications.vue";
+import GroupSearchComponent from "./../components/GroupSearch.vue";
+const CreateGroupComponent = () => import(/* webpackChunkName: "group.create" */ "./../components/GroupCreate.vue");
 
 const router = new VueRouter({
 	mode: "history",
@@ -161,12 +167,78 @@ const router = new VueRouter({
 		// 	component: DriveComponent,
 		// 	props: true
 		// },
+		{
+			path: "/groups/feed",
+			name: 'groups',
+			component: GroupFeedComponent,
+		},
+		{
+			path: "/groups/joins",
+			name: 'groupjoins',
+			component: GroupJoinsComponent,
+		},
+		{
+			path: "/groups/discover",
+			name: 'groupdiscover',
+			component: GroupDiscoverComponent,
+			props: true
+		},
+		{
+			path: "/groups/notifications",
+			name: 'groupnotify',
+			component: GroupNotificationsComponent,
+		},
+		{
+			path: "/groups/search",
+			name: 'groupsearch',
+			component: GroupSearchComponent,
+		},
+		{
+			path: "/groups/create",
+			name: 'groupscreate',
+			component: CreateGroupComponent,
+		},
 		// {
 		// 	path: "/i/web/groups",
 		// 	name: 'groups',
 		// 	component: GroupsComponent,
 		// 	props: true
 		// },
+		{
+			path: "/groups/:gid/p/:sid",
+			component: () => import(/* webpackChunkName: "groups-post" */ './../components/GroupPost.vue'),
+			props: true
+		},
+		{
+			path: "/groups/:gid/user/:pid",
+			component: () => import(/* webpackChunkName: "groups-profile" */ './../components/GroupProfile.vue'),
+			props: true
+		},
+		{
+			path: "/groups/:groupId/about",
+			component: () => import(/* webpackChunkName: "groups-page-about" */ './../components/groups/Page/GroupAbout.vue'),
+			props: true
+		},
+		{
+			path: "/groups/:groupId/topics",
+			component: () => import(/* webpackChunkName: "groups-page-topics" */ './../components/groups/Page/GroupTopics.vue'),
+			props: true
+		},
+		{
+			path: "/groups/:groupId/members",
+			component: () => import(/* webpackChunkName: "groups-page-members" */ './../components/groups/Page/GroupMembers.vue'),
+			props: true
+		},
+		{
+			path: "/groups/:groupId/media",
+			component: () => import(/* webpackChunkName: "groups-page-media" */ './../components/groups/Page/GroupMedia.vue'),
+			props: true
+		},
+		{
+			path: "/groups/:groupId",
+			component: () => import(/* webpackChunkName: "groups-page" */ './../components/GroupPage.vue'),
+			props: true
+		},
 		{
 			path: "/i/web/post/:id",
 			name: 'post',
@@ -178,18 +250,18 @@ const router = new VueRouter({
 		// 	component: LivePlayerComponent,
 		// 	props: true
 		// },
-        {
-            path: "/i/web/profile/:id/followers",
-            name: 'profile-followers',
-            component: ProfileFollowersComponent,
-            props: true
-        },
-        {
-            path: "/i/web/profile/:id/following",
-            name: 'profile-following',
-            component: ProfileFollowingComponent,
-            props: true
-        },
+		{
+			path: "/i/web/profile/:id/followers",
+			name: 'profile-followers',
+			component: ProfileFollowersComponent,
+			props: true
+		},
+		{
+			path: "/i/web/profile/:id/following",
+			name: 'profile-following',
+			component: ProfileFollowingComponent,
+			props: true
+		},
 		{
 			path: "/i/web/profile/:id",
 			name: 'profile',

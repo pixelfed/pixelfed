@@ -11,7 +11,6 @@ use Illuminate\Support\Str;
 use League\Fractal;
 use League\Fractal\Serializer\ArraySerializer;
 
-
 class SearchApiV2Service
 {
     private $query;
@@ -119,7 +118,7 @@ class SearchApiV2Service
                 AccountService::get($res['id']);
             })
             ->filter(function ($account) {
-                return $account && isset($account['id']);
+                return $account && isset($account['id']) && ! isset($account['moved'], $account['moved']['id']);
             })
             ->values();
 
@@ -248,7 +247,7 @@ class SearchApiV2Service
 
             if ($sid = Status::whereUri($query)->first()) {
                 $s = StatusService::get($sid->id, false);
-                if (! $s) {
+                if (! $s || isset($s['account']['moved'], $s['account']['moved']['id'])) {
                     return $default;
                 }
                 if (in_array($s['visibility'], ['public', 'unlisted'])) {
@@ -359,7 +358,7 @@ class SearchApiV2Service
             ->whereUsername($query)
             ->first();
 
-        if (! $profile) {
+        if (! $profile || $profile->moved_to_profile_id) {
             return [
                 'accounts' => [],
                 'hashtags' => [],
@@ -367,9 +366,9 @@ class SearchApiV2Service
             ];
         }
 
-        $fractal = new Fractal\Manager();
-        $fractal->setSerializer(new ArraySerializer());
-        $resource = new Fractal\Resource\Item($profile, new AccountTransformer());
+        $fractal = new Fractal\Manager;
+        $fractal->setSerializer(new ArraySerializer);
+        $resource = new Fractal\Resource\Item($profile, new AccountTransformer);
 
         return [
             'accounts' => [$fractal->createData($resource)->toArray()],
@@ -393,9 +392,9 @@ class SearchApiV2Service
             ];
         }
 
-        $fractal = new Fractal\Manager();
-        $fractal->setSerializer(new ArraySerializer());
-        $resource = new Fractal\Resource\Item($profile, new AccountTransformer());
+        $fractal = new Fractal\Manager;
+        $fractal->setSerializer(new ArraySerializer);
+        $resource = new Fractal\Resource\Item($profile, new AccountTransformer);
 
         return [
             'accounts' => [$fractal->createData($resource)->toArray()],

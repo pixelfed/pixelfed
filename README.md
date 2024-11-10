@@ -43,3 +43,10 @@ We would like to extend our thanks to the following sponsors for funding Pixelfe
 - [NLnet Foundation](https://nlnet.nl) and [NGI0
 Discovery](https://nlnet.nl/discovery/), part of the [Next Generation
 Internet](https://ngi.eu) initiative.
+
+<p>This project is supported by:</p>
+<p>
+  <a href="https://www.digitalocean.com/?utm_medium=opensource&utm_source=pixelfed">
+    <img src="https://opensource.nyc3.cdn.digitaloceanspaces.com/attribution/assets/SVG/DO_Logo_horizontal_blue.svg" width="201px">
+  </a>
+</p>

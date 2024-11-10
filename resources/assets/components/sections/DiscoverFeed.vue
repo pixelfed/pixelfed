@@ -1,12 +1,10 @@
 <template>
     <div class="discover-feed-component">
         <section class="mt-3 mb-5 section-explore">
-            <b-breadcrumb class="font-default" :items="breadcrumbItems"></b-breadcrumb>
-
             <div class="profile-timeline">
                 <div class="row p-0 mt-5">
-                    <div class="col-12 mb-4 d-flex justify-content-between align-items-center">
-                        <p class="d-block d-md-none h1 font-weight-bold mb-0 font-default">Trending</p>
+                    <div class="col-12 mb-4 d-flex justify-content-between align-items-center flex-column flex-lg-row">
+                        <p class="d-block d-md-none h1 font-weight-bold mb-3 font-default">Trending</p>
                         <p class="d-none d-md-block display-4 font-weight-bold mb-0 font-default">Trending</p>
 
                         <div>
