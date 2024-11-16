@@ -2469,6 +2469,7 @@ class ApiV1Controller extends Controller
             'max_id' => 'sometimes|integer|min:0|max:'.PHP_INT_MAX,
             'limit' => 'sometimes|integer|min:1',
             'include_reblogs' => 'sometimes',
+            'photos_reblogs_only' => 'sometimes',
         ]);
 
         $napi = $request->has(self::PF_API_ENTITY_KEY);
@@ -2481,12 +2482,10 @@ class ApiV1Controller extends Controller
         }
         $pid = $request->user()->profile_id;
         $includeReblogs = $request->filled('include_reblogs') ? $request->boolean('include_reblogs') : false;
-        $nullFields = $includeReblogs ?
-        ['in_reply_to_id'] :
-        ['in_reply_to_id', 'reblog_of_id'];
-        $inTypes = $includeReblogs ?
-        ['photo', 'photo:album', 'video', 'video:album', 'photo:video:album', 'share'] :
-        ['photo', 'photo:album', 'video', 'video:album', 'photo:video:album'];
+        $PhotosReblogsOnly = $request->filled('photos_reblogs_only') ? $request->boolean('photos_reblogs_only') : true;
+        $nullFields = $includeReblogs ? ['statuses.in_reply_to_id'] : ['statuses.in_reply_to_id', 'statuses.reblog_of_id'];
+        $inTypesStrict = ['photo', 'photo:album', 'video', 'video:album', 'photo:video:album'];
+        $inTypes = $includeReblogs ? [...$inTypesStrict, 'share'] : $inTypesStrict;
         AccountService::setLastActive($request->user()->id);
 
         if (config('exp.cached_home_timeline')) {
@@ -2578,118 +2577,76 @@ class ApiV1Controller extends Controller
             $following = array_diff($following, $muted);
         }
 
+        $query = Status::select(
+            'statuses.id as id',
+            'statuses.profile_id as profile_id',
+            'statuses.type as type',
+            'statuses.visibility as visibility',
+            'statuses.in_reply_to_id as in_reply_to_id',
+            'statuses.reblog_of_id as reblog_of_id',
+            'reblog.type as reblog_type'
+        );
+
         if ($min || $max) {
             $dir = $min ? '>' : '<';
             $id = $min ?? $max;
-            $res = Status::select(
-                'id',
-                'profile_id',
-                'type',
-                'visibility',
-                'in_reply_to_id',
-                'reblog_of_id'
-            )
-                ->where('id', $dir, $id)
-                ->whereNull($nullFields)
-                ->whereIntegerInRaw('profile_id', $following)
-                ->whereIn('type', $inTypes)
-                ->whereIn('visibility', ['public', 'unlisted', 'private'])
-                ->orderByDesc('id')
-                ->take(($limit * 2))
-                ->get()
-                ->map(function ($s) use ($pid, $napi) {
-                    try {
-                        $account = $napi ? AccountService::get($s['profile_id'], true) : AccountService::getMastodon($s['profile_id'], true);
-                        if (! $account) {
-                            return false;
-                        }
-                        $status = $napi ? StatusService::get($s['id'], false) : StatusService::getMastodon($s['id'], false);
-                        if (! $status || ! isset($status['account']) || ! isset($status['account']['id'])) {
-                            return false;
-                        }
-                    } catch (\Exception $e) {
-                        return false;
-                    }
-
-                    $status['account'] = $account;
-
-                    if ($pid) {
-                        $status['favourited'] = (bool) LikeService::liked($pid, $s['id']);
-                        $status['reblogged'] = (bool) ReblogService::get($pid, $status['id']);
-                        $status['bookmarked'] = (bool) BookmarkService::get($pid, $status['id']);
-                    }
-
-                    return $status;
-                })
-                ->filter(function ($status) {
-                    return $status && isset($status['account']);
-                })
-                ->map(function ($status) use ($pid) {
-                    if (! empty($status['reblog'])) {
-                        $status['reblog']['favourited'] = (bool) LikeService::liked($pid, $status['reblog']['id']);
-                        $status['reblog']['reblogged'] = (bool) ReblogService::get($pid, $status['reblog']['id']);
-                        $status['bookmarked'] = (bool) BookmarkService::get($pid, $status['id']);
-                    }
-
-                    return $status;
-                })
-                ->take($limit)
-                ->values();
-        } else {
-            $res = Status::select(
-                'id',
-                'profile_id',
-                'type',
-                'visibility',
-                'in_reply_to_id',
-                'reblog_of_id',
-            )
-                ->whereNull($nullFields)
-                ->whereIntegerInRaw('profile_id', $following)
-                ->whereIn('type', $inTypes)
-                ->whereIn('visibility', ['public', 'unlisted', 'private'])
-                ->orderByDesc('id')
-                ->take(($limit * 2))
-                ->get()
-                ->map(function ($s) use ($pid, $napi) {
-                    try {
-                        $account = $napi ? AccountService::get($s['profile_id'], true) : AccountService::getMastodon($s['profile_id'], true);
-                        if (! $account) {
-                            return false;
-                        }
-                        $status = $napi ? StatusService::get($s['id'], false) : StatusService::getMastodon($s['id'], false);
-                        if (! $status || ! isset($status['account']) || ! isset($status['account']['id'])) {
-                            return false;
-                        }
-                    } catch (\Exception $e) {
-                        return false;
-                    }
-
-                    $status['account'] = $account;
-
-                    if ($pid) {
-                        $status['favourited'] = (bool) LikeService::liked($pid, $s['id']);
-                        $status['reblogged'] = (bool) ReblogService::get($pid, $status['id']);
-                        $status['bookmarked'] = (bool) BookmarkService::get($pid, $status['id']);
-                    }
-
-                    return $status;
-                })
-                ->filter(function ($status) {
-                    return $status && isset($status['account']);
-                })
-                ->map(function ($status) use ($pid) {
-                    if (! empty($status['reblog'])) {
-                        $status['reblog']['favourited'] = (bool) LikeService::liked($pid, $status['reblog']['id']);
-                        $status['reblog']['reblogged'] = (bool) ReblogService::get($pid, $status['reblog']['id']);
-                        $status['bookmarked'] = (bool) BookmarkService::get($pid, $status['id']);
-                    }
-
-                    return $status;
-                })
-                ->take($limit)
-                ->values();
+            $query = $query->where('statuses.id', $dir, $id);
         }
+
+        $query = $query->whereNull($nullFields)
+            ->whereIntegerInRaw('statuses.profile_id', $following)
+            ->whereIn('statuses.type', $inTypes)
+            ->whereIn('statuses.visibility', ['public', 'unlisted', 'private'])
+            ->leftJoin('statuses as reblog','reblog.id', '=', 'statuses.reblog_of_id');
+
+        if ($PhotosReblogsOnly) {
+            $query = $query->where(function ($query) use ($inTypesStrict) {
+                    $query->whereNull('statuses.reblog_of_id')
+                        ->orWhereIn('reblog.type', $inTypesStrict);
+                });
+        }
+
+        $res = $query->orderByDesc('id')
+            ->take(($limit * 2))
+            ->get()
+            ->map(function ($s) use ($pid, $napi) {
+                try {
+                    $account = $napi ? AccountService::get($s['profile_id'], true) : AccountService::getMastodon($s['profile_id'], true);
+                    if (! $account) {
+                        return false;
+                    }
+                    $status = $napi ? StatusService::get($s['id'], false) : StatusService::getMastodon($s['id'], false);
+                    if (! $status || ! isset($status['account']) || ! isset($status['account']['id'])) {
+                        return false;
+                    }
+                } catch (\Exception $e) {
+                    return false;
+                }
+
+                $status['account'] = $account;
+
+                if ($pid) {
+                    $status['favourited'] = (bool) LikeService::liked($pid, $s['id']);
+                    $status['reblogged'] = (bool) ReblogService::get($pid, $status['id']);
+                    $status['bookmarked'] = (bool) BookmarkService::get($pid, $status['id']);
+                }
+
+                return $status;
+            })
+            ->filter(function ($status) {
+                return $status && isset($status['account']);
+            })
+            ->map(function ($status) use ($pid) {
+                if (! empty($status['reblog'])) {
+                    $status['reblog']['favourited'] = (bool) LikeService::liked($pid, $status['reblog']['id']);
+                    $status['reblog']['reblogged'] = (bool) ReblogService::get($pid, $status['reblog']['id']);
+                    $status['bookmarked'] = (bool) BookmarkService::get($pid, $status['id']);
+                }
+
+                return $status;
+            })
+            ->take($limit)
+            ->values();
 
         $baseUrl = config('app.url').'/api/v1/timelines/home?limit='.$limit.'&';
         $minId = $res->map(function ($s) {
