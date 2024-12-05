@@ -8,12 +8,12 @@ use App\Services\StatusService;
 use App\Status;
 use App\Transformer\Api\StatusTransformer;
 use App\UserFilter;
-use App\Util\Lexer\Autolink;
 use Auth;
 use DB;
 use Illuminate\Http\Request;
 use League\Fractal;
 use League\Fractal\Serializer\ArraySerializer;
+use Purify;
 
 class CommentController extends Controller
 {
@@ -56,12 +56,10 @@ class CommentController extends Controller
 
         $reply = DB::transaction(function () use ($comment, $status, $profile, $nsfw) {
             $scope = $profile->is_private == true ? 'private' : 'public';
-            $autolink = Autolink::create()->autolink($comment);
-            $reply = new Status();
+            $reply = new Status;
             $reply->profile_id = $profile->id;
             $reply->is_nsfw = $nsfw;
-            $reply->caption = e($comment);
-            $reply->rendered = $autolink;
+            $reply->caption = Purify::clean($comment);
             $reply->in_reply_to_id = $status->id;
             $reply->in_reply_to_profile_id = $status->profile_id;
             $reply->scope = $scope;
@@ -76,9 +74,9 @@ class CommentController extends Controller
         CommentPipeline::dispatch($status, $reply);
 
         if ($request->ajax()) {
-            $fractal = new Fractal\Manager();
-            $fractal->setSerializer(new ArraySerializer());
-            $entity = new Fractal\Resource\Item($reply, new StatusTransformer());
+            $fractal = new Fractal\Manager;
+            $fractal->setSerializer(new ArraySerializer);
+            $entity = new Fractal\Resource\Item($reply, new StatusTransformer);
             $entity = $fractal->createData($entity)->toArray();
             $response = [
                 'code' => 200,

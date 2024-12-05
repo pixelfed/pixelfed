@@ -22,6 +22,7 @@ use App\Services\WebfingerService;
 use App\Status;
 use App\UserFilter;
 use App\Util\ActivityPub\Helpers;
+use App\Util\Lexer\Autolink;
 use Illuminate\Http\Request;
 use Illuminate\Support\Str;
 
@@ -326,7 +327,6 @@ class DirectMessageController extends Controller
         $status = new Status;
         $status->profile_id = $profile->id;
         $status->caption = $msg;
-        $status->rendered = $msg;
         $status->visibility = 'direct';
         $status->scope = 'direct';
         $status->in_reply_to_profile_id = $recipient->id;
@@ -372,7 +372,7 @@ class DirectMessageController extends Controller
             ->exists();
 
         if ($recipient->domain == null && $hidden == false && ! $nf) {
-            $notification = new Notification();
+            $notification = new Notification;
             $notification->profile_id = $recipient->id;
             $notification->actor_id = $profile->id;
             $notification->action = 'dm';
@@ -405,6 +405,8 @@ class DirectMessageController extends Controller
     {
         $this->validate($request, [
             'pid' => 'required',
+            'max_id' => 'sometimes|integer',
+            'min_id' => 'sometimes|integer',
         ]);
         $user = $request->user();
         abort_if($user->has_roles && ! UserRoleService::can('can-direct-message', $user->id), 403, 'Invalid permissions for this action');
@@ -419,29 +421,33 @@ class DirectMessageController extends Controller
         if ($min_id) {
             $res = DirectMessage::select('*')
                 ->where('id', '>', $min_id)
-                ->where(function ($q) use ($pid, $uid) {
-                    return $q->where([['from_id', $pid], ['to_id', $uid],
-                    ])->orWhere([['from_id', $uid], ['to_id', $pid]]);
+                ->where(function ($query) use ($pid, $uid) {
+                    $query->where('from_id', $pid)->where('to_id', $uid);
+                })->orWhere(function ($query) use ($pid, $uid) {
+                    $query->where('from_id', $uid)->where('to_id', $pid);
                 })
-                ->latest()
+                ->orderBy('id', 'asc')
                 ->take(8)
-                ->get();
+                ->get()
+                ->reverse();
         } elseif ($max_id) {
             $res = DirectMessage::select('*')
                 ->where('id', '<', $max_id)
-                ->where(function ($q) use ($pid, $uid) {
-                    return $q->where([['from_id', $pid], ['to_id', $uid],
-                    ])->orWhere([['from_id', $uid], ['to_id', $pid]]);
+                ->where(function ($query) use ($pid, $uid) {
+                    $query->where('from_id', $pid)->where('to_id', $uid);
+                })->orWhere(function ($query) use ($pid, $uid) {
+                    $query->where('from_id', $uid)->where('to_id', $pid);
                 })
-                ->latest()
+                ->orderBy('id', 'desc')
                 ->take(8)
                 ->get();
         } else {
-            $res = DirectMessage::where(function ($q) use ($pid, $uid) {
-                return $q->where([['from_id', $pid], ['to_id', $uid],
-                ])->orWhere([['from_id', $uid], ['to_id', $pid]]);
+            $res = DirectMessage::where(function ($query) use ($pid, $uid) {
+                $query->where('from_id', $pid)->where('to_id', $uid);
+            })->orWhere(function ($query) use ($pid, $uid) {
+                $query->where('from_id', $uid)->where('to_id', $pid);
             })
-                ->latest()
+                ->orderBy('id', 'desc')
                 ->take(8)
                 ->get();
         }
@@ -630,13 +636,12 @@ class DirectMessageController extends Controller
         $status = new Status;
         $status->profile_id = $profile->id;
         $status->caption = null;
-        $status->rendered = null;
         $status->visibility = 'direct';
         $status->scope = 'direct';
         $status->in_reply_to_profile_id = $recipient->id;
         $status->save();
 
-        $media = new Media();
+        $media = new Media;
         $media->status_id = $status->id;
         $media->profile_id = $profile->id;
         $media->user_id = $user->id;
@@ -824,6 +829,11 @@ class DirectMessageController extends Controller
     {
         $profile = $dm->author;
         $url = $dm->recipient->sharedInbox ?? $dm->recipient->inbox_url;
+        $status = $dm->status;
+
+        if (! $status) {
+            return;
+        }
 
         $tags = [
             [
@@ -832,6 +842,8 @@ class DirectMessageController extends Controller
                 'name' => $dm->recipient->emailUrl(),
             ],
         ];
+
+        $content = $status->caption ? Autolink::create()->autolink($status->caption) : null;
 
         $body = [
             '@context' => [
@@ -848,7 +860,7 @@ class DirectMessageController extends Controller
                 'id' => $dm->status->url(),
                 'type' => 'Note',
                 'summary' => null,
-                'content' => $dm->status->rendered ?? $dm->status->caption,
+                'content' => $content,
                 'inReplyTo' => null,
                 'published' => $dm->status->created_at->toAtomString(),
                 'url' => $dm->status->url(),

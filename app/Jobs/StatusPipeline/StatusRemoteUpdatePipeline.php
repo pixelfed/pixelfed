@@ -120,8 +120,7 @@ class StatusRemoteUpdatePipeline implements ShouldQueue
     protected function updateImmediateAttributes($status, $activity)
     {
         if (isset($activity['content'])) {
-            $status->caption = strip_tags($activity['content']);
-            $status->rendered = Purify::clean($activity['content']);
+            $status->caption = strip_tags(Purify::clean($activity['content']));
         }
 
         if (isset($activity['sensitive'])) {

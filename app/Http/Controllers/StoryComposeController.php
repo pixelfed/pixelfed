@@ -54,7 +54,7 @@ class StoryComposeController extends Controller
         $photo = $request->file('file');
         $path = $this->storePhoto($photo, $user);
 
-        $story = new Story();
+        $story = new Story;
         $story->duration = 3;
         $story->profile_id = $user->profile_id;
         $story->type = Str::endsWith($photo->getMimeType(), 'mp4') ? 'video' : 'photo';
@@ -403,7 +403,6 @@ class StoryComposeController extends Controller
         $status->profile_id = $pid;
         $status->type = 'story:reaction';
         $status->caption = $text;
-        $status->rendered = $text;
         $status->scope = 'direct';
         $status->visibility = 'direct';
         $status->in_reply_to_profile_id = $story->profile_id;
@@ -477,7 +476,6 @@ class StoryComposeController extends Controller
         $status->type = 'story:reply';
         $status->profile_id = $pid;
         $status->caption = $text;
-        $status->rendered = $text;
         $status->scope = 'direct';
         $status->visibility = 'direct';
         $status->in_reply_to_profile_id = $story->profile_id;

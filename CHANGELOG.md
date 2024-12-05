@@ -1,6 +1,14 @@
 # Release Notes
 
 ## [Unreleased](https://github.com/pixelfed/pixelfed/compare/v0.12.3...dev)
+
+### Updates
+- Update AP helpers, reject statuses with invalid dates ([960f3849](https://github.com/pixelfed/pixelfed/commit/960f3849))
+- Update DirectMessage API, fix broken threading ([044d410c](https://github.com/pixelfed/pixelfed/commit/044d410c))
+- Update Status caption render logic ([fb8dbb95](https://github.com/pixelfed/pixelfed/commit/fb8dbb95))
+- Update ApiV1Controller, fix bookmark bug. Closes #5216 ([9f7cc52c](https://github.com/pixelfed/pixelfed/commit/9f7cc52c))
+- Update Status caption logic, stop storing duplicate html caption in db and defer to cached StatusService rendering ([9eeb7b67](https://github.com/pixelfed/pixelfed/commit/9eeb7b67))
+- Update AutolinkService, optimize lookups ([eac2c196](https://github.com/pixelfed/pixelfed/commit/eac2c196))
 -  ([](https://github.com/pixelfed/pixelfed/commit/))
 
 ## [v0.12.4 (2024-11-08)](https://github.com/pixelfed/pixelfed/compare/v0.12.4...dev)

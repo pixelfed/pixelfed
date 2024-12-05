@@ -308,46 +308,6 @@ class Status extends Model
 		return $this->comments()->orderBy('created_at', 'desc')->take(3);
 	}
 
-	public function toActivityPubObject()
-	{
-		if($this->local == false) {
-			return;
-		}
-		$profile = $this->profile;
-		$to = $this->scopeToAudience('to');
-		$cc = $this->scopeToAudience('cc');
-		return [
-			'@context' => 'https://www.w3.org/ns/activitystreams',
-			'id'    => $this->permalink(),
-			'type'  => 'Create',
-			'actor' => $profile->permalink(),
-			'published' => str_replace('+00:00', 'Z', $this->created_at->format(DATE_RFC3339_EXTENDED)),
-			'to' => $to,
-			'cc' => $cc,
-			'object' => [
-				'id' => $this->url(),
-				'type' => 'Note',
-				'summary' => null,
-				'inReplyTo' => null,
-				'published' => str_replace('+00:00', 'Z', $this->created_at->format(DATE_RFC3339_EXTENDED)),
-				'url' => $this->url(),
-				'attributedTo' => $this->profile->url(),
-				'to' => $to,
-				'cc' => $cc,
-				'sensitive' => (bool) $this->is_nsfw,
-				'content' => $this->rendered,
-				'attachment' => $this->media->map(function($media) {
-					return [
-						'type' => 'Document',
-						'mediaType' => $media->mime,
-						'url' => $media->url(),
-						'name' => null
-					];
-				})->toArray()
-			]
-		];
-	}
-
 	public function scopeToAudience($audience)
 	{
 		if(!in_array($audience, ['to', 'cc']) || $this->local == false) { 

@@ -2,129 +2,122 @@
 
 namespace App\Jobs\GroupPipeline;
 
-use App\Notification;
 use App\Hashtag;
 use App\Mention;
-use App\Profile;
-use App\Status;
-use App\StatusHashtag;
-use App\Models\GroupPostHashtag;
 use App\Models\GroupPost;
-use Cache;
+use App\Models\GroupPostHashtag;
+use App\Profile;
+use App\Services\StatusService;
+use App\Status;
+use App\Util\Lexer\Autolink;
+use App\Util\Lexer\Extractor;
 use DB;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
-use Illuminate\Support\Facades\Redis;
-use App\Services\MediaStorageService;
-use App\Services\NotificationService;
-use App\Services\StatusService;
-use App\Util\Lexer\Autolink;
-use App\Util\Lexer\Extractor;
 
 class NewStatusPipeline implements ShouldQueue
 {
-	use Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
+    use Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
 
-	protected $status;
-	protected $gp;
-	protected $tags;
-	protected $mentions;
+    protected $status;
 
-	public function __construct(Status $status, GroupPost $gp)
-	{
-		$this->status = $status;
-		$this->gp = $gp;
-	}
+    protected $gp;
 
-	public function handle()
-	{
-		$status = $this->status;
+    protected $tags;
 
-		$autolink = Autolink::create()
-			->setAutolinkActiveUsersOnly(true)
-			->setBaseHashPath("/groups/{$status->group_id}/topics/")
-			->setBaseUserPath("/groups/{$status->group_id}/username/")
-			->autolink($status->caption);
+    protected $mentions;
+
+    public function __construct(Status $status, GroupPost $gp)
+    {
+        $this->status = $status;
+        $this->gp = $gp;
+    }
+
+    public function handle()
+    {
+        $status = $this->status;
+
+        $autolink = Autolink::create()
+            ->setAutolinkActiveUsersOnly(true)
+            ->setBaseHashPath("/groups/{$status->group_id}/topics/")
+            ->setBaseUserPath("/groups/{$status->group_id}/username/")
+            ->autolink($status->caption);
 
         $entities = Extractor::create()->extract($status->caption);
+        $status->entities = null;
+        $status->save();
 
-		$autolink = str_replace('/discover/tags/', '/groups/' . $status->group_id . '/topics/', $autolink);
+        $this->tags = array_unique($entities['hashtags']);
+        $this->mentions = array_unique($entities['mentions']);
 
-		$status->rendered = nl2br($autolink);
-		$status->entities = null;
-		$status->save();
+        if (count($this->tags)) {
+            $this->storeHashtags();
+        }
 
-		$this->tags = array_unique($entities['hashtags']);
-		$this->mentions = array_unique($entities['mentions']);
+        if (count($this->mentions)) {
+            $this->storeMentions($this->mentions);
+        }
+    }
 
-		if(count($this->tags)) {
-			$this->storeHashtags();
-		}
+    protected function storeHashtags()
+    {
+        $tags = $this->tags;
+        $status = $this->status;
+        $gp = $this->gp;
 
-		if(count($this->mentions)) {
-			$this->storeMentions($this->mentions);
-		}
-	}
+        foreach ($tags as $tag) {
+            if (mb_strlen($tag) > 124) {
+                continue;
+            }
 
-	protected function storeHashtags()
-	{
-		$tags = $this->tags;
-		$status = $this->status;
-		$gp = $this->gp;
+            DB::transaction(function () use ($status, $tag, $gp) {
+                $slug = str_slug($tag, '-', false);
+                $hashtag = Hashtag::firstOrCreate(
+                    ['name' => $tag, 'slug' => $slug]
+                );
+                GroupPostHashtag::firstOrCreate(
+                    [
+                        'group_id' => $status->group_id,
+                        'group_post_id' => $gp->id,
+                        'status_id' => $status->id,
+                        'hashtag_id' => $hashtag->id,
+                        'profile_id' => $status->profile_id,
+                    ]
+                );
 
-		foreach ($tags as $tag) {
-			if(mb_strlen($tag) > 124) {
-				continue;
-			}
+            });
+        }
 
-			DB::transaction(function () use ($status, $tag, $gp) {
-				$slug = str_slug($tag, '-', false);
-				$hashtag = Hashtag::firstOrCreate(
-					['name' => $tag, 'slug' => $slug]
-				);
-				GroupPostHashtag::firstOrCreate(
-					[
-						'group_id' => $status->group_id,
-						'group_post_id' => $gp->id,
-						'status_id' => $status->id,
-						'hashtag_id' => $hashtag->id,
-						'profile_id' => $status->profile_id,
-					]
-				);
+        if (count($this->mentions)) {
+            $this->storeMentions();
+        }
+        StatusService::del($status->id);
+    }
 
-			});
-		}
+    protected function storeMentions()
+    {
+        $mentions = $this->mentions;
+        $status = $this->status;
 
-		if(count($this->mentions)) {
-			$this->storeMentions();
-		}
-		StatusService::del($status->id);
-	}
+        foreach ($mentions as $mention) {
+            $mentioned = Profile::whereUsername($mention)->first();
 
-	protected function storeMentions()
-	{
-		$mentions = $this->mentions;
-		$status = $this->status;
+            if (empty($mentioned) || ! isset($mentioned->id)) {
+                continue;
+            }
 
-		foreach ($mentions as $mention) {
-			$mentioned = Profile::whereUsername($mention)->first();
+            DB::transaction(function () use ($status, $mentioned) {
+                $m = new Mention;
+                $m->status_id = $status->id;
+                $m->profile_id = $mentioned->id;
+                $m->save();
 
-			if (empty($mentioned) || !isset($mentioned->id)) {
-				continue;
-			}
-
-			DB::transaction(function () use ($status, $mentioned) {
-				$m = new Mention();
-				$m->status_id = $status->id;
-				$m->profile_id = $mentioned->id;
-				$m->save();
-
-				MentionPipeline::dispatch($status, $m);
-			});
-		}
-		StatusService::del($status->id);
-	}
+                MentionPipeline::dispatch($status, $m);
+            });
+        }
+        StatusService::del($status->id);
+    }
 }

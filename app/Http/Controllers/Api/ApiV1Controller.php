@@ -1878,7 +1878,7 @@ class ApiV1Controller extends Controller
         $media->original_sha256 = $hash;
         $media->size = $photo->getSize();
         $media->mime = $mime;
-        $media->caption = $request->input('description') ?? "";
+        $media->caption = $request->input('description') ?? '';
         $media->filter_class = $filterClass;
         $media->filter_name = $filterName;
         if ($license) {
@@ -2106,7 +2106,7 @@ class ApiV1Controller extends Controller
         $media->original_sha256 = $hash;
         $media->size = $photo->getSize();
         $media->mime = $mime;
-        $media->caption = $request->input('description') ?? "";
+        $media->caption = $request->input('description') ?? '';
         $media->filter_class = $filterClass;
         $media->filter_name = $filterName;
         if ($license) {
@@ -3490,8 +3490,7 @@ class ApiV1Controller extends Controller
             return [];
         }
 
-        $content = strip_tags($request->input('status'));
-        $rendered = Autolink::create()->autolink($content);
+        $content = $request->filled('status') ? strip_tags(Purify::clean($request->input('status'))) : null;
         $cw = $user->profile->cw == true ? true : $request->boolean('sensitive', false);
         $spoilerText = $cw && $request->filled('spoiler_text') ? $request->input('spoiler_text') : null;
 
@@ -3505,7 +3504,6 @@ class ApiV1Controller extends Controller
 
             $status = new Status;
             $status->caption = $content;
-            $status->rendered = $rendered;
             $status->scope = $visibility;
             $status->visibility = $visibility;
             $status->profile_id = $user->profile_id;
@@ -3530,7 +3528,6 @@ class ApiV1Controller extends Controller
             if (! $in_reply_to_id) {
                 $status = new Status;
                 $status->caption = $content;
-                $status->rendered = $rendered;
                 $status->profile_id = $user->profile_id;
                 $status->is_nsfw = $cw;
                 $status->cw_summary = $spoilerText;
@@ -3951,6 +3948,7 @@ class ApiV1Controller extends Controller
         abort_unless($request->user()->tokenCan('write'), 403);
 
         $status = Status::findOrFail($id);
+        $user = $request->user();
         $pid = $request->user()->profile_id;
         $account = AccountService::get($status->profile_id);
         abort_if(isset($account['moved'], $account['moved']['id']), 422, 'Cannot bookmark a post from an account that has migrated');
@@ -3994,6 +3992,7 @@ class ApiV1Controller extends Controller
 
         $status = Status::findOrFail($id);
         $pid = $request->user()->profile_id;
+        $user = $request->user();
 
         abort_if($user->has_roles && ! UserRoleService::can('can-bookmark', $user->id), 403, 'Invalid permissions for this action');
         abort_if($status->in_reply_to_id || $status->reblog_of_id, 404);

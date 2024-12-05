@@ -417,8 +417,8 @@ class Inbox
             return;
         }
 
-        $msg = $activity['content'];
-        $msgText = strip_tags($activity['content']);
+        $msg = Purify::clean($activity['content']);
+        $msgText = strip_tags($msg);
 
         if (Str::startsWith($msgText, '@'.$profile->username)) {
             $len = strlen('@'.$profile->username);
@@ -438,7 +438,6 @@ class Inbox
         $status = new Status;
         $status->profile_id = $actor->id;
         $status->caption = $msgText;
-        $status->rendered = $msg;
         $status->visibility = 'direct';
         $status->scope = 'direct';
         $status->url = $activity['id'];
@@ -1081,7 +1080,6 @@ class Inbox
         $status->uri = $url;
         $status->object_url = $url;
         $status->caption = $text;
-        $status->rendered = $text;
         $status->scope = 'direct';
         $status->visibility = 'direct';
         $status->in_reply_to_profile_id = $story->profile_id;
@@ -1199,7 +1197,6 @@ class Inbox
         $status->profile_id = $actorProfile->id;
         $status->type = 'story:reply';
         $status->caption = $text;
-        $status->rendered = $text;
         $status->url = $url;
         $status->uri = $url;
         $status->object_url = $url;

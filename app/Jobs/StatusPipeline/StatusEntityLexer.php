@@ -91,11 +91,6 @@ class StatusEntityLexer implements ShouldQueue
     public function storeEntities()
     {
         $this->storeHashtags();
-        DB::transaction(function () {
-            $status = $this->status;
-            $status->rendered = nl2br($this->autolink);
-            $status->save();
-        });
     }
 
     public function storeHashtags()
@@ -146,7 +141,7 @@ class StatusEntityLexer implements ShouldQueue
             }
 
             DB::transaction(function () use ($status, $mentioned) {
-                $m = new Mention();
+                $m = new Mention;
                 $m->status_id = $status->id;
                 $m->profile_id = $mentioned->id;
                 $m->save();

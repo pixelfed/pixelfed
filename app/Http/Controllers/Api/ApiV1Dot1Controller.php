@@ -37,7 +37,6 @@ use App\Status;
 use App\StatusArchived;
 use App\User;
 use App\UserSetting;
-use App\Util\Lexer\Autolink;
 use App\Util\Lexer\RestrictedNames;
 use Cache;
 use DB;
@@ -49,6 +48,7 @@ use Jenssegers\Agent\Agent;
 use League\Fractal;
 use League\Fractal\Serializer\ArraySerializer;
 use Mail;
+use Purify;
 
 class ApiV1Dot1Controller extends Controller
 {
@@ -1293,14 +1293,12 @@ class ApiV1Dot1Controller extends Controller
             return [];
         }
 
-        $content = strip_tags($request->input('status'));
-        $rendered = Autolink::create()->autolink($content);
+        $content = $request->filled('status') ? strip_tags(Purify::clean($request->input('status'))) : null;
         $cw = $user->profile->cw == true ? true : $request->boolean('sensitive', false);
         $spoilerText = $cw && $request->filled('spoiler_text') ? $request->input('spoiler_text') : null;
 
         $status = new Status;
         $status->caption = $content;
-        $status->rendered = $rendered;
         $status->profile_id = $user->profile_id;
         $status->is_nsfw = $cw;
         $status->cw_summary = $spoilerText;

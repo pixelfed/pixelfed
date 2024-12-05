@@ -8,6 +8,7 @@ use App\Profile;
 use App\Services\WebfingerService;
 use App\Status;
 use App\Util\ActivityPub\Helpers;
+use App\Util\Lexer\Autolink;
 use Auth;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Cache;
@@ -320,17 +321,21 @@ class SearchController extends Controller
 
         if (Status::whereUri($tag)->whereLocal(false)->exists()) {
             $item = Status::whereUri($tag)->first();
+            if (! $item) {
+                return;
+            }
             $media = $item->firstMedia();
             $url = null;
             if ($media) {
                 $url = $media->remote_url;
             }
+            $content = $item->caption ? Autolink::create()->autolink($item->caption) : null;
             $this->tokens['posts'] = [[
                 'count' => 0,
                 'url' => "/i/web/post/_/$item->profile_id/$item->id",
                 'type' => 'status',
                 'username' => $item->profile->username,
-                'caption' => $item->rendered ?? $item->caption,
+                'caption' => $content,
                 'thumb' => $url,
                 'timestamp' => $item->created_at->diffForHumans(),
             ]];
@@ -340,17 +345,21 @@ class SearchController extends Controller
 
         if (isset($remote['type']) && $remote['type'] == 'Note') {
             $item = Helpers::statusFetch($tag);
+            if (! $item) {
+                return;
+            }
             $media = $item->firstMedia();
             $url = null;
             if ($media) {
                 $url = $media->remote_url;
             }
+            $content = $item->caption ? Autolink::create()->autolink($item->caption) : null;
             $this->tokens['posts'] = [[
                 'count' => 0,
                 'url' => "/i/web/post/_/$item->profile_id/$item->id",
                 'type' => 'status',
                 'username' => $item->profile->username,
-                'caption' => $item->rendered ?? $item->caption,
+                'caption' => $content,
                 'thumb' => $url,
                 'timestamp' => $item->created_at->diffForHumans(),
             ]];

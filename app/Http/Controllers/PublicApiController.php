@@ -31,8 +31,8 @@ class PublicApiController extends Controller
 
     public function __construct()
     {
-        $this->fractal = new Fractal\Manager();
-        $this->fractal->setSerializer(new ArraySerializer());
+        $this->fractal = new Fractal\Manager;
+        $this->fractal->setSerializer(new ArraySerializer);
     }
 
     protected function getUserData($user)
@@ -74,7 +74,7 @@ class PublicApiController extends Controller
             abort_if(! in_array($cached['visibility'], ['public', 'unlisted']), 403);
             $res = ['status' => $cached];
         } else {
-            $item = new Fractal\Resource\Item($status, new StatusStatelessTransformer());
+            $item = new Fractal\Resource\Item($status, new StatusStatelessTransformer);
             $res = [
                 'status' => $this->fractal->createData($item)->toArray(),
             ];
@@ -141,7 +141,7 @@ class PublicApiController extends Controller
                 $replies = $status->comments()
                     ->whereNull('reblog_of_id')
                     ->whereIn('scope', $scope)
-                    ->select('id', 'caption', 'local', 'visibility', 'scope', 'is_nsfw', 'rendered', 'profile_id', 'in_reply_to_id', 'type', 'reply_count', 'created_at')
+                    ->select('id', 'caption', 'local', 'visibility', 'scope', 'is_nsfw', 'profile_id', 'in_reply_to_id', 'type', 'reply_count', 'created_at')
                     ->where('id', '>=', $request->min_id)
                     ->orderBy('id', 'desc')
                     ->paginate($limit);
@@ -150,7 +150,7 @@ class PublicApiController extends Controller
                 $replies = $status->comments()
                     ->whereNull('reblog_of_id')
                     ->whereIn('scope', $scope)
-                    ->select('id', 'caption', 'local', 'visibility', 'scope', 'is_nsfw', 'rendered', 'profile_id', 'in_reply_to_id', 'type', 'reply_count', 'created_at')
+                    ->select('id', 'caption', 'local', 'visibility', 'scope', 'is_nsfw', 'profile_id', 'in_reply_to_id', 'type', 'reply_count', 'created_at')
                     ->where('id', '<=', $request->max_id)
                     ->orderBy('id', 'desc')
                     ->paginate($limit);
@@ -159,12 +159,12 @@ class PublicApiController extends Controller
             $replies = Status::whereInReplyToId($status->id)
                 ->whereNull('reblog_of_id')
                 ->whereIn('scope', $scope)
-                ->select('id', 'caption', 'local', 'visibility', 'scope', 'is_nsfw', 'rendered', 'profile_id', 'in_reply_to_id', 'type', 'reply_count', 'created_at')
+                ->select('id', 'caption', 'local', 'visibility', 'scope', 'is_nsfw', 'profile_id', 'in_reply_to_id', 'type', 'reply_count', 'created_at')
                 ->orderBy('id', 'desc')
                 ->paginate($limit);
         }
 
-        $resource = new Fractal\Resource\Collection($replies, new StatusStatelessTransformer(), 'data');
+        $resource = new Fractal\Resource\Collection($replies, new StatusStatelessTransformer, 'data');
         $resource->setPaginator(new IlluminatePaginatorAdapter($replies));
         $res = $this->fractal->createData($resource)->toArray();
 
@@ -271,7 +271,6 @@ class PublicApiController extends Controller
                     'id',
                     'uri',
                     'caption',
-                    'rendered',
                     'profile_id',
                     'type',
                     'in_reply_to_id',
@@ -405,7 +404,6 @@ class PublicApiController extends Controller
                 'id',
                 'uri',
                 'caption',
-                'rendered',
                 'profile_id',
                 'type',
                 'in_reply_to_id',
@@ -456,7 +454,6 @@ class PublicApiController extends Controller
                 'id',
                 'uri',
                 'caption',
-                'rendered',
                 'profile_id',
                 'type',
                 'in_reply_to_id',

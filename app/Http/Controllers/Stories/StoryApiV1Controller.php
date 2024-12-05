@@ -281,7 +281,7 @@ class StoryApiV1Controller extends Controller
         $photo = $request->file('file');
         $path = $this->storeMedia($photo, $user);
 
-        $story = new Story();
+        $story = new Story;
         $story->duration = $request->input('duration', 3);
         $story->profile_id = $user->profile_id;
         $story->type = Str::endsWith($photo->getMimeType(), 'mp4') ? 'video' : 'photo';
@@ -418,7 +418,6 @@ class StoryApiV1Controller extends Controller
         $status->type = 'story:reply';
         $status->profile_id = $pid;
         $status->caption = $text;
-        $status->rendered = $text;
         $status->scope = 'direct';
         $status->visibility = 'direct';
         $status->in_reply_to_profile_id = $story->profile_id;

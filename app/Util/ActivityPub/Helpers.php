@@ -298,6 +298,22 @@ class Helpers
         return null;
     }
 
+    public static function validateTimestamp($timestamp)
+    {
+        try {
+            $date = Carbon::parse($timestamp);
+            $now = Carbon::now();
+            $tenYearsAgo = $now->copy()->subYears(10);
+            $isMoreThanTenYearsOld = $date->lt($tenYearsAgo);
+            $tomorrow = $now->copy()->addDay();
+            $isMoreThanOneDayFuture = $date->gt($tomorrow);
+
+            return ! ($isMoreThanTenYearsOld || $isMoreThanOneDayFuture);
+        } catch (\Exception $e) {
+            return false;
+        }
+    }
+
     public static function statusFirstOrFetch($url, $replyTo = false)
     {
         $url = self::validateUrl($url);
@@ -326,6 +342,10 @@ class Helpers
         $res = self::fetchFromUrl($url);
 
         if (! $res || empty($res) || isset($res['error']) || ! isset($res['@context']) || ! isset($res['published'])) {
+            return;
+        }
+
+        if (! self::validateTimestamp($res['published'])) {
             return;
         }
 
@@ -532,7 +552,6 @@ class Helpers
                 'url' => $url,
                 'object_url' => $id,
                 'caption' => isset($activity['content']) ? Purify::clean(strip_tags($activity['content'])) : null,
-                'rendered' => isset($activity['content']) ? Purify::clean($activity['content']) : null,
                 'created_at' => Carbon::parse($ts)->tz('UTC'),
                 'in_reply_to_id' => $reply_to,
                 'local' => false,
@@ -674,8 +693,7 @@ class Helpers
         $status->url = isset($res['url']) ? $res['url'] : $url;
         $status->uri = isset($res['url']) ? $res['url'] : $url;
         $status->object_url = $id;
-        $status->caption = strip_tags($res['content']);
-        $status->rendered = Purify::clean($res['content']);
+        $status->caption = strip_tags(Purify::clean($res['content']));
         $status->created_at = Carbon::parse($ts)->tz('UTC');
         $status->in_reply_to_id = null;
         $status->local = false;
