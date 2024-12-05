@@ -11,7 +11,7 @@ Confirm Email
 
 <p>
   If the link above is not working, please copy the following address into your web browser:
-  <br>
+  <br><br>
   {{ $verify->url() }}</p>
 </p>
 
