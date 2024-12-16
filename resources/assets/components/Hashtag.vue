@@ -74,7 +74,7 @@
 												width="32"
 												height="32"
 												:hash="status.media_attachments[0].blurhash"
-												:src="status.media_attachments[0].url"
+												:src="status.media_attachments[0].preview_url"
 												/>
 										</div>
 										<span v-if="status.pf_type == 'photo:album'" class="float-right mr-3 post-icon"><i class="fas fa-images fa-2x"></i></span>
