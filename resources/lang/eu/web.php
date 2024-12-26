@@ -150,7 +150,7 @@ return [
 		'copyrightInfringement' => 'Copyrightaren urraketa',
 		'impersonation' => 'Inpersonazioa',
 		'scamOrFraud' => 'Iruzur edo maula',
-		'confirmReport' => 'Salaketa berretsi',
+		'confirmReport' => 'Berretsi salaketa',
 		'confirmReportText' => 'Ziur al zaude bidalketa hau salatu nahi duzula?',
 		'reportSent' => 'Salaketa bidali da',
 		'reportSentText' => 'Zure salaketa ondo jaso dugu.',
