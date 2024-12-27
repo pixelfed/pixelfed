@@ -185,10 +185,10 @@ return [
 		'peopleYouMayKnow' => 'Άτομα που μπορεί να ξέρετε',
 
 		'onboarding' => [
-			'welcome' => 'Welcome',
-			'thisIsYourHomeFeed' => 'This is your home feed, a chronological feed of posts from accounts you follow.',
-			'letUsHelpYouFind' => 'Let us help you find some interesting people to follow',
-			'refreshFeed' => 'Refresh my feed',
+			'welcome' => 'Καλώς ήρθατε',
+			'thisIsYourHomeFeed' => 'Αυτή είναι η αρχική σου ροή, μια χρονολογική ροή των δημοσιεύσεων από λογαριασμούς που ακολουθείτε.',
+			'letUsHelpYouFind' => 'Ας σας βοηθήσουμε να βρείτε μερικούς ενδιαφέροντες ανθρώπους να ακολουθήσετε',
+			'refreshFeed' => 'Ανανέωση της ροής μου',
 		],
 	],
 
@@ -197,12 +197,12 @@ return [
 	],
 
 	'report' => [
-		'report' => 'Report',
-		'selectReason' => 'Select a reason',
-		'reported' => 'Reported',
-		'sendingReport' => 'Sending report',
-		'thanksMsg' => 'Thanks for the report, people like you help keep our community safe!',
-		'contactAdminMsg' => 'If you\'d like to contact an administrator about this post or report',
+		'report' => 'Αναφορά',
+		'selectReason' => 'Επιλέξτε μια αιτία',
+		'reported' => 'Αναφέρθηκε',
+		'sendingReport' => 'Αποστολή αναφοράς',
+		'thanksMsg' => 'Ευχαριστούμε για την αναφορά, άνθρωποι σαν κι εσάς βοηθούν να κρατήσετε την κοινότητά μας ασφαλής!',
+		'contactAdminMsg' => 'Αν θέλετε να επικοινωνήσετε με το διαχειριστή για αυτή τη δημοσίευση ή αναφορά',
 	],
 
 ];
