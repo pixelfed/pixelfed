@@ -21,8 +21,8 @@ return [
 	'blockingAccounts' => 'Блокировка аккаунтов',
 	'safetyTips' => 'Советы по безопасности',
 	'reportSomething' => 'Жалобы',
-	'dataPolicy' => 'Конфиденциальность'
+	'dataPolicy' => 'Конфиденциальность',
     
-    'taggingPeople' => 'Отметки людей'
+    'taggingPeople' => 'Отметки людей',
 
 ];
