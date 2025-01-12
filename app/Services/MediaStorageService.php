@@ -94,7 +94,7 @@ class MediaStorageService
         $storagePath = implode('/', $p);
 
         $url = ResilientMediaStorageService::store($storagePath, $path, $name);
-        if ($thumb) {
+        if ($thumb && !empty($media->thumbnail_path)) {
             $thumbUrl = ResilientMediaStorageService::store($storagePath, $thumb, $thumbname);
             $media->thumbnail_url = $thumbUrl;
         }
