@@ -15,6 +15,9 @@ class AccountWithStatusesTransformer extends Fractal\TransformerAbstract
 
 	public function transform(Profile $profile)
 	{
+		$auth = Auth::check();
+		$isSelf = $auth && $profile->id == Auth::user()->profile->id;
+
 		$local = $profile->domain == null;
 		$is_admin = !$local ? false : $profile->user->is_admin;
 		$acct = $local ? $profile->username : substr($profile->username, 1);
@@ -26,8 +29,8 @@ class AccountWithStatusesTransformer extends Fractal\TransformerAbstract
 			'display_name' => $profile->name,
 			'locked' => (bool) $profile->is_private,
 			'followers_count' => $profile->followerCount(),
-			'following_count' => $profile->followingCount(),
-			'statuses_count' => (int) $profile->statusCount(),
+			'following_count' => $profile->followingCount($isSelf),
+			'statuses_count' => (int) $profile->statusCount($isSelf),
 			'note' => $profile->bio ?? '',
 			'url' => $profile->url(),
 			'avatar' => $profile->avatarUrl(),

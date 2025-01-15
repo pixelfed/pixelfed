@@ -65,10 +65,10 @@ class Profile extends Model
 		return $this->hasMany(Status::class);
 	}
 
-	public function followingCount($short = false)
+	public function followingCount($short = false, $isSelf = false)
 	{
 		$count = Cache::remember('profile:following_count:'.$this->id, now()->addMonths(1), function() {
-			if($this->domain == null && $this->user->settings->show_profile_following_count == false) {
+			if(!$isSelf && $this->domain == null && $this->user->settings->show_profile_following_count == false) {
 				return 0;
 			}
 			$count = DB::table('followers')->where('profile_id', $this->id)->count();
@@ -82,10 +82,10 @@ class Profile extends Model
 		return $short ? PrettyNumber::convert($count) : $count;
 	}
 
-	public function followerCount($short = false)
+	public function followerCount($short = false, $isSelf = false)
 	{
 		$count = Cache::remember('profile:follower_count:'.$this->id, now()->addMonths(1), function() {
-			if($this->domain == null && $this->user->settings->show_profile_follower_count == false) {
+			if(!$isSelf && $this->domain == null && $this->user->settings->show_profile_follower_count == false) {
 				return 0;
 			}
 			$count = DB::table('followers')->where('following_id', $this->id)->count();
