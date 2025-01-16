@@ -71,7 +71,7 @@ class UserCreate extends Command
 
         $email = $this->ask('Email');
 
-        if(User::whereEmail($email)->exists()) {
+        if(User::whereRaw('lower(email) = ?', [strtolower($email)])->exists()) {
             $this->error('Email already in use, please try again...');
             exit;
         }
