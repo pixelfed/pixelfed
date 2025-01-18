@@ -25,7 +25,7 @@
             <span>Navigate to the <a href="/settings/import" class="font-weight-bold">Import</a> settings page</span>
         </li>
         <li class="">
-            <span>Follow the instructions and import your posts 🥳</span>
+            <span>Follow the instructions and import your posts 🥳 NB: The export may contain files in the webp or heic file formats, this media is not supported by the import</span>
         </li>
     </ol>
     <hr class="mb-4" />
