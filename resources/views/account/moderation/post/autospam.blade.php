@@ -69,7 +69,7 @@
 		<div class="col-12 col-md-6 offset-md-3 my-3">
 			<div class="border rounded p-3 border-primary">
 				<p class="h4 font-weight-bold pt-2 text-primary">Review the Community Guidelines</p>
-				<p class="lead pt-4 text-primary">We want to keep {{config('app.name')}} a safe place for everyone, and we created these <a class="font-weight-bold text-primary" href="{{route('help.community-guidelines')}}">Community Guidelines</a> to support and protect our community.</p>
+				<p class="lead pt-4 text-primary">We want to keep {{config_cache('app.name')}} a safe place for everyone, and we created these <a class="font-weight-bold text-primary" href="{{route('help.community-guidelines')}}">Community Guidelines</a> to support and protect our community.</p>
 			</div>
 		</div>
 

@@ -16,6 +16,13 @@
 					</li>
 
 					<li class="nav-item">
+						<a class="nav-link {{request()->is('*autospam*')?'active':''}}" href="{{route('admin.autospam')}}">
+							<i class="ni ni-bold-right text-primary"></i>
+							<span class="nav-link-text">Autospam</span>
+						</a>
+					</li>
+
+					<li class="nav-item">
 						<a class="nav-link {{request()->is('*messages*')?'active':''}}" href="{{route('admin.messages')}}">
 							<i class="ni ni-bold-right text-primary"></i>
 							<span class="nav-link-text">Messages</span>
@@ -37,13 +44,6 @@
 					</li>
 
 					<li class="nav-item">
-						<a class="nav-link {{request()->is('*stories*')?'active':''}}" href="{{route('admin.stories')}}">
-							<i class="ni ni-bold-right text-primary"></i>
-							<span class="nav-link-text">Stories <span class="badge badge-primary ml-1">NEW</span></span>
-						</a>
-					</li>
-
-					<li class="nav-item">
 						<a class="nav-link {{request()->is('*users*')?'active':''}}" href="{{route('admin.users')}}">
 							<i class="ni ni-bold-right text-primary"></i>
 							<span class="nav-link-text">Users</span>
@@ -56,37 +56,24 @@
 							<span class="nav-link-text">Settings</span>
 						</a>
 					</li>
+
+					@if((bool) config_cache('instance.curated_registration.enabled'))
+					<li class="nav-item">
+						<a class="nav-link {{request()->is('*admin/curated-onboarding*')?'active':''}}" href="{{route('admin.curated-onboarding')}}">
+							<i class="ni ni-bold-right text-primary"></i>
+							<span class="nav-link-text">Curated Onboarding</span>
+						</a>
+					</li>
+					@endif
 				</ul>
 
 				<hr class="my-3">
 
-				<ul class="navbar-nav mb-md-3">
-
-                    <li class="nav-item">
-                        <a class="nav-link {{request()->is('*directory*')?'active':''}}" href="{{route('admin.directory')}}">
-                            <i class="ni ni-bold-right text-primary"></i>
-                            <span class="nav-link-text">Directory <span class="badge badge-primary ml-1">NEW</span></span>
-                        </a>
-                    </li>
-
-					<li class="nav-item">
-						<a class="nav-link {{request()->is('*apps*')?'active':''}}" href="{{route('admin.apps')}}">
-							<i class="ni ni-bold-right text-primary"></i>
-							<span class="nav-link-text">Apps</span>
-						</a>
-					</li>
-
+				<ul class="navbar-nav">
 					<li class="nav-item">
 						<a class="nav-link {{request()->is('*custom-emoji*')?'active':''}}" href="{{route('admin.custom-emoji')}}">
 							<i class="ni ni-bold-right text-primary"></i>
-							<span class="nav-link-text">Custom Emoji <span class="badge badge-primary ml-1">NEW</span></span>
-						</a>
-					</li>
-
-					<li class="nav-item">
-						<a class="nav-link {{request()->is('*diagnostics*')?'active':''}}" href="{{route('admin.diagnostics')}}">
-							<i class="ni ni-bold-right text-primary"></i>
-							<span class="nav-link-text">Diagnostics <span class="badge badge-primary ml-1">NEW</span></span>
+							<span class="nav-link-text">Custom Emoji</span>
 						</a>
 					</li>
 
@@ -94,13 +81,6 @@
 						<a class="nav-link {{request()->is('*hashtags*')?'active':''}}" href="{{route('admin.hashtags')}}">
 							<i class="ni ni-bold-right text-primary"></i>
 							<span class="nav-link-text">Hashtags</span>
-						</a>
-					</li>
-
-					<li class="nav-item">
-						<a class="nav-link" href="/horizon">
-							<i class="ni ni-bold-right text-primary"></i>
-							<span class="nav-link-text">Horizon</span>
 						</a>
 					</li>
 
@@ -119,16 +99,64 @@
 					</li>
 
 					<li class="nav-item">
-						<a class="nav-link {{request()->is('*site-news*')?'active':''}}" href="/i/admin/site-news">
+						<a class="nav-link {{request()->is('*profiles*')?'active':''}}" href="/i/admin/profiles">
 							<i class="ni ni-bold-right text-primary"></i>
-							<span class="nav-link-text">Newsroom</span>
+							<span class="nav-link-text">Profiles</span>
+						</a>
+					</li>
+
+					{{-- <li class="nav-item">
+						<a class="nav-link {{request()->is('*roles*')?'active':''}}" href="{{route('admin.roles')}}">
+							<i class="ni ni-bold-right text-primary"></i>
+							<span class="nav-link-text">Roles <span class="badge badge-primary ml-1">NEW</span></span>
+						</a>
+					</li> --}}
+
+					<li class="nav-item">
+						<a class="nav-link {{request()->is('*stories*')?'active':''}}" href="{{route('admin.stories')}}">
+							<i class="ni ni-bold-right text-primary"></i>
+							<span class="nav-link-text">Stories</span>
+						</a>
+					</li>
+				</ul>
+
+				<hr class="my-3">
+
+				<ul class="navbar-nav mb-md-3">
+
+					<li class="nav-item">
+						<a class="nav-link {{request()->is('*apps*')?'active':''}}" href="{{route('admin.apps')}}">
+							<i class="ni ni-bold-right text-primary"></i>
+							<span class="nav-link-text">Apps</span>
 						</a>
 					</li>
 
 					<li class="nav-item">
-						<a class="nav-link {{request()->is('*profiles*')?'active':''}}" href="/i/admin/profiles">
+						<a class="nav-link {{request()->is('*diagnostics*')?'active':''}}" href="{{route('admin.diagnostics')}}">
 							<i class="ni ni-bold-right text-primary"></i>
-							<span class="nav-link-text">Profiles</span>
+							<span class="nav-link-text">Diagnostics</span>
+						</a>
+					</li>
+
+                    <li class="nav-item">
+                        <a class="nav-link {{request()->is('*directory*')?'active':''}}" href="{{route('admin.directory')}}">
+                            <i class="ni ni-bold-right text-primary"></i>
+                            <span class="nav-link-text">Directory</span>
+                        </a>
+                    </li>
+
+					<li class="nav-item">
+						<a class="nav-link" href="/horizon">
+							<i class="ni ni-bold-right text-primary"></i>
+							<span class="nav-link-text">Horizon</span>
+						</a>
+					</li>
+
+
+					<li class="nav-item">
+						<a class="nav-link {{request()->is('*site-news*')?'active':''}}" href="/i/admin/site-news">
+							<i class="ni ni-bold-right text-primary"></i>
+							<span class="nav-link-text">Newsroom</span>
 						</a>
 					</li>
 
@@ -152,7 +180,6 @@
 							<span class="nav-link-text">System</span>
 						</a>
 					</li>
-
 				</ul>
 			</div>
 		</div>

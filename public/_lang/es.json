@@ -1,27 +1,32 @@
 {
     "common": {
-        "comment": "Comentario",
+        "comment": "Comentar",
         "commented": "Comentado",
         "comments": "Comentarios",
         "like": "Me gusta",
         "liked": "Te gusta",
-        "likes": "Me gustas",
+        "likes": "Me gusta",
         "share": "Compartir",
         "shared": "Compartido",
         "shares": "Compartidos",
         "unshare": "No compartir",
+        "bookmark": "Marcador",
         "cancel": "Cancelar",
         "copyLink": "Copiar Enlace",
         "delete": "Eliminar",
         "error": "Error",
-        "errorMsg": "Algo fue mal. Por favor int\u00e9ntelo de nuevo m\u00e1s tarde.",
+        "errorMsg": "Algo sali\u00f3 mal. Por favor int\u00e9ntalo de nuevo m\u00e1s tarde.",
         "oops": "Upss!",
         "other": "Otros",
         "readMore": "Ver m\u00e1s",
         "success": "Correcto",
+        "proceed": "Proceder",
+        "next": "Siguiente",
+        "close": "Cerrar",
+        "clickHere": "haz click aqu\u00ed",
         "sensitive": "Sensible",
         "sensitiveContent": "Contenido Sensible",
-        "sensitiveContentWarning": "Este post podr\u00eda tener contenido sensible"
+        "sensitiveContentWarning": "Esta publicaci\u00f3n podr\u00eda contener contenido sensible"
     },
     "site": {
         "terms": "T\u00e9rminos de Uso",
@@ -42,7 +47,7 @@
         "drive": "Multimedia",
         "settings": "Ajustes",
         "compose": "Crear Nuevo",
-        "logout": "Logout",
+        "logout": "Cerrar sesi\u00f3n",
         "about": "Acerca de",
         "help": "Ayuda",
         "language": "Idioma",
@@ -73,7 +78,8 @@
         "groupPost": "publicaci\u00f3n de grupo",
         "modlog": "modlog",
         "post": "publicaci\u00f3n",
-        "story": "historia"
+        "story": "historia",
+        "noneFound": "No se han encontrado notificaciones"
     },
     "post": {
         "shareToFollowers": "Compartir a seguidores",
@@ -92,8 +98,8 @@
         "editProfile": "Editar Perfil",
         "followRequested": "Seguimiento Solicitado",
         "joined": "Se uni\u00f3",
-        "emptyCollections": "We can't seem to find any collections",
-        "emptyPosts": "We can't seem to find any posts"
+        "emptyCollections": "Parece que no podemos encontrar ninguna colecci\u00f3n",
+        "emptyPosts": "Parece que no podemos encontrar ning\u00fan post"
     },
     "menu": {
         "viewPost": "Ver Publicaci\u00f3n",
@@ -113,8 +119,8 @@
         "sensitive": "Contenido Sensible",
         "abusive": "Abusivo o Da\u00f1ino",
         "underageAccount": "Cuenta de Menor de Edad",
-        "copyrightInfringement": "Violaci\u00f3n de Copyright",
-        "impersonation": "Suplantaci\u00f3n",
+        "copyrightInfringement": "Infracci\u00f3n de derechos de autor",
+        "impersonation": "Suplantaci\u00f3n de identidad",
         "scamOrFraud": "Scam o Fraude",
         "confirmReport": "Confirmar Reporte",
         "confirmReportText": "\u00bfSeguro que quieres reportar esta publicaci\u00f3n?",
@@ -134,17 +140,31 @@
         "showLikes": "Mostrar me gustas",
         "compactMode": "Modo Compacto",
         "embedConfirmText": "Usando este incrustado, usted acepta",
-        "deletePostConfirm": "\u00bfSeguro que desea eliminar esta publicaci\u00f3n?",
-        "archivePostConfirm": "\u00bfSeguro que desea archivar esta publicaci\u00f3n?",
+        "deletePostConfirm": "\u00bfSeguro que deseas eliminar esta publicaci\u00f3n?",
+        "archivePostConfirm": "\u00bfSeguro que deseas archivar esta publicaci\u00f3n?",
         "unarchivePostConfirm": "\u00bfSeguro que desea desarchivar esta publicaci\u00f3n?"
     },
     "story": {
         "add": "A\u00f1adir Historia"
     },
     "timeline": {
-        "peopleYouMayKnow": "Gente que podr\u00edas conocer"
+        "peopleYouMayKnow": "Personas que quiz\u00e1s conozcas",
+        "onboarding": {
+            "welcome": "Bienvenido/a",
+            "thisIsYourHomeFeed": "Este es tu cronolog\u00eda principal, que muestra de manera cronol\u00f3gica las publicaciones de cuentas que sigues.",
+            "letUsHelpYouFind": "D\u00e9janos ayudarte a encontrar algunas personas interesantes para seguir",
+            "refreshFeed": "Actualizar mi cronolog\u00eda"
+        }
     },
     "hashtags": {
-        "emptyFeed": "We can't seem to find any posts for this hashtag"
+        "emptyFeed": "Parece que no podemos encontrar posts para este hashtag"
+    },
+    "report": {
+        "report": "Reportar",
+        "selectReason": "Seleccionar un motivo",
+        "reported": "Reportado",
+        "sendingReport": "Enviando reporte",
+        "thanksMsg": "Gracias por el reporte, \u00a1personas como t\u00fa ayudan a mantener nuestra comunidad segura!",
+        "contactAdminMsg": "Si quieres contactar un administrador sobre esta publicaci\u00f3n o reporte"
     }
 }

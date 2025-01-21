@@ -1,6 +1,14 @@
 @extends('admin.partial.template-full')
 
 @section('section')
+	<div class="bg-primary px-4 py-3 mb-5 rounded d-flex align-items-center justify-content-between">
+		<div style="max-width: 70%;">
+			<p class="lead text-white my-0 font-weight-bold">Try the new Report UI</p>
+			<p class="text-white small mb-0">We are deprecating this Report UI in the next major version release. The updated Report UI is easier, faster and provides more options to handle reports and spam.</p>
+		</div>
+		<a href="/i/admin/reports?tab=report&id={{$report->id}}" class="btn btn-outline-white">View in new Report UI</a>
+	</div>
+
 	<div class="d-flex justify-content-between title mb-3">
 		<div>
 			<p class="font-weight-bold h3">
@@ -16,16 +24,17 @@
 	<div class="row">
 		<div class="col-12 col-md-8 mt-3">
 			<div class="card shadow-none border">
-				@if($report->status->media()->count())
+				@if($report->status && $report->status->media()->count())
 				<img class="card-img-top border-bottom" src="{{$report->status->thumb(true)}}">
 				@endif
 				<div class="card-body">
 					<div class="mt-2 p-3">
-						@if($report->status->caption)
+						@if($report->status && $report->status->caption)
 						<p class="text-break">
 							{{$report->status->media()->count() ? 'Caption' : 'Comment'}}: <span class="font-weight-bold">{{$report->status->caption}}</span>
 						</p>
 						@endif
+						@if($report->status)
 						<p class="mb-0">
 							Like Count: <span class="font-weight-bold">{{$report->status->likes_count}}</span>
 						</p>
@@ -41,7 +50,8 @@
                         <p class="" style="word-break: break-all !important;">
                             Local URL: <span class="font-weight-bold text-primary"><a href="/i/web/post/{{$report->status->id}}">{{url('/i/web/post/' . $report->status->id)}}</a></span>
                         </p>
-                        @if($report->status->in_reply_to_id)
+                        @endif
+                        @if($report->status && $report->status->in_reply_to_id)
                         <p class="mt-n3" style="word-break: break-all !important;">
                             Parent Post: <span class="font-weight-bold text-primary"><a href="/i/web/post/{{$report->status->in_reply_to_id}}">{{url('/i/web/post/' . $report->status->in_reply_to_id)}}</a></span>
                         </p>

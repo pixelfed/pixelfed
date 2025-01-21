@@ -13,6 +13,7 @@ return [
 		'shared' => 'Zdieľané',
 		'shares' => 'Zdiaľané',
 		'unshare' => 'Zrušiť zdieľanie',
+		'bookmark' => 'Uložiť',
 
 		'cancel' => 'Zrušiť',
 		'copyLink' => 'Skopírovať odkaz',
@@ -23,6 +24,10 @@ return [
 		'other' => 'Iné',
 		'readMore' => 'Zobraziť viac',
 		'success' => 'Hotovo',
+		'proceed' => 'Pokračovať',
+		'next' => 'Ďalej',
+		'close' => 'Zavrieť',
+		'clickHere' => 'klikni tu',
 
 		'sensitive' => 'Citlivý',
 		'sensitiveContent' => 'Citlivý obsah',
@@ -97,6 +102,7 @@ return [
 		'modlog' => 'modlog',
 		'post' => 'príspevok',
 		'story' => 'story',
+		'noneFound' => 'Žiadne nájdené notifikácie',
 	],
 
 	'post' => [
@@ -157,7 +163,7 @@ return [
 		'modUnlistConfirm' => 'Naozaj chcete odstrániť zo zoznamu tento príspevok?',
 		'modUnlistSuccess' => 'Príspevok bol úspešne odstránený zo zoznamu',
 		'modMarkAsSpammerConfirm' => 'Naozaj chcete označiť tohto používateľa ako odosielateľa spamu? Všetky existujúce a budúce príspevky budú odstránené z timelines a bude pridané upozornenie o obsahu.',
-		'modMarkAsSpammerSuccess' => 'Účet bol úspešne označený ako odosielateľa spamu',
+		'modMarkAsSpammerSuccess' => 'Účet bol úspešne označený ako spammer',
 
 		'toFollowers' => 'pre Sledujúcich',
 
@@ -176,11 +182,27 @@ return [
 	],
 
 	'timeline' => [
-		'peopleYouMayKnow' => 'Ľudia ktorých možno poznáte'
+		'peopleYouMayKnow' => 'Ľudia ktorých možno poznáte',
+
+		'onboarding' => [
+			'welcome' => 'Vitajte',
+			'thisIsYourHomeFeed' => 'This is your home feed, a chronological feed of posts from accounts you follow.',
+			'letUsHelpYouFind' => 'Nechajte nás pomôcť vám nájsť zaujímavých ľudí ktorých môžete sledovať',
+			'refreshFeed' => 'Refresh my feed',
+		],
 	],
 
 	'hashtags' => [
 		'emptyFeed' => 'Zdá sa, že nemôžeme nájsť žiadne príspevky pre tento hashtag'
+	],
+
+	'report' => [
+		'report' => 'Nahlásiť',
+		'selectReason' => 'Vyberte dôvod',
+		'reported' => 'Nahlásené',
+		'sendingReport' => 'Odosielanie hlásenia',
+		'thanksMsg' => 'Ďakujeme za hlásenie, ľudia ako vy pomáhajú udržiavať našu komunitu v bezpečí!',
+		'contactAdminMsg' => 'Ak chcete kontaktovať administrátora ohľadom tohto príspevku alebo ho nahlásiť',
 	],
 
 ];

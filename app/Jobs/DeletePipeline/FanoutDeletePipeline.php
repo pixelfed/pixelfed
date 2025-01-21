@@ -53,10 +53,10 @@ class FanoutDeletePipeline implements ShouldQueue
         	"id" => $profile->permalink('#delete'),
         	"type" => "Delete",
         	"actor" => $profile->permalink(),
-        	"to" => [
-        		"https://www.w3.org/ns/activitystreams#Public",
+        	"object" => [
+        		"type" => "Person",
+				"id" => $profile->permalink()
         	],
-        	"object" => $profile->permalink(),
         ];
 
         $payload = json_encode($activity);

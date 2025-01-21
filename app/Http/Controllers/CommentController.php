@@ -2,23 +2,18 @@
 
 namespace App\Http\Controllers;
 
-use Illuminate\Http\Request;
-use Auth;
-use DB;
-use Cache;
-
-use App\Comment;
 use App\Jobs\CommentPipeline\CommentPipeline;
 use App\Jobs\StatusPipeline\NewStatusPipeline;
-use App\Util\Lexer\Autolink;
-use App\Profile;
-use App\Status;
-use App\UserFilter;
-use League\Fractal;
-use App\Transformer\Api\StatusTransformer;
-use League\Fractal\Serializer\ArraySerializer;
-use League\Fractal\Pagination\IlluminatePaginatorAdapter;
 use App\Services\StatusService;
+use App\Status;
+use App\Transformer\Api\StatusTransformer;
+use App\UserFilter;
+use Auth;
+use DB;
+use Illuminate\Http\Request;
+use League\Fractal;
+use League\Fractal\Serializer\ArraySerializer;
+use Purify;
 
 class CommentController extends Controller
 {
@@ -33,9 +28,9 @@ class CommentController extends Controller
             abort(403);
         }
         $this->validate($request, [
-            'item'    => 'required|integer|min:1',
-            'comment' => 'required|string|max:'.(int) config('pixelfed.max_caption_length'),
-            'sensitive' => 'nullable|boolean'
+            'item' => 'required|integer|min:1',
+            'comment' => 'required|string|max:'.config_cache('pixelfed.max_caption_length'),
+            'sensitive' => 'nullable|boolean',
         ]);
         $comment = $request->input('comment');
         $statusId = $request->input('item');
@@ -45,7 +40,7 @@ class CommentController extends Controller
         $profile = $user->profile;
         $status = Status::findOrFail($statusId);
 
-        if($status->comments_disabled == true) {
+        if ($status->comments_disabled == true) {
             return;
         }
 
@@ -55,18 +50,17 @@ class CommentController extends Controller
             ->whereFilterableId($profile->id)
             ->exists();
 
-        if($filtered == true) {
+        if ($filtered == true) {
             return;
         }
 
-        $reply = DB::transaction(function() use($comment, $status, $profile, $nsfw) {
+        $reply = DB::transaction(function () use ($comment, $status, $profile, $nsfw) {
             $scope = $profile->is_private == true ? 'private' : 'public';
-            $autolink = Autolink::create()->autolink($comment);
-            $reply = new Status();
+            $reply = new Status;
             $reply->profile_id = $profile->id;
             $reply->is_nsfw = $nsfw;
-            $reply->caption = e($comment);
-            $reply->rendered = $autolink;
+            $reply->caption = Purify::clean($comment);
+            $reply->rendered = "";
             $reply->in_reply_to_id = $status->id;
             $reply->in_reply_to_profile_id = $status->profile_id;
             $reply->scope = $scope;
@@ -81,9 +75,9 @@ class CommentController extends Controller
         CommentPipeline::dispatch($status, $reply);
 
         if ($request->ajax()) {
-            $fractal = new Fractal\Manager();
-            $fractal->setSerializer(new ArraySerializer());
-            $entity = new Fractal\Resource\Item($reply, new StatusTransformer());
+            $fractal = new Fractal\Manager;
+            $fractal->setSerializer(new ArraySerializer);
+            $entity = new Fractal\Resource\Item($reply, new StatusTransformer);
             $entity = $fractal->createData($entity)->toArray();
             $response = [
                 'code' => 200,

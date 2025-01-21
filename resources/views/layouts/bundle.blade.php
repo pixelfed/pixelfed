@@ -9,11 +9,11 @@
 
     <meta name="mobile-web-app-capable" content="yes">
 
-    <title>{{ $title ?? config('app.name', 'Laravel') }}</title>
+    <title>{{ $title ?? config_cache('app.name', 'Pixelfed') }}</title>
     <link rel="manifest" href="/manifest.json">
 
-    <meta property="og:site_name" content="{{ config('app.name', 'pixelfed') }}">
-    <meta property="og:title" content="{{ $title ?? config('app.name', 'pixelfed') }}">
+    <meta property="og:site_name" content="{{ config_cache('app.name', 'pixelfed') }}">
+    <meta property="og:title" content="{{ $title ?? config_cache('app.name', 'pixelfed') }}">
     <meta property="og:type" content="article">
     <meta property="og:url" content="{{request()->url()}}">
     @stack('meta')

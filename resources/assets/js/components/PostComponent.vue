@@ -302,53 +302,6 @@
 								v-on:likeStatus="likeStatus" />
 
 						<comment-feed :status="status" class="mt-3" />
-						<!-- <div v-if="user.hasOwnProperty('id')" class="card card-body shadow-none border border-top-0 bg-light">
-								<div class="media">
-									<img src="/storage/avatars/default.png" class="rounded-circle mr-2" width="40" height="40">
-									<div class="media-body">
-											<div class="form-group mb-0" style="position:relative;">
-												  <input class="form-control rounded-pill" placeholder="Add a comment..." style="padding-right: 90px;">
-												  <div class="btn btn-primary btn-sm rounded-pill font-weight-bold px-3" style="position:absolute;top: 5px;right:6px;">Post</div>
-											</div>
-									</div>
-								</div>
-						</div>
-
-						<div v-if="user.hasOwnProperty('id')" v-for="(reply, index) in results" :key="'replies:'+index" class="card card-body shadow-none border border-top-0">
-							<div class="media">
-								<img :src="reply.account.avatar" class="rounded-circle border mr-3" width="32px" height="32px">
-									<div class="media-body">
-										<div v-if="reply.sensitive == true">
-											<span class="py-3">
-												<a class="text-dark font-weight-bold mr-3"  style="font-size: 13px;" :href="profileUrl(reply)" v-bind:title="reply.account.username">{{trimCaption(reply.account.username,15)}}</a>
-												<span class="text-break" style="font-size: 13px;">
-													<span class="font-italic text-muted">This comment may contain sensitive material</span>
-													<span class="text-primary cursor-pointer pl-1" @click="reply.sensitive = false;">Show</span>
-												</span>
-											</span>
-										</div>
-										<div v-else>
-											<p class="d-flex justify-content-between align-items-top read-more mb-0" style="overflow-y: hidden;">
-												<span class="mr-3" style="font-size: 13px;">
-													<a class="text-dark font-weight-bold mr-1 text-break" :href="profileUrl(reply)" v-bind:title="reply.account.username">{{trimCaption(reply.account.username,15)}}</a>
-													<span class="text-break comment-body" style="word-break: break-all;" v-html="reply.content"></span>
-												</span>
-												<span class="text-right" style="min-width: 30px;">
-													<span v-on:click="likeReply(reply, $event)"><i v-bind:class="[reply.favourited ? 'fas fa-heart fa-sm text-danger':'far fa-heart fa-sm text-lighter']"></i></span>
-													<span class="pl-2 text-lighter cursor-pointer" @click="ctxMenu(reply)">
-														<span class="fas fa-ellipsis-v text-lighter"></span>
-													</span>
-												</span>
-											</p>
-											<p class="mb-0">
-												<a v-once class="text-muted mr-3 text-decoration-none small" style="width: 20px;" v-text="timeAgo(reply.created_at)" :href="getStatusUrl(reply)"></a>
-												<span v-if="reply.favourites_count" class="text-muted comment-reaction font-weight-bold mr-3 small">{{reply.favourites_count == 1 ? '1 like' : reply.favourites_count + ' likes'}}</span>
-												<span class="small text-muted comment-reaction font-weight-bold cursor-pointer" v-on:click="replyFocus(reply, index, true)">Reply</span>
-											</p>
-										</div>
-									</div>
-							</div>
-						</div> -->
 					</div>
 				</div>
 			</div>
@@ -371,7 +324,7 @@
 			centered
 			title="Likes"
 			body-class="list-group-flush py-3 px-0">
-			<div class="list-group">
+			<div v-if="likedLoaded" class="list-group">
 				<div class="list-group-item border-0 py-1" v-for="(user, index) in likes" :key="'modal_likes_'+index">
 					<div class="media">
 						<a :href="user.url">
@@ -392,44 +345,13 @@
 						</div>
 					</div>
 				</div>
-				<infinite-loading @infinite="infiniteLikesHandler" spinner="spiral">
+				<infinite-loading v-if="likesCanLoadMore" @infinite="infiniteLikesHandler" spinner="spiral">
 					<div slot="no-more"></div>
 					<div slot="no-results"></div>
 				</infinite-loading>
 			</div>
-		</b-modal>
-		<b-modal ref="sharesModal"
-			id="s-modal"
-			hide-footer
-			centered
-			title="Shares"
-			body-class="list-group-flush py-3 px-0">
-			<div class="list-group">
-				<div class="list-group-item border-0 py-1" v-for="(user, index) in shares" :key="'modal_shares_'+index">
-					<div class="media">
-						<a :href="user.url">
-							<img class="mr-3 rounded-circle box-shadow" :src="user.avatar" :alt="user.username + '’s avatar'" width="30px">
-						</a>
-						<div class="media-body">
-							<div class="d-inline-block">
-								<p class="mb-0" style="font-size: 14px">
-									<a :href="user.url" class="font-weight-bold text-dark">
-										{{user.username}}
-									</a>
-								</p>
-								<p class="text-muted mb-0" style="font-size: 14px">
-										{{user.display_name}}
-									</a>
-								</p>
-							</div>
-							<p class="float-right"><!-- <a class="btn btn-primary font-weight-bold py-1" href="#">Follow</a> --></p>
-						</div>
-					</div>
-				</div>
-				<infinite-loading @infinite="infiniteSharesHandler" spinner="spiral">
-					<div slot="no-more"></div>
-					<div slot="no-results"></div>
-				</infinite-loading>
+			<div v-else class="d-flex justify-content-center align-items-center h-100">
+				<b-spinner />
 			</div>
 		</b-modal>
 		<b-modal ref="lightboxModal"
@@ -515,8 +437,6 @@
 			size="sm"
 			body-class="list-group-flush p-0 rounded">
 			<div class="list-group text-center">
-				<!-- <div v-if="user && user.id != status.account.id && relationship && relationship.following" class="list-group-item rounded cursor-pointer font-weight-bold text-danger" @click="ctxMenuUnfollow()">Unfollow</div>
-				<div v-if="user && user.id != status.account.id && relationship && !relationship.following" class="list-group-item rounded cursor-pointer font-weight-bold text-primary" @click="ctxMenuFollow()">Follow</div> -->
 				<div v-if="status && status.local == true" class="list-group-item rounded cursor-pointer" @click="showEmbedPostModal()">Embed</div>
 				<div class="list-group-item rounded cursor-pointer" @click="ctxMenuCopyLink()">Copy Link</div>
 				<div v-if="status && user.id == status.account.id" class="list-group-item rounded cursor-pointer" @click="toggleCommentVisibility">{{ showComments ? 'Disable' : 'Enable'}} Comments</div>
@@ -667,6 +587,7 @@ import VueTribute from 'vue-tribute';
 import PollCard from './partials/PollCard.vue';
 import CommentFeed from './partials/CommentFeed.vue';
 import StatusCard from './partials/StatusCard.vue';
+import { parseLinkHeader } from '@web3-storage/parse-link-header';
 
 pixelfed.postComponent = {};
 
@@ -692,84 +613,85 @@ export default {
 		},
 
 		data() {
-				return {
-						config: window.App.config,
-						status: false,
-						media: {},
-						user: false,
-						reactions: {
-							liked: false,
-							shared: false
-						},
-						likes: [],
-						likesPage: 1,
-						shares: [],
-						sharesPage: 1,
-						lightboxMedia: false,
-						replyText: '',
-						replyStatus: {},
-						replySensitive: false,
-						relationship: {},
-						results: [],
-						pagination: {},
-						min_id: 0,
-						max_id: 0,
-						reply_to_profile_id: 0,
-						thread: false,
-						showComments: false,
-						warning: false,
-						loaded: false,
-						loading: null,
-						replyingToId: this.statusId,
-						replyingToUsername: this.statusUsername,
-						replyToIndex: 0,
-						replySending: false,
-						emoji: window.App.util.emoji,
-						showReadMore: true,
-						showCaption: true,
-						ctxEmbedPayload: false,
-						copiedEmbed: false,
-						ctxEmbedShowCaption: true,
-						ctxEmbedShowLikes: false,
-						ctxEmbedCompactMode: false,
-						layout: this.profileLayout,
-						showProfileMorePosts: false,
-						profileMorePosts: [],
-						reactionBarLoading: true,
-						tributeSettings: {
-							collection: [
-								{
-									trigger: '@',
-									menuShowMinLength: 2,
-									values: (function (text, cb) {
-										let url = '/api/compose/v0/search/mention';
-										axios.get(url, { params: { q: text }})
-										.then(res => {
-											cb(res.data);
-										})
-										.catch(err => {
-											console.log(err);
-										})
+			return {
+					config: window.App.config,
+					status: false,
+					media: {},
+					user: false,
+					reactions: {
+						liked: false,
+						shared: false
+					},
+					likes: [],
+					likesCursor: null,
+					likesCanLoadMore: true,
+					likedLoaded: false,
+					shares: [],
+					lightboxMedia: false,
+					replyText: '',
+					replyStatus: {},
+					replySensitive: false,
+					relationship: {},
+					results: [],
+					pagination: {},
+					min_id: 0,
+					max_id: 0,
+					reply_to_profile_id: 0,
+					thread: false,
+					showComments: false,
+					warning: false,
+					loaded: false,
+					loading: null,
+					replyingToId: this.statusId,
+					replyingToUsername: this.statusUsername,
+					replyToIndex: 0,
+					replySending: false,
+					emoji: window.App.util.emoji,
+					showReadMore: true,
+					showCaption: true,
+					ctxEmbedPayload: false,
+					copiedEmbed: false,
+					ctxEmbedShowCaption: true,
+					ctxEmbedShowLikes: false,
+					ctxEmbedCompactMode: false,
+					layout: this.profileLayout,
+					showProfileMorePosts: false,
+					profileMorePosts: [],
+					reactionBarLoading: true,
+					tributeSettings: {
+						collection: [
+							{
+								trigger: '@',
+								menuShowMinLength: 2,
+								values: (function (text, cb) {
+									let url = '/api/compose/v0/search/mention';
+									axios.get(url, { params: { q: text }})
+									.then(res => {
+										cb(res.data);
 									})
-								},
-								{
-									trigger: '#',
-									menuShowMinLength: 2,
-									values: (function (text, cb) {
-										let url = '/api/compose/v0/search/hashtag';
-										axios.get(url, { params: { q: text }})
-										.then(res => {
-											cb(res.data);
-										})
-										.catch(err => {
-											console.log(err);
-										})
+									.catch(err => {
+										console.log(err);
 									})
-								}
-							]
-						},
-						content: undefined
-					}
+								})
+							},
+							{
+								trigger: '#',
+								menuShowMinLength: 2,
+								values: (function (text, cb) {
+									let url = '/api/compose/v0/search/hashtag';
+									axios.get(url, { params: { q: text }})
+									.then(res => {
+										cb(res.data);
+									})
+									.catch(err => {
+										console.log(err);
+									})
+								})
+							}
+						]
+					},
+					content: undefined
+			}
 		},
 		watch: {
 			ctxEmbedShowCaption: function (n,o) {
@@ -847,8 +769,6 @@ export default {
 									let img = `<img draggable="false" class="emojione custom-emoji" alt="${emoji.shortcode}" title="${emoji.shortcode}" src="${emoji.url}" data-original="${emoji.url}" data-static="${emoji.static_url}" width="18" height="18" onerror="this.onerror=null;this.src='/storage/emoji/missing.png';" />`;
 									self.content = self.content.replace(`:${emoji.shortcode}:`, img);
 								});
-								self.likesPage = 2;
-								self.sharesPage = 2;
 								self.showCaption = !response.data.status.sensitive;
 								if(self.status.comments_disabled == false) {
 									self.showComments = true;
@@ -886,59 +806,68 @@ export default {
 					window.location.href = '/login?next=' + encodeURIComponent('/p/' + this.status.shortcode);
 					return;
 				}
-				if(this.likes.length) {
+				if(this.likes && this.likes.length) {
 					this.$refs.likesModal.show();
 					return;
 				}
-				axios.get('/api/v2/likes/profile/'+this.statusUsername+'/status/'+this.statusId)
+				axios.get('/api/v1/statuses/'+ this.statusId + '/favourited_by', {
+					params: {
+						limit: 40,
+						'_pe': 1
+					}
+				})
 				.then(res => {
-					this.likes = res.data.data;
-					this.$refs.likesModal.show();
-				});
-			},
+					this.likes = res.data;
 
-			sharesModal() {
-				if(this.status.reblogs_count == 0 || $('body').hasClass('loggedIn') == false) {
-					window.location.href = '/login?next=' + encodeURIComponent('/p/' + this.status.shortcode);
-					return;
-				}
-				if(this.shares.length) {
-					this.$refs.sharesModal.show();
-					return;
-				}
-				axios.get('/api/v2/shares/profile/'+this.statusUsername+'/status/'+this.statusId)
-				.then(res => {
-					this.shares = res.data.data;
-					this.$refs.sharesModal.show();
-				});
+					if(res.headers && res.headers.link) {
+						const links = parseLinkHeader(res.headers.link);
+						if(links.prev) {
+							this.likesCursor = links.prev.cursor;
+							this.likesCanLoadMore = true;
+						} else {
+							this.likesCanLoadMore = false;
+						}
+					} else {
+						this.likesCanLoadMore = false;
+					}
+					this.$refs.likesModal.show();
+				})
+				.then(() => {
+					setTimeout(() => { this.likedLoaded = true }, 1000);
+				})
 			},
 
 			infiniteLikesHandler($state) {
-				let api = '/api/v2/likes/profile/'+this.statusUsername+'/status/'+this.statusId;
-				axios.get(api, {
-					params: {
-						page: this.likesPage,
-					},
-				}).then(({ data }) => {
-					if (data.data.length > 0) {
-						this.likes.push(...data.data);
-						this.likesPage++;
-						$state.loaded();
-					} else {
-						$state.complete();
-					}
-				});
-			},
+				if(!this.likesCanLoadMore) {
+					$state.complete();
+					return;
+				}
 
-			infiniteSharesHandler($state) {
-				axios.get('/api/v2/shares/profile/'+this.statusUsername+'/status/'+this.statusId, {
+				axios.get('/api/v1/statuses/'+ this.statusId + '/favourited_by', {
 					params: {
-						page: this.sharesPage,
+						cursor: this.likesCursor,
+						limit: 20,
+						'_pe': 1
 					},
-				}).then(({ data }) => {
-					if (data.data.length > 0) {
-						this.shares.push(...data.data);
-						this.sharesPage++;
+				}).then(res => {
+					if (res && res.data.length) {
+						this.likes.push(...res.data);
+					}
+
+					if(res.headers && res.headers.link) {
+						const links = parseLinkHeader(res.headers.link);
+						if(links.prev) {
+							this.likesCursor = links.prev.cursor;
+							this.likesCanLoadMore = true;
+						} else {
+							this.likesCanLoadMore = false;
+						}
+					} else {
+						this.likesCanLoadMore = false;
+					}
+					return this.likesCanLoadMore;
+				}).then(res => {
+					if(res) {
 						$state.loaded();
 					} else {
 						$state.complete();
@@ -1448,7 +1377,15 @@ export default {
 			},
 
 			previewUrl(status) {
-				return status.sensitive ? '/storage/no-preview.png?v=' + new Date().getTime() : status.media_attachments[0].preview_url;
+                if(status.sensitive) {
+                    return '/storage/no-preview.png';
+                }
+
+                if(status.media_attachments[0]?.optimized_url) {
+                    return status.media_attachments[0]?.optimized_url;
+                }
+
+				return status.media_attachments[0].preview_url;
 			},
 
 			previewBackground(status) {
@@ -1625,34 +1562,6 @@ export default {
 				navigator.clipboard.writeText(status.url);
 				this.closeCtxMenu();
 				return;
-			},
-
-			ctxMenuFollow() {
-				let id = this.status.account.id;
-				axios.post('/i/follow', {
-					item: id
-				}).then(res => {
-					let username = this.status.account.acct;
-					this.relationship.following = true;
-					this.$refs.ctxModal.hide();
-					setTimeout(function() {
-						swal('Follow successful!', 'You are now following ' + username, 'success');
-					}, 500);
-				});
-			},
-
-			ctxMenuUnfollow() {
-				let id = this.status.account.id;
-				axios.post('/i/follow', {
-					item: id
-				}).then(res => {
-					let username = this.status.account.acct;
-					this.relationship.following = false;
-					this.$refs.ctxModal.hide();
-					setTimeout(function() {
-						swal('Unfollow successful!', 'You are no longer following ' + username, 'success');
-					}, 500);
-				});
 			},
 
 			archivePost(status) {

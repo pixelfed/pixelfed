@@ -3,39 +3,44 @@
 return [
 
 	'common' => [
-		'comment' => 'Comment',
-		'commented' => 'Commented',
-		'comments' => 'Comments',
-		'like' => 'Like',
-		'liked' => 'Liked',
-		'likes' => 'Likes',
-		'share' => 'Share',
-		'shared' => 'Shared',
-		'shares' => 'Shares',
-		'unshare' => 'Unshare',
+		'comment' => 'Komentar',
+		'commented' => 'Komentarisao',
+		'comments' => 'Komentari',
+		'like' => 'Sviđa mi se',
+		'liked' => 'Sviđa mi se',
+		'likes' => 'Sviđanja',
+		'share' => 'Podeli',
+		'shared' => 'Podeljeno',
+		'shares' => 'Deljenja',
+		'unshare' => 'Nemoj deliti',
+		'bookmark' => 'Bookmark',
 
-		'cancel' => 'Cancel',
-		'copyLink' => 'Copy Link',
-		'delete' => 'Delete',
-		'error' => 'Error',
-		'errorMsg' => 'Something went wrong. Please try again later.',
-		'oops' => 'Oops!',
-		'other' => 'Other',
-		'readMore' => 'Read more',
-		'success' => 'Success',
+		'cancel' => 'Otkaži',
+		'copyLink' => 'Kopiraj vezu',
+		'delete' => 'Obriši',
+		'error' => 'Grеška',
+		'errorMsg' => 'Nešto nije u redu. Pokušaj ponovo kasnije.',
+		'oops' => 'Ups!',
+		'other' => 'Ostalo',
+		'readMore' => 'Pročitaj više',
+		'success' => 'Uspeh',
+		'proceed' => 'Proceed',
+		'next' => 'Next',
+		'close' => 'Close',
+		'clickHere' => 'click here',
 
-		'sensitive' => 'Sensitive',
-		'sensitiveContent' => 'Sensitive Content',
-		'sensitiveContentWarning' => 'This post may contain sensitive content',
+		'sensitive' => 'Osetljivo',
+		'sensitiveContent' => 'Osetljivi sadržaj',
+		'sensitiveContentWarning' => 'Ovaj post može sadržati osetljivi sadržaj',
 	],
 
 	'site' => [
-		'terms' => 'Terms of Use',
-		'privacy' => 'Privacy Policy',
+		'terms' => 'Uslovi korišćenja',
+		'privacy' => 'Politika privatnosti',
 	],
 
 	'navmenu' => [
-		'search' => 'Search',
+		'search' => 'Pretraga',
 		'admin' => 'Admin Dashboard',
 
 		// Timelines
@@ -97,6 +102,7 @@ return [
 		'modlog' => 'modlog',
 		'post' => 'post',
 		'story' => 'story',
+		'noneFound' => 'No notifications found',
 	],
 
 	'post' => [
@@ -176,11 +182,27 @@ return [
 	],
 
 	'timeline' => [
-		'peopleYouMayKnow' => 'People you may know'
+		'peopleYouMayKnow' => 'People you may know',
+
+		'onboarding' => [
+			'welcome' => 'Welcome',
+			'thisIsYourHomeFeed' => 'This is your home feed, a chronological feed of posts from accounts you follow.',
+			'letUsHelpYouFind' => 'Let us help you find some interesting people to follow',
+			'refreshFeed' => 'Refresh my feed',
+		],
 	],
 
 	'hashtags' => [
 		'emptyFeed' => 'We can\'t seem to find any posts for this hashtag'
+	],
+
+	'report' => [
+		'report' => 'Report',
+		'selectReason' => 'Select a reason',
+		'reported' => 'Reported',
+		'sendingReport' => 'Sending report',
+		'thanksMsg' => 'Thanks for the report, people like you help keep our community safe!',
+		'contactAdminMsg' => 'If you\'d like to contact an administrator about this post or report',
 	],
 
 ];

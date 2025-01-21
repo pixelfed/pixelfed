@@ -46,8 +46,19 @@ class ContactController extends Controller
 		$contact->response = '';
 		$contact->save();
 
-		ContactPipeline::dispatchNow($contact);
+		ContactPipeline::dispatch($contact);
 
 		return redirect()->back()->with('status', 'Success - Your message has been sent to admins.');
 	}
+
+    public function showAdminResponse(Request $request, $id)
+    {
+        abort_if(!$request->user(), 404);
+        $uid = $request->user()->id;
+        $contact = Contact::whereUserId($uid)
+            ->whereNotNull('response')
+            ->whereNotNull('responded_at')
+            ->findOrFail($id);
+        return view('site.contact.admin-response', compact('contact'));
+    }
 }

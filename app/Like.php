@@ -9,14 +9,17 @@ class Like extends Model
 {
     use SoftDeletes;
 
-    const MAX_PER_DAY = 500;
+    const MAX_PER_DAY = 1500;
 
     /**
      * The attributes that should be mutated to dates.
      *
      * @var array
      */
-    protected $dates = ['deleted_at'];
+    protected $casts = [
+    	'deleted_at' => 'datetime'
+    ];
+
     protected $fillable = ['profile_id', 'status_id', 'status_profile_id'];
 
     public function actor()
@@ -27,22 +30,5 @@ class Like extends Model
     public function status()
     {
         return $this->belongsTo(Status::class);
-    }
-
-    public function toText($type = 'post')
-    {
-        $actorName = $this->actor->username;
-        $msg = $type == 'post' ? __('notification.likedPhoto') : __('notification.likedComment');
-
-        return "{$actorName} ".$msg;
-    }
-
-    public function toHtml($type = 'post')
-    {
-        $actorName = $this->actor->username;
-        $actorUrl = $this->actor->url();
-        $msg = $type == 'post' ? __('notification.likedPhoto') : __('notification.likedComment');
-
-        return "<a href='{$actorUrl}' class='profile-link'>{$actorName}</a> ".$msg;
     }
 }

@@ -35,9 +35,13 @@ class CloudMediaMigrate extends Command
      */
     public function handle()
     {
-        $enabled = config('pixelfed.cloud_storage');
+        $enabled = (bool) config_cache('pixelfed.cloud_storage');
         if(!$enabled) {
             $this->error('Cloud storage not enabled. Exiting...');
+            return;
+        }
+
+        if(!$this->confirm('Are you sure you want to proceed?')) {
             return;
         }
 

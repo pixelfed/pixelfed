@@ -17,6 +17,7 @@ use Log;
 use Storage;
 use Zttp\Zttp;
 use App\Util\ActivityPub\Helpers;
+use App\Services\MediaPathService;
 
 class RemoteFollowImportRecent implements ShouldQueue
 {
@@ -45,7 +46,6 @@ class RemoteFollowImportRecent implements ShouldQueue
             'image/jpg',
             'image/jpeg',
             'image/png',
-            'image/gif',
         ];
     }
 
@@ -208,9 +208,7 @@ class RemoteFollowImportRecent implements ShouldQueue
     public function importMedia($url, $mime, $status)
     {
         $user = $this->profile;
-        $monthHash = hash('sha1', date('Y').date('m'));
-        $userHash = hash('sha1', $user->id.(string) $user->created_at);
-        $storagePath = "public/m/{$monthHash}/{$userHash}";
+        $storagePath = MediaPathService::get($user, 2);
 
         try {
             $info = pathinfo($url);

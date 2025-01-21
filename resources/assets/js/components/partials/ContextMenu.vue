@@ -9,8 +9,6 @@
 			size="sm"
 			body-class="list-group-flush p-0 rounded">
 			<div class="list-group text-center">
-				<!-- <div v-if="status && status.account.id != profile.id && ctxMenuRelationship && ctxMenuRelationship.following" class="list-group-item rounded cursor-pointer font-weight-bold text-danger" @click="ctxMenuUnfollow()">Unfollow</div>
-				<div v-if="status && status.account.id != profile.id && ctxMenuRelationship && !ctxMenuRelationship.following" class="list-group-item rounded cursor-pointer font-weight-bold text-primary" @click="ctxMenuFollow()">Follow</div> -->
 				<div v-if="status.visibility !== 'archived'" class="list-group-item rounded cursor-pointer" @click="ctxMenuGoToPost()">View Post</div>
 				<div v-if="status.visibility !== 'archived'" class="list-group-item rounded cursor-pointer" @click="ctxMenuGoToProfile()">View Profile</div>
 				<!-- <div v-if="status && status.local == true && !status.in_reply_to_id" class="list-group-item rounded cursor-pointer" @click="ctxMenuEmbed()">Embed</div>
@@ -287,37 +285,6 @@
 				window.location.href = this.profileUrl(status);
 				this.closeCtxMenu();
 				return;
-			},
-
-			ctxMenuFollow() {
-				let id = this.ctxMenuStatus.account.id;
-				axios.post('/i/follow', {
-					item: id
-				}).then(res => {
-					let username = this.ctxMenuStatus.account.acct;
-					this.closeCtxMenu();
-					setTimeout(function() {
-						swal('Follow successful!', 'You are now following ' + username, 'success');
-					}, 500);
-				});
-			},
-
-			ctxMenuUnfollow() {
-				let id = this.ctxMenuStatus.account.id;
-				axios.post('/i/follow', {
-					item: id
-				}).then(res => {
-					let username = this.ctxMenuStatus.account.acct;
-					if(this.scope == 'home') {
-						this.feed = this.feed.filter(s => {
-							return s.account.id != this.ctxMenuStatus.account.id;
-						});
-					}
-					this.closeCtxMenu();
-					setTimeout(function() {
-						swal('Unfollow successful!', 'You are no longer following ' + username, 'success');
-					}, 500);
-				});
 			},
 
 			ctxMenuReportPost() {

@@ -50,7 +50,7 @@
 		</a>
 		<div class="collapse" id="collapse3">
 			<div>
-				During the compose process, you will see the <span class="font-weight-bold">Caption</span> input. Captions are optional and limited to <span class="font-weight-bold">{{config('pixelfed.max_caption_length')}}</span> characters.
+				During the compose process, you will see the <span class="font-weight-bold">Caption</span> input. Captions are optional and limited to <span class="font-weight-bold">{{config_cache('pixelfed.max_caption_length')}}</span> characters.
 			</div>
 		</div>
 	</p>

@@ -49,9 +49,7 @@ class NetworkTimelineService
 	public static function add($val)
 	{
 		if(self::count() > config('instance.timeline.network.cache_dropoff')) {
-			if(config('database.redis.client') === 'phpredis') {
-				Redis::zpopmin(self::CACHE_KEY);
-			}
+			Redis::zpopmin(self::CACHE_KEY);
 		}
 
 		return Redis::zadd(self::CACHE_KEY, $val, $val);
@@ -71,6 +69,26 @@ class NetworkTimelineService
 	{
 		return Redis::zcard(self::CACHE_KEY);
 	}
+
+    public static function deleteByProfileId($profileId)
+    {
+        $res = Redis::zrange(self::CACHE_KEY, 0, '-1');
+        if(!$res) {
+            return;
+        }
+        foreach($res as $postId) {
+            $s = StatusService::get($postId);
+            if(!$s) {
+                self::rem($postId);
+                continue;
+            }
+            if($s['account']['id'] == $profileId) {
+                self::rem($postId);
+            }
+        }
+
+        return;
+    }
 
 	public static function warmCache($force = false, $limit = 100)
 	{

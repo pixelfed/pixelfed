@@ -6,27 +6,32 @@ return [
 		'comment' => 'Comentar',
 		'commented' => 'Comentado',
 		'comments' => 'Comentários',
-		'like' => 'Curtir',
-		'liked' => 'Curtiu',
-		'likes' => 'Curtidas',
-		'share' => 'Compartilhar',
-		'shared' => 'Compartilhado',
-		'shares' => 'Compartilhamentos',
-		'unshare' => 'Desfazer compartilhamento',
+		'like' => 'Gosto',
+		'liked' => 'Gostei',
+		'likes' => 'Gostos',
+		'share' => 'Partilhar',
+		'shared' => 'Partilhado',
+		'shares' => 'Partilhas',
+		'unshare' => 'Despartilhar',
+		'bookmark' => 'Favorito',
 
 		'cancel' => 'Cancelar',
 		'copyLink' => 'Copiar link',
-		'delete' => 'Apagar',
+		'delete' => 'Eliminar',
 		'error' => 'Erro',
-		'errorMsg' => 'Algo deu errado. Por favor, tente novamente mais tarde.',
+		'errorMsg' => 'Algo correu mal. Por favor, tente novamente mais tarde.',
 		'oops' => 'Opa!',
 		'other' => 'Outro',
-		'readMore' => 'Leia mais',
+		'readMore' => 'Ler mais',
 		'success' => 'Sucesso',
+		'proceed' => 'Continuar',
+		'next' => 'Seguinte',
+		'close' => 'Fechar',
+		'clickHere' => 'clique aqui',
 
 		'sensitive' => 'Sensível',
 		'sensitiveContent' => 'Conteúdo sensível',
-		'sensitiveContentWarning' => 'Esta publicação pode conter conteúdo inapropriado',
+		'sensitiveContentWarning' => 'Este post pode conter conteúdo sensível',
 	],
 
 	'site' => [
@@ -35,27 +40,27 @@ return [
 	],
 
 	'navmenu' => [
-		'search' => 'Pesquisar',
-		'admin' => 'Painel do Administrador',
+		'search' => 'Pesquisa',
+		'admin' => 'Painel de Administração',
 
 		// Timelines
-		'homeFeed' => 'Página inicial',
+		'homeFeed' => 'Inicio',
 		'localFeed' => 'Feed local',
 		'globalFeed' => 'Feed global',
 
 		// Core features
-		'discover' => 'Explorar',
-		'directMessages' => 'Mensagens privadas',
+		'discover' => 'Descobrir',
+		'directMessages' => 'Mensagens Diretas',
 		'notifications' => 'Notificações',
 		'groups' => 'Grupos',
-		'stories' => 'Histórias',
+		'stories' => 'Stories',
 
 		// Self links
 		'profile' => 'Perfil',
-		'drive' => 'Mídias',
-		'settings' => 'Configurações',
+		'drive' => 'Drive',
+		'settings' => 'Definições',
 		'compose' => 'Criar novo',
-		'logout' => 'Sair',
+		'logout' => 'Terminar Sessão',
 
 		// Nav footer
 		'about' => 'Sobre',
@@ -69,9 +74,9 @@ return [
 	],
 
 	'directMessages' => [
-		'inbox' => 'Caixa de entrada',
+		'inbox' => 'Caixa de Entrada',
 		'sent' => 'Enviadas',
-		'requests' => 'Solicitações'
+		'requests' => 'Pedidos'
 	],
 
 	'notifications' => [
@@ -85,10 +90,10 @@ return [
 		'sentA' => 'enviou um',
 
 		'followed' => 'seguiu',
-		'mentioned' => 'mencionado',
+		'mentioned' => 'mencionou',
 		'you' => 'você',
 
-		'yourApplication' => 'Sua inscrição para participar',
+		'yourApplication' => 'A sua candidatura para se juntar',
 		'applicationApproved' => 'foi aprovado!',
 		'applicationRejected' => 'foi rejeitado. Você pode se inscrever novamente para participar em 6 meses.',
 
@@ -97,78 +102,79 @@ return [
 		'modlog' => 'histórico de moderação',
 		'post' => 'publicação',
 		'story' => 'história',
+		'noneFound' => 'Nenhuma notificação encontrada',
 	],
 
 	'post' => [
-		'shareToFollowers' => 'Compartilhar com os seguidores',
-		'shareToOther' => 'Compartilhar com outros',
-		'noLikes' => 'Ainda sem curtidas',
-		'uploading' => 'Enviando',
+		'shareToFollowers' => 'Partilhar com os seguidores',
+		'shareToOther' => 'Partilhar com outros',
+		'noLikes' => 'Ainda sem gostos',
+		'uploading' => 'A enviar',
 	],
 
 	'profile' => [
 		'posts' => 'Publicações',
 		'followers' => 'Seguidores',
-		'following' => 'Seguindo',
+		'following' => 'A seguir',
 		'admin' => 'Administrador',
 		'collections' => 'Coleções',
 		'follow' => 'Seguir',
 		'unfollow' => 'Deixar de seguir',
 		'editProfile' => 'Editar Perfil',
-		'followRequested' => 'Solicitação de seguir enviada',
-		'joined' => 'Entrou',
+		'followRequested' => 'Pedido para seguir enviado',
+		'joined' => 'Juntou-se',
 
 		'emptyCollections' => 'Não conseguimos encontrar nenhuma coleção',
-		'emptyPosts' => 'Não encontramos nenhuma publicação',
+		'emptyPosts' => 'Não conseguimos encontrar nenhuma publicação',
 	],
 
 	'menu' => [
 		'viewPost' => 'Ver publicação',
-		'viewProfile' => 'Ver Perfil',
+		'viewProfile' => 'Ver perfil',
 		'moderationTools' => 'Ferramentas de moderação',
 		'report' => 'Denunciar',
-		'archive' => 'Arquivo',
-		'unarchive' => 'Desarquivar',
+		'archive' => 'Arquivar',
+		'unarchive' => 'Retirar do arquivo',
 		'embed' => 'Incorporar',
 
-		'selectOneOption' => 'Selecione uma das opções a seguir',
-		'unlistFromTimelines' => 'Retirar das linhas do tempo',
+		'selectOneOption' => 'Selecione uma das seguintes opções',
+		'unlistFromTimelines' => 'Remover das cronologias',
 		'addCW' => 'Adicionar aviso de conteúdo',
 		'removeCW' => 'Remover aviso de conteúdo',
 		'markAsSpammer' => 'Marcar como Spammer',
-		'markAsSpammerText' => 'Retirar das linhas do tempo + adicionar aviso de conteúdo às publicações antigas e futuras',
+		'markAsSpammerText' => 'Remover das cronologias e adicionar um aviso de conteúdo às publicações existentes e futuras',
 		'spam' => 'Lixo Eletrônico',
-		'sensitive' => 'Conteúdo sensível',
-		'abusive' => 'Abusivo ou Prejudicial',
+		'sensitive' => 'Conteúdo Sensível',
+		'abusive' => 'Abusivo ou prejudicial',
 		'underageAccount' => 'Conta de menor de idade',
-		'copyrightInfringement' => 'Violação de direitos autorais',
+		'copyrightInfringement' => 'Violação de direitos de autor',
 		'impersonation' => 'Roubo de identidade',
-		'scamOrFraud' => 'Golpe ou Fraude',
+		'scamOrFraud' => 'Esquema ou fraude',
 		'confirmReport' => 'Confirmar denúncia',
-		'confirmReportText' => 'Você realmente quer denunciar esta publicação?',
+		'confirmReportText' => 'Tem a certeza que deseja denunciar esta mensagem?',
 		'reportSent' => 'Denúncia enviada!',
-		'reportSentText' => 'Nós recebemos sua denúncia com sucesso.',
-		'reportSentError' => 'Houve um problema ao denunciar esta publicação.',
+		'reportSentText' => 'Recebemos com sucesso a sua denúncia.',
+		'reportSentError' => 'Ocorreu um erro ao denunciar este conteúdo.',
 
-		'modAddCWConfirm' => 'Você realmente quer adicionar um aviso de conteúdo a esta publicação?',
-		'modCWSuccess' => 'Aviso de conteúdo sensível adicionado com sucesso',
-		'modRemoveCWConfirm' => 'Você realmente quer remover o aviso de conteúdo desta publicação?',
-		'modRemoveCWSuccess' => 'Aviso de conteúdo sensível removido com sucesso',
-		'modUnlistConfirm' => 'Você realmente quer definir esta publicação como não listada?',
-		'modUnlistSuccess' => 'A publicação foi definida como não listada com sucesso',
+		'modAddCWConfirm' => 'Tem a certeza que pretende adicionar um aviso de conteúdo à publicação?',
+		'modCWSuccess' => 'Adicionou com sucesso um aviso de conteúdo',
+		'modRemoveCWConfirm' => 'Tem a certeza que pretende remover o aviso de conteúdo desta publicação?',
+		'modRemoveCWSuccess' => 'Removeu com sucesso o aviso de conteúdo',
+		'modUnlistConfirm' => 'Tem a certeza que pretende deslistar este post?',
+		'modUnlistSuccess' => 'Deslistou com sucesso este post',
 		'modMarkAsSpammerConfirm' => 'Você realmente quer denunciar este usuário por spam? Todas as suas publicações anteriores e futuras serão marcadas com um aviso de conteúdo e removidas das linhas do tempo.',
-		'modMarkAsSpammerSuccess' => 'Perfil denunciado com sucesso',
+		'modMarkAsSpammerSuccess' => 'Marcou com sucesso esta conta como spammer',
 
 		'toFollowers' => 'para seguidores',
 
-		'showCaption' => 'Mostrar legenda',
-		'showLikes' => 'Mostrar curtidas',
+		'showCaption' => 'Mostar legenda',
+		'showLikes' => 'Mostrar Gostos',
 		'compactMode' => 'Modo compacto',
 		'embedConfirmText' => 'Ao usar de forma “embed”, você concorda com nossas',
 
-		'deletePostConfirm' => 'Você tem certeza que deseja excluir esta publicação?',
-		'archivePostConfirm' => 'Tem certeza que deseja arquivar esta publicação?',
-		'unarchivePostConfirm' => 'Tem certeza que deseja desarquivar esta publicação?',
+		'deletePostConfirm' => 'Tem a certeza que pretende apagar esta publicação?',
+		'archivePostConfirm' => 'Tem a certeza que pretende arquivar esta publicação?',
+		'unarchivePostConfirm' => 'Tem a certeza que pretende desarquivar este post?',
 	],
 
 	'story' => [
@@ -176,11 +182,27 @@ return [
 	],
 
 	'timeline' => [
-		'peopleYouMayKnow' => 'Pessoas que você talvez conheça'
+		'peopleYouMayKnow' => 'Pessoas que talvez conheça',
+
+		'onboarding' => [
+			'welcome' => 'Bem-vindo',
+			'thisIsYourHomeFeed' => 'Este é o seu feed pessoal, com publicações em ordem cronológica das contas que segue.',
+			'letUsHelpYouFind' => 'Deixe-nos ajudar a encontrar algumas pessoas interessantes para seguir',
+			'refreshFeed' => 'Atualizar o meu feed',
+		],
 	],
 
 	'hashtags' => [
 		'emptyFeed' => 'Não encontramos nenhuma publicação com esta hashtag'
+	],
+
+	'report' => [
+		'report' => 'Denunciar',
+		'selectReason' => 'Selecione uma razão',
+		'reported' => 'Denunciado',
+		'sendingReport' => 'A enviar denúncia',
+		'thanksMsg' => 'Obrigado pela denúncia, pessoas como você ajudam a manter a nossa comunidade segura!',
+		'contactAdminMsg' => 'Se quiser entrar em contato com um administrador acerca desta publicação ou denúncia',
 	],
 
 ];

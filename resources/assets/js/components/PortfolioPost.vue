@@ -19,11 +19,11 @@
                     <div class="col-12 mb-4">
                         <p v-if="settings.show_captions && post.content_text">{{ post.content_text }}</p>
                         <div class="d-md-flex justify-content-between align-items-center">
-                            <p class="small text-lighter">by <a :href="profileUrl()" class="text-lighter font-weight-bold">&commat;{{profile.username}}</a></p>
-                            <p v-if="settings.show_license && post.media_attachments[0].license" class="small text-muted">Licensed under {{ post.media_attachments[0].license.title }}</p>
+                            <p class="small">by <a :href="profileUrl()" class="font-weight-bold link-color">&commat;{{profile.username}}</a></p>
+                            <p v-if="settings.show_license && post.media_attachments[0].license" class="small">Licensed under {{ post.media_attachments[0].license.title }}</p>
                             <p v-if="settings.show_location && post.place" class="small text-muted">{{ post.place.name }}, {{ post.place.country }}</p>
-                            <p v-if="settings.show_timestamp" class="small text-muted">
-                                <a v-if="settings.show_link" :href="post.url" class="text-lighter font-weight-bold" style="z-index: 2">
+                            <p v-if="settings.show_timestamp" class="small">
+                                <a v-if="settings.show_link" :href="post.url" class="font-weight-bold link-color" style="z-index: 2">
                                     {{ formatDate(post.created_at) }}
                                 </a>
                                 <span v-else class="user-select-none">
@@ -96,6 +96,15 @@
                 })
                 .then(res => {
                     this.settings = res.data;
+
+                    if(res.data.hasOwnProperty('background_color')) {
+                    	this.updateCssVariable('--body-bg', res.data.background_color);
+                    }
+
+                    if(res.data.hasOwnProperty('text_color')) {
+                    	this.updateCssVariable('--text-color', res.data.text_color);
+                    	this.updateCssVariable('--link-color', res.data.text_color);
+                    }
                 })
                 .then(() => {
                     setTimeout(() => {
@@ -116,6 +125,11 @@
             formatDate(ts) {
                 const dts = new Date(ts);
                 return dts.toLocaleDateString(undefined, { weekday: 'short', year: 'numeric', month: 'long', day: 'numeric' });
+            },
+
+            updateCssVariable(k, v) {
+            	let rs = document.querySelector(':root');
+            	rs.style.setProperty(k, v);
             }
         }
     }

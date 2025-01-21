@@ -105,7 +105,7 @@
 									{{__('navmenu.discover')}}
 								</a>
 
-								@if(config_cache('instance.stories.enabled'))
+								@if((bool) config_cache('instance.stories.enabled'))
 								<a class="dropdown-item lead" href="/i/stories/new">
 									<span style="width: 50px;margin-right:14px;">
 										<span class="fal fa-history text-lighter fa-lg"></span>

@@ -5,6 +5,10 @@ namespace App\Observers;
 use App\Status;
 use App\Services\ProfileStatusService;
 use Cache;
+use App\Models\ImportPost;
+use App\Services\ImportService;
+use App\Jobs\HomeFeedPipeline\FeedRemovePipeline;
+use App\Jobs\HomeFeedPipeline\FeedRemoveRemotePipeline;
 
 class StatusObserver
 {
@@ -34,6 +38,10 @@ class StatusObserver
      */
     public function updated(Status $status)
     {
+        if(!in_array($status->scope, ['public', 'unlisted', 'private'])) {
+            return;
+        }
+
         if(config('instance.timeline.home.cached')) {
             Cache::forget('pf:timelines:home:' . $status->profile_id);
         }
@@ -51,11 +59,28 @@ class StatusObserver
      */
     public function deleted(Status $status)
     {
+        if(!in_array($status->scope, ['public', 'unlisted', 'private'])) {
+            return;
+        }
+
         if(config('instance.timeline.home.cached')) {
             Cache::forget('pf:timelines:home:' . $status->profile_id);
         }
 
         ProfileStatusService::delete($status->profile_id, $status->id);
+
+        if($status->uri == null) {
+            ImportPost::whereProfileId($status->profile_id)->whereStatusId($status->id)->delete();
+            ImportService::clearImportedFiles($status->profile_id);
+        }
+
+        if(config('exp.cached_home_timeline')) {
+        	if($status->uri) {
+        		FeedRemoveRemotePipeline::dispatch($status->id, $status->profile_id)->onQueue('feed');
+        	} else {
+        		FeedRemovePipeline::dispatch($status->id, $status->profile_id)->onQueue('feed');
+        	}
+        }
     }
 
     /**

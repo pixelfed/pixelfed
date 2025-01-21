@@ -10,6 +10,7 @@
         "shared": "Geteilt",
         "shares": "Geteilt",
         "unshare": "Teilen r\u00fcckg\u00e4ngig machen",
+        "bookmark": "Lesezeichen",
         "cancel": "Abbrechen",
         "copyLink": "Link kopieren",
         "delete": "L\u00f6schen",
@@ -18,7 +19,11 @@
         "oops": "Hoppla!",
         "other": "Anderes",
         "readMore": "Weiterlesen",
-        "success": "Erfolgreich",
+        "success": "Erfolg",
+        "proceed": "Fortfahren",
+        "next": "Weiter",
+        "close": "Schlie\u00dfen",
+        "clickHere": "hier klicken",
         "sensitive": "Sensibel",
         "sensitiveContent": "Sensibler Inhalt",
         "sensitiveContentWarning": "Dieser Beitrag kann sensible Inhalte enthalten"
@@ -41,7 +46,7 @@
         "profile": "Profil",
         "drive": "Festplatte",
         "settings": "Einstellungen",
-        "compose": "Neu erstellen",
+        "compose": "Neu erstellen:",
         "logout": "Ausloggen",
         "about": "\u00dcber uns",
         "help": "Hilfe",
@@ -57,15 +62,15 @@
     },
     "notifications": {
         "liked": "gef\u00e4llt dein",
-        "commented": "kommentierte dein",
+        "commented": "kommentierte deinen",
         "reacted": "reagierte auf dein",
         "shared": "teilte deine",
         "tagged": "markierte dich in einem",
         "updatedA": "aktualisierte ein",
         "sentA": "sendete ein",
-        "followed": "gefolgt",
-        "mentioned": "erw\u00e4hnt",
-        "you": "du",
+        "followed": "folgt",
+        "mentioned": "erw\u00e4hnte",
+        "you": "dir",
         "yourApplication": "Deine Bewerbung um beizutreten",
         "applicationApproved": "wurde genehmigt!",
         "applicationRejected": "wurde abgelehnt. Du kannst dich in 6 Monaten erneut f\u00fcr den Beitritt bewerben.",
@@ -73,7 +78,8 @@
         "groupPost": "Gruppen-Post",
         "modlog": "modlog",
         "post": "Beitrag",
-        "story": "Story"
+        "story": "Story",
+        "noneFound": "Keine Benachrichtigungen vorhanden"
     },
     "post": {
         "shareToFollowers": "Mit Folgenden teilen",
@@ -119,14 +125,14 @@
         "confirmReport": "Meldung best\u00e4tigen",
         "confirmReportText": "Bist du sicher, dass du diesen Beitrag melden m\u00f6chtest?",
         "reportSent": "Meldung gesendet!",
-        "reportSentText": "Wir haben deinen Bericht erfolgreich erhalten.",
+        "reportSentText": "Wir haben deine Meldung erfolgreich erhalten.",
         "reportSentError": "Es gab ein Problem beim Melden dieses Beitrags.",
         "modAddCWConfirm": "Bist du sicher, dass du diesem Beitrag eine Inhaltswarnung hinzuf\u00fcgen m\u00f6chtest?",
         "modCWSuccess": "Inhaltswarnung erfolgreich hinzugef\u00fcgt",
-        "modRemoveCWConfirm": "Bist du sicher, dass die Inhaltswarnung auf diesem Beitrag entfernt werden soll?",
+        "modRemoveCWConfirm": "Bist du sicher, dass die Inhaltswarnung f\u00fcr diesen Beitrag entfernt werden soll?",
         "modRemoveCWSuccess": "Inhaltswarnung erfolgreich entfernt",
         "modUnlistConfirm": "Bist du sicher, dass du diesen Beitrag nicht listen m\u00f6chtest?",
-        "modUnlistSuccess": "Beitrag erfolgreich nicht gelistet",
+        "modUnlistSuccess": "Beitrag aus Timelines entfernt",
         "modMarkAsSpammerConfirm": "Bist du sicher, dass du diesen Benutzer als Spam markieren m\u00f6chtest? Alle existierenden und zuk\u00fcnftigen Beitr\u00e4ge werden nicht mehr in der Zeitleiste angezeigt und mit einer Inhaltswarnung versehen.",
         "modMarkAsSpammerSuccess": "Konto erfolgreich als Spammer markiert",
         "toFollowers": "an die Folgenden",
@@ -142,9 +148,23 @@
         "add": "Story hinzuf\u00fcgen"
     },
     "timeline": {
-        "peopleYouMayKnow": "Leute, die du vielleicht kennst"
+        "peopleYouMayKnow": "Leute, die du vielleicht kennst",
+        "onboarding": {
+            "welcome": "Herzlich Willkommen",
+            "thisIsYourHomeFeed": "Dies ist dein Heim-Feed, ein chronologischer Feed von Beitr\u00e4gen aus den Konten, denen du folgst.",
+            "letUsHelpYouFind": "Lass uns dir helfen, einige interessante Leute zu finden, denen du folgen kannst",
+            "refreshFeed": "Feed aktualisieren"
+        }
     },
     "hashtags": {
         "emptyFeed": "Wir k\u00f6nnen keine Beitr\u00e4ge mit diesem Hashtag finden"
+    },
+    "report": {
+        "report": "Melden",
+        "selectReason": "Einen Grund ausw\u00e4hlen",
+        "reported": "Gemeldet",
+        "sendingReport": "Meldung wird gesendet",
+        "thanksMsg": "Vielen Dank f\u00fcr die Meldung, Leute wie du helfen, unsere Community sicher zu halten!",
+        "contactAdminMsg": "Wenn du einen Administrator zu diesem Beitrag oder dieser Meldung kontaktieren m\u00f6chtest"
     }
 }

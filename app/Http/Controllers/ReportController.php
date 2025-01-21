@@ -8,6 +8,7 @@ use App\Status;
 use App\User;
 use Auth;
 use Illuminate\Http\Request;
+use App\Jobs\ReportPipeline\ReportNotifyAdminViaEmail;
 
 class ReportController extends Controller
 {
@@ -164,6 +165,10 @@ class ReportController extends Controller
         $report->type = $request->input('report');
         $report->message = e($request->input('msg'));
         $report->save();
+
+        if(config('instance.reports.email.enabled')) {
+			ReportNotifyAdminViaEmail::dispatch($report)->onQueue('default');
+		}
 
         if($request->wantsJson()) {
             return response()->json(200);

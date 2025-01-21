@@ -14,7 +14,9 @@ class Mention extends Model
      *
      * @var array
      */
-    protected $dates = ['deleted_at'];
+    protected $casts = [
+    	'deleted_at' => 'datetime'
+    ];
 
     protected $guarded = [];
 
@@ -26,21 +28,5 @@ class Mention extends Model
     public function status()
     {
         return $this->belongsTo(Status::class, 'status_id', 'id');
-    }
-
-    public function toText()
-    {
-        $actorName = $this->status->profile->username;
-
-        return "{$actorName} ".__('notification.mentionedYou');
-    }
-
-    public function toHtml()
-    {
-        $actorName = $this->status->profile->username;
-        $actorUrl = $this->status->profile->url();
-
-        return "<a href='{$actorUrl}' class='profile-link'>{$actorName}</a> ".
-          __('notification.mentionedYou');
     }
 }

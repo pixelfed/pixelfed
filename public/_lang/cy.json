@@ -10,6 +10,7 @@
         "shared": "Rhannu",
         "shares": "Rhannu",
         "unshare": "Dad-rannu",
+        "bookmark": "Tudalnodau",
         "cancel": "Canslo",
         "copyLink": "Cop\u00efo'r ddolen",
         "delete": "Dileu",
@@ -19,6 +20,10 @@
         "other": "Arall",
         "readMore": "Darllen mwy",
         "success": "Llwyddiant",
+        "proceed": "Parhau",
+        "next": "Nesaf",
+        "close": "Cau",
+        "clickHere": "cliciwch yma",
         "sensitive": "Sensitif",
         "sensitiveContent": "Cynnwys sensitif",
         "sensitiveContentWarning": "Gall y post hon gynnwys cynnwys sensitif"
@@ -42,7 +47,7 @@
         "drive": "Gyriant storio",
         "settings": "Gosodiadau",
         "compose": "Creu newydd",
-        "logout": "Logout",
+        "logout": "Allgofnodi",
         "about": "Amdano",
         "help": "Cymorth",
         "language": "Iaith",
@@ -73,7 +78,8 @@
         "groupPost": "post gr\u0175p",
         "modlog": "modlog",
         "post": "post",
-        "story": "stori"
+        "story": "stori",
+        "noneFound": "Dim hysbysiadau"
     },
     "post": {
         "shareToFollowers": "Rhannwch i ddilynwyr",
@@ -142,9 +148,23 @@
         "add": "Ychwanegu Stori"
     },
     "timeline": {
-        "peopleYouMayKnow": "Pobl efallai eich bod chi'n eu hadnabod"
+        "peopleYouMayKnow": "Pobl efallai eich bod chi'n eu hadnabod",
+        "onboarding": {
+            "welcome": "Croeso",
+            "thisIsYourHomeFeed": "Dyma'ch porthiant cartref, porthiant cronolegol o bostiadau o gyfrifon rydych chi'n eu dilyn.",
+            "letUsHelpYouFind": "Gadewch inni eich helpu i ddod o hyd i rai pobl ddiddorol i'w dilyn",
+            "refreshFeed": "Adnewyddu fy mhorthiant"
+        }
     },
     "hashtags": {
         "emptyFeed": "Ni allwn dod o hyd i unrhyw bostiadau ar gyfer yr hashnod hwn"
+    },
+    "report": {
+        "report": "Adroddi",
+        "selectReason": "Dewiswch reswm",
+        "reported": "Adroddwyd",
+        "sendingReport": "Anfon adroddiad",
+        "thanksMsg": "Diolch am yr adroddiad, mae pobl fel chi yn helpu i gadw ein cymuned yn ddiogel!",
+        "contactAdminMsg": "Os hoffech chi gysylltu \u00e2 gweinyddwr am y post neu'r adroddiad hwn"
     }
 }

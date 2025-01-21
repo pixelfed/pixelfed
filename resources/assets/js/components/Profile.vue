@@ -133,10 +133,10 @@
 											</a>
 										</div>
 									</div>
-									<p class="d-flex align-items-center mb-1">
-										<span class="font-weight-bold mr-1">{{profile.display_name}}</span>
-										<span v-if="profile.pronouns" class="text-muted small">{{profile.pronouns.join('/')}}</span>
-									</p>
+									<div class="d-md-flex align-items-center mb-1 text-break">
+										<div class="font-weight-bold mr-1">{{profile.display_name}}</div>
+										<div v-if="profile.pronouns" class="text-muted small">{{profile.pronouns.join('/')}}</div>
+									</div>
 									<p v-if="profile.note" class="mb-0" v-html="profile.note"></p>
 									<p v-if="profile.website"><a :href="profile.website" class="profile-website small" rel="me external nofollow noopener" target="_blank">{{formatWebsite(profile.website)}}</a></p>
 									<p class="d-flex small text-muted align-items-center">
@@ -154,8 +154,8 @@
 					</div>
 				</div>
 			</div>
-			<div class="d-block d-md-none my-0 pt-3 border-bottom">
-				<p v-if="user && user.hasOwnProperty('id')" class="pt-3">
+			<div v-if="user && user.hasOwnProperty('id')" class="d-block d-md-none my-0 pt-3 border-bottom">
+				<p class="pt-3">
 					<button v-if="owner" class="btn btn-outline-secondary bg-white btn-sm py-1 btn-block text-center font-weight-bold text-dark border border-lighter" @click.prevent="redirect('/settings/home')">Edit Profile</button>
 					<button v-if="!owner && relationship.following" class="btn btn-outline-secondary bg-white btn-sm py-1 px-5 font-weight-bold text-dark border border-lighter" @click="followProfile">&nbsp;&nbsp; Unfollow &nbsp;&nbsp;</button>
 					<button v-if="!owner && !relationship.following" class="btn btn-primary btn-sm py-1 px-5 font-weight-bold" @click="followProfile">{{relationship.followed_by ? 'Follow Back' : '&nbsp;&nbsp;&nbsp;&nbsp; Follow &nbsp;&nbsp;&nbsp;&nbsp;'}}</button>
@@ -339,16 +339,10 @@
 					<span class="text-dark">{{profileUsername}}</span> is not following yet</p>
 			</div>
 			<div v-else>
-				<div v-if="owner == true" class="list-group-item border-0 pt-0 px-0 mt-n2 mb-3">
-					<span class="d-flex px-4 pb-0 align-items-center">
-						<i class="fas fa-search text-lighter"></i>
-						<input type="text" class="form-control border-0 shadow-0 no-focus" placeholder="Search Following..." v-model="followingModalSearch" v-on:keyup="followingModalSearchHandler">
-					</span>
-				</div>
 				<div class="list-group-item border-0 py-1 mb-1" v-for="(user, index) in following" :key="'following_'+index">
 					<div class="media">
 						<a :href="profileUrlRedirect(user)">
-							<img class="mr-3 rounded-circle box-shadow" :src="user.avatar" :alt="user.username + '’s avatar'" width="30px" loading="lazy" onerror="this.onerror=null;this.src='/storage/avatars/default.png?v=0'">
+							<img class="mr-3 rounded-circle box-shadow" :src="user.avatar" :alt="user.username + '’s avatar'" width="30px" loading="lazy" onerror="this.src='/storage/avatars/default.jpg?v=0';this.onerror=null;" v-once>
 						</a>
 						<div class="media-body text-truncate">
 							<p class="mb-0" style="font-size: 14px">
@@ -368,7 +362,7 @@
 						</div>
 					</div>
 				</div>
-				<div v-if="followingModalSearch && following.length == 0" class="list-group-item border-0">
+				<div v-if="!followingLoading && following.length == 0" class="list-group-item border-0">
 					<div class="list-group-item border-0 pt-5">
 						<p class="p-3 text-center mb-0 lead">No Results Found</p>
 					</div>
@@ -394,7 +388,7 @@
 		dialog-class="follow-modal"
 		>
 		<div v-if="!followerLoading" class="list-group" style="max-height: 60vh;">
-			<div v-if="!followers.length" class="list-group-item border-0">
+			<div v-if="!followerLoading && !followers.length" class="list-group-item border-0">
 				<p class="text-center mb-0 font-weight-bold text-muted py-5">
 					<span class="text-dark">{{profileUsername}}</span> has no followers yet</p>
 			</div>
@@ -403,7 +397,7 @@
 				<div class="list-group-item border-0 py-1 mb-1" v-for="(user, index) in followers" :key="'follower_'+index">
 					<div class="media mb-0">
 						<a :href="profileUrlRedirect(user)">
-							<img class="mr-3 rounded-circle box-shadow" :src="user.avatar" :alt="user.username + '’s avatar'" width="30px" height="30px" loading="lazy" onerror="this.onerror=null;this.src='/storage/avatars/default.png?v=0'">
+							<img class="mr-3 rounded-circle box-shadow" :src="user.avatar" :alt="user.username + '’s avatar'" width="30px" height="30px" loading="lazy" onerror="this.src='/storage/avatars/default.jpg?v=0';this.onerror=null;" v-once>
 						</a>
 						<div class="media-body mb-0">
 							<p class="mb-0" style="font-size: 14px">
@@ -593,6 +587,7 @@
 <script type="text/javascript">
 	import VueMasonry from 'vue-masonry-css'
 	import StatusCard from './partials/StatusCard.vue';
+	import { parseLinkHeader } from '@web3-storage/parse-link-header';
 
 	export default {
 		props: [
@@ -623,11 +618,11 @@
 				modalStatus: false,
 				relationship: {},
 				followers: [],
-				followerCursor: 1,
+				followerCursor: null,
 				followerMore: true,
 				followerLoading: true,
 				following: [],
-				followingCursor: 1,
+				followingCursor: null,
 				followingMore: true,
 				followingLoading: true,
 				warning: false,
@@ -641,8 +636,6 @@
 				ctxEmbedPayload: null,
 				copiedEmbed: false,
 				hasStory: null,
-				followingModalSearch: null,
-				followingModalSearchCache: null,
 				followingModalTab: 'following',
 				bookmarksLoading: true,
 				archives: [],
@@ -1056,19 +1049,22 @@
 				if($('body').hasClass('loggedIn') == false) {
 					return;
 				}
-				axios.post('/i/follow', {
-					item: this.profileId
-				}).then(res => {
-					this.$refs.visitorContextMenu.hide();
-					if(this.relationship.following) {
+				this.$refs.visitorContextMenu.hide();
+				const curState = this.relationship.following;
+				const apiUrl = curState ?
+					'/api/v1/accounts/' + this.profileId + '/unfollow' :
+					'/api/v1/accounts/' + this.profileId + '/follow';
+				axios.post(apiUrl)
+				.then(res => {
+					if(curState) {
 						this.profile.followers_count--;
-						if(this.profile.locked == true) {
-							window.location.href = '/';
+						if(this.profile.locked) {
+							location.reload();
 						}
 					} else {
 						this.profile.followers_count++;
 					}
-					this.relationship.following = !this.relationship.following;
+					this.relationship = res.data;
 				}).catch(err => {
 					if(err.response.data.message) {
 						swal('Error', err.response.data.message, 'error');
@@ -1084,23 +1080,34 @@
 				if(this.profileSettings.following.list == false) {
 					return;
 				}
-				if(this.followingCursor > 1) {
+				if(this.followingCursor) {
 					this.$refs.followingModal.show();
 					return;
 				} else {
-					axios.get('/api/pixelfed/v1/accounts/'+this.profileId+'/following', {
+					axios.get('/api/v1/accounts/'+this.profileId+'/following', {
 						params: {
-							page: this.followingCursor
+							cursor: this.followingCursor,
+							limit: 40,
+							'_pe': 1
 						}
 					})
 					.then(res => {
 						this.following = res.data;
-						this.followingModalSearchCache = res.data;
-						this.followingCursor++;
-						if(res.data.length < 10) {
+
+						if(res.headers && res.headers.link) {
+							const links = parseLinkHeader(res.headers.link);
+							if(links.prev) {
+								this.followingCursor = links.prev.cursor;
+								this.followingMore = true;
+							} else {
+								this.followingMore = false;
+							}
+						} else {
 							this.followingMore = false;
 						}
-						this.followingLoading = false;
+					})
+					.then(() => {
+						setTimeout(() => { this.followingLoading = false }, 1000);
 					});
 					this.$refs.followingModal.show();
 					return;
@@ -1119,19 +1126,30 @@
 					this.$refs.followerModal.show();
 					return;
 				} else {
-					axios.get('/api/pixelfed/v1/accounts/'+this.profileId+'/followers', {
+					axios.get('/api/v1/accounts/'+this.profileId+'/followers', {
 						params: {
-							page: this.followerCursor
+							cursor: this.followerCursor,
+							limit: 40,
+							'_pe': 1
 						}
 					})
 					.then(res => {
 						this.followers.push(...res.data);
-						this.followerCursor++;
-						if(res.data.length < 10) {
+						if(res.headers && res.headers.link) {
+							const links = parseLinkHeader(res.headers.link);
+							if(links.prev) {
+								this.followerCursor = links.prev.cursor;
+								this.followerMore = true;
+							} else {
+								this.followerMore = false;
+							}
+						} else {
 							this.followerMore = false;
 						}
-						this.followerLoading = false;
 					})
+					.then(() => {
+						setTimeout(() => { this.followerLoading = false }, 1000);
+					});
 					this.$refs.followerModal.show();
 					return;
 				}
@@ -1142,20 +1160,27 @@
 					window.location.href = encodeURI('/login?next=/' + this.profile.username + '/');
 					return;
 				}
-				axios.get('/api/pixelfed/v1/accounts/'+this.profile.id+'/following', {
+				axios.get('/api/v1/accounts/'+this.profile.id+'/following', {
 					params: {
-						page: this.followingCursor,
-						fbu: this.followingModalSearch
+						cursor: this.followingCursor,
+						limit: 40,
+						'_pe': 1
 					}
 				})
 				.then(res => {
 					if(res.data.length > 0) {
 						this.following.push(...res.data);
-						this.followingCursor++;
-						this.followingModalSearchCache = this.following;
 					}
-					if(res.data.length < 10) {
-						this.followingModalSearchCache = this.following;
+
+					if(res.headers && res.headers.link) {
+						const links = parseLinkHeader(res.headers.link);
+						if(links.prev) {
+							this.followingCursor = links.prev.cursor;
+							this.followingMore = true;
+						} else {
+							this.followingMore = false;
+						}
+					} else {
 						this.followingMore = false;
 					}
 				});
@@ -1165,17 +1190,27 @@
 				if($('body').hasClass('loggedIn') == false) {
 					return;
 				}
-				axios.get('/api/pixelfed/v1/accounts/'+this.profile.id+'/followers', {
+				axios.get('/api/v1/accounts/'+this.profile.id+'/followers', {
 					params: {
-						page: this.followerCursor
+						cursor: this.followerCursor,
+						limit: 40,
+						'_pe': 1
 					}
 				})
 				.then(res => {
 					if(res.data.length > 0) {
 						this.followers.push(...res.data);
-						this.followerCursor++;
 					}
-					if(res.data.length < 10) {
+
+					if(res.headers && res.headers.link) {
+						const links = parseLinkHeader(res.headers.link);
+						if(links.prev) {
+							this.followerCursor = links.prev.cursor;
+							this.followerMore = true;
+						} else {
+							this.followerMore = false;
+						}
+					} else {
 						this.followerMore = false;
 					}
 				});
@@ -1186,9 +1221,11 @@
 			},
 
 			followModalAction(id, index, type = 'following') {
-				axios.post('/i/follow', {
-					item: id
-				}).then(res => {
+				const apiUrl = type === 'following' ?
+					'/api/v1/accounts/' + id + '/unfollow' :
+					'/api/v1/accounts/' + id + '/follow';
+				axios.post(apiUrl)
+				.then(res => {
 					if(type == 'following') {
 						this.following.splice(index, 1);
 						this.profile.following_count--;
@@ -1282,28 +1319,6 @@
 
 			storyRedirect() {
 				window.location.href = '/stories/' + this.profileUsername + '?t=4';
-			},
-
-			followingModalSearchHandler() {
-				let self = this;
-				let q = this.followingModalSearch;
-
-				if(q.length == 0) {
-					this.following = this.followingModalSearchCache;
-					this.followingModalSearch = null;
-				}
-				if(q.length > 0) {
-					let url = '/api/pixelfed/v1/accounts/' +
-						self.profileId + '/following?page=1&fbu=' +
-						q;
-
-					axios.get(url).then(res => {
-						this.following = res.data;
-					}).catch(err => {
-						self.following = self.followingModalSearchCache;
-						self.followingModalSearch = null;
-					});
-				}
 			},
 
 			truncate(str, len) {

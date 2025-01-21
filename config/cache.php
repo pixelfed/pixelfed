@@ -36,17 +36,20 @@ return [
 
         'array' => [
             'driver' => 'array',
+            'serialize' => false,
         ],
 
         'database' => [
             'driver'     => 'database',
             'table'      => 'cache',
             'connection' => null,
+            'lock_connection' => null,
         ],
 
         'file' => [
             'driver' => 'file',
             'path'   => storage_path('framework/cache/data'),
+            'lock_path' => storage_path('framework/cache/data'),
         ],
 
         'memcached' => [
@@ -70,7 +73,8 @@ return [
 
         'redis' => [
             'driver' => 'redis',
-            'client' => env('REDIS_CLIENT', 'phpredis'),
+            'lock_connection' => 'default',
+            'client' => env('REDIS_CLIENT', 'predis'),
 
             'default' => [
                 'scheme'   => env('REDIS_SCHEME', 'tcp'),
@@ -81,6 +85,43 @@ return [
                 'database' => env('REDIS_DATABASE', 0),
             ],
 
+            'session' => [
+                'scheme'   => env('REDIS_SCHEME', 'tcp'),
+                'path'     => env('REDIS_PATH'),
+                'host'     => env('REDIS_HOST', '127.0.0.1'),
+                'password' => env('REDIS_PASSWORD', null),
+                'port'     => env('REDIS_PORT', 6379),
+                'database' => env('REDIS_DATABASE_SESSION', 1),
+            ],
+
+            'pulse' => [
+                'scheme'   => env('REDIS_SCHEME', 'tcp'),
+                'path'     => env('REDIS_PATH'),
+                'host'     => env('REDIS_HOST', '127.0.0.1'),
+                'password' => env('REDIS_PASSWORD', null),
+                'port'     => env('REDIS_PORT', 6379),
+                'database' => env('REDIS_DATABASE_PULSE', 2),
+            ],
+
+        ],
+
+        'redis:session' => [
+            'driver' => 'redis',
+            'connection' => 'session',
+            'prefix' => 'pf_session',
+        ],
+
+        'dynamodb' => [
+            'driver' => 'dynamodb',
+            'key' => env('AWS_ACCESS_KEY_ID'),
+            'secret' => env('AWS_SECRET_ACCESS_KEY'),
+            'region' => env('AWS_DEFAULT_REGION', 'us-east-1'),
+            'table' => env('DYNAMODB_CACHE_TABLE', 'cache'),
+            'endpoint' => env('DYNAMODB_ENDPOINT'),
+        ],
+
+        'octane' => [
+            'driver' => 'octane',
         ],
 
     ],
@@ -101,4 +142,5 @@ return [
         str_slug(env('APP_NAME', 'laravel'), '_').'_cache'
     ),
 
+    'limiter' => env('CACHE_LIMITER_DRIVER', 'redis'),
 ];

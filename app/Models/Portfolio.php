@@ -28,13 +28,20 @@ class Portfolio extends Model
         'metadata' => 'json'
     ];
 
-    public function url()
+    public function url($suffix = '')
     {
         $account = AccountService::get($this->profile_id);
         if(!$account) {
             return null;
         }
 
-        return 'https://' . config('portfolio.domain') . config('portfolio.path') . '/' . $account['username'];
+        return 'https://' . config('portfolio.domain') . config('portfolio.path') . '/' . $account['username'] . $suffix;
+    }
+
+    public function permalink($suffix = '')
+    {
+    	$account = AccountService::get($this->profile_id);
+
+    	return config('app.url') . '/account/portfolio/' . $account['username'] . $suffix;
     }
 }

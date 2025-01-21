@@ -10,6 +10,7 @@
         "shared": "Compartiu",
         "shares": "Compartido",
         "unshare": "Non compartir",
+        "bookmark": "Marcar",
         "cancel": "Cancelar",
         "copyLink": "Copiar ligaz\u00f3n",
         "delete": "Eliminar",
@@ -19,6 +20,10 @@
         "other": "Outro",
         "readMore": "Ler m\u00e1is",
         "success": "\u00c9xito",
+        "proceed": "Proceder",
+        "next": "Seguinte",
+        "close": "Pechar",
+        "clickHere": "preme aqu\u00ed",
         "sensitive": "Sensible",
         "sensitiveContent": "Contido sensible",
         "sensitiveContentWarning": "Esta publicaci\u00f3n pode conter contido sensible"
@@ -42,7 +47,7 @@
         "drive": "Drive",
         "settings": "Axustes",
         "compose": "Crear Nova",
-        "logout": "Logout",
+        "logout": "Sa\u00edr",
         "about": "Acerca de",
         "help": "Axuda",
         "language": "Idioma",
@@ -63,17 +68,18 @@
         "tagged": "etiquetoute nunca",
         "updatedA": "actualizou unha",
         "sentA": "enviou unha",
-        "followed": "seguiu",
-        "mentioned": "mencionou",
-        "you": "you",
+        "followed": "seguiute",
+        "mentioned": "mencionoute",
+        "you": "ti",
         "yourApplication": "A t\u00faa solicitude para unirte",
         "applicationApproved": "foi aprobada!",
         "applicationRejected": "for rexeitada. Podes volver a solicitar unirte en 6 meses.",
         "dm": "md",
-        "groupPost": "group post",
+        "groupPost": "publicaci\u00f3n grupal",
         "modlog": "modlog",
         "post": "publicaci\u00f3n",
-        "story": "historia"
+        "story": "historia",
+        "noneFound": "Non hai notificaci\u00f3ns"
     },
     "post": {
         "shareToFollowers": "Compartir a seguidores",
@@ -92,8 +98,8 @@
         "editProfile": "Editar perfil",
         "followRequested": "Seguimento pedido",
         "joined": "Uniuse",
-        "emptyCollections": "We can't seem to find any collections",
-        "emptyPosts": "We can't seem to find any posts"
+        "emptyCollections": "Non podemos atopar ningunha colecci\u00f3n",
+        "emptyPosts": "Non podemos atopar ningunha publicaci\u00f3n"
     },
     "menu": {
         "viewPost": "Ver publicaci\u00f3n",
@@ -142,9 +148,23 @@
         "add": "Engadir historia"
     },
     "timeline": {
-        "peopleYouMayKnow": "Xente que podes co\u00f1ecer"
+        "peopleYouMayKnow": "Xente que podes co\u00f1ecer",
+        "onboarding": {
+            "welcome": "Benvido/a",
+            "thisIsYourHomeFeed": "Esta \u00e9 a t\u00faa cronolox\u00eda de inicio, formada por publicaci\u00f3ns en orde cronol\u00f3xica das contas que segues.",
+            "letUsHelpYouFind": "Deixa que che axudemos a atopar xente interesante que seguir",
+            "refreshFeed": "Actualiza a cronolox\u00eda"
+        }
     },
     "hashtags": {
-        "emptyFeed": "We can't seem to find any posts for this hashtag"
+        "emptyFeed": "Non podemos atopar ningunha publicaci\u00f3n con este cancelo"
+    },
+    "report": {
+        "report": "Denunciar",
+        "selectReason": "Elixe unha raz\u00f3n",
+        "reported": "Denunciado",
+        "sendingReport": "Enviando a denuncia",
+        "thanksMsg": "Grazas pola denuncia e axudarnos a manter segura a comunidade!",
+        "contactAdminMsg": "Se queres contactar coa administraci\u00f3n acerca desta publicaci\u00f3n ou denuncia"
     }
 }

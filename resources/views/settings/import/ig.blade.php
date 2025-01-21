@@ -3,7 +3,7 @@
 @section('section')
 
   <div class="title">
-    <h3 class="font-weight-bold">Import from Instagram</h3>
+    <h3 class="font-weight-bold">{{__('settings.import.import_from_instagram')}}</h3>
   </div>
   <hr>
   <section>

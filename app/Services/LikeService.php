@@ -24,9 +24,7 @@ class LikeService {
 	public static function setAdd($profileId, $statusId)
 	{
 		if(self::setCount($profileId) > 400) {
-			if(config('database.redis.client') === 'phpredis') {
-				Redis::zpopmin(self::CACHE_SET_KEY . $profileId);
-			}
+			Redis::zpopmin(self::CACHE_SET_KEY . $profileId);
 		}
 
 		return Redis::zadd(self::CACHE_SET_KEY . $profileId, $statusId, $statusId);
@@ -85,7 +83,10 @@ class LikeService {
 				return $empty;
 			}
 			$id = $like->profile_id;
-			$profile = ProfileService::get($id);
+			$profile = ProfileService::get($id, true);
+			if(!$profile) {
+				return [];
+			}
 			$profileUrl = "/i/web/profile/{$profile['id']}";
 			$res = [
 				'id' => (string) $profile['id'],

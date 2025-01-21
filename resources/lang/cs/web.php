@@ -13,6 +13,7 @@ return [
 		'shared' => 'Sdíleno',
 		'shares' => 'Sdílení',
 		'unshare' => 'Zrušit sdílení',
+		'bookmark' => 'Záložka',
 
 		'cancel' => 'Zrušit',
 		'copyLink' => 'Kopírovat odkaz',
@@ -23,6 +24,10 @@ return [
 		'other' => 'Další',
 		'readMore' => 'Číst více',
 		'success' => 'Úspěch',
+		'proceed' => 'Pokračovat',
+		'next' => 'Další',
+		'close' => 'Zavřít',
+		'clickHere' => 'klikněte zde',
 
 		'sensitive' => 'Citlivé',
 		'sensitiveContent' => 'Citlivý obsah',
@@ -40,8 +45,8 @@ return [
 
 		// Timelines
 		'homeFeed' => 'Domovská časová osa',
-		'localFeed' => 'Místní časová osa',
-		'globalFeed' => 'Globalní časová osa',
+		'localFeed' => 'Místní kanál',
+		'globalFeed' => 'Globální časová osa',
 
 		// Core features
 		'discover' => 'Objevovat',
@@ -97,6 +102,7 @@ return [
 		'modlog' => 'moderátorský záznam',
 		'post' => 'příspěvek',
 		'story' => 'příbeh',
+		'noneFound' => 'Nebyla nalezena žádná oznámení',
 	],
 
 	'post' => [
@@ -176,11 +182,27 @@ return [
 	],
 
 	'timeline' => [
-		'peopleYouMayKnow' => 'Lidé, které možná znáte'
+		'peopleYouMayKnow' => 'Lidé, které možná znáte',
+
+		'onboarding' => [
+			'welcome' => 'Vítejte',
+			'thisIsYourHomeFeed' => 'Toto je váš domovský kanál, chronologický kanál příspěvků z účtů, které sledujete.',
+			'letUsHelpYouFind' => 'Pomůžeme vám najít nějaké zajímavé lidi ke sledování',
+			'refreshFeed' => 'Obnovit můj kanál',
+		],
 	],
 
 	'hashtags' => [
 		'emptyFeed' => 'Zdá se, že pro tento štítek nelze najít žádné příspěvky'
+	],
+
+	'report' => [
+		'report' => 'Nahlásit',
+		'selectReason' => 'Vyberte důvod',
+		'reported' => 'Nahlášeno',
+		'sendingReport' => 'Odesílání hlášení',
+		'thanksMsg' => 'Díky za hlášení, lidé jako jste vy pomáhají udržet naši komunitu bezpečnou!',
+		'contactAdminMsg' => 'Pokud chcete kontaktovat administrátora ohledně tohoto příspěvku nebo hlášení',
 	],
 
 ];

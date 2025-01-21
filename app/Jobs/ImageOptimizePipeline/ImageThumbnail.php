@@ -59,6 +59,6 @@ class ImageThumbnail implements ShouldQueue
         $media->processed_at = Carbon::now();
         $media->save();
 
-        ImageUpdate::dispatch($media);
+        ImageUpdate::dispatch($media)->onQueue('mmo');
     }
 }

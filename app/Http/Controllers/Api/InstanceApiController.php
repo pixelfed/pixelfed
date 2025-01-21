@@ -4,8 +4,9 @@ namespace App\Http\Controllers\Api;
 
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
-use App\{Profile, Status, User};
+use App\{Profile, Instance, Status, User};
 use Cache;
+use App\Services\StatusService;
 
 class InstanceApiController extends Controller {
 
@@ -40,11 +41,8 @@ class InstanceApiController extends Controller {
 			'urls' => [],
 			'stats' => [
 				'user_count' => User::count(),
-				'status_count' => Status::whereNull('uri')->count(),
-				'domain_count' => Profile::whereNotNull('domain')
-					->groupBy('domain')
-					->pluck('domain')
-					->count()
+				'status_count' => StatusService::totalLocalStatuses(),
+				'domain_count' => Instance::count()
 			],
 			'thumbnail' => '',
 			'languages' => [],

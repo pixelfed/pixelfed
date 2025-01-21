@@ -6,11 +6,6 @@ use Illuminate\Database\Migrations\Migration;
 
 class AddSnowflakeidsToUsersTable extends Migration
 {
-    public function __construct()
-    {
-        DB::getDoctrineSchemaManager()->getDatabasePlatform()->registerDoctrineTypeMapping('enum', 'string');
-    }
-
     /**
      * Run the migrations.
      *
@@ -19,8 +14,8 @@ class AddSnowflakeidsToUsersTable extends Migration
     public function up()
     {
         Schema::table('statuses', function (Blueprint $table) {
-            $table->dropPrimary('id');
             $table->bigInteger('id')->unsigned()->primary()->change();
+            $table->dropPrimary('id');
         });
     }
 

@@ -5,6 +5,8 @@ namespace App\Observers;
 use App\Follower;
 use App\Services\FollowerService;
 use Cache;
+use App\Jobs\HomeFeedPipeline\FeedFollowPipeline;
+use App\Jobs\HomeFeedPipeline\FeedUnfollowPipeline;
 
 class FollowerObserver
 {
@@ -21,6 +23,7 @@ class FollowerObserver
         }
 
         FollowerService::add($follower->profile_id, $follower->following_id);
+        FeedFollowPipeline::dispatch($follower->profile_id, $follower->following_id)->onQueue('follow');
     }
 
     /**

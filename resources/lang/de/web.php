@@ -8,11 +8,12 @@ return [
 		'comments' => 'Kommentare',
 		'like' => 'Gefällt mir',
 		'liked' => 'Gefällt',
-		'likes' => 'Gefällt',
+		'likes' => 'Gefiel',
 		'share' => 'Teilen',
 		'shared' => 'Geteilt',
 		'shares' => 'Geteilt',
 		'unshare' => 'Teilen rückgängig machen',
+		'bookmark' => 'Lesezeichen',
 
 		'cancel' => 'Abbrechen',
 		'copyLink' => 'Link kopieren',
@@ -22,7 +23,11 @@ return [
 		'oops' => 'Hoppla!',
 		'other' => 'Anderes',
 		'readMore' => 'Weiterlesen',
-		'success' => 'Erfolgreich',
+		'success' => 'Erfolg',
+		'proceed' => 'Fortfahren',
+		'next' => 'Weiter',
+		'close' => 'Schließen',
+		'clickHere' => 'hier klicken',
 
 		'sensitive' => 'Sensibel',
 		'sensitiveContent' => 'Sensibler Inhalt',
@@ -54,7 +59,7 @@ return [
 		'profile' => 'Profil',
 		'drive' => 'Festplatte',
 		'settings' => 'Einstellungen',
-		'compose' => 'Neu erstellen',
+		'compose' => 'Neu erstellen:',
 		'logout' => 'Ausloggen',
 
 		// Nav footer
@@ -76,7 +81,7 @@ return [
 
 	'notifications' => [
 		'liked' => 'gefällt dein',
-		'commented' => 'kommentierte dein',
+		'commented' => 'kommentierte deinen',
 		'reacted' => 'reagierte auf dein',
 		'shared' => 'teilte deine',
 		'tagged' => 'markierte dich in einem',
@@ -84,9 +89,9 @@ return [
 		'updatedA' => 'aktualisierte ein',
 		'sentA' => 'sendete ein',
 
-		'followed' => 'gefolgt',
-		'mentioned' => 'erwähnt',
-		'you' => 'du',
+		'followed' => 'folgt',
+		'mentioned' => 'erwähnte',
+		'you' => 'dir',
 
 		'yourApplication' => 'Deine Bewerbung um beizutreten',
 		'applicationApproved' => 'wurde genehmigt!',
@@ -97,6 +102,7 @@ return [
 		'modlog' => 'modlog',
 		'post' => 'Beitrag',
 		'story' => 'Story',
+		'noneFound' => 'Keine Benachrichtigungen vorhanden',
 	],
 
 	'post' => [
@@ -147,15 +153,15 @@ return [
 		'confirmReport' => 'Meldung bestätigen',
 		'confirmReportText' => 'Bist du sicher, dass du diesen Beitrag melden möchtest?',
 		'reportSent' => 'Meldung gesendet!',
-		'reportSentText' => 'Wir haben deinen Bericht erfolgreich erhalten.',
+		'reportSentText' => 'Wir haben deine Meldung erfolgreich erhalten.',
 		'reportSentError' => 'Es gab ein Problem beim Melden dieses Beitrags.',
 
 		'modAddCWConfirm' => 'Bist du sicher, dass du diesem Beitrag eine Inhaltswarnung hinzufügen möchtest?',
 		'modCWSuccess' => 'Inhaltswarnung erfolgreich hinzugefügt',
-		'modRemoveCWConfirm' => 'Bist du sicher, dass die Inhaltswarnung auf diesem Beitrag entfernt werden soll?',
+		'modRemoveCWConfirm' => 'Bist du sicher, dass die Inhaltswarnung für diesen Beitrag entfernt werden soll?',
 		'modRemoveCWSuccess' => 'Inhaltswarnung erfolgreich entfernt',
 		'modUnlistConfirm' => 'Bist du sicher, dass du diesen Beitrag nicht listen möchtest?',
-		'modUnlistSuccess' => 'Beitrag erfolgreich nicht gelistet',
+		'modUnlistSuccess' => 'Beitrag aus Timelines entfernt',
 		'modMarkAsSpammerConfirm' => 'Bist du sicher, dass du diesen Benutzer als Spam markieren möchtest? Alle existierenden und zukünftigen Beiträge werden nicht mehr in der Zeitleiste angezeigt und mit einer Inhaltswarnung versehen.',
 		'modMarkAsSpammerSuccess' => 'Konto erfolgreich als Spammer markiert',
 
@@ -176,11 +182,36 @@ return [
 	],
 
 	'timeline' => [
-		'peopleYouMayKnow' => 'Leute, die du vielleicht kennst'
+		'peopleYouMayKnow' => 'Leute, die du vielleicht kennst',
+
+		'onboarding' => [
+			'welcome' => 'Herzlich willkommen',
+			'thisIsYourHomeFeed' => 'Dies ist dein Heim-Feed, ein chronologischer Feed von Beiträgen aus den Konten, denen du folgst.',
+			'letUsHelpYouFind' => 'Lass uns dir helfen, einige interessante Leute zu finden, denen du folgen kannst',
+			'refreshFeed' => 'Feed aktualisieren',
+		],
 	],
 
 	'hashtags' => [
 		'emptyFeed' => 'Wir können keine Beiträge mit diesem Hashtag finden'
+	],
+	
+	'report' => [
+		'report' => 'Melden',
+		'selectReason' => 'Wähle einen Grund',
+		'reported' => 'Gemeldet',
+		'sendingReport' => 'Sende Meldung',
+		'thanksMsg' => 'Danke für deine Meldung! Damit erhöhst du die Sicherheit der Community!',
+		'contactAdminMsg' => 'Wenn du die Administration wegen diesem Beitrag oder dieser Meldung kontaktieren möchtest',
+	],
+
+	'report' => [
+		'report' => 'Melden',
+		'selectReason' => 'Einen Grund auswählen',
+		'reported' => 'Gemeldet',
+		'sendingReport' => 'Meldung wird gesendet',
+		'thanksMsg' => 'Danke für deine Meldung! Damit erhöhst du die Sicherheit der Community!',
+		'contactAdminMsg' => 'Wenn du die Administration wegen dieses Beitrags oder dieser Meldung kontaktieren möchtest',
 	],
 
 ];

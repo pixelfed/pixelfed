@@ -4,7 +4,7 @@
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>{{ config('app.name') }} - Authorization</title>
+    <title>{{ config_cache('app.name') }} - Authorization</title>
     <link href="{{ mix('/css/app.css') }}" rel="stylesheet">
     <style>
         .passport-authorize .container {

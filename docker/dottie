@@ -1,0 +1,45 @@
+#!/bin/bash
+
+set -e -o errexit -o nounset -o pipefail
+
+declare project_root="${PWD}"
+declare user="${PF_USER:=www-data}"
+
+if command -v git &>/dev/null; then
+    project_root=$(git rev-parse --show-toplevel)
+fi
+
+declare -r release="${DOTTIE_VERSION:-latest}"
+
+declare -r update_check_file="/tmp/.dottie-update-check"      # file to check age of since last update
+declare -i update_check_max_age=$((8 * 60 * 60))              # 8 hours between checking for dottie version
+declare -i update_check_cur_age=$((update_check_max_age + 1)) # by default the "update" event should happen
+
+# default [docker run] flags
+declare -a flags=(
+    --rm
+    --interactive
+    --tty
+    --user "${user}"
+    --env TERM
+    --env COLORTERM
+    --volume "${project_root}:/var/www"
+    --workdir /var/www
+)
+
+# if update file exists, find its age since last modification
+if [[ -f "${update_check_file}" ]]; then
+    now=$(date +%s)
+    changed=$(date -r "${update_check_file}" +%s)
+    update_check_cur_age=$((now - changed))
+fi
+
+# if update file is older than max allowed poll for new version of dottie
+if [[ $update_check_cur_age -gt $update_check_max_age ]]; then
+    flags+=(--pull always)
+
+    touch "${update_check_file}"
+fi
+
+# run dottie
+exec docker run "${flags[@]}" "ghcr.io/jippi/dottie:${release}" "$@"

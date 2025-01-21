@@ -40,6 +40,6 @@ class CreateNewsroomTable extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('site_news');
+        Schema::dropIfExists('newsroom');
     }
 }

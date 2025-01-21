@@ -58,52 +58,97 @@
 					<span class="badge badge-danger badge-sm">ADMIN</span>
 				</p>
 				@endif
-				<p class="mb-0 text-center text-muted">
-					Joined {{$profile->created_at->diffForHumans()}}
-				</p>
+
+                <div class="d-flex justify-content-around mt-3">
+                    <div class="mb-0">
+                        <p class="mb-n2 text-center text-dark font-weight-bold">
+                            {{$profile->created_at->diffForHumans()}}
+                        </p>
+        				<p class="mb-0 text-center text-muted">
+        					<span class="small">Joined</span>
+        				</p>
+                    </div>
+                    @if($user->last_active_at)
+                    <div class="mb-0">
+                        <p class="mb-n2 text-center text-dark font-weight-bold">
+                            {{$user->last_active_at->diffForHumans()}}
+                        </p>
+                        <p class="mb-0 text-center text-muted">
+                            <span class="small">Last Active</span>
+                        </p>
+                    </div>
+                    @endif
+                </div>
 			</div>
-			<table class="table mb-0">
-				<tbody>
-					<tr>
-						<th scope="row" class="font-weight-bold text-muted text-uppercase pl-3 small" style="line-height: 2;">bookmarks</th>
-						<td class="text-right font-weight-bold">{{$profile->bookmarks()->count()}}</td>
-					</tr>
-					<tr>
-						<th scope="row" class="font-weight-bold text-muted text-uppercase pl-3 small" style="line-height: 2;">collections</th>
-						<td class="text-right font-weight-bold">{{$profile->collections()->count()}}</td>
-					</tr>
-					<tr>
-						<th scope="row" class="font-weight-bold text-muted text-uppercase pl-3 small" style="line-height: 2;">likes</th>
-						<td class="text-right font-weight-bold">{{$profile->likes()->count()}}</td>
-					</tr>
-					<tr>
-						<th scope="row" class="font-weight-bold text-muted text-uppercase pl-3 small" style="line-height: 2;">reports</th>
-						<td class="text-right font-weight-bold">{{$profile->reports()->count()}}</td>
-					</tr>
-					<tr>
-						<th scope="row" class="font-weight-bold text-muted text-uppercase pl-3 small" style="line-height: 2;">reported</th>
-						<td class="text-right font-weight-bold">{{$profile->reported()->count()}}</td>
-					</tr>
-					<tr>
-						<th scope="row" class="font-weight-bold text-muted text-uppercase pl-3 small" style="line-height: 2;">Active stories</th>
-						<td class="text-right font-weight-bold">{{$profile->stories()->count()}}</td>
-					</tr>
-					<tr>
-						<th scope="row" class="font-weight-bold text-muted text-uppercase pl-3 small" style="line-height: 2;">storage used</th>
-						<td class="text-right font-weight-bold">{{PrettyNumber::size($profile->media()->sum('size'))}}<span class="text-muted"> / {{PrettyNumber::size(config_cache('pixelfed.max_account_size') * 1000)}}</span></td>
-					</tr>
-				</tbody>
-			</table>
+
+            <div class="list-group list-group-flush details-list">
+                <div class="list-group-item details-list-item">
+                    <p class="details-list-item-title">email</p>
+                    <p class="details-list-item-value text-truncate" title="{{$user->email}}">{{$user->email}}</p>
+                </div>
+
+                @if($profile->website)
+                <div class="list-group-item details-list-item">
+                    <p class="details-list-item-title">website</p>
+                    <p class="details-list-item-value text-truncate" title="{{$profile->website}}">{{$profile->website}}</p>
+                </div>
+                @endif
+
+                <div class="list-group-item details-list-item">
+                    <p class="details-list-item-title">bookmarks</p>
+                    <p class="details-list-item-value text-truncate">{{$profile->bookmarks()->count()}}</p>
+                </div>
+
+                <div class="list-group-item details-list-item">
+                    <p class="details-list-item-title">collections</p>
+                    <p class="details-list-item-value text-truncate">{{$profile->collections()->count()}}</p>
+                </div>
+
+                <div class="list-group-item details-list-item">
+                    <p class="details-list-item-title">likes</p>
+                    <p class="details-list-item-value text-truncate">{{$profile->likes()->count()}}</p>
+                </div>
+
+                <div class="list-group-item details-list-item">
+                    <p class="details-list-item-title">reports</p>
+                    <p class="details-list-item-value text-truncate">{{$profile->reports()->count()}}</p>
+                </div>
+
+                <div class="list-group-item details-list-item">
+                    <p class="details-list-item-title">reported</p>
+                    <p class="details-list-item-value text-truncate">{{$profile->reported()->count()}}</p>
+                </div>
+
+                <div class="list-group-item details-list-item">
+                    <p class="details-list-item-title">active stories</p>
+                    <p class="details-list-item-value text-truncate">{{$profile->stories()->count()}}</p>
+                </div>
+
+                <div class="list-group-item details-list-item">
+                    <p class="details-list-item-title">storage used</p>
+                    <p class="details-list-item-value text-truncate">{{PrettyNumber::size($profile->media()->sum('size'))}}<span class="text-muted"> / {{PrettyNumber::size(config_cache('pixelfed.max_account_size') * 1000)}}</p>
+                </div>
+
+                <div class="list-group-item details-list-item">
+                    <p class="details-list-item-title">bio</p>
+                    <p class="details-list-item-value text-wrap text-xs">{{ $profile->bio }}</p>
+                </div>
+            </div>
 		</div>
 	</div>
 	<div class="col-12 col-md-8">
 		<p class="title h4 font-weight-bold mt-2 py-2">Recent Posts</p>
 		<hr>
 		<div class="row">
-			@foreach($profile->statuses()->whereHas('media')->latest()->take(9)->get() as $item)
-			<div class="col-12 col-md-4 col-sm-6 px-0" style="margin-bottom: 1px;">
+			@foreach($profile->statuses()->whereHas('media')->latest()->take(16)->get() as $item)
+            @php($post = \App\Services\StatusService::get($item->id, false))
+			<div class="col-12 col-md-3 col-sm-6 mb-3 px-0">
 				<a href="{{$item->url()}}">
-					<img src="{{$item->thumb(true)}}" width="200px" height="200px">
+                    @if($post)
+                    <img src="{{$post['media_attachments'][0]['url']}}" width="200px" height="200px" style="object-fit: cover;" onerror="this.src='/storage/no-preview.png';this.onerror=null;">
+                    @else
+					<img src="/storage/no-preview.png" width="200px" height="200px">
+                    @endif
 				</a>
 			</div>
 			@endforeach
@@ -119,3 +164,44 @@
 	</div>
 </div>
 @endsection
+
+@push('styles')
+<style type="text/css">
+    .gap-1 {
+        gap: 5rem;
+    }
+
+    .details-list {
+
+    }
+
+    .details-list-item {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        gap: 5rem;
+        border-left: 0;
+        border-right: 0;
+    }
+
+    .details-list-item-title {
+        margin-bottom: 0;
+        color: #9ca3af !important;
+        text-transform: uppercase !important;
+        font-weight: bold;
+        font-size: 13px;
+        opacity: 0.69;
+    }
+
+    .details-list-item-value {
+        font-size: 15px;
+        font-weight: 600;
+        margin-bottom: 0;
+    }
+
+    .text-xs {
+        font-size: 11px !important;
+        font-weight: normal;
+    }
+</style>
+@endpush

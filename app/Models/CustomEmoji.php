@@ -18,7 +18,7 @@ class CustomEmoji extends Model
 
 	public static function scan($text, $activitypub = false)
 	{
-		if(config('federation.custom_emoji.enabled') == false) {
+		if((bool) config_cache('federation.custom_emoji.enabled') == false) {
 			return [];
 		}
 

@@ -14,11 +14,12 @@ class Kernel extends HttpKernel
      * @var array
      */
     protected $middleware = [
+        \Illuminate\Http\Middleware\HandleCors::class,
         \Illuminate\Foundation\Http\Middleware\CheckForMaintenanceMode::class,
         \Illuminate\Foundation\Http\Middleware\ValidatePostSize::class,
+        \App\Http\Middleware\TrustProxies::class,
         \App\Http\Middleware\TrimStrings::class,
         \Illuminate\Foundation\Http\Middleware\ConvertEmptyStringsToNull::class,
-        \App\Http\Middleware\TrustProxies::class,
     ];
 
     /**
@@ -42,7 +43,6 @@ class Kernel extends HttpKernel
 
         'api' => [
             'bindings',
-            \Fruitcake\Cors\HandleCors::class,
         ],
     ];
 
@@ -54,6 +54,7 @@ class Kernel extends HttpKernel
      * @var array
      */
     protected $routeMiddleware = [
+        'api.admin'     => \App\Http\Middleware\Api\Admin::class,
         'admin'         => \App\Http\Middleware\Admin::class,
         'auth'          => \Illuminate\Auth\Middleware\Authenticate::class,
         'auth.basic'    => \Illuminate\Auth\Middleware\AuthenticateWithBasicAuth::class,
@@ -68,6 +69,8 @@ class Kernel extends HttpKernel
         'twofactor'     => \App\Http\Middleware\TwoFactorAuth::class,
         'validemail'    => \App\Http\Middleware\EmailVerificationCheck::class,
         'interstitial'  => \App\Http\Middleware\AccountInterstitial::class,
+        'scopes'        => \Laravel\Passport\Http\Middleware\CheckScopes::class,
+        'scope'         => \Laravel\Passport\Http\Middleware\CheckForAnyScope::class,
         // 'restricted'    => \App\Http\Middleware\RestrictedAccess::class,
     ];
 }

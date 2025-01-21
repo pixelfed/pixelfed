@@ -5,13 +5,6 @@ use Illuminate\Support\Facades\Schema;
 
 class UpdateStatusTableChangeCaptionToText extends Migration
 {
-    public function __construct()
-    {
-        DB::getDoctrineSchemaManager()
-            ->getDatabasePlatform()
-            ->registerDoctrineTypeMapping('enum', 'string');
-    }
-
     /**
      * Run the migrations.
      *

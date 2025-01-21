@@ -13,7 +13,7 @@ class CustomEmojiService
 {
 	public static function get($shortcode)
 	{
-		if(config('federation.custom_emoji.enabled') == false) {
+		if((bool) config_cache('federation.custom_emoji.enabled') == false) {
 			return;
 		}
 
@@ -22,7 +22,7 @@ class CustomEmojiService
 
 	public static function import($url, $id = false)
 	{
-		if(config('federation.custom_emoji.enabled') == false) {
+		if((bool) config_cache('federation.custom_emoji.enabled') == false) {
 			return;
 		}
 
@@ -133,6 +133,7 @@ class CustomEmojiService
 			return CustomEmoji::when(!$pgsql, function($q, $pgsql) {
 					return $q->groupBy('shortcode');
 				})
+                ->whereNull('uri')
 				->get()
 				->map(function($emojo) {
 					$url = url('storage/' . $emojo->media_path);

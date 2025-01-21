@@ -105,6 +105,7 @@ return [
     'description' => 'Pixelfed is an image sharing platform, an ethical alternative to centralized platforms.',
     'rules' => null,
     'logo' => '/img/pixelfed-icon-color.svg',
+    'banner_image' => '/storage/headers/default.jpg',
 
     /*
     |--------------------------------------------------------------------------

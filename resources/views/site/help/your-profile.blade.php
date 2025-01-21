@@ -141,6 +141,45 @@
     </div>
   </p>
   <hr>
+  <p class="h5 text-muted " id="migration">Migration</p>
+  <p>
+    <a class="text-dark font-weight-bold" data-toggle="collapse" href="#migrate-collapse1" role="button" aria-expanded="false" aria-controls="migrate-collapse1">
+      <i class="fas fa-chevron-down mr-2"></i>
+      How can I migrate my account?
+    </a>
+    <div class="collapse" id="migrate-collapse1">
+      <div>
+        To migrate your account successfully, your old account must be on a Pixelfed or Mastodon server, or one that supports the Mastodon Account Migration <a href="https://docs.joinmastodon.org/spec/activitypub/#Move">extension</a>.
+        <hr>
+        <p>Navigate to the <a href="/settings/account/aliases/manage">Account Aliases</a> page in the Settings to begin.</p>
+      </div>
+    </div>
+  </p>
+  <p>
+    <a class="text-dark font-weight-bold" data-toggle="collapse" href="#migrate-collapse2" role="button" aria-expanded="false" aria-controls="migrate-collapse2">
+      <i class="fas fa-chevron-down mr-2"></i>
+      How long does the migration take?
+    </a>
+    <div class="collapse" id="migrate-collapse2">
+      <div>
+        It can take a few hours to process post migration imports, please contact admins if it takes longer than 24 hours.
+      </div>
+    </div>
+  </p>
+  <p>
+    <a class="text-dark font-weight-bold" data-toggle="collapse" href="#migrate-collapse3" role="button" aria-expanded="false" aria-controls="migrate-collapse3">
+      <i class="fas fa-chevron-down mr-2"></i>
+      Why are my posts not migrated?
+    </a>
+    <div class="collapse" id="migrate-collapse3">
+      <div>
+        Post migrations are officially supported on Pixelfed servers running v0.11.9+ and higher, and when enabled by server admins.
+        <hr>
+        It can take a few hours to process post migration imports, please contact admins if it takes longer than 24 hours.
+      </div>
+    </div>
+  </p>
+  <hr>
   <p class="h5 text-muted " id="delete-your-account">Delete Your Account</p>
   <p> 
     <a class="text-dark font-weight-bold" data-toggle="collapse" href="#del-collapse1" role="button" aria-expanded="false" aria-controls="del-collapse1">

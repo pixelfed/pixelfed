@@ -6,7 +6,11 @@ use App\AccountInterstitial;
 use App\Status;
 use Cache;
 use Illuminate\Support\Str;
+use App\Services\NotificationService;
 use App\Services\StatusService;
+use App\Jobs\ReportPipeline\AutospamNotifyAdminViaEmail;
+use App\Notification;
+use App\Services\AutospamService;
 
 class Bouncer {
 
@@ -85,6 +89,12 @@ class Bouncer {
 			return;
 		}
 
+		if(AutospamService::active()) {
+			if(AutospamService::check($status->caption)) {
+				return (new self)->handle($status);
+			}
+		}
+
 		if(!Str::contains($status->caption, [
 			'https://', 
 			'http://', 
@@ -126,6 +136,10 @@ class Bouncer {
 		]);
 		$ai->save();
 
+		if(config('instance.reports.email.enabled') && config('instance.reports.email.autospam')) {
+			AutospamNotifyAdminViaEmail::dispatch($ai);
+		}
+
 		$u = $status->profile->user;
 		$u->has_interstitial = true;
 		$u->save();
@@ -134,6 +148,14 @@ class Bouncer {
 		$status->visibility = 'unlisted';
 		// $status->is_nsfw = true;
 		$status->save();
+
+		$notification = new Notification();
+		$notification->profile_id = $status->profile_id;
+		$notification->actor_id = $status->profile_id;
+		$notification->action = 'autospam.warning';
+		$notification->item_id = $status->id;
+		$notification->item_type = "App\Status";
+		$notification->save();
 
 		StatusService::del($status->id);
 

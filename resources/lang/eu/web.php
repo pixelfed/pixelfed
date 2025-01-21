@@ -13,6 +13,7 @@ return [
 		'shared' => 'Partekatuta',
 		'shares' => 'Partekatze',
 		'unshare' => 'Utzi partekatzeari',
+		'bookmark' => 'Laster-marka',
 
 		'cancel' => 'Utzi',
 		'copyLink' => 'Kopiatu esteka',
@@ -22,7 +23,11 @@ return [
 		'oops' => 'Ene!',
 		'other' => 'Bestelakoa',
 		'readMore' => 'Irakurri gehiago',
-		'success' => 'Burutu da',
+		'success' => 'Arrakastaz burutu da',
+		'proceed' => 'Jarraitu',
+		'next' => 'Hurrengoa',
+		'close' => 'Itxi',
+		'clickHere' => 'klikatu hemen',
 
 		'sensitive' => 'Hunkigarria',
 		'sensitiveContent' => 'Eduki hunkigarria',
@@ -39,7 +44,7 @@ return [
 		'admin' => 'Adminaren panela',
 
 		// Timelines
-		'homeFeed' => 'Etxeko jarioa',
+		'homeFeed' => 'Hasierako jarioa',
 		'localFeed' => 'Jario lokala',
 		'globalFeed' => 'Jario globala',
 
@@ -55,7 +60,7 @@ return [
 		'drive' => 'Unitatea',
 		'settings' => 'Ezarpenak',
 		'compose' => 'Sortu berria',
-		'logout' => 'Saioa itxi',
+		'logout' => 'Itxi saioa',
 
 		// Nav footer
 		'about' => 'Honi buruz',
@@ -76,7 +81,7 @@ return [
 
 	'notifications' => [
 		'liked' => 'datsegi zure',
-		'commented' => 'iruzkindu du zure',
+		'commented' => '-(e)k iruzkindu du zure',
 		'reacted' => '-(e)k erantzun egin du zure',
 		'shared' => 'partekatu du zure',
 		'tagged' => 'etiketatu zaitu hemen:',
@@ -92,11 +97,12 @@ return [
 		'applicationApproved' => 'onartu da!',
 		'applicationRejected' => 'ez da onartu. Berriz eska dezakezu 6 hilabete barru.',
 
-		'dm' => 'mezu pribatua',
+		'dm' => 'mezu zuzena',
 		'groupPost' => 'talde argitarapena',
 		'modlog' => 'modloga',
 		'post' => 'bidalketa',
 		'story' => 'istorioa',
+		'noneFound' => 'Ez da jakinarazpenik aurkitu',
 	],
 
 	'post' => [
@@ -115,7 +121,7 @@ return [
 		'follow' => 'Jarraitu',
 		'unfollow' => 'Utzi jarraitzeari',
 		'editProfile' => 'Editatu profila',
-		'followRequested' => 'Jarraitzea eskatuta',
+		'followRequested' => 'Jarraitzeko eskaera bidalita',
 		'joined' => 'Elkartu da',
 
 		'emptyCollections' => 'Ez dugu topatu bildumarik',
@@ -127,28 +133,28 @@ return [
 		'viewProfile' => 'Ikusi profila',
 		'moderationTools' => 'Moderazio tresnak',
 		'report' => 'Salatu',
-		'archive' => 'Artxiboa',
+		'archive' => 'Artxibatu',
 		'unarchive' => 'Desartxibatu',
 		'embed' => 'Kapsulatu',
 
 		'selectOneOption' => 'Hautatu aukera hauetako bat',
-		'unlistFromTimelines' => 'Denbora-lerroetatik ezkutatu',
+		'unlistFromTimelines' => 'Denbora-lerroetatik kendu',
 		'addCW' => 'Gehitu edukiaren abisua',
 		'removeCW' => 'Kendu edukiaren abisua',
 		'markAsSpammer' => 'Markatu zabor-bidaltzaile gisa',
 		'markAsSpammerText' => 'Ezkutatu + edukiaren abisua jarri etorkizuneko bidalketei',
 		'spam' => 'Zaborra',
 		'sensitive' => 'Eduki hunkigarria',
-		'abusive' => 'Bortxazko edo Mingarria',
+		'abusive' => 'Iraingarri edo mingarria',
 		'underageAccount' => 'Adin txikiko baten kontua',
 		'copyrightInfringement' => 'Copyrightaren urraketa',
-		'impersonation' => 'Nortasunaren iruzurra',
-		'scamOrFraud' => 'Iruzur edo lapurreta',
+		'impersonation' => 'Inpersonazioa',
+		'scamOrFraud' => 'Iruzur edo maula',
 		'confirmReport' => 'Berretsi salaketa',
 		'confirmReportText' => 'Ziur al zaude bidalketa hau salatu nahi duzula?',
 		'reportSent' => 'Salaketa bidali da',
 		'reportSentText' => 'Zure salaketa ondo jaso dugu.',
-		'reportSentError' => 'Arazo bat egon da bidalketa hau salatzean.',
+		'reportSentError' => 'Arazo bat egon da bidalketa hau salatzerakoan.',
 
 		'modAddCWConfirm' => 'Ziur al zaude edukiaren abisua jarri nahi duzula bidalketa honetan?',
 		'modCWSuccess' => 'Edukiaren abisua ondo gehitu da',
@@ -164,7 +170,7 @@ return [
 		'showCaption' => 'Irudiaren azalpena erakutsi',
 		'showLikes' => 'Erakutsi atsegiteak',
 		'compactMode' => 'Modu trinkoa',
-		'embedConfirmText' => 'Kapsulatze hau erabiliz, onartzen dituzu gure',
+		'embedConfirmText' => 'Txertaketa hau erabiliz, onartzen dituzu gure',
 
 		'deletePostConfirm' => 'Ziur al zaude bidalketa hau ezabatu nahi duzula?',
 		'archivePostConfirm' => 'Ziur al zaude bidalketa hau artxibatu nahi duzula?',
@@ -176,11 +182,27 @@ return [
 	],
 
 	'timeline' => [
-		'peopleYouMayKnow' => 'Ezagutu dezakezun jendea'
+		'peopleYouMayKnow' => 'Ezagun dezakezun jendea',
+
+		'onboarding' => [
+			'welcome' => 'Ongi etorri',
+			'thisIsYourHomeFeed' => 'Hau da zure hasierako jarioa, jarraitzen dituzun kontuen bidalketen jario kronologikoa.',
+			'letUsHelpYouFind' => 'Utz iezaguzu laguntzen jarraitzeko moduko jende interesgarria bilatzen',
+			'refreshFeed' => 'Nire jarioa eguneratu',
+		],
 	],
 
 	'hashtags' => [
 		'emptyFeed' => 'Ez dugu topatu traola hau duen bidalketarik'
+	],
+
+	'report' => [
+		'report' => 'Salatu',
+		'selectReason' => 'Hautatu arrazoia',
+		'reported' => 'Salatuta',
+		'sendingReport' => 'Salaketa bidaltzen',
+		'thanksMsg' => 'Eskerrik asko salaketagatik, zu bezalako jendeak gure komunitatea seguruagoa mantentzen du!',
+		'contactAdminMsg' => 'Administratzaile batekin harremanetan jarri nahi baduzu bidalketa edo salaketa honen harira',
 	],
 
 ];

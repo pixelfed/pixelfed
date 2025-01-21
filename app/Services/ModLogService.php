@@ -108,8 +108,6 @@ class ModLogService {
 	{
 		$log = $this->log;
 
-		$msg = "{$log->user_username} commented on a modlog";
-		$rendered = "<span class='font-weight-bold'>{$log->user_username}</span> commented on a <a href='/i/admin/users/modlogs/{$log->user_id}}' class='font-weight-bold text-decoration-none'>modlog</a>";
 		$item_id = $log->id;
 		$item_type = 'App\ModLog';
 		$action = 'admin.user.modlog.comment';
@@ -127,8 +125,6 @@ class ModLogService {
 			$n->item_id = $item_id;
 			$n->item_type = $item_type;
 			$n->action = $action;
-			$n->message = $msg;
-			$n->rendered = $rendered;
 			$n->save();
 		}
 	}

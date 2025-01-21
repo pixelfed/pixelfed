@@ -6,13 +6,14 @@ return [
 		'comment' => 'Commenta',
 		'commented' => 'Commentato',
 		'comments' => 'Commenti',
-		'like' => 'Like',
+		'like' => 'Mi piace',
 		'liked' => 'Like aggiunto',
 		'likes' => 'Tutti i Like',
 		'share' => 'Condividi',
 		'shared' => 'Condiviso',
 		'shares' => 'Condivisioni',
 		'unshare' => 'Annulla condivisione',
+		'bookmark' => 'Preferiti',
 
 		'cancel' => 'Annulla',
 		'copyLink' => 'Copia link',
@@ -23,6 +24,10 @@ return [
 		'other' => 'Altro',
 		'readMore' => 'Leggi di più',
 		'success' => 'Riuscito',
+		'proceed' => 'Continua',
+		'next' => 'Avanti',
+		'close' => 'Chiudi',
+		'clickHere' => 'clicca qui',
 
 		'sensitive' => 'Sensibile',
 		'sensitiveContent' => 'Contenuto Sensibile',
@@ -76,17 +81,17 @@ return [
 
 	'notifications' => [
 		'liked' => 'ha messo like a',
-		'commented' => 'ha commentato',
+		'commented' => 'ha commentato il tuo',
 		'reacted' => 'ha reagito a',
-		'shared' => 'ha condiviso',
+		'shared' => 'ha condiviso il tuo',
 		'tagged' => 'ti ha taggato in',
 
 		'updatedA' => 'ha aggiornato un',
 		'sentA' => 'ha inviato un',
 
-		'followed' => 'stai seguendo',
+		'followed' => 'sta seguendo',
 		'mentioned' => 'menzionato',
-		'you' => 'tu',
+		'you' => 'te',
 
 		'yourApplication' => 'La tua candidatura per unirti',
 		'applicationApproved' => 'è stata approvata!',
@@ -97,6 +102,7 @@ return [
 		'modlog' => 'modlog',
 		'post' => 'post',
 		'story' => 'storia',
+		'noneFound' => 'Non ci sono notifiche',
 	],
 
 	'post' => [
@@ -176,11 +182,27 @@ return [
 	],
 
 	'timeline' => [
-		'peopleYouMayKnow' => 'Persone che potresti conoscere'
+		'peopleYouMayKnow' => 'Persone che potresti conoscere',
+
+		'onboarding' => [
+			'welcome' => 'Benvenuto',
+			'thisIsYourHomeFeed' => 'Questo è il tuo feed principale, un feed in ordine cronologico dei post da account che segui.',
+			'letUsHelpYouFind' => 'Ti aiutiamo a trovare delle persone interessanti da seguire',
+			'refreshFeed' => 'Aggiorna il mio feed',
+		],
 	],
 
 	'hashtags' => [
-		'emptyFeed' => 'Non riusciamo a trovare alcun post con questo hashtag'
+		'emptyFeed' => 'Non riusciamo a trovare nessun post con questo hashtag'
+	],
+
+	'report' => [
+		'report' => 'Segnala',
+		'selectReason' => 'Seleziona un motivo',
+		'reported' => 'Segnalato',
+		'sendingReport' => 'Invio della segnalazione',
+		'thanksMsg' => 'Grazie per la segnalazione, le persone come te aiutano a mantenere la comunità al sicuro!',
+		'contactAdminMsg' => 'Se desideri contattare un amministratore per questo post o rapporto',
 	],
 
 ];

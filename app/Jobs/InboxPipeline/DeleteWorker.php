@@ -126,6 +126,11 @@ class DeleteWorker implements ShouldQueue
 			return false;
 		}
 		$signatureData = HttpSignature::parseSignatureHeader($signature);
+
+		if(!isset($signatureData['keyId'], $signatureData['signature'], $signatureData['headers']) || isset($signatureData['error'])) {
+			return false;
+		}
+
 		$keyId = Helpers::validateUrl($signatureData['keyId']);
 		$id = Helpers::validateUrl($bodyDecoded['id']);
 		$keyDomain = parse_url($keyId, PHP_URL_HOST);
@@ -186,6 +191,11 @@ class DeleteWorker implements ShouldQueue
 			return;
 		}
 		$signatureData = HttpSignature::parseSignatureHeader($signature);
+
+		if(!isset($signatureData['keyId'], $signatureData['signature'], $signatureData['headers']) || isset($signatureData['error'])) {
+			return;
+		}
+
 		$keyId = Helpers::validateUrl($signatureData['keyId']);
 		$actor = Profile::whereKeyId($keyId)->whereNotNull('remote_url')->first();
 		if(!$actor) {

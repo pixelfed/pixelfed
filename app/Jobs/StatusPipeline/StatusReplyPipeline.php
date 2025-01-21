@@ -70,8 +70,12 @@ class StatusReplyPipeline implements ShouldQueue
         }
 
         if(config('database.default') === 'mysql') {
-            $count = DB::select(DB::raw("select id, in_reply_to_id from statuses, (select @pv := :kid) initialisation where id > @pv and find_in_set(in_reply_to_id, @pv) > 0 and @pv := concat(@pv, ',', id)"), [ 'kid' => $reply->id]);
-            $reply->reply_count = count($count);
+        	// todo: refactor
+            // $exp = DB::raw("select id, in_reply_to_id from statuses, (select @pv := :kid) initialisation where id > @pv and find_in_set(in_reply_to_id, @pv) > 0 and @pv := concat(@pv, ',', id)");
+            // $expQuery = $exp->getValue(DB::connection()->getQueryGrammar());
+            // $count = DB::select($expQuery, [ 'kid' => $reply->id ]);
+            // $reply->reply_count = count($count);
+            $reply->reply_count = $reply->reply_count + 1;
             $reply->save();
         } else {
             $reply->reply_count = $reply->reply_count + 1;
@@ -83,20 +87,20 @@ class StatusReplyPipeline implements ShouldQueue
         Cache::forget('status:replies:all:' . $reply->id);
         Cache::forget('status:replies:all:' . $status->id);
 
-        DB::transaction(function() use($target, $actor, $status) {
-            $notification = new Notification();
-            $notification->profile_id = $target->id;
-            $notification->actor_id = $actor->id;
-            $notification->action = 'comment';
-            $notification->message = $status->replyToText();
-            $notification->rendered = $status->replyToHtml();
-            $notification->item_id = $status->id;
-            $notification->item_type = "App\Status";
-            $notification->save();
+        if($target->user_id && $target->domain === null) {
+            DB::transaction(function() use($target, $actor, $status) {
+                $notification = new Notification();
+                $notification->profile_id = $target->id;
+                $notification->actor_id = $actor->id;
+                $notification->action = 'comment';
+                $notification->item_id = $status->id;
+                $notification->item_type = "App\Status";
+                $notification->save();
 
-            NotificationService::setNotification($notification);
-            NotificationService::set($notification->profile_id, $notification->id);
-        });
+                NotificationService::setNotification($notification);
+                NotificationService::set($notification->profile_id, $notification->id);
+            });
+        }
 
         if($exists = Cache::get('status:replies:all:' . $reply->id)) {
         	if($exists && $exists->count() == 3) {

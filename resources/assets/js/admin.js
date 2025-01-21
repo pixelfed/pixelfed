@@ -22,9 +22,34 @@ Array.from(document.querySelectorAll('.pagination .page-link'))
 .forEach(el => el.textContent = (el.textContent === 'Next »' ? '›' :'‹'));
 
 Vue.component(
+    'admin-autospam',
+    require('./../components/admin/AdminAutospam.vue').default
+);
+
+Vue.component(
     'admin-directory',
     require('./../components/admin/AdminDirectory.vue').default
 );
+
+Vue.component(
+    'admin-reports',
+    require('./../components/admin/AdminReports.vue').default
+);
+
+Vue.component(
+    'admin-settings',
+    require('./../components/admin/AdminSettings.vue').default
+);
+
+Vue.component(
+    'instances-component',
+    require('./../components/admin/AdminInstances.vue').default
+);
+
+// Vue.component(
+//     'instance-details-component',
+//     require('./../components/admin/AdminInstanceDetails.vue').default
+// );
 
 Vue.component(
     'hashtag-component',

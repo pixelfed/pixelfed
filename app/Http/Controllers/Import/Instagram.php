@@ -17,7 +17,7 @@ trait Instagram
 {
 	public function instagram()
 	{
-		if(config_cache('pixelfed.import.instagram.enabled') != true) {
+		if((bool) config_cache('pixelfed.import.instagram.enabled') != true) {
 			abort(404, 'Feature not enabled');
 		}
 		return view('settings.import.instagram.home');
@@ -25,6 +25,9 @@ trait Instagram
 
     public function instagramStart(Request $request)
     {	
+        if((bool) config_cache('pixelfed.import.instagram.enabled') != true) {
+            abort(404, 'Feature not enabled');
+        }
         $completed = ImportJob::whereProfileId(Auth::user()->profile->id)
             ->whereService('instagram')
             ->whereNotNull('completed_at')
@@ -38,6 +41,9 @@ trait Instagram
 
     protected function instagramRedirectOrNew()
     {
+        if((bool) config_cache('pixelfed.import.instagram.enabled') != true) {
+            abort(404, 'Feature not enabled');
+        }
     	$profile = Auth::user()->profile;
     	$exists = ImportJob::whereProfileId($profile->id)
     		->whereService('instagram')
@@ -61,6 +67,9 @@ trait Instagram
 
     public function instagramStepOne(Request $request, $uuid)
     {
+        if((bool) config_cache('pixelfed.import.instagram.enabled') != true) {
+            abort(404, 'Feature not enabled');
+        }
     	$profile = Auth::user()->profile;
     	$job = ImportJob::whereProfileId($profile->id)
     		->whereNull('completed_at')
@@ -72,6 +81,9 @@ trait Instagram
 
     public function instagramStepOneStore(Request $request, $uuid)
     {
+        if((bool) config_cache('pixelfed.import.instagram.enabled') != true) {
+            abort(404, 'Feature not enabled');
+        }
         $max = 'max:' . config('pixelfed.import.instagram.limits.size');
     	$this->validate($request, [
     		'media.*' => 'required|mimes:bin,jpeg,png,gif|'.$max,
@@ -93,7 +105,7 @@ trait Instagram
     			continue;
     		}
             $storagePath = "import/{$job->uuid}";
-            $path = $v->store($storagePath);
+            $path = $v->storePublicly($storagePath);
             DB::transaction(function() use ($profile, $job, $path, $original) {
 		        $data = new ImportData;
 		        $data->profile_id = $profile->id;
@@ -114,6 +126,9 @@ trait Instagram
 
     public function instagramStepTwo(Request $request, $uuid)
     {
+        if((bool) config_cache('pixelfed.import.instagram.enabled') != true) {
+            abort(404, 'Feature not enabled');
+        }
     	$profile = Auth::user()->profile;
     	$job = ImportJob::whereProfileId($profile->id)
     		->whereNull('completed_at')
@@ -125,6 +140,9 @@ trait Instagram
 
     public function instagramStepTwoStore(Request $request, $uuid)
     {
+        if((bool) config_cache('pixelfed.import.instagram.enabled') != true) {
+            abort(404, 'Feature not enabled');
+        }
     	$this->validate($request, [
     		'media' => 'required|file|max:1000'
     	]);
@@ -141,7 +159,7 @@ trait Instagram
 			return abort(500);
 		}
 		$storagePath = "import/{$job->uuid}";
-        $path = $media->store($storagePath);
+        $path = $media->storePublicly($storagePath);
         $job->media_json = $path;
         $job->stage = 3;
         $job->save();
@@ -150,6 +168,9 @@ trait Instagram
 
     public function instagramStepThree(Request $request, $uuid)
     {
+        if((bool) config_cache('pixelfed.import.instagram.enabled') != true) {
+            abort(404, 'Feature not enabled');
+        }
     	$profile = Auth::user()->profile;
     	$job = ImportJob::whereProfileId($profile->id)
             ->whereService('instagram')
@@ -162,6 +183,9 @@ trait Instagram
 
     public function instagramStepThreeStore(Request $request, $uuid)
     {
+        if((bool) config_cache('pixelfed.import.instagram.enabled') != true) {
+            abort(404, 'Feature not enabled');
+        }
         $profile = Auth::user()->profile;
 
         try {

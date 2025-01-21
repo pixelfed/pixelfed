@@ -6,10 +6,6 @@ use Illuminate\Support\Facades\Schema;
 
 class UpdateStoriesTable extends Migration
 {
-    public function __construct()
-    {
-        DB::getDoctrineSchemaManager()->getDatabasePlatform()->registerDoctrineTypeMapping('enum', 'string');
-    }
     /**
      * Run the migrations.
      *

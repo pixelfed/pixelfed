@@ -4,6 +4,7 @@ namespace App\Transformer\Api;
 
 use App\Media;
 use League\Fractal;
+use Storage;
 
 class MediaTransformer extends Fractal\TransformerAbstract
 {
@@ -27,6 +28,10 @@ class MediaTransformer extends Fractal\TransformerAbstract
             'mime'          => $media->mime,
             'blurhash'      => $media->blurhash ?? 'U4Rfzst8?bt7ogayj[j[~pfQ9Goe%Mj[WBay'
         ];
+
+        if(config('media.hls.enabled') && $media->hls_transcoded_at != null && $media->hls_path) {
+            $res['hls_manifest'] = url(Storage::url($media->hls_path));
+        }
 
         if($media->width && $media->height) {
             $res['meta'] = [

@@ -78,7 +78,7 @@
 				</div>
 				<div class="form-group">
 					<label class="font-weight-bold text-muted">Website</label>
-					<input type="text" class="form-control" name="website" value="{{$user->website}}" placeholder="No website added">
+					<input type="text" class="form-control" name="website" value="{{$profile->website}}" placeholder="No website added">
 				</div>
 				<div class="form-group">
 					<label class="font-weight-bold text-muted">Admin</label>

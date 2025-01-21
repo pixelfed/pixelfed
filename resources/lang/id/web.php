@@ -3,26 +3,31 @@
 return [
 
 	'common' => [
-		'comment' => 'Komentar',
+		'comment' => 'Komentari',
 		'commented' => 'Dikomentari',
 		'comments' => 'Komentar',
-		'like' => 'Menyukai',
+		'like' => 'Sukai',
 		'liked' => 'Disukai',
 		'likes' => 'Suka',
 		'share' => 'Bagikan',
 		'shared' => 'Dibagikan',
 		'shares' => 'Dibagikan',
 		'unshare' => 'Batalkan berbagi',
+		'bookmark' => 'Penanda Buku',
 
 		'cancel' => 'Batal',
 		'copyLink' => 'Salin tautan',
 		'delete' => 'Hapus',
-		'error' => 'Kesalahan',
-		'errorMsg' => 'Telah terjadi kesalahan. Silakan coba lagi nanti.',
+		'error' => 'Galat',
+		'errorMsg' => 'Terjadi kesalahan. Silakan coba lagi nanti.',
 		'oops' => 'Oops!',
 		'other' => 'Lainnya',
 		'readMore' => 'Baca selengkapnya',
 		'success' => 'Berhasil',
+		'proceed' => 'Lanjut',
+		'next' => 'Berikutnya',
+		'close' => 'Tutup',
+		'clickHere' => 'klik di sini',
 
 		'sensitive' => 'Sensitif',
 		'sensitiveContent' => 'Konten Sensitif',
@@ -40,21 +45,21 @@ return [
 
 		// Timelines
 		'homeFeed' => 'Beranda',
-		'localFeed' => 'Umpan lokal',
-		'globalFeed' => 'Umpan global',
+		'localFeed' => 'Beranda Setempat',
+		'globalFeed' => 'Beranda Global',
 
 		// Core features
 		'discover' => 'Jelajahi',
 		'directMessages' => 'Pesan Langsung',
-		'notifications' => 'Notifikasi',
+		'notifications' => 'Pemberitahuan',
 		'groups' => 'Grup',
 		'stories' => 'Cerita',
 
 		// Self links
 		'profile' => 'Profil',
-		'drive' => 'Perangkat Keras',
+		'drive' => 'Kandar',
 		'settings' => 'Pengaturan',
-		'compose' => 'Membuat baru',
+		'compose' => 'Buat',
 		'logout' => 'Keluar',
 
 		// Nav footer
@@ -65,7 +70,7 @@ return [
 		'terms' => 'Ketentuan',
 
 		// Temporary links
-		'backToPreviousDesign' => 'Kembali ke desain sebelumnya'
+		'backToPreviousDesign' => 'Kembali ke rancangan sebelumnya'
 	],
 
 	'directMessages' => [
@@ -77,32 +82,33 @@ return [
 	'notifications' => [
 		'liked' => 'menyukai',
 		'commented' => 'mengomentari',
-		'reacted' => 'bereaksi terhadap',
+		'reacted' => 'bereaksi ke',
 		'shared' => 'membagikan',
-		'tagged' => 'menandai Anda pada sebuah',
+		'tagged' => 'menandai Anda di',
 
-		'updatedA' => 'mengupdate sebuah',
-		'sentA' => 'mengirim sebuah',
+		'updatedA' => 'memperbarui',
+		'sentA' => 'mengirim',
 
 		'followed' => 'diikuti',
 		'mentioned' => 'disebut',
-		'you' => 'anda',
+		'you' => 'Anda',
 
-		'yourApplication' => 'Aplikasi anda untuk mengikuti',
+		'yourApplication' => 'Aplikasi Anda untuk mengikuti',
 		'applicationApproved' => 'telah disetujui!',
-		'applicationRejected' => 'telah ditolak. Anda dapat kembali mengajukan untuk bergabung dalam 6 bulan.',
+		'applicationRejected' => 'ditolak. Anda dapat mengajukan lagi untuk bergabung dalam 6 bulan.',
 
 		'dm' => 'dm',
 		'groupPost' => 'postingan grup',
 		'modlog' => 'modlog',
 		'post' => 'postingan',
 		'story' => 'cerita',
+		'noneFound' => 'Tidak ditemukan pemberitahuan',
 	],
 
 	'post' => [
-		'shareToFollowers' => 'Membagikan kepada pengikut',
-		'shareToOther' => 'Membagikan ke orang lain',
-		'noLikes' => 'Belum ada yang menyukai',
+		'shareToFollowers' => 'Bagikan kepada pengikut',
+		'shareToOther' => 'Bagikan ke orang lain',
+		'noLikes' => 'Masih belum disukai',
 		'uploading' => 'Mengunggah',
 	],
 
@@ -110,10 +116,10 @@ return [
 		'posts' => 'Postingan',
 		'followers' => 'Pengikut',
 		'following' => 'Mengikuti',
-		'admin' => 'Pengelola',
+		'admin' => 'Pengurus',
 		'collections' => 'Koleksi',
 		'follow' => 'Ikuti',
-		'unfollow' => 'Berhenti Ikuti',
+		'unfollow' => 'Berhenti ikuti',
 		'editProfile' => 'Ubah Profil',
 		'followRequested' => 'Meminta Permintaan Mengikuti',
 		'joined' => 'Bergabung',
@@ -128,7 +134,7 @@ return [
 		'moderationTools' => 'Alat Moderasi',
 		'report' => 'Laporkan',
 		'archive' => 'Arsipkan',
-		'unarchive' => 'Keluarkan dari arsip',
+		'unarchive' => 'Lepas arsip',
 		'embed' => 'Penyemat',
 
 		'selectOneOption' => 'Pilih salah satu dari opsi berikut',
@@ -176,11 +182,27 @@ return [
 	],
 
 	'timeline' => [
-		'peopleYouMayKnow' => 'Orang yang mungkin Anda kenal'
+		'peopleYouMayKnow' => 'Orang yang mungkin Anda kenal',
+
+		'onboarding' => [
+			'welcome' => 'Selamat Datang',
+			'thisIsYourHomeFeed' => 'Ini merupakan tampilan beranda Anda, tampilan dari postingan akun yang Anda ikuti secara kronologis.',
+			'letUsHelpYouFind' => 'Biarkan kami membantumu menemukan orang-orang yang menarik untuk diikuti',
+			'refreshFeed' => 'Segarkan laman umpan',
+		],
 	],
 
 	'hashtags' => [
 		'emptyFeed' => 'Sepertinya kami tidak dapat menemukan postingan untuk tagar ini'
+	],
+
+	'report' => [
+		'report' => 'Laporkan',
+		'selectReason' => 'Pilih alasan',
+		'reported' => 'Terlaporkan',
+		'sendingReport' => 'Mengirim laporan',
+		'thanksMsg' => 'Terima kasih atas laporannya, tindakan Anda amat membantu menjaga komunitas!',
+		'contactAdminMsg' => 'Jika Anda berminat menghubungi seorang administrator mengenai postingan ini atau melaporkan',
 	],
 
 ];

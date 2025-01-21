@@ -70,7 +70,7 @@ return [
     |
     */
 
-    'connection' => null,
+    'connection' => env('SESSION_CONNECTION'),
 
     /*
     |--------------------------------------------------------------------------
@@ -96,7 +96,7 @@ return [
     |
     */
 
-    'store' => null,
+    'store' => env('SESSION_STORE'),
 
     /*
     |--------------------------------------------------------------------------
@@ -109,7 +109,7 @@ return [
     |
     */
 
-    'lottery' => [2, 1000],
+    'lottery' => [2, 100],
 
     /*
     |--------------------------------------------------------------------------
@@ -161,7 +161,7 @@ return [
     |
     */
 
-    'secure' => true,
+    'secure' => env('SESSION_SECURE_COOKIE', true),
 
     /*
     |--------------------------------------------------------------------------
@@ -183,12 +183,25 @@ return [
     |
     | This option determines how your cookies behave when cross-site requests
     | take place, and can be used to mitigate CSRF attacks. By default, we
-    | do not enable this as other CSRF protection services are in place.
+    | will set this value to "lax" since this is a secure default value.
     |
-    | Supported: "lax", "strict"
+    | Supported: "lax", "strict", "none", null
     |
     */
 
-    'same_site' => null,
+    'same_site' => env('SESSION_SAME_SITE_COOKIES', 'lax'),
+
+    /*
+    |--------------------------------------------------------------------------
+    | Partitioned Cookies
+    |--------------------------------------------------------------------------
+    |
+    | Setting this value to true will tie the cookie to the top-level site for
+    | a cross-site context. Partitioned cookies are accepted by the browser
+    | when flagged "secure" and the Same-Site attribute is set to "none".
+    |
+    */
+
+    'partitioned' => false,
 
 ];

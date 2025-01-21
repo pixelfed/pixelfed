@@ -3,6 +3,7 @@
 namespace App\Jobs\StatusPipeline;
 
 use Cache, Log;
+use App\Profile;
 use App\Status;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
@@ -52,11 +53,35 @@ class StatusActivityPubDeliver implements ShouldQueue
 		$status = $this->status;
 		$profile = $status->profile;
 
+		// ignore group posts
+        // if($status->group_id != null) {
+        //     return;
+        // }
+
 		if($status->local == false || $status->url || $status->uri) {
 			return;
 		}
 
 		$audience = $status->profile->getAudienceInbox();
+
+		$parentInbox = [];
+
+		$mentions = $status->mentions
+			->filter(function($f) { return $f->domain !== null;})
+			->values()
+			->map(function($m) { return $m->sharedInbox ?? $m->inbox_url; })
+			->toArray();
+
+		if($status->in_reply_to_profile_id) {
+			$parent = Profile::find($status->in_reply_to_profile_id);
+			if($parent && $parent->domain !== null) {
+				$parentInbox = [
+					$parent->sharedInbox ?? $parent->inbox_url
+				];
+			}
+		}
+
+		$audience = array_values(array_unique(array_merge($audience, $mentions, $parentInbox)));
 
 		if(empty($audience) || !in_array($status->scope, ['public', 'unlisted', 'private'])) {
 			// Return on profiles with no remote followers

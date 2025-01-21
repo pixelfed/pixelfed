@@ -14,12 +14,11 @@ class UpdateStoriesTableFixExpiresAtColumn extends Migration
 	public function up()
 	{
 		Schema::table('stories', function (Blueprint $table) {
-			$sm = Schema::getConnection()->getDoctrineSchemaManager();
-			$doctrineTable = $sm->listTableDetails('stories');
-
-			if($doctrineTable->hasIndex('stories_expires_at_index')) {
-				$table->dropIndex('stories_expires_at_index');
-			}
+            $indexes = Schema::getIndexes('stories');
+            $indexesFound = collect($indexes)->map(function($i) { return $i['name']; })->toArray();
+            if (in_array('stories_expires_at_index', $indexesFound)) {
+                $table->dropIndex('stories_expires_at_index');
+            }
 			$table->timestamp('expires_at')->default(null)->index()->nullable()->change();
 			$table->boolean('can_reply')->default(true);
 			$table->boolean('can_react')->default(true);
@@ -37,12 +36,11 @@ class UpdateStoriesTableFixExpiresAtColumn extends Migration
 	public function down()
 	{
 		Schema::table('stories', function (Blueprint $table) {
-			$sm = Schema::getConnection()->getDoctrineSchemaManager();
-			$doctrineTable = $sm->listTableDetails('stories');
-
-			if($doctrineTable->hasIndex('stories_expires_at_index')) {
-				$table->dropIndex('stories_expires_at_index');
-			}
+			$indexes = Schema::getIndexes('stories');
+            $indexesFound = collect($indexes)->map(function($i) { return $i['name']; })->toArray();
+            if (in_array('stories_expires_at_index', $indexesFound)) {
+                $table->dropIndex('stories_expires_at_index');
+            }
 			$table->timestamp('expires_at')->default(null)->index()->nullable()->change();
 			$table->dropColumn('can_reply');
 			$table->dropColumn('can_react');

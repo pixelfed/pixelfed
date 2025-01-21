@@ -379,26 +379,6 @@ export default {
 			this.searchContext(this.analysis);
 		},
 
-		followProfile(profile, index) {
-			this.loading = true;
-			axios.post('/i/follow', {
-				item: profile.entity.id
-			}).then(res => {
-				if(profile.entity.local == true) {
-					this.fetchSearchResults();
-					return;
-				} else {
-					this.loading = false;
-					this.results.profiles[index].entity.follow_request = true;
-					return;
-				}
-			}).catch(err => {
-				if(err.response.data.message) {
-					swal('Error', err.response.data.message, 'error');
-				}
-			});
-		},
-
 		searchLexer() {
 			let q = this.query;
 

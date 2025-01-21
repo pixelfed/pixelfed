@@ -9,6 +9,9 @@ use App\Http\Controllers\StatusController;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use App\Models\Poll;
 use App\Services\AccountService;
+use App\Services\StatusService;
+use App\Models\StatusEdit;
+use Illuminate\Support\Str;
 
 class Status extends Model
 {
@@ -26,7 +29,10 @@ class Status extends Model
 	 *
 	 * @var array
 	 */
-	protected $dates = ['deleted_at'];
+	protected $casts = [
+		'deleted_at' => 'datetime',
+		'edited_at'  => 'datetime'
+	];
 
 	protected $guarded = [];
 
@@ -46,11 +52,11 @@ class Status extends Model
 		'loop'
 	];
 
-	const MAX_MENTIONS = 5;
+	const MAX_MENTIONS = 20;
 
-	const MAX_HASHTAGS = 30;
+	const MAX_HASHTAGS = 60;
 
-	const MAX_LINKS = 2;
+	const MAX_LINKS = 5;
 
 	public function profile()
 	{
@@ -91,16 +97,30 @@ class Status extends Model
 
 	public function thumb($showNsfw = false)
 	{
-		$key = $showNsfw ? 'status:thumb:nsfw1'.$this->id : 'status:thumb:nsfw0'.$this->id;
-		return Cache::remember($key, now()->addMinutes(15), function() use ($showNsfw) {
-			$type = $this->type ?? $this->setType();
-			$is_nsfw = !$showNsfw ? $this->is_nsfw : false;
-			if ($this->media->count() == 0 || $is_nsfw || !in_array($type,['photo', 'photo:album', 'video'])) {
-				return url(Storage::url('public/no-preview.png'));
-			}
+		$entity = StatusService::get($this->id, false);
 
-			return url(Storage::url($this->firstMedia()->thumbnail_path));
-		});
+		if(!$entity || !isset($entity['media_attachments']) || empty($entity['media_attachments'])) {
+			return url(Storage::url('public/no-preview.png'));
+		}
+
+		if((!isset($entity['sensitive']) || $entity['sensitive']) && !$showNsfw) {
+			return url(Storage::url('public/no-preview.png'));
+		}
+
+        if(!isset($entity['visibility']) || !in_array($entity['visibility'], ['public', 'unlisted'])) {
+            return url(Storage::url('public/no-preview.png'));
+        }
+
+		return collect($entity['media_attachments'])
+            ->filter(fn($media) => $media['type'] == 'image' && in_array($media['mime'], ['image/jpeg', 'image/png']))
+            ->map(function($media) {
+                if(!Str::endsWith($media['preview_url'], ['no-preview.png', 'no-preview.jpg'])) {
+                    return $media['preview_url'];
+                }
+
+                return $media['url'];
+            })
+            ->first() ?? url(Storage::url('public/no-preview.png'));
 	}
 
 	public function url($forceLocal = false)
@@ -283,81 +303,9 @@ class Status extends Model
 		return $obj;
 	}
 
-	public function replyToText()
-	{
-		$actorName = $this->profile->username;
-
-		return "{$actorName} ".__('notification.commented');
-	}
-
-	public function replyToHtml()
-	{
-		$actorName = $this->profile->username;
-		$actorUrl = $this->profile->url();
-
-		return "<a href='{$actorUrl}' class='profile-link'>{$actorName}</a> ".
-		  __('notification.commented');
-	}
-
-	public function shareToText()
-	{
-		$actorName = $this->profile->username;
-
-		return "{$actorName} ".__('notification.shared');
-	}
-
-	public function shareToHtml()
-	{
-		$actorName = $this->profile->username;
-		$actorUrl = $this->profile->url();
-
-		return "<a href='{$actorUrl}' class='profile-link'>{$actorName}</a> ".
-		  __('notification.shared');
-	}
-
 	public function recentComments()
 	{
 		return $this->comments()->orderBy('created_at', 'desc')->take(3);
-	}
-
-	public function toActivityPubObject()
-	{
-		if($this->local == false) {
-			return;
-		}
-		$profile = $this->profile;
-		$to = $this->scopeToAudience('to');
-		$cc = $this->scopeToAudience('cc');
-		return [
-			'@context' => 'https://www.w3.org/ns/activitystreams',
-			'id'    => $this->permalink(),
-			'type'  => 'Create',
-			'actor' => $profile->permalink(),
-			'published' => str_replace('+00:00', 'Z', $this->created_at->format(DATE_RFC3339_EXTENDED)),
-			'to' => $to,
-			'cc' => $cc,
-			'object' => [
-				'id' => $this->url(),
-				'type' => 'Note',
-				'summary' => null,
-				'inReplyTo' => null,
-				'published' => str_replace('+00:00', 'Z', $this->created_at->format(DATE_RFC3339_EXTENDED)),
-				'url' => $this->url(),
-				'attributedTo' => $this->profile->url(),
-				'to' => $to,
-				'cc' => $cc,
-				'sensitive' => (bool) $this->is_nsfw,
-				'content' => $this->rendered,
-				'attachment' => $this->media->map(function($media) {
-					return [
-						'type' => 'Document',
-						'mediaType' => $media->mime,
-						'url' => $media->url(),
-						'name' => null
-					];
-				})->toArray()
-			]
-		];
 	}
 
 	public function scopeToAudience($audience)
@@ -422,5 +370,10 @@ class Status extends Model
 	public function poll()
 	{
 		return $this->hasOne(Poll::class);
+	}
+
+	public function edits()
+	{
+		return $this->hasMany(StatusEdit::class);
 	}
 }

@@ -11,8 +11,8 @@
 
 	<title>{{ $title ?? config_cache('app.name') }}</title>
 
-	<meta property="og:site_name" content="{{ config('app.name', 'pixelfed') }}">
-	<meta property="og:title" content="{{ $title ?? config('app.name', 'pixelfed') }}">
+	<meta property="og:site_name" content="{{ config_cache('app.name', 'pixelfed') }}">
+	<meta property="og:title" content="{{ $title ?? config_cache('app.name', 'pixelfed') }}">
 	<meta property="og:type" content="article">
 	<meta property="og:url" content="{{request()->url()}}">
 	@stack('meta')

@@ -10,6 +10,7 @@
         "shared": "Zdie\u013ean\u00e9",
         "shares": "Zdia\u013ean\u00e9",
         "unshare": "Zru\u0161i\u0165 zdie\u013eanie",
+        "bookmark": "Ulo\u017ei\u0165",
         "cancel": "Zru\u0161i\u0165",
         "copyLink": "Skop\u00edrova\u0165 odkaz",
         "delete": "Vymaza\u0165",
@@ -19,6 +20,10 @@
         "other": "In\u00e9",
         "readMore": "Zobrazi\u0165 viac",
         "success": "Hotovo",
+        "proceed": "Pokra\u010dova\u0165",
+        "next": "\u010ealej",
+        "close": "Zavrie\u0165",
+        "clickHere": "klikni tu",
         "sensitive": "Citliv\u00fd",
         "sensitiveContent": "Citliv\u00fd obsah",
         "sensitiveContentWarning": "Tento pr\u00edspevok m\u00f4\u017ee obsahova\u0165 citliv\u00fd obsah"
@@ -73,7 +78,8 @@
         "groupPost": "skupinov\u00fd pr\u00edspevok",
         "modlog": "modlog",
         "post": "pr\u00edspevok",
-        "story": "story"
+        "story": "story",
+        "noneFound": "\u017diadne n\u00e1jden\u00e9 notifik\u00e1cie"
     },
     "post": {
         "shareToFollowers": "Zdie\u013ea\u0165 pre sledovate\u013eov",
@@ -128,7 +134,7 @@
         "modUnlistConfirm": "Naozaj chcete odstr\u00e1ni\u0165 zo zoznamu tento pr\u00edspevok?",
         "modUnlistSuccess": "Pr\u00edspevok bol \u00faspe\u0161ne odstr\u00e1nen\u00fd zo zoznamu",
         "modMarkAsSpammerConfirm": "Naozaj chcete ozna\u010di\u0165 tohto pou\u017e\u00edvate\u013ea ako odosielate\u013ea spamu? V\u0161etky existuj\u00face a bud\u00face pr\u00edspevky bud\u00fa odstr\u00e1nen\u00e9 z timelines a bude pridan\u00e9 upozornenie o obsahu.",
-        "modMarkAsSpammerSuccess": "\u00da\u010det bol \u00faspe\u0161ne ozna\u010den\u00fd ako odosielate\u013ea spamu",
+        "modMarkAsSpammerSuccess": "\u00da\u010det bol \u00faspe\u0161ne ozna\u010den\u00fd ako spammer",
         "toFollowers": "pre Sleduj\u00facich",
         "showCaption": "Zobrazi\u0165 Titulok",
         "showLikes": "Zobrazi\u0165 P\u00e1\u010di sa mi",
@@ -142,9 +148,23 @@
         "add": "Prida\u0165 Story"
     },
     "timeline": {
-        "peopleYouMayKnow": "\u013dudia ktor\u00fdch mo\u017eno pozn\u00e1te"
+        "peopleYouMayKnow": "\u013dudia ktor\u00fdch mo\u017eno pozn\u00e1te",
+        "onboarding": {
+            "welcome": "Vitajte",
+            "thisIsYourHomeFeed": "This is your home feed, a chronological feed of posts from accounts you follow.",
+            "letUsHelpYouFind": "Nechajte n\u00e1s pom\u00f4c\u0165 v\u00e1m n\u00e1js\u0165 zauj\u00edmav\u00fdch \u013eud\u00ed ktor\u00fdch m\u00f4\u017eete sledova\u0165",
+            "refreshFeed": "Refresh my feed"
+        }
     },
     "hashtags": {
         "emptyFeed": "Zd\u00e1 sa, \u017ee nem\u00f4\u017eeme n\u00e1js\u0165 \u017eiadne pr\u00edspevky pre tento hashtag"
+    },
+    "report": {
+        "report": "Nahl\u00e1si\u0165",
+        "selectReason": "Vyberte d\u00f4vod",
+        "reported": "Nahl\u00e1sen\u00e9",
+        "sendingReport": "Odosielanie hl\u00e1senia",
+        "thanksMsg": "\u010eakujeme za hl\u00e1senie, \u013eudia ako vy pom\u00e1haj\u00fa udr\u017eiava\u0165 na\u0161u komunitu v bezpe\u010d\u00ed!",
+        "contactAdminMsg": "Ak chcete kontaktova\u0165 administr\u00e1tora oh\u013eadom tohto pr\u00edspevku alebo ho nahl\u00e1si\u0165"
     }
 }

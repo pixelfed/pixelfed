@@ -175,4 +175,67 @@ class UsernameTest extends TestCase
         $this->assertEquals($expectedEntity, $entities);
     }
 
+    /** @test * */
+    public function germanUmlatsAutolink()
+    {
+        $mentions = "@März and @königin and @Glück";
+        $autolink = Autolink::create()->autolink($mentions);
+
+        $expectedAutolink = '<a class="u-url mention" href="https://pixelfed.dev/März" rel="external nofollow noopener" target="_blank">@März</a> and <a class="u-url mention" href="https://pixelfed.dev/königin" rel="external nofollow noopener" target="_blank">@königin</a> and <a class="u-url mention" href="https://pixelfed.dev/Glück" rel="external nofollow noopener" target="_blank">@Glück</a>';
+        $this->assertEquals($expectedAutolink, $autolink);
+    }
+
+    /** @test * */
+    public function germanUmlatsExtractor()
+    {
+        $mentions = "@März and @königin and @Glück";
+        $entities = Extractor::create()->extract($mentions);
+
+        $expectedEntity = [
+            "hashtags" => [],
+            "urls" => [],
+            "mentions" => [
+              "märz",
+              "königin",
+              "glück",
+            ],
+            "replyto" => null,
+            "hashtags_with_indices" => [],
+            "urls_with_indices" => [],
+            "mentions_with_indices" => [
+              [
+                "screen_name" => "März",
+                "indices" => [
+                  0,
+                  5,
+                ],
+              ],
+              [
+                "screen_name" => "königin",
+                "indices" => [
+                  10,
+                  18,
+                ],
+              ],
+              [
+                "screen_name" => "Glück",
+                "indices" => [
+                  23,
+                  29,
+                ],
+              ],
+            ],
+        ];
+        $this->assertEquals($expectedEntity, $entities);
+    }
+
+    /** @test * */
+    public function germanUmlatsWebfingerAutolink()
+    {
+        $mentions = "hello @märz@example.org!";
+        $autolink = Autolink::create()->autolink($mentions);
+
+        $expectedAutolink = 'hello <a class="u-url list-slug" href="https://pixelfed.dev/@märz@example.org" rel="external nofollow noopener" target="_blank">@märz@example.org</a>!';
+        $this->assertEquals($expectedAutolink, $autolink);
+    }
 }

@@ -13,6 +13,7 @@ return [
 		'shared' => 'Udostępnione',
 		'shares' => 'Udostępnione',
 		'unshare' => 'Anuluj udostępnianie',
+		'bookmark' => 'Zakładka',
 
 		'cancel' => 'Anuluj',
 		'copyLink' => 'Kopiuj Link',
@@ -23,6 +24,10 @@ return [
 		'other' => 'Inne',
 		'readMore' => 'Czytaj więcej',
 		'success' => 'Sukces',
+		'proceed' => 'Kontynuuj',
+		'next' => 'Następny',
+		'close' => 'Zamknij',
+		'clickHere' => 'kliknij tutaj',
 
 		'sensitive' => 'Wrażliwe',
 		'sensitiveContent' => 'Treść wrażliwa',
@@ -55,7 +60,7 @@ return [
 		'drive' => 'Dysk',
 		'settings' => 'Ustawienia',
 		'compose' => 'Utwórz nowy',
-		'logout' => 'Logout',
+		'logout' => 'Wyloguj się',
 
 		// Nav footer
 		'about' => 'O nas',
@@ -97,6 +102,7 @@ return [
 		'modlog' => 'logi',
 		'post' => 'post',
 		'story' => 'opowieść',
+		'noneFound' => 'Brak powiadomień',
 	],
 
 	'post' => [
@@ -176,11 +182,27 @@ return [
 	],
 
 	'timeline' => [
-		'peopleYouMayKnow' => 'Ludzie, których możesz znać'
+		'peopleYouMayKnow' => 'Ludzie, których możesz znać',
+
+		'onboarding' => [
+			'welcome' => 'Witaj',
+			'thisIsYourHomeFeed' => 'To jest Twój kanał główny, chronologiczny kanał wpisów z kont, które śledzisz.',
+			'letUsHelpYouFind' => 'Pomożemy Ci znaleźć ciekawych ludzi do obserwowania',
+			'refreshFeed' => 'Odśwież mój kanał',
+		],
 	],
 
 	'hashtags' => [
 		'emptyFeed' => 'Nie możemy znaleźć żadnych postów dla tego hasztaga'
+	],
+
+	'report' => [
+		'report' => 'Zgłoś',
+		'selectReason' => 'Wybierz przyczynę',
+		'reported' => 'Zgłoszono',
+		'sendingReport' => 'Wysyłanie zgłoszenia',
+		'thanksMsg' => 'Dziękujemy za zgłoszenie, ludzie tacy jak ty pomagają chronić naszą społeczność!',
+		'contactAdminMsg' => 'Jeśli chcesz skontaktować się z administratorem w sprawie tego wpisu lub go zgłosić',
 	],
 
 ];

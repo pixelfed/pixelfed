@@ -14,9 +14,9 @@ return new class extends Migration
     public function up()
     {
         Schema::table('avatars', function (Blueprint $table) {
-            $sm = Schema::getConnection()->getDoctrineSchemaManager();
-            $indexesFound = $sm->listTableIndexes('avatars');
-            if(array_key_exists("avatars_cdn_url_unique", $indexesFound)) {
+            $indexes = Schema::getIndexes('avatars');
+            $indexesFound = collect($indexes)->map(function($i) { return $i['name']; })->toArray();
+            if (in_array('avatars_cdn_url_unique', $indexesFound)) {
                 $table->dropUnique('avatars_cdn_url_unique');
             }
         });
