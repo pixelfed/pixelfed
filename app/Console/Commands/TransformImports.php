@@ -103,7 +103,7 @@ class TransformImports extends Command
                 continue;
             }
 
-            $caption = $ip->caption;
+            $caption = $ip->caption != null ? $ip->caption : "";
             $status = new Status;
             $status->profile_id = $pid;
             $status->caption = $caption;
