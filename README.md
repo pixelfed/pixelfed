@@ -7,6 +7,11 @@
 <a title="Crowdin" target="_blank" href="https://crowdin.com/project/pixelfed"><img src="https://badges.crowdin.net/pixelfed/localized.svg"></a>
 </p>
 
+<p align="center">
+<a href="http://kck.st/4g34fFb"><img src="https://img.shields.io/badge/dynamic/xml?url=https%3A%2F%2Fwww.kickstarter.com%2Fprojects%2Fpixelfed%2Fpixelfed-foundation-2024-real-ethical-social-networks%2Fwidget%2Fcard.html&query=%2F%2Fli%5B%40class%3D'js-amount-pledged'%5D%2F%2Fspan%5B%40class%3D'money'%5D&logo=kickstarter&label=Kickstarter&color=purple" alt="Kickstarter Campaign" /></a>
+<a href="https://fedidb.org/software/pixelfed"><img src="https://img.shields.io/badge/dynamic/json?url=https%3A%2F%2Fapi.fedidb.org%2Fv1%2Fsoftware%2Fpixelfed&query=%24.monthly_actives&logo=pixelfed&logoColor=white&label=Monthly%20Active%20Users" alt="Monthly active users from FediDB" /></a>
+</p>
+
 ## Introduction
 
 A free and ethical photo sharing platform, powered by ActivityPub federation.
