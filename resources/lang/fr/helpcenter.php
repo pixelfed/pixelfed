@@ -2,7 +2,7 @@
 
 return [
     'helpcenter'               =>    'Centre d\'aide',
-    'whatsnew'                 =>    'Ce qui est nouveau',
+    'whatsnew'                 =>    'Nouveautés',
 
     'gettingStarted'           =>    'Débuter',
     'sharingMedia'             =>    'Partager du contenu',
