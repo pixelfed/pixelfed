@@ -5,6 +5,6 @@ return [
     'likedComment'           =>    'a aimé votre commentaire.',
     'startedFollowingYou'    =>    'a commencé à vous suivre.',
     'commented'              =>    'a commenté votre publication.',
-    'mentionedYou'           =>    'vous a mentionné.',
+    'mentionedYou'           =>    'vous a mentionné·e.',
     'shared'                 =>    'a partagé votre publication.',
 ];
