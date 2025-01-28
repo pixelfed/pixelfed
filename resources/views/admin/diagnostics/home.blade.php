@@ -623,7 +623,7 @@
 	<tr>
 		<td><span class="badge badge-primary">MAIL</span></td>
 		<td><strong>MAIL_DRIVER</strong></td>
-		<td><span>"{{config_cache('mail.mailers.smtp.transport')}}"</span></td>
+		<td><span>"{{config_cache('mail.default')}}"</span></td>
 	</tr>
 	<tr>
 		<td><span class="badge badge-primary">MAIL</span></td>
