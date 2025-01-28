@@ -623,17 +623,17 @@
 	<tr>
 		<td><span class="badge badge-primary">MAIL</span></td>
 		<td><strong>MAIL_DRIVER</strong></td>
-		<td><span>"{{config_cache('mail.driver')}}"</span></td>
+		<td><span>"{{config_cache('mail.mailers.smtp.transport')}}"</span></td>
 	</tr>
 	<tr>
 		<td><span class="badge badge-primary">MAIL</span></td>
 		<td><strong>MAIL_HOST</strong></td>
-		<td><span>"{{config_cache('mail.host')}}"</span></td>
+		<td><span>"{{config_cache('mail.mailers.smtp.host')}}"</span></td>
 	</tr>
 	<tr>
 		<td><span class="badge badge-primary">MAIL</span></td>
 		<td><strong>MAIL_PORT</strong></td>
-		<td><span>"{{config_cache('mail.port')}}"</span></td>
+		<td><span>"{{config_cache('mail.mailers.smtp.port')}}"</span></td>
 	</tr>
 	<tr>
 		<td><span class="badge badge-primary">MAIL</span></td>
@@ -648,7 +648,7 @@
 	<tr>
 		<td><span class="badge badge-primary">MAIL</span></td>
 		<td><strong>MAIL_ENCRYPTION</strong></td>
-		<td><span>"{{config_cache('mail.encryption')}}"</span></td>
+		<td><span>"{{config_cache('mail.mailers.smtp.encryption')}}"</span></td>
 	</tr>
 
 	<tr>
