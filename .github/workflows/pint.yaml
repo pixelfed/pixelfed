@@ -1,9 +1,11 @@
-name: Review Code Style with Laravel pint
+name: Laravel pint
 
-on: [push]
+on:
+  push:
+  pull_request:
 
 jobs:
-  lint:
+  pint:
     runs-on: ubuntu-latest
     strategy:
       fail-fast: true
