@@ -67,7 +67,7 @@
     }
 </script>
 
-<style lang="scss" scoped="true">
+<style lang="scss" scoped>
     .gap-1 {
         gap: 1rem;
     }

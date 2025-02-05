@@ -85,7 +85,7 @@
 						class="blurhash-wrapper"
                         :alt="status.media_attachments[0].description"
                         :title="status.media_attachments[0].description"
-						style="width: 100%;position: absolute;z-index:9;top:0:left:0"
+						style="width: 100%;position: absolute;z-index:9;top:0;left:0"
 						/>
 
 					<p v-if="!status.sensitive && sensitive"

@@ -71,14 +71,14 @@ class FollowServiceWarmCache implements ShouldQueue
         $hasFollowingPostProcessing = false;
 
         if(Follower::whereProfileId($id)->orWhere('following_id', $id)->count()) {
-            $following = [];
+            $followings = [];
             $followers = [];
     		foreach(Follower::where('following_id', $id)->orWhere('profile_id', $id)->lazyById(500) as $follow) {
                 if($follow->following_id != $id && $follow->profile_id != $id) {
                     continue;
                 }
                 if($follow->profile_id == $id) {
-                    $following[] = $follow->following_id;
+                    $followings[] = $follow->following_id;
                 } else {
                     $followers[] = $follow->profile_id;
                 }
@@ -94,12 +94,12 @@ class FollowServiceWarmCache implements ShouldQueue
                 }
             }
 
-            if(count($following) > 100) {
+            if(count($followings) > 100) {
                 // store following ids and process in another job
-                Storage::put('follow-warm-cache/' . $id . '/following.json', json_encode($following));
+                Storage::put('follow-warm-cache/' . $id . '/following.json', json_encode($followings));
                 $hasFollowingPostProcessing = true;
             } else {
-                foreach($following as $following) {
+                foreach($followings as $following) {
                     FollowerService::add($id, $following);
                 }
             }

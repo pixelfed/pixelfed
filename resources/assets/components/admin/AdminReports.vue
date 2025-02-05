@@ -1529,7 +1529,7 @@
                     window.history.pushState(null, null, `/i/admin/reports?tab=moderated-profiles`)
                     window.location.reload();
                 }).catch(error => {
-                    let errorMessage = 'An error occurred';
+                    let errorMessage;
                     if (error.response) {
                         errorMessage = `Error ${error.response.status}: ${error.response.data.error || error.response.data.message || error.response.statusText}`;
                     } else if (error.request) {

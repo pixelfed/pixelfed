@@ -148,9 +148,10 @@
 
 			moderatePost(status, action, $event) {
 				let username = status.account.username;
+                let msg;
 				switch(action) {
 					case 'autocw':
-						let msg = 'Are you sure you want to enforce CW for ' + username + ' ?';
+						msg = 'Are you sure you want to enforce CW for ' + username + ' ?';
 						swal({
 							title: 'Confirm',
 							text: msg,

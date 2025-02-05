@@ -553,7 +553,7 @@
 
 			handleSearch() {
 				if(!this.memberSearchModel || this.memberSearchModel == "" || this.memberSearchModel.length == 0) {
-					this.tab == 'list';
+					this.tab = 'list';
 					this.memberSearchModel = null;
 					return;
 				}

@@ -233,7 +233,6 @@
 		<div class="section-spacer"></div>
 		<div class="section-spacer"></div>
 	</main>
-  </div>
-	@include('layouts.partial.footer')
+  @include('layouts.partial.footer')
 </body>
 </html>
