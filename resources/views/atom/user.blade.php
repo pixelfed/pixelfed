@@ -29,7 +29,7 @@
                     <![CDATA[
                     <div class="media-gallery">
                         @foreach($item['media_attachments'] as $media)
-                            <img class="media-item" src="{{ $media['url'] }}" alt="{{ $media['description'] ?? '' }}">
+                            <img class="media-item" src="{{ $media['preview_url'] }}" alt="{{ $media['description'] ?? '' }}">
                         @endforeach
                     </div>
                     <p style="padding:10px;">{!! $item['content'] !!}</p>
@@ -43,7 +43,6 @@
                     <media:content
                         url="{{ $media['url'] }}"
                         type="{{ $media['mime'] }}"
-                        medium="image"
                     />
                 @endforeach
             </entry>

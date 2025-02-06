@@ -293,7 +293,7 @@ class ProfileController extends Controller
         $data = Cache::remember('pf:atom:user-feed:by-id:'.$profile['id'], 14400, function () use ($pid, $profile) {
             $items = Status::whereProfileId($pid)
                 ->whereScope('public')
-                ->whereIn('type', ['photo', 'photo:album'])
+                ->whereIn('type', ['photo', 'photo:album', 'video', 'video:album', 'photo:video:album'])
                 ->orderByDesc('id')
                 ->take(10)
                 ->get()
