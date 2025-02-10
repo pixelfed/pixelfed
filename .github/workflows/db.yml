@@ -119,6 +119,10 @@ jobs:
           rm -f *.deb
           dottie -v
 
+      - name: Install dottie
+        run: |
+          apt update && apt install ${{ matrix.db_type == 'postgres' && 'postgresql' || (matrix.db_type == 'mysql' && 'mysql' || 'mariadb') }}-client
+
       - name: Install PHP extensions
         run: |
           chmod +x install-php-extensions
