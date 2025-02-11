@@ -323,8 +323,8 @@ COPY docker/rootfs/apache /
 RUN --mount=type=cache,id=pixelfed-apt-lists-${PHP_VERSION}-${PHP_DEBIAN_RELEASE}-${TARGETPLATFORM},sharing=locked,target=/var/lib/apt/lists \
     --mount=type=cache,id=pixelfed-apt-cache-${PHP_VERSION}-${PHP_DEBIAN_RELEASE}-${TARGETPLATFORM},sharing=locked,target=/var/cache/apt \
     set -ex \
-    && apt-get update \
-    && apt-get install -y --no-install-recommends apache2
+    && apt update \
+    && apt install -y --no-install-recommends apache2
 
 RUN set -ex \
     && a2dismod mpm_event \
@@ -370,8 +370,8 @@ RUN --mount=type=cache,id=pixelfed-apt-lists-${PHP_VERSION}-${PHP_DEBIAN_RELEASE
     && gpg1 --keyserver "hkp://keyserver.ubuntu.com:80" --keyserver-options timeout=10 --recv-keys "${NGINX_GPGKEY}" \
     && gpg1 --export "$NGINX_GPGKEY" > "$NGINX_GPGKEY_PATH" \
     && echo "deb [signed-by=${NGINX_GPGKEY_PATH}] https://nginx.org/packages/mainline/debian/ ${PHP_DEBIAN_RELEASE} nginx" >> /etc/apt/sources.list.d/nginx.list \
-    && apt-get update \
-    && apt-get install -y --no-install-recommends nginx=${NGINX_VERSION}*
+    && apt update \
+    && apt install -y --no-install-recommends nginx=${NGINX_VERSION}*
 
 # copy docker entrypoints from the *real* nginx image directly
 COPY --link --from=nginx-image /docker-entrypoint.d /docker/entrypoint.d/

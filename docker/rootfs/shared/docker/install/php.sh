@@ -11,7 +11,7 @@ COMPOSER_VERSION=${COMPOSER_VERSION:?Missing COMPOSER_VERSION}
 curl -sSLo /tmp/debsuryorg-archive-keyring.deb https://packages.sury.org/debsuryorg-archive-keyring.deb
 dpkg -i /tmp/debsuryorg-archive-keyring.deb
 sh -c 'echo "deb [signed-by=/usr/share/keyrings/deb.sury.org-php.gpg] https://packages.sury.org/php/ $(lsb_release -sc) main" > /etc/apt/sources.list.d/php.list'
-apt-get update
+apt update
 rm -f /tmp/debsuryorg-archive-keyring.deb
 
 #############################################
@@ -37,7 +37,7 @@ if [[ "${PHP_BASE_TYPE}" == "apache" ]]; then
 fi
 
 # shellcheck disable=SC2086
-apt-get install -y ${php_extensions_string}
+apt install -y ${php_extensions_string}
 
 #############################################
 # Install Composer
@@ -57,7 +57,7 @@ readarray -d ' ' -t -O "${#pecl_extensions[@]}" pecl_extensions < <(echo -n "${P
 
 # install dh-php and PECL extensions if any are configured
 if [ ${#pecl_extensions[@]} -gt 0 ]; then
-    apt-get install -y dh-php
+    apt install -y --no-install-recommends dh-php
 
     # shellcheck disable=SC2086,SC2048
     pecl install ${pecl_extensions[*]}

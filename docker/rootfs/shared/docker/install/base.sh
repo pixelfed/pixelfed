@@ -56,9 +56,14 @@ packages+=(
 
 readarray -d ' ' -t -O "${#packages[@]}" packages < <(echo -n "${APT_PACKAGES_EXTRA:-}")
 
-apt-get update
-apt-get upgrade -y
-apt-get install -y "${packages[@]}"
+# Install MariaDB version that doesn't break on MariaDB dumps AND that still alias to mysql
+apt update
+apt install -y --no-install-recommends curl ca-certificates apt-transport-https
+curl -LsS https://downloads.mariadb.com/MariaDB/mariadb_repo_setup | bash -s -- --mariadb-server-version mariadb-10.11
+
+apt update
+apt upgrade -y
+apt install -y --no-install-recommends "${packages[@]}"
 
 locale-gen
 update-locale
