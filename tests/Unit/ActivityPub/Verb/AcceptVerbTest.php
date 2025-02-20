@@ -48,12 +48,8 @@ class AcceptVerbTest extends TestCase
                 [
                     'toot' => 'https://joinmastodon.org/ns#',
                     'sensitive' => 'as:sensitive',
-                    'ostatus' => 'https://ostatus.org#',
                     'movedTo' => 'as:movedTo',
                     'manuallyApprovesFollowers' => 'as:manuallyApprovesFollowers',
-                    'inReplyToAtomUri' => 'ostatus:inReplyToAtomUri',
-                    'conversation' => 'ostatus:conversation',
-                    'atomUri' => 'ostatus:atomUri',
                     'Hashtag' => 'as:Hashtag',
                     'Emoji' => 'toot:Emoji',
                 ],

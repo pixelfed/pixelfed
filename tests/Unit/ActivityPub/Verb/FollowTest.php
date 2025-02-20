@@ -31,12 +31,8 @@ class FollowTest extends TestCase
                 [
                     'toot' => 'http://joinmastodon.org/ns#',
                     'sensitive' => 'as:sensitive',
-                    'ostatus' => 'http://ostatus.org#',
                     'movedTo' => 'as:movedTo',
                     'manuallyApprovesFollowers' => 'as:manuallyApprovesFollowers',
-                    'inReplyToAtomUri' => 'ostatus:inReplyToAtomUri',
-                    'conversation' => 'ostatus:conversation',
-                    'atomUri' => 'ostatus:atomUri',
                     'Hashtag' => 'as:Hashtag',
                     'Emoji' => 'toot:Emoji',
                 ],

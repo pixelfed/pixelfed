@@ -52,10 +52,6 @@ class Webfinger
                 'type' => $avatarType,
                 'href' => $avatar,
             ],
-            [
-                'rel' => 'http://ostatus.org/schema/1.0/subscribe',
-                'template' => 'https://'.config_cache('pixelfed.domain.app').'/authorize_interaction?uri={uri}',
-            ],
         ];
     }
 
