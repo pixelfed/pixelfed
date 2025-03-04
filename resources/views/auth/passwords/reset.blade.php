@@ -109,18 +109,6 @@
 	                            </div>
 	                        </div>
 
-							@if((bool) config_cache('captcha.enabled'))
-							<label class="font-weight-bold small pt-3 text-muted">Captcha</label>
-	                        <div class="d-flex flex-grow-1">
-	                            {!! Captcha::display(['data-theme' => 'dark']) !!}
-	                        </div>
-	                        @if ($errors->has('h-captcha-response'))
-                                <div class="text-danger small mb-3">
-                                    <strong>{{ $errors->first('h-captcha-response') }}</strong>
-                                </div>
-                            @endif
-	                        @endif
-
 	                        <div class="form-group row pt-4 mb-0">
 	                            <div class="col-md-12">
 	                                <button
