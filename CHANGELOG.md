@@ -4,6 +4,7 @@
 
 ### Added
 - Add app register email verify resends ([dbd1e17](https://github.com/pixelfed/pixelfed/commit/dbd1e17))
+- Add AVIF support ([7ddbe0c47](https://github.com/pixelfed/pixelfed/commit/7ddbe0c47))
 
 ### Features
 - WebGL photo filters ([#5374](https://github.com/pixelfed/pixelfed/pull/5374))

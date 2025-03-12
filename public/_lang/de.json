@@ -5,7 +5,7 @@
         "comments": "Kommentare",
         "like": "Gef\u00e4llt mir",
         "liked": "Gef\u00e4llt",
-        "likes": "Gef\u00e4llt",
+        "likes": "Gefiel",
         "share": "Teilen",
         "shared": "Geteilt",
         "shares": "Geteilt",
@@ -150,7 +150,7 @@
     "timeline": {
         "peopleYouMayKnow": "Leute, die du vielleicht kennst",
         "onboarding": {
-            "welcome": "Herzlich Willkommen",
+            "welcome": "Herzlich willkommen",
             "thisIsYourHomeFeed": "Dies ist dein Heim-Feed, ein chronologischer Feed von Beitr\u00e4gen aus den Konten, denen du folgst.",
             "letUsHelpYouFind": "Lass uns dir helfen, einige interessante Leute zu finden, denen du folgen kannst",
             "refreshFeed": "Feed aktualisieren"
@@ -164,7 +164,7 @@
         "selectReason": "Einen Grund ausw\u00e4hlen",
         "reported": "Gemeldet",
         "sendingReport": "Meldung wird gesendet",
-        "thanksMsg": "Vielen Dank f\u00fcr die Meldung, Leute wie du helfen, unsere Community sicher zu halten!",
-        "contactAdminMsg": "Wenn du einen Administrator zu diesem Beitrag oder dieser Meldung kontaktieren m\u00f6chtest"
+        "thanksMsg": "Danke f\u00fcr deine Meldung! Damit erh\u00f6hst du die Sicherheit der Community!",
+        "contactAdminMsg": "Wenn du die Administration wegen dieses Beitrags oder dieser Meldung kontaktieren m\u00f6chtest"
     }
 }

@@ -5,7 +5,7 @@
         "comments": "Commentaires",
         "like": "J'aime",
         "liked": "Aim\u00e9",
-        "likes": "J'aime",
+        "likes": "J'aimes",
         "share": "Partager",
         "shared": "Partag\u00e9",
         "shares": "Partages",
@@ -35,9 +35,9 @@
     "navmenu": {
         "search": "Chercher",
         "admin": "Tableau de bord d'administration",
-        "homeFeed": "Flux principal",
-        "localFeed": "Flux local",
-        "globalFeed": "Flux global",
+        "homeFeed": "Fil principal",
+        "localFeed": "Fil local",
+        "globalFeed": "Fil global",
         "discover": "D\u00e9couvrir",
         "directMessages": "Messages Priv\u00e9s",
         "notifications": "Notifications",
@@ -71,7 +71,7 @@
         "followed": "s'est abonn\u00e9\u00b7e \u00e0",
         "mentioned": "a mentionn\u00e9",
         "you": "vous",
-        "yourApplication": "Votre candidature \u00e0 rejoindre",
+        "yourApplication": "Votre demande d'adh\u00e9sion",
         "applicationApproved": "a \u00e9t\u00e9 approuv\u00e9e !",
         "applicationRejected": "a \u00e9t\u00e9 rejet\u00e9e. Vous pouvez refaire une demande dans 6 mois.",
         "dm": "mp",
@@ -85,7 +85,7 @@
         "shareToFollowers": "Partager avec ses abonn\u00e9\u00b7e\u00b7s",
         "shareToOther": "Partager avec d'autres",
         "noLikes": "Aucun J'aime pour le moment",
-        "uploading": "Envoi en cours"
+        "uploading": "T\u00e9l\u00e9versement"
     },
     "profile": {
         "posts": "Publications",
@@ -132,7 +132,7 @@
         "modRemoveCWConfirm": "\u00cates-vous s\u00fbr\u00b7e de vouloir supprimer l'avertissement de contenu sur cette publication ?",
         "modRemoveCWSuccess": "Avertissement de contenu supprim\u00e9 avec succ\u00e8s",
         "modUnlistConfirm": "\u00cates-vous s\u00fbr\u00b7e de vouloir retirer cette publication des flux ?",
-        "modUnlistSuccess": "Publication retir\u00e9e des flux avec succ\u00e8s",
+        "modUnlistSuccess": "Publication retir\u00e9e des fils avec succ\u00e8s",
         "modMarkAsSpammerConfirm": "\u00cates-vous s\u00fbr\u00b7e de vouloir marquer cet utilisateur\u00b7rice comme spammeur\u00b7euse ? Toutes les publications existantes et futures seront retir\u00e9es des flux et un avertissement de contenu sera appliqu\u00e9.",
         "modMarkAsSpammerSuccess": "Compte marqu\u00e9 avec succ\u00e8s comme spammeur",
         "toFollowers": "aux abonn\u00e9\u00b7e\u00b7s",
@@ -148,7 +148,7 @@
         "add": "Ajouter une story"
     },
     "timeline": {
-        "peopleYouMayKnow": "Connaissances possibles",
+        "peopleYouMayKnow": "Personnes que vous connaissez peut-\u00eatre",
         "onboarding": {
             "welcome": "Bienvenue",
             "thisIsYourHomeFeed": "Ceci est votre flux personnel, un flux chronologique des publications de comptes que vous suivez.",

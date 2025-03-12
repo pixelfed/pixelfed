@@ -70,6 +70,7 @@ trait AdminSettingsController
             'type_gif' => 'nullable',
             'type_mp4' => 'nullable',
             'type_webp' => 'nullable',
+            'type_avif' => 'nullable',
             'admin_account_id' => 'nullable',
             'regs' => 'required|in:open,filtered,closed',
             'account_migration' => 'nullable',
@@ -128,6 +129,7 @@ trait AdminSettingsController
             'type_gif' => 'image/gif',
             'type_mp4' => 'video/mp4',
             'type_webp' => 'image/webp',
+            'type_avif' => 'image/avif',
         ];
 
         foreach ($mimes as $key => $value) {
@@ -609,7 +611,7 @@ trait AdminSettingsController
         $mediaTypes = $request->input('media_types');
         $mediaArray = explode(',', $mediaTypes);
         foreach ($mediaArray as $mediaType) {
-            if (! in_array($mediaType, ['image/jpeg', 'image/png', 'image/gif', 'image/webp', 'video/mp4'])) {
+            if (! in_array($mediaType, ['image/jpeg', 'image/png', 'image/gif', 'image/webp', 'video/mp4', 'image/avif'])) {
                 return redirect()->back()->withErrors(['media_types' => 'Invalid media type']);
             }
         }

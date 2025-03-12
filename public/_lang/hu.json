@@ -35,7 +35,7 @@
     "navmenu": {
         "search": "Keres\u00e9s",
         "admin": "Admin ir\u00e1ny\u00edt\u00f3pult",
-        "homeFeed": "Kezd\u0151lap",
+        "homeFeed": "Saj\u00e1t id\u0151vonal",
         "localFeed": "Helyi id\u0151vonal",
         "globalFeed": "Glob\u00e1lis id\u0151vonal",
         "discover": "Felfedez\u00e9s",
@@ -48,7 +48,7 @@
         "settings": "Be\u00e1ll\u00edt\u00e1sok",
         "compose": "\u00daj l\u00e9trehoz\u00e1sa",
         "logout": "Kijelentkez\u00e9s",
-        "about": "R\u00f3lunk",
+        "about": "N\u00e9vjegy",
         "help": "S\u00fag\u00f3",
         "language": "Nyelv",
         "privacy": "Adatv\u00e9delem",
@@ -151,9 +151,9 @@
         "peopleYouMayKnow": "Emberek, akiket ismerhet",
         "onboarding": {
             "welcome": "\u00dcdv\u00f6z\u00f6lj\u00fck",
-            "thisIsYourHomeFeed": "Ez a kezd\u0151lap, az \u00d6n \u00e1ltal k\u00f6vetett fi\u00f3kok bejegyz\u00e9sei id\u0151rendi sorrendben.",
+            "thisIsYourHomeFeed": "Ez a saj\u00e1t id\u0151vonala, az \u00d6n \u00e1ltal k\u00f6vetett fi\u00f3kok bejegyz\u00e9sei id\u0151rendi sorrendben.",
             "letUsHelpYouFind": "Keress\u00fcnk \u00e9rdekes, k\u00f6vethet\u0151 embereket",
-            "refreshFeed": "Kezd\u0151lap friss\u00edt\u00e9se"
+            "refreshFeed": "Id\u0151vonal friss\u00edt\u00e9se"
         }
     },
     "hashtags": {

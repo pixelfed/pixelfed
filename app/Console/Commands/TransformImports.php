@@ -109,11 +109,11 @@ class TransformImports extends Command
             $status->caption = $caption;
             $status->type = $ip->post_type;
 
-            $status->scope = 'unlisted';
-            $status->visibility = 'unlisted';
+            $status->scope = 'public';
+            $status->visibility = 'public';
             $status->id = $idk['id'];
             $status->created_at = now()->parse($ip->creation_date);
-            $status->save();
+            $status->saveQuietly();
 
             foreach ($ip->media as $ipm) {
                 $fileName = last(explode('/', $ipm['uri']));

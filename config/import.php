@@ -24,6 +24,9 @@ return [
         // Allow video posts to be imported
         'allow_video_posts' => env('PF_IMPORT_IG_ALLOW_VIDEO_POSTS', true),
 
+        // Allow webp posts to be imported
+        'allow_image_webp' => env('PF_IMPORT_IG_ALLOW_IMAGE_WEBP', true),
+
         'permissions' => [
             // Limit to admin accounts only
             'admins_only' => env('PF_IMPORT_IG_PERM_ADMIN_ONLY', false),

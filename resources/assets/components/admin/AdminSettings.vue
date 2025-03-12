@@ -1025,6 +1025,10 @@
                         res += 'video/mp4'
                     }
 
+                    if(this.mediaTypes.avif) {
+                        res += 'image/avif'
+                    }
+
                     if(res.endsWith(',')) {
                         res = res.slice(0, -1);
                     }
@@ -1088,7 +1092,7 @@
                 if(types && types.length) {
                     types.forEach((type) => {
                         let mime = type.split('/')[1];
-                        if(['jpeg', 'png', 'gif', 'webp', 'mp4'].includes(mime)) {
+                        if(['jpeg', 'png', 'gif', 'webp', 'mp4', 'avif'].includes(mime)) {
                             this.mediaTypes[mime] = true;
                         }
                     })

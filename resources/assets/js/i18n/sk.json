@@ -151,9 +151,9 @@
         "peopleYouMayKnow": "\u013dudia ktor\u00fdch mo\u017eno pozn\u00e1te",
         "onboarding": {
             "welcome": "Vitajte",
-            "thisIsYourHomeFeed": "This is your home feed, a chronological feed of posts from accounts you follow.",
+            "thisIsYourHomeFeed": "Toto je tvoj dom\u00e1ci kan\u00e1l pr\u00edspevkov z \u00fa\u010dtov, ktor\u00e9 nasleduje\u0161.",
             "letUsHelpYouFind": "Nechajte n\u00e1s pom\u00f4c\u0165 v\u00e1m n\u00e1js\u0165 zauj\u00edmav\u00fdch \u013eud\u00ed ktor\u00fdch m\u00f4\u017eete sledova\u0165",
-            "refreshFeed": "Refresh my feed"
+            "refreshFeed": "Obnovi\u0165 m\u00f4j kan\u00e1l"
         }
     },
     "hashtags": {
