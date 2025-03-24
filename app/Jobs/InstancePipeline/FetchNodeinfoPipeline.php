@@ -73,6 +73,7 @@ class FetchNodeinfoPipeline implements ShouldQueue, ShouldBeUniqueUntilProcessin
                 $instance->user_count = Profile::whereDomain($instance->domain)->count();
                 $instance->nodeinfo_last_fetched = now();
                 $instance->last_crawled_at = now();
+                $instance->delivery_timeout = 0;
                 $instance->save();
             }
         } else {

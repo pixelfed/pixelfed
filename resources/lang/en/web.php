@@ -59,6 +59,7 @@ return [
 		'profile' => 'Profile',
 		'drive' => 'Drive',
 		'settings' => 'Settings',
+        'appearance' => 'Appearance',
 		'compose' => 'Create New',
 		'logout' => 'Logout',
 
@@ -204,5 +205,21 @@ return [
 		'thanksMsg' => 'Thanks for the report, people like you help keep our community safe!',
 		'contactAdminMsg' => 'If you\'d like to contact an administrator about this post or report',
 	],
+
+    'appearance' => [
+        'theme' => 'Theme',
+        'profileLayout' => 'Profile Layout',
+        'compactPreviews' => 'Compact Media Previews',
+        'loadComments' => 'Load Comments',
+        'hideStats' => 'Hide Counts & Stats',
+
+        'auto' => 'Auto',
+        'lightMode' => 'Light mode',
+        'darkMode' => 'Dark mode',
+
+        'grid' => 'Grid',
+        'masonry' => 'Masonry',
+        'feed' => 'Feed',
+    ],
 
 ];

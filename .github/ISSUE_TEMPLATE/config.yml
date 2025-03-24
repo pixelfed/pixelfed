@@ -1,0 +1,8 @@
+blank_issues_enabled: false
+contact_links:
+  - name: Mobile Application Issues
+    url: https://github.com/pixelfed/pixelfed-rn/issues
+    about: Please create issues in the mobile app repo.
+  - name: Question
+    url: https://discord.gg/6Fy6AJMbMU
+    about: Please ask and answer questions in our Discord server

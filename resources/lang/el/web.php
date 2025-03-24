@@ -13,6 +13,7 @@ return [
 		'shared' => 'Κοινοποιήθηκε',
 		'shares' => 'Κοινοποιήσεις',
 		'unshare' => 'Αναίρεση κοινοποίησης',
+		'bookmark' => 'Σελιδοδείκτης',
 
 		'cancel' => 'Ακύρωση',
 		'copyLink' => 'Αντιγραφή Συνδέσμου',
@@ -23,6 +24,10 @@ return [
 		'other' => 'Άλλο',
 		'readMore' => 'Διαβάστε περισσότερα',
 		'success' => 'Επιτυχής',
+		'proceed' => 'Συνέχεια',
+		'next' => 'Επόμενο',
+		'close' => 'Κλείσιμο',
+		'clickHere' => 'κλικ εδώ',
 
 		'sensitive' => 'Ευαίσθητο',
 		'sensitiveContent' => 'Ευαίσθητο περιεχόμενο',
@@ -41,10 +46,10 @@ return [
 		// Timelines
 		'homeFeed' => 'Αρχική ροή',
 		'localFeed' => 'Τοπική Ροή',
-		'globalFeed' => 'Ομοσπονδιακή Ροή',
+		'globalFeed' => 'Καθολική Ροή',
 
 		// Core features
-		'discover' => 'Ανακαλύψτε',
+		'discover' => 'Ανακάλυψη',
 		'directMessages' => 'Προσωπικά Μηνύματα',
 		'notifications' => 'Ειδοποιήσεις',
 		'groups' => 'Ομάδες',
@@ -65,7 +70,7 @@ return [
 		'terms' => 'Όροι',
 
 		// Temporary links
-		'backToPreviousDesign' => 'Go back to previous design'
+		'backToPreviousDesign' => 'Πηγαίνετε πίσω στο προηγούμενο σχεδιασμό'
 	],
 
 	'directMessages' => [
@@ -75,16 +80,16 @@ return [
 	],
 
 	'notifications' => [
-		'liked' => 'επισήμανε ότι του αρέσει το',
+		'liked' => 'του άρεσε',
 		'commented' => 'σχολίασε στο',
-		'reacted' => 'αντέδρασε στο {item} σας',
-		'shared' => 'κοινοποίησε το {item} σας',
-		'tagged' => 'σας πρόσθεσε με ετικέτα σε μια δημοσίευση',
+		'reacted' => 'αντέδρασε στο',
+		'shared' => 'κοινοποίησε το',
+		'tagged' => 'σας πρόσθεσε με ετικέτα σε',
 
 		'updatedA' => 'ενημέρωσε ένα',
 		'sentA' => 'έστειλε ένα',
 
-		'followed' => 'followed',
+		'followed' => 'ακολούθησε',
 		'mentioned' => 'αναφέρθηκε',
 		'you' => 'εσύ',
 
@@ -97,13 +102,14 @@ return [
 		'modlog' => 'modlog',
 		'post' => 'δημοσίευση',
 		'story' => 'ιστορία',
+		'noneFound' => 'Δε βρέθηκαν ειδοποιήσεις',
 	],
 
 	'post' => [
 		'shareToFollowers' => 'Μοιραστείτε με τους ακόλουθους',
-		'shareToOther' => 'Share to other',
+		'shareToOther' => 'Κοινή χρήση σε άλλο',
 		'noLikes' => 'Δεν υπάρχουν likes ακόμα',
-		'uploading' => 'Μεταφόρτωση',
+		'uploading' => 'Γίνεται μεταφόρτωση',
 	],
 
 	'profile' => [
@@ -113,10 +119,10 @@ return [
 		'admin' => 'Διαχειριστής',
 		'collections' => 'Συλλογές',
 		'follow' => 'Ακολούθησε',
-		'unfollow' => 'Διακοπή παρακολούθησης',
+		'unfollow' => 'Άρση ακολούθησης',
 		'editProfile' => 'Επεξεργασία Προφίλ',
 		'followRequested' => 'Ακολουθήστε Το Αίτημα',
-		'joined' => 'Joined',
+		'joined' => 'Έγινε μέλος',
 
 		'emptyCollections' => 'Δεν μπορούμε να βρούμε συλλογές',
 		'emptyPosts' => 'Δεν μπορούμε να βρούμε δημοσιεύσεις',
@@ -132,42 +138,42 @@ return [
 		'embed' => 'Ενσωμάτωση',
 
 		'selectOneOption' => 'Επιλέξτε μία από τις ακόλουθες επιλογές',
-		'unlistFromTimelines' => 'Unlist from Timelines',
+		'unlistFromTimelines' => 'Κατάργηση από Χρονοδιαγράμματα',
 		'addCW' => 'Προσθήκη Προειδοποίησης Περιεχομένου',
 		'removeCW' => 'Αφαίρεση Προειδοποίησης Περιεχομένου',
 		'markAsSpammer' => 'Σήμανση ως Spammer',
-		'markAsSpammerText' => 'Unlist + CW existing and future posts',
+		'markAsSpammerText' => 'Κατάργηση από λίστα + ΠΠ σε υπάρχουσες και μελλοντικές δημοσιεύσεις',
 		'spam' => 'Ανεπιθύμητα',
 		'sensitive' => 'Ευαίσθητο περιεχόμενο',
 		'abusive' => 'Καταχρηστικό ή επιβλαβές',
 		'underageAccount' => 'Λογαριασμός ανηλίκου',
 		'copyrightInfringement' => 'Παραβίαση πνευματικών δικαιωμάτων',
-		'impersonation' => 'Impersonation',
+		'impersonation' => 'Απομίμηση',
 		'scamOrFraud' => 'Ανεπιθύμητο ή απάτη',
 		'confirmReport' => 'Επιβεβαίωση Αναφοράς',
-		'confirmReportText' => 'Είστε βέβαιοι ότι θέλετε να αναφέρετε αυτή την ανάρτηση;',
+		'confirmReportText' => 'Σίγουρα θέλετε να αναφέρετε αυτή την ανάρτηση;',
 		'reportSent' => 'Η Αναφορά Στάλθηκε!',
 		'reportSentText' => 'Έχουμε λάβει με επιτυχία την αναφορά σας.',
 		'reportSentError' => 'Παρουσιάστηκε ένα πρόβλημα κατά την αναφορά της ανάρτησης.',
 
-		'modAddCWConfirm' => 'Είστε βέβαιοι ότι θέλετε να προσθέσετε μια προειδοποίηση περιεχομένου σε αυτή την ανάρτηση;',
+		'modAddCWConfirm' => 'Σίγουρα θέλετε να προσθέσετε μια προειδοποίηση περιεχομένου σε αυτή την ανάρτηση;',
 		'modCWSuccess' => 'Επιτυχής προσθήκη προειδοποίησης περιεχομένου',
-		'modRemoveCWConfirm' => 'Είστε βέβαιοι ότι θέλετε να αφαιρέσετε την προειδοποίηση περιεχομένου σε αυτή την ανάρτηση;',
+		'modRemoveCWConfirm' => 'Σίγουρα θέλετε να αφαιρέσετε την προειδοποίηση περιεχομένου σε αυτή την ανάρτηση;',
 		'modRemoveCWSuccess' => 'Επιτυχής αφαίρεση προειδοποίησης περιεχομένου',
-		'modUnlistConfirm' => 'Are you sure you want to unlist this post?',
-		'modUnlistSuccess' => 'Successfully unlisted post',
+		'modUnlistConfirm' => 'Σίγουρα θέλετε να αφαιρέσετε από τη λίστα αυτή την ανάρτηση;',
+		'modUnlistSuccess' => 'Επιτυχής κατάργηση δημοσίευσης από λίστα',
 		'modMarkAsSpammerConfirm' => 'Είστε βέβαιοι ότι θέλετε να επισημάνετε αυτόν τον χρήστη ως spammer? Όλες οι υπάρχουσες και μελλοντικές δημοσιεύσεις δεν θα καταχωρούνται στα χρονοδιαγράμματα και θα εφαρμόζεται προειδοποίηση περιεχομένου.',
 		'modMarkAsSpammerSuccess' => 'Επιτυχής σήμανση λογαριασμού ως spammer',
 
 		'toFollowers' => 'στους Ακόλουθους',
 
-		'showCaption' => 'Show Caption',
+		'showCaption' => 'Εμφάνιση Λεζάντας',
 		'showLikes' => 'Εμφάνιση "μου αρέσει"',
 		'compactMode' => 'Συμπαγής Λειτουργία',
-		'embedConfirmText' => 'Χρησιμοποιώντας αυτό το ενσωματωμένο, συμφωνείτε με την',
+		'embedConfirmText' => 'Χρησιμοποιώντας αυτή την ενσωμάτωση, συμφωνείτε με',
 
-		'deletePostConfirm' => 'Είστε βέβαιοι ότι θέλετε να διαγράψετε αυτήν την ανάρτηση;',
-		'archivePostConfirm' => 'Είστε βέβαιοι ότι θέλετε να αρχειοθετήσετε αυτή την ανάρτηση;',
+		'deletePostConfirm' => 'Σίγουρα θέλετε να διαγράψετε αυτήν την ανάρτηση;',
+		'archivePostConfirm' => 'Σίγουρα θέλετε να αρχειοθετήσετε αυτή την ανάρτηση;',
 		'unarchivePostConfirm' => 'Είστε βέβαιοι ότι θέλετε να αφαιρέσετε αυτήν την ανάρτηση απο την αρχειοθήκη;',
 	],
 
@@ -176,11 +182,27 @@ return [
 	],
 
 	'timeline' => [
-		'peopleYouMayKnow' => 'Άτομα που μπορεί να ξέρετε'
+		'peopleYouMayKnow' => 'Άτομα που μπορεί να ξέρετε',
+
+		'onboarding' => [
+			'welcome' => 'Καλώς ήρθατε',
+			'thisIsYourHomeFeed' => 'Αυτή είναι η αρχική σου ροή, μια χρονολογική ροή των δημοσιεύσεων από λογαριασμούς που ακολουθείτε.',
+			'letUsHelpYouFind' => 'Ας σας βοηθήσουμε να βρείτε μερικούς ενδιαφέροντες ανθρώπους να ακολουθήσετε',
+			'refreshFeed' => 'Ανανέωση της ροής μου',
+		],
 	],
 
 	'hashtags' => [
 		'emptyFeed' => 'Δεν μπορούμε να βρούμε δημοσιεύσεις για αυτό το hashtag'
+	],
+
+	'report' => [
+		'report' => 'Αναφορά',
+		'selectReason' => 'Επιλέξτε μια αιτία',
+		'reported' => 'Αναφέρθηκε',
+		'sendingReport' => 'Αποστολή αναφοράς',
+		'thanksMsg' => 'Ευχαριστούμε για την αναφορά, άνθρωποι σαν κι εσάς βοηθούν να κρατήσετε την κοινότητά μας ασφαλής!',
+		'contactAdminMsg' => 'Αν θέλετε να επικοινωνήσετε με το διαχειριστή για αυτή τη δημοσίευση ή αναφορά',
 	],
 
 ];

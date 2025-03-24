@@ -10,6 +10,7 @@
         "shared": "\u0110\u00e3 chia s\u1ebb",
         "shares": "L\u01b0\u1ee3t chia s\u1ebb",
         "unshare": "H\u1ee7y chia s\u1ebb",
+        "bookmark": "L\u01b0u",
         "cancel": "H\u1ee7y",
         "copyLink": "Ch\u00e9p link",
         "delete": "X\u00f3a",
@@ -19,6 +20,10 @@
         "other": "Kh\u00e1c",
         "readMore": "Xem th\u00eam",
         "success": "Ho\u00e0n t\u1ea5t",
+        "proceed": "Ti\u1ebfp t\u1ee5c",
+        "next": "Ti\u1ebfp theo",
+        "close": "\u0110\u00f3ng",
+        "clickHere": "nh\u1ea5n v\u00e0o \u0111\u00e2y",
         "sensitive": "Nh\u1ea1y c\u1ea3m",
         "sensitiveContent": "N\u1ed9i dung nh\u1ea1y c\u1ea3m",
         "sensitiveContentWarning": "\u1ea2nh n\u00e0y c\u00f3 th\u1ec3 ch\u1ee9a n\u1ed9i dung nh\u1ea1y c\u1ea3m"
@@ -59,7 +64,7 @@
         "liked": "\u0111\u00e3 th\u00edch \u1ea3nh",
         "commented": "b\u00ecnh lu\u1eadn v\u1ec1 \u1ea3nh",
         "reacted": "xem \u1ea3nh",
-        "shared": "chia s\u1ebb \u1ea3nh",
+        "shared": "\u0111\u00e3 chia s\u1ebb",
         "tagged": "nh\u1eafc \u0111\u1ebfn b\u1ea1n trong",
         "updatedA": "\u0111\u00e3 c\u1eadp nh\u1eadt",
         "sentA": "\u0111\u00e3 g\u1eedi m\u1ed9t",
@@ -73,7 +78,8 @@
         "groupPost": "\u1ea3nh \u0111\u0103ng nh\u00f3m",
         "modlog": "nh\u1eadt k\u00fd ki\u1ec3m duy\u1ec7t",
         "post": "b\u00e0i \u0111\u0103ng",
-        "story": "kho\u1ea3nh kh\u1eafc"
+        "story": "kho\u1ea3nh kh\u1eafc",
+        "noneFound": "Kh\u00f4ng c\u00f3 th\u00f4ng b\u00e1o m\u1edbi"
     },
     "post": {
         "shareToFollowers": "Chia s\u1ebb \u0111\u1ebfn ng\u01b0\u1eddi theo d\u00f5i",
@@ -139,12 +145,26 @@
         "unarchivePostConfirm": "B\u1ea1n c\u00f3 ch\u1eafc mu\u1ed1n b\u1ecf l\u01b0u tr\u1eef \u1ea3nh n\u00e0y?"
     },
     "story": {
-        "add": "Th\u00eam kho\u1ea3nh kh\u1eafc"
+        "add": "Kho\u1ea3nh kh\u1eafc"
     },
     "timeline": {
-        "peopleYouMayKnow": "Nh\u1eefng ng\u01b0\u1eddi b\u1ea1n c\u00f3 th\u1ec3 bi\u1ebft"
+        "peopleYouMayKnow": "Nh\u1eefng ng\u01b0\u1eddi b\u1ea1n c\u00f3 th\u1ec3 bi\u1ebft",
+        "onboarding": {
+            "welcome": "Ch\u00e0o m\u1eebng",
+            "thisIsYourHomeFeed": "\u0110\u00e2y l\u00e0 b\u1ea3ng tin c\u1ee7a b\u1ea1n, \u0111\u01b0\u1ee3c x\u1ebfp theo th\u1ee9 t\u1ef1 th\u1eddi gian v\u1edbi nh\u1eefng t\u00e0i kho\u1ea3n m\u00e0 b\u1ea1n theo d\u00f5i.",
+            "letUsHelpYouFind": "\u0110\u00e2y l\u00e0 v\u00e0i ng\u01b0\u1eddi th\u00fa v\u1ecb m\u00e0 b\u1ea1n n\u00ean theo d\u00f5i",
+            "refreshFeed": "L\u00e0m t\u01b0\u01a1i b\u1ea3ng tin"
+        }
     },
     "hashtags": {
         "emptyFeed": "Kh\u00f4ng t\u00ecm th\u1ea5y \u1ea3nh n\u00e0o v\u1edbi hashtag n\u00e0y"
+    },
+    "report": {
+        "report": "B\u00e1o c\u00e1o",
+        "selectReason": "Ch\u1ecdn m\u1ed9t l\u00fd do",
+        "reported": "B\u1ecb b\u00e1o c\u00e1o",
+        "sendingReport": "\u0110ang g\u1eedi b\u00e1o c\u00e1o...",
+        "thanksMsg": "C\u1ea3m \u01a1n \u0111\u00e3 g\u1eedi b\u00e1o c\u00e1o, b\u1ea1n \u0111\u00e3 gi\u00fap c\u1ed9ng \u0111\u1ed3ng s\u1ea1ch h\u01a1n!",
+        "contactAdminMsg": "N\u1ebfu c\u1ea7n thi\u1ebft, h\u00e3y li\u00ean h\u1ec7 qu\u1ea3n tr\u1ecb vi\u00ean v\u1ec1 \u1ea3nh n\u00e0y ho\u1eb7c b\u00e1o c\u00e1o"
     }
 }

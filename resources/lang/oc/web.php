@@ -4,73 +4,78 @@ return [
 
 	'common' => [
 		'comment' => 'Comentar',
-		'commented' => 'Commented',
-		'comments' => 'Comments',
-		'like' => 'Like',
-		'liked' => 'Liked',
-		'likes' => 'Likes',
-		'share' => 'Share',
-		'shared' => 'Shared',
-		'shares' => 'Shares',
-		'unshare' => 'Unshare',
+		'commented' => 'Comentat',
+		'comments' => 'Comentaris',
+		'like' => 'Agradar',
+		'liked' => 'Agradat',
+		'likes' => 'Aquò m\'agrada',
+		'share' => 'Partejar',
+		'shared' => 'Partejat',
+		'shares' => 'Partages',
+		'unshare' => 'Partejar pas mai',
+		'bookmark' => 'Marcapaginas',
 
 		'cancel' => 'Anullar',
-		'copyLink' => 'Copy Link',
-		'delete' => 'Delete',
+		'copyLink' => 'Copiar lo ligam',
+		'delete' => 'Suprimir',
 		'error' => 'Error',
-		'errorMsg' => 'Something went wrong. Please try again later.',
-		'oops' => 'Oops!',
-		'other' => 'Other',
-		'readMore' => 'Read more',
-		'success' => 'Success',
+		'errorMsg' => 'Una error es subrevenguda. Volgatz tornar ensajar mai tard.',
+		'oops' => 'Ops!',
+		'other' => 'Autre',
+		'readMore' => 'Ne legir mai',
+		'success' => 'Capitada',
+		'proceed' => 'Contunhar',
+		'next' => 'Seguent',
+		'close' => 'Tampar',
+		'clickHere' => 'clicatz aicí',
 
-		'sensitive' => 'Sensitive',
-		'sensitiveContent' => 'Sensitive Content',
-		'sensitiveContentWarning' => 'This post may contain sensitive content',
+		'sensitive' => 'Sensible',
+		'sensitiveContent' => 'Contengut sensible',
+		'sensitiveContentWarning' => 'Lo contengut d\'aquela publicacion poiriá èsser sensibla',
 	],
 
 	'site' => [
-		'terms' => 'Terms of Use',
-		'privacy' => 'Privacy Policy',
+		'terms' => 'Condicions d\'utilizacion',
+		'privacy' => 'Politica de confidencialitat',
 	],
 
 	'navmenu' => [
-		'search' => 'Search',
-		'admin' => 'Admin Dashboard',
+		'search' => 'Cercar',
+		'admin' => 'Tablèu de mandas d\'administracion',
 
 		// Timelines
-		'homeFeed' => 'Home Feed',
-		'localFeed' => 'Local Feed',
+		'homeFeed' => 'Flux principal',
+		'localFeed' => 'Flux local',
 		'globalFeed' => 'Global Feed',
 
 		// Core features
-		'discover' => 'Discover',
+		'discover' => 'Descobrir',
 		'directMessages' => 'Direct Messages',
 		'notifications' => 'Notifications',
-		'groups' => 'Groups',
-		'stories' => 'Stories',
+		'groups' => 'Grops',
+		'stories' => 'Contes',
 
 		// Self links
-		'profile' => 'Profile',
+		'profile' => 'Perfil',
 		'drive' => 'Drive',
-		'settings' => 'Settings',
-		'compose' => 'Create New',
-		'logout' => 'Logout',
+		'settings' => 'Paramètres',
+		'compose' => 'Ajustar una novèla',
+		'logout' => '',
 
 		// Nav footer
-		'about' => 'About',
-		'help' => 'Help',
-		'language' => 'Language',
-		'privacy' => 'Privacy',
-		'terms' => 'Terms',
+		'about' => 'A prepaus',
+		'help' => 'Ajuda',
+		'language' => 'Lenga',
+		'privacy' => 'Confidencialitat',
+		'terms' => 'Condicions d’utilizacion',
 
 		// Temporary links
 		'backToPreviousDesign' => 'Go back to previous design'
 	],
 
 	'directMessages' => [
-		'inbox' => 'Inbox',
-		'sent' => 'Sent',
+		'inbox' => 'Dintrant',
+		'sent' => 'Mandats',
 		'requests' => 'Requests'
 	],
 
@@ -81,22 +86,23 @@ return [
 		'shared' => 'shared your',
 		'tagged' => 'tagged you in a',
 
-		'updatedA' => 'updated a',
-		'sentA' => 'sent a',
+		'updatedA' => 'actualizat un',
+		'sentA' => 'a enviat un',
 
-		'followed' => 'followed',
-		'mentioned' => 'mentioned',
-		'you' => 'you',
+		'followed' => 's\'es abonat a',
+		'mentioned' => 'a mencionat',
+		'you' => 'vos',
 
-		'yourApplication' => 'Your application to join',
-		'applicationApproved' => 'was approved!',
-		'applicationRejected' => 'was rejected. You can re-apply to join in 6 months.',
+		'yourApplication' => 'Vòstra candidatura a rejónher',
+		'applicationApproved' => 'es estada aprovada!',
+		'applicationRejected' => 'es estada regetada.',
 
-		'dm' => 'dm',
+		'dm' => 'messatge privat',
 		'groupPost' => 'group post',
 		'modlog' => 'modlog',
 		'post' => 'post',
 		'story' => 'story',
+		'noneFound' => 'No notifications found',
 	],
 
 	'post' => [
@@ -134,7 +140,7 @@ return [
 		'selectOneOption' => 'Select one of the following options',
 		'unlistFromTimelines' => 'Unlist from Timelines',
 		'addCW' => 'Add Content Warning',
-		'removeCW' => 'Remove Content Warning',
+		'removeCW' => 'Lo tèxte es rescondut jos l’avertiment',
 		'markAsSpammer' => 'Mark as Spammer',
 		'markAsSpammerText' => 'Unlist + CW existing and future posts',
 		'spam' => 'Spam',
@@ -176,11 +182,27 @@ return [
 	],
 
 	'timeline' => [
-		'peopleYouMayKnow' => 'Personas que coneissètz benlèu'
+		'peopleYouMayKnow' => 'Personas que coneissètz benlèu',
+
+		'onboarding' => [
+			'welcome' => 'Benvengut',
+			'thisIsYourHomeFeed' => 'This is your home feed, a chronological feed of posts from accounts you follow.',
+			'letUsHelpYouFind' => 'Let us help you find some interesting people to follow',
+			'refreshFeed' => 'Refresh my feed',
+		],
 	],
 
 	'hashtags' => [
 		'emptyFeed' => 'We can\'t seem to find any posts for this hashtag'
+	],
+
+	'report' => [
+		'report' => 'Report',
+		'selectReason' => 'Select a reason',
+		'reported' => 'Reported',
+		'sendingReport' => 'Sending report',
+		'thanksMsg' => 'Thanks for the report, people like you help keep our community safe!',
+		'contactAdminMsg' => 'If you\'d like to contact an administrator about this post or report',
 	],
 
 ];

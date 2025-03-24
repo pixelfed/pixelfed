@@ -3,26 +3,31 @@
 return [
 
 	'common' => [
-		'comment' => 'دیدگاه',
-		'commented' => 'Commented',
-		'comments' => 'دیدگاه‌ها',
+		'comment' => 'نظر',
+		'commented' => 'نظر داده شد',
+		'comments' => 'نظر',
 		'like' => 'پسند',
-		'liked' => 'Liked',
+		'liked' => 'پسندیده شد',
 		'likes' => 'پسند',
 		'share' => 'هم‌رسانی',
-		'shared' => 'Shared',
+		'shared' => 'هم‌رسانی شد',
 		'shares' => 'هم‌رسانی',
-		'unshare' => 'لغو هم‌رسانی',
+		'unshare' => 'ناهم‌رسانی',
+		'bookmark' => 'نشانک',
 
 		'cancel' => 'لغو',
-		'copyLink' => 'روگرفت پیوند',
+		'copyLink' => 'رونوشت از پیوند',
 		'delete' => 'حذف',
 		'error' => 'خطا',
-		'errorMsg' => 'مشکلی رخ داده است. لطفا بعدا امتحان کنید.',
+		'errorMsg' => 'چیزی اشتباه شد. لطفاً بعداً دوباره تلاش کنید.',
 		'oops' => 'اوه!',
-		'other' => 'سایر',
-		'readMore' => 'بیشتر بخوانید',
+		'other' => 'دیگر',
+		'readMore' => 'بیش‌تر بخوانید',
 		'success' => 'موفق',
+		'proceed' => 'پیشروی',
+		'next' => 'بعدی',
+		'close' => 'بستن',
+		'clickHere' => 'این‌جا را بزنید',
 
 		'sensitive' => 'حساس',
 		'sensitiveContent' => 'محتوای حساس',
@@ -39,7 +44,7 @@ return [
 		'admin' => 'پیشخوان مدیریتی',
 
 		// Timelines
-		'homeFeed' => 'خط زمانی خانگی',
+		'homeFeed' => 'خوراک خانه',
 		'localFeed' => 'خط زمانی محلی',
 		'globalFeed' => 'خط زمانی سراسری',
 
@@ -55,7 +60,7 @@ return [
 		'drive' => 'Drive',
 		'settings' => 'تنظیمات',
 		'compose' => 'فرستهٔ جدید',
-		'logout' => 'Logout',
+		'logout' => 'خروج',
 
 		// Nav footer
 		'about' => 'درباره',
@@ -65,12 +70,12 @@ return [
 		'terms' => 'شرایط',
 
 		// Temporary links
-		'backToPreviousDesign' => 'بازگشت به طراحی پیشین'
+		'backToPreviousDesign' => 'بازگشت به طرّاحی پیشین'
 	],
 
 	'directMessages' => [
-		'inbox' => 'صندوق دریافت',
-		'sent' => 'فرستاده شده',
+		'inbox' => 'صندوق ورودی',
+		'sent' => 'فرستاده',
 		'requests' => 'درخواست‌ها'
 	],
 
@@ -84,19 +89,20 @@ return [
 		'updatedA' => 'updated a',
 		'sentA' => 'sent a',
 
-		'followed' => 'followed',
-		'mentioned' => 'mentioned',
+		'followed' => 'پی گرفت',
+		'mentioned' => 'اشاره کرد',
 		'you' => 'شما',
 
-		'yourApplication' => 'درخواست شما برای پیوستن',
+		'yourApplication' => 'درخواست پیوستنتان',
 		'applicationApproved' => 'تایید شد!',
-		'applicationRejected' => 'رد شد. ۶ ماه دیگر می‌توانید مجددا اقدام کنید.',
+		'applicationRejected' => 'رد شد. ۶ ماه دیگر می‌توانید دوباره درخواست کنید.',
 
 		'dm' => 'dm',
 		'groupPost' => 'فرستهٔ گروهی',
 		'modlog' => 'modlog',
 		'post' => 'فرسته',
 		'story' => 'داستان',
+		'noneFound' => 'هیچ آگاهی‌ای پیدا نشد',
 	],
 
 	'post' => [
@@ -143,7 +149,7 @@ return [
 		'underageAccount' => 'حساب زیر سن قانونی',
 		'copyrightInfringement' => 'نقض قوانین حق تکثیر',
 		'impersonation' => 'جعل هویت',
-		'scamOrFraud' => 'Scam or Fraud',
+		'scamOrFraud' => 'هرزنامه یا کلاه‌برداری',
 		'confirmReport' => 'تایید گزارش',
 		'confirmReportText' => 'مطمئنید که می‌خواهید این فرسته را گزارش کنید؟',
 		'reportSent' => 'گزارش فرستاده شد!',
@@ -157,7 +163,7 @@ return [
 		'modUnlistConfirm' => 'مطمئنید که می‌خواهید این فرسته را برون‌فهرست کنید؟',
 		'modUnlistSuccess' => 'فرسته با موفقیت برون‌فهرست شد',
 		'modMarkAsSpammerConfirm' => 'مطمئنید که می‌خواهید این کاربر را به عنوان هرزنامه‌نویس نشانه‌گذاری کنید؟ تمام فرسته‌های موجود و آتی روی خط زمانی به صورت برون‌فهرست درآمده و هشدار محتوا بر آن‌ها اعمال خواهد شد.',
-		'modMarkAsSpammerSuccess' => 'Successfully marked account as spammer',
+		'modMarkAsSpammerSuccess' => 'حساب با موفقیت به عنوان هرزه‌پراکن علامت خورد',
 
 		'toFollowers' => 'به دنبال‌کنندگان',
 
@@ -176,11 +182,27 @@ return [
 	],
 
 	'timeline' => [
-		'peopleYouMayKnow' => 'افرادی که ممکن است بشناسید'
+		'peopleYouMayKnow' => 'افرادی که ممکن است بشناسید',
+
+		'onboarding' => [
+			'welcome' => 'خوش آمدید',
+			'thisIsYourHomeFeed' => 'این خوراک خانه‌تان است. خوراکی زمان‌نگاشته از فرسته‌هایحساب‌هایی که پی می‌گیرید.',
+			'letUsHelpYouFind' => 'بگذارید در یافتن افراد جالب برای پی‌گیری یاریتان کنیم',
+			'refreshFeed' => 'تازه‌سازی خوراکم',
+		],
 	],
 
 	'hashtags' => [
 		'emptyFeed' => 'به نظر می‌رسد که نمی‌توانیم چیزی برای این هشتگ پیدا کنیم'
+	],
+
+	'report' => [
+		'report' => 'گزارش',
+		'selectReason' => 'گزینش یک دلیل',
+		'reported' => 'گزارش شد',
+		'sendingReport' => 'فرستادن گزارش',
+		'thanksMsg' => 'ممنون از گزارش. افرادی چون شما اجتماعمان را امن نگه می‌دارند!',
+		'contactAdminMsg' => 'اگر می‌خواهید در بارهخ‌ای این فرسته یا گزارش با مدیری در تماس باشید',
 	],
 
 ];

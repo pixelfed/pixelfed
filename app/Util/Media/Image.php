@@ -16,7 +16,8 @@ class Image
 	public $acceptedMimes = [
 		'image/png',
 		'image/jpeg',
-		'image/webp'
+		'image/webp',
+		'image/avif',
 	];
 
 	public function __construct()

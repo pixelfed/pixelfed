@@ -44,257 +44,93 @@ class DirectMessageController extends Controller
         if ($user->has_roles && ! UserRoleService::can('can-direct-message', $user->id)) {
             return [];
         }
+
         $profile = $user->profile_id;
         $action = $request->input('a', 'inbox');
-        $page = $request->input('page');
+        $page = $request->input('page', 1);
+        $limit = 8;
+        $offset = ($page - 1) * $limit;
+
+        $baseQuery = DirectMessage::select(
+            'id', 'type', 'to_id', 'from_id', 'status_id',
+            'is_hidden', 'meta', 'created_at', 'read_at'
+        )->with(['author', 'status', 'recipient']);
 
         if (config('database.default') == 'pgsql') {
-            if ($action == 'inbox') {
-                $dms = DirectMessage::select('id', 'type', 'to_id', 'from_id', 'id', 'status_id', 'is_hidden', 'meta', 'created_at', 'read_at')
-                    ->whereToId($profile)
-                    ->with(['author', 'status'])
+            $query = match ($action) {
+                'inbox' => $baseQuery->whereToId($profile)
                     ->whereIsHidden(false)
-                    ->when($page, function ($q, $page) {
-                        if ($page > 1) {
-                            return $q->offset($page * 8 - 8);
-                        }
-                    })
-                    ->latest()
-                    ->get()
-                    ->unique('from_id')
-                    ->take(8)
-                    ->map(function ($r) use ($profile) {
-                        return $r->from_id !== $profile ? [
-                            'id' => (string) $r->from_id,
-                            'name' => $r->author->name,
-                            'username' => $r->author->username,
-                            'avatar' => $r->author->avatarUrl(),
-                            'url' => $r->author->url(),
-                            'isLocal' => (bool) ! $r->author->domain,
-                            'domain' => $r->author->domain,
-                            'timeAgo' => $r->created_at->diffForHumans(null, true, true),
-                            'lastMessage' => $r->status->caption,
-                            'messages' => [],
-                        ] : [
-                            'id' => (string) $r->to_id,
-                            'name' => $r->recipient->name,
-                            'username' => $r->recipient->username,
-                            'avatar' => $r->recipient->avatarUrl(),
-                            'url' => $r->recipient->url(),
-                            'isLocal' => (bool) ! $r->recipient->domain,
-                            'domain' => $r->recipient->domain,
-                            'timeAgo' => $r->created_at->diffForHumans(null, true, true),
-                            'lastMessage' => $r->status->caption,
-                            'messages' => [],
-                        ];
-                    })->values();
-            }
-
-            if ($action == 'sent') {
-                $dms = DirectMessage::select('id', 'type', 'to_id', 'from_id', 'id', 'status_id', 'is_hidden', 'meta', 'created_at', 'read_at')
-                    ->whereFromId($profile)
-                    ->with(['author', 'status'])
-                    ->orderBy('id', 'desc')
-                    ->when($page, function ($q, $page) {
-                        if ($page > 1) {
-                            return $q->offset($page * 8 - 8);
-                        }
-                    })
-                    ->get()
-                    ->unique('to_id')
-                    ->take(8)
-                    ->map(function ($r) use ($profile) {
-                        return $r->from_id !== $profile ? [
-                            'id' => (string) $r->from_id,
-                            'name' => $r->author->name,
-                            'username' => $r->author->username,
-                            'avatar' => $r->author->avatarUrl(),
-                            'url' => $r->author->url(),
-                            'isLocal' => (bool) ! $r->author->domain,
-                            'domain' => $r->author->domain,
-                            'timeAgo' => $r->created_at->diffForHumans(null, true, true),
-                            'lastMessage' => $r->status->caption,
-                            'messages' => [],
-                        ] : [
-                            'id' => (string) $r->to_id,
-                            'name' => $r->recipient->name,
-                            'username' => $r->recipient->username,
-                            'avatar' => $r->recipient->avatarUrl(),
-                            'url' => $r->recipient->url(),
-                            'isLocal' => (bool) ! $r->recipient->domain,
-                            'domain' => $r->recipient->domain,
-                            'timeAgo' => $r->created_at->diffForHumans(null, true, true),
-                            'lastMessage' => $r->status->caption,
-                            'messages' => [],
-                        ];
-                    });
-            }
-
-            if ($action == 'filtered') {
-                $dms = DirectMessage::select('id', 'type', 'to_id', 'from_id', 'id', 'status_id', 'is_hidden', 'meta', 'created_at', 'read_at')
-                    ->whereToId($profile)
-                    ->with(['author', 'status'])
+                    ->orderBy('created_at', 'desc'),
+                'sent' => $baseQuery->whereFromId($profile)
+                    ->orderBy('created_at', 'desc'),
+                'filtered' => $baseQuery->whereToId($profile)
                     ->whereIsHidden(true)
-                    ->orderBy('id', 'desc')
-                    ->when($page, function ($q, $page) {
-                        if ($page > 1) {
-                            return $q->offset($page * 8 - 8);
-                        }
-                    })
-                    ->get()
-                    ->unique('from_id')
-                    ->take(8)
-                    ->map(function ($r) use ($profile) {
-                        return $r->from_id !== $profile ? [
-                            'id' => (string) $r->from_id,
-                            'name' => $r->author->name,
-                            'username' => $r->author->username,
-                            'avatar' => $r->author->avatarUrl(),
-                            'url' => $r->author->url(),
-                            'isLocal' => (bool) ! $r->author->domain,
-                            'domain' => $r->author->domain,
-                            'timeAgo' => $r->created_at->diffForHumans(null, true, true),
-                            'lastMessage' => $r->status->caption,
-                            'messages' => [],
-                        ] : [
-                            'id' => (string) $r->to_id,
-                            'name' => $r->recipient->name,
-                            'username' => $r->recipient->username,
-                            'avatar' => $r->recipient->avatarUrl(),
-                            'url' => $r->recipient->url(),
-                            'isLocal' => (bool) ! $r->recipient->domain,
-                            'domain' => $r->recipient->domain,
-                            'timeAgo' => $r->created_at->diffForHumans(null, true, true),
-                            'lastMessage' => $r->status->caption,
-                            'messages' => [],
-                        ];
-                    });
-            }
-        } elseif (config('database.default') == 'mysql') {
-            if ($action == 'inbox') {
-                $dms = DirectMessage::selectRaw('*, max(created_at) as createdAt')
-                    ->whereToId($profile)
-                    ->with(['author', 'status'])
+                    ->orderBy('created_at', 'desc'),
+                default => throw new \InvalidArgumentException('Invalid action')
+            };
+
+            $dms = $query->offset($offset)
+                ->limit($limit)
+                ->get();
+
+            $dms = $action === 'sent' ?
+                   $dms->unique('to_id') :
+                   $dms->unique('from_id');
+        } else {
+            $query = match ($action) {
+                'inbox' => $baseQuery->whereToId($profile)
                     ->whereIsHidden(false)
-                    ->groupBy('from_id')
-                    ->latest()
-                    ->when($page, function ($q, $page) {
-                        if ($page > 1) {
-                            return $q->offset($page * 8 - 8);
-                        }
-                    })
-                    ->limit(8)
-                    ->get()
-                    ->map(function ($r) use ($profile) {
-                        return $r->from_id !== $profile ? [
-                            'id' => (string) $r->from_id,
-                            'name' => $r->author->name,
-                            'username' => $r->author->username,
-                            'avatar' => $r->author->avatarUrl(),
-                            'url' => $r->author->url(),
-                            'isLocal' => (bool) ! $r->author->domain,
-                            'domain' => $r->author->domain,
-                            'timeAgo' => $r->created_at->diffForHumans(null, true, true),
-                            'lastMessage' => $r->status->caption,
-                            'messages' => [],
-                        ] : [
-                            'id' => (string) $r->to_id,
-                            'name' => $r->recipient->name,
-                            'username' => $r->recipient->username,
-                            'avatar' => $r->recipient->avatarUrl(),
-                            'url' => $r->recipient->url(),
-                            'isLocal' => (bool) ! $r->recipient->domain,
-                            'domain' => $r->recipient->domain,
-                            'timeAgo' => $r->created_at->diffForHumans(null, true, true),
-                            'lastMessage' => $r->status->caption,
-                            'messages' => [],
-                        ];
-                    });
-            }
-
-            if ($action == 'sent') {
-                $dms = DirectMessage::selectRaw('*, max(created_at) as createdAt')
-                    ->whereFromId($profile)
-                    ->with(['author', 'status'])
-                    ->groupBy('to_id')
-                    ->orderBy('createdAt', 'desc')
-                    ->when($page, function ($q, $page) {
-                        if ($page > 1) {
-                            return $q->offset($page * 8 - 8);
-                        }
-                    })
-                    ->limit(8)
-                    ->get()
-                    ->map(function ($r) use ($profile) {
-                        return $r->from_id !== $profile ? [
-                            'id' => (string) $r->from_id,
-                            'name' => $r->author->name,
-                            'username' => $r->author->username,
-                            'avatar' => $r->author->avatarUrl(),
-                            'url' => $r->author->url(),
-                            'isLocal' => (bool) ! $r->author->domain,
-                            'domain' => $r->author->domain,
-                            'timeAgo' => $r->created_at->diffForHumans(null, true, true),
-                            'lastMessage' => $r->status->caption,
-                            'messages' => [],
-                        ] : [
-                            'id' => (string) $r->to_id,
-                            'name' => $r->recipient->name,
-                            'username' => $r->recipient->username,
-                            'avatar' => $r->recipient->avatarUrl(),
-                            'url' => $r->recipient->url(),
-                            'isLocal' => (bool) ! $r->recipient->domain,
-                            'domain' => $r->recipient->domain,
-                            'timeAgo' => $r->created_at->diffForHumans(null, true, true),
-                            'lastMessage' => $r->status->caption,
-                            'messages' => [],
-                        ];
-                    });
-            }
-
-            if ($action == 'filtered') {
-                $dms = DirectMessage::selectRaw('*, max(created_at) as createdAt')
-                    ->whereToId($profile)
-                    ->with(['author', 'status'])
+                    ->groupBy('from_id', 'id', 'type', 'to_id', 'status_id',
+                        'is_hidden', 'meta', 'created_at', 'read_at')
+                    ->orderBy('created_at', 'desc'),
+                'sent' => $baseQuery->whereFromId($profile)
+                    ->groupBy('to_id', 'id', 'type', 'from_id', 'status_id',
+                        'is_hidden', 'meta', 'created_at', 'read_at')
+                    ->orderBy('created_at', 'desc'),
+                'filtered' => $baseQuery->whereToId($profile)
                     ->whereIsHidden(true)
-                    ->groupBy('from_id')
-                    ->orderBy('createdAt', 'desc')
-                    ->when($page, function ($q, $page) {
-                        if ($page > 1) {
-                            return $q->offset($page * 8 - 8);
-                        }
-                    })
-                    ->limit(8)
-                    ->get()
-                    ->map(function ($r) use ($profile) {
-                        return $r->from_id !== $profile ? [
-                            'id' => (string) $r->from_id,
-                            'name' => $r->author->name,
-                            'username' => $r->author->username,
-                            'avatar' => $r->author->avatarUrl(),
-                            'url' => $r->author->url(),
-                            'isLocal' => (bool) ! $r->author->domain,
-                            'domain' => $r->author->domain,
-                            'timeAgo' => $r->created_at->diffForHumans(null, true, true),
-                            'lastMessage' => $r->status->caption,
-                            'messages' => [],
-                        ] : [
-                            'id' => (string) $r->to_id,
-                            'name' => $r->recipient->name,
-                            'username' => $r->recipient->username,
-                            'avatar' => $r->recipient->avatarUrl(),
-                            'url' => $r->recipient->url(),
-                            'isLocal' => (bool) ! $r->recipient->domain,
-                            'domain' => $r->recipient->domain,
-                            'timeAgo' => $r->created_at->diffForHumans(null, true, true),
-                            'lastMessage' => $r->status->caption,
-                            'messages' => [],
-                        ];
-                    });
-            }
+                    ->groupBy('from_id', 'id', 'type', 'to_id', 'status_id',
+                        'is_hidden', 'meta', 'created_at', 'read_at')
+                    ->orderBy('created_at', 'desc'),
+                default => throw new \InvalidArgumentException('Invalid action')
+            };
+
+            $dms = $query->offset($offset)
+                ->limit($limit)
+                ->get();
         }
 
-        return response()->json($dms->all());
+        $mappedDms = $dms->map(function ($r) use ($action) {
+            if ($action === 'sent') {
+                return [
+                    'id' => (string) $r->to_id,
+                    'name' => $r->recipient->name,
+                    'username' => $r->recipient->username,
+                    'avatar' => $r->recipient->avatarUrl(),
+                    'url' => $r->recipient->url(),
+                    'isLocal' => (bool) ! $r->recipient->domain,
+                    'domain' => $r->recipient->domain,
+                    'timeAgo' => $r->created_at->diffForHumans(null, true, true),
+                    'lastMessage' => $r->status->caption,
+                    'messages' => [],
+                ];
+            }
+
+            return [
+                'id' => (string) $r->from_id,
+                'name' => $r->author->name,
+                'username' => $r->author->username,
+                'avatar' => $r->author->avatarUrl(),
+                'url' => $r->author->url(),
+                'isLocal' => (bool) ! $r->author->domain,
+                'domain' => $r->author->domain,
+                'timeAgo' => $r->created_at->diffForHumans(null, true, true),
+                'lastMessage' => $r->status->caption,
+                'messages' => [],
+            ];
+        });
+
+        return response()->json($mappedDms->values());
     }
 
     public function create(Request $request)
@@ -307,7 +143,11 @@ class DirectMessageController extends Controller
 
         $user = $request->user();
         abort_if($user->has_roles && ! UserRoleService::can('can-direct-message', $user->id), 403, 'Invalid permissions for this action');
-        abort_if($user->created_at->gt(now()->subHours(72)), 400, 'You need to wait a bit before you can DM another account');
+        if (! $user->is_admin) {
+            if ((bool) ! config_cache('instance.allow_new_account_dms')) {
+                abort_if($user->created_at->gt(now()->subHours(72)), 400, 'You need to wait a bit before you can DM another account');
+            }
+        }
         $profile = $user->profile;
         $recipient = Profile::where('id', '!=', $profile->id)->findOrFail($request->input('to_id'));
 
@@ -408,19 +248,35 @@ class DirectMessageController extends Controller
             'max_id' => 'sometimes|integer',
             'min_id' => 'sometimes|integer',
         ]);
+
         $user = $request->user();
-        abort_if($user->has_roles && ! UserRoleService::can('can-direct-message', $user->id), 403, 'Invalid permissions for this action');
+        abort_if(
+            $user->has_roles && ! UserRoleService::can('can-direct-message', $user->id),
+            403,
+            'Invalid permissions for this action'
+        );
 
         $uid = $user->profile_id;
         $pid = $request->input('pid');
         $max_id = $request->input('max_id');
         $min_id = $request->input('min_id');
 
-        $r = Profile::findOrFail($pid);
+        $profile = Profile::findOrFail($pid);
+
+        $query = DirectMessage::select(
+            'id',
+            'is_hidden',
+            'from_id',
+            'to_id',
+            'type',
+            'status_id',
+            'meta',
+            'created_at',
+            'read_at'
+        )->with(['status']);
 
         if ($min_id) {
-            $res = DirectMessage::select('*')
-                ->where('id', '>', $min_id)
+            $res = $query->where('id', '>', $min_id)
                 ->where(function ($query) use ($pid, $uid) {
                     $query->where('from_id', $pid)->where('to_id', $uid);
                 })->orWhere(function ($query) use ($pid, $uid) {
@@ -431,8 +287,7 @@ class DirectMessageController extends Controller
                 ->get()
                 ->reverse();
         } elseif ($max_id) {
-            $res = DirectMessage::select('*')
-                ->where('id', '<', $max_id)
+            $res = $query->where('id', '<', $max_id)
                 ->where(function ($query) use ($pid, $uid) {
                     $query->where('from_id', $pid)->where('to_id', $uid);
                 })->orWhere(function ($query) use ($pid, $uid) {
@@ -442,7 +297,7 @@ class DirectMessageController extends Controller
                 ->take(8)
                 ->get();
         } else {
-            $res = DirectMessage::where(function ($query) use ($pid, $uid) {
+            $res = $query->where(function ($query) use ($pid, $uid) {
                 $query->where('from_id', $pid)->where('to_id', $uid);
             })->orWhere(function ($query) use ($pid, $uid) {
                 $query->where('from_id', $uid)->where('to_id', $pid);
@@ -452,46 +307,42 @@ class DirectMessageController extends Controller
                 ->get();
         }
 
-        $res = $res->filter(function ($s) {
-            return $s && $s->status;
-        })
-            ->map(function ($s) use ($uid) {
-                return [
-                    'id' => (string) $s->id,
-                    'hidden' => (bool) $s->is_hidden,
-                    'isAuthor' => $uid == $s->from_id,
-                    'type' => $s->type,
-                    'text' => $s->status->caption,
-                    'media' => $s->status->firstMedia() ? $s->status->firstMedia()->url() : null,
-                    'carousel' => MediaService::get($s->status_id),
-                    'created_at' => $s->created_at->format('c'),
-                    'timeAgo' => $s->created_at->diffForHumans(null, null, true),
-                    'seen' => $s->read_at != null,
-                    'reportId' => (string) $s->status_id,
-                    'meta' => json_decode($s->meta, true),
-                ];
-            })
-            ->values();
+        $messages = $res->filter(function ($message) {
+            return $message && $message->status;
+        })->map(function ($message) use ($uid) {
+            return [
+                'id' => (string) $message->id,
+                'hidden' => (bool) $message->is_hidden,
+                'isAuthor' => $uid == $message->from_id,
+                'type' => $message->type,
+                'text' => $message->status->caption,
+                'media' => $message->status->firstMedia() ? $message->status->firstMedia()->url() : null,
+                'carousel' => MediaService::get($message->status_id),
+                'created_at' => $message->created_at->format('c'),
+                'timeAgo' => $message->created_at->diffForHumans(null, null, true),
+                'seen' => $message->read_at != null,
+                'reportId' => (string) $message->status_id,
+                'meta' => is_string($message->meta) ? json_decode($message->meta, true) : $message->meta,
+            ];
+        })->values();
 
         $filters = UserFilterService::mutes($uid);
 
-        $w = [
-            'id' => (string) $r->id,
-            'name' => $r->name,
-            'username' => $r->username,
-            'avatar' => $r->avatarUrl(),
-            'url' => $r->url(),
-            'muted' => in_array($r->id, $filters),
-            'isLocal' => (bool) ! $r->domain,
-            'domain' => $r->domain,
-            'created_at' => $r->created_at->format('c'),
-            'updated_at' => $r->updated_at->format('c'),
-            'timeAgo' => $r->created_at->diffForHumans(null, true, true),
+        return response()->json([
+            'id' => (string) $profile->id,
+            'name' => $profile->name,
+            'username' => $profile->username,
+            'avatar' => $profile->avatarUrl(),
+            'url' => $profile->url(),
+            'muted' => in_array($profile->id, $filters),
+            'isLocal' => (bool) ! $profile->domain,
+            'domain' => $profile->domain,
+            'created_at' => $profile->created_at->format('c'),
+            'updated_at' => $profile->updated_at->format('c'),
+            'timeAgo' => $profile->created_at->diffForHumans(null, true, true),
             'lastMessage' => '',
-            'messages' => $res,
-        ];
-
-        return response()->json($w, 200, [], JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES);
+            'messages' => $messages,
+        ], 200, [], JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES);
     }
 
     public function delete(Request $request)

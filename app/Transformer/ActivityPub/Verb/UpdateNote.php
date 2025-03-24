@@ -53,7 +53,7 @@ class UpdateNote extends Fractal\TransformerAbstract
         $emoji = array_merge($emojis, $mentions);
         $tags = array_merge($emoji, $hashtags);
 
-        $content = $status->caption ? Autolink::create()->autolink($status->caption) : null;
+        $content = $status->caption ? nl2br(Autolink::create()->autolink($status->caption)) : "";
         $latestEdit = $status->edits()->latest()->first();
 
         return [

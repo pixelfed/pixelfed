@@ -17,6 +17,9 @@ Route::get('.well-known/host-meta', 'FederationController@hostMeta')->name('well
 Route::redirect('.well-known/change-password', '/settings/password');
 Route::get('api/nodeinfo/2.0.json', 'FederationController@nodeinfo');
 Route::get('api/service/health-check', 'HealthCheckController@get');
+Route::post('api/auth/app-code-verify', 'AppRegisterController@verifyCode')->middleware('throttle:app-code-verify');
+Route::post('api/auth/onboarding', 'AppRegisterController@onboarding')->middleware('throttle:app-code-verify');
+Route::get('storage/m/_v2/{pid}/{mhash}/{uhash}/{f}', 'MediaController@fallbackRedirect');
 
 Route::prefix('api/v0/groups')->middleware($middleware)->group(function () {
     Route::get('config', 'Groups\GroupsApiController@getConfig');

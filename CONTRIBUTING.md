@@ -8,7 +8,7 @@ However, if you file a bug report, your issue should contain a title and a clear
 Remember, bug reports are created in the hope that others with the same problem will be able to collaborate with you on solving it. Do not expect that the bug report will automatically see any activity or that others will jump to fix it. Creating a bug report serves to help yourself and others start on the path of fixing the problem.
 
 ## Core Development Discussion
-Informal discussion regarding bugs, new features, and implementation of existing features takes place in the ```#pixelfed-dev``` channel on the Freenode IRC network.
+Informal discussion regarding bugs, new features, and implementation of existing features takes place on [discord](https://discord.gg/VDhM32hbUK) or in the [```#pixeldev```](https://matrix.to/#/#pixeldev:matrix.org) channel matrix.
 
 ## Branches
 If you want to contribute to this repository, please file your pull request against the `staging` branch. 

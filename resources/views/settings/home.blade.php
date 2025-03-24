@@ -3,7 +3,7 @@
 @section('section')
 
 	<div class="title">
-		<h3 class="font-weight-bold">Account Settings</h3>
+		<h3 class="font-weight-bold">{{__('settings.home.account_settings')}}</h3>
 	</div>
 	<hr>
 	<div class="form-group row">
@@ -13,7 +13,7 @@
 		<div class="col-sm-9">
 			<p class="lead font-weight-bold mb-0">{{Auth::user()->username}}</p>
 			<p class="">
-				<a href="#" class="font-weight-bold change-profile-photo" data-toggle="collapse" data-target="#avatarCollapse" aria-expanded="false" aria-controls="avatarCollapse">Change Profile Photo</a>
+				<a href="#" class="font-weight-bold change-profile-photo" data-toggle="collapse" data-target="#avatarCollapse" aria-expanded="false" aria-controls="avatarCollapse">{{__('settings.home.change_profile_photo')}}</a>
 			</p>
 			<div class="collapse" id="avatarCollapse">
 				<form method="post" action="/settings/avatar" enctype="multipart/form-data">
@@ -21,41 +21,41 @@
 				<div class="card card-body">
 					<div class="custom-file mb-1">
 						<input type="file" name="avatar" class="custom-file-input" id="avatarInput">
-						<label class="custom-file-label" for="avatarInput">Select a profile photo</label>
+						<label class="custom-file-label" for="avatarInput">{{__('settings.home.select_a_profile_photo')}}</label>
 					</div>
-					<p><span class="small font-weight-bold">Must be a jpeg or png. Max avatar size: <span id="maxAvatarSize"></span></span></p>
+					<p><span class="small font-weight-bold">{{__('settings.home.must_be_a_jpeg_or_png_max_avatar_size')}} <span id="maxAvatarSize"></span></span></p>
 					<div id="previewAvatar"></div>
-					<p class="mb-0"><button type="submit" class="btn btn-primary px-4 py-0 font-weight-bold">Upload</button></p>
+					<p class="mb-0"><button type="submit" class="btn btn-primary px-4 py-0 font-weight-bold">{{__('settings.home.upload')}}</button></p>
 				</div>
 				</form>
 			</div>
 			<p class="">
-				<a class="font-weight-bold text-muted delete-profile-photo" href="#">Delete Profile Photo</a>
+				<a class="font-weight-bold text-muted delete-profile-photo" href="#">{{__('settings.home.delete_profile_photo')}}</a>
 			</p>
 		</div>
 	</div>
 	<form method="post">
 		@csrf
 		<div class="form-group row">
-			<label for="name" class="col-sm-3 col-form-label font-weight-bold">Name</label>
+			<label for="name" class="col-sm-3 col-form-label font-weight-bold">{{__('settings.home.name')}}</label>
 			<div class="col-sm-9">
-				<input type="text" class="form-control" id="name" name="name" placeholder="Your Name" maxlength="30" value="{{Auth::user()->profile->name}}" v-pre>
+				<input type="text" class="form-control" id="name" name="name" placeholder="{{__('settings.home.your_name')}}" maxlength="30" value="{{Auth::user()->profile->name}}" v-pre>
 			</div>
 		</div>
 		<div class="form-group row">
-			<label for="website" class="col-sm-3 col-form-label font-weight-bold">Website</label>
+			<label for="website" class="col-sm-3 col-form-label font-weight-bold">{{__('settings.home.website')}}</label>
 			<div class="col-sm-9">
-				<input type="text" class="form-control" id="website" name="website" placeholder="Website" value="{{Auth::user()->profile->website}}" v-pre>
+				<input type="text" class="form-control" id="website" name="website" placeholder="{{__('settings.home.website')}}" value="{{Auth::user()->profile->website}}" v-pre>
 			</div>
 		</div>
 		<div class="form-group row">
-			<label for="bio" class="col-sm-3 col-form-label font-weight-bold">Bio</label>
+			<label for="bio" class="col-sm-3 col-form-label font-weight-bold">{{__('settings.home.bio')}}</label>
 			<div class="col-sm-9">
 				<textarea
 					class="form-control"
 					id="bio"
 					name="bio"
-					placeholder="Add a bio here"
+					placeholder="{{__('settings.home.add_a_bio_here')}}"
 					rows="2"
 					data-max-length="{{config('pixelfed.max_bio_length')}}"
 					maxlength="{{config('pixelfed.max_bio_length')}}"
@@ -66,7 +66,7 @@
 			</div>
 		</div>
 		<div class="form-group row">
-			<label for="language" class="col-sm-3 col-form-label font-weight-bold">Language</label>
+			<label for="language" class="col-sm-3 col-form-label font-weight-bold">{{__('settings.home.language')}}</label>
 			<div class="col-sm-9">
 				<select class="form-control" name="language">
 				@foreach(App\Util\Localization\Localization::languages() as $lang)
@@ -76,43 +76,43 @@
 			</div>
 		</div>
 		<div class="form-group row">
-			<label for="pronouns" class="col-sm-3 col-form-label font-weight-bold">Pronouns</label>
+			<label for="pronouns" class="col-sm-3 col-form-label font-weight-bold">{{__('settings.home.pronouns')}}</label>
 			<div class="col-sm-9">
 				<select class="form-control" name="pronouns[]" multiple="" id="pronouns">
-					<option>Select Pronoun(s)</option>
+					<option>{{__('settings.home.select_pronouns')}}</option>
 				@foreach(\App\Services\PronounService::pronouns() as $val)
 					<option value="{{$val}}" {{$pronouns && in_array($val, $pronouns) ? 'selected' : ''}}>{{$val}}</option>
 				@endforeach
 				</select>
-				<p class="help-text text-muted small">Select up to 4 pronouns that will appear on your profile.</p>
+				<p class="help-text text-muted small">{{__('settings.home.select_up_to_4_pronouns_that_will_appear_on_etc')}}</p>
 			</div>
 		</div>
 
         @if((bool) config_cache('federation.activitypub.enabled'))
         <div class="form-group row">
-            <label for="aliases" class="col-sm-3 col-form-label font-weight-bold">Account Aliases</label>
+            <label for="aliases" class="col-sm-3 col-form-label font-weight-bold">{{__('settings.home.account_aliases')}}</label>
             <div class="col-sm-9" id="aliases">
-                <a class="font-weight-bold" href="/settings/account/aliases/manage">Manage account alias</a>
-                <p class="help-text text-muted small">To move from another account to this one, first you need to create an alias.</p>
+                <a class="font-weight-bold" href="/settings/account/aliases/manage">{{__('settings.home.manage_account_alias')}}</a>
+                <p class="help-text text-muted small">{{__('settings.home.to_move_from_another_account_to_this_one_first_etc')}}</p>
             </div>
         </div>
 
         @if((bool) config_cache('federation.migration'))
         <div class="form-group row">
-            <label for="aliases" class="col-sm-3 col-form-label font-weight-bold">Account Migrate</label>
+            <label for="aliases" class="col-sm-3 col-form-label font-weight-bold">{{__('settings.home.account_migrate')}}</label>
             <div class="col-sm-9" id="aliases">
-                <a class="font-weight-bold" href="/settings/account/migration/manage">Migrate to another account</a>
-                <p class="help-text text-muted small">To redirect this account to a different one (where supported).</p>
+                <a class="font-weight-bold" href="/settings/account/migration/manage">{{__('settings.home.migrate_to_another_account')}}</a>
+                <p class="help-text text-muted small">{{__('settings.home.to_redirect_this_account_to_a_different_one_etc')}}</p>
             </div>
         </div>
         @endif
         @endif
 		@if(config_cache('pixelfed.enforce_account_limit'))
 		<div class="pt-3">
-			<p class="font-weight-bold text-muted text-center">Storage Usage</p>
+			<p class="font-weight-bold text-muted text-center">{{__('settings.home.storage_usage')}}</p>
 		</div>
 		<div class="form-group row">
-			<label class="col-sm-3 col-form-label font-weight-bold">Storage Used</label>
+			<label class="col-sm-3 col-form-label font-weight-bold">{{__('settings.home.storage_used')}}</label>
 			<div class="col-sm-9">
 				<div class="progress mt-2">
 					<div class="progress-bar" role="progressbar" style="width: {{$storage['percentUsed']}}%"  aria-valuenow="{{$storage['percentUsed']}}" aria-valuemin="0" aria-valuemax="100"></div>
@@ -131,7 +131,7 @@
 		<hr>
 		<div class="form-group row">
 			<div class="col-12 text-right">
-				<button type="submit" class="btn btn-primary font-weight-bold py-0 px-5">Submit</button>
+				<button type="submit" class="btn btn-primary font-weight-bold py-0 px-5">{{__('settings.submit')}}</button>
 			</div>
 		</div>
 	</form>
@@ -199,13 +199,13 @@ $(document).ready(function() {
 
 		$('.delete-profile-photo').on('click', function(e) {
 			e.preventDefault();
-			if(window.confirm('Are you sure you want to delete your profile photo.') == false) {
+			if(window.confirm('{{__('settings.home.are_you_sure_you_want_to_delete_your_profile_photo')}}') == false) {
 				return;
 			}
 			axios.delete('/settings/avatar').then(res => {
 				window.location.href = window.location.href;
 			}).catch(err => {
-				swal('Error', 'An error occured, please try again later', 'error');
+				swal('{{__('settings.error')}}', '{{__('settings.home.an_error_occured_please_try_again_later')}}', 'error');
 			});
 		});
 })

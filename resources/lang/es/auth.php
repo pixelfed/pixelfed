@@ -13,7 +13,7 @@ return [
     |
     */
 
-    'failed'   => 'Los datos introducidos no son vÃ¡lidos.',
-    'throttle' => 'Demasiados intentos de iniciar sesiÃ³n. Por favor, intÃ©ntalo de nuevo en :seconds segundos.',
-
+    'failed'   => 'Los datos introducidos no son válidos.',
+    'throttle' => 'Demasiados intentos de iniciar sesión. Por favor, inténtalo de nuevo en :seconds segundos.',
+    'verifyYourEmailAddress' => ' - Verifica tu dirección de Correo',
 ];

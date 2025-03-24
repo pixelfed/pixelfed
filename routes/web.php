@@ -45,12 +45,104 @@ Route::domain(config('pixelfed.domain.app'))->middleware(['validemail', 'twofact
     Route::get('auth/forgot/email', 'UserEmailForgotController@index')->name('email.forgot');
     Route::post('auth/forgot/email', 'UserEmailForgotController@store')->middleware('throttle:10,900,forgotEmail');
 
+    Route::group([
+        'as' => 'passport.',
+        'prefix' => config('passport.path', 'oauth'),
+    ], function () {
+        Route::post('/token', [
+            'uses' => '\Laravel\Passport\Http\Controllers\AccessTokenController@issueToken',
+            'as' => 'token',
+            'middleware' => 'throttle',
+        ]);
+
+        Route::get('/authorize', [
+            'uses' => '\Laravel\Passport\Http\Controllers\AuthorizationController@authorize',
+            'as' => 'authorizations.authorize',
+            'middleware' => 'web',
+        ]);
+
+        $guard = config('passport.guard', null);
+
+        Route::middleware(['web', $guard ? 'auth:'.$guard : 'auth'])->group(function () {
+            Route::post('/token/refresh', [
+                'uses' => '\Laravel\Passport\Http\Controllers\TransientTokenController@refresh',
+                'as' => 'token.refresh',
+            ]);
+
+            Route::post('/authorize', [
+                'uses' => '\App\Http\Controllers\OAuth\OobAuthorizationController@approve',
+                'as' => 'authorizations.approve',
+            ]);
+
+            Route::delete('/authorize', [
+                'uses' => '\Laravel\Passport\Http\Controllers\DenyAuthorizationController@deny',
+                'as' => 'authorizations.deny',
+            ]);
+
+            Route::get('/tokens', [
+                'uses' => '\Laravel\Passport\Http\Controllers\AuthorizedAccessTokenController@forUser',
+                'as' => 'tokens.index',
+            ]);
+
+            Route::delete('/tokens/{token_id}', [
+                'uses' => '\Laravel\Passport\Http\Controllers\AuthorizedAccessTokenController@destroy',
+                'as' => 'tokens.destroy',
+            ]);
+
+            Route::get('/clients', [
+                'uses' => '\Laravel\Passport\Http\Controllers\ClientController@forUser',
+                'as' => 'clients.index',
+            ]);
+
+            Route::post('/clients', [
+                'uses' => '\Laravel\Passport\Http\Controllers\ClientController@store',
+                'as' => 'clients.store',
+            ]);
+
+            Route::put('/clients/{client_id}', [
+                'uses' => '\Laravel\Passport\Http\Controllers\ClientController@update',
+                'as' => 'clients.update',
+            ]);
+
+            Route::delete('/clients/{client_id}', [
+                'uses' => '\Laravel\Passport\Http\Controllers\ClientController@destroy',
+                'as' => 'clients.destroy',
+            ]);
+
+            Route::get('/scopes', [
+                'uses' => '\Laravel\Passport\Http\Controllers\ScopeController@all',
+                'as' => 'scopes.index',
+            ]);
+
+            Route::get('/personal-access-tokens', [
+                'uses' => '\Laravel\Passport\Http\Controllers\PersonalAccessTokenController@forUser',
+                'as' => 'personal.tokens.index',
+            ]);
+
+            Route::post('/personal-access-tokens', [
+                'uses' => '\Laravel\Passport\Http\Controllers\PersonalAccessTokenController@store',
+                'as' => 'personal.tokens.store',
+            ]);
+
+            Route::delete('/personal-access-tokens/{token_id}', [
+                'uses' => '\Laravel\Passport\Http\Controllers\PersonalAccessTokenController@destroy',
+                'as' => 'personal.tokens.destroy',
+            ]);
+        });
+
+    });
+
     Route::get('discover', 'DiscoverController@home')->name('discover');
 
     Route::get('discover/tags/{hashtag}', 'DiscoverController@showTags');
     Route::get('discover/places', 'PlaceController@directoryHome')->name('discover.places');
     Route::get('discover/places/{id}/{slug}', 'PlaceController@show');
     Route::get('discover/location/country/{country}', 'PlaceController@directoryCities');
+
+    Route::get('/i/app-email-verify', 'AppRegisterController@index');
+    Route::post('/i/app-email-verify', 'AppRegisterController@store')->middleware('throttle:app-signup');
+    Route::get('/i/app-email-resend', 'AppRegisterController@resendVerification');
+    Route::post('/i/app-email-resend', 'AppRegisterController@resendVerificationStore')->middleware('throttle:app-code-resend');
 
     Route::group(['prefix' => 'i'], function () {
         Route::redirect('/', '/');
@@ -382,7 +474,6 @@ Route::domain(config('pixelfed.domain.app'))->middleware(['validemail', 'twofact
     });
     Route::get('g/{hid}', 'GroupController@groupShortLinkRedirect');
 
-    Route::get('storage/m/_v2/{pid}/{mhash}/{uhash}/{f}', 'MediaController@fallbackRedirect');
     Route::get('stories/{username}', 'ProfileController@stories');
     Route::get('p/{id}', 'StatusController@shortcodeRedirect');
     Route::get('c/{collection}', 'CollectionController@show');

@@ -79,7 +79,7 @@ class FederationController extends Controller
         if (str_starts_with($resource, 'https://')) {
             if (str_starts_with($resource, 'https://'.$domain.'/users/')) {
                 $username = str_replace('https://'.$domain.'/users/', '', $resource);
-                if (strlen($username) > 15) {
+                if (strlen($username) > 30) {
                     return response('', 400);
                 }
                 $stripped = str_replace(['_', '.', '-'], '', $username);

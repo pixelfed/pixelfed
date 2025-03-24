@@ -29,6 +29,8 @@ class ImportPostController extends Controller
 
             'allow_video_posts' => config('import.instagram.allow_video_posts'),
 
+            'allow_image_webp' => config('import.instagram.allow_image_webp') && str_contains(config_cache('pixelfed.media_types'), 'image/webp'),
+
             'permissions' => [
                 'admins_only' => config('import.instagram.permissions.admins_only'),
                 'admin_follows_only' => config('import.instagram.permissions.admin_follows_only'),

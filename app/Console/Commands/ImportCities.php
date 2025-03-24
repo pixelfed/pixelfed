@@ -74,7 +74,6 @@ class ImportCities extends Command
      */
     public function handle()
     {
-        $old_memory_limit = ini_get('memory_limit');
         ini_set('memory_limit', '256M');
         $path = storage_path('app/cities.json');
 
@@ -137,7 +136,6 @@ class ImportCities extends Command
         $this->line('');
         $this->info('Successfully imported ' . $cityCount . ' entries!');
         $this->line('');
-        ini_set('memory_limit', $old_memory_limit);
         return;
     }
 

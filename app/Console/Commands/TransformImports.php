@@ -38,7 +38,7 @@ class TransformImports extends Command
             return;
         }
 
-        $ips = ImportPost::whereNull('status_id')->where('skip_missing_media', '!=', true)->take(500)->get();
+        $ips = ImportPost::whereNull('status_id')->where('skip_missing_media', '!=', true)->take(1500)->get();
 
         if (! $ips->count()) {
             return;
@@ -103,17 +103,17 @@ class TransformImports extends Command
                 continue;
             }
 
-            $caption = $ip->caption;
+            $caption = $ip->caption ?? "";
             $status = new Status;
             $status->profile_id = $pid;
             $status->caption = $caption;
             $status->type = $ip->post_type;
 
-            $status->scope = 'unlisted';
-            $status->visibility = 'unlisted';
+            $status->scope = 'public';
+            $status->visibility = 'public';
             $status->id = $idk['id'];
             $status->created_at = now()->parse($ip->creation_date);
-            $status->save();
+            $status->saveQuietly();
 
             foreach ($ip->media as $ipm) {
                 $fileName = last(explode('/', $ipm['uri']));

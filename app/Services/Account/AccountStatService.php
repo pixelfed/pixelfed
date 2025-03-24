@@ -2,7 +2,6 @@
 
 namespace App\Services\Account;
 
-use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Redis;
 
 class AccountStatService
@@ -27,5 +26,15 @@ class AccountStatService
     public static function getAllPostCountIncr($limit = -1)
     {
         return Redis::zrange(self::REFRESH_CACHE_KEY, 0, $limit);
+    }
+
+    public static function getPostCountChunk($lastId, $count)
+    {
+        return Redis::zrangebyscore(
+            self::REFRESH_CACHE_KEY,
+            '('.$lastId,
+            '+inf',
+            ['limit' => [0, $count]]
+        );
     }
 }

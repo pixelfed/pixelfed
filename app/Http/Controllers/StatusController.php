@@ -309,7 +309,7 @@ class StatusController extends Controller
         abort_if(! $statusAccount || isset($statusAccount['moved'], $statusAccount['moved']['id']), 422, 'Account moved');
 
         $count = $status->reblogs_count;
-
+        $defaultCaption = config_cache('database.default') === 'mysql' ? null : "";
         $exists = Status::whereProfileId(Auth::user()->profile->id)
             ->whereReblogOfId($status->id)
             ->exists();
@@ -324,6 +324,8 @@ class StatusController extends Controller
             }
         } else {
             $share = new Status;
+            $share->caption = $defaultCaption;
+            $share->rendered = $defaultCaption;
             $share->profile_id = $profile->id;
             $share->reblog_of_id = $status->id;
             $share->in_reply_to_profile_id = $status->profile_id;

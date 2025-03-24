@@ -1,6 +1,19 @@
 # Release Notes
 
 ## [Unreleased](https://github.com/pixelfed/pixelfed/compare/v0.12.3...dev)
+-  ([](https://github.com/pixelfed/pixelfed/commit/))
+
+## [v0.12.5 (2024-03-23)](https://github.com/pixelfed/pixelfed/compare/v0.12.5...dev)
+
+### Added
+- Add app register email verify resends ([dbd1e17](https://github.com/pixelfed/pixelfed/commit/dbd1e17))
+- Add AVIF support ([7ddbe0c47](https://github.com/pixelfed/pixelfed/commit/7ddbe0c47))
+
+### Features
+- WebGL photo filters ([#5374](https://github.com/pixelfed/pixelfed/pull/5374))
+
+### OAuth
+- Fix oauth oob (urn:ietf:wg:oauth:2.0:oob) support. ([8afbdb03](https://github.com/pixelfed/pixelfed/commit/8afbdb03))
 
 ### Updates
 - Update AP helpers, reject statuses with invalid dates ([960f3849](https://github.com/pixelfed/pixelfed/commit/960f3849))
@@ -9,7 +22,50 @@
 - Update ApiV1Controller, fix bookmark bug. Closes #5216 ([9f7cc52c](https://github.com/pixelfed/pixelfed/commit/9f7cc52c))
 - Update Status caption logic, stop storing duplicate html caption in db and defer to cached StatusService rendering ([9eeb7b67](https://github.com/pixelfed/pixelfed/commit/9eeb7b67))
 - Update AutolinkService, optimize lookups ([eac2c196](https://github.com/pixelfed/pixelfed/commit/eac2c196))
--  ([](https://github.com/pixelfed/pixelfed/commit/))
+- Update DirectMessageController, remove 72h limit for admins ([639df410](https://github.com/pixelfed/pixelfed/commit/639df410))
+- Update StatusService, fix newlines ([56c07b7a](https://github.com/pixelfed/pixelfed/commit/56c07b7a))
+- Update confirm email template, add plaintext link. Fixes #5375 ([45986707](https://github.com/pixelfed/pixelfed/commit/45986707))
+- Update UserVerifyEmail command ([77da9ad8](https://github.com/pixelfed/pixelfed/commit/77da9ad8))
+- Update StatusStatelessTransformer, refactor the caption field to be compliant with the MastoAPI. Fixes #5364 ([79039ba5](https://github.com/pixelfed/pixelfed/commit/79039ba5))
+- Update mailgun config, add endpoint and scheme ([271d5114](https://github.com/pixelfed/pixelfed/commit/271d5114))
+- Update search and status logic to fix postgres bugs ([8c39ef4](https://github.com/pixelfed/pixelfed/commit/8c39ef4))
+- Update db, fix sqlite migrations ([#5379](https://github.com/pixelfed/pixelfed/pull/5379))
+- Update CatchUnoptimizedMedia command, make 1hr limit opt-in ([99b15b73](https://github.com/pixelfed/pixelfed/commit/99b15b73))
+- Update IG, fix Instagram import. Closes #5411 ([fd434aec](https://github.com/pixelfed/pixelfed/commit/fd434aec))
+- Update StatusTagsPipeline, fix hashtag bug and formatting ([d516b799](https://github.com/pixelfed/pixelfed/commit/d516b799))
+- Update CollectionController, fix showCollection signature ([4e1dd599](https://github.com/pixelfed/pixelfed/commit/4e1dd599))
+- Update ApiV1Dot1Controller, fix in-app registration ([56f17b99](https://github.com/pixelfed/pixelfed/commit/56f17b99))
+- Update VerifyCsrfToken middleware, add oauth token. Fixes #5426 ([79ebbc2d](https://github.com/pixelfed/pixelfed/commit/79ebbc2d))
+- Update AdminSettingsController, increase max photo size limit from 50MB to 1GB ([aa448354](https://github.com/pixelfed/pixelfed/commit/aa448354))
+- Update BearerTokenResponse, return scopes in /oauth/token endpoint. Fixes #5286 ([d8f5c302](https://github.com/pixelfed/pixelfed/commit/d8f5c302))
+- Update hashtag component, fix missing video thumbnails ([witten](https://github.com/witten)) ([#5427](https://github.com/pixelfed/pixelfed/pull/5427))
+- Update AP Status Transformer, fix inReplyTo. Fixes #5409 ([83cc932f](https://github.com/pixelfed/pixelfed/commit/83cc932f))
+- Update Data Export, refactor following/follower and statuses exports to allow accounts of any size with api entity instead of ap ([0d25917c](https://github.com/pixelfed/pixelfed/commit/0d25917c))
+- Update oauth/token, fix scope to be space separated string instead of array ([4ce6e610](https://github.com/pixelfed/pixelfed/commit/4ce6e610))
+- Update SearchApiV2Service, fix hashtag search ([83c1a7fd](https://github.com/pixelfed/pixelfed/commit/83c1a7fd))
+- Update AP Helpers, fix comment bug ([22eae69f](https://github.com/pixelfed/pixelfed/commit/22eae69f))
+- Update ComposeController, add max_media_attachments attribute ([17918cbe](https://github.com/pixelfed/pixelfed/commit/17918cbe))
+- Fix GroupController, move groups enabled check to each method to fix route:list ([f260572e](https://github.com/pixelfed/pixelfed/commit/f260572e))
+- Update MediaStorageService, handle local media deletes after successful S3 upload ([280f63dc](https://github.com/pixelfed/pixelfed/commit/280f63dc))
+- Update status twitter:card to summary_large_image for images/albums ([9a5a9f55](https://github.com/pixelfed/pixelfed/commit/9a5a9f55))
+- Update CuratedOnboarding, add new app:curated-onboarding command, extend email verification window to 7 days and fix resend verification mails ([49604210](https://github.com/pixelfed/pixelfed/commit/49604210))
+- Update DirectMessageController, fix performance issue ([4ec9f99](https://github.com/pixelfed/pixelfed/commit/4ec9f99))
+- Update App Register to expire codes after 4 hours instead of 60 minutes ([0844094b](https://github.com/pixelfed/pixelfed/commit/0844094b))
+- Update ApiV1Controller, fix max_id pagination on home and public timeline feeds ([38e17a06e](https://github.com/pixelfed/pixelfed/commit/38e17a06e))
+- Update Post component, rewrite local post urls ([d2f2a1b1c](https://github.com/pixelfed/pixelfed/commit/d2f2a1b1c))
+- Update Profile component, rewrite local profile urls ([dfbccaa19](https://github.com/pixelfed/pixelfed/commit/dfbccaa19))
+- Update AccountPostCountStatUpdate, fix memory leak ([134eb6324](https://github.com/pixelfed/pixelfed/commit/134eb6324))
+- Update snowflake config, allow custom datacenter/worker ids ([806e210f1](https://github.com/pixelfed/pixelfed/commit/806e210f1))
+- Update ApiV1Controller, return empty statuses feed for private accounts instead of 403 response ([cce657d9c](https://github.com/pixelfed/pixelfed/commit/cce657d9c))
+- Update DM config, allow new users to send DMs by default, with a new env variable to enforce a 72h limit ([717f17cde](https://github.com/pixelfed/pixelfed/commit/717f17cde))
+- Update ApiV1Controller, add pagination to conversations endpoint with min/max/since id pagination and link header support ([244e86bad](https://github.com/pixelfed/pixelfed/commit/244e86bad))
+- Update Direct message component, fix pagination ([e6ef64857](https://github.com/pixelfed/pixelfed/commit/e6ef64857))
+- Update ActivityPub helpers, improve private account handling ([75e7a678c](https://github.com/pixelfed/pixelfed/commit/75e7a678c))
+- Update ApiV1Controller, improve follower handling ([976a1873e](https://github.com/pixelfed/pixelfed/commit/976a1873e))
+- Update Inbox, improve Accept Follower handling ([3725c689e](https://github.com/pixelfed/pixelfed/commit/3725c689e))
+- Update Inbox handler, add Reject Follow support ([fbe76e37f](https://github.com/pixelfed/pixelfed/commit/fbe76e37f))
+- Update Inbox handler, improve Undo Follow logic ([5525369fe](https://github.com/pixelfed/pixelfed/commit/5525369fe))
+- Update ApiV1Controller, send UndoFollow when cancelling a follow request on remote accounts ([2cf301181](https://github.com/pixelfed/pixelfed/commit/2cf301181))
 
 ## [v0.12.4 (2024-11-08)](https://github.com/pixelfed/pixelfed/compare/v0.12.4...dev)
 

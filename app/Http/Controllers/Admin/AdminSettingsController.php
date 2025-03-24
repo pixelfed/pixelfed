@@ -70,6 +70,7 @@ trait AdminSettingsController
             'type_gif' => 'nullable',
             'type_mp4' => 'nullable',
             'type_webp' => 'nullable',
+            'type_avif' => 'nullable',
             'admin_account_id' => 'nullable',
             'regs' => 'required|in:open,filtered,closed',
             'account_migration' => 'nullable',
@@ -128,6 +129,7 @@ trait AdminSettingsController
             'type_gif' => 'image/gif',
             'type_mp4' => 'video/mp4',
             'type_webp' => 'image/webp',
+            'type_avif' => 'image/avif',
         ];
 
         foreach ($mimes as $key => $value) {
@@ -600,7 +602,7 @@ trait AdminSettingsController
         $this->validate($request, [
             'image_quality' => 'required|integer|min:1|max:100',
             'max_album_length' => 'required|integer|min:1|max:20',
-            'max_photo_size' => 'required|integer|min:100|max:50000',
+            'max_photo_size' => 'required|integer|min:100|max:1000000',
             'media_types' => 'required',
             'optimize_image' => 'required',
             'optimize_video' => 'required',
@@ -609,7 +611,7 @@ trait AdminSettingsController
         $mediaTypes = $request->input('media_types');
         $mediaArray = explode(',', $mediaTypes);
         foreach ($mediaArray as $mediaType) {
-            if (! in_array($mediaType, ['image/jpeg', 'image/png', 'image/gif', 'image/webp', 'video/mp4'])) {
+            if (! in_array($mediaType, ['image/jpeg', 'image/png', 'image/gif', 'image/webp', 'video/mp4', 'image/avif'])) {
                 return redirect()->back()->withErrors(['media_types' => 'Invalid media type']);
             }
         }
@@ -876,6 +878,13 @@ trait AdminSettingsController
                 if (! $isValid) {
                     return response()->json(['error' => true, 's3_vce' => true, 'message' => "<div class='border border-danger text-danger p-3 font-weight-bold rounded-lg'>The S3/Spaces credentials you provided are invalid, or the bucket does not have the proper permissions.</div><br/>Please check all fields and try again.<br/><br/><strong>Any cloud storage configuration changes you made have NOT been saved due to invalid credentials.</strong>"], 400);
                 }
+
+                ConfigCacheService::put($dkey . 'key', $key);
+                ConfigCacheService::put($dkey . 'secret', $secret);
+                ConfigCacheService::put($dkey . 'region', $region);
+                ConfigCacheService::put($dkey . 'bucket', $bucket);
+                ConfigCacheService::put($dkey . 'endpoint', $endpoint);
+                ConfigCacheService::put($dkey . 'url', $url);
             }
             $res['changes'] = json_encode($changes);
         }

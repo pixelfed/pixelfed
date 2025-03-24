@@ -4,15 +4,16 @@ return [
 
 	'common' => [
 		'comment' => 'Yorum',
-		'commented' => 'Yorumlar',
+		'commented' => 'Yorumladı',
 		'comments' => 'Yorumlar',
 		'like' => 'Beğen',
 		'liked' => 'Beğenildi',
-		'likes' => 'Beğeniler',
+		'likes' => 'Beğenenler',
 		'share' => 'Paylaş',
-		'shared' => 'Paylaşılan',
+		'shared' => 'Paylaşıldı',
 		'shares' => 'Paylaşılanlar',
 		'unshare' => 'Paylaşımı kaldır',
+		'bookmark' => 'Yerimi',
 
 		'cancel' => 'İptal',
 		'copyLink' => 'Bağlantıyı Kopyala',
@@ -21,10 +22,14 @@ return [
 		'errorMsg' => 'Bir şeyler yanlış gitti. Lütfen daha sonra tekrar deneyiniz.',
 		'oops' => 'Hay aksi!',
 		'other' => 'Diğer',
-		'readMore' => 'Daha fazlasını oku',
+		'readMore' => 'Daha fazlası',
 		'success' => 'Başarılı',
+		'proceed' => 'İlerleyiniz',
+		'next' => 'İleri',
+		'close' => 'Kapat',
+		'clickHere' => 'buraya tıklayın',
 
-		'sensitive' => 'Hassasiyet',
+		'sensitive' => 'Hassas',
 		'sensitiveContent' => 'Hassas içerik',
 		'sensitiveContentWarning' => 'Bu ileti hassas içerik içeriyor olabilir',
 	],
@@ -35,17 +40,17 @@ return [
 	],
 
 	'navmenu' => [
-		'search' => 'Arama',
+		'search' => 'Ara',
 		'admin' => 'Yönetici Paneli',
 
 		// Timelines
-		'homeFeed' => 'Home Feed',
+		'homeFeed' => 'Anasayfa',
 		'localFeed' => 'Yerel Akış',
 		'globalFeed' => 'Evrensel Akış',
 
 		// Core features
 		'discover' => 'Keşfet',
-		'directMessages' => 'Direkt Mesajlar',
+		'directMessages' => 'Doğrudan Mesajlar',
 		'notifications' => 'Bildirimler',
 		'groups' => 'Gruplar',
 		'stories' => 'Hikayeler',
@@ -55,7 +60,7 @@ return [
 		'drive' => 'Depolama',
 		'settings' => 'Ayarlar',
 		'compose' => 'Yeni oluştur',
-		'logout' => 'Logout',
+		'logout' => 'Oturumu kapat',
 
 		// Nav footer
 		'about' => 'Hakkında',
@@ -75,35 +80,36 @@ return [
 	],
 
 	'notifications' => [
-		'liked' => 'liked your',
-		'commented' => 'commented on your',
-		'reacted' => 'reacted to your',
-		'shared' => 'shared your',
-		'tagged' => 'tagged you in a',
+		'liked' => 'beğendim',
+		'commented' => 'yorum yazdı',
+		'reacted' => 'tepki verdi',
+		'shared' => 'paylaştı',
+		'tagged' => 'sizi etiketledi',
 
-		'updatedA' => 'updated a',
-		'sentA' => 'sent a',
+		'updatedA' => 'güncel bir',
+		'sentA' => 'gönderdi',
 
-		'followed' => 'followed',
-		'mentioned' => 'mentioned',
+		'followed' => 'takip etti',
+		'mentioned' => 'bahsetti',
 		'you' => 'sen',
 
 		'yourApplication' => 'Katılma isteğiniz',
 		'applicationApproved' => 'onaylandı!',
 		'applicationRejected' => 'reddedildi. 6 ay sonra, tekrar katılma isteğinde bulunabilirsiniz.',
 
-		'dm' => 'özel mesaj',
-		'groupPost' => 'group post',
+		'dm' => 'dm',
+		'groupPost' => 'grup gönderisi',
 		'modlog' => 'modlog',
-		'post' => 'post',
+		'post' => 'gönderi',
 		'story' => 'hikaye',
+		'noneFound' => 'Bildirim bulunamadı',
 	],
 
 	'post' => [
-		'shareToFollowers' => 'Takipçileri paylaş',
-		'shareToOther' => 'Share to other',
+		'shareToFollowers' => 'Takipçilerle paylaş',
+		'shareToOther' => 'Diğerleriyle paylaş',
 		'noLikes' => 'Henüz beğenilmedi',
-		'uploading' => 'Yükleniyor',
+		'uploading' => 'Karşıya Yükleniyor',
 	],
 
 	'profile' => [
@@ -111,43 +117,43 @@ return [
 		'followers' => 'Takipçiler',
 		'following' => 'Takip ediliyor',
 		'admin' => 'Yönetici',
-		'collections' => 'Koleksiyonlar',
+		'collections' => 'Derlemeler',
 		'follow' => 'Takip et',
 		'unfollow' => 'Takibi bırak',
 		'editProfile' => 'Profili Düzenle',
 		'followRequested' => 'Takip İsteği',
 		'joined' => 'Katıldı',
 
-		'emptyCollections' => 'We can\'t seem to find any collections',
-		'emptyPosts' => 'We can\'t seem to find any posts',
+		'emptyCollections' => 'Herhangi bir koleksiyon bulunmuyor',
+		'emptyPosts' => 'Herhangi bir gönderi bulunmuyor',
 	],
 
 	'menu' => [
 		'viewPost' => 'Gönderiyi görüntüle',
 		'viewProfile' => 'Profili Görüntüle',
-		'moderationTools' => 'Denetim Ayarları',
+		'moderationTools' => 'Denetim Araçları',
 		'report' => 'Bildir',
-		'archive' => 'Archive',
+		'archive' => 'Arşiv',
 		'unarchive' => 'Arşivden çıkar',
-		'embed' => 'Embed',
+		'embed' => 'Yerleştir',
 
 		'selectOneOption' => 'Aşağıdaki seçeneklerden birini seçin',
 		'unlistFromTimelines' => 'Akışlardan kaldır',
 		'addCW' => 'İçerik Uyarısını Ekle',
 		'removeCW' => 'İçerik Uyarısını Kaldır',
-		'markAsSpammer' => 'Mark as Spammer',
-		'markAsSpammerText' => 'Unlist + CW existing and future posts',
-		'spam' => 'İstenmeyen',
+		'markAsSpammer' => 'İstenmeyen İleti Göndericisi Olarak İşaretle',
+		'markAsSpammerText' => 'Mevcut ve gelecekteki gönderileri + CW listesini kaldırın',
+		'spam' => 'İstenmeyen posta',
 		'sensitive' => 'Hassas içerik',
 		'abusive' => 'İstismarcı veya Zararlı',
-		'underageAccount' => 'Underage Account',
+		'underageAccount' => 'Yaşı Tutmayan Hesap',
 		'copyrightInfringement' => 'Telif hakkı ihlali',
 		'impersonation' => 'Taklit Hesap',
 		'scamOrFraud' => 'Dolandırıcılık',
 		'confirmReport' => 'Bildirimi onayla',
 		'confirmReportText' => 'Bu paylaşımı bildirmek istediğinizden emin misiniz?',
 		'reportSent' => 'Rapor Gönderildi!',
-		'reportSentText' => 'Raporunuzu başarıyla aldık.',
+		'reportSentText' => 'Raporunuzu başarılı bir şekilde aldık.',
 		'reportSentError' => 'Bu gönderi bildirilirken bir sorun oluştu.',
 
 		'modAddCWConfirm' => 'Bu gönderiye bir içerik uyarısı eklemek istediğinizden emin misiniz?',
@@ -164,7 +170,7 @@ return [
 		'showCaption' => 'Açıklamayı göster',
 		'showLikes' => 'Beğenileri Göster',
 		'compactMode' => 'Kompakt Mod',
-		'embedConfirmText' => 'By using this embed, you agree to our',
+		'embedConfirmText' => 'Bu gömüyü kullanarak,',
 
 		'deletePostConfirm' => 'Bu gönderiyi silmek istediğinizden emin misiniz?',
 		'archivePostConfirm' => 'Bu gönderiyi arşivlemek istediğinizden emin misiniz?',
@@ -176,11 +182,27 @@ return [
 	],
 
 	'timeline' => [
-		'peopleYouMayKnow' => 'Tanıyor olabileceğin kişiler'
+		'peopleYouMayKnow' => 'Tanıyor olabileceğin kişiler',
+
+		'onboarding' => [
+			'welcome' => 'Hoş Geldiniz',
+			'thisIsYourHomeFeed' => 'Burası sizin akış sayfanız, takip ettiğiniz hesapların paylaşımları kronolojik gösterilir.',
+			'letUsHelpYouFind' => 'Takip etmek için size bazı ilginç kişileri bulmanızda yardımcı olalım',
+			'refreshFeed' => 'Akışımı yenile',
+		],
 	],
 
 	'hashtags' => [
-		'emptyFeed' => 'We can\'t seem to find any posts for this hashtag'
+		'emptyFeed' => 'Bu etiket ile ilgili bir gönderi bulamıyoruz'
+	],
+
+	'report' => [
+		'report' => 'Bildir',
+		'selectReason' => 'Bir sebep seçin',
+		'reported' => 'Bildirildi',
+		'sendingReport' => 'Bildiri gönderiliyor',
+		'thanksMsg' => 'Bildirdiğiniz için teşekkürler, sizin gibi insanlar sayesinde topluluğumuz güvende kalıyor!',
+		'contactAdminMsg' => 'Eğer bu gönderi veya bildirim hakkında bir yönetici ile irtibata geçmek istiyorsanız',
 	],
 
 ];

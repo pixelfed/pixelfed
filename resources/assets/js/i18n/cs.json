@@ -10,6 +10,7 @@
         "shared": "Sd\u00edleno",
         "shares": "Sd\u00edlen\u00ed",
         "unshare": "Zru\u0161it sd\u00edlen\u00ed",
+        "bookmark": "Z\u00e1lo\u017eka",
         "cancel": "Zru\u0161it",
         "copyLink": "Kop\u00edrovat odkaz",
         "delete": "Smazat",
@@ -19,6 +20,10 @@
         "other": "Dal\u0161\u00ed",
         "readMore": "\u010c\u00edst v\u00edce",
         "success": "\u00dasp\u011bch",
+        "proceed": "Pokra\u010dovat",
+        "next": "Dal\u0161\u00ed",
+        "close": "Zav\u0159\u00edt",
+        "clickHere": "klikn\u011bte zde",
         "sensitive": "Citliv\u00e9",
         "sensitiveContent": "Citliv\u00fd obsah",
         "sensitiveContentWarning": "Tento p\u0159\u00edsp\u011bvek m\u016f\u017ee obsahovat citliv\u00fd obsah"
@@ -31,8 +36,8 @@
         "search": "Hledat",
         "admin": "Administr\u00e1torsk\u00fd ovl\u00e1dac\u00ed panel",
         "homeFeed": "Domovsk\u00e1 \u010dasov\u00e1 osa",
-        "localFeed": "M\u00edstn\u00ed \u010dasov\u00e1 osa",
-        "globalFeed": "Globaln\u00ed \u010dasov\u00e1 osa",
+        "localFeed": "M\u00edstn\u00ed kan\u00e1l",
+        "globalFeed": "Glob\u00e1ln\u00ed \u010dasov\u00e1 osa",
         "discover": "Objevovat",
         "directMessages": "Soukrom\u00e9 zpr\u00e1vy",
         "notifications": "Ozn\u00e1men\u00ed",
@@ -73,7 +78,8 @@
         "groupPost": "skupinov\u00fd p\u0159\u00edsp\u011bvek",
         "modlog": "moder\u00e1torsk\u00fd z\u00e1znam",
         "post": "p\u0159\u00edsp\u011bvek",
-        "story": "p\u0159\u00edbeh"
+        "story": "p\u0159\u00edbeh",
+        "noneFound": "Nebyla nalezena \u017e\u00e1dn\u00e1 ozn\u00e1men\u00ed"
     },
     "post": {
         "shareToFollowers": "Sd\u00edlet se sleduj\u00edc\u00edmi",
@@ -142,9 +148,23 @@
         "add": "P\u0159idat p\u0159\u00edb\u011bh"
     },
     "timeline": {
-        "peopleYouMayKnow": "Lid\u00e9, kter\u00e9 mo\u017en\u00e1 zn\u00e1te"
+        "peopleYouMayKnow": "Lid\u00e9, kter\u00e9 mo\u017en\u00e1 zn\u00e1te",
+        "onboarding": {
+            "welcome": "V\u00edtejte",
+            "thisIsYourHomeFeed": "Toto je v\u00e1\u0161 domovsk\u00fd kan\u00e1l, chronologick\u00fd kan\u00e1l p\u0159\u00edsp\u011bvk\u016f z \u00fa\u010dt\u016f, kter\u00e9 sledujete.",
+            "letUsHelpYouFind": "Pom\u016f\u017eeme v\u00e1m naj\u00edt n\u011bjak\u00e9 zaj\u00edmav\u00e9 lidi ke sledov\u00e1n\u00ed",
+            "refreshFeed": "Obnovit m\u016fj kan\u00e1l"
+        }
     },
     "hashtags": {
         "emptyFeed": "Zd\u00e1 se, \u017ee pro tento \u0161t\u00edtek nelze naj\u00edt \u017e\u00e1dn\u00e9 p\u0159\u00edsp\u011bvky"
+    },
+    "report": {
+        "report": "Nahl\u00e1sit",
+        "selectReason": "Vyberte d\u016fvod",
+        "reported": "Nahl\u00e1\u0161eno",
+        "sendingReport": "Odes\u00edl\u00e1n\u00ed hl\u00e1\u0161en\u00ed",
+        "thanksMsg": "D\u00edky za hl\u00e1\u0161en\u00ed, lid\u00e9 jako jste vy pom\u00e1haj\u00ed udr\u017eet na\u0161i komunitu bezpe\u010dnou!",
+        "contactAdminMsg": "Pokud chcete kontaktovat administr\u00e1tora ohledn\u011b tohoto p\u0159\u00edsp\u011bvku nebo hl\u00e1\u0161en\u00ed"
     }
 }

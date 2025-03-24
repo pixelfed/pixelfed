@@ -13,6 +13,7 @@ return [
 		'shared' => 'שיתפו',
 		'shares' => 'שיתופים',
 		'unshare' => 'ביטול-שיתוף',
+		'bookmark' => 'שמירה',
 
 		'cancel' => 'ביטול',
 		'copyLink' => 'העתק קישור',
@@ -23,6 +24,10 @@ return [
 		'other' => 'אחר',
 		'readMore' => 'קרא עוד',
 		'success' => 'הצלחה',
+		'proceed' => 'המשך',
+		'next' => 'הבא',
+		'close' => 'סגור',
+		'clickHere' => 'לחץ כאן',
 
 		'sensitive' => 'רגיש',
 		'sensitiveContent' => 'תוכן רגיש',
@@ -84,7 +89,7 @@ return [
 		'updatedA' => 'עדכנו',
 		'sentA' => 'שלחו',
 
-		'followed' => 'עוקבים',
+		'followed' => 'עקבו',
 		'mentioned' => 'ציינו',
 		'you' => 'אתכם',
 
@@ -97,6 +102,7 @@ return [
 		'modlog' => 'לוג מנהלים',
 		'post' => 'פוסט',
 		'story' => 'סטורי',
+		'noneFound' => 'לא נמצאו התראות',
 	],
 
 	'post' => [
@@ -176,11 +182,27 @@ return [
 	],
 
 	'timeline' => [
-		'peopleYouMayKnow' => 'אנשים שאתם אולי מכירים'
+		'peopleYouMayKnow' => 'אנשים שאתם אולי מכירים',
+
+		'onboarding' => [
+			'welcome' => 'ברוכים הבאים',
+			'thisIsYourHomeFeed' => 'זהו פיד הבית, פיד כרונולוגי של פוסטים מחשבונות אחריהם אתם עוקבים.',
+			'letUsHelpYouFind' => 'אפשרו לנו לעזור לך למצוא אנשים מעניינים לעקוב',
+			'refreshFeed' => 'ריענון הפיד',
+		],
 	],
 
 	'hashtags' => [
 		'emptyFeed' => 'לא נמצאו פוסטים עבור תיוג זה'
+	],
+
+	'report' => [
+		'report' => 'דווח',
+		'selectReason' => 'בחרו סיבה',
+		'reported' => 'דיווח נשלח',
+		'sendingReport' => 'שולח דיווח',
+		'thanksMsg' => 'תודה על הדיווח, אנשים כמוכם מסעיים לשמור על בטחון קהילתנו!',
+		'contactAdminMsg' => 'אם ברצונכם ליצור קשר עם מנהל לגבי הפוסט או דיווח הזה',
 	],
 
 ];

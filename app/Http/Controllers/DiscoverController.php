@@ -190,6 +190,7 @@ class DiscoverController extends Controller
         })->filter(function ($s) use ($filtered) {
             return
                 $s &&
+                isset($s['account'], $s['account']['id']) &&
                 ! in_array($s['account']['id'], $filtered) &&
                 isset($s['account']);
         })->values();

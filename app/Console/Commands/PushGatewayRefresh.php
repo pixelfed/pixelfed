@@ -51,8 +51,6 @@ class PushGatewayRefresh extends Command
                 $recheck = NotificationAppGatewayService::forceSupportRecheck();
                 if ($recheck) {
                     $this->info('Success! Push Notifications are now active!');
-                    PushNotificationService::warmList('like');
-
                     return;
                 } else {
                     $this->error('Error, please ensure you have a valid API key.');

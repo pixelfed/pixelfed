@@ -82,6 +82,7 @@ class Config
                         'network' => (bool) config('federation.network_timeline'),
                     ],
                     'mobile_apis' => (bool) config_cache('pixelfed.oauth_enabled'),
+                    'mobile_registration' => config('auth.in_app_registration'),
                     'stories' => (bool) config_cache('instance.stories.enabled'),
                     'video' => Str::contains(config_cache('pixelfed.media_types'), 'video/mp4'),
                     'import' => [

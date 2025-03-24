@@ -19,7 +19,7 @@ class CreateDirectMessagesTable extends Migration
             $table->bigInteger('from_id')->unsigned()->index();
             $table->string('from_profile_ids')->nullable();
             $table->boolean('group_message')->default(false);
-            $table->bigInteger('status_id')->unsigned()->integer();
+            $table->bigInteger('status_id')->unsigned();
             $table->unique(['to_id', 'from_id', 'status_id']);
             $table->timestamp('read_at')->nullable();
             $table->timestamps();

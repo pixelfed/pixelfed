@@ -27,11 +27,11 @@ class GroupController extends GroupFederationController
     public function __construct()
     {
         $this->middleware('auth');
-        abort_unless(config('groups.enabled'), 404);
     }
 
     public function index(Request $request)
     {
+        abort_unless(config('groups.enabled'), 404);
         abort_if(! $request->user(), 404);
 
         return view('layouts.spa');
@@ -39,6 +39,7 @@ class GroupController extends GroupFederationController
 
     public function home(Request $request)
     {
+        abort_unless(config('groups.enabled'), 404);
         abort_if(! $request->user(), 404);
 
         return view('layouts.spa');
@@ -46,6 +47,7 @@ class GroupController extends GroupFederationController
 
     public function show(Request $request, $id, $path = false)
     {
+        abort_unless(config('groups.enabled'), 404);
         $group = Group::find($id);
 
         if (! $group || $group->status) {
@@ -61,6 +63,7 @@ class GroupController extends GroupFederationController
 
     public function showStatus(Request $request, $gid, $sid)
     {
+        abort_unless(config('groups.enabled'), 404);
         $group = Group::find($gid);
         $pid = optional($request->user())->profile_id ?? false;
 
@@ -81,6 +84,7 @@ class GroupController extends GroupFederationController
 
     public function getGroup(Request $request, $id)
     {
+        abort_unless(config('groups.enabled'), 404);
         $group = Group::whereNull('status')->findOrFail($id);
         $pid = optional($request->user())->profile_id ?? false;
 
@@ -91,6 +95,7 @@ class GroupController extends GroupFederationController
 
     public function showStatusLikes(Request $request, $id, $sid)
     {
+        abort_unless(config('groups.enabled'), 404);
         $group = Group::findOrFail($id);
         $user = $request->user();
         $pid = $user->profile_id;
@@ -114,6 +119,7 @@ class GroupController extends GroupFederationController
 
     public function groupSettings(Request $request, $id)
     {
+        abort_unless(config('groups.enabled'), 404);
         abort_if(! $request->user(), 404);
         $group = Group::findOrFail($id);
         $pid = $request->user()->profile_id;
@@ -125,6 +131,7 @@ class GroupController extends GroupFederationController
 
     public function joinGroup(Request $request, $id)
     {
+        abort_unless(config('groups.enabled'), 404);
         $group = Group::findOrFail($id);
         $pid = $request->user()->profile_id;
         abort_if($group->isMember($pid), 404);
@@ -159,6 +166,7 @@ class GroupController extends GroupFederationController
 
     public function updateGroup(Request $request, $id)
     {
+        abort_unless(config('groups.enabled'), 404);
         $this->validate($request, [
             'description' => 'nullable|max:500',
             'membership' => 'required|in:all,local,private',
@@ -257,11 +265,14 @@ class GroupController extends GroupFederationController
 
     protected function toJson($group, $pid = false)
     {
+        abort_unless(config('groups.enabled'), 404);
+
         return GroupService::get($group->id, $pid);
     }
 
     public function groupLeave(Request $request, $id)
     {
+        abort_unless(config('groups.enabled'), 404);
         abort_if(! $request->user(), 404);
 
         $pid = $request->user()->profile_id;
@@ -281,6 +292,7 @@ class GroupController extends GroupFederationController
 
     public function cancelJoinRequest(Request $request, $id)
     {
+        abort_unless(config('groups.enabled'), 404);
         abort_if(! $request->user(), 404);
 
         $pid = $request->user()->profile_id;
@@ -299,6 +311,7 @@ class GroupController extends GroupFederationController
 
     public function metaBlockSearch(Request $request, $id)
     {
+        abort_unless(config('groups.enabled'), 404);
         abort_if(! $request->user(), 404);
         $group = Group::findOrFail($id);
         $pid = $request->user()->profile_id;
@@ -332,6 +345,7 @@ class GroupController extends GroupFederationController
 
     public function reportCreate(Request $request, $id)
     {
+        abort_unless(config('groups.enabled'), 404);
         abort_if(! $request->user(), 404);
         $group = Group::findOrFail($id);
         $pid = $request->user()->profile_id;
@@ -368,7 +382,7 @@ class GroupController extends GroupFederationController
             'You already reported this'
         );
 
-        $report = new GroupReport();
+        $report = new GroupReport;
         $report->group_id = $group->id;
         $report->profile_id = $pid;
         $report->type = $type;
@@ -399,6 +413,7 @@ class GroupController extends GroupFederationController
 
     public function reportAction(Request $request, $id)
     {
+        abort_unless(config('groups.enabled'), 404);
         abort_if(! $request->user(), 404);
         $group = Group::findOrFail($id);
         $pid = $request->user()->profile_id;
@@ -477,6 +492,7 @@ class GroupController extends GroupFederationController
 
     public function getMemberInteractionLimits(Request $request, $id)
     {
+        abort_unless(config('groups.enabled'), 404);
         abort_if(! $request->user(), 404);
         $group = Group::findOrFail($id);
         $pid = $request->user()->profile_id;
@@ -492,6 +508,7 @@ class GroupController extends GroupFederationController
 
     public function updateMemberInteractionLimits(Request $request, $id)
     {
+        abort_unless(config('groups.enabled'), 404);
         abort_if(! $request->user(), 404);
         $group = Group::findOrFail($id);
         $pid = $request->user()->profile_id;
@@ -553,6 +570,7 @@ class GroupController extends GroupFederationController
 
     public function showProfile(Request $request, $id, $pid)
     {
+        abort_unless(config('groups.enabled'), 404);
         $group = Group::find($id);
 
         if (! $group || $group->status) {
@@ -564,6 +582,7 @@ class GroupController extends GroupFederationController
 
     public function showProfileByUsername(Request $request, $id, $pid)
     {
+        abort_unless(config('groups.enabled'), 404);
         abort_if(! $request->user(), 404);
         if (! $request->user()) {
             return redirect("/{$pid}");
@@ -597,6 +616,7 @@ class GroupController extends GroupFederationController
 
     public function groupInviteLanding(Request $request, $id)
     {
+        abort_unless(config('groups.enabled'), 404);
         abort(404, 'Not yet implemented');
         $group = Group::findOrFail($id);
 
@@ -605,6 +625,7 @@ class GroupController extends GroupFederationController
 
     public function groupShortLinkRedirect(Request $request, $hid)
     {
+        abort_unless(config('groups.enabled'), 404);
         $gid = HashidService::decode($hid);
         $group = Group::findOrFail($gid);
 
@@ -613,6 +634,7 @@ class GroupController extends GroupFederationController
 
     public function groupInviteClaim(Request $request, $id)
     {
+        abort_unless(config('groups.enabled'), 404);
         $group = GroupService::get($id);
         abort_if(! $group || empty($group), 404);
 
@@ -621,6 +643,7 @@ class GroupController extends GroupFederationController
 
     public function groupMemberInviteCheck(Request $request, $id)
     {
+        abort_unless(config('groups.enabled'), 404);
         abort_if(! $request->user(), 404);
         $pid = $request->user()->profile_id;
         $group = Group::findOrFail($id);
@@ -636,6 +659,7 @@ class GroupController extends GroupFederationController
 
     public function groupMemberInviteAccept(Request $request, $id)
     {
+        abort_unless(config('groups.enabled'), 404);
         abort_if(! $request->user(), 404);
         $pid = $request->user()->profile_id;
         $group = Group::findOrFail($id);
@@ -661,6 +685,7 @@ class GroupController extends GroupFederationController
 
     public function groupMemberInviteDecline(Request $request, $id)
     {
+        abort_unless(config('groups.enabled'), 404);
         abort_if(! $request->user(), 404);
         $pid = $request->user()->profile_id;
         $group = Group::findOrFail($id);

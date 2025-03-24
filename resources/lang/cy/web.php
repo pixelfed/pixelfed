@@ -13,6 +13,7 @@ return [
 		'shared' => 'Rhannu',
 		'shares' => 'Rhannu',
 		'unshare' => 'Dad-rannu',
+		'bookmark' => 'Tudalnodau',
 
 		'cancel' => 'Canslo',
 		'copyLink' => 'Copïo\'r ddolen',
@@ -23,6 +24,10 @@ return [
 		'other' => 'Arall',
 		'readMore' => 'Darllen mwy',
 		'success' => 'Llwyddiant',
+		'proceed' => 'Parhau',
+		'next' => 'Nesaf',
+		'close' => 'Cau',
+		'clickHere' => 'cliciwch yma',
 
 		'sensitive' => 'Sensitif',
 		'sensitiveContent' => 'Cynnwys sensitif',
@@ -55,7 +60,7 @@ return [
 		'drive' => 'Gyriant storio',
 		'settings' => 'Gosodiadau',
 		'compose' => 'Creu newydd',
-		'logout' => 'Logout',
+		'logout' => 'Allgofnodi',
 
 		// Nav footer
 		'about' => 'Amdano',
@@ -97,6 +102,7 @@ return [
 		'modlog' => 'modlog',
 		'post' => 'post',
 		'story' => 'stori',
+		'noneFound' => 'Dim hysbysiadau',
 	],
 
 	'post' => [
@@ -176,11 +182,27 @@ return [
 	],
 
 	'timeline' => [
-		'peopleYouMayKnow' => 'Pobl efallai eich bod chi\'n eu hadnabod'
+		'peopleYouMayKnow' => 'Pobl efallai eich bod chi\'n eu hadnabod',
+
+		'onboarding' => [
+			'welcome' => 'Croeso',
+			'thisIsYourHomeFeed' => 'Dyma\'ch porthiant cartref, porthiant cronolegol o bostiadau o gyfrifon rydych chi\'n eu dilyn.',
+			'letUsHelpYouFind' => 'Gadewch inni eich helpu i ddod o hyd i rai pobl ddiddorol i\'w dilyn',
+			'refreshFeed' => 'Adnewyddu fy mhorthiant',
+		],
 	],
 
 	'hashtags' => [
 		'emptyFeed' => 'Ni allwn dod o hyd i unrhyw bostiadau ar gyfer yr hashnod hwn'
+	],
+
+	'report' => [
+		'report' => 'Adroddi',
+		'selectReason' => 'Dewiswch reswm',
+		'reported' => 'Adroddwyd',
+		'sendingReport' => 'Anfon adroddiad',
+		'thanksMsg' => 'Diolch am yr adroddiad, mae pobl fel chi yn helpu i gadw ein cymuned yn ddiogel!',
+		'contactAdminMsg' => 'Os hoffech chi gysylltu â gweinyddwr am y post neu\'r adroddiad hwn',
 	],
 
 ];

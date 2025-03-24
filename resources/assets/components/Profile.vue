@@ -131,6 +131,9 @@
                     // this.fetchPosts();
                     // this.isLoaded = true;
                     this.fetchRelationship();
+                    if(this.cachedProfile && this.cachedProfile.local) {
+                        window.history.pushState({}, '', `/${this.cachedProfile.acct}`);
+                    }
                 } else {
                     this.curUser = window._sharedData.user;
                     this.fetchProfile();
@@ -163,6 +166,10 @@
                     } else {
                         this.owner = false;
                         this.fetchRelationship();
+                    }
+
+                    if(res.data && res.data.local) {
+                        window.history.pushState({}, '', `/${res.data.acct}`);
                     }
                 })
                 .catch(err => {

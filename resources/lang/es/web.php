@@ -3,30 +3,35 @@
 return [
 
 	'common' => [
-		'comment' => 'Comentario',
+		'comment' => 'Comentar',
 		'commented' => 'Comentado',
 		'comments' => 'Comentarios',
 		'like' => 'Me gusta',
 		'liked' => 'Te gusta',
-		'likes' => 'Me gustas',
+		'likes' => 'Me gusta',
 		'share' => 'Compartir',
 		'shared' => 'Compartido',
 		'shares' => 'Compartidos',
 		'unshare' => 'No compartir',
+		'bookmark' => 'Marcador',
 
 		'cancel' => 'Cancelar',
 		'copyLink' => 'Copiar Enlace',
 		'delete' => 'Eliminar',
 		'error' => 'Error',
-		'errorMsg' => 'Algo fue mal. Por favor inténtelo de nuevo más tarde.',
+		'errorMsg' => 'Algo salió mal. Por favor inténtalo de nuevo más tarde.',
 		'oops' => 'Upss!',
 		'other' => 'Otros',
 		'readMore' => 'Ver más',
 		'success' => 'Correcto',
+		'proceed' => 'Proceder',
+		'next' => 'Siguiente',
+		'close' => 'Cerrar',
+		'clickHere' => 'haz clic aquí',
 
 		'sensitive' => 'Sensible',
 		'sensitiveContent' => 'Contenido Sensible',
-		'sensitiveContentWarning' => 'Este post podría tener contenido sensible',
+		'sensitiveContentWarning' => 'Esta publicación podría contener contenido sensible',
 	],
 
 	'site' => [
@@ -54,8 +59,9 @@ return [
 		'profile' => 'Perfil',
 		'drive' => 'Multimedia',
 		'settings' => 'Ajustes',
+        'appearance' => 'Aspecto',
 		'compose' => 'Crear Nuevo',
-		'logout' => 'Logout',
+		'logout' => 'Cerrar sesión',
 
 		// Nav footer
 		'about' => 'Acerca de',
@@ -97,12 +103,13 @@ return [
 		'modlog' => 'modlog',
 		'post' => 'publicación',
 		'story' => 'historia',
+		'noneFound' => 'No se han encontrado notificaciones',
 	],
 
 	'post' => [
-		'shareToFollowers' => 'Compartir a seguidores',
-		'shareToOther' => 'Compartir a otros',
-		'noLikes' => 'No hay me gustas',
+		'shareToFollowers' => 'Compartir con seguidores',
+		'shareToOther' => 'Compartir con otros',
+		'noLikes' => 'Aún no hay "me gusta"',
 		'uploading' => 'Subiendo',
 	],
 
@@ -114,35 +121,35 @@ return [
 		'collections' => 'Colecciones',
 		'follow' => 'Seguir',
 		'unfollow' => 'Dejar de seguir',
-		'editProfile' => 'Editar Perfil',
+		'editProfile' => 'Editar perfil',
 		'followRequested' => 'Seguimiento Solicitado',
 		'joined' => 'Se unió',
 
-		'emptyCollections' => 'We can\'t seem to find any collections',
-		'emptyPosts' => 'We can\'t seem to find any posts',
+		'emptyCollections' => 'Parece que no podemos encontrar ninguna colección',
+		'emptyPosts' => 'Parece que no podemos encontrar ninguna publicación',
 	],
 
 	'menu' => [
-		'viewPost' => 'Ver Publicación',
-		'viewProfile' => 'Ver Perfil',
-		'moderationTools' => 'Herramientas de Moderación',
+		'viewPost' => 'Ver publicación',
+		'viewProfile' => 'Ver perfil',
+		'moderationTools' => 'Herramientas de moderación',
 		'report' => 'Reportar',
 		'archive' => 'Archivar',
-		'unarchive' => 'No Archivar',
+		'unarchive' => 'Desarchivar',
 		'embed' => 'Incrustar',
 
-		'selectOneOption' => 'Escoge una de las siguientes opciones',
+		'selectOneOption' => 'Selecciona una de las siguientes opciones',
 		'unlistFromTimelines' => 'No listar en Líneas Temporales',
 		'addCW' => 'Añadir Spoiler',
 		'removeCW' => 'Quitar Spoiler',
 		'markAsSpammer' => 'Marcar como Spammer',
 		'markAsSpammerText' => 'No listar + Spoiler publicaciones actuales y futuras',
 		'spam' => 'Spam',
-		'sensitive' => 'Contenido Sensible',
+		'sensitive' => 'Contenido sensible',
 		'abusive' => 'Abusivo o Dañino',
-		'underageAccount' => 'Cuenta de Menor de Edad',
-		'copyrightInfringement' => 'Violación de Copyright',
-		'impersonation' => 'Suplantación',
+		'underageAccount' => 'Cuenta de menor de edad',
+		'copyrightInfringement' => 'Infracción de derechos de autor',
+		'impersonation' => 'Suplantación de identidad',
 		'scamOrFraud' => 'Scam o Fraude',
 		'confirmReport' => 'Confirmar Reporte',
 		'confirmReportText' => '¿Seguro que quieres reportar esta publicación?',
@@ -154,7 +161,7 @@ return [
 		'modCWSuccess' => 'Spoiler añadido correctamente',
 		'modRemoveCWConfirm' => '¿Seguro que desea eliminar el spoiler de esta publicación?',
 		'modRemoveCWSuccess' => 'Spoiler eliminado correctamente',
-		'modUnlistConfirm' => '¿Seguro que desea no listar esta publicación?',
+		'modUnlistConfirm' => '¿Estás seguro de que deseas no listar esta publicación?',
 		'modUnlistSuccess' => 'Publicación no listada correctamente',
 		'modMarkAsSpammerConfirm' => '¿Seguro que quiere marcar este usuario como spammer? Todas las publicaciones existentes y futuras no serán listadas en las líneas temporales y se les agregará un Spoiler o alerta de contenido.',
 		'modMarkAsSpammerSuccess' => 'Cuenta marcada como spam correctamente',
@@ -162,25 +169,57 @@ return [
 		'toFollowers' => 'a Seguidores',
 
 		'showCaption' => 'Mostrar subtítulos',
-		'showLikes' => 'Mostrar me gustas',
-		'compactMode' => 'Modo Compacto',
-		'embedConfirmText' => 'Usando este incrustado, usted acepta',
+		'showLikes' => 'Mostrar "me gusta"',
+		'compactMode' => 'Modo compacto',
+		'embedConfirmText' => 'Al utilizar esta incrustación, usted acepta nuestros',
 
-		'deletePostConfirm' => '¿Seguro que desea eliminar esta publicación?',
-		'archivePostConfirm' => '¿Seguro que desea archivar esta publicación?',
+		'deletePostConfirm' => '¿Seguro que deseas eliminar esta publicación?',
+		'archivePostConfirm' => '¿Seguro que deseas archivar esta publicación?',
 		'unarchivePostConfirm' => '¿Seguro que desea desarchivar esta publicación?',
 	],
 
 	'story' => [
-		'add' => 'Añadir Historia'
+		'add' => 'Añadir historia'
 	],
 
 	'timeline' => [
-		'peopleYouMayKnow' => 'Gente que podrías conocer'
+		'peopleYouMayKnow' => 'Personas que quizás conozcas',
+
+		'onboarding' => [
+			'welcome' => 'Bienvenido/a',
+			'thisIsYourHomeFeed' => 'Este es tu cronología principal, que muestra de manera cronológica las publicaciones de cuentas que sigues.',
+			'letUsHelpYouFind' => 'Déjanos ayudarte a encontrar algunas personas interesantes para seguir',
+			'refreshFeed' => 'Actualizar mi cronología',
+		],
 	],
 
 	'hashtags' => [
-		'emptyFeed' => 'We can\'t seem to find any posts for this hashtag'
+		'emptyFeed' => 'Parece que no podemos encontrar posts para este hashtag'
 	],
+
+	'report' => [
+		'report' => 'Reportar',
+		'selectReason' => 'Seleccionar un motivo',
+		'reported' => 'Reportado',
+		'sendingReport' => 'Enviando reporte',
+		'thanksMsg' => 'Gracias por el reporte, ¡personas como tú ayudan a mantener nuestra comunidad segura!',
+		'contactAdminMsg' => 'Si quieres contactar un administrador sobre esta publicación o reporte',
+	],
+
+    'appearance' => [
+        'theme' => 'Tema',
+        'profileLayout' => 'Arreglo de Perfil',
+        'compactPreviews' => 'Previstas Compactas de Medios',
+        'loadComments' => 'Cargar Comentarios',
+        'hideStats' => 'Ocultar Cuentas y Estadísticas',
+
+        'auto' => 'Automático',
+        'lightMode' => 'Modo claro',
+        'darkMode' => 'Modo oscuro',
+
+        'grid' => 'Cuadrícula',
+        'masonry' => 'Mampostería',
+        'feed' => 'Feed',
+    ],
 
 ];

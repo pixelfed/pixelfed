@@ -344,7 +344,7 @@ class ProfileController extends Controller
             return response($res)->withHeaders(['X-Frame-Options' => 'ALLOWALL']);
         }
 
-        if (strlen($username) > 15 || strlen($username) < 2) {
+        if (strlen($username) > 30 || strlen($username) < 2) {
             return response($res)->withHeaders(['X-Frame-Options' => 'ALLOWALL']);
         }
 

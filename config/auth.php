@@ -112,4 +112,5 @@ return [
         ],
     ],
 
+    'in_app_registration' => (bool) env('APP_REGISTER', true),
 ];

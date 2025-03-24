@@ -12,4 +12,10 @@ return [
 
   'status.disabled.header' 	  => 'Perfil Indisponível',
   'status.disabled.body'	  => 'Desculpe, este perfil não está disponível neste momento. Por favor, tente novamente mais tarde.',
+
+'block.domain.max'      => 'Limite máximo de bloqueio de domínios atingido! Você só pode bloquear :max domínios por vez. Peça ao seu administrador para ajustar este limite.',
+
+'mutedAccounts'           => 'Contas Silenciadas',
+'blockedAccounts'         => 'Contas Bloqueadas',
+'blockedDomains'          => 'Domínios Bloqueados',
 ];

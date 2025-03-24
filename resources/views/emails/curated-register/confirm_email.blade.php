@@ -10,7 +10,7 @@ Please confirm your email address so we can process your new registration applic
 </x-mail::button>
 
 
-<p style="font-size:10pt;">If you did not create this account, please disregard this email. This link expires after 24 hours.</p>
+<p style="font-size:10pt;">If you did not create this account, please disregard this email. This link expires in 7 days.</p>
 <br>
 
 Thanks,<br>

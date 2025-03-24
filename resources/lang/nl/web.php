@@ -13,6 +13,7 @@ return [
 		'shared' => 'Gedeeld',
 		'shares' => 'Gedeeld door',
 		'unshare' => 'Niet meer delen',
+		'bookmark' => 'Bladwijzer',
 
 		'cancel' => 'Annuleren',
 		'copyLink' => 'Link kopiëren',
@@ -23,6 +24,10 @@ return [
 		'other' => 'Anders',
 		'readMore' => 'Lees meer',
 		'success' => 'Geslaagd',
+		'proceed' => 'Doorgaan',
+		'next' => 'Volgende',
+		'close' => 'Sluiten',
+		'clickHere' => 'klik hier',
 
 		'sensitive' => 'Gevoelig',
 		'sensitiveContent' => 'Gevoelige inhoud',
@@ -55,7 +60,7 @@ return [
 		'drive' => 'Drive',
 		'settings' => 'Instellingen',
 		'compose' => 'Nieuwe aanmaken',
-		'logout' => 'Logout',
+		'logout' => 'Uitloggen',
 
 		// Nav footer
 		'about' => 'Over',
@@ -97,6 +102,7 @@ return [
 		'modlog' => 'modlogboek',
 		'post' => 'post',
 		'story' => 'verhaal',
+		'noneFound' => 'Geen notificaties gevonden',
 	],
 
 	'post' => [
@@ -118,8 +124,8 @@ return [
 		'followRequested' => 'Volgen verzocht',
 		'joined' => 'Lid geworden',
 
-		'emptyCollections' => 'We can\'t seem to find any collections',
-		'emptyPosts' => 'We can\'t seem to find any posts',
+		'emptyCollections' => 'We kunnen geen collecties vinden',
+		'emptyPosts' => 'We kunnen geen posts vinden',
 	],
 
 	'menu' => [
@@ -176,11 +182,27 @@ return [
 	],
 
 	'timeline' => [
-		'peopleYouMayKnow' => 'Mensen die u misschien kent'
+		'peopleYouMayKnow' => 'Mensen die u misschien kent',
+
+		'onboarding' => [
+			'welcome' => 'Welkom',
+			'thisIsYourHomeFeed' => 'Dit is je thuisfeed, een chronologische feed van accounts die je volgt.',
+			'letUsHelpYouFind' => 'Laat ons u helpen interessante mensen te vinden om te volgen',
+			'refreshFeed' => 'Mijn feed vernieuwen',
+		],
 	],
 
 	'hashtags' => [
-		'emptyFeed' => 'We can\'t seem to find any posts for this hashtag'
+		'emptyFeed' => 'We kunnen geen berichten voor deze hashtag vinden'
+	],
+
+	'report' => [
+		'report' => 'Rapporteren',
+		'selectReason' => 'Een reden selecteren',
+		'reported' => 'Gerapporteerd',
+		'sendingReport' => 'Rapport versturen',
+		'thanksMsg' => 'Bedankt voor het rapport, mensen zoals u helpen onze gemeenschap veilig te houden!',
+		'contactAdminMsg' => 'Als u over dit bericht of rapport contact wilt opnemen met een beheerder',
 	],
 
 ];

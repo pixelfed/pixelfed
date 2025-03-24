@@ -3,14 +3,14 @@
 @section('section')
 
 <div class="title">
-	<h3 class="font-weight-bold">Relationships</h3>
+	<h3 class="font-weight-bold">{{__('settings.relationships')}}</h3>
 </div>
 <hr>
 <div class="form-group pb-1">
     <p>
-        <a class="btn py-0 btn-link {{!request()->has('mode') || $mode == 'followers' ? 'font-weight-bold' : 'text-muted'}}" href="?mode=followers&page=1">Followers</a>
-        <a class="btn btn-link py-0  {{$mode == 'following' ? 'font-weight-bold' : 'text-muted'}}" href="?mode=following&page=1">Following</a>
-        <a class="btn btn-link py-0 {{$mode == 'hashtags' ? 'font-weight-bold' : 'text-muted'}}" href="?mode=hashtags&page=1">Hashtags</a>
+        <a class="btn py-0 btn-link {{!request()->has('mode') || $mode == 'followers' ? 'font-weight-bold' : 'text-muted'}}" href="?mode=followers&page=1">{{__('settings.relationships.followers')}}</a>
+        <a class="btn btn-link py-0  {{$mode == 'following' ? 'font-weight-bold' : 'text-muted'}}" href="?mode=following&page=1">{{__('settings.relationships.following')}}</a>
+        <a class="btn btn-link py-0 {{$mode == 'hashtags' ? 'font-weight-bold' : 'text-muted'}}" href="?mode=hashtags&page=1">{{__('settings.relationships.hashtags')}}</a>
     </p>
 </div>
 
@@ -25,8 +25,8 @@
 			{{-- <th scope="col" class="pt-0 pb-1 mt-0">
 				<input type="checkbox" name="check" class="form-control check-all">
 			</th> --}}
-			<th scope="col">Hashtag</th>
-			<th scope="col">Action</th>
+			<th scope="col">{{__('settings.relationships.hashtag')}}</th>
+			<th scope="col">{{__('settings.relationships.action')}}</th>
 		</tr>
 	</thead>
 	<tbody>
@@ -48,8 +48,8 @@
 			{{-- <th scope="col" class="pt-0 pb-1 mt-0">
 				<input type="checkbox" name="check" class="form-control check-all">
 			</th> --}}
-			<th scope="col">Username</th>
-			<th scope="col">Action</th>
+			<th scope="col">{{__('settings.relationships.username')}}</th>
+			<th scope="col">{{__('settings.relationship.action')}}</th>
 		</tr>
 	</thead>
 	<tbody>
@@ -69,8 +69,8 @@
 			</td>
 			@else
 			<td class="text-center">
-				<a class="btn btn-outline-primary btn-sm py-0 action-btn" href="#" data-id="{{$follower->id}}" data-action="mute">Mute</a>
-				<a class="btn btn-outline-danger btn-sm py-0 action-btn" href="#" data-id="{{$follower->id}}" data-action="block">Block</a>
+				<a class="btn btn-outline-primary btn-sm py-0 action-btn" href="#" data-id="{{$follower->id}}" data-action="mute">{{__('settings.relationships.mute')}}</a>
+				<a class="btn btn-outline-danger btn-sm py-0 action-btn" href="#" data-id="{{$follower->id}}" data-action="block">{{__('settings.relationships.block')}}</a>
 			</td>
 			@endif
 		</tr>
@@ -106,8 +106,8 @@
 					item: id
 				}).then(res => {
 					swal(
-						'Mute Successful',
-						'You have successfully muted that user',
+						'{{__('settings.relationships.mute_successful')}}',
+						'{{__('settings.relationships.you_have_successfully_muted_that_user')}}',
 						'success'
 						);
 				});
@@ -119,8 +119,8 @@
 					item: id
 				}).then(res => {
 					swal(
-						'Block Successful',
-						'You have successfully blocked that user',
+						'{{__('settings.relationships.block_successful')}}',
+						'{{__('settings.relationships.you_have_successfully_blocked_that_user')}}',
 						'success'
 						);
 				});
@@ -130,15 +130,15 @@
 				axios.post('/api/v1/accounts/' + id + '/unfollow')
 				.then(res => {
 					swal(
-						'Unfollow Successful',
-						'You have successfully unfollowed that user',
+						'{{__('settings.relationships.unfollow_successful')}}',
+						'{{__('settings.relationships.you_have_successfully_unfollowed_that_user')}}',
 						'success'
 						);
 				})
 				.catch(err => {
 					swal(
-						'Error',
-						'An error occured when attempting to unfollow this user',
+						'{{__('settings.error')}}',
+						'{{__('settings.relationships.an_error_occured_when_attempting_to_unfollow_this_user')}}',
 						'error'
 						);
 				});
@@ -147,8 +147,8 @@
 				case 'unfollowhashtag':
 				axios.post('/api/v1/tags/' + id + '/unfollow').then(res => {
 					swal(
-						'Unfollow Successful',
-						'You have successfully unfollowed that hashtag',
+						'{{__('settings.relationships.unfollow_successful')}}',
+						'{{__('settings.relationships.you_have_successfully_unfollowed_that_hashtag')}}',
 						'success'
 						);
 				});

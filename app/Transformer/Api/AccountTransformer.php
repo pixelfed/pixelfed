@@ -75,13 +75,6 @@ class AccountTransformer extends Fractal\TransformerAbstract
             'location' => $profile->location,
         ];
 
-        if ($profile->moved_to_profile_id) {
-            $mt = AccountService::getMastodon($profile->moved_to_profile_id, true);
-            if ($mt) {
-                $res['moved'] = $mt;
-            }
-        }
-
         return $res;
     }
 

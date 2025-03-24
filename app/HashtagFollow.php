@@ -12,7 +12,7 @@ class HashtagFollow extends Model
     	'hashtag_id'
     ];
 
-    const MAX_LIMIT = 250;
+    const MAX_LIMIT = 25;
 
     public function hashtag()
     {

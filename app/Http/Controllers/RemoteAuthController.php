@@ -358,7 +358,7 @@ class RemoteAuthController extends Controller
             'username' => [
                 'required',
                 'min:2',
-                'max:15',
+                'max:30',
                 function ($attribute, $value, $fail) {
                     $dash = substr_count($value, '-');
                     $underscore = substr_count($value, '_');
@@ -489,7 +489,7 @@ class RemoteAuthController extends Controller
             'username' => [
                 'required',
                 'min:2',
-                'max:15',
+                'max:30',
                 'unique:users,username',
                 function ($attribute, $value, $fail) {
                     $dash = substr_count($value, '-');

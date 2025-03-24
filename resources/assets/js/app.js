@@ -78,31 +78,40 @@ window.App.util = {
 			}
 			return new Intl.NumberFormat(locale, { notation: notation , compactDisplay: "short" }).format(count);
 		}),
-		timeAgo: (function(ts) {
-			let date = Date.parse(ts);
-			let seconds = Math.floor((new Date() - date) / 1000);
-			let interval = Math.floor(seconds / 63072000);
-			if (interval >= 1) {
-				return interval + "y";
-			}
-			interval = Math.floor(seconds / 604800);
-			if (interval >= 1) {
-				return interval + "w";
-			}
-			interval = Math.floor(seconds / 86400);
-			if (interval >= 1) {
-				return interval + "d";
-			}
-			interval = Math.floor(seconds / 3600);
-			if (interval >= 1) {
-				return interval + "h";
-			}
-			interval = Math.floor(seconds / 60);
-			if (interval >= 1) {
-				return interval + "m";
-			}
-			return Math.floor(seconds) + "s";
-		}),
+        timeAgo: function(ts) {
+            const date = new Date(ts);
+            const now = new Date();
+
+            const seconds = Math.floor((now - date) / 1000);
+
+            const secondsInYear = 60 * 60 * 24 * 365.25;
+            let interval = Math.floor(seconds / secondsInYear);
+            if (interval >= 1) {
+                return interval + "y";
+            }
+
+            interval = Math.floor(seconds / (60 * 60 * 24 * 7));
+            if (interval >= 1) {
+                return interval + "w";
+            }
+
+            interval = Math.floor(seconds / (60 * 60 * 24));
+            if (interval >= 1) {
+                return interval + "d";
+            }
+
+            interval = Math.floor(seconds / (60 * 60));
+            if (interval >= 1) {
+                return interval + "h";
+            }
+
+            interval = Math.floor(seconds / 60);
+            if (interval >= 1) {
+                return interval + "m";
+            }
+
+            return Math.floor(seconds) + "s";
+        },
 		timeAhead: (function(ts, short = true) {
 			let date = Date.parse(ts);
 			let diff = date - Date.parse(new Date());

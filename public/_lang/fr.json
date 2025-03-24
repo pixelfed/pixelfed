@@ -5,23 +5,28 @@
         "comments": "Commentaires",
         "like": "J'aime",
         "liked": "Aim\u00e9",
-        "likes": "J'aime",
+        "likes": "J'aimes",
         "share": "Partager",
         "shared": "Partag\u00e9",
         "shares": "Partages",
         "unshare": "Ne plus partager",
+        "bookmark": "Marque-page",
         "cancel": "Annuler",
         "copyLink": "Copier le lien",
         "delete": "Supprimer",
         "error": "Erreur",
         "errorMsg": "Une erreur est survenue. Veuillez r\u00e9essayer plus tard.",
-        "oops": "Zut !",
+        "oops": "Oups\u00a0!",
         "other": "Autre",
         "readMore": "En savoir plus",
-        "success": "Op\u00e9ration r\u00e9ussie",
+        "success": "Succ\u00e8s",
+        "proceed": "Continuer",
+        "next": "Suivant",
+        "close": "Fermer",
+        "clickHere": "cliquez ici",
         "sensitive": "Sensible",
         "sensitiveContent": "Contenu sensible",
-        "sensitiveContentWarning": "Le contenu de ce message peut \u00eatre sensible"
+        "sensitiveContentWarning": "Le contenu de cette publication peut \u00eatre sensible"
     },
     "site": {
         "terms": "Conditions d'utilisation",
@@ -42,7 +47,7 @@
         "drive": "M\u00e9diath\u00e8que",
         "settings": "Param\u00e8tres",
         "compose": "Publier",
-        "logout": "Logout",
+        "logout": "D\u00e9connexion",
         "about": "\u00c0 propos",
         "help": "Aide",
         "language": "Langue",
@@ -66,20 +71,21 @@
         "followed": "s'est abonn\u00e9\u00b7e \u00e0",
         "mentioned": "a mentionn\u00e9",
         "you": "vous",
-        "yourApplication": "Votre candidature \u00e0 rejoindre",
+        "yourApplication": "Votre demande d'adh\u00e9sion",
         "applicationApproved": "a \u00e9t\u00e9 approuv\u00e9e !",
         "applicationRejected": "a \u00e9t\u00e9 rejet\u00e9e. Vous pouvez refaire une demande dans 6 mois.",
         "dm": "mp",
         "groupPost": "publication de groupe",
         "modlog": "journal de mod\u00e9ration",
         "post": "publication",
-        "story": "story"
+        "story": "story",
+        "noneFound": "Aucune notification trouv\u00e9e"
     },
     "post": {
         "shareToFollowers": "Partager avec ses abonn\u00e9\u00b7e\u00b7s",
         "shareToOther": "Partager avec d'autres",
         "noLikes": "Aucun J'aime pour le moment",
-        "uploading": "Envoi en cours"
+        "uploading": "T\u00e9l\u00e9versement"
     },
     "profile": {
         "posts": "Publications",
@@ -90,10 +96,10 @@
         "follow": "S'abonner",
         "unfollow": "Se d\u00e9sabonner",
         "editProfile": "Modifier votre profil",
-        "followRequested": "Demande d'abonnement",
+        "followRequested": "Demande d'abonnement faite",
         "joined": "A rejoint",
         "emptyCollections": "Aucune collection ne semble exister",
-        "emptyPosts": "Aucune publication ne semble exister"
+        "emptyPosts": "Il semble n\u2019y avoir aucune publication"
     },
     "menu": {
         "viewPost": "Voir la publication",
@@ -108,7 +114,7 @@
         "addCW": "Ajouter un avertissement de contenu",
         "removeCW": "Enlever l\u2019avertissement de contenu",
         "markAsSpammer": "Marquer comme spammeur\u00b7euse",
-        "markAsSpammerText": "Retirer + avertissements pour les contenus existants et futurs",
+        "markAsSpammerText": "Retirer des flux + ajouter un avertissement de contenu pour les publications existantes et futures",
         "spam": "Ind\u00e9sirable",
         "sensitive": "Contenu sensible",
         "abusive": "Abusif ou pr\u00e9judiciable",
@@ -142,9 +148,23 @@
         "add": "Ajouter une story"
     },
     "timeline": {
-        "peopleYouMayKnow": "Connaissances possibles"
+        "peopleYouMayKnow": "Personnes que vous connaissez peut-\u00eatre",
+        "onboarding": {
+            "welcome": "Bienvenue",
+            "thisIsYourHomeFeed": "Ceci est votre flux personnel, un flux chronologique des publications de comptes que vous suivez.",
+            "letUsHelpYouFind": "Laissez-nous vous aider \u00e0 trouver des personnes int\u00e9ressantes \u00e0 suivre",
+            "refreshFeed": "Actualiser mon flux"
+        }
     },
     "hashtags": {
         "emptyFeed": "Aucune publication ne semble exister pour ce hashtag"
+    },
+    "report": {
+        "report": "Signaler",
+        "selectReason": "S\u00e9lectionner un motif",
+        "reported": "Signal\u00e9",
+        "sendingReport": "Envoi du signalement",
+        "thanksMsg": "Merci pour votre signalement, les gens comme vous aident \u00e0 assurer la s\u00e9curit\u00e9 de notre communaut\u00e9 !",
+        "contactAdminMsg": "Si vous souhaitez contacter un\u00b7e administrateur\u00b7trice \u00e0 propos de cette publication ou de ce signalement"
     }
 }

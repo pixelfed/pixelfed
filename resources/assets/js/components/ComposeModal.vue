@@ -1,6 +1,6 @@
 <template>
 <div class="compose-modal-component">
-	<input type="file" id="pf-dz" name="media" class="w-100 h-100 d-none file-input" multiple="" v-bind:accept="config.uploader.media_types">
+	<input type="file" id="pf-dz" name="media" class="w-100 h-100 d-none file-input" multiple="" v-bind:accept="config.uploader.media_types" @input="onInputFile">
 	<canvas class="d-none" id="pr_canvas"></canvas>
 	<img class="d-none" id="pr_img">
 	<div class="timeline">
@@ -184,7 +184,6 @@
                             </template>
 							<a v-if="!pageLoading && page == 'addText'" class="font-weight-bold text-decoration-none" href="#" @click.prevent="composeTextPost()">Post</a>
                             <a v-if="!pageLoading && page == 'video-2'" class="font-weight-bold text-decoration-none" href="#" @click.prevent="compose()">Post</a>
-							<span v-if="!pageLoading && page == 'filteringMedia'" class="font-weight-bold text-decoration-none text-muted">Next</span>
 						</span>
 					</div>
 				</div>
@@ -342,8 +341,8 @@
 					</div>
 
 					<div v-else-if="page == 'cropPhoto'" class="w-100 h-100">
-						<div v-if="ids.length > 0">
-							<vue-cropper
+						<div v-if="media.length > 0">
+                            <vue-cropper
 								ref="cropper"
 								:relativeZoom="cropper.zoom"
 								:aspectRatio="cropper.aspectRatio"
@@ -358,37 +357,22 @@
 
 					<div v-else-if="page == 2" class="w-100 h-100">
 						<div v-if="media.length == 1">
-							<div slot="img" style="display:flex;min-height: 420px;align-items: center;">
-								<img :class="'d-block img-fluid w-100 ' + [media[carouselCursor].filter_class?media[carouselCursor].filter_class:'']" :src="media[carouselCursor].url" :alt="media[carouselCursor].description" :title="media[carouselCursor].description">
-							</div>
-							<hr>
-							<div v-if="ids.length > 0 && media[carouselCursor].type == 'image'" class="align-items-center px-2 pt-2">
-								<ul class="nav media-drawer-filters text-center">
-									<li class="nav-item">
-										<div class="p-1 pt-3">
-											<img :src="media[carouselCursor].url" width="100px" height="60px" v-on:click.prevent="toggleFilter($event, null)" class="cursor-pointer">
-										</div>
-										<a :class="[media[carouselCursor].filter_class == null ? 'nav-link text-primary active' : 'nav-link text-muted']" href="#" v-on:click.prevent="toggleFilter($event, null)">No Filter</a>
-									</li>
-									<li class="nav-item" v-for="(filter, index) in filters">
-										<div class="p-1 pt-3">
-                                            <div class="rounded" :class="filter[1]">
-											 <img :src="media[carouselCursor].url" width="100px" height="60px" v-on:click.prevent="toggleFilter($event, filter[1])">
-                                            </div>
-										</div>
-										<a :class="[media[carouselCursor].filter_class == filter[1] ? 'nav-link text-primary active' : 'nav-link text-muted']" href="#" v-on:click.prevent="toggleFilter($event, filter[1])">{{filter[0]}}</a>
-									</li>
-								</ul>
-							</div>
+                            <template v-if="media[0].type === 'image'">
+							    <media-editor-preview class="media-editor" :editor="editor" :sourceIndex="0" />
+							    <hr>
+                                <media-editor-filter-menu class="media-editor" :editor="editor" :sourceIndex="0" />
+                            </template>
+                            <img v-else class="d-block img-fluid w-100" src="/storage/no-preview.png" :alt="media[carouselCursor].description" :title="media[carouselCursor].description">
 						</div>
 						<div v-else-if="media.length > 1" class="d-flex-inline px-2 pt-2">
 							<ul class="nav media-drawer-filters text-center pb-3">
 								<li class="nav-item mx-md-4">&nbsp;</li>
-								<li v-for="(m, i) in media" :key="m.id + ':' + carouselCursor" class="nav-item mx-md-4">
+								<li v-for="(m, i) in media" :key="i + (ids[i] || m.url || '')" class="nav-item mx-md-4">
 										<div class="nav-link" style="display:block;width:300px;height:300px;" @click="carouselCursor = i">
 											<!-- <img :class="'d-block img-fluid w-100 ' + [m.filter_class?m.filter_class:'']" :src="m.url" :alt="m.description" :title="m.description"> -->
 											<div :class="[m.filter_class?m.filter_class:'']" style="width:100%;height:100%;display:block;">
-												<div :class="'rounded ' +  [i == carouselCursor ? ' border border-primary shadow':'']" :style="'display:block;width:100%;height:100%;background-image: url(' + m.url + ');background-size:cover;'"></div>
+												<media-editor-preview v-if="m.type === 'image'" class="media-editor" :editor="editor" :sourceIndex="i" :class="'rounded ' +  [i == carouselCursor ? ' border border-primary shadow':'']" style="width:100%;height:100%;" />
+                                                <img v-else class="d-block img-fluid w-100" src="/storage/no-preview.png" :alt="media[carouselCursor].description" :title="media[carouselCursor].description">
 											</div>
 										</div>
 										<div v-if="i == carouselCursor" class="text-center mb-0 small text-lighter font-weight-bold pt-2">
@@ -402,21 +386,8 @@
 								<li class="nav-item mx-md-4">&nbsp;</li>
 							</ul>
 							<hr>
-							<div v-if="ids.length > 0 && media[carouselCursor].type == 'image'" class="align-items-center px-2 pt-2">
-								<ul class="nav media-drawer-filters text-center">
-									<li class="nav-item">
-										<div class="p-1 pt-3">
-											<img :src="media[carouselCursor].url" width="100px" height="60px" v-on:click.prevent="toggleFilter($event, null)" class="cursor-pointer">
-										</div>
-										<a :class="[media[carouselCursor].filter_class == null ? 'nav-link text-primary active' : 'nav-link text-muted']" href="#" v-on:click.prevent="toggleFilter($event, null)">No Filter</a>
-									</li>
-									<li class="nav-item" v-for="(filter, index) in filters">
-										<div class="p-1 pt-3">
-											<img :src="media[carouselCursor].url" width="100px" height="60px" :class="filter[1]" v-on:click.prevent="toggleFilter($event, filter[1])">
-										</div>
-										<a :class="[media[carouselCursor].filter_class == filter[1] ? 'nav-link text-primary active' : 'nav-link text-muted']" href="#" v-on:click.prevent="toggleFilter($event, filter[1])">{{filter[0]}}</a>
-									</li>
-								</ul>
+							<div v-if="media[carouselCursor].type == 'image'" class="align-items-center px-2 pt-2">
+								<media-editor-filter-menu class="media-editor" :editor="editor" :sourceIndex="carouselCursor" />
 							</div>
 						</div>
 						<div v-else>
@@ -427,7 +398,7 @@
 					<div v-else-if="page == 3" class="w-100 h-100">
 						<div class="border-bottom mt-2">
 							<div class="media px-3">
-								<img :src="media[0].url" width="42px" height="42px" :class="[media[0].filter_class?'mr-2 ' + media[0].filter_class:'mr-2']">
+								<img :src="media[0].preview_url" width="42px" height="42px" class="mr-2">
 								<div class="media-body">
 									<div class="form-group">
 										<label class="font-weight-bold text-muted small d-none">Caption</label>
@@ -780,7 +751,7 @@
 					<div v-else-if="page == 'video-2'" class="w-100 h-100">
 						<div v-if="video.title.length" class="border-bottom">
 							<div class="media p-3">
-								<img :src="media[0].url" width="100px" height="70px" :class="[media[0].filter_class?'mr-2 ' + media[0].filter_class:'mr-2']">
+								<img :src="media[0].preview_url" width="100px" height="70px" class="mr-2">
 								<div class="media-body">
 									<p class="font-weight-bold mb-1">{{video.title ? video.title.slice(0,70) : 'Untitled'}}</p>
 									<p class="mb-0 text-muted small">{{video.description ? video.description.slice(0,90) : 'No description'}}</p>
@@ -839,13 +810,6 @@
 							</div>
 						</div>
 					</div>
-
-                    <div v-else-if="page == 'filteringMedia'" class="w-100 h-100 py-5">
-                        <div class="d-flex flex-column align-items-center justify-content-center py-5">
-                            <b-spinner small />
-                            <p class="font-weight-bold mt-3">Applying filters...</p>
-                        </div>
-                    </div>
 				</div>
 
 				<!-- card-footers -->
@@ -875,13 +839,17 @@ import 'cropperjs/dist/cropper.css';
 import Autocomplete from '@trevoreyre/autocomplete-vue'
 import '@trevoreyre/autocomplete-vue/dist/style.css'
 import VueTribute from 'vue-tribute'
+import { MediaEditor, MediaEditorPreview, MediaEditorFilterMenu } from 'webgl-media-editor/vue2'
+import { filterEffects } from './filters';
 
 export default {
 
 	components: {
 		VueCropper,
 		Autocomplete,
-		VueTribute
+		VueTribute,
+        MediaEditorPreview,
+        MediaEditorFilterMenu
 	},
 
 	data() {
@@ -892,10 +860,9 @@ export default {
 			composeText: '',
 			composeTextLength: 0,
 			nsfw: false,
-			filters: [],
-			currentFilter: false,
 			ids: [],
 			media: [],
+			files: [],
 			carouselCursor: 0,
 			uploading: false,
 			uploadProgress: 100,
@@ -923,7 +890,6 @@ export default {
 			},
 
 			namedPages: [
-                'filteringMedia',
 				'cropPhoto',
 				'tagPeople',
 				'addLocation',
@@ -1044,12 +1010,35 @@ export default {
 			collectionsPage: 1,
 			collectionsCanLoadMore: false,
 			spoilerText: undefined,
-            isFilteringMedia: false,
-            filteringMediaTimeout: undefined,
-            filteringRemainingCount: 0,
             isPosting: false,
 		}
 	},
+
+    created() {
+        try {
+            this.editor = new MediaEditor({
+                effects: filterEffects,
+                onEdit: (sourceIndex, {effect, intensity, crop}) => {
+                    if (sourceIndex >= this.files.length) return
+                    const file = this.files[sourceIndex]
+
+                    this.$set(file, 'editState', { effect, intensity, crop })
+                },
+                onRenderPreview: (sourceIndex, previewUrl) => {
+                    if (sourceIndex >= this.files.length) return
+                    const file = this.files[sourceIndex]
+                    const { editState } = file
+                    const media = this.media[sourceIndex]
+
+                    // If the image was edited, use the preview image from the editor.
+                    if (editState && (editState.crop || editState.effect !== -1)) media.preview_url = previewUrl
+                    // When no edits are applied, use the original media URL.
+                    // This limits broken previews with firefox's resistFingerprinting setting.
+                    else media.preview_url = media.url
+                },
+            })
+        } catch {}
+    },
 
 	computed: {
 		spoilerTextLength: function() {
@@ -1058,7 +1047,6 @@ export default {
 	},
 
 	beforeMount() {
-		this.filters = window.App.util.filters.sort();
 		axios.get('/api/compose/v0/settings')
 		.then(res => {
 			this.composeSettings = res.data;
@@ -1075,8 +1063,13 @@ export default {
 		});
 	},
 
-	mounted() {
-		this.mediaWatcher();
+	destroyed() {
+		this.media.forEach(media => {
+            URL.revokeObjectURL(media.url);
+            URL.revokeObjectURL(media.preview_url);
+        })
+		this.files.length = this.media.length = 0
+		this.editor = undefined
 	},
 
 	methods: {
@@ -1156,39 +1149,64 @@ export default {
 			this.mode = 'text';
 		},
 
-		mediaWatcher() {
-			let self = this;
-			$(document).on('change', '#pf-dz', function(e) {
-				self.mediaUpload();
-			});
-		},
+		onInputFile(event) {
+			const input = event.target
+			const files = Array.from(input.files)
+			input.value = null;
 
-		mediaUpload() {
 			let self = this;
-			self.uploading = true;
-			let io = document.querySelector('#pf-dz');
-			if(!io.files.length) {
-				self.uploading = false;
-			}
-			Array.prototype.forEach.call(io.files, function(io, i) {
-				if(self.media && self.media.length + i >= self.config.uploader.album_limit) {
+
+			files.forEach((file, i) => {
+				if(self.media && self.media.length >= self.config.uploader.album_limit) {
 					swal('Error', 'You can only upload ' + self.config.uploader.album_limit + ' photos per album', 'error');
-					self.uploading = false;
 					self.page = 2;
 					return;
 				}
-				let type = io.type;
 				let acceptedMimes = self.config.uploader.media_types.split(',');
-				let validated = $.inArray(type, acceptedMimes);
+				let validated = $.inArray(file.type, acceptedMimes);
 				if(validated == -1) {
 					swal('Invalid File Type', 'The file you are trying to add is not a valid mime type. Please upload a '+self.config.uploader.media_types+' only.', 'error');
-					self.uploading = false;
 					self.page = 2;
 					return;
+				}
+
+                const type = file.type.replace(/\/.*/, '')
+				const url = URL.createObjectURL(file)
+                const preview_url = type === 'image' ? URL.createObjectURL(file) : '/storage/no-preview.png'
+
+				this.files.push({ file, editState: undefined })
+				this.media.push({ url, preview_url, type })
+			})
+
+			if (this.media.length) {
+				this.page = 3
+			} else {
+				this.page = 2
+			}
+		},
+
+		async mediaUpload() {
+			this.uploading = true;
+
+			const uploadPromises = this.files.map(async (fileInfo, i) => {
+				let file = fileInfo.file
+				const media = this.media[i]
+
+				if (media.type === 'image' && fileInfo.editState) {
+                    const { editState, cropperBlob } = fileInfo
+
+                    // If the WebGL editor is supported by the browser, apply the edits and use the resulting blob
+                    if (this.editor && (editState.effect !== -1 || !!editState.crop)) {
+					    file = await this.editor.toBlob(i)
+                    }
+                    // Otherwise, only the cropped result from cropper.js may be used
+                    else if (cropperBlob) {
+                        file = cropperBlob
+                    }
 				}
 
 				let form = new FormData();
-				form.append('file', io);
+				form.append('file', file);
 
 				let xhrConfig = {
 					onUploadProgress: function(e) {
@@ -1197,12 +1215,13 @@ export default {
 					}
 				};
 
-				axios.post('/api/compose/v0/media/upload', form, xhrConfig)
+                const self = this
+
+				await axios.post('/api/compose/v0/media/upload', form, xhrConfig)
 				.then(function(e) {
 					self.uploadProgress = 100;
 					self.ids.push(e.data.id);
-					self.media.push(e.data);
-					self.uploading = false;
+					Object.assign(media, e.data)
 					setTimeout(function() {
 						// if(type === 'video/mp4') {
 						// 	self.pageTitle = 'Edit Video Details';
@@ -1216,131 +1235,100 @@ export default {
 				}).catch(function(e) {
 					switch(e.response.status) {
 						case 403:
-							self.uploading = false;
-							io.value = null;
 							swal('Account size limit reached', 'Contact your admin for assistance.', 'error');
 							self.page = 2;
 						break;
 
 						case 413:
-							self.uploading = false;
-							io.value = null;
-							swal('File is too large', 'The file you uploaded has the size of ' + self.formatBytes(io.size) + '. Unfortunately, only images up to ' + self.formatBytes(self.config.uploader.max_photo_size  * 1024) + ' are supported.\nPlease resize the file and try again.', 'error');
+							swal('File is too large', 'The file you uploaded has the size of ' + self.formatBytes(file.size) + '. Unfortunately, only images up to ' + self.formatBytes(self.config.uploader.max_photo_size  * 1024) + ' are supported.\nPlease resize the file and try again.', 'error');
 							self.page = 2;
 						break;
 
 						case 451:
-							self.uploading = false;
-							io.value = null;
 							swal('Banned Content', 'This content has been banned and cannot be uploaded.', 'error');
 							self.page = 2;
 						break;
 
 						case 429:
-							self.uploading = false;
-							io.value = null;
 							swal('Limit Reached', 'You can upload up to 250 photos or videos per day and you\'ve reached that limit. Please try again later.', 'error');
 							self.page = 2;
 						break;
 
 						case 500:
-							self.uploading = false;
-							io.value = null;
 							swal('Error', e.response.data.message, 'error');
 							self.page = 2;
 						break;
 
 						default:
-							self.uploading = false;
-							io.value = null;
 							swal('Oops, something went wrong!', 'An unexpected error occurred.', 'error');
 							self.page = 2;
 						break;
 					}
+
+                    throw e
 				});
-				io.value = null;
-				self.uploadProgress = 0;
 			});
+
+            await Promise.all(uploadPromises).finally(() => {
+				this.uploadProgress = 0;
+			    this.uploading = false;
+            });
 		},
 
-		toggleFilter(e, filter) {
-			this.media[this.carouselCursor].filter_class = filter;
-			this.currentFilter = filter;
-		},
-
-		deleteMedia() {
+		async deleteMedia() {
 			if(window.confirm('Are you sure you want to delete this media?') == false) {
 				return;
 			}
 			let id = this.media[this.carouselCursor].id;
 
-			axios.delete('/api/compose/v0/media/delete', {
-				params: {
-					id: id
-				}
-			}).then(res => {
-				this.ids.splice(this.carouselCursor, 1);
-				this.media.splice(this.carouselCursor, 1);
-				if(this.media.length == 0) {
-					this.ids = [];
-					this.media = [];
-					this.carouselCursor = 0;
-				} else {
-					this.carouselCursor = 0;
-				}
-			}).catch(err => {
-				swal('Whoops!', 'An error occured when attempting to delete this, please try again', 'error');
-			});
+            if (id) {
+                try {
+			        await axios.delete('/api/compose/v0/media/delete', {
+				        params: {
+					        id: id
+				        }
+			        })
+                }
+                catch(err) {
+				    swal('Whoops!', 'An error occured when attempting to delete this, please try again', 'error');
+                    return
+			    }
+            }
+            this.ids.splice(this.carouselCursor, 1);
+			this.media.splice(this.carouselCursor, 1);
+
+            URL.revokeObjectURL(this.files[this.carouselCursor]?.url)
+            this.files.splice(this.carouselCursor, 1)
+
+			if(this.media.length == 0) {
+				this.ids = [];
+				this.media = [];
+				this.carouselCursor = 0;
+			} else {
+				this.carouselCursor = 0;
+			}
 		},
 
         mediaReorder(dir) {
-            const m = this.media;
-            const cur = this.carouselCursor;
-            const pla = m[cur];
-            let res = [];
-            let cursor = 0;
+            const prevIndex = this.carouselCursor
+            const newIndex = prevIndex + (dir === 'prev' ? -1 : 1)
 
-            if(dir == 'prev') {
-                if(cur == 0) {
-                    for (let i = cursor; i < m.length - 1; i++) {
-                        res[i] = m[i+1];
-                    }
-                    res[m.length - 1] = pla;
-                    cursor = 0;
-                } else {
-                    res = this.handleSwap(m, cur, cur - 1);
-                    cursor = cur - 1;
-                }
-            } else {
-                if(cur == m.length - 1) {
-                    res = m;
-                    let lastItem = res.pop();
-                    res.unshift(lastItem);
-                    cursor = m.length - 1;
-                } else {
-                    res = this.handleSwap(m, cur, cur + 1);
-                    cursor = cur + 1;
-                }
-            }
-            this.$nextTick(() => {
-                this.media = res;
-                this.carouselCursor = cursor;
-            })
+            if (newIndex < 0 || newIndex >= this.media.length) return
+
+            const [removedFile] = this.files.splice(prevIndex, 1)
+            const [removedMedia] = this.media.splice(prevIndex, 1)
+            const [removedId] = this.ids.splice(prevIndex, 1)
+
+            this.files.splice(newIndex, 0, removedFile)
+            this.media.splice(newIndex, 0, removedMedia)
+            this.ids.splice(newIndex, 0, removedId)
+            this.carouselCursor = newIndex
         },
 
-        handleSwap(arr, index1, index2) {
-            if (index1 >= 0 && index1 < arr.length && index2 >= 0 && index2 < arr.length) {
-                const temp = arr[index1];
-                arr[index1] = arr[index2];
-                arr[index2] = temp;
-                return arr;
-            }
-        },
-
-		compose() {
+		async compose() {
 			let state = this.composeState;
 
-			if(this.uploadProgress != 100 || this.ids.length == 0) {
+			if(this.files.length == 0) {
 				return;
 			}
 
@@ -1353,11 +1341,14 @@ export default {
 			switch(state) {
 				case 'publish':
                     this.isPosting = true;
-                    let count = this.media.filter(m => m.filter_class && !m.hasOwnProperty('is_filtered')).length;
-                    if(count) {
-                        this.applyFilterToMedia();
-                        return;
+
+                    try {
+                        await this.mediaUpload().finally(() => this.isPosting = false)
+                    } catch {
+                        this.isPosting = false;
+                        return
                     }
+
 					if(this.composeSettings.media_descriptions === true) {
 						let count = this.media.filter(m => {
 							return !m.hasOwnProperty('alt') || m.alt.length < 2;
@@ -1420,6 +1411,8 @@ export default {
 								this.defineErrorMessage(err);
                             break;
                         }
+                    }).finally(() => {
+                        this.isPosting = false;
                     });
                     return;
                 break;
@@ -1488,10 +1481,6 @@ export default {
 			switch(this.mode) {
 				case 'photo':
 					switch(this.page) {
-                        case 'filteringMedia':
-                            this.page = 2;
-                        break;
-
 						case 'addText':
 							this.page = 1;
 						break;
@@ -1526,10 +1515,6 @@ export default {
 
 				case 'video':
 					switch(this.page) {
-                        case 'filteringMedia':
-                            this.page = 2;
-                        break;
-
 						case 'licensePicker':
 							this.page = 'video-2';
 						break;
@@ -1549,10 +1534,6 @@ export default {
 						case 'addText':
 							this.page = 1;
 						break;
-
-                        case 'filteringMedia':
-                            this.page = 2;
-                        break;
 
 						case 'textOptions':
 							this.page = 'addText';
@@ -1593,31 +1574,31 @@ export default {
 					this.page = 2;
 				break;
 
-                case 'filteringMedia':
-                break;
-
 				case 'cropPhoto':
-					this.pageLoading = true;
-					let self = this;
-					this.$refs.cropper.getCroppedCanvas({
-							maxWidth: 4096,
-							maxHeight: 4096,
-							fillColor: '#fff',
-							imageSmoothingEnabled: false,
-							imageSmoothingQuality: 'high',
-						}).toBlob(function(blob) {
-						self.mediaCropped = true;
-						let data = new FormData();
-						data.append('file', blob);
-						data.append('id', self.ids[self.carouselCursor]);
-						let url = '/api/compose/v0/media/update';
-						axios.post(url, data).then(res => {
-							self.media[self.carouselCursor].url = res.data.url;
-							self.pageLoading = false;
-							self.page = 2;
-						}).catch(err => {
-						});
-					});
+                    const file = this.files[this.carouselCursor]
+                    const { cropper } = this.$refs
+
+                    // update the file state in this vue component
+                    const croppedState = {
+                        ...file.editState,
+                        crop: cropper.getData()
+                    }
+
+                    if (this.editor) {
+                        // also update the file state in the WebGL editor
+                        this.editor.setEditState(this.carouselCursor, croppedState)
+                    } else {
+                        // if the browser can't run the WebGL editor, get the cropped image from cropper.js
+                         cropper.getCroppedCanvas().toBlob((blob) => {
+                            const { media } = this.media[this.carouselCursor]
+
+                            file.croppedBlob = blob
+                            URL.revokeObjectURL(media.preview_url)
+                            media.preview_url = URL.createObjectURL(blob)
+                        })
+                    }
+
+					this.page = 2;
 				break;
 
 				case 2:
@@ -1763,111 +1744,6 @@ export default {
 				this.cameraRollMedia = res.data;
 			});
 		},
-
-		applyFilterToMedia() {
-			// this is where the magic happens
-            let count = this.media.filter(m => m.filter_class).length;
-            if(count) {
-                this.page = 'filteringMedia';
-                this.filteringRemainingCount = count;
-                this.$nextTick(() => {
-                    this.isFilteringMedia = true;
-                    Promise.all(this.media.map(media => {
-                        return this.applyFilterToMediaSave(media);
-                    })).catch(err => {
-                        console.error(err);
-                        swal('Oops!', 'An error occurred while applying filters to your media. Please refresh the page and try again. If the problem persist, please try a different web browser.', 'error');
-                    });
-                })
-            } else {
-                this.page = 3;
-            }
-		},
-
-        async applyFilterToMediaSave(media) {
-            if(!media.filter_class) {
-                return;
-            }
-
-            // Load image
-            const image = document.createElement('img');
-            image.src = media.url;
-            await new Promise((resolve, reject) => {
-                image.addEventListener('load', () => resolve());
-                image.addEventListener('error', () => {
-                    reject(new Error('Failed to load image'));
-                });
-            });
-
-            // Create canvas
-            let canvas;
-            let usingOffscreenCanvas = false;
-            if('OffscreenCanvas' in window) {
-                canvas = new OffscreenCanvas(image.width, image.height);
-                usingOffscreenCanvas = true;
-            } else {
-                canvas = document.createElement('canvas');
-                canvas.width = image.width;
-                canvas.height = image.height;
-            }
-
-            // Draw image with filter to canvas
-            const ctx = canvas.getContext('2d');
-            if (!ctx) {
-                throw new Error('Failed to get canvas context');
-            }
-            if (!('filter' in ctx)) {
-                throw new Error('Canvas filter not supported');
-            }
-            ctx.filter = App.util.filterCss[media.filter_class];
-            ctx.drawImage(image, 0, 0, image.width, image.height);
-            ctx.save();
-
-            // Convert canvas to blob
-            let blob;
-            if(usingOffscreenCanvas) {
-                blob = await canvas.convertToBlob({
-                    type: media.mime,
-                    quality: 1,
-                });
-            } else {
-                blob = await new Promise((resolve, reject) => {
-                    canvas.toBlob(blob => {
-                        if(blob) {
-                            resolve(blob);
-                        } else {
-                            reject(
-                                new Error('Failed to convert canvas to blob'),
-                            );
-                        }
-                    }, media.mime, 1);
-                });
-            }
-
-            // Upload blob / Update media
-            const data = new FormData();
-            data.append('file', blob);
-            data.append('id', media.id);
-            await axios.post('/api/compose/v0/media/update', data);
-            media.is_filtered = true;
-            this.updateFilteringMedia();
-        },
-
-        updateFilteringMedia() {
-            this.filteringRemainingCount--;
-            this.filteringMediaTimeout = setTimeout(() => this.filteringMediaTimeoutJob(), 500);
-        },
-
-        filteringMediaTimeoutJob() {
-            if(this.filteringRemainingCount === 0) {
-                this.isFilteringMedia = false;
-                clearTimeout(this.filteringMediaTimeout);
-                setTimeout(() => this.compose(), 500);
-            } else {
-                clearTimeout(this.filteringMediaTimeout);
-                this.filteringMediaTimeout = setTimeout(() => this.filteringMediaTimeoutJob(), 1000);
-            }
-        },
 
 		tagSearch(input) {
 			if (input.length < 1) { return []; }
@@ -2059,6 +1935,11 @@ export default {
 				this.collectionsCanLoadMore = true;
 			});
 		}
+	},
+    watch: {
+        files(value) {
+			this.editor.setSources(value.map(f => f.file))
+		},
 	}
 }
 </script>
@@ -2111,5 +1992,34 @@ export default {
 				}
 			}
 		}
+        .media-editor {
+            background-color: transparent;
+            border: none !important;
+            box-shadow: none !important;
+            font-size: 12px;
+
+            --height-menu-row: 5rem;
+            --gap-preview: 0rem;
+            --height-menu-row-scroll: 10rem;
+
+            --color-bg-button: transparent; /*var(--light);*/
+            --color-bg-preview: transparent; /*var(--light-gray);*/
+            --color-bg-button-hover: var(--light-gray);
+            --color-bg-acc: var(--card-bg);
+
+            --color-fnt-default: var(--body-color);
+            --color-fnt-acc: var(--text-lighter);
+
+            --color-scrollbar-thumb: var(--light-gray);
+            --color-scrollbar-both: var(--light-gray) transparent;
+
+            --color-slider-thumb: var(--text-lighter);
+            --color-slider-progress: var(--light-gray);
+            --color-slider-track: var(--light);
+
+            --color-crop-outline: var(--light-gray);
+            --color-crop-dashed: #ffffffde;
+            --color-crop-overlay: #00000082;
+        }
 	}
 </style>

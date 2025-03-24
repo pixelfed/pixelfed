@@ -40,10 +40,11 @@ class CatchUnoptimizedMedia extends Command
      */
     public function handle()
     {
+        $hasLimit = (bool) config('media.image_optimize.catch_unoptimized_media_hour_limit');
         Media::whereNull('processed_at')
-            ->where('created_at', '>', now()->subHours(1))
-            ->where('skip_optimize', '!=', true)
-            ->whereNull('remote_url')
+            ->when($hasLimit, function($q, $hasLimit) {
+                $q->where('created_at', '>', now()->subHours(1));
+            })->whereNull('remote_url')
             ->whereNotNull('status_id')
             ->whereNotNull('media_path')
             ->whereIn('mime', [
@@ -52,6 +53,7 @@ class CatchUnoptimizedMedia extends Command
             ])
             ->chunk(50, function($medias) {
                 foreach ($medias as $media) {
+					if ($media->skip_optimize) continue;
                     ImageOptimize::dispatch($media);
                 }
             });

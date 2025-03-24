@@ -16,6 +16,7 @@ declare -a packages=()
 # Standard packages
 packages+=(
     apt-utils
+    bzip2
     ca-certificates
     curl
     git

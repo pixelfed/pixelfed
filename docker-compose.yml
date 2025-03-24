@@ -17,7 +17,7 @@ services:
   #
   # See: https://github.com/nginx-proxy/nginx-proxy/tree/main/docs
   proxy:
-    image: nginxproxy/nginx-proxy:1.4
+    image: "nginxproxy/nginx-proxy:${DOCKER_PROXY_VERSION}"
     container_name: "${DOCKER_ALL_CONTAINER_NAME_PREFIX}-proxy"
     restart: unless-stopped
     profiles:

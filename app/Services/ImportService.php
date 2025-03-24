@@ -14,7 +14,7 @@ class ImportService
         if($userId > 999999) {
             return;
         }
-        if($year < 9 || $year > 23) {
+        if($year < 9 || $year > (int) now()->addYear()->format('y')) {
             return;
         }
         if($month < 1 || $month > 12) {

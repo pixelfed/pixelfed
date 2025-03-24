@@ -5,11 +5,15 @@ namespace App\Jobs\MentionPipeline;
 use App\Mention;
 use App\Notification;
 use App\Status;
+use App\User;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
+use App\Jobs\PushNotificationPipeline\MentionPushNotifyPipeline;
+use App\Services\NotificationAppGatewayService;
+use App\Services\PushNotificationService;
 use App\Services\StatusService;
 
 class MentionPipeline implements ShouldQueue
@@ -57,7 +61,7 @@ class MentionPipeline implements ShouldQueue
                   ->count();
 
         if ($actor->id === $target || $exists !== 0) {
-            return true;
+            return;
         }
 
         Notification::firstOrCreate(
@@ -71,5 +75,14 @@ class MentionPipeline implements ShouldQueue
         );
 
         StatusService::del($status->id);
+
+        if (NotificationAppGatewayService::enabled()) {
+            if (PushNotificationService::check('mention', $target)) {
+                $user = User::whereProfileId($target)->first();
+                if ($user && $user->expo_token && $user->notify_enabled) {
+                    MentionPushNotifyPipeline::dispatch($user->expo_token, $actor->username)->onQueue('pushnotify');
+                }
+            }
+        }
     }
 }

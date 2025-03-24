@@ -29,7 +29,7 @@ class CollectionController extends Controller
         return view('collection.create', compact('collection'));
     }
 
-    public function show(Request $request, int $id)
+    public function show(Request $request, $id)
     {
         $user = $request->user();
         $collection = CollectionService::getCollection($id);

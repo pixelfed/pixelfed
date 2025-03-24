@@ -19,7 +19,7 @@ return [
         'remoteFollow' => env('AP_REMOTE_FOLLOW', true),
 
         'delivery' => [
-            'timeout' => env('ACTIVITYPUB_DELIVERY_TIMEOUT', 30.0),
+            'timeout' => env('ACTIVITYPUB_DELIVERY_TIMEOUT', 30),
             'concurrency' => env('ACTIVITYPUB_DELIVERY_CONCURRENCY', 10),
             'logger' => [
                 'enabled' => env('AP_LOGGER_ENABLED', false),

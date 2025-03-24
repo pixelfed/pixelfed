@@ -38,7 +38,7 @@ class Kernel extends ConsoleKernel
         }
 
         if (config('import.instagram.enabled')) {
-            $schedule->command('app:transform-imports')->everyTenMinutes()->onOneServer();
+            $schedule->command('app:transform-imports')->twiceDaily(13, 22)->onOneServer();
             $schedule->command('app:import-upload-garbage-collection')->hourlyAt(51)->onOneServer();
             $schedule->command('app:import-remove-deleted-accounts')->hourlyAt(37)->onOneServer();
             $schedule->command('app:import-upload-clean-storage')->twiceDailyAt(1, 13, 32)->onOneServer();

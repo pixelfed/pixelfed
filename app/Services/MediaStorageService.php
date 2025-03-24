@@ -19,7 +19,7 @@ class MediaStorageService
     public static function store(Media $media)
     {
         if ((bool) config_cache('pixelfed.cloud_storage') == true) {
-            (new self())->cloudStore($media);
+            (new self)->cloudStore($media);
         }
 
     }
@@ -31,19 +31,19 @@ class MediaStorageService
         }
 
         if ((bool) config_cache('pixelfed.cloud_storage') == true) {
-            return (new self())->cloudMove($media);
+            return (new self)->cloudMove($media);
         }
 
     }
 
     public static function avatar($avatar, $local = false, $skipRecentCheck = false)
     {
-        return (new self())->fetchAvatar($avatar, $local, $skipRecentCheck);
+        return (new self)->fetchAvatar($avatar, $local, $skipRecentCheck);
     }
 
     public static function head($url)
     {
-        $c = new Client();
+        $c = new Client;
         try {
             $r = $c->request('HEAD', $url);
         } catch (RequestException $e) {
@@ -75,17 +75,19 @@ class MediaStorageService
     {
         if ($media->remote_media == true) {
             if (config('media.storage.remote.cloud')) {
-                (new self())->remoteToCloud($media);
+                (new self)->remoteToCloud($media);
             }
         } else {
-            (new self())->localToCloud($media);
+            (new self)->localToCloud($media);
         }
     }
 
     protected function localToCloud($media)
     {
         $path = storage_path('app/'.$media->media_path);
-        $thumb = storage_path('app/'.$media->thumbnail_path);
+        if ($media->thumbnail_path) {
+            $thumb = storage_path('app/'.$media->thumbnail_path);
+        }
 
         $p = explode('/', $media->media_path);
         $name = array_pop($p);
@@ -94,7 +96,7 @@ class MediaStorageService
         $storagePath = implode('/', $p);
 
         $url = ResilientMediaStorageService::store($storagePath, $path, $name);
-        if ($thumb) {
+        if ($media->thumbnail_path) {
             $thumbUrl = ResilientMediaStorageService::store($storagePath, $thumb, $thumbname);
             $media->thumbnail_url = $thumbUrl;
         }
@@ -102,6 +104,18 @@ class MediaStorageService
         $media->optimized_url = $url;
         $media->replicated_at = now();
         $media->save();
+        if ((bool) config_cache('pixelfed.cloud_storage') && (bool) config('media.delete_local_after_cloud')) {
+            $s3Domain = config('filesystems.disks.s3.url') ?? config('filesystems.disks.s3.endpoint');
+            if (str_contains($url, $s3Domain)) {
+                if (file_exists($path)) {
+                    unlink($path);
+                }
+
+                if (file_exists($thumb)) {
+                    unlink($thumb);
+                }
+            }
+        }
         if ($media->status_id) {
             Cache::forget('status:transformer:media:attachments:'.$media->status_id);
             MediaService::del($media->status_id);

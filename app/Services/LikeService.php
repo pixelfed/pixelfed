@@ -79,13 +79,13 @@ class LikeService {
 
 		$res = Cache::remember('pf:services:likes:liked_by:' . $status->id, 86400, function() use($status, $empty) {
 			$like = Like::whereStatusId($status->id)->first();
-			if(!$like) {
+			if(!$like || !$like->profile_id) {
 				return $empty;
 			}
 			$id = $like->profile_id;
-			$profile = ProfileService::get($id, true);
+			$profile = AccountService::get($id, true);
 			if(!$profile) {
-				return [];
+				return $empty;
 			}
 			$profileUrl = "/i/web/profile/{$profile['id']}";
 			$res = [

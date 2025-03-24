@@ -107,7 +107,7 @@
                         <p v-else class="lead mb-0"><span class="font-weight-bold">{{ selectedPostsCounter }}</span> posts selected for import</p>
 
                         <button v-if="selectedMedia.length" class="btn btn-outline-danger font-weight-bold rounded-pill btn-sm my-1" @click="handleClearAll()">Clear all selected</button>
-                        <button v-else class="btn btn-outline-primary font-weight-bold rounded-pill" @click="handleSelectAll()">Select first 100 posts</button>
+                        <button v-else class="btn btn-outline-primary font-weight-bold rounded-pill" @click="handleSelectAll()">Select first {{ toggleLimit }} posts</button>
                     </div>
                 </section>
                 <section class="row mb-n5 media-selector" style="max-height: 600px;overflow-y: auto;">
@@ -233,7 +233,7 @@
             return {
                 page: 1,
                 step: 1,
-                toggleLimit: 100,
+                toggleLimit: 300,
                 config: {},
                 showDisabledWarning: false,
                 showNotAllowedWarning: false,
@@ -375,11 +375,14 @@
                 }
                 let res = json.filter(j => {
                     let ids = j.media.map(m => m.uri).filter(m => {
-                        if(this.config.allow_video_posts == true) {
-                            return m.endsWith('.png') || m.endsWith('.jpg') || m.endsWith('.mp4');
-                        } else {
-                            return m.endsWith('.png') || m.endsWith('.jpg');
+                        const supportedFormats = ['.png', '.jpg'];
+                        if (this.config.allow_video_posts) {
+                          supportedFormats.push('.mp4');
                         }
+                        if (this.config.allow_image_webp) {
+                          supportedFormats.push('.webp');
+                        }
+                        return supportedFormats.some(format => m.endsWith(format));
                     });
                     return ids.length;
                 }).filter(j => {
@@ -394,7 +397,7 @@
                 let file = this.$refs.zipInput.files[0];
                 let entries = await this.model(file);
                 if (entries && entries.length) {
-                    let files = await entries.filter(e => e.filename === 'content/posts_1.json' || e.filename === 'your_instagram_activity/content/posts_1.json');
+                    let files = await entries.filter(e => e.filename === 'content/posts_1.json' || e.filename === 'your_instagram_activity/content/posts_1.json' || e.filename === 'your_instagram_activity/media/posts_1.json');
 
                     if(!files || !files.length) {
                         this.contactModal(
@@ -415,7 +418,7 @@
                 let entries = await this.model(file);
                 if (entries && entries.length) {
                     this.zipFiles = entries;
-                    let media = await entries.filter(e => e.filename === 'content/posts_1.json' || e.filename === 'your_instagram_activity/content/posts_1.json')[0].getData(new zip.TextWriter());
+                    let media = await entries.filter(e => e.filename === 'content/posts_1.json' || e.filename === 'your_instagram_activity/content/posts_1.json' || e.filename === 'your_instagram_activity/media/posts_1.json')[0].getData(new zip.TextWriter());
                     this.filterPostMeta(media);
 
                     let imgs = await Promise.all(entries.filter(entry => {
@@ -621,7 +624,7 @@
             },
 
             handleSelectAll() {
-                let medias = this.postMeta.slice(0, 100);
+                let medias = this.postMeta.slice(0, this.toggleLimit);
                 for (var i = medias.length - 1; i >= 0; i--) {
                     let m = medias[i];
                     this.toggleSelectedPost(m);

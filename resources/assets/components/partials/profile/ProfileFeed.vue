@@ -438,7 +438,7 @@
 			<div v-if="!archives || !archives.length" class="row justify-content-center">
 				<div class="col-12 col-md-8 text-center">
 					<img src="/img/illustrations/dk-nature-man-monochrome.svg" class="img-fluid" style="opacity: 0.6;">
-					<p class="lead text-muted font-weight-bold">We can't seem to find any posts you have bookmarked</p>
+					<p class="lead text-muted font-weight-bold">We can't seem to find any posts you have archived</p>
 				</div>
 			</div>
 		</div>
@@ -844,32 +844,6 @@
 						this.canLoadMoreArchives = true;
 					}
 				})
-			},
-
-			handleBookmark(index) {
-				let p = this.feed[index];
-
-				if(p.reblog) {
-					p = p.reblog;
-				}
-
-				axios.post('/i/bookmark', {
-					item: p.id
-				})
-				.then(res => {
-					if(this.feed[index].reblog) {
-						this.feed[index].reblog.bookmarked = !p.bookmarked;
-					} else {
-						this.feed[index].bookmarked = !p.bookmarked;
-					}
-				})
-				.catch(err => {
-					this.$bvToast.toast('Cannot bookmark post at this time.', {
-						title: 'Bookmark Error',
-						variant: 'danger',
-						autoHideDelay: 5000
-					});
-				});
 			},
 
 			formatCount(val) {

@@ -1,27 +1,32 @@
 {
     "common": {
-        "comment": "Comentario",
+        "comment": "Comentar",
         "commented": "Comentado",
         "comments": "Comentarios",
         "like": "Me gusta",
         "liked": "Te gusta",
-        "likes": "Me gustas",
+        "likes": "Me gusta",
         "share": "Compartir",
         "shared": "Compartido",
         "shares": "Compartidos",
         "unshare": "No compartir",
+        "bookmark": "Marcador",
         "cancel": "Cancelar",
         "copyLink": "Copiar Enlace",
         "delete": "Eliminar",
         "error": "Error",
-        "errorMsg": "Algo fue mal. Por favor int\u00e9ntelo de nuevo m\u00e1s tarde.",
+        "errorMsg": "Algo sali\u00f3 mal. Por favor int\u00e9ntalo de nuevo m\u00e1s tarde.",
         "oops": "Upss!",
         "other": "Otros",
         "readMore": "Ver m\u00e1s",
         "success": "Correcto",
+        "proceed": "Proceder",
+        "next": "Siguiente",
+        "close": "Cerrar",
+        "clickHere": "haz clic aqu\u00ed",
         "sensitive": "Sensible",
         "sensitiveContent": "Contenido Sensible",
-        "sensitiveContentWarning": "Este post podr\u00eda tener contenido sensible"
+        "sensitiveContentWarning": "Esta publicaci\u00f3n podr\u00eda contener contenido sensible"
     },
     "site": {
         "terms": "T\u00e9rminos de Uso",
@@ -41,8 +46,9 @@
         "profile": "Perfil",
         "drive": "Multimedia",
         "settings": "Ajustes",
+        "appearance": "Aspecto",
         "compose": "Crear Nuevo",
-        "logout": "Logout",
+        "logout": "Cerrar sesi\u00f3n",
         "about": "Acerca de",
         "help": "Ayuda",
         "language": "Idioma",
@@ -73,12 +79,13 @@
         "groupPost": "publicaci\u00f3n de grupo",
         "modlog": "modlog",
         "post": "publicaci\u00f3n",
-        "story": "historia"
+        "story": "historia",
+        "noneFound": "No se han encontrado notificaciones"
     },
     "post": {
-        "shareToFollowers": "Compartir a seguidores",
-        "shareToOther": "Compartir a otros",
-        "noLikes": "No hay me gustas",
+        "shareToFollowers": "Compartir con seguidores",
+        "shareToOther": "Compartir con otros",
+        "noLikes": "A\u00fan no hay \"me gusta\"",
         "uploading": "Subiendo"
     },
     "profile": {
@@ -89,32 +96,32 @@
         "collections": "Colecciones",
         "follow": "Seguir",
         "unfollow": "Dejar de seguir",
-        "editProfile": "Editar Perfil",
+        "editProfile": "Editar perfil",
         "followRequested": "Seguimiento Solicitado",
         "joined": "Se uni\u00f3",
-        "emptyCollections": "We can't seem to find any collections",
-        "emptyPosts": "We can't seem to find any posts"
+        "emptyCollections": "Parece que no podemos encontrar ninguna colecci\u00f3n",
+        "emptyPosts": "Parece que no podemos encontrar ninguna publicaci\u00f3n"
     },
     "menu": {
-        "viewPost": "Ver Publicaci\u00f3n",
-        "viewProfile": "Ver Perfil",
-        "moderationTools": "Herramientas de Moderaci\u00f3n",
+        "viewPost": "Ver publicaci\u00f3n",
+        "viewProfile": "Ver perfil",
+        "moderationTools": "Herramientas de moderaci\u00f3n",
         "report": "Reportar",
         "archive": "Archivar",
-        "unarchive": "No Archivar",
+        "unarchive": "Desarchivar",
         "embed": "Incrustar",
-        "selectOneOption": "Escoge una de las siguientes opciones",
+        "selectOneOption": "Selecciona una de las siguientes opciones",
         "unlistFromTimelines": "No listar en L\u00edneas Temporales",
         "addCW": "A\u00f1adir Spoiler",
         "removeCW": "Quitar Spoiler",
         "markAsSpammer": "Marcar como Spammer",
         "markAsSpammerText": "No listar + Spoiler publicaciones actuales y futuras",
         "spam": "Spam",
-        "sensitive": "Contenido Sensible",
+        "sensitive": "Contenido sensible",
         "abusive": "Abusivo o Da\u00f1ino",
-        "underageAccount": "Cuenta de Menor de Edad",
-        "copyrightInfringement": "Violaci\u00f3n de Copyright",
-        "impersonation": "Suplantaci\u00f3n",
+        "underageAccount": "Cuenta de menor de edad",
+        "copyrightInfringement": "Infracci\u00f3n de derechos de autor",
+        "impersonation": "Suplantaci\u00f3n de identidad",
         "scamOrFraud": "Scam o Fraude",
         "confirmReport": "Confirmar Reporte",
         "confirmReportText": "\u00bfSeguro que quieres reportar esta publicaci\u00f3n?",
@@ -125,26 +132,53 @@
         "modCWSuccess": "Spoiler a\u00f1adido correctamente",
         "modRemoveCWConfirm": "\u00bfSeguro que desea eliminar el spoiler de esta publicaci\u00f3n?",
         "modRemoveCWSuccess": "Spoiler eliminado correctamente",
-        "modUnlistConfirm": "\u00bfSeguro que desea no listar esta publicaci\u00f3n?",
+        "modUnlistConfirm": "\u00bfEst\u00e1s seguro de que deseas no listar esta publicaci\u00f3n?",
         "modUnlistSuccess": "Publicaci\u00f3n no listada correctamente",
         "modMarkAsSpammerConfirm": "\u00bfSeguro que quiere marcar este usuario como spammer? Todas las publicaciones existentes y futuras no ser\u00e1n listadas en las l\u00edneas temporales y se les agregar\u00e1 un Spoiler o alerta de contenido.",
         "modMarkAsSpammerSuccess": "Cuenta marcada como spam correctamente",
         "toFollowers": "a Seguidores",
         "showCaption": "Mostrar subt\u00edtulos",
-        "showLikes": "Mostrar me gustas",
-        "compactMode": "Modo Compacto",
-        "embedConfirmText": "Usando este incrustado, usted acepta",
-        "deletePostConfirm": "\u00bfSeguro que desea eliminar esta publicaci\u00f3n?",
-        "archivePostConfirm": "\u00bfSeguro que desea archivar esta publicaci\u00f3n?",
+        "showLikes": "Mostrar \"me gusta\"",
+        "compactMode": "Modo compacto",
+        "embedConfirmText": "Al utilizar esta incrustaci\u00f3n, usted acepta nuestros",
+        "deletePostConfirm": "\u00bfSeguro que deseas eliminar esta publicaci\u00f3n?",
+        "archivePostConfirm": "\u00bfSeguro que deseas archivar esta publicaci\u00f3n?",
         "unarchivePostConfirm": "\u00bfSeguro que desea desarchivar esta publicaci\u00f3n?"
     },
     "story": {
-        "add": "A\u00f1adir Historia"
+        "add": "A\u00f1adir historia"
     },
     "timeline": {
-        "peopleYouMayKnow": "Gente que podr\u00edas conocer"
+        "peopleYouMayKnow": "Personas que quiz\u00e1s conozcas",
+        "onboarding": {
+            "welcome": "Bienvenido/a",
+            "thisIsYourHomeFeed": "Este es tu cronolog\u00eda principal, que muestra de manera cronol\u00f3gica las publicaciones de cuentas que sigues.",
+            "letUsHelpYouFind": "D\u00e9janos ayudarte a encontrar algunas personas interesantes para seguir",
+            "refreshFeed": "Actualizar mi cronolog\u00eda"
+        }
     },
     "hashtags": {
-        "emptyFeed": "We can't seem to find any posts for this hashtag"
+        "emptyFeed": "Parece que no podemos encontrar posts para este hashtag"
+    },
+    "report": {
+        "report": "Reportar",
+        "selectReason": "Seleccionar un motivo",
+        "reported": "Reportado",
+        "sendingReport": "Enviando reporte",
+        "thanksMsg": "Gracias por el reporte, \u00a1personas como t\u00fa ayudan a mantener nuestra comunidad segura!",
+        "contactAdminMsg": "Si quieres contactar un administrador sobre esta publicaci\u00f3n o reporte"
+    },
+    "appearance": {
+        "theme": "Tema",
+        "profileLayout": "Arreglo de Perfil",
+        "compactPreviews": "Previstas Compactas de Medios",
+        "loadComments": "Cargar Comentarios",
+        "hideStats": "Ocultar Cuentas y Estad\u00edsticas",
+        "auto": "Autom\u00e1tico",
+        "lightMode": "Modo claro",
+        "darkMode": "Modo oscuro",
+        "grid": "Cuadr\u00edcula",
+        "masonry": "Mamposter\u00eda",
+        "feed": "Feed"
     }
 }

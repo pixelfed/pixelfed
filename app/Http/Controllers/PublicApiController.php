@@ -730,6 +730,9 @@ class PublicApiController extends Controller
             ->map(function ($s) use ($user) {
                 try {
                     $status = StatusService::get($s->id, false);
+                    if (! $status) {
+                        return false;
+                    }
                 } catch (\Exception $e) {
                     $status = false;
                 }
@@ -740,6 +743,9 @@ class PublicApiController extends Controller
                 return $status;
             })
             ->filter(function ($s) use ($onlyMedia) {
+                if (! $s) {
+                    return false;
+                }
                 if ($onlyMedia) {
                     if (
                         ! isset($s['media_attachments']) ||

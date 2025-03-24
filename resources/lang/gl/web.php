@@ -13,6 +13,7 @@ return [
 		'shared' => 'Compartiu',
 		'shares' => 'Compartido',
 		'unshare' => 'Non compartir',
+		'bookmark' => 'Marcar',
 
 		'cancel' => 'Cancelar',
 		'copyLink' => 'Copiar ligazón',
@@ -23,6 +24,10 @@ return [
 		'other' => 'Outro',
 		'readMore' => 'Ler máis',
 		'success' => 'Éxito',
+		'proceed' => 'Proceder',
+		'next' => 'Seguinte',
+		'close' => 'Pechar',
+		'clickHere' => 'preme aquí',
 
 		'sensitive' => 'Sensible',
 		'sensitiveContent' => 'Contido sensible',
@@ -55,7 +60,7 @@ return [
 		'drive' => 'Drive',
 		'settings' => 'Axustes',
 		'compose' => 'Crear Nova',
-		'logout' => 'Logout',
+		'logout' => 'Saír',
 
 		// Nav footer
 		'about' => 'Acerca de',
@@ -84,19 +89,20 @@ return [
 		'updatedA' => 'actualizou unha',
 		'sentA' => 'enviou unha',
 
-		'followed' => 'seguiu',
-		'mentioned' => 'mencionou',
-		'you' => 'you',
+		'followed' => 'seguiute',
+		'mentioned' => 'mencionoute',
+		'you' => 'ti',
 
 		'yourApplication' => 'A túa solicitude para unirte',
 		'applicationApproved' => 'foi aprobada!',
 		'applicationRejected' => 'for rexeitada. Podes volver a solicitar unirte en 6 meses.',
 
 		'dm' => 'md',
-		'groupPost' => 'group post',
+		'groupPost' => 'publicación grupal',
 		'modlog' => 'modlog',
 		'post' => 'publicación',
 		'story' => 'historia',
+		'noneFound' => 'Non hai notificacións',
 	],
 
 	'post' => [
@@ -118,8 +124,8 @@ return [
 		'followRequested' => 'Seguimento pedido',
 		'joined' => 'Uniuse',
 
-		'emptyCollections' => 'We can\'t seem to find any collections',
-		'emptyPosts' => 'We can\'t seem to find any posts',
+		'emptyCollections' => 'Non podemos atopar ningunha colección',
+		'emptyPosts' => 'Non podemos atopar ningunha publicación',
 	],
 
 	'menu' => [
@@ -176,11 +182,27 @@ return [
 	],
 
 	'timeline' => [
-		'peopleYouMayKnow' => 'Xente que podes coñecer'
+		'peopleYouMayKnow' => 'Xente que podes coñecer',
+
+		'onboarding' => [
+			'welcome' => 'Benvido/a',
+			'thisIsYourHomeFeed' => 'Esta é a túa cronoloxía de inicio, formada por publicacións en orde cronolóxica das contas que segues.',
+			'letUsHelpYouFind' => 'Deixa que che axudemos a atopar xente interesante que seguir',
+			'refreshFeed' => 'Actualiza a cronoloxía',
+		],
 	],
 
 	'hashtags' => [
-		'emptyFeed' => 'We can\'t seem to find any posts for this hashtag'
+		'emptyFeed' => 'Non podemos atopar ningunha publicación con este cancelo'
+	],
+
+	'report' => [
+		'report' => 'Denunciar',
+		'selectReason' => 'Elixe unha razón',
+		'reported' => 'Denunciado',
+		'sendingReport' => 'Enviando a denuncia',
+		'thanksMsg' => 'Grazas pola denuncia e axudarnos a manter segura a comunidade!',
+		'contactAdminMsg' => 'Se queres contactar coa administración acerca desta publicación ou denuncia',
 	],
 
 ];

@@ -25,7 +25,7 @@ class StatusTransformer extends Fractal\TransformerAbstract
         $pid = request()->user()->profile_id;
         $taggedPeople = MediaTagService::get($status->id);
         $poll = $status->type === 'poll' ? PollService::get($status->id, $pid) : null;
-        $content = $status->caption ? Autolink::create()->autolink($status->caption) : null;
+        $content = $status->caption ? nl2br(Autolink::create()->autolink($status->caption)) : '';
 
         return [
             '_v' => 1,
@@ -33,8 +33,8 @@ class StatusTransformer extends Fractal\TransformerAbstract
             'shortcode' => HashidService::encode($status->id),
             'uri' => $status->url(),
             'url' => $status->url(),
-            'in_reply_to_id' => (string) $status->in_reply_to_id,
-            'in_reply_to_account_id' => (string) $status->in_reply_to_profile_id,
+            'in_reply_to_id' => $status->in_reply_to_id ? (string) $status->in_reply_to_id : null,
+            'in_reply_to_account_id' => $status->in_reply_to_profile_id ? (string) $status->in_reply_to_profile_id : null,
             'reblog' => $status->reblog_of_id ? StatusService::get($status->reblog_of_id) : null,
             'content' => $content,
             'content_text' => $status->caption,

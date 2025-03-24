@@ -56,7 +56,7 @@ class DomainBlockController extends Controller
         abort_if(!$request->user(), 403);
 
         $this->validate($request, [
-            'domain' => 'required|active_url|min:1|max:120'
+            'domain' => 'required|min:1|max:120'
         ]);
 
         $pid = $request->user()->profile_id;

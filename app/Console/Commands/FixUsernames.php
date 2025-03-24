@@ -90,7 +90,7 @@ class FixUsernames extends Command
                         break;
 
                     case $opts[1]:
-                        $new = filter_var($old, FILTER_SANITIZE_STRING|FILTER_FLAG_STRIP_LOW);
+                        $new = htmlspecialchars($old, ENT_QUOTES, 'UTF-8');
                         if(strlen($new) < 6) {
                             $new = $new . '_' . str_random(4);
                         }

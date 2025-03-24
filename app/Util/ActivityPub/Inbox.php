@@ -32,6 +32,7 @@ use App\Services\NotificationAppGatewayService;
 use App\Services\PollService;
 use App\Services\PushNotificationService;
 use App\Services\ReblogService;
+use App\Services\RelationshipService;
 use App\Services\UserFilterService;
 use App\Status;
 use App\Story;
@@ -42,6 +43,7 @@ use App\Util\ActivityPub\Validator\Announce as AnnounceValidator;
 use App\Util\ActivityPub\Validator\Follow as FollowValidator;
 use App\Util\ActivityPub\Validator\Like as LikeValidator;
 use App\Util\ActivityPub\Validator\MoveValidator;
+use App\Util\ActivityPub\Validator\RejectValidator;
 use App\Util\ActivityPub\Validator\UpdatePersonValidator;
 use Cache;
 use Illuminate\Support\Facades\Bus;
@@ -120,6 +122,9 @@ class Inbox
                 break;
 
             case 'Reject':
+                if (RejectValidator::validate($this->payload) == false) {
+                    return;
+                }
                 $this->handleRejectActivity();
                 break;
 
@@ -245,7 +250,7 @@ class Inbox
         $cc = isset($activity['cc']) ? $activity['cc'] : [];
 
         if ($activity['type'] == 'Question') {
-            //$this->handlePollCreate();
+            // $this->handlePollCreate();
 
             return;
         }
@@ -614,6 +619,9 @@ class Inbox
             Cache::forget('profile:following_count:'.$target->id);
             Cache::forget('profile:following_count:'.$actor->id);
         }
+        RelationshipService::refresh($actor->id, $target->id);
+        AccountService::del($actor->id);
+        AccountService::del($target->id);
 
     }
 
@@ -645,6 +653,7 @@ class Inbox
             'profile_id' => $actor->id,
             'reblog_of_id' => $parent->id,
             'type' => 'share',
+            'local' => false,
         ]);
 
         Notification::firstOrCreate(
@@ -705,10 +714,20 @@ class Inbox
             'profile_id' => $actor->id,
             'following_id' => $target->id,
         ]);
-        FollowPipeline::dispatch($follower);
-
+        FollowPipeline::dispatch($follower)->onQueue('high');
+        RelationshipService::refresh($actor->id, $target->id);
+        Cache::forget('profile:following:'.$target->id);
+        Cache::forget('profile:followers:'.$target->id);
+        Cache::forget('profile:following:'.$actor->id);
+        Cache::forget('profile:followers:'.$actor->id);
+        Cache::forget('profile:follower_count:'.$target->id);
+        Cache::forget('profile:follower_count:'.$actor->id);
+        Cache::forget('profile:following_count:'.$target->id);
+        Cache::forget('profile:following_count:'.$actor->id);
+        AccountService::del($actor->id);
+        AccountService::del($target->id);
+        RelationshipService::get($actor->id, $target->id);
         $request->delete();
-
     }
 
     public function handleDeleteActivity()
@@ -842,7 +861,21 @@ class Inbox
 
     }
 
-    public function handleRejectActivity() {}
+    public function handleRejectActivity()
+    {
+        $actorUrl = $this->payload['actor'];
+        $obj = $this->payload['object'];
+        $profileUrl = $obj['actor'];
+        if (! Helpers::validateUrl($actorUrl) || ! Helpers::validateLocalUrl($profileUrl)) {
+            return;
+        }
+        $actor = Helpers::profileFetch($actorUrl);
+        $profile = Helpers::profileFetch($profileUrl);
+
+        FollowRequest::whereFollowerId($profile->id)->whereFollowingId($actor->id)->forceDelete();
+        RelationshipService::refresh($actor->id, $profile->id);
+
+    }
 
     public function handleUndoActivity()
     {
@@ -908,6 +941,9 @@ class Inbox
                 Follower::whereProfileId($profile->id)
                     ->whereFollowingId($following->id)
                     ->delete();
+                FollowRequest::whereFollowingId($following->id)
+                    ->whereFollowerId($profile->id)
+                    ->forceDelete();
                 Notification::whereProfileId($following->id)
                     ->whereActorId($profile->id)
                     ->whereAction('follow')
@@ -915,6 +951,9 @@ class Inbox
                     ->whereItemType('App\Profile')
                     ->forceDelete();
                 FollowerService::remove($profile->id, $following->id);
+                RelationshipService::refresh($following->id, $profile->id);
+                AccountService::del($profile->id);
+                AccountService::del($following->id);
                 break;
 
             case 'Like':

@@ -48,12 +48,15 @@ if($displayName && $captionPreview) {
 
 @push('meta')@if($mediaCount && $s['pf_type'] === "photo" || $s['pf_type'] === "photo:album")
 <meta property="og:image" content="{{$s['media_attachments'][0]['url']}}">
+    <meta name="twitter:card" content="summary_large_image">
     @elseif($mediaCount && $s['pf_type'] === "video" || $s['pf_type'] === "video:album")<meta property="og:video" content="{{$s['media_attachments'][0]['url']}}">
+    <meta name="twitter:card" content="summary">
+    @else
+    <meta name="twitter:card" content="summary">
     @endif<meta property="og:description" content="{{ $ogDescription }}">
     <meta property="og:published_time" content="{{$s['created_at']}}">
     <meta property="profile:username" content="{{ $wf }}">
     <link href='{{$s['url']}}' rel='alternate' type='application/activity+json'>
-    <meta name="twitter:card" content="summary">
     <meta name="description" content="{{ $ogDescription }}">
 @endpush
 

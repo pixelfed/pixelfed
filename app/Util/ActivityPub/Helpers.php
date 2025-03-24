@@ -24,7 +24,6 @@ use App\Status;
 use App\Util\Media\License;
 use Cache;
 use Carbon\Carbon;
-use Illuminate\Support\Str;
 use Illuminate\Validation\Rule;
 use League\Uri\Exceptions\UriException;
 use League\Uri\Uri;
@@ -33,16 +32,32 @@ use Validator;
 
 class Helpers
 {
-    public static function validateObject($data)
+    private const PUBLIC_TIMELINE = 'https://www.w3.org/ns/activitystreams#Public';
+
+    private const CACHE_TTL = 14440;
+
+    private const URL_CACHE_PREFIX = 'helpers:url:';
+
+    private const FETCH_CACHE_TTL = 15;
+
+    private const LOCALHOST_DOMAINS = [
+        'localhost',
+        '127.0.0.1',
+        '::1',
+        'broadcasthost',
+        'ip6-localhost',
+        'ip6-loopback',
+    ];
+
+    /**
+     * Validate an ActivityPub object
+     */
+    public static function validateObject(array $data): bool
     {
         $verbs = ['Create', 'Announce', 'Like', 'Follow', 'Delete', 'Accept', 'Reject', 'Undo', 'Tombstone'];
 
-        $valid = Validator::make($data, [
-            'type' => [
-                'required',
-                'string',
-                Rule::in($verbs),
-            ],
+        return Validator::make($data, [
+            'type' => ['required', 'string', Rule::in($verbs)],
             'id' => 'required|string',
             'actor' => 'required|string|url',
             'object' => 'required',
@@ -50,105 +65,88 @@ class Helpers
             'object.attributedTo' => 'required_if:type,Create|url',
             'published' => 'required_if:type,Create|date',
         ])->passes();
-
-        return $valid;
     }
 
-    public static function verifyAttachments($data)
+    /**
+     * Validate media attachments
+     */
+    public static function verifyAttachments(array $data): bool
     {
         if (! isset($data['object']) || empty($data['object'])) {
             $data = ['object' => $data];
         }
 
         $activity = $data['object'];
-
         $mimeTypes = explode(',', config_cache('pixelfed.media_types'));
-        $mediaTypes = in_array('video/mp4', $mimeTypes) ? ['Document', 'Image', 'Video'] : ['Document', 'Image'];
-
-        // Peertube
-        // $mediaTypes = in_array('video/mp4', $mimeTypes) ? ['Document', 'Image', 'Video', 'Link'] : ['Document', 'Image'];
+        $mediaTypes = in_array('video/mp4', $mimeTypes) ?
+            ['Document', 'Image', 'Video'] :
+            ['Document', 'Image'];
 
         if (! isset($activity['attachment']) || empty($activity['attachment'])) {
             return false;
         }
 
-        // peertube
-        // $attachment = is_array($activity['url']) ?
-        //  collect($activity['url'])
-        //  ->filter(function($media) {
-        //      return $media['type'] == 'Link' && $media['mediaType'] == 'video/mp4';
-        //  })
-        //  ->take(1)
-        //  ->values()
-        //  ->toArray()[0] : $activity['attachment'];
-
-        $attachment = $activity['attachment'];
-
-        $valid = Validator::make($attachment, [
-            '*.type' => [
-                'required',
-                'string',
-                Rule::in($mediaTypes),
-            ],
+        return Validator::make($activity['attachment'], [
+            '*.type' => ['required', 'string', Rule::in($mediaTypes)],
             '*.url' => 'required|url',
-            '*.mediaType' => [
-                'required',
-                'string',
-                Rule::in($mimeTypes),
-            ],
+            '*.mediaType' => ['required', 'string', Rule::in($mimeTypes)],
             '*.name' => 'sometimes|nullable|string',
             '*.blurhash' => 'sometimes|nullable|string|min:6|max:164',
             '*.width' => 'sometimes|nullable|integer|min:1|max:5000',
             '*.height' => 'sometimes|nullable|integer|min:1|max:5000',
         ])->passes();
-
-        return $valid;
     }
 
-    public static function normalizeAudience($data, $localOnly = true)
+    /**
+     * Normalize ActivityPub audience
+     */
+    public static function normalizeAudience(array $data, bool $localOnly = true): ?array
     {
         if (! isset($data['to'])) {
-            return;
+            return null;
         }
 
-        $audience = [];
-        $audience['to'] = [];
-        $audience['cc'] = [];
-        $scope = 'private';
+        $audience = [
+            'to' => [],
+            'cc' => [],
+            'scope' => 'private',
+        ];
 
         if (is_array($data['to']) && ! empty($data['to'])) {
             foreach ($data['to'] as $to) {
-                if ($to == 'https://www.w3.org/ns/activitystreams#Public') {
-                    $scope = 'public';
+                if ($to == self::PUBLIC_TIMELINE) {
+                    $audience['scope'] = 'public';
 
                     continue;
                 }
                 $url = $localOnly ? self::validateLocalUrl($to) : self::validateUrl($to);
-                if ($url != false) {
-                    array_push($audience['to'], $url);
+                if ($url) {
+                    $audience['to'][] = $url;
                 }
             }
         }
 
         if (is_array($data['cc']) && ! empty($data['cc'])) {
             foreach ($data['cc'] as $cc) {
-                if ($cc == 'https://www.w3.org/ns/activitystreams#Public') {
-                    $scope = 'unlisted';
+                if ($cc == self::PUBLIC_TIMELINE) {
+                    $audience['scope'] = 'unlisted';
 
                     continue;
                 }
                 $url = $localOnly ? self::validateLocalUrl($cc) : self::validateUrl($cc);
-                if ($url != false) {
-                    array_push($audience['cc'], $url);
+                if ($url) {
+                    $audience['cc'][] = $url;
                 }
             }
         }
-        $audience['scope'] = $scope;
 
         return $audience;
     }
 
-    public static function userInAudience($profile, $data)
+    /**
+     * Check if user is in audience
+     */
+    public static function userInAudience(Profile $profile, array $data): bool
     {
         $audience = self::normalizeAudience($data);
         $url = $profile->permalink();
@@ -156,96 +154,167 @@ class Helpers
         return in_array($url, $audience['to']) || in_array($url, $audience['cc']);
     }
 
-    public static function validateUrl($url = null, $disableDNSCheck = false, $forceBanCheck = false)
+    /**
+     * Validate URL with various security and format checks
+     */
+    public static function validateUrl(?string $url, bool $disableDNSCheck = false, bool $forceBanCheck = false): string|bool
     {
-        if (is_array($url) && ! empty($url)) {
-            $url = $url[0];
-        }
-        if (! $url || strlen($url) === 0) {
+        if (! $normalizedUrl = self::normalizeUrl($url)) {
             return false;
         }
+
         try {
-            $uri = Uri::new($url);
+            $uri = Uri::new($normalizedUrl);
 
-            if (! $uri) {
-                return false;
-            }
-
-            if ($uri->getScheme() !== 'https') {
+            if (! self::isValidUri($uri)) {
                 return false;
             }
 
             $host = $uri->getHost();
-
-            if (! $host || $host === '') {
+            if (! self::isValidHost($host)) {
                 return false;
             }
 
-            if (! filter_var($host, FILTER_VALIDATE_DOMAIN, FILTER_FLAG_HOSTNAME)) {
+            if (! self::passesSecurityChecks($host, $disableDNSCheck, $forceBanCheck)) {
                 return false;
-            }
-
-            if (! str_contains($host, '.')) {
-                return false;
-            }
-
-            $localhosts = [
-                'localhost',
-                '127.0.0.1',
-                '::1',
-                'broadcasthost',
-                'ip6-localhost',
-                'ip6-loopback',
-            ];
-
-            if (in_array($host, $localhosts)) {
-                return false;
-            }
-
-            if ($disableDNSCheck !== true && app()->environment() === 'production' && (bool) config('security.url.verify_dns')) {
-                $hash = hash('sha256', $host);
-                $key = "helpers:url:valid-dns:sha256-{$hash}";
-                $domainValidDns = Cache::remember($key, 14440, function () use ($host) {
-                    return DomainService::hasValidDns($host);
-                });
-                if (! $domainValidDns) {
-                    return false;
-                }
-            }
-
-            if ($forceBanCheck || $disableDNSCheck !== true && app()->environment() === 'production') {
-                $bannedInstances = InstanceService::getBannedDomains();
-                if (in_array($host, $bannedInstances)) {
-                    return false;
-                }
             }
 
             return $uri->toString();
+
         } catch (UriException $e) {
             return false;
         }
     }
 
-    public static function validateLocalUrl($url)
+    /**
+     * Normalize URL input
+     */
+    public static function normalizeUrl(?string $url): ?string
+    {
+        if (is_array($url) && ! empty($url)) {
+            $url = $url[0];
+        }
+
+        return (! $url || strlen($url) === 0) ? null : $url;
+    }
+
+    /**
+     * Validate basic URI requirements
+     */
+    public static function isValidUri(Uri $uri): bool
+    {
+        return $uri && $uri->getScheme() === 'https';
+    }
+
+    /**
+     * Validate host requirements
+     */
+    public static function isValidHost(?string $host): bool
+    {
+        if (! $host || $host === '') {
+            return false;
+        }
+
+        if (! filter_var($host, FILTER_VALIDATE_DOMAIN, FILTER_FLAG_HOSTNAME)) {
+            return false;
+        }
+
+        if (! str_contains($host, '.')) {
+            return false;
+        }
+
+        if (in_array($host, self::LOCALHOST_DOMAINS)) {
+            return false;
+        }
+
+        return true;
+    }
+
+    /**
+     * Check DNS and banned status if required
+     */
+    public static function passesSecurityChecks(string $host, bool $disableDNSCheck, bool $forceBanCheck): bool
+    {
+        if ($disableDNSCheck !== true && self::shouldCheckDNS()) {
+            if (! self::hasValidDNS($host)) {
+                return false;
+            }
+        }
+
+        if ($forceBanCheck || self::shouldCheckBans()) {
+            if (self::isHostBanned($host)) {
+                return false;
+            }
+        }
+
+        return true;
+    }
+
+    /**
+     * Check if DNS validation is required
+     */
+    public static function shouldCheckDNS(): bool
+    {
+        return app()->environment() === 'production' &&
+               (bool) config('security.url.verify_dns');
+    }
+
+    /**
+     * Validate domain DNS records
+     */
+    public static function hasValidDNS(string $host): bool
+    {
+        $hash = hash('sha256', $host);
+        $key = self::URL_CACHE_PREFIX."valid-dns:sha256-{$hash}";
+
+        return Cache::remember($key, self::CACHE_TTL, function () use ($host) {
+            return DomainService::hasValidDns($host);
+        });
+    }
+
+    /**
+     * Check if domain bans should be validated
+     */
+    public static function shouldCheckBans(): bool
+    {
+        return app()->environment() === 'production';
+    }
+
+    /**
+     * Check if host is in banned domains list
+     */
+    public static function isHostBanned(string $host): bool
+    {
+        $bannedInstances = InstanceService::getBannedDomains();
+
+        return in_array($host, $bannedInstances);
+    }
+
+    /**
+     * Validate local URL
+     */
+    public static function validateLocalUrl(string $url): string|bool
     {
         $url = self::validateUrl($url);
-        if ($url == true) {
+        if ($url) {
             $domain = config('pixelfed.domain.app');
-
             $uri = Uri::new($url);
             $host = $uri->getHost();
+
             if (! $host || empty($host)) {
                 return false;
             }
-            $url = strtolower($domain) === strtolower($host) ? $url : false;
 
-            return $url;
+            return strtolower($domain) === strtolower($host) ? $url : false;
         }
 
         return false;
     }
 
-    public static function zttpUserAgent()
+    /**
+     * Get user agent string
+     */
+    public static function zttpUserAgent(): array
     {
         $version = config('pixelfed.version');
         $url = config('app.url');
@@ -303,7 +372,7 @@ class Helpers
         try {
             $date = Carbon::parse($timestamp);
             $now = Carbon::now();
-            $tenYearsAgo = $now->copy()->subYears(10);
+            $tenYearsAgo = $now->copy()->subYears(20);
             $isMoreThanTenYearsOld = $date->lt($tenYearsAgo);
             $tomorrow = $now->copy()->addDay();
             $isMoreThanOneDayFuture = $date->gt($tomorrow);
@@ -314,257 +383,232 @@ class Helpers
         }
     }
 
-    public static function statusFirstOrFetch($url, $replyTo = false)
+    /**
+     * Fetch or create a status from URL
+     */
+    public static function statusFirstOrFetch(string $url, bool $replyTo = false): ?Status
     {
-        $url = self::validateUrl($url);
-        if ($url == false) {
-            return;
+        if (! $validUrl = self::validateUrl($url)) {
+            return null;
         }
 
-        $host = parse_url($url, PHP_URL_HOST);
-        $local = config('pixelfed.domain.app') == $host ? true : false;
+        if ($status = self::findExistingStatus($url)) {
+            return $status;
+        }
 
-        if ($local) {
+        return self::createStatusFromUrl($url, $replyTo);
+    }
+
+    /**
+     * Find existing status by URL
+     */
+    public static function findExistingStatus(string $url): ?Status
+    {
+        $host = parse_url($url, PHP_URL_HOST);
+
+        if (self::isLocalDomain($host)) {
             $id = (int) last(explode('/', $url));
 
-            return Status::whereNotIn('scope', ['draft', 'archived'])->findOrFail($id);
+            return Status::whereNotIn('scope', ['draft', 'archived'])
+                ->findOrFail($id);
         }
 
-        $cached = Status::whereNotIn('scope', ['draft', 'archived'])
-            ->whereUri($url)
-            ->orWhere('object_url', $url)
+        return Status::whereNotIn('scope', ['draft', 'archived'])
+            ->where(function ($query) use ($url) {
+                $query->whereUri($url)
+                    ->orWhere('object_url', $url);
+            })
             ->first();
+    }
 
-        if ($cached) {
-            return $cached;
-        }
-
+    /**
+     * Create a new status from ActivityPub data
+     */
+    public static function createStatusFromUrl(string $url, bool $replyTo): ?Status
+    {
         $res = self::fetchFromUrl($url);
 
-        if (! $res || empty($res) || isset($res['error']) || ! isset($res['@context']) || ! isset($res['published'])) {
-            return;
+        if (! $res || ! self::isValidStatusData($res)) {
+            return null;
         }
 
         if (! self::validateTimestamp($res['published'])) {
-            return;
+            return null;
         }
 
-        if (config('autospam.live_filters.enabled')) {
-            $filters = config('autospam.live_filters.filters');
-            if (! empty($filters) && isset($res['content']) && ! empty($res['content']) && strlen($filters) > 3) {
-                $filters = array_map('trim', explode(',', $filters));
-                $content = $res['content'];
-                foreach ($filters as $filter) {
-                    $filter = trim(strtolower($filter));
-                    if (! $filter || ! strlen($filter)) {
-                        continue;
-                    }
-                    if (str_contains(strtolower($content), $filter)) {
-                        return;
-                    }
-                }
-            }
+        if (! self::passesContentFilters($res)) {
+            return null;
         }
 
-        if (isset($res['object'])) {
-            $activity = $res;
-        } else {
-            $activity = ['object' => $res];
+        $activity = isset($res['object']) ? $res : ['object' => $res];
+
+        if (! $profile = self::getStatusProfile($activity)) {
+            return null;
         }
 
-        $scope = 'private';
-
-        $cw = isset($res['sensitive']) ? (bool) $res['sensitive'] : false;
-
-        if (isset($res['to']) == true) {
-            if (is_array($res['to']) && in_array('https://www.w3.org/ns/activitystreams#Public', $res['to'])) {
-                $scope = 'public';
-            }
-            if (is_string($res['to']) && $res['to'] == 'https://www.w3.org/ns/activitystreams#Public') {
-                $scope = 'public';
-            }
+        if (! self::validateStatusUrls($url, $activity)) {
+            return null;
         }
 
-        if (isset($res['cc']) == true) {
-            if (is_array($res['cc']) && in_array('https://www.w3.org/ns/activitystreams#Public', $res['cc'])) {
-                $scope = 'unlisted';
-            }
-            if (is_string($res['cc']) && $res['cc'] == 'https://www.w3.org/ns/activitystreams#Public') {
-                $scope = 'unlisted';
-            }
-        }
-
-        if (config('costar.enabled') == true) {
-            $blockedKeywords = config('costar.keyword.block');
-            if ($blockedKeywords !== null) {
-                $keywords = config('costar.keyword.block');
-                foreach ($keywords as $kw) {
-                    if (Str::contains($res['content'], $kw) == true) {
-                        return;
-                    }
-                }
-            }
-
-            $unlisted = config('costar.domain.unlisted');
-            if (in_array(parse_url($url, PHP_URL_HOST), $unlisted) == true) {
-                $unlisted = true;
-                $scope = 'unlisted';
-            } else {
-                $unlisted = false;
-            }
-
-            $cwDomains = config('costar.domain.cw');
-            if (in_array(parse_url($url, PHP_URL_HOST), $cwDomains) == true) {
-                $cw = true;
-            }
-        }
-
-        $id = isset($res['id']) ? self::pluckval($res['id']) : self::pluckval($url);
-        $idDomain = parse_url($id, PHP_URL_HOST);
-        $urlDomain = parse_url($url, PHP_URL_HOST);
-
-        if ($idDomain && $urlDomain && strtolower($idDomain) !== strtolower($urlDomain)) {
-            return;
-        }
-
-        if (! self::validateUrl($id)) {
-            return;
-        }
-
-        if (! isset($activity['object']['attributedTo'])) {
-            return;
-        }
-
-        $attributedTo = is_string($activity['object']['attributedTo']) ?
-            $activity['object']['attributedTo'] :
-            (is_array($activity['object']['attributedTo']) ?
-                collect($activity['object']['attributedTo'])
-                    ->filter(function ($o) {
-                        return $o && isset($o['type']) && $o['type'] == 'Person';
-                    })
-                    ->pluck('id')
-                    ->first() : null
-            );
-
-        if ($attributedTo) {
-            $actorDomain = parse_url($attributedTo, PHP_URL_HOST);
-            if (! self::validateUrl($attributedTo) ||
-                $idDomain !== $actorDomain ||
-                $actorDomain !== $urlDomain
-            ) {
-                return;
-            }
-        }
-
-        if ($idDomain !== $urlDomain) {
-            return;
-        }
-
-        $profile = self::profileFirstOrNew($attributedTo);
-
-        if (! $profile) {
-            return;
-        }
-
-        if (isset($activity['object']['inReplyTo']) && ! empty($activity['object']['inReplyTo']) || $replyTo == true) {
-            $reply_to = self::statusFirstOrFetch(self::pluckval($activity['object']['inReplyTo']), false);
-            if ($reply_to) {
-                $blocks = UserFilterService::blocks($reply_to->profile_id);
-                if (in_array($profile->id, $blocks)) {
-                    return;
-                }
-            }
-            $reply_to = optional($reply_to)->id;
-        } else {
-            $reply_to = null;
-        }
-        $ts = self::pluckval($res['published']);
-
-        if ($scope == 'public' && in_array($urlDomain, InstanceService::getUnlistedDomains())) {
-            $scope = 'unlisted';
-        }
-
-        if (in_array($urlDomain, InstanceService::getNsfwDomains())) {
-            $cw = true;
-        }
+        $reply_to = self::getReplyToId($activity, $profile, $replyTo);
+        $scope = self::getScope($activity, $url);
+        $cw = self::getSensitive($activity, $url);
 
         if ($res['type'] === 'Question') {
-            $status = self::storePoll(
+            return self::storePoll(
                 $profile,
                 $res,
                 $url,
-                $ts,
+                $res['published'],
                 $reply_to,
                 $cw,
                 $scope,
-                $id
+                $activity['id'] ?? $url
             );
-
-            return $status;
-        } else {
-            $status = self::storeStatus($url, $profile, $res);
         }
 
-        return $status;
+        return self::storeStatus($url, $profile, $res);
     }
 
-    public static function storeStatus($url, $profile, $activity)
+    /**
+     * Validate status data
+     */
+    public static function isValidStatusData(?array $res): bool
     {
-        $originalUrl = $url;
-        $id = isset($activity['id']) ? self::pluckval($activity['id']) : self::pluckval($activity['url']);
-        $url = isset($activity['url']) && is_string($activity['url']) ? self::pluckval($activity['url']) : self::pluckval($id);
-        $idDomain = parse_url($id, PHP_URL_HOST);
-        $urlDomain = parse_url($url, PHP_URL_HOST);
-        $originalUrlDomain = parse_url($originalUrl, PHP_URL_HOST);
-        if (! self::validateUrl($id) || ! self::validateUrl($url)) {
-            return;
+        return $res &&
+               ! empty($res) &&
+               ! isset($res['error']) &&
+               isset($res['@context']) &&
+               isset($res['published']);
+    }
+
+    /**
+     * Check if content passes filters
+     */
+    public static function passesContentFilters(array $res): bool
+    {
+        if (! config('autospam.live_filters.enabled')) {
+            return true;
         }
 
-        if (strtolower($originalUrlDomain) !== strtolower($idDomain) ||
-            strtolower($originalUrlDomain) !== strtolower($urlDomain)) {
-            return;
+        $filters = config('autospam.live_filters.filters');
+        if (empty($filters) || ! isset($res['content']) || strlen($filters) <= 3) {
+            return true;
         }
 
-        $reply_to = self::getReplyTo($activity);
+        $filters = array_map('trim', explode(',', $filters));
+        $content = strtolower($res['content']);
 
-        $ts = self::pluckval($activity['published']);
-        $scope = self::getScope($activity, $url);
-        $cw = self::getSensitive($activity, $url);
-        $pid = is_object($profile) ? $profile->id : (is_array($profile) ? $profile['id'] : null);
-        $isUnlisted = is_object($profile) ? $profile->unlisted : (is_array($profile) ? $profile['unlisted'] : false);
-        $commentsDisabled = isset($activity['commentsEnabled']) ? ! boolval($activity['commentsEnabled']) : false;
-
-        if (! $pid) {
-            return;
-        }
-
-        if ($scope == 'public') {
-            if ($isUnlisted == true) {
-                $scope = 'unlisted';
+        foreach ($filters as $filter) {
+            $filter = trim(strtolower($filter));
+            if ($filter && str_contains($content, $filter)) {
+                return false;
             }
         }
 
-        $status = Status::updateOrCreate(
-            [
-                'uri' => $url,
-            ], [
-                'profile_id' => $pid,
-                'url' => $url,
-                'object_url' => $id,
-                'caption' => isset($activity['content']) ? Purify::clean(strip_tags($activity['content'])) : null,
-                'created_at' => Carbon::parse($ts)->tz('UTC'),
-                'in_reply_to_id' => $reply_to,
-                'local' => false,
-                'is_nsfw' => $cw,
-                'scope' => $scope,
-                'visibility' => $scope,
-                'cw_summary' => ($cw == true && isset($activity['summary']) ?
-                    Purify::clean(strip_tags($activity['summary'])) : null),
-                'comments_disabled' => $commentsDisabled,
-            ]
-        );
+        return true;
+    }
 
-        if ($reply_to == null) {
+    /**
+     * Get profile for status
+     */
+    public static function getStatusProfile(array $activity): ?Profile
+    {
+        if (! isset($activity['object']['attributedTo'])) {
+            return null;
+        }
+
+        $attributedTo = self::extractAttributedTo($activity['object']['attributedTo']);
+
+        return $attributedTo ? self::profileFirstOrNew($attributedTo) : null;
+    }
+
+    /**
+     * Extract attributed to value
+     */
+    public static function extractAttributedTo(string|array $attributedTo): ?string
+    {
+        if (is_string($attributedTo)) {
+            return $attributedTo;
+        }
+
+        if (is_array($attributedTo)) {
+            return collect($attributedTo)
+                ->filter(fn ($o) => $o && isset($o['type']) && $o['type'] == 'Person')
+                ->pluck('id')
+                ->first();
+        }
+
+        return null;
+    }
+
+    /**
+     * Validate status URLs match
+     */
+    public static function validateStatusUrls(string $url, array $activity): bool
+    {
+        $id = isset($activity['id']) ?
+            self::pluckval($activity['id']) :
+            self::pluckval($url);
+
+        $idDomain = parse_url($id, PHP_URL_HOST);
+        $urlDomain = parse_url($url, PHP_URL_HOST);
+
+        return $idDomain &&
+               $urlDomain &&
+               strtolower($idDomain) === strtolower($urlDomain);
+    }
+
+    /**
+     * Get reply-to status ID
+     */
+    public static function getReplyToId(array $activity, Profile $profile, bool $replyTo): ?int
+    {
+        $inReplyTo = $activity['object']['inReplyTo'] ?? null;
+
+        if (! $inReplyTo && ! $replyTo) {
+            return null;
+        }
+
+        $reply = self::statusFirstOrFetch(self::pluckval($inReplyTo), false);
+
+        if (! $reply) {
+            return null;
+        }
+
+        $blocks = UserFilterService::blocks($reply->profile_id);
+
+        return in_array($profile->id, $blocks) ? null : $reply->id;
+    }
+
+    /**
+     * Store a new regular status
+     */
+    public static function storeStatus(string $url, Profile $profile, array $activity): Status
+    {
+        $originalUrl = $url;
+        $id = self::getStatusId($activity, $url);
+        $url = self::getStatusUrl($activity, $id);
+
+        if ((! isset($activity['type']) ||
+             in_array($activity['type'], ['Create', 'Note'])) &&
+            ! self::validateStatusDomains($originalUrl, $id, $url)) {
+            throw new \Exception('Invalid status domains');
+        }
+
+        $reply_to = self::getReplyTo($activity);
+        $ts = self::pluckval($activity['published']);
+        $scope = self::getScope($activity, $url);
+        $commentsDisabled = isset($activity['commentsEnabled']) ? (bool) $activity['commentsEnabled'] == false : false;
+        $cw = self::getSensitive($activity, $url);
+
+        if ($profile->unlisted) {
+            $scope = 'unlisted';
+        }
+
+        $status = self::createOrUpdateStatus($url, $profile, $id, $activity, $ts, $reply_to, $cw, $scope, $commentsDisabled);
+
+        if ($reply_to === null) {
             self::importNoteAttachment($activity, $status);
         } else {
             if (isset($activity['attachment']) && ! empty($activity['attachment'])) {
@@ -577,34 +621,136 @@ class Helpers
             StatusTagsPipeline::dispatch($activity, $status);
         }
 
+        self::handleStatusPostProcessing($status, $profile->id, $url);
+
+        return $status;
+    }
+
+    /**
+     * Get status ID from activity
+     */
+    public static function getStatusId(array $activity, string $url): string
+    {
+        return isset($activity['id']) ?
+            self::pluckval($activity['id']) :
+            self::pluckval($url);
+    }
+
+    /**
+     * Get status URL from activity
+     */
+    public static function getStatusUrl(array $activity, string $id): string
+    {
+        return isset($activity['url']) && is_string($activity['url']) ?
+            self::pluckval($activity['url']) :
+            self::pluckval($id);
+    }
+
+    /**
+     * Validate status domain consistency
+     */
+    public static function validateStatusDomains(string $originalUrl, string $id, string $url): bool
+    {
+        if (! self::validateUrl($id) || ! self::validateUrl($url)) {
+            return false;
+        }
+
+        $originalDomain = parse_url($originalUrl, PHP_URL_HOST);
+        $idDomain = parse_url($id, PHP_URL_HOST);
+        $urlDomain = parse_url($url, PHP_URL_HOST);
+
+        return strtolower($originalDomain) === strtolower($idDomain) &&
+               strtolower($originalDomain) === strtolower($urlDomain);
+    }
+
+    /**
+     * Create or update status record
+     */
+    public static function createOrUpdateStatus(
+        string $url,
+        Profile $profile,
+        string $id,
+        array $activity,
+        string $ts,
+        ?int $reply_to,
+        bool $cw,
+        string $scope,
+        bool $commentsDisabled
+    ): Status {
+        $caption = isset($activity['content']) ?
+            Purify::clean($activity['content']) :
+            '';
+
+        return Status::updateOrCreate(
+            ['uri' => $url],
+            [
+                'profile_id' => $profile->id,
+                'url' => $url,
+                'object_url' => $id,
+                'caption' => strip_tags($caption),
+                'rendered' => $caption,
+                'created_at' => Carbon::parse($ts)->tz('UTC'),
+                'in_reply_to_id' => $reply_to,
+                'local' => false,
+                'is_nsfw' => $cw,
+                'scope' => $scope,
+                'visibility' => $scope,
+                'cw_summary' => ($cw && isset($activity['summary'])) ?
+                    Purify::clean(strip_tags($activity['summary'])) :
+                    null,
+                'comments_disabled' => $commentsDisabled,
+            ]
+        );
+    }
+
+    /**
+     * Handle post-creation status processing
+     */
+    public static function handleStatusPostProcessing(Status $status, int $profileId, string $url): void
+    {
         if (config('instance.timeline.network.cached') &&
-            $status->in_reply_to_id === null &&
-            $status->reblog_of_id === null &&
-            in_array($status->type, ['photo', 'photo:album', 'video', 'video:album', 'photo:video:album']) &&
-            $status->created_at->gt(now()->subHours(config('instance.timeline.network.max_hours_old'))) &&
-            (config('instance.hide_nsfw_on_public_feeds') == true ? $status->is_nsfw == false : true)
+            self::isEligibleForNetwork($status)
         ) {
-            $filteredDomains = collect(InstanceService::getBannedDomains())
-                ->merge(InstanceService::getUnlistedDomains())
-                ->unique()
-                ->values()
-                ->toArray();
+            $urlDomain = parse_url($url, PHP_URL_HOST);
+            $filteredDomains = self::getFilteredDomains();
+
             if (! in_array($urlDomain, $filteredDomains)) {
-                if (! $isUnlisted) {
-                    NetworkTimelineService::add($status->id);
-                }
+                NetworkTimelineService::add($status->id);
             }
         }
 
-        AccountStatService::incrementPostCount($pid);
+        AccountStatService::incrementPostCount($profileId);
 
         if ($status->in_reply_to_id === null &&
             in_array($status->type, ['photo', 'photo:album', 'video', 'video:album', 'photo:video:album'])
         ) {
-            FeedInsertRemotePipeline::dispatch($status->id, $pid)->onQueue('feed');
+            FeedInsertRemotePipeline::dispatch($status->id, $profileId)
+                ->onQueue('feed');
         }
+    }
 
-        return $status;
+    /**
+     * Check if status is eligible for network timeline
+     */
+    public static function isEligibleForNetwork(Status $status): bool
+    {
+        return $status->in_reply_to_id === null &&
+               $status->reblog_of_id === null &&
+               in_array($status->type, ['photo', 'photo:album', 'video', 'video:album', 'photo:video:album']) &&
+               $status->created_at->gt(now()->subHours(config('instance.timeline.network.max_hours_old'))) &&
+               (config('instance.hide_nsfw_on_public_feeds') ? ! $status->is_nsfw : true);
+    }
+
+    /**
+     * Get filtered domains list
+     */
+    public static function getFilteredDomains(): array
+    {
+        return collect(InstanceService::getBannedDomains())
+            ->merge(InstanceService::getUnlistedDomains())
+            ->unique()
+            ->values()
+            ->toArray();
     }
 
     public static function getSensitive($activity, $url)
@@ -674,7 +820,7 @@ class Helpers
         return $scope;
     }
 
-    private static function storePoll($profile, $res, $url, $ts, $reply_to, $cw, $scope, $id)
+    public static function storePoll($profile, $res, $url, $ts, $reply_to, $cw, $scope, $id)
     {
         if (! isset($res['endTime']) || ! isset($res['oneOf']) || ! is_array($res['oneOf']) || count($res['oneOf']) > 4) {
             return;
@@ -688,12 +834,14 @@ class Helpers
             return $option['replies']['totalItems'] ?? 0;
         })->toArray();
 
+        $defaultCaption = '';
         $status = new Status;
         $status->profile_id = $profile->id;
         $status->url = isset($res['url']) ? $res['url'] : $url;
         $status->uri = isset($res['url']) ? $res['url'] : $url;
         $status->object_url = $id;
-        $status->caption = strip_tags(Purify::clean($res['content']));
+        $status->caption = strip_tags(Purify::clean($res['content'])) ?? $defaultCaption;
+        $status->rendered = Purify::clean($res['content'] ?? $defaultCaption);
         $status->created_at = Carbon::parse($ts)->tz('UTC');
         $status->in_reply_to_id = null;
         $status->local = false;
@@ -727,185 +875,431 @@ class Helpers
         return self::statusFirstOrFetch($url);
     }
 
-    public static function importNoteAttachment($data, Status $status)
+    /**
+     * Process and store note attachments
+     */
+    public static function importNoteAttachment(array $data, Status $status): void
     {
-        if (self::verifyAttachments($data) == false) {
-            // \Log::info('importNoteAttachment::failedVerification.', [$data['id']]);
+        if (! self::verifyAttachments($data)) {
             $status->viewType();
 
             return;
         }
-        $attachments = isset($data['object']) ? $data['object']['attachment'] : $data['attachment'];
-        // peertube
-        // if(!$attachments) {
-        //  $obj = isset($data['object']) ? $data['object'] : $data;
-        //  $attachments = is_array($obj['url']) ? $obj['url'] : null;
-        // }
-        $user = $status->profile;
-        $storagePath = MediaPathService::get($user, 2);
-        $allowed = explode(',', config_cache('pixelfed.media_types'));
+
+        $attachments = self::getAttachments($data);
+        $profile = $status->profile;
+        $storagePath = MediaPathService::get($profile, 2);
+        $allowedTypes = explode(',', config_cache('pixelfed.media_types'));
 
         foreach ($attachments as $key => $media) {
-            $type = $media['mediaType'];
-            $url = $media['url'];
-            $valid = self::validateUrl($url);
-            if (in_array($type, $allowed) == false || $valid == false) {
+            if (! self::isValidAttachment($media, $allowedTypes)) {
                 continue;
             }
-            $blurhash = isset($media['blurhash']) ? $media['blurhash'] : null;
-            $license = isset($media['license']) ? License::nameToId($media['license']) : null;
-            $caption = isset($media['name']) ? Purify::clean($media['name']) : null;
-            $width = isset($media['width']) ? $media['width'] : false;
-            $height = isset($media['height']) ? $media['height'] : false;
 
-            $media = new Media;
-            $media->blurhash = $blurhash;
-            $media->remote_media = true;
-            $media->status_id = $status->id;
-            $media->profile_id = $status->profile_id;
-            $media->user_id = null;
-            $media->media_path = $url;
-            $media->remote_url = $url;
-            $media->caption = $caption;
-            $media->order = $key + 1;
-            if ($width) {
-                $media->width = $width;
-            }
-            if ($height) {
-                $media->height = $height;
-            }
-            if ($license) {
-                $media->license = $license;
-            }
-            $media->mime = $type;
-            $media->version = 3;
-            $media->save();
-
-            if ((bool) config_cache('pixelfed.cloud_storage') == true) {
-                MediaStoragePipeline::dispatch($media);
-            }
+            $mediaModel = self::createMediaAttachment($media, $status, $key);
+            self::handleMediaStorage($mediaModel);
         }
 
         $status->viewType();
-
     }
 
-    public static function profileFirstOrNew($url)
+    /**
+     * Get attachments from ActivityPub data
+     */
+    public static function getAttachments(array $data): array
     {
-        $url = self::validateUrl($url);
-        if ($url == false) {
-            return;
+        return isset($data['object']) ?
+            $data['object']['attachment'] :
+            $data['attachment'];
+    }
+
+    /**
+     * Validate individual attachment
+     */
+    public static function isValidAttachment(array $media, array $allowedTypes): bool
+    {
+        $type = $media['mediaType'];
+        $url = $media['url'];
+
+        return in_array($type, $allowedTypes) &&
+               self::validateUrl($url);
+    }
+
+    /**
+     * Create media attachment record
+     */
+    public static function createMediaAttachment(array $media, Status $status, int $key): Media
+    {
+        $mediaModel = new Media;
+
+        self::setBasicMediaAttributes($mediaModel, $media, $status, $key);
+        self::setOptionalMediaAttributes($mediaModel, $media);
+
+        $mediaModel->save();
+
+        return $mediaModel;
+    }
+
+    /**
+     * Set basic media attributes
+     */
+    public static function setBasicMediaAttributes(Media $media, array $data, Status $status, int $key): void
+    {
+        $media->remote_media = true;
+        $media->status_id = $status->id;
+        $media->profile_id = $status->profile_id;
+        $media->user_id = null;
+        $media->media_path = $data['url'];
+        $media->remote_url = $data['url'];
+        $media->mime = $data['mediaType'];
+        $media->version = 3;
+        $media->order = $key + 1;
+    }
+
+    /**
+     * Set optional media attributes
+     */
+    public static function setOptionalMediaAttributes(Media $media, array $data): void
+    {
+        $media->blurhash = $data['blurhash'] ?? null;
+        $media->caption = isset($data['name']) ?
+            Purify::clean($data['name']) :
+            null;
+
+        if (isset($data['width'])) {
+            $media->width = $data['width'];
         }
 
-        $host = parse_url($url, PHP_URL_HOST);
-        $local = config('pixelfed.domain.app') == $host ? true : false;
-
-        if ($local == true) {
-            $id = last(explode('/', $url));
-
-            return Profile::whereNull('status')
-                ->whereNull('domain')
-                ->whereUsername($id)
-                ->firstOrFail();
+        if (isset($data['height'])) {
+            $media->height = $data['height'];
         }
 
-        if ($profile = Profile::whereRemoteUrl($url)->first()) {
-            if ($profile->last_fetched_at && $profile->last_fetched_at->lt(now()->subHours(24))) {
-                return self::profileUpdateOrCreate($url);
+        if (isset($data['license'])) {
+            $media->license = License::nameToId($data['license']);
+        }
+    }
+
+    /**
+     * Handle media storage processing
+     */
+    public static function handleMediaStorage(Media $media): void
+    {
+        if ((bool) config_cache('pixelfed.cloud_storage')) {
+            MediaStoragePipeline::dispatch($media);
+        }
+    }
+
+    /**
+     * Validate attachment collection
+     */
+    public static function validateAttachmentCollection(array $attachments, array $mediaTypes, array $mimeTypes): bool
+    {
+        return Validator::make($attachments, [
+            '*.type' => [
+                'required',
+                'string',
+                Rule::in($mediaTypes),
+            ],
+            '*.url' => 'required|url',
+            '*.mediaType' => [
+                'required',
+                'string',
+                Rule::in($mimeTypes),
+            ],
+            '*.name' => 'sometimes|nullable|string',
+            '*.blurhash' => 'sometimes|nullable|string|min:6|max:164',
+            '*.width' => 'sometimes|nullable|integer|min:1|max:5000',
+            '*.height' => 'sometimes|nullable|integer|min:1|max:5000',
+        ])->passes();
+    }
+
+    /**
+     * Get supported media types
+     */
+    public static function getSupportedMediaTypes(): array
+    {
+        $mimeTypes = explode(',', config_cache('pixelfed.media_types'));
+
+        return in_array('video/mp4', $mimeTypes) ?
+            ['Document', 'Image', 'Video'] :
+            ['Document', 'Image'];
+    }
+
+    /**
+     * Process specific media type attachment
+     */
+    public static function processMediaTypeAttachment(array $media, Status $status, int $order): ?Media
+    {
+        if (! self::isValidMediaType($media)) {
+            return null;
+        }
+
+        $mediaModel = new Media;
+        self::setMediaAttributes($mediaModel, $media, $status, $order);
+        $mediaModel->save();
+
+        return $mediaModel;
+    }
+
+    /**
+     * Validate media type
+     */
+    public static function isValidMediaType(array $media): bool
+    {
+        $requiredFields = ['mediaType', 'url'];
+
+        foreach ($requiredFields as $field) {
+            if (! isset($media[$field]) || empty($media[$field])) {
+                return false;
             }
+        }
 
+        return true;
+    }
+
+    /**
+     * Set media attributes
+     */
+    public static function setMediaAttributes(Media $media, array $data, Status $status, int $order): void
+    {
+        $media->remote_media = true;
+        $media->status_id = $status->id;
+        $media->profile_id = $status->profile_id;
+        $media->user_id = null;
+        $media->media_path = $data['url'];
+        $media->remote_url = $data['url'];
+        $media->mime = $data['mediaType'];
+        $media->version = 3;
+        $media->order = $order;
+
+        // Optional attributes
+        if (isset($data['blurhash'])) {
+            $media->blurhash = $data['blurhash'];
+        }
+
+        if (isset($data['name'])) {
+            $media->caption = Purify::clean($data['name']);
+        }
+
+        if (isset($data['width'])) {
+            $media->width = $data['width'];
+        }
+
+        if (isset($data['height'])) {
+            $media->height = $data['height'];
+        }
+
+        if (isset($data['license'])) {
+            $media->license = License::nameToId($data['license']);
+        }
+    }
+
+    /**
+     * Fetch or create a profile from a URL
+     */
+    public static function profileFirstOrNew(string $url): ?Profile
+    {
+        if (! $validatedUrl = self::validateUrl($url)) {
+            return null;
+        }
+
+        $host = parse_url($validatedUrl, PHP_URL_HOST);
+
+        if (self::isLocalDomain($host)) {
+            return self::getLocalProfile($validatedUrl);
+        }
+
+        return self::getOrFetchRemoteProfile($validatedUrl);
+    }
+
+    /**
+     * Check if domain is local
+     */
+    public static function isLocalDomain(string $host): bool
+    {
+        return config('pixelfed.domain.app') == $host;
+    }
+
+    /**
+     * Get local profile from URL
+     */
+    public static function getLocalProfile(string $url): ?Profile
+    {
+        $username = last(explode('/', $url));
+
+        return Profile::whereNull('status')
+            ->whereNull('domain')
+            ->whereUsername($username)
+            ->firstOrFail();
+    }
+
+    /**
+     * Get existing or fetch new remote profile
+     */
+    public static function getOrFetchRemoteProfile(string $url): ?Profile
+    {
+        $profile = Profile::whereRemoteUrl($url)->first();
+
+        if ($profile && ! self::needsFetch($profile)) {
             return $profile;
         }
 
         return self::profileUpdateOrCreate($url);
     }
 
-    public static function profileUpdateOrCreate($url, $movedToCheck = false)
+    /**
+     * Check if profile needs to be fetched
+     */
+    public static function needsFetch(?Profile $profile): bool
     {
-        $movedToPid = null;
+        return ! $profile?->last_fetched_at ||
+               $profile->last_fetched_at->lt(now()->subHours(24));
+    }
+
+    /**
+     * Update or create a profile from ActivityPub data
+     */
+    public static function profileUpdateOrCreate(string $url, bool $movedToCheck = false): ?Profile
+    {
         $res = self::fetchProfileFromUrl($url);
-        if (! $res || isset($res['id']) == false) {
-            return;
-        }
-        if (! self::validateUrl($res['inbox'])) {
-            return;
-        }
-        if (! self::validateUrl($res['id'])) {
-            return;
+
+        if (! $res || ! self::isValidProfileData($res, $url)) {
+            return null;
         }
 
-        if (ModeratedProfile::whereProfileUrl($res['id'])->whereIsBanned(true)->exists()) {
-            return;
-        }
-
-        $urlDomain = parse_url($url, PHP_URL_HOST);
         $domain = parse_url($res['id'], PHP_URL_HOST);
-        if (strtolower($urlDomain) !== strtolower($domain)) {
-            return;
+        $username = self::extractUsername($res);
+
+        if (! $username || self::isProfileBanned($res['id'])) {
+            return null;
         }
-        if (! isset($res['preferredUsername']) && ! isset($res['nickname'])) {
-            return;
-        }
-        // skip invalid usernames
-        if (! ctype_alnum($res['preferredUsername'])) {
-            $tmpUsername = str_replace(['_', '.', '-'], '', $res['preferredUsername']);
-            if (! ctype_alnum($tmpUsername)) {
-                return;
-            }
-        }
-        $username = (string) Purify::clean($res['preferredUsername'] ?? $res['nickname']);
-        if (empty($username)) {
-            return;
-        }
-        $remoteUsername = $username;
+
         $webfinger = "@{$username}@{$domain}";
-
-        $instance = Instance::updateOrCreate([
-            'domain' => $domain,
-        ]);
-        if ($instance->wasRecentlyCreated == true) {
-            \App\Jobs\InstancePipeline\FetchNodeinfoPipeline::dispatch($instance)->onQueue('low');
-        }
-
-        if (! $movedToCheck && isset($res['movedTo']) && Helpers::validateUrl($res['movedTo'])) {
-            $movedTo = self::profileUpdateOrCreate($res['movedTo'], true);
-            if ($movedTo) {
-                $movedToPid = $movedTo->id;
-            }
-        }
+        $instance = self::getOrCreateInstance($domain);
+        $movedToPid = $movedToCheck ? null : self::handleMovedTo($res);
 
         $profile = Profile::updateOrCreate(
             [
                 'domain' => strtolower($domain),
                 'username' => Purify::clean($webfinger),
             ],
-            [
-                'webfinger' => Purify::clean($webfinger),
-                'key_id' => $res['publicKey']['id'],
-                'remote_url' => $res['id'],
-                'name' => isset($res['name']) ? Purify::clean($res['name']) : 'user',
-                'bio' => isset($res['summary']) ? Purify::clean($res['summary']) : null,
-                'sharedInbox' => isset($res['endpoints']) && isset($res['endpoints']['sharedInbox']) ? $res['endpoints']['sharedInbox'] : null,
-                'inbox_url' => $res['inbox'],
-                'outbox_url' => isset($res['outbox']) ? $res['outbox'] : null,
-                'public_key' => $res['publicKey']['publicKeyPem'],
-                'indexable' => isset($res['indexable']) && is_bool($res['indexable']) ? $res['indexable'] : false,
-                'moved_to_profile_id' => $movedToPid,
-            ]
+            self::buildProfileData($res, $webfinger, $movedToPid)
         );
 
-        if ($profile->last_fetched_at == null ||
-            $profile->last_fetched_at->lt(now()->subMonths(3))
-        ) {
-            RemoteAvatarFetch::dispatch($profile);
-        }
-        $profile->last_fetched_at = now();
-        $profile->save();
+        self::handleProfileAvatar($profile);
 
         return $profile;
     }
 
-    public static function profileFetch($url)
+    /**
+     * Validate profile data from ActivityPub
+     */
+    public static function isValidProfileData(?array $res, string $url): bool
+    {
+        if (! $res || ! isset($res['id']) || ! isset($res['inbox'])) {
+            return false;
+        }
+
+        if (! self::validateUrl($res['inbox']) || ! self::validateUrl($res['id'])) {
+            return false;
+        }
+
+        $urlDomain = parse_url($url, PHP_URL_HOST);
+        $domain = parse_url($res['id'], PHP_URL_HOST);
+
+        return strtolower($urlDomain) === strtolower($domain);
+    }
+
+    /**
+     * Extract username from profile data
+     */
+    public static function extractUsername(array $res): ?string
+    {
+        $username = $res['preferredUsername'] ?? $res['nickname'] ?? null;
+
+        if (! $username || ! ctype_alnum(str_replace(['_', '.', '-'], '', $username))) {
+            return null;
+        }
+
+        return Purify::clean($username);
+    }
+
+    /**
+     * Check if profile is banned
+     */
+    public static function isProfileBanned(string $profileUrl): bool
+    {
+        return ModeratedProfile::whereProfileUrl($profileUrl)
+            ->whereIsBanned(true)
+            ->exists();
+    }
+
+    /**
+     * Get or create federation instance
+     */
+    public static function getOrCreateInstance(string $domain): Instance
+    {
+        $instance = Instance::updateOrCreate(['domain' => $domain]);
+
+        if ($instance->wasRecentlyCreated) {
+            \App\Jobs\InstancePipeline\FetchNodeinfoPipeline::dispatch($instance)
+                ->onQueue('low');
+        }
+
+        return $instance;
+    }
+
+    /**
+     * Handle moved profile references
+     */
+    public static function handleMovedTo(array $res): ?int
+    {
+        if (! isset($res['movedTo']) || ! self::validateUrl($res['movedTo'])) {
+            return null;
+        }
+
+        $movedTo = self::profileUpdateOrCreate($res['movedTo'], true);
+
+        return $movedTo?->id;
+    }
+
+    /**
+     * Build profile data array for database
+     */
+    public static function buildProfileData(array $res, string $webfinger, ?int $movedToPid): array
+    {
+        return [
+            'webfinger' => Purify::clean($webfinger),
+            'key_id' => $res['publicKey']['id'],
+            'remote_url' => $res['id'],
+            'name' => isset($res['name']) ? Purify::clean($res['name']) : 'user',
+            'bio' => isset($res['summary']) ? Purify::clean($res['summary']) : null,
+            'sharedInbox' => $res['endpoints']['sharedInbox'] ?? null,
+            'inbox_url' => $res['inbox'],
+            'outbox_url' => $res['outbox'] ?? null,
+            'public_key' => $res['publicKey']['publicKeyPem'],
+            'indexable' => isset($res['indexable']) ? (bool) $res['indexable'] : false,
+            'moved_to_profile_id' => $movedToPid,
+            'is_private' => isset($res['manuallyApprovesFollowers']) ? (bool) $res['manuallyApprovesFollowers'] : true,
+        ];
+    }
+
+    /**
+     * Handle profile avatar updates
+     */
+    public static function handleProfileAvatar(Profile $profile): void
+    {
+        if (! $profile->last_fetched_at ||
+            $profile->last_fetched_at->lt(now()->subMonths(3))
+        ) {
+            RemoteAvatarFetch::dispatch($profile);
+        }
+
+        $profile->last_fetched_at = now();
+        $profile->save();
+    }
+
+    public static function profileFetch($url): ?Profile
     {
         return self::profileFirstOrNew($url);
     }

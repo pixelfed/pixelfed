@@ -143,6 +143,24 @@ return [
             'database' => env('REDIS_DATABASE', 0),
         ],
 
+        'session' => [
+            'scheme'   => env('REDIS_SCHEME', 'tcp'),
+            'path'     => env('REDIS_PATH'),
+            'host'     => env('REDIS_HOST', '127.0.0.1'),
+            'password' => env('REDIS_PASSWORD', null),
+            'port'     => env('REDIS_PORT', 6379),
+            'database' => env('REDIS_DATABASE_SESSION', 1),
+        ],
+
+        'pulse' => [
+            'scheme'   => env('REDIS_SCHEME', 'tcp'),
+            'path'     => env('REDIS_PATH'),
+            'host'     => env('REDIS_HOST', '127.0.0.1'),
+            'password' => env('REDIS_PASSWORD', null),
+            'port'     => env('REDIS_PORT', 6379),
+            'database' => env('REDIS_DATABASE_PULSE', 2),
+        ],
+
     ],
 
 	'dbal' => [

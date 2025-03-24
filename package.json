@@ -13,6 +13,7 @@
 		"axios": ">=1.6.0",
 		"bootstrap": "^4.5.2",
 		"cross-env": "^5.2.1",
+		"esbuild": "^0.25.1",
 		"jquery": "^3.6.0",
 		"laravel-echo": "^1.12.0",
 		"laravel-mix-make-file-hash": "^2.2.0",
@@ -71,6 +72,7 @@
 		"vue-loading-overlay": "^3.3.3",
 		"vue-timeago": "^5.1.2",
 		"vue-tribute": "^1.0.7",
+		"webgl-media-editor": "^0.0.6",
 		"zuck.js": "^1.6.0"
 	},
 	"collective": {

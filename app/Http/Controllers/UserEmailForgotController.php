@@ -27,7 +27,7 @@ class UserEmailForgotController extends Controller
     public function store(Request $request)
     {
         $rules = [
-            'username' => 'required|min:2|max:15|exists:users'
+            'username' => 'required|min:2|max:30|exists:users'
         ];
 
         $messages = [

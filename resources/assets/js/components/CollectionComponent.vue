@@ -49,7 +49,7 @@
 							</span>
 							<span>·</span>
 						</span>
-						<span>{{collection.post_count}} photos</span>
+						<span>{{collection.post_count}} posts</span>
 						<span>·</span>
 						<span>by <a :href="'/' + profileUsername" class="font-weight-bold text-white">{{profileUsername}}</a></span>
 					</p>

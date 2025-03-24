@@ -5,8 +5,9 @@ namespace App\Console\Commands;
 use Illuminate\Console\Command;
 use Illuminate\Support\Str;
 use App\User;
+use Illuminate\Contracts\Console\PromptsForMissingInput;
 
-class UserVerifyEmail extends Command
+class UserVerifyEmail extends Command implements PromptsForMissingInput
 {
     /**
      * The name and signature of the console command.
@@ -39,10 +40,16 @@ class UserVerifyEmail extends Command
      */
     public function handle()
     {
-        $user = User::whereUsername($this->argument('username'))->first();
+        $username = $this->argument('username');
+        $user = User::whereUsername($username)->first();
 
         if(!$user) {
             $this->error('Username not found');
+            return;
+        }
+
+        if($user->email_verified_at) {
+            $this->error('Email already verified ' . $user->email_verified_at->diffForHumans());
             return;
         }
 

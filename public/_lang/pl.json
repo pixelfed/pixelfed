@@ -10,6 +10,7 @@
         "shared": "Udost\u0119pnione",
         "shares": "Udost\u0119pnione",
         "unshare": "Anuluj udost\u0119pnianie",
+        "bookmark": "Zak\u0142adka",
         "cancel": "Anuluj",
         "copyLink": "Kopiuj Link",
         "delete": "Usu\u0144",
@@ -19,6 +20,10 @@
         "other": "Inne",
         "readMore": "Czytaj wi\u0119cej",
         "success": "Sukces",
+        "proceed": "Kontynuuj",
+        "next": "Nast\u0119pny",
+        "close": "Zamknij",
+        "clickHere": "kliknij tutaj",
         "sensitive": "Wra\u017cliwe",
         "sensitiveContent": "Tre\u015b\u0107 wra\u017cliwa",
         "sensitiveContentWarning": "Ten post mo\u017ce zawiera\u0107 wra\u017cliwe tre\u015bci"
@@ -42,7 +47,7 @@
         "drive": "Dysk",
         "settings": "Ustawienia",
         "compose": "Utw\u00f3rz nowy",
-        "logout": "Logout",
+        "logout": "Wyloguj si\u0119",
         "about": "O nas",
         "help": "Pomoc",
         "language": "J\u0119zyk",
@@ -73,7 +78,8 @@
         "groupPost": "post grupowy",
         "modlog": "logi",
         "post": "post",
-        "story": "opowie\u015b\u0107"
+        "story": "opowie\u015b\u0107",
+        "noneFound": "Brak powiadomie\u0144"
     },
     "post": {
         "shareToFollowers": "Udost\u0119pnij obserwuj\u0105cym",
@@ -142,9 +148,23 @@
         "add": "Dodaj Opowie\u015b\u0107"
     },
     "timeline": {
-        "peopleYouMayKnow": "Ludzie, kt\u00f3rych mo\u017cesz zna\u0107"
+        "peopleYouMayKnow": "Ludzie, kt\u00f3rych mo\u017cesz zna\u0107",
+        "onboarding": {
+            "welcome": "Witaj",
+            "thisIsYourHomeFeed": "To jest Tw\u00f3j kana\u0142 g\u0142\u00f3wny, chronologiczny kana\u0142 wpis\u00f3w z kont, kt\u00f3re \u015bledzisz.",
+            "letUsHelpYouFind": "Pomo\u017cemy Ci znale\u017a\u0107 ciekawych ludzi do obserwowania",
+            "refreshFeed": "Od\u015bwie\u017c m\u00f3j kana\u0142"
+        }
     },
     "hashtags": {
         "emptyFeed": "Nie mo\u017cemy znale\u017a\u0107 \u017cadnych post\u00f3w dla tego hasztaga"
+    },
+    "report": {
+        "report": "Zg\u0142o\u015b",
+        "selectReason": "Wybierz przyczyn\u0119",
+        "reported": "Zg\u0142oszono",
+        "sendingReport": "Wysy\u0142anie zg\u0142oszenia",
+        "thanksMsg": "Dzi\u0119kujemy za zg\u0142oszenie, ludzie tacy jak ty pomagaj\u0105 chroni\u0107 nasz\u0105 spo\u0142eczno\u015b\u0107!",
+        "contactAdminMsg": "Je\u015bli chcesz skontaktowa\u0107 si\u0119 z administratorem w sprawie tego wpisu lub go zg\u0142osi\u0107"
     }
 }

@@ -3,58 +3,63 @@
 return [
 
 	'common' => [
-		'comment' => 'Kommentera',
+		'comment' => 'Kommentar',
 		'commented' => 'Kommenterade',
 		'comments' => 'Kommentarer',
 		'like' => 'Gilla',
-		'liked' => 'Gillade',
-		'likes' => 'Gillar-markeringar',
+		'liked' => 'Gillad',
+		'likes' => 'Gillanden',
 		'share' => 'Dela',
-		'shared' => 'Delade',
-		'shares' => 'Delningar',
-		'unshare' => 'Sluta dela',
+		'shared' => 'Utdelad',
+		'shares' => 'Utdelade',
+		'unshare' => 'Sluta dela ut',
+		'bookmark' => 'Bokmärk',
 
 		'cancel' => 'Avbryt',
 		'copyLink' => 'Kopiera länk',
 		'delete' => 'Ta bort',
 		'error' => 'Fel',
-		'errorMsg' => 'Något gick fel. Försök igen senare',
-		'oops' => 'Oops!',
+		'errorMsg' => 'Något gick fel. Vänligen försök igen senare.',
+		'oops' => 'Hoppsan!',
 		'other' => 'Andra',
 		'readMore' => 'Läs mer',
 		'success' => 'Lyckades',
+		'proceed' => 'Fortsätt',
+		'next' => 'Nästa',
+		'close' => 'Stäng',
+		'clickHere' => 'klicka här',
 
 		'sensitive' => 'Känsligt',
 		'sensitiveContent' => 'Känsligt innehåll',
-		'sensitiveContentWarning' => 'TDet här inlägget kan innehålla känsligt innehåll',
+		'sensitiveContentWarning' => 'Det här inlägget kan innehålla känsligt innehåll',
 	],
 
 	'site' => [
-		'terms' => 'Villkor',
+		'terms' => 'Användarvillkor',
 		'privacy' => 'Integritetspolicy',
 	],
 
 	'navmenu' => [
 		'search' => 'Sök',
-		'admin' => 'Admin Panel',
+		'admin' => 'Kontrollpanel för administratör',
 
 		// Timelines
-		'homeFeed' => 'Hemflödet',
-		'localFeed' => 'Lokala flödet',
-		'globalFeed' => 'Globala flödet',
+		'homeFeed' => 'Hemflöde',
+		'localFeed' => 'Lokalt flöde',
+		'globalFeed' => 'Globalt flöde',
 
 		// Core features
-		'discover' => 'Utforska',
+		'discover' => 'Upptäck',
 		'directMessages' => 'Direktmeddelanden',
 		'notifications' => 'Notifikationer',
 		'groups' => 'Grupper',
-		'stories' => 'Stories',
+		'stories' => 'Historier',
 
 		// Self links
 		'profile' => 'Profil',
-		'drive' => 'Drive',
+		'drive' => 'Enhet',
 		'settings' => 'Inställningar',
-		'compose' => 'Skapa nytt',
+		'compose' => 'Skapa ny',
 		'logout' => 'Logga ut',
 
 		// Nav footer
@@ -62,10 +67,10 @@ return [
 		'help' => 'Hjälp',
 		'language' => 'Språk',
 		'privacy' => 'Integritet',
-		'terms' => 'Vilkor',
+		'terms' => 'Villkor',
 
 		// Temporary links
-		'backToPreviousDesign' => 'Gå tillbaka till den gamla designen'
+		'backToPreviousDesign' => 'Gå tillbaka till föregående design'
 	],
 
 	'directMessages' => [
@@ -76,27 +81,28 @@ return [
 
 	'notifications' => [
 		'liked' => 'gillade ditt',
-		'commented' => 'kommenterade på ditt',
-		'reacted' => 'reagerade på ditt',
-		'shared' => 'delade ditt',
-		'tagged' => 'taggade dig i en',
+		'commented' => 'kommenterade på din',
+		'reacted' => 'reagerade på din',
+		'shared' => 'delade din',
+		'tagged' => 'taggade dig i ett',
 
 		'updatedA' => 'uppdaterade en',
 		'sentA' => 'skickade en',
 
-		'followed' => 'följer',
+		'followed' => 'följde',
 		'mentioned' => 'nämnde',
-		'you' => 'dig',
+		'you' => 'du',
 
-		'yourApplication' => 'Din ansökan att gå med',
+		'yourApplication' => 'Din ansökan för att gå med',
 		'applicationApproved' => 'blev godkänd!',
-		'applicationRejected' => 'blev nekad. Du kan ansöka igen om 6 månader.',
+		'applicationRejected' => 'nekades. Du kan söka för att gå med igen om 6 månader.',
 
 		'dm' => 'dm',
-		'groupPost' => 'grupp inlägg',
+		'groupPost' => 'gruppinlägg',
 		'modlog' => 'modlog',
 		'post' => 'inlägg',
-		'story' => 'story',
+		'story' => 'historik',
+		'noneFound' => 'Inga aviseringar hittades',
 	],
 
 	'post' => [
@@ -110,7 +116,7 @@ return [
 		'posts' => 'Inlägg',
 		'followers' => 'Följare',
 		'following' => 'Följer',
-		'admin' => 'Admin',
+		'admin' => 'Administratör',
 		'collections' => 'Kollektioner',
 		'follow' => 'Följ',
 		'unfollow' => 'Sluta följa',
@@ -128,16 +134,16 @@ return [
 		'moderationTools' => 'Modereringsverktyg',
 		'report' => 'Rapportera',
 		'archive' => 'Arkivera',
-		'unarchive' => 'avarkivera',
+		'unarchive' => 'Avarkivera',
 		'embed' => 'Bädda in',
 
 		'selectOneOption' => 'Välj ett av följande alternativ',
 		'unlistFromTimelines' => 'Avlista från tidslinjer',
-		'addCW' => 'Lägg till känslighetsvarning',
+		'addCW' => 'Lägg till innehållsvarning',
 		'removeCW' => 'Ta bort känslighetsvarning',
 		'markAsSpammer' => 'Markera som spammare',
 		'markAsSpammerText' => 'Avlista + känslighetsmarkera nuvarande och framtida inlägg',
-		'spam' => 'Spam',
+		'spam' => 'Skräppost',
 		'sensitive' => 'Känsligt innehåll',
 		'abusive' => 'Missbruk eller skadligt',
 		'underageAccount' => 'Minderårigt konto',
@@ -176,11 +182,27 @@ return [
 	],
 
 	'timeline' => [
-		'peopleYouMayKnow' => 'Personer du kanske känner'
+		'peopleYouMayKnow' => 'Personer du kanske känner',
+
+		'onboarding' => [
+			'welcome' => 'Välkommen',
+			'thisIsYourHomeFeed' => 'Detta är ditt hem foder, ett kronologiskt flöde av inlägg från konton du följer.',
+			'letUsHelpYouFind' => 'Låt oss hjälpa dig att hitta några intressanta människor att följa',
+			'refreshFeed' => 'Uppdatera mitt flöde',
+		],
 	],
 
 	'hashtags' => [
 		'emptyFeed' => 'Vi kan inte hitta några inlägg med den hashtagen'
+	],
+
+	'report' => [
+		'report' => 'Rapportera',
+		'selectReason' => 'Välj en anledning',
+		'reported' => 'Rapporterad',
+		'sendingReport' => 'Skickar rapport',
+		'thanksMsg' => 'Tack för rapporten, personer som gillar att du hjälper till att skydda vår gemenskap!',
+		'contactAdminMsg' => 'Om du vill kontakta en administratör om detta inlägg eller rapport',
 	],
 
 ];
