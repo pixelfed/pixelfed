@@ -16,6 +16,8 @@
         "bacon/bacon-qr-code": "^3.0",
         "brick/math": "^0.14",
         "buzz/laravel-h-captcha": "^1.0.4",
+        "deployer/deployer": "^7.5",
+        "doctrine/dbal": "^3.0",
         "endroid/qr-code": "^6.0",
         "guzzlehttp/guzzle": "^7.10",
         "intervention/image-laravel": "^1.5",
