@@ -3,12 +3,18 @@
 namespace App\Jobs\GroupsPipeline;
 
 use App\Util\Media\Image;
+use App\Jobs\PushNotificationPipeline\PostPushNotifyPipeline;
+use Exception;
+use App\Services\NotificationAppGatewayService;
+use App\Services\PushNotificationService;
+use App\Notification;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
 use App\Models\Group;
+use Log;
 use App\Models\GroupPost;
 use App\Models\GroupHashtag;
 use App\Models\GroupPostHashtag;
@@ -50,12 +56,41 @@ class NewPostPipeline implements ShouldQueue
     {
         $profile = $this->status->profile;
         $status = $this->status;
-
+    
         if ($profile->no_autolink == false) {
             $this->parseEntities();
         }
+    
+        $this->notifyFollowers($status);
     }
-
+    
+    public function notifyFollowers($status)
+    {
+        $followers = $status->profile->followers;
+    
+        foreach ($followers as $follower) {
+            try {
+                $notification = new Notification;
+                $notification->profile_id = $follower->id;
+                $notification->actor_id = $status->profile_id;
+                $notification->action = 'post';
+                $notification->item_id = $status->id;
+                $notification->item_type = "App\Status";
+                $notification->save();
+            } catch (Exception $e) {
+                Log::error($e);
+            }
+    
+            if (NotificationAppGatewayService::enabled()) {
+                if (PushNotificationService::check('post', $follower->id)) {
+                    $user = User::whereProfileId($follower->id)->first();
+                    if ($user && $user->expo_token && $user->notify_enabled) {
+                        PostPushNotifyPipeline::dispatch($user->expo_token, $status->profile->username)->onQueue('pushnotify');
+                    }
+                }
+            }
+        }
+    }
     public function parseEntities()
     {
         $this->extractEntities();
