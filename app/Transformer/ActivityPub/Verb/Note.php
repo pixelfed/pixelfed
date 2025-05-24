@@ -3,6 +3,7 @@
 namespace App\Transformer\ActivityPub\Verb;
 
 use App\Models\CustomEmoji;
+use App\Services\MediaService;
 use App\Status;
 use App\Util\Lexer\Autolink;
 use Illuminate\Support\Str;
@@ -53,7 +54,7 @@ class Note extends Fractal\TransformerAbstract
         $emojis = CustomEmoji::scan($status->caption, true) ?? [];
         $emoji = array_merge($emojis, $mentions);
         $tags = array_merge($emoji, $hashtags);
-        $content = $status->caption ? nl2br(Autolink::create()->autolink($status->caption)) : "";
+        $content = $status->caption ? nl2br(Autolink::create()->autolink($status->caption)) : '';
 
         return [
             '@context' => [
@@ -100,25 +101,7 @@ class Note extends Fractal\TransformerAbstract
             'to' => $status->scopeToAudience('to'),
             'cc' => $status->scopeToAudience('cc'),
             'sensitive' => (bool) $status->is_nsfw,
-            'attachment' => $status->media()->orderBy('order')->get()->map(function ($media) {
-                $res = [
-                    'type' => $media->activityVerb(),
-                    'mediaType' => $media->mime,
-                    'url' => $media->url(),
-                    'name' => $media->caption,
-                ];
-                if ($media->blurhash) {
-                    $res['blurhash'] = $media->blurhash;
-                }
-                if ($media->width) {
-                    $res['width'] = $media->width;
-                }
-                if ($media->height) {
-                    $res['height'] = $media->height;
-                }
-
-                return $res;
-            })->toArray(),
+            'attachment' => MediaService::activitypub($status->id),
             'tag' => $tags,
             'commentsEnabled' => (bool) ! $status->comments_disabled,
             'capabilities' => [

@@ -112,6 +112,21 @@
                     @click.prevent="unarchivePost(status)">
                     {{ $t('menu.unarchive') }}
                 </a>
+                <a
+                    v-if="status && profile.id == status.account.id && !status.pinned"
+                    class="list-group-item menu-option text-danger"
+                    href="#"
+                    @click.prevent="pinPost(status)">
+                    {{ $t('menu.pin') }}
+                </a>
+
+                <a
+                    v-if="status && profile.id == status.account.id && status.pinned"
+                    class="list-group-item menu-option text-danger"
+                    href="#"
+                    @click.prevent="unpinPost(status)">
+                    {{ $t('menu.unpin') }}
+                </a>
 
                 <a
                     v-if="config.ab.pue && status && profile.id == status.account.id && status.visibility !== 'archived'"
@@ -975,6 +990,57 @@
                         })
                     }
                 })
+            },
+
+            pinPost(status) {
+                if(window.confirm(this.$t('menu.pinPostConfirm')) == false) {
+                    return;
+                }
+
+                this.closeModals();
+
+                axios.post('/api/pixelfed/v1/statuses/' + status.id.toString() + '/pin')
+                .then(res => {
+                    const data = res.data;
+                    if(data.id && data.pinned) {
+                        this.$emit('pinned');
+                        swal('Pinned', 'Successfully pinned post to your profile', 'success');
+                    } else {
+                        swal('Error', 'An error occured when attempting to pin', 'error');
+                    }
+                })
+                .catch(err => {
+                    this.closeModals();
+                    if(err.response?.data?.error) {
+                        swal('Error', err.response?.data?.error, 'error');
+                    }
+                });
+            },
+
+            unpinPost(status) {
+                if(window.confirm(this.$t('menu.unpinPostConfirm')) == false) {
+                    return;
+                }
+                this.closeModals();
+
+                axios.post('/api/pixelfed/v1/statuses/' + status.id.toString() + '/unpin')
+                .then(res => {
+                    const data = res.data;
+                    if(data.id) {
+                        this.$emit('unpinned');
+                        swal('Unpinned', 'Successfully unpinned post from your profile', 'success');
+                    } else {
+                        swal('Error', data.error, 'error');
+                    }
+                })
+                .catch(err => {
+                    this.closeModals();
+                    if(err.response?.data?.error) {
+                        swal('Error', err.response?.data?.error, 'error');
+                    } else {
+                        window.location.reload()
+                    }
+                });
             },
         }
     }

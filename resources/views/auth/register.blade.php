@@ -5,7 +5,7 @@
     <div class="row justify-content-center">
         <div class="col-lg-5">
             <div class="card">
-                <div class="card-header bg-white p-3 text-center font-weight-bold">{{ __('Register a new account') }}</div>
+                <div class="card-header bg-white p-3 text-center font-weight-bold">{{ __('auth.registerTitle') }}</div>
 
                 <div class="card-body">
                     <form method="POST" action="{{ route('register') }}" class="px-md-3">
@@ -13,7 +13,7 @@
                         <input type="hidden" name="rt" value="{{ (new \App\Http\Controllers\Auth\RegisterController())->getRegisterToken() }}">
                         <div class="form-group row">
                             <div class="col-md-12">
-                                <label class="small font-weight-bold text-lighter">Name</label>
+                                <label class="small font-weight-bold text-lighter">{{ __('auth.name') }}</label>
                                 <input id="name" type="text" class="form-control{{ $errors->has('name') ? ' is-invalid' : '' }}" name="name" value="{{ old('name') }}" placeholder="{{ __('Name') }}" required autofocus>
 
                                 @if ($errors->has('name'))
@@ -26,8 +26,8 @@
 
                         <div class="form-group row">
                             <div class="col-md-12">
-                                <label class="small font-weight-bold text-lighter">Username</label>
-                                <input id="username" type="text" class="form-control{{ $errors->has('username') ? ' is-invalid' : '' }}" name="username" value="{{ old('username') }}" placeholder="{{ __('Username') }}" required>
+                                <label class="small font-weight-bold text-lighter">{{ __('auth.username') }}</label>
+                                <input id="username" type="text" class="form-control{{ $errors->has('username') ? ' is-invalid' : '' }}" name="username" value="{{ old('username') }}" placeholder="{{ __('auth.username') }}" required>
 
                                 @if ($errors->has('username'))
                                     <span class="invalid-feedback">
@@ -40,7 +40,7 @@
                         <div class="form-group row">
                             <div class="col-md-12">
                                 <label class="small font-weight-bold text-lighter">Email</label>
-                                <input id="email" type="email" class="form-control{{ $errors->has('email') ? ' is-invalid' : '' }}" name="email" value="{{ old('email') }}" placeholder="{{ __('E-Mail Address') }}" required>
+                                <input id="email" type="email" class="form-control{{ $errors->has('email') ? ' is-invalid' : '' }}" name="email" value="{{ old('email') }}" placeholder="{{ __('auth.emailAddress') }}" required>
 
                                 @if ($errors->has('email'))
                                     <span class="invalid-feedback">
@@ -52,8 +52,8 @@
 
                         <div class="form-group row">
                             <div class="col-md-12">
-                                <label class="small font-weight-bold text-lighter">Password</label>
-                                <input id="password" type="password" class="form-control{{ $errors->has('password') ? ' is-invalid' : '' }}" name="password" placeholder="{{ __('Password') }}" required>
+                                <label class="small font-weight-bold text-lighter">{{ __('auth.password') }}</label>
+                                <input id="password" type="password" class="form-control{{ $errors->has('password') ? ' is-invalid' : '' }}" name="password" placeholder="{{ __('auth.password') }}" required>
 
                                 @if ($errors->has('password'))
                                     <span class="invalid-feedback">
@@ -65,8 +65,8 @@
 
                         <div class="form-group row">
                             <div class="col-md-12">
-                                <label class="small font-weight-bold text-lighter">Confirm Password</label>
-                                <input id="password-confirm" type="password" class="form-control" name="password_confirmation" placeholder="{{ __('Confirm Password') }}" required>
+                                <label class="small font-weight-bold text-lighter">{{ __('auth.confirm-password')}}</label>
+                                <input id="password-confirm" type="password" class="form-control" name="password_confirmation" placeholder="{{ __('auth.confirm-password') }}" required>
                             </div>
                         </div>
 
@@ -75,7 +75,7 @@
                                 <div class="form-check">
                                   <input class="form-check-input" name="agecheck" type="checkbox" value="true" id="ageCheck" required>
                                   <label class="form-check-label" for="ageCheck">
-                                    I am at least 16 years old
+                                  {{ __('auth.age') }}
                                   </label>
                                 </div>
                             </div>
@@ -87,12 +87,12 @@
                         </div>
                         @endif
 
-                        <p class="small">By signing up, you agree to our <a href="{{route('site.terms')}}" class="font-weight-bold text-dark">Terms of Use</a> and <a href="{{route('site.privacy')}}" class="font-weight-bold text-dark">Privacy Policy</a>.</p>
-                        
+                        <p class="small">{!! __('auth.terms') !!}</p>
+
                         <div class="form-group row">
                             <div class="col-md-12">
                                 <button type="submit" class="btn btn-primary btn-block py-0 font-weight-bold">
-                                    {{ __('Register') }}
+                                    {{ __('auth.register') }}
                                 </button>
                             </div>
                         </div>

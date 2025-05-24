@@ -49,7 +49,7 @@
 				<input type="checkbox" name="check" class="form-control check-all">
 			</th> --}}
 			<th scope="col">{{__('settings.relationships.username')}}</th>
-			<th scope="col">{{__('settings.relationship.action')}}</th>
+			<th scope="col">{{__('settings.relationships.action')}}</th>
 		</tr>
 	</thead>
 	<tbody>
@@ -71,6 +71,7 @@
 			<td class="text-center">
 				<a class="btn btn-outline-primary btn-sm py-0 action-btn" href="#" data-id="{{$follower->id}}" data-action="mute">{{__('settings.relationships.mute')}}</a>
 				<a class="btn btn-outline-danger btn-sm py-0 action-btn" href="#" data-id="{{$follower->id}}" data-action="block">{{__('settings.relationships.block')}}</a>
+                <a class="btn btn-outline-secondary btn-sm py-0 action-btn" href="#" data-id="{{$follower->id}}" data-action="removeFollow">{{__('settings.relationships.removeFollow')}}</a>
 			</td>
 			@endif
 		</tr>
@@ -90,7 +91,7 @@
     background-color: #F7FAFC;
 }
 </style>
-@endpush 
+@endpush
 @push('scripts')
 <script type="text/javascript">
 	$(document).ready(() => {
@@ -152,6 +153,16 @@
 						'success'
 						);
 				});
+                break;
+                case 'removeFollow':
+                axios.post('/api/pixelfed/v1/accounts/' + id + '/remove_from_followers').then(res => {
+                    swal(
+                        '{{__('settings.relationships.unfollow_successful')}}',
+                        '{{__('settings.relationships.you_have_successfully_unfollowed_that_user')}}',
+                        'success'
+                        );
+                });
+
 			}
 			setTimeout(function() {
 				window.location.href = window.location.href;

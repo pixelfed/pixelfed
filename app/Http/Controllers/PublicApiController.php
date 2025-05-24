@@ -35,6 +35,11 @@ class PublicApiController extends Controller
         $this->fractal->setSerializer(new ArraySerializer);
     }
 
+    public function json($res, $code = 200, $headers = [])
+    {
+        return response()->json($res, $code, $headers, JSON_UNESCAPED_SLASHES);
+    }
+
     protected function getUserData($user)
     {
         if (! $user) {
@@ -667,10 +672,8 @@ class PublicApiController extends Controller
             'only_media' => 'nullable',
             'pinned' => 'nullable',
             'exclude_replies' => 'nullable',
-            'max_id' => 'nullable|integer|min:0|max:'.PHP_INT_MAX,
-            'since_id' => 'nullable|integer|min:0|max:'.PHP_INT_MAX,
-            'min_id' => 'nullable|integer|min:0|max:'.PHP_INT_MAX,
             'limit' => 'nullable|integer|min:1|max:24',
+            'cursor' => 'nullable',
         ]);
 
         $user = $request->user();
@@ -683,83 +686,194 @@ class PublicApiController extends Controller
         }
 
         $limit = $request->limit ?? 9;
-        $max_id = $request->max_id;
-        $min_id = $request->min_id;
         $scope = ['photo', 'photo:album', 'video', 'video:album'];
         $onlyMedia = $request->input('only_media', true);
+        $pinned = $request->filled('pinned') && $request->boolean('pinned') == true;
+        $hasCursor = $request->filled('cursor');
 
-        if (! $min_id && ! $max_id) {
-            $min_id = 1;
+        $visibility = $this->determineVisibility($profile, $user);
+
+        if (empty($visibility)) {
+            return response()->json([]);
+        }
+
+        $result = collect();
+        $remainingLimit = $limit;
+
+        if ($pinned && ! $hasCursor) {
+            $pinnedStatuses = Status::whereProfileId($profile['id'])
+                ->whereNotNull('pinned_order')
+                ->orderBy('pinned_order')
+                ->get();
+
+            $pinnedResult = $this->processStatuses($pinnedStatuses, $user, $onlyMedia);
+            $result = $pinnedResult;
+
+            $remainingLimit = max(1, $limit - $pinnedResult->count());
+        }
+
+        $paginator = Status::whereProfileId($profile['id'])
+            ->whereNull('in_reply_to_id')
+            ->whereNull('reblog_of_id')
+            ->when($pinned, function ($query) {
+                return $query->whereNull('pinned_order');
+            })
+            ->whereIn('type', $scope)
+            ->whereIn('scope', $visibility)
+            ->orderByDesc('id')
+            ->cursorPaginate($remainingLimit)
+            ->withQueryString();
+
+        $headers = $this->generatePaginationHeaders($paginator);
+        $regularStatuses = $this->processStatuses($paginator->items(), $user, $onlyMedia);
+        $result = $result->concat($regularStatuses);
+
+        return response()->json($result, 200, $headers);
+    }
+
+    /**
+     *  GET /api/pixelfed/v1/statuses/{id}/pin
+     */
+    public function statusPin(Request $request, $id)
+    {
+        abort_if(! $request->user(), 403);
+        $user = $request->user();
+        $status = Status::whereScope('public')->find($id);
+
+        if (! $status) {
+            return $this->json(['error' => 'Record not found'], 404);
+        }
+
+        if ($status->profile_id != $user->profile_id) {
+            return $this->json(['error' => "Validation failed: Someone else's post cannot be pinned"], 422);
+        }
+
+        $res = StatusService::markPin($status->id);
+
+        if (! $res['success']) {
+            return $this->json([
+                'error' => $res['error'],
+            ], 422);
+        }
+
+        $statusRes = StatusService::get($status->id, true, true);
+        $status['pinned'] = true;
+
+        return $this->json($statusRes);
+    }
+
+    /**
+     *  GET /api/pixelfed/v1/statuses/{id}/unpin
+     */
+    public function statusUnpin(Request $request, $id)
+    {
+        abort_if(! $request->user(), 403);
+        $status = Status::whereScope('public')->findOrFail($id);
+        $user = $request->user();
+
+        if ($status->profile_id != $user->profile_id) {
+            return $this->json(['error' => 'Record not found'], 404);
+        }
+
+        $res = StatusService::unmarkPin($status->id);
+        if (! $res) {
+            return $this->json($res, 422);
+        }
+
+        $status = StatusService::get($status->id, true, true);
+        $status['pinned'] = false;
+
+        return $this->json($status);
+    }
+
+    private function determineVisibility($profile, $user)
+    {
+        if (! $profile || ! isset($profile['id'])) {
+            return [];
+        }
+
+        if ($user && $profile['id'] == $user->profile_id) {
+            return ['public', 'unlisted', 'private'];
         }
 
         if ($profile['locked']) {
             if (! $user) {
-                return response()->json([]);
+                return [];
             }
-            $pid = $user->profile_id;
-            $following = Cache::remember('profile:following:'.$pid, now()->addMinutes(1440), function () use ($pid) {
-                $following = Follower::whereProfileId($pid)->pluck('following_id');
 
-                return $following->push($pid)->toArray();
-            });
-            $visibility = in_array($profile['id'], $following) == true ? ['public', 'unlisted', 'private'] : [];
+            $pid = $user->profile_id;
+            $isFollowing = FollowerService::follows($pid, $profile['id']);
+
+            return $isFollowing ? ['public', 'unlisted', 'private'] : ['public'];
         } else {
             if ($user) {
                 $pid = $user->profile_id;
-                $following = Cache::remember('profile:following:'.$pid, now()->addMinutes(1440), function () use ($pid) {
-                    $following = Follower::whereProfileId($pid)->pluck('following_id');
+                $isFollowing = FollowerService::follows($pid, $profile['id']);
 
-                    return $following->push($pid)->toArray();
-                });
-                $visibility = in_array($profile['id'], $following) == true ? ['public', 'unlisted', 'private'] : ['public', 'unlisted'];
+                return $isFollowing ? ['public', 'unlisted', 'private'] : ['public', 'unlisted'];
             } else {
-                $visibility = ['public', 'unlisted'];
+                return ['public', 'unlisted'];
             }
         }
-        $dir = $min_id ? '>' : '<';
-        $id = $min_id ?? $max_id;
-        $res = Status::whereProfileId($profile['id'])
-            ->whereNull('in_reply_to_id')
-            ->whereNull('reblog_of_id')
-            ->whereIn('type', $scope)
-            ->where('id', $dir, $id)
-            ->whereIn('scope', $visibility)
-            ->limit($limit)
-            ->orderByDesc('id')
-            ->get()
-            ->map(function ($s) use ($user) {
-                try {
-                    $status = StatusService::get($s->id, false);
-                    if (! $status) {
-                        return false;
-                    }
-                } catch (\Exception $e) {
-                    $status = false;
-                }
-                if ($user && $status) {
-                    $status['favourited'] = (bool) LikeService::liked($user->profile_id, $s->id);
+    }
+
+    private function processStatuses($statuses, $user, $onlyMedia)
+    {
+        return collect($statuses)->map(function ($status) use ($user) {
+            try {
+                $mastodonStatus = StatusService::get($status->id, false);
+                if (! $mastodonStatus) {
+                    return null;
                 }
 
-                return $status;
-            })
-            ->filter(function ($s) use ($onlyMedia) {
-                if (! $s) {
+                if ($user) {
+                    $mastodonStatus['favourited'] = (bool) LikeService::liked($user->profile_id, $status->id);
+                    $mastodonStatus['bookmarked'] = (bool) BookmarkService::get($user->profile_id, $status->id);
+                    $mastodonStatus['reblogged'] = (bool) StatusService::isShared($status->id, $user->profile_id);
+                }
+
+                return $mastodonStatus;
+            } catch (\Exception $e) {
+                return null;
+            }
+        })
+            ->filter(function ($status) use ($onlyMedia) {
+                if (! $status) {
                     return false;
                 }
+
                 if ($onlyMedia) {
-                    if (
-                        ! isset($s['media_attachments']) ||
-                        ! is_array($s['media_attachments']) ||
-                        empty($s['media_attachments'])
-                    ) {
-                        return false;
-                    }
+                    return isset($status['media_attachments']) &&
+                           is_array($status['media_attachments']) &&
+                           ! empty($status['media_attachments']);
                 }
 
-                return $s;
+                return true;
             })
             ->values();
+    }
 
-        return response()->json($res);
+    /**
+     * Generate pagination link headers from paginator
+     */
+    private function generatePaginationHeaders($paginator)
+    {
+        $link = null;
+
+        if ($paginator->onFirstPage()) {
+            if ($paginator->hasMorePages()) {
+                $link = '<'.$paginator->nextPageUrl().'>; rel="prev"';
+            }
+        } else {
+            if ($paginator->previousPageUrl()) {
+                $link = '<'.$paginator->previousPageUrl().'>; rel="next"';
+            }
+
+            if ($paginator->hasMorePages()) {
+                $link .= ($link ? ', ' : '').'<'.$paginator->nextPageUrl().'>; rel="prev"';
+            }
+        }
+
+        return isset($link) ? ['Link' => $link] : [];
     }
 }

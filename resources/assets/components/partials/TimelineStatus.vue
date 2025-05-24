@@ -10,46 +10,77 @@
                 @follow="follow"
                 @unfollow="unfollow" />
 
-            <post-content
-                :profile="profile"
-                :status="shadowStatus" />
+            <template v-if="!isFiltered || (isFiltered && filterType === 'blur')">
+                <post-content
+                    :profile="profile"
+                    :status="shadowStatus"
+                    :is-filtered="isFiltered"
+                    :filters="filters"
+                />
 
-            <post-reactions
-            	v-if="reactionBar"
-                :status="shadowStatus"
-                :profile="profile"
-                :admin="admin"
-                v-on:like="like"
-                v-on:unlike="unlike"
-                v-on:share="shareStatus"
-                v-on:unshare="unshareStatus"
-                v-on:likes-modal="showLikes"
-                v-on:shares-modal="showShares"
-                v-on:toggle-comments="showComments"
-                v-on:bookmark="handleBookmark"
-                v-on:mod-tools="openModTools" />
-
-            <div v-if="showCommentDrawer" class="card-footer rounded-bottom border-0" style="background: rgba(0,0,0,0.02);z-index: 3;">
-                <comment-drawer
+                <post-reactions
+                	v-if="reactionBar"
                     :status="shadowStatus"
                     :profile="profile"
-                    v-on:handle-report="handleReport"
-                    v-on:counter-change="counterChange"
-                    v-on:show-likes="showCommentLikes"
-                    v-on:follow="follow"
-                    v-on:unfollow="unfollow" />
-            </div>
+                    :admin="admin"
+                    @like="like"
+                    @unlike="unlike"
+                    @share="shareStatus"
+                    @unshare="unshareStatus"
+                    @likes-modal="showLikes"
+                    @shares-modal="showShares"
+                    @toggle-comments="showComments"
+                    @bookmark="handleBookmark"
+                    @mod-tools="openModTools" />
+
+                <div v-if="showCommentDrawer" class="card-footer rounded-bottom border-0" style="background: rgba(0,0,0,0.02);z-index: 3;">
+                    <comment-drawer
+                        :status="shadowStatus"
+                        :profile="profile"
+                        @handle-report="handleReport"
+                        @counter-change="counterChange"
+                        @show-likes="showCommentLikes"
+                        @follow="follow"
+                        @unfollow="unfollow" />
+                </div>
+            </template>
+
+            <template v-else>
+                <div class="card shadow-none mt-n2 mx-3 border-0">
+                  <div class="card-body bg-warning-light p-3 ft-std">
+                    <div class="badge badge-warning p-2" style="border-radius: 10px;">
+                      <i class="fas fa-exclamation-triangle mr-1" aria-hidden="true"></i>
+                      <span>Warning</span>
+                    </div>
+                    <p class="card-text mt-3" style="word-break:break-all;">
+                      This post contains the following filtered keyword{{ filteredTerms?.length > 1 ? 's' : ''}}:
+                      <span v-for="(term, idx) in filteredTerms" class="font-weight-bold">{{ term }}{{filteredTerms?.length === (idx + 1) ? '' : ', '}}</span>
+                    </p>
+                    <button class="btn btn-outline-primary font-weight-bold" @click="showHiddenStatus()" style="border-radius: 10px;">
+                      Show Content
+                    </button>
+                  </div>
+                </div>
+
+            </template>
         </div>
     </div>
 </template>
 
 <script type="text/javascript">
-    import CommentDrawer from './post/CommentDrawer.vue';
-    import PostHeader from './post/PostHeader.vue';
-    import PostContent from './post/PostContent.vue';
-    import PostReactions from './post/PostReactions.vue';
+    import CommentDrawer from "./post/CommentDrawer.vue";
+    import PostHeader from "./post/PostHeader.vue";
+    import PostContent from "./post/PostContent.vue";
+    import PostReactions from "./post/PostReactions.vue";
 
     export default {
+
+        components: {
+            "comment-drawer": CommentDrawer,
+            "post-content": PostContent,
+            "post-header": PostHeader,
+            "post-reactions": PostReactions
+        },
         props: {
             status: {
                 type: Object
@@ -60,21 +91,14 @@
             },
 
             reactionBar: {
-            	type: Boolean,
-            	default: true
+                type: Boolean,
+                default: true
             },
 
             useDropdownMenu: {
                 type: Boolean,
                 default: false
             }
-        },
-
-        components: {
-            "comment-drawer": CommentDrawer,
-            "post-content": PostContent,
-            "post-header": PostHeader,
-            "post-reactions": PostReactions
         },
 
         data() {
@@ -87,23 +111,12 @@
                 isBookmarking: false,
                 owner: false,
                 admin: false,
-                license: false
-            }
-        },
-
-        mounted() {
-            this.license = this.shadowStatus.media_attachments && this.shadowStatus.media_attachments.length ?
-                this.shadowStatus
-                .media_attachments
-                .filter(m => m.hasOwnProperty('license') && m.license && m.license.hasOwnProperty('id'))
-                .map(m => m.license)[0] : false;
-            this.admin = window._sharedData.user.is_admin;
-            this.owner = this.shadowStatus.account.id == window._sharedData.user.id;
-            if(this.shadowStatus.reply_count && this.autoloadComments && this.shadowStatus.comments_disabled === false) {
-                setTimeout(() => {
-                    this.showCommentDrawer = true;
-                }, 1000);
-            }
+                license: false,
+                isFiltered: false,
+                filterType: undefined,
+                filters: [],
+                filteredTerms: []
+            };
         },
 
         computed: {
@@ -128,7 +141,7 @@
             newReactions: {
                 get() {
                     return this.$store.state.newReactions;
-                },
+                }
             },
 
             isReblog: {
@@ -150,35 +163,25 @@
             }
         },
 
-        watch: {
-            status: {
-                deep: true,
-                immediate: true,
-                handler: function(o, n) {
-                    this.isBookmarking = false;
-                }
-            },
-        },
-
         methods: {
             openMenu() {
-                this.$emit('menu');
+                this.$emit("menu");
             },
 
             like() {
-                this.$emit('like');
+                this.$emit("like");
             },
 
             unlike() {
-                this.$emit('unlike');
+                this.$emit("unlike");
             },
 
             showLikes() {
-                this.$emit('likes-modal');
+                this.$emit("likes-modal");
             },
 
             showShares() {
-                this.$emit('shares-modal');
+                this.$emit("shares-modal");
             },
 
             showComments() {
@@ -195,47 +198,47 @@
                     navigator.share({
                         url: this.status.url
                     })
-                    .then(() => console.log('Share was successful.'))
-                    .catch((error) => console.log('Sharing failed', error));
+                        .then(() => console.log("Share was successful."))
+                        .catch((error) => console.log("Sharing failed", error));
                 } else {
-                    swal('Not supported', 'Your current device does not support native sharing.', 'error');
+                    swal("Not supported", "Your current device does not support native sharing.", "error");
                 }
             },
 
             counterChange(type) {
-                this.$emit('counter-change', type);
+                this.$emit("counter-change", type);
             },
 
             showCommentLikes(post) {
-                this.$emit('comment-likes-modal', post);
+                this.$emit("comment-likes-modal", post);
             },
 
             shareStatus() {
-                this.$emit('share');
+                this.$emit("share");
             },
 
             unshareStatus() {
-                this.$emit('unshare');
+                this.$emit("unshare");
             },
 
             handleReport(post) {
-                this.$emit('handle-report', post);
+                this.$emit("handle-report", post);
             },
 
             follow() {
-                this.$emit('follow');
+                this.$emit("follow");
             },
 
             unfollow() {
-                this.$emit('unfollow');
+                this.$emit("unfollow");
             },
 
             handleReblog() {
                 this.isReblogging = true;
-                if(this.status.reblogged) {
-                    this.$emit('unshare');
+                if (this.status.reblogged) {
+                    this.$emit("unshare");
                 } else {
-                    this.$emit('share');
+                    this.$emit("share");
                 }
 
                 setTimeout(() => {
@@ -246,7 +249,7 @@
             handleBookmark() {
                 event.currentTarget.blur();
                 this.isBookmarking = true;
-                this.$emit('bookmark');
+                this.$emit("bookmark");
 
                 setTimeout(() => {
                     this.isBookmarking = false;
@@ -254,7 +257,7 @@
             },
 
             getStatusAvatar() {
-                if(window._sharedData.user.id == this.status.account.id) {
+                if (window._sharedData.user.id == this.status.account.id) {
                     return window._sharedData.user.avatar;
                 }
 
@@ -262,10 +265,73 @@
             },
 
             openModTools() {
-                this.$emit('mod-tools');
+                this.$emit("mod-tools");
+            },
+
+            applyStatusFilters() {
+                const filterTypes = this.status.filtered.map(f => f.filter.filter_action);
+
+                if (filterTypes.includes("warn")) {
+                    this.applyWarnStatusFilter();
+                    return;
+                }
+                if (filterTypes.includes("blur")) {
+                    this.applyBlurStatusFilter();
+                    return;
+                }
+            },
+
+            applyWarnStatusFilter() {
+                this.isFiltered = true;
+                this.filterType = "warn";
+                this.filters = this.status.filtered;
+                this.filteredTerms = this.status.filtered.map(f => f.keyword_matches).flat(1);
+            },
+
+            applyBlurStatusFilter() {
+                this.isFiltered = true;
+                this.filterType = "blur";
+                this.filters = this.status.filtered;
+                this.filteredTerms = this.status.filtered.map(f => f.keyword_matches).flat(1);
+            },
+
+            showHiddenStatus() {
+                this.isFiltered = false;
+                this.filterType = null;
+                this.filters = [];
+                this.filteredTerms = [];
+            }
+        },
+
+        mounted() {
+            this.license = this.shadowStatus.media_attachments && this.shadowStatus.media_attachments.length ?
+                this.shadowStatus
+                    .media_attachments
+                    .filter(m => m.hasOwnProperty("license") && m.license && m.license.hasOwnProperty("id"))
+                    .map(m => m.license)[0] : false;
+            this.admin = window._sharedData.user.is_admin;
+            this.owner = this.shadowStatus.account.id == window._sharedData.user.id;
+            if (this.shadowStatus.reply_count && this.autoloadComments && this.shadowStatus.comments_disabled === false) {
+                setTimeout(() => {
+                    this.showCommentDrawer = true;
+                }, 1000);
+            }
+
+            if (this.status.filtered && this.status.filtered.length) {
+                this.applyStatusFilters();
+            }
+        },
+
+        watch: {
+            status: {
+                deep: true,
+                immediate: true,
+                handler: function(o, n) {
+                    this.isBookmarking = false;
+                }
             }
         }
-    }
+    };
 </script>
 
 <style lang="scss">

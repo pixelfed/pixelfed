@@ -8,6 +8,10 @@ Route::domain(config('pixelfed.domain.app'))->middleware(['validemail', 'twofact
     Route::get('authorize_interaction', 'AuthorizeInteractionController@get');
 
     Auth::routes();
+
+    Route::get('auth/oidc/start', 'RemoteOidcController@start');
+    Route::get('auth/oidc/callback', 'RemoteOidcController@handleCallback');
+
     Route::get('auth/raw/mastodon/start', 'RemoteAuthController@startRedirect');
     Route::post('auth/raw/mastodon/config', 'RemoteAuthController@getConfig');
     Route::post('auth/raw/mastodon/domains', 'RemoteAuthController@getAuthDomains');
@@ -364,6 +368,10 @@ Route::domain(config('pixelfed.domain.app'))->middleware(['validemail', 'twofact
         Route::group(['prefix' => 'account/migration', 'middleware' => 'dangerzone'], function() {
             Route::get('manage', 'ProfileMigrationController@index');
             Route::post('manage', 'ProfileMigrationController@store');
+        });
+
+        Route::group(['prefix' => 'filters'], function() {
+            Route::get('/', 'SettingsController@filtersHome')->name('settings.filters');
         });
     });
 

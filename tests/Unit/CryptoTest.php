@@ -3,6 +3,7 @@
 namespace Tests\Unit;
 
 use phpseclib\Crypt\RSA;
+use PHPUnit\Framework\Attributes\Test;
 use Tests\TestCase;
 
 class CryptoTest extends TestCase
@@ -12,12 +13,14 @@ class CryptoTest extends TestCase
      *
      * @return void
      */
-    public function testLibraryInstalled()
+    #[Test]
+    public function libraryInstalled()
     {
         $this->assertTrue(class_exists('\phpseclib\Crypt\RSA'));
     }
 
-    public function testRSASigning()
+    #[Test]
+    public function RSASigning()
     {
         $rsa = new RSA();
         extract($rsa->createKey());

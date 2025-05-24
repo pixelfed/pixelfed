@@ -21,11 +21,31 @@ use App\Story;
 use FFMpeg;
 use Illuminate\Http\Request;
 use Illuminate\Support\Str;
-use Image as Intervention;
+use Intervention\Image\Encoders\JpegEncoder;
+use Intervention\Image\Encoders\PngEncoder;
+use Intervention\Image\ImageManager;
 use Storage;
 
 class StoryComposeController extends Controller
 {
+    protected $imageManager;
+
+    public function __construct()
+    {
+        $driver = match (config('image.driver')) {
+            'imagick' => \Intervention\Image\Drivers\Imagick\Driver::class,
+            'vips' => \Intervention\Image\Drivers\Vips\Driver::class,
+            default => \Intervention\Image\Drivers\Gd\Driver::class
+        };
+        $this->imageManager = new ImageManager(
+            $driver,
+            autoOrientation: true,
+            decodeAnimation: true,
+            blendingColor: 'ffffff',
+            strip: true
+        );
+    }
+
     public function apiV1Add(Request $request)
     {
         abort_if(! (bool) config_cache('instance.stories.enabled') || ! $request->user(), 404);
@@ -34,7 +54,7 @@ class StoryComposeController extends Controller
             'file' => function () {
                 return [
                     'required',
-                    'mimetypes:image/jpeg,image/png,video/mp4',
+                    'mimetypes:image/jpeg,image/png,video/mp4,image/jpg',
                     'max:'.config_cache('pixelfed.max_photo_size'),
                 ];
             },
@@ -108,12 +128,17 @@ class StoryComposeController extends Controller
 
         $storagePath = MediaPathService::story($user->profile);
         $path = $photo->storePubliclyAs($storagePath, Str::random(random_int(2, 12)).'_'.Str::random(random_int(32, 35)).'_'.Str::random(random_int(1, 14)).'.'.$photo->extension());
-        if (in_array($photo->getMimeType(), ['image/jpeg', 'image/png'])) {
+        if (in_array($photo->getMimeType(), ['image/jpeg', 'image/jpg', 'image/png'])) {
             $fpath = storage_path('app/'.$path);
-            $img = Intervention::make($fpath);
-            $img->orientate();
-            $img->save($fpath, config_cache('pixelfed.image_quality'));
-            $img->destroy();
+
+            $img = $this->imageManager->read($fpath);
+            $quality = config_cache('pixelfed.image_quality');
+            $encoder = in_array($photo->getMimeType(), ['image/jpeg', 'image/jpg']) ?
+                new JpegEncoder($quality) :
+                new PngEncoder;
+
+            $encoded = $img->encode($encoder);
+            file_put_contents($fpath, $encoded);
         }
 
         return $path;
@@ -147,12 +172,25 @@ class StoryComposeController extends Controller
         }
 
         if ($story->type === 'photo') {
-            $img = Intervention::make($path);
-            $img->crop($width, $height, $x, $y);
-            $img->resize(1080, 1920, function ($constraint) {
+            $img = $this->imageManager->read($path);
+            $img = $img->crop($width, $height, $x, $y);
+
+            $img = $img->resize(1080, 1920, function ($constraint) {
                 $constraint->aspectRatio();
+                $constraint->upsize();
             });
-            $img->save($path, config_cache('pixelfed.image_quality'));
+
+            $quality = config_cache('pixelfed.image_quality');
+            $extension = pathinfo($path, PATHINFO_EXTENSION);
+
+            if (in_array(strtolower($extension), ['jpg', 'jpeg'])) {
+                $encoder = new JpegEncoder($quality);
+            } else {
+                $encoder = new PngEncoder;
+            }
+
+            $encoded = $img->encode($encoder);
+            file_put_contents($path, $encoded);
         }
 
         return [

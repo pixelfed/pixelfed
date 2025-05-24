@@ -5,7 +5,7 @@
         "comments": "Kommentare",
         "like": "Gef\u00e4llt mir",
         "liked": "Gef\u00e4llt",
-        "likes": "Gefiel",
+        "likes": "\"Gef\u00e4llt mir\"-Angaben",
         "share": "Teilen",
         "shared": "Geteilt",
         "shares": "Geteilt",
@@ -53,6 +53,7 @@
         "language": "Sprache",
         "privacy": "Privatsph\u00e4re",
         "terms": "AGB",
+        "legalNotice": "Impressum",
         "backToPreviousDesign": "Zur\u00fcck zum vorherigen Design"
     },
     "directMessages": {

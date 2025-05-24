@@ -10,6 +10,8 @@
 /.gitconfig
 #/.gitignore
 /.idea
+/.phpunit.cache
+/.phpunit.result.cache
 /.vagrant
 /bootstrap/cache
 /docker-compose-state/

@@ -2,12 +2,13 @@
 
 namespace Tests\Unit;
 
+use PHPUnit\Framework\Attributes\Test;
 use Purify;
 use Tests\TestCase;
 
 class PurifierTest extends TestCase
 {
-    /** @test */
+    #[Test]
     public function puckTest()
     {
         $actual = Purify::clean("<span class=\"fa-spin fa\">catgirl spinning around in the interblag</span>");

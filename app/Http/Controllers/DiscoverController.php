@@ -57,11 +57,11 @@ class DiscoverController extends Controller
 
         $this->validate($request, [
             'hashtag' => 'required|string|min:1|max:124',
-            'page' => 'nullable|integer|min:1|max:'.($user ? 29 : 3),
+            'page' => 'nullable|integer|min:1',
         ]);
 
         $page = $request->input('page') ?? '1';
-        $end = $page > 1 ? $page * 9 : 0;
+        $end = $page > 1 ? $page * 9 : (($page * 9) + 9);
         $tag = $request->input('hashtag');
 
         if (config('database.default') === 'pgsql') {
@@ -80,6 +80,18 @@ class DiscoverController extends Controller
             'name' => $hashtag->name,
             'url' => $hashtag->url(),
         ];
+
+        $res['tags'] = [];
+
+        if ($page >= 8) {
+            if ($user) {
+                if ($page >= 29) {
+                    return $res;
+                }
+            } else {
+                return $res;
+            }
+        }
         if ($user) {
             $tags = StatusHashtagService::get($hashtag->id, $page, $end);
             $res['tags'] = collect($tags)
@@ -99,23 +111,8 @@ class DiscoverController extends Controller
                 })
                 ->values();
         } else {
-            if ($page != 1) {
-                $res['tags'] = [];
-
-                return $res;
-            }
-            $key = 'discover:tags:public_feed:'.$hashtag->id.':page:'.$page;
-            $tags = Cache::remember($key, 43200, function () use ($hashtag, $page, $end) {
-                return collect(StatusHashtagService::get($hashtag->id, $page, $end))
-                    ->filter(function ($tag) {
-                        if (! $tag['status']['local']) {
-                            return false;
-                        }
-
-                        return true;
-                    })
-                    ->values();
-            });
+            $key = 'discover:tags:public_feed:'.$hashtag->id.':page:'.$page.':end'.$end;
+            $tags = StatusHashtagService::get($hashtag->id, $page, $end);
             $res['tags'] = collect($tags)
                 ->filter(function ($tag) {
                     if (! StatusService::get($tag['status']['id'])) {

@@ -31,10 +31,8 @@
             </form>
           </div>
 
-          <div class="col-12 col-md-8 offset-md-2">
-            <p><a class="font-weight-bold" href="#">
-              Learn more
-            </a> about our reporting guidelines and policy.</p>
+          <div class="col-12">
+            <p class="text-center small"><a class="font-weight-bold" href="/site/kb/community-guidelines">Learn more</a> about our community guidelines and policies.</p>
           </div>
         </div>
       </div>

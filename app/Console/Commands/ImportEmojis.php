@@ -110,7 +110,7 @@ class ImportEmojis extends Command
 
     private function isEmoji($filename)
     {
-        $allowedMimeTypes = ['image/png', 'image/jpeg', 'image/webp'];
+        $allowedMimeTypes = ['image/png', 'image/jpeg', 'image/webp', 'image/jpg'];
         $mimeType = mime_content_type($filename);
 
         return in_array($mimeType, $allowedMimeTypes);

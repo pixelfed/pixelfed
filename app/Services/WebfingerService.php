@@ -11,8 +11,24 @@ class WebfingerService
 {
     public static function rawGet($url)
     {
+        if (empty($url)) {
+            return false;
+        }
+
         $n = WebfingerUrl::get($url);
+
         if (! $n) {
+            return false;
+        }
+        if (empty($n) || ! str_starts_with($n, 'https://')) {
+            return false;
+        }
+        $host = parse_url($n, PHP_URL_HOST);
+        if (! $host) {
+            return false;
+        }
+
+        if (in_array($host, InstanceService::getBannedDomains())) {
             return false;
         }
         $webfinger = FetchCacheService::getJson($n);

@@ -21,6 +21,7 @@ use App\Observers\UserFilterObserver;
 use App\Observers\UserObserver;
 use App\Profile;
 use App\Services\AccountService;
+use App\Services\UserOidcService;
 use App\Status;
 use App\StatusHashtag;
 use App\User;
@@ -112,6 +113,8 @@ class AppServiceProvider extends ServiceProvider
      */
     public function register()
     {
-        //
+        $this->app->bind(UserOidcService::class, function() {
+            return UserOidcService::build();
+        });
     }
 }

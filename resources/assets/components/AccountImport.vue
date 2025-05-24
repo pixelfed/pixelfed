@@ -367,7 +367,7 @@
             },
 
             async filterPostMeta(media) {
-            	let fbfix = await this.fixFacebookEncoding(media);
+                let fbfix = await this.fixFacebookEncoding(media);
                 let json = JSON.parse(fbfix);
                 /* Sometimes the JSON isn't an array, when there's only one post */
                 if (!Array.isArray(json)) {
@@ -422,24 +422,32 @@
                     this.filterPostMeta(media);
 
                     let imgs = await Promise.all(entries.filter(entry => {
-                        return (entry.filename.startsWith('media/posts/') || entry.filename.startsWith('media/other/')) && (entry.filename.endsWith('.png') || entry.filename.endsWith('.jpg') || entry.filename.endsWith('.mp4'));
+                        const supportedFormats = ['.png', '.jpg', '.jpeg', '.mp4'];
+                        if (this.config.allow_image_webp) {
+                            supportedFormats.push('.webp');
+                        }
+                        return (entry.filename.startsWith('media/posts/') || entry.filename.startsWith('media/other/')) &&
+                               supportedFormats.some(format => entry.filename.endsWith(format));
                     })
                     .map(async entry => {
+                        const supportedFormats = ['.png', '.jpg', '.jpeg', '.mp4'];
+                        if (this.config.allow_image_webp) {
+                            supportedFormats.push('.webp');
+                        }
+
                         if(
                             (
                                 entry.filename.startsWith('media/posts/') ||
                                 entry.filename.startsWith('media/other/')
-                            ) && (
-                                entry.filename.endsWith('.png') ||
-                                entry.filename.endsWith('.jpg') ||
-                                entry.filename.endsWith('.mp4')
-                            )
+                            ) &&
+                            supportedFormats.some(format => entry.filename.endsWith(format))
                         ) {
                             let types = {
                                 'png': 'image/png',
                                 'jpg': 'image/jpeg',
                                 'jpeg': 'image/jpeg',
-                                'mp4': 'video/mp4'
+                                'mp4': 'video/mp4',
+                                'webp': 'image/webp'
                             }
                             let type = types[entry.filename.split('/').pop().split('.').pop()];
                             let blob = await entry.getData(new zip.BlobWriter(type));
@@ -517,6 +525,15 @@
                 return res;
             },
 
+            getFilename(filename) {
+                const baseName = filename.split('/').pop();
+
+                const extension = baseName.split('.').pop();
+                const originalName = baseName.substring(0, baseName.lastIndexOf('.'));
+                const updatedFilename = originalName.replace(/[^a-zA-Z0-9_.-]/g, '_');
+                return updatedFilename + '.' + extension;
+            },
+
             handleImport() {
                 swal('Importing...', "Please wait while we upload your imported posts.\n Keep this page open and do not navigate away.", 'success');
                 this.importButtonLoading = true;
@@ -527,8 +544,9 @@
                 chunks.forEach(c => {
                     let formData = new FormData();
                     c.map((e, idx) => {
-                        let file = new File([e.file], e.filename);
-                        formData.append('file['+ idx +']', file, e.filename.split('/').pop());
+                        let chunkedFilename = this.getFilename(e.filename);
+                        let file = new File([e.file], chunkedFilename);
+                        formData.append('file['+ idx +']', file, chunkedFilename);
                     })
                     axios.post(
                         '/api/local/import/ig/media',

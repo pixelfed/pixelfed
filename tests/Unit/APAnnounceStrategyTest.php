@@ -3,6 +3,7 @@
 namespace Tests\Unit;
 
 use App\Util\ActivityPub\Helpers;
+use PHPUnit\Framework\Attributes\Test;
 use Tests\TestCase;
 
 class APAnnounceStrategyTest extends TestCase
@@ -26,22 +27,26 @@ class APAnnounceStrategyTest extends TestCase
         $this->pleroma = json_decode('{"@context":"https://www.w3.org/ns/activitystreams","actor":"https://pleroma.site/users/pixeldev","cc":["https://www.w3.org/ns/activitystreams#Public"],"context":"tag:mastodon.social,2018-10-14:objectId=59146153:objectType=Conversation","context_id":12325955,"id":"https://pleroma.site/activities/db2273eb-d504-4e3a-8f74-c343d069755a","object":"https://mastodon.social/users/dansup/statuses/100891324792793720","published":"2018-10-14T01:22:18.554227Z","to":["https://pleroma.site/users/pixeldev/followers","https://mastodon.social/users/dansup"],"type":"Announce"}', true);
     }
 
-    public function testBasicValidation()
+    #[Test]
+    public function basicValidation()
     {
         $this->assertFalse(Helpers::validateObject($this->invalid));
     }
 
-    public function testMastodonValidation()
+    #[Test]
+    public function mastodonValidation()
     {
         $this->assertTrue(Helpers::validateObject($this->mastodon));
     }
 
-    public function testPleromaValidation()
+    #[Test]
+    public function pleromaValidation()
     {
         $this->assertTrue(Helpers::validateObject($this->pleroma));
     }
 
-    public function testMastodonAudienceScope()
+    #[Test]
+    public function mastodonAudienceScope()
     {
         $scope = Helpers::normalizeAudience($this->mastodon, false);
         $actual = [
@@ -56,7 +61,8 @@ class APAnnounceStrategyTest extends TestCase
         $this->assertEquals($scope, $actual);
     }
 
-    public function testPleromaAudienceScope()
+    #[Test]
+    public function pleromaAudienceScope()
     {
         $scope = Helpers::normalizeAudience($this->pleroma, false);
         $actual = [
@@ -71,7 +77,8 @@ class APAnnounceStrategyTest extends TestCase
         $this->assertEquals($scope, $actual);
     }
 
-    public function testInvalidAudienceScope()
+    #[Test]
+    public function invalidAudienceScope()
     {
         $scope = Helpers::normalizeAudience($this->invalid, false);
         $actual = [

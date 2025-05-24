@@ -18,7 +18,7 @@
         "buzz/laravel-h-captcha": "^1.0.4",
         "doctrine/dbal": "^3.0",
         "endroid/qr-code": "^6.0",
-        "intervention/image": "^2.4",
+        "intervention/image": "^3.11.2",
         "jenssegers/agent": "^2.6",
         "laravel-notification-channels/expo": "^2.0.0",
         "laravel-notification-channels/webpush": "^10.2",
@@ -31,6 +31,7 @@
         "laravel/ui": "^4.2",
         "league/flysystem-aws-s3-v3": "^3.0",
         "league/iso3166": "^2.1|^4.0",
+        "league/oauth2-client": "^2.8",
         "league/uri": "^7.4",
         "pbmedia/laravel-ffmpeg": "^8.0",
         "phpseclib/phpseclib": "~2.0",
@@ -51,7 +52,7 @@
         "laravel/pint": "^1.13",
         "laravel/telescope": "^5.5",
         "mockery/mockery": "^1.6",
-        "nunomaduro/collision": "^8.1",
+        "nunomaduro/collision": "^8.8",
         "phpunit/phpunit": "^11.0.1"
     },
     "autoload": {

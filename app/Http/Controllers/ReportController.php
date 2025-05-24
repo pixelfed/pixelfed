@@ -2,13 +2,13 @@
 
 namespace App\Http\Controllers;
 
+use App\Jobs\ReportPipeline\ReportNotifyAdminViaEmail;
+use App\Models\Group;
 use App\Profile;
 use App\Report;
 use App\Status;
-use App\User;
 use Auth;
 use Illuminate\Http\Request;
-use App\Jobs\ReportPipeline\ReportNotifyAdminViaEmail;
 
 class ReportController extends Controller
 {
@@ -22,9 +22,32 @@ class ReportController extends Controller
     public function showForm(Request $request)
     {
         $this->validate($request, [
-          'type'    => 'required|alpha_dash',
-          'id'      => 'required|integer|min:1',
+            'type' => 'required|alpha_dash|in:comment,group,post,user',
+            'id' => 'required|integer|min:1',
         ]);
+
+        $type = $request->input('type');
+        $id = $request->input('id');
+        $pid = $request->user()->profile_id;
+
+        switch ($request->input('type')) {
+            case 'post':
+            case 'comment':
+                Status::findOrFail($id);
+                break;
+
+            case 'user':
+                Profile::findOrFail($id);
+                break;
+
+            case 'group':
+                Group::where('profile_id', '!=', $pid)->findOrFail($id);
+                break;
+
+            default:
+                // code...
+                break;
+        }
 
         return view('report.form');
     }
@@ -87,10 +110,10 @@ class ReportController extends Controller
     public function formStore(Request $request)
     {
         $this->validate($request, [
-            'report'  => 'required|alpha_dash',
-            'type'    => 'required|alpha_dash',
-            'id'      => 'required|integer|min:1',
-            'msg'     => 'nullable|string|max:150',
+            'report' => 'required|alpha_dash',
+            'type' => 'required|alpha_dash',
+            'id' => 'required|integer|min:1',
+            'msg' => 'nullable|string|max:150',
         ]);
 
         $profile = Auth::user()->profile;
@@ -101,8 +124,8 @@ class ReportController extends Controller
         $object = null;
         $types = [
             // original 3
-            'spam', 
-            'sensitive', 
+            'spam',
+            'sensitive',
             'abusive',
 
             // new
@@ -110,38 +133,62 @@ class ReportController extends Controller
             'copyright',
             'impersonation',
             'scam',
-            'terrorism'
+            'terrorism',
         ];
 
-        if (!in_array($reportType, $types)) {
-            if($request->wantsJson()) {
+        if (! in_array($reportType, $types)) {
+            if ($request->wantsJson()) {
                 return abort(400, 'Invalid report type');
             } else {
                 return redirect('/timeline')->with('error', 'Invalid report type');
             }
         }
 
+        $rpid = null;
+
         switch ($object_type) {
-        case 'post':
-          $object = Status::findOrFail($object_id);
-          $object_type = 'App\Status';
-          $exists = Report::whereUserId(Auth::id())
+            case 'post':
+                $object = Status::findOrFail($object_id);
+                $object_type = 'App\Status';
+                $exists = Report::whereUserId(Auth::id())
                     ->whereObjectId($object->id)
                     ->whereObjectType('App\Status')
                     ->count();
-          break;
 
-        default:
-            if($request->wantsJson()) {
-                return abort(400, 'Invalid report type');
-            } else {
-                return redirect('/timeline')->with('error', 'Invalid report type');
-            }
-          break;
-      }
+                $rpid = $object->profile_id;
+                break;
+
+            case 'user':
+                $object = Profile::findOrFail($object_id);
+                $object_type = 'App\Profile';
+                $exists = Report::whereUserId(Auth::id())
+                    ->whereObjectId($object->id)
+                    ->whereObjectType('App\Profile')
+                    ->count();
+                $rpid = $object->id;
+                break;
+
+            case 'group':
+                $object = Group::findOrFail($object_id);
+                $object_type = 'App\Models\Group';
+                $exists = Report::whereUserId(Auth::id())
+                    ->whereObjectId($object->id)
+                    ->whereObjectType('App\Models\Group')
+                    ->count();
+                $rpid = $object->profile_id;
+                break;
+
+            default:
+                if ($request->wantsJson()) {
+                    return abort(400, 'Invalid report type');
+                } else {
+                    return redirect('/timeline')->with('error', 'Invalid report type');
+                }
+                break;
+        }
 
         if ($exists !== 0) {
-            if($request->wantsJson()) {
+            if ($request->wantsJson()) {
                 return response()->json(200);
             } else {
                 return redirect('/timeline')->with('error', 'You have already reported this!');
@@ -149,28 +196,28 @@ class ReportController extends Controller
         }
 
         if ($object->profile_id == $profile->id) {
-            if($request->wantsJson()) {
+            if ($request->wantsJson()) {
                 return response()->json(200);
             } else {
                 return redirect('/timeline')->with('error', 'You cannot report your own content!');
             }
         }
 
-        $report = new Report();
+        $report = new Report;
         $report->profile_id = $profile->id;
         $report->user_id = Auth::id();
         $report->object_id = $object->id;
         $report->object_type = $object_type;
-        $report->reported_profile_id = $object->profile_id;
+        $report->reported_profile_id = $rpid;
         $report->type = $request->input('report');
         $report->message = e($request->input('msg'));
         $report->save();
 
-        if(config('instance.reports.email.enabled')) {
-			ReportNotifyAdminViaEmail::dispatch($report)->onQueue('default');
-		}
+        if (config('instance.reports.email.enabled')) {
+            ReportNotifyAdminViaEmail::dispatch($report)->onQueue('default');
+        }
 
-        if($request->wantsJson()) {
+        if ($request->wantsJson()) {
             return response()->json(200);
         } else {
             return redirect('/timeline')->with('status', 'Report successfully sent!');

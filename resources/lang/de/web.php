@@ -62,12 +62,13 @@ return [
 		'compose' => 'Neu erstellen:',
 		'logout' => 'Ausloggen',
 
-		// Nav footer
-		'about' => 'Über uns',
-		'help' => 'Hilfe',
-		'language' => 'Sprache',
-		'privacy' => 'Privatsphäre',
-		'terms' => 'AGB',
+        // Nav footer
+        'about' => 'Über uns',
+        'help' => 'Hilfe',
+        'language' => 'Sprache',
+        'privacy' => 'Privatsphäre',
+        'terms' => 'AGB',
+        'legalNotice' => 'Impressum',
 
 		// Temporary links
 		'backToPreviousDesign' => 'Zurück zum vorherigen Design'
@@ -195,7 +196,7 @@ return [
 	'hashtags' => [
 		'emptyFeed' => 'Wir können keine Beiträge mit diesem Hashtag finden'
 	],
-	
+
 	'report' => [
 		'report' => 'Melden',
 		'selectReason' => 'Wähle einen Grund',

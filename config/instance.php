@@ -188,4 +188,80 @@ return [
     'show_peers' => env('INSTANCE_SHOW_PEERS', false),
 
     'allow_new_account_dms' => env('INSTANCE_ALLOW_NEW_DMS', true),
+
+    'total_count_estimate' => env('INSTANCE_TOTAL_POSTS_COUNT_ESTIMATE', false),
+
+    'custom_filters' => [
+        /*
+         * The maximum number of characters from a status that will be scanned
+         * for filter matching. Scanning too many characters can hurt performance,
+         * so this limit ensures that only the most relevant portion of a status is processed.
+         *
+         * For remote statuses, you might want to increase this value if you expect
+         * important content to appear later in long posts.
+         */
+        'max_content_scan_limit' => env('PF_CF_CONTENT_SCAN_LIMIT', 2500),
+
+        /*
+         * The maximum number of filters a single user can create.
+         * Limiting the number of filters per user helps prevent abuse and
+         * ensures that the filtering system remains performant.
+         */
+        'max_filters_per_user' => env('PF_CF_MAX_FILTERS_PER_USER', 20),
+
+        /*
+         * The maximum number of keywords that can be associated with a single filter.
+         * This limit helps control the complexity of the generated regular expressions
+         * and protects against potential performance issues during content scanning.
+         */
+        'max_keywords_per_filter' => env('PF_CF_MAX_KEYWORDS_PER_FILTER', 10),
+
+        /*
+         * The maximum length allowed for each keyword in a filter.
+         * Limiting keyword length not only curtails the size of the regex patterns created,
+         * but also guards against potential abuse where excessively long keywords might
+         * negatively impact matching performance or lead to unintended behavior.
+         */
+        'max_keyword_length' => env('PF_CF_MAX_KEYWORD_LENGTH', 40),
+
+        /*
+         * The maximum allowed length for the combined regex pattern.
+         * When constructing a regex that matches multiple filter keywords, each keyword
+         * (after escaping and adding boundaries) contributes to the total pattern length.
+         *
+         * This value is set to 10000 by default. If you increase either the number of keywords
+         * per filter or the maximum length allowed for each keyword, consider increasing this
+         * limit accordingly so that the final regex pattern can accommodate the additional length
+         * without being truncated or causing performance issues.
+         */
+        'max_pattern_length' => env('PF_CF_MAX_PATTERN_LENGTH', 10000),
+
+        /*
+         * The maximum number of keyword matches to report for a given status.
+         * When a filter is applied to a status, the matching process may find multiple occurrences
+         * of a keyword. This value limits the number of matches that are reported back,
+         * which helps manage output volume and processing overhead.
+         *
+         * The default is set to 10, but you can adjust this value through your environment configuration.
+         */
+        'max_reported_matches' => env('PF_CF_MAX_REPORTED_MATCHES', 10),
+
+        /*
+         * The maximum number of filter creation operations allowed per hour for a non-admin user.
+         * This rate limit prevents abuse by restricting how many filters a normal user can create
+         * within one hour. Admin users are exempt from this limit.
+         *
+         * Default is 20 creations per hour.
+         */
+        'max_create_per_hour' => env('PF_CF_MAX_CREATE_PER_HOUR', 20),
+
+        /*
+         * The maximum number of filter update operations allowed per hour for a non-admin user.
+         * This rate limit is designed to prevent abuse by limiting how many times a normal user
+         * can update their filters within one hour. Admin users are not subject to these limits.
+         *
+         * Default is 40 updates per hour.
+         */
+        'max_updates_per_hour' => env('PF_CF_MAX_UPDATES_PER_HOUR', 40),
+    ],
 ];

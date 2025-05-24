@@ -21,15 +21,15 @@
     <div class="form-check pb-3">
       <input class="form-check-input" type="checkbox" name="is_private" id="is_private" {{$settings->is_private ? 'checked=""':''}}>
       <label class="form-check-label font-weight-bold" for="is_private">
-        {{__('Private Account')}}
+        Manually Review Follow Requests
       </label>
-      <p class="text-muted small help-text">{{__('settings.privacy.when_your_account_is_private_only_people_you_etc')}}</p>
+      <p class="text-muted small help-text">When you get a follow request, Pixelfed will not automatically approve it. You can instead manually confirm or deny the follow request. Your existing followers won't be affected.</p>
     </div>
 
     <div class="form-check pb-3">
       <input class="form-check-input" type="checkbox" name="crawlable" id="crawlable" {{!$settings->crawlable ? 'checked=""':''}} {{$settings->is_private ? 'disabled=""':''}}>
       <label class="form-check-label font-weight-bold" for="crawlable">
-        {{__('Disable Search Engine indexing')}}
+        {{__('settings.privacy.disable_search_engine_indexing')}}
       </label>
       <p class="text-muted small help-text">{{__('settings.privacy.when_your_account_is_visible_to_search_engines_etc')}} {!! $settings->is_private ? '<strong>'.__('settings.privacy.not_available_when_your_account_is_private').'</strong>' : ''!!}</p>
     </div>
@@ -37,7 +37,7 @@
     <div class="form-check pb-3">
       <input class="form-check-input" type="checkbox" name="indexable" id="indexable" {{$profile->indexable ? 'checked=""':''}} {{$settings->is_private ? 'disabled=""':''}}>
       <label class="form-check-label font-weight-bold" for="indexable">
-        {{__('Include public posts in search results')}}
+        {{__('settings.privacy.include_public_posts_in_search_results')}}
       </label>
         <p class="text-muted small help-text">{{__('settings.privacy.your_public_posts_may_appear_in_search_results_etc')}} {!! $settings->is_private ? '<strong>'.__('settings.privacy.not_available_when_your_account_is_private').'</strong>' : ''!!}</p>
     </div>
@@ -46,7 +46,7 @@
     <div class="form-check pb-3">
       <input class="form-check-input" type="checkbox" name="is_suggestable" id="is_suggestable" {{$settings->is_private ? 'disabled=""':''}} {{auth()->user()->profile->is_suggestable ? 'checked=""':''}}>
       <label class="form-check-label font-weight-bold" for="is_suggestable">
-        {{__('Show on Directory')}}
+        {{__('settings.privacy.show_on_directory')}}
       </label>
       <p class="text-muted small help-text">{{__('settings.privacy.when_this_option_is_enabled_your_profile_is_etc')}} {!! $settings->is_private ? '<strong>'.__('settings.privacy.not_available_when_your_account_is_private').'</strong>' : ''!!}</p>
     </div>
@@ -54,7 +54,7 @@
     <div class="form-check pb-3">
       <input class="form-check-input" type="checkbox" id="public_dm" {{$settings->public_dm ? 'checked=""':''}} name="public_dm">
       <label class="form-check-label font-weight-bold" for="public_dm">
-        {{__('Receive Direct Messages from anyone')}}
+        {{__('settings.privacy.receive_direct_messages_from_anyone')}}
       </label>
       <p class="text-muted small help-text">{{__('settings.privacy.if_selected_you_will_be_able_to_receive_messages_etc')}}</p>
     </div>
@@ -83,7 +83,7 @@
     <div class="form-check pb-3">
       <input class="form-check-input" type="checkbox" name="show_profile_follower_count" id="show_profile_follower_count" {{$settings->show_profile_follower_count ? 'checked=""':''}}>
       <label class="form-check-label font-weight-bold" for="show_profile_follower_count">
-        {{__('Show Follower Count')}}
+        {{__('settings.privacy.show_follower_count')}}
       </label>
       <p class="text-muted small help-text">{{__('settings.privacy.display_follower_count_on_profile')}}</p>
     </div>
@@ -92,7 +92,7 @@
     <div class="form-check pb-3">
       <input class="form-check-input" type="checkbox" name="show_profile_following_count" id="show_profile_following_count" {{$settings->show_profile_following_count ? 'checked=""':''}}>
       <label class="form-check-label font-weight-bold" for="show_profile_following_count">
-        {{__('Show Following Count')}}
+        {{__('settings.privacy.show_following_count')}}
       </label>
       <p class="text-muted small help-text">{{__('settings.privacy.display_following_count_on_profile')}}</p>
     </div>
@@ -100,7 +100,7 @@
     <div class="form-check pb-3">
       <input class="form-check-input" type="checkbox" name="disable_embeds" id="disable_embeds" {{$settings->disable_embeds ? 'checked=""':''}}>
       <label class="form-check-label font-weight-bold" for="disable_embeds">
-        {{__('Disable Embeds')}}
+        {{__('settings.privacy.disable_embeds')}}
       </label>
       <p class="text-muted small help-text">{{__('settings.privacy.disable_post_and_profile_embeds')}}</p>
     </div>
@@ -109,7 +109,7 @@
     <div class="form-check pb-3">
       <input class="form-check-input" type="checkbox" name="show_atom" id="show_atom" {{$settings->show_atom ? 'checked=""':''}}>
       <label class="form-check-label font-weight-bold" for="show_atom">
-        {{__('Enable Atom Feed')}}
+        {{__('settings.privacy.enable_atom_feed')}}
       </label>
       <p class="text-muted small help-text mb-0">{{__('settings.privacy.enable_your_profile_atom_feed_only_public_profiles_etc')}}</p>
       @if($settings->show_atom)

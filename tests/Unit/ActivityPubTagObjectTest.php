@@ -2,6 +2,7 @@
 
 namespace Tests\Unit;
 
+use PHPUnit\Framework\Attributes\Test;
 use PHPUnit\Framework\TestCase;
 
 class ActivityPubTagObjectTest extends TestCase
@@ -9,7 +10,8 @@ class ActivityPubTagObjectTest extends TestCase
     /**
      * A basic unit test example.
      */
-    public function test_gotosocial(): void
+    #[Test]
+    public function gotosocial(): void
     {
         $res = [
             "tag" => [
@@ -33,7 +35,8 @@ class ActivityPubTagObjectTest extends TestCase
         $this->assertTrue($tags->count() === 1);
     }
 
-    public function test_pixelfed_hashtags(): void
+    #[Test]
+    public function pixelfed_hashtags(): void
     {
         $res = [
             "tag" => [
@@ -94,8 +97,8 @@ class ActivityPubTagObjectTest extends TestCase
         $this->assertTrue($tags->count() === 7);
     }
 
-
-    public function test_pixelfed_mentions(): void
+    #[Test]
+    public function pixelfed_mentions(): void
     {
         $res = [
             "tag" => [

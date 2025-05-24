@@ -350,4 +350,9 @@ class SettingsController extends Controller
 
         return redirect(route('settings'))->with('status', 'Media settings successfully updated!');
     }
+
+    public function filtersHome(Request $request)
+    {
+        return view('settings.filters.home');
+    }
 }

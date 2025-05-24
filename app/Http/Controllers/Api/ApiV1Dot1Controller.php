@@ -1307,8 +1307,12 @@ class ApiV1Dot1Controller extends Controller
         $media->save();
 
         switch ($media->mime) {
+            case 'image/jpg':
             case 'image/jpeg':
             case 'image/png':
+            case 'image/webp':
+            case 'image/heic':
+            case 'image/avif':
                 ImageOptimize::dispatch($media)->onQueue('mmo');
                 break;
 

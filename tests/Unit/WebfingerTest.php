@@ -3,11 +3,12 @@
 namespace Tests\Unit;
 
 use App\Util\Lexer\Nickname;
+use PHPUnit\Framework\Attributes\Test;
 use Tests\TestCase;
 
 class WebfingerTest extends TestCase
 {
-    /** @test */
+    #[Test]
     public function webfingerTest()
     {
         $expected = [

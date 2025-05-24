@@ -3,6 +3,7 @@
 namespace Tests\Unit\ActivityPub;
 
 use App\Util\ActivityPub\Helpers;
+use PHPUnit\Framework\Attributes\Test;
 use Tests\TestCase;
 
 class RemoteFollowTest extends TestCase
@@ -17,7 +18,7 @@ class RemoteFollowTest extends TestCase
 
     }
 
-    /** @test */
+    #[Test]
     public function validateMastodonFollowObject()
     {
         $mastodon = json_decode($this->mastodon, true);

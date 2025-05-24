@@ -4,6 +4,7 @@ namespace App\Util\ActivityPub;
 
 use App\Models\InstanceActor;
 use App\Profile;
+use Artisan;
 use Cache;
 use DateTime;
 
@@ -71,14 +72,15 @@ class HttpSignature
     public static function instanceActorSign($url, $body = false, $addlHeaders = [], $method = 'post')
     {
         $keyId = config('app.url').'/i/actor#main-key';
-        if(config_cache('database.default') === 'mysql') {
-            $privateKey = Cache::rememberForever(InstanceActor::PKI_PRIVATE, function () {
-                return InstanceActor::first()->private_key;
-            });
-        } else {
-            $privateKey = InstanceActor::first()?->private_key;
-        }
-        abort_if(!$privateKey || empty($privateKey), 400, 'Missing instance actor key, please run php artisan instance:actor');
+        $privateKey = Cache::rememberForever(InstanceActor::PKI_PRIVATE, function () {
+            $instance = InstanceActor::first() ?: tap(Artisan::call('instance:actor'), fn () => sleep(10)) && InstanceActor::first();
+            if (! $instance) {
+                throw new \Exception('Failed to generate or retrieve InstanceActor.');
+            }
+
+            return $instance->private_key;
+        });
+        abort_if(! $privateKey || empty($privateKey), 400, 'Missing instance actor key, please run php artisan instance:actor');
         if ($body) {
             $digest = self::_digest($body);
         }

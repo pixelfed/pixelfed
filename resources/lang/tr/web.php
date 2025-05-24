@@ -124,7 +124,7 @@ return [
 		'followRequested' => 'Takip İsteği',
 		'joined' => 'Katıldı',
 
-		'emptyCollections' => 'Herhangi bir koleksiyon bulunmuyor',
+		'emptyCollections' => 'Herhangi bir derleme bulunmuyor',
 		'emptyPosts' => 'Herhangi bir gönderi bulunmuyor',
 	],
 

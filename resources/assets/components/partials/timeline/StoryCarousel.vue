@@ -10,7 +10,7 @@
 						<div class="story-wrapper-blur d-flex flex-column align-items-center justify-content-between" style="display: block;width: 100%;height:100%;">
 							<p class="mb-4"></p>
 							<p class="mb-0"><i class="fal fa-plus-circle fa-2x"></i></p>
-							<p class="font-weight-bold">My Story</p>
+							<p class="font-weight-bold">{{ $t("story.myStory")}}</p>
 						</div>
 					</div>
 				</template>

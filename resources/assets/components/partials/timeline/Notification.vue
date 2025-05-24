@@ -7,13 +7,13 @@
 		<div class="media-body font-weight-light">
 			<div v-if="n.type == 'favourite'">
 				<p class="my-0">
-					<a :href="displayProfileUrl(n.account)" @click.prevent="getProfileUrl(n.account)" class="font-weight-bold text-dark text-break" :title="n.account.acct">&commat;{{n.account.acct}}</a> {{ $t('notifications.liked') }} <a class="font-weight-bold" :href="displayPostUrl(n.status)" @click.prevent="getPostUrl(n.status)">post</a>.
+					<a :href="displayProfileUrl(n.account)" @click.prevent="getProfileUrl(n.account)" class="font-weight-bold text-dark text-break" :title="n.account.acct">&commat;{{n.account.acct}}</a> {{ $t('notifications.liked') }} <a class="font-weight-bold" :href="displayPostUrl(n.status)" @click.prevent="getPostUrl(n.status)">{{ $t("notifications.post")}}</a>.
 				</p>
 			</div>
 
 			<div v-else-if="n.type == 'comment'">
 				<p class="my-0">
-					<a :href="displayProfileUrl(n.account)" @click.prevent="getProfileUrl(n.account)" class="font-weight-bold text-dark text-break" :title="n.account.acct">&commat;{{n.account.acct}}</a> {{ $t('notifications.commented') }} <a class="font-weight-bold" :href="displayPostUrl(n.status)" @click.prevent="getPostUrl(n.status)">post</a>.
+					<a :href="displayProfileUrl(n.account)" @click.prevent="getProfileUrl(n.account)" class="font-weight-bold text-dark text-break" :title="n.account.acct">&commat;{{n.account.acct}}</a> {{ $t('notifications.commented') }} <a class="font-weight-bold" :href="displayPostUrl(n.status)" @click.prevent="getPostUrl(n.status)">{{ $t("notifications.post")}}</a>.
 				</p>
 			</div>
 
@@ -25,7 +25,7 @@
 
 			<div v-else-if="n.type == 'story:react'">
 				<p class="my-0">
-					<a :href="displayProfileUrl(n.account)" @click.prevent="getProfileUrl(n.account)" class="font-weight-bold text-dark text-break" :title="n.account.acct">&commat;{{n.account.acct}}</a> {{ $t('notifications.reacted') }} <a class="font-weight-bold" v-bind:href="'/account/direct/t/'+n.account.id">story</a>.
+					<a :href="displayProfileUrl(n.account)" @click.prevent="getProfileUrl(n.account)" class="font-weight-bold text-dark text-break" :title="n.account.acct">&commat;{{n.account.acct}}</a> {{ $t('notifications.reacted') }} <a class="font-weight-bold" v-bind:href="'/account/direct/t/'+n.account.id">{{ $t('notifications.story') }}</a>.
 				</p>
 			</div>
 
@@ -141,30 +141,8 @@
 				return text.slice(0, limit) + '...'
 			},
 
-			timeAgo(ts) {
-				let date = Date.parse(ts);
-				let seconds = Math.floor((new Date() - date) / 1000);
-				let interval = Math.floor(seconds / 31536000);
-				if (interval >= 1) {
-					return interval + "y";
-				}
-				interval = Math.floor(seconds / 604800);
-				if (interval >= 1) {
-					return interval + "w";
-				}
-				interval = Math.floor(seconds / 86400);
-				if (interval >= 1) {
-					return interval + "d";
-				}
-				interval = Math.floor(seconds / 3600);
-				if (interval >= 1) {
-					return interval + "h";
-				}
-				interval = Math.floor(seconds / 60);
-				if (interval >= 1) {
-					return interval + "m";
-				}
-				return Math.floor(seconds) + "s";
+            timeAgo(ts) {
+                return App.util.format.timeAgo(ts);
 			},
 
 			mentionUrl(status) {

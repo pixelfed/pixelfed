@@ -12,8 +12,12 @@ use Illuminate\Foundation\Bus\Dispatchable;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
 use Illuminate\Support\Str;
-use Image as Intervention;
 use Storage;
+use Intervention\Image\ImageManager;
+use Intervention\Image\Encoders\JpegEncoder;
+use Intervention\Image\Encoders\WebpEncoder;
+use Intervention\Image\Encoders\AvifEncoder;
+use Intervention\Image\Encoders\PngEncoder;
 
 class AvatarOptimize implements ShouldQueue
 {
@@ -50,14 +54,54 @@ class AvatarOptimize implements ShouldQueue
     {
         $avatar = $this->profile->avatar;
         $file = storage_path("app/$avatar->media_path");
+        $fileInfo = pathinfo($file);
+        $extension = strtolower($fileInfo['extension'] ?? 'jpg');
+
+        $driver = match(config('image.driver')) {
+            'imagick' => \Intervention\Image\Drivers\Imagick\Driver::class,
+            'vips' => \Intervention\Image\Drivers\Vips\Driver::class,
+            default => \Intervention\Image\Drivers\Gd\Driver::class
+        };
+
+        $imageManager = new ImageManager(
+            $driver,
+            autoOrientation: true,
+            decodeAnimation: true,
+            blendingColor: 'ffffff',
+            strip: true
+        );
+
+        $quality = config_cache('pixelfed.image_quality');
+
+        $encoder = null;
+        switch ($extension) {
+            case 'jpeg':
+            case 'jpg':
+                $encoder = new JpegEncoder($quality);
+                break;
+            case 'png':
+                $encoder = new PngEncoder();
+                break;
+            case 'webp':
+                $encoder = new WebpEncoder($quality);
+                break;
+            case 'avif':
+                $encoder = new AvifEncoder($quality);
+                break;
+            case 'heic':
+                $encoder = new JpegEncoder($quality);
+                $extension = 'jpg';
+                break;
+            default:
+                $encoder = new JpegEncoder($quality);
+                $extension = 'jpg';
+        }
 
         try {
-            $img = Intervention::make($file)->orientate();
-            $img->fit(200, 200, function ($constraint) {
-                $constraint->upsize();
-            });
-            $quality = config_cache('pixelfed.image_quality');
-            $img->save($file, $quality);
+            $img = $imageManager->read($file);
+            $img = $img->coverDown(200, 200);
+            $encoded = $encoder->encode($img);
+            file_put_contents($file, $encoded->toString());
 
             $avatar = Avatar::whereProfileId($this->profile->id)->firstOrFail();
             $avatar->change_count = ++$avatar->change_count;

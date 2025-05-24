@@ -3,11 +3,12 @@
 namespace Tests\Unit\Lexer;
 
 use App\Util\Lexer\RestrictedNames;
+use PHPUnit\Framework\Attributes\Test;
 use Tests\TestCase;
 
 class RestrictedNameTest extends TestCase
 {
-    /** @test */
+    #[Test]
     public function restrictedUsername()
     {
         $names = RestrictedNames::get();

@@ -4,11 +4,12 @@ namespace Tests\Unit\Lexer;
 
 use App\Util\Lexer\Autolink;
 use App\Util\Lexer\Extractor;
+use PHPUnit\Framework\Attributes\Test;
 use Tests\TestCase;
 
 class UsernameTest extends TestCase
 {
-    /** @test * */
+    #[Test]
     public function genericUsername()
     {
         $username = '@dansup';
@@ -38,7 +39,7 @@ class UsernameTest extends TestCase
         $this->assertEquals($expectedEntity, $entities);
     }
 
-    /** @test * */
+    #[Test]
     public function usernameWithPeriod()
     {
         $username = '@dansup.two';
@@ -68,7 +69,7 @@ class UsernameTest extends TestCase
         $this->assertEquals($expectedEntity, $entities);
     }
 
-    /** @test * */
+    #[Test]
     public function usernameWithDash()
     {
         $username = '@dansup-too';
@@ -98,7 +99,7 @@ class UsernameTest extends TestCase
         $this->assertEquals($expectedEntity, $entities);
     }
 
-    /** @test * */
+    #[Test]
     public function usernameWithUnderscore()
     {
         $username = '@dansup_too';
@@ -128,7 +129,7 @@ class UsernameTest extends TestCase
         $this->assertEquals($expectedEntity, $entities);
     }
 
-    /** @test * */
+    #[Test]
     public function multipleMentions()
     {
         $text = 'hello @dansup and @pixelfed.team from @username_underscore';
@@ -175,7 +176,7 @@ class UsernameTest extends TestCase
         $this->assertEquals($expectedEntity, $entities);
     }
 
-    /** @test * */
+    #[Test]
     public function germanUmlatsAutolink()
     {
         $mentions = "@März and @königin and @Glück";
@@ -185,7 +186,7 @@ class UsernameTest extends TestCase
         $this->assertEquals($expectedAutolink, $autolink);
     }
 
-    /** @test * */
+    #[Test]
     public function germanUmlatsExtractor()
     {
         $mentions = "@März and @königin and @Glück";
@@ -229,7 +230,7 @@ class UsernameTest extends TestCase
         $this->assertEquals($expectedEntity, $entities);
     }
 
-    /** @test * */
+    #[Test]
     public function germanUmlatsWebfingerAutolink()
     {
         $mentions = "hello @märz@example.org!";

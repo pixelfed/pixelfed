@@ -309,7 +309,7 @@ class StatusController extends Controller
         abort_if(! $statusAccount || isset($statusAccount['moved'], $statusAccount['moved']['id']), 422, 'Account moved');
 
         $count = $status->reblogs_count;
-        $defaultCaption = config_cache('database.default') === 'mysql' ? null : "";
+        $defaultCaption = config_cache('database.default') === 'mysql' ? null : '';
         $exists = Status::whereProfileId(Auth::user()->profile->id)
             ->whereReblogOfId($status->id)
             ->exists();
@@ -415,6 +415,9 @@ class StatusController extends Controller
     public static function mimeTypeCheck($mimes)
     {
         $allowed = explode(',', config_cache('pixelfed.media_types'));
+        if (! isset($allowed['image/jpg'])) {
+            $allowed[] = 'image/jpg';
+        }
         $count = count($mimes);
         $photos = 0;
         $videos = 0;

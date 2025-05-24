@@ -52,6 +52,7 @@ class LandingService
             'domain' => config('pixelfed.domain.app'),
             'show_directory' => (bool) config_cache('instance.landing.show_directory'),
             'show_explore_feed' => (bool) config_cache('instance.landing.show_explore'),
+            'show_legal_notice_link' => (bool) config('instance.has_legal_notice'),
             'open_registration' => (bool) $openReg,
             'curated_onboarding' => (bool) config_cache('instance.curated_registration.enabled'),
             'version' => config('pixelfed.version'),

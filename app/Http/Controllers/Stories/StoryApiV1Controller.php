@@ -260,7 +260,7 @@ class StoryApiV1Controller extends Controller
             'file' => function () {
                 return [
                     'required',
-                    'mimetypes:image/jpeg,image/png,video/mp4',
+                    'mimetypes:image/jpeg,image/jpg,image/png,video/mp4',
                     'max:'.config_cache('pixelfed.max_photo_size'),
                 ];
             },

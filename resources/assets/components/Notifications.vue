@@ -9,7 +9,7 @@
 				<div class="col-md-9 col-lg-9 col-xl-5 offset-xl-1">
 					<template v-if="tabIndex === 0">
 						<h1 class="font-weight-bold">
-							Notifications
+							{{ $t("notifications.title")}}
 						</h1>
 						<p class="small mt-n2">&nbsp;</p>
 					</template>
@@ -19,7 +19,7 @@
 								<i class="far fa-chevron-circle-left fa-2x mr-3" title="Go back to notifications"></i>
 							</a>
 							<h1 class="font-weight-bold">
-								Follow Requests
+							{{	$t("notifications.followRequest") }}
 							</h1>
 						</div>
 					</template>
@@ -141,13 +141,13 @@
 													class="btn btn-outline-success py-1 btn-sm font-weight-bold rounded-pill mr-2 mb-1"
 													@click.prevent="handleFollowRequest('accept', index)"
 													>
-													Accept
+													{{ $t('notifications.accept') }}
 												</button>
 
 												<button class="btn btn-outline-lighter py-1 btn-sm font-weight-bold rounded-pill mb-1"
 													@click.prevent="handleFollowRequest('reject', index)"
 													>
-													Reject
+													{{ $t("notifications.reject") }}
 												</button>
 											</div>
 										</div>
@@ -161,7 +161,7 @@
 										<div class="media align-items-center small">
 											<i class="far fa-exclamation-triangle mx-2"></i>
 											<div class="media-body">
-												<p class="mb-0 font-weight-bold">Filtering results may not include older notifications</p>
+												<p class="mb-0 font-weight-bold">{{ $t("notifications.filteringResults") }}</p>
 											</div>
 										</div>
 									</div>
@@ -244,40 +244,40 @@
 
         			{
         				id: 'mentions',
-        				name: 'Mentions',
-        				description: 'Replies to your posts and posts you were mentioned in',
+                        name: this.$t("notifications.mentions"),
+        				description: this.$t("notifications.mentionsDescription"),
         				icon: 'far fa-at',
         				types: ['comment', 'mention']
         			},
 
         			{
         				id: 'likes',
-        				name: 'Likes',
-        				description: 'Accounts that liked your posts',
+        				name: this.$t("notifications.likes"),
+        				description: this.$t("notifications.likesDescription"),
         				icon: 'far fa-heart',
         				types: ['favourite']
         			},
 
         			{
         				id: 'followers',
-        				name: 'Followers',
-        				description: 'Accounts that followed you',
+        				name: this.$t("notifications.followers"),
+        				description: this.$t("notifications.followersDescription"),
         				icon: 'far fa-user-plus',
         				types: ['follow']
         			},
 
         			{
         				id: 'reblogs',
-        				name: 'Reblogs',
-        				description: 'Accounts that shared or reblogged your posts',
+        				name: this.$t("notifications.reblogs"),
+        				description:this.$t("notifications.reblogsDescription"),
         				icon: 'far fa-retweet',
         				types: ['share']
         			},
 
         			{
         				id: 'direct',
-        				name: 'DMs',
-        				description: 'Direct messages you have with other accounts',
+        				name: this.$t("notifications.dms"),
+        				description: this.$t("notifications.dmsDescription"),
         				icon: 'far fa-envelope',
         				types: ['direct']
         			},

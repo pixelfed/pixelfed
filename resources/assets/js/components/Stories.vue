@@ -4,12 +4,12 @@
 			<div class="card-header bg-white">
 				<p class="mb-0 d-flex align-items-center justify-content-between">
 					<span class="text-muted font-weight-bold">Stories</span>
-					<a class="text-dark small" href="/account/activity">See All</a>
+					<a class="text-dark small" href="/account/activity">{{ $t("story.seeAll") }}</a>
 				</p>
 			</div>
 			<div class="card-body loader text-center" style="height: 120px;">
 				<div class="spinner-border" role="status">
-					<span class="sr-only">Loading…</span>
+					<span class="sr-only">{{ $t('common.loading') }}</span>
 				</div>
 			</div>
 			<div class="card-body pt-2 contents" style="max-height: 120px; overflow-y: scroll;">

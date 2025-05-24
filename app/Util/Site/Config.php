@@ -29,6 +29,7 @@ class Config
             return [
                 'version' => config('pixelfed.version'),
                 'open_registration' => (bool) config_cache('pixelfed.open_registration'),
+                'show_legal_notice_link' => (bool) config('instance.has_legal_notice'),
                 'uploader' => [
                     'max_photo_size' => (int) config_cache('pixelfed.max_photo_size'),
                     'max_caption_length' => (int) config_cache('pixelfed.max_caption_length'),

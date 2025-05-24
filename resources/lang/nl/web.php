@@ -98,9 +98,9 @@ return [
 		'applicationRejected' => 'werd afgekeurd. Je kunt over 6 maanden opnieuw aanmelden.',
 
 		'dm' => 'dm',
-		'groupPost' => 'groepspost',
+		'groupPost' => 'groepsbericht',
 		'modlog' => 'modlogboek',
-		'post' => 'post',
+		'post' => 'bericht',
 		'story' => 'verhaal',
 		'noneFound' => 'Geen notificaties gevonden',
 	],
@@ -108,7 +108,7 @@ return [
 	'post' => [
 		'shareToFollowers' => 'Deel met volgers',
 		'shareToOther' => 'Deel met anderen',
-		'noLikes' => 'Nog geen leuks',
+		'noLikes' => 'Nog geen likes',
 		'uploading' => 'Uploaden',
 	],
 
@@ -125,11 +125,11 @@ return [
 		'joined' => 'Lid geworden',
 
 		'emptyCollections' => 'We kunnen geen collecties vinden',
-		'emptyPosts' => 'We kunnen geen posts vinden',
+		'emptyPosts' => 'We kunnen geen berichten vinden',
 	],
 
 	'menu' => [
-		'viewPost' => 'Post bekijken',
+		'viewPost' => 'Berichten bekijken',
 		'viewProfile' => 'Profiel bekijken',
 		'moderationTools' => 'Moderatiegereedschappen',
 		'report' => 'Rapporteren',
@@ -151,14 +151,14 @@ return [
 		'impersonation' => 'Impersonatie',
 		'scamOrFraud' => 'Oplichting of fraude',
 		'confirmReport' => 'Bevestig Rapport',
-		'confirmReportText' => 'Weet je zeker dat je deze post wilt rapporteren?',
+		'confirmReportText' => 'Weet je zeker dat je dit bericht wilt rapporteren?',
 		'reportSent' => 'Rapport verzonden!',
 		'reportSentText' => 'We hebben uw rapport met succes ontvangen.',
-		'reportSentError' => 'Er is een probleem opgetreden bij het rapporteren van deze post.',
+		'reportSentError' => 'Er is een probleem opgetreden bij het rapporteren van dit bericht.',
 
-		'modAddCWConfirm' => 'Weet u zeker dat u een waarschuwing voor inhoud wilt toevoegen aan deze post?',
+		'modAddCWConfirm' => 'Weet u zeker dat u een waarschuwing voor inhoud wilt toevoegen aan dit bericht?',
 		'modCWSuccess' => 'Inhoudswaarschuwing succesvol toegevoegd',
-		'modRemoveCWConfirm' => 'Weet u zeker dat u de waarschuwing voor inhoud wilt verwijderen van deze post?',
+		'modRemoveCWConfirm' => 'Weet u zeker dat u de inhoudswaarschuwing wilt verwijderen van dit bericht?',
 		'modRemoveCWSuccess' => 'Succesvol de inhoudswaarschuwing verwijderd',
 		'modUnlistConfirm' => 'Weet je zeker dat je deze post uit de lijst wilt halen?',
 		'modUnlistSuccess' => 'Post met succes uit de lijst gehaald',

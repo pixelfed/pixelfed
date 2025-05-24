@@ -3,7 +3,7 @@
 		<div v-if="show" class="card card-body p-0 border mt-md-4 mb-md-3 shadow-none">
 			<div v-if="loading" class="w-100 h-100 d-flex align-items-center justify-content-center">
 				<div class="spinner-border spinner-border-sm text-lighter" role="status">
-					<span class="sr-only">Loading...</span>
+					<span class="sr-only">{{ $t('common.loading') }}</span>
 				</div>
 			</div>
 			<div v-else class="d-flex align-items-center justify-content-start scrolly">

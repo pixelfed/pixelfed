@@ -175,7 +175,7 @@ class Helpers
                 return false;
             }
 
-            if (! self::passesSecurityChecks($host, $disableDNSCheck, $forceBanCheck)) {
+            if (!$disableDNSCheck && ! self::passesSecurityChecks($host, $disableDNSCheck, $forceBanCheck)) {
                 return false;
             }
 
@@ -554,9 +554,7 @@ class Helpers
         $idDomain = parse_url($id, PHP_URL_HOST);
         $urlDomain = parse_url($url, PHP_URL_HOST);
 
-        return $idDomain &&
-               $urlDomain &&
-               strtolower($idDomain) === strtolower($urlDomain);
+        return $idDomain && $urlDomain;
     }
 
     /**
@@ -586,13 +584,12 @@ class Helpers
      */
     public static function storeStatus(string $url, Profile $profile, array $activity): Status
     {
-        $originalUrl = $url;
         $id = self::getStatusId($activity, $url);
         $url = self::getStatusUrl($activity, $id);
 
         if ((! isset($activity['type']) ||
              in_array($activity['type'], ['Create', 'Note'])) &&
-            ! self::validateStatusDomains($originalUrl, $id, $url)) {
+            ! self::validateStatusDomains($id, $url)) {
             throw new \Exception('Invalid status domains');
         }
 
@@ -647,20 +644,11 @@ class Helpers
     }
 
     /**
-     * Validate status domain consistency
+     * Validate the status URL and ID are valid
      */
-    public static function validateStatusDomains(string $originalUrl, string $id, string $url): bool
+    public static function validateStatusDomains(string $id, string $url): bool
     {
-        if (! self::validateUrl($id) || ! self::validateUrl($url)) {
-            return false;
-        }
-
-        $originalDomain = parse_url($originalUrl, PHP_URL_HOST);
-        $idDomain = parse_url($id, PHP_URL_HOST);
-        $urlDomain = parse_url($url, PHP_URL_HOST);
-
-        return strtolower($originalDomain) === strtolower($idDomain) &&
-               strtolower($originalDomain) === strtolower($urlDomain);
+        return self::validateUrl($id) && self::validateUrl($url);
     }
 
     /**

@@ -72,8 +72,8 @@
         "mentioned": "mainittu",
         "you": "sin\u00e4",
         "yourApplication": "Liittymist\u00e4 koskeva hakemuksesi",
-        "applicationApproved": "oli hyv\u00e4ksytty!",
-        "applicationRejected": "oli hyl\u00e4tty. Voit hakea uudelleen 6 kuukauden kuluttua.",
+        "applicationApproved": "hyv\u00e4ksyttiin!",
+        "applicationRejected": "hyl\u00e4ttiin. Voit hakea uudelleen 6 kuukauden kuluttua.",
         "dm": "yv",
         "groupPost": "ryhm\u00e4viesti",
         "modlog": "modelogi",
@@ -114,7 +114,7 @@
         "addCW": "Lis\u00e4\u00e4 sis\u00e4lt\u00f6varoitus",
         "removeCW": "Poista sis\u00e4lt\u00f6varoitus",
         "markAsSpammer": "Merkitse roskapostittajaksi",
-        "markAsSpammerText": "Unlist + SV olevat ja tulevat julkaisut",
+        "markAsSpammerText": "Poista listalta + SV olevat ja tulevat julkaisut",
         "spam": "Roskaposti",
         "sensitive": "Arkaluonteista sis\u00e4lt\u00f6\u00e4",
         "abusive": "Hy\u00f6kk\u00e4\u00e4v\u00e4 tai haitallinen",
@@ -132,8 +132,8 @@
         "modRemoveCWConfirm": "Haluatko varmasti poistaa julkaisun sis\u00e4lt\u00f6varoituksen?",
         "modRemoveCWSuccess": "Sis\u00e4lt\u00f6varoitus poistettu",
         "modUnlistConfirm": "Haluatko varmasti piilottaa julkaisun?",
-        "modUnlistSuccess": "Julkaisu piilotettu onnistuneesti",
-        "modMarkAsSpammerConfirm": "Haluatko varmasti merkit\u00e4 k\u00e4ytt\u00e4j\u00e4n roskapostittajaksi? Kaikki nykyiset ja tulevat julkaisut saavat sis\u00e4lt\u00f6varoituksen ja julkaisut piilotetaan julkisilta aikajanoilta.",
+        "modUnlistSuccess": "Julkaisun piilotus onnistui",
+        "modMarkAsSpammerConfirm": "Haluatko varmasti merkit\u00e4 k\u00e4ytt\u00e4j\u00e4n roskapostittajaksi? Kaikki nykyiset ja tulevat julkaisut saavat sis\u00e4lt\u00f6varoituksen ja julkaisut piilotetaan aikajanoilta.",
         "modMarkAsSpammerSuccess": "Tili merkitty roskapostittajaksi",
         "toFollowers": "seuraajille",
         "showCaption": "N\u00e4yt\u00e4 kuvaus",
@@ -151,7 +151,7 @@
         "peopleYouMayKnow": "Ihmisi\u00e4, jotka saatat tuntea",
         "onboarding": {
             "welcome": "Tervetuloa",
-            "thisIsYourHomeFeed": "T\u00e4m\u00e4 on kotisy\u00f6tteesi. Aikaj\u00e4rjestyksess\u00e4 oleva sy\u00f6te seuraamiesi k\u00e4ytt\u00e4jien julkaisuista.",
+            "thisIsYourHomeFeed": "T\u00e4m\u00e4 on kotisy\u00f6tteesi, aikaj\u00e4rjestyksess\u00e4 oleva sy\u00f6te seuraamiesi k\u00e4ytt\u00e4jien julkaisuista.",
             "letUsHelpYouFind": "Anna meid\u00e4n auttaa l\u00f6yt\u00e4m\u00e4\u00e4n mielenkiintoisia ihmisi\u00e4 seurattavaksi",
             "refreshFeed": "P\u00e4ivit\u00e4 sy\u00f6tteeni"
         }
@@ -164,7 +164,7 @@
         "selectReason": "Valitse syy",
         "reported": "Ilmoitettu",
         "sendingReport": "L\u00e4hetet\u00e4\u00e4n ilmoitusta",
-        "thanksMsg": "Kiitos ilmoituksesta. Sin\u00e4 ja kaltaisesi autatte pit\u00e4m\u00e4\u00e4n yhteis\u00f6n turvallisena!",
-        "contactAdminMsg": "Jos haluaisit ottaa yhteytt\u00e4 yll\u00e4pitoom t\u00e4st\u00e4 julkaisusta tai ilmoittaa sen"
+        "thanksMsg": "Kiitos ilmoituksesta, sin\u00e4 ja kaltaisesi autatte pit\u00e4m\u00e4\u00e4n yhteis\u00f6n turvallisena!",
+        "contactAdminMsg": "Jos haluaisit ottaa yhteytt\u00e4 yll\u00e4pitoon t\u00e4h\u00e4n julkaisuun liittyen tai ilmoittaa sen"
     }
 }

@@ -44,6 +44,8 @@ mix.js('resources/assets/js/app.js', 'public/js')
 .js('resources/assets/js/groups.js', 'public/js')
 .js('resources/assets/js/group-status.js', 'public/js')
 .js('resources/assets/js/group-topic-feed.js', 'public/js')
+.js('resources/assets/js/custom_filters.js', 'public/js')
+.js('resources/assets/js/settings.js', 'public/js')
 .vue({ version: 2 });
 
 mix.extract();

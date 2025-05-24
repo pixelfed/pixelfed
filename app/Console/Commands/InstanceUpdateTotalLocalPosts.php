@@ -53,9 +53,8 @@ class InstanceUpdateTotalLocalPosts extends Command
 
     protected function initCache()
     {
-        $count = DB::table('statuses')->whereNull(['url', 'deleted_at'])->count();
         $res = [
-            'count' => $count,
+            'count' => $this->getTotalLocalPosts(),
         ];
         Storage::put('total_local_posts.json', json_encode($res, JSON_UNESCAPED_SLASHES | JSON_PRETTY_PRINT));
         ConfigCacheService::put('instance.stats.total_local_posts', $res['count']);
@@ -68,12 +67,24 @@ class InstanceUpdateTotalLocalPosts extends Command
 
     protected function updateAndCache()
     {
-        $count = DB::table('statuses')->whereNull(['url', 'deleted_at'])->count();
         $res = [
-            'count' => $count,
+            'count' => $this->getTotalLocalPosts(),
         ];
         Storage::put('total_local_posts.json', json_encode($res, JSON_UNESCAPED_SLASHES | JSON_PRETTY_PRINT));
         ConfigCacheService::put('instance.stats.total_local_posts', $res['count']);
 
+    }
+
+    protected function getTotalLocalPosts()
+    {
+        if ((bool) config('instance.total_count_estimate') && config('database.default') === 'mysql') {
+            return DB::select("EXPLAIN SELECT COUNT(*) FROM statuses WHERE deleted_at IS NULL AND uri IS NULL and local = 1 AND type != 'share'")[0]->rows;
+        }
+
+        return DB::table('statuses')
+            ->whereNull('deleted_at')
+            ->where('local', true)
+            ->whereNot('type', 'share')
+            ->count();
     }
 }

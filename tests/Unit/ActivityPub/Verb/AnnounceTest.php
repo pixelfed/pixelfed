@@ -3,6 +3,7 @@
 namespace Tests\Unit\ActivityPub\Verb;
 
 use App\Util\ActivityPub\Validator\Announce;
+use PHPUnit\Framework\Attributes\Test;
 use Tests\TestCase;
 
 class AnnounceTest extends TestCase
@@ -138,32 +139,32 @@ class AnnounceTest extends TestCase
         ];
     }
 
-    /** @test */
+    #[Test]
     public function basic_accept()
     {
         $this->assertTrue(Announce::validate($this->validAnnounce));
     }
 
-    /** @test */
+    #[Test]
     public function invalid_accept()
     {
         $this->assertFalse(Announce::validate($this->invalidAnnounce));
     }
 
-    /** @test */
+    #[Test]
     public function context_missing()
     {
         $this->assertFalse(Announce::validate($this->contextMissing));
     }
 
-    /** @test */
+    #[Test]
     public function invalid_actor()
     {
         $this->assertFalse(Announce::validate($this->invalidActor));
         $this->assertFalse(Announce::validate($this->invalidActor2));
     }
 
-    /** @test */
+    #[Test]
     public function mastodon_announce()
     {
         $this->assertTrue(Announce::validate($this->mastodonAnnounce));

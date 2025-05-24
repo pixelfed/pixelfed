@@ -54,4 +54,79 @@ return [
             'limit' => env('PF_LOGIN_WITH_MASTODON_MAX_USES_LIMIT', 3)
         ]
     ],
+
+    'oidc' => [
+        /*
+         *   Enable OIDC authentication
+         *
+         *   Enable Sign-in with OpenID Connect (OIDC) authentication providers
+         */
+        'enabled' => env('PF_OIDC_ENABLED', false),
+
+        /*
+         *   Client ID
+         *
+         *   The client ID provided by your OIDC provider
+         */
+        'clientId' => env('PF_OIDC_CLIENT_ID', false),
+
+        /*
+         *   Client Secret
+         *
+         *   The client secret provided by your OIDC provider
+         */
+        'clientSecret' => env('PF_OIDC_CLIENT_SECRET', false),
+
+        /*
+         *   OAuth Scopes
+         *
+         *   The scopes to request from the OIDC provider, typically including
+         *   'openid' (required), 'profile', and 'email' for basic user information
+         */
+        'scopes' =>  env('PF_OIDC_SCOPES', 'openid profile email'),
+
+        /*
+         *   Authorization URL
+         *
+         *   The endpoint used to start the OIDC authentication flow
+         */
+        'authorizeURL' => env('PF_OIDC_AUTHORIZE_URL', ''),
+
+        /*
+         *   Token URL
+         *
+         *   The endpoint used to exchange the authorization code for an access token
+         */
+        'tokenURL' => env('PF_OIDC_TOKEN_URL', ''),
+
+        /*
+         *   Profile URL
+         *
+         *   The endpoint used to retrieve user information with a valid access token
+         */
+        'profileURL' => env('PF_OIDC_PROFILE_URL', ''),
+
+        /*
+         *   Logout URL
+         *
+         *   The endpoint used to log the user out of the OIDC provider
+         */
+        'logoutURL' => env('PF_OIDC_LOGOUT_URL', ''),
+
+        /*
+         *   Username Field
+         *
+         *   The field from the OIDC profile response to use as the username
+         *   Default is 'preferred_username' but can be changed based on your provider
+         */
+        'field_username' => env('PF_OIDC_USERNAME_FIELD', "preferred_username"),
+
+        /*
+         *   ID Field
+         *
+         *   The field from the OIDC profile response to use as the unique identifier
+         *   Default is 'sub' (subject) which is standard in OIDC implementations
+         */
+        'field_id' => env('PF_OIDC_FIELD_ID', 'sub'),
+    ],
 ];

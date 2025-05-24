@@ -228,7 +228,7 @@
 											Update
 										</a>
 										<span class="mx-1">·</span>
-										<a href="" class="text-danger font-weight-bold">
+										<a href="#" class="text-danger font-weight-bold" @click.prevent="handleDeleteAvatar()">
 											Delete
 										</a>
 									</p>
@@ -256,7 +256,7 @@
 											Update
 										</a>
 										<span class="mx-1">·</span>
-										<a href="" class="text-danger font-weight-bold">
+										<a href="#" class="text-danger font-weight-bold" @click.prevent="handleDeleteHeader()">
 											Delete
 										</a>
 									</p>
@@ -981,6 +981,30 @@
 
 			memberInteractionUrl(pid) {
 				return `/groups/${this.groupId}/members?a=il&pid=${pid}`;
+			},
+
+            handleDeleteAvatar() {
+                if(!window.confirm('Are you sure you want to delete your group avatar image?')) {
+                    return;
+                }
+                this.savingChanges = true;
+                axios.post('/api/v0/groups/' + this.group.id + '/settings/delete-avatar')
+                .then(res => {
+                    this.savingChanges = false;
+                    this.group = res.data;
+                });
+            },
+
+			handleDeleteHeader() {
+				if(!window.confirm('Are you sure you want to delete your group header image?')) {
+					return;
+				}
+				this.savingChanges = true;
+				axios.post('/api/v0/groups/' + this.group.id + '/settings/delete-header')
+				.then(res => {
+					this.savingChanges = false;
+					this.group = res.data;
+				});
 			},
 
 			undoBlock(type, val) {

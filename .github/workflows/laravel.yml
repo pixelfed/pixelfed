@@ -1,0 +1,55 @@
+name: Laravel Test Suite
+
+on:
+  push:
+    branches: [ staging, dev ]
+  pull_request:
+    branches: [ staging, dev ]
+
+jobs:
+  tests:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        php: [ '8.3' ]
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup PHP
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: ${{ matrix.php }}
+          extensions: mbstring, sqlite, xml, ctype, json, openssl
+          ini-values: post_max_size=256M, memory_limit=512M
+
+      - name: Cache Composer dependencies
+        uses: actions/cache@v3
+        with:
+          path: vendor
+          key: composer-${{ hashFiles('**/composer.lock') }}
+
+      - name: Install Composer dependencies
+        run: composer install --no-progress --no-suggest --prefer-dist -n
+
+      - name: Copy .env and generate key
+        run: |
+          cp .env.example .env
+          php artisan key:generate
+
+      - name: Prepare SQLite database
+        run: |
+          touch database/database.sqlite
+          php artisan migrate --env=testing --force --database=sqlite
+
+      - name: Run tests
+        run: |
+          php artisan test --env=testing --log-junit=tests/_output/junit.xml
+        continue-on-error: false
+
+      - name: Upload JUnit test results
+        if: always()
+        uses: actions/upload-artifact@v3
+        with:
+          name: junit-results
+          path: tests/_output/junit.xml

@@ -3,15 +3,17 @@
 namespace App\Jobs\GroupsPipeline;
 
 use App\Models\GroupMedia;
-use App\Util\Media\Image;
+use Exception;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
+use Intervention\Image\Encoders\JpegEncoder;
+use Intervention\Image\Encoders\PngEncoder;
+use Intervention\Image\ImageManager;
 use Log;
 use Storage;
-use Image as Intervention;
 
 class ImageResizePipeline implements ShouldQueue
 {
@@ -25,7 +27,7 @@ class ImageResizePipeline implements ShouldQueue
      * @var bool
      */
     public $deleteWhenMissingModels = true;
-    
+
     /**
      * Create a new job instance.
      *
@@ -45,43 +47,71 @@ class ImageResizePipeline implements ShouldQueue
     {
         $media = $this->media;
 
-        if(!$media) {
+        if (! $media) {
             return;
         }
 
-        if (!Storage::exists($media->media_path) || $media->skip_optimize) {
+        if (! Storage::exists($media->media_path) || $media->skip_optimize) {
             return;
         }
 
         $path = $media->media_path;
-        $file = storage_path('app/' . $path);
+        $file = storage_path('app/'.$path);
         $quality = config_cache('pixelfed.image_quality');
 
         $orientations = [
             'square' => [
-                'width'  => 1080,
+                'width' => 1080,
                 'height' => 1080,
             ],
             'landscape' => [
-                'width'  => 1920,
+                'width' => 1920,
                 'height' => 1080,
             ],
             'portrait' => [
-                'width'  => 1080,
+                'width' => 1080,
                 'height' => 1350,
             ],
         ];
 
         try {
-            $img = Intervention::make($file);
-            $img->orientate();
+            $driver = match (config('image.driver')) {
+                'imagick' => \Intervention\Image\Drivers\Imagick\Driver::class,
+                'vips' => \Intervention\Image\Drivers\Vips\Driver::class,
+                default => \Intervention\Image\Drivers\Gd\Driver::class
+            };
+
+            $imageManager = new ImageManager(
+                $driver,
+                autoOrientation: true,
+                decodeAnimation: true,
+                blendingColor: 'ffffff',
+                strip: true
+            );
+
+            $img = $imageManager->read($file);
+
             $width = $img->width();
             $height = $img->height();
             $aspect = $width / $height;
             $orientation = $aspect === 1 ? 'square' : ($aspect > 1 ? 'landscape' : 'portrait');
             $ratio = $orientations[$orientation];
-            $img->resize($ratio['width'], $ratio['height']);
-            $img->save($file, $quality);
+
+            $img = $img->resize($ratio['width'], $ratio['height'], function ($constraint) {
+                $constraint->aspectRatio();
+                $constraint->upsize();
+            });
+
+            $extension = pathinfo($file, PATHINFO_EXTENSION);
+            if (in_array(strtolower($extension), ['jpg', 'jpeg'])) {
+                $encoder = new JpegEncoder($quality);
+            } else {
+                $encoder = new PngEncoder;
+            }
+
+            $encoded = $img->encode($encoder);
+            file_put_contents($file, $encoded);
+
         } catch (Exception $e) {
             Log::error($e);
         }

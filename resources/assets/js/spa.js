@@ -29,9 +29,9 @@ window.blurhash = require("blurhash");
 $('[data-toggle="tooltip"]').tooltip()
 let token = document.head.querySelector('meta[name="csrf-token"]');
 if (token) {
-	window.axios.defaults.headers.common['X-CSRF-TOKEN'] = token.content;
+  window.axios.defaults.headers.common['X-CSRF-TOKEN'] = token.content;
 } else {
-	console.error('CSRF token not found.');
+  console.error('CSRF token not found.');
 }
 
 Vue.use(VueRouter);
@@ -49,53 +49,53 @@ Vue.use(VueTimeago, {
 });
 
 Vue.component(
-	'navbar',
-	require('./../components/partials/navbar.vue').default
+  'navbar',
+  require('./../components/partials/navbar.vue').default
 );
 
 Vue.component(
-	'notification-card',
-	require('./components/NotificationCard.vue').default
+  'notification-card',
+  require('./components/NotificationCard.vue').default
 );
 
 Vue.component(
-	'photo-presenter',
-	require('./../components/presenter/PhotoPresenter.vue').default
+  'photo-presenter',
+  require('./../components/presenter/PhotoPresenter.vue').default
 );
 
 Vue.component(
-	'video-presenter',
-	require('./../components/presenter/VideoPresenter.vue').default
+  'video-presenter',
+  require('./../components/presenter/VideoPresenter.vue').default
 );
 
 Vue.component(
-	'photo-album-presenter',
-	require('./../components/presenter/PhotoAlbumPresenter.vue').default
+  'photo-album-presenter',
+  require('./../components/presenter/PhotoAlbumPresenter.vue').default
 );
 
 Vue.component(
-	'video-album-presenter',
-	require('./../components/presenter/VideoAlbumPresenter.vue').default
+  'video-album-presenter',
+  require('./../components/presenter/VideoAlbumPresenter.vue').default
 );
 
 Vue.component(
-	'mixed-album-presenter',
-	require('./../components/presenter/MixedAlbumPresenter.vue').default
+  'mixed-album-presenter',
+  require('./../components/presenter/MixedAlbumPresenter.vue').default
 );
 
 Vue.component(
-	'post-menu',
-	require('./components/PostMenu.vue').default
+  'post-menu',
+  require('./components/PostMenu.vue').default
 );
 
 // Vue.component(
-// 	'announcements-card',
-// 	require('./components/AnnouncementsCard.vue').default
+//  'announcements-card',
+//  require('./components/AnnouncementsCard.vue').default
 // );
 
 Vue.component(
-	'story-component',
-	require('./components/StoryTimelineComponent.vue').default
+  'story-component',
+  require('./components/StoryTimelineComponent.vue').default
 );
 
 const HomeComponent = () => import(/* webpackChunkName: "home.chunk" */ "./../components/Home.vue");
@@ -143,443 +143,443 @@ import GroupSearchComponent from "./../components/GroupSearch.vue";
 const CreateGroupComponent = () => import(/* webpackChunkName: "group.create" */ "./../components/GroupCreate.vue");
 
 const router = new VueRouter({
-	mode: "history",
-	linkActiveClass: "active",
+  mode: "history",
+  linkActiveClass: "active",
 
-	routes: [
-		{
-			path: "/i/web/timeline/:scope",
-			name: 'timeline',
-			component: HomeComponent,
-			props: true
-		},
-		// {
-		// 	path: "/i/web/timeline/local",
-		// 	component: LocalTimeline
-		// },
-		// {
-		// 	path: "/i/web/timeline/global",
-		// 	component: GlobalTimeline
-		// },
-		// {
-		// 	path: "/i/web/drive",
-		// 	name: 'drive',
-		// 	component: DriveComponent,
-		// 	props: true
-		// },
-		{
-			path: "/groups/feed",
-			name: 'groups',
-			component: GroupFeedComponent,
-		},
-		{
-			path: "/groups/joins",
-			name: 'groupjoins',
-			component: GroupJoinsComponent,
-		},
-		{
-			path: "/groups/discover",
-			name: 'groupdiscover',
-			component: GroupDiscoverComponent,
-			props: true
-		},
-		{
-			path: "/groups/notifications",
-			name: 'groupnotify',
-			component: GroupNotificationsComponent,
-		},
-		{
-			path: "/groups/search",
-			name: 'groupsearch',
-			component: GroupSearchComponent,
-		},
-		{
-			path: "/groups/create",
-			name: 'groupscreate',
-			component: CreateGroupComponent,
-		},
-		// {
-		// 	path: "/i/web/groups",
-		// 	name: 'groups',
-		// 	component: GroupsComponent,
-		// 	props: true
-		// },
-		{
-			path: "/groups/:gid/p/:sid",
-			component: () => import(/* webpackChunkName: "groups-post" */ './../components/GroupPost.vue'),
-			props: true
-		},
-		{
-			path: "/groups/:gid/user/:pid",
-			component: () => import(/* webpackChunkName: "groups-profile" */ './../components/GroupProfile.vue'),
-			props: true
-		},
-		{
-			path: "/groups/:groupId/about",
-			component: () => import(/* webpackChunkName: "groups-page-about" */ './../components/groups/Page/GroupAbout.vue'),
-			props: true
-		},
-		{
-			path: "/groups/:groupId/topics",
-			component: () => import(/* webpackChunkName: "groups-page-topics" */ './../components/groups/Page/GroupTopics.vue'),
-			props: true
-		},
-		{
-			path: "/groups/:groupId/members",
-			component: () => import(/* webpackChunkName: "groups-page-members" */ './../components/groups/Page/GroupMembers.vue'),
-			props: true
-		},
-		{
-			path: "/groups/:groupId/media",
-			component: () => import(/* webpackChunkName: "groups-page-media" */ './../components/groups/Page/GroupMedia.vue'),
-			props: true
-		},
-		{
-			path: "/groups/:groupId",
-			component: () => import(/* webpackChunkName: "groups-page" */ './../components/GroupPage.vue'),
-			props: true
-		},
-		{
-			path: "/i/web/post/:id",
-			name: 'post',
-			component: PostComponent,
-			props: true
-		},
-		// {
-		// 	path: "/i/web/profile/:id/live",
-		// 	component: LivePlayerComponent,
-		// 	props: true
-		// },
-		{
-			path: "/i/web/profile/:id/followers",
-			name: 'profile-followers',
-			component: ProfileFollowersComponent,
-			props: true
-		},
-		{
-			path: "/i/web/profile/:id/following",
-			name: 'profile-following',
-			component: ProfileFollowingComponent,
-			props: true
-		},
-		{
-			path: "/i/web/profile/:id",
-			name: 'profile',
-			component: ProfileComponent,
-			props: true
-		},
-		// {
-		// 	path: "/i/web/videos",
-		// 	component: VideosComponent
-		// },
-		{
-			path: "/i/web/discover",
-			component: DiscoverComponent
-		},
-		// {
-		// 	path: "/i/web/stories",
-		// 	component: HomeComponent
-		// },
-		// {
-		// 	path: "/i/web/settings/*",
-		// 	component: SettingsComponent,
-		// 	props: true
-		// },
-		// {
-		// 	path: "/i/web/settings",
-		// 	component: SettingsComponent
-		// },
-		{
-			path: "/i/web/compose",
-			component: ComposeComponent
-		},
-		{
-			path: "/i/web/notifications",
-			component: NotificationsComponent
-		},
-		{
-			path: "/i/web/direct/thread/:accountId",
-			component: DirectMessageComponent,
-			props: true
-		},
-		{
-			path: "/i/web/direct",
-			component: DirectComponent
-		},
-		// {
-		// 	path: "/i/web/kb/:id",
-		// 	name: "kb",
-		// 	component: KnowledgebaseComponent,
-		// 	props: true
-		// },
-		{
-			path: "/i/web/hashtag/:id",
-			name: "hashtag",
-			component: HashtagComponent,
-			props: true
-		},
-		// {
-		// 	path: "/i/web/help",
-		// 	component: HelpComponent
-		// },
-		// {
-		// 	path: "/i/web/about",
-		// 	component: AboutComponent
-		// },
-		// {
-		// 	path: "/i/web/contact",
-		// 	component: ContactComponent
-		// },
-		{
-			path: "/i/web/language",
-			component: LanguageComponent
-		},
-		// {
-		// 	path: "/i/web/privacy",
-		// 	component: PrivacyComponent
-		// },
-		// {
-		// 	path: "/i/web/terms",
-		// 	component: TermsComponent
-		// },
-		{
-			path: "/i/web/whats-new",
-			component: ChangelogComponent
-		},
-		{
-			path: "/i/web/discover/my-memories",
-			component: MemoriesComponent
-		},
-		{
-			path: "/i/web/discover/my-hashtags",
-			component: MyHashtagComponent
-		},
-		{
-			path: "/i/web/discover/account-insights",
-			component: AccountInsightsComponent
-		},
-		{
-			path: "/i/web/discover/find-friends",
-			component: DiscoverFindFriendsComponent
-		},
-		{
-			path: "/i/web/discover/server-timelines",
-			component: DiscoverServerFeedComponent
-		},
-		{
-			path: "/i/web/discover/settings",
-			component: DiscoverSettingsComponent
-		},
-		// {
-		// 	path: "/i/web/livestreams",
-		// 	component: LivestreamsComponent
-		// },
-		// {
-		// 	path: "/i/web/live/help",
-		// 	component: LiveHelpComponent
-		// },
-		// {
-		// 	path: "/i/web/live/player",
-		// 	component: LivePlayerComponent
-		// },
-		// {
-		// 	path: "/i/web/live",
-		// 	component: LiveComponent
-		// },
+  routes: [
+    {
+      path: "/i/web/timeline/:scope",
+      name: 'timeline',
+      component: HomeComponent,
+      props: true
+    },
+    // {
+    //  path: "/i/web/timeline/local",
+    //  component: LocalTimeline
+    // },
+    // {
+    //  path: "/i/web/timeline/global",
+    //  component: GlobalTimeline
+    // },
+    // {
+    //  path: "/i/web/drive",
+    //  name: 'drive',
+    //  component: DriveComponent,
+    //  props: true
+    // },
+    {
+      path: "/groups/feed",
+      name: 'groups',
+      component: GroupFeedComponent,
+    },
+    {
+      path: "/groups/joins",
+      name: 'groupjoins',
+      component: GroupJoinsComponent,
+    },
+    {
+      path: "/groups/discover",
+      name: 'groupdiscover',
+      component: GroupDiscoverComponent,
+      props: true
+    },
+    {
+      path: "/groups/notifications",
+      name: 'groupnotify',
+      component: GroupNotificationsComponent,
+    },
+    {
+      path: "/groups/search",
+      name: 'groupsearch',
+      component: GroupSearchComponent,
+    },
+    {
+      path: "/groups/create",
+      name: 'groupscreate',
+      component: CreateGroupComponent,
+    },
+    // {
+    //  path: "/i/web/groups",
+    //  name: 'groups',
+    //  component: GroupsComponent,
+    //  props: true
+    // },
+    {
+      path: "/groups/:gid/p/:sid",
+      component: () => import(/* webpackChunkName: "groups-post" */ './../components/GroupPost.vue'),
+      props: true
+    },
+    {
+      path: "/groups/:gid/user/:pid",
+      component: () => import(/* webpackChunkName: "groups-profile" */ './../components/GroupProfile.vue'),
+      props: true
+    },
+    {
+      path: "/groups/:groupId/about",
+      component: () => import(/* webpackChunkName: "groups-page-about" */ './../components/groups/Page/GroupAbout.vue'),
+      props: true
+    },
+    {
+      path: "/groups/:groupId/topics",
+      component: () => import(/* webpackChunkName: "groups-page-topics" */ './../components/groups/Page/GroupTopics.vue'),
+      props: true
+    },
+    {
+      path: "/groups/:groupId/members",
+      component: () => import(/* webpackChunkName: "groups-page-members" */ './../components/groups/Page/GroupMembers.vue'),
+      props: true
+    },
+    {
+      path: "/groups/:groupId/media",
+      component: () => import(/* webpackChunkName: "groups-page-media" */ './../components/groups/Page/GroupMedia.vue'),
+      props: true
+    },
+    {
+      path: "/groups/:groupId",
+      component: () => import(/* webpackChunkName: "groups-page" */ './../components/GroupPage.vue'),
+      props: true
+    },
+    {
+      path: "/i/web/post/:id",
+      name: 'post',
+      component: PostComponent,
+      props: true
+    },
+    // {
+    //  path: "/i/web/profile/:id/live",
+    //  component: LivePlayerComponent,
+    //  props: true
+    // },
+    {
+      path: "/i/web/profile/:id/followers",
+      name: 'profile-followers',
+      component: ProfileFollowersComponent,
+      props: true
+    },
+    {
+      path: "/i/web/profile/:id/following",
+      name: 'profile-following',
+      component: ProfileFollowingComponent,
+      props: true
+    },
+    {
+      path: "/i/web/profile/:id",
+      name: 'profile',
+      component: ProfileComponent,
+      props: true
+    },
+    // {
+    //  path: "/i/web/videos",
+    //  component: VideosComponent
+    // },
+    {
+      path: "/i/web/discover",
+      component: DiscoverComponent
+    },
+    // {
+    //  path: "/i/web/stories",
+    //  component: HomeComponent
+    // },
+    // {
+    //  path: "/i/web/settings/*",
+    //  component: SettingsComponent,
+    //  props: true
+    // },
+    // {
+    //  path: "/i/web/settings",
+    //  component: SettingsComponent
+    // },
+    {
+      path: "/i/web/compose",
+      component: ComposeComponent
+    },
+    {
+      path: "/i/web/notifications",
+      component: NotificationsComponent
+    },
+    {
+      path: "/i/web/direct/thread/:accountId",
+      component: DirectMessageComponent,
+      props: true
+    },
+    {
+      path: "/i/web/direct",
+      component: DirectComponent
+    },
+    // {
+    //  path: "/i/web/kb/:id",
+    //  name: "kb",
+    //  component: KnowledgebaseComponent,
+    //  props: true
+    // },
+    {
+      path: "/i/web/hashtag/:id",
+      name: "hashtag",
+      component: HashtagComponent,
+      props: true
+    },
+    // {
+    //  path: "/i/web/help",
+    //  component: HelpComponent
+    // },
+    // {
+    //  path: "/i/web/about",
+    //  component: AboutComponent
+    // },
+    // {
+    //  path: "/i/web/contact",
+    //  component: ContactComponent
+    // },
+    {
+      path: "/i/web/language",
+      component: LanguageComponent
+    },
+    // {
+    //  path: "/i/web/privacy",
+    //  component: PrivacyComponent
+    // },
+    // {
+    //  path: "/i/web/terms",
+    //  component: TermsComponent
+    // },
+    {
+      path: "/i/web/whats-new",
+      component: ChangelogComponent
+    },
+    {
+      path: "/i/web/discover/my-memories",
+      component: MemoriesComponent
+    },
+    {
+      path: "/i/web/discover/my-hashtags",
+      component: MyHashtagComponent
+    },
+    {
+      path: "/i/web/discover/account-insights",
+      component: AccountInsightsComponent
+    },
+    {
+      path: "/i/web/discover/find-friends",
+      component: DiscoverFindFriendsComponent
+    },
+    {
+      path: "/i/web/discover/server-timelines",
+      component: DiscoverServerFeedComponent
+    },
+    {
+      path: "/i/web/discover/settings",
+      component: DiscoverSettingsComponent
+    },
+    // {
+    //  path: "/i/web/livestreams",
+    //  component: LivestreamsComponent
+    // },
+    // {
+    //  path: "/i/web/live/help",
+    //  component: LiveHelpComponent
+    // },
+    // {
+    //  path: "/i/web/live/player",
+    //  component: LivePlayerComponent
+    // },
+    // {
+    //  path: "/i/web/live",
+    //  component: LiveComponent
+    // },
 
-		{
-			path: "/i/web",
-			component: HomeComponent,
-			props: true
-		},
-		{
-			path: "/i/web/*",
-			component: NotFoundComponent,
-			props: true
-		},
-	],
+    {
+      path: "/i/web",
+      component: HomeComponent,
+      props: true
+    },
+    {
+      path: "/i/web/*",
+      component: NotFoundComponent,
+      props: true
+    },
+  ],
 
-	scrollBehavior(to, from, savedPosition) {
-		if (to.hash) {
-			return {
-				selector: `[id='${to.hash.slice(1)}']`
-			};
-		} else {
-			return { x: 0, y: 0 };
-		}
-	}
+  scrollBehavior(to, from, savedPosition) {
+    if (to.hash) {
+      return {
+        selector: `[id='${to.hash.slice(1)}']`
+      };
+    } else {
+      return { x: 0, y: 0 };
+    }
+  }
 });
 
 function lss(name, def) {
-	let key = 'pf_m2s.' + name;
-	let ls = window.localStorage;
-	if(ls.getItem(key)) {
-		let val = ls.getItem(key);
-		if(['pl', 'color-scheme'].includes(name)) {
-			return val;
-		}
-		return ['true', true].includes(val);
-	}
-	return def;
+  let key = 'pf_m2s.' + name;
+  let ls = window.localStorage;
+  if(ls.getItem(key)) {
+    let val = ls.getItem(key);
+    if(['pl', 'color-scheme'].includes(name)) {
+      return val;
+    }
+    return ['true', true].includes(val);
+  }
+  return def;
 }
 
 const store = new Vuex.Store({
-	state: {
-		version: 1,
-		hideCounts: lss('hc', false),
-		autoloadComments: lss('ac', true),
-		newReactions: lss('nr', true),
-		fixedHeight: lss('fh', false),
-		profileLayout: lss('pl', 'grid'),
-		showDMPrivacyWarning: lss('dmpwarn', true),
-		relationships: {},
-		emoji: [],
-		colorScheme: lss('color-scheme', 'system'),
-	},
+  state: {
+    version: 1,
+    hideCounts: lss('hc', false),
+    autoloadComments: lss('ac', true),
+    newReactions: lss('nr', true),
+    fixedHeight: lss('fh', false),
+    profileLayout: lss('pl', 'grid'),
+    showDMPrivacyWarning: lss('dmpwarn', true),
+    relationships: {},
+    emoji: [],
+    colorScheme: lss('color-scheme', 'system'),
+  },
 
-	getters: {
-		getVersion: state => {
-			return state.version;
-		},
+  getters: {
+    getVersion: state => {
+      return state.version;
+    },
 
-		getHideCounts: state => {
-			return state.hideCounts;
-		},
+    getHideCounts: state => {
+      return state.hideCounts;
+    },
 
-		getAutoloadComments: state => {
-			return state.autoloadComments;
-		},
+    getAutoloadComments: state => {
+      return state.autoloadComments;
+    },
 
-		getNewReactions: state => {
-			return state.newReactions;
-		},
+    getNewReactions: state => {
+      return state.newReactions;
+    },
 
-		getFixedHeight: state => {
-			return state.fixedHeight;
-		},
+    getFixedHeight: state => {
+      return state.fixedHeight;
+    },
 
-		getProfileLayout: state => {
-			return state.profileLayout;
-		},
+    getProfileLayout: state => {
+      return state.profileLayout;
+    },
 
-		getRelationship: (state) => (id) => {
-			// let rel = state.relationships[id];
-			// if(!rel || !rel.hasOwnProperty('id')) {
-			// 	return axios.get('/api/pixelfed/v1/accounts/relationships', {
-			// 		params: {
-			// 			'id[]': id
-			// 		}
-			// 	})
-			// 	.then(res => {
-			// 		let relationship = res.data;
-			// 		// Vue.set(state.relationships, relationship.id, relationship);
-			// 		state.commit('updateRelationship', res.data[0]);
-			// 		return res.data[0];
-			// 	})
-			// 	.catch(err => {
-			// 		return {};
-			// 	})
-			// } else {
-			// 	return state.relationships[id];
-			// }
-			return state.relationships[id];
-		},
+    getRelationship: (state) => (id) => {
+      // let rel = state.relationships[id];
+      // if(!rel || !rel.hasOwnProperty('id')) {
+      //  return axios.get('/api/pixelfed/v1/accounts/relationships', {
+      //    params: {
+      //      'id[]': id
+      //    }
+      //  })
+      //  .then(res => {
+      //    let relationship = res.data;
+      //    // Vue.set(state.relationships, relationship.id, relationship);
+      //    state.commit('updateRelationship', res.data[0]);
+      //    return res.data[0];
+      //  })
+      //  .catch(err => {
+      //    return {};
+      //  })
+      // } else {
+      //  return state.relationships[id];
+      // }
+      return state.relationships[id];
+    },
 
-		getCustomEmoji: state => {
-			return state.emoji;
-		},
+    getCustomEmoji: state => {
+      return state.emoji;
+    },
 
-		getColorScheme: state => {
-			return state.colorScheme;
-		},
+    getColorScheme: state => {
+      return state.colorScheme;
+    },
 
-		getShowDMPrivacyWarning: state => {
-			return state.showDMPrivacyWarning;
-		}
-	},
+    getShowDMPrivacyWarning: state => {
+      return state.showDMPrivacyWarning;
+    }
+  },
 
-	mutations: {
-		setVersion(state, value) {
-			state.version = value;
-		},
+  mutations: {
+    setVersion(state, value) {
+      state.version = value;
+    },
 
-		setHideCounts(state, value) {
-			localStorage.setItem('pf_m2s.hc', value);
-			state.hideCounts = value;
-		},
+    setHideCounts(state, value) {
+      localStorage.setItem('pf_m2s.hc', value);
+      state.hideCounts = value;
+    },
 
-		setAutoloadComments(state, value) {
-			localStorage.setItem('pf_m2s.ac', value);
-			state.autoloadComments = value;
-		},
+    setAutoloadComments(state, value) {
+      localStorage.setItem('pf_m2s.ac', value);
+      state.autoloadComments = value;
+    },
 
-		setNewReactions(state, value) {
-			localStorage.setItem('pf_m2s.nr', value);
-			state.newReactions = value;
-		},
+    setNewReactions(state, value) {
+      localStorage.setItem('pf_m2s.nr', value);
+      state.newReactions = value;
+    },
 
-		setFixedHeight(state, value) {
-			localStorage.setItem('pf_m2s.fh', value);
-			state.fixedHeight = value;
-		},
+    setFixedHeight(state, value) {
+      localStorage.setItem('pf_m2s.fh', value);
+      state.fixedHeight = value;
+    },
 
-		setProfileLayout(state, value) {
-			localStorage.setItem('pf_m2s.pl', value);
-			state.profileLayout = value;
-		},
+    setProfileLayout(state, value) {
+      localStorage.setItem('pf_m2s.pl', value);
+      state.profileLayout = value;
+    },
 
-		updateRelationship(state, relationships) {
-			relationships.forEach((relationship) => {
-				Vue.set(state.relationships, relationship.id, relationship)
-			})
-		},
+    updateRelationship(state, relationships) {
+      relationships.forEach((relationship) => {
+        Vue.set(state.relationships, relationship.id, relationship)
+      })
+    },
 
-		updateCustomEmoji(state, emojis) {
-			state.emoji = emojis;
-		},
+    updateCustomEmoji(state, emojis) {
+      state.emoji = emojis;
+    },
 
-		setColorScheme(state, value) {
-			if(state.colorScheme == value) {
-				return;
-			}
-			localStorage.setItem('pf_m2s.color-scheme', value);
-			state.colorScheme = value;
-			const name = value == 'system' ? '' : (value == 'light' ? 'force-light-mode' : 'force-dark-mode');
-			document.querySelector("body").className = name;
-			if(name != 'system') {
-				const payload = name == 'force-dark-mode' ? { dark_mode: 'on' } : {};
-				axios.post('/settings/labs', payload);
-			}
-		},
+    setColorScheme(state, value) {
+      if(state.colorScheme == value) {
+        return;
+      }
+      localStorage.setItem('pf_m2s.color-scheme', value);
+      state.colorScheme = value;
+      const name = value == 'system' ? '' : (value == 'light' ? 'force-light-mode' : 'force-dark-mode');
+      document.querySelector("body").className = name;
+      if(name != 'system') {
+        const payload = name == 'force-dark-mode' ? { dark_mode: 'on' } : {};
+        axios.post('/settings/labs', payload);
+      }
+    },
 
-		setShowDMPrivacyWarning(state, value) {
-			localStorage.setItem('pf_m2s.dmpwarn', value);
-			state.showDMPrivacyWarning = value;
-		}
-	},
+    setShowDMPrivacyWarning(state, value) {
+      localStorage.setItem('pf_m2s.dmpwarn', value);
+      state.showDMPrivacyWarning = value;
+    }
+  },
 });
 
 let i18nMessages = {
-	en: require('./i18n/en.json'),
-	ar: require('./i18n/ar.json'),
-	ca: require('./i18n/ca.json'),
-	de: require('./i18n/de.json'),
-	el: require('./i18n/el.json'),
-	es: require('./i18n/es.json'),
-	eu: require('./i18n/eu.json'),
-	fr: require('./i18n/fr.json'),
-	he: require('./i18n/he.json'),
-	gd: require('./i18n/gd.json'),
-	gl: require('./i18n/gl.json'),
-	id: require('./i18n/id.json'),
-	it: require('./i18n/it.json'),
-	ja: require('./i18n/ja.json'),
-	nl: require('./i18n/nl.json'),
-	pl: require('./i18n/pl.json'),
-	pt: require('./i18n/pt.json'),
-	ru: require('./i18n/ru.json'),
-	uk: require('./i18n/uk.json'),
-	vi: require('./i18n/vi.json'),
+  en: require('./i18n/en.json'),
+  ar: require('./i18n/ar.json'),
+  ca: require('./i18n/ca.json'),
+  de: require('./i18n/de.json'),
+  el: require('./i18n/el.json'),
+  es: require('./i18n/es.json'),
+  eu: require('./i18n/eu.json'),
+  fr: require('./i18n/fr.json'),
+  he: require('./i18n/he.json'),
+  gd: require('./i18n/gd.json'),
+  gl: require('./i18n/gl.json'),
+  id: require('./i18n/id.json'),
+  it: require('./i18n/it.json'),
+  ja: require('./i18n/ja.json'),
+  nl: require('./i18n/nl.json'),
+  pl: require('./i18n/pl.json'),
+  pt: require('./i18n/pt.json'),
+  ru: require('./i18n/ru.json'),
+  uk: require('./i18n/uk.json'),
+  vi: require('./i18n/vi.json'),
 };
 
 let locale = document.querySelector('html').getAttribute('lang');
@@ -593,64 +593,64 @@ const i18n = new VueI18n({
 sync(store, router);
 
 const App = new Vue({
-	el: '#content',
-	i18n,
-	router,
-	store
+  el: '#content',
+  i18n,
+  router,
+  store
 });
 
 axios.get('/api/v1/custom_emojis')
 .then(res => {
-	if(res && res.data && res.data.length) {
-		store.commit('updateCustomEmoji', res.data);
-	}
+  if(res && res.data && res.data.length) {
+    store.commit('updateCustomEmoji', res.data);
+  }
 });
 
 if(store.state.colorScheme) {
-	const name = store.state.colorScheme == 'system' ? '' : (store.state.colorScheme == 'light' ? 'force-light-mode' : 'force-dark-mode');
-	if(name != 'system') {
-		document.querySelector("body").className = name;
-	}
+  const name = store.state.colorScheme == 'system' ? '' : (store.state.colorScheme == 'light' ? 'force-light-mode' : 'force-dark-mode');
+  if(name != 'system') {
+    document.querySelector("body").className = name;
+  }
 }
 
 pixelfed.readmore = () => {
   $('.read-more').each(function(k,v) {
-	  let el = $(this);
-	  let attr = el.attr('data-readmore');
-	  if(typeof attr !== typeof undefined && attr !== false) {
-		return;
-	  }
-	  el.readmore({
-		collapsedHeight: 45,
-		heightMargin: 48,
-		moreLink: '<a href="#" class="d-block small font-weight-bold text-dark text-center">Show more</a>',
-		lessLink: '<a href="#" class="d-block small font-weight-bold text-dark text-center">Show less</a>',
-	  });
+    let el = $(this);
+    let attr = el.attr('data-readmore');
+    if(typeof attr !== typeof undefined && attr !== false) {
+    return;
+    }
+    el.readmore({
+    collapsedHeight: 45,
+    heightMargin: 48,
+    moreLink: '<a href="#" class="d-block small font-weight-bold text-dark text-center">Show more</a>',
+    lessLink: '<a href="#" class="d-block small font-weight-bold text-dark text-center">Show less</a>',
+    });
   });
 };
 
 try {
-	document.createEvent("TouchEvent");
-	$('body').addClass('touch');
+  document.createEvent("TouchEvent");
+  $('body').addClass('touch');
 } catch (e) {
 }
 
 window.App = window.App || {};
 
 // window.App.redirect = function() {
-// 	document.querySelectorAll('a').forEach(function(i,k) {
-// 		let a = i.getAttribute('href');
-// 		if(a && a.length > 5 && a.startsWith('https://')) {
-// 			let url = new URL(a);
-// 			if(url.host !== window.location.host && url.pathname !== '/i/redirect') {
-// 				i.setAttribute('href', '/i/redirect?url=' + encodeURIComponent(a));
-// 			}
-// 		}
-// 	});
+//  document.querySelectorAll('a').forEach(function(i,k) {
+//    let a = i.getAttribute('href');
+//    if(a && a.length > 5 && a.startsWith('https://')) {
+//      let url = new URL(a);
+//      if(url.host !== window.location.host && url.pathname !== '/i/redirect') {
+//        i.setAttribute('href', '/i/redirect?url=' + encodeURIComponent(a));
+//      }
+//    }
+//  });
 // }
 
 // window.App.boot = function() {
-// 	new Vue({ el: '#content'});
+//  new Vue({ el: '#content'});
 // }
 
 // window.addEventListener("load", () => {
@@ -660,235 +660,235 @@ window.App = window.App || {};
 // });
 
 window.App.util = {
-	compose: {
-		post: (function() {
-			let path = window.location.pathname;
-			let whitelist = [
-				'/',
-				'/timeline/public'
-			];
-			if(whitelist.includes(path)) {
-				$('#composeModal').modal('show');
-			} else {
-				window.location.href = '/?a=co';
-			}
-		}),
-		circle: (function() {
-			console.log('Unsupported method.');
-		}),
-		collection: (function() {
-			console.log('Unsupported method.');
-		}),
-		loop: (function() {
-			console.log('Unsupported method.');
-		}),
-		story: (function() {
-			console.log('Unsupported method.');
-		}),
-	},
-	time: (function() {
-		return new Date;
-	}),
-	version: 1,
-	format: {
-		count: (function(count = 0, locale = 'en-GB', notation = 'compact') {
-			if(count < 1) {
-				return 0;
-			}
-			return new Intl.NumberFormat(locale, { notation: notation , compactDisplay: "short" }).format(count);
-		}),
-		timeAgo: function(ts) {
-			const date = new Date(ts);
-			const now = new Date();
+  compose: {
+    post: (function() {
+      let path = window.location.pathname;
+      let whitelist = [
+        '/',
+        '/timeline/public'
+      ];
+      if(whitelist.includes(path)) {
+        $('#composeModal').modal('show');
+      } else {
+        window.location.href = '/?a=co';
+      }
+    }),
+    circle: (function() {
+      console.log('Unsupported method.');
+    }),
+    collection: (function() {
+      console.log('Unsupported method.');
+    }),
+    loop: (function() {
+      console.log('Unsupported method.');
+    }),
+    story: (function() {
+      console.log('Unsupported method.');
+    }),
+  },
+  time: (function() {
+    return new Date;
+  }),
+  version: 1,
+  format: {
+    count: (function(count = 0, locale = 'en-GB', notation = 'compact') {
+      if(count < 1) {
+        return 0;
+      }
+      return new Intl.NumberFormat(locale, { notation: notation , compactDisplay: "short" }).format(count);
+    }),
+    timeAgo: (function(ts) {
+          const date = new Date(ts);
+          const now = new Date();
 
-			const seconds = Math.floor((now - date) / 1000);
+          const seconds = Math.floor((now - date) / 1000);
 
-			const secondsInYear = 60 * 60 * 24 * 365.25;
-			let interval = Math.floor(seconds / secondsInYear);
-			if (interval >= 1) {
-				return interval + "y";
-			}
+          const secondsInYear = 60 * 60 * 24 * 365.25;
+          let interval = Math.floor(seconds / secondsInYear);
+          if (interval >= 1) {
+              return interval + "y";
+          }
 
-			interval = Math.floor(seconds / (60 * 60 * 24 * 7));
-			if (interval >= 1) {
-				return interval + "w";
-			}
+          interval = Math.floor(seconds / (60 * 60 * 24 * 7));
+          if (interval >= 1) {
+              return interval + "w";
+          }
 
-			interval = Math.floor(seconds / (60 * 60 * 24));
-			if (interval >= 1) {
-				return interval + "d";
-			}
+          interval = Math.floor(seconds / (60 * 60 * 24));
+          if (interval >= 1) {
+              return interval + "d";
+          }
 
-			interval = Math.floor(seconds / (60 * 60));
-			if (interval >= 1) {
-				return interval + "h";
-			}
+          interval = Math.floor(seconds / (60 * 60));
+          if (interval >= 1) {
+              return interval + "h";
+          }
 
-			interval = Math.floor(seconds / 60);
-			if (interval >= 1) {
-				return interval + "m";
-			}
+          interval = Math.floor(seconds / 60);
+          if (interval >= 1) {
+              return interval + "m";
+          }
 
-			return Math.floor(seconds) + "s";
-		},
-		timeAhead: (function(ts, short = true) {
-			let date = Date.parse(ts);
-			let diff = date - Date.parse(new Date());
-			let seconds = Math.floor((diff) / 1000);
-			let interval = Math.floor(seconds / 63072000);
-			if (interval >= 1) {
-				return interval + (short ? "y" : " years");
-			}
-			interval = Math.floor(seconds / 604800);
-			if (interval >= 1) {
-				return interval + (short ? "w" : " weeks");
-			}
-			interval = Math.floor(seconds / 86400);
-			if (interval >= 1) {
-				return interval + (short ? "d" : " days");
-			}
-			interval = Math.floor(seconds / 3600);
-			if (interval >= 1) {
-				return interval + (short ? "h" : " hours");
-			}
-			interval = Math.floor(seconds / 60);
-			if (interval >= 1) {
-				return interval + (short ? "m" : " minutes");
-			}
-			return Math.floor(seconds) + (short ? "s" : " seconds");
-		}),
-		rewriteLinks: (function(i) {
+          return Math.floor(seconds) + "s";
+      }),
+    timeAhead: (function(ts, short = true) {
+      let date = Date.parse(ts);
+      let diff = date - Date.parse(new Date());
+      let seconds = Math.floor((diff) / 1000);
+      let interval = Math.floor(seconds / 63072000);
+      if (interval >= 1) {
+        return interval + (short ? "y" : " years");
+      }
+      interval = Math.floor(seconds / 604800);
+      if (interval >= 1) {
+        return interval + (short ? "w" : " weeks");
+      }
+      interval = Math.floor(seconds / 86400);
+      if (interval >= 1) {
+        return interval + (short ? "d" : " days");
+      }
+      interval = Math.floor(seconds / 3600);
+      if (interval >= 1) {
+        return interval + (short ? "h" : " hours");
+      }
+      interval = Math.floor(seconds / 60);
+      if (interval >= 1) {
+        return interval + (short ? "m" : " minutes");
+      }
+      return Math.floor(seconds) + (short ? "s" : " seconds");
+    }),
+    rewriteLinks: (function(i) {
 
-			let tag = i.innerText;
+      let tag = i.innerText;
 
-			if(i.href.startsWith(window.location.origin)) {
-				return i.href;
-			}
+      if(i.href.startsWith(window.location.origin)) {
+        return i.href;
+      }
 
-			if(tag.startsWith('#') == true) {
-				tag = '/discover/tags/' + tag.substr(1) +'?src=rph';
-			} else if(tag.startsWith('@') == true) {
-				tag = '/' + i.innerText + '?src=rpp';
-			} else {
-				tag = '/i/redirect?url=' + encodeURIComponent(tag);
-			}
+      if(tag.startsWith('#') == true) {
+        tag = '/discover/tags/' + tag.substr(1) +'?src=rph';
+      } else if(tag.startsWith('@') == true) {
+        tag = '/' + i.innerText + '?src=rpp';
+      } else {
+        tag = '/i/redirect?url=' + encodeURIComponent(tag);
+      }
 
-			return tag;
-		})
-	},
-	filters: [
-			['1984','filter-1977'],
-			['Azen','filter-aden'],
-			['Astairo','filter-amaro'],
-			['Grassbee','filter-ashby'],
-			['Bookrun','filter-brannan'],
-			['Borough','filter-brooklyn'],
-			['Farms','filter-charmes'],
-			['Hairsadone','filter-clarendon'],
-			['Cleana ','filter-crema'],
-			['Catpatch','filter-dogpatch'],
-			['Earlyworm','filter-earlybird'],
-			['Plaid','filter-gingham'],
-			['Kyo','filter-ginza'],
-			['Yefe','filter-hefe'],
-			['Goddess','filter-helena'],
-			['Yards','filter-hudson'],
-			['Quill','filter-inkwell'],
-			['Rankine','filter-kelvin'],
-			['Juno','filter-juno'],
-			['Mark','filter-lark'],
-			['Chill','filter-lofi'],
-			['Van','filter-ludwig'],
-			['Apache','filter-maven'],
-			['May','filter-mayfair'],
-			['Ceres','filter-moon'],
-			['Knoxville','filter-nashville'],
-			['Felicity','filter-perpetua'],
-			['Sandblast','filter-poprocket'],
-			['Daisy','filter-reyes'],
-			['Elevate','filter-rise'],
-			['Nevada','filter-sierra'],
-			['Futura','filter-skyline'],
-			['Sleepy','filter-slumber'],
-			['Steward','filter-stinson'],
-			['Savoy','filter-sutro'],
-			['Blaze','filter-toaster'],
-			['Apricot','filter-valencia'],
-			['Gloming','filter-vesper'],
-			['Walter','filter-walden'],
-			['Poplar','filter-willow'],
-			['Xenon','filter-xpro-ii']
-	],
-	filterCss: {
-		'filter-1977': 'sepia(.5) hue-rotate(-30deg) saturate(1.4)',
-		'filter-aden': 'sepia(.2) brightness(1.15) saturate(1.4)',
-		'filter-amaro': 'sepia(.35) contrast(1.1) brightness(1.2) saturate(1.3)',
-		'filter-ashby': 'sepia(.5) contrast(1.2) saturate(1.8)',
-		'filter-brannan': 'sepia(.4) contrast(1.25) brightness(1.1) saturate(.9) hue-rotate(-2deg)',
-		'filter-brooklyn': 'sepia(.25) contrast(1.25) brightness(1.25) hue-rotate(5deg)',
-		'filter-charmes': 'sepia(.25) contrast(1.25) brightness(1.25) saturate(1.35) hue-rotate(-5deg)',
-		'filter-clarendon': 'sepia(.15) contrast(1.25) brightness(1.25) hue-rotate(5deg)',
-		'filter-crema': 'sepia(.5) contrast(1.25) brightness(1.15) saturate(.9) hue-rotate(-2deg)',
-		'filter-dogpatch': 'sepia(.35) saturate(1.1) contrast(1.5)',
-		'filter-earlybird': 'sepia(.25) contrast(1.25) brightness(1.15) saturate(.9) hue-rotate(-5deg)',
-		'filter-gingham': 'contrast(1.1) brightness(1.1)',
-		'filter-ginza': 'sepia(.25) contrast(1.15) brightness(1.2) saturate(1.35) hue-rotate(-5deg)',
-		'filter-hefe': 'sepia(.4) contrast(1.5) brightness(1.2) saturate(1.4) hue-rotate(-10deg)',
-		'filter-helena': 'sepia(.5) contrast(1.05) brightness(1.05) saturate(1.35)',
-		'filter-hudson': 'sepia(.25) contrast(1.2) brightness(1.2) saturate(1.05) hue-rotate(-15deg)',
-		'filter-inkwell': 'brightness(1.25) contrast(.85) grayscale(1)',
-		'filter-kelvin': 'sepia(.15) contrast(1.5) brightness(1.1) hue-rotate(-10deg)',
-		'filter-juno': 'sepia(.35) contrast(1.15) brightness(1.15) saturate(1.8)',
-		'filter-lark': 'sepia(.25) contrast(1.2) brightness(1.3) saturate(1.25)',
-		'filter-lofi': 'saturate(1.1) contrast(1.5)',
-		'filter-ludwig': 'sepia(.25) contrast(1.05) brightness(1.05) saturate(2)',
-		'filter-maven': 'sepia(.35) contrast(1.05) brightness(1.05) saturate(1.75)',
-		'filter-mayfair': 'contrast(1.1) brightness(1.15) saturate(1.1)',
-		'filter-moon': 'brightness(1.4) contrast(.95) saturate(0) sepia(.35)',
-		'filter-nashville': 'sepia(.25) contrast(1.5) brightness(.9) hue-rotate(-15deg)',
-		'filter-perpetua': 'contrast(1.1) brightness(1.25) saturate(1.1)',
-		'filter-poprocket': 'sepia(.15) brightness(1.2)',
-		'filter-reyes': 'sepia(.75) contrast(.75) brightness(1.25) saturate(1.4)',
-		'filter-rise': 'sepia(.25) contrast(1.25) brightness(1.2) saturate(.9)',
-		'filter-sierra': 'sepia(.25) contrast(1.5) brightness(.9) hue-rotate(-15deg)',
-		'filter-skyline': 'sepia(.15) contrast(1.25) brightness(1.25) saturate(1.2)',
-		'filter-slumber': 'sepia(.35) contrast(1.25) saturate(1.25)',
-		'filter-stinson': 'sepia(.35) contrast(1.25) brightness(1.1) saturate(1.25)',
-		'filter-sutro': 'sepia(.4) contrast(1.2) brightness(.9) saturate(1.4) hue-rotate(-10deg)',
-		'filter-toaster': 'sepia(.25) contrast(1.5) brightness(.95) hue-rotate(-15deg)',
-		'filter-valencia': 'sepia(.25) contrast(1.1) brightness(1.1)',
-		'filter-vesper': 'sepia(.35) contrast(1.15) brightness(1.2) saturate(1.3)',
-		'filter-walden': 'sepia(.35) contrast(.8) brightness(1.25) saturate(1.4)',
-		'filter-willow': 'brightness(1.2) contrast(.85) saturate(.05) sepia(.2)',
-		'filter-xpro-ii': 'sepia(.45) contrast(1.25) brightness(1.75) saturate(1.3) hue-rotate(-5deg)'
-	},
-	emoji: ['😂','💯','❤️','🙌','👏','👌','😍','😯','😢','😅','😁','🙂','😎','😀','🤣','😃','😄','😆','😉','😊','😋','😘','😗','😙','😚','🤗','🤩','🤔','🤨','😐','😑','😶','🙄','😏','😣','😥','😮','🤐','😪','😫','😴','😌','😛','😜','😝','🤤','😒','😓','😔','😕','🙃','🤑','😲','🙁','😖','😞','😟','😤','😭','😦','😧','😨','😩','🤯','😬','😰','😱','😳','🤪','😵','😡','😠','🤬','😷','🤒','🤕','🤢','🤮','🤧','😇','🤠','🤡','🤥','🤫','🤭','🧐','🤓','😈','👿','👹','👺','💀','👻','👽','🤖','💩','😺','😸','😹','😻','😼','😽','🙀','😿','😾','🤲','👐','🤝','👍','👎','👊','✊','🤛','🤜','🤞','✌️','🤟','🤘','👈','👉','👆','👇','☝️','✋','🤚','🖐','🖖','👋','🤙','💪','🖕','✍️','🙏','💍','💄','💋','👄','👅','👂','👃','👣','👁','👀','🧠','🗣','👤','👥'
-	],
-	embed: {
-		post: (function(url, caption = true, likes = false, layout = 'full') {
-			let u = url + '/embed?';
-			u += caption ? 'caption=true&' : 'caption=false&';
-			u += likes ? 'likes=true&' : 'likes=false&';
-			u += layout == 'compact' ? 'layout=compact' : 'layout=full';
-			return '<iframe title="Pixelfed Post Embed" src="'+u+'" class="pixelfed__embed" style="max-width: 100%; border: 0" width="400" allowfullscreen="allowfullscreen"></iframe><script async defer src="'+window.location.origin +'/embed.js"><\/script>';
-		}),
-		profile: (function(url) {
-			let u = url + '/embed';
-			return '<iframe title="Pixelfed Profile Embed" src="'+u+'" class="pixelfed__embed" style="max-width: 100%; border: 0" width="400" allowfullscreen="allowfullscreen"></iframe><script async defer src="'+window.location.origin +'/embed.js"><\/script>';
-		})
-	},
+      return tag;
+    })
+  },
+  filters: [
+      ['1984','filter-1977'],
+      ['Azen','filter-aden'],
+      ['Astairo','filter-amaro'],
+      ['Grassbee','filter-ashby'],
+      ['Bookrun','filter-brannan'],
+      ['Borough','filter-brooklyn'],
+      ['Farms','filter-charmes'],
+      ['Hairsadone','filter-clarendon'],
+      ['Cleana ','filter-crema'],
+      ['Catpatch','filter-dogpatch'],
+      ['Earlyworm','filter-earlybird'],
+      ['Plaid','filter-gingham'],
+      ['Kyo','filter-ginza'],
+      ['Yefe','filter-hefe'],
+      ['Goddess','filter-helena'],
+      ['Yards','filter-hudson'],
+      ['Quill','filter-inkwell'],
+      ['Rankine','filter-kelvin'],
+      ['Juno','filter-juno'],
+      ['Mark','filter-lark'],
+      ['Chill','filter-lofi'],
+      ['Van','filter-ludwig'],
+      ['Apache','filter-maven'],
+      ['May','filter-mayfair'],
+      ['Ceres','filter-moon'],
+      ['Knoxville','filter-nashville'],
+      ['Felicity','filter-perpetua'],
+      ['Sandblast','filter-poprocket'],
+      ['Daisy','filter-reyes'],
+      ['Elevate','filter-rise'],
+      ['Nevada','filter-sierra'],
+      ['Futura','filter-skyline'],
+      ['Sleepy','filter-slumber'],
+      ['Steward','filter-stinson'],
+      ['Savoy','filter-sutro'],
+      ['Blaze','filter-toaster'],
+      ['Apricot','filter-valencia'],
+      ['Gloming','filter-vesper'],
+      ['Walter','filter-walden'],
+      ['Poplar','filter-willow'],
+      ['Xenon','filter-xpro-ii']
+  ],
+  filterCss: {
+    'filter-1977': 'sepia(.5) hue-rotate(-30deg) saturate(1.4)',
+    'filter-aden': 'sepia(.2) brightness(1.15) saturate(1.4)',
+    'filter-amaro': 'sepia(.35) contrast(1.1) brightness(1.2) saturate(1.3)',
+    'filter-ashby': 'sepia(.5) contrast(1.2) saturate(1.8)',
+    'filter-brannan': 'sepia(.4) contrast(1.25) brightness(1.1) saturate(.9) hue-rotate(-2deg)',
+    'filter-brooklyn': 'sepia(.25) contrast(1.25) brightness(1.25) hue-rotate(5deg)',
+    'filter-charmes': 'sepia(.25) contrast(1.25) brightness(1.25) saturate(1.35) hue-rotate(-5deg)',
+    'filter-clarendon': 'sepia(.15) contrast(1.25) brightness(1.25) hue-rotate(5deg)',
+    'filter-crema': 'sepia(.5) contrast(1.25) brightness(1.15) saturate(.9) hue-rotate(-2deg)',
+    'filter-dogpatch': 'sepia(.35) saturate(1.1) contrast(1.5)',
+    'filter-earlybird': 'sepia(.25) contrast(1.25) brightness(1.15) saturate(.9) hue-rotate(-5deg)',
+    'filter-gingham': 'contrast(1.1) brightness(1.1)',
+    'filter-ginza': 'sepia(.25) contrast(1.15) brightness(1.2) saturate(1.35) hue-rotate(-5deg)',
+    'filter-hefe': 'sepia(.4) contrast(1.5) brightness(1.2) saturate(1.4) hue-rotate(-10deg)',
+    'filter-helena': 'sepia(.5) contrast(1.05) brightness(1.05) saturate(1.35)',
+    'filter-hudson': 'sepia(.25) contrast(1.2) brightness(1.2) saturate(1.05) hue-rotate(-15deg)',
+    'filter-inkwell': 'brightness(1.25) contrast(.85) grayscale(1)',
+    'filter-kelvin': 'sepia(.15) contrast(1.5) brightness(1.1) hue-rotate(-10deg)',
+    'filter-juno': 'sepia(.35) contrast(1.15) brightness(1.15) saturate(1.8)',
+    'filter-lark': 'sepia(.25) contrast(1.2) brightness(1.3) saturate(1.25)',
+    'filter-lofi': 'saturate(1.1) contrast(1.5)',
+    'filter-ludwig': 'sepia(.25) contrast(1.05) brightness(1.05) saturate(2)',
+    'filter-maven': 'sepia(.35) contrast(1.05) brightness(1.05) saturate(1.75)',
+    'filter-mayfair': 'contrast(1.1) brightness(1.15) saturate(1.1)',
+    'filter-moon': 'brightness(1.4) contrast(.95) saturate(0) sepia(.35)',
+    'filter-nashville': 'sepia(.25) contrast(1.5) brightness(.9) hue-rotate(-15deg)',
+    'filter-perpetua': 'contrast(1.1) brightness(1.25) saturate(1.1)',
+    'filter-poprocket': 'sepia(.15) brightness(1.2)',
+    'filter-reyes': 'sepia(.75) contrast(.75) brightness(1.25) saturate(1.4)',
+    'filter-rise': 'sepia(.25) contrast(1.25) brightness(1.2) saturate(.9)',
+    'filter-sierra': 'sepia(.25) contrast(1.5) brightness(.9) hue-rotate(-15deg)',
+    'filter-skyline': 'sepia(.15) contrast(1.25) brightness(1.25) saturate(1.2)',
+    'filter-slumber': 'sepia(.35) contrast(1.25) saturate(1.25)',
+    'filter-stinson': 'sepia(.35) contrast(1.25) brightness(1.1) saturate(1.25)',
+    'filter-sutro': 'sepia(.4) contrast(1.2) brightness(.9) saturate(1.4) hue-rotate(-10deg)',
+    'filter-toaster': 'sepia(.25) contrast(1.5) brightness(.95) hue-rotate(-15deg)',
+    'filter-valencia': 'sepia(.25) contrast(1.1) brightness(1.1)',
+    'filter-vesper': 'sepia(.35) contrast(1.15) brightness(1.2) saturate(1.3)',
+    'filter-walden': 'sepia(.35) contrast(.8) brightness(1.25) saturate(1.4)',
+    'filter-willow': 'brightness(1.2) contrast(.85) saturate(.05) sepia(.2)',
+    'filter-xpro-ii': 'sepia(.45) contrast(1.25) brightness(1.75) saturate(1.3) hue-rotate(-5deg)'
+  },
+  emoji: ['😂','💯','❤️','🙌','👏','👌','😍','😯','😢','😅','😁','🙂','😎','😀','🤣','😃','😄','😆','😉','😊','😋','😘','😗','😙','😚','🤗','🤩','🤔','🤨','😐','😑','😶','🙄','😏','😣','😥','😮','🤐','😪','😫','😴','😌','😛','😜','😝','🤤','😒','😓','😔','😕','🙃','🤑','😲','🙁','😖','😞','😟','😤','😭','😦','😧','😨','😩','🤯','😬','😰','😱','😳','🤪','😵','😡','😠','🤬','😷','🤒','🤕','🤢','🤮','🤧','😇','🤠','🤡','🤥','🤫','🤭','🧐','🤓','😈','👿','👹','👺','💀','👻','👽','🤖','💩','😺','😸','😹','😻','😼','😽','🙀','😿','😾','🤲','👐','🤝','👍','👎','👊','✊','🤛','🤜','🤞','✌️','🤟','🤘','👈','👉','👆','👇','☝️','✋','🤚','🖐','🖖','👋','🤙','💪','🖕','✍️','🙏','💍','💄','💋','👄','👅','👂','👃','👣','👁','👀','🧠','🗣','👤','👥'
+  ],
+  embed: {
+    post: (function(url, caption = true, likes = false, layout = 'full') {
+      let u = url + '/embed?';
+      u += caption ? 'caption=true&' : 'caption=false&';
+      u += likes ? 'likes=true&' : 'likes=false&';
+      u += layout == 'compact' ? 'layout=compact' : 'layout=full';
+      return '<iframe title="Pixelfed Post Embed" src="'+u+'" class="pixelfed__embed" style="max-width: 100%; border: 0" width="400" allowfullscreen="allowfullscreen"></iframe><script async defer src="'+window.location.origin +'/embed.js"><\/script>';
+    }),
+    profile: (function(url) {
+      let u = url + '/embed';
+      return '<iframe title="Pixelfed Profile Embed" src="'+u+'" class="pixelfed__embed" style="max-width: 100%; border: 0" width="400" allowfullscreen="allowfullscreen"></iframe><script async defer src="'+window.location.origin +'/embed.js"><\/script>';
+    })
+  },
 
-	clipboard: (function(data) {
-		return navigator.clipboard.writeText(data);
-	}),
+  clipboard: (function(data) {
+    return navigator.clipboard.writeText(data);
+  }),
 
-	navatar: (function() {
-		$('#navbarDropdown .far').addClass('d-none');
-			$('#navbarDropdown img').attr('src',window._sharedData.curUser.avatar)
-			.removeClass('d-none')
-			.addClass('rounded-circle border shadow')
-			.attr('width', 34).attr('height', 34);
-	})
+  navatar: (function() {
+    $('#navbarDropdown .far').addClass('d-none');
+      $('#navbarDropdown img').attr('src',window._sharedData.curUser.avatar)
+      .removeClass('d-none')
+      .addClass('rounded-circle border shadow')
+      .attr('width', 34).attr('height', 34);
+  })
 };
 
 const warningTitleCSS = 'color:red; font-size:60px; font-weight: bold; -webkit-text-stroke: 1px black;';

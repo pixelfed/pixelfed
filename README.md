@@ -1,23 +1,31 @@
-<p align="center"><img src="https://pixelfed.nyc3.cdn.digitaloceanspaces.com/logos/pixelfed-full-color.svg" width="300px"></p>
+<p align="center">
+<picture>
+  <source media="(prefers-color-scheme: dark)" srcset="https://pixelfed.nyc3.cdn.digitaloceanspaces.com/logos/pixelfed-full-color-dark.svg">
+  <source media="(prefers-color-scheme: light)" srcset="https://pixelfed.nyc3.cdn.digitaloceanspaces.com/logos/pixelfed-full-color.svg">
+  <img alt="Pixelfed logo" src="https://pixelfed.nyc3.cdn.digitaloceanspaces.com/logos/pixelfed-full-color.svg">
+</picture>
+</p>
 
 <p align="center">
-<a href="https://circleci.com/gh/pixelfed/pixelfed"><img src="https://circleci.com/gh/pixelfed/pixelfed.svg?style=svg" alt="Build Status"></a>
 <a href="https://packagist.org/packages/pixelfed/pixelfed"><img src="https://poser.pugx.org/pixelfed/pixelfed/v/stable.svg" alt="Latest Stable Version"></a>
 <a href="https://packagist.org/packages/pixelfed/pixelfed"><img src="https://poser.pugx.org/pixelfed/pixelfed/license.svg" alt="License"></a>
 <a title="Crowdin" target="_blank" href="https://crowdin.com/project/pixelfed"><img src="https://badges.crowdin.net/pixelfed/localized.svg"></a>
 </p>
 
 <p align="center">
-<a href="http://kck.st/4g34fFb"><img src="https://img.shields.io/badge/dynamic/xml?url=https%3A%2F%2Fwww.kickstarter.com%2Fprojects%2Fpixelfed%2Fpixelfed-foundation-2024-real-ethical-social-networks%2Fwidget%2Fcard.html&query=%2F%2Fli%5B%40class%3D'js-amount-pledged'%5D%2F%2Fspan%5B%40class%3D'money'%5D&logo=kickstarter&label=Kickstarter&color=purple" alt="Kickstarter Campaign" /></a>
-<a href="https://fedidb.org/software/pixelfed"><img src="https://img.shields.io/badge/dynamic/json?url=https%3A%2F%2Fapi.fedidb.org%2Fv1%2Fsoftware%2Fpixelfed&query=%24.monthly_actives&logo=pixelfed&logoColor=white&label=Monthly%20Active%20Users" alt="Monthly active users from FediDB" /></a>
+<a href="https://fedidb.org/software/pixelfed"><img src="https://img.shields.io/badge/dynamic/json?url=https%3A%2F%2Fapi.fedidb.org%2Fv1%2Fsoftware%2Fpixelfed&query=%24.user_count&logo=pixelfed&logoColor=white&label=Total%20Users" alt="Total Pixelfed users from FediDB" /></a>
 </p>
 
 ## Introduction
 
-A free and ethical photo sharing platform, powered by ActivityPub federation.
+Photo sharing the way it should be. Pixelfed lets your casual shots and creative photography find their audience naturally, without algorithmic barriers. Join [millions](https://fedidb.com) of people sharing across the [fediverse](https://fediverse.info).
 
 <p align="center">
-<img src="https://pixelfed.nyc3.cdn.digitaloceanspaces.com/media/pixelfed-screenshot.jpg">
+<picture>
+  <source media="(prefers-color-scheme: dark)" srcset="https://pixelfed.nyc3.cdn.digitaloceanspaces.com/media/pixelfed-readme-dark.jpg">
+  <source media="(prefers-color-scheme: light)" srcset="https://pixelfed.nyc3.cdn.digitaloceanspaces.com/media/pixelfed-readme-light.jpg">
+  <img alt="Pixelfed web user interface in light mode" src="https://pixelfed.nyc3.cdn.digitaloceanspaces.com/media/pixelfed-readme-light.jpg">
+</picture>
 </p>
 
 ## Official Documentation

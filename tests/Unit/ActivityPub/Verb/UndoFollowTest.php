@@ -3,6 +3,7 @@
 namespace Tests\Unit\ActivityPub\Verb;
 
 use App\Util\ActivityPub\Validator\UndoFollow;
+use PHPUnit\Framework\Attributes\Test;
 use Tests\TestCase;
 
 class UndoFollowTest extends TestCase
@@ -28,13 +29,13 @@ class UndoFollowTest extends TestCase
         ];
     }
 
-    /** @test */
+    #[Test]
     public function valid_undo_follow()
     {
         $this->assertTrue(UndoFollow::validate($this->validUndo));
     }
 
-    /** @test */
+    #[Test]
     public function invalid_undo_follow()
     {
         $this->assertFalse(UndoFollow::validate($this->invalidUndo));

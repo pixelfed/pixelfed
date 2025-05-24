@@ -101,10 +101,10 @@ class ApiV2Controller extends Controller
                     'media_attachments' => [
                         'supported_mime_types' => explode(',', config_cache('pixelfed.media_types')),
                         'image_size_limit' => config_cache('pixelfed.max_photo_size') * 1024,
-                        'image_matrix_limit' => 3686400,
+                        'image_matrix_limit' => 2073600,
                         'video_size_limit' => config_cache('pixelfed.max_photo_size') * 1024,
-                        'video_frame_rate_limit' => 240,
-                        'video_matrix_limit' => 3686400,
+                        'video_frame_rate_limit' => 120,
+                        'video_matrix_limit' => 2073600,
                     ],
                     'polls' => [
                         'max_options' => 0,
@@ -292,7 +292,7 @@ class ApiV2Controller extends Controller
             }
         }
 
-        $media = new Media();
+        $media = new Media;
         $media->status_id = null;
         $media->profile_id = $profile->id;
         $media->user_id = $user->id;
@@ -309,8 +309,12 @@ class ApiV2Controller extends Controller
         $media->save();
 
         switch ($media->mime) {
+            case 'image/jpg':
             case 'image/jpeg':
             case 'image/png':
+            case 'image/webp':
+            case 'image/heic':
+            case 'image/avif':
                 ImageOptimize::dispatch($media)->onQueue('mmo');
                 break;
 
@@ -326,9 +330,9 @@ class ApiV2Controller extends Controller
         $user->save();
 
         Cache::forget($limitKey);
-        $fractal = new Fractal\Manager();
-        $fractal->setSerializer(new ArraySerializer());
-        $resource = new Fractal\Resource\Item($media, new MediaTransformer());
+        $fractal = new Fractal\Manager;
+        $fractal->setSerializer(new ArraySerializer);
+        $resource = new Fractal\Resource\Item($media, new MediaTransformer);
         $res = $fractal->createData($resource)->toArray();
         $res['preview_url'] = $media->url().'?v='.time();
         $res['url'] = null;

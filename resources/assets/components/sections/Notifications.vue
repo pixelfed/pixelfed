@@ -3,7 +3,7 @@
 		<div class="card shadow-sm mb-3" style="overflow: hidden;border-radius: 15px !important;">
 			<div class="card-body pb-0">
 				<div class="d-flex justify-content-between align-items-center mb-3">
-					<span class="text-muted font-weight-bold">Notifications</span>
+					<span class="text-muted font-weight-bold">{{ $t("notifications.title")}}</span>
 					<div v-if="feed && feed.length">
 						<router-link to="/i/web/notifications" class="btn btn-outline-light btn-sm mr-2" style="color: #B8C2CC !important">
 							<i class="far fa-filter"></i>
@@ -49,27 +49,28 @@
 									class="mr-2 rounded-circle shadow-sm"
 									:src="n.account.avatar"
 									width="32"
+
 									height="32"
 									onerror="this.onerror=null;this.src='/storage/avatars/default.png';">
 
 								<div class="media-body font-weight-light small">
 									<div v-if="n.type == 'favourite'">
 										<p class="my-0">
-											<a :href="getProfileUrl(n.account)" class="font-weight-bold text-dark word-break" :title="n.account.acct">{{n.account.local == false ? '@':''}}{{truncate(n.account.username)}}</a> liked your
+											<a :href="getProfileUrl(n.account)" class="font-weight-bold text-dark word-break" :title="n.account.acct">{{n.account.local == false ? '@':''}}{{truncate(n.account.username)}}</a> {{ $t("notifications.liked")}}
 											<span v-if="n.status && n.status.hasOwnProperty('media_attachments')">
-												<a class="font-weight-bold" v-bind:href="getPostUrl(n.status)" :id="'fvn-' + n.id" @click.prevent="goToPost(n.status)">post</a>.
+												<a class="font-weight-bold" v-bind:href="getPostUrl(n.status)" :id="'fvn-' + n.id" @click.prevent="goToPost(n.status)">{{ $t("notifications.post")}}</a>.
 												<b-popover :target="'fvn-' + n.id" title="" triggers="hover" placement="top" boundary="window">
 													<img :src="notificationPreview(n)" width="100px" height="100px" style="object-fit: cover;">
 												</b-popover>
 											</span>
 											<span v-else>
-												<a class="font-weight-bold" :href="getPostUrl(n.status)" @click.prevent="goToPost(n.status)">post</a>.
+												<a class="font-weight-bold" :href="getPostUrl(n.status)" @click.prevent="goToPost(n.status)">{{ $t("notifications.post")}}</a>.
 											</span>
 										</p>
 									</div>
 									<div v-else-if="n.type == 'autospam.warning'">
 										<p class="my-0">
-											Your recent <a :href="getPostUrl(n.status)" @click.prevent="goToPost(n.status)" class="font-weight-bold">post</a> has been unlisted.
+                                            {{ $t("notifications.youRecent")}} <a :href="getPostUrl(n.status)" @click.prevent="goToPost(n.status)" class="font-weight-bold">{{ $t("notifications.post")}}</a> {{ $t("notifications.hasUnlisted")}}.
 										</p>
 										<p class="mt-n1 mb-0">
 											<span class="small text-muted"><a href="#" class="font-weight-bold" @click.prevent="showAutospamInfo(n.status)">Click here</a> for more info.</span>
@@ -77,64 +78,70 @@
 									</div>
 									<div v-else-if="n.type == 'comment'">
 										<p class="my-0">
-											<a :href="getProfileUrl(n.account)" class="font-weight-bold text-dark word-break" :title="n.account.acct">{{n.account.local == false ? '@':''}}{{truncate(n.account.username)}}</a> commented on your <a class="font-weight-bold" :href="getPostUrl(n.status)" @click.prevent="goToPost(n.status)">post</a>.
+											<a :href="getProfileUrl(n.account)" class="font-weight-bold text-dark word-break" :title="n.account.acct">{{n.account.local == false ? '@':''}}{{truncate(n.account.username)}}</a> {{ $t("notifications.commented")}} <a class="font-weight-bold" :href="getPostUrl(n.status)" @click.prevent="goToPost(n.status)">{{ $t("notifications.post")}}</a>.
 										</p>
 									</div>
 									<div v-else-if="n.type == 'group:comment'">
 										<p class="my-0">
-											<a :href="getProfileUrl(n.account)" class="font-weight-bold text-dark word-break" :title="n.account.acct">{{n.account.local == false ? '@':''}}{{truncate(n.account.username)}}</a> commented on your <a class="font-weight-bold" :href="n.group_post_url">group post</a>.
+											<a :href="getProfileUrl(n.account)" class="font-weight-bold text-dark word-break" :title="n.account.acct">{{n.account.local == false ? '@':''}}{{truncate(n.account.username)}}</a> {{ $t("notifications.commented")}} <a class="font-weight-bold" :href="n.group_post_url">{{  $t("notifications.groupPost")  }}</a>.
 										</p>
 									</div>
 									<div v-else-if="n.type == 'story:react'">
 										<p class="my-0">
-											<a :href="getProfileUrl(n.account)" class="font-weight-bold text-dark word-break" :title="n.account.acct">{{n.account.local == false ? '@':''}}{{truncate(n.account.username)}}</a> reacted to your <a class="font-weight-bold" v-bind:href="'/i/web/direct/thread/'+n.account.id">story</a>.
+											<a :href="getProfileUrl(n.account)" class="font-weight-bold text-dark word-break" :title="n.account.acct">{{n.account.local == false ? '@':''}}{{truncate(n.account.username)}}</a> {{ $t("notifications.reacted")}} <a class="font-weight-bold" v-bind:href="'/i/web/direct/thread/'+n.account.id">{{ $t("notifications.story")}}</a>.
 										</p>
 									</div>
 									<div v-else-if="n.type == 'story:comment'">
 										<p class="my-0">
-											<a :href="getProfileUrl(n.account)" class="font-weight-bold text-dark word-break" :title="n.account.acct">{{n.account.local == false ? '@':''}}{{truncate(n.account.username)}}</a> commented on your <a class="font-weight-bold" v-bind:href="'/i/web/direct/thread/'+n.account.id">story</a>.
+											<a :href="getProfileUrl(n.account)" class="font-weight-bold text-dark word-break" :title="n.account.acct">{{n.account.local == false ? '@':''}}{{truncate(n.account.username)}}</a> {{ $t("notifications.commented")}} <a class="font-weight-bold" v-bind:href="'/i/web/direct/thread/'+n.account.id">{{ $t("notifications.story")}}</a>.
 										</p>
 									</div>
 									<div v-else-if="n.type == 'mention'">
 										<p class="my-0">
-											<a :href="getProfileUrl(n.account)" class="font-weight-bold text-dark word-break" :title="n.account.acct">{{n.account.local == false ? '@':''}}{{truncate(n.account.username)}}</a> <a class="font-weight-bold" v-bind:href="mentionUrl(n.status)" @click.prevent="goToPost(n.status)">mentioned</a> you.
+											<a :href="getProfileUrl(n.account)" class="font-weight-bold text-dark word-break" :title="n.account.acct">{{n.account.local == false ? '@':''}}{{truncate(n.account.username)}}</a> <a class="font-weight-bold" v-bind:href="mentionUrl(n.status)" @click.prevent="goToPost(n.status)">{{ $t("notifications.mentioned")}}</a> {{ $t("notifications.you")}}.
 										</p>
 									</div>
 									<div v-else-if="n.type == 'follow'">
 										<p class="my-0">
-											<a :href="getProfileUrl(n.account)" class="font-weight-bold text-dark word-break" :title="n.account.acct">{{n.account.local == false ? '@':''}}{{truncate(n.account.username)}}</a> followed you.
+											<a :href="getProfileUrl(n.account)" class="font-weight-bold text-dark word-break" :title="n.account.acct">{{n.account.local == false ? '@':''}}{{truncate(n.account.username)}}</a> {{ $t("notifications.followed")}} {{ $t("notifications.you")}}.
 										</p>
 									</div>
 									<div v-else-if="n.type == 'share'">
 										<p class="my-0">
-											<a :href="getProfileUrl(n.account)" class="font-weight-bold text-dark word-break" :title="n.account.acct">{{n.account.local == false ? '@':''}}{{truncate(n.account.username)}}</a> shared your <a class="font-weight-bold" :href="getPostUrl(n.status)" @click.prevent="goToPost(n.status)">post</a>.
+											<a :href="getProfileUrl(n.account)" class="font-weight-bold text-dark word-break" :title="n.account.acct">{{n.account.local == false ? '@':''}}{{truncate(n.account.username)}}</a> {{ $t("notifications.shared")}}
+                                            <span v-if="n.status && n.status.hasOwnProperty('media_attachments')">
+												<a class="font-weight-bold" v-bind:href="getPostUrl(n.status)" :id="'fvn-' + n.id" @click.prevent="goToPost(n.status)">{{ $t("notifications.post")}}</a>.
+												<b-popover :target="'fvn-' + n.id" title="" triggers="hover" placement="top" boundary="window">
+													<img :src="notificationPreview(n)" width="100px" height="100px" style="object-fit: cover;">
+												</b-popover>
+											</span>
 										</p>
 									</div>
 									<div v-else-if="n.type == 'modlog'">
 										<p class="my-0">
-											<a :href="getProfileUrl(n.account)" class="font-weight-bold text-dark word-break" :title="n.account.acct">{{truncate(n.account.username)}}</a> updated a <a class="font-weight-bold" v-bind:href="n.modlog.url">modlog</a>.
+											<a :href="getProfileUrl(n.account)" class="font-weight-bold text-dark word-break" :title="n.account.acct">{{truncate(n.account.username)}}</a> {{ $t("notifications.updatedA")}} <a class="font-weight-bold" v-bind:href="n.modlog.url">modlog</a>.
 										</p>
 									</div>
 									<div v-else-if="n.type == 'tagged'">
 										<p class="my-0">
-											<a :href="getProfileUrl(n.account)" class="font-weight-bold text-dark word-break" :title="n.account.acct">{{n.account.local == false ? '@':''}}{{truncate(n.account.username)}}</a> tagged you in a <a class="font-weight-bold" v-bind:href="n.tagged.post_url">post</a>.
+											<a :href="getProfileUrl(n.account)" class="font-weight-bold text-dark word-break" :title="n.account.acct">{{n.account.local == false ? '@':''}}{{truncate(n.account.username)}}</a> {{ $t("notifications.tagged")}} <a class="font-weight-bold" v-bind:href="n.tagged.post_url">{{ $t("notifications.post")}}</a>.
 										</p>
 									</div>
 									<div v-else-if="n.type == 'direct'">
 										<p class="my-0">
-											<a :href="getProfileUrl(n.account)" class="font-weight-bold text-dark word-break" :title="n.account.acct">{{n.account.local == false ? '@':''}}{{truncate(n.account.username)}}</a> sent a <router-link class="font-weight-bold" :to="'/i/web/direct/thread/'+n.account.id">dm</router-link>.
+											<a :href="getProfileUrl(n.account)" class="font-weight-bold text-dark word-break" :title="n.account.acct">{{n.account.local == false ? '@':''}}{{truncate(n.account.username)}}</a> {{ $t("notifications.sentA")}} <router-link class="font-weight-bold" :to="'/i/web/direct/thread/'+n.account.id">dm</router-link>.
 										</p>
 									</div>
 
 									<div v-else-if="n.type == 'group.join.approved'">
 										<p class="my-0">
-											Your application to join the <a :href="n.group.url" class="font-weight-bold text-dark word-break" :title="n.group.name">{{truncate(n.group.name)}}</a> group was approved!
+											{{ $t("notifications.yourApplication")}} <a :href="n.group.url" class="font-weight-bold text-dark word-break" :title="n.group.name">{{truncate(n.group.name)}}</a> {{ $t("notifications.wasApproved")}}
 										</p>
 									</div>
 
 									<div v-else-if="n.type == 'group.join.rejected'">
 										<p class="my-0">
-											Your application to join <a :href="n.group.url" class="font-weight-bold text-dark word-break" :title="n.group.name">{{truncate(n.group.name)}}</a> was rejected.
+											{{ $t("notifications.yourApplication")}} <a :href="n.group.url" class="font-weight-bold text-dark word-break" :title="n.group.name">{{truncate(n.group.name)}}</a> {{ $t("notifications.wasRejected")}}
 										</p>
 									</div>
 
@@ -146,11 +153,11 @@
 
 									<div v-else>
 										<p class="my-0">
-											We cannot display this notification at this time.
+											{{ $t("notifications.cannotDisplay")}}
 										</p>
 									</div>
 								</div>
-								<div class="small text-muted font-weight-bold" :title="n.created_at">{{timeAgo(n.created_at)}}</div>
+								<div class="small text-muted font-weight-bold"  style="font-size: 12px;" :title="n.created_at">{{timeAgo(n.created_at)}}</div>
 							</div>
 						</div>
 

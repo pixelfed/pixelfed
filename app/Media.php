@@ -64,7 +64,7 @@ class Media extends Model
             return $this->cdn_url;
         }
 
-        if ($this->media_path && $this->mime && in_array($this->mime, ['image/jpeg', 'image/png'])) {
+        if ($this->media_path && $this->mime && in_array($this->mime, ['image/jpeg', 'image/png', 'image/jpg'])) {
             return $this->remote_media || Str::startsWith($this->media_path, 'http') ?
                 $this->media_path :
                 url(Storage::url($this->media_path));
@@ -89,7 +89,31 @@ class Media extends Model
 
     public function activityVerb()
     {
-        $verb = 'Image';
+        $verb = 'Document';
+        switch ($this->mimeType()) {
+            case 'audio':
+                $verb = 'Audio';
+                break;
+
+            case 'image':
+                $verb = 'Document';
+                break;
+
+            case 'video':
+                $verb = 'Video';
+                break;
+
+            default:
+                $verb = 'Document';
+                break;
+        }
+
+        return $verb;
+    }
+
+    public function mediaType()
+    {
+        $verb = 'Document';
         switch ($this->mimeType()) {
             case 'audio':
                 $verb = 'Audio';
@@ -104,7 +128,7 @@ class Media extends Model
                 break;
 
             default:
-                $verb = 'Document';
+                $verb = 'Image';
                 break;
         }
 

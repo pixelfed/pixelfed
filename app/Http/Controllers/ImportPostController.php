@@ -103,67 +103,95 @@ class ImportPostController extends Controller
 
         $uid = $request->user()->id;
         $pid = $request->user()->profile_id;
+        $successCount = 0;
+        $errors = [];
+
         foreach($request->input('files') as $file) {
-            $media = $file['media'];
-            $c = collect($media);
-            $postHash = hash('sha256', $c->toJson());
-            $exts = $c->map(function($m) {
-                $fn = last(explode('/', $m['uri']));
-                return last(explode('.', $fn));
-            });
-            $postType = 'photo';
+            try {
+                $media = $file['media'];
+                $c = collect($media);
 
-            if($exts->count() > 1) {
-                if($exts->contains('mp4')) {
-                    if($exts->contains('jpg', 'png')) {
-                        $postType = 'photo:video:album';
-                    } else {
-                        $postType = 'video:album';
-                    }
+                $firstUri = isset($media[0]['uri']) ? $media[0]['uri'] : '';
+                $postHash = hash('sha256', $c->toJson() . $firstUri);
+
+                $exists = ImportPost::where('user_id', $uid)
+                    ->where('post_hash', $postHash)
+                    ->exists();
+
+                if ($exists) {
+                    $errors[] = "Duplicate post detected. Skipping...";
+                    continue;
+                }
+
+                $exts = $c->map(function($m) {
+                    $fn = last(explode('/', $m['uri']));
+                    return last(explode('.', $fn));
+                });
+
+                $postType = $this->determinePostType($exts);
+
+                $ip = new ImportPost;
+                $ip->user_id = $uid;
+                $ip->profile_id = $pid;
+                $ip->post_hash = $postHash;
+                $ip->service = 'instagram';
+                $ip->post_type = $postType;
+                $ip->media_count = $c->count();
+
+                $ip->media = $c->map(function($m) {
+                    return [
+                        'uri' => $m['uri'],
+                        'title' => $this->formatHashtags($m['title'] ?? ''),
+                        'creation_timestamp' => $m['creation_timestamp'] ?? null
+                    ];
+                })->toArray();
+
+                $ip->caption = $c->count() > 1 ?
+                    $this->formatHashtags($file['title'] ?? '') :
+                    $this->formatHashtags($ip->media[0]['title'] ?? '');
+
+                $originalFilename = last(explode('/', $ip->media[0]['uri'] ?? ''));
+                $ip->filename = $this->sanitizeFilename($originalFilename);
+
+                $ip->metadata = $c->map(function($m) {
+                    return [
+                        'uri' => $m['uri'],
+                        'media_metadata' => isset($m['media_metadata']) ? $m['media_metadata'] : null
+                    ];
+                })->toArray();
+
+                $creationTimestamp = $c->count() > 1 ?
+                    ($file['creation_timestamp'] ?? null) :
+                    ($media[0]['creation_timestamp'] ?? null);
+
+                if ($creationTimestamp) {
+                    $ip->creation_date = now()->parse($creationTimestamp);
+                    $ip->creation_year = $ip->creation_date->format('y');
+                    $ip->creation_month = $ip->creation_date->format('m');
+                    $ip->creation_day = $ip->creation_date->format('d');
                 } else {
-                    $postType = 'photo:album';
+                    $ip->creation_date = now();
+                    $ip->creation_year = now()->format('y');
+                    $ip->creation_month = now()->format('m');
+                    $ip->creation_day = now()->format('d');
                 }
-            } else {
-                if(in_array($exts[0], ['jpg', 'png'])) {
-                    $postType = 'photo';
-                } else if(in_array($exts[0], ['mp4'])) {
-                    $postType = 'video';
-                }
+
+                $ip->save();
+                $successCount++;
+
+                ImportService::getImportedFiles($pid, true);
+                ImportService::getPostCount($pid, true);
+            } catch (\Exception $e) {
+                $errors[] = $e->getMessage();
+                \Log::error('Import error: ' . $e->getMessage());
+                continue;
             }
-
-            $ip = new ImportPost;
-            $ip->user_id = $uid;
-            $ip->profile_id = $pid;
-            $ip->post_hash = $postHash;
-            $ip->service = 'instagram';
-            $ip->post_type = $postType;
-            $ip->media_count = $c->count();
-            $ip->media = $c->map(function($m) {
-                return [
-                    'uri' => $m['uri'],
-                    'title' => $this->formatHashtags($m['title']),
-                    'creation_timestamp' => $m['creation_timestamp']
-                ];
-            })->toArray();
-            $ip->caption = $c->count() > 1 ? $this->formatHashtags($file['title']) : $this->formatHashtags($ip->media[0]['title']);
-            $ip->filename = last(explode('/', $ip->media[0]['uri']));
-            $ip->metadata = $c->map(function($m) {
-                return [
-                    'uri' => $m['uri'],
-                    'media_metadata' => isset($m['media_metadata']) ? $m['media_metadata'] : null
-                ];
-            })->toArray();
-            $ip->creation_date = $c->count() > 1 ? now()->parse($file['creation_timestamp']) : now()->parse($media[0]['creation_timestamp']);
-            $ip->creation_year = now()->parse($ip->creation_date)->format('y');
-            $ip->creation_month = now()->parse($ip->creation_date)->format('m');
-            $ip->creation_day = now()->parse($ip->creation_date)->format('d');
-            $ip->save();
-
-            ImportService::getImportedFiles($pid, true);
-            ImportService::getPostCount($pid, true);
         }
+
         return [
-            'msg' => 'Success'
+            'success' => true,
+            'msg' => 'Successfully imported ' . $successCount . ' posts',
+            'errors' => $errors
         ];
     }
 
@@ -173,7 +201,17 @@ class ImportPostController extends Controller
 
         $this->checkPermissions($request);
 
-        $mimes = config('import.instagram.allow_video_posts') ? 'mimetypes:image/png,image/jpeg,video/mp4' : 'mimetypes:image/png,image/jpeg';
+        $allowedMimeTypes = ['image/png', 'image/jpeg', 'image/jpg'];
+
+        if (config('import.instagram.allow_image_webp') && str_contains(config_cache('pixelfed.media_types'), 'image/webp')) {
+            $allowedMimeTypes[] = 'image/webp';
+        }
+
+        if (config('import.instagram.allow_video_posts')) {
+            $allowedMimeTypes[] = 'video/mp4';
+        }
+
+        $mimes = 'mimetypes:' . implode(',', $allowedMimeTypes);
 
         $this->validate($request, [
             'file' => 'required|array|max:10',
@@ -186,7 +224,12 @@ class ImportPostController extends Controller
         ]);
 
         foreach($request->file('file') as $file) {
-            $fileName = $file->getClientOriginalName();
+            $extension = $file->getClientOriginalExtension();
+
+            $originalName = pathinfo($file->getClientOriginalName(), PATHINFO_FILENAME);
+            $safeFilename = preg_replace('/[^a-zA-Z0-9_.-]/', '_', $originalName);
+            $fileName = $safeFilename . '.' . $extension;
+
             $file->storeAs('imports/' . $request->user()->id . '/', $fileName);
         }
 
@@ -195,6 +238,46 @@ class ImportPostController extends Controller
         return [
             'msg' => 'Success'
         ];
+    }
+
+
+    private function determinePostType($exts)
+    {
+        if ($exts->count() > 1) {
+            if ($exts->contains('mp4')) {
+                if ($exts->contains('jpg', 'png', 'webp')) {
+                    return 'photo:video:album';
+                } else {
+                    return 'video:album';
+                }
+            } else {
+                return 'photo:album';
+            }
+        } else {
+            if ($exts->isEmpty()) {
+                return 'photo';
+            }
+
+            $ext = $exts[0];
+
+            if (in_array($ext, ['jpg', 'jpeg', 'png', 'webp'])) {
+                return 'photo';
+            } else if (in_array($ext, ['mp4'])) {
+                return 'video';
+            } else {
+                return 'photo';
+            }
+        }
+    }
+
+    private function sanitizeFilename($filename)
+    {
+        $parts = explode('.', $filename);
+        $extension = array_pop($parts);
+        $originalName = implode('.', $parts);
+
+        $safeFilename = preg_replace('/[^a-zA-Z0-9_.-]/', '_', $originalName);
+        return $safeFilename . '.' . $extension;
     }
 
     protected function checkPermissions($request, $abortOnFail = true)

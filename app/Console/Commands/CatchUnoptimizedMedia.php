@@ -48,6 +48,7 @@ class CatchUnoptimizedMedia extends Command
             ->whereNotNull('status_id')
             ->whereNotNull('media_path')
             ->whereIn('mime', [
+                'image/jpg',
                 'image/jpeg',
                 'image/png',
             ])

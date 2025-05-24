@@ -26,6 +26,7 @@ use App\Jobs\ImageOptimizePipeline\ImageOptimize;
 use App\Jobs\LikePipeline\LikePipeline;
 use App\Jobs\MediaPipeline\MediaDeletePipeline;
 use App\Jobs\MediaPipeline\MediaSyncLicensePipeline;
+use App\Jobs\NotificationPipeline\NotificationWarmUserCache;
 use App\Jobs\SharePipeline\SharePipeline;
 use App\Jobs\SharePipeline\UndoSharePipeline;
 use App\Jobs\StatusPipeline\NewStatusPipeline;
@@ -34,6 +35,7 @@ use App\Jobs\VideoPipeline\VideoThumbnail;
 use App\Like;
 use App\Media;
 use App\Models\Conversation;
+use App\Models\CustomFilter;
 use App\Notification;
 use App\Profile;
 use App\Services\AccountService;
@@ -241,7 +243,7 @@ class ApiV1Controller extends Controller
         }
 
         $this->validate($request, [
-            'avatar' => 'sometimes|mimetypes:image/jpeg,image/png|max:'.config('pixelfed.max_avatar_size'),
+            'avatar' => 'sometimes|mimetypes:image/jpeg,image/jpg,image/png|max:'.config('pixelfed.max_avatar_size'),
             'display_name' => 'nullable|string|max:30',
             'note' => 'nullable|string|max:200',
             'locked' => 'nullable',
@@ -763,7 +765,8 @@ class ApiV1Controller extends Controller
             'reblog_of_id',
             'type',
             'id',
-            'scope'
+            'scope',
+            'pinned_order'
         )
             ->whereProfileId($profile['id'])
             ->whereNull('in_reply_to_id')
@@ -1732,11 +1735,11 @@ class ApiV1Controller extends Controller
                 'mobile_registration' => (bool) config_cache('pixelfed.open_registration') && config('auth.in_app_registration'),
                 'configuration' => [
                     'media_attachments' => [
-                        'image_matrix_limit' => 16777216,
+                        'image_matrix_limit' => 2073600,
                         'image_size_limit' => config_cache('pixelfed.max_photo_size') * 1024,
                         'supported_mime_types' => explode(',', config_cache('pixelfed.media_types')),
                         'video_frame_rate_limit' => 120,
-                        'video_matrix_limit' => 2304000,
+                        'video_matrix_limit' => 2073600,
                         'video_size_limit' => config_cache('pixelfed.max_photo_size') * 1024,
                     ],
                     'polls' => [
@@ -1904,9 +1907,11 @@ class ApiV1Controller extends Controller
         $media->save();
 
         switch ($media->mime) {
+            case 'image/jpg':
             case 'image/jpeg':
             case 'image/png':
             case 'image/webp':
+            case 'image/heic':
             case 'image/avif':
                 ImageOptimize::dispatch($media)->onQueue('mmo');
                 break;
@@ -2134,9 +2139,11 @@ class ApiV1Controller extends Controller
         $media->save();
 
         switch ($media->mime) {
+            case 'image/jpg':
             case 'image/jpeg':
             case 'image/png':
             case 'image/webp':
+            case 'image/heic':
             case 'image/avif':
                 ImageOptimize::dispatch($media)->onQueue('mmo');
                 break;
@@ -2387,7 +2394,7 @@ class ApiV1Controller extends Controller
         if (empty($res)) {
             if (! Cache::has('pf:services:notifications:hasSynced:'.$pid)) {
                 Cache::put('pf:services:notifications:hasSynced:'.$pid, 1, 1209600);
-                NotificationService::warmCache($pid, 400, true);
+                NotificationWarmUserCache::dispatch($pid);
             }
         }
 
@@ -2438,6 +2445,15 @@ class ApiV1Controller extends Controller
                 }
 
                 return true;
+            })
+            ->map(function ($n) use ($pid) {
+                if (isset($n['status'])) {
+                    $n['status']['favourited'] = (bool) LikeService::liked($pid, $n['status']['id']);
+                    $n['status']['reblogged'] = (bool) ReblogService::get($pid, $n['status']['id']);
+                    $n['status']['bookmarked'] = (bool) BookmarkService::get($pid, $n['status']['id']);
+                }
+
+                return $n;
             })
             ->filter(function ($n) use ($types) {
                 if (! $types) {
@@ -2503,6 +2519,14 @@ class ApiV1Controller extends Controller
         ['photo', 'photo:album', 'video', 'video:album', 'photo:video:album'];
         AccountService::setLastActive($request->user()->id);
 
+        $cachedFilters = CustomFilter::getCachedFiltersForAccount($pid);
+
+        $homeFilters = array_filter($cachedFilters, function ($item) {
+            [$filter, $rules] = $item;
+
+            return in_array('home', $filter->context);
+        });
+
         if (config('exp.cached_home_timeline')) {
             $paddedLimit = $includeReblogs ? $limit + 10 : $limit + 50;
             if ($min || $max) {
@@ -2539,6 +2563,23 @@ class ApiV1Controller extends Controller
                 ->filter(function ($s) use ($includeReblogs) {
                     return $includeReblogs ? true : $s['reblog'] == null;
                 })
+                ->map(function ($status) use ($homeFilters) {
+                    $filterResults = CustomFilter::applyCachedFilters($homeFilters, $status);
+
+                    if (! empty($filterResults)) {
+                        $status['filtered'] = $filterResults;
+                        $shouldHide = collect($filterResults)->contains(function ($result) {
+                            return $result['filter']['filter_action'] === 'hide';
+                        });
+
+                        if ($shouldHide) {
+                            return null;
+                        }
+                    }
+
+                    return $status;
+                })
+                ->filter()
                 ->take($limit)
                 ->map(function ($status) use ($pid) {
                     if ($pid) {
@@ -2647,6 +2688,23 @@ class ApiV1Controller extends Controller
 
                     return $status;
                 })
+                ->map(function ($status) use ($homeFilters) {
+                    $filterResults = CustomFilter::applyCachedFilters($homeFilters, $status);
+
+                    if (! empty($filterResults)) {
+                        $status['filtered'] = $filterResults;
+                        $shouldHide = collect($filterResults)->contains(function ($result) {
+                            return $result['filter']['filter_action'] === 'hide';
+                        });
+
+                        if ($shouldHide) {
+                            return null;
+                        }
+                    }
+
+                    return $status;
+                })
+                ->filter()
                 ->take($limit)
                 ->values();
         } else {
@@ -2701,6 +2759,23 @@ class ApiV1Controller extends Controller
 
                     return $status;
                 })
+                ->map(function ($status) use ($homeFilters) {
+                    $filterResults = CustomFilter::applyCachedFilters($homeFilters, $status);
+
+                    if (! empty($filterResults)) {
+                        $status['filtered'] = $filterResults;
+                        $shouldHide = collect($filterResults)->contains(function ($result) {
+                            return $result['filter']['filter_action'] === 'hide';
+                        });
+
+                        if ($shouldHide) {
+                            return null;
+                        }
+                    }
+
+                    return $status;
+                })
+                ->filter()
                 ->take($limit)
                 ->values();
         }
@@ -2762,7 +2837,7 @@ class ApiV1Controller extends Controller
             $limit = 40;
         }
         $user = $request->user();
-
+        $pid = $user->profile_id;
         $remote = $request->has('remote') && $request->boolean('remote');
         $local = $request->boolean('local');
         $userRoleKey = $remote ? 'can-view-network-feed' : 'can-view-public-feed';
@@ -2775,6 +2850,14 @@ class ApiV1Controller extends Controller
         $hideNsfw = config('instance.hide_nsfw_on_public_feeds');
         $amin = SnowflakeService::byDate(now()->subDays(config('federation.network_timeline_days_falloff')));
         $asf = AdminShadowFilterService::getHideFromPublicFeedsList();
+
+        $cachedFilters = CustomFilter::getCachedFiltersForAccount($pid);
+
+        $homeFilters = array_filter($cachedFilters, function ($item) {
+            [$filter, $rules] = $item;
+
+            return in_array('public', $filter->context);
+        });
         if ($local && $remote) {
             $feed = Status::select(
                 'id',
@@ -2965,6 +3048,23 @@ class ApiV1Controller extends Controller
 
                 return true;
             })
+            ->map(function ($status) use ($homeFilters) {
+                $filterResults = CustomFilter::applyCachedFilters($homeFilters, $status);
+
+                if (! empty($filterResults)) {
+                    $status['filtered'] = $filterResults;
+                    $shouldHide = collect($filterResults)->contains(function ($result) {
+                        return $result['filter']['filter_action'] === 'hide';
+                    });
+
+                    if ($shouldHide) {
+                        return null;
+                    }
+                }
+
+                return $status;
+            })
+            ->filter()
             ->take($limit)
             ->values();
 
@@ -3514,12 +3614,18 @@ class ApiV1Controller extends Controller
             'in_reply_to_id' => 'nullable',
             'media_ids' => 'sometimes|array|max:'.(int) config_cache('pixelfed.max_album_length'),
             'sensitive' => 'nullable',
-            'visibility' => 'string|in:private,unlisted,public',
+            'visibility' => 'string|in:private,unlisted,public,direct',
             'spoiler_text' => 'sometimes|max:140',
             'place_id' => 'sometimes|integer|min:1|max:128769',
             'collection_ids' => 'sometimes|array|max:3',
             'comments_disabled' => 'sometimes|boolean',
         ]);
+
+        if ($request->filled('visibility') && $request->input('visibility') === 'direct') {
+            return $this->json([
+                'error' => 'Direct visibility is not available.',
+            ], 400);
+        }
 
         if ($request->hasHeader('idempotency-key')) {
             $key = 'pf:api:v1:status:idempotency-key:'.$request->user()->id.':'.hash('sha1', $request->header('idempotency-key'));
@@ -3669,16 +3775,19 @@ class ApiV1Controller extends Controller
             abort(500, 'An error occured.');
         }
 
-        NewStatusPipeline::dispatch($status);
-        if ($status->in_reply_to_id) {
-            CommentPipeline::dispatch($parent, $status);
-        }
+        Cache::forget('pf:status:ap:v1:sid:'.$status->id);
+        Cache::forget('status:transformer:media:attachments:'.$status->id);
         Cache::forget('user:account:id:'.$user->id);
         Cache::forget('_api:statuses:recent_9:'.$user->profile_id);
         Cache::forget('profile:status_count:'.$user->profile_id);
         Cache::forget($user->storageUsedKey());
         Cache::forget('profile:embed:'.$status->profile_id);
         Cache::forget($limitKey);
+
+        NewStatusPipeline::dispatch($status);
+        if ($status->in_reply_to_id) {
+            CommentPipeline::dispatch($parent, $status);
+        }
 
         if ($request->has('collection_ids') && $ids) {
             $collections = Collection::whereProfileId($user->profile_id)
@@ -3902,8 +4011,16 @@ class ApiV1Controller extends Controller
         $pe = $request->has(self::PF_API_ENTITY_KEY);
         $pid = $request->user()->profile_id;
 
+        $cachedFilters = CustomFilter::getCachedFiltersForAccount($pid);
+
+        $tagFilters = array_filter($cachedFilters, function ($item) {
+            [$filter, $rules] = $item;
+
+            return in_array('tags', $filter->context);
+        });
+
         if ($min || $max) {
-            $minMax = SnowflakeService::byDate(now()->subMonths(6));
+            $minMax = SnowflakeService::byDate(now()->subMonths(9));
             if ($min && intval($min) < $minMax) {
                 return [];
             }
@@ -3958,6 +4075,23 @@ class ApiV1Controller extends Controller
 
                 return ! in_array($i['account']['id'], $filters) && ! in_array($domain, $domainBlocks);
             })
+            ->map(function ($status) use ($tagFilters) {
+                $filterResults = CustomFilter::applyCachedFilters($tagFilters, $status);
+
+                if (! empty($filterResults)) {
+                    $status['filtered'] = $filterResults;
+                    $shouldHide = collect($filterResults)->contains(function ($result) {
+                        return $result['filter']['filter_action'] === 'hide';
+                    });
+
+                    if ($shouldHide) {
+                        return null;
+                    }
+                }
+
+                return $status;
+            })
+            ->filter()
             ->take($limit)
             ->values()
             ->toArray();
@@ -4434,5 +4568,104 @@ class ApiV1Controller extends Controller
                     ->pluck('domain');
             })
         );
+    }
+
+    public function accountRemoveFollowById(Request $request, $id)
+    {
+        abort_if(! $request->user(), 403);
+
+        $pid = $request->user()->profile_id;
+
+        if ($pid === $id) {
+            return $this->json(['error' => 'Request invalid! target_id is same user id.'], 500);
+        }
+
+        $exists = Follower::whereProfileId($id)
+            ->whereFollowingId($pid)
+            ->first();
+
+        abort_unless($exists, 404);
+
+        $exists->delete();
+
+        RelationshipService::refresh($pid, $id);
+        RelationshipService::refresh($pid, $id);
+
+        UnfollowPipeline::dispatch($id, $pid)->onQueue('high');
+
+        Cache::forget('profile:following:'.$id);
+        Cache::forget('profile:followers:'.$id);
+        Cache::forget('profile:following:'.$pid);
+        Cache::forget('profile:followers:'.$pid);
+        Cache::forget('api:local:exp:rec:'.$pid);
+        Cache::forget('user:account:id:'.$id);
+        Cache::forget('user:account:id:'.$pid);
+        Cache::forget('profile:follower_count:'.$id);
+        Cache::forget('profile:follower_count:'.$pid);
+        Cache::forget('profile:following_count:'.$id);
+        Cache::forget('profile:following_count:'.$pid);
+        AccountService::del($pid);
+        AccountService::del($id);
+
+        $res = RelationshipService::get($id, $pid);
+
+        return $this->json($res);
+    }
+
+    /**
+     *  GET /api/v1/statuses/{id}/pin
+     */
+    public function statusPin(Request $request, $id)
+    {
+        abort_if(! $request->user(), 403);
+        abort_unless($request->user()->tokenCan('write'), 403);
+        $user = $request->user();
+        $status = Status::whereScope('public')->find($id);
+
+        if (! $status) {
+            return $this->json(['error' => 'Record not found'], 404);
+        }
+
+        if ($status->profile_id != $user->profile_id) {
+            return $this->json(['error' => "Validation failed: Someone else's post cannot be pinned"], 422);
+        }
+
+        $res = StatusService::markPin($status->id);
+
+        if (! $res['success']) {
+            return $this->json([
+                'error' => $res['error'],
+            ], 422);
+        }
+
+        $statusRes = StatusService::get($status->id, true, true);
+        $status['pinned'] = true;
+
+        return $this->json($statusRes);
+    }
+
+    /**
+     *  GET /api/v1/statuses/{id}/unpin
+     */
+    public function statusUnpin(Request $request, $id)
+    {
+        abort_if(! $request->user(), 403);
+        abort_unless($request->user()->tokenCan('write'), 403);
+        $status = Status::whereScope('public')->findOrFail($id);
+        $user = $request->user();
+
+        if ($status->profile_id != $user->profile_id) {
+            return $this->json(['error' => 'Record not found'], 404);
+        }
+
+        $res = StatusService::unmarkPin($status->id);
+        if (! $res) {
+            return $this->json($res, 422);
+        }
+
+        $status = StatusService::get($status->id, true, true);
+        $status['pinned'] = false;
+
+        return $this->json($status);
     }
 }

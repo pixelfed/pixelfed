@@ -71,6 +71,7 @@ class StatusTransformer extends Fractal\TransformerAbstract
             'poll' => $poll,
             'bookmarked' => BookmarkService::get($pid, $status->id),
             'edited_at' => $status->edited_at ? str_replace('+00:00', 'Z', $status->edited_at->format(DATE_RFC3339_EXTENDED)) : null,
+            'pinned' => (bool) $status->pinned_order,
         ];
     }
 }

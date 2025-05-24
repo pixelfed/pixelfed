@@ -16,7 +16,7 @@
 </div>
 <div class="container-fluid mt-4">
     <input type="hidden" id="slug" name="slug" value="{{$page->slug}}">
-    <input class="form-control form-control-lg" id="title" name="title" placeholder="Title">
+    <input class="form-control form-control-lg" id="title" name="title" placeholder="Title" value="{{$page->title}}">
     <p class="small text-muted">
       Page URL: <span class="page-url font-weight-bold">{{$page->url()}}</span>
       {{-- <span class="pl-1"><a href="#" class="font-weight-bold">Edit</a></span> --}}

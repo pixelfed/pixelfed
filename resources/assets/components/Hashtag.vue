@@ -56,7 +56,11 @@
                                     <div v-if="status.sensitive" class="square-content">
                                         <div class="info-overlay-text-label">
                                             <h5 class="text-white m-auto font-weight-bold">
-                                                <span>
+                                                <span v-if="status.hasOwnProperty('filtered')">
+                                                    <span class="far fa-eye-slash fa-lg p-2 d-flex-inline"></span>
+                                                    <span>Filtered</span>
+                                                </span>
+                                                <span v-else>
                                                     <span class="far fa-eye-slash fa-lg p-2 d-flex-inline"></span>
                                                 </span>
                                             </h5>
@@ -79,7 +83,15 @@
                                     <span v-if="status.pf_type == 'video'" class="float-right mr-3 post-icon"><i class="fas fa-video fa-2x"></i></span>
                                     <span v-if="status.pf_type == 'video:album'" class="float-right mr-3 post-icon"><i class="fas fa-film fa-2x"></i></span>
                                     <div class="info-overlay-text">
-                                        <h5 class="text-white m-auto font-weight-bold">
+                                        <h5 class="text-white m-auto font-weight-bold d-flex flex-column" style="gap:.5rem;">
+                                            <span>
+                                                <span class="far fa-heart fa-lg p-2 d-flex-inline"></span>
+                                                <span class="d-flex-inline">{{formatCount(status.favourites_count)}}</span>
+                                            </span>
+                                            <span>
+                                                <span class="far fa-retweet fa-lg p-2 d-flex-inline"></span>
+                                                <span class="d-flex-inline">{{formatCount(status.reblogs_count)}}</span>
+                                            </span>
                                             <span>
                                                 <span class="far fa-comment fa-lg p-2 d-flex-inline"></span>
                                                 <span class="d-flex-inline">{{formatCount(status.reply_count)}}</span>
@@ -197,7 +209,12 @@
                 })
                 .then(res => {
                     if(res.data && res.data.length) {
-                        this.feed = res.data;
+                        this.feed = res.data.map(s => {
+                            if(s.filtered) {
+                                s.sensitive = true;
+                            }
+                            return s;
+                        });
                         this.maxId = res.data[res.data.length - 1].id;
                         this.canLoadMore = true;
                     } else {
@@ -233,7 +250,13 @@
                 })
                 .then(res => {
                     if(res.data && res.data.length) {
-                        this.feed.push(...res.data);
+                        const data = res.data.map(s => {
+                            if(s.filtered) {
+                                s.sensitive = true;
+                            }
+                            return s;
+                        });
+                        this.feed.push(...data);
                         this.maxId = res.data[res.data.length - 1].id;
                         this.canLoadMore = true;
                     } else {
