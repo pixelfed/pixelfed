@@ -1,6 +1,9 @@
 name: Fix Code Style
 
-on: [push]
+on:
+  push:
+    branches:
+      - dev
 
 jobs:
   lint:
@@ -27,5 +30,5 @@ jobs:
       - name: Run Pint
         run: pint
 
-      - name: Commit linted files
-        uses: stefanzweifel/git-auto-commit-action@v5
+#      - name: Commit linted files
+#        uses: stefanzweifel/git-auto-commit-action@v5
