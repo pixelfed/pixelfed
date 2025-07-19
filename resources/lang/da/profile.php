@@ -1,5 +1,5 @@
 <?php
 
 return [
-  'emptyTimeline' => 'Denne bruger har ikke postet noget endnu!',
+    'emptyTimeline' => 'Denne bruger har ikke postet noget endnu!',
 ];

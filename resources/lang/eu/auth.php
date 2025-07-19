@@ -13,8 +13,7 @@ return [
     |
     */
 
-
-    'failed'   => 'Sartutako datuek ez dute balio.',
+    'failed' => 'Sartutako datuek ez dute balio.',
     'throttle' => 'Saiakera gehiegi. Mesedez, saitu zaitez :seconds segundo barru.',
 
 ];

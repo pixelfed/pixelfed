@@ -2,6 +2,6 @@
 
 return [
 
-  'emptyPersonalTimeline' => 'خط‌زمانی شما خالی است.',
+    'emptyPersonalTimeline' => 'خط‌زمانی شما خالی است.',
 
 ];
