@@ -1,4 +1,4 @@
-name: Fix Code Style
+name: Fix Code Style with commit
 
 on:
   push:
