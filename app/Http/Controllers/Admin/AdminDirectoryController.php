@@ -290,7 +290,7 @@ trait AdminDirectoryController
         ConfigCacheService::put('pixelfed.directory.submission-key', Str::random(random_int(40, 69)));
         ConfigCacheService::put('pixelfed.directory.submission-ts', now());
 
-        $data = (new PixelfedDirectoryController())->buildListing();
+        $data = (new PixelfedDirectoryController)->buildListing();
         $res = Http::withoutVerifying()->post('https://pixelfed.org/api/v1/directory/submission', $data);
 
         return 200;

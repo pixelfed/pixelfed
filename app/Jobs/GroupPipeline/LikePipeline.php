@@ -2,106 +2,106 @@
 
 namespace App\Jobs\GroupPipeline;
 
-use Cache, Log;
-use Illuminate\Support\Facades\Redis;
-use App\{Like, Notification};
+use App\Like;
+use App\Notification;
+use App\Services\StatusService;
+use App\Transformer\ActivityPub\Verb\Like as LikeTransformer;
+use App\Util\ActivityPub\Helpers;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
-use App\Util\ActivityPub\Helpers;
 use League\Fractal;
 use League\Fractal\Serializer\ArraySerializer;
-use App\Transformer\ActivityPub\Verb\Like as LikeTransformer;
-use App\Services\StatusService;
 
 class LikePipeline implements ShouldQueue
 {
-	use Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
+    use Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
 
-	protected $like;
+    protected $like;
 
-	/**
-	 * Delete the job if its models no longer exist.
-	 *
-	 * @var bool
-	 */
-	public $deleteWhenMissingModels = true;
+    /**
+     * Delete the job if its models no longer exist.
+     *
+     * @var bool
+     */
+    public $deleteWhenMissingModels = true;
 
-	public $timeout = 5;
-	public $tries = 1;
+    public $timeout = 5;
 
-	/**
-	 * Create a new job instance.
-	 *
-	 * @return void
-	 */
-	public function __construct(Like $like)
-	{
-		$this->like = $like;
-	}
+    public $tries = 1;
 
-	/**
-	 * Execute the job.
-	 *
-	 * @return void
-	 */
-	public function handle()
-	{
-		$like = $this->like;
+    /**
+     * Create a new job instance.
+     *
+     * @return void
+     */
+    public function __construct(Like $like)
+    {
+        $this->like = $like;
+    }
 
-		$status = $this->like->status;
-		$actor = $this->like->actor;
+    /**
+     * Execute the job.
+     *
+     * @return void
+     */
+    public function handle()
+    {
+        $like = $this->like;
 
-		if (!$status) {
-			// Ignore notifications to deleted statuses
-			return;
-		}
+        $status = $this->like->status;
+        $actor = $this->like->actor;
 
-		StatusService::refresh($status->id);
+        if (! $status) {
+            // Ignore notifications to deleted statuses
+            return;
+        }
 
-		if($status->url && $actor->domain == null) {
-			return $this->remoteLikeDeliver();
-		}
+        StatusService::refresh($status->id);
 
-		$exists = Notification::whereProfileId($status->profile_id)
-				  ->whereActorId($actor->id)
-				  ->whereAction('group:like')
-				  ->whereItemId($status->id)
-				  ->whereItemType('App\Status')
-				  ->count();
+        if ($status->url && $actor->domain == null) {
+            return $this->remoteLikeDeliver();
+        }
 
-		if ($actor->id === $status->profile_id || $exists !== 0) {
-			return true;
-		}
+        $exists = Notification::whereProfileId($status->profile_id)
+            ->whereActorId($actor->id)
+            ->whereAction('group:like')
+            ->whereItemId($status->id)
+            ->whereItemType('App\Status')
+            ->count();
 
-		try {
-			$notification = new Notification();
-			$notification->profile_id = $status->profile_id;
-			$notification->actor_id = $actor->id;
-			$notification->action = 'group:like';
-			$notification->item_id = $status->id;
-			$notification->item_type = "App\Status";
-			$notification->save();
+        if ($actor->id === $status->profile_id || $exists !== 0) {
+            return true;
+        }
 
-		} catch (Exception $e) {
-		}
-	}
+        try {
+            $notification = new Notification;
+            $notification->profile_id = $status->profile_id;
+            $notification->actor_id = $actor->id;
+            $notification->action = 'group:like';
+            $notification->item_id = $status->id;
+            $notification->item_type = "App\Status";
+            $notification->save();
 
-	public function remoteLikeDeliver()
-	{
-		$like = $this->like;
-		$status = $this->like->status;
-		$actor = $this->like->actor;
+        } catch (Exception $e) {
+        }
+    }
 
-		$fractal = new Fractal\Manager();
-		$fractal->setSerializer(new ArraySerializer());
-		$resource = new Fractal\Resource\Item($like, new LikeTransformer());
-		$activity = $fractal->createData($resource)->toArray();
+    public function remoteLikeDeliver()
+    {
+        $like = $this->like;
+        $status = $this->like->status;
+        $actor = $this->like->actor;
 
-		$url = $status->profile->sharedInbox ?? $status->profile->inbox_url;
+        $fractal = new Fractal\Manager;
+        $fractal->setSerializer(new ArraySerializer);
+        $resource = new Fractal\Resource\Item($like, new LikeTransformer);
+        $activity = $fractal->createData($resource)->toArray();
 
-		Helpers::sendSignedObject($actor, $url, $activity);
-	}
+        $url = $status->profile->sharedInbox ?? $status->profile->inbox_url;
+
+        Helpers::sendSignedObject($actor, $url, $activity);
+    }
 }

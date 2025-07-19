@@ -14,15 +14,15 @@ class CryptoTest extends TestCase
      * @return void
      */
     #[Test]
-    public function libraryInstalled()
+    public function library_installed()
     {
         $this->assertTrue(class_exists('\phpseclib\Crypt\RSA'));
     }
 
     #[Test]
-    public function RSASigning()
+    public function rsa_signing()
     {
-        $rsa = new RSA();
+        $rsa = new RSA;
         extract($rsa->createKey());
         $rsa->loadKey($privatekey);
         $plaintext = 'pixelfed rsa test';

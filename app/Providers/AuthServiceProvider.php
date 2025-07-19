@@ -2,11 +2,11 @@
 
 namespace App\Providers;
 
+use App\Models\CustomFilter;
+use App\Policies\CustomFilterPolicy;
 use Gate;
 use Illuminate\Foundation\Support\Providers\AuthServiceProvider as ServiceProvider;
 use Laravel\Passport\Passport;
-use App\Models\CustomFilter;
-use App\Policies\CustomFilterPolicy;
 
 class AuthServiceProvider extends ServiceProvider
 {
@@ -26,7 +26,7 @@ class AuthServiceProvider extends ServiceProvider
      */
     public function boot()
     {
-        if(config('pixelfed.oauth_enabled') == true) {
+        if (config('pixelfed.oauth_enabled') == true) {
             Passport::ignoreRoutes();
             Passport::tokensExpireIn(now()->addDays(config('instance.oauth.token_expiration', 356)));
             Passport::refreshTokensExpireIn(now()->addDays(config('instance.oauth.refresh_expiration', 400)));
@@ -43,7 +43,7 @@ class AuthServiceProvider extends ServiceProvider
                 'admin:read:domain_blocks' => 'Read sensitive information of all domain blocks',
                 'admin:write' => 'Modify all data on the server',
                 'admin:write:domain_blocks' => 'Perform moderation actions on domain blocks',
-                'push'  => 'Receive your push notifications'
+                'push' => 'Receive your push notifications',
             ]);
 
             Passport::setDefaultScope([

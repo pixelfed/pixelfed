@@ -130,7 +130,7 @@ trait HomeSettings
             $user->password = bcrypt($new);
             $user->save();
 
-            $log = new AccountLog();
+            $log = new AccountLog;
             $log->user_id = $user->id;
             $log->item_id = $user->id;
             $log->item_type = 'App\User';
@@ -178,7 +178,7 @@ trait HomeSettings
                 EmailVerification::whereUserId($user->id)->delete();
             }
 
-            $log = new AccountLog();
+            $log = new AccountLog;
             $log->user_id = $user->id;
             $log->item_id = $user->id;
             $log->item_type = 'App\User';

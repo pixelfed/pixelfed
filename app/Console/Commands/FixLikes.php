@@ -2,9 +2,9 @@
 
 namespace App\Console\Commands;
 
+use App\Like;
+use App\Status;
 use Illuminate\Console\Command;
-use App\{Like, Status};
-use DB;
 
 class FixLikes extends Command
 {
@@ -41,10 +41,11 @@ class FixLikes extends Command
     {
         $chunk = 100;
         $limit = Like::select('status_id')->groupBy('status_id')->get()->count();
-        
-        if($limit > 1000) {
-            if($this->confirm('We have found more than 1000 records to update, this may take a few moments. Are you sure you want to continue?') == false) {
+
+        if ($limit > 1000) {
+            if ($this->confirm('We have found more than 1000 records to update, this may take a few moments. Are you sure you want to continue?') == false) {
                 $this->error('Cancelling command...');
+
                 return;
             }
         }
@@ -56,11 +57,11 @@ class FixLikes extends Command
         $bar->start();
 
         Like::selectRaw('count(id) as count, status_id')
-            ->groupBy(['status_id','id'])
-            ->chunk($chunk, function($likes) use($bar) {
-                foreach($likes as $like) {
+            ->groupBy(['status_id', 'id'])
+            ->chunk($chunk, function ($likes) use ($bar) {
+                foreach ($likes as $like) {
                     $s = Status::find($like['status_id']);
-                    if($s && $s->likes_count == 0) {
+                    if ($s && $s->likes_count == 0) {
                         $s->likes_count = $like['count'];
                         $s->save();
                     }

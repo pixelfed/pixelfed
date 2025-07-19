@@ -33,7 +33,7 @@ class ProfileController extends Controller
         }
 
         // redirect authed users to Metro 2.0
-        if ($request->user() && !$request->filled('carousel')) {
+        if ($request->user() && ! $request->filled('carousel')) {
             // unless they force static view
             if (! $request->has('fs') || $request->input('fs') != '1') {
                 $pid = AccountService::usernameToId($username);
@@ -98,9 +98,10 @@ class ProfileController extends Controller
                 ],
             ];
 
-            if($carousel) {
+            if ($carousel) {
                 return view('profile.show_carousel', compact('profile', 'settings'));
             }
+
             return view('profile.show', compact('profile', 'settings'));
         } else {
             $key = 'profile:settings:'.$user->id;
@@ -139,9 +140,10 @@ class ProfileController extends Controller
                     'list' => $settings->show_profile_followers,
                 ],
             ];
-            if($carousel) {
+            if ($carousel) {
                 return view('profile.show_carousel', compact('profile', 'settings'));
             }
+
             return view('profile.show', compact('profile', 'settings'));
         }
     }
@@ -240,7 +242,7 @@ class ProfileController extends Controller
         abort_if($user->domain, 404);
 
         return Cache::remember('pf:activitypub:user-object:by-id:'.$user->id, 1800, function () use ($user) {
-            $fractal = new Fractal\Manager();
+            $fractal = new Fractal\Manager;
             $resource = new Fractal\Resource\Item($user, new ProfileTransformer);
             $res = $fractal->createData($resource)->toArray();
 

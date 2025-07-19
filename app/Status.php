@@ -2,7 +2,6 @@
 
 namespace App;
 
-use App\HasSnowflakePrimary;
 use App\Http\Controllers\StatusController;
 use App\Models\Poll;
 use App\Models\StatusEdit;

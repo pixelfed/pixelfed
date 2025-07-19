@@ -97,9 +97,9 @@ class SharePipeline implements ShouldQueue
         $status = $this->status;
         $profile = $status->profile;
 
-        $fractal = new Fractal\Manager();
-        $fractal->setSerializer(new ArraySerializer());
-        $resource = new Fractal\Resource\Item($status, new Announce());
+        $fractal = new Fractal\Manager;
+        $fractal->setSerializer(new ArraySerializer);
+        $resource = new Fractal\Resource\Item($status, new Announce);
         $activity = $fractal->createData($resource)->toArray();
 
         $audience = $status->profile->getAudienceInbox();
@@ -139,10 +139,8 @@ class SharePipeline implements ShouldQueue
 
         $pool = new Pool($client, $requests($audience), [
             'concurrency' => config('federation.activitypub.delivery.concurrency'),
-            'fulfilled' => function ($response, $index) {
-            },
-            'rejected' => function ($reason, $index) {
-            },
+            'fulfilled' => function ($response, $index) {},
+            'rejected' => function ($reason, $index) {},
         ]);
 
         $promise = $pool->promise();

@@ -2,7 +2,7 @@
 
 namespace App\Jobs\ImageOptimizePipeline;
 
-use Storage;
+use App\Jobs\MediaPipeline\MediaStoragePipeline;
 use App\Media;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
@@ -10,9 +10,6 @@ use Illuminate\Foundation\Bus\Dispatchable;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
 use ImageOptimizer;
-use Illuminate\Http\File;
-use App\Services\MediaPathService;
-use App\Jobs\MediaPipeline\MediaStoragePipeline;
 
 class ImageUpdate implements ShouldQueue
 {
@@ -24,7 +21,7 @@ class ImageUpdate implements ShouldQueue
         'image/jpeg',
         'image/png',
         'image/webp',
-        'image/avif'
+        'image/avif',
     ];
 
     /**
@@ -52,26 +49,26 @@ class ImageUpdate implements ShouldQueue
     public function handle()
     {
         $media = $this->media;
-        if(!$media) {
+        if (! $media) {
             return;
         }
         $path = storage_path('app/'.$media->media_path);
         $thumb = storage_path('app/'.$media->thumbnail_path);
 
-        if (!is_file($path)) {
+        if (! is_file($path)) {
             return;
         }
 
-        if((bool) config_cache('pixelfed.optimize_image')) {
+        if ((bool) config_cache('pixelfed.optimize_image')) {
             if (in_array($media->mime, $this->protectedMimes) == true) {
                 ImageOptimizer::optimize($thumb);
-                if(!$media->skip_optimize) {
+                if (! $media->skip_optimize) {
                     ImageOptimizer::optimize($path);
                 }
             }
         }
 
-        if (!is_file($path) || !is_file($thumb)) {
+        if (! is_file($path) || ! is_file($thumb)) {
             return;
         }
 

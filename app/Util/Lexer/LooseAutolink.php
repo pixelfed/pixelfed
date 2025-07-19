@@ -35,14 +35,13 @@ class LooseAutolink extends Autolink
      * Auto-link hashtags, URLs, usernames and lists.
      *
      * @param  string The tweet to be converted
-     *
      * @return string that auto-link HTML added
      *
      * @deprecated since version 1.9.0
      */
     public function autoLink($tweet = null)
     {
-        if (!is_null($tweet)) {
+        if (! is_null($tweet)) {
             $this->tweet = $tweet;
         }
 
@@ -58,7 +57,7 @@ class LooseAutolink extends Autolink
      */
     public function autoLinkUsernamesAndLists($tweet = null)
     {
-        if (!is_null($tweet)) {
+        if (! is_null($tweet)) {
             $this->tweet = $tweet;
         }
 
@@ -73,7 +72,7 @@ class LooseAutolink extends Autolink
      */
     public function autoLinkHashtags($tweet = null)
     {
-        if (!is_null($tweet)) {
+        if (! is_null($tweet)) {
             $this->tweet = $tweet;
         }
 
@@ -89,7 +88,7 @@ class LooseAutolink extends Autolink
      */
     public function autoLinkURLs($tweet = null)
     {
-        if (!is_null($tweet)) {
+        if (! is_null($tweet)) {
             $this->tweet = $tweet;
         }
 
@@ -104,7 +103,7 @@ class LooseAutolink extends Autolink
      */
     public function autoLinkCashtags($tweet = null)
     {
-        if (!is_null($tweet)) {
+        if (! is_null($tweet)) {
             $this->tweet = $tweet;
         }
 
@@ -188,10 +187,9 @@ class LooseAutolink extends Autolink
      *
      * This is a helper function to perform the generation of the link.
      *
-     * @param string $url     The URL to use as the href.
-     * @param string $class   The CSS class(es) to apply (space separated).
-     * @param string $element The tweet element to wrap.
-     *
+     * @param  string  $url  The URL to use as the href.
+     * @param  string  $class  The CSS class(es) to apply (space separated).
+     * @param  string  $element  The tweet element to wrap.
      * @return string The tweet element with a link applied.
      *
      * @deprecated since version 1.1.0
@@ -210,7 +208,7 @@ class LooseAutolink extends Autolink
         if ($this->nofollow) {
             $rel[] = 'nofollow';
         }
-        if (!empty($rel)) {
+        if (! empty($rel)) {
             $link .= ' rel="'.implode(' ', $rel).'"';
         }
         if ($this->target) {
@@ -226,10 +224,9 @@ class LooseAutolink extends Autolink
      *
      * This is a helper function to perform the generation of the hashtag link.
      *
-     * @param string $url     The URL to use as the href.
-     * @param string $class   The CSS class(es) to apply (space separated).
-     * @param string $element The tweet element to wrap.
-     *
+     * @param  string  $url  The URL to use as the href.
+     * @param  string  $class  The CSS class(es) to apply (space separated).
+     * @param  string  $element  The tweet element to wrap.
      * @return string The tweet element with a link applied.
      */
     protected function wrapHash($url, $class, $element)
@@ -248,7 +245,7 @@ class LooseAutolink extends Autolink
         if ($this->nofollow) {
             $rel[] = 'nofollow';
         }
-        if (!empty($rel)) {
+        if (! empty($rel)) {
             $link .= ' rel="'.implode(' ', $rel).'"';
         }
         if ($this->target) {
@@ -264,15 +261,14 @@ class LooseAutolink extends Autolink
      *
      * @see  addLinksToHashtags()
      *
-     * @param array $matches The regular expression matches.
-     *
+     * @param  array  $matches  The regular expression matches.
      * @return string The link-wrapped hashtag.
      */
     protected function _addLinksToHashtags($matches)
     {
-        list($all, $before, $hash, $tag, $after) = array_pad($matches, 5, '');
+        [$all, $before, $hash, $tag, $after] = array_pad($matches, 5, '');
         if (preg_match(self::$patterns['end_hashtag_match'], $after)
-            || (!preg_match('!\A["\']!', $before) && preg_match('!\A["\']!', $after)) || preg_match('!\A</!', $after)) {
+            || (! preg_match('!\A["\']!', $before) && preg_match('!\A["\']!', $after)) || preg_match('!\A</!', $after)) {
             return $all;
         }
         $replacement = $before;
@@ -292,15 +288,14 @@ class LooseAutolink extends Autolink
      *
      * @see  addLinksToCashtags()
      *
-     * @param array $matches The regular expression matches.
-     *
+     * @param  array  $matches  The regular expression matches.
      * @return string The link-wrapped cashtag.
      */
     protected function _addLinksToCashtags($matches)
     {
-        list($all, $before, $cash, $tag, $after) = array_pad($matches, 5, '');
+        [$all, $before, $cash, $tag, $after] = array_pad($matches, 5, '');
         if (preg_match(self::$patterns['end_cashtag_match'], $after)
-            || (!preg_match('!\A["\']!', $before) && preg_match('!\A["\']!', $after)) || preg_match('!\A</!', $after)) {
+            || (! preg_match('!\A["\']!', $before) && preg_match('!\A["\']!', $after)) || preg_match('!\A</!', $after)) {
             return $all;
         }
         $replacement = $before;
@@ -316,15 +311,14 @@ class LooseAutolink extends Autolink
      *
      * @see  addLinksToURLs()
      *
-     * @param array $matches The regular expression matches.
-     *
+     * @param  array  $matches  The regular expression matches.
      * @return string The link-wrapped URL.
      */
     protected function _addLinksToURLs($matches)
     {
-        list($all, $before, $url, $protocol, $domain, $path, $query) = array_pad($matches, 7, '');
+        [$all, $before, $url, $protocol, $domain, $path, $query] = array_pad($matches, 7, '');
         $url = htmlspecialchars($url, ENT_QUOTES, 'UTF-8', false);
-        if (!$protocol) {
+        if (! $protocol) {
             return $all;
         }
 
@@ -336,15 +330,14 @@ class LooseAutolink extends Autolink
      *
      * @see  addLinksToUsernamesAndLists()
      *
-     * @param array $matches The regular expression matches.
-     *
+     * @param  array  $matches  The regular expression matches.
      * @return string The link-wrapped username/list pair.
      */
     protected function _addLinksToUsernamesAndLists($matches)
     {
-        list($all, $before, $at, $username, $slash_listname, $after) = array_pad($matches, 6, '');
+        [$all, $before, $at, $username, $slash_listname, $after] = array_pad($matches, 6, '');
         // If $after is not empty, there is an invalid character.
-        if (!empty($slash_listname)) {
+        if (! empty($slash_listname)) {
             // Replace the list and username
             $element = $username.$slash_listname;
             $class = $this->class_list;
@@ -358,6 +351,7 @@ class LooseAutolink extends Autolink
             $class = $this->class_user;
             $url = $this->url_base_user.$element;
         }
+
         // XXX: Due to use of preg_replace_callback() for multiple replacements in a
         //      single tweet and also as only the match is replaced and we have to
         //      use a look-ahead for $after because there is no equivalent for the

@@ -19,11 +19,12 @@ class Instance extends Model
         'banned',
         'auto_cw',
         'unlisted',
-        'notes'
+        'notes',
     ];
 
     // To get all moderated instances, we need to search where (banned OR unlisted)
-    public function scopeModerated($query): void {
+    public function scopeModerated($query): void
+    {
         $query->where(function ($query) {
             $query->where('banned', true)->orWhere('unlisted', true);
         });

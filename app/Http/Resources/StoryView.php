@@ -2,9 +2,9 @@
 
 namespace App\Http\Resources;
 
+use App\Services\AccountService;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
-use App\Services\AccountService;
 
 class StoryView extends JsonResource
 {

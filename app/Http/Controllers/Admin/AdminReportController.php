@@ -1605,10 +1605,10 @@ trait AdminReportController
                     'origin' => config('pixelfed.domain.app'),
                     'date' => now()->format('c'),
                     'type' => 'moderated-profiles',
-                    'version' => "1.0"
+                    'version' => '1.0',
                 ],
-                'data' => $res
-            ], JSON_PRETTY_PRINT|JSON_UNESCAPED_SLASHES);
+                'data' => $res,
+            ], JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES);
         }, 'data-export.json');
     }
 

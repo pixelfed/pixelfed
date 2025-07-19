@@ -2,8 +2,8 @@
 
 namespace App\Console\Commands;
 
-use Illuminate\Console\Command;
 use App\Jobs\InternalPipeline\NotificationEpochUpdatePipeline;
+use Illuminate\Console\Command;
 
 class NotificationEpochUpdate extends Command
 {

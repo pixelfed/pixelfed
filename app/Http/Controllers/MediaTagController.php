@@ -2,14 +2,10 @@
 
 namespace App\Http\Controllers;
 
-use Illuminate\Http\Request;
-use App\Services\MediaTagService;
 use App\MediaTag;
 use App\Notification;
-use App\Profile;
-use App\UserFilter;
-use App\User;
-use Illuminate\Support\Str;
+use App\Services\MediaTagService;
+use Illuminate\Http\Request;
 
 class MediaTagController extends Controller
 {
@@ -25,11 +21,11 @@ class MediaTagController extends Controller
 
     public function untagProfile(Request $request)
     {
-        abort_if(!$request->user(), 403);
+        abort_if(! $request->user(), 403);
 
         $this->validate($request, [
             'status_id' => 'required',
-            'profile_id' => 'required'
+            'profile_id' => 'required',
         ]);
 
         $user = $request->user();
@@ -42,7 +38,7 @@ class MediaTagController extends Controller
             ->whereProfileId($profile_id)
             ->first();
 
-        if(!$tag) {
+        if (! $tag) {
             return [];
         }
         Notification::whereItemType('App\MediaTag')

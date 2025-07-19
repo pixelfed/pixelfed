@@ -9,17 +9,17 @@ class DirectMessage extends Model
 {
     public function status()
     {
-    	return $this->belongsTo(Status::class, 'status_id', 'id');
+        return $this->belongsTo(Status::class, 'status_id', 'id');
     }
 
     public function url()
     {
-    	return config('app.url') . '/account/direct/m/' . $this->status_id;
+        return config('app.url').'/account/direct/m/'.$this->status_id;
     }
 
     public function author()
     {
-    	return $this->belongsTo(Profile::class, 'from_id', 'id');
+        return $this->belongsTo(Profile::class, 'from_id', 'id');
     }
 
     public function recipient()
@@ -29,6 +29,6 @@ class DirectMessage extends Model
 
     public function me()
     {
-    	return Auth::user()->profile->id === $this->from_id;
+        return Auth::user()->profile->id === $this->from_id;
     }
 }

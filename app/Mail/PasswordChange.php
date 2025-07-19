@@ -5,7 +5,6 @@ namespace App\Mail;
 use Illuminate\Bus\Queueable;
 use Illuminate\Mail\Mailable;
 use Illuminate\Queue\SerializesModels;
-use Illuminate\Contracts\Queue\ShouldQueue;
 
 class PasswordChange extends Mailable
 {
@@ -29,7 +28,7 @@ class PasswordChange extends Mailable
     public function build()
     {
         return $this->with([
-                'user' => $this->user
-            ])->markdown('emails.notification.password_change');
+            'user' => $this->user,
+        ])->markdown('emails.notification.password_change');
     }
 }

@@ -2,16 +2,16 @@
 
 namespace App\Jobs\CuratedOnboarding;
 
+use App\Mail\CuratedRegisterNotifyAdmin;
+use App\Models\CuratedRegister;
+use App\User;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
-use App\Models\CuratedRegister;
-use App\User;
 use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\Storage;
-use App\Mail\CuratedRegisterNotifyAdmin;
 
 class CuratedOnboardingNotifyAdminNewApplicationPipeline implements ShouldQueue
 {
@@ -32,7 +32,7 @@ class CuratedOnboardingNotifyAdminNewApplicationPipeline implements ShouldQueue
      */
     public function handle(): void
     {
-        if(!config('instance.curated_registration.notify.admin.on_verify_email.enabled')) {
+        if (! config('instance.curated_registration.notify.admin.on_verify_email.enabled')) {
             return;
         }
 
@@ -55,9 +55,9 @@ class CuratedOnboardingNotifyAdminNewApplicationPipeline implements ShouldQueue
     protected function handleUnbundled()
     {
         $cr = $this->cr;
-        if($aid = config_cache('instance.admin.pid')) {
+        if ($aid = config_cache('instance.admin.pid')) {
             $admin = User::whereProfileId($aid)->first();
-            if($admin && $admin->email) {
+            if ($admin && $admin->email) {
                 Mail::to($admin->email)->send(new CuratedRegisterNotifyAdmin($cr));
             }
         }

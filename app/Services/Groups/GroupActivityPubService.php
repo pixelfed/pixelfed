@@ -3,19 +3,13 @@
 namespace App\Services\Groups;
 
 use App\Models\Group;
-use App\Models\GroupPost;
 use App\Models\GroupComment;
-use Cache;
-use Purify;
-use Illuminate\Support\Facades\Redis;
-use League\Fractal;
-use App\Util\ActivityPub\Helpers;
-use League\Fractal\Serializer\ArraySerializer;
-use League\Fractal\Pagination\IlluminatePaginatorAdapter;
-use App\Transformer\Api\GroupPostTransformer;
-use App\Services\ActivityPubFetchService;
-use Illuminate\Support\Facades\Validator;
+use App\Models\GroupPost;
 use App\Rules\ValidUrl;
+use App\Services\ActivityPubFetchService;
+use App\Util\ActivityPub\Helpers;
+use Illuminate\Support\Facades\Validator;
+use Purify;
 
 class GroupActivityPubService
 {
@@ -24,22 +18,23 @@ class GroupActivityPubService
     public static function fetchGroup($url, $saveOnFetch = true)
     {
         $group = Group::where('remote_url', $url)->first();
-        if($group) {
+        if ($group) {
             return $group;
         }
 
         $res = ActivityPubFetchService::get($url);
-        if(!$res) {
+        if (! $res) {
             return $res;
         }
         $json = json_decode($res, true);
         $group = self::validateGroup($json);
-        if(!$group) {
+        if (! $group) {
             return false;
         }
-        if($saveOnFetch) {
+        if ($saveOnFetch) {
             return self::storeGroup($group);
         }
+
         return $group;
     }
 
@@ -47,27 +42,29 @@ class GroupActivityPubService
     {
         $group = GroupPost::where('remote_url', $url)->first();
 
-        if($group) {
+        if ($group) {
             return $group;
         }
 
         $res = ActivityPubFetchService::get($url);
-        if(!$res) {
+        if (! $res) {
             return 'invalid res';
         }
         $json = json_decode($res, true);
-        if(!$json) {
+        if (! $json) {
             return 'invalid json';
         }
-        if(isset($json['inReplyTo'])) {
+        if (isset($json['inReplyTo'])) {
             $comment = self::validateGroupComment($json);
+
             return self::storeGroupComment($comment);
         }
 
         $group = self::validateGroupPost($json);
-        if($saveOnFetch) {
+        if ($saveOnFetch) {
             return self::storeGroupPost($group);
         }
+
         return $group;
     }
 
@@ -91,7 +88,7 @@ class GroupActivityPubService
             'publicKey.publicKeyPem' => 'required',
         ]);
 
-        if($validator->fails()) {
+        if ($validator->fails()) {
             return false;
         }
 
@@ -121,7 +118,7 @@ class GroupActivityPubService
             'published' => 'required',
         ]);
 
-        if($validator->fails()) {
+        if ($validator->fails()) {
             return false;
         }
 
@@ -150,8 +147,9 @@ class GroupActivityPubService
             'published' => 'required',
         ]);
 
-        if($validator->fails()) {
+        if ($validator->fails()) {
             return $validator->errors();
+
             return false;
         }
 
@@ -160,11 +158,11 @@ class GroupActivityPubService
 
     public static function getGroupFromPostActivity($groupPost)
     {
-        if(isset($groupPost['audience']) && is_string($groupPost['audience'])) {
+        if (isset($groupPost['audience']) && is_string($groupPost['audience'])) {
             return $groupPost['audience'];
         }
 
-        if(
+        if (
             isset(
                 $groupPost['target'],
                 $groupPost['target']['type'],
@@ -179,18 +177,18 @@ class GroupActivityPubService
 
     public static function getActorFromPostActivity($groupPost)
     {
-        if(!isset($groupPost['attributedTo'])) {
+        if (! isset($groupPost['attributedTo'])) {
             return false;
         }
 
         $field = $groupPost['attributedTo'];
 
-        if(is_string($field)) {
+        if (is_string($field)) {
             return $field;
         }
 
-        if(is_array($field) && count($field) === 1) {
-            if(
+        if (is_array($field) && count($field) === 1) {
+            if (
                 isset(
                     $field[0]['id'],
                     $field[0]['type']
@@ -207,22 +205,22 @@ class GroupActivityPubService
 
     public static function getCaptionFromPostActivity($groupPost)
     {
-        if(!isset($groupPost['name']) && isset($groupPost['content'])) {
+        if (! isset($groupPost['name']) && isset($groupPost['content'])) {
             return Purify::clean(strip_tags($groupPost['content']));
         }
 
-        if(isset($groupPost['name'], $groupPost['content'])) {
-            return Purify::clean(strip_tags($groupPost['name'])) . Purify::clean(strip_tags($groupPost['content']));
+        if (isset($groupPost['name'], $groupPost['content'])) {
+            return Purify::clean(strip_tags($groupPost['name'])).Purify::clean(strip_tags($groupPost['content']));
         }
     }
 
     public static function getSensitiveFromPostActivity($groupPost)
     {
-        if(!isset($groupPost['sensitive'])) {
+        if (! isset($groupPost['sensitive'])) {
             return true;
         }
 
-        if(isset($groupPost['sensitive']) && !is_bool($groupPost['sensitive'])) {
+        if (isset($groupPost['sensitive']) && ! is_bool($groupPost['sensitive'])) {
             return true;
         }
 
@@ -251,11 +249,11 @@ class GroupActivityPubService
     public static function storeGroupPost($groupPost)
     {
         $groupUrl = self::getGroupFromPostActivity($groupPost);
-        if(!$groupUrl) {
+        if (! $groupUrl) {
             return;
         }
         $group = self::fetchGroup($groupUrl, true);
-        if(!$group) {
+        if (! $group) {
             return;
         }
         $actorUrl = self::getActorFromPostActivity($groupPost);
@@ -274,17 +272,18 @@ class GroupActivityPubService
                 'is_nsfw' => $sensitive,
             ]
         );
+
         return $model;
     }
 
     public static function storeGroupComment($groupPost)
     {
         $groupUrl = self::getGroupFromPostActivity($groupPost);
-        if(!$groupUrl) {
+        if (! $groupUrl) {
             return;
         }
         $group = self::fetchGroup($groupUrl, true);
-        if(!$group) {
+        if (! $group) {
             return;
         }
         $actorUrl = self::getActorFromPostActivity($groupPost);
@@ -303,9 +302,10 @@ class GroupActivityPubService
                 'caption' => $caption,
                 'visibility' => 'public',
                 'is_nsfw' => $sensitive,
-                'local' => $actor->private_key != null
+                'local' => $actor->private_key != null,
             ]
         );
+
         return $model;
     }
 }

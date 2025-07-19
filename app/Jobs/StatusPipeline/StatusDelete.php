@@ -170,9 +170,9 @@ class StatusDelete implements ShouldQueue
 
         $audience = $status->profile->getAudienceInbox();
 
-        $fractal = new Fractal\Manager();
-        $fractal->setSerializer(new ArraySerializer());
-        $resource = new Fractal\Resource\Item($status, new DeleteNote());
+        $fractal = new Fractal\Manager;
+        $fractal->setSerializer(new ArraySerializer);
+        $resource = new Fractal\Resource\Item($status, new DeleteNote);
         $activity = $fractal->createData($resource)->toArray();
 
         $this->unlinkRemoveMedia($status);
@@ -207,10 +207,8 @@ class StatusDelete implements ShouldQueue
 
         $pool = new Pool($client, $requests($audience), [
             'concurrency' => config('federation.activitypub.delivery.concurrency'),
-            'fulfilled' => function ($response, $index) {
-            },
-            'rejected' => function ($reason, $index) {
-            },
+            'fulfilled' => function ($response, $index) {},
+            'rejected' => function ($reason, $index) {},
         ]);
 
         $promise = $pool->promise();

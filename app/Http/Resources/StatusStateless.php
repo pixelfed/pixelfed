@@ -32,7 +32,7 @@ class StatusStateless extends JsonResource
         return [
             '_v' => 1,
             'id' => (string) $status->id,
-            //'gid'                     => $status->group_id ? (string) $status->group_id : null,
+            // 'gid'                     => $status->group_id ? (string) $status->group_id : null,
             'shortcode' => HashidService::encode($status->id),
             'uri' => $status->url(),
             'url' => $status->url(),

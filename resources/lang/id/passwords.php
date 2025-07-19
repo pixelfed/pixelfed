@@ -1,4 +1,5 @@
 <?php
+
 return [
     /*
     |--------------------------------------------------------------------------
@@ -11,8 +12,8 @@ return [
     |
     */
     'password' => 'Password minimal enam karakter dan diisi dua kali harus sama.',
-    'reset'    => 'Password kamu sudah di-reset!',
-    'sent'     => 'Kami sudah mengirim link reset password lewat email!',
-    'token'    => 'Token reset password ini tidak valid.',
-    'user'     => "Kami tidak menemukan user beralamat email tersebut.",
+    'reset' => 'Password kamu sudah di-reset!',
+    'sent' => 'Kami sudah mengirim link reset password lewat email!',
+    'token' => 'Token reset password ini tidak valid.',
+    'user' => 'Kami tidak menemukan user beralamat email tersebut.',
 ];

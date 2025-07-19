@@ -2,10 +2,10 @@
 
 namespace App\Services\Internal;
 
-use Illuminate\Support\Facades\Cache;
-use Illuminate\Support\Facades\Http;
 use Illuminate\Http\Client\ConnectionException;
 use Illuminate\Http\Client\RequestException;
+use Illuminate\Support\Facades\Cache;
+use Illuminate\Support\Facades\Http;
 
 class SoftwareUpdateService
 {
@@ -13,19 +13,20 @@ class SoftwareUpdateService
 
     public static function cacheKey()
     {
-        return self::CACHE_KEY . 'latest:v1.0.0';
+        return self::CACHE_KEY.'latest:v1.0.0';
     }
 
     public static function get()
     {
         $curVersion = config('pixelfed.version');
 
-        $versions = Cache::remember(self::cacheKey(), 1800, function() {
+        $versions = Cache::remember(self::cacheKey(), 1800, function () {
             return self::fetchLatest();
         });
 
-        if(!$versions || !isset($versions['latest'], $versions['latest']['version'])) {
+        if (! $versions || ! isset($versions['latest'], $versions['latest']['version'])) {
             $hideWarning = (bool) config('instance.software-update.disable_failed_warning');
+
             return [
                 'current' => $curVersion,
                 'latest' => [
@@ -33,7 +34,7 @@ class SoftwareUpdateService
                     'published_at' => null,
                     'url' => null,
                 ],
-                'running_latest' => $hideWarning ? true : null
+                'running_latest' => $hideWarning ? true : null,
             ];
         }
 
@@ -44,7 +45,7 @@ class SoftwareUpdateService
                 'published_at' => $versions['latest']['published_at'],
                 'url' => $versions['latest']['url'],
             ],
-            'running_latest' => strval($versions['latest']['version']) === strval($curVersion)
+            'running_latest' => strval($versions['latest']['version']) === strval($curVersion),
         ];
     }
 
@@ -64,7 +65,7 @@ class SoftwareUpdateService
             return;
         }
 
-        if(!$res->ok()) {
+        if (! $res->ok()) {
             return;
         }
 

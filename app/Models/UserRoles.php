@@ -2,9 +2,9 @@
 
 namespace App\Models;
 
+use App\User;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
-use App\User;
 
 class UserRoles extends Model
 {
@@ -13,7 +13,7 @@ class UserRoles extends Model
     protected $guarded = [];
 
     protected $casts = [
-        'roles' => 'array'
+        'roles' => 'array',
     ];
 
     public function user()

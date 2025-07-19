@@ -1,8 +1,8 @@
 <?php
 
-use Illuminate\Support\Facades\Schema;
-use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Database\Migrations\Migration;
+use Illuminate\Database\Schema\Blueprint;
+use Illuminate\Support\Facades\Schema;
 
 class AddAccountStatusToProfilesTable extends Migration
 {
@@ -14,13 +14,13 @@ class AddAccountStatusToProfilesTable extends Migration
     public function up()
     {
         // Drop old columns, fix stories
-        if(Schema::hasColumn('profiles', 'hub_url')) {
+        if (Schema::hasColumn('profiles', 'hub_url')) {
             Schema::table('profiles', function (Blueprint $table) {
-                $table->dropColumn(['verify_token','secret','salmon_url','hub_url']);
+                $table->dropColumn(['verify_token', 'secret', 'salmon_url', 'hub_url']);
             });
         }
 
-        if(Schema::hasColumn('stories', 'bigIncrements')) {
+        if (Schema::hasColumn('stories', 'bigIncrements')) {
             Schema::table('stories', function (Blueprint $table) {
                 $table->dropColumn('bigIncrements');
             });

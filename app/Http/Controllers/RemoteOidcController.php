@@ -3,7 +3,8 @@
 namespace App\Http\Controllers;
 
 use App\Models\UserOidcMapping;
-use Purify;
+use App\Rules\EmailNotBanned;
+use App\Rules\PixelfedUsername;
 use App\Services\EmailService;
 use App\Services\UserOidcService;
 use App\User;
@@ -12,8 +13,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Str;
-use App\Rules\EmailNotBanned;
-use App\Rules\PixelfedUsername;
+use Purify;
 
 class RemoteOidcController extends Controller
 {
@@ -43,13 +43,13 @@ class RemoteOidcController extends Controller
             return redirect('/');
         }
 
-        abort_unless($request->input("state"), 400);
-        abort_unless($request->input("code"), 400);
+        abort_unless($request->input('state'), 400);
+        abort_unless($request->input('code'), 400);
 
-        abort_unless(hash_equals($request->session()->pull('oauth2state'), $request->input("state")), 400, "invalid state");
+        abort_unless(hash_equals($request->session()->pull('oauth2state'), $request->input('state')), 400, 'invalid state');
 
         $accessToken = $provider->getAccessToken('authorization_code', [
-            'code' => $request->get('code')
+            'code' => $request->get('code'),
         ]);
 
         $userInfo = $provider->getResourceOwner($accessToken);
@@ -59,15 +59,16 @@ class RemoteOidcController extends Controller
         $mappedUser = UserOidcMapping::where('oidc_id', $userInfoId)->first();
         if ($mappedUser) {
             $this->guarder()->login($mappedUser->user);
+
             return redirect('/');
         }
 
-        abort_if(EmailService::isBanned($userInfoData["email"]), 400, 'Banned email.');
+        abort_if(EmailService::isBanned($userInfoData['email']), 400, 'Banned email.');
 
         $user = $this->createUser([
             'username' => $userInfoData[config('remote-auth.oidc.field_username')],
-            'name' => $userInfoData["name"] ?? $userInfoData["display_name"] ?? $userInfoData[config('remote-auth.oidc.field_username')] ?? null,
-            'email' => $userInfoData["email"],
+            'name' => $userInfoData['name'] ?? $userInfoData['display_name'] ?? $userInfoData[config('remote-auth.oidc.field_username')] ?? null,
+            'email' => $userInfoData['email'],
         ]);
 
         UserOidcMapping::create([
@@ -87,14 +88,14 @@ class RemoteOidcController extends Controller
                 'email:strict,filter_unicode,dns,spoof',
                 'max:255',
                 'unique:users',
-                new EmailNotBanned(),
+                new EmailNotBanned,
             ],
             'username' => [
                 'required',
                 'min:2',
                 'max:30',
                 'unique:users,username',
-                new PixelfedUsername(),
+                new PixelfedUsername,
             ],
             'name' => 'nullable|max:30',
         ]);

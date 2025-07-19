@@ -2,22 +2,14 @@
 
 namespace App\Http\Controllers\Groups;
 
-use Illuminate\Support\Facades\Cache;
-use Illuminate\Support\Facades\RateLimiter;
 use App\Http\Controllers\Controller;
-use Illuminate\Http\Request;
-use App\Services\AccountService;
-use App\Services\GroupService;
-use App\Services\Groups\GroupPostService;
-use App\Services\Groups\GroupsLikeService;
-use App\Follower;
-use App\Profile;
 use App\Models\Group;
 use App\Models\GroupHashtag;
-use App\Models\GroupInvitation;
-use App\Models\GroupMember;
-use App\Models\GroupPostHashtag;
 use App\Models\GroupPost;
+use App\Models\GroupPostHashtag;
+use App\Services\Groups\GroupPostService;
+use App\Services\Groups\GroupsLikeService;
+use Illuminate\Http\Request;
 
 class GroupsTopicController extends Controller
 {
@@ -32,13 +24,13 @@ class GroupsTopicController extends Controller
             'gid' => 'required',
         ]);
 
-        abort_if(!$request->user(), 404);
+        abort_if(! $request->user(), 404);
 
         $pid = $request->user()->profile_id;
         $gid = $request->input('gid');
         $group = Group::findOrFail($gid);
 
-        abort_if(!$group->isMember($pid), 403, 'Not a member of group.');
+        abort_if(! $group->isMember($pid), 403, 'Not a member of group.');
 
         $posts = GroupPostHashtag::join('group_hashtags', 'group_hashtags.id', '=', 'group_post_hashtags.hashtag_id')
             ->selectRaw('group_hashtags.*, group_post_hashtags.*, count(group_post_hashtags.hashtag_id) as ht_count')
@@ -46,39 +38,40 @@ class GroupsTopicController extends Controller
             ->orderByDesc('ht_count')
             ->limit(10)
             ->pluck('group_post_hashtags.hashtag_id', 'ht_count')
-            ->map(function($id, $key) use ($gid) {
+            ->map(function ($id, $key) use ($gid) {
                 $tag = GroupHashtag::find($id);
+
                 return [
                     'hid' => $id,
                     'name' => $tag->name,
                     'url' => url("/groups/{$gid}/topics/{$tag->slug}"),
-                    'count' => $key
+                    'count' => $key,
                 ];
             })->values();
 
-        return response()->json($posts, 200, [], JSON_PRETTY_PRINT|JSON_UNESCAPED_SLASHES);
+        return response()->json($posts, 200, [], JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES);
     }
 
     public function groupTopicTag(Request $request)
     {
         $this->validate($request, [
             'gid' => 'required',
-            'name' => 'required'
+            'name' => 'required',
         ]);
 
-        abort_if(!$request->user(), 404);
+        abort_if(! $request->user(), 404);
 
         $pid = $request->user()->profile_id;
         $gid = $request->input('gid');
         $limit = $request->input('limit', 3);
         $group = Group::findOrFail($gid);
 
-        abort_if(!$group->isMember($pid), 403, 'Not a member of group.');
+        abort_if(! $group->isMember($pid), 403, 'Not a member of group.');
 
         $name = $request->input('name');
         $hashtag = GroupHashtag::whereName($name)->first();
 
-        if(!$hashtag) {
+        if (! $hashtag) {
             return [];
         }
 
@@ -105,29 +98,31 @@ class GroupsTopicController extends Controller
             ->whereHashtagId($hashtag->id)
             ->orderByDesc('id')
             ->simplePaginate($limit)
-            ->map(function($gp) use($pid) {
+            ->map(function ($gp) use ($pid) {
                 $status = GroupPostService::get($gp['group_id'], $gp['status_id']);
-                if(!$status) {
+                if (! $status) {
                     return false;
                 }
                 $status['favourited'] = (bool) GroupsLikeService::liked($pid, $gp['status_id']);
                 $status['favourites_count'] = GroupsLikeService::count($gp['status_id']);
                 $status['pf_type'] = $status['pf_type'];
                 $status['visibility'] = 'public';
+
                 return $status;
             });
 
-        return response()->json($posts, 200, [], JSON_PRETTY_PRINT|JSON_UNESCAPED_SLASHES);
+        return response()->json($posts, 200, [], JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES);
     }
 
     public function showTopicFeed(Request $request, $gid, $tag)
     {
-        abort_if(!$request->user(), 404);
+        abort_if(! $request->user(), 404);
 
         $pid = $request->user()->profile_id;
         $group = Group::findOrFail($gid);
         $gid = $group->id;
-        abort_if(!$group->isMember($pid), 403, 'Not a member of group.');
+        abort_if(! $group->isMember($pid), 403, 'Not a member of group.');
+
         return view('groups.topic-feed', compact('gid', 'tag'));
     }
 }

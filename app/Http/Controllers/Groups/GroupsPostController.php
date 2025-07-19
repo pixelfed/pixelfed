@@ -2,30 +2,23 @@
 
 namespace App\Http\Controllers\Groups;
 
-use Illuminate\Support\Facades\Bus;
-use Illuminate\Support\Facades\Cache;
-use Illuminate\Support\Facades\Storage;
-use Illuminate\Support\Facades\RateLimiter;
 use App\Http\Controllers\Controller;
-use Illuminate\Http\Request;
-use App\Services\AccountService;
-use App\Services\GroupService;
-use App\Services\Groups\GroupFeedService;
-use App\Services\Groups\GroupPostService;
-use App\Services\Groups\GroupMediaService;
-use App\Services\Groups\GroupsLikeService;
-use App\Follower;
-use App\Profile;
-use App\Models\Group;
-use App\Models\GroupHashtag;
-use App\Models\GroupPost;
-use App\Models\GroupLike;
-use App\Models\GroupMember;
-use App\Models\GroupInvitation;
-use App\Models\GroupMedia;
 use App\Jobs\GroupsPipeline\ImageResizePipeline;
 use App\Jobs\GroupsPipeline\ImageS3UploadPipeline;
 use App\Jobs\GroupsPipeline\NewPostPipeline;
+use App\Models\Group;
+use App\Models\GroupLike;
+use App\Models\GroupMedia;
+use App\Models\GroupPost;
+use App\Profile;
+use App\Services\Groups\GroupFeedService;
+use App\Services\Groups\GroupMediaService;
+use App\Services\Groups\GroupPostService;
+use App\Services\Groups\GroupsLikeService;
+use App\Services\GroupService;
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Bus;
+use Illuminate\Support\Facades\Cache;
 
 class GroupsPostController extends Controller
 {
@@ -39,7 +32,7 @@ class GroupsPostController extends Controller
         $this->validate($request, [
             'group_id' => 'required|exists:groups,id',
             'caption' => 'sometimes|string|max:'.config_cache('pixelfed.max_caption_length', 500),
-            'pollOptions' => 'sometimes|array|min:1|max:4'
+            'pollOptions' => 'sometimes|array|min:1|max:4',
         ]);
 
         $group = Group::findOrFail($request->input('group_id'));
@@ -47,9 +40,9 @@ class GroupsPostController extends Controller
         $caption = $request->input('caption');
         $type = $request->input('type', 'text');
 
-        abort_if(!GroupService::canPost($group->id, $pid), 422, 'You cannot create new posts at this time');
+        abort_if(! GroupService::canPost($group->id, $pid), 422, 'You cannot create new posts at this time');
 
-        if($type == 'text') {
+        if ($type == 'text') {
             abort_if(strlen(e($caption)) == 0, 403);
         }
 
@@ -67,7 +60,7 @@ class GroupsPostController extends Controller
 
         // NewStatusPipeline::dispatch($status, $gp);
 
-        if($type == 'poll') {
+        if ($type == 'poll') {
             // Polls not supported yet
             // $poll = new Poll;
             // $poll->status_id = $status->id;
@@ -80,14 +73,14 @@ class GroupsPostController extends Controller
             // $poll->save();
             // sleep(5);
         }
-        if($type == 'photo') {
+        if ($type == 'photo') {
             $photo = $request->file('photo');
             $storagePath = GroupMediaService::path($group->id, $pid, $status->id);
             // $storagePath = 'public/g/' . $group->id . '/p/' . $status->id;
             $path = $photo->storePublicly($storagePath);
             // $hash = \hash_file('sha256', $photo);
 
-            $media = new GroupMedia();
+            $media = new GroupMedia;
             $media->group_id = $group->id;
             $media->status_id = $status->id;
             $media->profile_id = $request->user()->profile_id;
@@ -107,13 +100,13 @@ class GroupsPostController extends Controller
             // delay response while background job optimizes media
             // sleep(5);
         }
-        if($type == 'video') {
+        if ($type == 'video') {
             $video = $request->file('video');
-            $storagePath = 'public/g/' . $group->id . '/p/' . $status->id;
+            $storagePath = 'public/g/'.$group->id.'/p/'.$status->id;
             $path = $video->storePublicly($storagePath);
             $hash = \hash_file('sha256', $video);
 
-            $media = new Media();
+            $media = new Media;
             $media->status_id = $status->id;
             $media->profile_id = $request->user()->profile_id;
             $media->user_id = $request->user()->id;
@@ -133,7 +126,7 @@ class GroupsPostController extends Controller
             'group:status:created',
             [
                 'type' => $gp->type,
-                'status_id' => $status->id
+                'status_id' => $status->id,
             ],
             GroupPost::class,
             $gp->id
@@ -141,13 +134,13 @@ class GroupsPostController extends Controller
 
         $s = GroupPostService::get($status->group_id, $status->id);
         GroupFeedService::add($group->id, $gp->id);
-        Cache::forget('groups:self:feed:' . $pid);
+        Cache::forget('groups:self:feed:'.$pid);
 
         $s['pf_type'] = $type;
         $s['visibility'] = 'public';
         $s['url'] = $gp->url();
 
-        if($type == 'poll') {
+        if ($type == 'poll') {
             $s['poll'] = PollService::get($status->id);
         }
 
@@ -159,31 +152,31 @@ class GroupsPostController extends Controller
 
     public function deletePost(Request $request)
     {
-        abort_if(!$request->user(), 403);
+        abort_if(! $request->user(), 403);
 
         $this->validate($request, [
-          'id'  => 'required|integer|min:1',
-          'gid' => 'required|integer|min:1'
+            'id' => 'required|integer|min:1',
+            'gid' => 'required|integer|min:1',
         ]);
 
         $pid = $request->user()->profile_id;
         $gid = $request->input('gid');
         $group = Group::findOrFail($gid);
-        abort_if(!$group->isMember($pid), 403, 'Not a member of group.');
+        abort_if(! $group->isMember($pid), 403, 'Not a member of group.');
 
         $gp = GroupPost::whereGroupId($status->group_id)->findOrFail($request->input('id'));
         abort_if($gp->profile_id != $pid && $group->profile_id != $pid, 403);
         $cached = GroupPostService::get($status->group_id, $status->id);
 
-        if($cached) {
-            $cached = collect($cached)->filter(function($r, $k) {
+        if ($cached) {
+            $cached = collect($cached)->filter(function ($r, $k) {
                 return in_array($k, [
                     'id',
                     'sensitive',
                     'pf_type',
                     'media_attachments',
                     'content_text',
-                    'created_at'
+                    'created_at',
                 ]);
             });
         }
@@ -195,7 +188,7 @@ class GroupsPostController extends Controller
             [
                 'type' => $gp->type,
                 'status_id' => $status->id,
-                'original' => $cached
+                'original' => $cached,
             ],
             GroupPost::class,
             $gp->id
@@ -235,9 +228,9 @@ class GroupsPostController extends Controller
         //  $u->save();
         // }
 
-        if($status->in_reply_to_id) {
+        if ($status->in_reply_to_id) {
             $parent = GroupPost::find($status->in_reply_to_id);
-            if($parent) {
+            if ($parent) {
                 $parent->reply_count = GroupPost::whereInReplyToId($parent->id)->count();
                 $parent->save();
                 GroupPostService::del($group->id, GroupService::sidToGid($group->id, $parent->id));
@@ -251,7 +244,7 @@ class GroupsPostController extends Controller
             StatusDelete::dispatch($status);
         }
 
-        if($request->wantsJson()) {
+        if ($request->wantsJson()) {
             return response()->json(['Status successfully deleted.']);
         } else {
             return redirect($user->url());
@@ -262,7 +255,7 @@ class GroupsPostController extends Controller
     {
         $this->validate($request, [
             'gid' => 'required',
-            'sid' => 'required'
+            'sid' => 'required',
         ]);
 
         $pid = $request->user()->profile_id;
@@ -270,11 +263,11 @@ class GroupsPostController extends Controller
         $sid = $request->input('sid');
 
         $group = GroupService::get($gid);
-        abort_if(!$group, 422, 'Invalid group');
-        abort_if(!GroupService::canLike($gid, $pid), 422, 'You cannot interact with this content at this time');
-        abort_if(!GroupService::isMember($gid, $pid), 403, 'Not a member of group');
+        abort_if(! $group, 422, 'Invalid group');
+        abort_if(! GroupService::canLike($gid, $pid), 422, 'You cannot interact with this content at this time');
+        abort_if(! GroupService::isMember($gid, $pid), 403, 'Not a member of group');
         $gp = GroupPostService::get($gid, $sid);
-        abort_if(!$gp, 422, 'Invalid status');
+        abort_if(! $gp, 422, 'Invalid status');
         $count = $gp['favourites_count'] ?? 0;
 
         $like = GroupLike::firstOrCreate([
@@ -283,10 +276,10 @@ class GroupsPostController extends Controller
             'status_id' => $sid,
         ]);
 
-        if($like->wasRecentlyCreated) {
+        if ($like->wasRecentlyCreated) {
             // update parent post like count
             $parent = GroupPost::whereGroupId($gid)->find($sid);
-            abort_if(!$parent, 422, 'Invalid status');
+            abort_if(! $parent, 422, 'Invalid status');
             $parent->likes_count = $parent->likes_count + 1;
             $parent->save();
             GroupsLikeService::add($pid, $sid);
@@ -324,7 +317,6 @@ class GroupsPostController extends Controller
         //     }
         // }
 
-
         // Cache::forget('status:'.$status->id.':likedby:userid:'.$request->user()->id);
         // StatusService::del($status->id);
 
@@ -337,7 +329,7 @@ class GroupsPostController extends Controller
     {
         $this->validate($request, [
             'gid' => 'required',
-            'sid' => 'required'
+            'sid' => 'required',
         ]);
 
         $pid = $request->user()->profile_id;
@@ -345,11 +337,11 @@ class GroupsPostController extends Controller
         $sid = $request->input('sid');
 
         $group = GroupService::get($gid);
-        abort_if(!$group, 422, 'Invalid group');
-        abort_if(!GroupService::canLike($gid, $pid), 422, 'You cannot interact with this content at this time');
-        abort_if(!GroupService::isMember($gid, $pid), 403, 'Not a member of group');
+        abort_if(! $group, 422, 'Invalid group');
+        abort_if(! GroupService::canLike($gid, $pid), 422, 'You cannot interact with this content at this time');
+        abort_if(! GroupService::isMember($gid, $pid), 403, 'Not a member of group');
         $gp = GroupPostService::get($gid, $sid);
-        abort_if(!$gp, 422, 'Invalid status');
+        abort_if(! $gp, 422, 'Invalid status');
         $count = $gp['favourites_count'] ?? 0;
 
         $like = GroupLike::where([
@@ -358,10 +350,10 @@ class GroupsPostController extends Controller
             'status_id' => $sid,
         ])->first();
 
-        if($like) {
+        if ($like) {
             $like->delete();
             $parent = GroupPost::whereGroupId($gid)->find($sid);
-            abort_if(!$parent, 422, 'Invalid status');
+            abort_if(! $parent, 422, 'Invalid status');
             $parent->likes_count = $parent->likes_count - 1;
             $parent->save();
             GroupsLikeService::remove($pid, $sid);
@@ -379,25 +371,25 @@ class GroupsPostController extends Controller
     {
         $this->validate($request, [
             'gid' => 'required',
-            'type' => 'required|in:photo,video'
+            'type' => 'required|in:photo,video',
         ]);
 
-        abort_if(!$request->user(), 404);
+        abort_if(! $request->user(), 404);
 
         $pid = $request->user()->profile_id;
         $gid = $request->input('gid');
         $type = $request->input('type');
         $group = Group::findOrFail($gid);
 
-        abort_if(!$group->isMember($pid), 403, 'Not a member of group.');
+        abort_if(! $group->isMember($pid), 403, 'Not a member of group.');
 
         $media = GroupPost::whereGroupId($gid)
             ->whereType($type)
             ->latest()
             ->simplePaginate(20)
-            ->map(function($gp) use($pid) {
+            ->map(function ($gp) use ($pid) {
                 $status = GroupPostService::get($gp['group_id'], $gp['id']);
-                if(!$status) {
+                if (! $status) {
                     return false;
                 }
                 $status['favourited'] = (bool) GroupsLikeService::liked($pid, $gp['id']);
@@ -411,10 +403,10 @@ class GroupsPostController extends Controller
                 // }
 
                 return $status;
-            })->filter(function($status) {
+            })->filter(function ($status) {
                 return $status;
             });
 
-        return response()->json($media->toArray(), 200, [], JSON_PRETTY_PRINT|JSON_UNESCAPED_SLASHES);
+        return response()->json($media->toArray(), 200, [], JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES);
     }
 }

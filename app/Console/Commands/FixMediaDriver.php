@@ -2,12 +2,12 @@
 
 namespace App\Console\Commands;
 
-use Illuminate\Console\Command;
-use Illuminate\Support\Facades\Storage;
-use App\Media;
-use League\Flysystem\MountManager;
 use App\Jobs\ImageOptimizePipeline\ImageOptimize;
 use App\Jobs\MediaPipeline\MediaFixLocalFilesystemCleanupPipeline;
+use App\Media;
+use Illuminate\Console\Command;
+use Illuminate\Support\Facades\Storage;
+use League\Flysystem\MountManager;
 
 class FixMediaDriver extends Command
 {
@@ -32,13 +32,15 @@ class FixMediaDriver extends Command
      */
     public function handle()
     {
-        if(config('filesystems.default') !== 'local') {
+        if (config('filesystems.default') !== 'local') {
             $this->error('Invalid default filesystem, set FILESYSTEM_DRIVER=local to proceed');
+
             return Command::SUCCESS;
         }
 
-        if((bool) config_cache('pixelfed.cloud_storage') == false) {
+        if ((bool) config_cache('pixelfed.cloud_storage') == false) {
             $this->error('Cloud storage not enabled, exiting...');
+
             return Command::SUCCESS;
         }
 
@@ -58,8 +60,9 @@ class FixMediaDriver extends Command
         $this->info(' ');
         $this->error('   Remember, FILESYSTEM_DRIVER=local must remain set or you will break things!');
 
-        if(!$this->confirm('Are you sure you want to perform this command?')) {
+        if (! $this->confirm('Are you sure you want to perform this command?')) {
             $this->info('Exiting...');
+
             return Command::SUCCESS;
         }
 
@@ -80,27 +83,27 @@ class FixMediaDriver extends Command
         $bar = $this->output->createProgressBar(Media::whereNotNull('status_id')->whereNull('cdn_url')->count());
         $bar->start();
 
-        foreach(Media::whereNotNull('status_id')->whereNull('cdn_url')->lazyById(20) as $media) {
-            if($cloud->exists($media->media_path)) {
-                if($optimize === 'yes') {
+        foreach (Media::whereNotNull('status_id')->whereNull('cdn_url')->lazyById(20) as $media) {
+            if ($cloud->exists($media->media_path)) {
+                if ($optimize === 'yes') {
                     $mountManager->copy(
-                        's3://' . $media->media_path,
-                        'local://' . $media->media_path
+                        's3://'.$media->media_path,
+                        'local://'.$media->media_path
                     );
                     sleep(1);
-                    if(empty($media->original_sha256)) {
+                    if (empty($media->original_sha256)) {
                         $hash = \hash_file('sha256', Storage::disk('local')->path($media->media_path));
                         $media->original_sha256 = $hash;
                         $media->save();
                         sleep(1);
                     }
-                    if(
+                    if (
                         $media->mime &&
                         in_array($media->mime, [
                             'image/jpg',
                             'image/jpeg',
                             'image/png',
-                            'image/webp'
+                            'image/webp',
                         ])
                     ) {
                         ImageOptimize::dispatch($media);
@@ -122,13 +125,14 @@ class FixMediaDriver extends Command
 
         $this->info('Successfully fixed media paths and cleared cached!');
 
-        if($optimize === 'yes') {
+        if ($optimize === 'yes') {
             MediaFixLocalFilesystemCleanupPipeline::dispatch()->delay(now()->addMinutes(15))->onQueue('default');
             $this->line(' ');
             $this->info('A cleanup job has been dispatched to delete media stored locally, it may take a few minutes to process!');
         }
 
         $this->line(' ');
+
         return Command::SUCCESS;
     }
 }

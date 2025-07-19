@@ -2,14 +2,15 @@
 
 namespace App\Console\Commands;
 
-use Illuminate\Console\Command;
 use App\Hashtag;
-use App\StatusHashtag;
 use App\Models\HashtagRelated;
 use App\Services\HashtagRelatedService;
+use App\StatusHashtag;
+use Illuminate\Console\Command;
 use Illuminate\Contracts\Console\PromptsForMissingInput;
-use function Laravel\Prompts\multiselect;
+
 use function Laravel\Prompts\confirm;
+use function Laravel\Prompts\multiselect;
 
 class HashtagRelatedGenerate extends Command implements PromptsForMissingInput
 {
@@ -46,30 +47,30 @@ class HashtagRelatedGenerate extends Command implements PromptsForMissingInput
     {
         $tag = $this->argument('tag');
         $hashtag = Hashtag::whereName($tag)->orWhere('slug', $tag)->first();
-        if(!$hashtag) {
+        if (! $hashtag) {
             $this->error('Hashtag not found, aborting...');
             exit;
         }
 
         $exists = HashtagRelated::whereHashtagId($hashtag->id)->exists();
 
-        if($exists) {
+        if ($exists) {
             $confirmed = confirm('Found existing related tags, do you want to regenerate them?');
-            if(!$confirmed) {
+            if (! $confirmed) {
                 $this->error('Aborting...');
                 exit;
             }
         }
 
-        $this->info('Looking up #' . $tag . '...');
+        $this->info('Looking up #'.$tag.'...');
 
         $tags = StatusHashtag::whereHashtagId($hashtag->id)->count();
-        if(!$tags || $tags < 100) {
+        if (! $tags || $tags < 100) {
             $this->error('Not enough posts found to generate related hashtags!');
             exit;
         }
 
-        $this->info('Found ' . $tags . ' posts that use that hashtag');
+        $this->info('Found '.$tags.' posts that use that hashtag');
         $related = collect(HashtagRelatedService::fetchRelatedTags($tag));
 
         $selected = multiselect(
@@ -78,15 +79,15 @@ class HashtagRelatedGenerate extends Command implements PromptsForMissingInput
             required: true,
         );
 
-        $filtered = $related->filter(fn($i) => in_array($i['name'], $selected))->all();
-        $agg_score = $related->filter(fn($i) => in_array($i['name'], $selected))->sum('related_count');
+        $filtered = $related->filter(fn ($i) => in_array($i['name'], $selected))->all();
+        $agg_score = $related->filter(fn ($i) => in_array($i['name'], $selected))->sum('related_count');
 
         HashtagRelated::updateOrCreate([
             'hashtag_id' => $hashtag->id,
         ], [
             'related_tags' => array_values($filtered),
             'agg_score' => $agg_score,
-            'last_calculated_at' => now()
+            'last_calculated_at' => now(),
         ]);
 
         $this->info('Finished!');

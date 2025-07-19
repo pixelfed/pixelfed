@@ -2,8 +2,12 @@
 
 namespace App\Jobs\MentionPipeline;
 
+use App\Jobs\PushNotificationPipeline\MentionPushNotifyPipeline;
 use App\Mention;
 use App\Notification;
+use App\Services\NotificationAppGatewayService;
+use App\Services\PushNotificationService;
+use App\Services\StatusService;
 use App\Status;
 use App\User;
 use Illuminate\Bus\Queueable;
@@ -11,16 +15,13 @@ use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
-use App\Jobs\PushNotificationPipeline\MentionPushNotifyPipeline;
-use App\Services\NotificationAppGatewayService;
-use App\Services\PushNotificationService;
-use App\Services\StatusService;
 
 class MentionPipeline implements ShouldQueue
 {
     use Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
 
     protected $status;
+
     protected $mention;
 
     /**
@@ -54,11 +55,11 @@ class MentionPipeline implements ShouldQueue
         $target = $this->mention->profile_id;
 
         $exists = Notification::whereProfileId($target)
-                  ->whereActorId($actor->id)
-                  ->whereIn('action', ['mention', 'comment'])
-                  ->whereItemId($status->id)
-                  ->whereItemType('App\Status')
-                  ->count();
+            ->whereActorId($actor->id)
+            ->whereIn('action', ['mention', 'comment'])
+            ->whereItemId($status->id)
+            ->whereItemType('App\Status')
+            ->count();
 
         if ($actor->id === $target || $exists !== 0) {
             return;

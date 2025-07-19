@@ -3,22 +3,27 @@
 namespace App\Util\Media;
 
 use App\Media;
-use Intervention\Image\ImageManager;
-use Intervention\Image\Encoders\JpegEncoder;
-use Intervention\Image\Encoders\WebpEncoder;
-use Intervention\Image\Encoders\AvifEncoder;
-use Intervention\Image\Encoders\PngEncoder;
-use Cache, Log, Storage;
-use App\Util\Media\Blurhash;
 use App\Services\StatusService;
+use Cache;
+use Intervention\Image\Encoders\JpegEncoder;
+use Intervention\Image\Encoders\PngEncoder;
+use Intervention\Image\Encoders\WebpEncoder;
+use Intervention\Image\ImageManager;
+use Log;
+use Storage;
 
 class Image
 {
     public $square;
+
     public $landscape;
+
     public $portrait;
+
     public $thumbnail;
+
     public $orientation;
+
     public $acceptedMimes = [
         'image/png',
         'image/jpeg',
@@ -38,12 +43,12 @@ class Image
         $this->landscape = $this->orientations()['landscape'];
         $this->portrait = $this->orientations()['portrait'];
         $this->thumbnail = [
-            'width'  => 640,
+            'width' => 640,
             'height' => 640,
         ];
         $this->orientation = null;
 
-        $driver = match(config('image.driver')) {
+        $driver = match (config('image.driver')) {
             'imagick' => \Intervention\Image\Drivers\Imagick\Driver::class,
             'vips' => \Intervention\Image\Drivers\Vips\Driver::class,
             default => \Intervention\Image\Drivers\Gd\Driver::class
@@ -62,15 +67,15 @@ class Image
     {
         return [
             'square' => [
-                'width'  => 1080,
+                'width' => 1080,
                 'height' => 1080,
             ],
             'landscape' => [
-                'width'  => 1920,
+                'width' => 1920,
                 'height' => 1080,
             ],
             'portrait' => [
-                'width'  => 1080,
+                'width' => 1080,
                 'height' => 1350,
             ],
         ];
@@ -80,7 +85,7 @@ class Image
     {
         if ($isThumbnail) {
             return [
-                'dimensions'  => $this->thumbnail,
+                'dimensions' => $this->thumbnail,
                 'orientation' => 'thumbnail',
             ];
         }
@@ -91,7 +96,7 @@ class Image
         $this->orientation = $orientation;
 
         return [
-            'dimensions'  => $this->orientations()[$orientation],
+            'dimensions' => $this->orientations()[$orientation],
             'orientation' => $orientation,
             'width_original' => $width,
             'height_original' => $height,
@@ -122,7 +127,7 @@ class Image
     {
         $path = $media->media_path;
         $file = storage_path('app/'.$path);
-        if (!in_array($media->mime, $this->acceptedMimes)) {
+        if (! in_array($media->mime, $this->acceptedMimes)) {
             return;
         }
 
@@ -132,37 +137,37 @@ class Image
             $outputExtension = $extension;
 
             $metadata = null;
-            if (!$thumbnail && config('media.exif.database', false) == true) {
+            if (! $thumbnail && config('media.exif.database', false) == true) {
                 try {
                     $exif = @exif_read_data($file);
                     if ($exif) {
                         $meta = [];
                         $keys = [
-                            "FileName",
-                            "FileSize",
-                            "FileType",
-                            "Make",
-                            "Model",
-                            "MimeType",
-                            "ColorSpace",
-                            "ExifVersion",
-                            "Orientation",
-                            "UserComment",
-                            "XResolution",
-                            "YResolution",
-                            "FileDateTime",
-                            "SectionsFound",
-                            "ExifImageWidth",
-                            "ResolutionUnit",
-                            "ExifImageLength",
-                            "FlashPixVersion",
-                            "Exif_IFD_Pointer",
-                            "YCbCrPositioning",
-                            "ComponentsConfiguration",
-                            "ExposureTime",
-                            "FNumber",
-                            "ISOSpeedRatings",
-                            "ShutterSpeedValue"
+                            'FileName',
+                            'FileSize',
+                            'FileType',
+                            'Make',
+                            'Model',
+                            'MimeType',
+                            'ColorSpace',
+                            'ExifVersion',
+                            'Orientation',
+                            'UserComment',
+                            'XResolution',
+                            'YResolution',
+                            'FileDateTime',
+                            'SectionsFound',
+                            'ExifImageWidth',
+                            'ResolutionUnit',
+                            'ExifImageLength',
+                            'FlashPixVersion',
+                            'Exif_IFD_Pointer',
+                            'YCbCrPositioning',
+                            'ComponentsConfiguration',
+                            'ExposureTime',
+                            'FNumber',
+                            'ISOSpeedRatings',
+                            'ShutterSpeedValue',
                         ];
                         foreach ($exif as $k => $v) {
                             if (in_array($k, $keys)) {
@@ -172,7 +177,7 @@ class Image
                         $media->metadata = json_encode($meta);
                     }
                 } catch (\Exception $e) {
-                    Log::info('EXIF extraction failed: ' . $e->getMessage());
+                    Log::info('EXIF extraction failed: '.$e->getMessage());
                 }
             }
 
@@ -209,7 +214,7 @@ class Image
                     $outputExtension = 'jpg';
                     break;
                 case 'png':
-                    $encoder = new PngEncoder();
+                    $encoder = new PngEncoder;
                     $outputExtension = 'png';
                     break;
                 case 'webp':
@@ -244,7 +249,7 @@ class Image
                 $media->height = $img->height();
                 $media->orientation = $orientation;
                 $media->media_path = $converted['path'];
-                $media->mime = 'image/' . $outputExtension;
+                $media->mime = 'image/'.$outputExtension;
             }
 
             $media->save();
@@ -253,7 +258,7 @@ class Image
                 $this->generateBlurhash($media);
             }
 
-            if($media->status_id) {
+            if ($media->status_id) {
                 Cache::forget('status:transformer:media:attachments:'.$media->status_id);
                 Cache::forget('status:thumb:'.$media->status_id);
                 StatusService::del($media->status_id);
@@ -262,7 +267,7 @@ class Image
         } catch (\Exception $e) {
             $media->processed_at = now();
             $media->save();
-            Log::info('MediaResizeException: ' . $e->getMessage() . ' | Could not process media id: ' . $media->id);
+            Log::info('MediaResizeException: '.$e->getMessage().' | Could not process media id: '.$media->id);
         }
     }
 

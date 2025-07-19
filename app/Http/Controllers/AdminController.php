@@ -247,9 +247,10 @@ class AdminController extends Controller
     {
         $message = Contact::findOrFail($id);
         $user = User::whereNull('status')->find($message->user_id);
-        if(!$user) {
+        if (! $user) {
             $message->read_at = now();
             $message->save();
+
             return redirect('/i/admin/messages/home')->with('status', 'Redirected from message sent from a deleted account');
         }
 
@@ -262,15 +263,16 @@ class AdminController extends Controller
             'message' => 'required|string|min:1|max:500',
         ]);
 
-        if(config('mail.default') === 'log') {
+        if (config('mail.default') === 'log') {
             return redirect('/i/admin/messages/home')->with('error', 'Mail driver not configured, please setup before you can sent email.');
         }
 
         $message = Contact::whereNull('responded_at')->findOrFail($id);
         $user = User::whereNull('status')->find($message->user_id);
-        if(!$user) {
+        if (! $user) {
             $message->read_at = now();
             $message->save();
+
             return redirect('/i/admin/messages/home')->with('status', 'Redirected from message sent from a deleted account');
         }
         $message->response = $request->input('message');
@@ -289,17 +291,19 @@ class AdminController extends Controller
             'message' => 'required|string|min:1|max:500',
         ]);
 
-        if(config('mail.default') === 'log') {
+        if (config('mail.default') === 'log') {
             return redirect('/i/admin/messages/home')->with('error', 'Mail driver not configured, please setup before you can sent email.');
         }
 
         $message = Contact::whereNull('read_at')->findOrFail($id);
         $user = User::whereNull('status')->find($message->user_id);
-        if(!$user) {
+        if (! $user) {
             $message->read_at = now();
             $message->save();
+
             return redirect('/i/admin/messages/home')->with('error', 'Redirected from message sent from a deleted account');
         }
+
         return new AdminMessageResponse($message);
     }
 
@@ -312,9 +316,10 @@ class AdminController extends Controller
         $message = Contact::findOrFail($id);
 
         $user = User::whereNull('status')->find($message->user_id);
-        if(!$user) {
+        if (! $user) {
             $message->read_at = now();
             $message->save();
+
             return redirect('/i/admin/messages/home')->with('error', 'Redirected from message sent from a deleted account');
         }
         if ($message->read_at) {

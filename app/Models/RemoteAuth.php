@@ -14,6 +14,6 @@ class RemoteAuth extends Model
     protected $casts = [
         'verify_credentials' => 'array',
         'last_successful_login_at' => 'datetime',
-        'last_verify_credentials_at' => 'datetime'
+        'last_verify_credentials_at' => 'datetime',
     ];
 }

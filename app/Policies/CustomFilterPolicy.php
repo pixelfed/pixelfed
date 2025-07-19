@@ -18,8 +18,6 @@ class CustomFilterPolicy
     /**
      * Determine whether the user can view the custom filter.
      *
-     * @param  \App\User  $user
-     * @param  \App\Models\CustomFilter  $filter
      * @return bool
      */
     public function view(User $user, CustomFilter $filter)
@@ -38,8 +36,6 @@ class CustomFilterPolicy
     /**
      * Determine whether the user can update the custom filter.
      *
-     * @param  \App\User  $user
-     * @param  \App\Models\CustomFilter  $filter
      * @return bool
      */
     public function update(User $user, CustomFilter $filter)
@@ -50,8 +46,6 @@ class CustomFilterPolicy
     /**
      * Determine whether the user can delete the custom filter.
      *
-     * @param  \App\User  $user
-     * @param  \App\Models\CustomFilter  $filter
      * @return bool
      */
     public function delete(User $user, CustomFilter $filter)

@@ -2,9 +2,9 @@
 
 namespace App\Http\Resources;
 
+use App\Services\AccountService;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
-use App\Services\AccountService;
 
 class AdminProfile extends JsonResource
 {
@@ -23,8 +23,9 @@ class AdminProfile extends JsonResource
             'autocw' => (bool) $this->cw,
             'unlisted' => (bool) $this->unlisted,
             'no_autolink' => (bool) $this->no_autolink,
-            'banned' => (bool) $this->status == 'banned'
+            'banned' => (bool) $this->status == 'banned',
         ];
+
         return $res;
     }
 }

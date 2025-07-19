@@ -879,12 +879,12 @@ trait AdminSettingsController
                     return response()->json(['error' => true, 's3_vce' => true, 'message' => "<div class='border border-danger text-danger p-3 font-weight-bold rounded-lg'>The S3/Spaces credentials you provided are invalid, or the bucket does not have the proper permissions.</div><br/>Please check all fields and try again.<br/><br/><strong>Any cloud storage configuration changes you made have NOT been saved due to invalid credentials.</strong>"], 400);
                 }
 
-                ConfigCacheService::put($dkey . 'key', $key);
-                ConfigCacheService::put($dkey . 'secret', $secret);
-                ConfigCacheService::put($dkey . 'region', $region);
-                ConfigCacheService::put($dkey . 'bucket', $bucket);
-                ConfigCacheService::put($dkey . 'endpoint', $endpoint);
-                ConfigCacheService::put($dkey . 'url', $url);
+                ConfigCacheService::put($dkey.'key', $key);
+                ConfigCacheService::put($dkey.'secret', $secret);
+                ConfigCacheService::put($dkey.'region', $region);
+                ConfigCacheService::put($dkey.'bucket', $bucket);
+                ConfigCacheService::put($dkey.'endpoint', $endpoint);
+                ConfigCacheService::put($dkey.'url', $url);
             }
             $res['changes'] = json_encode($changes);
         }

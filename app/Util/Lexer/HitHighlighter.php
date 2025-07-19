@@ -34,8 +34,8 @@ class HitHighlighter extends Regex
     /**
      * Provides fluent method chaining.
      *
-     * @param string $tweet       The tweet to be hit highlighted.
-     * @param bool   $full_encode Whether to encode all special characters.
+     * @param  string  $tweet  The tweet to be hit highlighted.
+     * @param  bool  $full_encode  Whether to encode all special characters.
      *
      * @see  __construct()
      *
@@ -53,13 +53,13 @@ class HitHighlighter extends Regex
      *
      * @see  htmlspecialchars()
      *
-     * @param string $tweet       The tweet to be hit highlighted.
-     * @param bool   $escape      Whether to escape the tweet (default: true).
-     * @param bool   $full_encode Whether to encode all special characters.
+     * @param  string  $tweet  The tweet to be hit highlighted.
+     * @param  bool  $escape  Whether to escape the tweet (default: true).
+     * @param  bool  $full_encode  Whether to encode all special characters.
      */
     public function __construct($tweet = null, $escape = true, $full_encode = false)
     {
-        if (!empty($tweet) && $escape) {
+        if (! empty($tweet) && $escape) {
             if ($full_encode) {
                 parent::__construct(htmlentities($tweet, ENT_QUOTES, 'UTF-8', false));
             } else {
@@ -83,8 +83,7 @@ class HitHighlighter extends Regex
     /**
      * Set the highlighting tag to surround hits with.  The default tag is 'em'.
      *
-     * @param string $v The tag name.
-     *
+     * @param  string  $v  The tag name.
      * @return HitHighlighter Fluid method chaining.
      */
     public function setTag($v)
@@ -97,15 +96,14 @@ class HitHighlighter extends Regex
     /**
      * Hit highlights the tweet.
      *
-     * @param string $tweet       The tweet to be hit highlighted.
-     * @param array  $hits        An array containing the start and end index pairs
-     *                            for the highlighting.
-     * @param bool   $escape      Whether to escape the tweet (default: true).
-     * @param bool   $full_encode Whether to encode all special characters.
-     *
+     * @param  string  $tweet  The tweet to be hit highlighted.
+     * @param  array  $hits  An array containing the start and end index pairs
+     *                       for the highlighting.
+     * @param  bool  $escape  Whether to escape the tweet (default: true).
+     * @param  bool  $full_encode  Whether to encode all special characters.
      * @return string The hit highlighted tweet.
      */
-    public function highlight($tweet = null, array $hits = null)
+    public function highlight($tweet = null, ?array $hits = null)
     {
         if (is_null($tweet)) {
             $tweet = $this->tweet;
@@ -157,7 +155,7 @@ class HitHighlighter extends Regex
                     $chunk = (isset($chunks[$chunk_index]) ? $chunks[$chunk_index] : null);
                     $start_in_chunk = false;
                 }
-                if (!$placed && $chunk !== null) {
+                if (! $placed && $chunk !== null) {
                     $hit_spot = $hit - $offset;
                     $highlightTweet .= StringUtils::substr($chunk, $chunk_cursor, $hit_spot - $chunk_cursor).$tag;
                     $chunk_cursor = $hit_spot;
@@ -165,7 +163,7 @@ class HitHighlighter extends Regex
                     $placed = true;
                 }
                 // Ultimate fallback - hits that run off the end get a closing tag:
-                if (!$placed) {
+                if (! $placed) {
                     $highlightTweet .= $tag;
                 }
             }
@@ -185,9 +183,8 @@ class HitHighlighter extends Regex
     /**
      * Hit highlights the tweet.
      *
-     * @param array $hits An array containing the start and end index pairs
-     *                    for the highlighting.
-     *
+     * @param  array  $hits  An array containing the start and end index pairs
+     *                       for the highlighting.
      * @return string The hit highlighted tweet.
      *
      * @deprecated since version 1.1.0

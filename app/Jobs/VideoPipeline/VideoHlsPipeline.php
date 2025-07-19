@@ -2,30 +2,33 @@
 
 namespace App\Jobs\VideoPipeline;
 
+use App\Services\MediaService;
+use App\Services\StatusService;
+use Cache;
+use FFMpeg;
+use FFMpeg\Format\Video\X264;
 use Illuminate\Bus\Queueable;
-use Illuminate\Contracts\Queue\ShouldBeUnique;
+use Illuminate\Contracts\Queue\ShouldBeUniqueUntilProcessing;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
 use Illuminate\Queue\InteractsWithQueue;
-use Illuminate\Queue\SerializesModels;
-use FFMpeg\Format\Video\X264;
-use FFMpeg;
-use Cache;
-use App\Services\MediaService;
-use App\Services\StatusService;
 use Illuminate\Queue\Middleware\WithoutOverlapping;
-use Illuminate\Contracts\Queue\ShouldBeUniqueUntilProcessing;
+use Illuminate\Queue\SerializesModels;
 
-class VideoHlsPipeline implements ShouldQueue, ShouldBeUniqueUntilProcessing
+class VideoHlsPipeline implements ShouldBeUniqueUntilProcessing, ShouldQueue
 {
     use Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
 
     protected $media;
 
     public $timeout = 900;
+
     public $tries = 3;
+
     public $maxExceptions = 1;
+
     public $failOnTimeout = true;
+
     public $deleteWhenMissingModels = true;
 
     /**
@@ -40,7 +43,7 @@ class VideoHlsPipeline implements ShouldQueue, ShouldBeUniqueUntilProcessing
      */
     public function uniqueId(): string
     {
-        return 'media:video-hls:id-' . $this->media->id;
+        return 'media:video-hls:id-'.$this->media->id;
     }
 
     /**
@@ -66,18 +69,19 @@ class VideoHlsPipeline implements ShouldQueue, ShouldBeUniqueUntilProcessing
      */
     public function handle(): void
     {
-        $depCheck = Cache::rememberForever('video-pipeline:hls:depcheck', function() {
+        $depCheck = Cache::rememberForever('video-pipeline:hls:depcheck', function () {
             $bin = config('laravel-ffmpeg.ffmpeg.binaries');
-            $output = shell_exec($bin . ' -version');
-            if($output && preg_match('/ffmpeg version ([^\s]+)/', $output, $matches)) {
+            $output = shell_exec($bin.' -version');
+            if ($output && preg_match('/ffmpeg version ([^\s]+)/', $output, $matches)) {
                 $version = $matches[1];
+
                 return (version_compare($version, config('laravel-ffmpeg.min_hls_version')) >= 0) ? 'ok' : false;
             } else {
                 return false;
             }
         });
 
-        if(!$depCheck || $depCheck !== 'ok') {
+        if (! $depCheck || $depCheck !== 'ok') {
             return;
         }
 
@@ -104,6 +108,5 @@ class VideoHlsPipeline implements ShouldQueue, ShouldBeUniqueUntilProcessing
         usleep(50000);
         StatusService::del($media->status_id);
 
-        return;
     }
 }

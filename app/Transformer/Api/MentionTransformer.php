@@ -10,10 +10,10 @@ class MentionTransformer extends Fractal\TransformerAbstract
     public function transform(Profile $profile)
     {
         return [
-            'id'       => (string) $profile->id,
-            'url'      => $profile->url(),
+            'id' => (string) $profile->id,
+            'url' => $profile->url(),
             'username' => $profile->username,
-            'acct'     => $profile->username,
+            'acct' => $profile->username,
         ];
     }
 }

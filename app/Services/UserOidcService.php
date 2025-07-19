@@ -4,7 +4,8 @@ namespace App\Services;
 
 use League\OAuth2\Client\Provider\GenericProvider;
 
-class UserOidcService extends GenericProvider {
+class UserOidcService extends GenericProvider
+{
     public static function build()
     {
         return new UserOidcService([

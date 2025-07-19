@@ -117,7 +117,7 @@ trait PrivacySettings
     public function mutedUsers()
     {
         $pid = Auth::user()->profile->id;
-        $ids = (new UserFilter())->mutedUserIds($pid);
+        $ids = (new UserFilter)->mutedUserIds($pid);
         $users = Profile::whereIn('id', $ids)->simplePaginate(15);
 
         return view('settings.privacy.muted', compact('users'));
@@ -146,7 +146,7 @@ trait PrivacySettings
     public function blockedUsers()
     {
         $pid = Auth::user()->profile->id;
-        $ids = (new UserFilter())->blockedUserIds($pid);
+        $ids = (new UserFilter)->blockedUserIds($pid);
         $users = Profile::whereIn('id', $ids)->simplePaginate(15);
 
         return view('settings.privacy.blocked', compact('users'));

@@ -11,10 +11,12 @@ use Tests\TestCase;
 class StatusLexerTest extends TestCase
 {
     public $status;
+
     public $entities;
+
     public $autolink;
 
-    public function setUp(): void
+    protected function setUp(): void
     {
         parent::setUp();
         $this->status = '@pixelfed hi, really like the website! #píxelfed';
@@ -23,7 +25,7 @@ class StatusLexerTest extends TestCase
     }
 
     #[Test]
-    public function lexerExtractor()
+    public function lexer_extractor()
     {
         $expected = [
             'hashtags' => [
@@ -51,8 +53,8 @@ class StatusLexerTest extends TestCase
                         0,
                         9,
                     ],
-                ]
-            ]
+                ],
+            ],
         ];
 
         $this->assertEquals($this->entities, $expected);
@@ -66,7 +68,7 @@ class StatusLexerTest extends TestCase
     }
 
     #[Test]
-    public function remoteMention()
+    public function remote_mention()
     {
         $expected = [
             'hashtags' => [
@@ -110,7 +112,7 @@ class StatusLexerTest extends TestCase
     }
 
     #[Test]
-    public function mentionLimit()
+    public function mention_limit()
     {
         $text = '@test1 @test @test2 @test3 @test4 @test5 @test6 @test7 @test8 @test9 @test10 @test11 @test12 @test13 @test14 @test15 @test16 @test17 @test18 @test19 test post';
 
@@ -120,7 +122,7 @@ class StatusLexerTest extends TestCase
     }
 
     #[Test]
-    public function hashtagLimit()
+    public function hashtag_limit()
     {
         $text = '#hashtag0 #hashtag1 #hashtag2 #hashtag3 #hashtag4 #hashtag5 #hashtag6 #hashtag7 #hashtag8 #hashtag9 #hashtag10 #hashtag11 #hashtag12 #hashtag13 #hashtag14 #hashtag15 #hashtag16 #hashtag17 #hashtag18 #hashtag19 #hashtag20 #hashtag21 #hashtag22 #hashtag23 #hashtag24 #hashtag25 #hashtag26 #hashtag27 #hashtag28 #hashtag29 #hashtag30 #hashtag31 #hashtag0 #hashtag1 #hashtag2 #hashtag3 #hashtag4 #hashtag5 #hashtag6 #hashtag7 #hashtag8 #hashtag9 #hashtag10 #hashtag11 #hashtag12 #hashtag13 #hashtag14 #hashtag15 #hashtag16 #hashtag17 #hashtag18 #hashtag19 #hashtag20 #hashtag21 #hashtag22 #hashtag23 #hashtag24 #hashtag25 #hashtag26 #hashtag27 #hashtag28 #hashtag29 #hashtag30 #hashtag31';
 
@@ -129,9 +131,8 @@ class StatusLexerTest extends TestCase
         $this->assertEquals(Status::MAX_HASHTAGS, $count);
     }
 
-
     #[Test]
-    public function linkLimit()
+    public function link_limit()
     {
         $text = 'https://example.org https://example.net https://example.com https://example.com https://example.net';
 

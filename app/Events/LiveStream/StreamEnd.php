@@ -4,8 +4,6 @@ namespace App\Events\LiveStream;
 
 use Illuminate\Broadcasting\Channel;
 use Illuminate\Broadcasting\InteractsWithSockets;
-use Illuminate\Broadcasting\PresenceChannel;
-use Illuminate\Broadcasting\PrivateChannel;
 use Illuminate\Contracts\Broadcasting\ShouldBroadcast;
 use Illuminate\Foundation\Events\Dispatchable;
 use Illuminate\Queue\SerializesModels;
@@ -33,7 +31,7 @@ class StreamEnd implements ShouldBroadcast
      */
     public function broadcastOn()
     {
-        return new Channel('live.chat.' . $this->id);
+        return new Channel('live.chat.'.$this->id);
     }
 
     public function broadcastAs()
@@ -43,6 +41,6 @@ class StreamEnd implements ShouldBroadcast
 
     public function broadcastWith()
     {
-        return ['ts' => time() ];
+        return ['ts' => time()];
     }
 }

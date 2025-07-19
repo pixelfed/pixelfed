@@ -120,7 +120,7 @@ Route::domain(config('pixelfed.domain.admin'))->prefix('i/admin')->group(functio
     Route::get('curated-onboarding/show/{id}/preview-message', 'AdminCuratedRegisterController@previewMessageShow');
     Route::get('curated-onboarding/show/{id}', 'AdminCuratedRegisterController@show');
 
-    Route::prefix('api')->group(function() {
+    Route::prefix('api')->group(function () {
         Route::get('stats', 'AdminController@getStats');
         Route::get('accounts', 'AdminController@getAccounts');
         Route::get('posts', 'AdminController@getPosts');

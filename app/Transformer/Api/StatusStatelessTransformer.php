@@ -23,12 +23,12 @@ class StatusStatelessTransformer extends Fractal\TransformerAbstract
     {
         $taggedPeople = MediaTagService::get($status->id);
         $poll = $status->type === 'poll' ? PollService::get($status->id) : null;
-        $rendered = $status->caption ? nl2br(Autolink::create()->autolink($status->caption)) : "";
+        $rendered = $status->caption ? nl2br(Autolink::create()->autolink($status->caption)) : '';
 
         return [
             '_v' => 1,
             'id' => (string) $status->id,
-            //'gid'						=> $status->group_id ? (string) $status->group_id : null,
+            // 'gid'						=> $status->group_id ? (string) $status->group_id : null,
             'shortcode' => HashidService::encode($status->id),
             'uri' => $status->url(),
             'url' => $status->url(),

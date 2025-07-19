@@ -2,15 +2,13 @@
 
 namespace App\Jobs\ReportPipeline;
 
+use App\Mail\AdminNewReport;
 use Illuminate\Bus\Queueable;
-use Illuminate\Contracts\Queue\ShouldBeUnique;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
-use App\Mail\AdminNewReport;
 use Illuminate\Support\Facades\Mail;
-use Illuminate\Support\Str;
 
 class ReportNotifyAdminViaEmail implements ShouldQueue
 {
@@ -37,14 +35,14 @@ class ReportNotifyAdminViaEmail implements ShouldQueue
     {
         $addresses = config('instance.reports.email.to');
 
-        if(config('instance.reports.email.enabled') == false || empty($addresses)) {
-        	return;
+        if (config('instance.reports.email.enabled') == false || empty($addresses)) {
+            return;
         }
 
-        if(strpos($addresses, ',')) {
-        	$to = explode(',', $addresses);
+        if (strpos($addresses, ',')) {
+            $to = explode(',', $addresses);
         } else {
-        	$to = $addresses;
+            $to = $addresses;
         }
 
         Mail::to($to)->send(new AdminNewReport($this->report));

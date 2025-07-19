@@ -3,12 +3,12 @@
 namespace App\Http\Controllers\Groups;
 
 use App\Http\Controllers\Controller;
-use Illuminate\Http\Request;
-use App\Services\GroupService;
 use App\Models\Group;
 use App\Models\GroupCategory;
 use App\Models\GroupMember;
 use App\Services\Groups\GroupAccountService;
+use App\Services\GroupService;
+use Illuminate\Http\Request;
 
 class GroupsApiController extends Controller
 {
@@ -37,7 +37,8 @@ class GroupsApiController extends Controller
     public function getGroupCategories(Request $request)
     {
         $res = GroupService::categories();
-        return response()->json($res, 200, [], JSON_PRETTY_PRINT|JSON_UNESCAPED_SLASHES);
+
+        return response()->json($res, 200, [], JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES);
     }
 
     public function getGroupsByCategory(Request $request)
@@ -46,13 +47,14 @@ class GroupsApiController extends Controller
         $category = GroupCategory::whereName($name)->firstOrFail();
         $groups = Group::whereCategoryId($category->id)
             ->simplePaginate(6)
-            ->map(function($group) {
+            ->map(function ($group) {
                 return GroupService::get($group->id);
             })
-            ->filter(function($group) {
+            ->filter(function ($group) {
                 return $group;
             })
             ->values();
+
         return $groups;
     }
 
@@ -67,17 +69,18 @@ class GroupsApiController extends Controller
         $memberOnly = $request->input('member') == true;
         $pid = $request->user()->profile_id;
         $res = GroupMember::whereProfileId($request->user()->profile_id)
-            ->when($selfOnly, function($q, $selfOnly) {
+            ->when($selfOnly, function ($q, $selfOnly) {
                 return $q->whereRole('founder');
             })
-            ->when($memberOnly, function($q, $memberOnly) {
+            ->when($memberOnly, function ($q, $memberOnly) {
                 return $q->whereRole('member');
             })
             ->simplePaginate(4)
-            ->map(function($member) use($pid) {
+            ->map(function ($member) use ($pid) {
                 $group = $member->group;
+
                 return $this->toJson($group, $pid);
-        });
+            });
 
         return response()->json($res);
     }

@@ -89,9 +89,9 @@ class StatusHashtagService
             return [];
         }
 
-        $fractal = new Fractal\Manager();
-        $fractal->setSerializer(new ArraySerializer());
-        $resource = new Fractal\Resource\Collection($status->hashtags, new HashtagTransformer());
+        $fractal = new Fractal\Manager;
+        $fractal->setSerializer(new ArraySerializer);
+        $resource = new Fractal\Resource\Collection($status->hashtags, new HashtagTransformer);
 
         return $fractal->createData($resource)->toArray();
     }

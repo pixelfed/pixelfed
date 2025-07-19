@@ -23,7 +23,7 @@ class ImageResize implements ShouldQueue
      * @var bool
      */
     public $deleteWhenMissingModels = true;
-    
+
     /**
      * Create a new job instance.
      *
@@ -42,21 +42,23 @@ class ImageResize implements ShouldQueue
     public function handle()
     {
         $media = $this->media;
-        if(!$media) {
+        if (! $media) {
             return;
         }
         $path = storage_path('app/'.$media->media_path);
-        if (!is_file($path) || $media->skip_optimize) {
-            Log::info('Tried to optimize media that does not exist or is not readable. ' . $path);
+        if (! is_file($path) || $media->skip_optimize) {
+            Log::info('Tried to optimize media that does not exist or is not readable. '.$path);
+
             return;
         }
 
-        if((bool) config_cache('pixelfed.optimize_image') === false) {
-        	ImageThumbnail::dispatch($media)->onQueue('mmo');
-        	return;
+        if ((bool) config_cache('pixelfed.optimize_image') === false) {
+            ImageThumbnail::dispatch($media)->onQueue('mmo');
+
+            return;
         }
         try {
-            $img = new Image();
+            $img = new Image;
             $img->resizeImage($media);
         } catch (Exception $e) {
             Log::error($e);

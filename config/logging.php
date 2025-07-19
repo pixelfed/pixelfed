@@ -35,38 +35,38 @@ return [
 
     'channels' => [
         'stack' => [
-            'driver'   => 'stack',
+            'driver' => 'stack',
             'channels' => ['single'],
             'ignore_exceptions' => false,
         ],
 
         'single' => [
             'driver' => 'single',
-            'path'   => storage_path('logs/laravel.log'),
+            'path' => storage_path('logs/laravel.log'),
             'level' => env('LOG_LEVEL', 'debug'),
         ],
 
         'daily' => [
             'driver' => 'daily',
-            'path'   => storage_path('logs/laravel.log'),
-            'level'  => 'debug',
-            'days'   => 14,
+            'path' => storage_path('logs/laravel.log'),
+            'level' => 'debug',
+            'days' => 14,
         ],
 
         'slack' => [
-            'driver'   => 'slack',
-            'url'      => env('LOG_SLACK_WEBHOOK_URL'),
+            'driver' => 'slack',
+            'url' => env('LOG_SLACK_WEBHOOK_URL'),
             'username' => 'Laravel Log',
-            'emoji'    => ':boom:',
-            'level'    => 'critical',
+            'emoji' => ':boom:',
+            'level' => 'critical',
         ],
 
         'stderr' => [
-            'driver'  => 'monolog',
+            'driver' => 'monolog',
             'level' => env('LOG_LEVEL', 'debug'),
             'handler' => StreamHandler::class,
             'formatter' => env('LOG_STDERR_FORMATTER'),
-            'with'    => [
+            'with' => [
                 'stream' => 'php://stderr',
             ],
         ],
@@ -78,7 +78,7 @@ return [
 
         'errorlog' => [
             'driver' => 'errorlog',
-            'level'  => 'debug',
+            'level' => 'debug',
         ],
 
         'null' => [
@@ -93,8 +93,8 @@ return [
         'media' => [
             'driver' => 'single',
             'bubble' => false,
-            'path'   => storage_path('logs/media.log'),
-            'level'  => 'debug'
+            'path' => storage_path('logs/media.log'),
+            'level' => 'debug',
         ],
     ],
 

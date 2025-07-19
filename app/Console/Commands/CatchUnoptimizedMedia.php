@@ -2,7 +2,6 @@
 
 namespace App\Console\Commands;
 
-use DB;
 use App\Jobs\ImageOptimizePipeline\ImageOptimize;
 use App\Media;
 use Illuminate\Console\Command;
@@ -42,7 +41,7 @@ class CatchUnoptimizedMedia extends Command
     {
         $hasLimit = (bool) config('media.image_optimize.catch_unoptimized_media_hour_limit');
         Media::whereNull('processed_at')
-            ->when($hasLimit, function($q, $hasLimit) {
+            ->when($hasLimit, function ($q, $hasLimit) {
                 $q->where('created_at', '>', now()->subHours(1));
             })->whereNull('remote_url')
             ->whereNotNull('status_id')
@@ -52,9 +51,11 @@ class CatchUnoptimizedMedia extends Command
                 'image/jpeg',
                 'image/png',
             ])
-            ->chunk(50, function($medias) {
+            ->chunk(50, function ($medias) {
                 foreach ($medias as $media) {
-					if ($media->skip_optimize) continue;
+                    if ($media->skip_optimize) {
+                        continue;
+                    }
                     ImageOptimize::dispatch($media);
                 }
             });

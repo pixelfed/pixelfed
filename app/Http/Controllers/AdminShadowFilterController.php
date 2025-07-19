@@ -2,17 +2,17 @@
 
 namespace App\Http\Controllers;
 
-use Illuminate\Http\Request;
 use App\Models\AdminShadowFilter;
 use App\Profile;
 use App\Services\AccountService;
 use App\Services\AdminShadowFilterService;
+use Illuminate\Http\Request;
 
 class AdminShadowFilterController extends Controller
 {
     public function __construct()
     {
-        $this->middleware(['auth','admin']);
+        $this->middleware(['auth', 'admin']);
     }
 
     public function home(Request $request)
@@ -20,27 +20,28 @@ class AdminShadowFilterController extends Controller
         $filter = $request->input('filter');
         $searchQuery = $request->input('q');
         $filters = AdminShadowFilter::whereHas('profile')
-        ->when($filter, function($q, $filter) {
-            if($filter == 'all') {
-                return $q;
-            } else if($filter == 'inactive') {
-                return $q->whereActive(false);
-            } else {
-                return $q;
-            }
-        }, function($q, $filter) {
-            return $q->whereActive(true);
-        })
-        ->when($searchQuery, function($q, $searchQuery) {
-            $ids = Profile::where('username', 'like', '%' . $searchQuery . '%')
-                ->limit(100)
-                ->pluck('id')
-                ->toArray();
-            return $q->where('item_type', 'App\Profile')->whereIn('item_id', $ids);
-        })
-        ->latest()
-        ->paginate(10)
-        ->withQueryString();
+            ->when($filter, function ($q, $filter) {
+                if ($filter == 'all') {
+                    return $q;
+                } elseif ($filter == 'inactive') {
+                    return $q->whereActive(false);
+                } else {
+                    return $q;
+                }
+            }, function ($q, $filter) {
+                return $q->whereActive(true);
+            })
+            ->when($searchQuery, function ($q, $searchQuery) {
+                $ids = Profile::where('username', 'like', '%'.$searchQuery.'%')
+                    ->limit(100)
+                    ->pluck('id')
+                    ->toArray();
+
+                return $q->where('item_type', 'App\Profile')->whereIn('item_id', $ids);
+            })
+            ->latest()
+            ->paginate(10)
+            ->withQueryString();
 
         return view('admin.asf.home', compact('filters'));
     }
@@ -54,6 +55,7 @@ class AdminShadowFilterController extends Controller
     {
         $filter = AdminShadowFilter::findOrFail($id);
         $profile = AccountService::get($filter->item_id);
+
         return view('admin.asf.edit', compact('filter', 'profile'));
     }
 
@@ -63,16 +65,16 @@ class AdminShadowFilterController extends Controller
             'username' => 'required',
             'active' => 'sometimes',
             'note' => 'sometimes',
-            'hide_from_public_feeds' => 'sometimes'
+            'hide_from_public_feeds' => 'sometimes',
         ]);
 
         $profile = Profile::whereUsername($request->input('username'))->first();
 
-        if(!$profile) {
+        if (! $profile) {
             return back()->withErrors(['Invalid account']);
         }
 
-        if($profile->user && $profile->user->is_admin) {
+        if ($profile->user && $profile->user->is_admin) {
             return back()->withErrors(['Cannot filter an admin account']);
         }
 
@@ -80,13 +82,13 @@ class AdminShadowFilterController extends Controller
 
         AdminShadowFilter::updateOrCreate([
             'item_id' => $profile->id,
-            'item_type' => get_class($profile)
+            'item_type' => get_class($profile),
         ], [
             'is_local' => $profile->domain === null,
             'note' => $request->input('note'),
             'hide_from_public_feeds' => $request->has('hide_from_public_feeds'),
             'admin_id' => $request->user()->profile_id,
-            'active' => $active
+            'active' => $active,
         ]);
 
         AdminShadowFilterService::refresh();
@@ -99,14 +101,14 @@ class AdminShadowFilterController extends Controller
         $this->validate($request, [
             'active' => 'sometimes',
             'note' => 'sometimes',
-            'hide_from_public_feeds' => 'sometimes'
+            'hide_from_public_feeds' => 'sometimes',
         ]);
 
         $filter = AdminShadowFilter::findOrFail($id);
 
         $profile = Profile::findOrFail($filter->item_id);
 
-        if($profile->user && $profile->user->is_admin) {
+        if ($profile->user && $profile->user->is_admin) {
             return back()->withErrors(['Cannot filter an admin account']);
         }
 

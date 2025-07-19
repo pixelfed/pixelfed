@@ -276,9 +276,9 @@ class NotificationService
                 return null;
             }
 
-            $fractal = new Fractal\Manager();
-            $fractal->setSerializer(new ArraySerializer());
-            $resource = new Fractal\Resource\Item($n, new NotificationTransformer());
+            $fractal = new Fractal\Manager;
+            $fractal->setSerializer(new ArraySerializer);
+            $resource = new Fractal\Resource\Item($n, new NotificationTransformer);
 
             return $fractal->createData($resource)->toArray();
         });
@@ -297,9 +297,9 @@ class NotificationService
     public static function setNotification(Notification $notification)
     {
         return Cache::remember('service:notification:'.$notification->id, self::ITEM_CACHE_TTL, function () use ($notification) {
-            $fractal = new Fractal\Manager();
-            $fractal->setSerializer(new ArraySerializer());
-            $resource = new Fractal\Resource\Item($notification, new NotificationTransformer());
+            $fractal = new Fractal\Manager;
+            $fractal->setSerializer(new ArraySerializer);
+            $resource = new Fractal\Resource\Item($notification, new NotificationTransformer);
 
             return $fractal->createData($resource)->toArray();
         });

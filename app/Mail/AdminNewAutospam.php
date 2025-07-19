@@ -2,14 +2,13 @@
 
 namespace App\Mail;
 
+use App\Services\AccountService;
+use App\Services\StatusService;
 use Illuminate\Bus\Queueable;
-use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Mail\Mailable;
 use Illuminate\Mail\Mailables\Content;
 use Illuminate\Mail\Mailables\Envelope;
 use Illuminate\Queue\SerializesModels;
-use App\Services\AccountService;
-use App\Services\StatusService;
 
 class AdminNewAutospam extends Mailable
 {
@@ -35,7 +34,7 @@ class AdminNewAutospam extends Mailable
     public function envelope()
     {
         return new Envelope(
-            subject: '[' . config('pixelfed.domain.app') . '] Spam Post Detected (Ref: autospam-' . $this->report->id . ')',
+            subject: '['.config('pixelfed.domain.app').'] Spam Post Detected (Ref: autospam-'.$this->report->id.')',
         );
     }
 
@@ -46,23 +45,23 @@ class AdminNewAutospam extends Mailable
      */
     public function content()
     {
-    	$data = $this->report->toArray();
-    	$reported_status = null;
-    	$reported_account = null;
-    	$url = url('/i/admin/reports/autospam/' . $this->report->id . '?ref=email');
+        $data = $this->report->toArray();
+        $reported_status = null;
+        $reported_account = null;
+        $url = url('/i/admin/reports/autospam/'.$this->report->id.'?ref=email');
 
-    	if($data['item_type'] === 'App\Status') {
-    		$reported_status = StatusService::get($this->report->item_id, false);
-    		$reported_account = AccountService::get($reported_status['account']['id'], true);
-    	}
+        if ($data['item_type'] === 'App\Status') {
+            $reported_status = StatusService::get($this->report->item_id, false);
+            $reported_account = AccountService::get($reported_status['account']['id'], true);
+        }
 
         return new Content(
             markdown: 'emails.admin.new_autospam',
             with: [
-            	'report' => $data,
-            	'url' => $url,
-            	'reported_status' => $reported_status,
-            	'reported_account' => $reported_account
+                'report' => $data,
+                'url' => $url,
+                'reported_status' => $reported_status,
+                'reported_account' => $reported_account,
             ]
         );
     }

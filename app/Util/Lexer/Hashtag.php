@@ -19,7 +19,7 @@ class Hashtag
     public static function replaceHashtagsWithLinks($status)
     {
         $hashtags = self::getHashtags($status);
-        if (!$hashtags) {
+        if (! $hashtags) {
             return false;
         }
 

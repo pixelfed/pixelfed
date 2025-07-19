@@ -68,7 +68,7 @@ class ProfileMigrationController extends Controller
             ],
             [
                 new ProfileMigrationMoveFollowersPipeline($user->profile_id, $newAccount->id),
-            ]
+            ],
         ])->onQueue('follow')->dispatch();
 
         return redirect()->back()->with(['status' => 'Succesfully migrated account!']);

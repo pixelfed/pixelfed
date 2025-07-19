@@ -2,25 +2,27 @@
 
 namespace App\Jobs\InternalPipeline;
 
+use App\Notification;
+use App\Services\NotificationService;
+use Cache;
 use Illuminate\Bus\Queueable;
-use Illuminate\Contracts\Queue\ShouldBeUnique;
+use Illuminate\Contracts\Queue\ShouldBeUniqueUntilProcessing;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
 use Illuminate\Queue\InteractsWithQueue;
-use Illuminate\Queue\SerializesModels;
 use Illuminate\Queue\Middleware\WithoutOverlapping;
-use Illuminate\Contracts\Queue\ShouldBeUniqueUntilProcessing;
-use App\Notification;
-use Cache;
-use App\Services\NotificationService;
+use Illuminate\Queue\SerializesModels;
 
-class NotificationEpochUpdatePipeline implements ShouldQueue, ShouldBeUniqueUntilProcessing
+class NotificationEpochUpdatePipeline implements ShouldBeUniqueUntilProcessing, ShouldQueue
 {
     use Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
 
     public $timeout = 1500;
+
     public $tries = 3;
+
     public $maxExceptions = 1;
+
     public $failOnTimeout = true;
 
     /**
@@ -61,16 +63,16 @@ class NotificationEpochUpdatePipeline implements ShouldQueue, ShouldBeUniqueUnti
      */
     public function handle(): void
     {
-        $pid = Cache::get(NotificationService::EPOCH_CACHE_KEY . '6');
-        if($pid && $pid > 1) {
+        $pid = Cache::get(NotificationService::EPOCH_CACHE_KEY.'6');
+        if ($pid && $pid > 1) {
             $rec = Notification::where('id', '>', $pid)->whereDate('created_at', now()->subMonths(6)->format('Y-m-d'))->first();
         } else {
             $rec = Notification::whereDate('created_at', now()->subMonths(6)->format('Y-m-d'))->first();
         }
         $id = 1;
-        if($rec) {
+        if ($rec) {
             $id = $rec->id;
         }
-        Cache::put(NotificationService::EPOCH_CACHE_KEY . '6', $id, 1209600);
+        Cache::put(NotificationService::EPOCH_CACHE_KEY.'6', $id, 1209600);
     }
 }

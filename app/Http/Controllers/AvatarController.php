@@ -7,7 +7,6 @@ use App\Jobs\AvatarPipeline\AvatarOptimize;
 use Auth;
 use Cache;
 use Illuminate\Http\Request;
-use Storage;
 
 class AvatarController extends Controller
 {
@@ -19,7 +18,7 @@ class AvatarController extends Controller
     public function store(Request $request)
     {
         $this->validate($request, [
-          'avatar' => 'required|mimetypes:image/jpeg,image/jpg,image/png|max:'.config('pixelfed.max_avatar_size'),
+            'avatar' => 'required|mimetypes:image/jpeg,image/jpg,image/png|max:'.config('pixelfed.max_avatar_size'),
         ]);
 
         try {
@@ -65,7 +64,7 @@ class AvatarController extends Controller
 
     public function checkDir($path)
     {
-        if (!is_dir($path)) {
+        if (! is_dir($path)) {
             mkdir($path);
         }
     }
@@ -119,21 +118,21 @@ class AvatarController extends Controller
 
         $avatar = $profile->avatar;
 
-        if( $avatar->media_path == 'public/avatars/default.png' || 
+        if ($avatar->media_path == 'public/avatars/default.png' ||
             $avatar->media_path == 'public/avatars/default.jpg'
         ) {
             return;
         }
 
-        if(is_file(storage_path('app/' . $avatar->media_path))) {
-            @unlink(storage_path('app/' . $avatar->media_path));
+        if (is_file(storage_path('app/'.$avatar->media_path))) {
+            @unlink(storage_path('app/'.$avatar->media_path));
         }
 
         $avatar->media_path = 'public/avatars/default.jpg';
         $avatar->change_count = $avatar->change_count + 1;
         $avatar->save();
 
-        Cache::forget('avatar:' . $avatar->profile_id);
+        Cache::forget('avatar:'.$avatar->profile_id);
 
         return response()->json(200);
     }

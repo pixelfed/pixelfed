@@ -2,8 +2,8 @@
 
 namespace App\Console\Commands;
 
-use Illuminate\Console\Command;
 use App\User;
+use Illuminate\Console\Command;
 
 class UserCreate extends Command
 {
@@ -42,7 +42,7 @@ class UserCreate extends Command
 
         $o = $this->options();
 
-        if( $o['name'] &&
+        if ($o['name'] &&
             $o['username'] &&
             $o['email'] &&
             $o['password']
@@ -57,6 +57,7 @@ class UserCreate extends Command
             $user->save();
 
             $this->info('Successfully created user!');
+
             return;
         }
 
@@ -64,14 +65,14 @@ class UserCreate extends Command
 
         $username = $this->ask('Username');
 
-        if(User::whereUsername($username)->exists()) {
+        if (User::whereUsername($username)->exists()) {
             $this->error('Username already in use, please try again...');
             exit;
         }
 
         $email = $this->ask('Email');
 
-        if(User::whereEmail($email)->exists()) {
+        if (User::whereEmail($email)->exists()) {
             $this->error('Email already in use, please try again...');
             exit;
         }
@@ -79,23 +80,23 @@ class UserCreate extends Command
         $password = $this->secret('Password');
         $confirm = $this->secret('Confirm Password');
 
-        if($password !== $confirm) {
+        if ($password !== $confirm) {
             $this->error('Password mismatch, please try again...');
             exit;
         }
-        
+
         if (strlen($password) < 6) {
             $this->error('Must be 6 or more characters, please try again...');
             exit;
         }
-        
+
         $is_admin = $this->confirm('Make this user an admin?');
         $confirm_email = $this->confirm('Manually verify email address?');
 
-        if($this->confirm('Are you sure you want to create this user?') && 
+        if ($this->confirm('Are you sure you want to create this user?') &&
             $username &&
-            $name && 
-            $email && 
+            $name &&
+            $email &&
             $password
         ) {
             $user = new User;

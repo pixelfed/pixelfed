@@ -1,11 +1,10 @@
 <?php
 
+use App\DirectMessage;
+use App\Models\Conversation;
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
-use App\DirectMessage;
-use App\Models\Conversation;
-use Illuminate\Support\Facades\DB;
 
 class CreateConversationsTable extends Migration
 {
@@ -16,7 +15,7 @@ class CreateConversationsTable extends Migration
      */
     public function up()
     {
-    	Schema::dropIfExists('conversations');
+        Schema::dropIfExists('conversations');
 
         Schema::create('conversations', function (Blueprint $table) {
             $table->bigIncrements('id');
@@ -34,21 +33,21 @@ class CreateConversationsTable extends Migration
 
         sleep(10);
 
-        if(DirectMessage::count()) {
+        if (DirectMessage::count()) {
 
-        	foreach(DirectMessage::lazy() as $msg) {
-				Conversation::updateOrInsert([
-					'to_id' => $msg->to_id,
-					'from_id' => $msg->from_id,
-				],
-				[
-					'dm_id' => $msg->id,
-					'status_id' => $msg->status_id,
-					'type' => $msg->type,
-					'created_at' => $msg->created_at,
-					'updated_at' => $msg->updated_at
-				]);
-        	}
+            foreach (DirectMessage::lazy() as $msg) {
+                Conversation::updateOrInsert([
+                    'to_id' => $msg->to_id,
+                    'from_id' => $msg->from_id,
+                ],
+                    [
+                        'dm_id' => $msg->id,
+                        'status_id' => $msg->status_id,
+                        'type' => $msg->type,
+                        'created_at' => $msg->created_at,
+                        'updated_at' => $msg->updated_at,
+                    ]);
+            }
         }
     }
 

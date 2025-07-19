@@ -2,9 +2,9 @@
 
 namespace App\Console\Commands;
 
-use Illuminate\Console\Command;
 use App\Profile;
 use App\Status;
+use Illuminate\Console\Command;
 
 class FixRemotePostCount extends Command
 {
@@ -39,8 +39,8 @@ class FixRemotePostCount extends Command
      */
     public function handle()
     {
-        Profile::whereNotNull('domain')->chunk(50, function($profiles) {
-            foreach($profiles as $profile) {
+        Profile::whereNotNull('domain')->chunk(50, function ($profiles) {
+            foreach ($profiles as $profile) {
                 $count = Status::whereNull(['in_reply_to_id', 'reblog_of_id'])->whereProfileId($profile->id)->count();
                 $this->info("Checking {$profile->id} {$profile->username} - found {$count} statuses");
                 $profile->status_count = $count;

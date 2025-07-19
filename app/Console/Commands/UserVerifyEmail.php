@@ -2,9 +2,8 @@
 
 namespace App\Console\Commands;
 
-use Illuminate\Console\Command;
-use Illuminate\Support\Str;
 use App\User;
+use Illuminate\Console\Command;
 use Illuminate\Contracts\Console\PromptsForMissingInput;
 
 class UserVerifyEmail extends Command implements PromptsForMissingInput
@@ -43,18 +42,20 @@ class UserVerifyEmail extends Command implements PromptsForMissingInput
         $username = $this->argument('username');
         $user = User::whereUsername($username)->first();
 
-        if(!$user) {
+        if (! $user) {
             $this->error('Username not found');
+
             return;
         }
 
-        if($user->email_verified_at) {
-            $this->error('Email already verified ' . $user->email_verified_at->diffForHumans());
+        if ($user->email_verified_at) {
+            $this->error('Email already verified '.$user->email_verified_at->diffForHumans());
+
             return;
         }
 
         $user->email_verified_at = now();
         $user->save();
-        $this->info('Successfully verified email address for ' . $user->username);
+        $this->info('Successfully verified email address for '.$user->username);
     }
 }

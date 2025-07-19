@@ -10,7 +10,7 @@ class CuratedRegister extends Model
     use HasFactory;
 
     protected $fillable = [
-        'user_has_responded'
+        'user_has_responded',
     ];
 
     protected $casts = [
@@ -28,22 +28,22 @@ class CuratedRegister extends Model
 
     public function adminStatusLabel()
     {
-        if($this->user_has_responded) {
+        if ($this->user_has_responded) {
             return '<span class="border border-warning px-3 py-1 rounded text-white font-weight-bold">Awaiting Admin Response</span>';
         }
-        if(!$this->email_verified_at) {
+        if (! $this->email_verified_at) {
             return '<span class="border border-danger px-3 py-1 rounded text-white font-weight-bold">Unverified email</span>';
         }
-        if($this->is_approved) {
+        if ($this->is_approved) {
             return '<span class="badge badge-success bg-success text-dark">Approved</span>';
         }
-        if($this->is_rejected) {
+        if ($this->is_rejected) {
             return '<span class="badge badge-danger bg-danger text-white">Rejected</span>';
         }
-        if($this->is_awaiting_more_info ) {
+        if ($this->is_awaiting_more_info) {
             return '<span class="border border-info px-3 py-1 rounded text-white font-weight-bold">Awaiting User Response</span>';
         }
-        if($this->is_closed ) {
+        if ($this->is_closed) {
             return '<span class="border border-muted px-3 py-1 rounded text-white font-weight-bold" style="opacity:0.5">Closed</span>';
         }
 
@@ -52,16 +52,16 @@ class CuratedRegister extends Model
 
     public function emailConfirmUrl()
     {
-        return url('/auth/sign_up/confirm?sid=' . $this->id . '&code=' . $this->verify_code);
+        return url('/auth/sign_up/confirm?sid='.$this->id.'&code='.$this->verify_code);
     }
 
     public function emailReplyUrl()
     {
-        return url('/auth/sign_up/concierge?sid=' . $this->id . '&code=' . $this->verify_code . '&sc=' . str_random(8));
+        return url('/auth/sign_up/concierge?sid='.$this->id.'&code='.$this->verify_code.'&sc='.str_random(8));
     }
 
     public function adminReviewUrl()
     {
-        return url('/i/admin/curated-onboarding/show/' . $this->id);
+        return url('/i/admin/curated-onboarding/show/'.$this->id);
     }
 }

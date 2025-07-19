@@ -3,12 +3,10 @@
 namespace App\Services\Groups;
 
 use App\Models\GroupComment;
+use App\Transformer\Api\GroupPostTransformer;
 use Cache;
-use Illuminate\Support\Facades\Redis;
 use League\Fractal;
 use League\Fractal\Serializer\ArraySerializer;
-use League\Fractal\Pagination\IlluminatePaginatorAdapter;
-use App\Transformer\Api\GroupPostTransformer;
 
 class GroupCommentService
 {
@@ -16,29 +14,30 @@ class GroupCommentService
 
     public static function key($gid, $pid)
     {
-        return self::CACHE_KEY . $gid . ':' . $pid;
+        return self::CACHE_KEY.$gid.':'.$pid;
     }
 
     public static function get($gid, $pid)
     {
-        return Cache::remember(self::key($gid, $pid), 604800, function() use($gid, $pid) {
+        return Cache::remember(self::key($gid, $pid), 604800, function () use ($gid, $pid) {
             $gp = GroupComment::whereGroupId($gid)->find($pid);
 
-            if(!$gp) {
+            if (! $gp) {
                 return null;
             }
 
-            $fractal = new Fractal\Manager();
-            $fractal->setSerializer(new ArraySerializer());
-            $resource = new Fractal\Resource\Item($gp, new GroupPostTransformer());
+            $fractal = new Fractal\Manager;
+            $fractal->setSerializer(new ArraySerializer);
+            $resource = new Fractal\Resource\Item($gp, new GroupPostTransformer);
             $res = $fractal->createData($resource)->toArray();
 
             $res['pf_type'] = 'group:post:comment';
             $res['url'] = $gp->url();
+
             // if($gp['type'] == 'poll') {
             //  $status['poll'] = PollService::get($status['id']);
             // }
-            //$status['account']['url'] = url("/groups/{$gp['group_id']}/user/{$status['account']['id']}");
+            // $status['account']['url'] = url("/groups/{$gp['group_id']}/user/{$status['account']['id']}");
             return $res;
         });
     }

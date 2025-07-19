@@ -14,7 +14,7 @@ class ValidUrl implements ValidationRule
      */
     public function validate(string $attribute, mixed $value, Closure $fail): void
     {
-        if (!str_starts_with(strtolower($value), 'https://')) {
+        if (! str_starts_with(strtolower($value), 'https://')) {
             $fail('The :attribute must start with https://.');
         }
     }

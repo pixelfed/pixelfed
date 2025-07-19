@@ -175,7 +175,7 @@ class Helpers
                 return false;
             }
 
-            if (!$disableDNSCheck && ! self::passesSecurityChecks($host, $disableDNSCheck, $forceBanCheck)) {
+            if (! $disableDNSCheck && ! self::passesSecurityChecks($host, $disableDNSCheck, $forceBanCheck)) {
                 return false;
             }
 

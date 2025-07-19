@@ -10,7 +10,7 @@ use Tests\TestCase;
 class UsernameTest extends TestCase
 {
     #[Test]
-    public function genericUsername()
+    public function generic_username()
     {
         $username = '@dansup';
         $entities = Extractor::create()->extract($username);
@@ -40,7 +40,7 @@ class UsernameTest extends TestCase
     }
 
     #[Test]
-    public function usernameWithPeriod()
+    public function username_with_period()
     {
         $username = '@dansup.two';
         $autolink = Autolink::create()->autolink($username);
@@ -70,7 +70,7 @@ class UsernameTest extends TestCase
     }
 
     #[Test]
-    public function usernameWithDash()
+    public function username_with_dash()
     {
         $username = '@dansup-too';
         $autolink = Autolink::create()->autolink($username);
@@ -100,7 +100,7 @@ class UsernameTest extends TestCase
     }
 
     #[Test]
-    public function usernameWithUnderscore()
+    public function username_with_underscore()
     {
         $username = '@dansup_too';
         $autolink = Autolink::create()->autolink($username);
@@ -130,7 +130,7 @@ class UsernameTest extends TestCase
     }
 
     #[Test]
-    public function multipleMentions()
+    public function multiple_mentions()
     {
         $text = 'hello @dansup and @pixelfed.team from @username_underscore';
         $autolink = Autolink::create()->autolink($text);
@@ -177,9 +177,9 @@ class UsernameTest extends TestCase
     }
 
     #[Test]
-    public function germanUmlatsAutolink()
+    public function german_umlats_autolink()
     {
-        $mentions = "@März and @königin and @Glück";
+        $mentions = '@März and @königin and @Glück';
         $autolink = Autolink::create()->autolink($mentions);
 
         $expectedAutolink = '<a class="u-url mention" href="https://pixelfed.dev/März" rel="external nofollow noopener" target="_blank">@März</a> and <a class="u-url mention" href="https://pixelfed.dev/königin" rel="external nofollow noopener" target="_blank">@königin</a> and <a class="u-url mention" href="https://pixelfed.dev/Glück" rel="external nofollow noopener" target="_blank">@Glück</a>';
@@ -187,53 +187,53 @@ class UsernameTest extends TestCase
     }
 
     #[Test]
-    public function germanUmlatsExtractor()
+    public function german_umlats_extractor()
     {
-        $mentions = "@März and @königin and @Glück";
+        $mentions = '@März and @königin and @Glück';
         $entities = Extractor::create()->extract($mentions);
 
         $expectedEntity = [
-            "hashtags" => [],
-            "urls" => [],
-            "mentions" => [
-              "märz",
-              "königin",
-              "glück",
+            'hashtags' => [],
+            'urls' => [],
+            'mentions' => [
+                'märz',
+                'königin',
+                'glück',
             ],
-            "replyto" => null,
-            "hashtags_with_indices" => [],
-            "urls_with_indices" => [],
-            "mentions_with_indices" => [
-              [
-                "screen_name" => "März",
-                "indices" => [
-                  0,
-                  5,
+            'replyto' => null,
+            'hashtags_with_indices' => [],
+            'urls_with_indices' => [],
+            'mentions_with_indices' => [
+                [
+                    'screen_name' => 'März',
+                    'indices' => [
+                        0,
+                        5,
+                    ],
                 ],
-              ],
-              [
-                "screen_name" => "königin",
-                "indices" => [
-                  10,
-                  18,
+                [
+                    'screen_name' => 'königin',
+                    'indices' => [
+                        10,
+                        18,
+                    ],
                 ],
-              ],
-              [
-                "screen_name" => "Glück",
-                "indices" => [
-                  23,
-                  29,
+                [
+                    'screen_name' => 'Glück',
+                    'indices' => [
+                        23,
+                        29,
+                    ],
                 ],
-              ],
             ],
         ];
         $this->assertEquals($expectedEntity, $entities);
     }
 
     #[Test]
-    public function germanUmlatsWebfingerAutolink()
+    public function german_umlats_webfinger_autolink()
     {
-        $mentions = "hello @märz@example.org!";
+        $mentions = 'hello @märz@example.org!';
         $autolink = Autolink::create()->autolink($mentions);
 
         $expectedAutolink = 'hello <a class="u-url list-slug" href="https://pixelfed.dev/@märz@example.org" rel="external nofollow noopener" target="_blank">@märz@example.org</a>!';

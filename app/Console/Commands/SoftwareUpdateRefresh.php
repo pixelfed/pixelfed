@@ -2,9 +2,9 @@
 
 namespace App\Console\Commands;
 
-use Illuminate\Console\Command;
 use App\Services\Internal\SoftwareUpdateService;
 use Cache;
+use Illuminate\Console\Command;
 
 class SoftwareUpdateRefresh extends Command
 {
@@ -29,7 +29,7 @@ class SoftwareUpdateRefresh extends Command
     {
         $key = SoftwareUpdateService::cacheKey();
         Cache::forget($key);
-        Cache::remember($key, 1209600, function() {
+        Cache::remember($key, 1209600, function () {
             return SoftwareUpdateService::fetchLatest();
         });
         $this->info('Succesfully updated software versions!');

@@ -60,7 +60,7 @@ class CommentController extends Controller
             $reply->profile_id = $profile->id;
             $reply->is_nsfw = $nsfw;
             $reply->caption = Purify::clean($comment);
-            $reply->rendered = "";
+            $reply->rendered = '';
             $reply->in_reply_to_id = $status->id;
             $reply->in_reply_to_profile_id = $status->profile_id;
             $reply->scope = $scope;

@@ -3,14 +3,10 @@
 namespace App\Jobs\ProfilePipeline;
 
 use Illuminate\Bus\Queueable;
-use Illuminate\Contracts\Queue\ShouldBeUnique;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
-use App\Profile;
-use App\Status;
-use App\Services\AccountService;
 
 class DecrementPostCount implements ShouldQueue
 {
@@ -36,6 +32,6 @@ class DecrementPostCount implements ShouldQueue
     public function handle()
     {
         // deprecated
-        return;
+
     }
 }

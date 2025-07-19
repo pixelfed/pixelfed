@@ -26,9 +26,9 @@ class GroupPostService
                 return null;
             }
 
-            $fractal = new Fractal\Manager();
-            $fractal->setSerializer(new ArraySerializer());
-            $resource = new Fractal\Resource\Item($gp, new GroupPostTransformer());
+            $fractal = new Fractal\Manager;
+            $fractal->setSerializer(new ArraySerializer);
+            $resource = new Fractal\Resource\Item($gp, new GroupPostTransformer);
             $res = $fractal->createData($resource)->toArray();
 
             $res['pf_type'] = $gp['type'];
@@ -37,7 +37,7 @@ class GroupPostService
             // if($gp['type'] == 'poll') {
             // 	$status['poll'] = PollService::get($status['id']);
             // }
-            //$status['account']['url'] = url("/groups/{$gp['group_id']}/user/{$status['account']['id']}");
+            // $status['account']['url'] = url("/groups/{$gp['group_id']}/user/{$status['account']['id']}");
             return $res;
         });
     }

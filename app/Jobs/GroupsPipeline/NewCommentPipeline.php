@@ -2,28 +2,28 @@
 
 namespace App\Jobs\GroupsPipeline;
 
-use App\Util\Media\Image;
-use Illuminate\Bus\Queueable;
-use Illuminate\Contracts\Queue\ShouldQueue;
-use Illuminate\Foundation\Bus\Dispatchable;
-use Illuminate\Queue\InteractsWithQueue;
-use Illuminate\Queue\SerializesModels;
-use App\Models\Group;
 use App\Models\GroupComment;
-use App\Models\GroupPost;
 use App\Models\GroupHashtag;
 use App\Models\GroupPostHashtag;
 use App\Util\Lexer\Autolink;
 use App\Util\Lexer\Extractor;
 use DB;
+use Illuminate\Bus\Queueable;
+use Illuminate\Contracts\Queue\ShouldQueue;
+use Illuminate\Foundation\Bus\Dispatchable;
+use Illuminate\Queue\InteractsWithQueue;
+use Illuminate\Queue\SerializesModels;
 
 class NewCommentPipeline implements ShouldQueue
 {
     use Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
 
     protected $status;
+
     protected $parent;
+
     protected $entities;
+
     protected $autolink;
 
     /**

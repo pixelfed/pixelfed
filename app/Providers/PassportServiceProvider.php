@@ -21,7 +21,7 @@ class PassportServiceProvider extends \Laravel\Passport\PassportServiceProvider
             $this->app->make(Bridge\ScopeRepository::class),
             $this->makeCryptKey('private'),
             app('encrypter')->getKey(),
-            new BearerTokenResponse()
+            new BearerTokenResponse
         );
     }
 }

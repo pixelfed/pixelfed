@@ -2,8 +2,8 @@
 
 namespace App\Console\Commands;
 
-use Illuminate\Console\Command;
 use App\User;
+use Illuminate\Console\Command;
 
 class UserSuspend extends Command
 {
@@ -39,17 +39,17 @@ class UserSuspend extends Command
     public function handle()
     {
         $id = $this->argument('id');
-        if(ctype_digit($id) == true) {
+        if (ctype_digit($id) == true) {
             $user = User::find($id);
         } else {
             $user = User::whereUsername($id)->first();
         }
-        if(!$user) {
+        if (! $user) {
             $this->error('Could not find any user with that username or id.');
             exit;
         }
-        $this->info('Found user, username: ' . $user->username);
-        if($this->confirm('Are you sure you want to suspend this user?')) {
+        $this->info('Found user, username: '.$user->username);
+        if ($this->confirm('Are you sure you want to suspend this user?')) {
             $profile = $user->profile;
             $user->status = $profile->status = 'suspended';
             $user->save();

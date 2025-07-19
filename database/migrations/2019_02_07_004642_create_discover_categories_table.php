@@ -1,8 +1,8 @@
 <?php
 
-use Illuminate\Support\Facades\Schema;
-use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Database\Migrations\Migration;
+use Illuminate\Database\Schema\Blueprint;
+use Illuminate\Support\Facades\Schema;
 
 class CreateDiscoverCategoriesTable extends Migration
 {
@@ -24,7 +24,7 @@ class CreateDiscoverCategoriesTable extends Migration
             $table->boolean('local_only')->default(true);
             $table->boolean('public_only')->default(true);
             $table->boolean('photos_only')->default(true);
-            $table->timestamp('active_until')->nullable();  
+            $table->timestamp('active_until')->nullable();
             $table->timestamps();
         });
     }

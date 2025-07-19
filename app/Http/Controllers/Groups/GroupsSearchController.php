@@ -2,19 +2,18 @@
 
 namespace App\Http\Controllers\Groups;
 
-use Illuminate\Support\Facades\Cache;
-use Illuminate\Support\Facades\RateLimiter;
-use App\Http\Controllers\Controller;
-use Illuminate\Http\Request;
-use App\Services\AccountService;
-use App\Services\GroupService;
 use App\Follower;
-use App\Profile;
+use App\Http\Controllers\Controller;
 use App\Models\Group;
-use App\Models\GroupMember;
 use App\Models\GroupInvitation;
-use App\Util\ActivityPub\Helpers;
+use App\Models\GroupMember;
+use App\Profile;
+use App\Services\AccountService;
 use App\Services\Groups\GroupActivityPubService;
+use App\Services\GroupService;
+use App\Util\ActivityPub\Helpers;
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Cache;
 
 class GroupsSearchController extends Controller
 {
@@ -25,7 +24,7 @@ class GroupsSearchController extends Controller
 
     public function inviteFriendsToGroup(Request $request)
     {
-        abort_if(!$request->user(), 404);
+        abort_if(! $request->user(), 404);
         $this->validate($request, [
             'uids' => 'required',
             'g' => 'required',
@@ -34,7 +33,7 @@ class GroupsSearchController extends Controller
         $gid = $request->input('g');
         $pid = $request->user()->profile_id;
         $group = Group::findOrFail($gid);
-        abort_if(!$group->isMember($pid), 404);
+        abort_if(! $group->isMember($pid), 404);
         abort_if(
             GroupInvitation::whereGroupId($group->id)
                 ->whereFromProfileId($pid)
@@ -44,10 +43,10 @@ class GroupsSearchController extends Controller
         );
 
         $profiles = collect($uid)
-            ->map(function($u) {
+            ->map(function ($u) {
                 return Profile::find($u);
             })
-            ->filter(function($u) use($pid) {
+            ->filter(function ($u) use ($pid) {
                 return $u &&
                     $u->id != $pid &&
                     isset($u->id) &&
@@ -55,13 +54,13 @@ class GroupsSearchController extends Controller
                         ->whereProfileId($u->id)
                         ->exists();
             })
-            ->filter(function($u) use($group, $pid) {
+            ->filter(function ($u) use ($group, $pid) {
                 return GroupInvitation::whereGroupId($group->id)
                     ->whereFromProfileId($pid)
                     ->whereToProfileId($u->id)
                     ->exists() == false;
             })
-            ->each(function($u) use($gid, $pid) {
+            ->each(function ($u) use ($gid, $pid) {
                 $gi = new GroupInvitation;
                 $gi->group_id = $gid;
                 $gi->from_profile_id = $pid;
@@ -71,22 +70,23 @@ class GroupsSearchController extends Controller
                 $gi->save();
                 // GroupMemberInvite::dispatch($gi);
             });
+
         return [200];
     }
 
     public function searchFriendsToInvite(Request $request)
     {
-        abort_if(!$request->user(), 404);
+        abort_if(! $request->user(), 404);
         $this->validate($request, [
             'q' => 'required|min:2|max:40',
             'g' => 'required',
-            'v' => 'required|in:0.2'
+            'v' => 'required|in:0.2',
         ]);
         $q = $request->input('q');
         $gid = $request->input('g');
         $pid = $request->user()->profile_id;
         $group = Group::findOrFail($gid);
-        abort_if(!$group->isMember($pid), 404);
+        abort_if(! $group->isMember($pid), 404);
 
         $res = Profile::where('username', 'like', "%{$q}%")
             ->whereNull('profiles.domain')
@@ -94,21 +94,22 @@ class GroupsSearchController extends Controller
             ->where('followers.following_id', $pid)
             ->take(10)
             ->get()
-            ->filter(function($p) use($group) {
+            ->filter(function ($p) use ($group) {
                 return $group->isMember($p->profile_id) == false;
             })
-            ->filter(function($p) use($group, $pid) {
+            ->filter(function ($p) use ($group, $pid) {
                 return GroupInvitation::whereGroupId($group->id)
                     ->whereFromProfileId($pid)
                     ->whereToProfileId($p->profile_id)
                     ->exists() == false;
             })
-            ->map(function($gm) use ($gid) {
+            ->map(function ($gm) use ($gid) {
                 $a = AccountService::get($gm->profile_id);
+
                 return [
                     'id' => (string) $gm->profile_id,
                     'username' => $a['acct'],
-                    'url' => url("/groups/{$gid}/user/{$a['id']}?rf=group_search")
+                    'url' => url("/groups/{$gid}/user/{$a['id']}?rf=group_search"),
                 ];
             })
             ->values();
@@ -118,64 +119,68 @@ class GroupsSearchController extends Controller
 
     public function searchGlobalResults(Request $request)
     {
-        abort_if(!$request->user(), 404);
+        abort_if(! $request->user(), 404);
         $this->validate($request, [
             'q' => 'required|min:2|max:140',
-            'v' => 'required|in:0.2'
+            'v' => 'required|in:0.2',
         ]);
         $q = $request->input('q');
 
-        if(str_starts_with($q, 'https://')) {
+        if (str_starts_with($q, 'https://')) {
             $res = Helpers::getSignedFetch($q);
-            if($res && $res = json_decode($res, true)) {
+            if ($res && $res = json_decode($res, true)) {
 
             }
-            if($res && isset($res['type']) && in_array($res['type'], ['Group', 'Note', 'Page'])) {
-                if($res['type'] === 'Group') {
+            if ($res && isset($res['type']) && in_array($res['type'], ['Group', 'Note', 'Page'])) {
+                if ($res['type'] === 'Group') {
                     return GroupActivityPubService::fetchGroup($q, true);
                 }
                 $resp = GroupActivityPubService::fetchGroupPost($q, true);
                 $resp['name'] = 'Group Post';
-                $resp['url'] = '/groups/' . $resp['group_id'] . '/p/' . $resp['id'];
+                $resp['url'] = '/groups/'.$resp['group_id'].'/p/'.$resp['id'];
+
                 return [$resp];
             }
         }
+
         return Group::whereNull('status')
-            ->where('name', 'like', '%' . $q . '%')
+            ->where('name', 'like', '%'.$q.'%')
             ->orderBy('id')
             ->take(10)
             ->pluck('id')
-            ->map(function($group) {
+            ->map(function ($group) {
                 return GroupService::get($group);
             });
     }
 
     public function searchLocalAutocomplete(Request $request)
     {
-        abort_if(!$request->user(), 404);
+        abort_if(! $request->user(), 404);
         $this->validate($request, [
             'q' => 'required|min:2|max:40',
             'g' => 'required',
-            'v' => 'required|in:0.2'
+            'v' => 'required|in:0.2',
         ]);
         $q = $request->input('q');
         $gid = $request->input('g');
         $pid = $request->user()->profile_id;
         $group = Group::findOrFail($gid);
-        abort_if(!$group->isMember($pid), 404);
+        abort_if(! $group->isMember($pid), 404);
 
         $res = GroupMember::whereGroupId($gid)
             ->join('profiles', 'group_members.profile_id', '=', 'profiles.id')
             ->where('profiles.username', 'like', "%{$q}%")
             ->take(10)
             ->get()
-            ->map(function($gm) use ($gid) {
+            ->map(function ($gm) use ($gid) {
                 $a = AccountService::get($gm->profile_id);
+
                 return [
                     'username' => $a['username'],
-                    'url' => url("/groups/{$gid}/user/{$a['id']}?rf=group_search")
+                    'url' => url("/groups/{$gid}/user/{$a['id']}?rf=group_search"),
                 ];
             });
+
         return $res;
     }
 
@@ -189,12 +194,12 @@ class GroupsSearchController extends Controller
         $gid = $request->input('g');
         $pid = $request->user()->profile_id;
         $group = Group::findOrFail($gid);
-        abort_if(!$group->isMember($pid), 404);
+        abort_if(! $group->isMember($pid), 404);
 
         $key = 'groups:search:recent:'.$gid.':pid:'.$pid;
         $ttl = now()->addDays(14);
         $res = Cache::get($key);
-        if(!$res) {
+        if (! $res) {
             $val = json_encode([$q]);
         } else {
             $ex = collect(json_decode($res))
@@ -206,6 +211,7 @@ class GroupsSearchController extends Controller
             $val = json_encode($ex);
         }
         Cache::put($key, $val, $ttl);
+
         return 200;
     }
 
@@ -214,8 +220,9 @@ class GroupsSearchController extends Controller
         $gid = $request->input('g');
         $pid = $request->user()->profile_id;
         $group = Group::findOrFail($gid);
-        abort_if(!$group->isMember($pid), 404);
+        abort_if(! $group->isMember($pid), 404);
         $key = 'groups:search:recent:'.$gid.':pid:'.$pid;
+
         return Cache::get($key);
     }
 }

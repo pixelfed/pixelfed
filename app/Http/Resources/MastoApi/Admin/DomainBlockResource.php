@@ -17,7 +17,7 @@ class DomainBlockResource extends JsonResource
         $severity = 'noop';
         if ($this->banned) {
             $severity = 'suspend';
-        } else if ($this->unlisted) {
+        } elseif ($this->unlisted) {
             $severity = 'silence';
         }
 
@@ -34,9 +34,9 @@ class DomainBlockResource extends JsonResource
             // We don't have data for these fields
             'reject_media' => false,
             'reject_reports' => false,
-            'private_comment' => $this->notes ? join('; ', $this->notes) : null,
+            'private_comment' => $this->notes ? implode('; ', $this->notes) : null,
             'public_comment' => $this->limit_reason,
-            'obfuscate' => false
+            'obfuscate' => false,
         ];
     }
 }

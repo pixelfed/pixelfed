@@ -10,6 +10,6 @@ class GroupInteraction extends Model
     use HasFactory;
 
     protected $casts = [
-    	'metadata' => 'array'
+        'metadata' => 'array',
     ];
 }

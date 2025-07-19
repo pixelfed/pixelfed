@@ -2,97 +2,97 @@
 
 namespace App\Services;
 
+use App\MediaTag;
+use App\Notification;
 use Cache;
 use Illuminate\Support\Facades\Redis;
-use App\Notification;
-use App\MediaTag;
-use League\Fractal;
-use League\Fractal\Serializer\ArraySerializer;
-use League\Fractal\Pagination\IlluminatePaginatorAdapter;
 
 class MediaTagService
 {
-	const CACHE_KEY = 'pf:services:media_tags:id:';
+    const CACHE_KEY = 'pf:services:media_tags:id:';
 
-	public static function get($mediaId, $usernames = true)
-	{
-		return self::coldGet($mediaId, $usernames);
-	}
+    public static function get($mediaId, $usernames = true)
+    {
+        return self::coldGet($mediaId, $usernames);
+    }
 
-	public static function coldGet($mediaId, $usernames = true)
-	{
-		$k = 'pf:services:media_tags:get:sid:' . $mediaId;
-		return Cache::remember($k, now()->addMinutes(60), function() use($mediaId, $usernames) {
-			$key = self::CACHE_KEY . $mediaId;
-			if(Redis::zCount($key, '-inf', '+inf') == 0) {
-				$tags = MediaTag::whereStatusId($mediaId)->get();
-				if($tags->count() == 0) {
-					return [];
-				}
+    public static function coldGet($mediaId, $usernames = true)
+    {
+        $k = 'pf:services:media_tags:get:sid:'.$mediaId;
 
-				foreach ($tags as $t) {
-					self::set($mediaId, $t->profile_id);
-				}
-			}
-			$res = Redis::zRange($key, 0, -1);
-			if(!$usernames) {
-				return $res;
-			}
-			$usernames = [];
-			foreach ($res as $k) {
-				$username = (new self)->idToUsername($k);
-				array_push($usernames, $username);
-			}
+        return Cache::remember($k, now()->addMinutes(60), function () use ($mediaId, $usernames) {
+            $key = self::CACHE_KEY.$mediaId;
+            if (Redis::zCount($key, '-inf', '+inf') == 0) {
+                $tags = MediaTag::whereStatusId($mediaId)->get();
+                if ($tags->count() == 0) {
+                    return [];
+                }
 
-			return $usernames;
-		});
-	}
+                foreach ($tags as $t) {
+                    self::set($mediaId, $t->profile_id);
+                }
+            }
+            $res = Redis::zRange($key, 0, -1);
+            if (! $usernames) {
+                return $res;
+            }
+            $usernames = [];
+            foreach ($res as $k) {
+                $username = (new self)->idToUsername($k);
+                array_push($usernames, $username);
+            }
 
-	public static function set($mediaId, $profileId)
-	{
-		$key = self::CACHE_KEY . $mediaId;
-		Redis::zAdd($key, $profileId, $profileId);
-		return true;
-	}
+            return $usernames;
+        });
+    }
 
-	protected function idToUsername($id)
-	{
-		$profile = ProfileService::get($id, true);
+    public static function set($mediaId, $profileId)
+    {
+        $key = self::CACHE_KEY.$mediaId;
+        Redis::zAdd($key, $profileId, $profileId);
 
-		if(!$profile) {
-			return 'unavailable';
-		}
+        return true;
+    }
 
-		return [
-			'id' => (string) $id,
-			'username' => $profile['username'],
-			'avatar' => $profile['avatar']
-		];
-	}
+    protected function idToUsername($id)
+    {
+        $profile = ProfileService::get($id, true);
 
-	public static function sendNotification(MediaTag $tag)
-	{
-		$p = $tag->status->profile;
-		$actor = $p->username;
+        if (! $profile) {
+            return 'unavailable';
+        }
 
-		$n = new Notification;
-		$n->profile_id = $tag->profile_id;
-		$n->actor_id = $p->id;
-		$n->item_id = $tag->id;
-		$n->item_type = 'App\MediaTag';
-		$n->action = 'tagged';
-		$n->save();
-		return;
-	}
+        return [
+            'id' => (string) $id,
+            'username' => $profile['username'],
+            'avatar' => $profile['avatar'],
+        ];
+    }
 
-	public static function untag($statusId, $profileId)
-	{
-		MediaTag::whereStatusId($statusId)
-			->whereProfileId($profileId)
-			->delete();
-		$key = 'pf:services:media_tags:get:sid:' . $statusId;
-		Redis::zRem(self::CACHE_KEY.$statusId, $profileId);
-		Cache::forget($key);
-		return true;
-	}
+    public static function sendNotification(MediaTag $tag)
+    {
+        $p = $tag->status->profile;
+        $actor = $p->username;
+
+        $n = new Notification;
+        $n->profile_id = $tag->profile_id;
+        $n->actor_id = $p->id;
+        $n->item_id = $tag->id;
+        $n->item_type = 'App\MediaTag';
+        $n->action = 'tagged';
+        $n->save();
+
+    }
+
+    public static function untag($statusId, $profileId)
+    {
+        MediaTag::whereStatusId($statusId)
+            ->whereProfileId($profileId)
+            ->delete();
+        $key = 'pf:services:media_tags:get:sid:'.$statusId;
+        Redis::zRem(self::CACHE_KEY.$statusId, $profileId);
+        Cache::forget($key);
+
+        return true;
+    }
 }

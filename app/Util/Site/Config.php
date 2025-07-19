@@ -108,6 +108,7 @@ class Config
     public static function refresh()
     {
         Cache::forget(self::CACHE_KEY);
+
         return self::get();
     }
 

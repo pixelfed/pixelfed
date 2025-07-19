@@ -20,15 +20,16 @@ class GroupMedia extends Model
         return [
             'metadata' => 'json',
             'processed_at' => 'datetime',
-            'thumbnail_generated' => 'datetime'
+            'thumbnail_generated' => 'datetime',
         ];
     }
 
     public function url()
     {
-        if($this->cdn_url) {
+        if ($this->cdn_url) {
             return $this->cdn_url;
         }
+
         return Storage::url($this->media_path);
     }
 

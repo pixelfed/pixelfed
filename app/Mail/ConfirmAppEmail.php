@@ -3,7 +3,6 @@
 namespace App\Mail;
 
 use Illuminate\Bus\Queueable;
-use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Mail\Mailable;
 use Illuminate\Mail\Mailables\Content;
 use Illuminate\Mail\Mailables\Envelope;
@@ -14,6 +13,7 @@ class ConfirmAppEmail extends Mailable
     use Queueable, SerializesModels;
 
     public $verify;
+
     public $appUrl;
 
     /**
@@ -50,7 +50,7 @@ class ConfirmAppEmail extends Mailable
             markdown: 'emails.confirm_app_email',
             with: [
                 'verify' => $this->verify,
-                'appUrl' => $this->appUrl
+                'appUrl' => $this->appUrl,
             ],
         );
     }

@@ -31,8 +31,8 @@ class Outbox
 
         $count = Status::whereProfileId($profile->id)->count();
 
-        $fractal = new Fractal\Manager();
-        $resource = new Fractal\Resource\Collection($timeline, new CreateNote());
+        $fractal = new Fractal\Manager;
+        $resource = new Fractal\Resource\Collection($timeline, new CreateNote);
         $res = $fractal->createData($resource)->toArray();
 
         $outbox = [

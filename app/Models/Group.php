@@ -2,66 +2,69 @@
 
 namespace App\Models;
 
-use Illuminate\Database\Eloquent\Factories\HasFactory;
-use Illuminate\Database\Eloquent\Model;
 use App\HasSnowflakePrimary;
 use App\Profile;
 use App\Services\GroupService;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
 class Group extends Model
 {
-    use HasSnowflakePrimary, HasFactory, SoftDeletes;
+    use HasFactory, HasSnowflakePrimary, SoftDeletes;
 
-	/**
-	 * Indicates if the IDs are auto-incrementing.
-	 *
-	 * @var bool
-	 */
-	public $incrementing = false;
+    /**
+     * Indicates if the IDs are auto-incrementing.
+     *
+     * @var bool
+     */
+    public $incrementing = false;
 
-	protected $casts = [
-		'metadata' => 'json'
-	];
+    protected $casts = [
+        'metadata' => 'json',
+    ];
 
-	public function url()
-	{
-		return url("/groups/{$this->id}");
-	}
+    public function url()
+    {
+        return url("/groups/{$this->id}");
+    }
 
-	public function permalink($suffix = null)
-	{
-		if(!$this->local) {
-			return $this->remote_url;
-		}
-		return $this->url() . $suffix;
-	}
+    public function permalink($suffix = null)
+    {
+        if (! $this->local) {
+            return $this->remote_url;
+        }
 
-	public function members()
-	{
-		return $this->hasMany(GroupMember::class);
-	}
+        return $this->url().$suffix;
+    }
 
-	public function admin()
-	{
-		return $this->belongsTo(Profile::class, 'profile_id');
-	}
+    public function members()
+    {
+        return $this->hasMany(GroupMember::class);
+    }
 
-	public function isMember($id = false)
-	{
-		$id = $id ?? request()->user()->profile_id;
-		// return $this->members()->whereProfileId($id)->whereJoinRequest(false)->exists();
-		return GroupService::isMember($this->id, $id);
-	}
+    public function admin()
+    {
+        return $this->belongsTo(Profile::class, 'profile_id');
+    }
 
-	public function getMembershipType()
-	{
-		return $this->is_private ? 'private' : ($this->is_local ? 'local' : 'all');
-	}
+    public function isMember($id = false)
+    {
+        $id = $id ?? request()->user()->profile_id;
 
-	public function selfRole($id = false)
-	{
-		$id = $id ?? request()->user()->profile_id;
-		return optional($this->members()->whereProfileId($id)->first())->role ?? null;
-	}
+        // return $this->members()->whereProfileId($id)->whereJoinRequest(false)->exists();
+        return GroupService::isMember($this->id, $id);
+    }
+
+    public function getMembershipType()
+    {
+        return $this->is_private ? 'private' : ($this->is_local ? 'local' : 'all');
+    }
+
+    public function selfRole($id = false)
+    {
+        $id = $id ?? request()->user()->profile_id;
+
+        return optional($this->members()->whereProfileId($id)->first())->role ?? null;
+    }
 }

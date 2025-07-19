@@ -68,9 +68,9 @@ class UserAccountDelete extends Command
 
         $profile = Profile::withTrashed()->find($user->profile_id);
 
-        $fractal = new Fractal\Manager();
-        $fractal->setSerializer(new ArraySerializer());
-        $resource = new Fractal\Resource\Item($profile, new DeleteActor());
+        $fractal = new Fractal\Manager;
+        $fractal->setSerializer(new ArraySerializer);
+        $resource = new Fractal\Resource\Item($profile, new DeleteActor);
         $activity = $fractal->createData($resource)->toArray();
 
         $audience = Instance::whereNotNull(['shared_inbox', 'nodeinfo_last_fetched'])
@@ -110,10 +110,8 @@ class UserAccountDelete extends Command
 
         $pool = new Pool($client, $requests($audience), [
             'concurrency' => 50,
-            'fulfilled' => function ($response, $index) {
-            },
-            'rejected' => function ($reason, $index) {
-            },
+            'fulfilled' => function ($response, $index) {},
+            'rejected' => function ($reason, $index) {},
         ]);
 
         $promise = $pool->promise();

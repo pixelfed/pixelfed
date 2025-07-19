@@ -2,75 +2,77 @@
 
 namespace App\Services;
 
+use App\Follower;
+use App\Models\UserDomainBlock;
+use App\Status;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Redis;
-use App\Follower;
-use App\Status;
-use App\Models\UserDomainBlock;
 
 class HomeTimelineService
 {
     const CACHE_KEY = 'pf:services:timeline:home:';
+
     const FOLLOWER_FEED_POST_LIMIT = 10;
 
     public static function get($id, $start = 0, $stop = 10)
     {
-        if($stop > 100) {
+        if ($stop > 100) {
             $stop = 100;
         }
 
-        return Redis::zrevrange(self::CACHE_KEY . $id, $start, $stop);
+        return Redis::zrevrange(self::CACHE_KEY.$id, $start, $stop);
     }
 
     public static function getRankedMaxId($id, $start = null, $limit = 10)
     {
-        if(!$start) {
+        if (! $start) {
             return [];
         }
 
-        return array_keys(Redis::zrevrangebyscore(self::CACHE_KEY . $id, $start, '-inf', [
+        return array_keys(Redis::zrevrangebyscore(self::CACHE_KEY.$id, $start, '-inf', [
             'withscores' => true,
-            'limit' => [1, $limit - 1]
+            'limit' => [1, $limit - 1],
         ]));
     }
 
     public static function getRankedMinId($id, $end = null, $limit = 10)
     {
-        if(!$end) {
+        if (! $end) {
             return [];
         }
 
-        return array_keys(Redis::zrevrangebyscore(self::CACHE_KEY . $id, '+inf', $end, [
+        return array_keys(Redis::zrevrangebyscore(self::CACHE_KEY.$id, '+inf', $end, [
             'withscores' => true,
-            'limit' => [0, $limit]
+            'limit' => [0, $limit],
         ]));
     }
 
     public static function add($id, $val)
     {
-        if(self::count($id) >= 400) {
-            Redis::zpopmin(self::CACHE_KEY . $id);
+        if (self::count($id) >= 400) {
+            Redis::zpopmin(self::CACHE_KEY.$id);
         }
 
-        return Redis::zadd(self::CACHE_KEY .$id, $val, $val);
+        return Redis::zadd(self::CACHE_KEY.$id, $val, $val);
     }
 
     public static function rem($id, $val)
     {
-        return Redis::zrem(self::CACHE_KEY . $id, $val);
+        return Redis::zrem(self::CACHE_KEY.$id, $val);
     }
 
     public static function count($id)
     {
-        return Redis::zcard(self::CACHE_KEY . $id);
+        return Redis::zcard(self::CACHE_KEY.$id);
     }
 
     public static function warmCache($id, $force = false, $limit = 100, $returnIds = false)
     {
-        if(self::count($id) == 0 || $force == true) {
-            Redis::del(self::CACHE_KEY . $id);
-            $following = Cache::remember('profile:following:'.$id, 1209600, function() use($id) {
+        if (self::count($id) == 0 || $force == true) {
+            Redis::del(self::CACHE_KEY.$id);
+            $following = Cache::remember('profile:following:'.$id, 1209600, function () use ($id) {
                 $following = Follower::whereProfileId($id)->pluck('following_id');
+
                 return $following->push($id)->toArray();
             });
 
@@ -78,7 +80,7 @@ class HomeTimelineService
 
             $filters = UserFilterService::filters($id);
 
-            if($filters && count($filters)) {
+            if ($filters && count($filters)) {
                 $following = array_diff($following, $filters);
             }
 
@@ -88,19 +90,19 @@ class HomeTimelineService
                 ->whereIn('profile_id', $following)
                 ->whereNull(['in_reply_to_id', 'reblog_of_id'])
                 ->whereIn('type', ['photo', 'photo:album', 'video', 'video:album', 'photo:video:album'])
-                ->whereIn('visibility',['public', 'unlisted', 'private'])
+                ->whereIn('visibility', ['public', 'unlisted', 'private'])
                 ->orderByDesc('id')
                 ->limit($limit)
                 ->pluck('id');
 
-            foreach($ids as $pid) {
+            foreach ($ids as $pid) {
                 $status = StatusService::get($pid, false);
-                if(!$status || !isset($status['account'], $status['url'])) {
+                if (! $status || ! isset($status['account'], $status['url'])) {
                     continue;
                 }
-                if($domainBlocks && count($domainBlocks)) {
+                if ($domainBlocks && count($domainBlocks)) {
                     $domain = strtolower(parse_url($status['url'], PHP_URL_HOST));
-                    if(in_array($domain, $domainBlocks)) {
+                    if (in_array($domain, $domainBlocks)) {
                         continue;
                     }
                 }
@@ -109,6 +111,7 @@ class HomeTimelineService
 
             return $returnIds ? $ids : 1;
         }
+
         return 0;
     }
 }

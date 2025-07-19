@@ -15,7 +15,7 @@ class Notification extends Model
      * @var array
      */
     protected $casts = [
-    	'deleted_at' => 'datetime'
+        'deleted_at' => 'datetime',
     ];
 
     protected $guarded = [];
@@ -44,5 +44,4 @@ class Notification extends Model
     {
         return $this->hasOne(MediaTag::class, 'item_id', 'id');
     }
-
 }

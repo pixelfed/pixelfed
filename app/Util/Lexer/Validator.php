@@ -52,8 +52,8 @@ class Validator extends Regex
     /**
      * Provides fluent method chaining.
      *
-     * @param string $tweet  The tweet to be validated.
-     * @param mixed  $config Setup short URL length from Twitter API /help/configuration response.
+     * @param  string  $tweet  The tweet to be validated.
+     * @param  mixed  $config  Setup short URL length from Twitter API /help/configuration response.
      *
      * @see  __construct()
      *
@@ -67,12 +67,12 @@ class Validator extends Regex
     /**
      * Reads in a tweet to be parsed and validates it.
      *
-     * @param string $tweet The tweet to validate.
+     * @param  string  $tweet  The tweet to validate.
      */
     public function __construct($tweet = null, $config = null)
     {
         parent::__construct($tweet);
-        if (!empty($config)) {
+        if (! empty($config)) {
             $this->setConfiguration($config);
         }
         $this->extractor = Extractor::create();
@@ -81,8 +81,7 @@ class Validator extends Regex
     /**
      * Setup short URL length from Twitter API /help/configuration response.
      *
-     * @param mixed $config
-     *
+     * @param  mixed  $config
      * @return Validator
      *
      * @link https://dev.twitter.com/docs/api/1/get/help/configuration
@@ -113,8 +112,7 @@ class Validator extends Regex
     /**
      * Set the length of a short URL beginning with http:.
      *
-     * @param mixed $length
-     *
+     * @param  mixed  $length
      * @return Validator
      */
     public function setShortUrlLength($length)
@@ -137,8 +135,7 @@ class Validator extends Regex
     /**
      * Set the length of a short URL beginning with https:.
      *
-     * @param mixed $length
-     *
+     * @param  mixed  $length
      * @return Validator
      */
     public function setShortUrlLengthHttps($length)
@@ -161,8 +158,7 @@ class Validator extends Regex
     /**
      * Check whether a tweet is valid.
      *
-     * @param string $tweet The tweet to validate.
-     *
+     * @param  string  $tweet  The tweet to validate.
      * @return bool Whether the tweet is valid.
      */
     public function isValidTweetText($tweet = null)
@@ -171,7 +167,7 @@ class Validator extends Regex
             $tweet = $this->tweet;
         }
         $length = $this->getTweetLength($tweet);
-        if (!$tweet || !$length) {
+        if (! $tweet || ! $length) {
             return false;
         }
         if ($length > self::MAX_LENGTH) {
@@ -199,8 +195,7 @@ class Validator extends Regex
     /**
      * Check whether a username is valid.
      *
-     * @param string $username The username to validate.
-     *
+     * @param  string  $username  The username to validate.
      * @return bool Whether the username is valid.
      */
     public function isValidUsername($username = null)
@@ -209,7 +204,7 @@ class Validator extends Regex
             $username = $this->tweet;
         }
         $length = StringUtils::strlen($username);
-        if (empty($username) || !$length) {
+        if (empty($username) || ! $length) {
             return false;
         }
         $extracted = $this->extractor->extractMentionedScreennames($username);
@@ -232,8 +227,7 @@ class Validator extends Regex
     /**
      * Check whether a list is valid.
      *
-     * @param string $list The list name to validate.
-     *
+     * @param  string  $list  The list name to validate.
      * @return bool Whether the list is valid.
      */
     public function isValidList($list = null)
@@ -242,13 +236,13 @@ class Validator extends Regex
             $list = $this->tweet;
         }
         $length = StringUtils::strlen($list);
-        if (empty($list) || !$length) {
+        if (empty($list) || ! $length) {
             return false;
         }
         preg_match(self::$patterns['valid_mentions_or_lists'], $list, $matches);
         $matches = array_pad($matches, 5, '');
 
-        return isset($matches) && $matches[1] === '' && $matches[4] && !empty($matches[4]) && $matches[5] === '';
+        return isset($matches) && $matches[1] === '' && $matches[4] && ! empty($matches[4]) && $matches[5] === '';
     }
 
     /**
@@ -266,8 +260,7 @@ class Validator extends Regex
     /**
      * Check whether a hashtag is valid.
      *
-     * @param string $hashtag The hashtag to validate.
-     *
+     * @param  string  $hashtag  The hashtag to validate.
      * @return bool Whether the hashtag is valid.
      */
     public function isValidHashtag($hashtag = null)
@@ -276,7 +269,7 @@ class Validator extends Regex
             $hashtag = $this->tweet;
         }
         $length = StringUtils::strlen($hashtag);
-        if (empty($hashtag) || !$length) {
+        if (empty($hashtag) || ! $length) {
             return false;
         }
         $extracted = $this->extractor->extractHashtags($hashtag);
@@ -299,10 +292,9 @@ class Validator extends Regex
     /**
      * Check whether a URL is valid.
      *
-     * @param string $url              The url to validate.
-     * @param bool   $unicode_domains  Consider the domain to be unicode.
-     * @param bool   $require_protocol Require a protocol for valid domain?
-     *
+     * @param  string  $url  The url to validate.
+     * @param  bool  $unicode_domains  Consider the domain to be unicode.
+     * @param  bool  $require_protocol  Require a protocol for valid domain?
      * @return bool Whether the URL is valid.
      */
     public function isValidURL($url = null, $unicode_domains = true, $require_protocol = true)
@@ -311,20 +303,20 @@ class Validator extends Regex
             $url = $this->tweet;
         }
         $length = StringUtils::strlen($url);
-        if (empty($url) || !$length) {
+        if (empty($url) || ! $length) {
             return false;
         }
         preg_match(self::$patterns['validate_url_unencoded'], $url, $matches);
         $match = array_shift($matches);
-        if (!$matches || $match !== $url) {
+        if (! $matches || $match !== $url) {
             return false;
         }
-        list($scheme, $authority, $path, $query, $fragment) = array_pad($matches, 5, '');
+        [$scheme, $authority, $path, $query, $fragment] = array_pad($matches, 5, '');
         // Check scheme, path, query, fragment:
-        if (($require_protocol && !(
+        if (($require_protocol && ! (
             self::isValidMatch($scheme, self::$patterns['validate_url_scheme']) && preg_match('/^https?$/i', $scheme))
-            ) || !self::isValidMatch($path, self::$patterns['validate_url_path']) || !self::isValidMatch($query, self::$patterns['validate_url_query'], true)
-            || !self::isValidMatch($fragment, self::$patterns['validate_url_fragment'], true)) {
+        ) || ! self::isValidMatch($path, self::$patterns['validate_url_path']) || ! self::isValidMatch($query, self::$patterns['validate_url_query'], true)
+        || ! self::isValidMatch($fragment, self::$patterns['validate_url_fragment'], true)) {
             return false;
         }
         // Check authority:
@@ -336,9 +328,8 @@ class Validator extends Regex
     /**
      * Check whether a URL is valid.
      *
-     * @param bool $unicode_domains  Consider the domain to be unicode.
-     * @param bool $require_protocol Require a protocol for valid domain?
-     *
+     * @param  bool  $unicode_domains  Consider the domain to be unicode.
+     * @param  bool  $require_protocol  Require a protocol for valid domain?
      * @return bool Whether the URL is valid.
      *
      * @deprecated since version 1.1.0
@@ -351,8 +342,7 @@ class Validator extends Regex
     /**
      * Determines the length of a tweet.  Takes shortening of URLs into account.
      *
-     * @param string $tweet The tweet to validate.
-     *
+     * @param  string  $tweet  The tweet to validate.
      * @return int the length of a tweet.
      */
     public function getTweetLength($tweet = null)
@@ -385,19 +375,18 @@ class Validator extends Regex
     /**
      * A helper function to check for a valid match.  Used in URL validation.
      *
-     * @param string $string   The subject string to test.
-     * @param string $pattern  The pattern to match against.
-     * @param bool   $optional Whether a match is compulsory or not.
-     *
+     * @param  string  $string  The subject string to test.
+     * @param  string  $pattern  The pattern to match against.
+     * @param  bool  $optional  Whether a match is compulsory or not.
      * @return bool Whether an exact match was found.
      */
     protected static function isValidMatch($string, $pattern, $optional = false)
     {
         $found = preg_match($pattern, $string, $matches);
-        if (!$optional) {
+        if (! $optional) {
             return ($string || $string === '') && $found && $matches[0] === $string;
         } else {
-            return !(($string || $string === '') && (!$found || $matches[0] !== $string));
+            return ! (($string || $string === '') && (! $found || $matches[0] !== $string));
         }
     }
 }

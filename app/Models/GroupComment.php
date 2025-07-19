@@ -2,9 +2,9 @@
 
 namespace App\Models;
 
+use App\Profile;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
-use App\Profile;
 
 class GroupComment extends Model
 {
@@ -19,6 +19,6 @@ class GroupComment extends Model
 
     public function url()
     {
-        return '/group/' . $this->group_id . '/c/' . $this->id;
+        return '/group/'.$this->group_id.'/c/'.$this->id;
     }
 }
