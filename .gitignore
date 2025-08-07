@@ -27,6 +27,7 @@
 /vendor
 /yarn-error.log
 /public/build
+/public/vendor/telescope/
 
 # Exceptions - these *MUST* be last
 !/bootstrap/cache/.gitignore
