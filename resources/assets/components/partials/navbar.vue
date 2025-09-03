@@ -237,10 +237,10 @@
                                         </li>
 
                                         <li class="nav-item">
-                                            <router-link class="nav-link" to="/settings/home">
+                                            <a class="nav-link" href="/settings/home">
                                                 <span class="icon text-lighter"><i class="far fa-cog"></i></span>
                                                 {{ $t('navmenu.settings') }}
-                                            </router-link>
+                                            </a>
                                         </li>
 
                                         <li v-if="user.is_admin" class="nav-item">
@@ -275,7 +275,7 @@
             hide-footer
             centered
             body-class="p-0 ui-menu"
-            title="$t('navmenu.appearance')">
+           :title="$t('navmenu.appearance')">
             <div class="list-group list-group-flush">
                 <div class="list-group-item px-3">
                     <div class="d-flex justify-content-between align-items-center">

@@ -12,7 +12,7 @@
                     placeholder="username"
                     aria-label="Your username"
                     aria-describedby="username-addon"
-                    maxlength="15"
+                    maxlength="30"
                     required
                     name="username"
                     value="{{ request()->session()->get('cur-reg.form-username') }}">
@@ -20,7 +20,7 @@
                     <span class="input-group-text bg-dark border-dark text-muted font-weight-bold" id="username-addon">&commat;{{ config('pixelfed.domain.app') }}</span>
                 </div>
             </div>
-            <p class="help-text small text-muted mb-0">You can use letters, numbers, and underscores with a max length of 15 chars.</p>
+            <p class="help-text small text-muted mb-0">You can use letters, numbers, and underscores with a max length of 30 chars.</p>
         </div>
 
         <div class="details-form-field">

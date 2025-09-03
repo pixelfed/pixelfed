@@ -1,0 +1,65 @@
+name: 🐞 Bug Report (Server / Backend / API)
+title: "[Server Bug]: "
+labels: ["🐛 Server Bug"]
+description: Report an issue with Pixelfed's HTTP server, REST API, etc.
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thanks for taking the time to fill out this bug report!
+
+        Before you proceed:
+
+        - Make sure to check whether there are similar issues in the repository
+        - Make sure you're using the latest version of the app
+
+  - type: markdown
+    attributes:
+      value: |
+        ## Required information
+  - type: textarea
+    id: description
+    attributes:
+      label: Description
+      description: Please provide a clear, concise and descriptive explanation of what the bug is. Include screenshots or a video if possible. Tell us what were you expecting to happen instead of what is happening now.
+    validations:
+      required: true
+
+  - type: textarea
+    id: steps-to-reproduce
+    attributes:
+      label: Steps to reproduce
+      description: Provide a detailed list of steps that reproduce the issue.
+      placeholder: |
+        1.
+        2.
+        3.
+    validations:
+      required: true
+
+  - type: input
+    id: pixelfed-version
+    attributes:
+      label: Pixelfed version
+      description: What version of Pixelfed are you using?
+      placeholder: ex. 1.2.3
+    validations:
+      required: true
+
+  - type: markdown
+    attributes:
+      value: |
+        ## Additonal information
+
+        Providing as much information as possible greatly helps us with reproducting the issues.
+
+  - type: dropdown
+    id: acknowledgements
+    attributes:
+      label: Acknowledgements
+      description: I searched for similar issues in the repository.
+      options:
+        - 'Yes'
+    validations:
+      required: true
+

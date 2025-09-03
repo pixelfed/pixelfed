@@ -46,6 +46,7 @@
         "profile": "Profil",
         "drive": "M\u00e9diath\u00e8que",
         "settings": "Param\u00e8tres",
+        "appearance": "Apparence",
         "compose": "Publier",
         "logout": "D\u00e9connexion",
         "about": "\u00c0 propos",
@@ -166,5 +167,18 @@
         "sendingReport": "Envoi du signalement",
         "thanksMsg": "Merci pour votre signalement, les gens comme vous aident \u00e0 assurer la s\u00e9curit\u00e9 de notre communaut\u00e9 !",
         "contactAdminMsg": "Si vous souhaitez contacter un\u00b7e administrateur\u00b7trice \u00e0 propos de cette publication ou de ce signalement"
+    },
+    "appearance": {
+        "theme": "Th\u00e8me",
+        "profileLayout": "Disposition du profil",
+        "compactPreviews": "Pr\u00e9visualisation compacte",
+        "loadComments": "Charger les commentaires",
+        "hideStats": "Masquer les nombres et statistiques",
+        "auto": "Auto",
+        "lightMode": "Mode clair",
+        "darkMode": "Mode sombre",
+        "grid": "Grille",
+        "masonry": "Dallage",
+        "feed": "Fil"
     }
 }

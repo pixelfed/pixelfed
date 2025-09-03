@@ -188,8 +188,7 @@ class DiscoverController extends Controller
             return
                 $s &&
                 isset($s['account'], $s['account']['id']) &&
-                ! in_array($s['account']['id'], $filtered) &&
-                isset($s['account']);
+                ! in_array($s['account']['id'], $filtered);
         })->values();
 
         return response()->json($res);

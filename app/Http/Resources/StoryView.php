@@ -2,9 +2,9 @@
 
 namespace App\Http\Resources;
 
+use App\Services\AccountService;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
-use App\Services\AccountService;
 
 class StoryView extends JsonResource
 {
@@ -15,6 +15,9 @@ class StoryView extends JsonResource
      */
     public function toArray(Request $request)
     {
-        return AccountService::get($this->profile_id, true);
+        $res = AccountService::get($this->profile_id, true);
+        $res['viewed_at'] = $this->created_at->format('c');
+
+        return $res;
     }
 }

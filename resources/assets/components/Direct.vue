@@ -167,8 +167,10 @@
                         const links = parseLinkHeader(res.headers.link);
                         if(links.next && links.next.url) {
                             this.nextUrl = links.next.url
+                            this.canLoadMore = true;
                         } else {
                             this.nextUrl = false;
+                            this.canLoadMore = false;
                         }
                     }
                     let ids = data.map(dm => dm.accounts[0].id);
@@ -195,8 +197,10 @@
                         const links = parseLinkHeader(res.headers.link);
                         if(links.next && links.next.url) {
                             this.nextUrl = links.next.url
+                            this.canLoadMore = true;
                         } else {
                             this.nextUrl = false;
+                            this.canLoadMore = false;
                         }
                     }
                     let data = res.data.filter(m => {
@@ -221,6 +225,7 @@
             toggleTab(index) {
                 event.currentTarget.blur();
                 this.threadsLoaded = false;
+                this.canLoadMore = true;
                 this.nextUrl = false;
                 this.tabIndex = index;
                 this.fetchThreads();

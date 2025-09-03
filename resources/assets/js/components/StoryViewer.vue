@@ -236,7 +236,7 @@
 					</button>
 				</div>
 				<div v-if="owner" class="list-group-item rounded cursor-pointer" @click="fetchViewers">{{ $t("story.viewers")}}</div>
-				<div v-if="!owner" class="list-group-item rounded cursor-pointer" @click="ctxMenuReport">>{{ $t("story.report")}}</div>
+				<div v-if="!owner" class="list-group-item rounded cursor-pointer" @click="ctxMenuReport">{{ $t("story.report")}}</div>
 				<div v-if="owner" class="list-group-item rounded cursor-pointer" @click="deleteStory">{{ $t("story.delete")}}</div>
 				<div class="list-group-item rounded cursor-pointer text-muted" @click="closeCtxMenu">{{ $t("story.close")}}</div>
 			</div>

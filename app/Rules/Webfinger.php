@@ -44,9 +44,6 @@ class WebFinger implements Rule
             return false;
         }
 
-        // Optional: Check if domain resolves (can be enabled for stricter validation)
-        // return checkdnsrr($domain, 'A') || checkdnsrr($domain, 'AAAA') || checkdnsrr($domain, 'MX');
-
         return true;
     }
 

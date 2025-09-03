@@ -32,6 +32,7 @@ class Kernel extends ConsoleKernel
         $schedule->command('gc:passwordreset')->dailyAt('09:41')->onOneServer();
         $schedule->command('gc:sessions')->twiceDaily(13, 23)->onOneServer();
         $schedule->command('app:weekly-instance-scan')->weeklyOn(2, '4:20')->onOneServer();
+        $schedule->command('app:cleanup-expired-app-registrations')->dailyAt(1)->onOneServer();
 
         if ((bool) config_cache('pixelfed.cloud_storage') && (bool) config_cache('media.delete_local_after_cloud')) {
             $schedule->command('media:s3gc')->hourlyAt(15);

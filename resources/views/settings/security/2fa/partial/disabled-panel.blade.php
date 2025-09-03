@@ -8,7 +8,7 @@
 				Two factor authentication is not enabled yet.
 			</p>
 			<p class="text-muted">
-				Two-factor authentication adds an additional layer of security to your account by requiring more than just a password to log in. <a href="#">Learn more</a>.
+				Two-factor authentication adds an additional layer of security to your account by requiring more than just a password to log in.
 			</p>
 			<p class="mb-0">
 				<a class="btn btn-success font-weight-bold" href="{{route('settings.security.2fa.setup')}}">Enable two-factor authentication</a>

@@ -3,7 +3,7 @@
 return [
 
 	'common' => [
-		'comment' => 'Comment',
+		'comment' => 'Kommentér',
 		'commented' => 'Kommenterede',
 		'comments' => 'Kommentarer',
 		'like' => 'Synes om',
@@ -13,7 +13,7 @@ return [
 		'shared' => 'Delt',
 		'shares' => 'Delinger',
 		'unshare' => 'Fjern deling',
-		'bookmark' => 'Bookmark',
+		'bookmark' => 'Bogmærk',
 
 		'cancel' => 'Annuller',
 		'copyLink' => 'Kopier link',
@@ -133,11 +133,11 @@ return [
 		'viewProfile' => 'Se profil',
 		'moderationTools' => 'Moderatorværktøjer',
 		'report' => 'Report',
-		'archive' => 'Archive',
-		'unarchive' => 'Unarchive',
-		'embed' => 'Embed',
+		'archive' => 'Arkivér',
+		'unarchive' => 'Anuller arkivering',
+		'embed' => 'Indlejr',
 
-		'selectOneOption' => 'Select one of the following options',
+		'selectOneOption' => 'Vælg en af følgende muligheder',
 		'unlistFromTimelines' => 'Skjul fra tidslinje',
 		'addCW' => 'Tilføj indholdsadvarsel',
 		'removeCW' => 'Fjern indholdsadvarsel',

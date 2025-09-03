@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Stories;
 
 use App\DirectMessage;
+use App\Follower;
 use App\Http\Controllers\Controller;
 use App\Http\Resources\StoryView as StoryViewResource;
 use App\Jobs\StoryPipeline\StoryDelete;
@@ -13,14 +14,20 @@ use App\Models\Conversation;
 use App\Notification;
 use App\Services\AccountService;
 use App\Services\MediaPathService;
+use App\Services\StoryIndexService;
 use App\Services\StoryService;
 use App\Status;
 use App\Story;
 use App\StoryView;
 use Illuminate\Http\Request;
+use Illuminate\Support\Arr;
 use Illuminate\Support\Facades\Cache;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
+use Illuminate\Validation\Rule;
+use Illuminate\Validation\Rules\File;
+use Illuminate\Validation\ValidationException;
 
 class StoryApiV1Controller extends Controller
 {
@@ -328,6 +335,9 @@ class StoryApiV1Controller extends Controller
         $story->can_react = $request->input('can_react');
         $story->save();
 
+        $index = app(StoryIndexService::class);
+        $index->indexStory($story);
+
         StoryService::delLatest($story->profile_id);
         StoryFanout::dispatch($story)->onQueue('story');
         StoryService::addRotateQueue($story->id);
@@ -336,6 +346,250 @@ class StoryApiV1Controller extends Controller
             'code' => 200,
             'msg' => 'Successfully published',
         ];
+    }
+
+    public function carouselNext(Request $request)
+    {
+        abort_if(! (bool) config_cache('instance.stories.enabled') || ! $request->user(), 404);
+        $pid = (int) $request->user()->profile_id;
+
+        $index = app(StoryIndexService::class);
+
+        $profileHydrator = function (array $ids) {
+            $out = [];
+            foreach ($ids as $id) {
+                $p = AccountService::get($id, true);
+                if ($p && isset($p['id'])) {
+                    $out[(int) $p['id']] = $p;
+                }
+            }
+
+            return $out;
+        };
+
+        $nodes = $index->fetchCarouselNodes($pid, $profileHydrator);
+
+        return response()->json(
+            [
+                'nodes' => array_values($nodes),
+            ],
+            200,
+            [],
+            JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES
+        );
+    }
+
+    public function publishNext(Request $request)
+    {
+        abort_if(! (bool) config_cache('instance.stories.enabled') || ! $request->user(), 404);
+
+        $validated = $this->validate($request, [
+            'image' => [
+                'required',
+                'image',
+                'mimes:jpeg,jpg,png',
+                File::image()
+                    ->min(10)
+                    ->max(((int) config_cache('pixelfed.max_photo_size')) ?: (6 * 1024))
+                    ->dimensions(Rule::dimensions()->width(1080)->height(1920)),
+            ],
+            'overlays' => 'nullable|array|min:0|max:4',
+            'overlays.*.absoluteScale' => 'numeric|min:0.1|max:5',
+            'overlays.*.absoluteX' => 'numeric',
+            'overlays.*.absoluteY' => 'numeric',
+            'overlays.*.color' => 'hex_color',
+            'overlays.*.backgroundColor' => 'string|in:transparent,#FFFFFF,#000000',
+            'overlays.*.content' => 'string|min:1|max:250',
+            'overlays.*.fontSize' => 'numeric|min:10|max:180',
+            'overlays.*.fontFamily' => 'string|in:default,serif,mono,rounded,bold',
+            'overlays.*.rotation' => 'numeric|min:-360|max:360',
+            'overlays.*.scale' => 'numeric|min:0.1|max:5',
+            'overlays.*.x' => 'numeric',
+            'overlays.*.y' => 'numeric',
+            'overlays.*.type' => 'string|in:text,mention,url,hashtag',
+        ]);
+
+        $user = $request->user();
+        $pid = $user->profile_id;
+
+        $count = Story::whereProfileId($user->profile_id)
+            ->whereActive(true)
+            ->where('expires_at', '>', now())
+            ->count();
+
+        if ($count >= Story::MAX_PER_DAY) {
+            return response()->json([
+                'code' => 418,
+                'error' => 'You’ve reached your daily limit of '.Story::MAX_PER_DAY.' Stories.',
+            ], 418, [], JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES);
+        }
+
+        DB::beginTransaction();
+
+        try {
+            $photo = $validated['image'];
+            $path = $this->storeMedia($photo, $user);
+
+            $allowedOverlayFields = [
+                'absoluteScale', 'absoluteX', 'absoluteY', 'color',
+                'content', 'fontSize', 'rotation', 'scale', 'x', 'y', 'type',
+            ];
+
+            $filteredOverlays = [];
+            if (isset($validated['overlays'])) {
+                foreach ($validated['overlays'] as $index => $overlay) {
+                    $filteredOverlay = Arr::only($overlay, $allowedOverlayFields);
+
+                    if (isset($filteredOverlay['type']) && isset($filteredOverlay['content'])) {
+                        $content = $filteredOverlay['content'];
+                        $type = $filteredOverlay['type'];
+
+                        switch ($type) {
+                            case 'text':
+                                if (! preg_match('/^[a-zA-Z0-9\s\p{P}\p{S}]*$/u', $content)) {
+                                    throw ValidationException::withMessages([
+                                        "overlays.{$index}.content" => 'Text overlays contain unsupported characters.',
+                                    ]);
+                                }
+                                break;
+
+                            case 'hashtag':
+                                if (! preg_match('/^#[A-Za-z0-9_]{1,29}$/', $content)) {
+                                    throw ValidationException::withMessages([
+                                        "overlays.{$index}.content" => 'Invalid hashtag overlay.',
+                                    ]);
+                                }
+                                break;
+
+                            case 'mention':
+                                $username = ltrim($content, '@');
+
+                                $doesFollow = DB::table('followers as f')
+                                    ->where('f.following_id', $pid)
+                                    ->whereExists(function ($q) use ($username) {
+                                        $q->select(DB::raw(1))
+                                            ->from('profiles as p')
+                                            ->whereColumn('p.id', 'f.profile_id')
+                                            ->where('p.username', $username);
+                                    })
+                                    ->exists();
+
+                                if (! $doesFollow) {
+                                    throw ValidationException::withMessages([
+                                        "overlays.{$index}.content" => 'The mentioned user does not exist.',
+                                    ]);
+                                }
+
+                                $filteredOverlay['content'] = $username;
+                                break;
+
+                            case 'url':
+                                if (! filter_var($content, FILTER_VALIDATE_URL)) {
+                                    throw ValidationException::withMessages([
+                                        "overlays.{$index}.content" => 'Invalid URL format.',
+                                    ]);
+                                }
+
+                                $parsedUrl = parse_url($content);
+                                if (! in_array($parsedUrl['scheme'] ?? '', ['https'])) {
+                                    throw ValidationException::withMessages([
+                                        "overlays.{$index}.content" => 'Only HTTP and HTTPS URLs are allowed.',
+                                    ]);
+                                }
+                                break;
+
+                            default:
+                                throw ValidationException::withMessages([
+                                    "overlays.{$index}.type" => 'Invalid overlay type.',
+                                ]);
+                        }
+                    }
+
+                    $filteredOverlays[] = $filteredOverlay;
+                }
+            }
+
+            $story = new Story;
+            $story->duration = 7;
+            $story->profile_id = $user->profile_id;
+            $story->type = 'photo';
+            $story->mime = $photo->getMimeType();
+            $story->path = $path;
+            $story->local = true;
+            $story->size = $photo->getSize();
+            $story->bearcap_token = Str::random(64);
+            $story->expires_at = now()->addDay();
+            $story->active = true;
+            $story->story = ['overlays' => $filteredOverlays];
+            $story->can_reply = false;
+            $story->can_react = false;
+            $story->save();
+
+            StoryService::delLatest($story->profile_id);
+            StoryFanout::dispatch($story)->onQueue('story');
+            StoryService::addRotateQueue($story->id);
+
+            DB::commit();
+
+            $index = app(StoryIndexService::class);
+            $index->indexStory($story);
+
+            $res = [
+                'code' => 200,
+                'msg' => 'Successfully added',
+            ];
+
+            return response()->json($res);
+
+        } catch (\Exception $e) {
+            DB::rollback();
+            \Log::error('Story creation failed', [
+                'user_id' => $user->id,
+                'error' => $e->getMessage(),
+            ]);
+            $res = [
+                'code' => 500,
+                'msg' => 'Failed to create story',
+            ];
+
+            return response()->json($res, 500);
+        }
+    }
+
+    public function mentionAutocomplete(Request $request)
+    {
+        abort_if(! (bool) config_cache('instance.stories.enabled') || ! $request->user(), 404);
+
+        $data = $request->validate([
+            'q' => ['required', 'string', 'max:120'],
+        ]);
+
+        $pid = $request->user()->profile_id;
+
+        $q = str_starts_with($data['q'], '@') ? substr($data['q'], 1) : $data['q'];
+
+        $rows = DB::table('profiles as p')
+            ->select('p.id', 'p.username')
+            ->where('p.username', 'like', $q.'%')
+            ->whereExists(function ($sub) use ($pid) {
+                $sub->select(DB::raw(1))
+                    ->from('followers as f')
+                    ->whereColumn('f.profile_id', 'p.id')
+                    ->where('f.following_id', $pid);
+            })
+            ->orderBy('p.username')
+            ->limit(10)
+            ->get()
+            ->map(function ($item) {
+                if ($item && $item->id) {
+                    return AccountService::get($item->id, true);
+                }
+
+            })
+            ->filter()
+            ->values();
+
+        return response()->json($rows);
     }
 
     public function delete(Request $request, $id)
@@ -348,6 +602,9 @@ class StoryApiV1Controller extends Controller
             ->findOrFail($id);
         $story->active = false;
         $story->save();
+
+        $index = app(StoryIndexService::class);
+        $index->removeStory($id, $story->profile_id);
 
         StoryDelete::dispatch($story)->onQueue('story');
 
@@ -365,37 +622,38 @@ class StoryApiV1Controller extends Controller
             'id' => 'required|min:1',
         ]);
         $id = $request->input('id');
-
+        $pid = $request->user()->profile_id;
         $authed = $request->user()->profile;
 
-        $story = Story::with('profile')
-            ->findOrFail($id);
-        $exp = $story->expires_at;
+        $story = Story::whereActive(true)->findOrFail($id);
 
         $profile = $story->profile;
 
-        if ($story->profile_id == $authed->id) {
+        if ($story->profile_id == $pid) {
             return [];
         }
 
-        $publicOnly = (bool) $profile->followedBy($authed);
-        abort_if(! $publicOnly, 403);
+        $following = Follower::whereProfileId($pid)->whereFollowingId($story->profile_id)->exists();
+        abort_if(! $following, 403, 'Invalid permission');
 
         $v = StoryView::firstOrCreate([
             'story_id' => $id,
-            'profile_id' => $authed->id,
+            'profile_id' => $pid,
         ]);
 
+        $index = app(StoryIndexService::class);
+        $index->markSeen($pid, $story->profile_id, $story->id, $story->created_at);
+
         if ($v->wasRecentlyCreated) {
+
             Story::findOrFail($story->id)->increment('view_count');
 
             if ($story->local == false) {
                 StoryViewDeliver::dispatch($story, $authed)->onQueue('story');
             }
+            Cache::forget('stories:recent:by_id:'.$pid);
+            StoryService::addSeen($pid, $story->id);
         }
-
-        Cache::forget('stories:recent:by_id:'.$authed->id);
-        StoryService::addSeen($authed->id, $story->id);
 
         return ['code' => 200];
     }
@@ -507,7 +765,8 @@ class StoryApiV1Controller extends Controller
 
         $viewers = StoryView::whereStoryId($story->id)
             ->orderByDesc('id')
-            ->cursorPaginate(10);
+            ->cursorPaginate(10)
+            ->withQueryString();
 
         return StoryViewResource::collection($viewers);
     }

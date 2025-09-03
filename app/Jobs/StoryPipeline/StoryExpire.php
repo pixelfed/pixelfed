@@ -2,173 +2,177 @@
 
 namespace App\Jobs\StoryPipeline;
 
+use App\Services\FollowerService;
+use App\Services\StoryIndexService;
+use App\Services\StoryService;
+use App\Story;
+use App\Transformer\ActivityPub\Verb\DeleteStory;
+use App\Util\ActivityPub\HttpSignature;
+use GuzzleHttp\Client;
+use GuzzleHttp\Pool;
 use Illuminate\Bus\Queueable;
-use Illuminate\Contracts\Queue\ShouldBeUnique;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
-use Storage;
-use App\Story;
 use League\Fractal;
 use League\Fractal\Serializer\ArraySerializer;
-use App\Transformer\ActivityPub\Verb\DeleteStory;
-use App\Util\ActivityPub\Helpers;
-use GuzzleHttp\Pool;
-use GuzzleHttp\Client;
-use GuzzleHttp\Promise;
-use App\Util\ActivityPub\HttpSignature;
-use App\Services\FollowerService;
-use App\Services\StoryService;
+use Storage;
 
 class StoryExpire implements ShouldQueue
 {
-	use Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
+    use Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
 
-	protected $story;
+    protected $story;
 
-	/**
-	 * Delete the job if its models no longer exist.
-	 *
-	 * @var bool
-	 */
-	public $deleteWhenMissingModels = true;
+    /**
+     * Delete the job if its models no longer exist.
+     *
+     * @var bool
+     */
+    public $deleteWhenMissingModels = true;
 
-	/**
-	 * Create a new job instance.
-	 *
-	 * @return void
-	 */
-	public function __construct(Story $story)
-	{
-		$this->story = $story;
-	}
+    /**
+     * Create a new job instance.
+     *
+     * @return void
+     */
+    public function __construct(Story $story)
+    {
+        $this->story = $story;
+    }
 
-	/**
-	 * Execute the job.
-	 *
-	 * @return void
-	 */
-	public function handle()
-	{
-		$story = $this->story;
+    /**
+     * Execute the job.
+     *
+     * @return void
+     */
+    public function handle()
+    {
+        $story = $this->story;
 
-		if($story->local == false) {
-			$this->handleRemoteExpiry();
-			return;
-		}
+        if ($story->local == false) {
+            $this->handleRemoteExpiry();
 
-		if($story->active == false) {
-			return;
-		}
+            return;
+        }
 
-		if($story->expires_at->gt(now())) {
-			return;
-		}
+        if ($story->active == false) {
+            return;
+        }
 
-		$story->active = false;
-		$story->save();
+        if ($story->expires_at->gt(now())) {
+            return;
+        }
 
-		$this->rotateMediaPath();
-		$this->fanoutExpiry();
+        $story->active = false;
+        $story->save();
 
-		StoryService::delLatest($story->profile_id);
-	}
+        $this->rotateMediaPath();
 
-	protected function rotateMediaPath()
-	{
-		$story = $this->story;
-		$date = date('Y').date('m');
-		$old = $story->path;
-		$base = "story_archives/{$story->profile_id}/{$date}/";
-		$paths = explode('/', $old);
-		$path = array_pop($paths);
-		$newPath = $base . $path;
+        $index = app(StoryIndexService::class);
+        $index->removeStory($story->id, $story->profile_id);
 
-		if(Storage::exists($old) == true) {
-			$dir = implode('/', $paths);
-			Storage::move($old, $newPath);
-			Storage::delete($old);
-			$story->bearcap_token = null;
-			$story->path = $newPath;
-			$story->save();
-			Storage::deleteDirectory($dir);
-		}
-	}
+        $this->fanoutExpiry();
 
-	protected function fanoutExpiry()
-	{
-		$story = $this->story;
-		$profile = $story->profile;
+        StoryService::delLatest($story->profile_id);
+    }
 
-		if($story->local == false || $story->remote_url) {
-			return;
-		}
+    protected function rotateMediaPath()
+    {
+        $story = $this->story;
+        $date = date('Y').date('m');
+        $old = $story->path;
+        $base = "story_archives/{$story->profile_id}/{$date}/";
+        $paths = explode('/', $old);
+        $path = array_pop($paths);
+        $newPath = $base.$path;
 
-		$audience = FollowerService::softwareAudience($story->profile_id, 'pixelfed');
+        if (Storage::exists($old) == true) {
+            $dir = implode('/', $paths);
+            Storage::move($old, $newPath);
+            Storage::delete($old);
+            $story->bearcap_token = null;
+            $story->path = $newPath;
+            $story->save();
+            Storage::deleteDirectory($dir);
+        }
+    }
 
-		if(empty($audience)) {
-			// Return on profiles with no remote followers
-			return;
-		}
+    protected function fanoutExpiry()
+    {
+        $story = $this->story;
+        $profile = $story->profile;
 
-		$fractal = new Fractal\Manager();
-		$fractal->setSerializer(new ArraySerializer());
-		$resource = new Fractal\Resource\Item($story, new DeleteStory());
-		$activity = $fractal->createData($resource)->toArray();
+        if ($story->local == false || $story->remote_url) {
+            return;
+        }
 
-		$payload = json_encode($activity);
+        $audience = FollowerService::softwareAudience($story->profile_id, 'pixelfed');
 
-		$client = new Client([
-			'timeout'  => config('federation.activitypub.delivery.timeout')
-		]);
+        if (empty($audience)) {
+            // Return on profiles with no remote followers
+            return;
+        }
 
-		$requests = function($audience) use ($client, $activity, $profile, $payload) {
-			foreach($audience as $url) {
-				$version = config('pixelfed.version');
-				$appUrl = config('app.url');
-				$headers = HttpSignature::sign($profile, $url, $activity, [
-					'Content-Type'	=> 'application/ld+json; profile="https://www.w3.org/ns/activitystreams"',
-					'User-Agent'	=> "(Pixelfed/{$version}; +{$appUrl})",
-				]);
-				yield function() use ($client, $url, $headers, $payload) {
-					return $client->postAsync($url, [
-						'curl' => [
-							CURLOPT_HTTPHEADER => $headers,
-							CURLOPT_POSTFIELDS => $payload,
-							CURLOPT_HEADER => true
-						]
-					]);
-				};
-			}
-		};
+        $fractal = new Fractal\Manager;
+        $fractal->setSerializer(new ArraySerializer);
+        $resource = new Fractal\Resource\Item($story, new DeleteStory);
+        $activity = $fractal->createData($resource)->toArray();
 
-		$pool = new Pool($client, $requests($audience), [
-			'concurrency' => config('federation.activitypub.delivery.concurrency'),
-			'fulfilled' => function ($response, $index) {
-			},
-			'rejected' => function ($reason, $index) {
-			}
-		]);
+        $payload = json_encode($activity);
 
-		$promise = $pool->promise();
+        $client = new Client([
+            'timeout' => config('federation.activitypub.delivery.timeout'),
+        ]);
 
-		$promise->wait();
-	}
+        $requests = function ($audience) use ($client, $activity, $profile, $payload) {
+            foreach ($audience as $url) {
+                $version = config('pixelfed.version');
+                $appUrl = config('app.url');
+                $headers = HttpSignature::sign($profile, $url, $activity, [
+                    'Content-Type' => 'application/ld+json; profile="https://www.w3.org/ns/activitystreams"',
+                    'User-Agent' => "(Pixelfed/{$version}; +{$appUrl})",
+                ]);
+                yield function () use ($client, $url, $headers, $payload) {
+                    return $client->postAsync($url, [
+                        'curl' => [
+                            CURLOPT_HTTPHEADER => $headers,
+                            CURLOPT_POSTFIELDS => $payload,
+                            CURLOPT_HEADER => true,
+                        ],
+                    ]);
+                };
+            }
+        };
 
-	protected function handleRemoteExpiry()
-	{
-		$story = $this->story;
-		$story->active = false;
-		$story->save();
+        $pool = new Pool($client, $requests($audience), [
+            'concurrency' => config('federation.activitypub.delivery.concurrency'),
+            'fulfilled' => function ($response, $index) {},
+            'rejected' => function ($reason, $index) {},
+        ]);
 
-		$path = $story->path;
+        $promise = $pool->promise();
 
-		if(Storage::exists($path) == true) {
-			Storage::delete($path);
-		}
+        $promise->wait();
+    }
 
-		$story->views()->delete();
-		$story->delete();
-	}
+    protected function handleRemoteExpiry()
+    {
+        $story = $this->story;
+        $story->active = false;
+        $story->save();
+
+        $index = app(StoryIndexService::class);
+        $index->removeStory($story->id, $story->profile_id);
+
+        $path = $story->path;
+
+        if (Storage::exists($path) == true) {
+            Storage::delete($path);
+        }
+
+        $story->views()->delete();
+        $story->delete();
+    }
 }

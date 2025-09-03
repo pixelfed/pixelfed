@@ -7,6 +7,7 @@ use App\Profile;
 use App\Services\AccountService;
 use App\Services\FollowerService;
 use App\Services\PollService;
+use App\Services\StoryIndexService;
 use App\Services\StoryService;
 use App\Services\UserRoleService;
 use App\Story;
@@ -183,6 +184,7 @@ class StoryController extends StoryComposeController
         $authed = $user->profile;
 
         $story = Story::with('profile')
+            ->whereActive(true)
             ->findOrFail($id);
         $exp = $story->expires_at;
 
@@ -202,6 +204,8 @@ class StoryController extends StoryComposeController
 
         if ($v->wasRecentlyCreated) {
             Story::findOrFail($story->id)->increment('view_count');
+            $index = app(StoryIndexService::class);
+            $index->markSeen($authed->id, $story->profile_id, $story->id, $story->created_at);
 
             if ($story->local == false) {
                 StoryViewDeliver::dispatch($story, $authed)->onQueue('story');

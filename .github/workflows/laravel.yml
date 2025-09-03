@@ -9,9 +9,11 @@ on:
 jobs:
   tests:
     runs-on: ubuntu-latest
+
     strategy:
       matrix:
         php: [ '8.3' ]
+
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
@@ -20,36 +22,17 @@ jobs:
         uses: shivammathur/setup-php@v2
         with:
           php-version: ${{ matrix.php }}
-          extensions: mbstring, sqlite, xml, ctype, json, openssl
-          ini-values: post_max_size=256M, memory_limit=512M
-
-      - name: Cache Composer dependencies
-        uses: actions/cache@v3
-        with:
-          path: vendor
-          key: composer-${{ hashFiles('**/composer.lock') }}
+          extensions: dom, curl, libxml, mbstring, zip, pcntl, pdo, sqlite, pdo_sqlite, bcmath, soap, intl, gd, exif, iconv
+          coverage: none
 
       - name: Install Composer dependencies
-        run: composer install --no-progress --no-suggest --prefer-dist -n
+        run: composer install -n --prefer-dist
 
-      - name: Copy .env and generate key
+      - name: Copy .env.testing
         run: |
-          cp .env.example .env
+          cp .env.testing .env
           php artisan key:generate
 
-      - name: Prepare SQLite database
-        run: |
-          touch database/database.sqlite
-          php artisan migrate --env=testing --force --database=sqlite
-
       - name: Run tests
-        run: |
-          php artisan test --env=testing --log-junit=tests/_output/junit.xml
+        run: php artisan test
         continue-on-error: false
-
-      - name: Upload JUnit test results
-        if: always()
-        uses: actions/upload-artifact@v3
-        with:
-          name: junit-results
-          path: tests/_output/junit.xml

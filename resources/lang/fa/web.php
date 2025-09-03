@@ -57,7 +57,7 @@ return [
 
 		// Self links
 		'profile' => 'نمایه',
-		'drive' => 'Drive',
+		'drive' => 'گرداننده',
 		'settings' => 'تنظیمات',
 		'compose' => 'فرستهٔ جدید',
 		'logout' => 'خروج',
@@ -97,9 +97,9 @@ return [
 		'applicationApproved' => 'تایید شد!',
 		'applicationRejected' => 'رد شد. ۶ ماه دیگر می‌توانید دوباره درخواست کنید.',
 
-		'dm' => 'dm',
+		'dm' => 'پم',
 		'groupPost' => 'فرستهٔ گروهی',
-		'modlog' => 'modlog',
+		'modlog' => 'گزارش مدیر',
 		'post' => 'فرسته',
 		'story' => 'داستان',
 		'noneFound' => 'هیچ آگاهی‌ای پیدا نشد',

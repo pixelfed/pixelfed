@@ -51,9 +51,9 @@ class AppRegisterController extends Controller
 
         DB::beginTransaction();
 
-        $exists = AppRegister::whereEmail($email)->where('created_at', '>', now()->subHours(24))->count();
+        $exists = AppRegister::whereEmail($email)->count();
 
-        if ($exists && $exists > 3) {
+        if ($exists) {
             $errorParams = http_build_query([
                 'status' => 'error',
                 'message' => 'Too many attempts, please try again later.',
@@ -102,7 +102,7 @@ class AppRegisterController extends Controller
         }
 
         $this->validate($request, [
-            'email' => 'required|email:rfc,dns,spoof,strict|unique:users,email',
+            'email' => 'required|email:rfc,dns,spoof,strict|unique:users,email|exists:app_registers,email',
             'verify_code' => ['required', 'digits:6', 'numeric'],
         ]);
 
@@ -111,7 +111,7 @@ class AppRegisterController extends Controller
 
         $exists = AppRegister::whereEmail($email)
             ->whereVerifyCode($code)
-            ->where('created_at', '>', now()->subHours(4))
+            ->where('created_at', '>', now()->subDays(90))
             ->exists();
 
         return response()->json([
@@ -204,7 +204,7 @@ class AppRegisterController extends Controller
         }
 
         $this->validate($request, [
-            'email' => 'required|email:rfc,dns,spoof,strict|unique:users,email',
+            'email' => 'required|email:rfc,dns,spoof,strict|unique:users,email|exists:app_registers,email',
             'verify_code' => ['required', 'digits:6', 'numeric'],
             'username' => $this->validateUsernameRule(),
             'name' => 'nullable|string|max:'.config('pixelfed.max_name_length'),
@@ -219,7 +219,7 @@ class AppRegisterController extends Controller
 
         $exists = AppRegister::whereEmail($email)
             ->whereVerifyCode($code)
-            ->where('created_at', '>', now()->subHours(4))
+            ->where('created_at', '>', now()->subDays(90))
             ->exists();
 
         if (! $exists) {

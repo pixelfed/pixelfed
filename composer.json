@@ -53,7 +53,7 @@
         "laravel/telescope": "^5.5",
         "mockery/mockery": "^1.6",
         "nunomaduro/collision": "^8.8",
-        "phpunit/phpunit": "^11.0.1"
+        "pestphp/pest": "^3.8"
     },
     "autoload": {
         "classmap": [
@@ -100,7 +100,10 @@
     "config": {
         "preferred-install": "dist",
         "sort-packages": true,
-        "optimize-autoloader": true
+        "optimize-autoloader": true,
+        "allow-plugins": {
+            "pestphp/pest-plugin": true
+        }
     },
     "prefer-stable": true
 }

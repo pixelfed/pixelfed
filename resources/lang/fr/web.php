@@ -59,6 +59,7 @@ return [
 		'profile' => 'Profil',
 		'drive' => 'Médiathèque',
 		'settings' => 'Paramètres',
+		'appearance' => 'Apparence',
 		'compose' => 'Publier',
 		'logout' => 'Déconnexion',
 
@@ -204,5 +205,21 @@ return [
 		'thanksMsg' => 'Merci pour votre signalement, les gens comme vous aident à assurer la sécurité de notre communauté !',
 		'contactAdminMsg' => 'Si vous souhaitez contacter un·e administrateur·trice à propos de cette publication ou de ce signalement',
 	],
+
+    'appearance' => [
+        'theme' => 'Thème',
+        'profileLayout' => 'Disposition du profil',
+        'compactPreviews' => 'Prévisualisation compacte',
+        'loadComments' => 'Charger les commentaires',
+        'hideStats' => 'Masquer les nombres et statistiques',
+
+        'auto' => 'Auto',
+        'lightMode' => 'Mode clair',
+        'darkMode' => 'Mode sombre',
+
+        'grid' => 'Grille',
+        'masonry' => 'Dallage',
+        'feed' => 'Fil',
+    ],
 
 ];
