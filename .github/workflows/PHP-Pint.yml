@@ -33,7 +33,7 @@ jobs:
         run: composer install --no-interaction --no-progress
 
       - name: Run Pint
-        run: pint  --test
+        run: ./vendor/bin/pint  --test
 
 #      - name: Commit linted files
 #        uses: stefanzweifel/git-auto-commit-action@v5
