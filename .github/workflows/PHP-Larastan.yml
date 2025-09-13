@@ -1,4 +1,4 @@
-name: PHP - Pint
+name: PHP - Larastan
 
 on:
   push:
