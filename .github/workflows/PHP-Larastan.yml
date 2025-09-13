@@ -11,7 +11,7 @@ on:
       - staging
 
 jobs:
-  lint:
+  Larastan:
     runs-on: ubuntu-latest
     strategy:
       fail-fast: true
