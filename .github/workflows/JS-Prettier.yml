@@ -1,0 +1,31 @@
+name: JS - Prettier
+
+on:
+  push:
+    branches:
+      - dev
+      - staging
+  pull_request:
+    branches:
+      - dev
+      - staging
+
+jobs:
+  Prettier:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: '24'
+
+      - name: Install Node dependencies
+        run: npm ci
+
+      - name: Run Prettier
+        run: npm run format:check
+
+#      - name: Commit linted files
+#        uses: stefanzweifel/git-auto-commit-action@v5
