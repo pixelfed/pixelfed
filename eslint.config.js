@@ -1,14 +1,14 @@
 const js = require('@eslint/js');
 const vue = require('eslint-plugin-vue');
-const { globals } = require('globals');
+const globals = require('globals');
 
 module.exports = [
   // Base JavaScript configuration
   js.configs.recommended,
-  
+
   // Vue.js configuration for Vue 2
   ...vue.configs['flat/essential'],
-  
+
   {
     files: ['**/*.{js,vue}'],
     languageOptions: {
@@ -34,17 +34,17 @@ module.exports = [
       'vue/multi-word-component-names': 'off',
       'vue/no-v-model-argument': 'off',
       'vue/no-multiple-template-root': 'error',
-      
+
       // General JavaScript rules
       'no-console': 'warn',
       'no-debugger': 'warn',
-      'no-unused-vars': ['error', { 
+      'no-unused-vars': ['error', {
         argsIgnorePattern: '^_',
-        varsIgnorePattern: '^_' 
+        varsIgnorePattern: '^_'
       }],
       'prefer-const': 'error',
       'no-var': 'error',
-      
+
       // Code style
       'indent': ['error', 2],
       'quotes': ['error', 'single'],
@@ -52,7 +52,7 @@ module.exports = [
       'comma-dangle': ['error', 'never'],
       'object-curly-spacing': ['error', 'always'],
       'array-bracket-spacing': ['error', 'never'],
-      
+
       // Best practices
       'eqeqeq': 'error',
       'no-eval': 'error',
@@ -60,7 +60,7 @@ module.exports = [
       'no-new-func': 'error'
     }
   },
-  
+
   // Specific configuration for Vue files
   {
     files: ['**/*.vue'],
@@ -79,7 +79,7 @@ module.exports = [
       }]
     }
   },
-  
+
   // Configuration for Laravel Mix and build files
   {
     files: ['webpack.mix.js', 'webpack.config.js'],
@@ -92,7 +92,7 @@ module.exports = [
       'no-console': 'off'
     }
   },
-  
+
   // Ignore patterns
   {
     ignores: [
