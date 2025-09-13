@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Api;
 
 use App\AccountLog;
 use App\EmailVerification;
+use App\Follower;
 use App\Http\Controllers\Controller;
 use App\Http\Controllers\StatusController;
 use App\Http\Resources\StatusStateless;
@@ -35,6 +36,7 @@ use App\Services\StatusService;
 use App\Services\UserStorageService;
 use App\Status;
 use App\StatusArchived;
+use App\Story;
 use App\User;
 use App\UserSetting;
 use App\Util\Lexer\RestrictedNames;
@@ -143,6 +145,26 @@ class ApiV1Dot1Controller extends Controller
                     ->whereObjectType('App\Profile')
                     ->count();
                 $rpid = $object->id;
+                break;
+
+            case 'story':
+                $object = Story::whereActive(true)->find($object_id);
+                if (! $object) {
+                    return $this->error('Invalid object id', 400, ['error_code' => 'ERROR_INVALID_OBJECT_ID']);
+                }
+                if ($object->profile_id == $user->profile_id) {
+                    return $this->error('Cannot self report', 400, ['error_code' => 'ERROR_NO_SELF_REPORTS']);
+                }
+                if (! Follower::whereProfileId($user->profile_id)->whereFollowingId($object->profile_id)->exists()) {
+                    return $this->error('Invalid object id', 400, ['error_code' => 'ERROR_INVALID_OBJECT_ID']);
+                }
+                $object_type = 'App\Story';
+                $exists = Report::whereUserId($user->id)
+                    ->whereObjectId($object->id)
+                    ->whereObjectType('App\Story')
+                    ->count();
+
+                $rpid = $object->profile_id;
                 break;
 
             default:

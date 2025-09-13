@@ -232,6 +232,7 @@ Route::group(['prefix' => 'api'], function () use ($middleware) {
             Route::post('thread/media', 'DirectMessageController@mediaUpload')->middleware($middleware);
             Route::post('thread/read', 'DirectMessageController@read')->middleware($middleware);
             Route::post('lookup', 'DirectMessageController@composeLookup')->middleware($middleware);
+            Route::get('compose/mutuals', 'DirectMessageController@composeMutuals')->middleware($middleware);
         });
 
         Route::group(['prefix' => 'archive'], function () use ($middleware) {
@@ -289,6 +290,15 @@ Route::group(['prefix' => 'api'], function () use ($middleware) {
 
         Route::post('status/create', 'Api\ApiV1Dot1Controller@statusCreate')->middleware($middleware);
         Route::get('nag/state', 'Api\ApiV1Dot1Controller@nagState');
+    });
+
+    Route::group(['prefix' => 'v1.2'], function () use ($middleware) {
+        Route::group(['prefix' => 'stories'], function () use ($middleware) {
+            Route::get('viewers', 'Stories\StoryApiV1Controller@viewers')->middleware($middleware);
+            Route::post('publish', 'Stories\StoryApiV1Controller@publishNext')->middleware($middleware);
+            Route::get('carousel', 'Stories\StoryApiV1Controller@carouselNext')->middleware($middleware);
+            Route::get('mention-autocomplete', 'Stories\StoryApiV1Controller@mentionAutocomplete')->middleware($middleware);
+        });
     });
 
     Route::group(['prefix' => 'live'], function () {

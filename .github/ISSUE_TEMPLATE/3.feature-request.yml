@@ -1,0 +1,52 @@
+name: 💡 Feature / Enhancement Request
+title: "[Enhancement]: "
+labels: ["➕ Enhancement"]
+description: Suggest a new feature enhancement for Pixelfed here
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thanks for taking the time to fill out this feature request form!
+
+        Before you proceed:
+
+        - Make sure to check whether there are similar feature requests open in the repository
+        - Make sure this isn't currenly being worked on in a pull request
+
+  - type: markdown
+    attributes:
+      value: |
+        ## Required information
+  - type: textarea
+    id: description
+    attributes:
+      label: Description
+      description: Please provide a clear, concise and description of what the feature is.
+    validations:
+      required: true
+
+  - type: textarea
+    id: use-case
+    attributes:
+      label: Use-case
+      description: Please describe how this feature will benefit you and other users.
+    validations:
+      required: true
+
+  - type: markdown
+    attributes:
+      value: |
+        ## Additonal information
+
+        Providing as much information as possible greatly helps us with reproducting the issues.
+
+  - type: dropdown
+    id: acknowledgements
+    attributes:
+      label: Acknowledgements
+      description: I searched for similar feature requests in the repository.
+      options:
+        - 'Yes'
+    validations:
+      required: true
+

@@ -275,7 +275,7 @@
             hide-footer
             centered
             body-class="p-0 ui-menu"
-            title="$t('navmenu.appearance')">
+           :title="$t('navmenu.appearance')">
             <div class="list-group list-group-flush">
                 <div class="list-group-item px-3">
                     <div class="d-flex justify-content-between align-items-center">

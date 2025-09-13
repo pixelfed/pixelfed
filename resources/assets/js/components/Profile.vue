@@ -213,12 +213,22 @@
                                         <span v-if="s.pf_type == 'video'" class="float-right mr-3 post-icon"><i class="fas fa-video fa-2x"></i></span>
                                         <span v-if="s.pf_type == 'video:album'" class="float-right mr-3 post-icon"><i class="fas fa-film fa-2x"></i></span>
                                         <div class="info-overlay-text">
-                                            <h5 class="text-white m-auto font-weight-bold">
-                                                <span>
+                                            <div class="text-white m-auto">
+                                                <p class="info-overlay-text-field font-weight-bold">
+                                                    <span class="far fa-heart fa-lg p-2 d-flex-inline"></span>
+                                                    <span class="d-flex-inline">{{formatCount(s.favourites_count)}}</span>
+                                                </p>
+
+                                                <p class="info-overlay-text-field font-weight-bold">
                                                     <span class="far fa-comment fa-lg p-2 d-flex-inline"></span>
                                                     <span class="d-flex-inline">{{formatCount(s.reply_count)}}</span>
-                                                </span>
-                                            </h5>
+                                                </p>
+
+                                                <p class="mb-0 info-overlay-text-field font-weight-bold">
+                                                    <span class="far fa-sync fa-lg p-2 d-flex-inline"></span>
+                                                    <span class="d-flex-inline">{{formatCount(s.reblogs_count)}}</span>
+                                                </p>
+                                            </div>
                                         </div>
                                     </div>
                                 </a>
@@ -230,7 +240,7 @@
                                 </div>
                             </div>
                         </div>
-                        <div v-if="timeline.length">
+                        <div v-if="timeline.length && canLoadMore">
                             <infinite-loading @infinite="infiniteTimeline">
                                 <div slot="no-more"></div>
                                 <div slot="no-results"></div>

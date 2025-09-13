@@ -720,7 +720,7 @@ class PublicApiController extends Controller
             })
             ->whereIn('type', $scope)
             ->whereIn('scope', $visibility)
-            ->orderByDesc('id')
+            ->orderByDesc('created_at')
             ->cursorPaginate($remainingLimit)
             ->withQueryString();
 

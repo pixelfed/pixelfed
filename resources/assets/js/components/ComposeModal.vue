@@ -682,7 +682,7 @@
                                   <div class="media-body">
                                     <h5 class="mt-0">{{ collection.title }}</h5>
                                     <p class="mb-0 text-muted small">
-                                      <span>{{ collection.post_count }} Posts
+                                      <span>{{ collection.post_count }} Posts</span>
                                       <span>&middot;</span>
                                       <span v-if="collection.visibility === 'draft'" class="primary"><i class="far fa-lock fa-sm"></i> {{ $t("profile.draft")}}</span>
                                       <span v-else>Created {{ timeago(collection.published_at) }} ago</span>
@@ -1771,7 +1771,7 @@ export default {
         },
 
         getTagResultValue(result) {
-            return '@' + result.name;
+            return result.name;
         },
 
         onTagSubmitLocation(result) {

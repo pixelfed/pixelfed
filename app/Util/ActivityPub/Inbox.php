@@ -33,6 +33,7 @@ use App\Services\PollService;
 use App\Services\PushNotificationService;
 use App\Services\ReblogService;
 use App\Services\RelationshipService;
+use App\Services\StoryIndexService;
 use App\Services\UserFilterService;
 use App\Status;
 use App\Story;
@@ -1037,6 +1038,9 @@ class Inbox
             'story_id' => $story->id,
             'profile_id' => $profile->id,
         ]);
+
+        $index = app(StoryIndexService::class);
+        $index->markSeen($profile->id, $story->profile_id, $story->id, $story->created_at);
 
         if ($view->wasRecentlyCreated == true) {
             $story->view_count++;
