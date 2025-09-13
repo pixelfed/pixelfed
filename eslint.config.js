@@ -1,8 +1,8 @@
-import js from '@eslint/js';
-import vue from 'eslint-plugin-vue';
-import globals from 'globals';
+const js = require('@eslint/js');
+const vue = require('eslint-plugin-vue');
+const { globals } = require('globals');
 
-export default [
+module.exports = [
   // Base JavaScript configuration
   js.configs.recommended,
   
