@@ -7,8 +7,8 @@
 		"watch-poll": "mix watch -- --watch-options-poll=1000",
 		"hot": "mix watch --hot",
 		"production": "mix --production",
-		"lint": "eslint resources/js/ --ext .vue,.js,.jsx,.cjs,.mjs,.ts,.tsx,.cts,.mts --fix",
-        "lint:check": "eslint resources/js/ --ext .vue,.js,.jsx,.cjs,.mjs,.ts,.tsx,.cts,.mts",
+		"lint": "eslint resources/ --ext .vue,.js,.jsx,.cjs,.mjs,.ts,.tsx,.cts,.mts --fix",
+        "lint:check": "eslint resources/ --ext .vue,.js,.jsx,.cjs,.mjs,.ts,.tsx,.cts,.mts",
         "format": "prettier --write 'resources/**/*.{js,vue,ts,css,scss}'",
         "format:check": "prettier --check 'resources/**/*.{js,vue,ts,css,scss}'"
 	},
