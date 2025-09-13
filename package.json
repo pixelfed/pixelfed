@@ -10,7 +10,7 @@
 		"lint": "eslint resources/js/ --ext .vue,.js,.jsx,.cjs,.mjs,.ts,.tsx,.cts,.mts --fix",
         "lint:check": "eslint resources/js/ --ext .vue,.js,.jsx,.cjs,.mjs,.ts,.tsx,.cts,.mts",
         "format": "prettier --write 'resources/**/*.{js,vue,ts,css,scss}'",
-        "format:check": "prettier --check 'resources/**/*.{js,vue,ts,css,scss}'",
+        "format:check": "prettier --check 'resources/**/*.{js,vue,ts,css,scss}'"
 	},
 	"devDependencies": {
 		"acorn": "^8.7.1",
