@@ -41,6 +41,12 @@ Documentation for Pixelfed can be found on the [Pixelfed documentation website](
 
 Pixelfed app for [YunoHost](https://yunohost.org 'YunoHost'). See [the package source code](https://github.com/YunoHost-Apps/pixelfed_ynh 'pixelfed_ynh repository on GitHub')
 
+## Deploy to StateMesh
+
+StateMesh is a decentralized cloud platform that provides resilient, censorship-resistant, and globally available compute infrastructure. It functions as a mesh-native platform, distributing applications across a network of community-powered nodes to ensure permanent uptime and data ownership for developers. Key features include autonomous, uncensorable, and decentralized computing, eliminating single points of failure. If you are looking for more architectural flexibility and distributing computing, while mentaining high-performance and low latency, you can try to deploy on StateMesh. In order to do so, click the button below.
+
+[![Deploy](https://console.cloud.statemesh.net/assets/layout/images/deployStateMesh_green.svg)](https://console.cloud.statemesh.net/deploy?appname=pixelfed&repository=https://github.com/pixelfed/pixelfed.git)
+
 ## License
 
 Pixelfed is open-sourced software licensed under the AGPL license.
