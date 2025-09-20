@@ -10,6 +10,11 @@
             <p class="text-muted mb-0">Manage and moderate user accounts</p>
         </div>
         <div class="col-md-6">
+                <div class="d-flex justify-content-md-end mb-4">
+                    <a href="{{ route('admin.users.invites.index') }}" class="btn btn-secondary" title="Invites">
+                        <span class="font-weight-bold">Invites</span>
+                    </a>
+                </div>
             <form method="get" class="d-flex justify-content-md-end">
                 <input type="hidden" name="a" value="search">
                 @if(request()->has('col'))<input type="hidden" name="col" value="{{request()->query('col')}}">@endif

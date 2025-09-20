@@ -20,6 +20,7 @@ class AdminInvite extends Model
         'uses',
         'skip_email_verification',
         'expires_at',
+        'admin_user_id',
     ];
 
     protected static function booted(): void
@@ -32,5 +33,20 @@ class AdminInvite extends Model
     public function url(): string
     {
         return url('/auth/invite/a/'.$this->invite_code);
+    }
+
+    public function isActive(): bool
+    {
+        return $this->hasUsesRemaining() && ! $this->hasExpired();
+    }
+
+    public function hasExpired(): bool
+    {
+        return $this->expires_at?->isPast() ?? false;
+    }
+
+    public function hasUsesRemaining(): bool
+    {
+        return $this->max_uses === 0 || is_null($this->max_uses) || $this->uses < $this->max_uses;
     }
 }

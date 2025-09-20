@@ -45,6 +45,10 @@ Route::domain(config('pixelfed.domain.admin'))->prefix('i/admin')->group(functio
     Route::get('users/delete/{id}', 'AdminController@userDelete');
     Route::post('users/delete/{id}', 'AdminController@userDeleteProcess');
     Route::post('users/moderation/update', 'AdminController@userModerate');
+    Route::get('users/invites', 'Admin\AdminUserInviteController@index')->name('admin.users.invites.index');
+    Route::get('users/invites/create', 'Admin\AdminUserInviteController@create')->name('admin.users.invites.create');
+    Route::post('users/invites/create', 'Admin\AdminUserInviteController@store')->name('admin.users.invites.store');
+    Route::post('users/invites/expire/{invite:invite_code}', 'Admin\AdminUserInviteController@expire')->name('admin.users.invites.expire');
     Route::get('media', 'AdminController@media')->name('admin.media');
     Route::redirect('media/list', '/i/admin/media');
     Route::get('media/show/{id}', 'AdminController@mediaShow');
@@ -120,7 +124,7 @@ Route::domain(config('pixelfed.domain.admin'))->prefix('i/admin')->group(functio
     Route::get('curated-onboarding/show/{id}/preview-message', 'AdminCuratedRegisterController@previewMessageShow');
     Route::get('curated-onboarding/show/{id}', 'AdminCuratedRegisterController@show');
 
-    Route::prefix('api')->group(function() {
+    Route::prefix('api')->group(function () {
         Route::get('stats', 'AdminController@getStats');
         Route::get('accounts', 'AdminController@getAccounts');
         Route::get('posts', 'AdminController@getPosts');
