@@ -13,7 +13,7 @@ add('shared_dirs', []);
 add('writable_dirs', []);
 
 // Hosts
-host('kaptr.eu')
+host('leonardo')
     ->set('deploy_path', '~/kaptr');
 
 // Extra tasks
