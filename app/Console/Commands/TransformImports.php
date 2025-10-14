@@ -46,6 +46,9 @@ class TransformImports extends Command
             return;
         }
 
+        $localFs = config('filesystems.default') === 'local';
+        $disk = $localFs ? Storage::disk('local') : Storage::disk(config('filesystems.default'));
+
         foreach ($ips as $ip) {
             $id = $ip->user_id;
             $pid = $ip->profile_id;
@@ -97,7 +100,7 @@ class TransformImports extends Command
                 continue;
             }
 
-            if (Storage::exists('imports/'.$id.'/'.$ip->filename) === false) {
+            if ($disk->exists('imports/'.$id.'/'.$ip->filename) === false) {
                 ImportService::clearAttempts($profile->id);
                 ImportService::getPostCount($profile->id, true);
                 $ip->skip_missing_media = true;
@@ -110,7 +113,7 @@ class TransformImports extends Command
             foreach ($ip->media as $ipm) {
                 $fileName = last(explode('/', $ipm['uri']));
                 $og = 'imports/'.$id.'/'.$fileName;
-                if (! Storage::exists($og)) {
+                if (! $disk->exists($og)) {
                     $missingMedia = true;
                 }
             }
@@ -130,17 +133,17 @@ class TransformImports extends Command
                 $ext = last(explode('.', $fileName));
                 $basePath = MediaPathService::get($profile);
                 $og = 'imports/'.$id.'/'.$fileName;
-                if (! Storage::exists($og)) {
+                if (! $disk->exists($og)) {
                     $ip->skip_missing_media = true;
                     $ip->save();
 
                     continue 2;
                 }
-                $size = Storage::size($og);
-                $mime = Storage::mimeType($og);
+                $size = $disk->size($og);
+                $mime = $disk->mimeType($og);
                 $newFile = Str::random(40).'.'.$ext;
                 $np = $basePath.'/'.$newFile;
-                Storage::move($og, $np);
+                $disk->move($og, $np);
 
                 $mediaRecords[] = [
                     'media_path' => $np,
@@ -216,8 +219,8 @@ class TransformImports extends Command
                 $ip->save();
 
                 foreach ($mediaRecords as $mediaData) {
-                    if (Storage::exists($mediaData['media_path'])) {
-                        Storage::delete($mediaData['media_path']);
+                    if ($disk->exists($mediaData['media_path'])) {
+                        $disk->delete($mediaData['media_path']);
                     }
                 }
 
@@ -228,8 +231,8 @@ class TransformImports extends Command
                 $ip->save();
 
                 foreach ($mediaRecords as $mediaData) {
-                    if (Storage::exists($mediaData['media_path'])) {
-                        Storage::delete($mediaData['media_path']);
+                    if ($disk->exists($mediaData['media_path'])) {
+                        $disk->delete($mediaData['media_path']);
                     }
                 }
 
