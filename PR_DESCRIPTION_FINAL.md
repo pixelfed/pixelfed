@@ -1,4 +1,7 @@
-Fixes pixelfed/pixelfed#3986 – Add 360° equirectangular image support
+Fixes #3986
+Fixes pixelfed/pixelfed#3986
+
+## Add 360° Equirectangular Image Support
 
 ## Summary
 
