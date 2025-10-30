@@ -29,7 +29,7 @@
 
             <!-- 360° Equirectangular Panorama Viewer -->
             <div
-                v-if="is360Photo"
+                v-if="is360Photo && !viewer360Failed"
                 :id="'panorama-' + status.id"
                 class="panorama-viewer"
                 role="img"
@@ -41,7 +41,7 @@
                 </div>
             </div>
 
-            <!-- Regular Image -->
+            <!-- Regular Image (or fallback for failed 360° viewer) -->
             <img
                 v-else
                 class="card-img-top"
@@ -62,7 +62,7 @@
             </p>
 
             <p
-                v-if="is360Photo"
+                v-if="is360Photo && !viewer360Failed"
                 class="panorama-hint">
                 <i class="fas fa-sync-alt"></i> Drag to explore 360° view
             </p>
@@ -95,6 +95,7 @@
                 sensitive: this.status.sensitive,
                 viewer360Loaded: false,
                 viewer360Instance: null,
+                viewer360Failed: false,
                 photoSphereLibraryLoaded: false
             };
         },
@@ -156,11 +157,13 @@
                 }
 
                 return new Promise((resolve, reject) => {
-                    // Load CSS
-                    const cssLink = document.createElement('link');
-                    cssLink.rel = 'stylesheet';
-                    cssLink.href = 'https://cdn.jsdelivr.net/npm/photo-sphere-viewer@5/index.min.css';
-                    document.head.appendChild(cssLink);
+                    // Load CSS only if not already loaded
+                    if (!document.querySelector('link[href*="photo-sphere-viewer"]')) {
+                        const cssLink = document.createElement('link');
+                        cssLink.rel = 'stylesheet';
+                        cssLink.href = 'https://cdn.jsdelivr.net/npm/photo-sphere-viewer@5/index.min.css';
+                        document.head.appendChild(cssLink);
+                    }
 
                     // Load JS
                     const script = document.createElement('script');
@@ -231,8 +234,8 @@
 
                 } catch (error) {
                     console.error('Failed to initialize 360° viewer:', error);
-                    // Fallback: component will show regular image since is360Photo will remain true
-                    // but viewer won't render, so we could add a flag to force regular display
+                    // Fallback: show regular image instead
+                    this.viewer360Failed = true;
                 }
             },
 
@@ -342,7 +345,7 @@
     border-radius: 15px;
     background: rgba(0, 0, 0, 0.6);
     pointer-events: none;
-    animation: fadeInOut 3s ease-in-out;
+    animation: fadeInOut 5s ease-in-out;
 }
 
 @keyframes fadeInOut {

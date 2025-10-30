@@ -251,7 +251,7 @@ class Image
 
                 // Fallback: Check aspect ratio (equirectangular images typically have 2:1 ratio)
                 // Allow tolerance of ±0.1 for aspect ratio detection
-                if (! $isEquirectangular) {
+                if (! $isEquirectangular && $img->height() > 0) {
                     $aspectRatio = $img->width() / $img->height();
                     if ($aspectRatio >= 1.9 && $aspectRatio <= 2.1) {
                         $isEquirectangular = true;

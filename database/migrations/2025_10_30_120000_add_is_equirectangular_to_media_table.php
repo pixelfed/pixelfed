@@ -12,7 +12,7 @@ return new class extends Migration
     public function up(): void
     {
         Schema::table('media', function (Blueprint $table) {
-            $table->boolean('is_equirectangular')->default(false)->after('orientation');
+            $table->boolean('is_equirectangular')->default(false)->after('orientation')->index();
         });
     }
 
