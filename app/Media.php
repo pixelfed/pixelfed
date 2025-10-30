@@ -24,6 +24,7 @@ class Media extends Model
         'deleted_at' => 'datetime',
         'skip_optimize' => 'boolean',
         'replicated_at' => 'datetime',
+        'is_equirectangular' => 'boolean',
     ];
 
     public function status()

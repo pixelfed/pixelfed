@@ -217,6 +217,50 @@ class Image
 
             $img = $this->imageManager->read($fileContents);
 
+            // Detect 360° equirectangular images
+            // Check for XMP GPano metadata first, then fall back to aspect ratio detection
+            if (! $thumbnail) {
+                $isEquirectangular = false;
+
+                try {
+                    // Try to detect GPano XMP metadata indicating equirectangular projection
+                    if ($this->defaultDisk !== 'local') {
+                        $tempXmpFile = tempnam(sys_get_temp_dir(), 'xmp_');
+                        file_put_contents($tempXmpFile, $fileContents);
+                        $xmpPath = $tempXmpFile;
+                    } else {
+                        $xmpPath = storage_path('app/'.$path);
+                    }
+
+                    $xmpData = @file_get_contents($xmpPath);
+                    if ($xmpData && (
+                        strpos($xmpData, 'GPano:ProjectionType="equirectangular"') !== false ||
+                        strpos($xmpData, 'ProjectionType>equirectangular<') !== false
+                    )) {
+                        $isEquirectangular = true;
+                    }
+
+                    if (isset($tempXmpFile) && file_exists($tempXmpFile)) {
+                        unlink($tempXmpFile);
+                    }
+                } catch (\Exception $e) {
+                    if (isset($tempXmpFile) && file_exists($tempXmpFile)) {
+                        unlink($tempXmpFile);
+                    }
+                }
+
+                // Fallback: Check aspect ratio (equirectangular images typically have 2:1 ratio)
+                // Allow tolerance of ±0.1 for aspect ratio detection
+                if (! $isEquirectangular) {
+                    $aspectRatio = $img->width() / $img->height();
+                    if ($aspectRatio >= 1.9 && $aspectRatio <= 2.1) {
+                        $isEquirectangular = true;
+                    }
+                }
+
+                $media->is_equirectangular = $isEquirectangular;
+            }
+
             $ratio = $this->getAspect($img->width(), $img->height(), $thumbnail);
             $aspect = $ratio['dimensions'];
             $orientation = $ratio['orientation'];
