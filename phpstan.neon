@@ -16,8 +16,10 @@ parameters:
 
     excludePaths:
         - bootstrap/cache/*
+        - node_modules/
         - storage/
         - vendor/
+
 
 #    ignoreErrors:
 #        - '#PHPDoc tag @var#'
