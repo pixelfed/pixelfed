@@ -16,6 +16,7 @@ use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
+use Illuminate\Support\Facades\Log;
 use League\Fractal;
 use League\Fractal\Serializer\ArraySerializer;
 
@@ -55,11 +56,22 @@ class LikePipeline implements ShouldQueue
     {
         $like = $this->like;
 
+        // Check if like still exists (in case it was soft deleted or removed)
+        if (!$like) {
+            Log::info("LikePipeline: Like no longer exists, skipping job");
+            return;
+        }
+
         $status = $this->like->status;
         $actor = $this->like->actor;
 
-        if (! $status) {
-            // Ignore notifications to deleted statuses
+        // Verify both status and actor exist
+        if (!$status) {
+            Log::info("LikePipeline: Status no longer exists for like {$like->id}, skipping job");
+            return;
+        }
+        if (!$actor) {
+            Log::info("LikePipeline: Actor no longer exists for like {$like->id}, skipping job");
             return;
         }
 
@@ -91,6 +103,7 @@ class LikePipeline implements ShouldQueue
                 $notification->save();
 
             } catch (Exception $e) {
+                Log::warning("LikePipeline: Failed to create notification for like {$like->id}: " . $e->getMessage());
             }
 
             if (NotificationAppGatewayService::enabled()) {
@@ -110,12 +123,37 @@ class LikePipeline implements ShouldQueue
         $status = $this->like->status;
         $actor = $this->like->actor;
 
+        // Verify all required models exist before attempting delivery
+        if (!$like) {
+            Log::info("LikePipeline: Like missing for remote delivery, skipping");
+            return;
+        }
+        if (!$status) {
+            Log::info("LikePipeline: status missing for remote delivery, skipping");
+            return;
+        }
+        if (!$actor) {
+            Log::info("LikePipeline: actor missing for remote delivery, skipping");
+            return;
+        }
+
+        // Verify status has a profile
+        if (!$status->profile) {
+            Log::info("LikePipeline: Status profile missing for like {$like->id}, skipping remote delivery");
+            return;
+        }
+
         $fractal = new Fractal\Manager;
         $fractal->setSerializer(new ArraySerializer);
         $resource = new Fractal\Resource\Item($like, new LikeTransformer);
         $activity = $fractal->createData($resource)->toArray();
 
         $url = $status->profile->sharedInbox ?? $status->profile->inbox_url;
+
+        if (!$url) {
+            Log::info("LikePipeline: No inbox URL available for like {$like->id}, skipping remote delivery");
+            return;
+        }
 
         Helpers::sendSignedObject($actor, $url, $activity);
     }
