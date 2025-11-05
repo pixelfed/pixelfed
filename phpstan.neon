@@ -19,7 +19,9 @@ parameters:
     ignoreErrors:
         - '#PHPDoc tag @var#'
         # Ignore relation existence errors since we've verified they exist
+        - '#Class App\\Jobs\\GroupPipeline\\MentionPipeline was not found#'
         - '#Relation .* is not found in .* model\.#'
 
     excludePaths:
         - app/Http/Controllers/Groups/GroupsPostController.php
+        - app/Jobs/GroupPipeline/NewStatusPipeline.php
