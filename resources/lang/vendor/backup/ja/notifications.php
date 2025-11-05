@@ -31,5 +31,5 @@ return [
     'unhealthy_backup_found_empty' => 'このアプリケーションのバックアップはありません。',
     'unhealthy_backup_found_old' => ':date に作成されたバックアップは古すぎます。',
     'unhealthy_backup_found_unknown' => '正確な原因が特定できませんでした。',
-    'unhealthy_backup_found_full' => 'バックアップが使用できる容量(:disk_limit)を超えています。(現在の使用量 :disk_usage),
+    'unhealthy_backup_found_full' => 'バックアップが使用できる容量(:disk_limit)を超えています。(現在の使用量 :disk_usage)',
 ];
