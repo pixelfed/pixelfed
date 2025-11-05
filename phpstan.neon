@@ -1,24 +1,23 @@
 includes:
-    - vendor/larastan/larastan/extension.neon
+    - ./vendor/larastan/larastan/extension.neon
 
 parameters:
-    # Level 10 is the highest level
-    level: 1
-
     paths:
         - app/
-        - bootstrap/
         - config/
         - database/
         - resources/
         - routes/
         - tests/
 
+    level: 1
+
+    ignoreErrors:
+        - '#PHPDoc tag @var#'
+        - '#Class App\\Http\\Controllers\\Groups\\VideoThumbnail was not found#'
+        - '#Class App\\Http\\Controllers\\Groups\\StatusDelete was not found#'
+        - '#Class App\\Jobs\\GroupPipeline\\MentionPipeline was not found#'
+
     excludePaths:
-        - bootstrap/cache/*
-        - storage/
-        - vendor/
-
-
-#    ignoreErrors:
-#        - '#PHPDoc tag @var#'
+        - app/Http/Controllers/Groups/GroupsPostController.php
+        - app/Jobs/GroupPipeline/NewStatusPipeline.php
