@@ -10,6 +10,8 @@ use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
+use Log;
+use Storage;
 
 class ImageThumbnail implements ShouldQueue
 {
@@ -23,7 +25,7 @@ class ImageThumbnail implements ShouldQueue
      * @var bool
      */
     public $deleteWhenMissingModels = true;
-    
+
     /**
      * Create a new job instance.
      *
@@ -42,18 +44,31 @@ class ImageThumbnail implements ShouldQueue
     public function handle()
     {
         $media = $this->media;
-        if(!$media) {
-            return;
-        }
-        $path = storage_path('app/'.$media->media_path);
-        if (!is_file($path)) {
+        if (! $media) {
             return;
         }
 
+        $localFs = config('filesystems.default') === 'local';
+
+        if ($localFs) {
+            $path = storage_path('app/'.$media->media_path);
+            if (! is_file($path)) {
+                return;
+            }
+        } else {
+            $disk = Storage::disk(config('filesystems.default'));
+            if (! $disk->exists($media->media_path)) {
+                return;
+            }
+        }
+
         try {
-            $img = new Image();
+            $img = new Image;
             $img->resizeThumbnail($media);
-        } catch (Exception $e) {
+        } catch (\Exception $e) {
+            if (config('app.dev_log')) {
+                Log::error('Thumbnail generation failed: '.$e->getMessage());
+            }
         }
 
         $media->processed_at = Carbon::now();

@@ -8,6 +8,7 @@ use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
+use Illuminate\Support\Facades\Log;
 use App\Util\ActivityPub\Inbox;
 
 class ActivityHandler implements ShouldQueue
@@ -41,7 +42,33 @@ class ActivityHandler implements ShouldQueue
      */
     public function handle()
     {
-        (new Inbox($this->headers, $this->username, $this->payload))->handle();
+        $headers = $this->headers;
+        $username = $this->username;
+        $payload = $this->payload;
+
+        // Verify required data exists
+        if (!$headers) {
+            Log::info("ActivityHandler: No headers provided, skipping job");
+            return;
+        }
+
+        if (!$username) {
+            Log::info("ActivityHandler: No username provided, skipping job");
+            return;
+        }
+
+        if (!$payload) {
+            Log::info("ActivityHandler: No payload provided, skipping job");
+            return;
+        }
+
+        try {
+            (new Inbox($headers, $username, $payload))->handle();
+        } catch (\Exception $e) {
+            Log::warning("ActivityHandler: Failed to handle activity for username {$username}: " . $e->getMessage());
+            throw $e;
+        }
+
         return;
     }
 }

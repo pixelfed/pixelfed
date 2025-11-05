@@ -9,6 +9,7 @@ use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
 use App\Contact;
 use App\Mail\ContactAdmin;
+use Illuminate\Support\Facades\Log;
 use Mail;
 
 class ContactPipeline implements ShouldQueue
@@ -35,10 +36,23 @@ class ContactPipeline implements ShouldQueue
     public function handle()
     {
         $contact = $this->contact;
+        
+        // Verify contact exists
+        if (!$contact) {
+            Log::info("ContactPipeline: Contact no longer exists, skipping job");
+            return;
+        }
+
         $email = config('instance.email');
         if(config('instance.contact.enabled') == false || $contact->read_at !== null || filter_var($email, FILTER_VALIDATE_EMAIL) == false) {
             return;
         }
-        Mail::to($email)->send(new ContactAdmin($contact));
+
+        try {
+            Mail::to($email)->send(new ContactAdmin($contact));
+        } catch (\Exception $e) {
+            Log::warning("ContactPipeline: Failed to send contact email for contact {$contact->id}: " . $e->getMessage());
+            throw $e;
+        }
     }
 }

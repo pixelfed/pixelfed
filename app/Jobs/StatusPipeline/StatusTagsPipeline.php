@@ -17,6 +17,7 @@ use Illuminate\Foundation\Bus\Dispatchable;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
 
 class StatusTagsPipeline implements ShouldQueue
 {
@@ -46,6 +47,18 @@ class StatusTagsPipeline implements ShouldQueue
     {
         $res = $this->activity;
         $status = $this->status;
+
+        // Verify status exists
+        if (!$status) {
+            Log::info("StatusTagsPipeline: Status no longer exists, skipping job");
+            return;
+        }
+
+        // Verify activity data exists
+        if (!$res || !isset($res['tag'])) {
+            Log::info("StatusTagsPipeline: No tag data in activity for status {$status->id}, skipping job");
+            return;
+        }
 
         if (isset($res['tag']['type'], $res['tag']['name'])) {
             $res['tag'] = [$res['tag']];

@@ -15,6 +15,7 @@ class MediaPathService {
 	public static function get($account, $version = 1)
 	{
 		$mh = hash('sha256', date('Y').'-.-'.date('m'));
+        $path = null;
 		
 		if($account instanceOf User) {
 			switch ($version) {
@@ -54,6 +55,7 @@ class MediaPathService {
 		$mh = hash('sha256', date('Y').'-.-'.date('m'));
 		$monthHash = HashidService::encode(date('Y').date('m'), false);
 		$random = date('d').Str::random(32);
+        $path = null;
 
 		if($account instanceOf User) {
 			switch ($version) {

@@ -32,6 +32,7 @@ use App\Services\NotificationAppGatewayService;
 use App\Services\ProfileStatusService;
 use App\Services\PublicTimelineService;
 use App\Services\PushNotificationService;
+use App\Services\SanitizeService;
 use App\Services\StatusService;
 use App\Services\UserStorageService;
 use App\Status;
@@ -50,7 +51,6 @@ use Jenssegers\Agent\Agent;
 use League\Fractal;
 use League\Fractal\Serializer\ArraySerializer;
 use Mail;
-use Purify;
 
 class ApiV1Dot1Controller extends Controller
 {
@@ -1294,7 +1294,8 @@ class ApiV1Dot1Controller extends Controller
             return [];
         }
         $defaultCaption = '';
-        $content = $request->filled('status') ? strip_tags(Purify::clean($request->input('status'))) : $defaultCaption;
+        $cleanedStatus = app(SanitizeService::class)->html($request->input('status', ''));
+        $content = $request->filled('status') ? strip_tags($cleanedStatus) : $defaultCaption;
         $cw = $user->profile->cw == true ? true : $request->boolean('sensitive', false);
         $spoilerText = $cw && $request->filled('spoiler_text') ? $request->input('spoiler_text') : null;
 

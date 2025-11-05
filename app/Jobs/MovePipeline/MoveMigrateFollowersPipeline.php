@@ -3,6 +3,8 @@
 namespace App\Jobs\MovePipeline;
 
 use App\Follower;
+use App\Http\Controllers\FollowerController;
+use App\Profile;
 use App\Util\ActivityPub\Helpers;
 use DateTime;
 use DB;
@@ -11,6 +13,7 @@ use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Queue\Queueable;
 use Illuminate\Queue\Middleware\ThrottlesExceptionsWithRedis;
 use Illuminate\Queue\Middleware\WithoutOverlapping;
+use Illuminate\Support\Facades\Log;
 
 class MoveMigrateFollowersPipeline implements ShouldQueue
 {
@@ -83,10 +86,26 @@ class MoveMigrateFollowersPipeline implements ShouldQueue
         $target = $this->target;
         $actor = $this->activity;
 
-        $targetAccount = Helpers::profileFetch($target);
-        $actorAccount = Helpers::profileFetch($actor);
+        // Verify target and actor are provided
+        if (!$target) {
+            Log::info("MoveMigrateFollowersPipeline: No target provided, skipping job");
+            return;
+        }
+        if (!$actor) {
+            Log::info("MoveMigrateFollowersPipeline: No actor provided, skipping job");
+            return;
+        }
+
+        try {
+            $targetAccount = Helpers::profileFetch($target);
+            $actorAccount = Helpers::profileFetch($actor);
+        } catch (\Exception $e) {
+            Log::warning("MoveMigrateFollowersPipeline: Failed to fetch profiles: " . $e->getMessage());
+            throw $e;
+        }
 
         if (! $targetAccount || ! $actorAccount) {
+            Log::warning("MoveMigrateFollowersPipeline: Could not fetch target or actor accounts");
             throw new Exception('Invalid move accounts');
         }
 
@@ -112,8 +131,8 @@ class MoveMigrateFollowersPipeline implements ShouldQueue
             ->where('followers.following_id', $actorAccount['id'])
             ->whereNotNull('profiles.user_id')
             ->whereNull('profiles.deleted_at')
-            ->select('profiles.id', 'profiles.user_id', 'profiles.username', 'profiles.private_key', 'profiles.status')
-            ->chunkById(100, function ($followers) use ($targetInbox, $targetPid, $target) {
+            ->select('profiles.id', 'profiles.user_id', 'profiles.username', 'profiles.private_key', 'profiles.status', 'followers.local_profile')
+            ->chunkById(100, function ($followers) use ($targetInbox, $targetPid, $targetAccount) {
                 foreach ($followers as $follower) {
                     if (! $follower->private_key || ! $follower->username || ! $follower->user_id || $follower->status === 'delete') {
                         continue;
@@ -124,8 +143,14 @@ class MoveMigrateFollowersPipeline implements ShouldQueue
                         'following_id' => $targetPid,
                     ]);
 
-                    MoveSendFollowPipeline::dispatch($follower, $targetInbox, $targetPid, $target)->onQueue('follow');
+                    // If the remote user has migrated to a different instance,
+                    // send a follow request for each local follower to the new
+                    // instance
+                    if ($targetInbox && $follower->local_profile) {
+                        $followerProfile = Profile::find($follower->id);
+                        (new FollowerController)->sendFollow($followerProfile, $targetAccount);
+                    }
                 }
-            }, 'id');
+            }, 'profiles.id', 'id');
     }
 }

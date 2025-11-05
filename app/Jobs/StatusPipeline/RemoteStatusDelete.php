@@ -29,6 +29,7 @@ use Illuminate\Foundation\Bus\Dispatchable;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\Middleware\WithoutOverlapping;
 use Illuminate\Queue\SerializesModels;
+use Illuminate\Support\Facades\Log;
 
 class RemoteStatusDelete implements ShouldBeUniqueUntilProcessing, ShouldQueue
 {
@@ -94,6 +95,12 @@ class RemoteStatusDelete implements ShouldBeUniqueUntilProcessing, ShouldQueue
     public function handle()
     {
         $status = $this->status;
+
+        // Verify status exists
+        if (!$status) {
+            Log::info("RemoteStatusDelete: Status no longer exists, skipping job");
+            return;
+        }
 
         if ($status->deleted_at) {
             return;

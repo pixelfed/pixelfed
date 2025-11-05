@@ -51,7 +51,20 @@ class StatusActivityPubDeliver implements ShouldQueue
 	public function handle()
 	{
 		$status = $this->status;
+
+		// Verify status exists
+		if (!$status) {
+			Log::info("StatusActivityPubDeliver: Status no longer exists, skipping job");
+			return;
+		}
+
 		$profile = $status->profile;
+
+		// Verify profile exists
+		if (!$profile) {
+			Log::info("StatusActivityPubDeliver: Profile no longer exists for status {$status->id}, skipping job");
+			return;
+		}
 
 		// ignore group posts
         // if($status->group_id != null) {

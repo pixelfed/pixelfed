@@ -17,6 +17,7 @@ use Illuminate\Queue\SerializesModels;
 use App\Jobs\DeletePipeline\DeleteRemoteProfilePipeline;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Http\Client\ConnectionException;
+use Illuminate\Support\Facades\Log;
 
 class InboxWorker implements ShouldQueue
 {
@@ -49,12 +50,26 @@ class InboxWorker implements ShouldQueue
 	{
 		$profile = null;
 		$headers = $this->headers;
+		$payload = $this->payload;
 
-		if(empty($headers) || empty($this->payload) || !isset($headers['signature']) || !isset($headers['date'])) {
+		// Verify headers exist
+		if (!$headers) {
+			Log::info("InboxWorker: Headers not provided, skipping job");
 			return;
 		}
 
-		$payload = json_decode($this->payload, true, 8);
+		// Verify payload exists
+		if (!$payload) {
+			Log::info("InboxWorker: Payload not provided, skipping job");
+			return;
+		}
+
+		if(empty($headers) || empty($payload) || !isset($headers['signature']) || !isset($headers['date'])) {
+			Log::info("InboxWorker: Invalid headers or payload structure, skipping job");
+			return;
+		}
+
+		$payload = json_decode($payload, true, 8);
 
 		if(isset($payload['id'])) {
 			$lockKey = 'pf:ap:user-inbox:activity:' . hash('sha256', $payload['id']);

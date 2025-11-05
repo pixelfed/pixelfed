@@ -58,6 +58,7 @@ use App\Services\NotificationService;
 use App\Services\PublicTimelineService;
 use App\Services\ReblogService;
 use App\Services\RelationshipService;
+use App\Services\SanitizeService;
 use App\Services\SnowflakeService;
 use App\Services\StatusService;
 use App\Services\UserFilterService;
@@ -87,7 +88,6 @@ use Illuminate\Support\Str;
 use Laravel\Passport\Passport;
 use League\Fractal;
 use League\Fractal\Serializer\ArraySerializer;
-use Purify;
 use Storage;
 
 class ApiV1Controller extends Controller
@@ -1964,7 +1964,7 @@ class ApiV1Controller extends Controller
             'media:update:'.$user->id,
             10,
             function () use ($media, $request) {
-                $caption = Purify::clean($request->input('description'));
+                $caption = app(SanitizeService::class)->html($request->input('description'));
 
                 if ($caption != $media->caption) {
                     $media->caption = $caption;

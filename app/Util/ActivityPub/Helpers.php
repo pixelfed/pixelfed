@@ -19,6 +19,7 @@ use App\Services\DomainService;
 use App\Services\InstanceService;
 use App\Services\MediaPathService;
 use App\Services\NetworkTimelineService;
+use App\Services\SanitizeService;
 use App\Services\UserFilterService;
 use App\Status;
 use App\Util\Media\License;
@@ -175,7 +176,7 @@ class Helpers
                 return false;
             }
 
-            if (!$disableDNSCheck && ! self::passesSecurityChecks($host, $disableDNSCheck, $forceBanCheck)) {
+            if (! $disableDNSCheck && ! self::passesSecurityChecks($host, $disableDNSCheck, $forceBanCheck)) {
                 return false;
             }
 
@@ -666,8 +667,11 @@ class Helpers
         bool $commentsDisabled
     ): Status {
         $caption = isset($activity['content']) ?
-            Purify::clean($activity['content']) :
+            app(SanitizeService::class)->html($activity['content']) :
             '';
+        $cwSummary = ($cw && isset($activity['summary'])) ?
+            app(SanitizeService::class)->html($activity['summary']) :
+            null;
 
         return Status::updateOrCreate(
             ['uri' => $url],
@@ -683,9 +687,7 @@ class Helpers
                 'is_nsfw' => $cw,
                 'scope' => $scope,
                 'visibility' => $scope,
-                'cw_summary' => ($cw && isset($activity['summary'])) ?
-                    Purify::clean(strip_tags($activity['summary'])) :
-                    null,
+                'cw_summary' => $cwSummary ? strip_tags($cwSummary) : null,
                 'comments_disabled' => $commentsDisabled,
             ]
         );
@@ -823,12 +825,15 @@ class Helpers
         })->toArray();
 
         $defaultCaption = '';
+        $cleanedCaption = ! empty($res['content']) ?
+            app(SanitizeService::class)->html($res['content']) :
+            null;
         $status = new Status;
         $status->profile_id = $profile->id;
         $status->url = isset($res['url']) ? $res['url'] : $url;
         $status->uri = isset($res['url']) ? $res['url'] : $url;
         $status->object_url = $id;
-        $status->caption = strip_tags(Purify::clean($res['content'])) ?? $defaultCaption;
+        $status->caption = $cleanedCaption ? strip_tags($cleanedCaption) : $defaultCaption;
         $status->rendered = Purify::clean($res['content'] ?? $defaultCaption);
         $status->created_at = Carbon::parse($ts)->tz('UTC');
         $status->in_reply_to_id = null;
@@ -1261,7 +1266,7 @@ class Helpers
             'key_id' => $res['publicKey']['id'],
             'remote_url' => $res['id'],
             'name' => isset($res['name']) ? Purify::clean($res['name']) : 'user',
-            'bio' => isset($res['summary']) ? Purify::clean($res['summary']) : null,
+            'bio' => isset($res['summary']) ? app(SanitizeService::class)->html($res['summary']) : null,
             'sharedInbox' => $res['endpoints']['sharedInbox'] ?? null,
             'inbox_url' => $res['inbox'],
             'outbox_url' => $res['outbox'] ?? null,

@@ -13,6 +13,7 @@ use Illuminate\Queue\Middleware\WithoutOverlapping;
 use Illuminate\Contracts\Queue\ShouldBeUniqueUntilProcessing;
 use App\Services\StatusService;
 use App\Services\HomeTimelineService;
+use Illuminate\Support\Facades\Log;
 
 class FeedRemoveDomainPipeline implements ShouldQueue, ShouldBeUniqueUntilProcessing
 {
@@ -73,7 +74,15 @@ class FeedRemoveDomainPipeline implements ShouldQueue, ShouldBeUniqueUntilProces
             return;
         }
 
-        if(!$this->pid || !$this->domain) {
+        // Verify profile ID exists
+        if (!$this->pid) {
+            Log::info("FeedRemoveDomainPipeline: Profile ID not provided, skipping job");
+            return;
+        }
+
+        // Verify domain exists
+        if (!$this->domain) {
+            Log::info("FeedRemoveDomainPipeline: Domain not provided, skipping job");
             return;
         }
         $domain = strtolower($this->domain);

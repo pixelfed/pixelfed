@@ -17,6 +17,7 @@ use Illuminate\Queue\SerializesModels;
 use App\Jobs\DeletePipeline\DeleteRemoteProfilePipeline;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Http\Client\ConnectionException;
+use Illuminate\Support\Facades\Log;
 
 class DeleteWorker implements ShouldQueue
 {
@@ -49,13 +50,29 @@ class DeleteWorker implements ShouldQueue
 	{
 		$profile = null;
 		$headers = $this->headers;
-		$payload = json_decode($this->payload, true, 8);
+		$payload = $this->payload;
+
+		// Verify headers exist
+		if (!$headers) {
+			Log::info("DeleteWorker: Headers not provided, skipping job");
+			return;
+		}
+
+		// Verify payload exists
+		if (!$payload) {
+			Log::info("DeleteWorker: Payload not provided, skipping job");
+			return;
+		}
+
+		$payload = json_decode($payload, true, 8);
 
 		if(!isset($headers['signature']) || !isset($headers['date'])) {
+			Log::info("DeleteWorker: Missing signature or date in headers, skipping job");
 			return;
 		}
 
 		if(empty($headers) || empty($payload)) {
+			Log::info("DeleteWorker: Empty headers or payload, skipping job");
 			return;
 		}
 

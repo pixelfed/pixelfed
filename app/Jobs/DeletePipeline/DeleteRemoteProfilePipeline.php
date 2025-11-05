@@ -7,6 +7,7 @@ use Illuminate\Queue\SerializesModels;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
+use Illuminate\Support\Facades\Log;
 use DB;
 use Illuminate\Support\Str;
 use App\{
@@ -72,6 +73,13 @@ class DeleteRemoteProfilePipeline implements ShouldQueue
 	public function handle()
 	{
 		$profile = $this->profile;
+
+		// Verify profile exists
+		if (!$profile) {
+			Log::info("DeleteRemoteProfilePipeline: Profile no longer exists, skipping job");
+			return;
+		}
+
 		$pid = $profile->id;
 
 		if($profile->domain == null || $profile->private_key) {

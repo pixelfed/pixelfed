@@ -80,7 +80,7 @@ class HttpSignature
 
             return $instance->private_key;
         });
-        abort_if(! $privateKey || empty($privateKey), 400, 'Missing instance actor key, please run php artisan instance:actor');
+        abort_if(! $privateKey, 400, 'Missing instance actor key, please run php artisan instance:actor');
         if ($body) {
             $digest = self::_digest($body);
         }

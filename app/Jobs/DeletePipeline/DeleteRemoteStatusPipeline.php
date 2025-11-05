@@ -25,6 +25,7 @@ use App\Services\StatusService;
 use App\Jobs\MediaPipeline\MediaDeletePipeline;
 use Cache;
 use App\Services\Account\AccountStatService;
+use Illuminate\Support\Facades\Log;
 
 class DeleteRemoteStatusPipeline implements ShouldQueue
 {
@@ -56,9 +57,22 @@ class DeleteRemoteStatusPipeline implements ShouldQueue
     {
         $status = $this->status;
 
-        AccountStatService::decrementPostCount($status->profile_id);
-        NetworkTimelineService::del($status->id);
-        StatusService::del($status->id, true);
+        // Verify status exists
+        if (!$status) {
+            Log::info("DeleteRemoteStatusPipeline: Status no longer exists, skipping job");
+            return;
+        }
+
+        // Verify status has a profile
+        if (!$status->profile_id) {
+            Log::info("DeleteRemoteStatusPipeline: Status {$status->id} has no profile_id, skipping job");
+            return;
+        }
+
+        try {
+            AccountStatService::decrementPostCount($status->profile_id);
+            NetworkTimelineService::del($status->id);
+            StatusService::del($status->id, true);
         Bookmark::whereStatusId($status->id)->delete();
         Notification::whereItemType('App\Status')
             ->whereItemId($status->id)
@@ -77,6 +91,11 @@ class DeleteRemoteStatusPipeline implements ShouldQueue
         StatusView::whereStatusId($status->id)->delete();
         Status::whereReblogOfId($status->id)->forceDelete();
         $status->forceDelete();
+        } catch (\Exception $e) {
+            Log::warning("DeleteRemoteStatusPipeline: Failed to delete status {$status->id}: " . $e->getMessage());
+            throw $e;
+        }
+        
         return 1;
     }
 }

@@ -1,0 +1,38 @@
+name: redis
+repository: ddev/ddev-redis
+version: v2.1.2
+install_date: "2025-09-18T23:53:47+01:00"
+project_files:
+    - docker-compose.redis.yaml
+    - redis/scripts/settings.ddev.redis.php
+    - redis/scripts/setup-drupal-settings.sh
+    - redis/scripts/setup-redis-optimized-config.sh
+    - redis/redis.conf
+    - redis/advanced.conf
+    - redis/append.conf
+    - redis/general.conf
+    - redis/io.conf
+    - redis/memory.conf
+    - redis/network.conf
+    - redis/security.conf
+    - redis/snapshots.conf
+    - commands/host/redis-backend
+    - commands/redis/redis-cli
+    - commands/redis/redis-flush
+global_files: []
+removal_actions:
+    - |
+      #ddev-description:Remove redis settings if applicable
+      files=(
+        "${DDEV_APPROOT}/${DDEV_DOCROOT}/sites/default/settings.ddev.redis.php"
+        "${DDEV_APPROOT}/.ddev/docker-compose.redis_extra.yaml"
+      )
+      for file in "${files[@]}"; do
+        if [ -f "$file" ]; then
+          if grep -q '#ddev-generated' "$file"; then
+            rm -f "$file"
+          else
+            echo "Unwilling to remove '$file' because it does not have #ddev-generated in it; you can manually delete it if it is safe to delete."
+          fi
+        fi
+      done

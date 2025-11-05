@@ -8,6 +8,8 @@ use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
+use Illuminate\Support\Facades\Log;
+use Storage;
 
 class ImageOptimize implements ShouldQueue
 {
@@ -40,20 +42,41 @@ class ImageOptimize implements ShouldQueue
     public function handle()
     {
         $media = $this->media;
-        if(!$media) {
-            return;
-        }
-        $path = storage_path('app/'.$media->media_path);
-        if (!is_file($path) || $media->skip_optimize) {
+        
+        // Verify media exists
+        if (!$media) {
+            Log::info("ImageOptimize: Media no longer exists, skipping job");
             return;
         }
 
-        if((bool) config_cache('pixelfed.optimize_image') == false) {
-        	ImageThumbnail::dispatch($media)->onQueue('mmo');
-    		return;
-    	} else {
-        	ImageResize::dispatch($media)->onQueue('mmo');
-    		return;
-    	}
+        // Verify media has required path
+        if (!$media->media_path) {
+            Log::info("ImageOptimize: Media {$media->id} has no media_path, skipping job");
+            return;
+        }
+
+        $localFs = config('filesystems.default') === 'local';
+
+        if ($localFs) {
+            $path = storage_path('app/'.$media->media_path);
+            if (! is_file($path) || $media->skip_optimize) {
+                return;
+            }
+        } else {
+            $disk = Storage::disk(config('filesystems.default'));
+            if (! $disk->exists($media->media_path) || $media->skip_optimize) {
+                return;
+            }
+        }
+
+        if ((bool) config_cache('pixelfed.optimize_image') == false) {
+            ImageThumbnail::dispatch($media)->onQueue('mmo');
+
+            return;
+        } else {
+            ImageResize::dispatch($media)->onQueue('mmo');
+
+            return;
+        }
     }
 }

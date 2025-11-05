@@ -10,6 +10,7 @@ use Illuminate\Foundation\Bus\Dispatchable;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
 use Log;
+use Storage;
 
 class ImageResize implements ShouldQueue
 {
@@ -23,7 +24,7 @@ class ImageResize implements ShouldQueue
      * @var bool
      */
     public $deleteWhenMissingModels = true;
-    
+
     /**
      * Create a new job instance.
      *
@@ -42,24 +43,46 @@ class ImageResize implements ShouldQueue
     public function handle()
     {
         $media = $this->media;
-        if(!$media) {
-            return;
-        }
-        $path = storage_path('app/'.$media->media_path);
-        if (!is_file($path) || $media->skip_optimize) {
-            Log::info('Tried to optimize media that does not exist or is not readable. ' . $path);
+        
+        // Verify media exists
+        if (!$media) {
+            Log::info("ImageResize: Media no longer exists, skipping job");
             return;
         }
 
-        if((bool) config_cache('pixelfed.optimize_image') === false) {
-        	ImageThumbnail::dispatch($media)->onQueue('mmo');
-        	return;
+        // Verify media has required path
+        if (!$media->media_path) {
+            Log::info("ImageResize: Media {$media->id} has no media_path, skipping job");
+            return;
         }
+
+        $localFs = config('filesystems.default') === 'local';
+
+        if ($localFs) {
+            $path = storage_path('app/'.$media->media_path);
+            if (! is_file($path) || $media->skip_optimize) {
+                return;
+            }
+        } else {
+            $disk = Storage::disk(config('filesystems.default'));
+            if (! $disk->exists($media->media_path) || $media->skip_optimize) {
+                return;
+            }
+        }
+
+        if ((bool) config_cache('pixelfed.optimize_image') === false) {
+            ImageThumbnail::dispatch($media)->onQueue('mmo');
+
+            return;
+        }
+
         try {
-            $img = new Image();
+            $img = new Image;
             $img->resizeImage($media);
-        } catch (Exception $e) {
-            Log::error($e);
+        } catch (\Exception $e) {
+            if (config('app.dev_log')) {
+                Log::error('Image resize failed: '.$e->getMessage());
+            }
         }
 
         ImageThumbnail::dispatch($media)->onQueue('mmo');

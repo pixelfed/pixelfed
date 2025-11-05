@@ -15,6 +15,7 @@ use App\Models\UserDomainBlock;
 use App\Services\FollowerService;
 use App\Services\HomeTimelineService;
 use App\Services\StatusService;
+use Illuminate\Support\Facades\Log;
 
 class FeedInsertPipeline implements ShouldQueue, ShouldBeUniqueUntilProcessing
 {
@@ -68,13 +69,27 @@ class FeedInsertPipeline implements ShouldQueue, ShouldBeUniqueUntilProcessing
     public function handle(): void
     {
         $sid = $this->sid;
+        $pid = $this->pid;
+
+        // Verify required IDs are provided
+        if (!$sid) {
+            Log::info("FeedInsertPipeline: Missing status ID, skipping job");
+            return;
+        }
+        if (!$pid) {
+            Log::info("FeedInsertPipeline: Missing profile ID, skipping job");
+            return;
+        }
+
         $status = StatusService::get($sid, false);
 
         if(!$status || !isset($status['account']) || !isset($status['account']['id'], $status['url'])) {
+            Log::info("FeedInsertPipeline: Status {$sid} not found or invalid, skipping job");
             return;
         }
 
         if(!in_array($status['pf_type'], ['photo', 'photo:album', 'video', 'video:album', 'photo:video:album'])) {
+            Log::info("FeedInsertPipeline: Status {$sid} type {$status['pf_type']} not supported, skipping job");
             return;
         }
 

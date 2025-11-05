@@ -16,6 +16,7 @@ use GuzzleHttp\Pool;
 use GuzzleHttp\Client;
 use GuzzleHttp\Promise;
 use App\Util\ActivityPub\HttpSignature;
+use Illuminate\Support\Facades\Log;
 
 class FanoutDeletePipeline implements ShouldQueue
 {
@@ -40,9 +41,22 @@ class FanoutDeletePipeline implements ShouldQueue
 	{
 		$profile = $this->profile;
 
-		$client = new Client([
-            'timeout'  => config('federation.activitypub.delivery.timeout')
-        ]);
+		// Verify profile exists
+		if (!$profile) {
+			Log::info("FanoutDeletePipeline: Profile no longer exists, skipping job");
+			return;
+		}
+
+		// Verify profile has required fields for ActivityPub
+		if (!$profile->permalink() || !$profile->private_key) {
+			Log::info("FanoutDeletePipeline: Profile {$profile->id} missing required fields for ActivityPub, skipping job");
+			return;
+		}
+
+		try {
+			$client = new Client([
+				'timeout'  => config('federation.activitypub.delivery.timeout')
+			]);
 
         $audience = Cache::remember('pf:ap:known_instances', now()->addHours(6), function() {
         	return Profile::whereNotNull('sharedInbox')->groupBy('sharedInbox')->pluck('sharedInbox')->toArray();
@@ -92,6 +106,10 @@ class FanoutDeletePipeline implements ShouldQueue
         $promise = $pool->promise();
 
         $promise->wait();
+		} catch (\Exception $e) {
+			Log::warning("FanoutDeletePipeline: Failed to fanout delete for profile {$profile->id}: " . $e->getMessage());
+			throw $e;
+		}
 
         return 1;
 	}

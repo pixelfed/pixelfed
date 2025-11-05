@@ -11,6 +11,7 @@ use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Redis;
 use App\Services\NotificationService;
 use App\Services\StatusService;
@@ -49,14 +50,36 @@ class StatusReplyPipeline implements ShouldQueue
 	public function handle()
 	{
 		$status = $this->status;
-		$actor = $status->profile;
-		$reply = Status::find($status->in_reply_to_id);
 
-		if(!$actor || !$reply) {
+		// Verify status exists
+		if (!$status) {
+			Log::info("StatusReplyPipeline: Status no longer exists, skipping job");
+			return 1;
+		}
+
+		// Verify status is a reply
+		if (!$status->in_reply_to_id) {
+			Log::info("StatusReplyPipeline: Status {$status->id} is not a reply, skipping job");
+			return 1;
+		}
+
+		$actor = $status->profile;
+		if (!$actor) {
+			Log::info("StatusReplyPipeline: Actor profile no longer exists for status {$status->id}, skipping job");
+			return 1;
+		}
+
+		$reply = Status::find($status->in_reply_to_id);
+		if (!$reply) {
+			Log::info("StatusReplyPipeline: Reply status {$status->in_reply_to_id} no longer exists for status {$status->id}, skipping job");
 			return 1;
 		}
 
 		$target = $reply->profile;
+		if (!$target) {
+			Log::info("StatusReplyPipeline: Target profile no longer exists for reply {$reply->id}, skipping job");
+			return 1;
+		}
 
 		$exists = Notification::whereProfileId($target->id)
                   ->whereActorId($actor->id)

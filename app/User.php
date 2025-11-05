@@ -4,6 +4,7 @@ namespace App;
 
 use App\Services\AvatarService;
 use App\Util\RateLimit\User as UserRateLimit;
+use App\Profile;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Foundation\Auth\User as Authenticatable;

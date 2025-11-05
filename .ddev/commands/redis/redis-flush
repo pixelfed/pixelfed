@@ -1,0 +1,12 @@
+#!/usr/bin/env sh
+
+#ddev-generated
+## Description: Flush all cache inside the Redis container
+## Usage: redis-flush
+## Example: "ddev redis-flush"
+
+if [ -f /etc/redis/conf/security.conf ]; then
+  redis-cli -p 6379 -h redis -a redis --no-auth-warning FLUSHALL ASYNC
+else
+  redis-cli -p 6379 -h redis FLUSHALL ASYNC
+fi

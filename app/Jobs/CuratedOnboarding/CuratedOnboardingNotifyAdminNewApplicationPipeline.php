@@ -9,6 +9,7 @@ use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
 use App\Models\CuratedRegister;
 use App\User;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\Storage;
 use App\Mail\CuratedRegisterNotifyAdmin;
@@ -32,6 +33,14 @@ class CuratedOnboardingNotifyAdminNewApplicationPipeline implements ShouldQueue
      */
     public function handle(): void
     {
+        $cr = $this->cr;
+
+        // Verify curated registration exists
+        if (!$cr) {
+            Log::info("CuratedOnboardingNotifyAdminNewApplicationPipeline: Curated registration no longer exists, skipping job");
+            return;
+        }
+
         if(!config('instance.curated_registration.notify.admin.on_verify_email.enabled')) {
             return;
         }

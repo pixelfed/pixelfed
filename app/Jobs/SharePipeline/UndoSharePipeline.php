@@ -76,8 +76,7 @@ class UndoSharePipeline implements ShouldQueue
     public function remoteAnnounceDeliver()
     {
         if (config('app.env') !== 'production' || (bool) config_cache('federation.activitypub.enabled') == false) {
-            $status->delete();
-
+            $this->status->delete();
             return 1;
         }
 

@@ -4,6 +4,7 @@ namespace App;
 
 use App\HasSnowflakePrimary;
 use App\Http\Controllers\StatusController;
+use App\Models\Conversation;
 use App\Models\Poll;
 use App\Models\StatusEdit;
 use App\Services\AccountService;

@@ -17,6 +17,7 @@ use App\Services\HomeTimelineService;
 use App\Services\StatusService;
 use Illuminate\Queue\Middleware\WithoutOverlapping;
 use Illuminate\Contracts\Queue\ShouldBeUniqueUntilProcessing;
+use Illuminate\Support\Facades\Log;
 
 class HashtagInsertFanoutPipeline implements ShouldQueue, ShouldBeUniqueUntilProcessing
 {
@@ -75,10 +76,24 @@ class HashtagInsertFanoutPipeline implements ShouldQueue, ShouldBeUniqueUntilPro
     public function handle(): void
     {
         $hashtag = $this->hashtag;
+
+        // Verify hashtag exists
+        if (!$hashtag) {
+            Log::info("HashtagInsertFanoutPipeline: Hashtag no longer exists, skipping job");
+            return;
+        }
+
+        // Verify hashtag has status ID
+        if (!$hashtag->status_id) {
+            Log::info("HashtagInsertFanoutPipeline: Hashtag {$hashtag->id} has no status_id, skipping job");
+            return;
+        }
+
         $sid = $hashtag->status_id;
         $status = StatusService::get($sid, false);
 
         if(!$status || !isset($status['account']) || !isset($status['account']['id'], $status['url'])) {
+            Log::info("HashtagInsertFanoutPipeline: Status {$sid} not found or invalid, skipping job");
             return;
         }
 

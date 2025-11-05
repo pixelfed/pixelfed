@@ -8,7 +8,8 @@ use Illuminate\Foundation\Bus\Dispatchable;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
 
-use Cache, Log;
+use Cache;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Redis;
 use League\Fractal;
 use League\Fractal\Serializer\ArraySerializer;
@@ -47,22 +48,45 @@ class FollowRejectPipeline implements ShouldQueue
 	public function handle()
 	{
 		$follow = $this->followRequest;
-		$actor = $follow->actor;
-		$target = $follow->target;
 
-		if($actor->domain == null || $actor->inbox_url == null || !$target->private_key) {
+		// Verify follow request exists
+		if (!$follow) {
+			Log::info("FollowRejectPipeline: Follow request no longer exists, skipping job");
 			return;
 		}
 
-		$fractal = new Fractal\Manager();
-		$fractal->setSerializer(new ArraySerializer());
-		$resource = new Fractal\Resource\Item($follow, new RejectFollow());
-		$activity = $fractal->createData($resource)->toArray();
-		$url = $actor->sharedInbox ?? $actor->inbox_url;
+		$actor = $follow->actor;
+		$target = $follow->target;
 
-		Helpers::sendSignedObject($target, $url, $activity);
+		// Verify actor and target exist
+		if (!$actor) {
+			Log::info("FollowRejectPipeline: Actor no longer exists for follow request {$follow->id}, skipping job");
+			return;
+		}
+		if (!$target) {
+			Log::info("FollowRejectPipeline: Target no longer exists for follow request {$follow->id}, skipping job");
+			return;
+		}
 
-		$follow->delete();
+		if($actor->domain == null || $actor->inbox_url == null || !$target->private_key) {
+			Log::info("FollowRejectPipeline: Missing required fields for follow request {$follow->id}, skipping job");
+			return;
+		}
+
+		try {
+			$fractal = new Fractal\Manager();
+			$fractal->setSerializer(new ArraySerializer());
+			$resource = new Fractal\Resource\Item($follow, new RejectFollow());
+			$activity = $fractal->createData($resource)->toArray();
+			$url = $actor->sharedInbox ?? $actor->inbox_url;
+
+			Helpers::sendSignedObject($target, $url, $activity);
+
+			$follow->delete();
+		} catch (\Exception $e) {
+			Log::warning("FollowRejectPipeline: Failed to process follow request {$follow->id}: " . $e->getMessage());
+			throw $e;
+		}
 
 		return;
 	}

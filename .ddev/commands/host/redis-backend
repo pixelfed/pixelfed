@@ -1,0 +1,116 @@
+#!/usr/bin/env bash
+#ddev-generated
+
+## Description: Use a different key-value store for Redis
+## Usage: redis-backend <image> [optimize]
+## Example: ddev redis-backend redis-alpine optimize
+
+REDIS_DOCKER_IMAGE=${1:-}
+REDIS_CONFIG=${2:-}
+NAME=$REDIS_DOCKER_IMAGE
+
+function show_help() {
+  cat <<EOF
+Usage: ddev redis-backend <image|alias> [optimize]
+
+Choose from predefined aliases, or provide any Redis-compatible Docker image.
+Note that not every Docker image can work right away, and you may need to override
+the "command:" in the docker-compose.redis_extra.yaml file
+
+Available aliases:
+  redis            redis:7
+  redis-alpine     redis:7-alpine
+  valkey           valkey/valkey:8
+  valkey-alpine    valkey/valkey:8-alpine
+
+Custom backend:
+  You can specify any Docker image, e.g.:
+    ddev redis-backend redis:6
+
+Optional:
+  optimize         Apply additional Redis configuration with resource limits
+  optimized        Same as optimize
+
+Examples:
+  ddev redis-backend redis-alpine optimize
+  ddev redis-backend valkey
+  ddev redis-backend redis:7.2-alpine
+EOF
+  exit 0
+}
+
+function optimize_config() {
+  [[ "$REDIS_CONFIG" != "optimized" && "$REDIS_CONFIG" != "optimize" ]] && return
+  ddev dotenv set .ddev/.env.redis --redis-optimized=true
+}
+
+function cleanup() {
+  rm -f "$DDEV_APPROOT/.ddev/.env.redis"
+  rm -rf "$DDEV_APPROOT/.ddev/redis/"
+  rm -f "$DDEV_APPROOT/.ddev/docker-compose.redis.yaml" "$DDEV_APPROOT/.ddev/docker-compose.redis_extra.yaml"
+
+  redis_volume="ddev-$(ddev status -j | docker run -i --rm ddev/ddev-utilities jq -r '.raw.name')_redis"
+  if docker volume ls -q | grep -qw "$redis_volume"; then
+    ddev stop
+    docker volume rm "$redis_volume"
+  fi
+}
+
+function check_docker_image() {
+  echo "Pulling ${REDIS_DOCKER_IMAGE}..."
+  if ! docker pull "$REDIS_DOCKER_IMAGE"; then
+    echo >&2 "❌ Unable to pull ${REDIS_DOCKER_IMAGE}"
+    exit 2
+  fi
+}
+
+function use_docker_image() {
+  [[ "$REDIS_DOCKER_IMAGE" != "redis:7" ]] && ddev dotenv set .ddev/.env.redis --redis-docker-image="$REDIS_DOCKER_IMAGE"
+  REPO=$(ddev add-on list --installed -j 2>/dev/null | docker run -i --rm ddev/ddev-utilities jq -r '.raw[] | select(.Name=="redis") | .Repository // empty' 2>/dev/null)
+  ddev add-on get "${REPO:-ddev/ddev-redis}"
+}
+
+case "$REDIS_DOCKER_IMAGE" in
+  redis)
+    NAME="Redis 7"
+    REDIS_DOCKER_IMAGE="redis:7"
+    ;;
+  redis-alpine)
+    NAME="Redis 7 Alpine"
+    REDIS_DOCKER_IMAGE="redis:7-alpine"
+    ;;
+  valkey)
+    NAME="Valkey 8"
+    REDIS_DOCKER_IMAGE="valkey/valkey:8"
+    ;;
+  valkey-alpine)
+    NAME="Valkey 8 Alpine"
+    REDIS_DOCKER_IMAGE="valkey/valkey:8-alpine"
+    ;;
+  ""|--help|-h)
+    show_help
+    ;;
+  *)
+    NAME="$REDIS_DOCKER_IMAGE"
+    # Allow unknown image, nothing to override
+    ;;
+esac
+
+check_docker_image
+cleanup
+optimize_config
+use_docker_image
+
+echo
+echo "✅ Redis backend: $REDIS_DOCKER_IMAGE"
+if [[ "$REDIS_CONFIG" == "optimized" || "$REDIS_CONFIG" == "optimize" ]]; then
+  echo "⚙️ Redis config: optimized"
+else
+  echo "⚙️ Redis config: default"
+fi
+
+echo
+echo "📝 Commit the '.ddev' directory to version control"
+
+echo
+echo "🔄 Redis config available after 'ddev restart'"

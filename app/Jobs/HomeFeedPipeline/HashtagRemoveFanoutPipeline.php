@@ -15,6 +15,7 @@ use App\Services\HomeTimelineService;
 use App\Services\StatusService;
 use Illuminate\Queue\Middleware\WithoutOverlapping;
 use Illuminate\Contracts\Queue\ShouldBeUniqueUntilProcessing;
+use Illuminate\Support\Facades\Log;
 
 class HashtagRemoveFanoutPipeline implements ShouldQueue, ShouldBeUniqueUntilProcessing
 {
@@ -69,9 +70,23 @@ class HashtagRemoveFanoutPipeline implements ShouldQueue, ShouldBeUniqueUntilPro
     {
         $sid = $this->sid;
         $hid = $this->hid;
+
+        // Verify status ID exists
+        if (!$sid) {
+            Log::info("HashtagRemoveFanoutPipeline: Status ID not provided, skipping job");
+            return;
+        }
+
+        // Verify hashtag ID exists
+        if (!$hid) {
+            Log::info("HashtagRemoveFanoutPipeline: Hashtag ID not provided, skipping job");
+            return;
+        }
+
         $status = StatusService::get($sid, false);
 
         if(!$status || !isset($status['account']) || !isset($status['account']['id'])) {
+            Log::info("HashtagRemoveFanoutPipeline: Status {$sid} not found or invalid, skipping job");
             return;
         }
 

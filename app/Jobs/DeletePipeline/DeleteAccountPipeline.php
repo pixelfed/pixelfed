@@ -51,6 +51,7 @@ use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
+use Illuminate\Support\Facades\Log;
 use Storage;
 
 class DeleteAccountPipeline implements ShouldQueue
@@ -75,6 +76,19 @@ class DeleteAccountPipeline implements ShouldQueue
     public function handle()
     {
         $user = $this->user;
+
+        // Verify user exists
+        if (!$user) {
+            Log::info("DeleteAccountPipeline: User no longer exists, skipping job");
+            return;
+        }
+
+        // Verify user has a profile
+        if (!$user->profile_id) {
+            Log::info("DeleteAccountPipeline: User {$user->id} has no profile_id, skipping job");
+            return;
+        }
+
         $profile = $user->profile;
         $id = $user->profile_id;
         $cloudStorageEnabled = (bool) config_cache('pixelfed.cloud_storage');

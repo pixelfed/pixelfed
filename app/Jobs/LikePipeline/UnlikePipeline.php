@@ -51,11 +51,22 @@ class UnlikePipeline implements ShouldQueue
 	{
 		$like = $this->like;
 
+		// Check if like still exists (in case it was already deleted)
+		if (!$like) {
+			Log::info("UnlikePipeline: Like no longer exists, skipping job");
+			return;
+		}
+
 		$status = $this->like->status;
 		$actor = $this->like->actor;
 
+		// Verify both status and actor exist
 		if (!$status) {
-			// Ignore notifications to deleted statuses
+			Log::info("UnlikePipeline: Status no longer exists for like {$like->id}, skipping job");
+			return;
+		}
+		if (!$actor) {
+			Log::info("UnlikePipeline: Actor no longer exists for like {$like->id}, skipping job");
 			return;
 		}
 
@@ -96,12 +107,37 @@ class UnlikePipeline implements ShouldQueue
 		$status = $this->like->status;
 		$actor = $this->like->actor;
 
+		// Verify all required models exist before attempting delivery
+		if (!$like) {
+			Log::info("UnlikePipeline: Like missing for remote delivery, skipping");
+			return;
+		}
+		if (!$status) {
+			Log::info("UnlikePipeline: Status missing for remote delivery, skipping");
+			return;
+		}
+		if (!$actor) {
+			Log::info("UnlikePipeline: Actor missing for remote delivery, skipping");
+			return;
+		}
+
+		// Verify status has a profile
+		if (!$status->profile) {
+			Log::info("UnlikePipeline: Status profile missing for like {$like->id}, skipping remote delivery");
+			return;
+		}
+
 		$fractal = new Fractal\Manager();
 		$fractal->setSerializer(new ArraySerializer());
 		$resource = new Fractal\Resource\Item($like, new LikeTransformer());
 		$activity = $fractal->createData($resource)->toArray();
 
 		$url = $status->profile->sharedInbox ?? $status->profile->inbox_url;
+
+		if (!$url) {
+			Log::info("UnlikePipeline: No inbox URL available for like {$like->id}, skipping remote delivery");
+			return;
+		}
 
 		Helpers::sendSignedObject($actor, $url, $activity);
 	}

@@ -33,6 +33,7 @@ use App\Services\PollService;
 use App\Services\PushNotificationService;
 use App\Services\ReblogService;
 use App\Services\RelationshipService;
+use App\Services\SanitizeService;
 use App\Services\StoryIndexService;
 use App\Services\UserFilterService;
 use App\Status;
@@ -50,7 +51,6 @@ use Cache;
 use Illuminate\Support\Facades\Bus;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Str;
-use Purify;
 use Storage;
 use Throwable;
 
@@ -423,7 +423,7 @@ class Inbox
             return;
         }
 
-        $msg = Purify::clean($activity['content']);
+        $msg = app(SanitizeService::class)->html($activity['content']);
         $msgText = strip_tags($msg);
 
         if (Str::startsWith($msgText, '@'.$profile->username)) {
@@ -637,7 +637,7 @@ class Inbox
 
         $parent = Helpers::statusFetch($activity);
 
-        if (! $parent || empty($parent)) {
+        if (! $parent) {
             return;
         }
 
@@ -1064,7 +1064,7 @@ class Inbox
         $actor = $this->payload['actor'];
         $storyUrl = $this->payload['inReplyTo'];
         $to = $this->payload['to'];
-        $text = Purify::clean($this->payload['content']);
+        $text = app(SanitizeService::class)->html($this->payload['content']);
 
         if (parse_url($id, PHP_URL_HOST) !== parse_url($actor, PHP_URL_HOST)) {
             return;
@@ -1184,7 +1184,7 @@ class Inbox
         $actor = $this->payload['actor'];
         $storyUrl = $this->payload['inReplyTo'];
         $to = $this->payload['to'];
-        $text = Purify::clean($this->payload['content']);
+        $text = app(SanitizeService::class)->html($this->payload['content']);
 
         if (parse_url($id, PHP_URL_HOST) !== parse_url($actor, PHP_URL_HOST)) {
             return;
@@ -1310,9 +1310,9 @@ class Inbox
         $content = null;
         if (isset($this->payload['content'])) {
             if (strlen($this->payload['content']) > 5000) {
-                $content = Purify::clean(substr($this->payload['content'], 0, 5000).' ... (truncated message due to exceeding max length)');
+                $content = app(SanitizeService::class)->html(substr($this->payload['content'], 0, 5000).' ... (truncated message due to exceeding max length)');
             } else {
-                $content = Purify::clean($this->payload['content']);
+                $content = app(SanitizeService::class)->html($this->payload['content']);
             }
         }
         $object = $this->payload['object'];

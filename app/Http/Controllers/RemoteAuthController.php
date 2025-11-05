@@ -3,9 +3,11 @@
 namespace App\Http\Controllers;
 
 use App\Models\RemoteAuth;
+use App\Rules\PixelfedUsername;
 use App\Services\Account\RemoteAuthService;
 use App\Services\EmailService;
 use App\Services\MediaStorageService;
+use App\Services\SanitizeService;
 use App\User;
 use App\Util\ActivityPub\Helpers;
 use App\Util\Lexer\RestrictedNames;
@@ -14,7 +16,6 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Str;
-use App\Rules\PixelfedUsername;
 use InvalidArgumentException;
 use Purify;
 
@@ -360,7 +361,7 @@ class RemoteAuthController extends Controller
                 'required',
                 'min:2',
                 'max:30',
-                new PixelfedUsername(),
+                new PixelfedUsername,
             ],
         ]);
         $username = strtolower($request->input('username'));
@@ -544,7 +545,7 @@ class RemoteAuthController extends Controller
         ]);
 
         $profile = $request->user()->profile;
-        $profile->bio = Purify::clean($request->input('bio'));
+        $profile->bio = app(SanitizeService::class)->html($request->input('bio'));
         $profile->save();
 
         return [200];

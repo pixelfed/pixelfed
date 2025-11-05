@@ -13,6 +13,7 @@ use Illuminate\Contracts\Queue\ShouldBeUniqueUntilProcessing;
 use App\Services\FollowerService;
 use App\Services\StatusService;
 use App\Services\HomeTimelineService;
+use Illuminate\Support\Facades\Log;
 
 class FeedRemoveRemotePipeline implements ShouldQueue, ShouldBeUniqueUntilProcessing
 {
@@ -65,10 +66,25 @@ class FeedRemoveRemotePipeline implements ShouldQueue, ShouldBeUniqueUntilProces
      */
     public function handle(): void
     {
-        $ids = FollowerService::localFollowerIds($this->pid);
+        $sid = $this->sid;
+        $pid = $this->pid;
+
+        // Verify status ID exists
+        if (!$sid) {
+            Log::info("FeedRemoveRemotePipeline: Status ID not provided, skipping job");
+            return;
+        }
+
+        // Verify profile ID exists
+        if (!$pid) {
+            Log::info("FeedRemoveRemotePipeline: Profile ID not provided, skipping job");
+            return;
+        }
+
+        $ids = FollowerService::localFollowerIds($pid);
 
         foreach($ids as $id) {
-            HomeTimelineService::rem($id, $this->sid);
+            HomeTimelineService::rem($id, $sid);
         }
     }
 }

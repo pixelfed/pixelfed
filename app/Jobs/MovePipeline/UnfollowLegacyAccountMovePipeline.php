@@ -106,6 +106,6 @@ class UnfollowLegacyAccountMovePipeline implements ShouldQueue
 
                     MoveSendUndoFollowPipeline::dispatch($follower, $targetInbox, $targetPid, $actor)->onQueue('move');
                 }
-            }, 'id');
+            }, 'profiles.id', 'id');
     }
 }

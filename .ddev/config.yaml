@@ -1,17 +1,18 @@
 type: laravel
 docroot: public
-php_version: "8.1"
+php_version: "8.4"
 webserver_type: nginx-fpm
 database:
   type: mariadb
-  version: "10.4"
+  version: "11.8"
 disable_settings_management: true
 web_environment:
-  - DB_CONNECTION=mysql
+  - DB_CONNECTION=mariadb
   - DB_HOST=ddev-pixelfed-db
   - DB_DATABASE=db
   - DB_USERNAME=db
   - DB_PASSWORD=db
+  - REDIS_CLIENT=phpredis
   - REDIS_HOST=ddev-pixelfed-redis
   - MAIL_DRIVER=smtp
   - MAIL_HOST=localhost
@@ -19,7 +20,6 @@ web_environment:
   - MAIL_USERNAME=null
   - MAIL_PASSWORD=null
   - MAIL_ENCRYPTION=null
-  - APP_KEY=placeholder
   - APP_NAME=PixelfedTest
   - APP_ENV=local
   - APP_KEY=base64:lwX95GbNWX3XsucdMe0XwtOKECta3h/B+p9NbH2jd0E=

@@ -3,22 +3,27 @@
 namespace App\Util\Media;
 
 use App\Media;
-use Intervention\Image\ImageManager;
-use Intervention\Image\Encoders\JpegEncoder;
-use Intervention\Image\Encoders\WebpEncoder;
-use Intervention\Image\Encoders\AvifEncoder;
-use Intervention\Image\Encoders\PngEncoder;
-use Cache, Log, Storage;
-use App\Util\Media\Blurhash;
 use App\Services\StatusService;
+use Cache;
+use Intervention\Image\Encoders\JpegEncoder;
+use Intervention\Image\Encoders\PngEncoder;
+use Intervention\Image\Encoders\WebpEncoder;
+use Intervention\Image\ImageManager;
+use Log;
+use Storage;
 
 class Image
 {
     public $square;
+
     public $landscape;
+
     public $portrait;
+
     public $thumbnail;
+
     public $orientation;
+
     public $acceptedMimes = [
         'image/png',
         'image/jpeg',
@@ -30,6 +35,8 @@ class Image
 
     protected $imageManager;
 
+    protected $defaultDisk;
+
     public function __construct()
     {
         ini_set('memory_limit', config('pixelfed.memory_limit', '1024M'));
@@ -38,12 +45,14 @@ class Image
         $this->landscape = $this->orientations()['landscape'];
         $this->portrait = $this->orientations()['portrait'];
         $this->thumbnail = [
-            'width'  => 640,
+            'width' => 640,
             'height' => 640,
         ];
         $this->orientation = null;
 
-        $driver = match(config('image.driver')) {
+        $this->defaultDisk = config('filesystems.default');
+
+        $driver = match (config('image.driver')) {
             'imagick' => \Intervention\Image\Drivers\Imagick\Driver::class,
             'vips' => \Intervention\Image\Drivers\Vips\Driver::class,
             default => \Intervention\Image\Drivers\Gd\Driver::class
@@ -62,15 +71,15 @@ class Image
     {
         return [
             'square' => [
-                'width'  => 1080,
+                'width' => 1080,
                 'height' => 1080,
             ],
             'landscape' => [
-                'width'  => 1920,
+                'width' => 1920,
                 'height' => 1080,
             ],
             'portrait' => [
-                'width'  => 1080,
+                'width' => 1080,
                 'height' => 1350,
             ],
         ];
@@ -80,7 +89,7 @@ class Image
     {
         if ($isThumbnail) {
             return [
-                'dimensions'  => $this->thumbnail,
+                'dimensions' => $this->thumbnail,
                 'orientation' => 'thumbnail',
             ];
         }
@@ -91,7 +100,7 @@ class Image
         $this->orientation = $orientation;
 
         return [
-            'dimensions'  => $this->orientations()[$orientation],
+            'dimensions' => $this->orientations()[$orientation],
             'orientation' => $orientation,
             'width_original' => $width,
             'height_original' => $height,
@@ -121,48 +130,68 @@ class Image
     public function handleImageTransform(Media $media, $thumbnail = false)
     {
         $path = $media->media_path;
-        $file = storage_path('app/'.$path);
-        if (!in_array($media->mime, $this->acceptedMimes)) {
+        $localFs = config('filesystems.default') === 'local';
+
+        if (! in_array($media->mime, $this->acceptedMimes)) {
             return;
         }
 
         try {
-            $fileInfo = pathinfo($file);
+            $fileContents = null;
+            $tempFile = null;
+
+            if ($this->defaultDisk === 'local') {
+                $filePath = storage_path('app/'.$path);
+                $fileContents = file_get_contents($filePath);
+            } else {
+                $fileContents = Storage::disk($this->defaultDisk)->get($path);
+            }
+
+            $fileInfo = pathinfo($path);
             $extension = strtolower($fileInfo['extension'] ?? 'jpg');
             $outputExtension = $extension;
 
             $metadata = null;
-            if (!$thumbnail && config('media.exif.database', false) == true) {
+            if (! $thumbnail && config('media.exif.database', false) == true) {
                 try {
-                    $exif = @exif_read_data($file);
+                    if ($this->defaultDisk !== 'local') {
+                        $tempFile = tempnam(sys_get_temp_dir(), 'exif_');
+                        file_put_contents($tempFile, $fileContents);
+                        $exifPath = $tempFile;
+                    } else {
+                        $exifPath = storage_path('app/'.$path);
+                    }
+
+                    $exif = @exif_read_data($exifPath);
+
                     if ($exif) {
                         $meta = [];
                         $keys = [
-                            "FileName",
-                            "FileSize",
-                            "FileType",
-                            "Make",
-                            "Model",
-                            "MimeType",
-                            "ColorSpace",
-                            "ExifVersion",
-                            "Orientation",
-                            "UserComment",
-                            "XResolution",
-                            "YResolution",
-                            "FileDateTime",
-                            "SectionsFound",
-                            "ExifImageWidth",
-                            "ResolutionUnit",
-                            "ExifImageLength",
-                            "FlashPixVersion",
-                            "Exif_IFD_Pointer",
-                            "YCbCrPositioning",
-                            "ComponentsConfiguration",
-                            "ExposureTime",
-                            "FNumber",
-                            "ISOSpeedRatings",
-                            "ShutterSpeedValue"
+                            'FileName',
+                            'FileSize',
+                            'FileType',
+                            'Make',
+                            'Model',
+                            'MimeType',
+                            'ColorSpace',
+                            'ExifVersion',
+                            'Orientation',
+                            'UserComment',
+                            'XResolution',
+                            'YResolution',
+                            'FileDateTime',
+                            'SectionsFound',
+                            'ExifImageWidth',
+                            'ResolutionUnit',
+                            'ExifImageLength',
+                            'FlashPixVersion',
+                            'Exif_IFD_Pointer',
+                            'YCbCrPositioning',
+                            'ComponentsConfiguration',
+                            'ExposureTime',
+                            'FNumber',
+                            'ISOSpeedRatings',
+                            'ShutterSpeedValue',
                         ];
                         foreach ($exif as $k => $v) {
                             if (in_array($k, $keys)) {
@@ -171,12 +200,22 @@ class Image
                         }
                         $media->metadata = json_encode($meta);
                     }
+
+                    if ($tempFile && file_exists($tempFile)) {
+                        unlink($tempFile);
+                        $tempFile = null;
+                    }
                 } catch (\Exception $e) {
-                    Log::info('EXIF extraction failed: ' . $e->getMessage());
+                    if ($tempFile && file_exists($tempFile)) {
+                        unlink($tempFile);
+                    }
+                    if (config('app.dev_log')) {
+                        Log::info('EXIF extraction failed: '.$e->getMessage());
+                    }
                 }
             }
 
-            $img = $this->imageManager->read($file);
+            $img = $this->imageManager->read($fileContents);
 
             $ratio = $this->getAspect($img->width(), $img->height(), $thumbnail);
             $aspect = $ratio['dimensions'];
@@ -209,7 +248,7 @@ class Image
                     $outputExtension = 'jpg';
                     break;
                 case 'png':
-                    $encoder = new PngEncoder();
+                    $encoder = new PngEncoder;
                     $outputExtension = 'png';
                     break;
                 case 'webp':
@@ -230,11 +269,17 @@ class Image
             }
 
             $converted = $this->setBaseName($path, $thumbnail, $outputExtension);
-            $newPath = storage_path('app/'.$converted['path']);
-
             $encoded = $encoder->encode($img);
 
-            file_put_contents($newPath, $encoded->toString());
+            if ($localFs) {
+                $newPath = storage_path('app/'.$converted['path']);
+                file_put_contents($newPath, $encoded->toString());
+            } else {
+                Storage::disk($this->defaultDisk)->put(
+                    $converted['path'],
+                    $encoded->toString()
+                );
+            }
 
             if ($thumbnail == true) {
                 $media->thumbnail_path = $converted['path'];
@@ -244,7 +289,7 @@ class Image
                 $media->height = $img->height();
                 $media->orientation = $orientation;
                 $media->media_path = $converted['path'];
-                $media->mime = 'image/' . $outputExtension;
+                $media->mime = 'image/'.$outputExtension;
             }
 
             $media->save();
@@ -253,7 +298,7 @@ class Image
                 $this->generateBlurhash($media);
             }
 
-            if($media->status_id) {
+            if ($media->status_id) {
                 Cache::forget('status:transformer:media:attachments:'.$media->status_id);
                 Cache::forget('status:thumb:'.$media->status_id);
                 StatusService::del($media->status_id);
@@ -262,7 +307,9 @@ class Image
         } catch (\Exception $e) {
             $media->processed_at = now();
             $media->save();
-            Log::info('MediaResizeException: ' . $e->getMessage() . ' | Could not process media id: ' . $media->id);
+            if (config('app.dev_log')) {
+                Log::info('MediaResizeException: '.$e->getMessage().' | Could not process media id: '.$media->id);
+            }
         }
     }
 
@@ -277,10 +324,28 @@ class Image
 
     protected function generateBlurhash($media)
     {
-        $blurhash = Blurhash::generate($media);
-        if ($blurhash) {
-            $media->blurhash = $blurhash;
-            $media->save();
+        try {
+            if ($this->defaultDisk === 'local') {
+                $thumbnailPath = storage_path('app/'.$media->thumbnail_path);
+                $blurhash = Blurhash::generate($media, $thumbnailPath);
+            } else {
+                $tempFile = tempnam(sys_get_temp_dir(), 'blurhash_');
+                $contents = Storage::disk($this->defaultDisk)->get($media->thumbnail_path);
+                file_put_contents($tempFile, $contents);
+
+                $blurhash = Blurhash::generate($media, $tempFile);
+
+                unlink($tempFile);
+            }
+
+            if ($blurhash) {
+                $media->blurhash = $blurhash;
+                $media->save();
+            }
+        } catch (\Exception $e) {
+            if (config('app.dev_log')) {
+                Log::info('Blurhash generation failed: '.$e->getMessage());
+            }
         }
     }
 }

@@ -13,6 +13,7 @@ use Illuminate\Contracts\Queue\ShouldBeUniqueUntilProcessing;
 use App\Services\AccountService;
 use App\Services\StatusService;
 use App\Services\HomeTimelineService;
+use Illuminate\Support\Facades\Log;
 
 class FeedUnfollowPipeline implements ShouldQueue, ShouldBeUniqueUntilProcessing
 {
@@ -67,6 +68,18 @@ class FeedUnfollowPipeline implements ShouldQueue, ShouldBeUniqueUntilProcessing
     {
         $actorId = $this->actorId;
         $followingId = $this->followingId;
+
+        // Verify actor ID exists
+        if (!$actorId) {
+            Log::info("FeedUnfollowPipeline: Actor ID not provided, skipping job");
+            return;
+        }
+
+        // Verify following ID exists
+        if (!$followingId) {
+            Log::info("FeedUnfollowPipeline: Following ID not provided, skipping job");
+            return;
+        }
 
         $ids = HomeTimelineService::get($actorId, 0, -1);
         foreach($ids as $id) {

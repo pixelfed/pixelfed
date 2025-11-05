@@ -6,6 +6,7 @@ use App\Follower;
 use App\Jobs\FollowPipeline\FollowPipeline;
 use App\Profile;
 use Illuminate\Console\Command;
+use Exception;
 
 class SeedFollows extends Command
 {

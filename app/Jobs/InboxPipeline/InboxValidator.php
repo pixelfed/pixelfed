@@ -18,6 +18,7 @@ use App\Jobs\DeletePipeline\DeleteRemoteProfilePipeline;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Http\Client\ConnectionException;
 use Illuminate\Support\Lottery;
+use Illuminate\Support\Facades\Log;
 
 class InboxValidator implements ShouldQueue
 {
@@ -52,12 +53,32 @@ class InboxValidator implements ShouldQueue
 	{
 		$username = $this->username;
 		$headers = $this->headers;
+		$payload = $this->payload;
 
-		if(empty($headers) || empty($this->payload) || !isset($headers['signature']) || !isset($headers['date'])) {
+		// Verify username exists
+		if (!$username) {
+			Log::info("InboxValidator: Username not provided, skipping job");
 			return;
 		}
 
-		$payload = json_decode($this->payload, true, 8);
+		// Verify headers exist
+		if (!$headers) {
+			Log::info("InboxValidator: Headers not provided, skipping job");
+			return;
+		}
+
+		// Verify payload exists
+		if (!$payload) {
+			Log::info("InboxValidator: Payload not provided, skipping job");
+			return;
+		}
+
+		if(empty($headers) || empty($payload) || !isset($headers['signature']) || !isset($headers['date'])) {
+			Log::info("InboxValidator: Invalid headers or payload structure, skipping job");
+			return;
+		}
+
+		$payload = json_decode($payload, true, 8);
 
 		if(isset($payload['id'])) {
 			$lockKey = 'pf:ap:user-inbox:activity:' . hash('sha256', $payload['id']);
@@ -69,6 +90,12 @@ class InboxValidator implements ShouldQueue
 		}
 
 		$profile = Profile::whereNull('domain')->whereUsername($username)->first();
+
+		// Verify profile exists
+		if (!$profile) {
+			Log::info("InboxValidator: Profile not found for username {$username}, skipping job");
+			return;
+		}
 
 		if(empty($profile) || empty($headers) || empty($payload)) {
 			return;

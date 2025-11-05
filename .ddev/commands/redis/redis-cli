@@ -1,7 +1,13 @@
-#!/bin/bash
-#ddev-generated
-## Description: Run redis-cli inside the redis container
-## Usage: redis-cli [flags] [args]
-## Example: "redis-cli KEYS *" or "ddev redis-cli INFO" or "ddev redis-cli --version"
+#!/usr/bin/env sh
 
-exec redis-cli -p 6379 -h redis "$@"
+#ddev-generated
+## Description: Run redis-cli inside the Redis container
+## Usage: redis-cli [flags] [args]
+## Example: "ddev redis-cli KEYS *" or "ddev redis-cli INFO" or "ddev redis-cli --version"
+## Aliases: redis
+
+if [ -f /etc/redis/conf/security.conf ]; then
+  redis-cli -p 6379 -h redis -a redis --no-auth-warning $@
+else
+  redis-cli -p 6379 -h redis $@
+fi

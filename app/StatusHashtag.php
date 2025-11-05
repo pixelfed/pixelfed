@@ -1,6 +1,10 @@
 <?php
 
 namespace App;
+use App\Status;
+use App\Profile;
+use App\Hashtag;
+use App\Media;
 
 use Illuminate\Database\Eloquent\Model;
 

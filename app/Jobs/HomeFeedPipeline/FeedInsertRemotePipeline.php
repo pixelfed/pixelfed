@@ -15,6 +15,7 @@ use App\Models\UserDomainBlock;
 use App\Services\FollowerService;
 use App\Services\HomeTimelineService;
 use App\Services\StatusService;
+use Illuminate\Support\Facades\Log;
 
 class FeedInsertRemotePipeline implements ShouldQueue, ShouldBeUniqueUntilProcessing
 {
@@ -68,9 +69,24 @@ class FeedInsertRemotePipeline implements ShouldQueue, ShouldBeUniqueUntilProces
     public function handle(): void
     {
         $sid = $this->sid;
+        $pid = $this->pid;
+
+        // Verify status ID exists
+        if (!$sid) {
+            Log::info("FeedInsertRemotePipeline: Status ID not provided, skipping job");
+            return;
+        }
+
+        // Verify profile ID exists
+        if (!$pid) {
+            Log::info("FeedInsertRemotePipeline: Profile ID not provided, skipping job");
+            return;
+        }
+
         $status = StatusService::get($sid, false);
 
         if(!$status || !isset($status['account']) || !isset($status['account']['id'], $status['url'])) {
+            Log::info("FeedInsertRemotePipeline: Status {$sid} not found or invalid, skipping job");
             return;
         }
 
@@ -78,7 +94,7 @@ class FeedInsertRemotePipeline implements ShouldQueue, ShouldBeUniqueUntilProces
             return;
         }
 
-        $ids = FollowerService::localFollowerIds($this->pid);
+        $ids = FollowerService::localFollowerIds($pid);
 
         if(!$ids || !count($ids)) {
             return;
@@ -105,7 +121,7 @@ class FeedInsertRemotePipeline implements ShouldQueue, ShouldBeUniqueUntilProces
 
         foreach($ids as $id) {
             if(!in_array($id, $skipIds)) {
-                HomeTimelineService::add($id, $this->sid);
+                HomeTimelineService::add($id, $sid);
             }
         }
     }

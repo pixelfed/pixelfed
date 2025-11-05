@@ -23,6 +23,7 @@ use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
+use Illuminate\Support\Facades\Log;
 
 class StatusEntityLexer implements ShouldQueue
 {
@@ -58,8 +59,25 @@ class StatusEntityLexer implements ShouldQueue
      */
     public function handle()
     {
-        $profile = $this->status->profile;
         $status = $this->status;
+
+        // Verify status exists
+        if (!$status) {
+            Log::info("StatusEntityLexer: Status no longer exists, skipping job");
+            return;
+        }
+
+        // Verify status has a profile
+        if (!$status->profile_id) {
+            Log::info("StatusEntityLexer: Status {$status->id} has no profile_id, skipping job");
+            return;
+        }
+
+        $profile = $status->profile;
+        if (!$profile) {
+            Log::info("StatusEntityLexer: Profile no longer exists for status {$status->id}, skipping job");
+            return;
+        }
 
         if (in_array($status->type, ['photo', 'photo:album', 'video', 'video:album', 'photo:video:album'])) {
             $profile->status_count = $profile->status_count + 1;

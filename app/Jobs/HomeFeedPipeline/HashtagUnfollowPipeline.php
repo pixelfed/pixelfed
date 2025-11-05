@@ -17,6 +17,7 @@ use App\StatusHashtag;
 use App\Services\HashtagFollowService;
 use App\Services\StatusService;
 use App\Services\HomeTimelineService;
+use Illuminate\Support\Facades\Log;
 
 class HashtagUnfollowPipeline implements ShouldQueue
 {
@@ -48,7 +49,27 @@ class HashtagUnfollowPipeline implements ShouldQueue
     {
         $hid = $this->hid;
         $pid = $this->pid;
-        $slug = strtolower($this->slug);
+        $slug = $this->slug;
+
+        // Verify hashtag ID exists
+        if (!$hid) {
+            Log::info("HashtagUnfollowPipeline: Hashtag ID not provided, skipping job");
+            return;
+        }
+
+        // Verify profile ID exists
+        if (!$pid) {
+            Log::info("HashtagUnfollowPipeline: Profile ID not provided, skipping job");
+            return;
+        }
+
+        // Verify slug exists
+        if (!$slug) {
+            Log::info("HashtagUnfollowPipeline: Slug not provided, skipping job");
+            return;
+        }
+
+        $slug = strtolower($slug);
 
         $statusIds = HomeTimelineService::get($pid, 0, -1);
 

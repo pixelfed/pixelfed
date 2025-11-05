@@ -14,6 +14,7 @@ use App\Services\AccountService;
 use App\Services\HomeTimelineService;
 use App\Services\SnowflakeService;
 use App\Status;
+use Illuminate\Support\Facades\Log;
 
 class FeedFollowPipeline implements ShouldQueue, ShouldBeUniqueUntilProcessing
 {
@@ -68,6 +69,18 @@ class FeedFollowPipeline implements ShouldQueue, ShouldBeUniqueUntilProcessing
     {
         $actorId = $this->actorId;
         $followingId = $this->followingId;
+
+        // Verify actor ID exists
+        if (!$actorId) {
+            Log::info("FeedFollowPipeline: Actor ID not provided, skipping job");
+            return;
+        }
+
+        // Verify following ID exists
+        if (!$followingId) {
+            Log::info("FeedFollowPipeline: Following ID not provided, skipping job");
+            return;
+        }
 
         $minId = SnowflakeService::byDate(now()->subWeeks(6));
 

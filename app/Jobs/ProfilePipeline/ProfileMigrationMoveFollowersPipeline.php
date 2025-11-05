@@ -3,6 +3,7 @@
 namespace App\Jobs\ProfilePipeline;
 
 use App\Follower;
+use App\Http\Controllers\FollowerController;
 use App\Profile;
 use App\Services\AccountService;
 use Illuminate\Bus\Batchable;
@@ -13,6 +14,7 @@ use Illuminate\Foundation\Bus\Dispatchable;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\Middleware\WithoutOverlapping;
 use Illuminate\Queue\SerializesModels;
+use Illuminate\Support\Facades\Log;
 
 class ProfileMigrationMoveFollowersPipeline implements ShouldBeUniqueUntilProcessing, ShouldQueue
 {
@@ -81,12 +83,21 @@ class ProfileMigrationMoveFollowersPipeline implements ShouldBeUniqueUntilProces
         $ne->save();
         $og->followers_count = 0;
         $og->save();
+
+        $targetInbox = $ne['sharedInbox'] ?? $ne['inbox_url'];
         foreach (Follower::whereFollowingId($this->oldPid)->lazyById(200, 'id') as $follower) {
             try {
                 $follower->following_id = $this->newPid;
                 $follower->save();
+
+                // If a local user has migrated to a different instance, send a
+                // follow request for each local follower to the new instance
+                if ($targetInbox && $follower->local_profile) {
+                    $followerProfile = Profile::find($follower->profile_id);
+                    (new FollowerController)->sendFollow($followerProfile, $ne);
+                }
             } catch (Exception $e) {
-                $follower->delete();
+                Log::error($e);
             }
         }
         AccountService::del($this->oldPid);

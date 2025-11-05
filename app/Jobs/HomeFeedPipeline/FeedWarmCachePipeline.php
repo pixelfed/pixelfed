@@ -11,6 +11,7 @@ use Illuminate\Queue\SerializesModels;
 use App\Services\HomeTimelineService;
 use Illuminate\Queue\Middleware\WithoutOverlapping;
 use Illuminate\Contracts\Queue\ShouldBeUniqueUntilProcessing;
+use Illuminate\Support\Facades\Log;
 
 class FeedWarmCachePipeline implements ShouldQueue, ShouldBeUniqueUntilProcessing
 {
@@ -62,6 +63,13 @@ class FeedWarmCachePipeline implements ShouldQueue, ShouldBeUniqueUntilProcessin
     public function handle(): void
     {
         $pid = $this->pid;
+
+        // Verify profile ID exists
+        if (!$pid) {
+            Log::info("FeedWarmCachePipeline: Profile ID not provided, skipping job");
+            return;
+        }
+
         HomeTimelineService::warmCache($pid, true, 400, true);
     }
 }

@@ -166,7 +166,7 @@ class FederationController extends Controller
 
         $headers = $request->headers->all();
         $payload = $request->getContent();
-        if (! $payload || empty($payload)) {
+        if (! $payload) {
             return;
         }
         $obj = json_decode($payload, true, 8);
@@ -220,7 +220,7 @@ class FederationController extends Controller
         $headers = $request->headers->all();
         $payload = $request->getContent();
 
-        if (! $payload || empty($payload)) {
+        if (! $payload) {
             return;
         }
 

@@ -10,6 +10,7 @@ use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
+use Illuminate\Support\Facades\Log;
 use App\Services\StatusService;
 
 class MediaSyncLicensePipeline implements ShouldQueue
@@ -28,8 +29,15 @@ class MediaSyncLicensePipeline implements ShouldQueue
 	public function handle()
 	{
 		$licenseId = $this->licenseId;
+		$userId = $this->userId;
 
-		if(!$licenseId || !$this->userId) {
+		// Verify required data exists
+		if (!$licenseId) {
+			Log::info("MediaSyncLicensePipeline: License ID not provided, skipping job");
+			return 1;
+		}
+		if (!$userId) {
+			Log::info("MediaSyncLicensePipeline: User ID not provided, skipping job");
 			return 1;
 		}
 

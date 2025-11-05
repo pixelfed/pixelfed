@@ -2,6 +2,10 @@
 
 ## [Unreleased](https://github.com/pixelfed/pixelfed/compare/v0.12.5...dev)
 
+- Update Status storage, add SanitizerService to fix spacing in html stripped content ([3686c9212](https://github.com/pixelfed/pixelfed/commit/3686c9212))
+- Update app config, add description and rule env variables ([0980519a9](https://github.com/pixelfed/pixelfed/commit/0980519a9))
+- Update InstanceService, fix total post count when config_cache is disabled ([f0bc9d66e](https://github.com/pixelfed/pixelfed/commit/f0bc9d66e))
+- Update media storage pipeline, improve support for non-local filesystems ([2e719bd00](https://github.com/pixelfed/pixelfed/commit/2e719bd00))
 -  ([](https://github.com/pixelfed/pixelfed/commit/))
 
 ## [v0.12.6 (2025-09-03)](https://github.com/pixelfed/pixelfed/compare/v0.12.6...dev)

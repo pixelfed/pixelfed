@@ -9,6 +9,7 @@ use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Redis;
 use App\Services\MediaStorageService;
 
@@ -26,7 +27,26 @@ class MediaStoragePipeline implements ShouldQueue
 
     public function handle()
     {
-    	MediaStorageService::store($this->media);
+        $media = $this->media;
+
+        // Verify media exists
+        if (!$media) {
+            Log::info("MediaStoragePipeline: Media no longer exists, skipping job");
+            return;
+        }
+
+        // Verify media has required fields
+        if (!$media->media_path) {
+            Log::info("MediaStoragePipeline: Media {$media->id} has no media_path, skipping job");
+            return;
+        }
+
+        try {
+            MediaStorageService::store($media);
+        } catch (\Exception $e) {
+            Log::warning("MediaStoragePipeline: Failed to store media {$media->id}: " . $e->getMessage());
+            throw $e;
+        }
     }
 
 }

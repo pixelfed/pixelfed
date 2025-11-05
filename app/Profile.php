@@ -8,6 +8,7 @@ use App\HasSnowflakePrimary;
 use Illuminate\Database\Eloquent\{Model, SoftDeletes};
 use App\Services\FollowerService;
 use App\Models\ProfileAlias;
+use App\Avatar;
 
 class Profile extends Model
 {

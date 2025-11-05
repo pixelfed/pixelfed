@@ -34,7 +34,7 @@ class DeleteUserDomainBlock extends Command
         $domain = text('Enter domain you want to unblock');
         $domain = strtolower($domain);
         $domain = $this->validateDomain($domain);
-        if(!$domain || empty($domain)) {
+        if(!$domain) {
             $this->error('Invalid domain');
             return;
         }

@@ -28,7 +28,7 @@ class CatchUnoptimizedMedia extends Command
      *
      * @return void
      */
-    public function __construct(Media $media)
+    public function __construct()
     {
         parent::__construct();
     }

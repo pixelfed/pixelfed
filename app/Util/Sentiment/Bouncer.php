@@ -47,9 +47,8 @@ class Bouncer {
 				return false;
 			}
 
-			$count = Status::select('id', 'scope')
-				->whereScope('public')
-				->find($ids)
+			$count = Status::whereScope('public')
+				->whereIn('id', $ids)
 				->count();
 
 			return $count >= 1 ? true : false;

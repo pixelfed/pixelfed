@@ -23,6 +23,7 @@ class Installer extends Command
     protected $description = 'CLI Installer';
 
     public $installType = 'Simple';
+    public $continue;
 
     /**
      * Create a new command instance.
@@ -170,7 +171,7 @@ class Installer extends Command
 
         $ffmpeg = exec('which ffmpeg');
         if (empty($ffmpeg)) {
-            $this->error("- \"{$ext}\" FFmpeg not found, aborting installation");
+            $this->error('- FFmpeg not found, aborting installation');
             exit;
         } else {
             $this->info('- Found FFmpeg!');

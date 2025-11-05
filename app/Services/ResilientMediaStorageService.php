@@ -41,8 +41,11 @@ class ResilientMediaStorageService
             try {
                 $disk = Storage::disk($baseDisk);
                 $file = $disk->putFileAs($storagePath, new File($path), $name, 'public');
-            } catch (S3Exception | ClientException | ConnectException | UnableToWriteFile | Exception $e) {}
-            return $disk->url($file);
+                return $disk->url($file);
+            } catch (S3Exception | ClientException | ConnectException | UnableToWriteFile | Exception $e) {
+                Log::warning("ResilientMediaStorageService: Failed to handle Resilient Store {$file} : " . $e->getMessage());
+                throw $e;
+            }
         }, function (int $attempt, Exception $exception) {
             return $attempt * 200;
         });
