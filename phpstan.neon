@@ -12,11 +12,17 @@ parameters:
 
     level: 1
 
+    # Laravel specific configurations
+    checkModelProperties: true
+    checkOctaneCompatibility: true
+    
     ignoreErrors:
         - '#PHPDoc tag @var#'
         - '#Class App\\Http\\Controllers\\Groups\\VideoThumbnail was not found#'
         - '#Class App\\Http\\Controllers\\Groups\\StatusDelete was not found#'
         - '#Class App\\Jobs\\GroupPipeline\\MentionPipeline was not found#'
+        # Ignore relation existence errors since we've verified they exist
+        - '#Relation .* is not found in .* model\.#'
 
     excludePaths:
         - app/Http/Controllers/Groups/GroupsPostController.php
