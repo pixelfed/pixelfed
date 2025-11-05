@@ -1,4 +1,4 @@
-name: Laravel Test Suite
+name: PHP - Laravel Test Suite
 
 on:
   push:
@@ -33,6 +33,6 @@ jobs:
           cp .env.testing .env
           php artisan key:generate
 
-      - name: Run tests
+      - name: Run artisan tests
         run: php artisan test
         continue-on-error: false
