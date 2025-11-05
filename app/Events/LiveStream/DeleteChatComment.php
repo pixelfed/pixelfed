@@ -38,14 +38,4 @@ class DeleteChatComment implements ShouldBroadcast
     {
         return new Channel('live.chat.' . $this->livestream->profile_id);
     }
-
-    public function broadcastAs()
-    {
-        return 'chat.delete-message';
-    }
-
-    public function broadcastWith()
-    {
-        return ['id' => $this->chatmsg['id']];
-    }
 }

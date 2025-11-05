@@ -67,16 +67,6 @@ class GroupsLikeService
         });
     }
 
-    public static function likedBy($status)
-    {
-        $empty = [
-            'username' => null,
-            'others' => false
-        ];
-
-        return $empty;
-    }
-
     public static function count($id)
     {
         return Cache::get(self::CACHE_POST_KEY . $id, 0);

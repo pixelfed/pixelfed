@@ -151,37 +151,6 @@ class GroupService
 		];
 	}
 
-	public static function fetchRemote($url)
-	{
-		// todo: refactor this demo
-		$res = Helpers::fetchFromUrl($url);
-
-		if(!$res || !isset($res['type']) || $res['type'] != 'Group') {
-			return false;
-		}
-
-		$group = Group::whereRemoteUrl($url)->first();
-
-		if($group) {
-			return $group;
-		}
-
-		$group = new Group;
-		$group->remote_url = $res['url'];
-		$group->name = $res['name'];
-		$group->inbox_url = $res['inbox'];
-		$group->metadata = [
-			'header' => [
-				'url' => $res['icon']['image']['url']
-			]
-		];
-		$group->description = Purify::clean($res['summary']);
-		$group->local = false;
-		$group->save();
-
-		return $group->url();
-	}
-
 	public static function log(
 		string $groupId,
 		string $profileId,
@@ -213,19 +182,6 @@ class GroupService
 		// todo: allow group admins to manually remove timeout
 		$key = self::key('rejoin-timeout:gid-' . $gid . ':pid-' . $pid);
 		return Cache::put($key, 1, 86400);
-	}
-
-	public static function getMemberInboxes($id)
-	{
-		// todo: cache this, maybe add join/leave methods to this service to handle cache invalidation
-		$group = (new Group)->withoutRelations()->findOrFail($id);
-		if(!$group->local) {
-			return [];
-		}
-		$members = GroupMember::whereGroupId($id)->whereLocalProfile(false)->pluck('profile_id');
-		return Profile::find($members)->map(function($u) {
-			return $u->sharedInbox ?? $u->inbox_url;
-		})->toArray();
 	}
 
 	public static function getInteractionLimits($gid, $pid)

@@ -51,24 +51,6 @@ class Helpers
     ];
 
     /**
-     * Validate an ActivityPub object
-     */
-    public static function validateObject(array $data): bool
-    {
-        $verbs = ['Create', 'Announce', 'Like', 'Follow', 'Delete', 'Accept', 'Reject', 'Undo', 'Tombstone'];
-
-        return Validator::make($data, [
-            'type' => ['required', 'string', Rule::in($verbs)],
-            'id' => 'required|string',
-            'actor' => 'required|string|url',
-            'object' => 'required',
-            'object.type' => 'required_if:type,Create',
-            'object.attributedTo' => 'required_if:type,Create|url',
-            'published' => 'required_if:type,Create|date',
-        ])->passes();
-    }
-
-    /**
      * Validate media attachments
      */
     public static function verifyAttachments(array $data): bool
@@ -142,17 +124,6 @@ class Helpers
         }
 
         return $audience;
-    }
-
-    /**
-     * Check if user is in audience
-     */
-    public static function userInAudience(Profile $profile, array $data): bool
-    {
-        $audience = self::normalizeAudience($data);
-        $url = $profile->permalink();
-
-        return in_array($url, $audience['to']) || in_array($url, $audience['cc']);
     }
 
     /**
@@ -310,20 +281,6 @@ class Helpers
         }
 
         return false;
-    }
-
-    /**
-     * Get user agent string
-     */
-    public static function zttpUserAgent(): array
-    {
-        $version = config('pixelfed.version');
-        $url = config('app.url');
-
-        return [
-            'Accept' => 'application/activity+json',
-            'User-Agent' => "(Pixelfed/{$version}; +{$url})",
-        ];
     }
 
     public static function fetchFromUrl($url = false)
@@ -980,58 +937,6 @@ class Helpers
         if ((bool) config_cache('pixelfed.cloud_storage')) {
             MediaStoragePipeline::dispatch($media);
         }
-    }
-
-    /**
-     * Validate attachment collection
-     */
-    public static function validateAttachmentCollection(array $attachments, array $mediaTypes, array $mimeTypes): bool
-    {
-        return Validator::make($attachments, [
-            '*.type' => [
-                'required',
-                'string',
-                Rule::in($mediaTypes),
-            ],
-            '*.url' => 'required|url',
-            '*.mediaType' => [
-                'required',
-                'string',
-                Rule::in($mimeTypes),
-            ],
-            '*.name' => 'sometimes|nullable|string',
-            '*.blurhash' => 'sometimes|nullable|string|min:6|max:164',
-            '*.width' => 'sometimes|nullable|integer|min:1|max:5000',
-            '*.height' => 'sometimes|nullable|integer|min:1|max:5000',
-        ])->passes();
-    }
-
-    /**
-     * Get supported media types
-     */
-    public static function getSupportedMediaTypes(): array
-    {
-        $mimeTypes = explode(',', config_cache('pixelfed.media_types'));
-
-        return in_array('video/mp4', $mimeTypes) ?
-            ['Document', 'Image', 'Video'] :
-            ['Document', 'Image'];
-    }
-
-    /**
-     * Process specific media type attachment
-     */
-    public static function processMediaTypeAttachment(array $media, Status $status, int $order): ?Media
-    {
-        if (! self::isValidMediaType($media)) {
-            return null;
-        }
-
-        $mediaModel = new Media;
-        self::setMediaAttributes($mediaModel, $media, $status, $order);
-        $mediaModel->save();
-
-        return $mediaModel;
     }
 
     /**

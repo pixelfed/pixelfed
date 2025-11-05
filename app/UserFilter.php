@@ -29,11 +29,6 @@ class UserFilter extends Model
     		->pluck('filterable_id');
     }
 
-    public function instance()
-    {
-        return $this->belongsTo(Instance::class, 'filterable_id');
-    }
-
     public function user()
     {
         return $this->belongsTo(Profile::class, 'user_id');

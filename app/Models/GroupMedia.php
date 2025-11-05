@@ -31,9 +31,4 @@ class GroupMedia extends Model
         }
         return Storage::url($this->media_path);
     }
-
-    public function thumbnailUrl()
-    {
-        return $this->thumbnail_url;
-    }
 }

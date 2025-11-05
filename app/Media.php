@@ -25,16 +25,6 @@ class Media extends Model
         'skip_optimize' => 'boolean'
     ];
 
-    public function status()
-    {
-        return $this->belongsTo(Status::class);
-    }
-
-    public function profile()
-    {
-        return $this->belongsTo(Profile::class);
-    }
-
     public function url()
     {
         if ($this->cdn_url) {
@@ -137,17 +127,6 @@ class Media extends Model
     public function getMetadata()
     {
         return json_decode($this->metadata, true, 3);
-    }
-
-    public function getModel()
-    {
-        if (empty($this->metadata)) {
-            return false;
-        }
-        $meta = $this->getMetadata();
-        if ($meta && isset($meta['Model'])) {
-            return $meta['Model'];
-        }
     }
 
     public function getLicense()

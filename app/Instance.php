@@ -23,45 +23,12 @@ class Instance extends Model
     ];
 
     // To get all moderated instances, we need to search where (banned OR unlisted)
-    public function scopeModerated($query): void {
-        $query->where(function ($query) {
-            $query->where('banned', true)->orWhere('unlisted', true);
-        });
-    }
 
-    public function profiles()
-    {
-        return $this->hasMany(Profile::class, 'domain', 'domain');
-    }
 
     public function statuses()
     {
         return $this->hasManyThrough(
             Status::class,
-            Profile::class,
-            'domain',
-            'profile_id',
-            'domain',
-            'id'
-        );
-    }
-
-    public function reported()
-    {
-        return $this->hasManyThrough(
-            Report::class,
-            Profile::class,
-            'domain',
-            'reported_profile_id',
-            'domain',
-            'id'
-        );
-    }
-
-    public function reports()
-    {
-        return $this->hasManyThrough(
-            Report::class,
             Profile::class,
             'domain',
             'profile_id',
@@ -80,10 +47,5 @@ class Instance extends Model
             'domain',
             'id'
         );
-    }
-
-    public function getUrl()
-    {
-        return url("/i/admin/instances/show/{$this->id}");
     }
 }

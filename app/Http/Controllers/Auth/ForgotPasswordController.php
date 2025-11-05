@@ -23,32 +23,6 @@ class ForgotPasswordController extends Controller
     use SendsPasswordResetEmails;
 
     /**
-     * Create a new controller instance.
-     *
-     * @return void
-     */
-    public function __construct()
-    {
-        $this->middleware('guest');
-    }
-
-    /**
-     * Display the form to request a password reset link.
-     *
-     * @return \Illuminate\View\View
-     */
-    public function showLinkRequestForm()
-    {
-		if(config('pixelfed.bouncer.cloud_ips.ban_logins')) {
-			abort_if(BouncerService::checkIp(request()->ip()), 404);
-		}
-
-		usleep(random_int(100000, 300000));
-
-        return view('auth.passwords.email');
-    }
-
-    /**
      * Validate the email for the given request.
      *
      * @param  \Illuminate\Http\Request  $request

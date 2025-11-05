@@ -10,49 +10,7 @@ use Illuminate\Validation\Validator;
 
 class ProfileMigrationStoreRequest extends FormRequest
 {
-    /**
-     * Determine if the user is authorized to make this request.
-     */
-    public function authorize(): bool
-    {
-        if ((bool) config_cache('federation.activitypub.enabled') === false ||
-            (bool) config_cache('federation.migration') === false) {
-            return false;
-        }
-        if (! $this->user() || $this->user()->status) {
-            return false;
-        }
 
-        return true;
-    }
-
-    /**
-     * Get the validation rules that apply to the request.
-     *
-     * @return array<string, \Illuminate\Contracts\Validation\ValidationRule|array<mixed>|string>
-     */
-    public function rules(): array
-    {
-        return [
-            'acct' => 'required|email',
-            'password' => 'required|current_password',
-        ];
-    }
-
-    public function after(): array
-    {
-        return [
-            function (Validator $validator) {
-                $err = $this->validateNewAccount();
-                if ($err !== 'noerr') {
-                    $validator->errors()->add(
-                        'acct',
-                        $err
-                    );
-                }
-            },
-        ];
-    }
 
     protected function validateNewAccount()
     {

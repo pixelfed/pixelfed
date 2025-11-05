@@ -46,27 +46,6 @@ class CleanupLegacyAccountMovePipeline implements ShouldQueue
     }
 
     /**
-     * Get the middleware the job should pass through.
-     *
-     * @return array<int, object>
-     */
-    public function middleware(): array
-    {
-        return [
-            new WithoutOverlapping('process-move-cleanup-legacy-followers:'.$this->target),
-            (new ThrottlesExceptions(2, 5 * 60))->backoff(5),
-        ];
-    }
-
-    /**
-     * Determine the time at which the job should timeout.
-     */
-    public function retryUntil(): DateTime
-    {
-        return now()->addMinutes(5);
-    }
-
-    /**
      * Execute the job.
      */
     public function handle(): void

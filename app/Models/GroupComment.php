@@ -12,11 +12,6 @@ class GroupComment extends Model
 
     public $guarded = [];
 
-    public function profile()
-    {
-        return $this->belongsTo(Profile::class);
-    }
-
     public function url()
     {
         return '/group/' . $this->group_id . '/c/' . $this->id;

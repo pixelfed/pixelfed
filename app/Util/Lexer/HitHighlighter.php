@@ -71,30 +71,6 @@ class HitHighlighter extends Regex
     }
 
     /**
-     * Set the highlighting tag to surround hits with.  The default tag is 'em'.
-     *
-     * @return string The tag name.
-     */
-    public function getTag()
-    {
-        return $this->tag;
-    }
-
-    /**
-     * Set the highlighting tag to surround hits with.  The default tag is 'em'.
-     *
-     * @param string $v The tag name.
-     *
-     * @return HitHighlighter Fluid method chaining.
-     */
-    public function setTag($v)
-    {
-        $this->tag = $v;
-
-        return $this;
-    }
-
-    /**
      * Hit highlights the tweet.
      *
      * @param string $tweet       The tweet to be hit highlighted.
@@ -180,20 +156,5 @@ class HitHighlighter extends Regex
         }
 
         return $highlightTweet;
-    }
-
-    /**
-     * Hit highlights the tweet.
-     *
-     * @param array $hits An array containing the start and end index pairs
-     *                    for the highlighting.
-     *
-     * @return string The hit highlighted tweet.
-     *
-     * @deprecated since version 1.1.0
-     */
-    public function addHitHighlighting(array $hits)
-    {
-        return $this->highlight($this->tweet, $hits);
     }
 }

@@ -21,11 +21,6 @@ class FollowerController extends Controller
         $this->middleware('auth');
     }
 
-    public function store(Request $request)
-    {
-        abort(422, 'Deprecated API Endpoint, use /api/v1/accounts/{id}/follow or /api/v1/accounts/{id}/unfollow instead.');
-    }
-
     public function sendFollow($user, $target)
     {
         if($target->domain == null || $user->domain != null) {

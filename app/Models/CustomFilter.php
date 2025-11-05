@@ -62,11 +62,6 @@ class CustomFilter extends Model
 
     protected static ?int $maxUpdatesPerHour = null;
 
-    public function account()
-    {
-        return $this->belongsTo(Profile::class, 'profile_id');
-    }
-
     public function keywords()
     {
         return $this->hasMany(CustomFilterKeyword::class);
@@ -86,72 +81,6 @@ class CustomFilter extends Model
             'expires_at' => $this->expires_at,
             'filter_action' => $this->filterAction,
         ];
-    }
-
-    public function getFilterActionAttribute()
-    {
-        switch ($this->action) {
-            case 0:
-                return 'warn';
-                break;
-
-            case 1:
-                return 'hide';
-                break;
-
-            case 2:
-                return 'blur';
-                break;
-        }
-    }
-
-    public function getTitleAttribute()
-    {
-        return $this->phrase;
-    }
-
-    public function setTitleAttribute($value)
-    {
-        $this->attributes['phrase'] = $value;
-    }
-
-    public function setFilterActionAttribute($value)
-    {
-        $this->attributes['action'] = $value;
-    }
-
-    public function setIrreversibleAttribute($value)
-    {
-        $this->attributes['action'] = $value ? self::ACTION_HIDE : self::ACTION_WARN;
-    }
-
-    public function getIrreversibleAttribute()
-    {
-        return $this->action === self::ACTION_HIDE;
-    }
-
-    public function getExpiresInAttribute()
-    {
-        if ($this->expires_at === null) {
-            return null;
-        }
-
-        $now = now();
-        foreach (self::EXPIRATION_DURATIONS as $duration) {
-            if ($now->addSeconds($duration)->gte($this->expires_at)) {
-                return $duration;
-            }
-        }
-
-        return null;
-    }
-
-    public function scopeUnexpired($query)
-    {
-        return $query->where(function ($q) {
-            $q->whereNull('expires_at')
-                ->orWhere('expires_at', '>', now());
-        });
     }
 
     public function isExpired()

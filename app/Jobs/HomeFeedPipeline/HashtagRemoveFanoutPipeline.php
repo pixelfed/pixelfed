@@ -37,24 +37,6 @@ class HashtagRemoveFanoutPipeline implements ShouldQueue, ShouldBeUniqueUntilPro
     public $uniqueFor = 3600;
 
     /**
-     * Get the unique ID for the job.
-     */
-    public function uniqueId(): string
-    {
-        return 'hfp:hashtag:fanout:remove:' . $this->hid . ':' . $this->sid;
-    }
-
-    /**
-     * Get the middleware the job should pass through.
-     *
-     * @return array<int, object>
-     */
-    public function middleware(): array
-    {
-        return [(new WithoutOverlapping("hfp:hashtag:fanout:remove:{$this->hid}:{$this->sid}"))->shared()->dontRelease()];
-    }
-
-    /**
      * Create a new job instance.
      */
     public function __construct($sid, $hid)

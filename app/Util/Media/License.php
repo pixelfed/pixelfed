@@ -106,21 +106,6 @@ class License {
         return array_keys(self::get());
     }
 
-    public static function getId($index)
-    {
-        return self::get()[$index]['id'];
-    }
-
-    public static function names()
-    {
-        return collect(self::get())
-            ->map(function($v) {
-                return $v['title'];
-            })
-            ->values()
-            ->toArray();
-    }
-
     public static function nameToId($name)
     {
     	$license = collect(self::get())

@@ -44,24 +44,6 @@ class ProfileMigrationDeliverMoveActivityPipeline implements ShouldBeUniqueUntil
     public $uniqueFor = 3600;
 
     /**
-     * Get the unique ID for the job.
-     */
-    public function uniqueId(): string
-    {
-        return 'profile:migration:deliver-move-followers:id:'.$this->migration->id;
-    }
-
-    /**
-     * Get the middleware the job should pass through.
-     *
-     * @return array<int, object>
-     */
-    public function middleware(): array
-    {
-        return [(new WithoutOverlapping('profile:migration:deliver-move-followers:id:'.$this->migration->id))->shared()->dontRelease()];
-    }
-
-    /**
      * Create a new job instance.
      */
     public function __construct($migration, $oldAccount, $newAccount)

@@ -16,61 +16,6 @@ class UserFilterObserver
      */
     public $afterCommit = true;
 
-	/**
-	 * Handle the user filter "created" event.
-	 *
-	 * @param  \App\UserFilter  $userFilter
-	 * @return void
-	 */
-	public function created(UserFilter $userFilter)
-	{
-		$this->filterCreate($userFilter);
-	}
-
-	/**
-	 * Handle the user filter "updated" event.
-	 *
-	 * @param  \App\UserFilter  $userFilter
-	 * @return void
-	 */
-	public function updated(UserFilter $userFilter)
-	{
-		$this->filterCreate($userFilter);
-	}
-
-	/**
-	 * Handle the user filter "deleted" event.
-	 *
-	 * @param  \App\UserFilter  $userFilter
-	 * @return void
-	 */
-	public function deleted(UserFilter $userFilter)
-	{
-		$this->filterDelete($userFilter);
-	}
-
-	/**
-	 * Handle the user filter "restored" event.
-	 *
-	 * @param  \App\UserFilter  $userFilter
-	 * @return void
-	 */
-	public function restored(UserFilter $userFilter)
-	{
-		$this->filterCreate($userFilter);
-	}
-
-	/**
-	 * Handle the user filter "force deleted" event.
-	 *
-	 * @param  \App\UserFilter  $userFilter
-	 * @return void
-	 */
-	public function forceDeleted(UserFilter $userFilter)
-	{
-		$this->filterDelete($userFilter);
-	}
-
 	protected function filterCreate(UserFilter $userFilter)
 	{
 		if($userFilter->filterable_type !== 'App\Profile') {

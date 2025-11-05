@@ -130,15 +130,4 @@ class RemoteFollowPipeline implements ShouldQueue
             Log::warning("RemoteFollowPipeline: Failed to store profile for {$remoteUsername}: " . $e->getMessage());
         }
     }
-
-    public function sendActivity()
-    {
-        $res = $this->response;
-        $url = $res['inbox'];
-
-        $activity = Zttp::withHeaders(['Content-Type' => 'application/ld+json; profile="https://www.w3.org/ns/activitystreams"'])->post($url, [
-            'type' => 'Follow',
-            'object' => $this->follower->url(),
-        ]);
-    }
 }

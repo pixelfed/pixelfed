@@ -32,11 +32,6 @@ class Story extends Model
 
     protected $hidden = ['json'];
 
-    public function profile()
-    {
-        return $this->belongsTo(Profile::class);
-    }
-
     public function views()
     {
         return $this->hasMany(StoryView::class);
@@ -71,25 +66,6 @@ class Story extends Model
     public function bearcapUrl()
     {
         return Bearcap::encode($this->url(), $this->bearcap_token);
-    }
-
-    public function scopeToAudience($scope)
-    {
-        $res = [];
-
-        switch ($scope) {
-            case 'to':
-                $res = [
-                    $this->profile->permalink('/followers'),
-                ];
-                break;
-
-            default:
-                $res = [];
-                break;
-        }
-
-        return $res;
     }
 
     public function toAdminEntity()

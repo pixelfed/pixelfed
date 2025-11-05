@@ -125,16 +125,6 @@ class Validator extends Regex
     }
 
     /**
-     * Get the length of a short URL beginning with http:.
-     *
-     * @return int
-     */
-    public function getShortUrlLength()
-    {
-        return $this->short_url_length;
-    }
-
-    /**
      * Set the length of a short URL beginning with https:.
      *
      * @param mixed $length
@@ -146,16 +136,6 @@ class Validator extends Regex
         $this->short_url_length_https = intval($length);
 
         return $this;
-    }
-
-    /**
-     * Get the length of a short URL beginning with https:.
-     *
-     * @return int
-     */
-    public function getShortUrlLengthHttps()
-    {
-        return $this->short_url_length_https;
     }
 
     /**
@@ -185,18 +165,6 @@ class Validator extends Regex
     }
 
     /**
-     * Check whether a tweet is valid.
-     *
-     * @return bool Whether the tweet is valid.
-     *
-     * @deprecated since version 1.1.0
-     */
-    public function validateTweet()
-    {
-        return $this->isValidTweetText();
-    }
-
-    /**
      * Check whether a username is valid.
      *
      * @param string $username The username to validate.
@@ -215,18 +183,6 @@ class Validator extends Regex
         $extracted = $this->extractor->extractMentionedScreennames($username);
 
         return count($extracted) === 1 && $extracted[0] === substr($username, 1);
-    }
-
-    /**
-     * Check whether a username is valid.
-     *
-     * @return bool Whether the username is valid.
-     *
-     * @deprecated since version 1.1.0
-     */
-    public function validateUsername()
-    {
-        return $this->isValidUsername();
     }
 
     /**
@@ -252,18 +208,6 @@ class Validator extends Regex
     }
 
     /**
-     * Check whether a list is valid.
-     *
-     * @return bool Whether the list is valid.
-     *
-     * @deprecated since version 1.1.0
-     */
-    public function validateList()
-    {
-        return $this->isValidList();
-    }
-
-    /**
      * Check whether a hashtag is valid.
      *
      * @param string $hashtag The hashtag to validate.
@@ -282,18 +226,6 @@ class Validator extends Regex
         $extracted = $this->extractor->extractHashtags($hashtag);
 
         return count($extracted) === 1 && $extracted[0] === substr($hashtag, 1);
-    }
-
-    /**
-     * Check whether a hashtag is valid.
-     *
-     * @return bool Whether the hashtag is valid.
-     *
-     * @deprecated since version 1.1.0
-     */
-    public function validateHashtag()
-    {
-        return $this->isValidHashtag();
     }
 
     /**
@@ -334,21 +266,6 @@ class Validator extends Regex
     }
 
     /**
-     * Check whether a URL is valid.
-     *
-     * @param bool $unicode_domains  Consider the domain to be unicode.
-     * @param bool $require_protocol Require a protocol for valid domain?
-     *
-     * @return bool Whether the URL is valid.
-     *
-     * @deprecated since version 1.1.0
-     */
-    public function validateURL($unicode_domains = true, $require_protocol = true)
-    {
-        return $this->isValidURL(null, $unicode_domains, $require_protocol);
-    }
-
-    /**
      * Determines the length of a tweet.  Takes shortening of URLs into account.
      *
      * @param string $tweet The tweet to validate.
@@ -368,18 +285,6 @@ class Validator extends Regex
         }
 
         return $length;
-    }
-
-    /**
-     * Determines the length of a tweet.  Takes shortening of URLs into account.
-     *
-     * @return int the length of a tweet.
-     *
-     * @deprecated since version 1.1.0
-     */
-    public function getLength()
-    {
-        return $this->getTweetLength();
     }
 
     /**

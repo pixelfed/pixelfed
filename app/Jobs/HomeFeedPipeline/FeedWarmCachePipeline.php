@@ -32,24 +32,6 @@ class FeedWarmCachePipeline implements ShouldQueue, ShouldBeUniqueUntilProcessin
     public $uniqueFor = 3600;
 
     /**
-     * Get the unique ID for the job.
-     */
-    public function uniqueId(): string
-    {
-        return 'hfp:warm-cache:pid:' . $this->pid;
-    }
-
-    /**
-     * Get the middleware the job should pass through.
-     *
-     * @return array<int, object>
-     */
-    public function middleware(): array
-    {
-        return [(new WithoutOverlapping("hfp:warm-cache:pid:{$this->pid}"))->shared()->dontRelease()];
-    }
-
-    /**
      * Create a new job instance.
      */
     public function __construct($pid)

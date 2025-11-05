@@ -23,11 +23,6 @@ class Poll extends Model
 		'expires_at' => 'datetime'
 	];
 
-	public function votes()
-	{
-		return $this->hasMany(PollVote::class);
-	}
-
 	public function getTallies()
 	{
 		return $this->cached_tallies;

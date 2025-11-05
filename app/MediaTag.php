@@ -13,9 +13,4 @@ class MediaTag extends Model
         'profile_id',
         'tagged_username',
     ];
-
-    public function status()
-    {
-        return $this->belongsTo(Status::class);
-    }
 }

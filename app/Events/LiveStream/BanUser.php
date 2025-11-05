@@ -38,14 +38,4 @@ class BanUser implements ShouldBroadcast
     {
         return new Channel('live.chat.' . $this->livestream->profile_id);
     }
-
-    public function broadcastAs()
-    {
-        return 'chat.ban-user';
-    }
-
-    public function broadcastWith()
-    {
-        return ['id' => $this->profileId];
-    }
 }

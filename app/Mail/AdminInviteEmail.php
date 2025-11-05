@@ -16,18 +16,4 @@ class AdminInviteEmail extends Mailable
     public function __construct(
         public readonly AdminInvite $invite,
     ) {}
-
-    public function envelope(): Envelope
-    {
-        return new Envelope(
-            subject: 'You\'ve been invited to join '.config('app.name').'!',
-        );
-    }
-
-    public function content(): Content
-    {
-        return new Content(
-            markdown: 'emails.user.invite',
-        );
-    }
 }

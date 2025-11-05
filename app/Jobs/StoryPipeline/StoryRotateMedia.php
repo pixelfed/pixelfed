@@ -37,14 +37,6 @@ class StoryRotateMedia implements ShouldQueue
     public $timeout = 300;
 
     /**
-     * Calculate the number of seconds to wait before retrying the job.
-     */
-    public function backoff(): array
-    {
-        return [30, 60, 120];
-    }
-
-    /**
      * Create a new job instance.
      *
      * @return void
@@ -182,45 +174,5 @@ class StoryRotateMedia implements ShouldQueue
         array_push($paths, $new);
 
         return implode('/', $paths);
-    }
-
-    /**
-     * Handle a job failure.
-     */
-    public function failed(Throwable $exception)
-    {
-        if (config('app.dev_log')) {
-            Log::error('StoryRotateMedia: Job permanently failed', [
-                'story_id' => $this->story->id,
-                'error' => $exception->getMessage(),
-                'attempts' => $this->attempts(),
-            ]);
-        }
-
-        if ($this->newPath && Storage::exists($this->newPath)) {
-            try {
-                Storage::delete($this->newPath);
-                if (config('app.dev_log')) {
-                    Log::info('StoryRotateMedia: Cleaned up orphaned file', [
-                        'path' => $this->newPath,
-                    ]);
-                }
-            } catch (Exception $e) {
-                if (config('app.dev_log')) {
-                    Log::error('StoryRotateMedia: Failed to cleanup orphaned file', [
-                        'path' => $this->newPath,
-                        'error' => $e->getMessage(),
-                    ]);
-                }
-            }
-        }
-    }
-
-    /**
-     * Determine the time at which the job should timeout.
-     */
-    public function retryUntil()
-    {
-        return now()->addHours(2);
     }
 }

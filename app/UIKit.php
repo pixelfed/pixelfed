@@ -13,9 +13,4 @@ class UIKit extends Model
     	'defv',
     	'dhis'
     ];
-
-    public static function section($k)
-    {
-    	return (new self)->where('k', $k)->first()->v;
-    }
 }

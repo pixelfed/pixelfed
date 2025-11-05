@@ -11,9 +11,4 @@ class FailedJob extends Model
     const UPDATED_AT = 'failed_at';
 
     public $timestamps = 'failed_at';
-
-    public function getFailedAtAttribute($val)
-    {
-    	return Carbon::parse($val);
-    }
 }

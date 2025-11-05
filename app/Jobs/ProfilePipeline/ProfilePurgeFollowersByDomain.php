@@ -39,24 +39,6 @@ class ProfilePurgeFollowersByDomain implements ShouldQueue, ShouldBeUniqueUntilP
     public $uniqueFor = 3600;
 
     /**
-     * Get the unique ID for the job.
-     */
-    public function uniqueId(): string
-    {
-        return 'followers:v1:purge-by-domain:' . $this->pid . ':d-' . $this->domain;
-    }
-
-    /**
-     * Get the middleware the job should pass through.
-     *
-     * @return array<int, object>
-     */
-    public function middleware(): array
-    {
-        return [(new WithoutOverlapping("followers:v1:purge-by-domain:{$this->pid}:d-{$this->domain}"))->shared()->dontRelease()];
-    }
-
-    /**
      * Create a new job instance.
      */
     public function __construct($pid, $domain)

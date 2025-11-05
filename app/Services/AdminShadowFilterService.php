@@ -9,15 +9,6 @@ class AdminShadowFilterService
 {
     const CACHE_KEY = 'pf:services:asfs:';
 
-    public static function queryFilter($name = 'hide_from_public_feeds')
-    {
-        return AdminShadowFilter::whereItemType('App\Profile')
-            ->whereActive(1)
-            ->where('hide_from_public_feeds', true)
-            ->pluck('item_id')
-            ->toArray();
-    }
-
     public static function getHideFromPublicFeedsList($refresh = false)
     {
         $key = self::CACHE_KEY . 'list:hide_from_public_feeds';

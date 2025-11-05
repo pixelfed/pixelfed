@@ -22,12 +22,4 @@ class AccountInterstitial extends Model
 	{
 		return $this->belongsTo(User::class);
 	}
-
-	public function status()
-	{
-		if($this->item_type != 'App\Status') {
-			return;
-		}
-		return $this->hasOne(Status::class, 'id', 'item_id');
-	}
 }

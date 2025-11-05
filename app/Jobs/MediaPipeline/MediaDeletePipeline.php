@@ -37,24 +37,6 @@ class MediaDeletePipeline implements ShouldBeUniqueUntilProcessing, ShouldQueue
      */
     public $uniqueFor = 3600;
 
-    /**
-     * Get the unique ID for the job.
-     */
-    public function uniqueId(): string
-    {
-        return 'media:purge-job:id-'.$this->media->id;
-    }
-
-    /**
-     * Get the middleware the job should pass through.
-     *
-     * @return array<int, object>
-     */
-    public function middleware(): array
-    {
-        return [(new WithoutOverlapping("media:purge-job:id-{$this->media->id}"))->shared()->dontRelease()];
-    }
-
     public function __construct(Media $media)
     {
         $this->media = $media;

@@ -771,18 +771,4 @@ class StoryFetch implements ShouldQueue
             }
         });
     }
-
-    /**
-     * Handle job failure
-     */
-    public function failed(Exception $exception)
-    {
-        if (config('app.dev_log')) {
-            Log::error('StoryFetch job failed permanently', [
-                'activity_id' => $this->activity['id'] ?? 'unknown',
-                'error' => $exception->getMessage(),
-                'attempts' => $this->attempts(),
-            ]);
-        }
-    }
 }

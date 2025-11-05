@@ -23,8 +23,5 @@ class CollectionItem extends Model
      */
     public $incrementing = false;
     
-	public function collection()
-	{
-		return $this->belongsTo(Collection::class);
-	}
+
 }

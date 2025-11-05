@@ -95,16 +95,6 @@ class ReblogService
         return Redis::zrem(self::CACHE_KEY.$profileId, $statusId);
     }
 
-    public static function getWarmCacheCount($profileId)
-    {
-        $minId = SnowflakeService::byDate(now()->subMonths(12));
-
-        return Status::where('id', '>', $minId)
-            ->whereProfileId($profileId)
-            ->whereNotNull('reblog_of_id')
-            ->count();
-    }
-
     public static function warmCache($profileId)
     {
         Redis::del(self::CACHE_KEY.$profileId);
@@ -118,24 +108,6 @@ class ReblogService
             self::add($profileId, $post->reblog_of_id);
         }
         Cache::put(self::CACHE_SKIP_KEY.$profileId, 1, now()->addHours(24));
-    }
-
-    public static function getPostReblogs($id, $start = 0, $stop = 10)
-    {
-        if (! Redis::zcard(self::REBLOGS_KEY.$id)) {
-            return Cache::remember(self::COLDBOOT_KEY.$id, 86400, function () use ($id) {
-                return Status::whereReblogOfId($id)
-                    ->pluck('id')
-                    ->each(function ($reblog) use ($id) {
-                        self::addPostReblog($id, $reblog);
-                    })
-                    ->map(function ($reblog) {
-                        return (string) $reblog;
-                    });
-            });
-        }
-
-        return Redis::zrange(self::REBLOGS_KEY.$id, $start, $stop);
     }
 
     public static function addPostReblog($parentId, $reblogId)

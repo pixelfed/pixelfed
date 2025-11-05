@@ -35,14 +35,4 @@ class StreamStart implements ShouldBroadcast
     {
         return new Channel('live.chat.' . $this->id);
     }
-
-    public function broadcastAs()
-    {
-        return 'stream.start';
-    }
-
-    public function broadcastWith()
-    {
-        return ['ts' => time() ];
-    }
 }

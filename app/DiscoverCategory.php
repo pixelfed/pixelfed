@@ -19,37 +19,15 @@ class DiscoverCategory extends Model
     	return url('/discover/c/'.$this->slug);
     }
 
-    public function editUrl()
-    {
-    	return url('/i/admin/discover/category/edit/' . $this->id);
-    }
-
     public function thumb()
     {
     	return $this->media->thumb();
-    }
-
-    public function mediaUrl()
-    {
-        return $this->media->url();
     }
 
 
     public function items()
     {
     	return $this->hasMany(DiscoverCategoryHashtag::class, 'discover_category_id');
-    }
-
-    public function hashtags()
-    {
-    	return $this->hasManyThrough(
-    		Hashtag::class,
-    		DiscoverCategoryHashtag::class,
-    		'discover_category_id',
-    		'id',
-    		'id',
-    		'hashtag_id'
-    	);
     }
 
     public function posts()

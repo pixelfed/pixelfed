@@ -40,11 +40,6 @@ class Profile extends Model
 		return $this->remote_url ?? url($this->username . $suffix);
 	}
 
-	public function localUrl($suffix = null)
-	{
-		return url($this->username . $suffix);
-	}
-
 	public function permalink($suffix = null)
 	{
 		return $this->remote_url ?? url('users/' . $this->username . $suffix);
@@ -134,27 +129,9 @@ class Profile extends Model
 		return Follower::whereProfileId($profile->id)->whereFollowingId($this->id)->exists();
 	}
 
-	public function bookmarks()
-	{
-		return $this->belongsToMany(
-			Status::class,
-			'bookmarks',
-			'profile_id',
-			'status_id'
-		);
-	}
-
 	public function likes()
 	{
 		return $this->hasMany(Like::class);
-	}
-
-	public function avatar()
-	{
-		return $this->hasOne(Avatar::class)->withDefault([
-			'media_path' => 'public/avatars/default.jpg',
-			'change_count' => 0
-		]);
 	}
 
 	public function avatarUrl()
@@ -208,10 +185,7 @@ class Profile extends Model
 	}
 
 	// deprecated
-	public function recommendFollowers()
-	{
-		return collect([]);
-	}
+
 
 	public function keyId()
 	{
@@ -254,11 +228,6 @@ class Profile extends Model
 		});
 	}
 
-	public function reports()
-	{
-		return $this->hasMany(Report::class, 'profile_id');
-	}
-
 	public function media()
 	{
 		return $this->hasMany(Media::class, 'profile_id');
@@ -269,62 +238,9 @@ class Profile extends Model
 		return $this->inbox_url ?? $this->permalink('/inbox');
 	}
 
-	public function outboxUrl()
-	{
-		return $this->outbox_url ?? $this->permalink('/outbox');
-	}
-
-	public function sharedInbox()
-	{
-		return $this->sharedInbox ?? $this->inboxUrl();
-	}
-
 	public function getDefaultScope()
 	{
 		return $this->is_private == true ? 'private' : 'public';
-	}
-
-	public function getAudience($scope = false)
-	{
-		if($this->remote_url) {
-			return [];
-		}
-		$scope = $scope ?? $this->getDefaultScope();
-		$audience = [];
-		switch ($scope) {
-			case 'public':
-				$audience = [
-					'to' => [
-						'https://www.w3.org/ns/activitystreams#Public'
-					],
-					'cc' => [
-						$this->permalink('/followers')
-					]
-				];
-			break;
-
-			case 'unlisted':
-				$audience = [
-					'to' => [
-					],
-					'cc' => [
-						'https://www.w3.org/ns/activitystreams#Public',
-						$this->permalink('/followers')
-					]
-				];
-			break;
-
-			case 'private':
-				$audience = [
-					'to' => [
-						$this->permalink('/followers')
-					],
-					'cc' => [
-					]
-				];
-			break;
-		}
-		return $audience;
 	}
 
 	public function getAudienceInbox($scope = 'public')
@@ -332,31 +248,9 @@ class Profile extends Model
 		return FollowerService::audience($this->id, $scope);
 	}
 
-	public function circles()
-	{
-		return $this->hasMany(Circle::class);
-	}
-
-	public function hashtags()
-	{
-		return $this->hasManyThrough(
-			Hashtag::class,
-			StatusHashtag::class,
-			'profile_id',
-			'id',
-			'id',
-			'hashtag_id'
-		);
-	}
-
 	public function hashtagFollowing()
 	{
 		return $this->hasMany(HashtagFollow::class);
-	}
-
-	public function collections()
-	{
-		return $this->hasMany(Collection::class);
 	}
 
 	public function hasFollowRequestById(int $id)
@@ -364,20 +258,5 @@ class Profile extends Model
 		return FollowRequest::whereFollowerId($id)
 			->whereFollowingId($this->id)
 			->exists();
-	}
-
-	public function stories()
-	{
-		return $this->hasMany(Story::class);
-	}
-
-	public function reported()
-	{
-		return $this->hasMany(Report::class, 'object_id');
-	}
-
-	public function aliases()
-	{
-		return $this->hasMany(ProfileAlias::class);
 	}
 }

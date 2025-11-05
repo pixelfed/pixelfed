@@ -14,25 +14,4 @@ class CustomFilterKeyword extends Model
     protected $casts = [
         'whole_word' => 'boolean',
     ];
-
-    public function customFilter()
-    {
-        return $this->belongsTo(CustomFilter::class);
-    }
-
-    public function setKeywordAttribute($value)
-    {
-        $this->attributes['keyword'] = mb_strtolower(trim($value));
-    }
-
-    public function toRegex()
-    {
-        $pattern = preg_quote($this->keyword, '/');
-
-        if ($this->whole_word) {
-            $pattern = '\b'.$pattern.'\b';
-        }
-
-        return '/'.$pattern.'/i';
-    }
 }

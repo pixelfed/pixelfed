@@ -6,12 +6,7 @@ use Stevebauman\Purify\Facades\Purify;
 
 class SanitizeService
 {
-    public function purify($html)
-    {
-        $cleaned = Purify::clean($html);
 
-        return $cleaned;
-    }
 
     public function html($html)
     {

@@ -294,18 +294,6 @@ class Inbox
 
     }
 
-    public function handlePollCreate()
-    {
-        $activity = $this->payload['object'];
-        $actor = $this->actorFirstOrCreate($this->payload['actor']);
-        if (! $actor || $actor->domain == null) {
-            return;
-        }
-        $url = isset($activity['url']) ? $activity['url'] : $activity['id'];
-        Helpers::statusFirstOrFetch($url);
-
-    }
-
     public function handleNoteCreate()
     {
         $activity = $this->payload['object'];

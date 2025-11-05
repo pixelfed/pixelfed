@@ -321,22 +321,4 @@ class AccountService
             return $formatter->format($num);
         }
     }
-
-    public static function getMetaDescription($id)
-    {
-        $account = self::get($id, true);
-
-        if (! $account) {
-            return '';
-        }
-
-        $posts = self::formatNumber($account['statuses_count']).' Posts, ';
-        $following = self::formatNumber($account['following_count']).' Following, ';
-        $followers = self::formatNumber($account['followers_count']).' Followers';
-        $note = $account['note'] && strlen($account['note']) ?
-            ' · '.\Purify::clean(strip_tags(str_replace("\n", '', str_replace("\r", '', $account['note'])))) :
-            '';
-
-        return $posts.$following.$followers.$note;
-    }
 }

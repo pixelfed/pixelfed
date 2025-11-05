@@ -13,9 +13,4 @@ class HashtagFollow extends Model
     ];
 
     const MAX_LIMIT = 25;
-
-    public function hashtag()
-    {
-    	return $this->belongsTo(Hashtag::class);
-    }
 }

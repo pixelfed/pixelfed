@@ -27,11 +27,6 @@ class Circle extends Model
     	);
     }
 
-    public function owner()
-    {
-    	return $this->belongsTo(Profile::class, 'profile_id');
-    }
-
     public function url()
     {
         return url("/i/circle/show/{$this->id}");

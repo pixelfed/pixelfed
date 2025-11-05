@@ -25,18 +25,6 @@ class InstanceService
 
     const CACHE_KEY_API_PEERS_LIST = 'pf:services:instance:api:peers:list:v0';
 
-    public function __construct()
-    {
-        ini_set('memory_limit', config('pixelfed.memory_limit', '1024M'));
-    }
-
-    public static function getByDomain($domain)
-    {
-        return Cache::remember(self::CACHE_KEY_BY_DOMAIN.$domain, 3600, function () use ($domain) {
-            return Instance::whereDomain($domain)->first();
-        });
-    }
-
     public static function getBannedDomains()
     {
         return Cache::remember(self::CACHE_KEY_BANNED_DOMAINS, 1209600, function () {

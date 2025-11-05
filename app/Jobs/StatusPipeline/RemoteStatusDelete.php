@@ -60,24 +60,6 @@ class RemoteStatusDelete implements ShouldBeUniqueUntilProcessing, ShouldQueue
     public $uniqueFor = 3600;
 
     /**
-     * Get the unique ID for the job.
-     */
-    public function uniqueId(): string
-    {
-        return 'status:remote:delete:'.$this->status->id;
-    }
-
-    /**
-     * Get the middleware the job should pass through.
-     *
-     * @return array<int, object>
-     */
-    public function middleware(): array
-    {
-        return [(new WithoutOverlapping("status-remote-delete-{$this->status->id}"))->shared()->dontRelease()];
-    }
-
-    /**
      * Create a new job instance.
      *
      * @return void

@@ -40,14 +40,6 @@ class FetchNodeinfoPipeline implements ShouldQueue, ShouldBeUniqueUntilProcessin
     public $uniqueFor = 14400;
 
     /**
-     * Get the unique ID for the job.
-     */
-    public function uniqueId(): string
-    {
-        return $this->instance->id;
-    }
-
-    /**
      * Execute the job.
      *
      * @return void

@@ -26,14 +26,6 @@ class Classifier
 	private bool $uneven = false;
 
 	/**
-	 * @param callable(string): array<int, string> $tokenizer
-	 */
-	public function setTokenizer(callable $tokenizer): void
-	{
-		$this->tokenizer = $tokenizer;
-	}
-
-	/**
 	 * @return Collection<int, string>
 	 */
 	public function tokenize(string $string): Collection
@@ -88,16 +80,6 @@ class Classifier
 	{
 		/** @var string */
 		return $this->guess($statement)->keys()->first();
-	}
-
-	/**
-	 * @return self
-	 */
-	public function uneven(bool $enabled = false): self
-	{
-		$this->uneven = $enabled;
-
-		return $this;
 	}
 
 	/**

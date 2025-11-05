@@ -24,34 +24,8 @@ class SuggestionService {
 		return Redis::zrem(self::CACHE_KEY, $val);
 	}
 
-	public static function add($val)
-	{
-		return self::set($val);
-	}
-
-	public static function rem($val)
-	{
-		return self::del($val);
-	}
-
 	public static function count()
 	{
 		return Redis::zcount(self::CACHE_KEY, '-inf', '+inf');
-	}
-
-	public static function warmCache($force = false)
-	{
-		if(self::count() == 0 || $force == true) {
-			$ids = Profile::whereNull('domain')
-				->whereIsSuggestable(true)
-				->whereIsPrivate(false)
-				->whereHas('statuses')
-				->pluck('id');
-			foreach($ids as $id) {
-				self::set($id);
-			}
-			return 1;
-		}
-		return 0;
 	}
 }

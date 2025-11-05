@@ -30,11 +30,6 @@ class CollectionService
 		return Redis::zrem(self::CACHE_KEY . 'items:' . $id, $sid);
 	}
 
-	public static function clearItems($id)
-	{
-		return Redis::del(self::CACHE_KEY . 'items:' . $id);
-	}
-
 	public static function coldBootItems($id)
 	{
 		return CollectionItem::whereCollectionId($id)

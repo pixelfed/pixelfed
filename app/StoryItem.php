@@ -28,11 +28,6 @@ class StoryItem extends Model
 
 	protected $visible = ['id'];
 
-	public function story()
-	{
-		return $this->belongsTo(Story::class);
-	}
-
 	public function url()
 	{
 		return url(Storage::url($this->media_path));

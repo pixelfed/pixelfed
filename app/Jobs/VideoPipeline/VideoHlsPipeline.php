@@ -36,24 +36,6 @@ class VideoHlsPipeline implements ShouldQueue, ShouldBeUniqueUntilProcessing
     public $uniqueFor = 3600;
 
     /**
-     * Get the unique ID for the job.
-     */
-    public function uniqueId(): string
-    {
-        return 'media:video-hls:id-' . $this->media->id;
-    }
-
-    /**
-     * Get the middleware the job should pass through.
-     *
-     * @return array<int, object>
-     */
-    public function middleware(): array
-    {
-        return [(new WithoutOverlapping("media:video-hls:id-{$this->media->id}"))->shared()->dontRelease()];
-    }
-
-    /**
      * Create a new job instance.
      */
     public function __construct($media)

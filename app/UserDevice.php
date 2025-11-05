@@ -21,14 +21,4 @@ class UserDevice extends Model
     {
     	return $this->belongsTo(User::class);
     }
-
-    public function getUserAgent()
-    {
-        if(!$this->user_agent) {
-            return 'Unknown';
-        }
-        $agent = new Agent();
-        $agent->setUserAgent($this->user_agent);
-        return $agent;
-    }
 }

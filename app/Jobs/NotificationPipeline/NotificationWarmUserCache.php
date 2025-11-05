@@ -63,14 +63,6 @@ class NotificationWarmUserCache implements ShouldBeUnique, ShouldQueue
     }
 
     /**
-     * Get the unique ID for the job.
-     */
-    public function uniqueId(): string
-    {
-        return 'notifications:profile_warm_cache:'.$this->pid;
-    }
-
-    /**
      * Execute the job.
      */
     public function handle(): void

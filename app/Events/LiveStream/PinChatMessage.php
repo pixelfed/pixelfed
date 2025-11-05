@@ -38,14 +38,4 @@ class PinChatMessage implements ShouldBroadcast
     {
         return new Channel('live.chat.' . $this->livestream->profile_id);
     }
-
-    public function broadcastAs()
-    {
-        return 'chat.pin-message';
-    }
-
-    public function broadcastWith()
-    {
-        return $this->chatmsg;
-    }
 }

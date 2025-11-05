@@ -20,29 +20,4 @@ class Notification extends Model
 
     protected $guarded = [];
 
-    public function actor()
-    {
-        return $this->belongsTo(Profile::class, 'actor_id', 'id');
-    }
-
-    public function profile()
-    {
-        return $this->belongsTo(Profile::class, 'profile_id', 'id');
-    }
-
-    public function item()
-    {
-        return $this->morphTo();
-    }
-
-    public function status()
-    {
-        return $this->belongsTo(Status::class, 'item_id', 'id');
-    }
-
-    public function tag()
-    {
-        return $this->hasOne(MediaTag::class, 'item_id', 'id');
-    }
-
 }

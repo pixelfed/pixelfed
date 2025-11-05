@@ -31,24 +31,6 @@ class AvatarStorageLargePurge implements ShouldQueue, ShouldBeUniqueUntilProcess
     public $uniqueFor = 3600;
 
     /**
-     * Get the unique ID for the job.
-     */
-    public function uniqueId(): string
-    {
-        return 'avatar:storage:lg-purge:' . $this->avatar->profile_id;
-    }
-
-    /**
-     * Get the middleware the job should pass through.
-     *
-     * @return array<int, object>
-     */
-    public function middleware(): array
-    {
-        return [(new WithoutOverlapping("avatar-storage-purge:{$this->avatar->profile_id}"))->shared()->dontRelease()];
-    }
-
-    /**
      * Create a new job instance.
      */
     public function __construct(Avatar $avatar)

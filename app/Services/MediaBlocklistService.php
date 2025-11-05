@@ -21,24 +21,4 @@ class MediaBlocklistService
 		$hashes = self::get();
 		return in_array($hash, $hashes) == true;
 	}
-
-	public static function remove($hash)
-	{
-		if(!self::exists($hash)) {
-			return;
-		}
-		MediaBlocklist::whereSha256($hash)->delete();
-		return;
-	}
-
-	public static function add($hash, $metadata)
-	{
-		$m = new MediaBlocklist;
-		$m->sha256 = $hash;
-		$m->active = true;
-		$m->metadata = json_encode($metadata);
-		$m->save();
-
-		return $m;
-	}
 }

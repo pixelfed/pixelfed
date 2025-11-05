@@ -51,12 +51,6 @@ class Extractor extends Regex
         return new self($tweet);
     }
 
-    public function setActiveUsersOnly($active)
-    {
-    	$this->activeUsersOnly = $active;
-    	return $this;
-    }
-
     /**
      * Reads in a tweet to be parsed and extracts elements from it.
      *
@@ -132,19 +126,6 @@ class Extractor extends Regex
         }
 
         return array_slice($hashtagsOnly, 0, Status::MAX_HASHTAGS);
-    }
-
-    /**
-     * Extracts all the cashtags from the tweet.
-     *
-     * @param string $tweet The tweet to extract.
-     *
-     * @return array The cashtag elements in the tweet.
-     */
-    public function extractCashtags($tweet = null)
-    {
-        $cashtagsOnly = [];
-        return $cashtagsOnly;
     }
 
     /**
@@ -499,18 +480,6 @@ class Extractor extends Regex
         }
 
         return array_slice($results, 0, Status::MAX_MENTIONS);
-    }
-
-    /**
-     * Extracts all the usernames and the indices they occur at from the tweet.
-     *
-     * @return array The username elements in the tweet.
-     *
-     * @deprecated since version 1.1.0
-     */
-    public function extractMentionedUsernamesOrListsWithIndices()
-    {
-        return $this->extractMentionsOrListsWithIndices();
     }
 
     /**

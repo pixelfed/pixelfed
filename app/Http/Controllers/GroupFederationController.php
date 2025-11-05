@@ -13,13 +13,7 @@ use Illuminate\Support\Facades\Cache;
 
 class GroupFederationController extends Controller
 {
-    public function getGroupObject(Request $request, $id)
-    {
-        $group = Group::whereLocal(true)->whereActivitypub(true)->findOrFail($id);
-        $res = $this->showGroupObject($group);
 
-        return response()->json($res, 200, [], JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES);
-    }
 
     public function showGroupObject($group)
     {
@@ -65,43 +59,5 @@ class GroupFederationController extends Controller
 
             return $res;
         });
-    }
-
-    public function getStatusObject(Request $request, $gid, $sid)
-    {
-        $group = Group::whereLocal(true)->whereActivitypub(true)->findOrFail($gid);
-        $gp = GroupPost::whereGroupId($gid)->findOrFail($sid);
-        $status = Status::findOrFail($gp->status_id);
-        // permission check
-        $content = $status->caption ? Autolink::create()->autolink($status->caption) : null;
-        $res = [
-            '@context' => 'https://www.w3.org/ns/activitystreams',
-            'id' => $gp->url(),
-
-            'type' => 'Note',
-
-            'summary' => null,
-            'content' => $content,
-            'inReplyTo' => null,
-
-            'published' => $status->created_at->toAtomString(),
-            'url' => $gp->url(),
-            'attributedTo' => $status->profile->permalink(),
-            'to' => [
-                'https://www.w3.org/ns/activitystreams#Public',
-                $group->permalink('/followers'),
-            ],
-            'cc' => [],
-            'sensitive' => (bool) $status->is_nsfw,
-            'attachment' => MediaService::activitypub($status->id),
-            'target' => [
-                'type' => 'Collection',
-                'id' => $group->permalink('/wall'),
-                'attributedTo' => $group->permalink(),
-            ],
-        ];
-
-        // ksort($res);
-        return response()->json($res, 200, [], JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES);
     }
 }

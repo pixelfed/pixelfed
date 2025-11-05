@@ -16,11 +16,6 @@ class Contact extends Model
         return $this->belongsTo(User::class);
     }
 
-    public function adminUrl()
-    {
-        return url('/i/admin/messages/show/'.$this->id);
-    }
-
     public function userResponseUrl()
     {
         return url('/i/contact-admin-response/'.$this->id);

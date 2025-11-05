@@ -246,16 +246,6 @@ class NotificationService
         return Redis::zrem(self::CACHE_KEY.$id, $val);
     }
 
-    public static function add($id, $val)
-    {
-        return self::set($id, $val);
-    }
-
-    public static function rem($id, $val)
-    {
-        return self::del($id, $val);
-    }
-
     public static function count($id)
     {
         return Redis::zcount(self::CACHE_KEY.$id, '-inf', '+inf');

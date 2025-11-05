@@ -16,54 +16,7 @@ use App\Services\FollowerService;
 
 class UserObserver
 {
-    /**
-     * Handle the notification "created" event.
-     *
-     * @param  \App\User $user
-     * @return void
-     */
-    public function created(User $user): void
-    {
-        $this->handleUser($user);
-    }
 
-    /**
-     * Listen to the User saved event.
-     *
-     * @param \App\User $user
-     *
-     * @return void
-     */
-    public function saved(User $user)
-    {
-        $this->handleUser($user);
-    }
-
-    /**
-     * Listen to the User updated event.
-     *
-     * @param \App\User $user
-     *
-     * @return void
-     */
-    public function updated(User $user): void
-    {
-        $this->handleUser($user);
-        if($user->profile) {
-            $this->applyDefaultDomainBlocks($user);
-        }
-    }
-
-    /**
-     * Handle the user "deleted" event.
-     *
-     * @param  \App\User $user
-     * @return void
-     */
-    public function deleted(User $user)
-    {
-        FollowerService::delCache($user->profile_id);
-    }
 
     protected function handleUser($user)
     {

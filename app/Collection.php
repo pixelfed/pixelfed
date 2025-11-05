@@ -21,11 +21,6 @@ class Collection extends Model
 
     public $dates = ['published_at'];
 
-	public function profile()
-	{
-		return $this->belongsTo(Profile::class);
-	}
-
     public function items()
     {
         return $this->hasMany(CollectionItem::class);

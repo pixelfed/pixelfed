@@ -35,24 +35,6 @@ class FeedUnfollowPipeline implements ShouldQueue, ShouldBeUniqueUntilProcessing
     public $uniqueFor = 3600;
 
     /**
-     * Get the unique ID for the job.
-     */
-    public function uniqueId(): string
-    {
-        return 'hts:feed:remove:follows:aid:' . $this->actorId . ':fid:' . $this->followingId;
-    }
-
-    /**
-     * Get the middleware the job should pass through.
-     *
-     * @return array<int, object>
-     */
-    public function middleware(): array
-    {
-        return [(new WithoutOverlapping("hts:feed:remove:follows:aid:{$this->actorId}:fid:{$this->followingId}"))->shared()->dontRelease()];
-    }
-
-    /**
      * Create a new job instance.
      */
     public function __construct($actorId, $followingId)

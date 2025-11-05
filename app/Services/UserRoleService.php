@@ -29,11 +29,6 @@ class UserRoleService
         return self::defaultRoles();
     }
 
-    public static function roleKeys()
-    {
-        return array_keys(self::defaultRoles());
-    }
-
     public static function defaultRoles()
     {
         return [

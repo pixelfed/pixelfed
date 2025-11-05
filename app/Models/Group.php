@@ -42,11 +42,6 @@ class Group extends Model
 		return $this->hasMany(GroupMember::class);
 	}
 
-	public function admin()
-	{
-		return $this->belongsTo(Profile::class, 'profile_id');
-	}
-
 	public function isMember($id = false)
 	{
 		$id = $id ?? request()->user()->profile_id;

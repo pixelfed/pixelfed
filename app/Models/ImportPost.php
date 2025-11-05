@@ -15,9 +15,4 @@ class ImportPost extends Model
         'creation_date' => 'datetime',
         'metadata' => 'json'
     ];
-
-    public function status()
-    {
-        return $this->hasOne(Status::class, 'id', 'status_id');
-    }
 }

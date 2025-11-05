@@ -79,22 +79,6 @@ class FollowerService
         return Redis::zrevrange(self::FOLLOWING_KEY.$id, $start, $stop);
     }
 
-    public static function followersPaginate($id, $page = 1, $limit = 10)
-    {
-        $start = $page == 1 ? 0 : $page * $limit - $limit;
-        $end = $start + ($limit - 1);
-
-        return self::followers($id, $start, $end);
-    }
-
-    public static function followingPaginate($id, $page = 1, $limit = 10)
-    {
-        $start = $page == 1 ? 0 : $page * $limit - $limit;
-        $end = $start + ($limit - 1);
-
-        return self::following($id, $start, $end);
-    }
-
     public static function followerCount($id, $warmCache = true)
     {
         if ($warmCache) {
@@ -356,30 +340,6 @@ class FollowerService
             'next_cursor' => $mutuals['next_cursor'],
             'total_count' => $mutuals['total_count'],
         ];
-    }
-
-    /**
-     * Get mutual count efficiently using Redis intersection
-     *
-     * @param  int  $profileId
-     * @return int
-     */
-    public static function getMutualCount($profileId)
-    {
-        self::cacheSyncCheck($profileId, 'followers');
-        self::cacheSyncCheck($profileId, 'following');
-
-        $followingKey = self::FOLLOWING_KEY.$profileId;
-        $followersKey = self::FOLLOWERS_KEY.$profileId;
-        $mutualsKey = self::FOLLOWERS_MUTUALS_KEY.$profileId;
-
-        $ttl = Redis::ttl($mutualsKey);
-        if ($ttl === -2 || $ttl < 300) {
-            Redis::zinterstore($mutualsKey, [$followingKey, $followersKey]);
-            Redis::expire($mutualsKey, 7200);
-        }
-
-        return Redis::zcard($mutualsKey);
     }
 
     public static function delCache($id)

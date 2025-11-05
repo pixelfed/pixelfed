@@ -26,42 +26,4 @@ class ConfirmAppEmail extends Mailable
         $this->verify = $verify;
         $this->appUrl = $url;
     }
-
-    /**
-     * Get the message envelope.
-     *
-     * @return \Illuminate\Mail\Mailables\Envelope
-     */
-    public function envelope()
-    {
-        return new Envelope(
-            subject: 'Complete Account Registration',
-        );
-    }
-
-    /**
-     * Get the message content definition.
-     *
-     * @return \Illuminate\Mail\Mailables\Content
-     */
-    public function content()
-    {
-        return new Content(
-            markdown: 'emails.confirm_app_email',
-            with: [
-                'verify' => $this->verify,
-                'appUrl' => $this->appUrl
-            ],
-        );
-    }
-
-    /**
-     * Get the attachments for the message.
-     *
-     * @return array
-     */
-    public function attachments()
-    {
-        return [];
-    }
 }

@@ -35,11 +35,6 @@ class AdminInvite extends Model
         return url('/auth/invite/a/'.$this->invite_code);
     }
 
-    public function isActive(): bool
-    {
-        return $this->hasUsesRemaining() && ! $this->hasExpired();
-    }
-
     public function hasExpired(): bool
     {
         return $this->expires_at?->isPast() ?? false;

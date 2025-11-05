@@ -29,23 +29,8 @@ class NewMention implements ShouldBroadcastNow
         $this->data = $data;
     }
 
-    public function broadcastAs()
-    {
-        return 'notification.new.mention';
-    }
-
     public function broadcastOn()
     {
         return new PrivateChannel('App.User.' . $this->user->id);
-    }
-
-    public function broadcastWith()
-    {
-        return ['id' => $this->user->id];
-    }
-
-    public function via()
-    {
-        return 'broadcast';
     }
 }

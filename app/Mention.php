@@ -19,14 +19,4 @@ class Mention extends Model
     ];
 
     protected $guarded = [];
-
-    public function profile()
-    {
-        return $this->belongsTo(Profile::class, 'profile_id', 'id');
-    }
-
-    public function status()
-    {
-        return $this->belongsTo(Status::class, 'status_id', 'id');
-    }
 }

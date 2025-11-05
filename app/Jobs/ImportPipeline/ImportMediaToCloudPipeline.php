@@ -35,24 +35,6 @@ class ImportMediaToCloudPipeline implements ShouldQueue, ShouldBeUniqueUntilProc
     public $uniqueFor = 3600;
 
     /**
-     * Get the unique ID for the job.
-     */
-    public function uniqueId(): string
-    {
-        return 'import-media-to-cloud-pipeline:ip-id:' . $this->importPost->id;
-    }
-
-    /**
-     * Get the middleware the job should pass through.
-     *
-     * @return array<int, object>
-     */
-    public function middleware(): array
-    {
-        return [(new WithoutOverlapping("import-media-to-cloud-pipeline:ip-id:{$this->importPost->id}"))->shared()->dontRelease()];
-    }
-
-    /**
     * Delete the job if its models no longer exist.
     *
     * @var bool

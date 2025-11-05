@@ -47,37 +47,4 @@ class GroupPostService
     {
         return Cache::forget(self::key($gid, $pid));
     }
-
-    public function getStatus(Request $request)
-    {
-        $gid = $request->input('gid');
-        $sid = $request->input('sid');
-        $pid = optional($request->user())->profile_id ?? false;
-
-        $group = Group::findOrFail($gid);
-
-        if($group->is_private) {
-            abort_if(!$group->isMember($pid), 404);
-        }
-
-        $gp = GroupPost::whereGroupId($group->id)->whereId($sid)->firstOrFail();
-
-        $status = GroupPostService::get($gp['group_id'], $gp['id']);
-        if(!$status) {
-            return false;
-        }
-        $status['reply_count'] = $gp['reply_count'];
-        $status['favourited'] = (bool) GroupsLikeService::liked($pid, $gp['id']);
-        $status['favourites_count'] = GroupsLikeService::count($gp['id']);
-        $status['pf_type'] = $gp['type'];
-        $status['visibility'] = 'public';
-        $status['url'] = $gp->url();
-        $status['account']['url'] = url("/groups/{$gp->group_id}/user/{$gp->profile_id}");
-
-        // if($gp['type'] == 'poll') {
-        //     $status['poll'] = PollService::get($status['id']);
-        // }
-
-        return $status;
-    }
 }

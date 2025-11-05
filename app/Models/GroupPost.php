@@ -30,26 +30,6 @@ class GroupPost extends Model
         'is_nsfw'
     ];
 
-	public function mediaPath()
-	{
-		return 'public/g/_v1/' . $this->group_id . '/' . $this->id;
-	}
-
-	public function group()
-	{
-		return $this->belongsTo(Group::class);
-	}
-
-	public function status()
-	{
-		return $this->belongsTo(Status::class);
-	}
-
-    public function profile()
-    {
-        return $this->belongsTo(Profile::class);
-    }
-
 	public function url()
 	{
         return '/groups/' . $this->group_id . '/p/' . $this->id;

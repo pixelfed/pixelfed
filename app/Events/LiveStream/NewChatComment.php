@@ -38,14 +38,4 @@ class NewChatComment implements ShouldBroadcast
     {
         return new Channel('live.chat.' . $this->livestream->profile_id);
     }
-
-    public function broadcastAs()
-    {
-        return 'chat.new-message';
-    }
-
-    public function broadcastWith()
-    {
-        return ['msg' => $this->chatmsg];
-    }
 }

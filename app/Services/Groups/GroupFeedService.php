@@ -40,18 +40,6 @@ class GroupFeedService
         ]));
     }
 
-    public static function getRankedMinId($gid, $end = null, $limit = 10)
-    {
-        if(!$end) {
-            return [];
-        }
-
-        return array_keys(Redis::zrevrangebyscore(self::CACHE_KEY . $gid, '+inf', $end, [
-            'withscores' => true,
-            'limit' => [0, $limit]
-        ]));
-    }
-
     public static function add($gid, $val)
     {
         if(self::count($gid) > self::FEED_LIMIT) {

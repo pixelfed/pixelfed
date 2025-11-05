@@ -13,9 +13,4 @@ class UserDomainBlock extends Model
     protected $guarded = [];
 
     public $timestamps = false;
-
-    public function profile()
-    {
-        return $this->belongsTo(Profile::class, 'profile_id');
-    }
 }

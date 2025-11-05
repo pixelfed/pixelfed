@@ -11,11 +11,6 @@ class NotificationAppGatewayService
 {
     const GATEWAY_SUPPORT_CHECK = 'px:nags:gateway-support-check';
 
-    public static function config()
-    {
-        return config('instance.notifications.nag');
-    }
-
     public static function enabled()
     {
         if ((bool) config('instance.notifications.nag.enabled') === false) {

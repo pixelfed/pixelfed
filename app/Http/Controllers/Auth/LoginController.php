@@ -36,25 +36,6 @@ class LoginController extends Controller
     protected $decayMinutes = 60;
 
     /**
-     * Create a new controller instance.
-     *
-     * @return void
-     */
-    public function __construct()
-    {
-        $this->middleware('guest')->except('logout');
-    }
-
-    public function showLoginForm()
-    {
-		if(config('pixelfed.bouncer.cloud_ips.ban_logins')) {
-			abort_if(BouncerService::checkIp(request()->ip()), 404);
-		}
-
-        return view('auth.login');
-    }
-
-    /**
      * Validate the user login request.
      *
      * @param \Illuminate\Http\Request $request

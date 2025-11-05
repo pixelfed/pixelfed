@@ -38,19 +38,6 @@ class MoveSendUndoFollowPipeline implements ShouldQueue
     public $maxExceptions = 3;
 
     /**
-     * Get the middleware the job should pass through.
-     *
-     * @return array<int, object>
-     */
-    public function middleware(): array
-    {
-        return [
-            new WithoutOverlapping('move-send-unfollow:'.$this->follower->id.':actor:'.$this->actor),
-            (new ThrottlesExceptions(2, 5 * 60))->backoff(5),
-        ];
-    }
-
-    /**
      * Create a new job instance.
      */
     public function __construct($follower, $targetInbox, $targetPid, $actor)

@@ -28,9 +28,4 @@ class Avatar extends Model
         'media_path',
         'size',
     ];
-
-    public function profile()
-    {
-    	return $this->belongsTo(Profile::class);
-    }
 }

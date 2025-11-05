@@ -16,18 +16,4 @@ class AdminShadowFilter extends Model
     protected $casts = [
         'created_at' => 'datetime'
     ];
-
-    public function account()
-    {
-        if($this->item_type === 'App\Profile') {
-            return AccountService::get($this->item_id, true);
-        }
-
-        return;
-    }
-
-    public function profile()
-    {
-        return $this->belongsTo(Profile::class, 'item_id');
-    }
 }

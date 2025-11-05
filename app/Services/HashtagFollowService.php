@@ -32,11 +32,6 @@ class HashtagFollowService
 		return Redis::zadd(self::CACHE_KEY . $hid, $pid, $pid);
 	}
 
-	public static function rem($hid, $pid)
-	{
-		return Redis::zrem(self::CACHE_KEY . $hid, $pid);
-	}
-
 	public static function get($hid)
 	{
 		return Redis::zrange(self::CACHE_KEY . $hid, 0, -1);

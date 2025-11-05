@@ -26,16 +26,6 @@ class FollowServiceWarmCache implements ShouldQueue
 	public $timeout = 5000;
 	public $failOnTimeout = false;
 
-    /**
-     * Get the middleware the job should pass through.
-     *
-     * @return array<int, object>
-     */
-    public function middleware(): array
-    {
-        return [(new WithoutOverlapping($this->profileId))->dontRelease()];
-    }
-
 	/**
 	 * Create a new job instance.
 	 *

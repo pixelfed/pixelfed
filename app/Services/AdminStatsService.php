@@ -36,43 +36,6 @@ class AdminStatsService
         );
     }
 
-    public static function storage()
-    {
-        return Cache::remember('admin:dashboard:storage:stats', 120000, function () {
-            $res = [];
-
-            $res['last_updated'] = str_replace('+00:00', 'Z', now()->format(DATE_RFC3339_EXTENDED));
-
-            $avatars = Avatar::count();
-            $avatarsLocal = Avatar::whereNull('cdn_url')->count();
-            $res['avatar'] = [
-                'count' => $avatars,
-                'local_count' => $avatarsLocal,
-                'cloud_count' => ($avatars - $avatarsLocal),
-                'total_sum' => Avatar::sum('size'),
-            ];
-
-            $media = Media::count();
-            $mediaSum = Media::sum('size');
-            $mediaLocalSum = Media::whereNotNull('user_id')->sum('size');
-            $mediaLocal = Media::whereNotNull('user_id')->count();
-            $res['media'] = [
-                'count' => $media,
-                'local_count' => $mediaLocal,
-                'cloud_count' => ($media - $mediaLocal),
-                'total_sum' => $mediaSum,
-                'local_sum' => $mediaLocalSum,
-                'local_30d' => Media::whereNotNull('user_id')->where('created_at', '>', now()->subDays(30))->sum('size'),
-                'cloud_30d' => Media::whereNull('user_id')->where('created_at', '>', now()->subDays(30))->sum('size'),
-                'cloud_sum' => ($mediaSum - $mediaLocalSum),
-                'avg_size' => Media::avg('size'),
-                'avg_mime' => Media::groupBy('mime')->orderByRaw('COUNT(*) DESC')->first()->mime,
-            ];
-
-            return $res;
-        });
-    }
-
     protected static function recentData()
     {
         $day = config('database.default') == 'pgsql' ? 'DATE_PART(\'day\',' : 'day(';

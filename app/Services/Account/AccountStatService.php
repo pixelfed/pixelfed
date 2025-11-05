@@ -23,11 +23,6 @@ class AccountStatService
         return Redis::zrem(self::REFRESH_CACHE_KEY, $pid);
     }
 
-    public static function getAllPostCountIncr($limit = -1)
-    {
-        return Redis::zrange(self::REFRESH_CACHE_KEY, 0, $limit);
-    }
-
     public static function getPostCountChunk($lastId, $count)
     {
         return Redis::zrangebyscore(

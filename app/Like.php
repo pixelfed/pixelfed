@@ -21,14 +21,4 @@ class Like extends Model
     ];
 
     protected $fillable = ['profile_id', 'status_id', 'status_profile_id'];
-
-    public function actor()
-    {
-        return $this->belongsTo(Profile::class, 'profile_id', 'id');
-    }
-
-    public function status()
-    {
-        return $this->belongsTo(Status::class);
-    }
 }

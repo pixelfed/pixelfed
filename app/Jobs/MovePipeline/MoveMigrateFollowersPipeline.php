@@ -54,27 +54,6 @@ class MoveMigrateFollowersPipeline implements ShouldQueue
     }
 
     /**
-     * Get the middleware the job should pass through.
-     *
-     * @return array<int, object>
-     */
-    public function middleware(): array
-    {
-        return [
-            new WithoutOverlapping('process-move-migrate-followers:'.$this->target),
-            (new ThrottlesExceptionsWithRedis(5, 2 * 60))->backoff(1),
-        ];
-    }
-
-    /**
-     * Determine the time at which the job should timeout.
-     */
-    public function retryUntil(): DateTime
-    {
-        return now()->addMinutes(15);
-    }
-
-    /**
      * Execute the job.
      */
     public function handle(): void
