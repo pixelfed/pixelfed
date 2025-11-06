@@ -13,6 +13,7 @@ return [
     | Included options:
     |   - \Intervention\Image\Drivers\Gd\Driver::class
     |   - \Intervention\Image\Drivers\Imagick\Driver::class
+    |   - \Intervention\Image\Drivers\vips\Driver::class
     |
     */
 
