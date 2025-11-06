@@ -100,7 +100,7 @@ class BaseApiController extends Controller
 
             Cache::forget("avatar:{$profile->id}");
             AvatarOptimize::dispatch($user->profile, $currentAvatar);
-        } catch (Exception $e) {
+        } catch (\Exception $e) {
         }
 
         return response()->json([
