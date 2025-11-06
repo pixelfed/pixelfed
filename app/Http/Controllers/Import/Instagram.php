@@ -117,7 +117,7 @@ trait Instagram
 		        $data->save();
             });
         }
-        DB::transaction(function() use ($profile, $job) {
+        DB::transaction(function() use ($job) {
         	$job->stage = 2;
         	$job->save();
     	});

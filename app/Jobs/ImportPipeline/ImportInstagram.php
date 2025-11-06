@@ -85,7 +85,7 @@ class ImportInstagram implements ShouldQueue
 			}
 
 			DB::transaction(function() use(
-				$fs, $job, $profile, $caption, $taken_at, $filename,
+				$fs, $profile, $caption, $taken_at, $filename,
 				$monthHash, $userHash, $importData
 			) {
 				$status = new Status();

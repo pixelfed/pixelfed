@@ -1,0 +1,916 @@
+025-11-06T12:46:24.9455400Z  ------ ----------------------------------------------------------------------- 
+2025-11-06T12:46:24.9456216Z   Line   app/DiscoverCategory.php                                               
+2025-11-06T12:46:24.9456869Z  ------ ----------------------------------------------------------------------- 
+2025-11-06T12:46:24.9457531Z   29     Access to an undefined property App\DiscoverCategory::$media.          
+2025-11-06T12:46:24.9458527Z          🪪  property.notFound                                                  
+2025-11-06T12:46:24.9459374Z          💡  Learn more: https://phpstan.org/blog/solving-phpstan-access-to-und  
+2025-11-06T12:46:24.9460061Z          efined-property                                                        
+2025-11-06T12:46:24.9460681Z   34     Access to an undefined property App\DiscoverCategory::$media.          
+2025-11-06T12:46:24.9461152Z          🪪  property.notFound                                                  
+2025-11-06T12:46:24.9461611Z          💡  Learn more: https://phpstan.org/blog/solving-phpstan-access-to-und  
+2025-11-06T12:46:24.9462005Z          efined-property                                                        
+2025-11-06T12:46:24.9462344Z  ------ ----------------------------------------------------------------------- 
+2025-11-06T12:46:24.9462564Z 
+2025-11-06T12:46:24.9462688Z  ------ ----------------------------------------------------------------------- 
+2025-11-06T12:46:24.9463093Z   Line   app/Events/Notification/NewPublicPost.php                              
+2025-11-06T12:46:24.9463497Z  ------ ----------------------------------------------------------------------- 
+2025-11-06T12:46:24.9463855Z   47     Access to an undefined property                                        
+2025-11-06T12:46:24.9464256Z          App\Events\Notification\NewPublicPost::$fractal.                       
+2025-11-06T12:46:24.9464874Z          🪪  property.notFound                                                  
+2025-11-06T12:46:24.9465340Z          💡  Learn more: https://phpstan.org/blog/solving-phpstan-access-to-und  
+2025-11-06T12:46:24.9465993Z          efined-property                                                        
+2025-11-06T12:46:24.9466336Z  ------ ----------------------------------------------------------------------- 
+2025-11-06T12:46:24.9466549Z 
+2025-11-06T12:46:24.9466675Z  ------ ---------------------------------------------------------------------- 
+2025-11-06T12:46:24.9467192Z   Line   app/Exceptions/Handler.php                                            
+2025-11-06T12:46:24.9467564Z  ------ ---------------------------------------------------------------------- 
+2025-11-06T12:46:24.9467935Z   18     Class Zttp\ConnectionException not found.                             
+2025-11-06T12:46:24.9468380Z          🪪  class.notFound                                                    
+2025-11-06T12:46:24.9468820Z          💡  Learn more at https://phpstan.org/user-guide/discovering-symbols  
+2025-11-06T12:46:24.9469189Z  ------ ---------------------------------------------------------------------- 
+2025-11-06T12:46:24.9469402Z 
+2025-11-06T12:46:24.9469523Z  ------ ----------------------------------------------------------------------- 
+2025-11-06T12:46:24.9469894Z   Line   app/FollowRequest.php                                                  
+2025-11-06T12:46:24.9470255Z  ------ ----------------------------------------------------------------------- 
+2025-11-06T12:46:24.9470653Z   38     Access to an undefined property App\FollowRequest::$target.            
+2025-11-06T12:46:24.9471100Z          🪪  property.notFound                                                  
+2025-11-06T12:46:24.9471550Z          💡  Learn more: https://phpstan.org/blog/solving-phpstan-access-to-und  
+2025-11-06T12:46:24.9471941Z          efined-property                                                        
+2025-11-06T12:46:24.9472280Z  ------ ----------------------------------------------------------------------- 
+2025-11-06T12:46:24.9472490Z 
+2025-11-06T12:46:24.9472614Z  ------ ----------------------------------------------------------------------- 
+2025-11-06T12:46:24.9472958Z   Line   app/Follower.php                                                       
+2025-11-06T12:46:24.9473309Z  ------ ----------------------------------------------------------------------- 
+2025-11-06T12:46:24.9473683Z   33     Access to an undefined property App\Follower::$actor.                  
+2025-11-06T12:46:24.9474135Z          🪪  property.notFound                                                  
+2025-11-06T12:46:24.9474599Z          💡  Learn more: https://phpstan.org/blog/solving-phpstan-access-to-und  
+2025-11-06T12:46:24.9474985Z          efined-property                                                        
+2025-11-06T12:46:24.9475321Z  ------ ----------------------------------------------------------------------- 
+2025-11-06T12:46:24.9475526Z 
+2025-11-06T12:46:24.9475862Z  ------ --------------------------------------------------------------------- 
+2025-11-06T12:46:24.9476290Z   Line   app/Http/Controllers/Admin/AdminReportController.php (in context of  
+2025-11-06T12:46:24.9476732Z          class App\Http\Controllers\AdminController)                          
+2025-11-06T12:46:24.9477088Z  ------ --------------------------------------------------------------------- 
+2025-11-06T12:46:24.9477443Z   387    Undefined variable: $meta                                            
+2025-11-06T12:46:24.9477885Z          🪪  variable.undefined                                               
+2025-11-06T12:46:24.9478254Z   387    Undefined variable: $status                                          
+2025-11-06T12:46:24.9478709Z          🪪  variable.undefined                                               
+2025-11-06T12:46:24.9479073Z   388    Undefined variable: $status                                          
+2025-11-06T12:46:24.9479500Z          🪪  variable.undefined                                               
+2025-11-06T12:46:24.9480004Z   389    Undefined variable: $status                                          
+2025-11-06T12:46:24.9480455Z          🪪  variable.undefined                                               
+2025-11-06T12:46:24.9480834Z   390    Undefined variable: $status                                          
+2025-11-06T12:46:24.9481265Z          🪪  variable.undefined                                               
+2025-11-06T12:46:24.9481635Z   391    Undefined variable: $status                                          
+2025-11-06T12:46:24.9482176Z          🪪  variable.undefined                                               
+2025-11-06T12:46:24.9482555Z   460    Variable $status might not be defined.                               
+2025-11-06T12:46:24.9482988Z          🪪  variable.undefined                                               
+2025-11-06T12:46:24.9483368Z   823    Variable $profile might not be defined.                              
+2025-11-06T12:46:24.9483804Z          🪪  variable.undefined                                               
+2025-11-06T12:46:24.9484182Z   883    Variable $profile might not be defined.                              
+2025-11-06T12:46:24.9484614Z          🪪  variable.undefined                                               
+2025-11-06T12:46:24.9484985Z   943    Variable $profile might not be defined.                              
+2025-11-06T12:46:24.9485416Z          🪪  variable.undefined                                               
+2025-11-06T12:46:24.9485919Z   1007   Variable $profile might not be defined.                              
+2025-11-06T12:46:24.9486361Z          🪪  variable.undefined                                               
+2025-11-06T12:46:24.9486703Z  ------ --------------------------------------------------------------------- 
+2025-11-06T12:46:24.9486917Z 
+2025-11-06T12:46:24.9487043Z  ------ ------------------------------------------------------------------- 
+2025-11-06T12:46:24.9487479Z   Line   app/Http/Controllers/Admin/AdminUserController.php (in context of  
+2025-11-06T12:46:24.9487910Z          class App\Http\Controllers\AdminController)                        
+2025-11-06T12:46:24.9488269Z  ------ ------------------------------------------------------------------- 
+2025-11-06T12:46:24.9488621Z   319    Variable $msg might not be defined.                                
+2025-11-06T12:46:24.9489053Z          🪪  variable.undefined                                             
+2025-11-06T12:46:24.9489417Z   324    Variable $msg might not be defined.                                
+2025-11-06T12:46:24.9489838Z          🪪  variable.undefined                                             
+2025-11-06T12:46:24.9490295Z  ------ ------------------------------------------------------------------- 
+2025-11-06T12:46:24.9490648Z 
+2025-11-06T12:46:24.9490809Z  ------ ------------------------------------------------ 
+2025-11-06T12:46:24.9491330Z   Line   app/Http/Controllers/Api/ApiV1Controller.php    
+2025-11-06T12:46:24.9491858Z  ------ ------------------------------------------------ 
+2025-11-06T12:46:24.9492340Z   3774   Variable $status might not be defined.          
+2025-11-06T12:46:24.9492920Z          🪪  variable.undefined                          
+2025-11-06T12:46:24.9493403Z   3789   Variable $parent might not be defined.          
+2025-11-06T12:46:24.9493986Z          🪪  variable.undefined                          
+2025-11-06T12:46:24.9494487Z   4308   Variable $account in isset() is never defined.  
+2025-11-06T12:46:24.9495099Z          🪪  isset.variable                              
+2025-11-06T12:46:24.9495553Z  ------ ------------------------------------------------ 
+2025-11-06T12:46:24.9495984Z 
+2025-11-06T12:46:24.9496194Z  ------ ---------------------------------------------------------------------- 
+2025-11-06T12:46:24.9496897Z   Line   app/Http/Controllers/Api/ApiV1Dot1Controller.php                      
+2025-11-06T12:46:24.9497603Z  ------ ---------------------------------------------------------------------- 
+2025-11-06T12:46:24.9498473Z   1034   Static method App\Services\AccountService::usernameToId() invoked     
+2025-11-06T12:46:24.9499196Z          with 2 parameters, 1 required.                                        
+2025-11-06T12:46:24.9499946Z          🪪  arguments.count                                                   
+2025-11-06T12:46:24.9500598Z   1040   Variable $limits might not be defined.                                
+2025-11-06T12:46:24.9501380Z          🪪  variable.undefined                                                
+2025-11-06T12:46:24.9502210Z   1244   Call to static method can() on an unknown class                       
+2025-11-06T12:46:24.9502894Z          App\Http\Controllers\Api\UserRoleService.                             
+2025-11-06T12:46:24.9503640Z          🪪  class.notFound                                                    
+2025-11-06T12:46:24.9504410Z          💡  Learn more at https://phpstan.org/user-guide/discovering-symbols  
+2025-11-06T12:46:24.9505054Z  ------ ---------------------------------------------------------------------- 
+2025-11-06T12:46:24.9505416Z 
+2025-11-06T12:46:24.9505576Z  ------ -------------------------------------------- 
+2025-11-06T12:46:24.9506193Z   Line   app/Http/Controllers/AvatarController.php   
+2025-11-06T12:46:24.9506717Z  ------ -------------------------------------------- 
+2025-11-06T12:46:24.9507186Z   112    Variable $avatarpath might not be defined.  
+2025-11-06T12:46:24.9507770Z          🪪  variable.undefined                      
+2025-11-06T12:46:24.9508228Z  ------ -------------------------------------------- 
+2025-11-06T12:46:24.9508519Z 
+2025-11-06T12:46:24.9508669Z  ------ --------------------------------------------- 
+2025-11-06T12:46:24.9509162Z   Line   app/Http/Controllers/DiscoverController.php  
+2025-11-06T12:46:24.9509645Z  ------ --------------------------------------------- 
+2025-11-06T12:46:24.9510110Z   257    Variable $res might not be defined.          
+2025-11-06T12:46:24.9510657Z          🪪  variable.undefined                       
+2025-11-06T12:46:24.9511134Z  ------ --------------------------------------------- 
+2025-11-06T12:46:24.9511430Z 
+2025-11-06T12:46:24.9511583Z  ------ ------------------------------------------ 
+2025-11-06T12:46:24.9512046Z   Line   app/Http/Controllers/GroupController.php  
+2025-11-06T12:46:24.9512507Z  ------ ------------------------------------------ 
+2025-11-06T12:46:24.9512942Z   343    Variable $res might not be defined.       
+2025-11-06T12:46:24.9513472Z          🪪  variable.undefined                    
+2025-11-06T12:46:24.9513917Z   343    Variable $res might not be defined.       
+2025-11-06T12:46:24.9514472Z          🪪  variable.undefined                    
+2025-11-06T12:46:24.9514892Z  ------ ------------------------------------------ 
+2025-11-06T12:46:24.9515180Z 
+2025-11-06T12:46:24.9515379Z  ------ ---------------------------------------------------------------- 
+2025-11-06T12:46:24.9516176Z   Line   app/Http/Controllers/Import/Instagram.php (in context of class  
+2025-11-06T12:46:24.9516887Z          App\Http\Controllers\ImportController)                          
+2025-11-06T12:46:24.9517487Z  ------ ---------------------------------------------------------------- 
+2025-11-06T12:46:24.9518093Z   120    Anonymous function has an unused use $profile.                  
+2025-11-06T12:46:24.9518858Z          🪪  closure.unusedUse                                           
+2025-11-06T12:46:24.9519300Z  ------ ---------------------------------------------------------------- 
+2025-11-06T12:46:24.9519512Z 
+2025-11-06T12:46:24.9519609Z  ------ ---------------------------------------------- 
+2025-11-06T12:46:24.9519912Z   Line   app/Http/Controllers/PortfolioController.php  
+2025-11-06T12:46:24.9520201Z  ------ ---------------------------------------------- 
+2025-11-06T12:46:24.9520475Z   147    Undefined variable: $metadata                 
+2025-11-06T12:46:24.9520801Z          🪪  variable.undefined                        
+2025-11-06T12:46:24.9521081Z   206    Anonymous function has an unused use $id.     
+2025-11-06T12:46:24.9521547Z          🪪  closure.unusedUse                         
+2025-11-06T12:46:24.9521805Z  ------ ---------------------------------------------- 
+2025-11-06T12:46:24.9521970Z 
+2025-11-06T12:46:24.9522062Z  ------ ---------------------------------------------- 
+2025-11-06T12:46:24.9522345Z   Line   app/Http/Controllers/PublicApiController.php  
+2025-11-06T12:46:24.9522637Z  ------ ---------------------------------------------- 
+2025-11-06T12:46:24.9522915Z   172    Variable $replies might not be defined.       
+2025-11-06T12:46:24.9523361Z          🪪  variable.undefined                        
+2025-11-06T12:46:24.9523640Z   173    Variable $replies might not be defined.       
+2025-11-06T12:46:24.9524138Z          🪪  variable.undefined                        
+2025-11-06T12:46:24.9524541Z  ------ ---------------------------------------------- 
+2025-11-06T12:46:24.9524844Z 
+2025-11-06T12:46:24.9524982Z  ------ --------------------------------------------- 
+2025-11-06T12:46:24.9525310Z   Line   app/Http/Controllers/SeasonalController.php  
+2025-11-06T12:46:24.9525910Z  ------ --------------------------------------------- 
+2025-11-06T12:46:24.9526291Z   128    Anonymous function has an unused use $uid.   
+2025-11-06T12:46:24.9526731Z          🪪  closure.unusedUse                        
+2025-11-06T12:46:24.9526985Z  ------ --------------------------------------------- 
+2025-11-06T12:46:24.9527290Z 
+2025-11-06T12:46:24.9527543Z  ------ ----------------------------------------------------------------------- 
+2025-11-06T12:46:24.9528019Z   Line   app/Http/Controllers/Settings/RelationshipSettings.php (in context of  
+2025-11-06T12:46:24.9528720Z          class App\Http\Controllers\SettingsController)                         
+2025-11-06T12:46:24.9529373Z  ------ ----------------------------------------------------------------------- 
+2025-11-06T12:46:24.9530016Z   42     Call to function compact() contains possibly undefined variable        
+2025-11-06T12:46:24.9530382Z          $data.                                                                 
+2025-11-06T12:46:24.9530784Z          🪪  variable.undefined                                                 
+2025-11-06T12:46:24.9531132Z  ------ ----------------------------------------------------------------------- 
+2025-11-06T12:46:24.9531345Z 
+2025-11-06T12:46:24.9531470Z  ------ ---------------------------------------------------------------------- 
+2025-11-06T12:46:24.9531886Z   Line   app/Http/Controllers/StoryComposeController.php                       
+2025-11-06T12:46:24.9532300Z  ------ ---------------------------------------------------------------------- 
+2025-11-06T12:46:24.9532670Z   38     Class Intervention\Image\Drivers\Vips\Driver not found.               
+2025-11-06T12:46:24.9533112Z          🪪  class.notFound                                                    
+2025-11-06T12:46:24.9533548Z          💡  Learn more at https://phpstan.org/user-guide/discovering-symbols  
+2025-11-06T12:46:24.9533980Z   127    Variable $tempPath in isset() always exists and is not nullable.      
+2025-11-06T12:46:24.9534414Z          🪪  isset.variable                                                    
+2025-11-06T12:46:24.9534747Z  ------ ---------------------------------------------------------------------- 
+2025-11-06T12:46:24.9534954Z 
+2025-11-06T12:46:24.9535083Z  ------ ----------------------------------------------------------------------- 
+2025-11-06T12:46:24.9535468Z   Line   app/Http/Resources/AdminUser.php                                       
+2025-11-06T12:46:24.9536093Z  ------ ----------------------------------------------------------------------- 
+2025-11-06T12:46:24.9536447Z   18     Access to an undefined property                                        
+2025-11-06T12:46:24.9536857Z          App\Http\Resources\AdminUser::$profile_id.                             
+2025-11-06T12:46:24.9537305Z          🪪  property.notFound                                                  
+2025-11-06T12:46:24.9537989Z          💡  Learn more: https://phpstan.org/blog/solving-phpstan-access-to-und  
+2025-11-06T12:46:24.9538617Z          efined-property                                                        
+2025-11-06T12:46:24.9539194Z   21     Access to an undefined property App\Http\Resources\AdminUser::$id.     
+2025-11-06T12:46:24.9539877Z          🪪  property.notFound                                                  
+2025-11-06T12:46:24.9540547Z          💡  Learn more: https://phpstan.org/blog/solving-phpstan-access-to-und  
+2025-11-06T12:46:24.9541308Z          efined-property                                                        
+2025-11-06T12:46:24.9541746Z   22     Access to an undefined property                                        
+2025-11-06T12:46:24.9542273Z          App\Http\Resources\AdminUser::$profile_id.                             
+2025-11-06T12:46:24.9542922Z          🪪  property.notFound                                                  
+2025-11-06T12:46:24.9543658Z          💡  Learn more: https://phpstan.org/blog/solving-phpstan-access-to-und  
+2025-11-06T12:46:24.9544215Z          efined-property                                                        
+2025-11-06T12:46:24.9544751Z   23     Access to an undefined property App\Http\Resources\AdminUser::$name.   
+2025-11-06T12:46:24.9545545Z          🪪  property.notFound                                                  
+2025-11-06T12:46:24.9546511Z          💡  Learn more: https://phpstan.org/blog/solving-phpstan-access-to-und  
+2025-11-06T12:46:24.9547146Z          efined-property                                                        
+2025-11-06T12:46:24.9547531Z   24     Access to an undefined property                                        
+2025-11-06T12:46:24.9547930Z          App\Http\Resources\AdminUser::$username.                               
+2025-11-06T12:46:24.9548359Z          🪪  property.notFound                                                  
+2025-11-06T12:46:24.9548814Z          💡  Learn more: https://phpstan.org/blog/solving-phpstan-access-to-und  
+2025-11-06T12:46:24.9549206Z          efined-property                                                        
+2025-11-06T12:46:24.9549566Z   25     Access to an undefined property                                        
+2025-11-06T12:46:24.9549951Z          App\Http\Resources\AdminUser::$is_admin.                               
+2025-11-06T12:46:24.9550392Z          🪪  property.notFound                                                  
+2025-11-06T12:46:24.9550839Z          💡  Learn more: https://phpstan.org/blog/solving-phpstan-access-to-und  
+2025-11-06T12:46:24.9551229Z          efined-property                                                        
+2025-11-06T12:46:24.9551616Z   26     Access to an undefined property App\Http\Resources\AdminUser::$email.  
+2025-11-06T12:46:24.9552055Z          🪪  property.notFound                                                  
+2025-11-06T12:46:24.9552506Z          💡  Learn more: https://phpstan.org/blog/solving-phpstan-access-to-und  
+2025-11-06T12:46:24.9552902Z          efined-property                                                        
+2025-11-06T12:46:24.9553265Z   27     Access to an undefined property                                        
+2025-11-06T12:46:24.9553655Z          App\Http\Resources\AdminUser::$email_verified_at.                      
+2025-11-06T12:46:24.9554089Z          🪪  property.notFound                                                  
+2025-11-06T12:46:24.9554539Z          💡  Learn more: https://phpstan.org/blog/solving-phpstan-access-to-und  
+2025-11-06T12:46:24.9554929Z          efined-property                                                        
+2025-11-06T12:46:24.9555295Z   28     Access to an undefined property                                        
+2025-11-06T12:46:24.9555883Z          App\Http\Resources\AdminUser::$2fa_enabled.                            
+2025-11-06T12:46:24.9556327Z          🪪  property.notFound                                                  
+2025-11-06T12:46:24.9556926Z          💡  Learn more: https://phpstan.org/blog/solving-phpstan-access-to-und  
+2025-11-06T12:46:24.9557326Z          efined-property                                                        
+2025-11-06T12:46:24.9557699Z   29     Access to an undefined property                                        
+2025-11-06T12:46:24.9558108Z          App\Http\Resources\AdminUser::$register_source.                        
+2025-11-06T12:46:24.9558741Z          🪪  property.notFound                                                  
+2025-11-06T12:46:24.9559542Z          💡  Learn more: https://phpstan.org/blog/solving-phpstan-access-to-und  
+2025-11-06T12:46:24.9560433Z          efined-property                                                        
+2025-11-06T12:46:24.9561067Z   30     Access to an undefined property                                        
+2025-11-06T12:46:24.9561761Z          App\Http\Resources\AdminUser::$app_register_ip.                        
+2025-11-06T12:46:24.9562562Z          🪪  property.notFound                                                  
+2025-11-06T12:46:24.9563377Z          💡  Learn more: https://phpstan.org/blog/solving-phpstan-access-to-und  
+2025-11-06T12:46:24.9564058Z          efined-property                                                        
+2025-11-06T12:46:24.9564695Z   31     Access to an undefined property                                        
+2025-11-06T12:46:24.9565378Z          App\Http\Resources\AdminUser::$has_interstitial.                       
+2025-11-06T12:46:24.9566315Z          🪪  property.notFound                                                  
+2025-11-06T12:46:24.9567126Z          💡  Learn more: https://phpstan.org/blog/solving-phpstan-access-to-und  
+2025-11-06T12:46:24.9567798Z          efined-property                                                        
+2025-11-06T12:46:24.9568446Z   32     Access to an undefined property                                        
+2025-11-06T12:46:24.9569134Z          App\Http\Resources\AdminUser::$last_active_at.                         
+2025-11-06T12:46:24.9569942Z          🪪  property.notFound                                                  
+2025-11-06T12:46:24.9570746Z          💡  Learn more: https://phpstan.org/blog/solving-phpstan-access-to-und  
+2025-11-06T12:46:24.9571207Z          efined-property                                                        
+2025-11-06T12:46:24.9571580Z   33     Access to an undefined property                                        
+2025-11-06T12:46:24.9571980Z          App\Http\Resources\AdminUser::$created_at.                             
+2025-11-06T12:46:24.9572430Z          🪪  property.notFound                                                  
+2025-11-06T12:46:24.9572886Z          💡  Learn more: https://phpstan.org/blog/solving-phpstan-access-to-und  
+2025-11-06T12:46:24.9573290Z          efined-property                                                        
+2025-11-06T12:46:24.9573640Z  ------ ----------------------------------------------------------------------- 
+2025-11-06T12:46:24.9573851Z 
+2025-11-06T12:46:24.9574052Z  ------ ----------------------------------------------------------------------- 
+2025-11-06T12:46:24.9574750Z   Line   app/Http/Resources/DirectoryProfile.php                                
+2025-11-06T12:46:24.9575432Z  ------ ----------------------------------------------------------------------- 
+2025-11-06T12:46:24.9576173Z   19     Access to an undefined property                                        
+2025-11-06T12:46:24.9576886Z          App\Http\Resources\DirectoryProfile::$id.                              
+2025-11-06T12:46:24.9577631Z          🪪  property.notFound                                                  
+2025-11-06T12:46:24.9578099Z          💡  Learn more: https://phpstan.org/blog/solving-phpstan-access-to-und  
+2025-11-06T12:46:24.9578490Z          efined-property                                                        
+2025-11-06T12:46:24.9578860Z   24     Access to an undefined property                                        
+2025-11-06T12:46:24.9579416Z          App\Http\Resources\DirectoryProfile::$username.                        
+2025-11-06T12:46:24.9579871Z          🪪  property.notFound                                                  
+2025-11-06T12:46:24.9580329Z          💡  Learn more: https://phpstan.org/blog/solving-phpstan-access-to-und  
+2025-11-06T12:46:24.9580716Z          efined-property                                                        
+2025-11-06T12:46:24.9581080Z   26     Access to an undefined property                                        
+2025-11-06T12:46:24.9581586Z          App\Http\Resources\DirectoryProfile::$id.                              
+2025-11-06T12:46:24.9582029Z          🪪  property.notFound                                                  
+2025-11-06T12:46:24.9582481Z          💡  Learn more: https://phpstan.org/blog/solving-phpstan-access-to-und  
+2025-11-06T12:46:24.9582868Z          efined-property                                                        
+2025-11-06T12:46:24.9583232Z   27     Access to an undefined property                                        
+2025-11-06T12:46:24.9583637Z          App\Http\Resources\DirectoryProfile::$name.                            
+2025-11-06T12:46:24.9584079Z          🪪  property.notFound                                                  
+2025-11-06T12:46:24.9584532Z          💡  Learn more: https://phpstan.org/blog/solving-phpstan-access-to-und  
+2025-11-06T12:46:24.9584915Z          efined-property                                                        
+2025-11-06T12:46:24.9585280Z   28     Access to an undefined property                                        
+2025-11-06T12:46:24.9585928Z          App\Http\Resources\DirectoryProfile::$username.                        
+2025-11-06T12:46:24.9586654Z          🪪  property.notFound                                                  
+2025-11-06T12:46:24.9587434Z          💡  Learn more: https://phpstan.org/blog/solving-phpstan-access-to-und  
+2025-11-06T12:46:24.9588108Z          efined-property                                                        
+2025-11-06T12:46:24.9588596Z  ------ ----------------------------------------------------------------------- 
+2025-11-06T12:46:24.9588806Z 
+2025-11-06T12:46:24.9588927Z  ------ ----------------------------------------------------------------------- 
+2025-11-06T12:46:24.9589347Z   Line   app/Http/Resources/ImportStatus.php                                    
+2025-11-06T12:46:24.9589737Z  ------ ----------------------------------------------------------------------- 
+2025-11-06T12:46:24.9590089Z   18     Access to an undefined property                                        
+2025-11-06T12:46:24.9590506Z          App\Http\Resources\ImportStatus::$status_id.                           
+2025-11-06T12:46:24.9591214Z          🪪  property.notFound                                                  
+2025-11-06T12:46:24.9592000Z          💡  Learn more: https://phpstan.org/blog/solving-phpstan-access-to-und  
+2025-11-06T12:46:24.9592667Z          efined-property                                                        
+2025-11-06T12:46:24.9593250Z  ------ ----------------------------------------------------------------------- 
+2025-11-06T12:46:24.9593618Z 
+2025-11-06T12:46:24.9593825Z  ------ ----------------------------------------------------------------------- 
+2025-11-06T12:46:24.9594530Z   Line   app/Http/Resources/MastoApi/Admin/DomainBlockResource.php              
+2025-11-06T12:46:24.9595079Z  ------ ----------------------------------------------------------------------- 
+2025-11-06T12:46:24.9595440Z   18     Access to an undefined property                                        
+2025-11-06T12:46:24.9595961Z          App\Http\Resources\MastoApi\Admin\DomainBlockResource::$banned.        
+2025-11-06T12:46:24.9596420Z          🪪  property.notFound                                                  
+2025-11-06T12:46:24.9596873Z          💡  Learn more: https://phpstan.org/blog/solving-phpstan-access-to-und  
+2025-11-06T12:46:24.9597338Z          efined-property                                                        
+2025-11-06T12:46:24.9598151Z   20     Access to an undefined property                                        
+2025-11-06T12:46:24.9598886Z          App\Http\Resources\MastoApi\Admin\DomainBlockResource::$unlisted.      
+2025-11-06T12:46:24.9599692Z          🪪  property.notFound                                                  
+2025-11-06T12:46:24.9600469Z          💡  Learn more: https://phpstan.org/blog/solving-phpstan-access-to-und  
+2025-11-06T12:46:24.9601145Z          efined-property                                                        
+2025-11-06T12:46:24.9601820Z   25     Access to an undefined property                                        
+2025-11-06T12:46:24.9602256Z          App\Http\Resources\MastoApi\Admin\DomainBlockResource::$id.            
+2025-11-06T12:46:24.9602733Z          🪪  property.notFound                                                  
+2025-11-06T12:46:24.9603543Z          💡  Learn more: https://phpstan.org/blog/solving-phpstan-access-to-und  
+2025-11-06T12:46:24.9604228Z          efined-property                                                        
+2025-11-06T12:46:24.9604853Z   26     Access to an undefined property                                        
+2025-11-06T12:46:24.9605564Z          App\Http\Resources\MastoApi\Admin\DomainBlockResource::$domain.        
+2025-11-06T12:46:24.9606282Z          🪪  property.notFound                                                  
+2025-11-06T12:46:24.9606752Z          💡  Learn more: https://phpstan.org/blog/solving-phpstan-access-to-und  
+2025-11-06T12:46:24.9607162Z          efined-property                                                        
+2025-11-06T12:46:24.9607528Z   29     Access to an undefined property                                        
+2025-11-06T12:46:24.9607944Z          App\Http\Resources\MastoApi\Admin\DomainBlockResource::$domain.        
+2025-11-06T12:46:24.9608389Z          🪪  property.notFound                                                  
+2025-11-06T12:46:24.9608866Z          💡  Learn more: https://phpstan.org/blog/solving-phpstan-access-to-und  
+2025-11-06T12:46:24.9609258Z          efined-property                                                        
+2025-11-06T12:46:24.9609620Z   33     Access to an undefined property                                        
+2025-11-06T12:46:24.9610029Z          App\Http\Resources\MastoApi\Admin\DomainBlockResource::$updated_at.    
+2025-11-06T12:46:24.9610473Z          🪪  property.notFound                                                  
+2025-11-06T12:46:24.9610929Z          💡  Learn more: https://phpstan.org/blog/solving-phpstan-access-to-und  
+2025-11-06T12:46:24.9611337Z          efined-property                                                        
+2025-11-06T12:46:24.9611979Z   37     Access to an undefined property                                        
+2025-11-06T12:46:24.9612682Z          App\Http\Resources\MastoApi\Admin\DomainBlockResource::$notes.         
+2025-11-06T12:46:24.9613457Z          🪪  property.notFound                                                  
+2025-11-06T12:46:24.9614247Z          💡  Learn more: https://phpstan.org/blog/solving-phpstan-access-to-und  
+2025-11-06T12:46:24.9614903Z          efined-property                                                        
+2025-11-06T12:46:24.9615534Z   38     Access to an undefined property                                        
+2025-11-06T12:46:24.9616393Z          App\Http\Resources\MastoApi\Admin\DomainBlockResource::$limit_reason.  
+2025-11-06T12:46:24.9617187Z          🪪  property.notFound                                                  
+2025-11-06T12:46:24.9617921Z          💡  Learn more: https://phpstan.org/blog/solving-phpstan-access-to-und  
+2025-11-06T12:46:24.9618308Z          efined-property                                                        
+2025-11-06T12:46:24.9618651Z  ------ ----------------------------------------------------------------------- 
+2025-11-06T12:46:24.9618856Z 
+2025-11-06T12:46:24.9618985Z  ------ ----------------------------------------------------------------------- 
+2025-11-06T12:46:24.9619544Z   Line   app/Http/Resources/MastoApi/FollowedTagResource.php                    
+2025-11-06T12:46:24.9619962Z  ------ ----------------------------------------------------------------------- 
+2025-11-06T12:46:24.9620311Z   20     Access to an undefined property                                        
+2025-11-06T12:46:24.9620726Z          App\Http\Resources\MastoApi\FollowedTagResource::$hashtag_id.          
+2025-11-06T12:46:24.9621175Z          🪪  property.notFound                                                  
+2025-11-06T12:46:24.9621742Z          💡  Learn more: https://phpstan.org/blog/solving-phpstan-access-to-und  
+2025-11-06T12:46:24.9622135Z          efined-property                                                        
+2025-11-06T12:46:24.9622472Z  ------ ----------------------------------------------------------------------- 
+2025-11-06T12:46:24.9622684Z 
+2025-11-06T12:46:24.9622803Z  ------ ----------------------------------------------------------------------- 
+2025-11-06T12:46:24.9623191Z   Line   app/Http/Resources/StoryView.php                                       
+2025-11-06T12:46:24.9623585Z  ------ ----------------------------------------------------------------------- 
+2025-11-06T12:46:24.9623941Z   18     Access to an undefined property                                        
+2025-11-06T12:46:24.9624331Z          App\Http\Resources\StoryView::$profile_id.                             
+2025-11-06T12:46:24.9624766Z          🪪  property.notFound                                                  
+2025-11-06T12:46:24.9625225Z          💡  Learn more: https://phpstan.org/blog/solving-phpstan-access-to-und  
+2025-11-06T12:46:24.9625789Z          efined-property                                                        
+2025-11-06T12:46:24.9626184Z   19     Access to an undefined property                                        
+2025-11-06T12:46:24.9626573Z          App\Http\Resources\StoryView::$created_at.                             
+2025-11-06T12:46:24.9627022Z          🪪  property.notFound                                                  
+2025-11-06T12:46:24.9627574Z          💡  Learn more: https://phpstan.org/blog/solving-phpstan-access-to-und  
+2025-11-06T12:46:24.9628251Z          efined-property                                                        
+2025-11-06T12:46:24.9628823Z  ------ ----------------------------------------------------------------------- 
+2025-11-06T12:46:24.9629185Z 
+2025-11-06T12:46:24.9629391Z  ------ ----------------------------------------------------------------------- 
+2025-11-06T12:46:24.9630099Z   Line   app/Http/Resources/UserAppSettingsResource.php                         
+2025-11-06T12:46:24.9630785Z  ------ ----------------------------------------------------------------------- 
+2025-11-06T12:46:24.9631394Z   21     Access to an undefined property                                        
+2025-11-06T12:46:24.9632090Z          App\Http\Resources\UserAppSettingsResource::$profile_id.               
+2025-11-06T12:46:24.9632886Z          🪪  property.notFound                                                  
+2025-11-06T12:46:24.9633670Z          💡  Learn more: https://phpstan.org/blog/solving-phpstan-access-to-und  
+2025-11-06T12:46:24.9634327Z          efined-property                                                        
+2025-11-06T12:46:24.9634952Z   23     Access to an undefined property                                        
+2025-11-06T12:46:24.9635779Z          App\Http\Resources\UserAppSettingsResource::$updated_at.               
+2025-11-06T12:46:24.9636615Z          🪪  property.notFound                                                  
+2025-11-06T12:46:24.9637421Z          💡  Learn more: https://phpstan.org/blog/solving-phpstan-access-to-und  
+2025-11-06T12:46:24.9638040Z          efined-property                                                        
+2025-11-06T12:46:24.9638408Z   24     Access to an undefined property                                        
+2025-11-06T12:46:24.9638957Z          App\Http\Resources\UserAppSettingsResource::$common.                   
+2025-11-06T12:46:24.9639423Z          🪪  property.notFound                                                  
+2025-11-06T12:46:24.9639871Z          💡  Learn more: https://phpstan.org/blog/solving-phpstan-access-to-und  
+2025-11-06T12:46:24.9640260Z          efined-property                                                        
+2025-11-06T12:46:24.9640601Z  ------ ----------------------------------------------------------------------- 
+2025-11-06T12:46:24.9640809Z 
+2025-11-06T12:46:24.9641047Z  ------ ---------------------------------------------------------------------- 
+2025-11-06T12:46:24.9641697Z   Line   app/Jobs/AvatarPipeline/AvatarOptimize.php                            
+2025-11-06T12:46:24.9642372Z  ------ ---------------------------------------------------------------------- 
+2025-11-06T12:46:24.9643013Z   62     Class Intervention\Image\Drivers\Vips\Driver not found.               
+2025-11-06T12:46:24.9643781Z          🪪  class.notFound                                                    
+2025-11-06T12:46:24.9644539Z          💡  Learn more at https://phpstan.org/user-guide/discovering-symbols  
+2025-11-06T12:46:24.9645168Z  ------ ---------------------------------------------------------------------- 
+2025-11-06T12:46:24.9645474Z 
+2025-11-06T12:46:24.9645580Z  ------ ------------------------------------------------- 
+2025-11-06T12:46:24.9646092Z   Line   app/Jobs/GroupPipeline/GroupCommentPipeline.php  
+2025-11-06T12:46:24.9646403Z  ------ ------------------------------------------------- 
+2025-11-06T12:46:24.9646698Z   61     Call to an undefined static method               
+2025-11-06T12:46:24.9647012Z          App\Models\GroupPost::whereStatusId().           
+2025-11-06T12:46:24.9647355Z          🪪  staticMethod.notFound                        
+2025-11-06T12:46:24.9647629Z  ------ ------------------------------------------------- 
+2025-11-06T12:46:24.9647805Z 
+2025-11-06T12:46:24.9647929Z  ------ ---------------------------------------------------------------------- 
+2025-11-06T12:46:24.9648346Z   Line   app/Jobs/GroupsPipeline/ImageResizePipeline.php                       
+2025-11-06T12:46:24.9648751Z  ------ ---------------------------------------------------------------------- 
+2025-11-06T12:46:24.9649122Z   80     Class Intervention\Image\Drivers\Vips\Driver not found.               
+2025-11-06T12:46:24.9649837Z          🪪  class.notFound                                                    
+2025-11-06T12:46:24.9650572Z          💡  Learn more at https://phpstan.org/user-guide/discovering-symbols  
+2025-11-06T12:46:24.9651202Z  ------ ---------------------------------------------------------------------- 
+2025-11-06T12:46:24.9651561Z 
+2025-11-06T12:46:24.9651772Z  ------ --------------------------------------------------- 
+2025-11-06T12:46:24.9652320Z   Line   app/Jobs/GroupsPipeline/ImageS3UploadPipeline.php  
+2025-11-06T12:46:24.9652880Z  ------ --------------------------------------------------- 
+2025-11-06T12:46:24.9653383Z   90     Anonymous function has an unused use $attempts.    
+2025-11-06T12:46:24.9653985Z          🪪  closure.unusedUse                              
+2025-11-06T12:46:24.9654296Z   99     Variable $file might not be defined.               
+2025-11-06T12:46:24.9654640Z          🪪  variable.undefined                             
+2025-11-06T12:46:24.9654927Z  ------ --------------------------------------------------- 
+2025-11-06T12:46:24.9655108Z 
+2025-11-06T12:46:24.9655203Z  ------ --------------------------------------------- 
+2025-11-06T12:46:24.9655513Z   Line   app/Jobs/ImportPipeline/ImportInstagram.php  
+2025-11-06T12:46:24.9656008Z  ------ --------------------------------------------- 
+2025-11-06T12:46:24.9656287Z   87     Anonymous function has an unused use $job.   
+2025-11-06T12:46:24.9656611Z          🪪  closure.unusedUse                        
+2025-11-06T12:46:24.9656880Z   88     Variable $taken_at might not be defined.     
+2025-11-06T12:46:24.9657196Z          🪪  variable.undefined                       
+2025-11-06T12:46:24.9657598Z  ------ --------------------------------------------- 
+2025-11-06T12:46:24.9657786Z 
+2025-11-06T12:46:24.9657885Z  ------ ----------------------------------------- 
+2025-11-06T12:46:24.9658369Z   Line   app/Jobs/InboxPipeline/DeleteWorker.php  
+2025-11-06T12:46:24.9658835Z  ------ ----------------------------------------- 
+2025-11-06T12:46:24.9659265Z   93     Undefined variable: $key                 
+2025-11-06T12:46:24.9659778Z          🪪  variable.undefined                   
+2025-11-06T12:46:24.9660364Z  ------ ----------------------------------------- 
+2025-11-06T12:46:24.9660647Z 
+2025-11-06T12:46:24.9660857Z  ------ ---------------------------------------------------------------------- 
+2025-11-06T12:46:24.9661597Z   Line   app/Jobs/RemoteFollowPipeline/RemoteFollowImportRecent.php            
+2025-11-06T12:46:24.9662304Z  ------ ---------------------------------------------------------------------- 
+2025-11-06T12:46:24.9662940Z   68     Call to static method withHeaders() on an unknown class Zttp\Zttp.    
+2025-11-06T12:46:24.9663420Z          🪪  class.notFound                                                    
+2025-11-06T12:46:24.9663859Z          💡  Learn more at https://phpstan.org/user-guide/discovering-symbols  
+2025-11-06T12:46:24.9664389Z   204    Job class App\Jobs\StatusPipeline\NewStatusPipeline constructor       
+2025-11-06T12:46:24.9664848Z          invoked with 2 parameters in                                          
+2025-11-06T12:46:24.9665414Z          App\Jobs\StatusPipeline\NewStatusPipeline::dispatch(), 1 required.    
+2025-11-06T12:46:24.9666195Z          🪪  arguments.count                                                   
+2025-11-06T12:46:24.9666623Z  ------ ---------------------------------------------------------------------- 
+2025-11-06T12:46:24.9666845Z 
+2025-11-06T12:46:24.9667063Z  ------ ----------------------------------------------------------------------- 
+2025-11-06T12:46:24.9667812Z   Line   app/Jobs/RemoteFollowPipeline/RemoteFollowPipeline.php                 
+2025-11-06T12:46:24.9668569Z  ------ ----------------------------------------------------------------------- 
+2025-11-06T12:46:24.9669246Z   76     Instantiated class HttpSignatures\Context not found.                   
+2025-11-06T12:46:24.9670242Z          🪪  class.notFound                                                     
+2025-11-06T12:46:24.9670993Z          💡  Learn more at https://phpstan.org/user-guide/discovering-symbols   
+2025-11-06T12:46:24.9671963Z   82     Call to static method defaultHandlerFromContext() on an unknown class  
+2025-11-06T12:46:24.9672474Z          HttpSignatures\GuzzleHttpSignatures.                                   
+2025-11-06T12:46:24.9673037Z          🪪  class.notFound                                                     
+2025-11-06T12:46:24.9673624Z          💡  Learn more at https://phpstan.org/user-guide/discovering-symbols   
+2025-11-06T12:46:24.9674135Z   84     Call to static method withHeaders() on an unknown class Zttp\Zttp.     
+2025-11-06T12:46:24.9674670Z          🪪  class.notFound                                                     
+2025-11-06T12:46:24.9675194Z          💡  Learn more at https://phpstan.org/user-guide/discovering-symbols   
+2025-11-06T12:46:24.9675853Z   139    Call to static method withHeaders() on an unknown class Zttp\Zttp.     
+2025-11-06T12:46:24.9676395Z          🪪  class.notFound                                                     
+2025-11-06T12:46:24.9676923Z          💡  Learn more at https://phpstan.org/user-guide/discovering-symbols   
+2025-11-06T12:46:24.9677445Z  ------ ----------------------------------------------------------------------- 
+2025-11-06T12:46:24.9677688Z 
+2025-11-06T12:46:24.9677844Z  ------ ----------------------------------------------------------------------- 
+2025-11-06T12:46:24.9678347Z   Line   app/Models/CustomFilter.php                                            
+2025-11-06T12:46:24.9678829Z  ------ ----------------------------------------------------------------------- 
+2025-11-06T12:46:24.9679424Z   401    Variable $statusMatches in empty() always exists and is always falsy.  
+2025-11-06T12:46:24.9680024Z          🪪  empty.variable                                                     
+2025-11-06T12:46:24.9680521Z   405    Variable $statusMatches in empty() always exists and is always falsy.  
+2025-11-06T12:46:24.9681061Z          🪪  empty.variable                                                     
+2025-11-06T12:46:24.9681498Z  ------ ----------------------------------------------------------------------- 
+2025-11-06T12:46:24.9732987Z 
+2025-11-06T12:46:24.9733221Z  ------ ----------------------------------------------------------------------- 
+2025-11-06T12:46:24.9733877Z   Line   app/Models/Group.php                                                   
+2025-11-06T12:46:24.9734502Z  ------ ----------------------------------------------------------------------- 
+2025-11-06T12:46:24.9735185Z   59     Access to an undefined property App\Models\Group::$is_local.           
+2025-11-06T12:46:24.9736242Z          🪪  property.notFound                                                  
+2025-11-06T12:46:24.9737118Z          💡  Learn more: https://phpstan.org/blog/solving-phpstan-access-to-und  
+2025-11-06T12:46:24.9737799Z          efined-property                                                        
+2025-11-06T12:46:24.9738379Z  ------ ----------------------------------------------------------------------- 
+2025-11-06T12:46:24.9738742Z 
+2025-11-06T12:46:24.9738950Z  ------ ----------------------------------------------------------------------- 
+2025-11-06T12:46:24.9739632Z   Line   app/Models/ParentalControls.php                                        
+2025-11-06T12:46:24.9740327Z  ------ ----------------------------------------------------------------------- 
+2025-11-06T12:46:24.9741003Z   35     Access to an undefined property App\Models\ParentalControls::$child.   
+2025-11-06T12:46:24.9741794Z          🪪  property.notFound                                                  
+2025-11-06T12:46:24.9742628Z          💡  Learn more: https://phpstan.org/blog/solving-phpstan-access-to-und  
+2025-11-06T12:46:24.9743297Z          efined-property                                                        
+2025-11-06T12:46:24.9743707Z  ------ ----------------------------------------------------------------------- 
+2025-11-06T12:46:24.9743930Z 
+2025-11-06T12:46:24.9744051Z  ------ ----------------------------------------------------------------------- 
+2025-11-06T12:46:24.9744450Z   Line   app/Observers/StatusHashtagObserver.php                                
+2025-11-06T12:46:24.9744851Z  ------ ----------------------------------------------------------------------- 
+2025-11-06T12:46:24.9745229Z   48     Static method App\Services\StatusHashtagService::del() invoked with 2  
+2025-11-06T12:46:24.9745869Z          parameters, 1 required.                                                
+2025-11-06T12:46:24.9746302Z          🪪  arguments.count                                                    
+2025-11-06T12:46:24.9746695Z   74     Static method App\Services\StatusHashtagService::del() invoked with 2  
+2025-11-06T12:46:24.9747083Z          parameters, 1 required.                                                
+2025-11-06T12:46:24.9747487Z          🪪  arguments.count                                                    
+2025-11-06T12:46:24.9747811Z  ------ ----------------------------------------------------------------------- 
+2025-11-06T12:46:24.9748014Z 
+2025-11-06T12:46:24.9748136Z  ------ ----------------------------------------------------------------------- 
+2025-11-06T12:46:24.9748477Z   Line   app/Profile.php                                                        
+2025-11-06T12:46:24.9748811Z  ------ ----------------------------------------------------------------------- 
+2025-11-06T12:46:24.9749174Z   72     Access to an undefined property App\Profile::$user.                    
+2025-11-06T12:46:24.9749726Z          🪪  property.notFound                                                  
+2025-11-06T12:46:24.9750671Z          💡  Learn more: https://phpstan.org/blog/solving-phpstan-access-to-und  
+2025-11-06T12:46:24.9751193Z          efined-property                                                        
+2025-11-06T12:46:24.9751873Z   89     Access to an undefined property App\Profile::$user.                    
+2025-11-06T12:46:24.9752551Z          🪪  property.notFound                                                  
+2025-11-06T12:46:24.9753154Z          💡  Learn more: https://phpstan.org/blog/solving-phpstan-access-to-und  
+2025-11-06T12:46:24.9753964Z          efined-property                                                        
+2025-11-06T12:46:24.9754538Z   163    Access to an undefined property App\Profile::$avatar.                  
+2025-11-06T12:46:24.9755130Z          🪪  property.notFound                                                  
+2025-11-06T12:46:24.9755892Z          💡  Learn more: https://phpstan.org/blog/solving-phpstan-access-to-und  
+2025-11-06T12:46:24.9756308Z          efined-property                                                        
+2025-11-06T12:46:24.9756773Z  ------ ----------------------------------------------------------------------- 
+2025-11-06T12:46:24.9757142Z 
+2025-11-06T12:46:24.9757326Z  ------ ------------------------------------------------------ 
+2025-11-06T12:46:24.9757893Z   Line   app/Providers/AuthServiceProvider.php                 
+2025-11-06T12:46:24.9758439Z  ------ ------------------------------------------------------ 
+2025-11-06T12:46:24.9758935Z   35     Call to an undefined static method                    
+2025-11-06T12:46:24.9759509Z          Laravel\Passport\Passport::personalAccessClientId().  
+2025-11-06T12:46:24.9760153Z          🪪  staticMethod.notFound                             
+2025-11-06T12:46:24.9760443Z  ------ ------------------------------------------------------ 
+2025-11-06T12:46:24.9760620Z 
+2025-11-06T12:46:24.9760745Z  ------ ---------------------------------------------------------------------- 
+2025-11-06T12:46:24.9761132Z   Line   app/Services/AvatarService.php                                        
+2025-11-06T12:46:24.9761499Z  ------ ---------------------------------------------------------------------- 
+2025-11-06T12:46:24.9761873Z   97     Caught class App\Services\Exception not found.                        
+2025-11-06T12:46:24.9762645Z          🪪  class.notFound                                                    
+2025-11-06T12:46:24.9763401Z          💡  Learn more at https://phpstan.org/user-guide/discovering-symbols  
+2025-11-06T12:46:24.9764026Z  ------ ---------------------------------------------------------------------- 
+2025-11-06T12:46:24.9764398Z 
+2025-11-06T12:46:24.9764604Z  ------ ---------------------------------------------------------------------- 
+2025-11-06T12:46:24.9765273Z   Line   app/Services/ConfigCacheService.php                                   
+2025-11-06T12:46:24.9766105Z  ------ ---------------------------------------------------------------------- 
+2025-11-06T12:46:24.9766743Z   183    Caught class App\Services\Exception not found.                        
+2025-11-06T12:46:24.9767477Z          🪪  class.notFound                                                    
+2025-11-06T12:46:24.9767898Z          💡  Learn more at https://phpstan.org/user-guide/discovering-symbols  
+2025-11-06T12:46:24.9768268Z  ------ ---------------------------------------------------------------------- 
+2025-11-06T12:46:24.9768471Z 
+2025-11-06T12:46:24.9768557Z  ------ ------------------------------------- 
+2025-11-06T12:46:24.9768823Z   Line   app/Services/FilesystemService.php   
+2025-11-06T12:46:24.9769082Z  ------ ------------------------------------- 
+2025-11-06T12:46:24.9769334Z   66     Variable $res might not be defined.  
+2025-11-06T12:46:24.9769629Z          🪪  variable.undefined               
+2025-11-06T12:46:24.9769860Z  ------ ------------------------------------- 
+2025-11-06T12:46:24.9770016Z 
+2025-11-06T12:46:24.9770143Z  ------ ---------------------------------------------------------------------- 
+2025-11-06T12:46:24.9770684Z   Line   app/Services/GroupService.php                                         
+2025-11-06T12:46:24.9771071Z  ------ ---------------------------------------------------------------------- 
+2025-11-06T12:46:24.9771445Z   31     Anonymous function has an unused use $pid.                            
+2025-11-06T12:46:24.9771870Z          🪪  closure.unusedUse                                                 
+2025-11-06T12:46:24.9772245Z   188    Deprecated in PHP 8.4: Parameter #3 $type (string) is implicitly      
+2025-11-06T12:46:24.9772751Z          nullable via default value null.                                      
+2025-11-06T12:46:24.9773198Z          🪪  parameter.implicitlyNullable                                      
+2025-11-06T12:46:24.9773593Z   189    Deprecated in PHP 8.4: Parameter #4 $meta (array) is implicitly       
+2025-11-06T12:46:24.9773980Z          nullable via default value null.                                      
+2025-11-06T12:46:24.9774419Z          🪪  parameter.implicitlyNullable                                      
+2025-11-06T12:46:24.9774835Z   190    Deprecated in PHP 8.4: Parameter #5 $itemType (string) is implicitly  
+2025-11-06T12:46:24.9775242Z          nullable via default value null.                                      
+2025-11-06T12:46:24.9775906Z          🪪  parameter.implicitlyNullable                                      
+2025-11-06T12:46:24.9776311Z   191    Deprecated in PHP 8.4: Parameter #6 $itemId (string) is implicitly    
+2025-11-06T12:46:24.9776698Z          nullable via default value null.                                      
+2025-11-06T12:46:24.9777153Z          🪪  parameter.implicitlyNullable                                      
+2025-11-06T12:46:24.9777506Z  ------ ---------------------------------------------------------------------- 
+2025-11-06T12:46:24.9777709Z 
+2025-11-06T12:46:24.9777794Z  ------ -------------------------------------- 
+2025-11-06T12:46:24.9778058Z   Line   app/Services/MediaStorageService.php  
+2025-11-06T12:46:24.9778308Z  ------ -------------------------------------- 
+2025-11-06T12:46:24.9778558Z   202    Variable $ext might not be defined.   
+2025-11-06T12:46:24.9778846Z          🪪  variable.undefined                
+2025-11-06T12:46:24.9779082Z  ------ -------------------------------------- 
+2025-11-06T12:46:24.9779239Z 
+2025-11-06T12:46:24.9779357Z  ------ ---------------------------------------------------------------- 
+2025-11-06T12:46:24.9779713Z   Line   app/Services/ModLogService.php                                  
+2025-11-06T12:46:24.9780069Z  ------ ---------------------------------------------------------------- 
+2025-11-06T12:46:24.9780408Z   60     Deprecated in PHP 8.4: Parameter #1 $val (array) is implicitly  
+2025-11-06T12:46:24.9780764Z          nullable via default value null.                                
+2025-11-06T12:46:24.9781170Z          🪪  parameter.implicitlyNullable                                
+2025-11-06T12:46:24.9781497Z  ------ ---------------------------------------------------------------- 
+2025-11-06T12:46:24.9781691Z 
+2025-11-06T12:46:24.9781822Z  ------ --------------------------------------------------------------------- 
+2025-11-06T12:46:24.9782190Z   Line   app/Services/PollService.php                                         
+2025-11-06T12:46:24.9782561Z  ------ --------------------------------------------------------------------- 
+2025-11-06T12:46:24.9782907Z   85     Called 'first' on Laravel collection, but could have been retrieved  
+2025-11-06T12:46:24.9783245Z          as a query.                                                          
+2025-11-06T12:46:24.9783658Z          🪪  larastan.noUnnecessaryCollectionCall                             
+2025-11-06T12:46:24.9784014Z  ------ --------------------------------------------------------------------- 
+2025-11-06T12:46:24.9784217Z 
+2025-11-06T12:46:24.9784316Z  ------ ------------------------------------------------- 
+2025-11-06T12:46:24.9784627Z   Line   app/Services/ResilientMediaStorageService.php    
+2025-11-06T12:46:24.9785058Z  ------ ------------------------------------------------- 
+2025-11-06T12:46:24.9785370Z   38     Anonymous function has an unused use $attempts.  
+2025-11-06T12:46:24.9785979Z          🪪  closure.unusedUse                            
+2025-11-06T12:46:24.9786271Z   47     Variable $file might not be defined.             
+2025-11-06T12:46:24.9786602Z          🪪  variable.undefined                           
+2025-11-06T12:46:24.9786864Z  ------ ------------------------------------------------- 
+2025-11-06T12:46:24.9787036Z 
+2025-11-06T12:46:24.9787299Z  ------ ----------------------------------------------------------------------- 
+2025-11-06T12:46:24.9787707Z   Line   app/Services/StoryIndexService.php                                     
+2025-11-06T12:46:24.9788097Z  ------ ----------------------------------------------------------------------- 
+2025-11-06T12:46:24.9788483Z   177    Static method Redis::pipeline() invoked with 1 parameter, 0 required.  
+2025-11-06T12:46:24.9788935Z          🪪  arguments.count                                                    
+2025-11-06T12:46:24.9789386Z   208    Static method Redis::pipeline() invoked with 1 parameter, 0 required.  
+2025-11-06T12:46:24.9790155Z          🪪  arguments.count                                                    
+2025-11-06T12:46:24.9790822Z   241    Static method Redis::set() invoked with 5 parameters, 2-3 required.    
+2025-11-06T12:46:24.9791576Z          🪪  arguments.count                                                    
+2025-11-06T12:46:24.9792237Z   405    Static method Redis::pipeline() invoked with 1 parameter, 0 required.  
+2025-11-06T12:46:24.9793063Z          🪪  arguments.count                                                    
+2025-11-06T12:46:24.9793732Z   434    Static method Redis::pipeline() invoked with 1 parameter, 0 required.  
+2025-11-06T12:46:24.9794502Z          🪪  arguments.count                                                    
+2025-11-06T12:46:24.9795166Z   654    Static method Redis::pipeline() invoked with 1 parameter, 0 required.  
+2025-11-06T12:46:24.9796127Z          🪪  arguments.count                                                    
+2025-11-06T12:46:24.9796703Z  ------ ----------------------------------------------------------------------- 
+2025-11-06T12:46:24.9797064Z 
+2025-11-06T12:46:24.9797270Z  ------ --------------------------------------------------------------------- 
+2025-11-06T12:46:24.9797921Z   Line   app/Services/StoryService.php                                        
+2025-11-06T12:46:24.9798583Z  ------ --------------------------------------------------------------------- 
+2025-11-06T12:46:24.9799243Z   63     Call to an undefined static method                                   
+2025-11-06T12:46:24.9799904Z          App\Services\PollService::storyPoll().                               
+2025-11-06T12:46:24.9800672Z          🪪  staticMethod.notFound                                            
+2025-11-06T12:46:24.9801340Z   125    Called 'count' on Laravel collection, but could have been retrieved  
+2025-11-06T12:46:24.9801935Z          as a query.                                                          
+2025-11-06T12:46:24.9802649Z          🪪  larastan.noUnnecessaryCollectionCall                             
+2025-11-06T12:46:24.9803277Z  ------ --------------------------------------------------------------------- 
+2025-11-06T12:46:24.9803648Z 
+2025-11-06T12:46:24.9803872Z  ------ ----------------------------------------------------------------------- 
+2025-11-06T12:46:24.9804451Z   Line   app/Status.php                                                         
+2025-11-06T12:46:24.9805040Z  ------ ----------------------------------------------------------------------- 
+2025-11-06T12:46:24.9805808Z   92     Access to an undefined property App\Status::$media.                    
+2025-11-06T12:46:24.9806593Z          🪪  property.notFound                                                  
+2025-11-06T12:46:24.9807396Z          💡  Learn more: https://phpstan.org/blog/solving-phpstan-access-to-und  
+2025-11-06T12:46:24.9808252Z          efined-property                                                        
+2025-11-06T12:46:24.9808964Z   149    Access to an undefined property App\Status::$profile.                  
+2025-11-06T12:46:24.9809754Z          🪪  property.notFound                                                  
+2025-11-06T12:46:24.9810289Z          💡  Learn more: https://phpstan.org/blog/solving-phpstan-access-to-und  
+2025-11-06T12:46:24.9810690Z          efined-property                                                        
+2025-11-06T12:46:24.9811222Z   292    Access to an undefined property App\Status::$media.                    
+2025-11-06T12:46:24.9811655Z          🪪  property.notFound                                                  
+2025-11-06T12:46:24.9812108Z          💡  Learn more: https://phpstan.org/blog/solving-phpstan-access-to-und  
+2025-11-06T12:46:24.9812484Z          efined-property                                                        
+2025-11-06T12:46:24.9812863Z   325    Access to an undefined property App\Status::$mentions.                 
+2025-11-06T12:46:24.9813328Z          🪪  property.notFound                                                  
+2025-11-06T12:46:24.9813766Z          💡  Learn more: https://phpstan.org/blog/solving-phpstan-access-to-und  
+2025-11-06T12:46:24.9814142Z          efined-property                                                        
+2025-11-06T12:46:24.9814516Z   341    Access to an undefined property App\Status::$profile.                  
+2025-11-06T12:46:24.9814956Z          🪪  property.notFound                                                  
+2025-11-06T12:46:24.9815394Z          💡  Learn more: https://phpstan.org/blog/solving-phpstan-access-to-und  
+2025-11-06T12:46:24.9816125Z          efined-property                                                        
+2025-11-06T12:46:24.9816808Z   345    Access to an undefined property App\Status::$profile.                  
+2025-11-06T12:46:24.9817426Z          🪪  property.notFound                                                  
+2025-11-06T12:46:24.9817876Z          💡  Learn more: https://phpstan.org/blog/solving-phpstan-access-to-und  
+2025-11-06T12:46:24.9818248Z          efined-property                                                        
+2025-11-06T12:46:24.9818626Z   352    Access to an undefined property App\Status::$profile.                  
+2025-11-06T12:46:24.9819059Z          🪪  property.notFound                                                  
+2025-11-06T12:46:24.9819495Z          💡  Learn more: https://phpstan.org/blog/solving-phpstan-access-to-und  
+2025-11-06T12:46:24.9819879Z          efined-property                                                        
+2025-11-06T12:46:24.9820404Z  ------ ----------------------------------------------------------------------- 
+2025-11-06T12:46:24.9820774Z 
+2025-11-06T12:46:24.9820989Z  ------ ----------------------------------------------------------------------- 
+2025-11-06T12:46:24.9821569Z   Line   app/Story.php                                                          
+2025-11-06T12:46:24.9822151Z  ------ ----------------------------------------------------------------------- 
+2025-11-06T12:46:24.9822798Z   54     Access to an undefined property App\Story::$profile.                   
+2025-11-06T12:46:24.9823561Z          🪪  property.notFound                                                  
+2025-11-06T12:46:24.9824349Z          💡  Learn more: https://phpstan.org/blog/solving-phpstan-access-to-und  
+2025-11-06T12:46:24.9825015Z          efined-property                                                        
+2025-11-06T12:46:24.9825923Z   61     Access to an undefined property App\Story::$profile.                   
+2025-11-06T12:46:24.9826713Z          🪪  property.notFound                                                  
+2025-11-06T12:46:24.9827496Z          💡  Learn more: https://phpstan.org/blog/solving-phpstan-access-to-und  
+2025-11-06T12:46:24.9828206Z          efined-property                                                        
+2025-11-06T12:46:24.9829061Z   83     Access to an undefined property App\Story::$profile.                   
+2025-11-06T12:46:24.9829858Z          🪪  property.notFound                                                  
+2025-11-06T12:46:24.9830647Z          💡  Learn more: https://phpstan.org/blog/solving-phpstan-access-to-und  
+2025-11-06T12:46:24.9831307Z          efined-property                                                        
+2025-11-06T12:46:24.9831890Z  ------ ----------------------------------------------------------------------- 
+2025-11-06T12:46:24.9832304Z 
+2025-11-06T12:46:24.9833885Z  ------ ----------------------------------------------------------------------- 
+2025-11-06T12:46:24.9834518Z   Line   app/StoryItem.php                                                      
+2025-11-06T12:46:24.9835124Z  ------ ----------------------------------------------------------------------- 
+2025-11-06T12:46:24.9835938Z   38     Access to an undefined property App\StoryItem::$media_path.            
+2025-11-06T12:46:24.9836757Z          🪪  property.notFound                                                  
+2025-11-06T12:46:24.9837557Z          💡  Learn more: https://phpstan.org/blog/solving-phpstan-access-to-und  
+2025-11-06T12:46:24.9838224Z          efined-property                                                        
+2025-11-06T12:46:24.9838809Z  ------ ----------------------------------------------------------------------- 
+2025-11-06T12:46:24.9839172Z 
+2025-11-06T12:46:24.9841228Z  ------ ---------------------------------------------------------------------- 
+2025-11-06T12:46:24.9841935Z   Line   app/Util/ActivityPub/DiscoverActor.php                                
+2025-11-06T12:46:24.9842607Z  ------ ---------------------------------------------------------------------- 
+2025-11-06T12:46:24.9843239Z   20     Call to static method withHeaders() on an unknown class Zttp\Zttp.    
+2025-11-06T12:46:24.9844011Z          🪪  class.notFound                                                    
+2025-11-06T12:46:24.9844744Z          💡  Learn more at https://phpstan.org/user-guide/discovering-symbols  
+2025-11-06T12:46:24.9845130Z  ------ ---------------------------------------------------------------------- 
+2025-11-06T12:46:24.9845344Z 
+2025-11-06T12:46:24.9848565Z  ------ ---------------------------------------------------------------------- 
+2025-11-06T12:46:24.9849300Z   Line   app/Util/ActivityPub/Helpers.php                                      
+2025-11-06T12:46:24.9849951Z  ------ ---------------------------------------------------------------------- 
+2025-11-06T12:46:24.9850600Z   185    Caught class League\Uri\Exceptions\UriException not found.            
+2025-11-06T12:46:24.9851406Z          🪪  class.notFound                                                    
+2025-11-06T12:46:24.9852150Z          💡  Learn more at https://phpstan.org/user-guide/discovering-symbols  
+2025-11-06T12:46:24.9852827Z   195    Variable $url in empty() is never defined.                            
+2025-11-06T12:46:24.9853557Z          🪪  empty.variable                                                    
+2025-11-06T12:46:24.9854123Z  ------ ---------------------------------------------------------------------- 
+2025-11-06T12:46:24.9854482Z 
+2025-11-06T12:46:24.9855886Z  ------ --------------------------------------------------------------------- 
+2025-11-06T12:46:24.9856654Z   Line   app/Util/ActivityPub/Inbox.php                                       
+2025-11-06T12:46:24.9857298Z  ------ --------------------------------------------------------------------- 
+2025-11-06T12:46:24.9857935Z   1367   Called 'count' on Laravel collection, but could have been retrieved  
+2025-11-06T12:46:24.9858528Z          as a query.                                                          
+2025-11-06T12:46:24.9859278Z          🪪  larastan.noUnnecessaryCollectionCall                             
+2025-11-06T12:46:24.9859653Z  ------ --------------------------------------------------------------------- 
+2025-11-06T12:46:24.9859859Z 
+2025-11-06T12:46:24.9862535Z  ------ ----------------------------------------------------------------------- 
+2025-11-06T12:46:24.9863226Z   Line   app/Util/Lexer/Autolink.php                                            
+2025-11-06T12:46:24.9863867Z  ------ ----------------------------------------------------------------------- 
+2025-11-06T12:46:24.9864475Z   162    Unsafe usage of new static().                                          
+2025-11-06T12:46:24.9865196Z          🪪  new.static                                                         
+2025-11-06T12:46:24.9866141Z          💡  See:                                                               
+2025-11-06T12:46:24.9866786Z          https://phpstan.org/blog/solving-phpstan-error-unsafe-usage-of-new-st  
+2025-11-06T12:46:24.9867419Z          atic                                                                   
+2025-11-06T12:46:24.9867941Z  ------ ----------------------------------------------------------------------- 
+2025-11-06T12:46:24.9868302Z 
+2025-11-06T12:46:24.9871822Z  ------ -------------------------------------------------------------------- 
+2025-11-06T12:46:24.9872469Z   Line   app/Util/Lexer/Extractor.php                                        
+2025-11-06T12:46:24.9873103Z  ------ -------------------------------------------------------------------- 
+2025-11-06T12:46:24.9873753Z   90     Method App\Util\Lexer\Extractor::extractRepliedUsernames() invoked  
+2025-11-06T12:46:24.9874423Z          with 1 parameter, 0 required.                                       
+2025-11-06T12:46:24.9875169Z          🪪  arguments.count                                                 
+2025-11-06T12:46:24.9875854Z   93     Method                                                              
+2025-11-06T12:46:24.9876485Z          App\Util\Lexer\Extractor::extractMentionedUsernamesWithIndices()    
+2025-11-06T12:46:24.9877170Z          invoked with 1 parameter, 0 required.                               
+2025-11-06T12:46:24.9877891Z          🪪  arguments.count                                                 
+2025-11-06T12:46:24.9878470Z  ------ -------------------------------------------------------------------- 
+2025-11-06T12:46:24.9878828Z 
+2025-11-06T12:46:24.9879833Z  ------ ----------------------------------------------------------------- 
+2025-11-06T12:46:24.9880550Z   Line   app/Util/Lexer/HitHighlighter.php                                
+2025-11-06T12:46:24.9881178Z  ------ ----------------------------------------------------------------- 
+2025-11-06T12:46:24.9881780Z   108    Deprecated in PHP 8.4: Parameter #2 $hits (array) is implicitly  
+2025-11-06T12:46:24.9882442Z          nullable via default value null.                                 
+2025-11-06T12:46:24.9883190Z          🪪  parameter.implicitlyNullable                                 
+2025-11-06T12:46:24.9883781Z  ------ ----------------------------------------------------------------- 
+2025-11-06T12:46:24.9884126Z 
+2025-11-06T12:46:24.9884926Z  ------ ----------------------------------------------------------------- 
+2025-11-06T12:46:24.9885874Z   Line   app/Util/Lexer/Validator.php                                     
+2025-11-06T12:46:24.9886497Z  ------ ----------------------------------------------------------------- 
+2025-11-06T12:46:24.9887099Z   251    Variable $matches in isset() always exists and is not nullable.  
+2025-11-06T12:46:24.9887835Z          🪪  isset.variable                                               
+2025-11-06T12:46:24.9888370Z  ------ ----------------------------------------------------------------- 
+2025-11-06T12:46:24.9888727Z 
+2025-11-06T12:46:24.9890759Z  ------ ---------------------------------------------------------------------- 
+2025-11-06T12:46:24.9891445Z   Line   app/Util/Media/Image.php                                              
+2025-11-06T12:46:24.9892068Z  ------ ---------------------------------------------------------------------- 
+2025-11-06T12:46:24.9892716Z   57     Class Intervention\Image\Drivers\Vips\Driver not found.               
+2025-11-06T12:46:24.9893701Z          🪪  class.notFound                                                    
+2025-11-06T12:46:24.9894473Z          💡  Learn more at https://phpstan.org/user-guide/discovering-symbols  
+2025-11-06T12:46:24.9895104Z  ------ ---------------------------------------------------------------------- 
+2025-11-06T12:46:24.9895468Z 
+2025-11-06T12:46:24.9897292Z  ------ ---------------------------------------------------------------------- 
+2025-11-06T12:46:24.9897905Z   Line   config/app.php                                                        
+2025-11-06T12:46:24.9898686Z  ------ ---------------------------------------------------------------------- 
+2025-11-06T12:46:24.9899335Z   218    Class Pbmedia\LaravelFFMpeg\FFMpegFacade not found.                   
+2025-11-06T12:46:24.9900129Z          🪪  class.notFound                                                    
+2025-11-06T12:46:24.9900871Z          💡  Learn more at https://phpstan.org/user-guide/discovering-symbols  
+2025-11-06T12:46:24.9901509Z  ------ ---------------------------------------------------------------------- 
+2025-11-06T12:46:24.9901875Z 
+2025-11-06T12:46:24.9903651Z  ------ ---------------------------------------------------------------------- 
+2025-11-06T12:46:24.9904268Z   Line   config/database.php                                                   
+2025-11-06T12:46:24.9904871Z  ------ ---------------------------------------------------------------------- 
+2025-11-06T12:46:24.9905521Z   168    Class Illuminate\Database\DBAL\TimestampType not found.               
+2025-11-06T12:46:24.9906479Z          🪪  class.notFound                                                    
+2025-11-06T12:46:24.9907219Z          💡  Learn more at https://phpstan.org/user-guide/discovering-symbols  
+2025-11-06T12:46:24.9907841Z  ------ ---------------------------------------------------------------------- 
+2025-11-06T12:46:24.9908202Z 
+2025-11-06T12:46:24.9938759Z  ------ ----------------------------------------------------------------------- 
+2025-11-06T12:46:24.9939449Z   Line   config/websockets.php                                                  
+2025-11-06T12:46:24.9940079Z  ------ ----------------------------------------------------------------------- 
+2025-11-06T12:46:24.9940606Z   24     Class                                                                  
+2025-11-06T12:46:24.9941231Z          BeyondCode\LaravelWebSockets\Dashboard\Http\Middleware\Authorize not   
+2025-11-06T12:46:24.9941854Z          found.                                                                 
+2025-11-06T12:46:24.9942524Z          🪪  class.notFound                                                     
+2025-11-06T12:46:24.9943269Z          💡  Learn more at https://phpstan.org/user-guide/discovering-symbols   
+2025-11-06T12:46:24.9943999Z   45     Class BeyondCode\LaravelWebSockets\Apps\ConfigAppManager not found.    
+2025-11-06T12:46:24.9944777Z          🪪  class.notFound                                                     
+2025-11-06T12:46:24.9945515Z          💡  Learn more at https://phpstan.org/user-guide/discovering-symbols   
+2025-11-06T12:46:24.9946280Z   123    Class                                                                  
+2025-11-06T12:46:24.9946910Z          BeyondCode\LaravelWebSockets\ChannelManagers\LocalChannelManager not   
+2025-11-06T12:46:24.9947536Z          found.                                                                 
+2025-11-06T12:46:24.9948177Z          🪪  class.notFound                                                     
+2025-11-06T12:46:24.9948912Z          💡  Learn more at https://phpstan.org/user-guide/discovering-symbols   
+2025-11-06T12:46:24.9949364Z   136    Class                                                                  
+2025-11-06T12:46:24.9950022Z          BeyondCode\LaravelWebSockets\Statistics\Collectors\MemoryCollector     
+2025-11-06T12:46:24.9950581Z          not found.                                                             
+2025-11-06T12:46:24.9951126Z          🪪  class.notFound                                                     
+2025-11-06T12:46:24.9951998Z          💡  Learn more at https://phpstan.org/user-guide/discovering-symbols   
+2025-11-06T12:46:24.9952526Z   154    Class                                                                  
+2025-11-06T12:46:24.9953132Z          BeyondCode\LaravelWebSockets\ChannelManagers\RedisChannelManager not   
+2025-11-06T12:46:24.9953697Z          found.                                                                 
+2025-11-06T12:46:24.9954240Z          🪪  class.notFound                                                     
+2025-11-06T12:46:24.9955060Z          💡  Learn more at https://phpstan.org/user-guide/discovering-symbols   
+2025-11-06T12:46:24.9955545Z   167    Class                                                                  
+2025-11-06T12:46:24.9956260Z          BeyondCode\LaravelWebSockets\Statistics\Collectors\RedisCollector not  
+2025-11-06T12:46:24.9956775Z          found.                                                                 
+2025-11-06T12:46:24.9957360Z          🪪  class.notFound                                                     
+2025-11-06T12:46:24.9957811Z          💡  Learn more at https://phpstan.org/user-guide/discovering-symbols   
+2025-11-06T12:46:24.9958585Z   188    Class BeyondCode\LaravelWebSockets\Statistics\Stores\DatabaseStore     
+2025-11-06T12:46:24.9959072Z          not found.                                                             
+2025-11-06T12:46:24.9959521Z          🪪  class.notFound                                                     
+2025-11-06T12:46:24.9960238Z          💡  Learn more at https://phpstan.org/user-guide/discovering-symbols   
+2025-11-06T12:46:24.9960840Z   270    Class BeyondCode\LaravelWebSockets\Server\WebSocketHandler not found.  
+2025-11-06T12:46:24.9961376Z          🪪  class.notFound                                                     
+2025-11-06T12:46:24.9962058Z          💡  Learn more at https://phpstan.org/user-guide/discovering-symbols   
+2025-11-06T12:46:24.9962673Z   272    Class BeyondCode\LaravelWebSockets\Server\HealthHandler not found.     
+2025-11-06T12:46:24.9963194Z          🪪  class.notFound                                                     
+2025-11-06T12:46:24.9963930Z          💡  Learn more at https://phpstan.org/user-guide/discovering-symbols   
+2025-11-06T12:46:24.9964508Z   274    Class BeyondCode\LaravelWebSockets\API\TriggerEvent not found.         
+2025-11-06T12:46:24.9965053Z          🪪  class.notFound                                                     
+2025-11-06T12:46:24.9965905Z          💡  Learn more at https://phpstan.org/user-guide/discovering-symbols   
+2025-11-06T12:46:24.9966479Z   276    Class BeyondCode\LaravelWebSockets\API\FetchChannels not found.        
+2025-11-06T12:46:24.9966988Z          🪪  class.notFound                                                     
+2025-11-06T12:46:24.9967769Z          💡  Learn more at https://phpstan.org/user-guide/discovering-symbols   
+2025-11-06T12:46:24.9968373Z   278    Class BeyondCode\LaravelWebSockets\API\FetchChannel not found.         
+2025-11-06T12:46:24.9968866Z          🪪  class.notFound                                                     
+2025-11-06T12:46:24.9969609Z          💡  Learn more at https://phpstan.org/user-guide/discovering-symbols   
+2025-11-06T12:46:24.9970213Z   280    Class BeyondCode\LaravelWebSockets\API\FetchUsers not found.           
+2025-11-06T12:46:24.9970696Z          🪪  class.notFound                                                     
+2025-11-06T12:46:24.9971508Z          💡  Learn more at https://phpstan.org/user-guide/discovering-symbols   
+2025-11-06T12:46:24.9971954Z   297    Class React\Promise\FulfilledPromise not found.                        
+2025-11-06T12:46:24.9972390Z          🪪  class.notFound                                                     
+2025-11-06T12:46:24.9972814Z          💡  Learn more at https://phpstan.org/user-guide/discovering-symbols   
+2025-11-06T12:46:24.9973181Z  ------ ----------------------------------------------------------------------- 
+2025-11-06T12:46:24.9973389Z 
+2025-11-06T12:46:24.9974316Z  ------ ----------------------------------------- 
+2025-11-06T12:46:24.9974962Z   Line   database/factories/UserFactory.php       
+2025-11-06T12:46:24.9975273Z  ------ ----------------------------------------- 
+2025-11-06T12:46:24.9975876Z   16     Variable $factory might not be defined.  
+2025-11-06T12:46:24.9976391Z          🪪  variable.undefined                   
+2025-11-06T12:46:24.9976644Z  ------ ----------------------------------------- 
+2025-11-06T12:46:24.9976810Z 
+2025-11-06T12:46:24.9978661Z  ------ --------------------------- 
+2025-11-06T12:46:24.9979197Z   Line   tests/Pest.php             
+2025-11-06T12:46:24.9979472Z  ------ --------------------------- 
+2025-11-06T12:46:24.9980010Z   4      Undefined variable: $this  
+2025-11-06T12:46:24.9980623Z          🪪  variable.undefined     
+2025-11-06T12:46:24.9981058Z  ------ --------------------------- 
+2025-11-06T12:46:24.9981353Z 
+2025-11-06T12:46:25.0013162Z  ------ ----------------------------------------------------------------------- 
+2025-11-06T12:46:25.0014006Z   Line   tests/Unit/APAnnounceStrategyTest.php                                  
+2025-11-06T12:46:25.0014769Z  ------ ----------------------------------------------------------------------- 
+2025-11-06T12:46:25.0015465Z   15     Access to an undefined property                                        
+2025-11-06T12:46:25.0016412Z          Tests\Unit\APAnnounceStrategyTest::$invalid.                           
+2025-11-06T12:46:25.0017337Z          🪪  property.notFound                                                  
+2025-11-06T12:46:25.0018274Z          💡  Learn more: https://phpstan.org/blog/solving-phpstan-access-to-und  
+2025-11-06T12:46:25.0019015Z          efined-property                                                        
+2025-11-06T12:46:25.0019715Z   25     Access to an undefined property                                        
+2025-11-06T12:46:25.0020484Z          Tests\Unit\APAnnounceStrategyTest::$mastodon.                          
+2025-11-06T12:46:25.0021375Z          🪪  property.notFound                                                  
+2025-11-06T12:46:25.0022278Z          💡  Learn more: https://phpstan.org/blog/solving-phpstan-access-to-und  
+2025-11-06T12:46:25.0023033Z          efined-property                                                        
+2025-11-06T12:46:25.0023725Z   27     Access to an undefined property                                        
+2025-11-06T12:46:25.0024512Z          Tests\Unit\APAnnounceStrategyTest::$pleroma.                           
+2025-11-06T12:46:25.0025416Z          🪪  property.notFound                                                  
+2025-11-06T12:46:25.0026482Z          💡  Learn more: https://phpstan.org/blog/solving-phpstan-access-to-und  
+2025-11-06T12:46:25.0027214Z          efined-property                                                        
+2025-11-06T12:46:25.0029227Z   33     Access to an undefined property                                        
+2025-11-06T12:46:25.0029998Z          Tests\Unit\APAnnounceStrategyTest::$invalid.                           
+2025-11-06T12:46:25.0030835Z          🪪  property.notFound                                                  
+2025-11-06T12:46:25.0031660Z          💡  Learn more: https://phpstan.org/blog/solving-phpstan-access-to-und  
+2025-11-06T12:46:25.0032331Z          efined-property                                                        
+2025-11-06T12:46:25.0032958Z   39     Access to an undefined property                                        
+2025-11-06T12:46:25.0033679Z          Tests\Unit\APAnnounceStrategyTest::$mastodon.                          
+2025-11-06T12:46:25.0034446Z          🪪  property.notFound                                                  
+2025-11-06T12:46:25.0035249Z          💡  Learn more: https://phpstan.org/blog/solving-phpstan-access-to-und  
+2025-11-06T12:46:25.0036046Z          efined-property                                                        
+2025-11-06T12:46:25.0036911Z   45     Access to an undefined property                                        
+2025-11-06T12:46:25.0037628Z          Tests\Unit\APAnnounceStrategyTest::$pleroma.                           
+2025-11-06T12:46:25.0038461Z          🪪  property.notFound                                                  
+2025-11-06T12:46:25.0039251Z          💡  Learn more: https://phpstan.org/blog/solving-phpstan-access-to-und  
+2025-11-06T12:46:25.0039929Z          efined-property                                                        
+2025-11-06T12:46:25.0040563Z   51     Access to an undefined property                                        
+2025-11-06T12:46:25.0041455Z          Tests\Unit\APAnnounceStrategyTest::$mastodon.                          
+2025-11-06T12:46:25.0042250Z          🪪  property.notFound                                                  
+2025-11-06T12:46:25.0043036Z          💡  Learn more: https://phpstan.org/blog/solving-phpstan-access-to-und  
+2025-11-06T12:46:25.0043705Z          efined-property                                                        
+2025-11-06T12:46:25.0044345Z   67     Access to an undefined property                                        
+2025-11-06T12:46:25.0045055Z          Tests\Unit\APAnnounceStrategyTest::$pleroma.                           
+2025-11-06T12:46:25.0045922Z          🪪  property.notFound                                                  
+2025-11-06T12:46:25.0046407Z          💡  Learn more: https://phpstan.org/blog/solving-phpstan-access-to-und  
+2025-11-06T12:46:25.0046823Z          efined-property                                                        
+2025-11-06T12:46:25.0047220Z   83     Access to an undefined property                                        
+2025-11-06T12:46:25.0047649Z          Tests\Unit\APAnnounceStrategyTest::$invalid.                           
+2025-11-06T12:46:25.0048109Z          🪪  property.notFound                                                  
+2025-11-06T12:46:25.0048569Z          💡  Learn more: https://phpstan.org/blog/solving-phpstan-access-to-und  
+2025-11-06T12:46:25.0048971Z          efined-property                                                        
+2025-11-06T12:46:25.0049308Z  ------ ----------------------------------------------------------------------- 
+2025-11-06T12:46:25.0049516Z 
+2025-11-06T12:46:25.0052632Z  -- --------------------------------------------------------------------------- 
+2025-11-06T12:46:25.0053210Z      Error                                                                      
+2025-11-06T12:46:25.0053739Z  -- --------------------------------------------------------------------------- 
+2025-11-06T12:46:25.0054415Z      Ignored error pattern #PHPDoc tag @var# was not matched in reported        
+2025-11-06T12:46:25.0055024Z      errors.                                                                    
+2025-11-06T12:46:25.0055737Z      Ignored error pattern #Class                                               
+2025-11-06T12:46:25.0056449Z      App\\Http\\Controllers\\Groups\\VideoThumbnail was not found# was not      
+2025-11-06T12:46:25.0057161Z      matched in reported errors.                                                
+2025-11-06T12:46:25.0057874Z      Ignored error pattern #Class App\\Http\\Controllers\\Groups\\StatusDelete  
+2025-11-06T12:46:25.0058597Z      was not found# was not matched in reported errors.                         
+2025-11-06T12:46:25.0059330Z      Ignored error pattern #Class App\\Jobs\\GroupPipeline\\MentionPipeline     
+2025-11-06T12:46:25.0060043Z      was not found# was not matched in reported errors.                         
+2025-11-06T12:46:25.0060668Z  -- --------------------------------------------------------------------------- 
+2025-11-06T12:46:25.0061029Z 
+2025-11-06T12:46:25.0061266Z  [ERROR] Found 169 errors   
