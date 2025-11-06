@@ -39,7 +39,6 @@ class Classifier
 	public function tokenize(string $string): Collection
 	{
 		if ($this->tokenizer) {
-			/** @var array<int, string> */
 			$tokens = call_user_func($this->tokenizer, $string);
 
 			return collect($tokens);
