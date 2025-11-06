@@ -72,7 +72,7 @@ class ImportInstagram implements ShouldQueue
 				if(!$min->lt($taken_at)) {
 					$taken_at = Carbon::now();
 				}
-			} catch (Exception $e) {
+			} catch (\Exception $e) {
 
 			}
 			$filename = last( explode('/', $import['path']) );

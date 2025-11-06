@@ -30,6 +30,8 @@ use App\Services\AccountService;
 use App\Services\FollowerService;
 use App\Services\NotificationAppGatewayService;
 use App\Services\PollService;
+use App\Models\PollVote;
+use App\User;
 use App\Services\PushNotificationService;
 use App\Services\ReblogService;
 use App\Services\RelationshipService;

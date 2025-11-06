@@ -42,7 +42,7 @@ class RemoteAuthService
             return false;
         } catch (ConnectionException $e) {
             return false;
-        } catch (Exception $e) {
+        } catch (\Exception $e) {
             return false;
         }
 
@@ -129,7 +129,7 @@ class RemoteAuthService
                 return false;
             } catch (ConnectionException $e) {
                 return false;
-            } catch (Exception $e) {
+            } catch (\Exception $e) {
                 return false;
             }
             $json = $res->json();
@@ -153,7 +153,7 @@ class RemoteAuthService
             return false;
         } catch (ConnectionException $e) {
             return false;
-        } catch (Exception $e) {
+        } catch (\Exception $e) {
             return false;
         }
         $json = $res->json();
@@ -182,7 +182,7 @@ class RemoteAuthService
             return;
         } catch (ConnectionException $e) {
             return;
-        } catch (Exception $e) {
+        } catch (\Exception $e) {
             return;
         }
 

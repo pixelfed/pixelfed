@@ -102,7 +102,7 @@ class LikePipeline implements ShouldQueue
                 $notification->item_type = "App\Status";
                 $notification->save();
 
-            } catch (Exception $e) {
+            } catch (\Exception $e) {
                 Log::warning("LikePipeline: Failed to create notification for like {$like->id}: " . $e->getMessage());
             }
 

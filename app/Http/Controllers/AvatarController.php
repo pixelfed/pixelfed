@@ -42,7 +42,7 @@ class AvatarController extends Controller
             Cache::forget("avatar:{$profile->id}");
             Cache::forget('user:account:id:'.$user->id);
             AvatarOptimize::dispatch($user->profile, $currentAvatar);
-        } catch (Exception $e) {
+        } catch (\Exception $e) {
         }
 
         return redirect()->back()->with('status', 'Avatar updated successfully. It may take a few minutes to update across the site.');

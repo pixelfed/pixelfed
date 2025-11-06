@@ -232,7 +232,7 @@ class RemoteFollowImportRecent implements ShouldQueue
             @unlink($file);
 
             return true;
-        } catch (Exception $e) {
+        } catch (\Exception $e) {
             return false;
         }
     }

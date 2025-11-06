@@ -11,6 +11,8 @@ use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
 use Illuminate\Support\Facades\Redis;
 use App\Services\MediaStorageService;
+use Illuminate\Support\Facades\Storage;
+use Illuminate\Http\File;
 
 class GroupMediaPipeline implements ShouldQueue
 {

@@ -60,7 +60,7 @@ class SoftwareUpdateService
             return;
         } catch (ConnectionException $e) {
             return;
-        } catch (Exception $e) {
+        } catch (\Exception $e) {
             return;
         }
 

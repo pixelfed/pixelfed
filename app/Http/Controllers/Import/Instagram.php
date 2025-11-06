@@ -196,7 +196,7 @@ trait Instagram
             ->whereStage(3)
             ->firstOrFail();
             ImportInstagram::dispatch($import);
-        } catch (Exception $e) {
+        } catch (\Exception $e) {
             \Log::info($e);
         }
 

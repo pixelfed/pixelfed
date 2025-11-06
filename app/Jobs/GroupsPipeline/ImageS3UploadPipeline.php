@@ -16,6 +16,7 @@ use GuzzleHttp\Exception\ClientException;
 use Aws\S3\Exception\S3Exception;
 use GuzzleHttp\Exception\ConnectException;
 use League\Flysystem\UnableToWriteFile;
+use Illuminate\Support\Facades\Log;
 
 class ImageS3UploadPipeline implements ShouldQueue
 {
