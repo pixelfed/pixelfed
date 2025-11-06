@@ -17,7 +17,7 @@ class FollowedTagResource extends JsonResource
      */
     public function toArray($request)
     {
-    	$tag = HashtagService::get($this->hashtag_id);
+    	$tag = HashtagService::get($this->resource->hashtag_id);
 
     	if(!$tag || !isset($tag['name'])) {
     		return [];

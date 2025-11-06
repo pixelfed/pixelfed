@@ -15,22 +15,22 @@ class AdminUser extends JsonResource
      */
     public function toArray($request)
     {
-        $account = AccountService::get($this->profile_id, true);
+        $account = AccountService::get($this->resource->profile_id, true);
 
         $res = [
-            'id' => (string) $this->id,
-            'profile_id' => (string) $this->profile_id,
-            'name' => $this->name,
-            'username' => $this->username,
-            'is_admin' => (bool) $this->is_admin,
-            'email' => $this->email,
-            'email_verified_at' => $this->email_verified_at,
-            'two_factor_enabled' => (bool) $this->{'2fa_enabled'},
-            'register_source' => $this->register_source,
-            'app_register_ip' => $this->app_register_ip,
-            'has_interstitial' => (bool) $this->has_interstitial,
-            'last_active_at' => $this->last_active_at,
-            'created_at' => $this->created_at,
+            'id' => (string) $this->resource->id,
+            'profile_id' => (string) $this->resource->profile_id,
+            'name' => $this->resource->name,
+            'username' => $this->resource->username,
+            'is_admin' => (bool) $this->resource->is_admin,
+            'email' => $this->resource->email,
+            'email_verified_at' => $this->resource->email_verified_at,
+            'two_factor_enabled' => (bool) $this->resource->{'2fa_enabled'},
+            'register_source' => $this->resource->register_source,
+            'app_register_ip' => $this->resource->app_register_ip,
+            'has_interstitial' => (bool) $this->resource->has_interstitial,
+            'last_active_at' => $this->resource->last_active_at,
+            'created_at' => $this->resource->created_at,
         ];
 
         if ($account) {

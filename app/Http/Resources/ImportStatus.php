@@ -15,6 +15,6 @@ class ImportStatus extends JsonResource
      */
     public function toArray(Request $request): array
     {
-        return StatusService::get($this->status_id, false);
+        return StatusService::get($this->resource->status_id, false);
     }
 }
