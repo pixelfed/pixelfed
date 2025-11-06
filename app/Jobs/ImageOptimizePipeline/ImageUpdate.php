@@ -118,7 +118,7 @@ class ImageUpdate implements ShouldQueue
         $disk = Storage::disk(config('filesystems.default'));
         $localFs = config('filesystems.default') === 'local';
 
-        if (! $path || empty($path)) {
+        if (! $path) {
             return 0;
         }
 

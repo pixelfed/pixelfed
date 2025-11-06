@@ -73,7 +73,7 @@ class AutospamService
 
         return Cache::remember(self::MODEL_CACHE_KEY, 86400, function () {
             $res = Storage::get(self::MODEL_FILE_PATH);
-            if (! $res || empty($res)) {
+            if (! $res) {
                 return null;
             }
 

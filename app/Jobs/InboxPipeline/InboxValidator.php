@@ -73,7 +73,7 @@ class InboxValidator implements ShouldQueue
 			return;
 		}
 
-		if(empty($headers) || empty($payload) || !isset($headers['signature']) || !isset($headers['date'])) {
+		if(!$headers || !$payload || !isset($headers['signature']) || !isset($headers['date'])) {
 			Log::info("InboxValidator: Invalid headers or payload structure, skipping job");
 			return;
 		}
@@ -97,7 +97,7 @@ class InboxValidator implements ShouldQueue
 			return;
 		}
 
-		if(empty($profile) || empty($headers) || empty($payload)) {
+		if(!$profile || !$headers || !$payload) {
 			return;
 		}
 
@@ -233,7 +233,7 @@ class InboxValidator implements ShouldQueue
 		}
 
 		$res = json_decode($res->body(), true, 8);
-		if(!$res || empty($res) || !isset($res['publicKey']) || !isset($res['publicKey']['id'])) {
+		if(!$res || !isset($res['publicKey']) || !isset($res['publicKey']['id'])) {
 			return;
 		}
 		if($res['publicKey']['id'] !== $actor->key_id) {

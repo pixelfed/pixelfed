@@ -131,7 +131,7 @@ class CollectionService
 	public static function getThumb($id)
 	{
 		$item = self::getItems($id, 0, 1);
-		if(!$item || empty($item)) {
+		if(!$item) {
 			return url('/storage/no-preview.png');
 		}
 		$status = StatusService::get($item[0]);

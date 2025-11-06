@@ -23,7 +23,7 @@ class NotificationAppGatewayService
         }
 
         $apiKey = config('instance.notifications.nag.api_key');
-        if (! $apiKey || empty($apiKey) || strlen($apiKey) !== 45) {
+        if (! $apiKey || strlen($apiKey) !== 45) {
             return false;
         }
 
@@ -64,7 +64,7 @@ class NotificationAppGatewayService
 
     public static function isValidExpoPushToken($token)
     {
-        if (! $token || empty($token)) {
+        if (! $token) {
             return false;
         }
 
@@ -89,19 +89,19 @@ class NotificationAppGatewayService
             return false;
         }
 
-        if (! $userToken || empty($userToken) || ! self::isValidExpoPushToken($userToken)) {
+        if (! $userToken || ! self::isValidExpoPushToken($userToken)) {
             return false;
         }
 
         $types = PushNotificationService::NOTIFY_TYPES;
 
-        if (! $type || empty($type) || ! in_array($type, $types)) {
+        if (! $type || ! in_array($type, $types)) {
             return false;
         }
 
         $apiKey = config('instance.notifications.nag.api_key');
 
-        if (! $apiKey || empty($apiKey)) {
+        if (! $apiKey) {
             return false;
         }
         $url = 'https://'.config('instance.notifications.nag.endpoint').'/api/v1/relay/deliver';

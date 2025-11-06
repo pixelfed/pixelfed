@@ -20,7 +20,7 @@ class WebfingerService
         if (! $n) {
             return false;
         }
-        if (empty($n) || ! str_starts_with($n, 'https://')) {
+        if (! str_starts_with($n, 'https://')) {
             return false;
         }
         $host = parse_url($n, PHP_URL_HOST);

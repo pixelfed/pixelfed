@@ -44,7 +44,7 @@ class HandleUpdateActivity implements ShouldQueue
             return;
         }
 
-        if (empty($payload) || ! isset($payload['actor'])) {
+        if (! $payload || ! isset($payload['actor'])) {
             Log::info("HandleUpdateActivity: Invalid payload or missing actor, skipping job");
             return;
         }

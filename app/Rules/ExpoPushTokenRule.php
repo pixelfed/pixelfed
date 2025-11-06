@@ -14,7 +14,7 @@ class ExpoPushTokenRule implements ValidationRule
      */
     public function validate(string $attribute, mixed $value, Closure $fail): void
     {
-        if (! $value || empty($value)) {
+        if (! $value) {
             $fail('The :attribute must not be empty.');
         }
 
