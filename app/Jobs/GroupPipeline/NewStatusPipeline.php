@@ -11,6 +11,7 @@ use App\Services\StatusService;
 use App\Status;
 use App\Util\Lexer\Autolink;
 use App\Util\Lexer\Extractor;
+use App\Jobs\MentionPipeline\MentionPipeline;
 use DB;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
@@ -58,7 +59,7 @@ class NewStatusPipeline implements ShouldQueue
         }
 
         if (count($this->mentions)) {
-            $this->storeMentions($this->mentions);
+            $this->storeMentions();
         }
     }
 
@@ -89,10 +90,6 @@ class NewStatusPipeline implements ShouldQueue
                 );
 
             });
-        }
-
-        if (count($this->mentions)) {
-            $this->storeMentions();
         }
         StatusService::del($status->id);
     }
