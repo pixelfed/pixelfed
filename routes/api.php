@@ -321,23 +321,23 @@ Route::group(['prefix' => 'api'], function () use ($middleware) {
 
     Route::group(['prefix' => 'admin'], function () use ($middleware) {
         Route::post('moderate/post/{id}', 'Api\ApiV1Dot1Controller@moderatePost')->middleware($middleware);
-        Route::get('supported', 'Api\AdminApiController@supported')->middleware($middleware);
-        Route::get('stats', 'Api\AdminApiController@getStats')->middleware($middleware);
+        Route::get('supported', 'Api\V1\Admin\StatsController@supported')->middleware($middleware);
+        Route::get('stats', 'Api\V1\Admin\StatsController@getStats')->middleware($middleware);
 
-        Route::get('autospam/list', 'Api\AdminApiController@autospam')->middleware($middleware);
-        Route::post('autospam/handle', 'Api\AdminApiController@autospamHandle')->middleware($middleware);
-        Route::get('mod-reports/list', 'Api\AdminApiController@modReports')->middleware($middleware);
-        Route::post('mod-reports/handle', 'Api\AdminApiController@modReportHandle')->middleware($middleware);
-        Route::get('config', 'Api\AdminApiController@getConfiguration')->middleware($middleware);
-        Route::post('config/update', 'Api\AdminApiController@updateConfiguration')->middleware($middleware);
-        Route::get('users/list', 'Api\AdminApiController@getUsers')->middleware($middleware);
-        Route::get('users/get', 'Api\AdminApiController@getUser')->middleware($middleware);
-        Route::post('users/action', 'Api\AdminApiController@userAdminAction')->middleware($middleware);
-        Route::get('instances/list', 'Api\AdminApiController@instances')->middleware($middleware);
-        Route::get('instances/get', 'Api\AdminApiController@getInstance')->middleware($middleware);
-        Route::post('instances/moderate', 'Api\AdminApiController@moderateInstance')->middleware($middleware);
-        Route::post('instances/refresh-stats', 'Api\AdminApiController@refreshInstanceStats')->middleware($middleware);
-        Route::get('instance/stats', 'Api\AdminApiController@getAllStats')->middleware($middleware);
+        Route::get('autospam/list', 'Api\V1\Admin\ModerationController@autospam')->middleware($middleware);
+        Route::post('autospam/handle', 'Api\V1\Admin\ModerationController@autospamHandle')->middleware($middleware);
+        Route::get('mod-reports/list', 'Api\V1\Admin\ModerationController@modReports')->middleware($middleware);
+        Route::post('mod-reports/handle', 'Api\V1\Admin\ModerationController@modReportHandle')->middleware($middleware);
+        Route::get('config', 'Api\V1\Admin\ConfigController@getConfiguration')->middleware($middleware);
+        Route::post('config/update', 'Api\V1\Admin\ConfigController@updateConfiguration')->middleware($middleware);
+        Route::get('users/list', 'Api\V1\Admin\UserController@getUsers')->middleware($middleware);
+        Route::get('users/get', 'Api\V1\Admin\UserController@getUser')->middleware($middleware);
+        Route::post('users/action', 'Api\V1\Admin\UserController@userAdminAction')->middleware($middleware);
+        Route::get('instances/list', 'Api\V1\Admin\InstanceController@instances')->middleware($middleware);
+        Route::get('instances/get', 'Api\V1\Admin\InstanceController@getInstance')->middleware($middleware);
+        Route::post('instances/moderate', 'Api\V1\Admin\InstanceController@moderateInstance')->middleware($middleware);
+        Route::post('instances/refresh-stats', 'Api\V1\Admin\InstanceController@refreshInstanceStats')->middleware($middleware);
+        Route::get('instance/stats', 'Api\V1\Admin\InstanceController@getAllStats')->middleware($middleware);
     });
 
     Route::group(['prefix' => 'landing/v1'], function () {
