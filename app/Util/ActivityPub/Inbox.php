@@ -1364,7 +1364,7 @@ class Inbox
                     $obc = $objects->count();
                 }
             }
-            $count = Status::whereProfileId($accountId)->find($objects)->count();
+            $count = Status::whereProfileId($accountId)->whereIn('id', $objects)->count();
             if ($obc !== $count) {
                 return;
             }

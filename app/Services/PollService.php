@@ -84,8 +84,7 @@ class PollService
 	{
 		return !$profileId ? false : PollVote::whereStoryId($id)
 			->whereProfileId($profileId)
-			->pluck('choice')
-			->first();
+			->value('choice');
 	}
 
 	public static function ownVotes($id, $profileId = false)

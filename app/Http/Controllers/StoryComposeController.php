@@ -124,7 +124,7 @@ class StoryComposeController extends Controller
                     ], 422);
                 }
             } finally {
-                if (! $localFs && isset($tempPath) && file_exists($tempPath)) {
+                if (! $localFs && file_exists($tempPath)) {
                     unlink($tempPath);
                 }
             }
