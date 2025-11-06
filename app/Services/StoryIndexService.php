@@ -238,7 +238,10 @@ class StoryIndexService
     {
         $lockKey = $this->rebuildLockKey();
 
-        $lockAcquired = Redis::set($lockKey, '1', 'EX', self::REBUILD_LOCK_TTL, 'NX');
+        $lockAcquired = Redis::setnx($lockKey, '1');
+        if ($lockAcquired) {
+            Redis::expire($lockKey, self::REBUILD_LOCK_TTL);
+        }
 
         if (! $lockAcquired) {
             return ['status' => 'already_rebuilding', 'message' => 'Index rebuild already in progress'];

@@ -201,7 +201,7 @@ class RemoteFollowImportRecent implements ShouldQueue
         Log::info(count($attachments).' media found...');
 
         if ($count !== 0) {
-            NewStatusPipeline::dispatch($status, $status->media->first());
+            NewStatusPipeline::dispatch($status);
         }
     }
 
