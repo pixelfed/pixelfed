@@ -11,6 +11,8 @@ class ConfirmEmail extends Mailable
 {
     use Queueable, SerializesModels;
 
+    protected $verify;
+
     /**
      * Create a new message instance.
      *
