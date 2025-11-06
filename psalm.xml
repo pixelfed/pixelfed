@@ -10,6 +10,11 @@
 >
     <projectFiles>
         <directory name="app"/>
+        <directory name="config"/>
+        <directory name="database"/>
+        <directory name="resources"/>
+        <directory name="routes"/>
+        <directory name="tests"/>
         <ignoreFiles>
             <directory name="vendor"/>
         </ignoreFiles>
