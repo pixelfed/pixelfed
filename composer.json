@@ -5,7 +5,7 @@
     "license": "AGPL-3.0-only",
     "type": "project",
     "require": {
-        "php": "^8.2|^8.3|^8.4",
+        "php": "^8.3|^8.4",
         "ext-bcmath": "*",
         "ext-ctype": "*",
         "ext-curl": "*",
