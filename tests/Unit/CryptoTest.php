@@ -23,7 +23,9 @@ class CryptoTest extends TestCase
     public function RSASigning()
     {
         $rsa = new RSA();
-        extract($rsa->createKey());
+        $keys = $rsa->createKey();
+        $privatekey = $keys['privatekey'];
+        $publickey = $keys['publickey'];
         $rsa->loadKey($privatekey);
         $plaintext = 'pixelfed rsa test';
         $signature = $rsa->sign($plaintext);
