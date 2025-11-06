@@ -663,7 +663,7 @@ class StoryFetch implements ShouldQueue
      */
     private function getAllowedMimeTypes(): array
     {
-        $mediaTypes = config_cache('pixelfed.media_types', 'image/jpeg,image/png');
+        $mediaTypes = config_cache('pixelfed.media_types');
 
         return array_map('trim', explode(',', $mediaTypes));
     }
