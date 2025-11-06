@@ -2,10 +2,14 @@
 
 namespace App\Http\Resources;
 
+use App\Profile;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
 use App\Services\AccountService;
 
+/**
+ * @property Profile $resource
+ */
 class AdminProfile extends JsonResource
 {
     /**
@@ -15,15 +19,15 @@ class AdminProfile extends JsonResource
      */
     public function toArray(Request $request): array
     {
-        $res = AccountService::get($this->id, true);
-        $res['domain'] = $this->domain;
-        $res['status'] = $this->status;
+        $res = AccountService::get($this->resource->id, true);
+        $res['domain'] = $this->resource->domain;
+        $res['status'] = $this->resource->status;
         $res['limits'] = [
-            'exist' => $this->cw || $this->unlisted || $this->no_autolink,
-            'autocw' => (bool) $this->cw,
-            'unlisted' => (bool) $this->unlisted,
-            'no_autolink' => (bool) $this->no_autolink,
-            'banned' => (bool) $this->status == 'banned'
+            'exist' => $this->resource->cw || $this->resource->unlisted || $this->resource->no_autolink,
+            'autocw' => (bool) $this->resource->cw,
+            'unlisted' => (bool) $this->resource->unlisted,
+            'no_autolink' => (bool) $this->resource->no_autolink,
+            'banned' => (bool) $this->resource->status == 'banned'
         ];
         return $res;
     }
