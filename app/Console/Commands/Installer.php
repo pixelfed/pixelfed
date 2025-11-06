@@ -212,7 +212,7 @@ class Installer extends Command
         ];
 
         foreach ($paths as $path) {
-            if (is_writeable($path) == false) {
+            if (is_writable($path) == false) {
                 $this->error("- Invalid permission found! Aborting installation.");
                 $this->error("  Please make the following path writeable by the web server:");
                 $this->error("  $path");
