@@ -91,79 +91,79 @@ Route::prefix('api/v0/groups')->middleware($middleware)->group(function () {
 Route::group(['prefix' => 'api'], function () use ($middleware) {
 
     Route::group(['prefix' => 'v1'], function () use ($middleware) {
-        Route::post('apps', 'Api\ApiV1Controller@apps');
-        Route::get('apps/verify_credentials', 'Api\ApiV1Controller@getApp')->middleware($middleware);
-        Route::get('instance', 'Api\ApiV1Controller@instance');
-        Route::get('instance/peers', 'Api\ApiV1Controller@instancePeers');
-        Route::get('bookmarks', 'Api\ApiV1Controller@bookmarks')->middleware($middleware);
+        Route::post('apps', 'Api\V1\AppController@apps');
+        Route::get('apps/verify_credentials', 'Api\V1\AppController@getApp')->middleware($middleware);
+        Route::get('instance', 'Api\V1\InstanceController@instance');
+        Route::get('instance/peers', 'Api\V1\InstanceController@instancePeers');
+        Route::get('bookmarks', 'Api\V1\BookmarkController@bookmarks')->middleware($middleware);
 
-        Route::get('accounts/verify_credentials', 'Api\ApiV1Controller@verifyCredentials')->middleware($middleware);
-        Route::match(['post', 'patch'], 'accounts/update_credentials', 'Api\ApiV1Controller@accountUpdateCredentials')->middleware($middleware);
-        Route::get('accounts/relationships', 'Api\ApiV1Controller@accountRelationshipsById')->middleware($middleware);
-        Route::get('accounts/search', 'Api\ApiV1Controller@accountSearch')->middleware($middleware);
-        Route::get('accounts/{id}/statuses', 'Api\ApiV1Controller@accountStatusesById')->middleware($middleware);
-        Route::get('accounts/{id}/following', 'Api\ApiV1Controller@accountFollowingById')->middleware($middleware);
-        Route::get('accounts/{id}/followers', 'Api\ApiV1Controller@accountFollowersById')->middleware($middleware);
-        Route::post('accounts/{id}/follow', 'Api\ApiV1Controller@accountFollowById')->middleware($middleware);
-        Route::post('accounts/{id}/unfollow', 'Api\ApiV1Controller@accountUnfollowById')->middleware($middleware);
-        Route::post('accounts/{id}/block', 'Api\ApiV1Controller@accountBlockById')->middleware($middleware);
-        Route::post('accounts/{id}/unblock', 'Api\ApiV1Controller@accountUnblockById')->middleware($middleware);
-        Route::post('accounts/{id}/remove_from_followers', 'Api\ApiV1Controller@accountRemoveFollowById')->middleware($middleware);
-        Route::post('accounts/{id}/pin', 'Api\ApiV1Controller@accountEndorsements')->middleware($middleware);
-        Route::post('accounts/{id}/unpin', 'Api\ApiV1Controller@accountEndorsements')->middleware($middleware);
-        Route::post('accounts/{id}/mute', 'Api\ApiV1Controller@accountMuteById')->middleware($middleware);
-        Route::post('accounts/{id}/unmute', 'Api\ApiV1Controller@accountUnmuteById')->middleware($middleware);
-        Route::get('accounts/{id}/lists', 'Api\ApiV1Controller@accountListsById')->middleware($middleware);
-        Route::get('lists/{id}/accounts', 'Api\ApiV1Controller@accountListsById')->middleware($middleware);
-        Route::get('accounts/{id}', 'Api\ApiV1Controller@accountById')->middleware($middleware);
+        Route::get('accounts/verify_credentials', 'Api\V1\AccountController@verifyCredentials')->middleware($middleware);
+        Route::match(['post', 'patch'], 'accounts/update_credentials', 'Api\V1\AccountController@accountUpdateCredentials')->middleware($middleware);
+        Route::get('accounts/relationships', 'Api\V1\AccountController@accountRelationshipsById')->middleware($middleware);
+        Route::get('accounts/search', 'Api\V1\AccountController@accountSearch')->middleware($middleware);
+        Route::get('accounts/{id}/statuses', 'Api\V1\AccountController@accountStatusesById')->middleware($middleware);
+        Route::get('accounts/{id}/following', 'Api\V1\AccountController@accountFollowingById')->middleware($middleware);
+        Route::get('accounts/{id}/followers', 'Api\V1\AccountController@accountFollowersById')->middleware($middleware);
+        Route::post('accounts/{id}/follow', 'Api\V1\AccountController@accountFollowById')->middleware($middleware);
+        Route::post('accounts/{id}/unfollow', 'Api\V1\AccountController@accountUnfollowById')->middleware($middleware);
+        Route::post('accounts/{id}/block', 'Api\V1\AccountController@accountBlockById')->middleware($middleware);
+        Route::post('accounts/{id}/unblock', 'Api\V1\AccountController@accountUnblockById')->middleware($middleware);
+        Route::post('accounts/{id}/remove_from_followers', 'Api\V1\AccountController@accountRemoveFollowById')->middleware($middleware);
+        Route::post('accounts/{id}/pin', 'Api\V1\AccountController@accountEndorsements')->middleware($middleware);
+        Route::post('accounts/{id}/unpin', 'Api\V1\AccountController@accountEndorsements')->middleware($middleware);
+        Route::post('accounts/{id}/mute', 'Api\V1\AccountController@accountMuteById')->middleware($middleware);
+        Route::post('accounts/{id}/unmute', 'Api\V1\AccountController@accountUnmuteById')->middleware($middleware);
+        Route::get('accounts/{id}/lists', 'Api\V1\AccountController@accountListsById')->middleware($middleware);
+        Route::get('lists/{id}/accounts', 'Api\V1\AccountController@accountListsById')->middleware($middleware);
+        Route::get('accounts/{id}', 'Api\V1\AccountController@accountById')->middleware($middleware);
 
         Route::post('avatar/update', 'ApiController@avatarUpdate')->middleware($middleware);
-        Route::get('blocks', 'Api\ApiV1Controller@accountBlocks')->middleware($middleware);
-        Route::get('conversations', 'Api\ApiV1Controller@conversations')->middleware($middleware);
-        Route::get('custom_emojis', 'Api\ApiV1Controller@customEmojis');
+        Route::get('blocks', 'Api\V1\AccountController@accountBlocks')->middleware($middleware);
+        Route::get('conversations', 'Api\V1\ConversationController@conversations')->middleware($middleware);
+        Route::get('custom_emojis', 'Api\V1\AppController@customEmojis');
         Route::get('domain_blocks', 'Api\V1\DomainBlockController@index')->middleware($middleware);
         Route::post('domain_blocks', 'Api\V1\DomainBlockController@store')->middleware($middleware);
         Route::delete('domain_blocks', 'Api\V1\DomainBlockController@delete')->middleware($middleware);
-        Route::get('endorsements', 'Api\ApiV1Controller@accountEndorsements')->middleware($middleware);
-        Route::get('favourites', 'Api\ApiV1Controller@accountFavourites')->middleware($middleware);
-        Route::get('filters', 'Api\ApiV1Controller@accountFilters')->middleware($middleware);
-        Route::get('follow_requests', 'Api\ApiV1Controller@accountFollowRequests')->middleware($middleware);
-        Route::post('follow_requests/{id}/authorize', 'Api\ApiV1Controller@accountFollowRequestAccept')->middleware($middleware);
-        Route::post('follow_requests/{id}/reject', 'Api\ApiV1Controller@accountFollowRequestReject')->middleware($middleware);
-        Route::get('lists', 'Api\ApiV1Controller@accountLists')->middleware($middleware);
-        Route::post('media', 'Api\ApiV1Controller@mediaUpload')->middleware($middleware);
-        Route::get('media/{id}', 'Api\ApiV1Controller@mediaGet')->middleware($middleware);
-        Route::put('media/{id}', 'Api\ApiV1Controller@mediaUpdate')->middleware($middleware);
-        Route::get('mutes', 'Api\ApiV1Controller@accountMutes')->middleware($middleware);
-        Route::get('notifications', 'Api\ApiV1Controller@accountNotifications')->middleware($middleware);
-        Route::get('suggestions', 'Api\ApiV1Controller@accountSuggestions')->middleware($middleware);
+        Route::get('endorsements', 'Api\V1\AccountController@accountEndorsements')->middleware($middleware);
+        Route::get('favourites', 'Api\V1\AccountController@accountFavourites')->middleware($middleware);
+        Route::get('filters', 'Api\V1\AccountController@accountFilters')->middleware($middleware);
+        Route::get('follow_requests', 'Api\V1\AccountController@accountFollowRequests')->middleware($middleware);
+        Route::post('follow_requests/{id}/authorize', 'Api\V1\AccountController@accountFollowRequestAccept')->middleware($middleware);
+        Route::post('follow_requests/{id}/reject', 'Api\V1\AccountController@accountFollowRequestReject')->middleware($middleware);
+        Route::get('lists', 'Api\V1\AccountController@accountLists')->middleware($middleware);
+        Route::post('media', 'Api\V1\MediaController@mediaUpload')->middleware($middleware);
+        Route::get('media/{id}', 'Api\V1\MediaController@mediaGet')->middleware($middleware);
+        Route::put('media/{id}', 'Api\V1\MediaController@mediaUpdate')->middleware($middleware);
+        Route::get('mutes', 'Api\V1\AccountController@accountMutes')->middleware($middleware);
+        Route::get('notifications', 'Api\V1\NotificationController@accountNotifications')->middleware($middleware);
+        Route::get('suggestions', 'Api\V1\AccountController@accountSuggestions')->middleware($middleware);
 
-        Route::post('statuses/{id}/favourite', 'Api\ApiV1Controller@statusFavouriteById')->middleware($middleware);
-        Route::post('statuses/{id}/unfavourite', 'Api\ApiV1Controller@statusUnfavouriteById')->middleware($middleware);
-        Route::get('statuses/{id}/context', 'Api\ApiV1Controller@statusContext')->middleware($middleware);
-        Route::get('statuses/{id}/card', 'Api\ApiV1Controller@statusCard')->middleware($middleware);
-        Route::get('statuses/{id}/reblogged_by', 'Api\ApiV1Controller@statusRebloggedBy')->middleware($middleware);
-        Route::get('statuses/{id}/favourited_by', 'Api\ApiV1Controller@statusFavouritedBy')->middleware($middleware);
-        Route::post('statuses/{id}/reblog', 'Api\ApiV1Controller@statusShare')->middleware($middleware);
-        Route::post('statuses/{id}/unreblog', 'Api\ApiV1Controller@statusUnshare')->middleware($middleware);
-        Route::post('statuses/{id}/bookmark', 'Api\ApiV1Controller@bookmarkStatus')->middleware($middleware);
-        Route::post('statuses/{id}/unbookmark', 'Api\ApiV1Controller@unbookmarkStatus')->middleware($middleware);
-        Route::post('statuses/{id}/pin', 'Api\ApiV1Controller@statusPin')->middleware($middleware);
-        Route::post('statuses/{id}/unpin', 'Api\ApiV1Controller@statusUnpin')->middleware($middleware);
-        Route::delete('statuses/{id}', 'Api\ApiV1Controller@statusDelete')->middleware($middleware);
-        Route::get('statuses/{id}', 'Api\ApiV1Controller@statusById')->middleware($middleware);
-        Route::post('statuses', 'Api\ApiV1Controller@statusCreate')->middleware($middleware);
+        Route::post('statuses/{id}/favourite', 'Api\V1\StatusController@statusFavouriteById')->middleware($middleware);
+        Route::post('statuses/{id}/unfavourite', 'Api\V1\StatusController@statusUnfavouriteById')->middleware($middleware);
+        Route::get('statuses/{id}/context', 'Api\V1\StatusController@statusContext')->middleware($middleware);
+        Route::get('statuses/{id}/card', 'Api\V1\StatusController@statusCard')->middleware($middleware);
+        Route::get('statuses/{id}/reblogged_by', 'Api\V1\StatusController@statusRebloggedBy')->middleware($middleware);
+        Route::get('statuses/{id}/favourited_by', 'Api\V1\StatusController@statusFavouritedBy')->middleware($middleware);
+        Route::post('statuses/{id}/reblog', 'Api\V1\StatusController@statusShare')->middleware($middleware);
+        Route::post('statuses/{id}/unreblog', 'Api\V1\StatusController@statusUnshare')->middleware($middleware);
+        Route::post('statuses/{id}/bookmark', 'Api\V1\StatusController@bookmarkStatus')->middleware($middleware);
+        Route::post('statuses/{id}/unbookmark', 'Api\V1\StatusController@unbookmarkStatus')->middleware($middleware);
+        Route::post('statuses/{id}/pin', 'Api\V1\StatusController@statusPin')->middleware($middleware);
+        Route::post('statuses/{id}/unpin', 'Api\V1\StatusController@statusUnpin')->middleware($middleware);
+        Route::delete('statuses/{id}', 'Api\V1\StatusController@statusDelete')->middleware($middleware);
+        Route::get('statuses/{id}', 'Api\V1\StatusController@statusById')->middleware($middleware);
+        Route::post('statuses', 'Api\V1\StatusCreateController@statusCreate')->middleware($middleware);
 
-        Route::get('timelines/home', 'Api\ApiV1Controller@timelineHome')->middleware($middleware);
-        Route::get('timelines/public', 'Api\ApiV1Controller@timelinePublic')->middleware($middleware);
-        Route::get('timelines/tag/{hashtag}', 'Api\ApiV1Controller@timelineHashtag')->middleware($middleware);
-        Route::get('discover/posts', 'Api\ApiV1Controller@discoverPosts')->middleware($middleware);
+        Route::get('timelines/home', 'Api\V1\TimelineController@timelineHome')->middleware($middleware);
+        Route::get('timelines/public', 'Api\V1\TimelineController@timelinePublic')->middleware($middleware);
+        Route::get('timelines/tag/{hashtag}', 'Api\V1\TimelineController@timelineHashtag')->middleware($middleware);
+        Route::get('discover/posts', 'Api\V1\DiscoverController@discoverPosts')->middleware($middleware);
 
-        Route::get('preferences', 'Api\ApiV1Controller@getPreferences')->middleware($middleware);
-        Route::get('trends', 'Api\ApiV1Controller@getTrends')->middleware($middleware);
-        Route::get('announcements', 'Api\ApiV1Controller@getAnnouncements')->middleware($middleware);
-        Route::get('markers', 'Api\ApiV1Controller@getMarkers')->middleware($middleware);
-        Route::post('markers', 'Api\ApiV1Controller@setMarkers')->middleware($middleware);
+        Route::get('preferences', 'Api\V1\PreferencesController@getPreferences')->middleware($middleware);
+        Route::get('trends', 'Api\V1\PreferencesController@getTrends')->middleware($middleware);
+        Route::get('announcements', 'Api\V1\PreferencesController@getAnnouncements')->middleware($middleware);
+        Route::get('markers', 'Api\V1\PreferencesController@getMarkers')->middleware($middleware);
+        Route::post('markers', 'Api\V1\PreferencesController@setMarkers')->middleware($middleware);
 
         Route::get('followed_tags', [TagsController::class, 'getFollowedTags'])->middleware($middleware);
         Route::post('tags/{id}/follow', [TagsController::class, 'followHashtag'])->middleware($middleware);
@@ -200,7 +200,7 @@ Route::group(['prefix' => 'api'], function () use ($middleware) {
         Route::post('report', 'Api\ApiV1Dot1Controller@report')->middleware($middleware);
 
         Route::group(['prefix' => 'accounts'], function () use ($middleware) {
-            Route::get('timelines/home', 'Api\ApiV1Controller@timelineHome')->middleware($middleware);
+            Route::get('timelines/home', 'Api\V1\TimelineController@timelineHome')->middleware($middleware);
             Route::delete('avatar', 'Api\ApiV1Dot1Controller@deleteAvatar')->middleware($middleware);
             Route::get('{id}/posts', 'Api\ApiV1Dot1Controller@accountPosts')->middleware($middleware);
             Route::post('change-password', 'Api\ApiV1Dot1Controller@accountChangePassword')->middleware($middleware);
@@ -260,7 +260,7 @@ Route::group(['prefix' => 'api'], function () use ($middleware) {
         });
 
         Route::group(['prefix' => 'discover'], function () use ($middleware) {
-            Route::get('accounts/popular', 'Api\ApiV1Controller@discoverAccountsPopular')->middleware($middleware);
+            Route::get('accounts/popular', 'Api\V1\DiscoverController@discoverAccountsPopular')->middleware($middleware);
             Route::get('posts/trending', 'DiscoverController@trendingApi')->middleware($middleware);
             Route::get('posts/hashtags', 'DiscoverController@trendingHashtags')->middleware($middleware);
             Route::get('posts/network/trending', 'DiscoverController@discoverNetworkTrending')->middleware($middleware);
@@ -318,7 +318,7 @@ Route::group(['prefix' => 'api'], function () use ($middleware) {
         // Route::post('broadcast/publish', 'LiveStreamController@clientBroadcastPublish')->middleware($middleware);
         // Route::post('broadcast/finish', 'LiveStreamController@clientBroadcastFinish')->middleware($middleware);
     });
-
+ 
     Route::group(['prefix' => 'admin'], function () use ($middleware) {
         Route::post('moderate/post/{id}', 'Api\ApiV1Dot1Controller@moderatePost')->middleware($middleware);
         Route::get('supported', 'Api\AdminApiController@supported')->middleware($middleware);
@@ -349,7 +349,7 @@ Route::group(['prefix' => 'api'], function () use ($middleware) {
             Route::post('report', 'Api\ApiV1Dot1Controller@report')->middleware($middleware);
 
             Route::group(['prefix' => 'accounts'], function () use ($middleware) {
-                Route::get('timelines/home', 'Api\ApiV1Controller@timelineHome')->middleware($middleware);
+                Route::get('timelines/home', 'Api\V1\TimelineController@timelineHome')->middleware($middleware);
                 Route::delete('avatar', 'Api\ApiV1Dot1Controller@deleteAvatar')->middleware($middleware);
                 Route::get('{id}/posts', 'Api\ApiV1Dot1Controller@accountPosts')->middleware($middleware);
                 Route::post('change-password', 'Api\ApiV1Dot1Controller@accountChangePassword')->middleware($middleware);
@@ -393,7 +393,7 @@ Route::group(['prefix' => 'api'], function () use ($middleware) {
             });
 
             Route::group(['prefix' => 'discover'], function () use ($middleware) {
-                Route::get('accounts/popular', 'Api\ApiV1Controller@discoverAccountsPopular')->middleware($middleware);
+                Route::get('accounts/popular', 'Api\V1\DiscoverController@discoverAccountsPopular')->middleware($middleware);
                 Route::get('posts/trending', 'DiscoverController@trendingApi')->middleware($middleware);
                 Route::get('posts/hashtags', 'DiscoverController@trendingHashtags')->middleware($middleware);
             });
