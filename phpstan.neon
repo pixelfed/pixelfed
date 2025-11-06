@@ -1,0 +1,27 @@
+includes:
+    - ./vendor/larastan/larastan/extension.neon
+
+parameters:
+    paths:
+        - app/
+        - config/
+        - database/
+        - resources/
+        - routes/
+        - tests/
+
+    level: 1
+
+    # Laravel specific configurations
+    checkModelProperties: true
+    checkOctaneCompatibility: true
+    
+    ignoreErrors:
+        - '#PHPDoc tag @var#'
+        - '#Class App\\Jobs\\GroupPipeline\\MentionPipeline was not found#'
+        # Ignore relation existence errors since we've verified they exist
+        - '#Relation .* is not found in .* model\.#'
+
+    excludePaths:
+        - app/Http/Controllers/Groups/GroupsPostController.php
+        - app/Jobs/GroupPipeline/NewStatusPipeline.php
