@@ -1,0 +1,17 @@
+includes:
+    - ./vendor/larastan/larastan/extension.neon
+
+parameters:
+    paths:
+        - app/Rules/
+        - app/Mail/
+        - app/Console/Commands/
+    
+    level: 1
+    
+    ignoreErrors:
+        - '#PHPDoc tag @var#'
+        - '#Call to an undefined static method App\\.*::#'
+        - '#Call to static method .* on an unknown class (Cache|Storage|DB|Lang)#'
+        
+    excludePaths: []
