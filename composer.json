@@ -49,6 +49,7 @@
     },
     "require-dev": {
         "fakerphp/faker": "^1.23",
+        "larastan/larastan": "^3.0",
         "laravel/pint": "^1.13",
         "laravel/telescope": "^5.5",
         "mockery/mockery": "^1.6",
