@@ -184,10 +184,10 @@ Route::group(['prefix' => 'api'], function () use ($middleware) {
     });
 
     Route::group(['prefix' => 'v2'], function () use ($middleware) {
-        Route::get('search', 'Api\ApiV2Controller@search')->middleware($middleware);
-        Route::post('media', 'Api\ApiV2Controller@mediaUploadV2')->middleware($middleware);
-        Route::get('streaming/config', 'Api\ApiV2Controller@getWebsocketConfig');
-        Route::get('instance', 'Api\ApiV2Controller@instance');
+        Route::get('search', 'Api\V2\SearchController@search')->middleware($middleware);
+        Route::post('media', 'Api\V2\MediaController@mediaUploadV2')->middleware($middleware);
+        Route::get('streaming/config', 'Api\V2\StreamingController@getWebsocketConfig');
+        Route::get('instance', 'Api\V2\InstanceController@instance');
 
         Route::get('filters', 'CustomFilterController@index')->middleware($middleware);
         Route::get('filters/{id}', 'CustomFilterController@show')->middleware($middleware);
@@ -197,19 +197,19 @@ Route::group(['prefix' => 'api'], function () use ($middleware) {
     });
 
     Route::group(['prefix' => 'v1.1'], function () use ($middleware) {
-        Route::post('report', 'Api\ApiV1Dot1Controller@report')->middleware($middleware);
+        Route::post('report', 'Api\V1Dot1\ReportController@report')->middleware($middleware);
 
         Route::group(['prefix' => 'accounts'], function () use ($middleware) {
             Route::get('timelines/home', 'Api\ApiV1Controller@timelineHome')->middleware($middleware);
-            Route::delete('avatar', 'Api\ApiV1Dot1Controller@deleteAvatar')->middleware($middleware);
-            Route::get('{id}/posts', 'Api\ApiV1Dot1Controller@accountPosts')->middleware($middleware);
-            Route::post('change-password', 'Api\ApiV1Dot1Controller@accountChangePassword')->middleware($middleware);
-            Route::get('login-activity', 'Api\ApiV1Dot1Controller@accountLoginActivity')->middleware($middleware);
-            Route::get('two-factor', 'Api\ApiV1Dot1Controller@accountTwoFactor')->middleware($middleware);
-            Route::get('emails-from-pixelfed', 'Api\ApiV1Dot1Controller@accountEmailsFromPixelfed')->middleware($middleware);
-            Route::get('apps-and-applications', 'Api\ApiV1Dot1Controller@accountApps')->middleware($middleware);
-            Route::get('mutuals/{id}', 'Api\ApiV1Dot1Controller@getMutualAccounts')->middleware($middleware);
-            Route::get('username/{username}', 'Api\ApiV1Dot1Controller@accountUsernameToId')->middleware($middleware);
+            Route::delete('avatar', 'Api\V1Dot1\AccountController@deleteAvatar')->middleware($middleware);
+            Route::get('{id}/posts', 'Api\V1Dot1\AccountController@accountPosts')->middleware($middleware);
+            Route::post('change-password', 'Api\V1Dot1\AccountController@accountChangePassword')->middleware($middleware);
+            Route::get('login-activity', 'Api\V1Dot1\AccountController@accountLoginActivity')->middleware($middleware);
+            Route::get('two-factor', 'Api\V1Dot1\AccountController@accountTwoFactor')->middleware($middleware);
+            Route::get('emails-from-pixelfed', 'Api\V1Dot1\AccountController@accountEmailsFromPixelfed')->middleware($middleware);
+            Route::get('apps-and-applications', 'Api\V1Dot1\AccountController@accountApps')->middleware($middleware);
+            Route::get('mutuals/{id}', 'Api\V1Dot1\AccountController@getMutualAccounts')->middleware($middleware);
+            Route::get('username/{username}', 'Api\V1Dot1\AccountController@accountUsernameToId')->middleware($middleware);
         });
 
         Route::group(['prefix' => 'collections'], function () use ($middleware) {
@@ -236,13 +236,13 @@ Route::group(['prefix' => 'api'], function () use ($middleware) {
         });
 
         Route::group(['prefix' => 'archive'], function () use ($middleware) {
-            Route::post('add/{id}', 'Api\ApiV1Dot1Controller@archive')->middleware($middleware);
-            Route::post('remove/{id}', 'Api\ApiV1Dot1Controller@unarchive')->middleware($middleware);
-            Route::get('list', 'Api\ApiV1Dot1Controller@archivedPosts')->middleware($middleware);
+            Route::post('add/{id}', 'Api\V1Dot1\ArchiveController@archive')->middleware($middleware);
+            Route::post('remove/{id}', 'Api\V1Dot1\ArchiveController@unarchive')->middleware($middleware);
+            Route::get('list', 'Api\V1Dot1\ArchiveController@archivedPosts')->middleware($middleware);
         });
 
         Route::group(['prefix' => 'places'], function () use ($middleware) {
-            Route::get('posts/{id}/{slug}', 'Api\ApiV1Dot1Controller@placesById')->middleware($middleware);
+            Route::get('posts/{id}/{slug}', 'Api\V1Dot1\PlacesController@placesById')->middleware($middleware);
         });
 
         Route::group(['prefix' => 'stories'], function () use ($middleware) {
@@ -271,10 +271,10 @@ Route::group(['prefix' => 'api'], function () use ($middleware) {
         });
 
         Route::group(['prefix' => 'auth'], function () {
-            Route::get('iarpfc', 'Api\ApiV1Dot1Controller@inAppRegistrationPreFlightCheck');
-            Route::post('iar', 'Api\ApiV1Dot1Controller@inAppRegistration');
-            Route::post('iarc', 'Api\ApiV1Dot1Controller@inAppRegistrationConfirm');
-            Route::get('iarer', 'Api\ApiV1Dot1Controller@inAppRegistrationEmailRedirect');
+            Route::get('iarpfc', 'Api\V1Dot1\AuthController@inAppRegistrationPreFlightCheck');
+            Route::post('iar', 'Api\V1Dot1\AuthController@inAppRegistration');
+            Route::post('iarc', 'Api\V1Dot1\AuthController@inAppRegistrationConfirm');
+            Route::get('iarer', 'Api\V1Dot1\AuthController@inAppRegistrationEmailRedirect');
 
             Route::post('invite/admin/verify', 'AdminInviteController@apiVerifyCheck')->middleware('throttle:20,120');
             Route::post('invite/admin/uc', 'AdminInviteController@apiUsernameCheck')->middleware('throttle:20,120');
@@ -282,14 +282,14 @@ Route::group(['prefix' => 'api'], function () use ($middleware) {
         });
 
         Route::group(['prefix' => 'push'], function () use ($middleware) {
-            Route::get('state', 'Api\ApiV1Dot1Controller@getPushState')->middleware($middleware);
-            Route::post('compare', 'Api\ApiV1Dot1Controller@comparePush')->middleware($middleware);
-            Route::post('update', 'Api\ApiV1Dot1Controller@updatePush')->middleware($middleware);
-            Route::post('disable', 'Api\ApiV1Dot1Controller@disablePush')->middleware($middleware);
+            Route::get('state', 'Api\V1Dot1\PushNotificationController@getPushState')->middleware($middleware);
+            Route::post('compare', 'Api\V1Dot1\PushNotificationController@comparePush')->middleware($middleware);
+            Route::post('update', 'Api\V1Dot1\PushNotificationController@updatePush')->middleware($middleware);
+            Route::post('disable', 'Api\V1Dot1\PushNotificationController@disablePush')->middleware($middleware);
         });
 
-        Route::post('status/create', 'Api\ApiV1Dot1Controller@statusCreate')->middleware($middleware);
-        Route::get('nag/state', 'Api\ApiV1Dot1Controller@nagState');
+        Route::post('status/create', 'Api\V1Dot1\StatusController@statusCreate')->middleware($middleware);
+        Route::get('nag/state', 'Api\V1Dot1\PushNotificationController@nagState');
     });
 
     Route::group(['prefix' => 'v1.2'], function () use ($middleware) {
@@ -320,7 +320,7 @@ Route::group(['prefix' => 'api'], function () use ($middleware) {
     });
 
     Route::group(['prefix' => 'admin'], function () use ($middleware) {
-        Route::post('moderate/post/{id}', 'Api\ApiV1Dot1Controller@moderatePost')->middleware($middleware);
+        Route::post('moderate/post/{id}', 'Api\V1Dot1\ModerationController@moderatePost')->middleware($middleware);
         Route::get('supported', 'Api\AdminApiController@supported')->middleware($middleware);
         Route::get('stats', 'Api\AdminApiController@getStats')->middleware($middleware);
 
@@ -346,23 +346,23 @@ Route::group(['prefix' => 'api'], function () use ($middleware) {
 
     Route::group(['prefix' => 'pixelfed'], function () use ($middleware) {
         Route::group(['prefix' => 'v1'], function () use ($middleware) {
-            Route::post('report', 'Api\ApiV1Dot1Controller@report')->middleware($middleware);
+            Route::post('report', 'Api\V1Dot1\ReportController@report')->middleware($middleware);
 
             Route::group(['prefix' => 'accounts'], function () use ($middleware) {
                 Route::get('timelines/home', 'Api\ApiV1Controller@timelineHome')->middleware($middleware);
-                Route::delete('avatar', 'Api\ApiV1Dot1Controller@deleteAvatar')->middleware($middleware);
-                Route::get('{id}/posts', 'Api\ApiV1Dot1Controller@accountPosts')->middleware($middleware);
-                Route::post('change-password', 'Api\ApiV1Dot1Controller@accountChangePassword')->middleware($middleware);
-                Route::get('login-activity', 'Api\ApiV1Dot1Controller@accountLoginActivity')->middleware($middleware);
-                Route::get('two-factor', 'Api\ApiV1Dot1Controller@accountTwoFactor')->middleware($middleware);
-                Route::get('emails-from-pixelfed', 'Api\ApiV1Dot1Controller@accountEmailsFromPixelfed')->middleware($middleware);
-                Route::get('apps-and-applications', 'Api\ApiV1Dot1Controller@accountApps')->middleware($middleware);
+                Route::delete('avatar', 'Api\V1Dot1\AccountController@deleteAvatar')->middleware($middleware);
+                Route::get('{id}/posts', 'Api\V1Dot1\AccountController@accountPosts')->middleware($middleware);
+                Route::post('change-password', 'Api\V1Dot1\AccountController@accountChangePassword')->middleware($middleware);
+                Route::get('login-activity', 'Api\V1Dot1\AccountController@accountLoginActivity')->middleware($middleware);
+                Route::get('two-factor', 'Api\V1Dot1\AccountController@accountTwoFactor')->middleware($middleware);
+                Route::get('emails-from-pixelfed', 'Api\V1Dot1\AccountController@accountEmailsFromPixelfed')->middleware($middleware);
+                Route::get('apps-and-applications', 'Api\V1Dot1\AccountController@accountApps')->middleware($middleware);
             });
 
             Route::group(['prefix' => 'archive'], function () use ($middleware) {
-                Route::post('add/{id}', 'Api\ApiV1Dot1Controller@archive')->middleware($middleware);
-                Route::post('remove/{id}', 'Api\ApiV1Dot1Controller@unarchive')->middleware($middleware);
-                Route::get('list', 'Api\ApiV1Dot1Controller@archivedPosts')->middleware($middleware);
+                Route::post('add/{id}', 'Api\V1Dot1\ArchiveController@archive')->middleware($middleware);
+                Route::post('remove/{id}', 'Api\V1Dot1\ArchiveController@unarchive')->middleware($middleware);
+                Route::get('list', 'Api\V1Dot1\ArchiveController@archivedPosts')->middleware($middleware);
             });
 
             Route::group(['prefix' => 'collections'], function () use ($middleware) {
@@ -403,11 +403,11 @@ Route::group(['prefix' => 'api'], function () use ($middleware) {
             });
 
             Route::group(['prefix' => 'places'], function () use ($middleware) {
-                Route::get('posts/{id}/{slug}', 'Api\ApiV1Dot1Controller@placesById')->middleware($middleware);
+                Route::get('posts/{id}/{slug}', 'Api\V1Dot1\PlacesController@placesById')->middleware($middleware);
             });
 
-            Route::get('web/settings', 'Api\ApiV1Dot1Controller@getWebSettings')->middleware($middleware);
-            Route::post('web/settings', 'Api\ApiV1Dot1Controller@setWebSettings')->middleware($middleware);
+            Route::get('web/settings', 'Api\V1Dot1\AccountController@getWebSettings')->middleware($middleware);
+            Route::post('web/settings', 'Api\V1Dot1\AccountController@setWebSettings')->middleware($middleware);
             Route::get('app/settings', 'UserAppSettingsController@get')->middleware($middleware);
             Route::post('app/settings', 'UserAppSettingsController@store')->middleware($middleware);
 
