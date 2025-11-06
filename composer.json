@@ -19,6 +19,7 @@
         "doctrine/dbal": "^3.0",
         "endroid/qr-code": "^6.0",
         "intervention/image": "^3.11.2",
+        "intervention/image-driver-vips": "^1.0",
         "jenssegers/agent": "^2.6",
         "laravel-notification-channels/expo": "^2.0.0",
         "laravel-notification-channels/webpush": "^10.2",
