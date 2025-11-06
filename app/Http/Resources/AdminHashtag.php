@@ -2,8 +2,12 @@
 
 namespace App\Http\Resources;
 
+use App\Hashtag;
 use Illuminate\Http\Resources\Json\JsonResource;
 
+/**
+ * @property Hashtag $resource
+ */
 class AdminHashtag extends JsonResource
 {
     /**
@@ -15,15 +19,15 @@ class AdminHashtag extends JsonResource
     public function toArray($request)
     {
         return [
-            'id' => $this->id,
-            'name' => $this->name,
-            'slug' => $this->slug,
-            'can_trend' => $this->can_trend === null ? true : (bool) $this->can_trend,
-            'can_search' => $this->can_search === null ? true : (bool) $this->can_search,
-            'is_nsfw' => (bool) $this->is_nsfw,
-            'is_banned' => (bool) $this->is_banned,
-            'cached_count' => $this->cached_count ?? 0,
-            'created_at' => $this->created_at
+            'id' => $this->resource->id,
+            'name' => $this->resource->name,
+            'slug' => $this->resource->slug,
+            'can_trend' => $this->resource->can_trend === null ? true : (bool) $this->resource->can_trend,
+            'can_search' => $this->resource->can_search === null ? true : (bool) $this->resource->can_search,
+            'is_nsfw' => (bool) $this->resource->is_nsfw,
+            'is_banned' => (bool) $this->resource->is_banned,
+            'cached_count' => $this->resource->cached_count ?? 0,
+            'created_at' => $this->resource->created_at
         ];
     }
 }
