@@ -184,10 +184,10 @@ Route::group(['prefix' => 'api'], function () use ($middleware) {
     });
 
     Route::group(['prefix' => 'v2'], function () use ($middleware) {
-        Route::get('search', 'Api\V2\SearchController@search')->middleware($middleware);
-        Route::post('media', 'Api\V2\MediaController@mediaUploadV2')->middleware($middleware);
-        Route::get('streaming/config', 'Api\V2\StreamingController@getWebsocketConfig');
-        Route::get('instance', 'Api\V2\InstanceController@instance');
+        Route::get('search', 'Api\ApiV2Controller@search')->middleware($middleware);
+        Route::post('media', 'Api\ApiV2Controller@mediaUploadV2')->middleware($middleware);
+        Route::get('streaming/config', 'Api\ApiV2Controller@getWebsocketConfig');
+        Route::get('instance', 'Api\ApiV2Controller@instance');
 
         Route::get('filters', 'CustomFilterController@index')->middleware($middleware);
         Route::get('filters/{id}', 'CustomFilterController@show')->middleware($middleware);
