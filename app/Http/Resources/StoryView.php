@@ -15,8 +15,8 @@ class StoryView extends JsonResource
      */
     public function toArray(Request $request)
     {
-        $res = AccountService::get($this->profile_id, true);
-        $res['viewed_at'] = $this->created_at->format('c');
+        $res = AccountService::get($this->resource->profile_id, true);
+        $res['viewed_at'] = $this->resource->created_at->format('c');
 
         return $res;
     }

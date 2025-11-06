@@ -18,10 +18,10 @@ class UserAppSettingsResource extends JsonResource
     public function toArray(Request $request): array
     {
         return [
-            'id' => (string) $this->profile_id,
+            'id' => (string) $this->resource->profile_id,
             'username' => $request->user()->username,
-            'updated_at' => str_replace('+00:00', 'Z', $this->updated_at->format(DATE_RFC3339_EXTENDED)),
-            'common' => $this->common,
+            'updated_at' => str_replace('+00:00', 'Z', $this->resource->updated_at->format(DATE_RFC3339_EXTENDED)),
+            'common' => $this->resource->common,
         ];
     }
 }

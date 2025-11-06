@@ -16,16 +16,16 @@ class DirectoryProfile extends JsonResource
 	 */
 	public function toArray($request)
 	{
-		$account = AccountService::get($this->id, true);
+		$account = AccountService::get($this->resource->id, true);
 		if(!$account) {
 			return [];
 		}
 
-		$url = url($this->username);
+		$url = url($this->resource->username);
 		return [
-			'id' => $this->id,
-			'name' => $this->name,
-			'username' => $this->username,
+			'id' => $this->resource->id,
+			'name' => $this->resource->name,
+			'username' => $this->resource->username,
 			'url' => $url,
 			'avatar' => $account['avatar'],
 			'following_count' => $account['following_count'],
