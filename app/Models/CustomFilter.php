@@ -398,11 +398,11 @@ class CustomFilter extends Model
             //     }
             // }
 
-            if (! empty($keywordMatches) || ! empty($statusMatches)) {
+            if (! empty($keywordMatches)) {
                 $results[] = [
                     'filter' => $filter->toFilterArray(),
                     'keyword_matches' => $keywordMatches ?: null,
-                    'status_matches' => ! empty($statusMatches) ? $statusMatches : null,
+                    'status_matches' => $statusMatches,
                 ];
             }
         }
