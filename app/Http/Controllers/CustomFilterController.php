@@ -258,7 +258,6 @@ class CustomFilterController extends Controller
         $validatedData = $request->validate([
             'title' => 'string|max:100',
             'context' => 'array|max:10',
-            'context.*' => 'string|in:home,notifications,public,thread,account,tags,groups',
             'context.*' => [
                 'string',
                 Rule::in(self::ACTIVE_TYPES),

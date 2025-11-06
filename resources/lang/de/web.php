@@ -199,15 +199,6 @@ return [
 
 	'report' => [
 		'report' => 'Melden',
-		'selectReason' => 'Wähle einen Grund',
-		'reported' => 'Gemeldet',
-		'sendingReport' => 'Sende Meldung',
-		'thanksMsg' => 'Danke für deine Meldung! Damit erhöhst du die Sicherheit der Community!',
-		'contactAdminMsg' => 'Wenn du die Administration wegen diesem Beitrag oder dieser Meldung kontaktieren möchtest',
-	],
-
-	'report' => [
-		'report' => 'Melden',
 		'selectReason' => 'Einen Grund auswählen',
 		'reported' => 'Gemeldet',
 		'sendingReport' => 'Meldung wird gesendet',

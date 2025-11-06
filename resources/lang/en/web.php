@@ -311,7 +311,6 @@ return [
             'create_new_filter' => 'Create new Filter',
             'filter_title' => 'Filter Title',
             'edit_filter' => 'Edit Filter',
-            'create_filter' => 'Create Filter',
             'advance_mode' => 'Advanced Mode',
             'simple_mode' => 'Simple Mode',
             'keywords' => 'Keywords',
