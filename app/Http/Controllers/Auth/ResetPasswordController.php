@@ -8,6 +8,7 @@ use Illuminate\Support\Facades\Password;
 use Illuminate\Http\Request;
 use App\Services\BouncerService;
 use Illuminate\Validation\Rules;
+use Illuminate\Validation\ValidationException;
 
 class ResetPasswordController extends Controller
 {

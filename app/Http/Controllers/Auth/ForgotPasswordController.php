@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use Illuminate\Foundation\Auth\SendsPasswordResetEmails;
 use App\Services\BouncerService;
 use Illuminate\Http\Request;
+use Illuminate\Validation\ValidationException;
 
 class ForgotPasswordController extends Controller
 {
