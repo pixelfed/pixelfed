@@ -14,7 +14,7 @@
         "ext-mbstring": "*",
         "ext-openssl": "*",
         "bacon/bacon-qr-code": "^3.0",
-        "brick/math": "^0.11",
+        "brick/math": "^0.14",
         "buzz/laravel-h-captcha": "^1.0.4",
         "doctrine/dbal": "^3.0",
         "endroid/qr-code": "^6.0",
