@@ -153,7 +153,7 @@ class CollectionController extends Controller
             ->whereIn('type', ['photo', 'photo:album', 'video'])
             ->findOrFail($postId);
 
-        CollectionItem::firstOrCreate([
+        $item = CollectionItem::firstOrCreate([
             'collection_id' => $collection->id,
             'object_type' => 'App\Status',
             'object_id' => $status->id,
