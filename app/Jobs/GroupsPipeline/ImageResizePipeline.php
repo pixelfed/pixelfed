@@ -3,6 +3,7 @@
 namespace App\Jobs\GroupsPipeline;
 
 use App\Models\GroupMedia;
+use App\Util\Media\ImageDriverManager;
 use Exception;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
@@ -75,19 +76,7 @@ class ImageResizePipeline implements ShouldQueue
         ];
 
         try {
-            $driver = match (config('image.driver')) {
-                'imagick' => \Intervention\Image\Drivers\Imagick\Driver::class,
-                'vips' => \Intervention\Image\Drivers\Vips\Driver::class,
-                default => \Intervention\Image\Drivers\Gd\Driver::class
-            };
-
-            $imageManager = new ImageManager(
-                $driver,
-                autoOrientation: true,
-                decodeAnimation: true,
-                blendingColor: 'ffffff',
-                strip: true
-            );
+            $imageManager = ImageDriverManager::createImageManager();
 
             $img = $imageManager->read($file);
 

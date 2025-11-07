@@ -11,13 +11,13 @@ return [
     | internally. Depending on your PHP setup, you can choose one of them.
     |
     | Included options:
-    |   - \Intervention\Image\Drivers\Gd\Driver::class
-    |   - \Intervention\Image\Drivers\Imagick\Driver::class
-    |   - \Intervention\Image\Drivers\vips\Driver::class
+    |   - gd      = \Intervention\Image\Drivers\Gd\Driver::class
+    |   - imagick = \Intervention\Image\Drivers\Imagick\Driver::class
+    |   - vips    = \Intervention\Image\Drivers\vips\Driver::class
     |
     */
 
-    'driver' => env('IMAGE_DRIVER', '\Intervention\Image\Drivers\Gd\Driver::class'),
+    'driver' => env('IMAGE_DRIVER', 'gd'),
 
     /*
     |--------------------------------------------------------------------------
