@@ -150,6 +150,7 @@ return [
         /*
          * Package Service Providers...
          */
+        ProtoneMedia\LaravelFFMpeg\Support\ServiceProvider::class,
 
         /*
          * Application Service Providers...
@@ -212,11 +213,9 @@ return [
         'Validator' => Illuminate\Support\Facades\Validator::class,
         'View' => Illuminate\Support\Facades\View::class,
         'Str' => Illuminate\Support\Str::class,
-
         'PrettyNumber' => App\Util\Lexer\PrettyNumber::class,
         'Purify' => Stevebauman\Purify\Facades\Purify::class,
-        'FFMpeg' => Pbmedia\LaravelFFMpeg\FFMpegFacade::class,
-        'Captcha' => Buzz\LaravelHCaptcha\CaptchaFacade::class,
+        'FFMpeg' => ProtoneMedia\LaravelFFMpeg\Support\FFMpeg::class,
+        'Captcha' => Buzz\LaravelHCaptcha\CaptchaFacade::class
     ],
-
 ];

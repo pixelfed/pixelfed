@@ -33,7 +33,7 @@
         "league/iso3166": "^2.1|^4.0",
         "league/oauth2-client": "^2.8",
         "league/uri": "^7.4",
-        "pbmedia/laravel-ffmpeg": "^8.0",
+        "pbmedia/laravel-ffmpeg": "^8.7",
         "phpseclib/phpseclib": "~2.0",
         "pixelfed/fractal": "^0.18.0",
         "pixelfed/laravel-snowflake": "^2.0",
