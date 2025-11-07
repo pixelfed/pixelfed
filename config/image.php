@@ -42,6 +42,6 @@ return [
         'autoOrientation' => true,
         'decodeAnimation' => true,
         'blendingColor' => env('IMAGE_BLENDINGCOLOR', 'ffffff'),
-        'strip' => env('IMAGE_STRIP', 'false'),
+        'strip' => env('IMAGE_STRIP', 'true'),
     ]
 ];
