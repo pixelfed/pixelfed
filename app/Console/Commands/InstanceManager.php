@@ -80,7 +80,7 @@ class InstanceManager extends Command
             exit;
         }
 
-        progress(
+        $users = progress(
             label: 'Updating instance stats...',
             steps: Instance::all(),
             callback: fn ($instance) => $this->updateInstanceStats($instance),
