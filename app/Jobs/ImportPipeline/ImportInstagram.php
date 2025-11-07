@@ -58,9 +58,9 @@ class ImportInstagram implements ShouldQueue
 		$user = $profile->user;
 		$json = $job->mediaJson();
 		$collection = array_reverse($json['photos']);
-		$files = $job->files;
+		// $files = $job->files;
 		$monthHash = hash('sha1', date('Y').date('m'));
-		$userHash = hash('sha1', $user->id . (string) $user->created_at);
+		$userHash = hash('sha1', $user->id . $user->created_at);
 		$fs = new Filesystem;
 
 		foreach($collection as $import)
@@ -85,7 +85,7 @@ class ImportInstagram implements ShouldQueue
 			}
 
 			DB::transaction(function() use(
-				$fs, $job, $profile, $caption, $taken_at, $filename,
+				$fs, $profile, $caption, $taken_at, $filename,
 				$monthHash, $userHash, $importData
 			) {
 				$status = new Status();

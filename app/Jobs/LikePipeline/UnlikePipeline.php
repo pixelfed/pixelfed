@@ -97,8 +97,6 @@ class UnlikePipeline implements ShouldQueue
 		}
 
 		$like->forceDelete();
-
-		return;
 	}
 
 	public function remoteLikeDeliver()

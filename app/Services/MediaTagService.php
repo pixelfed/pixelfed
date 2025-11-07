@@ -73,7 +73,7 @@ class MediaTagService
 	public static function sendNotification(MediaTag $tag)
 	{
 		$p = $tag->status->profile;
-		$actor = $p->username;
+		// $actor = $p->username;
 
 		$n = new Notification;
 		$n->profile_id = $tag->profile_id;
@@ -82,7 +82,6 @@ class MediaTagService
 		$n->item_type = 'App\MediaTag';
 		$n->action = 'tagged';
 		$n->save();
-		return;
 	}
 
 	public static function untag($statusId, $profileId)

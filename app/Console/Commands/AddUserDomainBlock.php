@@ -39,7 +39,6 @@ class AddUserDomainBlock extends Command
             return;
         }
         $this->processBlocks($domain);
-        return;
     }
 
     protected function validateDomain($domain)

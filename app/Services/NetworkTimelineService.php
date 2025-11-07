@@ -86,8 +86,6 @@ class NetworkTimelineService
                 self::rem($postId);
             }
         }
-
-        return;
     }
 
 	public static function warmCache($force = false, $limit = 100)

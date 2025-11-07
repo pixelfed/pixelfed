@@ -48,22 +48,18 @@ class AdminProfileActionPipeline implements ShouldQueue
      */
     public function handle()
     {
-        $profile = $this->profile;
+        // $profile = $this->profile;
         $action = $this->action;
 
         switch($action) {
             case 'mark-all-cw':
                 return $this->markAllPostsWithContentWarnings();
-            break;
             case 'unlist-all':
                 return $this->unlistAllPosts();
-            break;
             case 'purge':
                 return $this->purgeAllPosts();
-            break;
             case 'refetch':
                 return $this->refetchAllPosts();
-            break;
         }
     }
 

@@ -43,7 +43,7 @@ class DeleteRemoteProfile extends Command
             exit;
         }
 
-        $confirmed = confirm('Are you sure you want to delete '.$profile->username.'\'s account? This action cannot be reversed.');
+        confirm('Are you sure you want to delete '.$profile->username.'\'s account? This action cannot be reversed.');
         DeleteRemoteProfilePipeline::dispatch($profile)->onQueue('adelete');
         $this->info('Dispatched delete job, it may take a few minutes...');
         exit;

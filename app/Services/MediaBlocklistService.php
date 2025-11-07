@@ -28,7 +28,6 @@ class MediaBlocklistService
 			return;
 		}
 		MediaBlocklist::whereSha256($hash)->delete();
-		return;
 	}
 
 	public static function add($hash, $metadata)

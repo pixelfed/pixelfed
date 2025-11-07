@@ -22,8 +22,6 @@ class AdminShadowFilter extends Model
         if($this->item_type === 'App\Profile') {
             return AccountService::get($this->item_id, true);
         }
-
-        return;
     }
 
     public function profile()

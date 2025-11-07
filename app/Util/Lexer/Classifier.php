@@ -89,9 +89,6 @@ class Classifier
 		return $this->guess($statement)->keys()->first();
 	}
 
-	/**
-	 * @return self
-	 */
 	public function uneven(bool $enabled = false): self
 	{
 		$this->uneven = $enabled;

@@ -185,7 +185,5 @@ class RemoteAuthService
         } catch (Exception $e) {
             return;
         }
-
-        return;
     }
 }

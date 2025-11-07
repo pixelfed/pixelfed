@@ -26,7 +26,7 @@ class ReportController extends Controller
             'id' => 'required|integer|min:1',
         ]);
 
-        $type = $request->input('type');
+        $request->input('type');
         $id = $request->input('id');
         $pid = $request->user()->profile_id;
 
@@ -120,7 +120,7 @@ class ReportController extends Controller
         $reportType = $request->input('report');
         $object_id = $request->input('id');
         $object_type = $request->input('type');
-        $msg = $request->input('msg');
+        $request->input('msg');
         $object = null;
         $types = [
             // original 3
@@ -184,7 +184,6 @@ class ReportController extends Controller
                 } else {
                     return redirect('/timeline')->with('error', 'Invalid report type');
                 }
-                break;
         }
 
         if ($exists !== 0) {

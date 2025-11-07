@@ -51,7 +51,7 @@ class GroupPostTransformer extends Fractal\TransformerAbstract
             'replies'                   => [],
             'parent'                    => [],
             'place'                     => null,
-            'local'                     => (bool) !$status->remote_url,
+            'local'                     => !$status->remote_url,
             'account'                   => AccountService::get($status->profile_id, true),
             'poll'                      => [],
         ];

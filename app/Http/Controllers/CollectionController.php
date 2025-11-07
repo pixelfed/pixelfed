@@ -153,7 +153,7 @@ class CollectionController extends Controller
             ->whereIn('type', ['photo', 'photo:album', 'video'])
             ->findOrFail($postId);
 
-        $item = CollectionItem::firstOrCreate([
+        CollectionItem::firstOrCreate([
             'collection_id' => $collection->id,
             'object_type' => 'App\Status',
             'object_id' => $status->id,
@@ -248,7 +248,7 @@ class CollectionController extends Controller
             }
         }
 
-        $owner = $pid ? $pid == $profile['id'] : false;
+        $owner = $pid && $pid == $profile['id'];
 
         if ($follows) {
             $visibility = ['public', 'private'];

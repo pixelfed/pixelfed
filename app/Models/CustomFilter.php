@@ -93,15 +93,12 @@ class CustomFilter extends Model
         switch ($this->action) {
             case 0:
                 return 'warn';
-                break;
 
             case 1:
                 return 'hide';
-                break;
 
             case 2:
                 return 'blur';
-                break;
         }
     }
 

@@ -111,7 +111,6 @@ class MediaCloudUrlRewrite extends Command implements PromptsForMissingInput
                 $this->error('Invalid selection');
 
                 return;
-                break;
         }
     }
 
@@ -174,7 +173,7 @@ class MediaCloudUrlRewrite extends Command implements PromptsForMissingInput
         $this->info('Updating avatar urls...');
         $oldDomain = trim($this->argument('oldDomain'));
         $newDomain = trim($this->argument('newDomain'));
-        $disk = Storage::disk(config('filesystems.cloud'));
+        Storage::disk(config('filesystems.cloud'));
         $count = Avatar::count();
         $bar = $this->output->createProgressBar($count);
         $counter = 0;

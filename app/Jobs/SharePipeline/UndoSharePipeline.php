@@ -35,7 +35,7 @@ class UndoSharePipeline implements ShouldQueue
     public function handle()
     {
         $status = $this->status;
-        $actor = $status->profile;
+        // $actor = $status->profile;
         $parent = Status::find($status->reblog_of_id);
 
         FeedRemovePipeline::dispatch($status->id, $status->profile_id)->onQueue('feed');

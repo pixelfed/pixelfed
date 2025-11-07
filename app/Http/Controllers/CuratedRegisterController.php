@@ -106,7 +106,7 @@ class CuratedRegisterController extends Controller
             return redirect()->back()->withErrors(['code' => 'You already replied to this request.']);
         }
 
-        $act = CuratedRegisterActivity::create([
+        CuratedRegisterActivity::create([
             'register_id' => $crid,
             'reply_to_id' => $acid,
             'type' => 'user_response',
@@ -141,7 +141,7 @@ class CuratedRegisterController extends Controller
         }
         $this->validate($request, $rules, $messages);
 
-        $action = $request->input('action');
+        $request->input('action');
         $sid = $request->input('sid');
         $id = $request->input('id');
         $code = $request->input('code');
@@ -161,7 +161,6 @@ class CuratedRegisterController extends Controller
         $request->session()->put('cur-reg-con.email-confirmed', true);
         $request->session()->put('cur-reg-con.cr-id', $cr->id);
         $request->session()->put('cur-reg-con.ac-id', $ac->id);
-        $emailConfirmed = true;
 
         return redirect('/auth/sign_up/concierge/form');
     }
@@ -315,7 +314,6 @@ class CuratedRegisterController extends Controller
                 $request->session()->put('cur-step', 1);
 
                 return view('auth.curated-register.index', compact('step'));
-                break;
 
             case 2:
                 $this->stepTwo($request);
@@ -323,7 +321,6 @@ class CuratedRegisterController extends Controller
                 $request->session()->put('cur-step', 2);
 
                 return view('auth.curated-register.index', compact('step'));
-                break;
 
             case 3:
                 $this->stepThree($request);
@@ -333,7 +330,6 @@ class CuratedRegisterController extends Controller
                 $request->session()->pull('cur-reg');
 
                 return view('auth.curated-register.index', compact('step', 'verifiedEmail'));
-                break;
         }
     }
 

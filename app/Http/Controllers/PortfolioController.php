@@ -203,7 +203,7 @@ class PortfolioController extends Controller
             ->pluck('status_id');
         });
 
-        return $media->map(function($sid) use($id) {
+        return $media->map(function ($sid) {
             return StatusService::get($sid);
         })
         ->filter(function($post) {
@@ -517,7 +517,6 @@ class PortfolioController extends Controller
 		return response()
 			->view('portfolio.rss_feed', compact('account', 'now', 'feed', 'portfolioUrl'), 200)
 			->header('Content-Type', 'text/xml');
-        return response($feed)->withHeaders(['Content-Type' => 'text/xml']);
     }
 
 
@@ -531,7 +530,7 @@ class PortfolioController extends Controller
 
         $portfolio = Portfolio::whereUserId($user->id)->where('active', 1)->firstOrFail();
         $metadata = $portfolio->metadata;
-        $baseUrl = config('app.url');
+        config('app.url');
         $page = $request->input('page');
 
         $res = [

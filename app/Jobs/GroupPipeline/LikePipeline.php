@@ -49,7 +49,7 @@ class LikePipeline implements ShouldQueue
 	 */
 	public function handle()
 	{
-		$like = $this->like;
+		// $like = $this->like;
 
 		$status = $this->like->status;
 		$actor = $this->like->actor;

@@ -12,6 +12,6 @@ class PushNotificationService {
 
     public static function check($listId, $memberId) {
         $user = User::where('notify_enabled', true)->where('profile_id', $memberId)->first();
-        return $user ? (bool) $user->{"notify_{$listId}"} : false;
+        return $user && (bool) $user->{"notify_{$listId}"};
     }
 }

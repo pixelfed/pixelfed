@@ -130,23 +130,18 @@ class AvatarStorage extends Command
         switch ($id) {
             case 'Cancel':
                 return;
-            break;
 
             case 'Upload default avatar to cloud':
                 return $this->uploadDefaultAvatar();
-                break;
 
             case 'Move local avatars to cloud':
                 return $this->uploadAvatarsToCloud();
-                break;
 
             case 'Re-fetch remote avatars':
                 return $this->refetchRemoteAvatars();
-                break;
 
             case 'Fix missing avatars':
                 return $this->fixMissingAvatars();
-                break;
         }
     }
 

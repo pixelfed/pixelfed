@@ -101,7 +101,7 @@ class FixMissingUserProfile extends Command
                 $names = config_cache('account.autofollow_usernames');
                 $names = explode(',', $names);
 
-                if(!$names || !last($names)) {
+                if(!last($names)) {
                     return;
                 }
 

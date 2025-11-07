@@ -109,7 +109,7 @@ class DirectMessageController extends Controller
                     'username' => $r->recipient->username,
                     'avatar' => $r->recipient->avatarUrl(),
                     'url' => $r->recipient->url(),
-                    'isLocal' => (bool) ! $r->recipient->domain,
+                    'isLocal' => ! $r->recipient->domain,
                     'domain' => $r->recipient->domain,
                     'timeAgo' => $r->created_at->diffForHumans(null, true, true),
                     'lastMessage' => $r->status->caption,
@@ -123,7 +123,7 @@ class DirectMessageController extends Controller
                 'username' => $r->author->username,
                 'avatar' => $r->author->avatarUrl(),
                 'url' => $r->author->url(),
-                'isLocal' => (bool) ! $r->author->domain,
+                'isLocal' => ! $r->author->domain,
                 'domain' => $r->author->domain,
                 'timeAgo' => $r->created_at->diffForHumans(null, true, true),
                 'lastMessage' => $r->status->caption,
@@ -145,7 +145,7 @@ class DirectMessageController extends Controller
         $user = $request->user();
         abort_if($user->has_roles && ! UserRoleService::can('can-direct-message', $user->id), 403, 'Invalid permissions for this action');
         if (! $user->is_admin) {
-            if ((bool) ! config_cache('instance.allow_new_account_dms')) {
+            if (! config_cache('instance.allow_new_account_dms')) {
                 abort_if($user->created_at->gt(now()->subHours(72)), 400, 'You need to wait a bit before you can DM another account');
             }
         }
@@ -336,7 +336,7 @@ class DirectMessageController extends Controller
             'avatar' => $profile->avatarUrl(),
             'url' => $profile->url(),
             'muted' => in_array($profile->id, $filters),
-            'isLocal' => (bool) ! $profile->domain,
+            'isLocal' => ! $profile->domain,
             'domain' => $profile->domain,
             'created_at' => $profile->created_at->format('c'),
             'updated_at' => $profile->updated_at->format('c'),
@@ -465,7 +465,7 @@ class DirectMessageController extends Controller
         $photo = $request->file('file');
         $fileSize = $photo->getSize();
         $sizeInKbs = (int) ceil($fileSize / 1000);
-        $updatedAccountSize = (int) $accountSize + (int) $sizeInKbs;
+        $updatedAccountSize = (int) $accountSize + $sizeInKbs;
 
         if ((bool) config_cache('pixelfed.enforce_account_limit') == true) {
             $limit = (int) config_cache('pixelfed.max_account_size');
@@ -527,7 +527,7 @@ class DirectMessageController extends Controller
             ]
         );
 
-        $user->storage_used = (int) $updatedAccountSize;
+        $user->storage_used = $updatedAccountSize;
         $user->storage_used_updated_at = now();
         $user->save();
 
@@ -583,7 +583,7 @@ class DirectMessageController extends Controller
 
         $blocked->push($request->user()->profile_id);
 
-        $results = Profile::select('id', 'domain', 'username')
+        return Profile::select('id', 'domain', 'username')
             ->whereNotIn('id', $blocked)
             ->where('username', 'like', '%'.$q.'%')
             ->orderBy('domain')
@@ -593,7 +593,7 @@ class DirectMessageController extends Controller
                 $acct = AccountService::get($r->id);
 
                 return [
-                    'local' => (bool) ! $r->domain,
+                    'local' => ! $r->domain,
                     'id' => (string) $r->id,
                     'name' => $r->username,
                     'privacy' => true,
@@ -601,8 +601,6 @@ class DirectMessageController extends Controller
                     'account' => $acct,
                 ];
             });
-
-        return $results;
     }
 
     public function composeMutuals(Request $request)

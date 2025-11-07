@@ -457,8 +457,7 @@ class Installer extends Command
         $envPath = app()->environmentFilePath();
         $payload = file_get_contents($envPath);
 
-        if ($existing = $this->existingEnv($key, $payload)) {
-        } else {
+        if (!$existing = $this->existingEnv($key, $payload)) {
             $this->error("$key empty - $error");
         }
     }

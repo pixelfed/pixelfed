@@ -148,7 +148,6 @@ class GroupsAdminController extends Controller
                 );
 
                 return [200];
-            break;
 
             case 'user':
                 $profile = Profile::whereUsername($item)->first();
@@ -175,7 +174,6 @@ class GroupsAdminController extends Controller
                 );
 
                 return [200];
-            break;
 
             case 'moderate':
                 $instance = Instance::whereDomain($item)->first();
@@ -201,11 +199,9 @@ class GroupsAdminController extends Controller
                 );
 
                 return [200];
-            break;
 
             default:
                 return response()->json([], 422, []);
-            break;
         }
     }
 
@@ -251,7 +247,6 @@ class GroupsAdminController extends Controller
                 $gb->delete();
 
                 return [200];
-            break;
 
             case 'user':
                 $profile = Profile::whereUsername($item)->first();
@@ -279,7 +274,6 @@ class GroupsAdminController extends Controller
                 $gb->delete();
 
                 return [200];
-            break;
 
             case 'moderate':
                 $instance = Instance::whereDomain($item)->first();
@@ -306,11 +300,9 @@ class GroupsAdminController extends Controller
                 $gb->delete();
 
                 return [200];
-            break;
 
             default:
                 return response()->json([], 422, []);
-            break;
         }
     }
 

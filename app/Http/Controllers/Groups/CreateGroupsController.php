@@ -27,7 +27,7 @@ class CreateGroupsController extends Controller
             $allowed = Group::whereProfileId($pid)->count() <= $max;
         }
 
-        return ['permission' => (bool) $allowed];
+        return ['permission' => $allowed];
     }
 
     public function storeGroup(Request $request)
@@ -44,13 +44,12 @@ class CreateGroupsController extends Controller
 
         $config = GroupService::config();
         abort_if($config['limits']['user']['create']['new'] == false && $request->user()->is_admin == false, 422, 'Invalid operation');
-        $max = $config['limits']['user']['create']['max'];
         // abort_if(Group::whereProfileId($pid)->count() <= $max, 422, 'Group limit reached');
 
         $group = new Group;
         $group->profile_id = $pid;
         $group->name = $request->input('name');
-        $group->description = $request->input('description', null);
+        $group->description = $request->input('description');
         $group->is_private = $request->input('membership') == 'private';
         $group->local_only = $request->input('membership') == 'local';
         $group->metadata = $request->input('configuration');

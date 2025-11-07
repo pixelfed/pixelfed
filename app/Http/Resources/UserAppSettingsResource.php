@@ -8,7 +8,7 @@ use Illuminate\Http\Resources\Json\JsonResource;
 class UserAppSettingsResource extends JsonResource
 {
 
-    public static $wrap = null;
+    public static $wrap;
 
     /**
      * Transform the resource into an array.

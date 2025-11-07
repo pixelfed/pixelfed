@@ -153,7 +153,7 @@ class SettingsController extends Controller
 
     public function requestFullExport(Request $request)
     {
-        $user = Auth::user();
+        Auth::user();
 
         return view('settings.export.show');
     }
@@ -227,7 +227,6 @@ class SettingsController extends Controller
         ]);
         $sponsors->sponsors = json_encode($res);
         $sponsors->save();
-        $sponsors = $res;
 
         return redirect(route('settings'))->with('status', 'Sponsor settings successfully updated!');
     }

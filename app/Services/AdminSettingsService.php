@@ -143,7 +143,7 @@ class AdminSettingsService
         $cloud_storage = (bool) config_cache('pixelfed.cloud_storage');
         $cloud_disk = config('filesystems.cloud');
         $cloud_ready = ! empty(config('filesystems.disks.'.$cloud_disk.'.key')) && ! empty(config('filesystems.disks.'.$cloud_disk.'.secret'));
-        $primaryDisk = (bool) $cloud_ready && $cloud_storage;
+        $primaryDisk = $cloud_ready && $cloud_storage;
         $pkey = 'filesystems.disks.'.$cloud_disk.'.';
         $disk = [
             'driver' => $cloud_disk,
@@ -159,7 +159,7 @@ class AdminSettingsService
 
         return [
             'primary_disk' => $primaryDisk ? 'cloud' : 'local',
-            'cloud_ready' => (bool) $cloud_ready,
+            'cloud_ready' => $cloud_ready,
             'cloud_disk' => $cloud_disk,
             'disk_config' => $disk,
         ];

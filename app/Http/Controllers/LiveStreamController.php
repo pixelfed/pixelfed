@@ -26,21 +26,18 @@ class LiveStreamController extends Controller
 		abort_if(!$request->user(), 403);
 
 		if(config('livestreaming.broadcast.limits.enabled')) {
-			if($request->user()->is_admin) {
-
-			} else {
-				$limits = config('livestreaming.broadcast.limits');
-				$user = $request->user();
-				abort_if($limits['admins_only'] && $user->is_admin == false, 401, 'LSE:003');
-				if($limits['min_account_age']) {
+			if (!$request->user()->is_admin) {
+                $limits = config('livestreaming.broadcast.limits');
+                $user = $request->user();
+                abort_if($limits['admins_only'] && $user->is_admin == false, 401, 'LSE:003');
+                if($limits['min_account_age']) {
 					abort_if($user->created_at->gt(now()->subDays($limits['min_account_age'])), 403, 'LSE:005');
 				}
-
-				if($limits['min_follower_count']) {
+                if($limits['min_follower_count']) {
 					$account = AccountService::get($user->profile_id);
 					abort_if($account['followers_count'] < $limits['min_follower_count'], 403, 'LSE:008');
 				}
-			}
+            }
 		}
 
 		$this->validate($request, [
@@ -81,7 +78,7 @@ class LiveStreamController extends Controller
 		}
 
 		$res = [];
-		$owner = $request->user() ? $stream->profile_id == $request->user()->profile_id : false;
+		$owner = $request->user() && $stream->profile_id == $request->user()->profile_id;
 
 		if($stream->visibility === 'private') {
 			abort_if(!$owner && !FollowerService::follows($request->user()->profile_id, $stream->profile_id), 403, 'LSE:011');
@@ -110,8 +107,6 @@ class LiveStreamController extends Controller
 		if(!$stream) {
 			return [];
 		}
-
-		$res = [];
 
 		$res = [
 			'hls_url' => $stream->getHlsUrl(),
@@ -185,12 +180,10 @@ class LiveStreamController extends Controller
 			abort_if(!$owner && !FollowerService::follows($request->user()->profile_id, $stream->profile_id), 403, 'LSE:021');
 		}
 
-		$res = collect(LiveStreamService::getComments($stream->profile_id))
+		return collect(LiveStreamService::getComments($stream->profile_id))
 			->map(function($res) {
 				return json_decode($res);
 			});
-
-		return $res;
 	}
 
 	public function addChatComment(Request $request)
@@ -244,8 +237,6 @@ class LiveStreamController extends Controller
 		$stream->name = $request->input('name');
 		$stream->description = $request->input('description');
 		$stream->save();
-
-		return;
 	}
 
 	public function deleteChatComment(Request $request)
@@ -271,7 +262,6 @@ class LiveStreamController extends Controller
 		DeleteChatComment::dispatch($stream, $payload);
 		$payload = json_encode($payload, JSON_UNESCAPED_SLASHES);
 		LiveStreamService::deleteComment($stream->profile_id, $payload);
-		return;
 	}
 
 	public function banChatUser(Request $request)
@@ -289,7 +279,6 @@ class LiveStreamController extends Controller
 		$pid = $request->input('profile_id');
 
 		BanUser::dispatch($stream, $pid);
-		return;
 	}
 
 	public function pinChatComment(Request $request)
@@ -310,7 +299,6 @@ class LiveStreamController extends Controller
 
 		$stream = LiveStream::whereProfileId($request->user()->profile_id)->firstOrFail();
 		PinChatMessage::dispatch($stream, $msg);
-		return;
 	}
 
 	public function unpinChatComment(Request $request)
@@ -331,7 +319,6 @@ class LiveStreamController extends Controller
 
 		$stream = LiveStream::whereProfileId($request->user()->profile_id)->firstOrFail();
 		UnpinChatMessage::dispatch($stream, $msg);
-		return;
 	}
 
 	public function getConfig(Request $request)

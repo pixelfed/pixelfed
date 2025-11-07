@@ -136,7 +136,6 @@ class ImportCities extends Command
         $this->line('');
         $this->info('Successfully imported ' . $cityCount . ' entries!');
         $this->line('');
-        return;
     }
 
     private function insertBuffer($buffer)

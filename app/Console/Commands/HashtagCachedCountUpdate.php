@@ -52,6 +52,5 @@ class HashtagCachedCountUpdate extends Command
         }
         $bar->finish();
         $this->line(' ');
-        return;
     }
 }

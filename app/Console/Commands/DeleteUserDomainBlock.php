@@ -39,7 +39,6 @@ class DeleteUserDomainBlock extends Command
             return;
         }
         $this->processUnblocks($domain);
-        return;
     }
 
     protected function validateDomain($domain)

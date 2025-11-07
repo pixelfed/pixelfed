@@ -68,13 +68,10 @@ class AvatarStorageLargePurge implements ShouldQueue, ShouldBeUniqueUntilProcess
         $files = collect(AvatarService::storage($avatar));
 
         $curFile = Str::of($avatar->cdn_url)->explode('/')->last();
-
-        $files = $files->filter(function($f) use($curFile) {
+        $files->filter(function($f) use($curFile) {
             return !$curFile || !str_ends_with($f, $curFile);
         })->each(function($name) use($disk) {
             $disk->delete($name);
         });
-
-        return;
     }
 }

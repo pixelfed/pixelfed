@@ -124,7 +124,5 @@ class FollowServiceWarmCache implements ShouldQueue
         if($hasFollowerPostProcessing) {
             FollowServiceWarmCacheLargeIngestPipeline::dispatch($id, 'followers')->onQueue('follow');
         }
-
-		return;
 	}
 }

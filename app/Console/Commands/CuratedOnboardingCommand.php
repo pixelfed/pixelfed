@@ -50,15 +50,12 @@ class CuratedOnboardingCommand extends Command
         switch ($action) {
             case 'Stats':
                 return $this->stats();
-                break;
 
             case 'Edit':
                 return $this->edit();
-                break;
 
             default:
                 exit;
-                break;
         }
     }
 

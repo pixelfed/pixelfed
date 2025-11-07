@@ -92,7 +92,7 @@ class ComposeController extends Controller
         $photo = $request->file('file');
         $fileSize = $photo->getSize();
         $sizeInKbs = (int) ceil($fileSize / 1000);
-        $updatedAccountSize = (int) $accountSize + (int) $sizeInKbs;
+        $updatedAccountSize = (int) $accountSize + $sizeInKbs;
 
         if ((bool) config_cache('pixelfed.enforce_account_limit') == true) {
             $limit = (int) config_cache('pixelfed.max_account_size');
@@ -148,7 +148,7 @@ class ComposeController extends Controller
                 break;
         }
 
-        $user->storage_used = (int) $updatedAccountSize;
+        $user->storage_used = $updatedAccountSize;
         $user->storage_used_updated_at = now();
         $user->save();
 
@@ -201,7 +201,7 @@ class ComposeController extends Controller
         $name = last($fragments);
         array_pop($fragments);
         $dir = implode('/', $fragments);
-        $path = $photo->storePubliclyAs($dir, $name);
+        $photo->storePubliclyAs($dir, $name);
         $res = [
             'url' => $media->url().'?v='.time(),
         ];
@@ -270,7 +270,8 @@ class ComposeController extends Controller
         $blocked->push($request->user()->profile_id);
 
         $operator = config('database.default') === 'pgsql' ? 'ilike' : 'like';
-        $results = Profile::select([
+
+        return Profile::select([
             'profiles.id',
             'profiles.domain',
             'profiles.username',
@@ -300,8 +301,6 @@ class ComposeController extends Controller
                     'avatar' => $r->avatarUrl(),
                 ];
             });
-
-        return $results;
     }
 
     public function searchUntag(Request $request)
@@ -393,7 +392,7 @@ class ComposeController extends Controller
         $q = '%'.$q.'%';
         $wildcard = config('database.default') === 'pgsql' ? 'ilike' : 'like';
 
-        $places = DB::table('places')
+        return DB::table('places')
             ->where('name', $wildcard, $q)
             ->limit((strlen($q) > 5 ? 360 : 30))
             ->get()
@@ -414,8 +413,6 @@ class ComposeController extends Controller
             })
             ->values()
             ->all();
-
-        return $places;
     }
 
     public function searchMentionAutocomplete(Request $request)
@@ -451,7 +448,7 @@ class ComposeController extends Controller
         $currentUserId = $request->user()->profile_id;
         $operator = config('database.default') === 'pgsql' ? 'ilike' : 'like';
 
-        $results = Profile::select([
+        return Profile::select([
             'profiles.id',
             'profiles.domain',
             'profiles.username',
@@ -482,8 +479,6 @@ class ComposeController extends Controller
                     'is_followed' => (bool) $profile->is_followed,
                 ];
             });
-
-        return $results;
     }
 
     public function searchHashtagAutocomplete(Request $request)
@@ -498,7 +493,7 @@ class ComposeController extends Controller
 
         $q = $request->input('q');
 
-        $results = Hashtag::select('slug')
+        return Hashtag::select('slug')
             ->where('slug', 'like', '%'.$q.'%')
             ->whereIsNsfw(false)
             ->whereIsBanned(false)
@@ -510,8 +505,6 @@ class ComposeController extends Controller
                     'value' => $tag->slug,
                 ];
             });
-
-        return $results;
     }
 
     public function store(Request $request)
@@ -552,7 +545,7 @@ class ComposeController extends Controller
         $profile = $user->profile;
 
         $limitKey = 'compose:rate-limit:store:'.$user->id;
-        $limitTtl = now()->addMinutes(15);
+        now()->addMinutes(15);
         // $limitReached = Cache::remember($limitKey, $limitTtl, function () use ($user) {
         //     $dailyLimit = Status::whereProfileId($user->profile_id)
         //         ->whereNull('in_reply_to_id')
@@ -575,7 +568,7 @@ class ComposeController extends Controller
         $place = $request->input('place');
         $cw = $request->input('cw');
         $tagged = $request->input('tagged');
-        $optimize_media = (bool) $request->input('optimize_media');
+        $request->input('optimize_media');
 
         foreach ($medias as $k => $media) {
             if ($k + 1 > config_cache('pixelfed.max_album_length')) {
@@ -588,7 +581,7 @@ class ComposeController extends Controller
             $m->filter_class = in_array($media['filter_class'], Filter::classes()) ? $media['filter_class'] : null;
             $m->license = $license;
             $m->caption = isset($media['alt']) ? strip_tags($media['alt']) : null;
-            $m->order = isset($media['cursor']) && is_int($media['cursor']) ? (int) $media['cursor'] : $k;
+            $m->order = isset($media['cursor']) && is_int($media['cursor']) ? $media['cursor'] : $k;
 
             if ($cw == true || $profile->cw == true) {
                 $m->is_nsfw = $cw;

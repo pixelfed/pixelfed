@@ -34,7 +34,7 @@ class FilesystemService
             $bucket,
         );
 
-        $throw = false;
+        // $throw = false;
         $filesystem = new Filesystem($adapter);
 
         $writable = false;

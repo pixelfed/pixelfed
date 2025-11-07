@@ -87,7 +87,5 @@ class FollowRejectPipeline implements ShouldQueue
 			Log::warning("FollowRejectPipeline: Failed to process follow request {$follow->id}: " . $e->getMessage());
 			throw $e;
 		}
-
-		return;
 	}
 }
