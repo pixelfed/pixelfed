@@ -15,7 +15,7 @@ use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
 use Log;
 use Storage;
-use Zttp\Zttp;
+use Illuminate\Support\Facades\Http;
 use App\Util\ActivityPub\Helpers;
 use App\Services\MediaPathService;
 
@@ -65,7 +65,7 @@ class RemoteFollowImportRecent implements ShouldQueue
         if(Helpers::validateUrl($url) == false) {
             return;
         }
-        $response = Zttp::withHeaders([
+        $response = Http::withHeaders([
             'User-Agent' => 'PixelfedBot v0.1 - https://pixelfed.org',
         ])->get($url);
 

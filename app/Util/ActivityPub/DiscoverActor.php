@@ -2,7 +2,7 @@
 
 namespace App\Util\ActivityPub;
 
-use Zttp\Zttp;
+use Illuminate\Support\Facades\Http;
 
 class DiscoverActor
 {
@@ -17,7 +17,7 @@ class DiscoverActor
 
     public function fetch()
     {
-        $res = Zttp::withHeaders([
+        $res = Http::withHeaders([
             'Accept' => 'application/ld+json; profile="https://www.w3.org/ns/activitystreams"',
             'User-Agent' => 'PixelfedBot - https://pixelfed.org',
         ])->get($this->url);

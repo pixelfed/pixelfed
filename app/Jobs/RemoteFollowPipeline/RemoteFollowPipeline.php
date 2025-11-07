@@ -14,7 +14,7 @@ use Illuminate\Foundation\Bus\Dispatchable;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
 use Illuminate\Support\Facades\Log;
-use Zttp\Zttp;
+use Illuminate\Support\Facades\Http;
 
 class RemoteFollowPipeline implements ShouldQueue
 {
@@ -81,7 +81,7 @@ class RemoteFollowPipeline implements ShouldQueue
 
         $handlerStack = GuzzleHttpSignatures::defaultHandlerFromContext($context);
         $client = new Client(['handler' => $handlerStack]);
-        $response = Zttp::withHeaders([
+        $response = Http::withHeaders([
             'Accept' => 'application/ld+json; profile="https://www.w3.org/ns/activitystreams"',
             'User-Agent' => 'PixelfedBot v0.1 - https://pixelfed.org',
         ])->get($url);
@@ -136,7 +136,7 @@ class RemoteFollowPipeline implements ShouldQueue
         $res = $this->response;
         $url = $res['inbox'];
 
-        $activity = Zttp::withHeaders(['Content-Type' => 'application/ld+json; profile="https://www.w3.org/ns/activitystreams"'])->post($url, [
+        $activity = Http::withHeaders(['Content-Type' => 'application/ld+json; profile="https://www.w3.org/ns/activitystreams"'])->post($url, [
             'type' => 'Follow',
             'object' => $this->follower->url(),
         ]);

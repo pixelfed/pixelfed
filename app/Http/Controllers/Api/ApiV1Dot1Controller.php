@@ -34,6 +34,7 @@ use App\Services\PublicTimelineService;
 use App\Services\PushNotificationService;
 use App\Services\SanitizeService;
 use App\Services\StatusService;
+use App\Services\UserRoleService;
 use App\Services\UserStorageService;
 use App\Status;
 use App\StatusArchived;

@@ -182,7 +182,7 @@ class Helpers
 
             return $uri->toString();
 
-        } catch (UriException $e) {
+        } catch (UriException|\Exception $e) {
             return false;
         }
     }

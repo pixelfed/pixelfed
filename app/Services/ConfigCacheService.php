@@ -4,6 +4,7 @@ namespace App\Services;
 
 use App\Models\ConfigCache as ConfigCacheModel;
 use Cache;
+use Exception;
 use Illuminate\Database\QueryException;
 
 class ConfigCacheService
