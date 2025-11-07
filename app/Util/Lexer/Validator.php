@@ -47,7 +47,7 @@ class Validator extends Regex
     /**
      * @var Extractor
      */
-    protected $extractor = null;
+    protected $extractor;
 
     /**
      * Provides fluent method chaining.

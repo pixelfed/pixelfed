@@ -227,7 +227,7 @@ class SettingsController extends Controller
         ]);
         $sponsors->sponsors = json_encode($res);
         $sponsors->save();
-        $sponsors = $res;
+        // $sponsors = $res;
 
         return redirect(route('settings'))->with('status', 'Sponsor settings successfully updated!');
     }

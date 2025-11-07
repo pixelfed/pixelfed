@@ -84,7 +84,6 @@ class StatusLocalUpdateActivityPubDeliverPipeline implements ShouldQueue
 			case 'poll':
 				// Polls not yet supported
 				return;
-			break;
 
 			default:
 				$activitypubObject = new UpdateNote();

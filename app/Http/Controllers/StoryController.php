@@ -186,7 +186,7 @@ class StoryController extends StoryComposeController
         $story = Story::with('profile')
             ->whereActive(true)
             ->findOrFail($id);
-        $exp = $story->expires_at;
+        // $exp = $story->expires_at;
 
         $profile = $story->profile;
 

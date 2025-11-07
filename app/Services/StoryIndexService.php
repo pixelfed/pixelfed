@@ -181,14 +181,14 @@ class StoryIndexService
             $keyAuth = $this->authorKey($author);
 
             $pipe->hset($keyStory, 'id', $sid);
-            $pipe->hset($keyStory, 'profile_id', (string) $author);
+            $pipe->hset($keyStory, 'profile_id', $author);
             $pipe->hset($keyStory, 'type', (string) $type);
             $pipe->hset($keyStory, 'path', (string) $path);
             $pipe->hset($keyStory, 'duration', (string) $duration);
             $pipe->hset($keyStory, 'overlays', $overlays);
             $pipe->hset($keyStory, 'created_at', $createdIso);
             $pipe->hset($keyStory, 'view_count', (string) $viewCount);
-            $pipe->expire($keyStory, (int) $ttl);
+            $pipe->expire($keyStory, $ttl);
 
             if (config('database.redis.client') === 'predis') {
                 $pipe->zadd($keyAuth, [$sid => $score]);
@@ -196,7 +196,7 @@ class StoryIndexService
                 $pipe->zadd($keyAuth, $score, $sid);
             }
             $pipe->sadd('story:active_authors', $author);
-            $pipe->expire($keyAuth, (int) ($ttl + 3600));
+            $pipe->expire($keyAuth, $ttl + 3600);
         });
     }
 

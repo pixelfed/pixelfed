@@ -74,7 +74,5 @@ class AvatarStorageLargePurge implements ShouldQueue, ShouldBeUniqueUntilProcess
         })->each(function($name) use($disk) {
             $disk->delete($name);
         });
-
-        return;
     }
 }

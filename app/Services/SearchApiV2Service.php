@@ -45,21 +45,18 @@ class SearchApiV2Service
                         'hashtags' => [],
                         'statuses' => [],
                     ];
-                    break;
                 case 'hashtags':
                     return [
                         'accounts' => [],
                         'hashtags' => $this->hashtags(),
                         'statuses' => [],
                     ];
-                    break;
                 case 'statuses':
                     return [
                         'accounts' => [],
                         'hashtags' => [],
                         'statuses' => $this->statuses(),
                     ];
-                    break;
             }
         }
 
@@ -335,7 +332,6 @@ class SearchApiV2Service
                             $default['statuses'][] = $note;
 
                             return $default;
-                            break;
 
                         case 'Person':
                             $obj = Helpers::profileFetch($query);
@@ -350,7 +346,6 @@ class SearchApiV2Service
                                 AccountService::get($obj['id'], true);
 
                             return $default;
-                            break;
 
                         default:
                             return [
@@ -358,7 +353,6 @@ class SearchApiV2Service
                                 'hashtags' => [],
                                 'statuses' => [],
                             ];
-                            break;
                     }
                 }
             } catch (\Exception $e) {

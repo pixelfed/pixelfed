@@ -50,31 +50,24 @@ class InstanceManager extends Command
         switch($action) {
             case 'Recalculate Stats':
                 return $this->recalculateStats();
-            break;
 
             case 'Unlisted Instances':
                 return $this->viewUnlistedInstances();
-            break;
 
             case 'Banned Instances':
                 return $this->viewBannedInstances();
-            break;
 
             case 'Unlist Instance':
                 return $this->unlistInstance();
-            break;
 
             case 'Ban Instance':
                 return $this->banInstance();
-            break;
 
             case 'Unban Instance':
                 return $this->unbanInstance();
-            break;
 
             case 'Relist Instance':
                 return $this->relistInstance();
-            break;
         }
     }
 

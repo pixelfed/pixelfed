@@ -80,7 +80,7 @@ class MediaDeletePipeline implements ShouldBeUniqueUntilProcessing, ShouldQueue
 
         $e = explode('/', $path);
         array_pop($e);
-        $i = implode('/', $e);
+        // $i = implode('/', $e);
 
         try {
             if ((bool) config_cache('pixelfed.cloud_storage') == true) {

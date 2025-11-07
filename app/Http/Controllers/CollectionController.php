@@ -248,7 +248,7 @@ class CollectionController extends Controller
             }
         }
 
-        $owner = $pid ? $pid == $profile['id'] : false;
+        $owner = $pid && $pid == $profile['id'];
 
         if ($follows) {
             $visibility = ['public', 'private'];

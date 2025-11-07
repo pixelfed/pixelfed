@@ -78,7 +78,6 @@ class StoryGC extends Command
 				}
 				StoryRotateMedia::dispatch($story)->onQueue('story');
 				StoryService::removeRotateQueue($id);
-				return;
 			});
 	}
 }

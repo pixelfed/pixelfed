@@ -52,7 +52,7 @@ class NewCommentPipeline implements ShouldQueue
     public function handle()
     {
         $profile = $this->status->profile;
-        $status = $this->status;
+        // $status = $this->status;
 
         $parent = $this->parent;
         $parent->reply_count = GroupComment::whereStatusId($parent->id)->count();

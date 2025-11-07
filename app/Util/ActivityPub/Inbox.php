@@ -287,7 +287,7 @@ class Inbox
             return;
         }
 
-        $inReplyTo = $activity['inReplyTo'];
+        // $inReplyTo = $activity['inReplyTo'];
         $url = isset($activity['url']) ? $activity['url'] : $activity['id'];
 
         Helpers::statusFirstOrFetch($url, true);
@@ -776,7 +776,6 @@ class Inbox
                     DeleteRemoteProfilePipeline::dispatch($profile)->onQueue('inbox');
 
                     return;
-                    break;
 
                 case 'Tombstone':
                     $profile = Profile::whereRemoteUrl($actor)->first();
@@ -802,7 +801,6 @@ class Inbox
                     RemoteStatusDelete::dispatch($status)->onQueue('high');
 
                     return;
-                    break;
 
                 case 'Story':
                     $story = Story::whereObjectId($id)
@@ -812,11 +810,9 @@ class Inbox
                     }
 
                     return;
-                    break;
 
                 default:
                     return;
-                    break;
             }
         }
 
@@ -897,7 +893,7 @@ class Inbox
                 break;
 
             case 'Announce':
-                if (is_array($obj) && isset($obj['object'])) {
+                if (isset($obj['object'])) {
                     $obj = $obj['object'];
                 }
                 if (! is_string($obj)) {

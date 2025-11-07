@@ -61,7 +61,5 @@ class AvatarStorageCleanup implements ShouldQueue, ShouldBeUniqueUntilProcessing
     public function handle(): void
     {
         AvatarService::cleanup($this->avatar, true);
-
-        return;
     }
 }

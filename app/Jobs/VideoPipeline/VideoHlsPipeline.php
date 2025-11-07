@@ -103,7 +103,5 @@ class VideoHlsPipeline implements ShouldQueue, ShouldBeUniqueUntilProcessing
         MediaService::del($media->status_id);
         usleep(50000);
         StatusService::del($media->status_id);
-
-        return;
     }
 }

@@ -81,7 +81,7 @@ trait AdminHashtagsController
         ]);
 
         $hashtag = Hashtag::whereSlug($request->input('slug'))->findOrFail($request->input('id'));
-        $canTrendPrev = $hashtag->can_trend == null ? true : $hashtag->can_trend;
+        // $canTrendPrev = $hashtag->can_trend == null ? true : $hashtag->can_trend;
         $hashtag->is_banned = $request->input('is_banned');
         $hashtag->is_nsfw = $request->input('is_nsfw');
         $hashtag->can_search = $hashtag->is_banned ? false : $request->input('can_search');

@@ -39,7 +39,7 @@ class Helpers
 
     private const URL_CACHE_PREFIX = 'helpers:url:';
 
-    private const FETCH_CACHE_TTL = 15;
+    // private const FETCH_CACHE_TTL = 15;
 
     private const LOCALHOST_DOMAINS = [
         'localhost',
@@ -597,7 +597,7 @@ class Helpers
         $reply_to = self::getReplyTo($activity);
         $ts = self::pluckval($activity['published']);
         $scope = self::getScope($activity, $url);
-        $commentsDisabled = isset($activity['commentsEnabled']) ? (bool) $activity['commentsEnabled'] == false : false;
+        $commentsDisabled = isset($activity['commentsEnabled']) && (bool) $activity['commentsEnabled'] == false;
         $cw = self::getSensitive($activity, $url);
 
         if ($profile->unlisted) {
@@ -750,7 +750,7 @@ class Helpers
         }
 
         $urlDomain = parse_url($url, PHP_URL_HOST);
-        $cw = isset($activity['sensitive']) ? (bool) $activity['sensitive'] : false;
+        $cw = isset($activity['sensitive']) && (bool) $activity['sensitive'];
 
         if (in_array($urlDomain, InstanceService::getNsfwDomains())) {
             $cw = true;
@@ -1271,7 +1271,7 @@ class Helpers
             'inbox_url' => $res['inbox'],
             'outbox_url' => $res['outbox'] ?? null,
             'public_key' => $res['publicKey']['publicKeyPem'],
-            'indexable' => isset($res['indexable']) ? (bool) $res['indexable'] : false,
+            'indexable' => isset($res['indexable']) && (bool) $res['indexable'],
             'moved_to_profile_id' => $movedToPid,
             'is_private' => isset($res['manuallyApprovesFollowers']) ? (bool) $res['manuallyApprovesFollowers'] : true,
         ];

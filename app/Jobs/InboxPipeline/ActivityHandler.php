@@ -68,7 +68,5 @@ class ActivityHandler implements ShouldQueue
             Log::warning("ActivityHandler: Failed to handle activity for username {$username}: " . $e->getMessage());
             throw $e;
         }
-
-        return;
     }
 }

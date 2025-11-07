@@ -87,8 +87,6 @@ class StoryDelete implements ShouldQueue
 		// delete reports
 
 		$story->delete();
-
-		return;
 	}
 
 	protected function fanoutExpiry($profile, $activity)

@@ -418,7 +418,7 @@ class StatusController extends Controller
         if (! isset($allowed['image/jpg'])) {
             $allowed[] = 'image/jpg';
         }
-        $count = count($mimes);
+        // $count = count($mimes);
         $photos = 0;
         $videos = 0;
         foreach ($mimes as $mime) {
