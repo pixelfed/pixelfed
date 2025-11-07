@@ -37,7 +37,7 @@
         "phpseclib/phpseclib": "~2.0",
         "pixelfed/fractal": "^0.18.0",
         "pixelfed/laravel-snowflake": "^2.0",
-        "pragmarx/google2fa": "^8.0",
+        "pragmarx/google2fa": "^9.0",
         "predis/predis": "^2.0",
         "pusher/pusher-php-server": "^7.2",
         "resend/resend-php": "^0.13.0",
