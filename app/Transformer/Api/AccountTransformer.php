@@ -26,7 +26,7 @@ class AccountTransformer extends Fractal\TransformerAbstract
             return User::whereIsAdmin(true)->pluck('profile_id')->toArray();
         });
 
-        $local = $profile->private_key != null;
+        //dead $local = $profile->private_key != null;
         $local = $profile->user_id && $profile->private_key != null;
         $hideFollowing = false;
         $hideFollowers = false;
