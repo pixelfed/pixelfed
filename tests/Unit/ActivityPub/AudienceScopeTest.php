@@ -9,6 +9,8 @@ use Tests\TestCase;
 class AudienceScopeTest extends TestCase
 {
     protected array $invalid;
+    protected array $mastodon;
+    protected array $pleroma;
 
     public function setUp(): void
     {
