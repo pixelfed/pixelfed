@@ -323,6 +323,7 @@ class Extractor extends Regex
      */
     public function extractCashtagsWithIndices($tweet = null)
     {
+        return [];
     }
 
     /**
