@@ -39,6 +39,7 @@ use App\Services\UserFilterService;
 use App\Status;
 use App\Story;
 use App\StoryView;
+use App\User;
 use App\UserFilter;
 use App\Util\ActivityPub\Validator\Accept as AcceptValidator;
 use App\Util\ActivityPub\Validator\Announce as AnnounceValidator;
