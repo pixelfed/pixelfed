@@ -12,10 +12,10 @@ This setup uses `serversideup/php:8.4-fpm-nginx` as the base image and is design
 
 1. **Copy the environment file:**
    ```bash
-   cp .env.docker.example .env.docker
+   cp .env.docker.example .env
    ```
 
-2. **Update `.env.docker` with your configuration:**
+2. **Update `.env` with your configuration:**
    - Set `APP_KEY` (generate with: `docker compose run --rm pixelfed php artisan key:generate --show`)
    - Update `APP_URL`, `APP_DOMAIN`, `ADMIN_DOMAIN`, `SESSION_DOMAIN` with your domain
    - Set secure database passwords for `DB_PASSWORD` and `DB_ROOT_PASSWORD`
@@ -144,6 +144,6 @@ docker compose exec pixelfed php artisan view:clear
 ```
 
 ### Database Connection Issues
-- Verify database credentials in `.env.docker`
+- Verify database credentials in `.env`
 - Check if database container is running: `docker compose ps`
 - View database logs: `docker compose logs db`

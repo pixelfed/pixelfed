@@ -10,7 +10,7 @@ services:
     ports:
       - "8080:8080"
     env_file:
-      - .env.docker
+      - .env
     environment:
       # PHP Configuration
       AUTORUN_LARAVEL_MIGRATION_ISOLATION: "true"
@@ -43,7 +43,7 @@ services:
     container_name: pixelfed-db
     restart: unless-stopped
     env_file:
-      - .env.docker
+      - .env
     environment:
       MARIADB_DATABASE: ${DB_DATABASE}
       MARIADB_USER: ${DB_USERNAME}
@@ -72,7 +72,7 @@ services:
     restart: unless-stopped
     command: php artisan horizon
     env_file:
-      - .env.docker
+      - .env
     environment:
       AUTORUN_ENABLED: "false"
       PHP_POST_MAX_SIZE: "500M"

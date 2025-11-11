@@ -1,8 +1,7 @@
 .git
 .gitignore
-.env
-.env.*
-!.env.docker
+.env.example
+.env.docker.example
 node_modules
 vendor
 storage/logs/*
