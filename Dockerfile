@@ -31,7 +31,8 @@ RUN install-php-extensions \
     zip \
     pdo_mysql \
     redis \
-    vips
+    vips \
+    ffi
 
 # Copy application files
 COPY --chown=www-data:www-data . /var/www/html
