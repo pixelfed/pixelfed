@@ -83,6 +83,7 @@ server {
 - **db:** MariaDB 11 database
 - **redis:** Redis cache and queue backend
 - **horizon:** Laravel Horizon queue worker
+- **scheduler:** Laravel task scheduler (runs scheduled tasks every minute)
 
 ## Volumes
 
