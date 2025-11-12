@@ -10,8 +10,10 @@ services:
     env_file:
       - .env
     environment:
+      # SSL Configuration (handled by reverse proxy)
+      SSL_MODE: "off"
+
       # PHP Configuration
-      AUTORUN_LARAVEL_MIGRATION_ISOLATION: "true"
       PHP_POST_MAX_SIZE: "500M"
       PHP_UPLOAD_MAX_FILE_SIZE: "500M"
       PHP_OPCACHE_ENABLE: "1"
@@ -19,14 +21,13 @@ services:
       # Laravel Auto-run Configuration
       AUTORUN_ENABLED: "true"
       AUTORUN_LARAVEL_MIGRATION: "true"
+      AUTORUN_LARAVEL_MIGRATION_ISOLATION: "true"
       AUTORUN_LARAVEL_STORAGE_LINK: "true"
       AUTORUN_LARAVEL_EVENT_CACHE: "true"
       AUTORUN_LARAVEL_ROUTE_CACHE: "true"
       AUTORUN_LARAVEL_VIEW_CACHE: "true"
-      AUTORUN_LARAVEL_CONFIG_CACHE: "true"
-      
-      # SSL Configuration (handled by reverse proxy)
-      SSL_MODE: "off"
+      AUTORUN_LARAVEL_CONFIG_CACHE: "true"   
+
     volumes:
       - ./storage:/var/www/html/storage
       - ./bootstrap/cache:/var/www/html/bootstrap/cache

@@ -16,22 +16,29 @@ This setup uses `serversideup/php:8.4-fpm-nginx` as the base image and is design
    ```
 
 2. **Update `.env` with your configuration:**
-   - Set `APP_KEY` (generate with: `docker compose run --rm pixelfed php artisan key:generate --show`)
+   - Set `APP_KEY` ( generate with https://laravel-encryption-key-generator.vercel.app/ )
    - Update `APP_URL`, `APP_DOMAIN`, `ADMIN_DOMAIN`, `SESSION_DOMAIN` with your domain
    - Set secure database passwords for `DB_PASSWORD` and `DB_ROOT_PASSWORD`
    - Configure mail settings
 
-3. **Build and start the containers:**
+3. **Build container**
+   ```bash
+   docker compose build
+   ```
+
+4. **Build and start the containers:**
    ```bash
    docker compose up -d
    ```
 
-4. **Generate application key (if not done in step 2):**
+5. **Generate application key (if not done in step 2):**
    ```bash
-   docker compose exec pixelfed php artisan key:generate
+   docker compose exec pixelfed php artisan instance:actor
+   docker compose exec pixelfed php artisan import:cities
+   docker compose exec pixelfed php artisan passport:keys
    ```
 
-5. **Create admin user:**
+6. **Create admin user:**
    ```bash
    docker compose exec pixelfed php artisan user:create
    ```
@@ -77,26 +84,11 @@ server {
 }
 ```
 
-## Services
-
-- **pixelfed:** Main application (port 8080)
-- **db:** MariaDB 11 database
-- **redis:** Redis cache and queue backend
-- **horizon:** Laravel Horizon queue worker
-- **scheduler:** Laravel task scheduler (runs scheduled tasks every minute)
-
-## Volumes
-
-- `db-data`: Database persistence
-- `redis-data`: Redis persistence
-- `./storage`: Application storage (uploads, cache, logs)
-- `./bootstrap/cache`: Laravel bootstrap cache
-
 ## Useful Commands
 
 ```bash
 # View logs
-docker compose logs -f pixelfed
+docker compose logs -f
 
 # Run artisan commands
 docker compose exec pixelfed php artisan [command]
@@ -147,4 +139,4 @@ docker compose exec pixelfed php artisan view:clear
 ### Database Connection Issues
 - Verify database credentials in `.env`
 - Check if database container is running: `docker compose ps`
-- View database logs: `docker compose logs db`
+- View database logs: `docker compose logs -f db`
