@@ -20,7 +20,6 @@ class UserObserver
      * Handle the notification "created" event.
      *
      * @param  \App\User $user
-     * @return void
      */
     public function created(User $user): void
     {
@@ -43,8 +42,6 @@ class UserObserver
      * Listen to the User updated event.
      *
      * @param \App\User $user
-     *
-     * @return void
      */
     public function updated(User $user): void
     {
