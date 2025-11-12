@@ -34,7 +34,7 @@ class DeleteRemoteStatusPipeline implements ShouldQueue
     protected $status;
 
     public $timeout = 30;
-    public $tries = 2;
+    public $tries = 3;
     public $maxExceptions = 1;
     public $deleteWhenMissingModels = true;
 

@@ -20,7 +20,7 @@ class ActivityHandler implements ShouldQueue
     protected $payload;
 
     public $timeout = 300;
-    public $tries = 1;
+    public $tries = 3;
     public $maxExceptions = 1;
 
     /**

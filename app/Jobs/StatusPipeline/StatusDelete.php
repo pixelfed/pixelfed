@@ -49,7 +49,7 @@ class StatusDelete implements ShouldQueue
 
     public $timeout = 900;
 
-    public $tries = 2;
+    public $tries = 3;
 
     /**
      * Create a new job instance.

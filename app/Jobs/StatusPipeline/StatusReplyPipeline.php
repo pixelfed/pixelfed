@@ -30,7 +30,7 @@ class StatusReplyPipeline implements ShouldQueue
 	public $deleteWhenMissingModels = true;
 
 	public $timeout = 60;
-	public $tries = 2;
+	public $tries = 3;
 
 	/**
 	 * Create a new job instance.
