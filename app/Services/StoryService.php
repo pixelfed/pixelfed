@@ -122,7 +122,7 @@ class StoryService
 					'sum' => (int) Story::sum('size'),
 					'average' => (int) Story::avg('size')
 				],
-				'avg_spu' => $total ? (int) ($total / Story::groupBy('profile_id')->pluck('profile_id')->count()) : 'N/A',
+				'avg_spu' => $total ? (int) ($total / Story::distinct('profile_id')->count('profile_id')) : 'N/A',
 				'avg_duration' => (int) floor(Story::avg('duration')),
 				'avg_type' => $total ? Story::selectRaw('type, count(id) as count')->groupBy('type')->orderByDesc('count')->first()->type : 'N/A'
 			];
