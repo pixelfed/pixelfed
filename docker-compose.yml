@@ -54,7 +54,7 @@ services:
       AUTORUN_LARAVEL_EVENT_CACHE: "true"
       AUTORUN_LARAVEL_ROUTE_CACHE: "true"
       AUTORUN_LARAVEL_VIEW_CACHE: "true"
-      AUTORUN_LARAVEL_CONFIG_CACHE: "true"   
+      AUTORUN_LARAVEL_CONFIG_CACHE: "true"
 
     volumes:
       - ./storage:/var/www/html/storage
@@ -75,7 +75,12 @@ services:
     env_file:
       - .env
     environment:
-      AUTORUN_ENABLED: "false"
+      # Laravel Auto-run Configuration
+      AUTORUN_LARAVEL_STORAGE_LINK: "true"
+      AUTORUN_LARAVEL_EVENT_CACHE: "true"
+      AUTORUN_LARAVEL_ROUTE_CACHE: "true"
+      AUTORUN_LARAVEL_VIEW_CACHE: "true"
+      AUTORUN_LARAVEL_CONFIG_CACHE: "true"
       PHP_POST_MAX_SIZE: "500M"
       PHP_UPLOAD_MAX_FILE_SIZE: "500M"
       PHP_OPCACHE_ENABLE: "1"
@@ -99,7 +104,12 @@ services:
     env_file:
       - .env
     environment:
-      AUTORUN_ENABLED: "false"
+      # Laravel Auto-run Configuration
+      AUTORUN_LARAVEL_STORAGE_LINK: "true"
+      AUTORUN_LARAVEL_EVENT_CACHE: "true"
+      AUTORUN_LARAVEL_ROUTE_CACHE: "true"
+      AUTORUN_LARAVEL_VIEW_CACHE: "true"
+      AUTORUN_LARAVEL_CONFIG_CACHE: "true"
       PHP_POST_MAX_SIZE: "500M"
       PHP_UPLOAD_MAX_FILE_SIZE: "500M"
       PHP_OPCACHE_ENABLE: "1"
