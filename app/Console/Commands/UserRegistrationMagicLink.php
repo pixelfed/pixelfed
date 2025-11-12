@@ -20,7 +20,7 @@ class UserRegistrationMagicLink extends Command
      *
      * @var string
      */
-    protected $description = 'Get the app magic link for users who register in-app but have not recieved the confirmation email';
+    protected $description = 'Get the app magic link for users who register in-app but have not received the confirmation email';
 
     /**
      * Execute the console command.
