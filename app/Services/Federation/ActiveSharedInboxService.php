@@ -26,7 +26,7 @@ class ActiveSharedInboxService
             return $res;
         }
 
-        if (! $res && self::count() == '0') {
+        if (self::count() == '0') {
             return self::warmCheck();
         }
     }

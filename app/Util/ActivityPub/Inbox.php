@@ -899,7 +899,7 @@ class Inbox
                 break;
 
             case 'Announce':
-                if (is_array($obj) && isset($obj['object'])) {
+                if (isset($obj['object'])) {
                     $obj = $obj['object'];
                 }
                 if (! is_string($obj)) {
