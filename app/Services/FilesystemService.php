@@ -12,6 +12,8 @@ use League\Flysystem\FilesystemException;
 use League\Flysystem\UnableToListContents;
 use League\Flysystem\FileAttributes;
 use League\Flysystem\UnableToWriteFile;
+use League\Flysystem\UnableToReadFile;
+use League\Flysystem\UnableToDeleteFile;
 
 class FilesystemService
 {

@@ -9,6 +9,7 @@ use GuzzleHttp\Exception\ClientException;
 use Aws\S3\Exception\S3Exception;
 use GuzzleHttp\Exception\ConnectException;
 use League\Flysystem\UnableToWriteFile;
+use Illuminate\Support\Facades\Log;
 
 class ResilientMediaStorageService
 {
@@ -34,7 +35,7 @@ class ResilientMediaStorageService
     public static function handleResilientStore($storagePath, $path, $name)
     {
         $attempts = 0;
-        return retry(4, function() use($storagePath, $path, $name, $attempts) {
+        return retry(4, function() use($storagePath, $path, $name) {
             self::$attempts++;
             usleep(100000);
             $baseDisk = self::$attempts > 1 ? self::getAltDriver() : config('filesystems.cloud');

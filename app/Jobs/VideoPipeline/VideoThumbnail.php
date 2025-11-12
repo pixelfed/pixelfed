@@ -104,7 +104,7 @@ class VideoThumbnail implements ShouldQueue, ShouldBeUniqueUntilProcessing
             if(config('media.hls.enabled')) {
                 VideoHlsPipeline::dispatch($media)->onQueue('mmo');
             }
-        } catch (Exception $e) {
+        } catch (\Exception $e) {
             
         }
 

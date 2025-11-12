@@ -593,7 +593,7 @@ class RemoteAuthController extends Controller
                 }
             } catch (\GuzzleHttp\Exception\RequestException $e) {
                 return;
-            } catch (Exception $e) {
+            } catch (\Exception $e) {
                 return [];
             }
         }

@@ -84,7 +84,7 @@ class FollowPipeline implements ShouldQueue
                 $notification->item_id = $target->id;
                 $notification->item_type = "App\Profile";
                 $notification->save();
-            } catch (Exception $e) {
+            } catch (\Exception $e) {
                 Log::error($e);
             }
 

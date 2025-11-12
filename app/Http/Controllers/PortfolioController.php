@@ -203,7 +203,7 @@ class PortfolioController extends Controller
             ->pluck('status_id');
         });
 
-        return $media->map(function($sid) use($id) {
+        return $media->map(function($sid) {
             return StatusService::get($sid);
         })
         ->filter(function($post) {

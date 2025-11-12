@@ -132,7 +132,7 @@ class VideoThumbnailToCloudPipeline implements ShouldQueue, ShouldBeUniqueUntilP
             if(str_starts_with($media->media_path, 'public/m/_v2/') && str_ends_with($media->media_path, '.mp4')) {
                 Storage::disk('local')->delete($media->media_path);
             }
-        } catch (Exception $e) {
+        } catch (\Exception $e) {
         }
 
         if($media->status_id) {

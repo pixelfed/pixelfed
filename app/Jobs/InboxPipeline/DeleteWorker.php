@@ -71,7 +71,7 @@ class DeleteWorker implements ShouldQueue
 			return;
 		}
 
-		if(empty($headers) || empty($payload)) {
+		if(!$headers || !$payload) {
 			Log::info("DeleteWorker: Empty headers or payload, skipping job");
 			return;
 		}

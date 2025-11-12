@@ -28,7 +28,7 @@ class GroupService
 		$res = Cache::remember(
 			self::key($id),
 			1209600,
-			function() use($id, $pid) {
+			function() use($id) {
 				$group = (new Group)->withoutRelations()->whereNull('status')->find($id);
 
 				if(!$group) {

@@ -30,6 +30,8 @@ use App\Services\AccountService;
 use App\Services\FollowerService;
 use App\Services\NotificationAppGatewayService;
 use App\Services\PollService;
+use App\Models\PollVote;
+use App\User;
 use App\Services\PushNotificationService;
 use App\Services\ReblogService;
 use App\Services\RelationshipService;
@@ -473,7 +475,7 @@ class Inbox
             ]
         );
 
-        if (count($activity['attachment'])) {
+        if (count($activity['attachment'] ?? [])) {
             $photos = 0;
             $videos = 0;
             $allowed = explode(',', config_cache('pixelfed.media_types'));

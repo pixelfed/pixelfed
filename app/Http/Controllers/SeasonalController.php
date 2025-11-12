@@ -125,7 +125,7 @@ class SeasonalController extends Controller
 			];
 		});
 
-		$res = Cache::remember($userKey, $userTtl, function() use($uid, $pid, $epochStart, $epochEnd, $request) {
+		$res = Cache::remember($userKey, $userTtl, function() use($pid, $epochStart, $epochEnd, $request) {
 			return [
 				'account' => [
 					'user_id' => $request->user()->id,

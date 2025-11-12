@@ -116,7 +116,7 @@ class AvatarOptimize implements ShouldQueue
                 $avatar->cdn_url = null;
                 $avatar->save();
             }
-        } catch (Exception $e) {
+        } catch (\Exception $e) {
         }
     }
 

@@ -44,7 +44,7 @@ class StoreStatusEditRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'status' => 'sometimes|max:'.config_cache('pixelfed.max_caption_length', 500),
+            'status' => 'sometimes|max:'.config_cache('pixelfed.max_caption_length'),
             'spoiler_text' => 'nullable|string|max:140',
             'sensitive' => 'sometimes|boolean',
             'media_ids' => [

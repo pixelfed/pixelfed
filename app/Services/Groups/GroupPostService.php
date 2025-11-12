@@ -9,6 +9,8 @@ use League\Fractal;
 use League\Fractal\Serializer\ArraySerializer;
 use League\Fractal\Pagination\IlluminatePaginatorAdapter;
 use App\Transformer\Api\GroupPostTransformer;
+use Illuminate\Http\Request;
+use App\Models\Group;
 
 class GroupPostService
 {

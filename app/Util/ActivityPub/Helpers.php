@@ -182,7 +182,7 @@ class Helpers
 
             return $uri->toString();
 
-        } catch (UriException $e) {
+        } catch (UriException|\Exception $e) {
             return false;
         }
     }
@@ -302,7 +302,7 @@ class Helpers
             $uri = Uri::new($url);
             $host = $uri->getHost();
 
-            if (! $host || empty($host)) {
+            if (! $host) {
                 return false;
             }
 
@@ -338,7 +338,7 @@ class Helpers
 
         return Cache::remember($key, $ttl, function () use ($url) {
             $res = ActivityPubFetchService::get($url);
-            if (! $res || empty($res)) {
+            if (! $res) {
                 return false;
             }
             $res = json_decode($res, true, 8);
@@ -477,7 +477,6 @@ class Helpers
     public static function isValidStatusData(?array $res): bool
     {
         return $res &&
-               ! empty($res) &&
                ! isset($res['error']) &&
                isset($res['@context']) &&
                isset($res['published']);

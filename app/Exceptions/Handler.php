@@ -15,7 +15,6 @@ class Handler extends ExceptionHandler
 	 */
 	protected $dontReport = [
 		OAuthServerException::class,
-		\Zttp\ConnectionException::class,
 		\GuzzleHttp\Exception\ConnectException::class,
 		\Illuminate\Http\Client\ConnectionException::class
 	];

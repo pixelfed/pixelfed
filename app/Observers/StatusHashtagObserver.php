@@ -45,7 +45,7 @@ class StatusHashtagObserver implements ShouldHandleEventsAfterCommit
      */
     public function deleted(StatusHashtag $hashtag)
     {
-        StatusHashtagService::del($hashtag->hashtag_id, $hashtag->status_id);
+        StatusHashtagService::del($hashtag->hashtag_id);
         DB::table('hashtags')->where('id', $hashtag->hashtag_id)->decrement('cached_count');
         if($hashtag->status_visibility && $hashtag->status_visibility === 'public') {
             HashtagRemoveFanoutPipeline::dispatch($hashtag->status_id, $hashtag->hashtag_id)->onQueue('feed');
@@ -71,6 +71,6 @@ class StatusHashtagObserver implements ShouldHandleEventsAfterCommit
      */
     public function forceDeleted(StatusHashtag $hashtag)
     {
-        StatusHashtagService::del($hashtag->hashtag_id, $hashtag->status_id);
+        StatusHashtagService::del($hashtag->hashtag_id);
     }
 }

@@ -10,6 +10,7 @@ use App\Profile;
 use App\Jobs\AvatarPipeline\AvatarStorageLargePurge;
 use League\Flysystem\UnableToCheckDirectoryExistence;
 use League\Flysystem\UnableToRetrieveMetadata;
+use Exception;
 
 class AvatarService
 {

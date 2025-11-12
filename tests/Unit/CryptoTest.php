@@ -2,7 +2,8 @@
 
 namespace Tests\Unit;
 
-use phpseclib\Crypt\RSA;
+use phpseclib3\Crypt\PublicKeyLoader;
+use phpseclib3\Crypt\RSA;
 use PHPUnit\Framework\Attributes\Test;
 use Tests\TestCase;
 
@@ -16,18 +17,18 @@ class CryptoTest extends TestCase
     #[Test]
     public function libraryInstalled()
     {
-        $this->assertTrue(class_exists('\phpseclib\Crypt\RSA'));
+        $this->assertTrue(class_exists('\phpseclib3\Crypt\RSA'));
     }
 
     #[Test]
     public function RSASigning()
     {
-        $rsa = new RSA();
-        extract($rsa->createKey());
-        $rsa->loadKey($privatekey);
+        $private = RSA::createKey();
+        $publicKey = $private->getPublicKey();
+        
         $plaintext = 'pixelfed rsa test';
-        $signature = $rsa->sign($plaintext);
-        $rsa->loadKey($publickey);
-        $this->assertTrue($rsa->verify($plaintext, $signature));
+        $signature = $private->sign($plaintext);
+        
+        $this->assertTrue($publicKey->verify($plaintext, $signature));
     }
 }

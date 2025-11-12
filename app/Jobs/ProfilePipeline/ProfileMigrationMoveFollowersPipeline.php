@@ -96,7 +96,7 @@ class ProfileMigrationMoveFollowersPipeline implements ShouldBeUniqueUntilProces
                     $followerProfile = Profile::find($follower->profile_id);
                     (new FollowerController)->sendFollow($followerProfile, $ne);
                 }
-            } catch (Exception $e) {
+            } catch (\Exception $e) {
                 Log::error($e);
             }
         }

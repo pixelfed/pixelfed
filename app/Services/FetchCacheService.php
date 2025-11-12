@@ -62,7 +62,7 @@ class FetchCacheService
             Cache::put($key, 1, $ttl);
 
             return false;
-        } catch (Exception $e) {
+        } catch (\Exception $e) {
             Cache::put($key, 1, $ttl);
 
             return false;

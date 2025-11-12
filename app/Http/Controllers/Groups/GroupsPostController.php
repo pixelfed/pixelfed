@@ -26,6 +26,10 @@ use App\Models\GroupMedia;
 use App\Jobs\GroupsPipeline\ImageResizePipeline;
 use App\Jobs\GroupsPipeline\ImageS3UploadPipeline;
 use App\Jobs\GroupsPipeline\NewPostPipeline;
+use App\Jobs\VideoPipeline\VideoThumbnail;
+use App\Jobs\StatusPipeline\StatusDelete;
+use App\Media;
+use App\Services\PollService;
 
 class GroupsPostController extends Controller
 {
@@ -38,7 +42,7 @@ class GroupsPostController extends Controller
     {
         $this->validate($request, [
             'group_id' => 'required|exists:groups,id',
-            'caption' => 'sometimes|string|max:'.config_cache('pixelfed.max_caption_length', 500),
+            'caption' => 'sometimes|string|max:'.config_cache('pixelfed.max_caption_length'),
             'pollOptions' => 'sometimes|array|min:1|max:4'
         ]);
 

@@ -72,7 +72,7 @@ class ImportInstagram implements ShouldQueue
 				if(!$min->lt($taken_at)) {
 					$taken_at = Carbon::now();
 				}
-			} catch (Exception $e) {
+			} catch (\Exception $e) {
 
 			}
 			$filename = last( explode('/', $import['path']) );
@@ -85,7 +85,7 @@ class ImportInstagram implements ShouldQueue
 			}
 
 			DB::transaction(function() use(
-				$fs, $job, $profile, $caption, $taken_at, $filename,
+				$fs, $profile, $caption, $taken_at, $filename,
 				$monthHash, $userHash, $importData
 			) {
 				$status = new Status();

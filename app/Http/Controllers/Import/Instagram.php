@@ -117,7 +117,7 @@ trait Instagram
 		        $data->save();
             });
         }
-        DB::transaction(function() use ($profile, $job) {
+        DB::transaction(function() use ($job) {
         	$job->stage = 2;
         	$job->save();
     	});
@@ -196,7 +196,7 @@ trait Instagram
             ->whereStage(3)
             ->firstOrFail();
             ImportInstagram::dispatch($import);
-        } catch (Exception $e) {
+        } catch (\Exception $e) {
             \Log::info($e);
         }
 

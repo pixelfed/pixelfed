@@ -50,7 +50,7 @@ class ProfileAliasController extends Controller
         $webfingerService = WebfingerService::lookup($acct);
         $webfingerUrl = WebfingerService::rawGet($acct);
 
-        if (! $webfingerService || ! isset($webfingerService['url']) || ! $webfingerUrl || empty($webfingerUrl)) {
+        if (! $webfingerService || ! isset($webfingerService['url']) || ! $webfingerUrl) {
             return back()->with('error', 'Invalid account, cannot add alias at this time.');
         }
         $alias = new ProfileAlias;
