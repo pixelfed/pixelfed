@@ -1,4 +1,32 @@
 services:
+## MariaDB and Redis (optional)
+  db:
+    image: mariadb:11
+    container_name: pixelfed-db
+    restart: unless-stopped
+    env_file:
+      - .env
+    environment:
+      MARIADB_DATABASE: ${DB_DATABASE}
+      MARIADB_USER: ${DB_USERNAME}
+      MARIADB_PASSWORD: ${DB_PASSWORD}
+      MARIADB_ROOT_PASSWORD: ${DB_ROOT_PASSWORD}
+    volumes:
+      - ./mariadb-11-data:/var/lib/mysql
+    networks:
+      - pixelfed-network
+
+  redis:
+    image: redis:7-alpine
+    container_name: pixelfed-redis
+    restart: unless-stopped
+    command: redis-server --appendonly yes
+    volumes:
+      - ./redis-data:/data
+    networks:
+      - pixelfed-network
+
+## Pixelfed containers - App (Web/API), Horizon Queue, Scheduled task.
   pixelfed:
     build:
       context: .
@@ -69,7 +97,7 @@ services:
       dockerfile: Dockerfile
     container_name: pixelfed-horizon
     restart: unless-stopped
-    command: php artisan horizon
+    command: ["php", "/var/www/html/artisan", "horizon"]
     env_file:
       - .env
     environment:
