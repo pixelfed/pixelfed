@@ -248,7 +248,7 @@ class Validator extends Regex
         preg_match(self::$patterns['valid_mentions_or_lists'], $list, $matches);
         $matches = array_pad($matches, 5, '');
 
-        return isset($matches) && $matches[1] === '' && $matches[4] && !empty($matches[4]) && $matches[5] === '';
+        return $matches[1] === '' && $matches[4] && !empty($matches[4]) && $matches[5] === '';
     }
 
     /**
