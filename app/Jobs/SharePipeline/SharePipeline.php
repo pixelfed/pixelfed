@@ -21,6 +21,8 @@ use League\Fractal\Serializer\ArraySerializer;
 
 class SharePipeline implements ShouldQueue
 {
+    public $tries = 3; // For some reason this particular activity has a habit of popping failed, with a constraint violation error, but works when retried ... so we'll retry it once
+
     use Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
 
     protected $status;
