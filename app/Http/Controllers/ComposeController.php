@@ -92,7 +92,7 @@ class ComposeController extends Controller
         $photo = $request->file('file');
         $fileSize = $photo->getSize();
         $sizeInKbs = (int) ceil($fileSize / 1000);
-        $updatedAccountSize = (int) $accountSize + (int) $sizeInKbs;
+        $updatedAccountSize = (int) $accountSize + $sizeInKbs;
 
         if ((bool) config_cache('pixelfed.enforce_account_limit') == true) {
             $limit = (int) config_cache('pixelfed.max_account_size');
@@ -148,7 +148,7 @@ class ComposeController extends Controller
                 break;
         }
 
-        $user->storage_used = (int) $updatedAccountSize;
+        $user->storage_used = $updatedAccountSize;
         $user->storage_used_updated_at = now();
         $user->save();
 
@@ -588,7 +588,7 @@ class ComposeController extends Controller
             $m->filter_class = in_array($media['filter_class'], Filter::classes()) ? $media['filter_class'] : null;
             $m->license = $license;
             $m->caption = isset($media['alt']) ? strip_tags($media['alt']) : null;
-            $m->order = isset($media['cursor']) && is_int($media['cursor']) ? (int) $media['cursor'] : $k;
+            $m->order = isset($media['cursor']) && is_int($media['cursor']) ? $media['cursor'] : $k;
 
             if ($cw == true || $profile->cw == true) {
                 $m->is_nsfw = $cw;

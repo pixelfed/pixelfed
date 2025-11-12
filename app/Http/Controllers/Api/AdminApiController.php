@@ -430,7 +430,7 @@ class AdminApiController extends Controller
         ];
 
         $key = $request->input('key');
-        $value = (bool) filter_var($request->input('value'), FILTER_VALIDATE_BOOLEAN);
+        $value = filter_var($request->input('value'), FILTER_VALIDATE_BOOLEAN);
         abort_if(! in_array($key, $allowedKeys), 400, 'Invalid cache key.');
 
         ConfigCacheService::put($key, $value);
@@ -772,7 +772,7 @@ class AdminApiController extends Controller
 
         $id = $request->input('id');
         $key = $request->input('key');
-        $value = (bool) filter_var($request->input('value'), FILTER_VALIDATE_BOOLEAN);
+        $value = filter_var($request->input('value'), FILTER_VALIDATE_BOOLEAN);
         $res = Instance::findOrFail($id);
         $res->{$key} = $value;
         $res->save();

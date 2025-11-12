@@ -27,7 +27,7 @@ class CreateGroupsController extends Controller
             $allowed = Group::whereProfileId($pid)->count() <= $max;
         }
 
-        return ['permission' => (bool) $allowed];
+        return ['permission' => $allowed];
     }
 
     public function storeGroup(Request $request)

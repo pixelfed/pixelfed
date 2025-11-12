@@ -96,8 +96,8 @@ trait AdminSettingsController
                 break;
         }
 
-        ConfigCacheService::put('pixelfed.open_registration', (bool) $orb);
-        ConfigCacheService::put('instance.curated_registration.enabled', (bool) $cob);
+        ConfigCacheService::put('pixelfed.open_registration', $orb);
+        ConfigCacheService::put('instance.curated_registration.enabled', $cob);
 
         if ($request->filled('admin_account_id')) {
             ConfigCacheService::put('instance.admin.pid', $request->admin_account_id);
@@ -206,7 +206,7 @@ trait AdminSettingsController
             }
 
             if (config_cache($value) !== $active) {
-                ConfigCacheService::put($value, (bool) $active);
+                ConfigCacheService::put($value, $active);
             }
         }
 

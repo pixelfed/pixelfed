@@ -92,7 +92,7 @@ class Blurhash {
         $size_y = floor($size_info / 9) + 1;
         $size_x = ($size_info % 9) + 1;
 
-        $length = (int) strlen($blurhash);
+        $length = strlen($blurhash);
         $expected_length = (int) (4 + (2 * $size_y * $size_x));
         if ($length !== $expected_length) {
             throw new InvalidArgumentException("Blurhash length mismatch: length is {$length} but it should be {$expected_length}");

@@ -109,7 +109,7 @@ class CreateNote extends Fractal\TransformerAbstract
                 'sensitive' => (bool) $status->is_nsfw,
                 'attachment' => MediaService::activitypub($status->id, true),
                 'tag' => $tags,
-                'commentsEnabled' => (bool) ! $status->comments_disabled,
+                'commentsEnabled' => ! $status->comments_disabled,
                 'capabilities' => [
                     'announce' => 'https://www.w3.org/ns/activitystreams#Public',
                     'like' => 'https://www.w3.org/ns/activitystreams#Public',

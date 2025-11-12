@@ -225,7 +225,7 @@ class SearchController extends Controller
                             'following' => $item->followedBy(Auth::user()->profile),
                             'follow_request' => $item->hasFollowRequestById(Auth::user()->profile_id),
                             'thumb' => $item->avatarUrl(),
-                            'local' => (bool) ! $item->domain,
+                            'local' => ! $item->domain,
                             'post_count' => $item->statuses()->count(),
                         ],
                     ]];
@@ -261,7 +261,7 @@ class SearchController extends Controller
                                 'following' => $item->followedBy(Auth::user()->profile),
                                 'follow_request' => $item->hasFollowRequestById(Auth::user()->profile_id),
                                 'thumb' => $item->avatarUrl(),
-                                'local' => (bool) ! $item->domain,
+                                'local' => ! $item->domain,
                                 'post_count' => $item->statuses()->count(),
                             ],
                         ];

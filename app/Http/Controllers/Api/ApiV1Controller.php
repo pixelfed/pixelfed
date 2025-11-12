@@ -1845,7 +1845,7 @@ class ApiV1Controller extends Controller
         $photo = $request->file('file');
         $fileSize = $photo->getSize();
         $sizeInKbs = (int) ceil($fileSize / 1000);
-        $updatedAccountSize = (int) $accountSize + (int) $sizeInKbs;
+        $updatedAccountSize = (int) $accountSize + $sizeInKbs;
 
         if ((bool) config_cache('pixelfed.enforce_account_limit') == true) {
             $limit = (int) config_cache('pixelfed.max_account_size');
@@ -1923,7 +1923,7 @@ class ApiV1Controller extends Controller
                 break;
         }
 
-        $user->storage_used = (int) $updatedAccountSize;
+        $user->storage_used = $updatedAccountSize;
         $user->storage_used_updated_at = now();
         $user->save();
 
@@ -2072,7 +2072,7 @@ class ApiV1Controller extends Controller
         $photo = $request->file('file');
         $fileSize = $photo->getSize();
         $sizeInKbs = (int) ceil($fileSize / 1000);
-        $updatedAccountSize = (int) $accountSize + (int) $sizeInKbs;
+        $updatedAccountSize = (int) $accountSize + $sizeInKbs;
 
         if ((bool) config_cache('pixelfed.enforce_account_limit') == true) {
             $limit = (int) config_cache('pixelfed.max_account_size');
@@ -2155,7 +2155,7 @@ class ApiV1Controller extends Controller
                 break;
         }
 
-        $user->storage_used = (int) $updatedAccountSize;
+        $user->storage_used = $updatedAccountSize;
         $user->storage_used_updated_at = now();
         $user->save();
 

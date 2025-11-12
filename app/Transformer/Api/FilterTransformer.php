@@ -9,12 +9,12 @@ class FilterTransformer extends Fractal\TransformerAbstract
 	public function transform()
 	{
 		return [
-			'id' => (string) '',
-			'phrase' => (string) '',
+			'id' => '',
+			'phrase' => '',
 			'context' => [],
 			'expires_at' => null,
-			'irreversible' => (bool) false,
-			'whole_word' => (bool) false
+			'irreversible' => false,
+			'whole_word' => false
 		];
 	}
 }
