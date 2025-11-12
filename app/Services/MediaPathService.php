@@ -22,7 +22,7 @@ class MediaPathService {
 				// deprecated
 				case 1:
 					$monthHash = hash('sha1', date('Y').date('m'));
-					$userHash = hash('sha1', $account->id . (string) $account->created_at);
+					$userHash = hash('sha1', $account->id . $account->created_at);
 					$path = "public/m/{$monthHash}/{$userHash}";
 					break;
 

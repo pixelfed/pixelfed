@@ -60,7 +60,7 @@ class ImportInstagram implements ShouldQueue
 		$collection = array_reverse($json['photos']);
 		$files = $job->files;
 		$monthHash = hash('sha1', date('Y').date('m'));
-		$userHash = hash('sha1', $user->id . (string) $user->created_at);
+		$userHash = hash('sha1', $user->id . $user->created_at);
 		$fs = new Filesystem;
 
 		foreach($collection as $import)
