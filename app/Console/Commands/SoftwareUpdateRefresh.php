@@ -32,6 +32,6 @@ class SoftwareUpdateRefresh extends Command
         Cache::remember($key, 1209600, function() {
             return SoftwareUpdateService::fetchLatest();
         });
-        $this->info('Succesfully updated software versions!');
+        $this->info('successfully updated software versions!');
     }
 }
