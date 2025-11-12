@@ -65,32 +65,6 @@ services:
     networks:
       - pixelfed-network
 
-  db:
-    image: mariadb:11
-    container_name: pixelfed-db
-    restart: unless-stopped
-    env_file:
-      - .env
-    environment:
-      MARIADB_DATABASE: ${DB_DATABASE}
-      MARIADB_USER: ${DB_USERNAME}
-      MARIADB_PASSWORD: ${DB_PASSWORD}
-      MARIADB_ROOT_PASSWORD: ${DB_ROOT_PASSWORD}
-    volumes:
-      - ./mariadb-11-data:/var/lib/mysql
-    networks:
-      - pixelfed-network
-
-  redis:
-    image: redis:7-alpine
-    container_name: pixelfed-redis
-    restart: unless-stopped
-    command: redis-server --appendonly yes
-    volumes:
-      - ./redis-data:/data
-    networks:
-      - pixelfed-network
-
   horizon:
     build:
       context: .
