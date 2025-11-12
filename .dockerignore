@@ -18,3 +18,5 @@ README.md
 .editorconfig
 .phpunit.result.cache
 tests
+mariadb-11-data
+redis-data
