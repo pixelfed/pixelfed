@@ -12,7 +12,6 @@ class OobAuthorizationController extends ApproveAuthorizationController
     /**
      * Approve the authorization request.
      *
-     * @param  Request  $request
      * @return \Illuminate\Http\Response
      */
     public function approve(Request $request)

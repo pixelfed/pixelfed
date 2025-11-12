@@ -7,14 +7,13 @@ use Closure;
 class EmailVerificationCheck
 {
 	/**
-	 * Handle an incoming request.
-	 *
-	 * @param \Illuminate\Http\Request $request
-	 * @param \Closure                 $next
-	 *
-	 * @return mixed
-	 */
-	public function handle($request, Closure $next)
+     * Handle an incoming request.
+     *
+     * @param \Illuminate\Http\Request $request
+     *
+     * @return mixed
+     */
+    public function handle($request, Closure $next)
 	{
 		if ($request->user() &&
 			config('pixelfed.enforce_email_verification') &&

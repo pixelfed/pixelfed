@@ -13,7 +13,6 @@ class FollowerObserver
     /**
      * Handle the Follower "created" event.
      *
-     * @param  \App\Follower  $follower
      * @return void
      */
     public function created(Follower $follower)
@@ -29,7 +28,6 @@ class FollowerObserver
     /**
      * Handle the Follower "deleted" event.
      *
-     * @param  \App\Follower  $follower
      * @return void
      */
     public function deleted(Follower $follower)
@@ -40,7 +38,6 @@ class FollowerObserver
     /**
      * Handle the Follower "force deleted" event.
      *
-     * @param  \App\Follower  $follower
      * @return void
      */
     public function forceDeleted(Follower $follower)

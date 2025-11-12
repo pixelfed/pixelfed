@@ -14,7 +14,6 @@ class StatusHashtagObserver implements ShouldHandleEventsAfterCommit
     /**
      * Handle the notification "created" event.
      *
-     * @param  \App\StatusHashtag  $hashtag
      * @return void
      */
     public function created(StatusHashtag $hashtag)
@@ -29,7 +28,6 @@ class StatusHashtagObserver implements ShouldHandleEventsAfterCommit
     /**
      * Handle the notification "updated" event.
      *
-     * @param  \App\StatusHashtag  $hashtag
      * @return void
      */
     public function updated(StatusHashtag $hashtag)
@@ -40,7 +38,6 @@ class StatusHashtagObserver implements ShouldHandleEventsAfterCommit
     /**
      * Handle the notification "deleted" event.
      *
-     * @param  \App\StatusHashtag  $hashtag
      * @return void
      */
     public function deleted(StatusHashtag $hashtag)
@@ -55,7 +52,6 @@ class StatusHashtagObserver implements ShouldHandleEventsAfterCommit
     /**
      * Handle the notification "restored" event.
      *
-     * @param  \App\StatusHashtag  $hashtag
      * @return void
      */
     public function restored(StatusHashtag $hashtag)
@@ -66,7 +62,6 @@ class StatusHashtagObserver implements ShouldHandleEventsAfterCommit
     /**
      * Handle the notification "force deleted" event.
      *
-     * @param  \App\StatusHashtag  $hashtag
      * @return void
      */
     public function forceDeleted(StatusHashtag $hashtag)

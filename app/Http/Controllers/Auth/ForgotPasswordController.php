@@ -52,7 +52,6 @@ class ForgotPasswordController extends Controller
     /**
      * Validate the email for the given request.
      *
-     * @param  \Illuminate\Http\Request  $request
      * @return void
      */
     public function validateEmail(Request $request)
@@ -82,10 +81,8 @@ class ForgotPasswordController extends Controller
     /**
      * Get the response for a failed password reset link.
      *
-     * @param  \Illuminate\Http\Request  $request
      * @param  string  $response
      * @return \Illuminate\Http\RedirectResponse
-     *
      * @throws \Illuminate\Validation\ValidationException
      */
     public function sendResetLinkFailedResponse(Request $request, $response)

@@ -22,7 +22,6 @@ class StatusObserver
     /**
      * Handle the Status "created" event.
      *
-     * @param  \App\Status  $status
      * @return void
      */
     public function created(Status $status)
@@ -33,7 +32,6 @@ class StatusObserver
     /**
      * Handle the Status "updated" event.
      *
-     * @param  \App\Status  $status
      * @return void
      */
     public function updated(Status $status)
@@ -54,7 +52,6 @@ class StatusObserver
     /**
      * Handle the Status "deleted" event.
      *
-     * @param  \App\Status  $status
      * @return void
      */
     public function deleted(Status $status)
@@ -86,7 +83,6 @@ class StatusObserver
     /**
      * Handle the Status "restored" event.
      *
-     * @param  \App\Status  $status
      * @return void
      */
     public function restored(Status $status)
@@ -97,7 +93,6 @@ class StatusObserver
     /**
      * Handle the Status "force deleted" event.
      *
-     * @param  \App\Status  $status
      * @return void
      */
     public function forceDeleted(Status $status)

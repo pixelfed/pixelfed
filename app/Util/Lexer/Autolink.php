@@ -799,12 +799,10 @@ class Autolink extends Regex
     }
 
     /**
-     * @param array  $entity
      * @param string $text
      * @param array  $attributes
      *
      * @return string
-     *
      * @since 1.1.0
      */
     public function linkToText(array $entity, $text, $attributes = [])

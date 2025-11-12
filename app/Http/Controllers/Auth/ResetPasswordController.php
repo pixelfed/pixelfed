@@ -87,7 +87,6 @@ class ResetPasswordController extends Controller
      *
      * If no token is present, display the link request form.
      *
-     * @param  \Illuminate\Http\Request  $request
      * @return \Illuminate\Contracts\View\Factory|\Illuminate\View\View
      */
     public function showResetForm(Request $request)
@@ -133,7 +132,6 @@ class ResetPasswordController extends Controller
     /**
      * Get the password reset credentials from the request.
      *
-     * @param  \Illuminate\Http\Request  $request
      * @return array
      */
     protected function credentials(Request $request)
@@ -146,7 +144,6 @@ class ResetPasswordController extends Controller
     /**
      * Get the response for a failed password reset.
      *
-     * @param  \Illuminate\Http\Request  $request
      * @param  string  $response
      * @return \Illuminate\Http\RedirectResponse|\Illuminate\Http\JsonResponse
      */

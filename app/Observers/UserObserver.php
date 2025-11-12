@@ -18,8 +18,6 @@ class UserObserver
 {
     /**
      * Handle the notification "created" event.
-     *
-     * @param  \App\User $user
      */
     public function created(User $user): void
     {
@@ -29,7 +27,6 @@ class UserObserver
     /**
      * Listen to the User saved event.
      *
-     * @param \App\User $user
      *
      * @return void
      */
@@ -40,8 +37,6 @@ class UserObserver
 
     /**
      * Listen to the User updated event.
-     *
-     * @param \App\User $user
      */
     public function updated(User $user): void
     {
@@ -54,7 +49,6 @@ class UserObserver
     /**
      * Handle the user "deleted" event.
      *
-     * @param  \App\User $user
      * @return void
      */
     public function deleted(User $user)
