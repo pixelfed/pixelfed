@@ -86,10 +86,7 @@ class ImageResizePipeline implements ShouldQueue
             $orientation = $aspect === 1 ? 'square' : ($aspect > 1 ? 'landscape' : 'portrait');
             $ratio = $orientations[$orientation];
 
-            $img = $img->resize($ratio['width'], $ratio['height'], function ($constraint) {
-                $constraint->aspectRatio();
-                $constraint->upsize();
-            });
+            $img = $img->scaleDown($ratio['width'], $ratio['height']);
 
             $extension = pathinfo($file, PATHINFO_EXTENSION);
             if (in_array(strtolower($extension), ['jpg', 'jpeg'])) {
