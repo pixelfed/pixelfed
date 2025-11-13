@@ -18,7 +18,7 @@ class TwoFactorAuth
     {
         if($request->user()) {
             $user = $request->user();
-            $enabled = (bool) $user->{'2fa_enabled'};
+            $enabled = (bool) $user->mfa_enabled;
             if($enabled != false) {
                 $checkpoint = 'i/auth/checkpoint';
                 if($request->session()->has('2fa.session.active') !== true && !$request->is($checkpoint) && !$request->is('logout'))

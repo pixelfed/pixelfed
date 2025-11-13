@@ -43,7 +43,7 @@ trait SecuritySettings
 	public function securityTwoFactorSetup(Request $request)
 	{
 		$user = Auth::user();
-		if($user->{'2fa_enabled'} && $user->{'2fa_secret'}) {
+		if($user->mfa_enabled && $user->mfa_secret) {
 			return redirect(route('account.security'));
 		}
 		$backups = $this->generateBackupCodes();
@@ -65,8 +65,8 @@ trait SecuritySettings
 			)
 		);
 		$qrcode = $writer->writeString($qrcode);
-		$user->{'2fa_secret'} = $key;
-		$user->{'2fa_backup_codes'} = json_encode($backups);
+		$user->mfa_secret = $key;
+		$user->mfa_backup_codes = json_encode($backups);
 		$user->save();
 		return view('settings.security.2fa.setup', compact('user', 'qrcode', 'backups'));
 	}
@@ -84,7 +84,7 @@ trait SecuritySettings
 	public function securityTwoFactorSetupStore(Request $request)
 	{
 		$user = Auth::user();
-		if($user->{'2fa_enabled'} && $user->{'2fa_secret'}) {
+		if($user->mfa_enabled && $user->mfa_secret) {
 			abort(403, 'Two factor auth is already setup.');
 		}
 		$this->validate($request, [
@@ -92,10 +92,10 @@ trait SecuritySettings
 		]);
 		$code = $request->input('code');
 		$google2fa = new Google2FA();
-		$verify = $google2fa->verifyKey($user->{'2fa_secret'}, $code);
+		$verify = $google2fa->verifyKey($user->mfa_secret, $code);
 		if($verify) {
-			$user->{'2fa_enabled'} = true;
-			$user->{'2fa_setup_at'} = Carbon::now();
+			$user->mfa_enabled = true;
+			$user->mfa_setup_at = Carbon::now();
 			$user->save();
 			return response()->json(['msg'=>'success']);
 		} else {
@@ -107,7 +107,7 @@ trait SecuritySettings
 	{
 		$user = Auth::user();
 
-		if(!$user->{'2fa_enabled'} || !$user->{'2fa_secret'}) {
+		if(!$user->mfa_enabled || !$user->mfa_secret) {
 			abort(403);
 		}
 
@@ -118,10 +118,10 @@ trait SecuritySettings
 	{
 		$user = Auth::user();
 
-		if(!$user->{'2fa_enabled'} || !$user->{'2fa_secret'} || !$user->{'2fa_backup_codes'}) {
+		if(!$user->mfa_enabled || !$user->mfa_secret || !$user->mfa_backup_codes) {
 			abort(403);
 		}
-		$codes = json_decode($user->{'2fa_backup_codes'}, true);
+		$codes = json_decode($user->mfa_backup_codes, true);
 		return view('settings.security.2fa.recovery-codes', compact('user', 'codes'));
 	}
 
@@ -129,11 +129,11 @@ trait SecuritySettings
 	{
 		$user = Auth::user();
 
-		if(!$user->{'2fa_enabled'} || !$user->{'2fa_secret'}) {
+		if(!$user->mfa_enabled || !$user->mfa_secret) {
 			abort(403);
 		}
 		$backups = $this->generateBackupCodes();
-		$user->{'2fa_backup_codes'} = json_encode($backups);
+		$user->mfa_backup_codes = json_encode($backups);
 		$user->save();
 		return redirect(route('settings.security.2fa.recovery'));
 	}
@@ -142,7 +142,7 @@ trait SecuritySettings
 	{
 		$user = Auth::user();
 
-		if(!$user->{'2fa_enabled'} || !$user->{'2fa_secret'} || !$user->{'2fa_backup_codes'}) {
+		if(!$user->mfa_enabled || !$user->mfa_secret || !$user->mfa_backup_codes) {
 			abort(403);
 		}
 
@@ -154,14 +154,14 @@ trait SecuritySettings
 			abort(403);
 		}
 
-		$user->{'2fa_enabled'} = false;
-		$user->{'2fa_secret'} = null;
-		$user->{'2fa_backup_codes'} = null;
-		$user->{'2fa_setup_at'} = null;
+		$user->mfa_enabled = false;
+		$user->mfa_secret = null;
+		$user->mfa_backup_codes = null;
+		$user->mfa_setup_at = null;
 		$user->save();
 
 		return response()->json([
-			'msg' => 'Successfully removed 2fa device'
+			'msg' => 'Successfully removed MFA device'
 		], 200);
 	}
 }

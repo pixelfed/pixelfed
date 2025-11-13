@@ -54,7 +54,7 @@
 				  			</div>
 				  			<div>
 				  				<p class="font-weight-bold">OTP Secret</p>
-				  				<input type="text" class="form-control" value="{{ $user->{'2fa_secret'} }}" disabled>
+				  				<input type="text" class="form-control" value="{{ $user->mfa_secret }}" disabled>
 				  			</div>
 				  		</div>
 				  		<div class="card-body">
@@ -76,7 +76,7 @@
 			  	</div>
 			  	<hr>
 			  	<div class="collapse" id="step3">
-				  	<p>Please store the following codes in a safe place, each backup code can be used only once if you do not have access to your 2FA mobile app.</p>
+				  	<p>Please store the following codes in a safe place, each backup code can be used only once if you do not have access to your MFA mobile app.</p>
 
 				  	<code>
 				  	@foreach($backups as $code)

@@ -26,7 +26,7 @@ class User extends Authenticatable
         return [
             'deleted_at' => 'datetime',
             'email_verified_at' => 'datetime',
-            '2fa_setup_at' => 'datetime',
+            'mfa_setup_at' => 'datetime',
             'last_active_at' => 'datetime',
         ];
     }
@@ -60,8 +60,8 @@ class User extends Authenticatable
      */
     protected $hidden = [
         'email', 'password', 'is_admin', 'remember_token',
-        'email_verified_at', '2fa_enabled', '2fa_secret',
-        '2fa_backup_codes', '2fa_setup_at', 'deleted_at',
+        'email_verified_at', 'mfa_enabled', 'mfa_secret',
+        'mfa_backup_codes', 'mfa_setup_at', 'deleted_at',
         'updated_at',
     ];
 

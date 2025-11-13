@@ -30,7 +30,7 @@ trait AdminDirectoryController
 
         $res['countries'] = collect((new ISO3166)->all())->pluck('name');
         $res['admins'] = User::whereIsAdmin(true)
-            ->where('2fa_enabled', true)
+            ->where('mfa_enabled', true)
             ->get()->map(function ($user) {
                 return [
                     'uid' => (string) $user->id,

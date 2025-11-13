@@ -388,8 +388,8 @@ class ApiV1Dot1Controller extends Controller
         }
 
         $res = [
-            'active' => (bool) $user->{'2fa_enabled'},
-            'setup_at' => $user->{'2fa_setup_at'},
+            'active' => (bool) $user->mfa_enabled,
+            'setup_at' => $user->mfa_setup_at,
         ];
 
         return $this->json($res);

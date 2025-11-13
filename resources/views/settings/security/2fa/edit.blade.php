@@ -24,7 +24,7 @@
 			  	<div class="card-body d-flex justify-content-between align-items-center">
 			  		<i class="fas fa-lock fa-3x text-success"></i>
 			  		<p class="font-weight-bold mb-0">
-			  			Added {{$user->{'2fa_setup_at'}->diffForHumans()}}
+			  			Added {{$user->mfa_setup_at->diffForHumans()}}
 			  		</p>
 			  	</div>
 			  	<div class="card-footer bg-white text-right">

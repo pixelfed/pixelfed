@@ -533,7 +533,7 @@ class AccountController extends Controller
         $user = Auth::user();
         $code = $request->input('code');
         $google2fa = new Google2FA;
-        $verify = $google2fa->verifyKey($user->{'2fa_secret'}, $code);
+        $verify = $google2fa->verifyKey($user->mfa_secret, $code);
         if ($verify) {
             $request->session()->push('2fa.session.active', true);
 
@@ -564,13 +564,13 @@ class AccountController extends Controller
 
     protected function twoFactorBackupCheck($request, $code, User $user)
     {
-        $backupCodes = $user->{'2fa_backup_codes'};
+        $backupCodes = $user->mfa_backup_codes;
         if ($backupCodes) {
             $codes = json_decode($backupCodes, true);
             foreach ($codes as $c) {
                 if (hash_equals($c, $code)) {
                     $codes = array_flatten(array_diff($codes, [$code]));
-                    $user->{'2fa_backup_codes'} = json_encode($codes);
+                    $user->mfa_backup_codes = json_encode($codes);
                     $user->save();
                     $request->session()->push('2fa.session.active', true);
 

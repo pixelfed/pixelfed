@@ -11,12 +11,12 @@
     <div class="mb-4 pb-4">
       <div class="d-flex justify-content-between align-items-center">
         <h4 class="font-weight-bold mb-0">{{__('settings.security.two_factor_authentication')}}</h4>
-        @if($user->{'2fa_enabled'})
+        @if($user->mfa_enabled)
         <a class="btn btn-success btn-sm font-weight-bold" href="#">{{__('settings.security.enabled')}}</a>
         @endif
       </div>
       <hr>
-      @if($user->{'2fa_enabled'})
+      @if($user->mfa_enabled)
       @include('settings.security.2fa.partial.edit-panel')
       @else
       @include('settings.security.2fa.partial.disabled-panel')

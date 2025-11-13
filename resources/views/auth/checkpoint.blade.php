@@ -14,12 +14,12 @@
 	            	<a href="/">
 	                	<img src="/img/pixelfed-icon-white.svg" height="60px">
 	            	</a>
-	                <h1 class="pt-4 pb-1">2FA Checkpoint</h1>
+	                <h1 class="pt-4 pb-1">MFA Checkpoint</h1>
 		            <p class="font-weight-light lead">
-		            	Enter the 2FA code from your device.
+		            	Enter the MFA code from your device.
 		            </p>
 		            <p class="text-muted small pb-3">
-		                If you lose access to your 2FA device, contact the admins.
+		                If you lose access to your MFA device, contact the admins.
 		            </p>
 	            </div>
 	            <div class="card bg-glass">
@@ -30,7 +30,7 @@
 	                        <div class="form-group row">
 
 	                            <div class="col-md-12">
-	                            	<label class="font-weight-bold small text-muted">2FA Code</label>
+	                            	<label class="font-weight-bold small text-muted">MFA Code</label>
 	                                <input
 	                                	id="code"
 	                                	type="text"

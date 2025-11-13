@@ -219,10 +219,10 @@ class DeleteAccountPipeline implements ShouldQueue
             $user->remember_token = null;
             $user->is_admin = false;
             $user->expo_token = null;
-            $user->{'2fa_enabled'} = false;
-            $user->{'2fa_secret'} = null;
-            $user->{'2fa_backup_codes'} = null;
-            $user->{'2fa_setup_at'} = null;
+            $user->mfa_enabled = false;
+            $user->mfa_secret = null;
+            $user->mfa_backup_codes = null;
+            $user->mfa_setup_at = null;
             $user->save();
         });
     }

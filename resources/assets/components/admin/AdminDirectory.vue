@@ -337,7 +337,7 @@
                                                 <p class="lead font-weight-bold text-danger">No admin(s) found</p>
                                                 <ul class="text-danger">
                                                     <li>Admins must be active</li>
-                                                    <li>Admins must have 2FA setup and enabled</li>
+                                                    <li>Admins must have MFA setup and enabled</li>
                                                 </ul>
                                             </div>
                                         </div>
@@ -506,7 +506,7 @@
                                         <li>No analytics or 3rd party trackers*</li>
                                         <li>User data is not sold to any 3rd parties</li>
                                         <li>Data is stored securely in accordance with industry standards</li>
-                                        <li>Admin accounts are protected with 2FA</li>
+                                        <li>Admin accounts are protected with MFA</li>
                                         <li>Follow strict support procedures to keep your accounts safe</li>
                                         <li>Give at least 6 months warning in the event we shut down</li>
                                     </ul>
