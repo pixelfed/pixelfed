@@ -141,25 +141,22 @@ class PublicApiController extends Controller
             $scope = ['public', 'unlisted'];
         }
 
-        if ($request->filled('min_id') || $request->filled('max_id')) {
-            if ($request->filled('min_id')) {
-                $replies = $status->comments()
-                    ->whereNull('reblog_of_id')
-                    ->whereIn('scope', $scope)
-                    ->select('id', 'caption', 'local', 'visibility', 'scope', 'is_nsfw', 'profile_id', 'in_reply_to_id', 'type', 'reply_count', 'created_at')
-                    ->where('id', '>=', $request->min_id)
-                    ->orderBy('id', 'desc')
-                    ->paginate($limit);
-            }
-            if ($request->filled('max_id')) {
-                $replies = $status->comments()
-                    ->whereNull('reblog_of_id')
-                    ->whereIn('scope', $scope)
-                    ->select('id', 'caption', 'local', 'visibility', 'scope', 'is_nsfw', 'profile_id', 'in_reply_to_id', 'type', 'reply_count', 'created_at')
-                    ->where('id', '<=', $request->max_id)
-                    ->orderBy('id', 'desc')
-                    ->paginate($limit);
-            }
+        if ($request->filled('min_id')) {
+            $replies = $status->comments()
+                ->whereNull('reblog_of_id')
+                ->whereIn('scope', $scope)
+                ->select('id', 'caption', 'local', 'visibility', 'scope', 'is_nsfw', 'profile_id', 'in_reply_to_id', 'type', 'reply_count', 'created_at')
+                ->where('id', '>=', $request->min_id)
+                ->orderBy('id', 'desc')
+                ->paginate($limit);
+        } elseif ($request->filled('max_id')) {
+            $replies = $status->comments()
+                ->whereNull('reblog_of_id')
+                ->whereIn('scope', $scope)
+                ->select('id', 'caption', 'local', 'visibility', 'scope', 'is_nsfw', 'profile_id', 'in_reply_to_id', 'type', 'reply_count', 'created_at')
+                ->where('id', '<=', $request->max_id)
+                ->orderBy('id', 'desc')
+                ->paginate($limit);
         } else {
             $replies = Status::whereInReplyToId($status->id)
                 ->whereNull('reblog_of_id')
