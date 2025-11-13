@@ -96,7 +96,7 @@ class ImageResizePipeline implements ShouldQueue
             }
 
             $encoded = $img->encode($encoder);
-            file_put_contents($file, $encoded);
+            file_put_contents($file, $encoded->toString());
 
         } catch (Exception $e) {
             Log::error($e);
