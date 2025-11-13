@@ -40,6 +40,7 @@ class FilesystemService
         $filesystem = new Filesystem($adapter);
 
         $writable = false;
+        $res = [];
         try {
             $filesystem->write(self::VERIFY_FILE_NAME, 'ok', []);
             $writable = true;

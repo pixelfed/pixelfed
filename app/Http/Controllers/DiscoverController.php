@@ -215,6 +215,7 @@ class DiscoverController extends Controller
         abort_if(! $this->config()['memories']['enabled'], 404);
         $type = $request->input('type') ?? 'posts';
 
+        $res = [];
         switch ($type) {
             case 'posts':
                 $res = Status::whereProfileId($pid)
