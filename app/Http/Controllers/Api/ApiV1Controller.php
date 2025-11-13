@@ -4305,7 +4305,7 @@ class ApiV1Controller extends Controller
         $pid = $request->user()->profile_id;
         $status = StatusService::getMastodon($id, false);
         abort_if(! $status, 404);
-        abort_if(isset($status['account']['moved']['id']), 404, 'Account moved');
+        abort_if(isset($status['account'], $account['account']['moved']['id']), 404, 'Account moved');
 
         if ($status['visibility'] == 'private') {
             if ($pid != $status['account']['id']) {
