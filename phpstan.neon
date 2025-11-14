@@ -7,7 +7,7 @@ parameters:
     # Laravel specific configurations
     noModelMake: true
     noUnnecessaryCollectionCall: true
-    noUnnecessaryEnumerableToArrayCalls: true
+    noUnnecessaryEnumerableToArrayCalls: false
     checkModelProperties: true
     checkOctaneCompatibility: true
     noEnvCallsOutsideOfConfig: true
