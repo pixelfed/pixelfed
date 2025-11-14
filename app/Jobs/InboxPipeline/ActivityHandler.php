@@ -52,6 +52,7 @@ class ActivityHandler implements ShouldQueue
             return;
         }
 
+        // TODO: This value is always null (InboxWorker/DeleteWorker)
         // if (!$username) {
         //     Log::info("ActivityHandler: No username provided, skipping job");
         //     return;
