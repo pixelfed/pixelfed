@@ -13,9 +13,21 @@ parameters:
     level: 1
 
     # Laravel specific configurations
+    noModelMake: true
+    noUnnecessaryCollectionCall: true
+    noUnnecessaryEnumerableToArrayCalls: true
     checkModelProperties: true
     checkOctaneCompatibility: true
-    
+    noEnvCallsOutsideOfConfig: true
+    checkModelAppends: true
+    checkModelMethodVisibility: true
+    checkAuthCallsWhenInRequestScope: true
+    checkConfigTypes: true
+
+    checkMissingTranslations: false
+    translationDirectories:
+        - resources/lang
+
     ignoreErrors:
         - '#PHPDoc tag @var#'
         - '#Class App\\Jobs\\GroupPipeline\\MentionPipeline was not found#'
