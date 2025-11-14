@@ -34,6 +34,14 @@ This setup uses `serversideup/php:8.4-fpm-nginx` as the base image and is design
    docker compose build
    ```
 
+    #### Container Build Troubleshooting ####
+   
+    `failed to solve: error from sender: open /home/username/pixelfed/storage/app/public/m/_v2/xxxxxxxxxxxxxxxxxx/xxxxxxxxxxx-xxxxxxxxxx/xxxxxxxxxxxx: permission denied` or similar might require.
+    ```bash
+    sudo find storage/ -type d -exec chmod 755 {} \; # set all directories to rwx by user/group
+    sudo find storage/ -type f -exec chmod 644 {} \; # set all files to rw by user/group
+    ```
+
 4. **Build and start the containers:**
    ```bash
    docker compose up -d db redis  # Bootstrap the database and Redis.
