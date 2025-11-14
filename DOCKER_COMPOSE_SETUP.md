@@ -36,7 +36,7 @@ This setup uses `serversideup/php:8.4-fpm-nginx` as the base image and is design
 
     #### Container Build Troubleshooting ####
    
-    `failed to solve: error from sender: open /home/username/pixelfed/storage/app/public/m/_v2/xxxxxxxxxxxxxxxxxx/xxxxxxxxxxx-xxxxxxxxxx/xxxxxxxxxxxx: permission denied` or similar might require.
+    `open /home/username/pixelfed/storage/app/public/m/_v2/xxxxxxxxxxxxxxxxxx/xxxxxxxxxxx-xxxxxxxxxx/xxxxxxxxxxxx: permission denied` or similar might require fixing local permissions.
     ```bash
     sudo find storage/ -type d -exec chmod 755 {} \; # set all directories to rwx by user/group
     sudo find storage/ -type f -exec chmod 644 {} \; # set all files to rw by user/group
