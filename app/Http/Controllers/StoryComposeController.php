@@ -19,6 +19,7 @@ use App\Services\StoryService;
 use App\Services\UserRoleService;
 use App\Status;
 use App\Story;
+use App\Util\Media\ImageDriverManager;
 use FFMpeg;
 use Illuminate\Http\Request;
 use Illuminate\Support\Str;
@@ -33,18 +34,7 @@ class StoryComposeController extends Controller
 
     public function __construct()
     {
-        $driver = match (config('image.driver')) {
-            'imagick' => \Intervention\Image\Drivers\Imagick\Driver::class,
-            'vips' => \Intervention\Image\Drivers\Vips\Driver::class,
-            default => \Intervention\Image\Drivers\Gd\Driver::class
-        };
-        $this->imageManager = new ImageManager(
-            $driver,
-            autoOrientation: true,
-            decodeAnimation: true,
-            blendingColor: 'ffffff',
-            strip: true
-        );
+        $this->imageManager = ImageDriverManager::createImageManager();
     }
 
     public function apiV1Add(Request $request)

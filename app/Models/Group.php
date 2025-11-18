@@ -9,6 +9,19 @@ use App\Profile;
 use App\Services\GroupService;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
+/**
+ * @property int $id
+ * @property int $profile_id
+ * @property string|null $name
+ * @property bool $is_private
+ * @property bool $local
+ * @property string|null $remote_url
+ * @property array|null $metadata
+ * @property \Illuminate\Support\Carbon|null $created_at
+ * @property \Illuminate\Support\Carbon|null $updated_at
+ * @property \Illuminate\Support\Carbon|null $deleted_at
+ * @property-read bool $is_local
+ */
 class Group extends Model
 {
     use HasSnowflakePrimary, HasFactory, SoftDeletes;

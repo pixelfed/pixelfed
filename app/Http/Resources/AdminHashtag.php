@@ -4,6 +4,17 @@ namespace App\Http\Resources;
 
 use Illuminate\Http\Resources\Json\JsonResource;
 
+/**
+ * @property int $id
+ * @property string $name
+ * @property string $slug
+ * @property bool|null $can_trend
+ * @property bool|null $can_search
+ * @property bool $is_nsfw
+ * @property bool $is_banned
+ * @property int|null $cached_count
+ * @property \Illuminate\Support\Carbon $created_at
+ */
 class AdminHashtag extends JsonResource
 {
     /**

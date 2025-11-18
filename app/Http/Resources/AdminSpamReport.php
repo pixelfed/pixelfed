@@ -7,6 +7,14 @@ use Illuminate\Http\Resources\Json\JsonResource;
 use App\Services\AccountService;
 use App\Services\StatusService;
 
+/**
+ * @property int $id
+ * @property string $type
+ * @property int|null $item_id
+ * @property string|null $item_type
+ * @property \Illuminate\Support\Carbon|null $read_at
+ * @property \Illuminate\Support\Carbon $created_at
+ */
 class AdminSpamReport extends JsonResource
 {
 	/**

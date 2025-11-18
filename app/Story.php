@@ -7,6 +7,18 @@ use Auth;
 use Illuminate\Database\Eloquent\Model;
 use Storage;
 
+/**
+ * @property int $id
+ * @property int $profile_id
+ * @property string|null $path
+ * @property string|null $bearcap_token
+ * @property array|null $story
+ * @property int $view_count
+ * @property \Illuminate\Support\Carbon|null $expires_at
+ * @property \Illuminate\Support\Carbon|null $created_at
+ * @property \Illuminate\Support\Carbon|null $updated_at
+ * @property-read \App\Profile $profile
+ */
 class Story extends Model
 {
     use HasSnowflakePrimary;

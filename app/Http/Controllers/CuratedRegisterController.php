@@ -315,7 +315,6 @@ class CuratedRegisterController extends Controller
                 $request->session()->put('cur-step', 1);
 
                 return view('auth.curated-register.index', compact('step'));
-                break;
 
             case 2:
                 $this->stepTwo($request);
@@ -323,7 +322,6 @@ class CuratedRegisterController extends Controller
                 $request->session()->put('cur-step', 2);
 
                 return view('auth.curated-register.index', compact('step'));
-                break;
 
             case 3:
                 $this->stepThree($request);
@@ -333,7 +331,6 @@ class CuratedRegisterController extends Controller
                 $request->session()->pull('cur-reg');
 
                 return view('auth.curated-register.index', compact('step', 'verifiedEmail'));
-                break;
         }
     }
 

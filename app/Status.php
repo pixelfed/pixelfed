@@ -15,6 +15,32 @@ use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Support\Str;
 use Storage;
 
+/**
+ * @property int $id
+ * @property int $profile_id
+ * @property string|null $type
+ * @property string|null $caption
+ * @property int|null $in_reply_to_id
+ * @property int|null $in_reply_to_profile_id
+ * @property int|null $reblog_of_id
+ * @property bool $is_nsfw
+ * @property string|null $scope
+ * @property string|null $visibility
+ * @property string|null $cw_summary
+ * @property bool $comments_disabled
+ * @property int $likes_count
+ * @property int $reblogs_count
+ * @property int $reply_count
+ * @property bool $local
+ * @property string|null $place
+ * @property \Illuminate\Support\Carbon|null $created_at
+ * @property \Illuminate\Support\Carbon|null $updated_at
+ * @property \Illuminate\Support\Carbon|null $deleted_at
+ * @property \Illuminate\Support\Carbon|null $edited_at
+ * @property-read \App\Profile $profile
+ * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Media> $media
+ * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Mention> $mentions
+ */
 class Status extends Model
 {
     use HasSnowflakePrimary, SoftDeletes;

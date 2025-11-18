@@ -8,6 +8,16 @@ use App\Instance;
 use App\Services\AccountService;
 use App\Services\StatusService;
 
+/**
+ * @property int $id
+ * @property string $uri
+ * @property int $account_id
+ * @property array|null $status_ids
+ * @property string|null $comment
+ * @property array|null $report_meta
+ * @property \Illuminate\Support\Carbon|null $created_at
+ * @property \Illuminate\Support\Carbon|null $action_taken_at
+ */
 class AdminRemoteReport extends JsonResource
 {
     /**

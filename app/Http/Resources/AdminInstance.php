@@ -4,6 +4,22 @@ namespace App\Http\Resources;
 
 use Illuminate\Http\Resources\Json\JsonResource;
 
+/**
+ * @property int $id
+ * @property string $domain
+ * @property string|null $software
+ * @property bool $unlisted
+ * @property bool $auto_cw
+ * @property bool $banned
+ * @property int|null $user_count
+ * @property int|null $status_count
+ * @property \Illuminate\Support\Carbon|null $last_crawled_at
+ * @property string|null $notes
+ * @property string|null $base_domain
+ * @property bool|null $ban_subdomains
+ * @property \Illuminate\Support\Carbon|null $actors_last_synced_at
+ * @property \Illuminate\Support\Carbon $created_at
+ */
 class AdminInstance extends JsonResource
 {
     /**

@@ -111,7 +111,6 @@ class MediaCloudUrlRewrite extends Command implements PromptsForMissingInput
                 $this->error('Invalid selection');
 
                 return;
-                break;
         }
     }
 

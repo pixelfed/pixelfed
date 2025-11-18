@@ -517,7 +517,7 @@ class PortfolioController extends Controller
 		return response()
 			->view('portfolio.rss_feed', compact('account', 'now', 'feed', 'portfolioUrl'), 200)
 			->header('Content-Type', 'text/xml');
-        return response($feed)->withHeaders(['Content-Type' => 'text/xml']);
+        //Dead return response($feed)->withHeaders(['Content-Type' => 'text/xml']);
     }
 
 

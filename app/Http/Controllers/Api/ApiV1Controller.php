@@ -24,6 +24,7 @@ use App\Jobs\FollowPipeline\UnfollowPipeline;
 use App\Jobs\HomeFeedPipeline\FeedWarmCachePipeline;
 use App\Jobs\ImageOptimizePipeline\ImageOptimize;
 use App\Jobs\LikePipeline\LikePipeline;
+use App\Jobs\LikePipeline\UnlikePipeline;
 use App\Jobs\MediaPipeline\MediaDeletePipeline;
 use App\Jobs\MediaPipeline\MediaSyncLicensePipeline;
 use App\Jobs\NotificationPipeline\NotificationWarmUserCache;
@@ -1382,17 +1383,16 @@ class ApiV1Controller extends Controller
      */
     public function statusFavouriteById(Request $request, $id)
     {
-        abort_if(! $request->user() || ! $request->user()->token(), 403);
+        abort_if(!$request->user() || !$request->user()->token(), 403);
         abort_unless($request->user()->tokenCan('write'), 403);
 
         $user = $request->user();
-        abort_if($user->has_roles && ! UserRoleService::can('can-like', $user->id), 403, 'Invalid permissions for this action');
+        abort_if($user->has_roles && !UserRoleService::can('can-like', $user->id), 403, 'Invalid permissions for this action');
 
         $napi = $request->has(self::PF_API_ENTITY_KEY);
         $status = $napi ? StatusService::get($id, false) : StatusService::getMastodon($id, false);
 
         abort_unless($status, 404);
-
         abort_if(isset($status['moved'], $status['moved']['id']), 422, 'Cannot like a post from an account that has migrated');
 
         if ($status && isset($status['account'], $status['account']['acct']) && strpos($status['account']['acct'], '@') != -1) {
@@ -1406,9 +1406,9 @@ class ApiV1Controller extends Controller
 
         if (intval($spid) !== intval($user->profile_id)) {
             if ($status['visibility'] == 'private') {
-                abort_if(! FollowerService::follows($user->profile_id, $spid), 403);
+                abort_if(!FollowerService::follows($user->profile_id, $spid), 403);
             } else {
-                abort_if(! in_array($status['visibility'], ['public', 'unlisted']), 403);
+                abort_if(!in_array($status['visibility'], ['public', 'unlisted']), 403);
             }
         }
 
@@ -1424,23 +1424,47 @@ class ApiV1Controller extends Controller
             abort(422);
         }
 
-        $like = Like::firstOrCreate([
-            'profile_id' => $user->profile_id,
-            'status_id' => $status['id'],
-        ]);
+        $like = DB::transaction(function () use ($user, $status, $spid, $id) {
+            $statusModel = Status::lockForUpdate()->find($status['id']);
 
-        if ($like->wasRecentlyCreated == true) {
-            $like->status_profile_id = $spid;
-            $like->is_comment = ! empty($status['in_reply_to_id']);
-            $like->save();
-            Status::findOrFail($status['id'])->update([
-                'likes_count' => ($status['favourites_count'] ?? 0) + 1,
-            ]);
-            LikePipeline::dispatch($like)->onQueue('feed');
+            if (!$statusModel) {
+                abort(404, 'Status not found');
+            }
+
+            $like = Like::firstOrCreate(
+                [
+                    'profile_id' => $user->profile_id,
+                    'status_id' => $status['id'],
+                ],
+                [
+                    'status_profile_id' => $spid,
+                    'is_comment' => !empty($status['in_reply_to_id']),
+                ]
+            );
+
+            if ($like->wasRecentlyCreated) {
+                $statusModel->increment('likes_count');
+
+                DB::afterCommit(function () use ($like) {
+                    LikePipeline::dispatch($like)->onQueue('feed');
+                });
+            }
+
+            return $like;
+        });
+
+        StatusService::del($status['id']);
+        $freshStatus = $napi ? StatusService::get($id, false) : StatusService::getMastodon($id, false);
+
+        if ($freshStatus) {
+            $freshStatus['favourited'] = true;
+            $freshStatus['bookmarked'] = BookmarkService::get($user->profile_id, $status['id']);
+            $freshStatus['reblogged'] = ReblogService::get($user->profile_id, $status['id']);
+            return $this->json($freshStatus);
         }
 
         $status['favourited'] = true;
-        $status['favourites_count'] = $status['favourites_count'] + 1;
+        $status['favourites_count'] = ($status['favourites_count'] ?? 0) + ($like->wasRecentlyCreated ? 1 : 0);
         $status['bookmarked'] = BookmarkService::get($user->profile_id, $status['id']);
         $status['reblogged'] = ReblogService::get($user->profile_id, $status['id']);
 
@@ -1455,11 +1479,11 @@ class ApiV1Controller extends Controller
      */
     public function statusUnfavouriteById(Request $request, $id)
     {
-        abort_if(! $request->user() || ! $request->user()->token(), 403);
+        abort_if(!$request->user() || !$request->user()->token(), 403);
         abort_unless($request->user()->tokenCan('write'), 403);
 
         $user = $request->user();
-        abort_if($user->has_roles && ! UserRoleService::can('can-like', $user->id), 403, 'Invalid permissions for this action');
+        abort_if($user->has_roles && !UserRoleService::can('can-like', $user->id), 403, 'Invalid permissions for this action');
 
         $napi = $request->has(self::PF_API_ENTITY_KEY);
         $status = $napi ? StatusService::get($id, false) : StatusService::getMastodon($id, false);
@@ -1478,29 +1502,42 @@ class ApiV1Controller extends Controller
 
         if (intval($spid) !== intval($user->profile_id)) {
             if ($status['visibility'] == 'private') {
-                abort_if(! FollowerService::follows($user->profile_id, $spid), 403);
+                abort_if(!FollowerService::follows($user->profile_id, $spid), 403);
             } else {
-                abort_if(! in_array($status['visibility'], ['public', 'unlisted']), 403);
+                abort_if(!in_array($status['visibility'], ['public', 'unlisted']), 403);
             }
         }
 
-        $like = Like::whereProfileId($user->profile_id)
-            ->whereStatusId($status['id'])
-            ->first();
+        $didUnlike = DB::transaction(function () use ($user, $status) {
+            $like = Like::with(['actor', 'status'])
+                ->lockForUpdate()
+                ->whereProfileId($user->profile_id)
+                ->whereStatusId($status['id'])
+                ->first();
 
-        if ($like) {
-            $like->forceDelete();
-            $ogStatus = Status::find($status['id']);
-            if ($ogStatus) {
-                $ogStatus->likes_count = $ogStatus->likes_count > 1 ? $ogStatus->likes_count - 1 : 0;
-                $ogStatus->save();
+            if (!$like) {
+                return false;
             }
-        }
+
+            DB::afterCommit(function () use ($like) {
+                UnlikePipeline::dispatch($like)->onQueue('feed');
+            });
+
+            return true;
+        });
 
         StatusService::del($status['id']);
+        $freshStatus = $napi ? StatusService::get($id, false) : StatusService::getMastodon($id, false);
+
+        if ($freshStatus) {
+            $freshStatus['favourited'] = false;
+            $freshStatus['bookmarked'] = BookmarkService::get($user->profile_id, $status['id']);
+            $freshStatus['reblogged'] = ReblogService::get($user->profile_id, $status['id']);
+            return $this->json($freshStatus);
+        }
 
         $status['favourited'] = false;
-        $status['favourites_count'] = isset($ogStatus) ? $ogStatus->likes_count : $status['favourites_count'] - 1;
+        $status['favourites_count'] = max(0, ($status['favourites_count'] ?? 0) - ($didUnlike ? 1 : 0));
         $status['bookmarked'] = BookmarkService::get($user->profile_id, $status['id']);
         $status['reblogged'] = ReblogService::get($user->profile_id, $status['id']);
 

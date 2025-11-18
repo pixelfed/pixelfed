@@ -48,22 +48,23 @@ class GroupFederationController extends Controller
                 'url' => $group->permalink(),
             ];
 
-            if ($group->metadata && isset($group->metadata['avatar'])) {
-                $res['icon'] = [
-                    'type' => 'Image',
-                    'url' => $group->metadata['avatar']['url'],
-                ];
-            }
+            //Dead - after a return
+            // if ($group->metadata && isset($group->metadata['avatar'])) {
+            //     $res['icon'] = [
+            //         'type' => 'Image',
+            //         'url' => $group->metadata['avatar']['url'],
+            //     ];
+            // }
 
-            if ($group->metadata && isset($group->metadata['header'])) {
-                $res['image'] = [
-                    'type' => 'Image',
-                    'url' => $group->metadata['header']['url'],
-                ];
-            }
-            ksort($res);
+            // if ($group->metadata && isset($group->metadata['header'])) {
+            //     $res['image'] = [
+            //         'type' => 'Image',
+            //         'url' => $group->metadata['header']['url'],
+            //     ];
+            // }
+            // ksort($res);
 
-            return $res;
+            // return $res;
         });
     }
 

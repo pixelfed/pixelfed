@@ -6,6 +6,14 @@ use Illuminate\Database\Eloquent\Model;
 use Pixelfed\Snowflake\HasSnowflakePrimary;
 use Storage;
 
+/**
+ * @property int $id
+ * @property int $story_id
+ * @property string|null $media_path
+ * @property \Illuminate\Support\Carbon|null $expires_at
+ * @property \Illuminate\Support\Carbon|null $created_at
+ * @property \Illuminate\Support\Carbon|null $updated_at
+ */
 class StoryItem extends Model
 {
 	use HasSnowflakePrimary;

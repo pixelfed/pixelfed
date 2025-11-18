@@ -6,6 +6,14 @@ use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
 use App\Services\AccountService;
 
+/**
+ * @property int $id
+ * @property string|null $domain
+ * @property string|null $status
+ * @property bool $cw
+ * @property bool $unlisted
+ * @property bool $no_autolink
+ */
 class AdminProfile extends JsonResource
 {
     /**

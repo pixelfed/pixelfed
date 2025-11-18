@@ -493,35 +493,27 @@ trait AdminSettingsController
         switch ($type) {
             case 'home':
                 return $this->settingsApiUpdateHomeType($request);
-                break;
 
             case 'landing':
                 return $this->settingsApiUpdateLandingType($request);
-                break;
 
             case 'posts':
                 return $this->settingsApiUpdatePostsType($request);
-                break;
 
             case 'platform':
                 return $this->settingsApiUpdatePlatformType($request);
-                break;
 
             case 'branding':
                 return $this->settingsApiUpdateBrandingType($request);
-                break;
 
             case 'media':
                 return $this->settingsApiUpdateMediaType($request);
-                break;
 
             case 'users':
                 return $this->settingsApiUpdateUsersType($request);
-                break;
 
             case 'storage':
                 return $this->settingsApiUpdateStorageType($request);
-                break;
 
             default:
                 abort(404);
@@ -611,7 +603,7 @@ trait AdminSettingsController
         $mediaTypes = $request->input('media_types');
         $mediaArray = explode(',', $mediaTypes);
         foreach ($mediaArray as $mediaType) {
-            if (! in_array($mediaType, ['image/jpeg', 'image/png', 'image/gif', 'image/webp', 'video/mp4', 'image/avif'])) {
+            if (! in_array($mediaType, ['image/jpeg', 'image/png', 'image/gif', 'image/webp', 'image/avif', 'image/heic', 'video/mp4', 'video/mov'])) {
                 return redirect()->back()->withErrors(['media_types' => 'Invalid media type']);
             }
         }

@@ -5,6 +5,15 @@ namespace App\Http\Resources\MastoApi\Admin;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
 
+/**
+ * @property int $id
+ * @property string $domain
+ * @property bool $banned
+ * @property bool $unlisted
+ * @property \Illuminate\Support\Carbon $updated_at
+ * @property array|null $notes
+ * @property string|null $limit_reason
+ */
 class DomainBlockResource extends JsonResource
 {
     /**

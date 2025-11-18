@@ -8,6 +8,10 @@ use Tests\TestCase;
 
 class APAnnounceStrategyTest extends TestCase
 {
+    private array $invalid;
+    private array $mastodon;
+    private array $pleroma;
+
     public function setUp(): void
     {
         parent::setUp();

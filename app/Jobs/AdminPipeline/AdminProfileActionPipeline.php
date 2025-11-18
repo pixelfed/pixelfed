@@ -54,16 +54,12 @@ class AdminProfileActionPipeline implements ShouldQueue
         switch($action) {
             case 'mark-all-cw':
                 return $this->markAllPostsWithContentWarnings();
-            break;
             case 'unlist-all':
                 return $this->unlistAllPosts();
-            break;
             case 'purge':
                 return $this->purgeAllPosts();
-            break;
             case 'refetch':
                 return $this->refetchAllPosts();
-            break;
         }
     }
 

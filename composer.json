@@ -14,11 +14,11 @@
         "ext-mbstring": "*",
         "ext-openssl": "*",
         "bacon/bacon-qr-code": "^3.0",
-        "brick/math": "^0.11",
+        "brick/math": "^0.14",
         "buzz/laravel-h-captcha": "^1.0.4",
         "endroid/qr-code": "^6.0",
         "guzzlehttp/guzzle": "^7.10",
-        "intervention/image": "^3.11.2",
+        "intervention/image-laravel": "^1.5",
         "intervention/image-driver-vips": "^1.0",
         "jenssegers/agent": "^2.6",
         "laravel-notification-channels/expo": "^2.0.0",
@@ -39,15 +39,16 @@
         "phpseclib/phpseclib": "~3.0",
         "pixelfed/fractal": "^0.18.0",
         "pixelfed/laravel-snowflake": "^2.0",
-        "pragmarx/google2fa": "^8.0",
-        "predis/predis": "^2.0",
+        "pragmarx/google2fa": "^9.0",
+        "predis/predis": "^3.2",
         "pusher/pusher-php-server": "^7.2",
         "resend/resend-php": "^0.13.0",
         "spatie/laravel-backup": "^9.2.9",
         "spatie/laravel-image-optimizer": "^1.8.2",
         "stevebauman/purify": "^6.2.0",
-        "symfony/http-client": "^6.1",
-        "symfony/mailgun-mailer": "^6.1"
+        "symfony/http-client": "^7.3",
+        "symfony/http-foundation": "7.3.7",
+        "symfony/mailgun-mailer": "^7.3"
     },
     "require-dev": {
         "fakerphp/faker": "^1.23",
@@ -55,7 +56,7 @@
         "laravel/telescope": "^5.5",
         "mockery/mockery": "^1.6",
         "nunomaduro/collision": "^8.8",
-        "pestphp/pest": "^3.8"
+        "pestphp/pest": "^4.0"
     },
     "autoload": {
         "classmap": [
@@ -104,7 +105,8 @@
         "sort-packages": true,
         "optimize-autoloader": true,
         "allow-plugins": {
-            "pestphp/pest-plugin": true
+            "pestphp/pest-plugin": true,
+            "php-http/discovery": true
         }
     },
     "prefer-stable": true

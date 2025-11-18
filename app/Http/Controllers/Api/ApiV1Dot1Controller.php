@@ -170,7 +170,6 @@ class ApiV1Dot1Controller extends Controller
 
             default:
                 return $this->error('Invalid report type', 400, ['error_code' => 'ERROR_REPORT_OBJECT_TYPE_INVALID']);
-                break;
         }
 
         if ($exists !== 0) {

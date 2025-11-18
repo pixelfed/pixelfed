@@ -10,6 +10,25 @@ use App\Services\FollowerService;
 use App\Models\ProfileAlias;
 use App\Avatar;
 
+/**
+ * @property int $id
+ * @property int|null $user_id
+ * @property string $username
+ * @property string|null $name
+ * @property string|null $domain
+ * @property string|null $remote_url
+ * @property bool $is_private
+ * @property int $status_count
+ * @property int $following_count
+ * @property int $followers_count
+ * @property \Illuminate\Support\Carbon|null $last_fetched_at
+ * @property \Illuminate\Support\Carbon|null $last_status_at
+ * @property \Illuminate\Support\Carbon|null $created_at
+ * @property \Illuminate\Support\Carbon|null $updated_at
+ * @property \Illuminate\Support\Carbon|null $deleted_at
+ * @property-read \App\User|null $user
+ * @property-read \App\Avatar $avatar
+ */
 class Profile extends Model
 {
 	use HasSnowflakePrimary, SoftDeletes;

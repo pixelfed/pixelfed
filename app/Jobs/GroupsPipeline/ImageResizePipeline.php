@@ -3,6 +3,7 @@
 namespace App\Jobs\GroupsPipeline;
 
 use App\Models\GroupMedia;
+use App\Util\Media\ImageDriverManager;
 use Exception;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
@@ -75,19 +76,7 @@ class ImageResizePipeline implements ShouldQueue
         ];
 
         try {
-            $driver = match (config('image.driver')) {
-                'imagick' => \Intervention\Image\Drivers\Imagick\Driver::class,
-                'vips' => \Intervention\Image\Drivers\Vips\Driver::class,
-                default => \Intervention\Image\Drivers\Gd\Driver::class
-            };
-
-            $imageManager = new ImageManager(
-                $driver,
-                autoOrientation: true,
-                decodeAnimation: true,
-                blendingColor: 'ffffff',
-                strip: true
-            );
+            $imageManager = ImageDriverManager::createImageManager();
 
             $img = $imageManager->read($file);
 
@@ -97,10 +86,7 @@ class ImageResizePipeline implements ShouldQueue
             $orientation = $aspect === 1 ? 'square' : ($aspect > 1 ? 'landscape' : 'portrait');
             $ratio = $orientations[$orientation];
 
-            $img = $img->resize($ratio['width'], $ratio['height'], function ($constraint) {
-                $constraint->aspectRatio();
-                $constraint->upsize();
-            });
+            $img = $img->scaleDown($ratio['width'], $ratio['height']);
 
             $extension = pathinfo($file, PATHINFO_EXTENSION);
             if (in_array(strtolower($extension), ['jpg', 'jpeg'])) {
@@ -110,7 +96,7 @@ class ImageResizePipeline implements ShouldQueue
             }
 
             $encoded = $img->encode($encoder);
-            file_put_contents($file, $encoded);
+            file_put_contents($file, $encoded->toString());
 
         } catch (Exception $e) {
             Log::error($e);

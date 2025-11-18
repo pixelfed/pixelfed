@@ -5,6 +5,17 @@ namespace App;
 use Illuminate\Database\Eloquent\Model;
 use App\Profile;
 
+/**
+ * @property int $id
+ * @property int $profile_id
+ * @property int $following_id
+ * @property bool|null $local_profile
+ * @property \Illuminate\Support\Carbon|null $created_at
+ * @property \Illuminate\Support\Carbon|null $updated_at
+ * @property-read \App\Profile $actor
+ * @property-read \App\Profile $target
+ * @property-read \App\Profile $profile
+ */
 class Follower extends Model
 {
 

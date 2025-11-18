@@ -5,6 +5,21 @@ namespace App\Http\Resources;
 use App\Services\AccountService;
 use Illuminate\Http\Resources\Json\JsonResource;
 
+/**
+ * @property int $id
+ * @property int $profile_id
+ * @property string|null $name
+ * @property string $username
+ * @property bool $is_admin
+ * @property string $email
+ * @property \Illuminate\Support\Carbon|null $email_verified_at
+ * @property bool $2fa_enabled
+ * @property string|null $register_source
+ * @property string|null $app_register_ip
+ * @property bool $has_interstitial
+ * @property \Illuminate\Support\Carbon|null $last_active_at
+ * @property \Illuminate\Support\Carbon $created_at
+ */
 class AdminUser extends JsonResource
 {
     /**

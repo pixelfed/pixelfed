@@ -4,6 +4,7 @@ namespace App\Util\Media;
 
 use App\Media;
 use App\Services\StatusService;
+use App\Util\Media\ImageDriverManager;
 use Cache;
 use Intervention\Image\Encoders\JpegEncoder;
 use Intervention\Image\Encoders\PngEncoder;
@@ -52,19 +53,7 @@ class Image
 
         $this->defaultDisk = config('filesystems.default');
 
-        $driver = match (config('image.driver')) {
-            'imagick' => \Intervention\Image\Drivers\Imagick\Driver::class,
-            'vips' => \Intervention\Image\Drivers\Vips\Driver::class,
-            default => \Intervention\Image\Drivers\Gd\Driver::class
-        };
-
-        $this->imageManager = new ImageManager(
-            $driver,
-            autoOrientation: true,
-            decodeAnimation: true,
-            blendingColor: 'ffffff',
-            strip: true
-        );
+        $this->imageManager = ImageDriverManager::createImageManager();
     }
 
     public function orientations()

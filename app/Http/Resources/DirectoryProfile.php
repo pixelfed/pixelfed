@@ -6,6 +6,11 @@ use Illuminate\Http\Resources\Json\JsonResource;
 use Cache;
 use App\Services\AccountService;
 
+/**
+ * @property int $id
+ * @property string|null $name
+ * @property string $username
+ */
 class DirectoryProfile extends JsonResource
 {
 	/**

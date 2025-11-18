@@ -7,6 +7,9 @@ use Illuminate\Http\JsonResponse;
 use Cache;
 use App\Services\HashtagService;
 
+/**
+ * @property int $hashtag_id
+ */
 class FollowedTagResource extends JsonResource
 {
     /**
