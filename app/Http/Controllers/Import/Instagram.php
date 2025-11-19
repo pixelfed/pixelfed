@@ -12,6 +12,7 @@ use App\{
 	User
 };
 use App\Jobs\ImportPipeline\ImportInstagram;
+use App\Services\ImportService;
 
 trait Instagram
 {
@@ -124,7 +125,7 @@ trait Instagram
         	});
         } catch (\Exception $e) {
             // Clean up on failure
-            $this->cleanupImportDirectory($job);
+            ImportService::cleanupImportDirectory($job);
             throw $e;
         }
         return redirect($job->url());
@@ -162,7 +163,7 @@ trait Instagram
     	$file = file_get_contents($media);
 		$json = json_decode($file, true, 5);
 		if(!$json || !isset($json['photos'])) {
-			$this->cleanupImportDirectory($job);
+			ImportService::cleanupImportDirectory($job);
 			return abort(500);
 		}
 		try {
@@ -172,7 +173,7 @@ trait Instagram
 	        $job->stage = 3;
 	        $job->save();
 		} catch (\Exception $e) {
-			$this->cleanupImportDirectory($job);
+			ImportService::cleanupImportDirectory($job);
 			throw $e;
 		}
         return redirect($job->url());
@@ -215,25 +216,4 @@ trait Instagram
         return redirect(route('settings'))->with(['status' => 'Import successful! It may take a few minutes to finish.']);
     }
 
-	/**
-	 * Clean up temporary import directory.
-	 *
-	 * @param ImportJob $job
-	 * @return void
-	 */
-	protected function cleanupImportDirectory(ImportJob $job)
-	{
-		try {
-			$importPath = "import/{$job->uuid}";
-			if (\Storage::exists($importPath)) {
-				\Storage::deleteDirectory($importPath);
-			}
-		} catch (\Exception $e) {
-			\Log::warning('Failed to cleanup import directory', [
-				'job_id' => $job->id,
-				'path' => $importPath ?? null,
-				'error' => $e->getMessage(),
-			]);
-		}
-	}
 }

@@ -11,6 +11,7 @@ use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
 use App\Jobs\ImageOptimizePipeline\ImageOptimize;
+use App\Services\ImportService;
 use App\{
 	ImportJob,
 	ImportData,
@@ -130,37 +131,16 @@ class ImportInstagram implements ShouldQueue
 			$job->save();
 
 			// Clean up temporary import files
-			$this->cleanupImportDirectory($job);
+			ImportService::cleanupImportDirectory($job);
 		} catch (\Exception $e) {
 			// Log the error and clean up on failure
 			\Log::error('Instagram import failed', [
 				'job_id' => $this->import->id,
 				'error' => $e->getMessage(),
 			]);
-			$this->cleanupImportDirectory($this->import);
+			ImportService::cleanupImportDirectory($this->import);
 			throw $e;
 		}
 	}
 
-	/**
-	 * Clean up temporary import directory.
-	 *
-	 * @param ImportJob $job
-	 * @return void
-	 */
-	protected function cleanupImportDirectory(ImportJob $job)
-	{
-		try {
-			$importPath = "import/{$job->uuid}";
-			if (\Storage::exists($importPath)) {
-				\Storage::deleteDirectory($importPath);
-			}
-		} catch (\Exception $e) {
-			\Log::warning('Failed to cleanup import directory', [
-				'job_id' => $job->id,
-				'path' => $importPath ?? null,
-				'error' => $e->getMessage(),
-			]);
-		}
-	}
 }

@@ -299,6 +299,22 @@ class ImportService
         return Cache::forget($key);
     }
 
+    public static function cleanupImportDirectory($job)
+    {
+        try {
+            $importPath = "import/{$job->uuid}";
+            if (\Storage::exists($importPath)) {
+                \Storage::deleteDirectory($importPath);
+            }
+        } catch (\Exception $e) {
+            \Log::warning('Failed to cleanup import directory', [
+                'job_id' => $job->id,
+                'path' => $importPath ?? null,
+                'error' => $e->getMessage(),
+            ]);
+        }
+    }
+
     private static function getNextValidDate($year, $month, $day)
     {
         try {
