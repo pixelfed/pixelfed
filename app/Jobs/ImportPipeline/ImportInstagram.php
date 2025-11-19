@@ -138,7 +138,7 @@ class ImportInstagram implements ShouldQueue
 				'job_id' => $this->import->id,
 				'error' => $e->getMessage(),
 			]);
-			ImportService::cleanupImportDirectory($this->import);
+			ImportService::cleanupImportDirectory($this->import->id);
 			throw $e;
 		}
 	}
