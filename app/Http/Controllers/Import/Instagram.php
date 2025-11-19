@@ -99,28 +99,34 @@ trait Instagram
     		->firstOrFail();
     		
         $limit = config('pixelfed.import.instagram.limits.posts');
-        foreach ($media as $k => $v) {
-        	$original = $v->getClientOriginalName();
-    		if(strlen($original) < 32 || $k > $limit) {
-    			continue;
-    		}
-            $storagePath = "import/{$job->uuid}";
-            $path = $v->storePublicly($storagePath);
-            DB::transaction(function() use ($profile, $job, $path, $original) {
-		        $data = new ImportData;
-		        $data->profile_id = $profile->id;
-		        $data->job_id = $job->id;
-		        $data->service = 'instagram';
-		        $data->path = $path;
-		        $data->stage = $job->stage;
-		        $data->original_name = $original;
-		        $data->save();
-            });
+        try {
+            foreach ($media as $k => $v) {
+            	$original = $v->getClientOriginalName();
+        		if(strlen($original) < 32 || $k > $limit) {
+        			continue;
+        		}
+                $storagePath = "import/{$job->uuid}";
+                $path = $v->storePublicly($storagePath);
+                DB::transaction(function() use ($profile, $job, $path, $original) {
+    		        $data = new ImportData;
+    		        $data->profile_id = $profile->id;
+    		        $data->job_id = $job->id;
+    		        $data->service = 'instagram';
+    		        $data->path = $path;
+    		        $data->stage = $job->stage;
+    		        $data->original_name = $original;
+    		        $data->save();
+                });
+            }
+            DB::transaction(function() use ($job) {
+            	$job->stage = 2;
+            	$job->save();
+        	});
+        } catch (\Exception $e) {
+            // Clean up on failure
+            $this->cleanupImportDirectory($job);
+            throw $e;
         }
-        DB::transaction(function() use ($job) {
-        	$job->stage = 2;
-        	$job->save();
-    	});
         return redirect($job->url());
     }
 
@@ -156,13 +162,19 @@ trait Instagram
     	$file = file_get_contents($media);
 		$json = json_decode($file, true, 5);
 		if(!$json || !isset($json['photos'])) {
+			$this->cleanupImportDirectory($job);
 			return abort(500);
 		}
-		$storagePath = "import/{$job->uuid}";
-        $path = $media->storePublicly($storagePath);
-        $job->media_json = $path;
-        $job->stage = 3;
-        $job->save();
+		try {
+			$storagePath = "import/{$job->uuid}";
+	        $path = $media->storePublicly($storagePath);
+	        $job->media_json = $path;
+	        $job->stage = 3;
+	        $job->save();
+		} catch (\Exception $e) {
+			$this->cleanupImportDirectory($job);
+			throw $e;
+		}
         return redirect($job->url());
     }
 
@@ -202,4 +214,26 @@ trait Instagram
 
         return redirect(route('settings'))->with(['status' => 'Import successful! It may take a few minutes to finish.']);
     }
+
+	/**
+	 * Clean up temporary import directory.
+	 *
+	 * @param ImportJob $job
+	 * @return void
+	 */
+	protected function cleanupImportDirectory(ImportJob $job)
+	{
+		try {
+			$importPath = "import/{$job->uuid}";
+			if (\Storage::exists($importPath)) {
+				\Storage::deleteDirectory($importPath);
+			}
+		} catch (\Exception $e) {
+			\Log::warning('Failed to cleanup import directory', [
+				'job_id' => $job->id,
+				'path' => $importPath ?? null,
+				'error' => $e->getMessage(),
+			]);
+		}
+	}
 }
