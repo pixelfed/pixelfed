@@ -284,33 +284,36 @@ class MediaStorageService
         }
         file_put_contents($tmpName, $data);
 
-        $mimeCheck = Storage::mimeType('remcache/'.$tmpPath);
+        try {
+            $mimeCheck = Storage::mimeType('remcache/'.$tmpPath);
 
-        if (! $mimeCheck || ! in_array($mimeCheck, ['image/png', 'image/jpeg', 'image/jpg'])) {
+            if (! $mimeCheck || ! in_array($mimeCheck, ['image/png', 'image/jpeg', 'image/jpg'])) {
+                $avatar->last_fetched_at = now();
+                $avatar->save();
+
+                return;
+            }
+
+            $disk = Storage::disk($driver);
+            $file = $disk->putFileAs($base, new File($tmpName), $path, 'public');
+            $permalink = $disk->url($file);
+
+            $avatar->media_path = $base.'/'.$path;
+            $avatar->is_remote = true;
+            $avatar->cdn_url = $local ? config('app.url').$permalink : $permalink;
+            $avatar->size = $head['length'];
+            $avatar->change_count = $avatar->change_count + 1;
             $avatar->last_fetched_at = now();
             $avatar->save();
-            unlink($tmpName);
 
-            return;
+            Cache::forget('avatar:'.$avatar->profile_id);
+            AccountService::del($avatar->profile_id);
+            AvatarStorageCleanup::dispatch($avatar)->onQueue($queue)->delay(now()->addMinutes(random_int(3, 15)));
+        } finally {
+            if (file_exists($tmpName)) {
+                unlink($tmpName);
+            }
         }
-
-        $disk = Storage::disk($driver);
-        $file = $disk->putFileAs($base, new File($tmpName), $path, 'public');
-        $permalink = $disk->url($file);
-
-        $avatar->media_path = $base.'/'.$path;
-        $avatar->is_remote = true;
-        $avatar->cdn_url = $local ? config('app.url').$permalink : $permalink;
-        $avatar->size = $head['length'];
-        $avatar->change_count = $avatar->change_count + 1;
-        $avatar->last_fetched_at = now();
-        $avatar->save();
-
-        Cache::forget('avatar:'.$avatar->profile_id);
-        AccountService::del($avatar->profile_id);
-        AvatarStorageCleanup::dispatch($avatar)->onQueue($queue)->delay(now()->addMinutes(random_int(3, 15)));
-
-        unlink($tmpName);
     }
 
     public static function delete(Media $media, $confirm = false)
