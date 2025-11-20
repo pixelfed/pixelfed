@@ -84,7 +84,7 @@ trait ExportSettings
             Storage::append($tempPath, ']');
 
             return response()->stream(
-                function () use ($tempPath) {
+                function () use ($tempPath, $userExportPath) {
                     $handle = fopen(Storage::path($tempPath), 'rb');
                     while (! feof($handle)) {
                         echo fread($handle, 8192);
@@ -92,7 +92,7 @@ trait ExportSettings
                     }
                     fclose($handle);
 
-                    Storage::delete($tempPath);
+                    Storage::deleteDirectory($userExportPath);
                 },
                 200,
                 [
@@ -102,8 +102,8 @@ trait ExportSettings
             );
 
         } catch (\Exception $e) {
-            if (Storage::exists($tempPath)) {
-                Storage::delete($tempPath);
+            if (Storage::exists($userExportPath)) {
+                Storage::deleteDirectory($userExportPath);
             }
             throw $e;
         }
@@ -148,7 +148,7 @@ trait ExportSettings
             Storage::append($tempPath, ']');
 
             return response()->stream(
-                function () use ($tempPath) {
+                function () use ($tempPath, $userExportPath) {
                     $handle = fopen(Storage::path($tempPath), 'rb');
                     while (! feof($handle)) {
                         echo fread($handle, 8192);
@@ -156,7 +156,7 @@ trait ExportSettings
                     }
                     fclose($handle);
 
-                    Storage::delete($tempPath);
+                    Storage::deleteDirectory($userExportPath);
                 },
                 200,
                 [
@@ -166,8 +166,8 @@ trait ExportSettings
             );
 
         } catch (\Exception $e) {
-            if (Storage::exists($tempPath)) {
-                Storage::delete($tempPath);
+            if (Storage::exists($userExportPath)) {
+                Storage::deleteDirectory($userExportPath);
             }
             throw $e;
         }
@@ -235,14 +235,14 @@ trait ExportSettings
             Storage::append($tempPath, ']');
 
             return response()->stream(
-                function () use ($tempPath) {
+                function () use ($tempPath, $userExportPath) {
                     $handle = fopen(Storage::path($tempPath), 'rb');
                     while (! feof($handle)) {
                         echo fread($handle, 8192);
                         flush();
                     }
                     fclose($handle);
-                    Storage::delete($tempPath);
+                    Storage::deleteDirectory($userExportPath);
                 },
                 200,
                 [
@@ -252,8 +252,8 @@ trait ExportSettings
             );
 
         } catch (\Exception $e) {
-            if (Storage::exists($tempPath)) {
-                Storage::delete($tempPath);
+            if (Storage::exists($userExportPath)) {
+                Storage::deleteDirectory($userExportPath);
             }
             throw $e;
         }
