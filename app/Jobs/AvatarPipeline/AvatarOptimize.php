@@ -132,7 +132,15 @@ class AvatarOptimize implements ShouldQueue
         $avatar->media_path = $path;
         $avatar->cdn_url = $disk->url($path);
         $avatar->save();
-        Storage::delete($localPath);  //Delete avatar from local temp storage
+        
+        //Delete local avatar 
+        Storage::delete($localPath);
+        //Delete empty folder called Profile_id
+        $dir = dirname($localPath);
+        if (Storage::exists($dir) && empty(Storage::files($dir))) {
+            Storage::deleteDirectory($dir);
+        }
+        
         Cache::forget('avatar:'.$avatar->profile_id);
     }
 }
