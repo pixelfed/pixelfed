@@ -170,6 +170,12 @@ class StoryExpire implements ShouldQueue
 
         if (Storage::exists($path) == true) {
             Storage::delete($path);
+            
+            // Clean up empty directory
+            $dir = dirname($path);
+            if (Storage::exists($dir) && empty(Storage::files($dir))) {
+                Storage::deleteDirectory($dir);
+            }
         }
 
         $story->views()->delete();
