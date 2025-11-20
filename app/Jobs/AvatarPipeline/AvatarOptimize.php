@@ -123,6 +123,7 @@ class AvatarOptimize implements ShouldQueue
 
     protected function uploadToCloud($avatar)
     {
+        $localPath = $avatar->media_path;
         $base = 'cache/avatars/'.$avatar->profile_id;
         $disk = Storage::disk(config('filesystems.cloud'));
         $disk->deleteDirectory($base);
@@ -131,7 +132,7 @@ class AvatarOptimize implements ShouldQueue
         $avatar->media_path = $path;
         $avatar->cdn_url = $disk->url($path);
         $avatar->save();
-        Storage::delete($avatar->media_path);
+        Storage::delete($localPath);  //Delete avatar from local temp storage
         Cache::forget('avatar:'.$avatar->profile_id);
     }
 }
