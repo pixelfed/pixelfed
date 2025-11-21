@@ -131,7 +131,7 @@ class MediaStorageService
                     Storage::disk('local')->delete($media->media_path);
                 }
 
-                if ($media->thumbnail_path && Storage::disk('local')->exists($media->thumbnail_path)) {
+                if (Storage::disk('local')->exists($media->thumbnail_path)) {
                     Storage::disk('local')->delete($media->thumbnail_path);
                 }
             }
