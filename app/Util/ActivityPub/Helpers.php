@@ -1148,6 +1148,7 @@ class Helpers
         return ! $profile?->last_fetched_at ||
                $profile->last_fetched_at->lt(now()->subHours(24));
     }
+
     /**
      * Update or create a profile from ActivityPub data
      */
