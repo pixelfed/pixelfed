@@ -1175,12 +1175,12 @@ class Helpers
         // First try to find by key_id to handle race conditions
         if ($keyId) {
             try {
-                $existingByKeyId = Profile::where('key_id', $keyId)->first();
-                if ($existingByKeyId) {
+                $profileByKeyId = Profile::where('key_id', $keyId)->first();
+                if ($profileByKeyId) {
                     // Update existing profile with new data
                     $profileByKeyId->update(self::buildProfileData($res, $webfinger, $movedToPid));  // same as line 1192 - ONLY update existing profile, not updateOrCreate
                     self::handleProfileAvatar($profileByKeyId);  // same as line 1201
-                    return $existingByKeyId;
+                    return $profileByKeyId;
                 }
             } catch (\Illuminate\Database\QueryException $e) {
                 // Log the error but continue to updateOrCreate
