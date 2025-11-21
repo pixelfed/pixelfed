@@ -187,11 +187,6 @@ class Profile extends Model
 				return url('/storage/avatars/default.jpg');
 			}
 
-			// Skip cache if avatar is still being processed (optimization/cloud upload in progress)
-			if($avatar->last_processed_at === null) {
-				return $this->getAvatarUrl($avatar);
-			}
-
 			// Cache the URL for 14 days once processing is complete
 			$url = Cache::remember('avatar:'.$this->id, 1209600, function () use ($avatar) {
 				return $this->getAvatarUrl($avatar);
