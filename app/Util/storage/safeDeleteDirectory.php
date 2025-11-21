@@ -12,21 +12,29 @@ class SafeDeleteDirectory
      * Logs a warning if the directory is not empty or deletion fails.
      *
      * @param string $path
+     * @param string $disk Disk name (e.g., 'local', 's3'). Required.
      * @return bool
+     * @throws \InvalidArgumentException
      */
-    public static function deleteEmpty($path)
+    public static function deleteEmpty($path, $disk)
     {
-        if (!Storage::exists($path)) {
+        if (empty($disk)) {
+            throw new \InvalidArgumentException('Disk parameter is required. Use "local" or "s3" or other configured disk name.');
+        }
+
+        $disk = Storage::disk($disk);
+
+        if (!$disk->exists($path)) {
             return true;
         }
 
-        if (!empty(Storage::allFiles($path))) {
+        if (!empty($disk->allFiles($path))) {
             Log::warning("Cannot delete directory: {$path} - directory is not empty");
             return false;
         }
 
         try {
-            Storage::deleteDirectory($path);
+            $disk->deleteDirectory($path);
             return true;
         } catch (\Exception $e) {
             Log::warning("Failed to delete directory: {$path} - " . $e->getMessage());
@@ -39,29 +47,37 @@ class SafeDeleteDirectory
      * Logs a warning if the deletion fails.
      *
      * @param string $path
+     * @param string $disk Disk name (e.g., 'local', 's3'). Required.
      * @return bool
+     * @throws \InvalidArgumentException
      */
-    public static function deleteRecursive($path)
+    public static function deleteRecursive($path, $disk)
     {
-        if (!Storage::exists($path)) {
+        if (empty($disk)) {
+            throw new \InvalidArgumentException('Disk parameter is required. Use "local" or "s3" or other configured disk name.');
+        }
+
+        $disk = Storage::disk($disk);
+
+        if (!$disk->exists($path)) {
             return true;
         }
 
         try {
             // Delete all files in the directory
-            $files = Storage::allFiles($path);
+            $files = $disk->allFiles($path);
             if (!empty($files)) {
-                Storage::delete($files);
+                $disk->delete($files);
             }
 
             // Delete all subdirectories recursively
-            $directories = Storage::directories($path);
+            $directories = $disk->directories($path);
             foreach ($directories as $directory) {
-                self::deleteRecursive($directory);
+                self::deleteRecursive($directory, $disk);
             }
 
             // Delete the directory itself
-            Storage::deleteDirectory($path);
+            $disk->deleteDirectory($path);
             return true;
         } catch (\Exception $e) {
             Log::warning("Failed to recursively delete directory: {$path} - " . $e->getMessage());
