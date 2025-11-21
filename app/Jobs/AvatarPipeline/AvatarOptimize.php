@@ -133,8 +133,10 @@ class AvatarOptimize implements ShouldQueue
             $base = 'cache/avatars/'.$avatar->profile_id;
             $disk = Storage::disk(config('filesystems.cloud'));
             
-            // Delete existing avatar folder in the cloud
-            $disk->deleteDirectory($base);
+            // Delete existing avatar folder in the cloud (if it exists)
+            if ($disk->exists($base)) {
+                $disk->deleteDirectory($base);
+            }
             
             // Generate new cloud path with unique identifier
             $path = $base.'/'.'avatar_'.strtolower(Str::random(random_int(3, 6))).$avatar->change_count.'.'.pathinfo($avatar->media_path, PATHINFO_EXTENSION);
