@@ -310,8 +310,8 @@ class MediaStorageService
             AccountService::del($avatar->profile_id);
             AvatarStorageCleanup::dispatch($avatar)->onQueue($queue)->delay(now()->addMinutes(random_int(3, 15)));
         } finally {
-            if (file_exists($tmpName)) {
-                unlink($tmpName);
+            if (Storage::disk('local')->exists('remcache/'.$tmpPath)) {
+                Storage::disk('local')->delete('remcache/'.$tmpPath);
             }
         }
     }
