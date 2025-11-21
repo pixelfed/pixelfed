@@ -14,7 +14,7 @@ class SafeDeleteDirectory
      * @param string $path
      * @return bool
      */
-    public static function safe($path)
+    public static function deleteEmpty($path)
     {
         if (!Storage::exists($path)) {
             return true;
@@ -40,7 +40,7 @@ class SafeDeleteDirectory
      * @param string $path
      * @return bool
      */
-    public static function recursive($path)
+    public static function deleteRecursive($path)
     {
         if (!Storage::exists($path)) {
             return true;
