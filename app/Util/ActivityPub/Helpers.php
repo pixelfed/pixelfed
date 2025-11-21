@@ -1170,14 +1170,33 @@ class Helpers
         $webfinger = "@{$username}@{$domain}";
         $instance = self::getOrCreateInstance($domain);
         $movedToPid = $movedToCheck ? null : self::handleMovedTo($res);
+        $keyId = $res['publicKey']['id'] ?? null;
 
-        $profile = Profile::updateOrCreate(
-            [
-                'domain' => strtolower($domain),
-                'username' => Purify::clean($webfinger),
-            ],
-            self::buildProfileData($res, $webfinger, $movedToPid)
-        );
+        // First try to find by key_id to handle race conditions
+        if ($keyId) {
+            $existingByKeyId = Profile::where('key_id', $keyId)->first();
+            if ($existingByKeyId) {
+                // Update existing profile with new data
+                $existingByKeyId->update(self::buildProfileData($res, $webfinger, $movedToPid));
+                self::handleProfileAvatar($existingByKeyId);
+                return $existingByKeyId;
+            }
+        }
+
+        try {
+            $profile = Profile::updateOrCreate(
+                [
+                    'domain' => strtolower($domain),
+                    'username' => Purify::clean($webfinger),
+                ],
+                self::buildProfileData($res, $webfinger, $movedToPid)
+            );
+        } catch (\Illuminate\Database\QueryException $e) {
+            // TODO Handle unique constraint violation on key_id
+            // if ($e->getCode() === '23000' && $keyId) {
+            // }
+            throw $e;
+        }
 
         self::handleProfileAvatar($profile);
 
