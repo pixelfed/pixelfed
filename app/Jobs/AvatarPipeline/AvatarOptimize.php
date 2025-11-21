@@ -123,24 +123,39 @@ class AvatarOptimize implements ShouldQueue
 
     protected function uploadToCloud($avatar)
     {
+        // Store local path to prepare to delete it
         $localPath = $avatar->media_path;
+        
+        // Prepare cloud storage path
         $base = 'cache/avatars/'.$avatar->profile_id;
         $disk = Storage::disk(config('filesystems.cloud'));
+        
+        // Delete existing avatar folder in the cloud
         $disk->deleteDirectory($base);
+        
+        // Generate new cloud path with unique identifier
         $path = $base.'/'.'avatar_'.strtolower(Str::random(random_int(3, 6))).$avatar->change_count.'.'.pathinfo($avatar->media_path, PATHINFO_EXTENSION);
-        $url = $disk->put($path, Storage::get($avatar->media_path));
-        $avatar->media_path = $path;
+        
+        // Upload avatar to cloud storage
+        $disk->put($path, Storage::get($localPath));
+        
+        // Set CDN URL for cloud-served avatar
         $avatar->cdn_url = $disk->url($path);
+        
+        // Clear local path since we're using cloud storage only
+        $avatar->media_path = null;
         $avatar->save();
         
-        //Delete local avatar 
-        Storage::delete($localPath);
-        //Delete empty folder called Profile_id
+        // Delete local avatar file
+        Storage::disk('local')->delete($localPath);
+        
+        // Delete empty folder on local storage if folder is empty (it should be)
         $dir = dirname($localPath);
-        if (Storage::exists($dir) && empty(Storage::files($dir))) {
-            Storage::deleteDirectory($dir);
+        if (Storage::disk('local')->exists($dir) && empty(Storage::disk('local')->files($dir))) {
+            Storage::disk('local')->deleteDirectory($dir);
         }
         
+        // Clear avatar cache to force refresh
         Cache::forget('avatar:'.$avatar->profile_id);
     }
 }
