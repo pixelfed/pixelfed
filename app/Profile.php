@@ -178,13 +178,36 @@ class Profile extends Model
 
 	public function avatarUrl()
 	{
-		$url = Cache::remember('avatar:'.$this->id, 1209600, function () {
+		try {
+			// Retrieve the avatar record for this profile
 			$avatar = $this->avatar;
 
+			// Return default if no avatar exists
 			if(!$avatar) {
 				return url('/storage/avatars/default.jpg');
 			}
 
+			// Skip cache if avatar is still being processed (optimization/cloud upload in progress)
+			if($avatar->last_processed_at === null) {
+				return $this->getAvatarUrl($avatar);
+			}
+
+			// Cache the URL for 14 days once processing is complete
+			$url = Cache::remember('avatar:'.$this->id, 1209600, function () use ($avatar) {
+				return $this->getAvatarUrl($avatar);
+			});
+
+			return $url;
+		} catch (\Exception $e) {
+			// Gracefully return default avatar on any error
+			return url('/storage/avatars/default.jpg');
+		}
+	}
+
+	protected function getAvatarUrl($avatar)
+	{
+		try {
+			// Return CDN URL if avatar is stored in cloud storage
 			if($avatar->cdn_url) {
 				if(substr($avatar->cdn_url, 0, 8) === 'https://') {
 					return $avatar->cdn_url;
@@ -193,12 +216,15 @@ class Profile extends Model
 				}
 			}
 
+			// Get the local media path
 			$path = $avatar->media_path;
 
+			// Return default if no path is set
 			if(!$path) {
 				return url('/storage/avatars/default.jpg');
 			}
 
+			// Return remote URL if this is a federated avatar stored locally
 			if( $avatar->is_remote &&
 				$avatar->remote_url &&
 				boolval(config_cache('federation.avatars.store_local')) == true
@@ -206,24 +232,29 @@ class Profile extends Model
 				return $avatar->remote_url;
 			}
 
+			// Return default for default avatar path
 			if($path === 'public/avatars/default.jpg') {
 				return url('/storage/avatars/default.jpg');
 			}
 
+			// Return default if path doesn't start with 'public' (invalid path)
 			if(substr($path, 0, 6) !== 'public') {
 				return url('/storage/avatars/default.jpg');
 			}
 
+			// Return S3 URL if using cloud storage as default filesystem
 			if(config('filesystems.default') !== 'local') {
 				return Storage::url($path);
 			}
 
+			// Return local URL with cache-busting version parameter
 			$path = "{$path}?v={$avatar->change_count}";
 
 			return url(Storage::url($path));
-		});
-
-		return $url;
+		} catch (\Exception $e) {
+			// Gracefully return default avatar on any error
+			return url('/storage/avatars/default.jpg');
+		}
 	}
 
 	// deprecated
