@@ -134,7 +134,7 @@ class AvatarOptimize implements ShouldQueue
             $disk = Storage::disk(config('filesystems.cloud'));
 
             // Delete existing avatar folder in the cloud (if it exists)
-            //// Catches: "AvatarOptimize: uploadToCloud exception for profile: 492561745372893187 - Unable to delete directory located at: cache/avatars/xxxxxxxxxxxxxxxxxxxxxxxx"
+            //// Catches: "AvatarOptimize: uploadToCloud exception for profile: xxxxxxxxxxxxxxxxxxxxxxxx - Unable to delete directory located at: cache/avatars/xxxxxxxxxxxxxxxxxxxxxxxx"
             if ($disk->exists($base)) {
                 try {
                     $disk->deleteDirectory($base);
