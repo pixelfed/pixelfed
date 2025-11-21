@@ -1,11 +1,11 @@
 <?php
 
-namespace App\Services;
+namespace App\Util\Storage;
 
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Log;
 
-class StorageService
+class SafeDeleteDirectory
 {
     /**
      * Safely delete a directory only if it's empty.
@@ -14,7 +14,7 @@ class StorageService
      * @param string $path
      * @return bool
      */
-    public static function safeDeleteDirectory($path)
+    public static function safe($path)
     {
         if (!Storage::exists($path)) {
             return true;
@@ -40,7 +40,7 @@ class StorageService
      * @param string $path
      * @return bool
      */
-    public static function deleteDirectoryRecursive($path)
+    public static function recursive($path)
     {
         if (!Storage::exists($path)) {
             return true;
@@ -56,7 +56,7 @@ class StorageService
             // Delete all subdirectories recursively
             $directories = Storage::directories($path);
             foreach ($directories as $directory) {
-                self::deleteDirectoryRecursive($directory);
+                self::recursive($directory);
             }
 
             // Delete the directory itself
