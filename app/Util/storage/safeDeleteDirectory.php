@@ -36,6 +36,7 @@ class SafeDeleteDirectory
 
     /**
      * Recursively delete all files and subdirectories, then delete the directory.
+     * Logs a warning if the deletion fails.
      *
      * @param string $path
      * @return bool
