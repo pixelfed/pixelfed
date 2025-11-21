@@ -22,19 +22,19 @@ class SafeDeleteDirectory
             throw new \InvalidArgumentException('Disk parameter is required. Use "local" or "s3" or other configured disk name.');
         }
 
-        $diskInstance = Storage::disk($disk);
+        $disk = Storage::disk($disk);
 
-        if (!$diskInstance->exists($path)) {
+        if (!$disk->exists($path)) {
             return true;
         }
 
-        if (!empty($diskInstance->allFiles($path))) {
+        if (!empty($disk->allFiles($path))) {
             Log::warning("Cannot delete directory: {$path} - directory is not empty");
             return false;
         }
 
         try {
-            $diskInstance->deleteDirectory($path);
+            $disk->deleteDirectory($path);
             return true;
         } catch (\Exception $e) {
             Log::warning("Failed to delete directory: {$path} - " . $e->getMessage());
@@ -57,27 +57,27 @@ class SafeDeleteDirectory
             throw new \InvalidArgumentException('Disk parameter is required. Use "local" or "s3" or other configured disk name.');
         }
 
-        $diskInstance = Storage::disk($disk);
+        $disk = Storage::disk($disk);
 
-        if (!$diskInstance->exists($path)) {
+        if (!$disk->exists($path)) {
             return true;
         }
 
         try {
             // Delete all files in the directory
-            $files = $diskInstance->allFiles($path);
+            $files = $disk->allFiles($path);
             if (!empty($files)) {
-                $diskInstance->delete($files);
+                $disk->delete($files);
             }
 
             // Delete all subdirectories recursively
-            $directories = $diskInstance->directories($path);
+            $directories = $disk->directories($path);
             foreach ($directories as $directory) {
                 self::deleteRecursive($disk, $directory);
             }
 
             // Delete the directory itself
-            $diskInstance->deleteDirectory($path);
+            $disk->deleteDirectory($path);
             return true;
         } catch (\Exception $e) {
             Log::warning("Failed to recursively delete directory: {$path} - " . $e->getMessage());
