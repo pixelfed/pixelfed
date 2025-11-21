@@ -1199,7 +1199,7 @@ class Helpers
         } catch (\Illuminate\Database\QueryException $e) {
             // TODO Handle unique constraint violation on key_id
             if ($e->getCode() === '23000' && $keyId) {
-                Log::warning("APHelpers: profileUpdateOrCreate failed with Integrity constraint violation: " . $e->getMessage());
+                Log::warning("APHelpers: profileUpdateOrCreate failed with Integrity constraint violation with keyId: " . $keyId . " - Error: " . $e->getMessage());
             }
             Log::warning("APHelpers: profileUpdateOrCreate failed: " . $e->getMessage());
             throw $e;
