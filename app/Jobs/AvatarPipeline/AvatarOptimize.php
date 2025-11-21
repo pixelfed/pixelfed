@@ -14,7 +14,7 @@ use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
 use Illuminate\Support\Str;
 use Illuminate\Support\Facades\Log;
-use Storage;
+use Illuminate\Support\Facades\Storage;
 use Intervention\Image\ImageManager;
 use Intervention\Image\Encoders\JpegEncoder;
 use Intervention\Image\Encoders\WebpEncoder;
@@ -132,13 +132,17 @@ class AvatarOptimize implements ShouldQueue
             // Prepare cloud storage path
             $base = 'cache/avatars/'.$avatar->profile_id;
             $disk = Storage::disk(config('filesystems.cloud'));
-            
+
             // Delete existing avatar folder in the cloud (if it exists)
-            //// Fixes: "AvatarOptimize: uploadToCloud exception for profile: 492561745372893187 - Unable to delete directory located at: cache/avatars/xxxxxxxxxxxxxxxxxxxxxxxx"
+            //// Catches: "AvatarOptimize: uploadToCloud exception for profile: 492561745372893187 - Unable to delete directory located at: cache/avatars/xxxxxxxxxxxxxxxxxxxxxxxx"
             if ($disk->exists($base)) {
-                $disk->deleteDirectory($base);
+                try {
+                    $disk->deleteDirectory($base);
+                } catch (\Exception $deleteEx) {
+                    Log::warning("AvatarOptimize: Could not delete existing avatar directory for profile: ". $avatar->profile_id . " - " . $deleteEx->getMessage());
+                }
             }
-            
+
             // Generate new cloud path with unique identifier
             $path = $base.'/'.'avatar_'.strtolower(Str::random(random_int(3, 6))).$avatar->change_count.'.'.pathinfo($avatar->media_path, PATHINFO_EXTENSION);
             
@@ -148,21 +152,24 @@ class AvatarOptimize implements ShouldQueue
             // Verify remote file exists before deleting local
             if (!$disk->exists($path)) {
                 Log::warning("AvatarOptimize: uploadToCloud failed to upload avatar to cloud for profile: ". $avatar->profile_id);
-                return;
+                $uploadSuccess = false;
+            } else {
+                // Set CDN URL for cloud-served avatar
+                $avatar->cdn_url = $disk->url($path);
+                
+                // Clear local path since we're using cloud storage only
+                $avatar->media_path = null;
+                $avatar->save();
+                
+                // Clear avatar cache to force refresh
+                Cache::forget('avatar:'.$avatar->profile_id);
+                
+                // Mark upload as successful
+                $uploadSuccess = true;
             }
-            
-            // Set CDN URL for cloud-served avatar
-            $avatar->cdn_url = $disk->url($path);
-            
-            // Clear local path since we're using cloud storage only
-            $avatar->media_path = null;
-            $avatar->save();
-            
-            // Clear avatar cache to force refresh
-            Cache::forget('avatar:'.$avatar->profile_id);
-            
-            // Mark upload as successful
-            $uploadSuccess = true;
+        } catch (\Exception $e) {
+            Log::error("AvatarOptimize: uploadToCloud exception for profile: ". $avatar->profile_id . " - " . $e->getMessage());
+            $uploadSuccess = false;
         } finally {
             // Only delete local file if upload was successful (cdn_url is set)
             if ($uploadSuccess && $avatar->cdn_url) {
