@@ -123,39 +123,49 @@ class AvatarOptimize implements ShouldQueue
 
     protected function uploadToCloud($avatar)
     {
-        // Store local path to prepare to delete it
+        // Store local path before clearing it
         $localPath = $avatar->media_path;
-        
-        // Prepare cloud storage path
-        $base = 'cache/avatars/'.$avatar->profile_id;
-        $disk = Storage::disk(config('filesystems.cloud'));
-        
-        // Delete existing avatar folder in the cloud
-        $disk->deleteDirectory($base);
-        
-        // Generate new cloud path with unique identifier
-        $path = $base.'/'.'avatar_'.strtolower(Str::random(random_int(3, 6))).$avatar->change_count.'.'.pathinfo($avatar->media_path, PATHINFO_EXTENSION);
-        
-        // Upload avatar to cloud storage
-        $disk->put($path, Storage::get($localPath));
-        
-        // Set CDN URL for cloud-served avatar
-        $avatar->cdn_url = $disk->url($path);
-        
-        // Clear local path since we're using cloud storage only
-        $avatar->media_path = null;
-        $avatar->save();
-        
-        // Delete local avatar file
-        Storage::disk('local')->delete($localPath);
-        
-        // Delete empty folder on local storage if folder is empty (it should be)
-        $dir = dirname($localPath);
-        if (Storage::disk('local')->exists($dir) && empty(Storage::disk('local')->files($dir))) {
-            Storage::disk('local')->deleteDirectory($dir);
+
+        try {
+            // Prepare cloud storage path
+            $base = 'cache/avatars/'.$avatar->profile_id;
+            $disk = Storage::disk(config('filesystems.cloud'));
+
+            // Delete existing avatar folder in the cloud
+            $disk->deleteDirectory($base);
+
+            // Generate new cloud path with unique identifier
+            $path = $base.'/'.'avatar_'.strtolower(Str::random(random_int(3, 6))).$avatar->change_count.'.'.pathinfo($avatar->media_path, PATHINFO_EXTENSION);
+
+            // Upload avatar to cloud storage
+            $disk->put($path, Storage::get($localPath));
+
+            // Verify remote file exists before deleting local
+            if (!$disk->exists($path)) {
+                Log::warning("AvatarOptimize: uploadToCloud failed to upload avatar to cloud for profile: ". $avatar->profile_id;
+                return;
+            }
+
+            // Set CDN URL for cloud-served avatar
+            $avatar->cdn_url = $disk->url($path);
+
+            // Clear local path since we're using cloud storage only
+            $avatar->media_path = null;
+            $avatar->save();
+
+            // Clear avatar cache to force refresh
+            Cache::forget('avatar:'.$avatar->profile_id);
+        } finally {
+            // Only delete local file if upload was successful (cdn_url is set)
+            if ($avatar->cdn_url) {
+                Storage::disk('local')->delete($localPath);
+
+                // Delete empty folder if no other avatars exist
+                $dir = dirname($localPath);
+                if (Storage::disk('local')->exists($dir) && empty(Storage::disk('local')->files($dir))) {
+                    Storage::disk('local')->deleteDirectory($dir);
+                }
+            }
         }
-        
-        // Clear avatar cache to force refresh
-        Cache::forget('avatar:'.$avatar->profile_id);
     }
 }
