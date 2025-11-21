@@ -127,12 +127,12 @@ class MediaStorageService
         if ((bool) config_cache('pixelfed.cloud_storage') && (bool) config('media.delete_local_after_cloud')) {
             $s3Domain = config('filesystems.disks.s3.url') ?? config('filesystems.disks.s3.endpoint');
             if (str_contains($url, $s3Domain)) {
-                if (file_exists($path)) {
-                    unlink($path);
+                if (Storage::disk('local')->exists($media->media_path)) {
+                    Storage::disk('local')->delete($media->media_path);
                 }
 
-                if (file_exists($thumb)) {
-                    unlink($thumb);
+                if ($media->thumbnail_path && Storage::disk('local')->exists($media->thumbnail_path)) {
+                    Storage::disk('local')->delete($media->thumbnail_path);
                 }
             }
         }
@@ -221,7 +221,9 @@ class MediaStorageService
             Cache::forget('status:transformer:media:attachments:'.$media->status_id);
         }
 
-        unlink($tmpName);
+        if (Storage::disk('local')->exists('remcache/'.$tmpPath)) {
+            Storage::disk('local')->delete('remcache/'.$tmpPath);
+        }
     }
 
     protected function fetchAvatar($avatar, $local = false, $skipRecentCheck = false)
