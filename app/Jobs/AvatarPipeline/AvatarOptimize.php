@@ -13,6 +13,7 @@ use Illuminate\Foundation\Bus\Dispatchable;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
 use Illuminate\Support\Str;
+use Illuminate\Support\Facades\Log;
 use Storage;
 use Intervention\Image\ImageManager;
 use Intervention\Image\Encoders\JpegEncoder;
