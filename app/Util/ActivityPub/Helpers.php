@@ -1177,8 +1177,8 @@ class Helpers
             $existingByKeyId = Profile::where('key_id', $keyId)->first();
             if ($existingByKeyId) {
                 // Update existing profile with new data
-                $existingByKeyId->update(self::buildProfileData($res, $webfinger, $movedToPid));
-                self::handleProfileAvatar($existingByKeyId);
+                $existingByKeyId->update(self::buildProfileData($res, $webfinger, $movedToPid));  // same as line 1192
+                self::handleProfileAvatar($existingByKeyId);  // same as line 1201
                 return $existingByKeyId;
             }
         }
