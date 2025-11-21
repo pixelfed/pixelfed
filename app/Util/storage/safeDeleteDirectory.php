@@ -57,7 +57,7 @@ class SafeDeleteDirectory
             // Delete all subdirectories recursively
             $directories = Storage::directories($path);
             foreach ($directories as $directory) {
-                self::recursive($directory);
+                self::deleteRecursive($directory);
             }
 
             // Delete the directory itself
