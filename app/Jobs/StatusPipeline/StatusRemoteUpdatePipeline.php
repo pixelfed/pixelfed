@@ -102,7 +102,17 @@ class StatusRemoteUpdatePipeline implements ShouldQueue
             in_array($nm['mediaType'], explode(',', config_cache('pixelfed.media_types')));
         });
 
-        // Deduplicate attachments by URL to avoid constraint violations
+        // Check for duplicate URLs before removing them
+        $allUrls = $nm->pluck('url');
+        $uniqueUrls = $allUrls->unique();
+        
+        if ($allUrls->count() > $uniqueUrls->count()) {
+            // Find which URLs are duplicated
+            $duplicateUrls = $allUrls->diff($uniqueUrls->values())->unique()->values();
+            Log::warning("StatusRemoteUpdatePipeline: Found duplicate media URLs in status {$status->id}: " . $duplicateUrls->implode(', '));
+        }
+        
+        // Remove duplicates
         $nm = $nm->unique('url');
 
         // Skip when no media
