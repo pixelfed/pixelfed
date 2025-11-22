@@ -8,79 +8,64 @@ use Illuminate\Support\Facades\Log;
 class SafeDeleteDirectory
 {
     /**
-     * Safely delete a directory only if it's empty.
-     * Logs a warning if the directory is not empty or deletion fails.
-     *
-     * @param string $disk Disk name (e.g., 'local', 's3'). Required.
-     * @param string $path
-     * @return bool
-     * @throws \InvalidArgumentException
-     */
-    public static function deleteEmpty($disk, $path)
-    {
-        if (empty($disk)) {
-            throw new \InvalidArgumentException('Disk parameter is required. Use "local" or "s3" or other configured disk name.');
-        }
-
-        $disk = Storage::disk($disk);
-
-        if (!$disk->exists($path)) {
-            return true;
-        }
-
-        if (!empty($disk->allFiles($path))) {
-            Log::warning("Cannot delete directory: {$path} - directory is not empty");
-            return false;
-        }
-
-        try {
-            $disk->deleteDirectory($path);
-            return true;
-        } catch (\Exception $e) {
-            Log::warning("Failed to delete directory: {$path} - " . $e->getMessage());
-            return false;
-        }
-    }
-
-    /**
      * Recursively delete all files and subdirectories, then delete the directory.
      * Logs a warning if the deletion fails.
      *
-     * @param string $disk Disk name (e.g., 'local', 's3'). Required.
+     * @param string $diskName Disk name (e.g. 'local', 's3'). Required.
      * @param string $path
      * @return bool
+     *
      * @throws \InvalidArgumentException
      */
-    public static function deleteRecursive($disk, $path)
+    public static function deleteRecursive(string $diskName, string $path): bool
     {
-        if (empty($disk)) {
-            throw new \InvalidArgumentException('Disk parameter is required. Use "local" or "s3" or other configured disk name.');
+        if ($diskName === '') {
+            throw new \InvalidArgumentException(
+                'Disk parameter is required. Use "local", "s3" or another configured disk name.'
+            );
         }
 
-        $disk = Storage::disk($disk);
+        $disk = Storage::disk($diskName);
 
         if (!$disk->exists($path)) {
             return true;
         }
 
         try {
-            // Delete all files in the directory
+            // Delete all files in the directory (recursively)
             $files = $disk->allFiles($path);
             if (!empty($files)) {
-                $disk->delete($files);
+                $deletedFiles = $disk->delete($files);
+
+                // If the driver reports a failure, log and stop here
+                if ($deletedFiles === false) {
+                    Log::warning("Failed to delete one or more files in directory {$path} on disk {$diskName}.");
+                    return false;
+                }
             }
 
             // Delete all subdirectories recursively
             $directories = $disk->directories($path);
             foreach ($directories as $directory) {
-                self::deleteRecursive($disk, $directory);
+                if (!self::deleteRecursive($diskName, $directory)) {
+                    return false;
+                }
             }
 
             // Delete the directory itself
-            $disk->deleteDirectory($path);
+            $deletedDir = $disk->deleteDirectory($path);
+
+            if (!$deletedDir) {
+                Log::warning("Failed to delete directory {$path} on disk {$diskName}.");
+                return false;
+            }
+
             return true;
         } catch (\Exception $e) {
-            Log::warning("Failed to recursively delete directory: {$path} - " . $e->getMessage());
+            Log::warning(
+                "Failed to recursively delete directory {$path} on disk {$diskName}: " . $e->getMessage()
+            );
+
             return false;
         }
     }
