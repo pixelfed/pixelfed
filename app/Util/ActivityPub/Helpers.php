@@ -923,6 +923,15 @@ class Helpers
      */
     public static function createMediaAttachment(array $media, Status $status, int $key): Media
     {
+        // Check if media already exists to avoid duplicate key constraint violation
+        $existingMedia = Media::where('status_id', $status->id)
+            ->where('media_path', $media['url'])
+            ->first();
+
+        if ($existingMedia) {
+            return $existingMedia;
+        }
+
         $mediaModel = new Media;
 
         self::setBasicMediaAttributes($mediaModel, $media, $status, $key);
