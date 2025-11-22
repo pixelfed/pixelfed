@@ -26,6 +26,7 @@ use App\Util\Media\License;
 use Cache;
 use Carbon\Carbon;
 use Illuminate\Validation\Rule;
+use Illuminate\Support\Facades\Log;
 use League\Uri\Exceptions\UriException;
 use League\Uri\Uri;
 use Purify;
