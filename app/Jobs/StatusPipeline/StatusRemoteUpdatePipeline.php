@@ -102,6 +102,9 @@ class StatusRemoteUpdatePipeline implements ShouldQueue
             in_array($nm['mediaType'], explode(',', config_cache('pixelfed.media_types')));
         });
 
+        // Deduplicate attachments by URL to avoid constraint violations
+        $nm = $nm->unique('url');
+
         // Skip when no media
         if (! $ogm->count() && ! $nm->count()) {
             return;
