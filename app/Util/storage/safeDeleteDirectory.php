@@ -21,7 +21,7 @@ class SafeDeleteDirectory
     {
         if ($diskName === '') {
             throw new \InvalidArgumentException(
-                'Disk parameter is required. Use "local", "s3" or another configured disk name.'
+                'SafeDeleteDirectory: diskName parameter required. Use "local" or "s3".'
             );
         }
 
@@ -39,7 +39,7 @@ class SafeDeleteDirectory
 
                 // If the driver reports a failure, log and stop here
                 if ($deletedFiles === false) {
-                    Log::warning("Failed to delete one or more files in directory {$path} on disk {$diskName}.");
+                    Log::warning("SafeDeleteDirectory: Failed to delete one or more files in directory {$path} on disk {$diskName}.");
                     return false;
                 }
             }
@@ -56,14 +56,14 @@ class SafeDeleteDirectory
             $deletedDir = $disk->deleteDirectory($path);
 
             if (!$deletedDir) {
-                Log::warning("Failed to delete directory {$path} on disk {$diskName}.");
+                Log::warning("SafeDeleteDirectory: Failed to delete directory {$path} on disk {$diskName}.");
                 return false;
             }
 
             return true;
         } catch (\Exception $e) {
             Log::warning(
-                "Failed to recursively delete directory {$path} on disk {$diskName}: " . $e->getMessage()
+                "SafeDeleteDirectory: Failed to recursively delete directory {$path} on disk {$diskName}: " . $e->getMessage()
             );
 
             return false;
