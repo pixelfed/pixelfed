@@ -258,9 +258,9 @@
 						<div class="col-4 p-1 p-md-3" v-for="(s, index) in profileMorePosts" :key="'tlob:'+index">
 							<a class="card info-overlay card-md-border-0" :href="getStatusUrl(s)" v-once>
 								<div :class="[s.sensitive ? 'square' : 'square ' + s.media_attachments[0].filter_class]">
-									<span v-if="s.pf_type == 'photo:album'" class="float-right mr-3 post-icon"><i class="fas fa-images fa-2x"></i></span>
-									<span v-if="s.pf_type == 'video'" class="float-right mr-3 post-icon"><i class="fas fa-video fa-2x"></i></span>
-									<span v-if="s.pf_type == 'video:album'" class="float-right mr-3 post-icon"><i class="fas fa-film fa-2x"></i></span>
+									<span v-if="s.pf_type == 'photo:album'" class="float-right mr-3 post-icon"><i class="fas fa-images"></i></span>
+									<span v-if="s.pf_type == 'video'" class="float-right mr-3 post-icon"><i class="fas fa-video"></i></span>
+									<span v-if="s.pf_type == 'video:album'" class="float-right mr-3 post-icon"><i class="fas fa-film"></i></span>
 									<div class="square-content" v-bind:style="previewBackground(s)">
 									</div>
 									<div class="info-overlay-text">

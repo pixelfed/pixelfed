@@ -9,6 +9,12 @@ If you did not create this account, please disregard this email.
 Confirm Email
 @endcomponent
 
+<p>
+  If the link above is not working, please copy the following address into your web browser:
+  <br><br>
+  {{ $verify->url() }}</p>
+</p>
+
 <p>This link expires after 24 hours.</p>
 <br>
 <small>

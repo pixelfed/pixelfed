@@ -161,7 +161,7 @@
                                 <a id="navbarDropdown" class="nav-link dropdown-toggle" href="#" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" title="User Menu">
                                     <i class="d-none far fa-user fa-lg text-dark"></i>
                                     <span class="sr-only">User Menu</span>
-                                    <img :src="user.avatar" class="nav-avatar rounded-circle border shadow" width="30" height="30" onerror="this.onerror=null;this.src='/storage/avatars/default.png?v=0';">
+                                    <img :src="user.avatar" class="nav-avatar rounded-circle border" width="30" height="30" onerror="this.onerror=null;this.src='/storage/avatars/default.png?v=0';">
                                 </a>
 
                                 <div class="dropdown-menu dropdown-menu-right shadow" aria-labelledby="navbarDropdown">
@@ -724,7 +724,6 @@
                 font-size: 0.9rem;
                 border-radius: 50rem;
                 background-image: url("data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIyNCIgaGVpZ2h0PSIyNCIgZmlsbD0ibm9uZSIgc3Ryb2tlPSIjQjhDMkNDIiBzdHJva2Utd2lkdGg9IjIiIHN0cm9rZS1saW5lY2FwPSJyb3VuZCIgc3Ryb2tlLWxpbmVqb2luPSJyb3VuZCI+PGNpcmNsZSBjeD0iMTEiIGN5PSIxMSIgcj0iNSIvPjxwYXRoIGQ9Ik0xOSAxOWwtNC00Ii8+PC9zdmc+");
-                box-shadow: 0 0.125rem 0.25rem rgb(0 0 0 / 8%) !important;
             }
 
             &-result {

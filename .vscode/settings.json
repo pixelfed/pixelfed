@@ -9,7 +9,7 @@
     },
     "[dockercompose]": {
         "editor.defaultFormatter": "redhat.vscode-yaml",
-        "editor.autoIndent": "advanced",
+        "editor.autoIndent": "advanced"
     },
     "yaml.schemas": {
         "https://json.schemastore.org/composer": "https://raw.githubusercontent.com/compose-spec/compose-spec/master/schema/compose-spec.json"
@@ -17,5 +17,6 @@
     "files.associations": {
         ".env": "shellscript",
         ".env.*": "shellscript"
-    }
+    },
+    "editor.formatOnSave": false
 }
