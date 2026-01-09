@@ -105,6 +105,16 @@
       <p class="text-muted small help-text">{{__('settings.privacy.disable_post_and_profile_embeds')}}</p>
     </div>
 
+    @if(auth()->user()->is_admin)
+    <div class="form-check pb-3">
+      <input class="form-check-input" type="checkbox" name="opt_out_curated_onboarding_notifications" id="opt_out_curated_onboarding_notifications" {{$settings->opt_out_curated_onboarding_notifications ? 'checked=""':''}}>
+      <label class="form-check-label font-weight-bold" for="opt_out_curated_onboarding_notifications">
+        {{__('settings.privacy.opt_out_curated_onboarding_notifications')}}
+      </label>
+      <p class="text-muted small help-text">{{__('settings.privacy.opt_out_curated_onboarding_notifications_help')}}</p>
+    </div>
+    @endif
+
     @if(!$settings->is_private)
     <div class="form-check pb-3">
       <input class="form-check-input" type="checkbox" name="show_atom" id="show_atom" {{$settings->show_atom ? 'checked=""':''}}>

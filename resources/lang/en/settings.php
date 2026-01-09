@@ -107,6 +107,8 @@ return [
     'privacy.display_following_count_on_profile' =>                     'Display following count on profile',
     'privacy.disable_embeds' =>                                         'Disable Embeds',
     'privacy.disable_post_and_profile_embeds' =>                        'Disable post and profile embeds',
+    'privacy.opt_out_curated_onboarding_notifications' =>               'Opt out of curated onboarding notifications',
+    'privacy.opt_out_curated_onboarding_notifications_help' =>           'When enabled, you will not receive email notifications for new curated onboarding applications.',
     'privacy.enable_atom_feed' =>                                       'Enable Atom Feed',
     'privacy.enable_your_profile_atom_feed_only_public_profiles_etc' => 'Enable your profile atom feed. Only public profiles are eligible.',
     'privacy.confirm_this_action' =>                                    'Confirm this action',

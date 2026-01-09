@@ -46,6 +46,13 @@ trait PrivacySettings
             'show_atom',
         ];
 
+        // Handle admin-only curated onboarding notification opt-out
+        if ($request->user()->is_admin) {
+            $optOut = $request->input('opt_out_curated_onboarding_notifications') == 'on';
+            $settings->opt_out_curated_onboarding_notifications = $optOut;
+            $settings->save();
+        }
+
         $profile->indexable = $request->input('indexable') == 'on';
         $profile->is_suggestable = $request->input('is_suggestable') == 'on';
         $profile->save();
