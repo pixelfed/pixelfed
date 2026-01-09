@@ -73,10 +73,11 @@ class CuratedOnboardingNotifyAdminNewApplicationPipeline implements ShouldQueue
     {
         $cr = $this->cr;
         
-        // Get all admins with email addresses
+        // Get all admins with email addresses and their settings
         $admins = User::whereIsAdmin(true)
             ->whereNotNull('email')
             ->where('email', '!=', '')
+            ->with('settings')
             ->get();
         
         // Also check if a specific admin is configured
@@ -86,15 +87,22 @@ class CuratedOnboardingNotifyAdminNewApplicationPipeline implements ShouldQueue
                 ->whereIsAdmin(true)
                 ->whereNotNull('email')
                 ->where('email', '!=', '')
+                ->with('settings')
                 ->first();
         }
         
-        // Collect all unique admin emails
-        $adminEmails = $admins->pluck('email')->unique()->filter()->toArray();
+        // Filter out admins who have opted out of notifications
+        $adminEmails = $admins->filter(function($admin) {
+            // If settings don't exist or opt_out is false/null, include the admin
+            return !$admin->settings || !$admin->settings->opt_out_curated_onboarding_notifications;
+        })->pluck('email')->unique()->filter()->toArray();
         
-        // Add configured admin email if not already in the list
+        // Add configured admin email if not already in the list and not opted out
         if($configuredAdmin && $configuredAdmin->email && !in_array($configuredAdmin->email, $adminEmails)) {
-            $adminEmails[] = $configuredAdmin->email;
+            $optedOut = $configuredAdmin->settings && $configuredAdmin->settings->opt_out_curated_onboarding_notifications;
+            if(!$optedOut) {
+                $adminEmails[] = $configuredAdmin->email;
+            }
         }
         
         // Get CC addresses from config if set
