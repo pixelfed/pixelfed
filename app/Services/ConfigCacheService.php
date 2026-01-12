@@ -200,8 +200,10 @@ class ConfigCacheService
         if ($exists) {
             $exists->v = $protect ? $protected : $val;
             $exists->save();
-            Cache::put(self::CACHE_KEY.$key, $val, now()->addHours(12));
-
+            //Drop protected keys from cache
+            if (!$protect) {
+                Cache::put(self::CACHE_KEY.$key, $val, now()->addHours(12));
+            }
             return self::get($key);
         }
 
