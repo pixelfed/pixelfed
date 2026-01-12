@@ -26,6 +26,13 @@ class SnowflakeService
 
     public static function next()
     {
+        $seq = Cache::increment('snowflake:seq', 1);
+    
+        if ($seq > 4095) {
+            Cache::put('snowflake:seq', 0);
+            $seq = 0;
+        }
+        
         $seq = Cache::get('snowflake:seq');
 
         if (! $seq) {
