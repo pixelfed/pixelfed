@@ -24,35 +24,24 @@ class SnowflakeService
         | 0;
     }
 
-    public static function next()
+    public static function next(): int
     {
-        $seq = Cache::increment('snowflake:seq', 1);
+        $key = 'snowflake:seq';
+        $seq = Cache::increment($key);
     
         if ($seq > 4095) {
-            Cache::put('snowflake:seq', 0);
+            Cache::put($key, 0);
             $seq = 0;
         }
-        
-        $seq = Cache::get('snowflake:seq');
-
-        if (! $seq) {
-            Cache::put('snowflake:seq', 1);
-            $seq = 1;
-        } else {
-            Cache::increment('snowflake:seq');
-        }
-
-        if ($seq >= 4095) {
-            Cache::put('snowflake:seq', 0);
-            $seq = 0;
-        }
-
-        $datacenterId = config('snowflake.datacenter_id') ?? random_int(1, 31);
-        $workerId = config('snowflake.worker_id') ?? random_int(1, 31);
-
-        return ((round(microtime(true) * 1000) - 1549756800000) << 22)
-        | ($datacenterId << 17)
-        | ($workerId << 12)
-        | $seq;
+    
+        $datacenterId = (int) (config('snowflake.datacenter_id') ?? random_int(1, 31));
+        $workerId     = (int) (config('snowflake.worker_id') ?? random_int(1, 31));
+    
+        $timestampMs = (int) floor(microtime(true) * 1000) - 1549756800000;
+    
+        return ($timestampMs << 22)
+            | (($datacenterId & 0x1F) << 17)
+            | (($workerId & 0x1F) << 12)
+            | ($seq & 0xFFF);
     }
 }
