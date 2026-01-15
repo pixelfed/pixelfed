@@ -31,10 +31,6 @@ $id = str_random(14);
 @push('scripts')
 <script>
     function onSubmit() {
-        @if ($errors->any())
-        document.getElementById('{{$id}}').submit();
-        return;
-        @endif
         swal({
             text: "Please select the region you are located in",
             icon: "info",
