@@ -8,7 +8,7 @@ use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Queue\Queueable;
 use Illuminate\Support\Facades\Log;
 
-class ReblogPushNotifyPipeline implements ShouldQueue
+class SharePushNotifyPipeline implements ShouldQueue
 {
   use Queueable;
 
@@ -35,20 +35,20 @@ class ReblogPushNotifyPipeline implements ShouldQueue
 
     // Verify Push Token exists
     if (! $pushToken) {
-      Log::info('ReblogPushNotifyPipeline: Push token not provided, skipping job');
+      Log::info('SharePushNotifyPipeline: Push token not provided, skipping job');
 
       return;
     }
 
     // Verify actor exists
     if (! $actor) {
-      Log::info('ReblogPushNotifyPipeline: Actor not provided, skipping job');
+      Log::info('SharePushNotifyPipeline: Actor not provided, skipping job');
 
       return;
     }
 
     try {
-      NotificationAppGatewayService::send($pushToken, 'reblog', $actor);
+      NotificationAppGatewayService::send($pushToken, 'share', $actor);
     } catch (Exception $e) {
       Log::warning("NotificationAppGatewayService: Failed to send reblog notification to {$actor} :".$e->getMessage());
 
