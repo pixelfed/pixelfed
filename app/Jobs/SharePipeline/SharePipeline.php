@@ -3,7 +3,7 @@
 namespace App\Jobs\SharePipeline;
 
 use App\Jobs\HomeFeedPipeline\FeedInsertPipeline;
-use App\Jobs\PushNotificationPipeline\ReblogPushNotificationPipeline;
+use App\Jobs\PushNotificationPipeline\SharePushNotifyPipeline;
 use App\Notification;
 use App\Services\NotificationAppGatewayService;
 use App\Services\PushNotificationService;
@@ -169,7 +169,7 @@ class SharePipeline implements ShouldQueue
         $user = User::whereProfileId($status->profile_id)->first();
 
         if ($user && $user->expo_token && $user->notify_enabled) {
-            ReblogPushNotificationPipeline::dispatchSync($user->expo_token, $actor->username);
+            SharePushNotifyPipeline::dispatchSync($user->expo_token, $actor->username);
         }
     }
 }
