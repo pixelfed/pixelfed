@@ -40,4 +40,19 @@ class ReblogPushNotifyPipeline implements ShouldQueue
       return;
     }
 
-    
+    // Verify actor exists
+    if (! $actor) {
+      Log::info('ReblogPushNotifyPipeline: Actor not provided, skipping job');
+
+      return;
+    }
+
+    try {
+      NotificationAppGatewayService::send($pushToken, 'reblog', $actor);
+    } catch (Exception $e) {
+      Log::warning("NotificationAppGatewayService: Failed to send reblog notification to {$actor} :".$e->getMessage());
+
+      return;
+    }
+  }
+}
