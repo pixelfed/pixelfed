@@ -273,10 +273,10 @@ class Inbox
             return;
         }
 
-        if ($activity['type'] == 'Note' && ! empty($activity['inReplyTo'])) {
+        if (in_array($activity['type'], ['Note', 'Article']) && ! empty($activity['inReplyTo'])) {
             $this->handleNoteReply();
 
-        } elseif ($activity['type'] == 'Note' && ! empty($activity['attachment'])) {
+        } elseif (in_array($activity['type'], ['Note', 'Article']) && ! empty($activity['attachment'])) {
             if (! $this->verifyNoteAttachment()) {
                 return;
             }
@@ -1431,7 +1431,7 @@ class Inbox
             return;
         }
 
-        if ($activity['type'] === 'Note') {
+        if (in_array($activity['type'], ['Note', 'Article'])) {
             if (Status::whereObjectUrl($activity['id'])->exists()) {
                 StatusRemoteUpdatePipeline::dispatch($activity);
             }

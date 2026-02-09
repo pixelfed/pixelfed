@@ -306,7 +306,7 @@ class SearchApiV2Service
                 if ($res) {
                     $json = json_decode($res, true);
 
-                    if (! $json || ! isset($json['@context']) || ! isset($json['type']) || ! in_array($json['type'], ['Note', 'Person'])) {
+                    if (! $json || ! isset($json['@context']) || ! isset($json['type']) || ! in_array($json['type'], ['Note', 'Person', 'Article'])) {
                         return [
                             'accounts' => [],
                             'hashtags' => [],
@@ -316,6 +316,7 @@ class SearchApiV2Service
 
                     switch ($json['type']) {
                         case 'Note':
+                        case 'Article':
                             $obj = Helpers::statusFetch($query);
                             if (! $obj || ! isset($obj['id'])) {
                                 return $default;

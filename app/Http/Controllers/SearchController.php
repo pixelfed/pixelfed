@@ -88,7 +88,7 @@ class SearchController extends Controller
         ) {
             $remote = Helpers::fetchFromUrl($tag);
             if (isset($remote['type']) &&
-                in_array($remote['type'], ['Note', 'Question'])
+                in_array($remote['type'], ['Note', 'Question', 'Article'])
             ) {
                 $item = Helpers::statusFetch($tag);
                 $this->tokens['posts'] = [[
@@ -343,7 +343,7 @@ class SearchController extends Controller
 
         $remote = Helpers::fetchFromUrl($tag);
 
-        if (isset($remote['type']) && $remote['type'] == 'Note') {
+        if (isset($remote['type']) && in_array($remote['type'], ['Note', 'Article'])) {
             $item = Helpers::statusFetch($tag);
             if (! $item) {
                 return;
