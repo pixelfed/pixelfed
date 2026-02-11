@@ -6,13 +6,13 @@
 					<div class="card-header bg-bluegray-800 nav-menu" style="border-top-left-radius: 10px; border-top-right-radius: 10px;">
 						<ul class="nav justify-content-around">
 						  <li class="nav-item">
-							<router-link to="/" class="nav-link">About</router-link>
+							<router-link to="/" class="nav-link">{{ $t('landing.about') }}</router-link>
 							</li>
 							<li v-if="config.show_directory" class="nav-item">
-								<router-link to="/web/directory" class="nav-link">Directory</router-link>
+								<router-link to="/web/directory" class="nav-link">{{ $t('landing.directory') }}</router-link>
 							</li>
 							<li v-if="config.show_explore_feed" class="nav-item">
-								<router-link to="/web/explore" class="nav-link">Explore</router-link>
+								<router-link to="/web/explore" class="nav-link">{{ $t('landing.explore') }}</router-link>
 							</li>
 						</ul>
 					</div>
@@ -30,8 +30,7 @@
 					<div class="card-body">
 						<div class="server-header">
 							<p class="server-header-domain">{{ config.domain }}</p>
-							<p class="server-header-attribution">
-								Decentralized photo sharing social media powered by <a href="https://pixelfed.org" target="_blank">Pixelfed</a>
+							<p class="server-header-attribution" v-html="$t('landing.decentralized_by_pixelfed')">
 							</p>
 						</div>
 
@@ -39,15 +38,15 @@
 							<div class="list-group">
 								<div class="list-group-item bg-transparent">
 									<p class="stat-value">{{ formatCount(config.stats.posts_count) }}</p>
-									<p class="stat-label">Posts</p>
+									<p class="stat-label">{{ $t('landing.posts') }}</p>
 								</div>
 								<div class="list-group-item bg-transparent">
 									<p class="stat-value">{{ formatCount(config.stats.active_users) }}</p>
-									<p class="stat-label">Active Users</p>
+									<p class="stat-label">{{ $t('landing.active_users') }}</p>
 								</div>
 								<div class="list-group-item bg-transparent">
 									<p class="stat-value">{{ formatCount(config.stats.total_users) }}</p>
-									<p class="stat-label">Total Users</p>
+									<p class="stat-label">{{ $t('landing.total_users') }}</p>
 								</div>
 							</div>
 						</div>
@@ -55,7 +54,7 @@
 						<div class="server-admin">
 							<div class="list-group">
 								<div v-if="config.contact.account" class="list-group-item bg-transparent">
-									<p class="item-label">Managed By</p>
+									<p class="item-label">{{ $t('landing.managed_by') }}</p>
 									<a :href="config.contact.account.url" class="admin-card" target="_blank">
 										<div class="d-flex">
 											<img
@@ -89,7 +88,7 @@
 						        <button class="btn btn-link btn-block" type="button" data-toggle="collapse" data-target="#collapseOne" aria-controls="collapseOne" @click="toggleAccordion(0)">
 						        	<span class="text-white h5">
 							        	<i class="far fa-info-circle mr-2 text-muted"></i>
-							          	About
+							          	{{ $t('landing.about') }}
 						        	</span>
 						        	<i class="far" :class="[ accordionTab === 0 ? 'fa-chevron-left text-primary': 'fa-chevron-down']"></i>
 						        </button>
@@ -109,7 +108,7 @@
 						        <button class="btn btn-link btn-block text-left collapsed" type="button" data-toggle="collapse" data-target="#collapseTwo" aria-expanded="false" aria-controls="collapseTwo" @click="toggleAccordion(1)">
 						        	<span class="text-white h5">
 							        	<i class="far fa-list mr-2 text-muted"></i>
-						          		Server Rules
+						          		{{ $t('landing.server_rules') }}
 						          	</span>
 						        	<i class="far" :class="[ accordionTab === 1 ? 'fa-chevron-left text-primary': 'fa-chevron-down']"></i>
 						        </button>
@@ -133,7 +132,7 @@
 						        <button class="btn btn-link btn-block text-left collapsed" type="button" data-toggle="collapse" data-target="#collapseThree" aria-expanded="false" aria-controls="collapseThree" @click="toggleAccordion(2)">
 						        	<span class="text-white h5">
 							        	<i class="far fa-sparkles mr-2 text-muted"></i>
-						          		Supported Features
+						          		{{ $t('landing.supported_features') }}
 						          	</span>
 						        	<i class="far" :class="[ accordionTab === 2 ? 'fa-chevron-left text-primary': 'fa-chevron-down']"></i>
 						        </button>
@@ -142,44 +141,43 @@
 						    <div id="collapseThree" class="collapse" aria-labelledby="headingThree" data-parent="#accordion">
 						      <div class="card-body card-features">
 						      	<div class="card-features-cloud">
-						      		<div class="badge badge-success"><i class="far fa-check-circle"></i> Photo Posts</div>
-						      		<div class="badge badge-success"><i class="far fa-check-circle"></i> Photo Albums</div>
-						      		<div class="badge badge-success"><i class="far fa-check-circle"></i> Photo Filters</div>
-						      		<div class="badge badge-success"><i class="far fa-check-circle"></i> Collections</div>
-						      		<div class="badge badge-success"><i class="far fa-check-circle"></i> Comments</div>
-						      		<div class="badge badge-success"><i class="far fa-check-circle"></i> Hashtags</div>
-						      		<div class="badge badge-success"><i class="far fa-check-circle"></i> Likes</div>
-						      		<div class="badge badge-success"><i class="far fa-check-circle"></i> Notifications</div>
-						      		<div class="badge badge-success"><i class="far fa-check-circle"></i> Shares</div>
+						      		<div class="badge badge-success"><i class="far fa-check-circle"></i> {{ $t('landing.features.photo_posts') }}</div>
+						      		<div class="badge badge-success"><i class="far fa-check-circle"></i> {{ $t('landing.features.photo_albums') }}</div>
+						      		<div class="badge badge-success"><i class="far fa-check-circle"></i> {{ $t('landing.features.photo_filters') }}</div>
+						      		<div class="badge badge-success"><i class="far fa-check-circle"></i> {{ $t('landing.features.collections') }}</div>
+						      		<div class="badge badge-success"><i class="far fa-check-circle"></i> {{ $t('landing.features.comments') }}</div>
+						      		<div class="badge badge-success"><i class="far fa-check-circle"></i> {{ $t('landing.features.hashtags') }}</div>
+						      		<div class="badge badge-success"><i class="far fa-check-circle"></i> {{ $t('landing.features.likes') }}</div>
+						      		<div class="badge badge-success"><i class="far fa-check-circle"></i> {{ $t('landing.features.notifications') }}</div>
+						      		<div class="badge badge-success"><i class="far fa-check-circle"></i> {{ $t('landing.features.shares') }}</div>
 						      	</div>
 
 						      	<div class="py-3">
 						      		<p class="lead">
-						      			<span>You can share up to <span class="font-weight-bold">{{ config.uploader.album_limit }}</span> photos*</span>
-						      			<span v-if="config.features.video">or <span class="font-weight-bold">1</span> video*</span>
-						      			<span>at a time with a max caption length of <span class="font-weight-bold">{{ config.uploader.max_caption_length }}</span> characters.</span>
+						      			<span v-if="config.features.video" v-html="$t('landing.features.share_up_to_n_photos_videos', {num_photos: config.uploader.album_limit, num_video: 1, caption_length: config.uploader.max_caption_length})"></span>
+						      			<span v-else v-html="$t('landing.features.share_up_to_n_photos', {num_photos: config.uploader.album_limit, caption_length: config.uploader.max_caption_length})"></span>
 									</p>
-									<p class="small opacity-50">* - Maximum file size is {{ formatBytes(config.uploader.max_photo_size) }}</p>
+									<p class="small opacity-50">{{ $t('landing.features.file_size', {max_size: formatBytes(config.uploader.max_photo_size)}) }}</p>
 						      	</div>
 
 						        <div class="list-group list-group-features">
 						        	<div class="list-group-item bg-bluegray-900">
-						        		<div class="feature-label">Federation</div>
+						        		<div class="feature-label">{{ $t('landing.features.federation') }}</div>
 						        		<i class="far fa-lg" :class="[config.features.federation ? 'fa-check-circle' : 'fa-times-circle' ]"></i>
 						        	</div>
 
 						        	<div class="list-group-item bg-bluegray-900">
-						        		<div class="feature-label">Mobile App Support</div>
+						        		<div class="feature-label">{{ $t('landing.features.mobile_app') }}</div>
 						        		<i class="far fa-lg" :class="[config.features.mobile_apis ? 'fa-check-circle' : 'fa-times-circle' ]"></i>
 						        	</div>
 
 						        	<div class="list-group-item bg-bluegray-900">
-						        		<div class="feature-label">Stories</div>
+						        		<div class="feature-label">{{ $t('landing.features.stories') }}</div>
 						        		<i class="far fa-lg" :class="[config.features.stories ? 'fa-check-circle' : 'fa-times-circle' ]"></i>
 						        	</div>
 
 						        	<div class="list-group-item bg-bluegray-900">
-						        		<div class="feature-label">Videos</div>
+						        		<div class="feature-label">{{ $t('landing.features.videos') }}</div>
 						        		<i class="far fa-lg" :class="[config.features.video ? 'fa-check-circle' : 'fa-times-circle' ]"></i>
 						        	</div>
 						        </div>

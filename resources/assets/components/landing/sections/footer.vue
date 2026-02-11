@@ -1,21 +1,21 @@
 <template>
     <div class="footer-component">
         <div class="footer-component-links">
-            <a href="/site/help">Help</a>
+            <a href="/site/help">{{ $t('navmenu.help') }}</a>
             <div class="spacer">·</div>
-            <a href="/site/terms">Terms</a>
+            <a href="/site/terms">{{ $t('navmenu.terms') }}</a>
             <div class="spacer">·</div>
-            <a href="/site/privacy">Privacy</a>
+            <a href="/site/privacy">{{ $t('navmenu.privacy') }}</a>
             <div class="spacer">·</div>
-            <a v-if="config.show_legal_notice_link" href="/site/legal-notice">Legal Notice</a>
+            <a v-if="config.show_legal_notice_link" href="/site/legal-notice">{{ $t('navmenu.legalNotice') }}</a>
             <div v-if="config.show_legal_notice_link" class="spacer">·</div>
-            <a href="https://pixelfed.org/mobile-apps" target="_blank">Mobile Apps</a>
+            <a href="https://pixelfed.org/mobile-apps" target="_blank">{{ $t('navmenu.mobileApps') }}</a>
         </div>
 
         <div class="footer-component-attribution">
             <div><span>© {{ getYear() }} {{ config.domain }}</span></div>
             <div class="spacer">·</div>
-            <div><a href="https://pixelfed.org" class="text-bluegray-500 font-weight-bold">Powered by Pixelfed</a></div>
+            <div><a href="https://pixelfed.org" class="text-bluegray-500 font-weight-bold">{{ $t('landing.powered_by_pixelfed') }}</a></div>
             <div class="spacer">·</div>
             <div><span>v{{ config.version }}</span></div>
         </div>
