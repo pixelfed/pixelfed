@@ -42,6 +42,7 @@ class RelationshipTransformer extends Fractal\TransformerAbstract
             'domain_blocking' => $domainBlocking,
             'showing_reblogs' => false,
             'endorsed' => false,
+            'account_status' => $profile->status ?? 'active',
         ];
     }
 }
