@@ -1,6 +1,7 @@
 <?php
 
 use Monolog\Handler\NullHandler;
+use Monolog\Handler\RotatingFileHandler;
 use Monolog\Handler\StreamHandler;
 
 return [
@@ -41,8 +42,14 @@ return [
         ],
 
         'single' => [
-            'driver' => 'single',
-            'path'   => storage_path('logs/laravel.log'),
+            'driver' => 'monolog',
+            'handler' => RotatingFileHandler::class,
+            'handler_with' => [
+                'filename' => storage_path('logs/laravel.log'),
+                'maxFiles' => 12,
+                'filenameFormat' => '{filename}-{date}',
+                'dateFormat' => 'Y-m',
+            ],
             'level' => env('LOG_LEVEL', 'debug'),
         ],
 
