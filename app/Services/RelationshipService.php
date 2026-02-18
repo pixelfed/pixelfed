@@ -4,6 +4,7 @@ namespace App\Services;
 
 use App\Follower;
 use App\FollowRequest;
+use App\Profile;
 use App\UserFilter;
 use Illuminate\Support\Facades\Cache;
 
@@ -24,6 +25,8 @@ class RelationshipService
         }
 
         return Cache::remember(self::key("a_{$aid}:t_{$tid}"), 1209600, function () use ($aid, $tid) {
+            $targetProfile = Profile::find($tid);
+
             return [
                 'id' => (string) $tid,
                 'following' => Follower::whereProfileId($aid)->whereFollowingId($tid)->exists(),
@@ -45,6 +48,7 @@ class RelationshipService
                 'domain_blocking' => false,
                 'showing_reblogs' => false,
                 'endorsed' => false,
+                'account_status' => $targetProfile && $targetProfile->status ? $targetProfile->status : 'active',
             ];
         });
     }
@@ -88,6 +92,7 @@ class RelationshipService
             'domain_blocking' => false,
             'showing_reblogs' => false,
             'endorsed' => false,
+            'account_status' => 'active',
         ];
     }
 
