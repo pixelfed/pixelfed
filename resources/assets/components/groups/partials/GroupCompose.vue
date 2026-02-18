@@ -24,7 +24,6 @@
 								}"
 								:rows="!composeText || composeText.length < 40 ? 1 : 5"
 								:placeholder="placeholder"
-								style="resize: none;"
 								v-model="composeText"
 								></textarea>
 
