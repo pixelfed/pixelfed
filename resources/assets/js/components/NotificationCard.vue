@@ -15,7 +15,8 @@
 						<p class="mb-0 text-lighter"><i class="fas fa-chevron-right"></i></p>
 					</div>
 				</div>
-				<div v-if="notifications.length > 0" class="media align-items-center px-3 py-2 border-bottom border-light" v-for="(n, index) in notifications">
+				<div v-if="notifications.length > 0" class="media align-items-center px-3 py-2 border-bottom border-light" v-for="(n, index) in notifications" :key="'notif-'+index">
+					<template v-if="n.account">
 					<img class="mr-2 rounded-circle" style="border:1px solid #ccc" :src="n.account.avatar" alt="" width="32px" height="32px" onerror="this.onerror=null;this.src='/storage/avatars/default.png';">
 					<div class="media-body font-weight-light small">
 						<div v-if="n.type == 'favourite'">
@@ -126,6 +127,7 @@
 						</div>
 					</div>
 					<div class="small text-muted font-weight-bold" :title="n.created_at">{{timeAgo(n.created_at)}}</div>
+					</template>
 				</div>
 				<div v-if="notifications.length">
 					<infinite-loading @infinite="infiniteNotifications">
@@ -186,6 +188,9 @@
 				axios.get('/api/pixelfed/v1/notifications?pg=true')
 				.then(res => {
 					let data = res.data.filter(n => {
+						if(!n.account) {
+							return false;
+						}
 						if(n.type == 'share' && !n.status) {
 							return false;
 						}
@@ -226,6 +231,9 @@
 				}).then(res => {
 					if(res.data.length) {
 						let data = res.data.filter(n => {
+							if(!n.account) {
+								return false;
+							}
 							if(n.type == 'share' && !n.status) {
 								return false;
 							}

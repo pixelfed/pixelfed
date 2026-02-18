@@ -257,6 +257,9 @@
             },
 
             getStatusAvatar() {
+                if(!this.status.account) {
+                    return '/storage/avatars/default.png?v=0';
+                }
                 if (window._sharedData.user.id == this.status.account.id) {
                     return window._sharedData.user.avatar;
                 }
@@ -310,7 +313,7 @@
                     .filter(m => m.hasOwnProperty("license") && m.license && m.license.hasOwnProperty("id"))
                     .map(m => m.license)[0] : false;
             this.admin = window._sharedData.user.is_admin;
-            this.owner = this.shadowStatus.account.id == window._sharedData.user.id;
+            this.owner = this.shadowStatus.account && this.shadowStatus.account.id == window._sharedData.user.id;
             if (this.shadowStatus.reply_count && this.autoloadComments && this.shadowStatus.comments_disabled === false) {
                 setTimeout(() => {
                     this.showCommentDrawer = true;

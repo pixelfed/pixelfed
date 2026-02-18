@@ -236,6 +236,9 @@
 			},
 
 			getStatusAvatar() {
+				if(!this.status.account) {
+					return '/storage/avatars/default.png?v=0';
+				}
 				if(window._sharedData.user.id == this.status.account.id) {
 					return window._sharedData.user.avatar;
 				}

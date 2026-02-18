@@ -297,7 +297,7 @@
                     }
                     this.ids = ids;
                     this.max_id = Math.min(...ids);
-                    this.feed = res.data;
+                    this.feed = res.data.filter(p => p && p.account && (!p.reblog || p.reblog.account));
 
                     if(res.data.length < 4) {
                         this.canLoadMore = false;
@@ -358,7 +358,7 @@
                     }
                     setTimeout(() => {
                         res.data.forEach(p => {
-                            if(this.ids.indexOf(p.id) == -1) {
+                            if(this.ids.indexOf(p.id) == -1 && p && p.account && (!p.reblog || p.reblog.account)) {
                                 if(this.max_id > p.id) {
                                     this.max_id = p.id;
                                 }

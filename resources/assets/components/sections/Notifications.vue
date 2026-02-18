@@ -35,7 +35,7 @@
 
 					<template v-else>
 						<div v-for="(n, index) in feed" class="mb-2">
-							<div class="media align-items-center">
+							<div v-if="n.account" class="media align-items-center">
 								<img
 									v-if="n.type === 'autospam.warning'"
 									class="mr-2 rounded-circle shadow-sm p-1"

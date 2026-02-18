@@ -11,7 +11,7 @@
             </div>
         </div>
         <div class="card-header border-0" style="border-top-left-radius: 15px;border-top-right-radius: 15px;">
-            <div class="media align-items-center">
+            <div class="media align-items-center" v-if="status && status.account">
                 <a :href="status.account.url" @click.prevent="goToProfile()" style="margin-right: 10px;">
                     <img :src="getStatusAvatar()" style="border-radius:15px;" width="44" height="44" onerror="this.onerror=null;this.src='/storage/avatars/default.png?v=0';">
                 </a>
@@ -363,6 +363,9 @@
             },
 
             getStatusAvatar() {
+                if(!this.status.account) {
+                    return '/storage/avatars/default.png?v=0';
+                }
                 if(window._sharedData.user.id == this.status.account.id) {
                     return window._sharedData.user.avatar;
                 }
