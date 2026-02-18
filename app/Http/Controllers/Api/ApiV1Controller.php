@@ -1084,6 +1084,7 @@ class ApiV1Controller extends Controller
                         'domain_blocking' => false,
                         'showing_reblogs' => false,
                         'endorsed' => false,
+                        'account_status' => 'active',
                     ];
                 }
 
