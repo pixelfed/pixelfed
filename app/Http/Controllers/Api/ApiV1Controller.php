@@ -2534,6 +2534,10 @@ class ApiV1Controller extends Controller
                 return $n;
             })
             ->filter(function ($n) use ($pe) {
+                if (! isset($n['account']) || ! is_array($n['account']) || ! isset($n['account']['id'])) {
+                    return false;
+                }
+
                 if (in_array($n['type'], ['mention', 'reblog', 'favourite'])) {
                     return isset($n['status'], $n['status']['id']);
                 }

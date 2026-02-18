@@ -27,7 +27,7 @@ class AccountService
             $fractal = new Fractal\Manager;
             $fractal->setSerializer(new ArraySerializer);
             $profile = Profile::find($id);
-            if (! $profile || $profile->status === 'delete') {
+            if (! $profile || in_array($profile->status, ['delete', 'suspended', 'banned'])) {
                 return null;
             }
             $resource = new Fractal\Resource\Item($profile, new AccountTransformer);

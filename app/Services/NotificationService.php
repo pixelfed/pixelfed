@@ -126,7 +126,10 @@ class NotificationService
             $n = self::rewriteMastodonTypes(self::getNotification($id));
             if ($n != null && in_array($n['type'], self::MASTODON_TYPES)) {
                 if (isset($n['account'])) {
-                    $n['account'] = AccountService::getMastodon($n['account']['id']);
+                    $n['account'] = AccountService::getMastodon($n['account']['id'], true);
+                    if (! $n['account']) {
+                        continue;
+                    }
                 }
 
                 if (isset($n['relationship'])) {
@@ -162,7 +165,10 @@ class NotificationService
             $n = self::rewriteMastodonTypes(self::getNotification($id));
             if ($n != null && in_array($n['type'], self::MASTODON_TYPES)) {
                 if (isset($n['account'])) {
-                    $n['account'] = AccountService::getMastodon($n['account']['id']);
+                    $n['account'] = AccountService::getMastodon($n['account']['id'], true);
+                    if (! $n['account']) {
+                        continue;
+                    }
                 }
 
                 if (isset($n['relationship'])) {
