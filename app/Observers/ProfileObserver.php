@@ -32,6 +32,10 @@ class ProfileObserver
     public function updated(Profile $profile)
     {
         AccountService::del($profile->id);
+
+        if ($profile->wasChanged('status')) {
+            AccountService::clearStatusCache($profile->id);
+        }
     }
 
     /**
