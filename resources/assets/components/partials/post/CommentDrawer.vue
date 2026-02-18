@@ -311,8 +311,8 @@
 					<textarea
                         class="form-control bg-light rounded-sm shadow-sm rounded-pill"
                         placeholder="Write a comment...."
-                        style="resize: none;padding-right:140px;"
-                        rows="1"
+                        style="padding-right:140px;"
+                        rows="2"
                         v-model="replyContent"
                         :disabled="isPostingReply"></textarea>
 				</vue-tribute>

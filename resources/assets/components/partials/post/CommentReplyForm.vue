@@ -5,7 +5,8 @@
 
             <div style="display: flex;flex-grow: 1;position: relative;">
         		<textarea
-        			class="form-control bg-light rounded-lg shadow-sm" style="resize: none;padding-right: 60px;"
+        			class="form-control bg-light rounded-lg shadow-sm rounded-pill" style="padding-right: 60px;"
+              rows="2"
         			placeholder="Write a comment...."
         			v-model="replyContent"
         			:disabled="isPostingReply" />
