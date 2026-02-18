@@ -82,6 +82,26 @@ class AccountService
         return Cache::forget(self::CACHE_KEY.$id);
     }
 
+    public static function getStatus($id)
+    {
+        $key = 'pf:services:account:status:'.$id;
+
+        return Cache::remember($key, 900, function () use ($id) {
+            $profile = Profile::find($id);
+
+            if (! $profile) {
+                return 'not-found';
+            }
+
+            return $profile->status ?? 'active';
+        });
+    }
+
+    public static function clearStatusCache($id)
+    {
+        return Cache::forget('pf:services:account:status:'.$id);
+    }
+
     public static function settings($id)
     {
         return Cache::remember('profile:compose:settings:'.$id, 604800, function () use ($id) {
