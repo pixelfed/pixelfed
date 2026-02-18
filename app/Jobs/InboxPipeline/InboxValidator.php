@@ -156,6 +156,23 @@ class InboxValidator implements ShouldQueue
         $inboxPath = "/users/{$profile->username}/inbox";
         [$verified, $headers] = HttpSignature::verify($pkey, $signatureData, $headers, $inboxPath, $body);
         if ($verified == 1) {
+            // Ensure the signer (keyId owner) matches the payload actor
+            $payloadActorUrl = Helpers::pluckval($bodyDecoded['actor']);
+            if ($payloadActorUrl) {
+                $signerDomain = parse_url($keyId, PHP_URL_HOST);
+                $actorDomain = parse_url($payloadActorUrl, PHP_URL_HOST);
+                if (! $signerDomain || ! $actorDomain) {
+                    return false;  // Missing domain
+                } 
+                
+                if ($signerDomain !== $actorDomain) {
+                    return false;
+                }
+                if ($actor->remote_url !== $payloadActorUrl) {
+                    return false;
+                }
+            }
+
             return true;
         } else {
             return false;
