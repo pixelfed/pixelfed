@@ -18,71 +18,71 @@ class UserFilterService
     public static function mutes(int $profile_id)
     {
         $key = self::USER_MUTES_KEY.$profile_id;
-        $warm = Cache::has($key.':cached-v0');
-        if ($warm) {
-            return Redis::zrevrange($key, 0, -1) ?? [];
-        } else {
-            if (Redis::zrevrange($key, 0, -1)) {
-                return Redis::zrevrange($key, 0, -1);
-            }
-            $ids = UserFilter::whereFilterType('mute')
-                ->whereUserId($profile_id)
-                ->pluck('filterable_id')
-                ->map(function ($id) {
-                    $acct = AccountService::get($id, true);
-                    if (! $acct) {
-                        return false;
-                    }
 
-                    return $acct['id'];
-                })
-                ->filter(function ($res) {
-                    return $res;
-                })
-                ->values()
-                ->toArray();
-            foreach ($ids as $muted_id) {
-                Redis::zadd($key, (int) $muted_id, (int) $muted_id);
-            }
-            Cache::set($key.':cached-v0', 1, 7776000);
-
+        $ids = Redis::zrevrange($key, 0, -1);
+        if (! empty($ids)) {
             return $ids;
         }
+
+        Cache::forget($key.':cached-v0');
+
+        $ids = UserFilter::whereFilterType('mute')
+            ->whereUserId($profile_id)
+            ->pluck('filterable_id')
+            ->map(function ($id) {
+                $acct = AccountService::get($id, true);
+                if (! $acct) {
+                    return false;
+                }
+
+                return $acct['id'];
+            })
+            ->filter(function ($res) {
+                return $res;
+            })
+            ->values()
+            ->toArray();
+        foreach ($ids as $muted_id) {
+            Redis::zadd($key, (int) $muted_id, (int) $muted_id);
+        }
+        Cache::set($key.':cached-v0', 1, 7776000);
+
+        return $ids;
     }
 
     public static function blocks(int $profile_id)
     {
         $key = self::USER_BLOCKS_KEY.$profile_id;
-        $warm = Cache::has($key.':cached-v0');
-        if ($warm) {
-            return Redis::zrevrange($key, 0, -1) ?? [];
-        } else {
-            if (Redis::zrevrange($key, 0, -1)) {
-                return Redis::zrevrange($key, 0, -1);
-            }
-            $ids = UserFilter::whereFilterType('block')
-                ->whereUserId($profile_id)
-                ->pluck('filterable_id')
-                ->map(function ($id) {
-                    $acct = AccountService::get($id, true);
-                    if (! $acct) {
-                        return false;
-                    }
 
-                    return $acct['id'];
-                })
-                ->filter(function ($res) {
-                    return $res;
-                })
-                ->values()
-                ->toArray();
-            foreach ($ids as $blocked_id) {
-                Redis::zadd($key, (int) $blocked_id, (int) $blocked_id);
-            }
-            Cache::set($key.':cached-v0', 1, 7776000);
-
+        $ids = Redis::zrevrange($key, 0, -1);
+        if (! empty($ids)) {
             return $ids;
         }
+
+        Cache::forget($key.':cached-v0');
+
+        $ids = UserFilter::whereFilterType('block')
+            ->whereUserId($profile_id)
+            ->pluck('filterable_id')
+            ->map(function ($id) {
+                $acct = AccountService::get($id, true);
+                if (! $acct) {
+                    return false;
+                }
+
+                return $acct['id'];
+            })
+            ->filter(function ($res) {
+                return $res;
+            })
+            ->values()
+            ->toArray();
+        foreach ($ids as $blocked_id) {
+            Redis::zadd($key, (int) $blocked_id, (int) $blocked_id);
+        }
+        Cache::set($key.':cached-v0', 1, 7776000);
+
+        return $ids;
     }
 
     public static function filters(int $profile_id)
