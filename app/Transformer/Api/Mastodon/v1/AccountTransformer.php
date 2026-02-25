@@ -11,11 +11,12 @@ class AccountTransformer extends Fractal\TransformerAbstract
     {
         $local = $profile->domain == null;
         $username = $local ? $profile->username : explode('@', substr($profile->username, 1))[0];
+        $acct = $local ? $profile->username : substr($profile->username, 1);
 
         return [
             'id' => (string) $profile->id,
             'username' => $username,
-            'acct' => $username,
+            'acct' => $acct,
             'display_name' => $profile->name,
             'locked' => (bool) $profile->is_private,
             'bot' => false,
