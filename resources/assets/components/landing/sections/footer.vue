@@ -15,7 +15,7 @@
         <div class="footer-component-attribution">
             <div><span>© {{ getYear() }} {{ config.domain }}</span></div>
             <div class="spacer">·</div>
-            <div><a href="https://pixelfed.org" class="text-bluegray-500 font-weight-bold">{{ $t('landing.powered_by_pixelfed') }}</a></div>
+            <div><a href="https://pixelfed.org" class="text-bluegray-500 font-weight-bold">{{ $t('powered_by_pixelfed') }}</a></div>
             <div class="spacer">·</div>
             <div><span>v{{ config.version }}</span></div>
         </div>
