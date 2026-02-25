@@ -223,6 +223,8 @@ return [
         'feed' => 'Fil',
     ],
 
+    'powered_by_pixelfed' => 'Propulsé par Pixelfed',
+
     'landing' => [
         'login'         =>    'Se connecter',
         'signup'        =>    'Créer un compte',
@@ -257,6 +259,5 @@ return [
         'discover_accounts' => 'Découvrir des comptes et personnes',
         'nothing_to_show'   => 'Rien à montrer pour le moment… Revenez plus tard.',
         'explore_trending'  => 'Parcourir les tendances',
-        'powered_by_pixelfed' => 'Propulsé par Pixelfed',
     ],
 ];

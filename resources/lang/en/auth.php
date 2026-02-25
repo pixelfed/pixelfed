@@ -22,6 +22,8 @@ return [
     'terms'            =>   "By signing up, you agree to our <a href=\"".route('site.terms')."\" class=\"font-weight-bold text-dark\">Terms of Use</a> and <a href=\"".route('site.privacy')."\" class=\"font-weight-bold text-dark\">Privacy Policy</a>.",
 
     'emailAddress'     =>   "E-Mail Address",
+    'email'            =>   "E-Mail",
+    'forgotEmail'      =>   "Forgot E-Mail",
 
     'registerTitle'    =>   'Register a new account',
 

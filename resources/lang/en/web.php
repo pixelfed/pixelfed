@@ -372,6 +372,8 @@ return [
 
     ],
 
+    'powered_by_pixelfed' => 'Powered by Pixelfed',
+
     'landing' => [
         'login'         =>    'Login',
         'signup'        =>    'Sign up',
@@ -406,6 +408,5 @@ return [
         'discover_accounts' => 'Discover accounts and people',
         'nothing_to_show'   => 'Nothing to show yet! Check back later.',
         'explore_trending'   => 'Explore trending posts',
-        'powered_by_pixelfed' => 'Powered by Pixelfed',
     ],
 ];

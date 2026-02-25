@@ -32,6 +32,8 @@ return [
     'terms'            =>   "En vous inscrivant, vous acceptez nos <a href=\"".route('site.terms')."\" class=\"font-weight-bold text-dark\">conditions d’utilisation</a> et <a href=\"".route('site.privacy')."\" class=\"font-weight-bold text-dark\">politique de confidentialité</a>.",
 
     'emailAddress'     =>   "Adresse de courriel",
+    'email'            =>   "Courriel",
+    'forgotEmail'      =>   "Courriel oublié",
 
     'registerTitle'    =>   'Créer un nouveau profil',
 
