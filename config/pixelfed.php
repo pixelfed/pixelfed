@@ -161,6 +161,16 @@ return [
 
     /*
     |--------------------------------------------------------------------------
+    | Image Storage Format
+    |--------------------------------------------------------------------------
+    |
+    | Set the image storage format. All uploads will be converted to this format.
+    |
+    */
+    'image_storage_format' => (string) env('IMAGE_STORAGE_FORMAT', \App\Util\Media\StorageFormat::JPEG->name),
+
+    /*
+    |--------------------------------------------------------------------------
     | Account deletion
     |--------------------------------------------------------------------------
     |

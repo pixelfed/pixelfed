@@ -5,11 +5,9 @@ namespace App\Util\Media;
 use App\Media;
 use App\Services\StatusService;
 use Cache;
-use Intervention\Image\Encoders\JpegEncoder;
-use Intervention\Image\Encoders\PngEncoder;
-use Intervention\Image\Encoders\WebpEncoder;
 use Log;
 use Storage;
+use Jcupitt\Vips;
 
 class Image
 {
@@ -117,6 +115,7 @@ class Image
     public function handleImageTransform(Media $media, $thumbnail = false)
     {
         $path = $media->media_path;
+        $targetFormat = StorageFormat::getConfigured();
         $localFs = config('filesystems.default') === 'local';
 
         if (! in_array($media->mime, $this->acceptedMimes)) {
@@ -135,7 +134,7 @@ class Image
             }
 
             $fileInfo = pathinfo($path);
-            $extension = strtolower($fileInfo['extension'] ?? 'jpg');
+            $extension = $targetFormat->extension();
             $outputExtension = $extension;
 
             $metadata = null;
@@ -202,69 +201,45 @@ class Image
                 }
             }
 
-            $img = $this->imageManager->read($fileContents);
+            $img = Vips\Image::newFromBuffer($fileContents);
 
-            $ratio = $this->getAspect($img->width(), $img->height(), $thumbnail);
+            $ratio = $this->getAspect($img->width, $img->height, $thumbnail);
             $aspect = $ratio['dimensions'];
             $orientation = $ratio['orientation'];
 
             if ($thumbnail) {
-                $img = $img->coverDown(
-                    $aspect['width'],
-                    $aspect['height']
-                );
+                $img = Vips\Image::thumbnail_buffer($fileContents, $aspect['width'], [
+                    'height' => $aspect['height'],
+                    'crop' => 'centre',
+                    'size' => 'down',
+                ]);
             } else {
                 if (
                     ($ratio['width_original'] > $aspect['width'])
                     || ($ratio['height_original'] > $aspect['height'])
                 ) {
-                    $img = $img->scaleDown(
-                        $aspect['width'],
-                        $aspect['height']
-                    );
+                    $img = Vips\Image::thumbnail_buffer($fileContents, $aspect['width'], [
+                        'height' => $aspect['height'],
+                        'size' => 'down',
+                    ]);
+                } else {
+                    $img = Vips\Image::newFromBuffer($fileContents);
                 }
             }
 
             $quality = config_cache('pixelfed.image_quality');
 
-            $encoder = null;
-            switch ($extension) {
-                case 'jpeg':
-                case 'jpg':
-                    $encoder = new JpegEncoder($quality);
-                    $outputExtension = 'jpg';
-                    break;
-                case 'png':
-                    $encoder = new PngEncoder;
-                    $outputExtension = 'png';
-                    break;
-                case 'webp':
-                    $encoder = new WebpEncoder($quality);
-                    $outputExtension = 'webp';
-                    break;
-                case 'avif':
-                    $encoder = new JpegEncoder($quality);
-                    $outputExtension = 'jpg';
-                    break;
-                case 'heic':
-                    $encoder = new JpegEncoder($quality);
-                    $outputExtension = 'jpg';
-                    break;
-                default:
-                    $encoder = new JpegEncoder($quality);
-                    $outputExtension = 'jpg';
-            }
-
             $converted = $this->setBaseName($path, $thumbnail, $outputExtension);
-            $encoded = $encoder->encode($img);
+
+            $encoded = $targetFormat->saveBuffer($img);
 
             if ($localFs) {
                 $newPath = storage_path('app/'.$converted['path']);
-                file_put_contents($newPath, $encoded->toString());
+                file_put_contents($newPath, $encoded);
             } else {
                 Storage::disk($this->defaultDisk)->put(
                     $converted['path'],
-                    $encoded->toString()
+                    $encoded
                 );
             }
 
@@ -272,11 +247,11 @@ class Image
                 $media->thumbnail_path = $converted['path'];
                 $media->thumbnail_url = url(Storage::url($converted['path']));
             } else {
-                $media->width = $img->width();
-                $media->height = $img->height();
+                $media->width = $img->width;
+                $media->height = $img->height;
                 $media->orientation = $orientation;
                 $media->media_path = $converted['path'];
-                $media->mime = 'image/'.$outputExtension;
+                $media->mime = $targetFormat->mimeType();
             }
 
             $media->save();
@@ -305,7 +280,7 @@ class Image
         $filename = $pathInfo['filename'];
         $name = ($thumbnail == true) ? $filename . '_thumb' : $filename;
         $basePath = $dir . $name . '.' . $extension;
-    
+
         return ['path' => $basePath, 'png' => false];
     }
 
