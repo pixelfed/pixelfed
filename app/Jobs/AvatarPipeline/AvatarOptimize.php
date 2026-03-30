@@ -86,7 +86,7 @@ class AvatarOptimize implements ShouldQueue
         }
 
         try {
-            $img = $imageManager->read($file);
+            $img = $imageManager->decodePath($file);
             $img = $img->coverDown(200, 200);
             $encoded = $encoder->encode($img);
             file_put_contents($file, $encoded->toString());

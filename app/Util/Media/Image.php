@@ -202,7 +202,7 @@ class Image
                 }
             }
 
-            $img = $this->imageManager->read($fileContents);
+            $img = $this->imageManager->decodeBinary($fileContents);
 
             $ratio = $this->getAspect($img->width(), $img->height(), $thumbnail);
             $aspect = $ratio['dimensions'];
@@ -305,7 +305,7 @@ class Image
         $filename = $pathInfo['filename'];
         $name = ($thumbnail == true) ? $filename . '_thumb' : $filename;
         $basePath = $dir . $name . '.' . $extension;
-    
+
         return ['path' => $basePath, 'png' => false];
     }
 

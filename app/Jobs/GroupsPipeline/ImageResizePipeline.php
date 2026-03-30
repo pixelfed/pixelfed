@@ -77,7 +77,7 @@ class ImageResizePipeline implements ShouldQueue
         try {
             $imageManager = ImageDriverManager::createImageManager();
 
-            $img = $imageManager->read($file);
+            $img = $imageManager->decodePath($file);
 
             $width = $img->width();
             $height = $img->height();
