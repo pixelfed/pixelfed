@@ -59,6 +59,10 @@ trait HomeSettings
 
         $enforceEmailVerification = config_cache('pixelfed.enforce_email_verification');
 
+        if ($enforceEmailVerification && ! $user->email_verified_at) {
+            return redirect('/settings/home')->with('error', 'You must verify your email before you can update your profile.');
+        }
+
         // Only allow email to be updated if not yet verified
         if (! $enforceEmailVerification || ! $changes && $user->email_verified_at) {
             if ($profile->name != $name) {
