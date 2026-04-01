@@ -86,6 +86,7 @@ trait HomeSettings
             }
 
             if ($existingPronouns != $pronouns) {
+                $changes = true;
                 if ($pronouns && in_array('Select Pronoun(s)', $pronouns)) {
                     PronounService::clear($profile->id);
                 } else {
