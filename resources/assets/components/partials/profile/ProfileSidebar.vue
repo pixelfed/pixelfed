@@ -8,7 +8,8 @@
                              onerror="this.onerror=null;this.src='/storage/avatars/default.png?v=0';">
                     </div>
                     <div class="media-body">
-                        <p class="display-name" v-html="getDisplayName()"></p>
+                        <p class="display-name mb-0" v-html="getDisplayName()"></p>
+                        <p v-if="profile.pronouns && profile.pronouns.length" class="text-muted small mb-1">{{profile.pronouns.join('/')}}</p>
                         <p class="username" :class="{ remote: !profile.local }">
                             <a v-if="!profile.local" :href="profile.url" class="primary">&commat;{{ profile.acct }}</a>
                             <span v-else>&commat;{{ profile.acct }}</span>
@@ -109,7 +110,8 @@
             </div>
 
             <div class="d-none d-md-block text-center">
-                <p v-html="getDisplayName()" class="display-name"></p>
+                <p v-html="getDisplayName()" class="display-name mb-0"></p>
+                <p v-if="profile.pronouns && profile.pronouns.length" class="text-muted small mb-1">{{profile.pronouns.join('/')}}</p>
 
                 <p class="username" :class="{ remote: !profile.local }">
                     <a v-if="!profile.local" :href="profile.url" class="primary">&commat;{{ profile.acct }}</a>
