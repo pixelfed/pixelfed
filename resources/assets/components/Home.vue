@@ -9,6 +9,22 @@
                 </div>
 
                 <div class="col-md-8 col-lg-6 px-0">
+                    <template v-if="enforceEmailVerification && !profile.email_verified_at">
+                        <div class="card rounded-lg mb-4 ft-std" style="background: #f59e0b;">
+                            <div class="card-body">
+                                <div class="d-flex justify-content-between align-items-center" style="gap:1rem">
+                                    <div class="d-flex align-items-center" style="gap:1rem">
+                                        <i class="far fa-envelope-open fa-3x text-white"></i>
+                                        <div>
+                                            <h1 class="h4 font-weight-bold text-light mb-0">Verify your email address</h1>
+                                            <p class="mb-0 text-white" style="font-size:16px;">Please check your inbox to verify your account and unlock all features.</p>
+                                        </div>
+                                    </div>
+                                    <a class="btn btn-light font-weight-bold" href="/i/verify-email">Verify Now</a>
+                                </div>
+                            </div>
+                        </div>
+                    </template>
                     <template v-if="showUpdateWarning && updateInfo && updateInfo.hasOwnProperty('running_latest')">
                         <div class="card rounded-lg mb-4 ft-std" style="background: #e11d48;border: 3px dashed #fff">
                             <div class="card-body">
@@ -108,6 +124,7 @@
                 recommended: [],
                 trending: [],
                 storiesEnabled: false,
+                enforceEmailVerification: false,
                 shouldRefresh: false,
                 showUpdateWarning: false,
                 showUpdateConnectionWarning: false,
@@ -128,6 +145,7 @@
                 this.profile = window._sharedData.user;
                 this.isLoaded = true;
                 this.storiesEnabled = window.App?.config?.features?.hasOwnProperty('stories') ? window.App.config.features.stories : false;
+                this.enforceEmailVerification = window.App?.config?.enforce_email_verification ?? false;
 
                 if(this.profile.is_admin) {
                     this.softwareUpdateCheck();
