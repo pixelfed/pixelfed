@@ -8,6 +8,7 @@ use App\Status;
 use App\Transformer\Api\AccountTransformer;
 use App\User;
 use App\UserSetting;
+use Auth;
 use Cache;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Str;
@@ -37,6 +38,10 @@ class AccountService
 
         if (! $res) {
             return $softFail ? null : abort(404);
+        }
+
+        if (Auth::check() && $res['id'] == Auth::user()->profile_id) {
+            $res['email_verified_at'] = Auth::user()->email_verified_at ? Auth::user()->email_verified_at->toJSON() : null;
         }
 
         return $res;
