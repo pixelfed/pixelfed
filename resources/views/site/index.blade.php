@@ -41,7 +41,7 @@
 			<noscript>
 				<div class="container">
 					<h1 class="pt-5 text-center">Pixelfed</h1>
-					<p class="pt-2 text-center lead">Please enable javascript to view this content.</p>
+					<p class="pt-2 text-center lead">{{__('web.common.javascript')}}</p>
 				</div>
 			</noscript>
 			<navbar></navbar>

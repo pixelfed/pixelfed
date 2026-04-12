@@ -32,6 +32,7 @@ return [
 		'sensitive' => 'Sensible',
 		'sensitiveContent' => 'Contenu sensible',
 		'sensitiveContentWarning' => 'Le contenu de cette publication peut être sensible',
+		'javascript' => 'Activez JavaScript SVP pour consulter ce contenu.',
 	],
 
 	'site' => [
@@ -249,7 +250,7 @@ return [
             'notifications' =>  'Notifications',
             'shares'        =>  'Partages',
             'share_up_to_n_photos' =>  'Vous pouvez partager jusqu\'à <span class="font-weight-bold">{num_photos}</span> photos* à la fois avec des légendes d\'une longueur maximale de <span class="font-weight-bold">{caption_length}</span> caractères.',
-            'share_up_to_n_photos_videos'   =>  'Vous pouvez partager jusqu\'à <span class="font-weight-bold">{num_photos}</span> photos* or <span class="font-weight-bold">{num_video}</span> video* à la fois avec des légendes d\'une longueur maximale de <span class="font-weight-bold">{caption_length}</span> caractères.',
+            'share_up_to_n_photos_videos'   =>  'Vous pouvez partager jusqu\'à <span class="font-weight-bold">{num_photos}</span> photos* ou <span class="font-weight-bold">{num_video}</span> vidéo* à la fois avec des légendes d\'une longueur maximale de <span class="font-weight-bold">{caption_length}</span> caractères.',
             'file_size'     => '* la taille maximale des fichiers est {max_size}',
             'federation'    => 'Fédération',
             'mobile_app'    => 'Application mobile',

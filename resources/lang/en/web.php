@@ -32,6 +32,7 @@ return [
 		'sensitive' => 'Sensitive',
 		'sensitiveContent' => 'Sensitive Content',
 		'sensitiveContentWarning' => 'This post may contain sensitive content',
+		'javascript' => 'Please enable javascript to view this content.',
     'loading' => 'Loading...',
     'continue' => 'Continue',
 	],
