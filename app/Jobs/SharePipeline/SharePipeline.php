@@ -3,7 +3,10 @@
 namespace App\Jobs\SharePipeline;
 
 use App\Jobs\HomeFeedPipeline\FeedInsertPipeline;
+use App\Jobs\PushNotificationPipeline\SharePushNotifyPipeline;
 use App\Notification;
+use App\Services\NotificationAppGatewayService;
+use App\Services\PushNotificationService;
 use App\Services\ReblogService;
 use App\Services\StatusService;
 use App\Status;
@@ -74,7 +77,7 @@ class SharePipeline implements ShouldQueue
         $parent->save();
         StatusService::del($parent->id);
 
-        Notification::firstOrCreate(
+        $notification = Notification::firstOrCreate(
             [
                 'profile_id' => $target->id,
                 'actor_id' => $actor->id,
@@ -83,6 +86,10 @@ class SharePipeline implements ShouldQueue
                 'item_id' => $status->reblog_of_id ?? $status->id,
             ]
         );
+
+        if ($notification->wasRecentlyCreated) {
+            $this->sendPushNotification($status, $actor);
+        }
 
         FeedInsertPipeline::dispatch($status->id, $status->profile_id)->onQueue('feed');
 
@@ -147,5 +154,22 @@ class SharePipeline implements ShouldQueue
 
         $promise->wait();
 
+    }
+
+    protected function sendPushNotification($status, $actor)
+    {
+        if (! NotificationAppGatewayService::enabled()) {
+            return;
+        }
+
+        if (! PushNotificationService::check('reblog', $status->profile_id)) {
+            return;
+        }
+
+        $user = User::whereProfileId($status->profile_id)->first();
+
+        if ($user && $user->expo_token && $user->notify_enabled) {
+            SharePushNotifyPipeline::dispatchSync($user->expo_token, $actor->username);
+        }
     }
 }
