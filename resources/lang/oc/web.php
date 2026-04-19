@@ -99,7 +99,7 @@ return [
 
 		'dm' => 'messatge privat',
 		'groupPost' => 'gropar las publicacions',
-		'modlog' => 'modlog',
+		'modlog' => 'jornal de moderacion',
 		'post' => 'publicacion',
 		'story' => 'istòria',
 		'noneFound' => 'Cap de notificacion pas trobada',
@@ -142,7 +142,7 @@ return [
 		'addCW' => 'Apondre un avertiment',
 		'removeCW' => 'Tirar l\'avertiment de contengut',
 		'markAsSpammer' => 'Marcar coma abusaire',
-		'markAsSpammerText' => 'Tirar dels flux + apondon un avertiment de contengut per las publicacions existentas e futuras ',
+		'markAsSpammerText' => 'Tirar dels flux + apondon un avertiment de contengut per las publicacions existentas e futuras',
 		'spam' => 'Messatge indesirable',
 		'sensitive' => 'Contengut sensible',
 		'abusive' => 'Abusiu o prejudiciable',
