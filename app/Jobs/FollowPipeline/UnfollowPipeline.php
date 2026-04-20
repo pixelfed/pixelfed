@@ -103,7 +103,7 @@ class UnfollowPipeline implements ShouldQueue
                 });
         }
 
-        if ($actorProfile->domain == null && config('instance.timeline.home.cached')) {
+        if ($actorProfile->domain == null) {
             Cache::forget('pf:timelines:home:'.$actor);
         }
 
