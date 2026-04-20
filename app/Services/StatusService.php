@@ -64,10 +64,6 @@ class StatusService
 
         $status['replies_count'] = $status['reply_count'];
 
-        if (config('exp.emc') == false) {
-            return $status;
-        }
-
         unset(
             $status['_v'],
             $status['comments_disabled'],

@@ -33,9 +33,6 @@ return [
 	// Single page application (beta)
 	'spa' => true,
 
-	// Enforce Mastoapi Compatibility (alpha)
-	'emc' => env('EXP_EMC', true),
-
 	// HLS Live Streaming
 	'hls' => env('HLS_LIVE', false),
 

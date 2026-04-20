@@ -393,7 +393,6 @@ class Installer extends Command
         $this->updateEnvFile('OPEN_REGISTRATION', $open_registration);
         $this->updateEnvFile('ENFORCE_EMAIL_VERIFICATION', $enforce_email_verification);
         $this->updateEnvFile('OAUTH_ENABLED', $enable_mobile_apis);
-        $this->updateEnvFile('EXP_EMC', $enable_mobile_apis);
     }
 
     protected function mediaSettings()
