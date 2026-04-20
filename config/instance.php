@@ -26,15 +26,19 @@ return [
     'timeline' => [
         'home' => [
             'cached' => env('PF_HOME_TIMELINE_CACHE', false),
-            'cache_ttl' => env('PF_HOME_TIMELINE_CACHE_TTL', 900),
+            'cache_ttl' => env('PF_HOME_TIMELINE_CACHE_TTL', 86400),
+            'cache_dropoff' => env('PF_HOME_TIMELINE_CACHE_DROPOFF', 800),
         ],
 
         'local' => [
             'is_public' => env('INSTANCE_PUBLIC_LOCAL_TIMELINE', false),
+            'cache_dropoff' => env('INSTANCE_PUBLIC_TIMELINE_CACHE_DROPOFF', 10000),
+            'cache_ttl' => env('INSTANCE_PUBLIC_TIMELINE_CACHE_TTL', 86400),
         ],
 
         'network' => [
             'cache_dropoff' => env('INSTANCE_NETWORK_TIMELINE_CACHE_DROPOFF', 10000),
+            'cache_ttl' => env('INSTANCE_NETWORK_TIMELINE_CACHE_TTL', 86400),
             'max_hours_old' => env('INSTANCE_NETWORK_TIMELINE_CACHE_MAX_HOUR_INGEST', 2160),
         ],
     ],
