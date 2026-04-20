@@ -71,12 +71,10 @@ class StatusObserver
             ImportService::clearImportedFiles($status->profile_id);
         }
 
-        if (config('exp.cached_home_timeline')) {
-            if ($status->uri) {
-                FeedRemoveRemotePipeline::dispatch($status->id, $status->profile_id)->onQueue('feed');
-            } else {
-                FeedRemovePipeline::dispatch($status->id, $status->profile_id)->onQueue('feed');
-            }
+        if ($status->uri) {
+            FeedRemoveRemotePipeline::dispatch($status->id, $status->profile_id)->onQueue('feed');
+        } else {
+            FeedRemovePipeline::dispatch($status->id, $status->profile_id)->onQueue('feed');
         }
     }
 

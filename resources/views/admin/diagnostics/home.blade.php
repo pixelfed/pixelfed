@@ -313,11 +313,6 @@
                                 	</tr>
                                 	<tr>
                                 		<td><span class="badge badge-primary">EXP</span></td>
-                                		<td><strong>EXP_CPT</strong></td>
-                                		<td><span>{{config_cache('exp.cached_public_timeline') ? '✅ true' : '❌ false' }}</span></td>
-                                	</tr>
-                                	<tr>
-                                		<td><span class="badge badge-primary">EXP</span></td>
                                 		<td><strong>EXP_GPS</strong></td>
                                 		<td><span>{{config_cache('exp.gps') ? '✅ true' : '❌ false' }}</span></td>
                                 	</tr>
