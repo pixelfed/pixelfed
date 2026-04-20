@@ -39,8 +39,5 @@ return [
 	// HLS Live Streaming
 	'hls' => env('HLS_LIVE', false),
 
-	// Post Update/Edits
-	'pue' => env('EXP_PUE', true),
-
 	'autolink' => env('EXP_AUTOLINK_V2', false),
 ];
