@@ -11,8 +11,8 @@ class NetworkTimelineService
 
     public static function get($start = 0, $stop = 10)
     {
-        if ($stop > 100) {
-            $stop = 100;
+        if ($stop > 500) {
+            $stop = 500;
         }
 
         return Redis::zrevrange(self::CACHE_KEY, $start, $stop);
@@ -64,6 +64,27 @@ class NetworkTimelineService
     public static function count()
     {
         return Redis::zcard(self::CACHE_KEY);
+    }
+
+    public static function fallbackMaxId($max, $limit = 10)
+    {
+        $hideNsfw = config('instance.hide_nsfw_on_public_feeds');
+        $maxHoursOld = config('instance.timeline.network.max_hours_old', 2160);
+
+        return Status::where('id', '<', $max)
+            ->whereNotNull('uri')
+            ->whereNull(['in_reply_to_id', 'reblog_of_id'])
+            ->whereIn('type', ['photo', 'photo:album', 'video', 'video:album', 'photo:video:album'])
+            ->whereScope('public')
+            ->where('created_at', '>', now()->subHours($maxHoursOld))
+            ->when($hideNsfw, function ($q) {
+                return $q->where('is_nsfw', false);
+            })
+            ->orderByDesc('id')
+            ->limit($limit)
+            ->pluck('id')
+            ->values()
+            ->toArray();
     }
 
     public static function deleteByProfileId($profileId)

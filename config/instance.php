@@ -27,11 +27,13 @@ return [
         'home' => [
             'cached' => env('PF_HOME_TIMELINE_CACHE', false),
             'cache_ttl' => env('PF_HOME_TIMELINE_CACHE_TTL', 900),
+            'cache_dropoff' => env('PF_HOME_TIMELINE_CACHE_DROPOFF', 800),
         ],
 
         'local' => [
             'cached' => env('INSTANCE_PUBLIC_TIMELINE_CACHED', false),
             'is_public' => env('INSTANCE_PUBLIC_LOCAL_TIMELINE', false),
+            'cache_dropoff' => env('INSTANCE_PUBLIC_TIMELINE_CACHE_DROPOFF', 10000),
         ],
 
         'network' => [

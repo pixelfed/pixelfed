@@ -2651,6 +2651,9 @@ class ApiV1Controller extends Controller
                     $res = HomeTimelineService::getRankedMinId($pid, $min ?? 0, $paddedLimit);
                 } else {
                     $res = HomeTimelineService::getRankedMaxId($pid, $max ?? 0, $paddedLimit);
+                    if (empty($res) && $max) {
+                        $res = HomeTimelineService::fallbackMaxId($pid, $max, $paddedLimit);
+                    }
                 }
             } else {
                 $res = HomeTimelineService::get($pid, 0, $paddedLimit);
@@ -3014,6 +3017,9 @@ class ApiV1Controller extends Controller
 
                 if ($max) {
                     $feed = NetworkTimelineService::getRankedMaxId($max, $limit + 5);
+                    if (empty($feed)) {
+                        $feed = NetworkTimelineService::fallbackMaxId($max, $limit + 5);
+                    }
                 } elseif ($min) {
                     $feed = NetworkTimelineService::getRankedMinId($min, $limit + 5);
                 } else {
@@ -3061,6 +3067,9 @@ class ApiV1Controller extends Controller
 
                 if ($max) {
                     $feed = PublicTimelineService::getRankedMaxId($max, $limit + 5);
+                    if (empty($feed)) {
+                        $feed = PublicTimelineService::fallbackMaxId($max, $limit + 5);
+                    }
                 } elseif ($min) {
                     $feed = PublicTimelineService::getRankedMinId($min, $limit + 5);
                 } else {
