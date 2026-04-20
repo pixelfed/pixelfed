@@ -62,7 +62,6 @@ class StatusTransformer extends Fractal\TransformerAbstract
             'place' => $status->place,
             'local' => (bool) $status->local,
             'taggedPeople' => $taggedPeople,
-            'label' => ['covid' => false],
             'liked_by' => LikeService::likedBy($status),
             'media_attachments' => MediaService::get($status->id),
             'account' => ProfileService::get($status->profile_id, true),
