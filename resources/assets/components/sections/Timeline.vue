@@ -204,10 +204,6 @@
                     return;
                 };
             }
-            if(window.App.config.ab.hasOwnProperty('cached_home_timeline')) {
-                const cht = window.App.config.ab.cached_home_timeline == true;
-                this.baseApi = cht ? '/api/v1/timelines/' : '/api/v1/timelines/';
-            }
             this.fetchSettings();
         },
 

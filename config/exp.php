@@ -23,9 +23,9 @@ return [
 	'polls' => env('EXP_POLLS', false),
 
 	// Cached public timeline for larger instances (beta)
-	'cached_public_timeline' => env('EXP_CPT', false),
+	'cached_public_timeline' => env('EXP_CPT', true),
 
-	'cached_home_timeline' => env('EXP_CHT', false),
+	'cached_home_timeline' => env('EXP_CHT', true),
 
 	// Groups (unreleased)
 	'gps' => env('EXP_GPS', false),
