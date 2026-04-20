@@ -124,7 +124,6 @@ Route::domain(config('pixelfed.domain.app'))->middleware(['validemail', 'twofact
 
         Route::group(['prefix' => 'local'], function () {
             // Route::post('status/compose', 'InternalApiController@composePost')->middleware('throttle:maxPostsPerHour,60')->middleware('throttle:maxPostsPerDay,1440');
-            Route::get('exp/rec', 'ApiController@userRecommendations');
             Route::post('discover/tag/subscribe', 'HashtagFollowController@store');
             Route::get('discover/tag/list', 'HashtagFollowController@getTags');
             // Route::get('profile/sponsor/{id}', 'ProfileSponsorController@get');
