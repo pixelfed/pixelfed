@@ -25,7 +25,6 @@ return [
 
     'timeline' => [
         'home' => [
-            'cached' => env('PF_HOME_TIMELINE_CACHE', true),
             'cache_ttl' => env('PF_HOME_TIMELINE_CACHE_TTL', 86400),
             'cache_dropoff' => env('PF_HOME_TIMELINE_CACHE_DROPOFF', 800),
         ],
