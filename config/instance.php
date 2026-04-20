@@ -30,7 +30,7 @@ return [
         ],
 
         'local' => [
-            'cached' => env('INSTANCE_PUBLIC_TIMELINE_CACHED', false),
+            'cached' => env('INSTANCE_PUBLIC_TIMELINE_CACHED', true),
             'is_public' => env('INSTANCE_PUBLIC_LOCAL_TIMELINE', false),
         ],
 
