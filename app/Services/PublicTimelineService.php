@@ -48,7 +48,14 @@ class PublicTimelineService
             Redis::zpopmin(self::CACHE_KEY);
         }
 
-        return Redis::zadd(self::CACHE_KEY, $val, $val);
+        $result = Redis::zadd(self::CACHE_KEY, $val, $val);
+
+        $ttl = Redis::ttl(self::CACHE_KEY);
+        if ($ttl < 0) {
+            Redis::expire(self::CACHE_KEY, config('instance.timeline.local.cache_ttl', 86400));
+        }
+
+        return $result;
     }
 
     public static function rem($val)

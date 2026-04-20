@@ -53,7 +53,14 @@ class HomeTimelineService
             Redis::zpopmin(self::CACHE_KEY.$id);
         }
 
-        return Redis::zadd(self::CACHE_KEY.$id, $val, $val);
+        $result = Redis::zadd(self::CACHE_KEY.$id, $val, $val);
+
+        $ttl = Redis::ttl(self::CACHE_KEY.$id);
+        if ($ttl < 0) {
+            Redis::expire(self::CACHE_KEY.$id, config('instance.timeline.home.cache_ttl', 86400));
+        }
+
+        return $result;
     }
 
     public static function rem($id, $val)
