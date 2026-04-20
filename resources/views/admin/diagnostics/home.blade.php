@@ -525,11 +525,6 @@
 
                                 	<tr>
                                 		<td><span class="badge badge-primary">INSTANCE</span></td>
-                                		<td><strong>INSTANCE_NETWORK_TIMELINE_CACHED</strong></td>
-                                		<td><span>{{config('instance.timeline.network.cached') }}</span></td>
-                                	</tr>
-                                	<tr>
-                                		<td><span class="badge badge-primary">INSTANCE</span></td>
                                 		<td><strong>INSTANCE_NETWORK_TIMELINE_CACHE_DROPOFF</strong></td>
                                 		<td><span>{{config('instance.timeline.network.cache_dropoff') }}</span></td>
                                 	</tr>

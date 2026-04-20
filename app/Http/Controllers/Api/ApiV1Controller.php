@@ -3005,51 +3005,18 @@ class ApiV1Controller extends Controller
                 ->values()
                 ->toArray();
         } elseif ($remote && ! $local) {
-            if (config('instance.timeline.network.cached')) {
-                Cache::remember('api:v1:timelines:network:cache_check', 10368000, function () {
-                    if (NetworkTimelineService::count() == 0) {
-                        NetworkTimelineService::warmCache(true, config('instance.timeline.network.cache_dropoff'));
-                    }
-                });
-
-                if ($max) {
-                    $feed = NetworkTimelineService::getRankedMaxId($max, $limit + 5);
-                } elseif ($min) {
-                    $feed = NetworkTimelineService::getRankedMinId($min, $limit + 5);
-                } else {
-                    $feed = NetworkTimelineService::get(0, $limit + 5);
+            Cache::remember('api:v1:timelines:network:cache_check', 10368000, function () {
+                if (NetworkTimelineService::count() == 0) {
+                    NetworkTimelineService::warmCache(true, config('instance.timeline.network.cache_dropoff'));
                 }
-            } else {
-                $feed = Status::select(
-                    'id',
-                    'uri',
-                    'type',
-                    'scope',
-                    'local',
-                    'created_at',
-                    'profile_id',
-                    'in_reply_to_id',
-                    'reblog_of_id'
-                )
-                    ->when($minOrMax, function ($q, $minOrMax) use ($min, $max) {
-                        $dir = $min ? '>' : '<';
-                        $id = $min ?? $max;
+            });
 
-                        return $q->where('id', $dir, $id);
-                    })
-                    ->whereNull(['in_reply_to_id', 'reblog_of_id'])
-                    ->when($hideNsfw, function ($q, $hideNsfw) {
-                        return $q->where('is_nsfw', false);
-                    })
-                    ->whereIn('type', ['photo', 'photo:album', 'video', 'video:album', 'photo:video:album'])
-                    ->whereLocal(false)
-                    ->whereScope('public')
-                    ->where('id', '>', $amin)
-                    ->orderByDesc('id')
-                    ->limit(($limit * 2))
-                    ->pluck('id')
-                    ->values()
-                    ->toArray();
+            if ($max) {
+                $feed = NetworkTimelineService::getRankedMaxId($max, $limit + 5);
+            } elseif ($min) {
+                $feed = NetworkTimelineService::getRankedMinId($min, $limit + 5);
+            } else {
+                $feed = NetworkTimelineService::get(0, $limit + 5);
             }
         } else {
             if (config('instance.timeline.local.cached')) {
