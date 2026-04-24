@@ -77,17 +77,18 @@ class Helpers
             $data = ['object' => $data];
         }
 
-        $activity = $data['object'];
         $mimeTypes = explode(',', config_cache('pixelfed.media_types'));
         $mediaTypes = in_array('video/mp4', $mimeTypes) ?
             ['Document', 'Image', 'Video'] :
             ['Document', 'Image'];
 
-        if (! isset($activity['attachment']) || empty($activity['attachment'])) {
+        $attachments = self::getAttachments($data);
+
+        if (empty($attachments)) {
             return false;
         }
 
-        return Validator::make($activity['attachment'], [
+        return Validator::make($attachments, [
             '*.type' => ['required', 'string', Rule::in($mediaTypes)],
             '*.url' => 'required|url',
             '*.mediaType' => ['required', 'string', Rule::in($mimeTypes)],
@@ -901,9 +902,21 @@ class Helpers
      */
     public static function getAttachments(array $data): array
     {
-        return isset($data['object']) ?
-            $data['object']['attachment'] :
-            $data['attachment'];
+        $object = isset($data['object']) ?
+            $data['object'] :
+            $data;
+
+        if (! is_array($object) ||
+            ! isset($object['attachment']) ||
+            empty($object['attachment']) ||
+            ! is_array($object['attachment'])
+        ) {
+            return [];
+        }
+
+        return array_is_list($object['attachment']) ?
+            $object['attachment'] :
+            [$object['attachment']];
     }
 
     /**

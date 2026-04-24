@@ -56,5 +56,56 @@ class NoteAttachmentTest extends TestCase
         $valid = Helpers::verifyAttachments($this->invalidMime);
         $this->assertFalse($valid);
     }
-}
 
+    #[Test]
+    public function compactedCreateNoteAttachment()
+    {
+        $activity = $this->mastodon;
+        $activity['object']['attachment'] = $activity['object']['attachment'][0];
+
+        $valid = Helpers::verifyAttachments($activity);
+        $this->assertTrue($valid);
+    }
+
+    #[Test]
+    public function compactedBareNoteAttachment()
+    {
+        $activity = $this->pixelfed;
+        $activity['attachment'] = $activity['attachment'][0];
+
+        $valid = Helpers::verifyAttachments($activity);
+        $this->assertTrue($valid);
+    }
+
+    #[Test]
+    public function compactedInvalidAttachmentType()
+    {
+        $activity = $this->invalidType;
+        $activity['object']['attachment'] = $activity['object']['attachment'][0];
+
+        $valid = Helpers::verifyAttachments($activity);
+        $this->assertFalse($valid);
+    }
+
+    #[Test]
+    public function compactedInvalidMimeType()
+    {
+        $activity = $this->invalidMime;
+        $activity['object']['attachment'] = $activity['object']['attachment'][0];
+
+        $valid = Helpers::verifyAttachments($activity);
+        $this->assertFalse($valid);
+    }
+
+    #[Test]
+    public function getAttachmentsReturnsListForCompactedAttachment()
+    {
+        $activity = $this->mastodon;
+        $activity['object']['attachment'] = $activity['object']['attachment'][0];
+
+        $attachments = Helpers::getAttachments($activity);
+
+        $this->assertCount(1, $attachments);
+        $this->assertSame('Document', $attachments[0]['type']);
+    }
+}
