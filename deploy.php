@@ -14,6 +14,7 @@ add('writable_dirs', []);
 
 // Hosts
 host('leonardo')
+    ->set('http_user', 'samuel')
     ->set('deploy_path', '~/kaptr');
 
 // Extra tasks
