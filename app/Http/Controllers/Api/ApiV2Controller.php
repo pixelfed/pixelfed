@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Jobs\ImageOptimizePipeline\ImageOptimize;
 use App\Jobs\MediaPipeline\MediaDeletePipeline;
 use App\Jobs\VideoPipeline\VideoThumbnail;
+use App\Jobs\VideoPipeline\VideoTranscode;
 use App\Media;
 use App\Services\AccountService;
 use App\Services\InstanceService;
@@ -320,6 +321,13 @@ class ApiV2Controller extends Controller
 
             case 'video/mp4':
                 VideoThumbnail::dispatch($media)->onQueue('mmo');
+                $preview_url = '/storage/no-preview.png';
+                $url = '/storage/no-preview.png';
+                break;
+
+            case 'video/quicktime':
+            case 'video/x-m4v':
+                VideoTranscode::dispatch($media)->onQueue('mmo');
                 $preview_url = '/storage/no-preview.png';
                 $url = '/storage/no-preview.png';
                 break;

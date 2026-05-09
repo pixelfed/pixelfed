@@ -603,7 +603,7 @@ trait AdminSettingsController
         $mediaTypes = $request->input('media_types');
         $mediaArray = explode(',', $mediaTypes);
         foreach ($mediaArray as $mediaType) {
-            if (! in_array($mediaType, ['image/jpeg', 'image/png', 'image/gif', 'image/webp', 'image/avif', 'image/heic', 'video/mp4', 'video/mov'])) {
+            if (! in_array($mediaType, ['image/jpeg', 'image/png', 'image/gif', 'image/webp', 'image/avif', 'image/heic', 'video/mp4', 'video/quicktime', 'video/x-m4v'])) {
                 return redirect()->back()->withErrors(['media_types' => 'Invalid media type']);
             }
         }
