@@ -26,7 +26,9 @@
         "clickHere": "haz clic aqu\u00ed",
         "sensitive": "Sensible",
         "sensitiveContent": "Contenido Sensible",
-        "sensitiveContentWarning": "Esta publicaci\u00f3n podr\u00eda contener contenido sensible"
+        "sensitiveContentWarning": "Esta publicaci\u00f3n podr\u00eda contener contenido sensible",
+        "loading": "Cargando...",
+        "continue": "Continuar"
     },
     "site": {
         "terms": "T\u00e9rminos de Uso",
@@ -49,11 +51,13 @@
         "appearance": "Aspecto",
         "compose": "Crear Nuevo",
         "logout": "Cerrar sesi\u00f3n",
+        "createStory": "Crear Historia",
         "about": "Acerca de",
         "help": "Ayuda",
         "language": "Idioma",
         "privacy": "Privacidad",
         "terms": "T\u00e9rminos",
+        "legalNotice": "Aviso Legal",
         "backToPreviousDesign": "Volver al dise\u00f1o anterior"
     },
     "directMessages": {
@@ -62,6 +66,7 @@
         "requests": "Solicitudes"
     },
     "notifications": {
+        "title": "Notificaciones",
         "liked": "le gust\u00f3 tu",
         "commented": "coment\u00f3 en tu",
         "reacted": "reaccion\u00f3 a tu",
@@ -71,7 +76,7 @@
         "sentA": "envi\u00f3 un",
         "followed": "te sigui\u00f3",
         "mentioned": "te mencion\u00f3",
-        "you": "t\u00fa",
+        "you": "",
         "yourApplication": "Tu solicitud para unirse",
         "applicationApproved": "ha sido aprobada!",
         "applicationRejected": "ha sido rechazada. Puedes volver a solicitar unirte en 6 meses.",
@@ -80,7 +85,24 @@
         "modlog": "modlog",
         "post": "publicaci\u00f3n",
         "story": "historia",
-        "noneFound": "No se han encontrado notificaciones"
+        "noneFound": "No se han encontrado notificaciones",
+        "youRecent": "Tu reciente",
+        "hasUnlisted": "se ha removido de la lista",
+        "cannotDisplay": "Por el momento no podemos mostrar esta notificación.",
+        "followRequest": "Solicitudes de seguidores",
+        "filteringResults": "Filtrar resultados puede omitir notificaciones antiguas",
+        "mentions": "Menciones",
+        "mentionsDescription": "Respuestas a tus posts y posts donde se te menciona",
+        "likes": "Me gusta",
+        "likesDescription": "Cuentas que han dado Me Gusta a tus posts",
+        "followers": "Seguidores",
+        "followersDescription": "Cuentas que te han seguido",
+        "reblogs": "Reposteos",
+        "reblogsDescription": "Cuentas que compartieron o repostearon tus posts",
+        "dms": "MDs",
+        "dmsDescription": "Mensajes directos que has intercambiado con otras cuentas",
+        "accept": "Aceptar",
+        "reject": "Rechazar"
     },
     "post": {
         "shareToFollowers": "Compartir con seguidores",
