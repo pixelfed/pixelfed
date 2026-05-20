@@ -180,7 +180,7 @@ class Helpers
                 return false;
             }
 
-            return $uri->toString();
+            return $uri;
 
         } catch (UriException $e) {
             return false;
