@@ -71,7 +71,7 @@ class Handler extends ExceptionHandler
                     'message' => $exception->getMessage(),
                     'errors' => $exception->validator->getMessageBag(),
                 ],
-                method_exists($exception, 'getStatusCode') ? $exception->getStatusCode() : 500
+                method_exists($exception, 'getStatusCode') ? $exception->getStatusCode() : $exception->status
             );
         } elseif ($request->wantsJson()) {
             return response()->json(
