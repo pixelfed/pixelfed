@@ -1,0 +1,282 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<files psalm-version="6.16.1@f1f5de594dc76faf8784e02d3dc4716c91c6f6ac">
+  <file src="app/Console/Commands/FixUsernames.php">
+    <NoValue>
+      <code><![CDATA[$u]]></code>
+    </NoValue>
+  </file>
+  <file src="app/FailedJob.php">
+    <PublicModelAccessor>
+      <code><![CDATA[getFailedAtAttribute]]></code>
+    </PublicModelAccessor>
+  </file>
+  <file src="app/Http/Controllers/AccountController.php">
+    <NoValue>
+      <code><![CDATA[return abort(403);]]></code>
+      <code><![CDATA[return abort(403);]]></code>
+      <code><![CDATA[return abort(403);]]></code>
+      <code><![CDATA[return abort(403);]]></code>
+      <code><![CDATA[return abort(406);]]></code>
+      <code><![CDATA[return abort(406);]]></code>
+      <code><![CDATA[return abort(406);]]></code>
+      <code><![CDATA[return abort(406);]]></code>
+    </NoValue>
+  </file>
+  <file src="app/Http/Controllers/Admin/AdminReportController.php">
+    <NoValue>
+      <code><![CDATA[return abort(403);]]></code>
+    </NoValue>
+    <UndefinedVariable>
+      <code><![CDATA[$meta]]></code>
+      <code><![CDATA[$status]]></code>
+      <code><![CDATA[$status]]></code>
+      <code><![CDATA[$status]]></code>
+      <code><![CDATA[$status]]></code>
+      <code><![CDATA[$status]]></code>
+    </UndefinedVariable>
+  </file>
+  <file src="app/Http/Controllers/AdminController.php">
+    <UndefinedClass>
+      <code><![CDATA[AdminProfile]]></code>
+    </UndefinedClass>
+  </file>
+  <file src="app/Http/Controllers/Api/AdminApiController.php">
+    <NoValue>
+      <code><![CDATA[return abort(403);]]></code>
+    </NoValue>
+  </file>
+  <file src="app/Http/Controllers/Api/ApiV1Controller.php">
+    <UndefinedVariable>
+      <code><![CDATA[$account]]></code>
+    </UndefinedVariable>
+  </file>
+  <file src="app/Http/Controllers/Api/ApiV1Dot1Controller.php">
+    <UndefinedDocblockClass>
+      <code><![CDATA[StatusTransformer]]></code>
+    </UndefinedDocblockClass>
+  </file>
+  <file src="app/Http/Controllers/Api/ApiV2Controller.php">
+    <UndefinedClass>
+      <code><![CDATA[DB]]></code>
+      <code><![CDATA[StatusService]]></code>
+      <code><![CDATA[StatusService]]></code>
+      <code><![CDATA[StatusService]]></code>
+      <code><![CDATA[UserFilterService]]></code>
+      <code><![CDATA[UserFilterService]]></code>
+    </UndefinedClass>
+  </file>
+  <file src="app/Http/Controllers/Api/V1/DomainBlockController.php">
+    <NoValue>
+      <code><![CDATA[return abort(500, 'Invalid domain or already blocked by server admins');]]></code>
+    </NoValue>
+  </file>
+  <file src="app/Http/Controllers/AppRegisterController.php">
+    <InaccessibleProperty>
+      <code><![CDATA[$token->token]]></code>
+    </InaccessibleProperty>
+  </file>
+  <file src="app/Http/Controllers/Groups/GroupsPostController.php">
+    <UndefinedVariable>
+      <code><![CDATA[$status]]></code>
+      <code><![CDATA[$status]]></code>
+      <code><![CDATA[$status]]></code>
+      <code><![CDATA[$status]]></code>
+      <code><![CDATA[$status]]></code>
+      <code><![CDATA[$status]]></code>
+      <code><![CDATA[$status]]></code>
+      <code><![CDATA[$status]]></code>
+      <code><![CDATA[$status]]></code>
+    </UndefinedVariable>
+  </file>
+  <file src="app/Http/Controllers/Import/Instagram.php">
+    <NoValue>
+      <code><![CDATA[return abort(500);]]></code>
+    </NoValue>
+  </file>
+  <file src="app/Http/Controllers/PersonalAccessTokenController.php">
+    <InaccessibleProperty>
+      <code><![CDATA[$result->token]]></code>
+      <code><![CDATA[$result->token]]></code>
+    </InaccessibleProperty>
+  </file>
+  <file src="app/Http/Controllers/PortfolioController.php">
+    <UndefinedVariable>
+      <code><![CDATA[$metadata]]></code>
+    </UndefinedVariable>
+  </file>
+  <file src="app/Http/Controllers/ProfileController.php">
+    <NoValue>
+      <code><![CDATA[return abort(404);]]></code>
+    </NoValue>
+  </file>
+  <file src="app/Http/Controllers/RemoteAuthController.php">
+    <NoValue>
+      <code><![CDATA[$res]]></code>
+      <code><![CDATA[$res]]></code>
+      <code><![CDATA[$res]]></code>
+      <code><![CDATA[$res]]></code>
+    </NoValue>
+  </file>
+  <file src="app/Http/Controllers/ReportController.php">
+    <NoValue>
+      <code><![CDATA[return abort(400, 'Invalid report type');]]></code>
+      <code><![CDATA[return abort(400, 'Invalid report type');]]></code>
+    </NoValue>
+  </file>
+  <file src="app/Http/Controllers/StoryController.php">
+    <NoValue>
+      <code><![CDATA[return abort([], 403);]]></code>
+    </NoValue>
+  </file>
+  <file src="app/Http/Controllers/TimelineController.php">
+    <UndefinedClass>
+      <code><![CDATA[StatusTimelineTransformer]]></code>
+    </UndefinedClass>
+  </file>
+  <file src="app/Http/Kernel.php">
+    <UndefinedClass>
+      <code><![CDATA[CheckForAnyScope]]></code>
+      <code><![CDATA[CheckScopes]]></code>
+    </UndefinedClass>
+  </file>
+  <file src="app/Http/Middleware/Api/Admin.php">
+    <NoValue>
+      <code><![CDATA[return abort(403, 'You must be an administrator to do that');]]></code>
+    </NoValue>
+  </file>
+  <file src="app/Jobs/CuratedOnboarding/CuratedOnboardingNotifyAdminNewApplicationPipeline.php">
+    <NoValue>
+      <code><![CDATA[$adminUsernames]]></code>
+      <code><![CDATA[$ccAddresses]]></code>
+    </NoValue>
+  </file>
+  <file src="app/Jobs/GroupsPipeline/DeleteCommentPipeline.php">
+    <ParseError>
+      <code><![CDATA[)]]></code>
+    </ParseError>
+  </file>
+  <file src="app/Jobs/InboxPipeline/DeleteWorker.php">
+    <UndefinedVariable>
+      <code><![CDATA[$key]]></code>
+    </UndefinedVariable>
+  </file>
+  <file src="app/Jobs/RemoteFollowPipeline/RemoteFollowPipeline.php">
+    <UndefinedClass>
+      <code><![CDATA[Context]]></code>
+      <code><![CDATA[GuzzleHttpSignatures]]></code>
+    </UndefinedClass>
+  </file>
+  <file src="app/Jobs/ReportPipeline/AutospamNotifyAdminViaEmail.php">
+    <NoValue>
+      <code><![CDATA[$addresses]]></code>
+      <code><![CDATA[$addresses]]></code>
+      <code><![CDATA[$to]]></code>
+    </NoValue>
+  </file>
+  <file src="app/Jobs/ReportPipeline/ReportNotifyAdminViaEmail.php">
+    <NoValue>
+      <code><![CDATA[$addresses]]></code>
+      <code><![CDATA[$addresses]]></code>
+      <code><![CDATA[$to]]></code>
+    </NoValue>
+  </file>
+  <file src="app/Models/CustomFilter.php">
+    <PublicModelAccessor>
+      <code><![CDATA[getExpiresInAttribute]]></code>
+      <code><![CDATA[getFilterActionAttribute]]></code>
+      <code><![CDATA[getIrreversibleAttribute]]></code>
+      <code><![CDATA[getTitleAttribute]]></code>
+      <code><![CDATA[setFilterActionAttribute]]></code>
+      <code><![CDATA[setIrreversibleAttribute]]></code>
+      <code><![CDATA[setTitleAttribute]]></code>
+    </PublicModelAccessor>
+    <UndefinedDocblockClass>
+      <code><![CDATA[Collection]]></code>
+    </UndefinedDocblockClass>
+  </file>
+  <file src="app/Models/CustomFilterKeyword.php">
+    <PublicModelAccessor>
+      <code><![CDATA[setKeywordAttribute]]></code>
+    </PublicModelAccessor>
+  </file>
+  <file src="app/Observers/LikeObserver.php">
+    <UndefinedDocblockClass>
+      <code><![CDATA[\App\Models\Like]]></code>
+      <code><![CDATA[\App\Models\Like]]></code>
+      <code><![CDATA[\App\Models\Like]]></code>
+      <code><![CDATA[\App\Models\Like]]></code>
+      <code><![CDATA[\App\Models\Like]]></code>
+    </UndefinedDocblockClass>
+  </file>
+  <file src="app/Services/StoryIndexService.php">
+    <NoValue>
+      <code><![CDATA[$results]]></code>
+    </NoValue>
+  </file>
+  <file src="app/Util/ActivityPub/Helpers.php">
+    <UndefinedClass>
+      <code><![CDATA[UriException]]></code>
+    </UndefinedClass>
+  </file>
+  <file src="app/Util/Lexer/Autolink.php">
+    <UndefinedDocblockClass>
+      <code><![CDATA[autolinkActiveUsersOnly]]></code>
+      <code><![CDATA[protected $autolinkActiveUsersOnly = false;]]></code>
+    </UndefinedDocblockClass>
+  </file>
+  <file src="app/Util/Lexer/Regex.php">
+    <UnsupportedPropertyReferenceUsage>
+      <code><![CDATA[$re = &self::$patterns]]></code>
+    </UnsupportedPropertyReferenceUsage>
+  </file>
+  <file src="app/Util/RateLimit/User.php">
+    <PublicModelAccessor>
+      <code><![CDATA[getMaxCollectionsPerDayAttribute]]></code>
+      <code><![CDATA[getMaxCollectionsPerHourAttribute]]></code>
+      <code><![CDATA[getMaxCollectionsPerMonthAttribute]]></code>
+      <code><![CDATA[getMaxCommentsPerDayAttribute]]></code>
+      <code><![CDATA[getMaxCommentsPerHourAttribute]]></code>
+      <code><![CDATA[getMaxComposeMediaUpdatesPerDayAttribute]]></code>
+      <code><![CDATA[getMaxComposeMediaUpdatesPerHourAttribute]]></code>
+      <code><![CDATA[getMaxComposeMediaUpdatesPerMonthAttribute]]></code>
+      <code><![CDATA[getMaxHashtagFollowsPerDayAttribute]]></code>
+      <code><![CDATA[getMaxHashtagFollowsPerHourAttribute]]></code>
+      <code><![CDATA[getMaxInstanceBansPerDayAttribute]]></code>
+      <code><![CDATA[getMaxLikesPerDayAttribute]]></code>
+      <code><![CDATA[getMaxLikesPerHourAttribute]]></code>
+      <code><![CDATA[getMaxPostEditsPerDayAttribute]]></code>
+      <code><![CDATA[getMaxPostEditsPerHourAttribute]]></code>
+      <code><![CDATA[getMaxPostsPerDayAttribute]]></code>
+      <code><![CDATA[getMaxPostsPerHourAttribute]]></code>
+      <code><![CDATA[getMaxSharesPerDayAttribute]]></code>
+      <code><![CDATA[getMaxSharesPerHourAttribute]]></code>
+      <code><![CDATA[getMaxStoriesPerDayAttribute]]></code>
+      <code><![CDATA[getMaxStoriesPerHourAttribute]]></code>
+      <code><![CDATA[getMaxStoryDeletePerDayAttribute]]></code>
+      <code><![CDATA[getMaxUserBansPerDayAttribute]]></code>
+    </PublicModelAccessor>
+  </file>
+  <file src="config/websockets.php">
+    <UndefinedClass>
+      <code><![CDATA[\BeyondCode\LaravelWebSockets\API\FetchChannel]]></code>
+      <code><![CDATA[\BeyondCode\LaravelWebSockets\API\FetchChannels]]></code>
+      <code><![CDATA[\BeyondCode\LaravelWebSockets\API\FetchUsers]]></code>
+      <code><![CDATA[\BeyondCode\LaravelWebSockets\API\TriggerEvent]]></code>
+      <code><![CDATA[\BeyondCode\LaravelWebSockets\Apps\ConfigAppManager]]></code>
+      <code><![CDATA[\BeyondCode\LaravelWebSockets\ChannelManagers\LocalChannelManager]]></code>
+      <code><![CDATA[\BeyondCode\LaravelWebSockets\ChannelManagers\RedisChannelManager]]></code>
+      <code><![CDATA[\BeyondCode\LaravelWebSockets\Dashboard\Http\Middleware\Authorize]]></code>
+      <code><![CDATA[\BeyondCode\LaravelWebSockets\Server\HealthHandler]]></code>
+      <code><![CDATA[\BeyondCode\LaravelWebSockets\Server\WebSocketHandler]]></code>
+      <code><![CDATA[\BeyondCode\LaravelWebSockets\Statistics\Collectors\MemoryCollector]]></code>
+      <code><![CDATA[\BeyondCode\LaravelWebSockets\Statistics\Collectors\RedisCollector]]></code>
+      <code><![CDATA[\BeyondCode\LaravelWebSockets\Statistics\Stores\DatabaseStore]]></code>
+      <code><![CDATA[\React\Promise\FulfilledPromise]]></code>
+    </UndefinedClass>
+  </file>
+  <file src="public/index.php">
+    <MissingFile>
+      <code><![CDATA[require __DIR__.'/../storage/framework/maintenance.php']]></code>
+    </MissingFile>
+  </file>
+</files>
