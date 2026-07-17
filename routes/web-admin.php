@@ -64,6 +64,7 @@ Route::domain(config('pixelfed.domain.admin'))->prefix('i/admin')->group(functio
     Route::get('settings/backups', 'AdminController@settingsBackups')->name('admin.settings.backups');
     Route::get('settings/storage', 'AdminController@settingsStorage')->name('admin.settings.storage');
     Route::get('settings/system', 'AdminController@settingsSystem')->name('admin.settings.system');
+    Route::post('settings/system/clear-instance-cache', 'AdminController@settingsClearInstanceCache')->name('admin.settings.system.clear-instance-cache');
 
     Route::get('instances', 'AdminController@instances')->name('admin.instances');
     Route::post('instances', 'AdminController@instanceScan');

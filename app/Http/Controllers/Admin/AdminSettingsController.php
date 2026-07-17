@@ -316,6 +316,13 @@ trait AdminSettingsController
         return view('admin.settings.system', compact('sys'));
     }
 
+    public function settingsClearInstanceCache(Request $request)
+    {
+        LandingCacheService::invalidate();
+
+        return redirect()->route('admin.settings.system')->with('status', 'Instance cache cleared.');
+    }
+
     public function settingsApiFetch(Request $request)
     {
         $cloud_storage = ConfigCacheService::get('pixelfed.cloud_storage');
