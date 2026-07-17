@@ -10,6 +10,7 @@ use App\Services\AccountService;
 use App\Services\AdminSettingsService;
 use App\Services\ConfigCacheService;
 use App\Services\FilesystemService;
+use App\Services\LandingCacheService;
 use App\User;
 use App\Util\Site\Config;
 use Artisan;
@@ -101,8 +102,7 @@ trait AdminSettingsController
 
         if ($request->filled('admin_account_id')) {
             ConfigCacheService::put('instance.admin.pid', $request->admin_account_id);
-            Cache::forget('api:v1:instance-data:contact');
-            Cache::forget('api:v1:instance-data-response-v1');
+            LandingCacheService::invalidateContact();
         }
         if ($request->filled('rule_delete')) {
             $index = (int) $request->input('rule_delete');
@@ -114,8 +114,7 @@ trait AdminSettingsController
             unset($json[$index]);
             $json = json_encode(array_values($json));
             ConfigCacheService::put('app.rules', $json);
-            Cache::forget('api:v1:instance-data:rules');
-            Cache::forget('api:v1:instance-data-response-v1');
+            LandingCacheService::invalidateRules();
 
             return 200;
         }
@@ -220,8 +219,7 @@ trait AdminSettingsController
                 $json[] = $val;
                 ConfigCacheService::put('app.rules', json_encode(array_values($json)));
             }
-            Cache::forget('api:v1:instance-data:rules');
-            Cache::forget('api:v1:instance-data-response-v1');
+            LandingCacheService::invalidateRules();
         }
 
         if ($request->filled('account_autofollow_usernames')) {
@@ -366,9 +364,7 @@ trait AdminSettingsController
             $json[] = $val;
             ConfigCacheService::put('app.rules', json_encode(array_values($json)));
         }
-        Cache::forget('api:v1:instance-data:rules');
-        Cache::forget('api:v1:instance-data-response-v1');
-        Cache::forget('api:v2:instance-data-response-v2');
+        LandingCacheService::invalidateRules();
         Config::refresh();
 
         return [$val];
@@ -395,9 +391,7 @@ trait AdminSettingsController
             ConfigCacheService::put('app.rules', json_encode(array_values($json)));
         }
 
-        Cache::forget('api:v1:instance-data:rules');
-        Cache::forget('api:v1:instance-data-response-v1');
-        Cache::forget('api:v2:instance-data-response-v2');
+        LandingCacheService::invalidateRules();
         Config::refresh();
 
         return response()->json($json);
@@ -413,9 +407,7 @@ trait AdminSettingsController
             ConfigCacheService::put('app.rules', json_encode([]));
         }
 
-        Cache::forget('api:v1:instance-data:rules');
-        Cache::forget('api:v1:instance-data-response-v1');
-        Cache::forget('api:v2:instance-data-response-v2');
+        LandingCacheService::invalidateRules();
         Config::refresh();
 
         return response()->json([]);
@@ -560,9 +552,7 @@ trait AdminSettingsController
         ConfigCacheService::put('pixelfed.import.instagram.enabled', $request->boolean('instagram_import'));
         ConfigCacheService::put('pixelfed.bouncer.enabled', $request->boolean('autospam_enabled'));
 
-        Cache::forget('api:v1:instance-data-response-v1');
-        Cache::forget('api:v2:instance-data-response-v2');
-        Cache::forget('api:v1:instance-data:contact');
+        LandingCacheService::invalidateContact();
         Config::refresh();
 
         return $request->all();
@@ -580,10 +570,8 @@ trait AdminSettingsController
         ConfigCacheService::put('instance.landing.show_directory', $request->boolean('show_directory'));
         ConfigCacheService::put('instance.landing.show_explore', $request->boolean('show_explore'));
 
-        Cache::forget('api:v1:instance-data:rules');
-        Cache::forget('api:v1:instance-data-response-v1');
-        Cache::forget('api:v2:instance-data-response-v2');
-        Cache::forget('api:v1:instance-data:contact');
+        LandingCacheService::invalidateRules();
+        LandingCacheService::invalidateContact();
         Config::refresh();
 
         return $request->all();
@@ -615,10 +603,8 @@ trait AdminSettingsController
         ConfigCacheService::put('pixelfed.optimize_image', $request->boolean('optimize_image'));
         ConfigCacheService::put('pixelfed.optimize_video', $request->boolean('optimize_video'));
 
-        Cache::forget('api:v1:instance-data:rules');
-        Cache::forget('api:v1:instance-data-response-v1');
-        Cache::forget('api:v2:instance-data-response-v2');
-        Cache::forget('api:v1:instance-data:contact');
+        LandingCacheService::invalidateRules();
+        LandingCacheService::invalidateContact();
         Config::refresh();
 
         return $request->all();
@@ -636,10 +622,8 @@ trait AdminSettingsController
         ConfigCacheService::put('app.short_description', $request->input('short_description'));
         ConfigCacheService::put('app.description', $request->input('long_description'));
 
-        Cache::forget('api:v1:instance-data:rules');
-        Cache::forget('api:v1:instance-data-response-v1');
-        Cache::forget('api:v2:instance-data-response-v2');
-        Cache::forget('api:v1:instance-data:contact');
+        LandingCacheService::invalidateRules();
+        LandingCacheService::invalidateContact();
         Config::refresh();
 
         return $request->all();
@@ -658,9 +642,7 @@ trait AdminSettingsController
             'max_caption_length' => $request->input('max_caption_length'),
             'max_altext_length' => $request->input('max_altext_length'),
         ];
-        Cache::forget('api:v1:instance-data:rules');
-        Cache::forget('api:v1:instance-data-response-v1');
-        Cache::forget('api:v2:instance-data-response-v2');
+        LandingCacheService::invalidateRules();
         Config::refresh();
 
         return $res;
@@ -724,9 +706,7 @@ trait AdminSettingsController
             'captcha_sitekey' => $request->input('captcha_sitekey'),
             'custom_emoji_enabled' => $request->boolean('custom_emoji_enabled'),
         ];
-        Cache::forget('api:v1:instance-data:rules');
-        Cache::forget('api:v1:instance-data-response-v1');
-        Cache::forget('api:v2:instance-data-response-v2');
+        LandingCacheService::invalidateRules();
         Config::refresh();
 
         return $res;
@@ -792,9 +772,7 @@ trait AdminSettingsController
             'max_user_mutes' => $request->input('max_user_mutes'),
             'max_domain_blocks' => $request->input('max_domain_blocks'),
         ];
-        Cache::forget('api:v1:instance-data:rules');
-        Cache::forget('api:v1:instance-data-response-v1');
-        Cache::forget('api:v2:instance-data-response-v2');
+        LandingCacheService::invalidateRules();
         Config::refresh();
 
         return $res;
@@ -880,9 +858,7 @@ trait AdminSettingsController
             }
             $res['changes'] = json_encode($changes);
         }
-        Cache::forget('api:v1:instance-data:rules');
-        Cache::forget('api:v1:instance-data-response-v1');
-        Cache::forget('api:v2:instance-data-response-v2');
+        LandingCacheService::invalidateRules();
         Config::refresh();
 
         return $res;
