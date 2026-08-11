@@ -46,6 +46,7 @@ class StoryApiV1Controller extends Controller
                     ->leftJoin('followers', 'followers.following_id', 'stories.profile_id')
                     ->where('followers.profile_id', $pid)
                     ->where('stories.active', true)
+                    ->get()
                     ->map(function ($s) {
                         $r = new \StdClass;
                         $r->id = $s->id;
@@ -158,6 +159,7 @@ class StoryApiV1Controller extends Controller
                     ->leftJoin('followers', 'followers.following_id', 'stories.profile_id')
                     ->where('followers.profile_id', $pid)
                     ->where('stories.active', true)
+                    ->get()
                     ->map(function ($s) {
                         $r = new \StdClass;
                         $r->id = $s->id;
