@@ -21,7 +21,7 @@ class AutospamService
     public static function check($text)
     {
         if (! $text || strlen($text) == 0) {
-
+            return false;
         }
         if (! self::active()) {
             return null;
