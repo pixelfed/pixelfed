@@ -1294,6 +1294,9 @@ class Helpers
 
     public static function profileFetch($url): ?Profile
     {
+        if ($url === null) {
+            return null;
+        }
         return self::profileFirstOrNew($url);
     }
 
