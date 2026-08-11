@@ -346,22 +346,23 @@ class ApiV1Controller extends Controller
             $website = $request->input('website');
             if ($website != $profile->website) {
                 if ($website) {
-                    if (! strpos($website, '.')) {
+                    // Validate URL scheme FIRST
+                    if (!Str::startsWith($website, ['http://', 'https://'])) {
                         $website = null;
-                    }
+                    } else {
+                        if (!strpos($website, '.')) {
+                            $website = null;
+                        }
 
-                    if ($website && ! strpos($website, '://')) {
-                        $website = 'https://'.$website;
-                    }
+                        $host = parse_url($website, PHP_URL_HOST);
 
-                    $host = parse_url($website, PHP_URL_HOST);
-
-                    $bannedInstances = InstanceService::getBannedDomains();
-                    if (in_array($host, $bannedInstances)) {
-                        $website = null;
+                        $bannedInstances = InstanceService::getBannedDomains();
+                        if (in_array($host, $bannedInstances)) {
+                            $website = null;
+                        }
                     }
                 }
-                $profile->website = $website ? $website : null;
+                $profile->website = $website;
                 $changes = true;
             }
         }
