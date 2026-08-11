@@ -63,6 +63,8 @@ class MediaDeletePipeline implements ShouldBeUniqueUntilProcessing, ShouldQueue
     public function handle()
     {
         $media = $this->media;
+
+        // Verify media exists
         if (! $media) {
             Log::info('MediaDeletePipeline: Media no longer exists, skipping job');
             return 1;
