@@ -94,30 +94,15 @@ class StatusTagsPipeline implements ShouldQueue
 
                 if (config('database.default') === 'pgsql') {
                     $hashtag = DB::transaction(function () use ($name) {
-                        $baseSlug = str_slug($name, '-', false);
-                        $slug = $baseSlug;
-                        $counter = 1;
+                        $slug = str_slug($name, '-', false);
 
-                        $existing = Hashtag::where('name', $name)
+                        // Use slug for lookup (case-insensitive via str_slug normalization)
+                        $existing = Hashtag::where('slug', $slug)
                             ->lockForUpdate()
                             ->first();
 
                         if ($existing) {
-                            if ($existing->slug !== $slug) {
-                                while (Hashtag::where('slug', $slug)
-                                    ->where('name', '!=', $name)
-                                    ->exists()) {
-                                    $slug = $baseSlug.'-'.$counter++;
-                                }
-                                $existing->slug = $slug;
-                                $existing->save();
-                            }
-
                             return $existing;
-                        }
-
-                        while (Hashtag::where('slug', $slug)->exists()) {
-                            $slug = $baseSlug.'-'.$counter++;
                         }
 
                         return Hashtag::create([
