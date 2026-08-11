@@ -12,7 +12,7 @@
             @include('auth.curated-register.partials.progress-bar', ['step' => 4])
 
             <p class="text-center"><i class="fal fa-check-circle text-success fa-8x"></i></p>
-            <h1 class="text-center font-weight-bold my-4">Succesfully Sent Response!</h1>
+            <h1 class="text-center font-weight-bold my-4">Successfully Sent Response!</h1>
             <p class="h4 text-center"><span class="font-weight-bold">Our admin team will review your application.</span></p>
             <hr class="border-dark">
             <p class="lead text-center">Most applications are processed within 24-48 hours. We will send you an email once your account is ready!</p>
