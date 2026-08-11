@@ -457,7 +457,7 @@ class RemoteAuthController extends Controller
         abort_unless($request->session()->exists('oauth_masto_raid'), 403);
 
         $this->validate($request, [
-            'email' => 'required|email:strict,filter_unicode,dns,spoof',
+            'email' => 'required|email:strict,filter_unicode,dns,spoof|unique:users,email',
             'username' => [
                 'required',
                 'min:2',
