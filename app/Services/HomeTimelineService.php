@@ -16,8 +16,8 @@ class HomeTimelineService
 
     public static function get($id, $start = 0, $stop = 10)
     {
-        if ($stop > 100) {
-            $stop = 100;
+        if ($stop > 500) {
+            $stop = 500;
         }
 
         return Redis::zrevrange(self::CACHE_KEY.$id, $start, $stop);
@@ -49,11 +49,18 @@ class HomeTimelineService
 
     public static function add($id, $val)
     {
-        if (self::count($id) >= 400) {
+        if (self::count($id) >= config('instance.timeline.home.cache_dropoff', 800)) {
             Redis::zpopmin(self::CACHE_KEY.$id);
         }
 
-        return Redis::zadd(self::CACHE_KEY.$id, $val, $val);
+        $result = Redis::zadd(self::CACHE_KEY.$id, $val, $val);
+
+        $ttl = Redis::ttl(self::CACHE_KEY.$id);
+        if ($ttl < 0) {
+            Redis::expire(self::CACHE_KEY.$id, config('instance.timeline.home.cache_ttl', 86400));
+        }
+
+        return $result;
     }
 
     public static function rem($id, $val)
@@ -64,6 +71,26 @@ class HomeTimelineService
     public static function count($id)
     {
         return Redis::zcard(self::CACHE_KEY.$id);
+    }
+
+    public static function fallbackMaxId($id, $max, $limit = 10)
+    {
+        $following = Cache::remember('profile:following:'.$id, 1209600, function () use ($id) {
+            $following = Follower::whereProfileId($id)->pluck('following_id');
+
+            return $following->push($id)->toArray();
+        });
+
+        return Status::where('id', '<', $max)
+            ->whereIntegerInRaw('profile_id', $following)
+            ->whereNull(['in_reply_to_id', 'reblog_of_id'])
+            ->whereIn('type', ['photo', 'photo:album', 'video', 'video:album', 'photo:video:album'])
+            ->whereIn('visibility', ['public', 'unlisted', 'private'])
+            ->orderByDesc('id')
+            ->limit($limit)
+            ->pluck('id')
+            ->values()
+            ->toArray();
     }
 
     public static function warmCache($id, $force = false, $limit = 100, $returnIds = false)

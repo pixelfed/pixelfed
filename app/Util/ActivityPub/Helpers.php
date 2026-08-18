@@ -698,9 +698,7 @@ class Helpers
      */
     public static function handleStatusPostProcessing(Status $status, int $profileId, string $url): void
     {
-        if (config('instance.timeline.network.cached') &&
-            self::isEligibleForNetwork($status)
-        ) {
+        if (self::isEligibleForNetwork($status)) {
             $urlDomain = parse_url($url, PHP_URL_HOST);
             $filteredDomains = self::getFilteredDomains();
 

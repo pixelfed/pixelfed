@@ -22,11 +22,6 @@ return [
 	// Poll statuses (alpha)
 	'polls' => env('EXP_POLLS', false),
 
-	// Cached public timeline for larger instances (beta)
-	'cached_public_timeline' => env('EXP_CPT', false),
-
-	'cached_home_timeline' => env('EXP_CHT', false),
-
 	// Groups (unreleased)
 	'gps' => env('EXP_GPS', false),
 

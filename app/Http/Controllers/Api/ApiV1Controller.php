@@ -2644,258 +2644,72 @@ class ApiV1Controller extends Controller
             return in_array('home', $filter->context);
         });
 
-        if (config('exp.cached_home_timeline')) {
-            $paddedLimit = $includeReblogs ? $limit + 10 : $limit + 50;
-            if ($min || $max) {
-                if ($request->has('min_id')) {
-                    $res = HomeTimelineService::getRankedMinId($pid, $min ?? 0, $paddedLimit);
-                } else {
-                    $res = HomeTimelineService::getRankedMaxId($pid, $max ?? 0, $paddedLimit);
-                }
-            } else {
-                $res = HomeTimelineService::get($pid, 0, $paddedLimit);
-            }
-
-            if (! $res) {
-                $res = Cache::has('pf:services:apiv1:home:cached:coldbootcheck:'.$pid);
-                if (! $res) {
-                    Cache::set('pf:services:apiv1:home:cached:coldbootcheck:'.$pid, 1, 86400);
-                    FeedWarmCachePipeline::dispatchSync($pid);
-
-                    return response()->json([], 206);
-                } else {
-                    Cache::set('pf:services:apiv1:home:cached:coldbootcheck:'.$pid, 1, 86400);
-
-                    return response()->json([], 206);
-                }
-            }
-
-            $res = collect($res)
-                ->map(function ($id) use ($napi) {
-                    return $napi ? StatusService::get($id, false) : StatusService::getMastodon($id, false);
-                })
-                ->filter(function ($res) {
-                    return $res && isset($res['account']);
-                })
-                ->filter(function ($s) use ($includeReblogs) {
-                    return $includeReblogs ? true : $s['reblog'] == null;
-                })
-                ->map(function ($status) use ($homeFilters) {
-                    $filterResults = CustomFilter::applyCachedFilters($homeFilters, $status);
-
-                    if (! empty($filterResults)) {
-                        $status['filtered'] = $filterResults;
-                        $shouldHide = collect($filterResults)->contains(function ($result) {
-                            return $result['filter']['filter_action'] === 'hide';
-                        });
-
-                        if ($shouldHide) {
-                            return null;
-                        }
-                    }
-
-                    return $status;
-                })
-                ->filter()
-                ->take($limit)
-                ->map(function ($status) use ($pid) {
-                    if ($pid) {
-                        $status['favourited'] = (bool) LikeService::liked($pid, $status['id']);
-                        $status['reblogged'] = (bool) ReblogService::get($pid, $status['id']);
-                        $status['bookmarked'] = (bool) BookmarkService::get($pid, $status['id']);
-                    }
-
-                    return $status;
-                })
-                ->values();
-
-            $baseUrl = config('app.url').'/api/v1/timelines/home?limit='.$limit.'&';
-            $minId = $res->map(function ($s) {
-                return ['id' => $s['id']];
-            })->min('id');
-            $maxId = $res->map(function ($s) {
-                return ['id' => $s['id']];
-            })->max('id');
-
-            if ($minId == $maxId) {
-                $minId = null;
-            }
-
-            if ($maxId && $res->count() >= $limit) {
-                $link = '<'.$baseUrl.'max_id='.$minId.'>; rel="next"';
-            }
-
-            if ($minId) {
-                $link = '<'.$baseUrl.'min_id='.$maxId.'>; rel="prev"';
-            }
-
-            if ($maxId && $minId) {
-                $link = '<'.$baseUrl.'max_id='.$minId.'>; rel="next",<'.$baseUrl.'min_id='.$maxId.'>; rel="prev"';
-            }
-
-            $headers = isset($link) ? ['Link' => $link] : [];
-
-            return $this->json($res->toArray(), 200, $headers);
-        }
-
-        $following = Cache::remember('profile:following:'.$pid, 1209600, function () use ($pid) {
-            $following = Follower::whereProfileId($pid)->pluck('following_id');
-
-            return $following->push($pid)->toArray();
-        });
-
-        $muted = UserFilterService::mutes($pid);
-
-        if ($muted && count($muted)) {
-            $following = array_diff($following, $muted);
-        }
-
+        $paddedLimit = $includeReblogs ? $limit + 10 : $limit + 50;
         if ($min || $max) {
-            $dir = $min ? '>' : '<';
-            $id = $min ?? $max;
-            $res = Status::select(
-                'id',
-                'profile_id',
-                'type',
-                'visibility',
-                'in_reply_to_id',
-                'reblog_of_id'
-            )
-                ->where('id', $dir, $id)
-                ->whereNull($nullFields)
-                ->whereIntegerInRaw('profile_id', $following)
-                ->whereIn('type', $inTypes)
-                ->whereIn('visibility', ['public', 'unlisted', 'private'])
-                ->orderByDesc('id')
-                ->take(($limit * 2))
-                ->get()
-                ->map(function ($s) use ($pid, $napi) {
-                    try {
-                        $account = $napi ? AccountService::get($s['profile_id'], true) : AccountService::getMastodon($s['profile_id'], true);
-                        if (! $account) {
-                            return false;
-                        }
-                        $status = $napi ? StatusService::get($s['id'], false) : StatusService::getMastodon($s['id'], false);
-                        if (! $status || ! isset($status['account']) || ! isset($status['account']['id'])) {
-                            return false;
-                        }
-                    } catch (\Exception $e) {
-                        return false;
+            if ($request->has('min_id')) {
+                $res = HomeTimelineService::getRankedMinId($pid, $min ?? 0, $paddedLimit);
+            } else {
+                $res = HomeTimelineService::getRankedMaxId($pid, $max ?? 0, $paddedLimit);
+                    if (empty($res) && $max) {
+                        $res = HomeTimelineService::fallbackMaxId($pid, $max, $paddedLimit);
                     }
-
-                    $status['account'] = $account;
-
-                    if ($pid) {
-                        $status['favourited'] = (bool) LikeService::liked($pid, $s['id']);
-                        $status['reblogged'] = (bool) ReblogService::get($pid, $status['id']);
-                        $status['bookmarked'] = (bool) BookmarkService::get($pid, $status['id']);
-                    }
-
-                    return $status;
-                })
-                ->filter(function ($status) {
-                    return $status && isset($status['account']);
-                })
-                ->map(function ($status) use ($pid) {
-                    if (! empty($status['reblog'])) {
-                        $status['reblog']['favourited'] = (bool) LikeService::liked($pid, $status['reblog']['id']);
-                        $status['reblog']['reblogged'] = (bool) ReblogService::get($pid, $status['reblog']['id']);
-                        $status['bookmarked'] = (bool) BookmarkService::get($pid, $status['id']);
-                    }
-
-                    return $status;
-                })
-                ->map(function ($status) use ($homeFilters) {
-                    $filterResults = CustomFilter::applyCachedFilters($homeFilters, $status);
-
-                    if (! empty($filterResults)) {
-                        $status['filtered'] = $filterResults;
-                        $shouldHide = collect($filterResults)->contains(function ($result) {
-                            return $result['filter']['filter_action'] === 'hide';
-                        });
-
-                        if ($shouldHide) {
-                            return null;
-                        }
-                    }
-
-                    return $status;
-                })
-                ->filter()
-                ->take($limit)
-                ->values();
+            }
         } else {
-            $res = Status::select(
-                'id',
-                'profile_id',
-                'type',
-                'visibility',
-                'in_reply_to_id',
-                'reblog_of_id',
-            )
-                ->whereNull($nullFields)
-                ->whereIntegerInRaw('profile_id', $following)
-                ->whereIn('type', $inTypes)
-                ->whereIn('visibility', ['public', 'unlisted', 'private'])
-                ->orderByDesc('id')
-                ->take(($limit * 2))
-                ->get()
-                ->map(function ($s) use ($pid, $napi) {
-                    try {
-                        $account = $napi ? AccountService::get($s['profile_id'], true) : AccountService::getMastodon($s['profile_id'], true);
-                        if (! $account) {
-                            return false;
-                        }
-                        $status = $napi ? StatusService::get($s['id'], false) : StatusService::getMastodon($s['id'], false);
-                        if (! $status || ! isset($status['account']) || ! isset($status['account']['id'])) {
-                            return false;
-                        }
-                    } catch (\Exception $e) {
-                        return false;
-                    }
-
-                    $status['account'] = $account;
-
-                    if ($pid) {
-                        $status['favourited'] = (bool) LikeService::liked($pid, $s['id']);
-                        $status['reblogged'] = (bool) ReblogService::get($pid, $status['id']);
-                        $status['bookmarked'] = (bool) BookmarkService::get($pid, $status['id']);
-                    }
-
-                    return $status;
-                })
-                ->filter(function ($status) {
-                    return $status && isset($status['account']);
-                })
-                ->map(function ($status) use ($pid) {
-                    if (! empty($status['reblog'])) {
-                        $status['reblog']['favourited'] = (bool) LikeService::liked($pid, $status['reblog']['id']);
-                        $status['reblog']['reblogged'] = (bool) ReblogService::get($pid, $status['reblog']['id']);
-                        $status['bookmarked'] = (bool) BookmarkService::get($pid, $status['id']);
-                    }
-
-                    return $status;
-                })
-                ->map(function ($status) use ($homeFilters) {
-                    $filterResults = CustomFilter::applyCachedFilters($homeFilters, $status);
-
-                    if (! empty($filterResults)) {
-                        $status['filtered'] = $filterResults;
-                        $shouldHide = collect($filterResults)->contains(function ($result) {
-                            return $result['filter']['filter_action'] === 'hide';
-                        });
-
-                        if ($shouldHide) {
-                            return null;
-                        }
-                    }
-
-                    return $status;
-                })
-                ->filter()
-                ->take($limit)
-                ->values();
+            $res = HomeTimelineService::get($pid, 0, $paddedLimit);
         }
+
+        if (! $res) {
+            $res = Cache::has('pf:services:apiv1:home:cached:coldbootcheck:'.$pid);
+            if (! $res) {
+                Cache::set('pf:services:apiv1:home:cached:coldbootcheck:'.$pid, 1, 86400);
+                FeedWarmCachePipeline::dispatchSync($pid);
+
+                return response()->json([], 206);
+            } else {
+                Cache::set('pf:services:apiv1:home:cached:coldbootcheck:'.$pid, 1, 86400);
+
+                return response()->json([], 206);
+            }
+        }
+
+        $res = collect($res)
+            ->map(function ($id) use ($napi) {
+                return $napi ? StatusService::get($id, false) : StatusService::getMastodon($id, false);
+            })
+            ->filter(function ($res) {
+                return $res && isset($res['account']);
+            })
+            ->filter(function ($s) use ($includeReblogs) {
+                return $includeReblogs ? true : $s['reblog'] == null;
+            })
+            ->map(function ($status) use ($homeFilters) {
+                $filterResults = CustomFilter::applyCachedFilters($homeFilters, $status);
+
+                if (! empty($filterResults)) {
+                    $status['filtered'] = $filterResults;
+                    $shouldHide = collect($filterResults)->contains(function ($result) {
+                        return $result['filter']['filter_action'] === 'hide';
+                    });
+
+                    if ($shouldHide) {
+                        return null;
+                    }
+                }
+
+                return $status;
+            })
+            ->filter()
+            ->take($limit)
+            ->map(function ($status) use ($pid) {
+                if ($pid) {
+                    $status['favourited'] = (bool) LikeService::liked($pid, $status['id']);
+                    $status['reblogged'] = (bool) ReblogService::get($pid, $status['id']);
+                    $status['bookmarked'] = (bool) BookmarkService::get($pid, $status['id']);
+                }
+
+                return $status;
+            })
+            ->values();
 
         $baseUrl = config('app.url').'/api/v1/timelines/home?limit='.$limit.'&';
         $minId = $res->map(function ($s) {
@@ -2909,7 +2723,7 @@ class ApiV1Controller extends Controller
             $minId = null;
         }
 
-        if ($maxId) {
+        if ($maxId && $res->count() >= $limit) {
             $link = '<'.$baseUrl.'max_id='.$minId.'>; rel="next"';
         }
 
@@ -3005,98 +2819,38 @@ class ApiV1Controller extends Controller
                 ->values()
                 ->toArray();
         } elseif ($remote && ! $local) {
-            if (config('instance.timeline.network.cached')) {
-                Cache::remember('api:v1:timelines:network:cache_check', 10368000, function () {
-                    if (NetworkTimelineService::count() == 0) {
-                        NetworkTimelineService::warmCache(true, config('instance.timeline.network.cache_dropoff'));
-                    }
-                });
-
-                if ($max) {
-                    $feed = NetworkTimelineService::getRankedMaxId($max, $limit + 5);
-                } elseif ($min) {
-                    $feed = NetworkTimelineService::getRankedMinId($min, $limit + 5);
-                } else {
-                    $feed = NetworkTimelineService::get(0, $limit + 5);
+            Cache::remember('api:v1:timelines:network:cache_check', 10368000, function () {
+                if (NetworkTimelineService::count() == 0) {
+                    NetworkTimelineService::warmCache(true, config('instance.timeline.network.cache_dropoff'));
                 }
-            } else {
-                $feed = Status::select(
-                    'id',
-                    'uri',
-                    'type',
-                    'scope',
-                    'local',
-                    'created_at',
-                    'profile_id',
-                    'in_reply_to_id',
-                    'reblog_of_id'
-                )
-                    ->when($minOrMax, function ($q, $minOrMax) use ($min, $max) {
-                        $dir = $min ? '>' : '<';
-                        $id = $min ?? $max;
+            });
 
-                        return $q->where('id', $dir, $id);
-                    })
-                    ->whereNull(['in_reply_to_id', 'reblog_of_id'])
-                    ->when($hideNsfw, function ($q, $hideNsfw) {
-                        return $q->where('is_nsfw', false);
-                    })
-                    ->whereIn('type', ['photo', 'photo:album', 'video', 'video:album', 'photo:video:album'])
-                    ->whereLocal(false)
-                    ->whereScope('public')
-                    ->where('id', '>', $amin)
-                    ->orderByDesc('id')
-                    ->limit(($limit * 2))
-                    ->pluck('id')
-                    ->values()
-                    ->toArray();
+            if ($max) {
+                $feed = NetworkTimelineService::getRankedMaxId($max, $limit + 5);
+                if (empty($feed)) {
+                    $feed = NetworkTimelineService::fallbackMaxId($max, $limit + 5);
+                }
+            } elseif ($min) {
+                $feed = NetworkTimelineService::getRankedMinId($min, $limit + 5);
+            } else {
+                $feed = NetworkTimelineService::get(0, $limit + 5);
             }
         } else {
-            if (config('instance.timeline.local.cached')) {
-                Cache::remember('api:v1:timelines:public:cache_check', 10368000, function () {
-                    if (PublicTimelineService::count() == 0) {
-                        PublicTimelineService::warmCache(true, 400);
-                    }
-                });
-
-                if ($max) {
-                    $feed = PublicTimelineService::getRankedMaxId($max, $limit + 5);
-                } elseif ($min) {
-                    $feed = PublicTimelineService::getRankedMinId($min, $limit + 5);
-                } else {
-                    $feed = PublicTimelineService::get(0, $limit + 5);
+            Cache::remember('api:v1:timelines:public:cache_check', 10368000, function () {
+                if (PublicTimelineService::count() == 0) {
+                    PublicTimelineService::warmCache(true, 400);
                 }
-            } else {
-                $feed = Status::select(
-                    'id',
-                    'uri',
-                    'type',
-                    'scope',
-                    'local',
-                    'created_at',
-                    'profile_id',
-                    'in_reply_to_id',
-                    'reblog_of_id'
-                )
-                    ->when($minOrMax, function ($q, $minOrMax) use ($min, $max) {
-                        $dir = $min ? '>' : '<';
-                        $id = $min ?? $max;
+            });
 
-                        return $q->where('id', $dir, $id);
-                    })
-                    ->whereNull(['in_reply_to_id', 'reblog_of_id'])
-                    ->when($hideNsfw, function ($q, $hideNsfw) {
-                        return $q->where('is_nsfw', false);
-                    })
-                    ->whereIn('type', ['photo', 'photo:album', 'video', 'video:album', 'photo:video:album'])
-                    ->whereLocal(true)
-                    ->whereScope('public')
-                    ->where('id', '>', $amin)
-                    ->orderByDesc('id')
-                    ->limit(($limit * 2))
-                    ->pluck('id')
-                    ->values()
-                    ->toArray();
+            if ($max) {
+                $feed = PublicTimelineService::getRankedMaxId($max, $limit + 5);
+                if (empty($feed)) {
+                    $feed = PublicTimelineService::fallbackMaxId($max, $limit + 5);
+                }
+            } elseif ($min) {
+                $feed = PublicTimelineService::getRankedMinId($min, $limit + 5);
+            } else {
+                $feed = PublicTimelineService::get(0, $limit + 5);
             }
         }
 

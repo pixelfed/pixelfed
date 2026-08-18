@@ -232,127 +232,41 @@ class PublicApiController extends Controller
         $user = $request->user();
         $filtered = $user ? UserFilterService::filters($user->profile_id) : [];
 
-        $hideNsfw = config('instance.hide_nsfw_on_public_feeds');
-        if (config('exp.cached_public_timeline') == false) {
-            if ($min || $max) {
-                $dir = $min ? '>' : '<';
-                $id = $min ?? $max;
-                $timeline = Status::select(
-                    'id',
-                    'profile_id',
-                    'type',
-                    'scope',
-                    'local'
-                )
-                    ->where('id', $dir, $id)
-                    ->whereNull(['in_reply_to_id', 'reblog_of_id'])
-                    ->whereIn('type', ['photo', 'photo:album', 'video', 'video:album', 'photo:video:album'])
-                    ->whereLocal(true)
-                    ->when($hideNsfw, function ($q, $hideNsfw) {
-                        return $q->where('is_nsfw', false);
-                    })
-                    ->whereScope('public')
-                    ->orderBy('id', 'desc')
-                    ->limit($limit)
-                    ->get()
-                    ->map(function ($s) use ($user) {
-                        $status = StatusService::getFull($s->id, $user->profile_id);
-                        if (! $status) {
-                            return false;
-                        }
-                        $status['favourited'] = (bool) LikeService::liked($user->profile_id, $s->id);
-                        $status['bookmarked'] = (bool) BookmarkService::get($user->profile_id, $s->id);
-                        $status['reblogged'] = (bool) ReblogService::get($user->profile_id, $s->id);
-
-                        return $status;
-                    })
-                    ->filter(function ($s) use ($filtered) {
-                        return $s && isset($s['account']) && in_array($s['account']['id'], $filtered) == false;
-                    })
-                    ->values();
-                $res = $timeline->toArray();
-            } else {
-                $timeline = Status::select(
-                    'id',
-                    'uri',
-                    'caption',
-                    'profile_id',
-                    'type',
-                    'in_reply_to_id',
-                    'reblog_of_id',
-                    'is_nsfw',
-                    'scope',
-                    'local',
-                    'reply_count',
-                    'comments_disabled',
-                    'created_at',
-                    'place_id',
-                    'likes_count',
-                    'reblogs_count',
-                    'updated_at'
-                )
-                    ->whereNull(['in_reply_to_id', 'reblog_of_id'])
-                    ->whereIn('type', ['photo', 'photo:album', 'video', 'video:album', 'photo:video:album'])
-                    ->whereLocal(true)
-                    ->when($hideNsfw, function ($q, $hideNsfw) {
-                        return $q->where('is_nsfw', false);
-                    })
-                    ->whereScope('public')
-                    ->orderBy('id', 'desc')
-                    ->limit($limit)
-                    ->get()
-                    ->map(function ($s) use ($user) {
-                        $status = StatusService::getFull($s->id, $user->profile_id);
-                        if (! $status) {
-                            return false;
-                        }
-                        $status['favourited'] = (bool) LikeService::liked($user->profile_id, $s->id);
-                        $status['bookmarked'] = (bool) BookmarkService::get($user->profile_id, $s->id);
-                        $status['reblogged'] = (bool) ReblogService::get($user->profile_id, $s->id);
-
-                        return $status;
-                    })
-                    ->filter(function ($s) use ($filtered) {
-                        return $s && isset($s['account']) && in_array($s['account']['id'], $filtered) == false;
-                    })
-                    ->values();
-
-                $res = $timeline->toArray();
+        Cache::remember('api:v1:timelines:public:cache_check', 10368000, function () {
+            if (PublicTimelineService::count() == 0) {
+                PublicTimelineService::warmCache(true, 400);
             }
+        });
+
+        if ($max) {
+            $feed = PublicTimelineService::getRankedMaxId($max, $limit);
+            if (empty($feed)) {
+                $feed = PublicTimelineService::fallbackMaxId($max, $limit);
+            }
+        } elseif ($min) {
+            $feed = PublicTimelineService::getRankedMinId($min, $limit);
         } else {
-            Cache::remember('api:v1:timelines:public:cache_check', 10368000, function () {
-                if (PublicTimelineService::count() == 0) {
-                    PublicTimelineService::warmCache(true, 400);
-                }
-            });
-
-            if ($max) {
-                $feed = PublicTimelineService::getRankedMaxId($max, $limit);
-            } elseif ($min) {
-                $feed = PublicTimelineService::getRankedMinId($min, $limit);
-            } else {
-                $feed = PublicTimelineService::get(0, $limit);
-            }
-
-            $res = collect($feed)
-                ->take($limit)
-                ->map(function ($k) use ($user) {
-                    $status = StatusService::get($k);
-                    if ($status && isset($status['account']) && $user) {
-                        $status['favourited'] = (bool) LikeService::liked($user->profile_id, $k);
-                        $status['bookmarked'] = (bool) BookmarkService::get($user->profile_id, $k);
-                        $status['reblogged'] = (bool) ReblogService::get($user->profile_id, $k);
-                        $status['relationship'] = RelationshipService::get($user->profile_id, $status['account']['id']);
-                    }
-
-                    return $status;
-                })
-                ->filter(function ($s) use ($filtered) {
-                    return $s && isset($s['account']) && in_array($s['account']['id'], $filtered) == false;
-                })
-                ->values()
-                ->toArray();
+            $feed = PublicTimelineService::get(0, $limit);
         }
+
+        $res = collect($feed)
+            ->take($limit)
+            ->map(function ($k) use ($user) {
+                $status = StatusService::get($k);
+                if ($status && isset($status['account']) && $user) {
+                    $status['favourited'] = (bool) LikeService::liked($user->profile_id, $k);
+                    $status['bookmarked'] = (bool) BookmarkService::get($user->profile_id, $k);
+                    $status['reblogged'] = (bool) ReblogService::get($user->profile_id, $k);
+                    $status['relationship'] = RelationshipService::get($user->profile_id, $status['account']['id']);
+                }
+
+                return $status;
+            })
+            ->filter(function ($s) use ($filtered) {
+                return $s && isset($s['account']) && in_array($s['account']['id'], $filtered) == false;
+            })
+            ->values()
+            ->toArray();
 
         return response()->json($res);
     }
@@ -531,103 +445,41 @@ class PublicApiController extends Controller
         $filtered = $user ? UserFilterService::filters($user->profile_id) : [];
         $hideNsfw = config('instance.hide_nsfw_on_public_feeds');
 
-        if (config('instance.timeline.network.cached') == false) {
-            if ($min || $max) {
-                $dir = $min ? '>' : '<';
-                $id = $min ?? $max;
-                $timeline = Status::select(
-                    'id',
-                    'uri',
-                    'type',
-                    'scope',
-                    'created_at',
-                )
-                    ->where('id', $dir, $id)
-                    ->when($hideNsfw, function ($q, $hideNsfw) {
-                        return $q->where('is_nsfw', false);
-                    })
-                    ->whereNull(['in_reply_to_id', 'reblog_of_id'])
-                    ->whereNotIn('profile_id', $filtered)
-                    ->whereIn('type', ['photo', 'photo:album', 'video', 'video:album', 'photo:video:album'])
-                    ->whereNotNull('uri')
-                    ->whereScope('public')
-                    ->where('id', '>', $amin)
-                    ->orderBy('created_at', 'desc')
-                    ->limit($limit)
-                    ->get()
-                    ->map(function ($s) use ($user) {
-                        $status = StatusService::get($s->id);
-                        $status['favourited'] = (bool) LikeService::liked($user->profile_id, $s->id);
-                        $status['bookmarked'] = (bool) BookmarkService::get($user->profile_id, $s->id);
-                        $status['reblogged'] = (bool) ReblogService::get($user->profile_id, $s->id);
-
-                        return $status;
-                    });
-                $res = $timeline->toArray();
-            } else {
-                $timeline = Status::select(
-                    'id',
-                    'uri',
-                    'type',
-                    'scope',
-                    'created_at',
-                )
-                    ->whereNull(['in_reply_to_id', 'reblog_of_id'])
-                    ->whereNotIn('profile_id', $filtered)
-                    ->when($hideNsfw, function ($q, $hideNsfw) {
-                        return $q->where('is_nsfw', false);
-                    })
-                    ->whereIn('type', ['photo', 'photo:album', 'video', 'video:album', 'photo:video:album'])
-                    ->whereNotNull('uri')
-                    ->whereScope('public')
-                    ->where('id', '>', $amin)
-                    ->orderBy('created_at', 'desc')
-                    ->limit($limit)
-                    ->get()
-                    ->map(function ($s) use ($user) {
-                        $status = StatusService::get($s->id);
-                        $status['favourited'] = (bool) LikeService::liked($user->profile_id, $s->id);
-                        $status['bookmarked'] = (bool) BookmarkService::get($user->profile_id, $s->id);
-                        $status['reblogged'] = (bool) ReblogService::get($user->profile_id, $s->id);
-
-                        return $status;
-                    });
-                $res = $timeline->toArray();
+        Cache::remember('api:v1:timelines:network:cache_check', 10368000, function () {
+            if (NetworkTimelineService::count() == 0) {
+                NetworkTimelineService::warmCache(true, 400);
             }
+        });
+
+        if ($max) {
+            $feed = NetworkTimelineService::getRankedMaxId($max, $limit);
+            if (empty($feed)) {
+                $feed = NetworkTimelineService::fallbackMaxId($max, $limit);
+            }
+        } elseif ($min) {
+            $feed = NetworkTimelineService::getRankedMinId($min, $limit);
         } else {
-            Cache::remember('api:v1:timelines:network:cache_check', 10368000, function () {
-                if (NetworkTimelineService::count() == 0) {
-                    NetworkTimelineService::warmCache(true, 400);
-                }
-            });
-
-            if ($max) {
-                $feed = NetworkTimelineService::getRankedMaxId($max, $limit);
-            } elseif ($min) {
-                $feed = NetworkTimelineService::getRankedMinId($min, $limit);
-            } else {
-                $feed = NetworkTimelineService::get(0, $limit);
-            }
-
-            $res = collect($feed)
-                ->take($limit)
-                ->map(function ($k) use ($user) {
-                    $status = StatusService::get($k);
-                    if ($status && isset($status['account']) && $user) {
-                        $status['favourited'] = (bool) LikeService::liked($user->profile_id, $k);
-                        $status['bookmarked'] = (bool) BookmarkService::get($user->profile_id, $k);
-                        $status['reblogged'] = (bool) ReblogService::get($user->profile_id, $k);
-                        $status['relationship'] = RelationshipService::get($user->profile_id, $status['account']['id']);
-                    }
-
-                    return $status;
-                })
-                ->filter(function ($s) use ($filtered) {
-                    return $s && isset($s['account']) && in_array($s['account']['id'], $filtered) == false;
-                })
-                ->values()
-                ->toArray();
+            $feed = NetworkTimelineService::get(0, $limit);
         }
+
+        $res = collect($feed)
+            ->take($limit)
+            ->map(function ($k) use ($user) {
+                $status = StatusService::get($k);
+                if ($status && isset($status['account']) && $user) {
+                    $status['favourited'] = (bool) LikeService::liked($user->profile_id, $k);
+                    $status['bookmarked'] = (bool) BookmarkService::get($user->profile_id, $k);
+                    $status['reblogged'] = (bool) ReblogService::get($user->profile_id, $k);
+                    $status['relationship'] = RelationshipService::get($user->profile_id, $status['account']['id']);
+                }
+
+                return $status;
+            })
+            ->filter(function ($s) use ($filtered) {
+                return $s && isset($s['account']) && in_array($s['account']['id'], $filtered) == false;
+            })
+            ->values()
+            ->toArray();
 
         return response()->json($res);
     }
