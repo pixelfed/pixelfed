@@ -740,7 +740,19 @@ class Helpers
         $idDomain = parse_url($id, PHP_URL_HOST);
         $urlDomain = parse_url($url, PHP_URL_HOST);
 
-        return $idDomain && $urlDomain;
+        if (! $idDomain || ! $urlDomain) {
+            return false;
+        }
+
+        $attributedTo = $activity['attributedTo'] ?? $activity['object']['attributedTo'] ?? null;
+        if ($attributedTo) {
+            $authorDomain = parse_url(self::pluckval($attributedTo), PHP_URL_HOST);
+            if ($authorDomain && strtolower($idDomain) !== strtolower($authorDomain)) {
+                return false;
+            }
+        }
+
+        return true;
     }
 
     /**
@@ -835,7 +847,14 @@ class Helpers
      */
     public static function validateStatusDomains(string $id, string $url): bool
     {
-        return self::validateUrl($id) && self::validateUrl($url);
+        if (! self::validateUrl($id) || ! self::validateUrl($url)) {
+            return false;
+        }
+
+        $idDomain = parse_url($id, PHP_URL_HOST);
+        $urlDomain = parse_url($url, PHP_URL_HOST);
+
+        return $idDomain && $urlDomain && strtolower($idDomain) === strtolower($urlDomain);
     }
 
     /**
