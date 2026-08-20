@@ -562,6 +562,11 @@ class Inbox
     {
         $actor = $this->actorFirstOrCreate($this->payload['actor']);
         $target = $this->actorFirstOrCreate($this->payload['object']);
+
+        if ($target->moved_to_profile_id) {
+            return;
+        }        
+        
         if (! $actor || ! $target) {
             return;
         }
