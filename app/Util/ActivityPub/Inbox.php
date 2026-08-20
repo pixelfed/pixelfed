@@ -416,9 +416,13 @@ class Inbox
     public function handleDirectMessage()
     {
         $activity = $this->payload['object'];
+        $to = $activity['to'] ?? [];
+        if (is_string($to)) {
+            $to = [$to];
+        }
         $actor = $this->actorFirstOrCreate($this->payload['actor']);
         $profile = Profile::whereNull('domain')
-            ->whereUsername(array_last(explode('/', $activity['to'][0])))
+            ->whereUsername(array_last(explode('/', $to[0])))
             ->firstOrFail();
 
         if (! $actor || in_array($actor->id, $profile->blockedIds()->toArray())) {
