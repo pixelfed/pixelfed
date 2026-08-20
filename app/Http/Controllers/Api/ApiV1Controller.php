@@ -1269,7 +1269,7 @@ class ApiV1Controller extends Controller
             $selfProfile = $user->profile;
             $selfProfile->following_count = Follower::whereProfileId($pid)->count();
             $selfProfile->save();
-            FollowerService::remove($pid, $profile->pid);
+            FollowerService::remove($pid, $profile->id);
             AccountService::del($pid);
             AccountService::del($profile->id);
         }
