@@ -733,26 +733,72 @@ class Helpers
      */
     public static function validateStatusUrls(string $url, array $activity): bool
     {
-        $id = isset($activity['id']) ?
-            self::pluckval($activity['id']) :
-            self::pluckval($url);
+        $id = self::extractActivityPubUrl(
+            $activity['id'] ?? $url
+        );
+
+        if (! $id) {
+            return false;
+        }
 
         $idDomain = parse_url($id, PHP_URL_HOST);
         $urlDomain = parse_url($url, PHP_URL_HOST);
 
-        if (! $idDomain || ! $urlDomain) {
+        if (! is_string($idDomain) || ! is_string($urlDomain)) {
             return false;
         }
 
-        $attributedTo = $activity['attributedTo'] ?? $activity['object']['attributedTo'] ?? null;
-        if ($attributedTo) {
-            $authorDomain = parse_url(self::pluckval($attributedTo), PHP_URL_HOST);
-            if ($authorDomain && strtolower($idDomain) !== strtolower($authorDomain)) {
+        if (strcasecmp($idDomain, $urlDomain) !== 0) {
+            return false;
+        }
+
+        $attributedTo = $activity['attributedTo']
+            ?? $activity['object']['attributedTo']
+            ?? null;
+
+        if ($attributedTo !== null) {
+            $author = self::extractActivityPubUrl($attributedTo);
+
+            if (! $author) {
+                return false;
+            }
+
+            $authorDomain = parse_url($author, PHP_URL_HOST);
+
+            if (
+                ! is_string($authorDomain) ||
+                strcasecmp($idDomain, $authorDomain) !== 0
+            ) {
                 return false;
             }
         }
 
         return true;
+    }
+
+    private static function extractActivityPubUrl($value): ?string
+    {
+        $value = self::pluckval($value);
+
+        if (is_string($value)) {
+            return $value !== '' ? $value : null;
+        }
+
+        if (is_array($value)) {
+            foreach ($value as $item) {
+                $item = self::pluckval($item);
+
+                if (is_string($item) && $item !== '') {
+                    return $item;
+                }
+
+                if (is_array($item) && isset($item['id']) && is_string($item['id'])) {
+                    return $item['id'];
+                }
+            }
+        }
+
+        return null;
     }
 
     /**
