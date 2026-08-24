@@ -2608,8 +2608,8 @@ class ApiV1Controller extends Controller
 
         $this->validate($request, [
             'page' => 'sometimes|integer|max:40',
-            'min_id' => 'sometimes|integer|min:0|max:'.PHP_INT_MAX,
-            'max_id' => 'sometimes|integer|min:0|max:'.PHP_INT_MAX,
+            'min_id' => 'nullable|integer|min:0|max:'.PHP_INT_MAX,
+            'max_id' => 'nullable|integer|min:0|max:'.PHP_INT_MAX,
             'limit' => 'sometimes|integer|min:1',
             'include_reblogs' => 'sometimes',
         ]);
