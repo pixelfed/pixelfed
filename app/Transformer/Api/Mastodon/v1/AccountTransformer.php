@@ -42,6 +42,7 @@ class AccountTransformer extends Fractal\TransformerAbstract
                 $res['moved'] = [
                     'id' => $newProfile['id'],
                     'acct' => $newProfile['acct'],
+                    'avatar' => $newProfile['avatar'],
                 ];
             }
         }
