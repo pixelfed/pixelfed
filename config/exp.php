@@ -7,15 +7,6 @@
  */
 
 return [
-	// Hidden like counts (deprecated)
-	'lc' => env('EXP_LC', false),
-
-	// Recommendations (deprecated)
-	'rec' => false,
-
-	// Loops feature (deprecated)
-	'loops' => false,
-
 	// Text only posts (alpha)
 	'top' => env('EXP_TOP', false),
 

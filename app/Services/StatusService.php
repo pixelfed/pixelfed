@@ -18,47 +18,93 @@ class StatusService
     {
         $p = $publicOnly ? 'pub:' : 'all:';
 
-        return self::CACHE_KEY.$p.$id;
+        return self::CACHE_KEY . $p . $id;
     }
 
-    public static function get($id, $publicOnly = true, $mastodonMode = false)
-    {
+    public static function get(
+        $id,
+        $publicOnly = true,
+        $mastodonMode = false,
+        $viewerProfileId = null
+    ) {
         $res = Cache::remember(self::key($id, $publicOnly), 21600, function () use ($id, $publicOnly) {
             if ($publicOnly) {
                 $status = Status::whereScope('public')->find($id);
             } else {
-                $status = Status::whereIn('scope', ['public', 'private', 'unlisted', 'group'])->find($id);
+                $status = Status::whereIn('scope', [
+                    'public',
+                    'private',
+                    'unlisted',
+                    'group',
+                ])->find($id);
             }
+
             if (! $status) {
                 return null;
             }
+
             $fractal = new Fractal\Manager;
             $fractal->setSerializer(new ArraySerializer);
-            $resource = new Fractal\Resource\Item($status, new StatusStatelessTransformer);
+
+            $resource = new Fractal\Resource\Item(
+                $status,
+                new StatusStatelessTransformer
+            );
+
             $res = $fractal->createData($resource)->toArray();
-            $res['_pid'] = isset($res['account']) && isset($res['account']['id']) ? $res['account']['id'] : null;
+
+            $res['_pid'] = isset($res['account'], $res['account']['id'])
+                ? $res['account']['id']
+                : null;
+
             if (isset($res['_pid'])) {
                 unset($res['account']);
             }
 
             return $res;
         });
-        if ($res && isset($res['_pid'])) {
-            $res['account'] = $mastodonMode === true ? AccountService::getMastodon($res['_pid'], true) : AccountService::get($res['_pid'], true);
+
+        if (! $res) {
+            return null;
+        }
+
+        if ($viewerProfileId !== null) {
+            $ownerProfileId = $res['_pid'] ?? null;
+            $visibility = $res['visibility'] ?? null;
+
+            if (! self::isVisibleTo(
+                $ownerProfileId,
+                $visibility,
+                $viewerProfileId
+            )) {
+                return null;
+            }
+        }
+
+        if (isset($res['_pid'])) {
+            $res['account'] = $mastodonMode === true
+                ? AccountService::getMastodon($res['_pid'], true)
+                : AccountService::get($res['_pid'], true);
+
             unset($res['_pid']);
         }
 
         return $res;
     }
 
-    public static function getMastodon($id, $publicOnly = true)
-    {
-        $status = self::get($id, $publicOnly, true);
-        if (! $status) {
-            return null;
-        }
+    public static function getMastodon(
+        $id,
+        $publicOnly = true,
+        $viewerProfileId = null
+    ) {
+        $status = self::get(
+            $id,
+            $publicOnly,
+            true,
+            $viewerProfileId
+        );
 
-        if (! isset($status['account'])) {
+        if (! $status || ! isset($status['account'])) {
             return null;
         }
 
@@ -73,7 +119,6 @@ class StatusService
             $status['comments_disabled'],
             $status['content_text'],
             $status['gid'],
-            $status['label'],
             $status['liked_by'],
             $status['local'],
             $status['parent'],
@@ -94,6 +139,7 @@ class StatusService
             $status['account']['website'],
             $status['media_attachments'],
         );
+
         $status['account']['avatar_static'] = $status['account']['avatar'];
         $status['account']['bot'] = false;
         $status['account']['emojis'] = [];
@@ -102,11 +148,79 @@ class StatusService
         $status['account']['header_static'] = url('/storage/headers/missing.png');
         $status['account']['last_status_at'] = null;
 
-        $status['media_attachments'] = array_values(MediaService::getMastodon($status['id']));
+        $status['media_attachments'] = array_values(
+            MediaService::getMastodon($status['id'])
+        );
+
         $status['muted'] = false;
         $status['reblogged'] = false;
 
         return $status;
+    }
+
+    /**
+     * Determine whether a status with the given visibility can be
+     * returned to a viewer.
+     */
+    public static function isVisibleTo(
+        $ownerProfileId,
+        $visibility,
+        $viewerProfileId
+    ) {
+        if (! $ownerProfileId || ! $visibility || ! $viewerProfileId) {
+            return false;
+        }
+
+        $ownerProfileId = (int) $ownerProfileId;
+        $viewerProfileId = (int) $viewerProfileId;
+
+        if ($ownerProfileId === $viewerProfileId) {
+            return true;
+        }
+
+        switch ($visibility) {
+            case 'public':
+            case 'unlisted':
+                return true;
+
+            case 'private':
+                return FollowerService::follows(
+                    $viewerProfileId,
+                    $ownerProfileId
+                );
+
+            case 'group':
+            default:
+                return false;
+        }
+    }
+
+    public static function clampReplyVisibility(
+        $replyVisibility,
+        $parentVisibility
+    ) {
+        if ($parentVisibility === 'group') {
+            return 'group';
+        }
+
+        $levels = [
+            'private' => 0,
+            'unlisted' => 1,
+            'public' => 2,
+        ];
+
+        if (
+            ! isset($levels[$replyVisibility]) ||
+            ! isset($levels[$parentVisibility])
+        ) {
+            return 'private';
+        }
+
+        if ($levels[$replyVisibility] > $levels[$parentVisibility]) {
+            return $parentVisibility;
+        }
+
+        return $replyVisibility;
     }
 
     public static function getState($id, $pid)
@@ -159,11 +273,11 @@ class StatusService
         if ($purge) {
             $status = self::get($id);
             if ($status && isset($status['account']) && isset($status['account']['id'])) {
-                Cache::forget('profile:embed:'.$status['account']['id']);
+                Cache::forget('profile:embed:' . $status['account']['id']);
             }
-            Cache::forget('status:transformer:media:attachments:'.$id);
+            Cache::forget('status:transformer:media:attachments:' . $id);
             MediaService::del($id);
-            Cache::forget('pf:services:sh:id:'.$id);
+            Cache::forget('pf:services:sh:id:' . $id);
             PublicTimelineService::rem($id);
             NetworkTimelineService::rem($id);
         }

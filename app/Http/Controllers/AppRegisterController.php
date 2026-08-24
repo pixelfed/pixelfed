@@ -8,15 +8,20 @@ use App\Services\AccountService;
 use App\User;
 use App\Util\Lexer\RestrictedNames;
 use Illuminate\Http\Request;
+use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Str;
-use Laravel\Passport\RefreshTokenRepository;
+use Laravel\Passport\RefreshToken;
 use Purify;
 
 class AppRegisterController extends Controller
 {
+    private const VERIFY_CODE_MAX_ATTEMPTS = 10;
+
+    private const VERIFY_CODE_TTL_SECONDS = 3600;
+
     public function index(Request $request)
     {
         abort_unless(config('auth.in_app_registration'), 404);
@@ -96,7 +101,9 @@ class AppRegisterController extends Controller
     public function verifyCode(Request $request)
     {
         abort_unless(config('auth.in_app_registration'), 404);
+
         $open = (bool) config_cache('pixelfed.open_registration');
+
         if (! $open || $request->user()) {
             return redirect('/');
         }
@@ -107,15 +114,19 @@ class AppRegisterController extends Controller
         ]);
 
         $email = strtolower($request->input('email'));
-        $code = $request->input('verify_code');
+        $code = (string) $request->input('verify_code');
 
-        $exists = AppRegister::whereEmail($email)
-            ->whereVerifyCode($code)
-            ->where('created_at', '>', now()->subDays(90))
-            ->exists();
+        $result = $this->checkVerificationCode($email, $code);
+
+        if ($result['locked']) {
+            return response()->json([
+                'status' => 'error',
+                'message' => 'Too many verification attempts. Please request a new code.',
+            ], 429);
+        }
 
         return response()->json([
-            'status' => $exists ? 'success' : 'error',
+            'status' => $result['valid'] ? 'success' : 'error',
         ]);
     }
 
@@ -156,11 +167,15 @@ class AppRegisterController extends Controller
         $exists = AppRegister::whereEmail($email)->first();
 
         if (! $exists || $exists->uses > 5) {
-            $errorMessage = $exists->uses > 5 ? 'Too many attempts have been made, please contact the admins.' : 'Email not found';
+            $errorMessage = ! $exists
+                ? 'Email not found'
+                : 'Too many attempts have been made, please contact the admins.';
+
             $errorParams = http_build_query([
                 'status' => 'error',
                 'message' => $errorMessage,
             ]);
+
             DB::rollBack();
 
             return redirect()->away("pixelfed://verifyEmail?{$errorParams}");
@@ -169,6 +184,7 @@ class AppRegisterController extends Controller
         $registration = $exists->update([
             'verify_code' => $code,
             'uses' => ($exists->uses + 1),
+            'failed_attempts' => 0,
             'email_delivered_at' => now(),
         ]);
 
@@ -217,15 +233,19 @@ class AppRegisterController extends Controller
         $name = $request->input('name');
         $password = $request->input('password');
 
-        $exists = AppRegister::whereEmail($email)
-            ->whereVerifyCode($code)
-            ->where('created_at', '>', now()->subDays(90))
-            ->exists();
+        $result = $this->checkVerificationCode($email, (string) $code);
 
-        if (! $exists) {
+        if ($result['locked']) {
             return response()->json([
                 'status' => 'error',
-                'message' => 'Invalid verification code, please try again later.',
+                'message' => 'Too many verification attempts. Please request a new code.',
+            ], 429);
+        }
+
+        if (! $result['valid']) {
+            return response()->json([
+                'status' => 'error',
+                'message' => 'Invalid or expired verification code.',
             ]);
         }
 
@@ -244,8 +264,7 @@ class AppRegisterController extends Controller
         $tokenModel = $token->token;
         $clientId = $tokenModel->client_id;
         $clientSecret = DB::table('oauth_clients')->where('id', $clientId)->value('secret');
-        $refreshTokenRepo = app(RefreshTokenRepository::class);
-        $refreshToken = $refreshTokenRepo->create([
+        $refreshToken = RefreshToken::create([
             'id' => Str::random(80),
             'access_token_id' => $tokenModel->id,
             'revoked' => false,
@@ -317,5 +336,68 @@ class AppRegisterController extends Controller
                 }
             },
         ];
+    }
+
+    protected function checkVerificationCode(string $email, string $code): array
+    {
+        return DB::transaction(function () use ($email, $code) {
+            $registration = AppRegister::whereEmail($email)
+                ->lockForUpdate()
+                ->first();
+
+            if (! $registration) {
+                return [
+                    'valid' => false,
+                    'locked' => false,
+                ];
+            }
+
+            if ((int) $registration->failed_attempts >= self::VERIFY_CODE_MAX_ATTEMPTS) {
+                return [
+                    'valid' => false,
+                    'locked' => true,
+                ];
+            }
+
+            $issuedAt = $registration->email_delivered_at
+                ? Carbon::parse($registration->email_delivered_at)
+                : null;
+
+            if (
+                ! $issuedAt ||
+                $issuedAt->lte(now()->subSeconds(self::VERIFY_CODE_TTL_SECONDS))
+            ) {
+                return [
+                    'valid' => false,
+                    'locked' => false,
+                ];
+            }
+
+            $storedCode = str_pad(
+                (string) $registration->verify_code,
+                6,
+                '0',
+                STR_PAD_LEFT
+            );
+
+            if (hash_equals($storedCode, (string) $code)) {
+                return [
+                    'valid' => true,
+                    'locked' => false,
+                ];
+            }
+
+            $registration->failed_attempts = min(
+                self::VERIFY_CODE_MAX_ATTEMPTS,
+                ((int) $registration->failed_attempts) + 1
+            );
+
+            $registration->save();
+
+            return [
+                'valid' => false,
+                'locked' => $registration->failed_attempts >= self::VERIFY_CODE_MAX_ATTEMPTS,
+            ];
+        }, 3);
     }
 }

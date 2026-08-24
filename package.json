@@ -75,6 +75,9 @@
         "webgl-media-editor": "^0.0.6",
         "zuck.js": "^1.6.0"
     },
+    "overrides": {
+        "webpackbar": "^7.0.0"
+    },
     "collective": {
         "type": "opencollective",
         "url": "https://opencollective.com/pixelfed"

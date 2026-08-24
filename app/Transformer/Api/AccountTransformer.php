@@ -3,6 +3,7 @@
 namespace App\Transformer\Api;
 
 use App\Profile;
+use App\Services\AccountService;
 use App\Services\PronounService;
 use App\User;
 use App\UserSetting;
@@ -73,6 +74,17 @@ class AccountTransformer extends Fractal\TransformerAbstract
             'pronouns' => PronounService::get($profile->id),
             'location' => $profile->location,
         ];
+
+        if ($profile->moved_to_profile_id) {
+            $newProfile = AccountService::get($profile->moved_to_profile_id);
+            if ($newProfile && isset($newProfile['id'], $newProfile['acct'])) {
+                $res['moved'] = [
+                    'id' => $newProfile['id'],
+                    'acct' => $newProfile['acct'],
+                    'avatar' => $newProfile['avatar'],
+                ];
+            }
+        }
 
         return $res;
     }

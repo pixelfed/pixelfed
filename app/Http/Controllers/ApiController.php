@@ -12,9 +12,4 @@ class ApiController extends BaseApiController
     {
         return response()->json(Config::get());
     }
-
-    public function userRecommendations(Request $request)
-    {
-        return response()->json([]);
-    }
 }

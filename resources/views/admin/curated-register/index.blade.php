@@ -302,7 +302,7 @@
         } else if(type === 'approve-all') {
             return axios.post(`/i/admin/api/curated-onboarding/show/${id}/approve`)
         } else if(type === 'request-info') {
-            axios.post(`/i/admin/api/curated-onboarding/show/${id}/message/send`, {
+            return axios.post(`/i/admin/api/curated-onboarding/show/${id}/message/send`, {
                 message: msg
             })
         }
