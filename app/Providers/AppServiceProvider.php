@@ -101,7 +101,16 @@ class AppServiceProvider extends ServiceProvider
         });
 
         RateLimiter::for('app-code-verify', function (Request $request) {
-            return Limit::perHour(20)->by($request->ip());
+            $email = strtolower(trim((string) $request->input('email')));
+
+            $emailKey = $email !== ''
+                ? hash('sha256', $email)
+                : 'missing';
+
+            return [
+                Limit::perHour(20)->by('app-code-verify:ip:' . $request->ip()),
+                Limit::perHour(10)->by('app-code-verify:email:' . $emailKey),
+            ];
         });
 
         RateLimiter::for('app-code-resend', function (Request $request) {
