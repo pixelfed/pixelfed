@@ -13,9 +13,6 @@ return [
 	// Recommendations (deprecated)
 	'rec' => false,
 
-	// Loops feature (deprecated)
-	'loops' => false,
-
 	// Text only posts (alpha)
 	'top' => env('EXP_TOP', false),
 

@@ -504,11 +504,6 @@
                                 	</tr>
                                 	<tr>
                                 		<td><span class="badge badge-primary">INSTANCE</span></td>
-                                		<td><strong>EXP_LOOPS</strong></td>
-                                		<td><span>{{config_cache('instance.discover.loops.enabled') ? '✅ true' : '❌ false' }}</span></td>
-                                	</tr>
-                                	<tr>
-                                		<td><span class="badge badge-primary">INSTANCE</span></td>
                                 		<td><strong>INSTANCE_PUBLIC_HASHTAGS</strong></td>
                                 		<td><span>{{config_cache('instance.discover.tags.is_public') ? '✅ true' : '❌ false' }}</span></td>
                                 	</tr>
