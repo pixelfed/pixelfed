@@ -57,7 +57,7 @@ class InboxWorker implements ShouldQueue
 
         if ($this->verifySignature($headers, $payload) == true) {
             if (isset($payload['id'])) {
-                $lockKey = 'pf:ap:user-inbox:activity:'.hash('sha256', $payload['id']);
+                $lockKey = 'pf:ap:user-inbox:activity:' . hash('sha256', $payload['id']);
                 if (! Cache::add($lockKey, 1, 3600)) {
                     // Already processed after valid signature check
                     return 1;
@@ -84,8 +84,9 @@ class InboxWorker implements ShouldQueue
         if (! $date) {
             return false;
         }
-        if (! now()->parse($date)->gt(now()->subDays(1)) ||
-           ! now()->parse($date)->lt(now()->addDays(1))
+        if (
+            ! now()->parse($date)->gt(now()->subDays(1)) ||
+            ! now()->parse($date)->lt(now()->addDays(1))
         ) {
             return false;
         }
@@ -102,7 +103,9 @@ class InboxWorker implements ShouldQueue
         $id = Helpers::validateUrl($bodyDecoded['id']);
         $keyDomain = parse_url($keyId, PHP_URL_HOST);
         $idDomain = parse_url($id, PHP_URL_HOST);
-        if (isset($bodyDecoded['object'])
+        $actorDomain = parse_url($payload['actor'] ?? '', PHP_URL_HOST);
+        if (
+            isset($bodyDecoded['object'])
             && is_array($bodyDecoded['object'])
             && isset($bodyDecoded['object']['attributedTo'])
         ) {
@@ -118,7 +121,10 @@ class InboxWorker implements ShouldQueue
                 return false;
             }
         }
-        if (! $keyDomain || ! $idDomain || $keyDomain !== $idDomain) {
+        if (
+            !$keyDomain || !$idDomain || !$actorDomain
+            || $keyDomain !== $idDomain || $keyDomain !== $actorDomain
+        ) {
             return false;
         }
         $actor = Profile::whereKeyId($keyId)->first();
@@ -152,8 +158,9 @@ class InboxWorker implements ShouldQueue
         if (! $date) {
             return;
         }
-        if (! now()->parse($date)->gt(now()->subDays(1)) ||
-           ! now()->parse($date)->lt(now()->addDays(1))
+        if (
+            ! now()->parse($date)->gt(now()->subDays(1)) ||
+            ! now()->parse($date)->lt(now()->addDays(1))
         ) {
             return;
         }

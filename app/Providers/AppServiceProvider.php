@@ -36,11 +36,11 @@ use Illuminate\Pagination\Paginator;
 use Illuminate\Support\Facades\Gate;
 use Illuminate\Support\Facades\RateLimiter;
 use Illuminate\Support\Facades\Schema;
+use Illuminate\Support\Facades\URL;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\ServiceProvider;
 use Laravel\Passport\Passport;
 use Laravel\Pulse\Facades\Pulse;
-use URL;
 
 class AppServiceProvider extends ServiceProvider
 {
@@ -101,7 +101,16 @@ class AppServiceProvider extends ServiceProvider
         });
 
         RateLimiter::for('app-code-verify', function (Request $request) {
-            return Limit::perHour(20)->by($request->ip());
+            $email = strtolower(trim((string) $request->input('email')));
+
+            $emailKey = $email !== ''
+                ? hash('sha256', $email)
+                : 'missing';
+
+            return [
+                Limit::perHour(20)->by('app-code-verify:ip:' . $request->ip()),
+                Limit::perHour(10)->by('app-code-verify:email:' . $emailKey),
+            ];
         });
 
         RateLimiter::for('app-code-resend', function (Request $request) {
@@ -116,8 +125,8 @@ class AppServiceProvider extends ServiceProvider
             $user = $request->user('web');
 
             $actor = $user
-                ? 'u:'.$user->getAuthIdentifier()
-                : 'ip:'.$request->ip();
+                ? 'u:' . $user->getAuthIdentifier()
+                : 'ip:' . $request->ip();
 
             $tooMany = function (Request $request, array $headers) {
                 return response()->json([
@@ -166,6 +175,8 @@ class AppServiceProvider extends ServiceProvider
             'write',
             'follow',
         ]);
+
+        URL::forceRootUrl(config('app.url'));
 
         // Model::preventLazyLoading(true);
     }
