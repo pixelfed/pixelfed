@@ -298,11 +298,6 @@
 
                                 	<tr>
                                 		<td><span class="badge badge-primary">EXP</span></td>
-                                		<td><strong>EXP_LC</strong></td>
-                                		<td><span>{{config_cache('exp.lc') ? '✅ true' : '❌ false' }}</span></td>
-                                	</tr>
-                                	<tr>
-                                		<td><span class="badge badge-primary">EXP</span></td>
                                 		<td><strong>EXP_TOP</strong></td>
                                 		<td><span>{{config_cache('exp.top') ? '✅ true' : '❌ false' }}</span></td>
                                 	</tr>
