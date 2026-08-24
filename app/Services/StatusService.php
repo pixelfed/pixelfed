@@ -119,7 +119,6 @@ class StatusService
             $status['comments_disabled'],
             $status['content_text'],
             $status['gid'],
-            $status['label'],
             $status['liked_by'],
             $status['local'],
             $status['parent'],

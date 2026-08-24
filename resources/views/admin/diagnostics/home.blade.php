@@ -601,21 +601,6 @@
                                 	</tr>
                                 	<tr>
                                 		<td><span class="badge badge-primary">INSTANCE</span></td>
-                                		<td><strong>ENABLE_COVID_LABEL</strong></td>
-                                		<td><span>{{config_cache('instance.label.covid.enabled') ? '✅ true' : '❌ false' }}</span></td>
-                                	</tr>
-                                	<tr>
-                                		<td><span class="badge badge-primary">INSTANCE</span></td>
-                                		<td><strong>COVID_LABEL_URL</strong></td>
-                                		<td><span>"{{config_cache('instance.label.covid.url')}}"</span></td>
-                                	</tr>
-                                	<tr>
-                                		<td><span class="badge badge-primary">INSTANCE</span></td>
-                                		<td><strong>COVID_LABEL_ORG</strong></td>
-                                		<td><span>"{{config_cache('instance.label.covid.org')}}"</span></td>
-                                	</tr>
-                                	<tr>
-                                		<td><span class="badge badge-primary">INSTANCE</span></td>
                                 		<td><strong>ENABLE_CONFIG_CACHE</strong></td>
                                 		<td><span>{{config_cache('instance.enable_cc') ? '✅ true' : '❌ false' }}</span></td>
                                 	</tr>

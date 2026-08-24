@@ -11,7 +11,6 @@ use App\Services\MediaTagService;
 use App\Services\PollService;
 use App\Services\ProfileService;
 use App\Services\StatusHashtagService;
-use App\Services\StatusLabelService;
 use App\Services\StatusMentionService;
 use App\Services\StatusService;
 use App\Status;
@@ -63,7 +62,6 @@ class StatusTransformer extends Fractal\TransformerAbstract
             'place' => $status->place,
             'local' => (bool) $status->local,
             'taggedPeople' => $taggedPeople,
-            'label' => StatusLabelService::get($status),
             'liked_by' => LikeService::likedBy($status),
             'media_attachments' => MediaService::get($status->id),
             'account' => ProfileService::get($status->profile_id, true),

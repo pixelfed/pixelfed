@@ -80,14 +80,6 @@ return [
         ],
     ],
 
-    'label' => [
-        'covid' => [
-            'enabled' => env('ENABLE_COVID_LABEL', true),
-            'url' => env('COVID_LABEL_URL', 'https://www.who.int/emergencies/diseases/novel-coronavirus-2019/advice-for-public'),
-            'org' => env('COVID_LABEL_ORG', 'visit the WHO website'),
-        ],
-    ],
-
     'enable_cc' => env('ENABLE_CONFIG_CACHE', true),
 
     'has_legal_notice' => env('INSTANCE_LEGAL_NOTICE', false),
