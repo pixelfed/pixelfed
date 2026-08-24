@@ -36,11 +36,11 @@ use Illuminate\Pagination\Paginator;
 use Illuminate\Support\Facades\Gate;
 use Illuminate\Support\Facades\RateLimiter;
 use Illuminate\Support\Facades\Schema;
+use Illuminate\Support\Facades\URL;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\ServiceProvider;
 use Laravel\Passport\Passport;
 use Laravel\Pulse\Facades\Pulse;
-use URL;
 
 class AppServiceProvider extends ServiceProvider
 {
@@ -116,8 +116,8 @@ class AppServiceProvider extends ServiceProvider
             $user = $request->user('web');
 
             $actor = $user
-                ? 'u:'.$user->getAuthIdentifier()
-                : 'ip:'.$request->ip();
+                ? 'u:' . $user->getAuthIdentifier()
+                : 'ip:' . $request->ip();
 
             $tooMany = function (Request $request, array $headers) {
                 return response()->json([
@@ -166,6 +166,8 @@ class AppServiceProvider extends ServiceProvider
             'write',
             'follow',
         ]);
+
+        URL::forceRootUrl(config('app.url'));
 
         // Model::preventLazyLoading(true);
     }
