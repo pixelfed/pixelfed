@@ -5,6 +5,7 @@ namespace App\Util\ActivityPub;
 use App\Instance;
 use App\Jobs\AvatarPipeline\RemoteAvatarFetch;
 use App\Jobs\HomeFeedPipeline\FeedInsertRemotePipeline;
+use App\Jobs\InstancePipeline\FetchNodeinfoPipeline;
 use App\Jobs\MediaPipeline\MediaStoragePipeline;
 use App\Jobs\StatusPipeline\StatusReplyPipeline;
 use App\Jobs\StatusPipeline\StatusTagsPipeline;
@@ -26,7 +27,6 @@ use App\Util\Media\License;
 use Cache;
 use Carbon\Carbon;
 use Illuminate\Validation\Rule;
-use League\Uri\Exceptions\UriException;
 use League\Uri\Uri;
 use Purify;
 use Validator;
@@ -51,7 +51,6 @@ class Helpers
         'ip6-localhost',
         'ip6-loopback',
     ];
-
 
     /**
      * Validate an ActivityPub object
@@ -213,7 +212,6 @@ class Helpers
         return $uri->toString();
     }
 
-
     /**
      * Normalize URL input
      */
@@ -243,7 +241,6 @@ class Helpers
 
         return $url;
     }
-
 
     /**
      * Validate basic URI requirements
@@ -326,7 +323,6 @@ class Helpers
         return $host;
     }
 
-
     public static function resolvePublicIps(string $host): array
     {
         $host = self::normalizeHost($host);
@@ -335,14 +331,14 @@ class Helpers
             return [];
         }
 
-        $key = self::URL_CACHE_PREFIX .
-            'public-ips:sha256-' .
+        $key = self::URL_CACHE_PREFIX.
+            'public-ips:sha256-'.
             hash('sha256', $host);
 
         return Cache::remember($key, 60, function () use ($host) {
             $ips = [];
 
-            $aRecords = @dns_get_record($host . '.', DNS_A);
+            $aRecords = @dns_get_record($host.'.', DNS_A);
 
             if (is_array($aRecords)) {
                 foreach ($aRecords as $record) {
@@ -352,7 +348,7 @@ class Helpers
                 }
             }
 
-            $aaaaRecords = @dns_get_record($host . '.', DNS_AAAA);
+            $aaaaRecords = @dns_get_record($host.'.', DNS_AAAA);
 
             if (is_array($aaaaRecords)) {
                 foreach ($aaaaRecords as $record) {
@@ -446,7 +442,7 @@ class Helpers
     public static function hasValidDNS(string $host): bool
     {
         $hash = hash('sha256', $host);
-        $key = self::URL_CACHE_PREFIX . "valid-dns:sha256-{$hash}";
+        $key = self::URL_CACHE_PREFIX."valid-dns:sha256-{$hash}";
 
         return Cache::remember($key, self::CACHE_TTL, function () use ($host) {
             return DomainService::hasValidDns($host);
@@ -469,7 +465,7 @@ class Helpers
         $host = strtolower(rtrim($host, '.'));
 
         $bannedInstances = array_map(
-            fn($domain) => strtolower(rtrim($domain, '.')),
+            fn ($domain) => strtolower(rtrim($domain, '.')),
             InstanceService::getBannedDomains()
         );
 
@@ -720,7 +716,7 @@ class Helpers
 
         if (is_array($attributedTo)) {
             return collect($attributedTo)
-                ->filter(fn($o) => $o && isset($o['type']) && $o['type'] == 'Person')
+                ->filter(fn ($o) => $o && isset($o['type']) && $o['type'] == 'Person')
                 ->pluck('id')
                 ->first();
         }
@@ -1488,7 +1484,7 @@ class Helpers
         $instance = Instance::updateOrCreate(['domain' => $domain]);
 
         if ($instance->wasRecentlyCreated) {
-            \App\Jobs\InstancePipeline\FetchNodeinfoPipeline::dispatch($instance)
+            FetchNodeinfoPipeline::dispatch($instance)
                 ->onQueue('low');
         }
 
@@ -1551,6 +1547,7 @@ class Helpers
         if ($url === null) {
             return null;
         }
+
         return self::profileFirstOrNew($url);
     }
 
