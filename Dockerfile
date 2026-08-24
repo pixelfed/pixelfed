@@ -1,4 +1,4 @@
-FROM serversideup/php:8.4-frankenphp
+FROM serversideup/php:8.5-frankenphp
 
 WORKDIR /var/www/html
 
