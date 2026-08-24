@@ -1,8 +1,15 @@
 # Release Notes
 
-## [Unreleased](https://github.com/pixelfed/pixelfed/compare/v0.12.8...dev)
+## [Unreleased](https://github.com/pixelfed/pixelfed/compare/v0.12.10...dev)
 
 -   ([](https://github.com/pixelfed/pixelfed/commit/))
+
+## [v0.12.9 (2026-08-25)](https://github.com/pixelfed/pixelfed/compare/v0.12.9...dev)
+
+-   Account Migration fix ([2fd3162f404](https://github.com/pixelfed/pixelfed/commit/2fd3162f4041bf82a51018ffbe3e1509b6576e33))
+-   Fix post likes modal ([d1b11e2a8](https://github.com/pixelfed/pixelfed/commit/d1b11e2a8f61f87a36bd1d3bee43f9c7507ab19a))
+-   Refactor UserFilterService ([ecb04f3ab3](https://github.com/pixelfed/pixelfed/commit/ecb04f3ab3bd64d694747f929cfb9beeb9a76021))
+-   Add alt tag to avatars ([5e79dbd3321](https://github.com/pixelfed/pixelfed/commit/5e79dbd33216f702f798d3c76a49188e69b5fa47))
 
 ## [v0.12.8 (2026-08-24)](https://github.com/pixelfed/pixelfed/compare/v0.12.8...dev)
 
