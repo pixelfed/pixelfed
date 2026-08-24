@@ -7,9 +7,6 @@
  */
 
 return [
-	// Recommendations (deprecated)
-	'rec' => false,
-
 	// Text only posts (alpha)
 	'top' => env('EXP_TOP', false),
 
