@@ -226,6 +226,13 @@ trait PrivacySettings
                     break;
 
                 case 'remove-all':
+                    Follower::whereFollowingId($profile->id)
+                        ->select(['profile_id', 'following_id'])
+                        ->chunkById(100, function ($followers) {
+                            foreach ($followers as $follower) {
+                                FeedUnfollowPipeline::dispatch($follower->profile_id, $follower->following_id)->onQueue('feed');
+                            }
+                        });
                     Follower::whereFollowingId($profile->id)->delete();
                     break;
 

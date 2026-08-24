@@ -31,26 +31,25 @@ class StatusController extends Controller
         if ($request->user()) {
             // unless they force static view
             if (! $request->has('fs') || $request->input('fs') != '1') {
-                return redirect('/i/web/post/'.$id);
+                return redirect('/i/web/post/' . $id);
             }
         }
 
-        $status = StatusService::get($id, false);
+        $statusData = StatusService::get($id, false);
 
         abort_if(
-            ! $status ||
-            ! isset($status['account'], $status['account']['username']) ||
-            $status['account']['username'] != $username ||
-            isset($status['reblog']), 404);
+            ! $statusData ||
+                ! isset($statusData['account'], $statusData['account']['username']) ||
+                $statusData['account']['username'] !== $username ||
+                isset($statusData['reblog']),
+            404
+        );
 
-        abort_if(! in_array($status['visibility'], ['public', 'unlisted']) && ! $request->user(), 403, 'Invalid permission');
+        $user = Profile::whereNull('domain')
+            ->whereUsername($username)
+            ->firstOrFail();
 
-        if ($request->wantsJson() && (bool) config_cache('federation.activitypub.enabled')) {
-            return $this->showActivityPub($request, $status);
-        }
-
-        $user = Profile::whereNull('domain')->whereUsername($username)->firstOrFail();
-        if ($user->status != null) {
+        if ($user->status !== null) {
             return ProfileController::accountCheck($user);
         }
 
@@ -59,8 +58,42 @@ class StatusController extends Controller
             ->whereIn('scope', ['public', 'unlisted', 'private'])
             ->findOrFail($id);
 
+        if ($status->visibility === 'private' || $user->is_private) {
+            $viewer = $request->user();
+
+            if (! $viewer) {
+                abort(404);
+            }
+
+            $viewerProfile = $viewer->profile;
+
+            $isOwner = $viewerProfile->id === $user->id;
+            $isAdmin = (bool) $viewer->is_admin;
+            $isFollower = $user->followedBy($viewerProfile);
+
+            if (! $isOwner && ! $isAdmin && ! $isFollower) {
+                abort(404);
+            }
+        }
+
+        if ($status->type === 'archived') {
+            $viewer = $request->user();
+
+            if (! $viewer || $viewer->profile_id !== $status->profile_id) {
+                abort(404);
+            }
+        }
+
+        if (
+            $request->wantsJson() &&
+            (bool) config_cache('federation.activitypub.enabled')
+        ) {
+            return $this->showActivityPub($request, $statusData);
+        }
+
         if ($status->uri || $status->url) {
             $url = $status->uri ?? $status->url;
+
             if (ends_with($url, '/activity')) {
                 $url = str_replace('/activity', '', $url);
             }
@@ -68,23 +101,9 @@ class StatusController extends Controller
             return redirect($url);
         }
 
-        if ($status->visibility == 'private' || $user->is_private) {
-            if (! Auth::check()) {
-                abort(404);
-            }
-            $pid = Auth::user()->profile;
-            if ($user->followedBy($pid) == false && $user->id !== $pid->id && Auth::user()->is_admin == false) {
-                abort(404);
-            }
-        }
-
-        if ($status->type == 'archived') {
-            if (Auth::user()->profile_id !== $status->profile_id) {
-                abort(404);
-            }
-        }
-
-        $template = $status->in_reply_to_id ? 'status.reply' : 'status.show';
+        $template = $status->in_reply_to_id
+            ? 'status.reply'
+            : 'status.show';
 
         return view($template, compact('user', 'status'));
     }
@@ -94,7 +113,7 @@ class StatusController extends Controller
         $hid = HashidService::decode($id);
         abort_if(! $hid, 404);
 
-        return redirect('/i/web/post/'.$hid);
+        return redirect('/i/web/post/' . $hid);
     }
 
     public function showId(int $id)
@@ -145,7 +164,7 @@ class StatusController extends Controller
             return response($content)->header('X-Frame-Options', 'ALLOWALL');
         }
 
-        $aiCheck = Cache::remember('profile:ai-check:spam-login:'.$profile['id'], 3600, function () use ($profile) {
+        $aiCheck = Cache::remember('profile:ai-check:spam-login:' . $profile['id'], 3600, function () use ($profile) {
             $user = Profile::find($profile['id']);
             if (! $user) {
                 return true;
@@ -235,7 +254,8 @@ class StatusController extends Controller
 
         $user = Auth::user();
 
-        if ($status->profile_id != $user->profile->id &&
+        if (
+            $status->profile_id != $user->profile->id &&
             $user->is_admin == true &&
             $status->uri == null
         ) {
@@ -270,19 +290,19 @@ class StatusController extends Controller
         if ($status->in_reply_to_id) {
             $parent = Status::find($status->in_reply_to_id);
             if ($parent && ($parent->profile_id == $user->profile_id) || ($status->profile_id == $user->profile_id) || $user->is_admin) {
-                Cache::forget('_api:statuses:recent_9:'.$status->profile_id);
-                Cache::forget('profile:status_count:'.$status->profile_id);
-                Cache::forget('profile:embed:'.$status->profile_id);
+                Cache::forget('_api:statuses:recent_9:' . $status->profile_id);
+                Cache::forget('profile:status_count:' . $status->profile_id);
+                Cache::forget('profile:embed:' . $status->profile_id);
                 StatusService::del($status->id, true);
-                Cache::forget('profile:status_count:'.$status->profile_id);
+                Cache::forget('profile:status_count:' . $status->profile_id);
                 $status->uri ? RemoteStatusDelete::dispatch($status) : StatusDelete::dispatch($status);
             }
         } elseif ($status->profile_id == $user->profile_id || $user->is_admin == true) {
-            Cache::forget('_api:statuses:recent_9:'.$status->profile_id);
-            Cache::forget('profile:status_count:'.$status->profile_id);
-            Cache::forget('profile:embed:'.$status->profile_id);
+            Cache::forget('_api:statuses:recent_9:' . $status->profile_id);
+            Cache::forget('profile:status_count:' . $status->profile_id);
+            Cache::forget('profile:embed:' . $status->profile_id);
             StatusService::del($status->id, true);
-            Cache::forget('profile:status_count:'.$status->profile_id);
+            Cache::forget('profile:status_count:' . $status->profile_id);
             $status->uri ? RemoteStatusDelete::dispatch($status) : StatusDelete::dispatch($status);
         }
 
@@ -336,7 +356,7 @@ class StatusController extends Controller
             ReblogService::add($profile->id, $status->id);
         }
 
-        Cache::forget('status:'.$status->id.':sharedby:userid:'.$user->id);
+        Cache::forget('status:' . $status->id . ':sharedby:userid:' . $user->id);
         StatusService::del($status->id);
 
         if ($request->ajax()) {
@@ -350,7 +370,7 @@ class StatusController extends Controller
 
     public function showActivityPub(Request $request, $status)
     {
-        $key = 'pf:status:ap:v1:sid:'.$status['id'];
+        $key = 'pf:status:ap:v1:sid:' . $status['id'];
 
         return Cache::remember($key, 3600, function () use ($status) {
             $status = Status::findOrFail($status['id']);
@@ -392,7 +412,7 @@ class StatusController extends Controller
         $status->media->each(function ($media) use ($licenseId) {
             $media->license = $licenseId;
             $media->save();
-            Cache::forget('status:transformer:media:attachments:'.$media->status_id);
+            Cache::forget('status:transformer:media:attachments:' . $media->status_id);
         });
 
         return redirect($status->url());
@@ -486,7 +506,7 @@ class StatusController extends Controller
             return response()->json(0);
         }
 
-        Cache::forget('profile:home-timeline-cursor:'.$request->user()->id);
+        Cache::forget('profile:home-timeline-cursor:' . $request->user()->id);
 
         foreach ($views as $view) {
             if (! isset($view['sid']) || ! isset($view['pid'])) {

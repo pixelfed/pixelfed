@@ -53,8 +53,6 @@ Route::domain(config('pixelfed.domain.app'))->middleware(['validemail', 'twofact
             Route::get('status/{id}/replies', 'InternalApiController@statusReplies');
             Route::post('moderator/action', 'InternalApiController@modAction');
             Route::get('discover/categories', 'InternalApiController@discoverCategories');
-            Route::get('loops', 'DiscoverController@loopsApi');
-            Route::post('loops/watch', 'DiscoverController@loopWatch');
             Route::get('discover/tag', 'DiscoverController@getHashtags');
             Route::get('statuses/{id}/replies', 'Api\ApiV1Controller@statusReplies');
             Route::get('statuses/{id}/state', 'Api\ApiV1Controller@statusState');
@@ -95,8 +93,6 @@ Route::domain(config('pixelfed.domain.app'))->middleware(['validemail', 'twofact
                 Route::get('comments/{username}/status/{postId}', 'PublicApiController@statusComments');
                 Route::post('moderator/action', 'InternalApiController@modAction');
                 Route::get('discover/categories', 'InternalApiController@discoverCategories');
-                Route::get('loops', 'DiscoverController@loopsApi');
-                Route::post('loops/watch', 'DiscoverController@loopWatch');
                 Route::get('discover/tag', 'DiscoverController@getHashtags');
                 Route::get('discover/posts/trending', 'DiscoverController@trendingApi');
                 Route::get('discover/posts/hashtags', 'DiscoverController@trendingHashtags');

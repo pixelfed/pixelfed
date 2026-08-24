@@ -92,6 +92,10 @@ trait AdminUserController
 
     public function userEditSubmit(Request $request, $id)
     {
+        $this->validate($request, [
+            'website' => 'nullable|url|max:120',
+        ]);
+
         $user = User::findOrFail($id);
         $profile = $user->profile;
         $changed = false;

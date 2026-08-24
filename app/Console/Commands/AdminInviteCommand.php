@@ -41,6 +41,7 @@ class AdminInviteCommand extends Command
         $this->line(' ');
         $this->info('    Manage user registration invite links');
         $this->line(' ');
+        $this->handleExpiredInvites();
 
         return match ($this->choice(
             'Select an action',
@@ -48,15 +49,22 @@ class AdminInviteCommand extends Command
                 'Create invite',
                 'View invites',
                 'Expire invite',
+                'Expire all invites',
                 'Cancel',
             ],
-            3
+            4
         )) {
             'Create invite' => $this->create(),
             'View invites' => $this->view(),
             'Expire invite' => $this->expire(),
+            'Expire all invites' => $this->expireAll(),
             default => Command::SUCCESS,
         };
+    }
+
+    protected function handleExpiredInvites()
+    {
+        AdminInvite::whereNotNull('expires_at')->where('expires_at', '<', now())->delete();
     }
 
     protected function create(): int
@@ -78,14 +86,14 @@ class AdminInviteCommand extends Command
         $expires = match ($this->choice(
             'Set an invite expiry date?',
             [
-                'No - invite never expires',
                 'Yes - expire after 24 hours',
+                'No - invite never expires',
                 'Custom - let me pick an expiry date',
             ],
             0
         )) {
-            'No - invite never expires' => null,
             'Yes - expire after 24 hours' => now()->addHours(24),
+            'No - invite never expires' => null,
             'Custom - let me pick an expiry date' => now()->addDays(
                 (int) $this->ask('Custom expiry date in days', 14)
             ),
@@ -168,6 +176,14 @@ class AdminInviteCommand extends Command
         $invite->save();
 
         $this->info('Expired the following invite: '.$invite->url());
+
+        return Command::SUCCESS;
+    }
+
+    protected function expireAll(): int
+    {
+        $count = AdminInvite::query()->delete();
+        $this->info('Deleted '.$count.' invites');
 
         return Command::SUCCESS;
     }

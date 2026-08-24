@@ -137,8 +137,14 @@
                                         <div class="font-weight-bold mr-1">{{profile.display_name}}</div>
                                         <div v-if="profile.pronouns" class="text-muted small">{{profile.pronouns.join('/')}}</div>
                                     </div>
-                                    <p v-if="profile.note" class="mb-0" v-html="profile.note"></p>
-                                    <p v-if="profile.website"><a :href="profile.website" class="profile-website small" rel="me external nofollow noopener" target="_blank">{{formatWebsite(profile.website)}}</a></p>
+                                    <div v-if="profile.note">
+                                        <p v-if="user || profile.followers_count > 10 || profile.statuses_count > 10" class="mb-0" v-html="profile.note"></p>
+                                        <p v-else ></p>
+                                    </div>
+                                    <p v-if="profile.website">
+                                        <a v-if="user || profile.followers_count > 10 || profile.statuses_count > 10" :href="profile.website" class="profile-website small" rel="me external nofollow noopener" target="_blank">{{formatWebsite(profile.website)}}</a>
+                                        <span class="profile-website small"></span>
+                                    </p>
                                     <p class="d-flex small text-muted align-items-center">
                                         <span v-if="profile.is_admin" class="btn btn-outline-danger btn-sm py-0 mr-3" title="Admin Account" data-toggle="tooltip">
                                             {{ $t("profile.admin") }}

@@ -5,6 +5,7 @@ namespace App\Util\ActivityPub;
 use App\Instance;
 use App\Jobs\AvatarPipeline\RemoteAvatarFetch;
 use App\Jobs\HomeFeedPipeline\FeedInsertRemotePipeline;
+use App\Jobs\InstancePipeline\FetchNodeinfoPipeline;
 use App\Jobs\MediaPipeline\MediaStoragePipeline;
 use App\Jobs\StatusPipeline\StatusReplyPipeline;
 use App\Jobs\StatusPipeline\StatusTagsPipeline;
@@ -26,7 +27,6 @@ use App\Util\Media\License;
 use Cache;
 use Carbon\Carbon;
 use Illuminate\Validation\Rule;
-use League\Uri\Exceptions\UriException;
 use League\Uri\Uri;
 use Purify;
 use Validator;
@@ -40,6 +40,8 @@ class Helpers
     private const URL_CACHE_PREFIX = 'helpers:url:';
 
     private const FETCH_CACHE_TTL = 15;
+
+    private const MAX_URL_LENGTH = 4096;
 
     private const LOCALHOST_DOMAINS = [
         'localhost',
@@ -156,47 +158,88 @@ class Helpers
     }
 
     /**
-     * Validate URL with various security and format checks
+     * Validate a URL that may be used for federation.
      */
-    public static function validateUrl(?string $url, bool $disableDNSCheck = false, bool $forceBanCheck = false): string|bool
-    {
-        if (! $normalizedUrl = self::normalizeUrl($url)) {
+    public static function validateUrl(
+        mixed $url,
+        bool $disableDNSCheck = false,
+        bool $forceBanCheck = false
+    ): string|bool {
+        $url = self::normalizeUrl($url);
+
+        if (! $url) {
             return false;
         }
 
         try {
-            $uri = Uri::new($normalizedUrl);
-
-            if (! self::isValidUri($uri)) {
-                return false;
-            }
-
-            $host = $uri->getHost();
-            if (! self::isValidHost($host)) {
-                return false;
-            }
-
-            if (! $disableDNSCheck && ! self::passesSecurityChecks($host, $disableDNSCheck, $forceBanCheck)) {
-                return false;
-            }
-
-            return $uri->toString();
-
-        } catch (UriException $e) {
+            $uri = Uri::new($url);
+        } catch (\Throwable $e) {
             return false;
         }
+
+        if (! self::isValidUri($uri)) {
+            return false;
+        }
+
+        $host = self::normalizeHost($uri->getHost());
+
+        if (! $host) {
+            return false;
+        }
+
+        try {
+            $uri = $uri->withHost($host);
+        } catch (\Throwable $e) {
+            return false;
+        }
+
+        if (empty(self::resolvePublicIps($host))) {
+            return false;
+        }
+
+        if (! $disableDNSCheck && self::shouldCheckDNS()) {
+            if (! self::hasValidDNS($host)) {
+                return false;
+            }
+        }
+
+        if ($forceBanCheck || self::shouldCheckBans()) {
+            if (self::isHostBanned($host)) {
+                return false;
+            }
+        }
+
+        return $uri->toString();
     }
 
     /**
      * Normalize URL input
      */
-    public static function normalizeUrl(?string $url): ?string
+    public static function normalizeUrl(mixed $url): ?string
     {
-        if (is_array($url) && ! empty($url)) {
-            $url = $url[0];
+        if (is_array($url)) {
+            $url = $url[0] ?? null;
         }
 
-        return (! $url || strlen($url) === 0) ? null : $url;
+        if (! is_string($url)) {
+            return null;
+        }
+
+        $url = trim($url);
+
+        if ($url === '' || strlen($url) > 4096) {
+            return null;
+        }
+
+        if (preg_match('/[\x00-\x20\x7f]/', $url)) {
+            return null;
+        }
+
+        if (str_contains($url, '\\')) {
+            return null;
+        }
+
+        return $url;
     }
 
     /**
@@ -204,7 +247,131 @@ class Helpers
      */
     public static function isValidUri(Uri $uri): bool
     {
-        return $uri && $uri->getScheme() === 'https';
+        if (strtolower($uri->getScheme()) !== 'https') {
+            return false;
+        }
+
+        if (! $uri->getHost()) {
+            return false;
+        }
+
+        $userInfo = $uri->getUserInfo();
+
+        if ($userInfo !== null && $userInfo !== '') {
+            return false;
+        }
+
+        $port = $uri->getPort();
+
+        if ($port !== null && ($port < 1 || $port > 65535)) {
+            return false;
+        }
+
+        return true;
+    }
+
+    public static function normalizeHost(?string $host): ?string
+    {
+        if (! is_string($host) || $host === '') {
+            return null;
+        }
+
+        $host = strtolower(rtrim($host, '.'));
+
+        if ($host === '' || strlen($host) > 253) {
+            return null;
+        }
+
+        if (filter_var($host, FILTER_VALIDATE_IP) !== false) {
+            return null;
+        }
+
+        if (preg_match('/[^\x00-\x7f]/', $host)) {
+            if (! function_exists('idn_to_ascii')) {
+                return null;
+            }
+
+            $host = idn_to_ascii(
+                $host,
+                IDNA_DEFAULT,
+                INTL_IDNA_VARIANT_UTS46
+            );
+
+            if (! $host) {
+                return null;
+            }
+
+            $host = strtolower(rtrim($host, '.'));
+        }
+
+        if (! filter_var(
+            $host,
+            FILTER_VALIDATE_DOMAIN,
+            FILTER_FLAG_HOSTNAME
+        )) {
+            return null;
+        }
+
+        if (! str_contains($host, '.')) {
+            return null;
+        }
+
+        if (in_array($host, self::LOCALHOST_DOMAINS, true)) {
+            return null;
+        }
+
+        return $host;
+    }
+
+    public static function resolvePublicIps(string $host): array
+    {
+        $host = self::normalizeHost($host);
+
+        if (! $host) {
+            return [];
+        }
+
+        $key = self::URL_CACHE_PREFIX.
+            'public-ips:sha256-'.
+            hash('sha256', $host);
+
+        return Cache::remember($key, 60, function () use ($host) {
+            $ips = [];
+
+            $aRecords = @dns_get_record($host.'.', DNS_A);
+
+            if (is_array($aRecords)) {
+                foreach ($aRecords as $record) {
+                    if (! empty($record['ip'])) {
+                        $ips[] = $record['ip'];
+                    }
+                }
+            }
+
+            $aaaaRecords = @dns_get_record($host.'.', DNS_AAAA);
+
+            if (is_array($aaaaRecords)) {
+                foreach ($aaaaRecords as $record) {
+                    if (! empty($record['ipv6'])) {
+                        $ips[] = $record['ipv6'];
+                    }
+                }
+            }
+
+            $ips = array_values(array_unique($ips));
+
+            if (empty($ips)) {
+                return [];
+            }
+
+            foreach ($ips as $ip) {
+                if (! self::isPublicIp($ip)) {
+                    return [];
+                }
+            }
+
+            return $ips;
+        });
     }
 
     /**
@@ -229,6 +396,15 @@ class Helpers
         }
 
         return true;
+    }
+
+    public static function isPublicIp(string $ip): bool
+    {
+        return filter_var(
+            $ip,
+            FILTER_VALIDATE_IP,
+            FILTER_FLAG_GLOBAL_RANGE
+        ) !== false;
     }
 
     /**
@@ -257,7 +433,7 @@ class Helpers
     public static function shouldCheckDNS(): bool
     {
         return app()->environment() === 'production' &&
-               (bool) config('security.url.verify_dns');
+            (bool) config('security.url.verify_dns');
     }
 
     /**
@@ -286,9 +462,14 @@ class Helpers
      */
     public static function isHostBanned(string $host): bool
     {
-        $bannedInstances = InstanceService::getBannedDomains();
+        $host = strtolower(rtrim($host, '.'));
 
-        return in_array($host, $bannedInstances);
+        $bannedInstances = array_map(
+            fn ($domain) => strtolower(rtrim($domain, '.')),
+            InstanceService::getBannedDomains()
+        );
+
+        return in_array($host, $bannedInstances, true);
     }
 
     /**
@@ -477,10 +658,10 @@ class Helpers
     public static function isValidStatusData(?array $res): bool
     {
         return $res &&
-               ! empty($res) &&
-               ! isset($res['error']) &&
-               isset($res['@context']) &&
-               isset($res['published']);
+            ! empty($res) &&
+            ! isset($res['error']) &&
+            isset($res['@context']) &&
+            isset($res['published']);
     }
 
     /**
@@ -548,14 +729,72 @@ class Helpers
      */
     public static function validateStatusUrls(string $url, array $activity): bool
     {
-        $id = isset($activity['id']) ?
-            self::pluckval($activity['id']) :
-            self::pluckval($url);
+        $id = self::extractActivityPubUrl(
+            $activity['id'] ?? $url
+        );
+
+        if (! $id) {
+            return false;
+        }
 
         $idDomain = parse_url($id, PHP_URL_HOST);
         $urlDomain = parse_url($url, PHP_URL_HOST);
 
-        return $idDomain && $urlDomain;
+        if (! is_string($idDomain) || ! is_string($urlDomain)) {
+            return false;
+        }
+
+        if (strcasecmp($idDomain, $urlDomain) !== 0) {
+            return false;
+        }
+
+        $attributedTo = $activity['attributedTo']
+            ?? $activity['object']['attributedTo']
+            ?? null;
+
+        if ($attributedTo !== null) {
+            $author = self::extractActivityPubUrl($attributedTo);
+
+            if (! $author) {
+                return false;
+            }
+
+            $authorDomain = parse_url($author, PHP_URL_HOST);
+
+            if (
+                ! is_string($authorDomain) ||
+                strcasecmp($idDomain, $authorDomain) !== 0
+            ) {
+                return false;
+            }
+        }
+
+        return true;
+    }
+
+    private static function extractActivityPubUrl($value): ?string
+    {
+        $value = self::pluckval($value);
+
+        if (is_string($value)) {
+            return $value !== '' ? $value : null;
+        }
+
+        if (is_array($value)) {
+            foreach ($value as $item) {
+                $item = self::pluckval($item);
+
+                if (is_string($item) && $item !== '') {
+                    return $item;
+                }
+
+                if (is_array($item) && isset($item['id']) && is_string($item['id'])) {
+                    return $item['id'];
+                }
+            }
+        }
+
+        return null;
     }
 
     /**
@@ -589,8 +828,9 @@ class Helpers
         $url = self::getStatusUrl($activity, $id);
 
         if ((! isset($activity['type']) ||
-             in_array($activity['type'], ['Create', 'Note'])) &&
-            ! self::validateStatusDomains($id, $url)) {
+                in_array($activity['type'], ['Create', 'Note'])) &&
+            ! self::validateStatusDomains($id, $url)
+        ) {
             throw new \Exception('Invalid status domains');
         }
 
@@ -649,7 +889,14 @@ class Helpers
      */
     public static function validateStatusDomains(string $id, string $url): bool
     {
-        return self::validateUrl($id) && self::validateUrl($url);
+        if (! self::validateUrl($id) || ! self::validateUrl($url)) {
+            return false;
+        }
+
+        $idDomain = parse_url($id, PHP_URL_HOST);
+        $urlDomain = parse_url($url, PHP_URL_HOST);
+
+        return $idDomain && $urlDomain && strtolower($idDomain) === strtolower($urlDomain);
     }
 
     /**
@@ -698,7 +945,8 @@ class Helpers
      */
     public static function handleStatusPostProcessing(Status $status, int $profileId, string $url): void
     {
-        if (config('instance.timeline.network.cached') &&
+        if (
+            config('instance.timeline.network.cached') &&
             self::isEligibleForNetwork($status)
         ) {
             $urlDomain = parse_url($url, PHP_URL_HOST);
@@ -711,7 +959,8 @@ class Helpers
 
         AccountStatService::incrementPostCount($profileId);
 
-        if ($status->in_reply_to_id === null &&
+        if (
+            $status->in_reply_to_id === null &&
             in_array($status->type, ['photo', 'photo:album', 'video', 'video:album', 'photo:video:album'])
         ) {
             FeedInsertRemotePipeline::dispatch($status->id, $profileId)
@@ -725,10 +974,10 @@ class Helpers
     public static function isEligibleForNetwork(Status $status): bool
     {
         return $status->in_reply_to_id === null &&
-               $status->reblog_of_id === null &&
-               in_array($status->type, ['photo', 'photo:album', 'video', 'video:album', 'photo:video:album']) &&
-               $status->created_at->gt(now()->subHours(config('instance.timeline.network.max_hours_old'))) &&
-               (config('instance.hide_nsfw_on_public_feeds') ? ! $status->is_nsfw : true);
+            $status->reblog_of_id === null &&
+            in_array($status->type, ['photo', 'photo:album', 'video', 'video:album', 'photo:video:album']) &&
+            $status->created_at->gt(now()->subHours(config('instance.timeline.network.max_hours_old'))) &&
+            (config('instance.hide_nsfw_on_public_feeds') ? ! $status->is_nsfw : true);
     }
 
     /**
@@ -915,7 +1164,7 @@ class Helpers
         $url = $media['url'];
 
         return in_array($type, $allowedTypes) &&
-               self::validateUrl($url);
+            self::validateUrl($url);
     }
 
     /**
@@ -1146,7 +1395,7 @@ class Helpers
     public static function needsFetch(?Profile $profile): bool
     {
         return ! $profile?->last_fetched_at ||
-               $profile->last_fetched_at->lt(now()->subHours(24));
+            $profile->last_fetched_at->lt(now()->subHours(24));
     }
 
     /**
@@ -1235,7 +1484,7 @@ class Helpers
         $instance = Instance::updateOrCreate(['domain' => $domain]);
 
         if ($instance->wasRecentlyCreated) {
-            \App\Jobs\InstancePipeline\FetchNodeinfoPipeline::dispatch($instance)
+            FetchNodeinfoPipeline::dispatch($instance)
                 ->onQueue('low');
         }
 
@@ -1282,7 +1531,8 @@ class Helpers
      */
     public static function handleProfileAvatar(Profile $profile): void
     {
-        if (! $profile->last_fetched_at ||
+        if (
+            ! $profile->last_fetched_at ||
             $profile->last_fetched_at->lt(now()->subMonths(3))
         ) {
             RemoteAvatarFetch::dispatch($profile);
@@ -1294,6 +1544,10 @@ class Helpers
 
     public static function profileFetch($url): ?Profile
     {
+        if ($url === null) {
+            return null;
+        }
+
         return self::profileFirstOrNew($url);
     }
 
