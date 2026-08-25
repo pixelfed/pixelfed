@@ -1,25 +1,35 @@
 includes:
     - vendor/larastan/larastan/extension.neon
+    - vendor/nesbot/carbon/extension.neon
     - phpstan-baseline.neon
 
 parameters:
-    paths:
-        - app/
-
+    # Level 10 is the highest level
     level: 0
 
-    ignoreErrors:
-        - '#Call to an undefined method [a-zA-Z0-9\\_]+::whereProfileId\(\)#'
-        - '#Call to an undefined method [a-zA-Z0-9\\_]+::whereFollowingId\(\)#'
-        - '#Call to an undefined method [a-zA-Z0-9\\_]+::whereUserId\(\)#'
-        - '#Call to an undefined method [a-zA-Z0-9\\_]+::whereAction\(\)#'
-        - '#Call to an undefined method [a-zA-Z0-9\\_]+::whereRegisterId\(\)#'
-        - '#Call to an undefined method [a-zA-Z0-9\\_]+::whereType\(\)#'
-        - '#Call to an undefined method [a-zA-Z0-9\\_]+::whereK\(\)#'
-        - '#Class App\\Http\\Controllers\\Settings\\FeedUnfollowPipeline not found#'
-        - '#Class App\\Observers\\FeedUnfollowPipeline not found#'
+    # Laravel specific configurations
+    noModelMake: true
+    noUnnecessaryCollectionCall: true
+    checkModelProperties: true
+    checkOctaneCompatibility: true
+    noEnvCallsOutsideOfConfig: true
+    checkModelAppends: true
+    checkModelMethodVisibility: true
+    checkAuthCallsWhenInRequestScope: true
+
+    checkMissingTranslations: false
+    translationDirectories:
+        - resources/lang
+
+    paths:
+        - app/
+        - routes/
+        - tests/
 
     excludePaths:
+        - bootstrap/cache/*
+        - storage/
+        - vendor/
         - app/Console/Commands/ImportCities.php
         - app/Http/Controllers/SettingsController.php
         - app/Observers/FollowerObserver.php

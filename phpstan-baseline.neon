@@ -91,6 +91,12 @@ parameters:
 			path: app/Http/Controllers/AccountController.php
 
 		-
+			message: '#^Do not use Auth\:\:user\(\) in a class that has access to the request\. Use \$request\-\>user\(\) instead\.$#'
+			identifier: larastan.noAuthFacadeInRequestScope
+			count: 6
+			path: app/Http/Controllers/AccountController.php
+
+		-
 			message: '#^Call to static method collection\(\) on an unknown class App\\Http\\Controllers\\AdminProfile\.$#'
 			identifier: class.notFound
 			count: 1
@@ -337,6 +343,12 @@ parameters:
 			path: app/Http/Controllers/Api/BaseApiController.php
 
 		-
+			message: '#^Do not use Auth\:\:user\(\) in a class that has access to the request\. Use \$request\-\>user\(\) instead\.$#'
+			identifier: larastan.noAuthFacadeInRequestScope
+			count: 1
+			path: app/Http/Controllers/Api/BaseApiController.php
+
+		-
 			message: '#^Call to static method remember\(\) on an unknown class Cache\.$#'
 			identifier: class.notFound
 			count: 1
@@ -349,8 +361,44 @@ parameters:
 			path: app/Http/Controllers/AvatarController.php
 
 		-
+			message: '#^Do not use Auth\:\:user\(\) in a class that has access to the request\. Use \$request\-\>user\(\) instead\.$#'
+			identifier: larastan.noAuthFacadeInRequestScope
+			count: 2
+			path: app/Http/Controllers/AvatarController.php
+
+		-
+			message: '#^Do not use Auth\:\:user\(\) in a class that has access to the request\. Use \$request\-\>user\(\) instead\.$#'
+			identifier: larastan.noAuthFacadeInRequestScope
+			count: 2
+			path: app/Http/Controllers/CircleController.php
+
+		-
+			message: '#^Do not use Auth\:\:check\(\) in a class that has access to the request\. Use \$request\-\>user\(\) \!\=\= null instead\.$#'
+			identifier: larastan.noAuthFacadeInRequestScope
+			count: 2
+			path: app/Http/Controllers/CollectionController.php
+
+		-
+			message: '#^Do not use Auth\:\:user\(\) in a class that has access to the request\. Use \$request\-\>user\(\) instead\.$#'
+			identifier: larastan.noAuthFacadeInRequestScope
+			count: 2
+			path: app/Http/Controllers/CollectionController.php
+
+		-
 			message: '#^Call to static method follows\(\) on an unknown class App\\Http\\Controllers\\FollowerService\.$#'
 			identifier: class.notFound
+			count: 1
+			path: app/Http/Controllers/CommentController.php
+
+		-
+			message: '#^Do not use Auth\:\:check\(\) in a class that has access to the request\. Use \$request\-\>user\(\) \!\=\= null instead\.$#'
+			identifier: larastan.noAuthFacadeInRequestScope
+			count: 1
+			path: app/Http/Controllers/CommentController.php
+
+		-
+			message: '#^Do not use Auth\:\:user\(\) in a class that has access to the request\. Use \$request\-\>user\(\) instead\.$#'
+			identifier: larastan.noAuthFacadeInRequestScope
 			count: 1
 			path: app/Http/Controllers/CommentController.php
 
@@ -365,6 +413,24 @@ parameters:
 			identifier: class.notFound
 			count: 3
 			path: app/Http/Controllers/ComposeController.php
+
+		-
+			message: '#^Do not use Auth\:\:user\(\) in a class that has access to the request\. Use \$request\-\>user\(\) instead\.$#'
+			identifier: larastan.noAuthFacadeInRequestScope
+			count: 1
+			path: app/Http/Controllers/ComposeController.php
+
+		-
+			message: '#^Do not use Auth\:\:check\(\) in a class that has access to the request\. Use \$request\-\>user\(\) \!\=\= null instead\.$#'
+			identifier: larastan.noAuthFacadeInRequestScope
+			count: 1
+			path: app/Http/Controllers/ContactController.php
+
+		-
+			message: '#^Do not use Auth\:\:user\(\) in a class that has access to the request\. Use \$request\-\>user\(\) instead\.$#'
+			identifier: larastan.noAuthFacadeInRequestScope
+			count: 1
+			path: app/Http/Controllers/ContactController.php
 
 		-
 			message: '#^Relation ''keywords'' is not found in App\\Models\\CustomFilter model\.$#'
@@ -397,6 +463,18 @@ parameters:
 			path: app/Http/Controllers/DiscoverController.php
 
 		-
+			message: '#^Do not use Auth\:\:check\(\) in a class that has access to the request\. Use \$request\-\>user\(\) \!\=\= null instead\.$#'
+			identifier: larastan.noAuthFacadeInRequestScope
+			count: 3
+			path: app/Http/Controllers/DiscoverController.php
+
+		-
+			message: '#^Do not use Auth\:\:user\(\) in a class that has access to the request\. Use \$request\-\>user\(\) instead\.$#'
+			identifier: larastan.noAuthFacadeInRequestScope
+			count: 1
+			path: app/Http/Controllers/DiscoverController.php
+
+		-
 			message: '#^Call to static method get\(\) on an unknown class Cache\.$#'
 			identifier: class.notFound
 			count: 2
@@ -415,6 +493,12 @@ parameters:
 			path: app/Http/Controllers/Groups/GroupsPostController.php
 
 		-
+			message: '#^Do not use Auth\:\:user\(\) in a class that has access to the request\. Use \$request\-\>user\(\) instead\.$#'
+			identifier: larastan.noAuthFacadeInRequestScope
+			count: 1
+			path: app/Http/Controllers/HashtagFollowController.php
+
+		-
 			message: '#^Relation ''hashtag'' is not found in App\\HashtagFollow model\.$#'
 			identifier: larastan.relationExistence
 			count: 1
@@ -424,6 +508,12 @@ parameters:
 			message: '#^Call to static method info\(\) on an unknown class Log\.$#'
 			identifier: class.notFound
 			count: 1
+			path: app/Http/Controllers/ImportController.php
+
+		-
+			message: '#^Do not use Auth\:\:user\(\) in a class that has access to the request\. Use \$request\-\>user\(\) instead\.$#'
+			identifier: larastan.noAuthFacadeInRequestScope
+			count: 7
 			path: app/Http/Controllers/ImportController.php
 
 		-
@@ -451,10 +541,28 @@ parameters:
 			path: app/Http/Controllers/InternalApiController.php
 
 		-
+			message: '#^Do not use Auth\:\:check\(\) in a class that has access to the request\. Use \$request\-\>user\(\) \!\=\= null instead\.$#'
+			identifier: larastan.noAuthFacadeInRequestScope
+			count: 2
+			path: app/Http/Controllers/InternalApiController.php
+
+		-
+			message: '#^Do not use Auth\:\:user\(\) in a class that has access to the request\. Use \$request\-\>user\(\) instead\.$#'
+			identifier: larastan.noAuthFacadeInRequestScope
+			count: 8
+			path: app/Http/Controllers/InternalApiController.php
+
+		-
 			message: '#^Relation ''status'' is not found in App\\DirectMessage model\.$#'
 			identifier: larastan.relationExistence
 			count: 1
 			path: app/Http/Controllers/InternalApiController.php
+
+		-
+			message: '#^Do not use Auth\:\:user\(\) in a class that has access to the request\. Use \$request\-\>user\(\) instead\.$#'
+			identifier: larastan.noAuthFacadeInRequestScope
+			count: 1
+			path: app/Http/Controllers/MicroController.php
 
 		-
 			message: '#^Call to static method make\(\) on an unknown class View\.$#'
@@ -467,6 +575,12 @@ parameters:
 			identifier: class.notFound
 			count: 2
 			path: app/Http/Controllers/MobileController.php
+
+		-
+			message: '#^Do not use Auth\:\:check\(\) in a class that has access to the request\. Use \$request\-\>user\(\) \!\=\= null instead\.$#'
+			identifier: larastan.noAuthFacadeInRequestScope
+			count: 3
+			path: app/Http/Controllers/NewsroomController.php
 
 		-
 			message: '#^Call to static method forget\(\) on an unknown class Cache\.$#'
@@ -511,6 +625,18 @@ parameters:
 			path: app/Http/Controllers/ProfileController.php
 
 		-
+			message: '#^Do not use Auth\:\:check\(\) in a class that has access to the request\. Use \$request\-\>user\(\) \!\=\= null instead\.$#'
+			identifier: larastan.noAuthFacadeInRequestScope
+			count: 3
+			path: app/Http/Controllers/ProfileController.php
+
+		-
+			message: '#^Do not use Auth\:\:user\(\) in a class that has access to the request\. Use \$request\-\>user\(\) instead\.$#'
+			identifier: larastan.noAuthFacadeInRequestScope
+			count: 3
+			path: app/Http/Controllers/ProfileController.php
+
+		-
 			message: '#^Call to static method forget\(\) on an unknown class Cache\.$#'
 			identifier: class.notFound
 			count: 2
@@ -533,6 +659,24 @@ parameters:
 			identifier: class.notFound
 			count: 3
 			path: app/Http/Controllers/PublicApiController.php
+
+		-
+			message: '#^Do not use Auth\:\:check\(\) in a class that has access to the request\. Use \$request\-\>user\(\) \!\=\= null instead\.$#'
+			identifier: larastan.noAuthFacadeInRequestScope
+			count: 3
+			path: app/Http/Controllers/PublicApiController.php
+
+		-
+			message: '#^Do not use Auth\:\:user\(\) in a class that has access to the request\. Use \$request\-\>user\(\) instead\.$#'
+			identifier: larastan.noAuthFacadeInRequestScope
+			count: 1
+			path: app/Http/Controllers/PublicApiController.php
+
+		-
+			message: '#^Do not use Auth\:\:user\(\) in a class that has access to the request\. Use \$request\-\>user\(\) instead\.$#'
+			identifier: larastan.noAuthFacadeInRequestScope
+			count: 1
+			path: app/Http/Controllers/ReportController.php
 
 		-
 			message: '#^Relation ''media'' is not found in App\\Status model\.$#'
@@ -559,6 +703,12 @@ parameters:
 			path: app/Http/Controllers/SiteController.php
 
 		-
+			message: '#^Do not use Auth\:\:check\(\) in a class that has access to the request\. Use \$request\-\>user\(\) \!\=\= null instead\.$#'
+			identifier: larastan.noAuthFacadeInRequestScope
+			count: 1
+			path: app/Http/Controllers/SiteController.php
+
+		-
 			message: '#^Call to static method remember\(\) on an unknown class Cache\.$#'
 			identifier: class.notFound
 			count: 1
@@ -574,6 +724,18 @@ parameters:
 			message: '#^Call to static method remember\(\) on an unknown class Cache\.$#'
 			identifier: class.notFound
 			count: 2
+			path: app/Http/Controllers/StatusController.php
+
+		-
+			message: '#^Do not use Auth\:\:check\(\) in a class that has access to the request\. Use \$request\-\>user\(\) \!\=\= null instead\.$#'
+			identifier: larastan.noAuthFacadeInRequestScope
+			count: 1
+			path: app/Http/Controllers/StatusController.php
+
+		-
+			message: '#^Do not use Auth\:\:user\(\) in a class that has access to the request\. Use \$request\-\>user\(\) instead\.$#'
+			identifier: larastan.noAuthFacadeInRequestScope
+			count: 8
 			path: app/Http/Controllers/StatusController.php
 
 		-
@@ -613,6 +775,12 @@ parameters:
 			path: app/Http/Controllers/TimelineController.php
 
 		-
+			message: '#^Do not use Auth\:\:check\(\) in a class that has access to the request\. Use \$request\-\>user\(\) \!\=\= null instead\.$#'
+			identifier: larastan.noAuthFacadeInRequestScope
+			count: 1
+			path: app/Http/Controllers/TimelineController.php
+
+		-
 			message: '#^Instantiated class App\\Transformer\\Api\\StatusTimelineTransformer not found\.$#'
 			identifier: class.notFound
 			count: 1
@@ -625,6 +793,18 @@ parameters:
 			path: app/Http/Controllers/TimelineController.php
 
 		-
+			message: '#^Do not use Auth\:\:check\(\) in a class that has access to the request\. Use \$request\-\>user\(\) \!\=\= null instead\.$#'
+			identifier: larastan.noAuthFacadeInRequestScope
+			count: 3
+			path: app/Http/Controllers/UserInviteController.php
+
+		-
+			message: '#^Do not use Auth\:\:user\(\) in a class that has access to the request\. Use \$request\-\>user\(\) instead\.$#'
+			identifier: larastan.noAuthFacadeInRequestScope
+			count: 1
+			path: app/Http/Controllers/UserInviteController.php
+
+		-
 			message: '#^Class Laravel\\Passport\\Http\\Middleware\\CheckForAnyScope not found\.$#'
 			identifier: class.notFound
 			count: 1
@@ -635,6 +815,42 @@ parameters:
 			identifier: class.notFound
 			count: 1
 			path: app/Http/Kernel.php
+
+		-
+			message: '#^Do not use Auth\:\:check\(\) in a class that has access to the request\. Use \$request\-\>user\(\) \!\=\= null instead\.$#'
+			identifier: larastan.noAuthFacadeInRequestScope
+			count: 1
+			path: app/Http/Middleware/AccountInterstitial.php
+
+		-
+			message: '#^Do not use Auth\:\:check\(\) in a class that has access to the request\. Use \$request\-\>user\(\) \!\=\= null instead\.$#'
+			identifier: larastan.noAuthFacadeInRequestScope
+			count: 1
+			path: app/Http/Middleware/Admin.php
+
+		-
+			message: '#^Do not use Auth\:\:user\(\) in a class that has access to the request\. Use \$request\-\>user\(\) instead\.$#'
+			identifier: larastan.noAuthFacadeInRequestScope
+			count: 1
+			path: app/Http/Middleware/Admin.php
+
+		-
+			message: '#^Do not use Auth\:\:check\(\) in a class that has access to the request\. Use \$request\-\>user\(\) \!\=\= null instead\.$#'
+			identifier: larastan.noAuthFacadeInRequestScope
+			count: 1
+			path: app/Http/Middleware/Api/Admin.php
+
+		-
+			message: '#^Do not use Auth\:\:user\(\) in a class that has access to the request\. Use \$request\-\>user\(\) instead\.$#'
+			identifier: larastan.noAuthFacadeInRequestScope
+			count: 1
+			path: app/Http/Middleware/Api/Admin.php
+
+		-
+			message: '#^Do not use Auth\:\:check\(\) in a class that has access to the request\. Use \$request\-\>user\(\) \!\=\= null instead\.$#'
+			identifier: larastan.noAuthFacadeInRequestScope
+			count: 1
+			path: app/Http/Middleware/DangerZone.php
 
 		-
 			message: '#^Call to static method get\(\) on an unknown class Session\.$#'
@@ -1475,3 +1691,15 @@ parameters:
 			identifier: class.notFound
 			count: 1
 			path: app/Util/Site/Config.php
+
+		-
+			message: '#^Access to an undefined property Tests\\Unit\\ActivityPub\\AudienceScopeTest\:\:\$mastodon\.$#'
+			identifier: property.notFound
+			count: 3
+			path: tests/Unit/ActivityPub/AudienceScopeTest.php
+
+		-
+			message: '#^Access to an undefined property Tests\\Unit\\ActivityPub\\AudienceScopeTest\:\:\$pleroma\.$#'
+			identifier: property.notFound
+			count: 3
+			path: tests/Unit/ActivityPub/AudienceScopeTest.php
