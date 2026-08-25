@@ -82,21 +82,18 @@ class CuratedOnboardingNotifyAdminNewApplicationPipeline implements ShouldQueue
             $admins = User::where('is_admin', true)->get();
         }
 
-        if ($admins->isEmpty()) {
+        if ($admins->isEmpty() && empty($ccEmails)) {
             return;
         }
 
-        $hasIncludedCC = false;
-
         foreach ($admins as $admin) {
             if ($admin->email) {
-                $mailer = Mail::to($admin->email);
-                if ($ccEmails && ! $hasIncludedCC) {
-                    $mailer->cc($ccEmails);
-                    $hasIncludedCC = true;
-                }
-                $mailer->send(new CuratedRegisterNotifyAdmin($cr));
+                Mail::to($admin->email)->send(new CuratedRegisterNotifyAdmin($cr));
             }
+        }
+
+        if ($ccEmails) {
+            Mail::to($ccEmails)->send(new CuratedRegisterNotifyAdmin($cr));
         }
     }
 }
