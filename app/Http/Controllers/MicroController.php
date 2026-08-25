@@ -3,10 +3,14 @@
 namespace App\Http\Controllers;
 
 use App\Status;
+use App\Transformer\Api\StatusTransformer;
 use Auth;
 use DB;
 use Illuminate\Http\Request;
 use Illuminate\Validation\Rule;
+use League\Fractal\Manager;
+use League\Fractal\Resource\Item;
+use League\Fractal\Serializer\ArraySerializer;
 
 class MicroController extends Controller
 {
@@ -57,9 +61,9 @@ class MicroController extends Controller
             return $status;
         });
 
-        $fractal = new \League\Fractal\Manager;
-        $fractal->setSerializer(new \League\Fractal\Serializer\ArraySerializer);
-        $s = new \League\Fractal\Resource\Item($status, new \App\Transformer\Api\StatusTransformer);
+        $fractal = new Manager;
+        $fractal->setSerializer(new ArraySerializer);
+        $s = new Item($status, new StatusTransformer);
 
         return $fractal->createData($s)->toArray();
     }

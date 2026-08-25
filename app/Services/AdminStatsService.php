@@ -13,6 +13,7 @@ use App\Status;
 use App\User;
 use App\Util\Lexer\PrettyNumber;
 use Cache;
+use Carbon\Carbon;
 use DateInterval;
 use DatePeriod;
 use DB;
@@ -94,7 +95,7 @@ class AdminStatsService
 
         return Cache::remember('admin:dashboard:home:data:v0:24hr', $ttl, function () {
             return [
-                'failedjobs' => PrettyNumber::convert(FailedJob::where('failed_at', '>=', \Carbon\Carbon::now()->subDay())->count()),
+                'failedjobs' => PrettyNumber::convert(FailedJob::where('failed_at', '>=', Carbon::now()->subDay())->count()),
                 'statuses' => PrettyNumber::convert(intval(StatusService::totalLocalStatuses())),
                 'statuses_monthly' => PrettyNumber::convert(Status::where('created_at', '>', now()->subMonth())->count()),
                 'profiles' => PrettyNumber::convert(Profile::count()),

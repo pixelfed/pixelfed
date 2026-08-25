@@ -11,6 +11,7 @@ use App\Services\SanitizeService;
 use App\User;
 use App\Util\ActivityPub\Helpers;
 use App\Util\Lexer\RestrictedNames;
+use GuzzleHttp\Exception\RequestException;
 use Illuminate\Auth\Events\Registered;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -591,7 +592,7 @@ class RemoteAuthController extends Controller
                 } else {
                     return [];
                 }
-            } catch (\GuzzleHttp\Exception\RequestException $e) {
+            } catch (RequestException $e) {
                 return;
             } catch (\Exception $e) {
                 return [];

@@ -10,6 +10,7 @@ use App\Services\AccountService;
 use App\Services\PronounService;
 use App\Util\Lexer\Autolink;
 use App\Util\Lexer\PrettyNumber;
+use App\Util\Localization\Localization;
 use Cache;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -78,7 +79,7 @@ trait HomeSettings
             }
 
             if ($user->language != $language &&
-                in_array($language, \App\Util\Localization\Localization::languages())
+                in_array($language, Localization::languages())
             ) {
                 $changes = true;
                 $user->language = $language;
@@ -128,7 +129,7 @@ trait HomeSettings
 
         $user = $request->user();
 
-        if (!password_verify($current, $user->password)) {
+        if (! password_verify($current, $user->password)) {
             return redirect()->back()->with('error', 'There was an error with your request! Please try again.');
         }
 

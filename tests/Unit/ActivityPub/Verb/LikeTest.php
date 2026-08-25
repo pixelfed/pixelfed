@@ -10,7 +10,7 @@ class LikeTest extends TestCase
 {
     protected array $basicLike;
 
-    public function setUp(): void
+    protected function setUp(): void
     {
         parent::setUp();
 

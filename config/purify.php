@@ -1,5 +1,6 @@
 <?php
 
+use Stevebauman\Purify\Cache\CacheDefinitionCache;
 use Stevebauman\Purify\Definitions\Html5Definition;
 
 return [
@@ -54,48 +55,48 @@ return [
             'AutoFormat.RemoveEmpty' => false,
 
             'Attr.AllowedClasses' => [
-	            'h-feed',
-	            'h-entry',
-	            'h-cite',
-	            'h-card',
-	            'p-author',
-	            'p-name',
-	            'p-in-reply-to',
-	            'p-repost-of',
-	            'p-comment',
-	            'u-photo',
-	            'u-uid',
-	            'u-url',
-	            'dt-published',
-	            'e-content',
-	            'mention',
-	            'hashtag',
-	            'ellipsis',
-	            'invisible'
-	        ],
+                'h-feed',
+                'h-entry',
+                'h-cite',
+                'h-card',
+                'p-author',
+                'p-name',
+                'p-in-reply-to',
+                'p-repost-of',
+                'p-comment',
+                'u-photo',
+                'u-uid',
+                'u-url',
+                'dt-published',
+                'e-content',
+                'mention',
+                'hashtag',
+                'ellipsis',
+                'invisible',
+            ],
 
-	        'Attr.AllowedRel' => [
-	            'noreferrer',
-	            'noopener',
-	            'nofollow'
-	        ],
+            'Attr.AllowedRel' => [
+                'noreferrer',
+                'noopener',
+                'nofollow',
+            ],
 
-	        'HTML.TargetBlank' => true,
+            'HTML.TargetBlank' => true,
 
-	        'HTML.Nofollow' => true,
+            'HTML.Nofollow' => true,
 
-	        'URI.DefaultScheme' => 'https',
+            'URI.DefaultScheme' => 'https',
 
-	        'URI.DisableExternalResources' => true,
+            'URI.DisableExternalResources' => true,
 
-	        'URI.DisableResources' => true,
+            'URI.DisableResources' => true,
 
-	        'URI.AllowedSchemes' => [
-	            'http' => true,
-	            'https' => true,
-	        ],
+            'URI.AllowedSchemes' => [
+                'http' => true,
+                'https' => true,
+            ],
 
-	        'URI.HostBlacklist' => config('costar.enabled') ? config('costar.domain.block') : [],
+            'URI.HostBlacklist' => config('costar.enabled') ? config('costar.domain.block') : [],
         ],
 
     ],
@@ -132,7 +133,7 @@ return [
 
     'serializer' => [
         'driver' => env('CACHE_DRIVER', 'file'),
-        'cache' => \Stevebauman\Purify\Cache\CacheDefinitionCache::class,
+        'cache' => CacheDefinitionCache::class,
     ],
 
     // 'serializer' => [

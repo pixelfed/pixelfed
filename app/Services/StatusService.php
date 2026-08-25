@@ -18,7 +18,7 @@ class StatusService
     {
         $p = $publicOnly ? 'pub:' : 'all:';
 
-        return self::CACHE_KEY . $p . $id;
+        return self::CACHE_KEY.$p.$id;
     }
 
     public static function get(
@@ -273,11 +273,11 @@ class StatusService
         if ($purge) {
             $status = self::get($id);
             if ($status && isset($status['account']) && isset($status['account']['id'])) {
-                Cache::forget('profile:embed:' . $status['account']['id']);
+                Cache::forget('profile:embed:'.$status['account']['id']);
             }
-            Cache::forget('status:transformer:media:attachments:' . $id);
+            Cache::forget('status:transformer:media:attachments:'.$id);
             MediaService::del($id);
-            Cache::forget('pf:services:sh:id:' . $id);
+            Cache::forget('pf:services:sh:id:'.$id);
             PublicTimelineService::rem($id);
             NetworkTimelineService::rem($id);
         }

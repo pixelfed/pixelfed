@@ -35,7 +35,7 @@ class GroupsPostController extends Controller
     {
         $this->validate($request, [
             'group_id' => 'required|exists:groups,id',
-            'caption' => 'sometimes|string|max:' . config_cache('pixelfed.max_caption_length'),
+            'caption' => 'sometimes|string|max:'.config_cache('pixelfed.max_caption_length'),
             'pollOptions' => 'sometimes|array|min:1|max:4',
         ]);
 
@@ -107,7 +107,7 @@ class GroupsPostController extends Controller
         }
         if ($type == 'video') {
             $video = $request->file('video');
-            $storagePath = 'public/g/' . $group->id . '/p/' . $status->id;
+            $storagePath = 'public/g/'.$group->id.'/p/'.$status->id;
             $path = $video->storePublicly($storagePath);
             $hash = \hash_file('sha256', $video);
 
@@ -139,7 +139,7 @@ class GroupsPostController extends Controller
 
         $s = GroupPostService::get($status->group_id, $status->id);
         GroupFeedService::add($group->id, $gp->id);
-        Cache::forget('groups:self:feed:' . $pid);
+        Cache::forget('groups:self:feed:'.$pid);
 
         $s['pf_type'] = $type;
         $s['visibility'] = 'public';

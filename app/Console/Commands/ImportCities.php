@@ -6,6 +6,7 @@ use App\Place;
 use DB;
 use Illuminate\Console\Command;
 use Illuminate\Support\Str;
+use League\ISO3166\ISO3166;
 
 class ImportCities extends Command
 {
@@ -153,7 +154,7 @@ class ImportCities extends Command
             return $countries[$code];
         }
 
-        $country = (new \League\ISO3166\ISO3166)->alpha2($code);
+        $country = (new ISO3166)->alpha2($code);
         $this->countries[$code] = $country['name'];
 
         return $this->countries[$code];

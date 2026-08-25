@@ -2,7 +2,7 @@
 
 return [
 
-	/*
+    /*
     |--------------------------------------------------------------------------
     | Enable Autospam
     |--------------------------------------------------------------------------
@@ -15,7 +15,6 @@ return [
     */
 
     'enabled' => env('PF_BOUNCER_ENABLED', false),
-
 
     /*
     |--------------------------------------------------------------------------
@@ -31,12 +30,12 @@ return [
     'ignored_tokens' => env('PF_AUTOSPAM_IGNORED_TOKENS', 'the,a,of,and'),
 
     'nlp' => [
-    	'enabled' => false,
-    	'spam_sample_limit' => env('PF_AUTOSPAM_NLP_SPAM_SAMPLE_LIMIT', 200),
+        'enabled' => false,
+        'spam_sample_limit' => env('PF_AUTOSPAM_NLP_SPAM_SAMPLE_LIMIT', 200),
     ],
 
     'live_filters' => [
         'enabled' => env('PF_AUTOSPAM_LIVE_FILTERS_ENABLED', false),
         'filters' => env('PF_AUTOSPAM_LIVE_FILTERS_CSV', ''),
-    ]
+    ],
 ];

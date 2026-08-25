@@ -39,6 +39,7 @@ use App\Services\UserStorageService;
 use App\Status;
 use App\StatusArchived;
 use App\Story;
+use App\Transformer\Api\AccountTransformer;
 use App\User;
 use App\UserSetting;
 use App\Util\Lexer\RestrictedNames;
@@ -204,7 +205,7 @@ class ApiV1Dot1Controller extends Controller
     /**
      * DELETE /api/v1.1/accounts/avatar
      *
-     * @return \App\Transformer\Api\AccountTransformer
+     * @return AccountTransformer
      */
     public function deleteAvatar(Request $request)
     {
@@ -286,7 +287,7 @@ class ApiV1Dot1Controller extends Controller
     /**
      * POST /api/v1.1/accounts/change-password
      *
-     * @return \App\Transformer\Api\AccountTransformer
+     * @return AccountTransformer
      */
     public function accountChangePassword(Request $request)
     {

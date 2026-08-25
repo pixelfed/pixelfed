@@ -36,7 +36,7 @@ class ActivityPubFetchService
 
         $domainKey = base64_encode(strtolower($host));
         $urlKey = hash('sha256', $url);
-        $key = self::CACHE_KEY . $domainKey . ':' . $urlKey;
+        $key = self::CACHE_KEY.$domainKey.':'.$urlKey;
 
         return Cache::remember($key, 450, function () use ($url) {
             return self::fetchRequest($url);
@@ -173,7 +173,6 @@ class ActivityPubFetchService
             }
         }
 
-        return;
     }
 
     private static function signedHeaders(string $url): array
@@ -192,10 +191,10 @@ class ActivityPubFetchService
         $headers['Accept'] = 'application/activity+json';
 
         $headers['User-Agent'] =
-            'PixelFedBot/1.0.0 (Pixelfed/' .
-            config('pixelfed.version') .
-            '; +' .
-            config('app.url') .
+            'PixelFedBot/1.0.0 (Pixelfed/'.
+            config('pixelfed.version').
+            '; +'.
+            config('app.url').
             ')';
 
         return $headers;
@@ -208,11 +207,11 @@ class ActivityPubFetchService
     ): string {
         $addresses = array_map(function ($ip) {
             return str_contains($ip, ':')
-                ? '[' . $ip . ']'
+                ? '['.$ip.']'
                 : $ip;
         }, $ips);
 
-        return $host . ':' . $port . ':' . implode(',', $addresses);
+        return $host.':'.$port.':'.implode(',', $addresses);
     }
 
     private static function resolveRedirect(

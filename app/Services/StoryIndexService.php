@@ -2,6 +2,7 @@
 
 namespace App\Services;
 
+use Carbon\Carbon;
 use Illuminate\Support\Arr;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
@@ -615,7 +616,7 @@ class StoryIndexService
                 'stories' => collect($storyItems)->sortBy('id')->values()->all(),
                 'url' => $url,
                 'hasViewed' => false,
-                '_latest_ts' => \Carbon\Carbon::parse($profileStories->first()->created_at)->timestamp,
+                '_latest_ts' => Carbon::parse($profileStories->first()->created_at)->timestamp,
             ];
         }
 

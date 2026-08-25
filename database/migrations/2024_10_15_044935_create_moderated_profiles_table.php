@@ -1,11 +1,11 @@
 <?php
 
+use App\Models\ModeratedProfile;
+use App\ModLog;
+use App\Profile;
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
-use App\Profile;
-use App\ModLog;
-use App\Models\ModeratedProfile;
 
 return new class extends Migration
 {
@@ -31,9 +31,9 @@ return new class extends Migration
 
         $logs = ModLog::whereObjectType('App\Profile::class')->whereAction('admin.user.delete')->get();
 
-        foreach($logs as $log) {
+        foreach ($logs as $log) {
             $profile = Profile::withTrashed()->find($log->object_id);
-            if(!$profile || $profile->private_key) {
+            if (! $profile || $profile->private_key) {
                 continue;
             }
             ModeratedProfile::updateOrCreate([

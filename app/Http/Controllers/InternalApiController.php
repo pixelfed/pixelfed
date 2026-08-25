@@ -107,6 +107,7 @@ class InternalApiController extends Controller
                     return $user && ($s->profile_id === $user->profile_id
                         || FollowerService::follows($user->profile_id, $s->profile_id));
                 }
+
                 return false;
             })->take($limit);
         $resource = new Fractal\Resource\Collection($children, new StatusTransformer);
@@ -338,9 +339,9 @@ class InternalApiController extends Controller
             'only_media' => 'nullable',
             'pinned' => 'nullable',
             'exclude_replies' => 'nullable',
-            'max_id' => 'nullable|integer|min:0|max:' . PHP_INT_MAX,
-            'since_id' => 'nullable|integer|min:0|max:' . PHP_INT_MAX,
-            'min_id' => 'nullable|integer|min:0|max:' . PHP_INT_MAX,
+            'max_id' => 'nullable|integer|min:0|max:'.PHP_INT_MAX,
+            'since_id' => 'nullable|integer|min:0|max:'.PHP_INT_MAX,
+            'min_id' => 'nullable|integer|min:0|max:'.PHP_INT_MAX,
             'limit' => 'nullable|integer|min:1|max:24',
         ]);
 
@@ -358,7 +359,7 @@ class InternalApiController extends Controller
                 return response()->json([]);
             }
             $pid = Auth::user()->profile->id;
-            $following = Cache::remember('profile:following:' . $pid, now()->addMinutes(1440), function () use ($pid) {
+            $following = Cache::remember('profile:following:'.$pid, now()->addMinutes(1440), function () use ($pid) {
                 $following = Follower::whereProfileId($pid)->pluck('following_id');
 
                 return $following->push($pid)->toArray();
@@ -367,7 +368,7 @@ class InternalApiController extends Controller
         } else {
             if (Auth::check()) {
                 $pid = Auth::user()->profile->id;
-                $following = Cache::remember('profile:following:' . $pid, now()->addMinutes(1440), function () use ($pid) {
+                $following = Cache::remember('profile:following:'.$pid, now()->addMinutes(1440), function () use ($pid) {
                     $following = Follower::whereProfileId($pid)->pluck('following_id');
 
                     return $following->push($pid)->toArray();
@@ -411,12 +412,12 @@ class InternalApiController extends Controller
 
     public function remoteProfile(Request $request, $id)
     {
-        return redirect('/i/web/profile/' . $id);
+        return redirect('/i/web/profile/'.$id);
     }
 
     public function remoteStatus(Request $request, $profileId, $statusId)
     {
-        return redirect('/i/web/post/' . $statusId);
+        return redirect('/i/web/post/'.$statusId);
     }
 
     public function requestEmailVerification(Request $request)

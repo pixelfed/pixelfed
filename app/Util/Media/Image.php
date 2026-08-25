@@ -301,11 +301,11 @@ class Image
     public function setBaseName($basePath, $thumbnail, $extension)
     {
         $pathInfo = pathinfo($basePath);
-        $dir = isset($pathInfo['dirname']) && $pathInfo['dirname'] !== '.' ? $pathInfo['dirname'] . '/' : '';
+        $dir = isset($pathInfo['dirname']) && $pathInfo['dirname'] !== '.' ? $pathInfo['dirname'].'/' : '';
         $filename = $pathInfo['filename'];
-        $name = ($thumbnail == true) ? $filename . '_thumb' : $filename;
-        $basePath = $dir . $name . '.' . $extension;
-    
+        $name = ($thumbnail == true) ? $filename.'_thumb' : $filename;
+        $basePath = $dir.$name.'.'.$extension;
+
         return ['path' => $basePath, 'png' => false];
     }
 

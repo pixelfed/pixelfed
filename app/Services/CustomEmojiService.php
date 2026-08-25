@@ -81,24 +81,24 @@ class CustomEmojiService
 
             $ext = '.'.last(explode('/', $json['icon']['mediaType']));
             $mediaPath = 'emoji/'.$emoji->id.$ext;
-            
+
             try {
                 $response = Http::timeout(30)
                     ->withOptions(['max_redirects' => 0])
                     ->get($json['icon']['url']);
-            
-                if (!$response->successful()) {
+
+                if (! $response->successful()) {
                     return;
                 }
-            
+
                 // Validate actual content type from response
                 $contentType = $response->header('Content-Type');
-                if (!in_array($contentType, ['image/jpeg', 'image/png', 'image/jpg'])) {
+                if (! in_array($contentType, ['image/jpeg', 'image/png', 'image/jpg'])) {
                     return;
                 }
-            
+
                 Storage::put('public/'.$mediaPath, $response->body());
-            
+
                 $emoji->media_path = $mediaPath;
                 $emoji->save();
             } catch (\Exception $e) {

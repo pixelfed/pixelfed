@@ -9,6 +9,7 @@ use Cache;
 use DB;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
+use Illuminate\Support\Carbon;
 use Storage;
 
 /**
@@ -22,13 +23,13 @@ use Storage;
  * @property int $status_count
  * @property int $following_count
  * @property int $followers_count
- * @property \Illuminate\Support\Carbon|null $last_fetched_at
- * @property \Illuminate\Support\Carbon|null $last_status_at
- * @property \Illuminate\Support\Carbon|null $created_at
- * @property \Illuminate\Support\Carbon|null $updated_at
- * @property \Illuminate\Support\Carbon|null $deleted_at
- * @property-read \App\User|null $user
- * @property-read \App\Avatar $avatar
+ * @property Carbon|null $last_fetched_at
+ * @property Carbon|null $last_status_at
+ * @property Carbon|null $created_at
+ * @property Carbon|null $updated_at
+ * @property Carbon|null $deleted_at
+ * @property-read User|null $user
+ * @property-read Avatar $avatar
  */
 class Profile extends Model
 {

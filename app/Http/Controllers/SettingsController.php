@@ -133,11 +133,11 @@ class SettingsController extends Controller
         $user = Auth::user();
         abort_if(! config('pixelfed.account_deletion'), 403);
         abort_if($user->is_admin, 403);
-    
+
         $this->validate($request, [
             'confirm' => 'required|accepted',
         ]);
-    
+
         $profile = $user->profile;
         $ts = Carbon::now()->addMonth();
         $user->email = $user->id;

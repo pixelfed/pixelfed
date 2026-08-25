@@ -7,6 +7,7 @@ use App\Services\StatusService;
 use App\Story;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
+use Illuminate\Support\Carbon;
 
 /**
  * @property int $id
@@ -16,8 +17,8 @@ use Illuminate\Http\Resources\Json\JsonResource;
  * @property string $object_type
  * @property int $reported_profile_id
  * @property string|null $message
- * @property \Illuminate\Support\Carbon|null $admin_seen
- * @property \Illuminate\Support\Carbon $created_at
+ * @property Carbon|null $admin_seen
+ * @property Carbon $created_at
  */
 class AdminReport extends JsonResource
 {

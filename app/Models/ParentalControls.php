@@ -7,6 +7,7 @@ use App\User;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
+use Illuminate\Support\Carbon;
 
 /**
  * @property int $id
@@ -14,13 +15,13 @@ use Illuminate\Database\Eloquent\SoftDeletes;
  * @property int $child_id
  * @property array|null $permissions
  * @property string|null $verify_code
- * @property \Illuminate\Support\Carbon|null $email_sent_at
- * @property \Illuminate\Support\Carbon|null $email_verified_at
- * @property \Illuminate\Support\Carbon|null $created_at
- * @property \Illuminate\Support\Carbon|null $updated_at
- * @property \Illuminate\Support\Carbon|null $deleted_at
- * @property-read \App\User $parent
- * @property-read \App\User $child
+ * @property Carbon|null $email_sent_at
+ * @property Carbon|null $email_verified_at
+ * @property Carbon|null $created_at
+ * @property Carbon|null $updated_at
+ * @property Carbon|null $deleted_at
+ * @property-read User $parent
+ * @property-read User $child
  */
 class ParentalControls extends Model
 {

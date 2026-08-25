@@ -2,6 +2,6 @@
 
 return [
 
-  'emptyPersonalTimeline' => 'Via kronologio estas malplena.',
+    'emptyPersonalTimeline' => 'Via kronologio estas malplena.',
 
 ];

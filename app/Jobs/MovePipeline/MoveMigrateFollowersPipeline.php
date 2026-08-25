@@ -101,7 +101,7 @@ class MoveMigrateFollowersPipeline implements ShouldQueue
         try {
             $targetAccount = Helpers::profileFetch($target);
             $actorAccount = Helpers::profileFetch($actor);
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             Log::warning('MoveMigrateFollowersPipeline: Failed to fetch profiles: '.$e->getMessage());
             throw $e;
         }

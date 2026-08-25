@@ -9,12 +9,12 @@ Route::domain(config('pixelfed.domain.app'))->middleware(['validemail', 'twofact
         Route::get('v1/polls/{id}', 'PollController@getPoll');
         Route::post('v1/polls/{id}/votes', 'PollController@vote');
 
-        Route::group(['prefix' => 'web-admin'], function() {
+        Route::group(['prefix' => 'web-admin'], function () {
             Route::get('software-update/check', [SoftwareUpdateController::class, 'getSoftwareUpdateCheck']);
         });
 
-        Route::group(['prefix' => 'compose'], function() {
-            Route::group(['prefix' => 'v0'], function() {
+        Route::group(['prefix' => 'compose'], function () {
+            Route::group(['prefix' => 'v0'], function () {
                 Route::post('/media/upload', 'ComposeController@mediaUpload');
                 Route::post('/media/update', 'ComposeController@mediaUpdate');
                 Route::delete('/media/delete', 'ComposeController@mediaDelete');
@@ -43,7 +43,7 @@ Route::domain(config('pixelfed.domain.app'))->middleware(['validemail', 'twofact
             Route::post('read', 'DirectMessageController@read');
         });
 
-        Route::group(['prefix' => 'v2'], function() {
+        Route::group(['prefix' => 'v2'], function () {
             Route::get('config', 'ApiController@siteConfiguration');
             Route::get('discover', 'InternalApiController@discover');
             Route::get('discover/posts', 'InternalApiController@discoverPosts')->middleware('auth:api');
@@ -58,8 +58,8 @@ Route::domain(config('pixelfed.domain.app'))->middleware(['validemail', 'twofact
             Route::get('statuses/{id}/state', 'Api\ApiV1Controller@statusState');
         });
 
-        Route::group(['prefix' => 'pixelfed'], function() {
-            Route::group(['prefix' => 'v1'], function() {
+        Route::group(['prefix' => 'pixelfed'], function () {
+            Route::group(['prefix' => 'v1'], function () {
                 Route::get('accounts/verify_credentials', 'ApiController@verifyCredentials');
                 Route::get('accounts/relationships', 'Api\ApiV1Controller@accountRelationshipsById');
                 Route::get('accounts/search', 'Api\ApiV1Controller@accountSearch');
@@ -84,7 +84,7 @@ Route::domain(config('pixelfed.domain.app'))->middleware(['validemail', 'twofact
                 Route::get('blocks', 'AccountController@accountBlocks');
             });
 
-            Route::group(['prefix' => 'v2'], function() {
+            Route::group(['prefix' => 'v2'], function () {
                 Route::get('config', 'ApiController@siteConfiguration');
                 Route::get('discover', 'InternalApiController@discover');
                 Route::get('discover/posts', 'InternalApiController@discoverPosts');

@@ -1,4 +1,5 @@
 <?php
+
 return [
-  'emptyPersonalTimeline' => 'Linimasa kamu kosong.',
+    'emptyPersonalTimeline' => 'Linimasa kamu kosong.',
 ];

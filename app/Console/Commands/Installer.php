@@ -3,6 +3,8 @@
 namespace App\Console\Commands;
 
 use Illuminate\Console\Command;
+use Illuminate\Foundation\Bootstrap\LoadEnvironmentVariables;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Redis;
 use PDO;
 
@@ -457,13 +459,13 @@ class Installer extends Command
             // Force reload environment variables
             $app = app();
             $app->bootstrapWith([
-                \Illuminate\Foundation\Bootstrap\LoadEnvironmentVariables::class,
+                LoadEnvironmentVariables::class,
             ]);
 
             // Purge database connections to force reconnect with new credentials
             $app->forgetInstance('db');
             $app->forgetInstance('db.connection');
-            \Illuminate\Support\Facades\DB::purge();
+            DB::purge();
 
             // Rebuild config cache
             $this->call('config:cache');

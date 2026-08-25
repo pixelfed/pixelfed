@@ -31,7 +31,7 @@ class StatusController extends Controller
         if ($request->user()) {
             // unless they force static view
             if (! $request->has('fs') || $request->input('fs') != '1') {
-                return redirect('/i/web/post/' . $id);
+                return redirect('/i/web/post/'.$id);
             }
         }
 
@@ -113,7 +113,7 @@ class StatusController extends Controller
         $hid = HashidService::decode($id);
         abort_if(! $hid, 404);
 
-        return redirect('/i/web/post/' . $hid);
+        return redirect('/i/web/post/'.$hid);
     }
 
     public function showId(int $id)
@@ -164,7 +164,7 @@ class StatusController extends Controller
             return response($content)->header('X-Frame-Options', 'ALLOWALL');
         }
 
-        $aiCheck = Cache::remember('profile:ai-check:spam-login:' . $profile['id'], 3600, function () use ($profile) {
+        $aiCheck = Cache::remember('profile:ai-check:spam-login:'.$profile['id'], 3600, function () use ($profile) {
             $user = Profile::find($profile['id']);
             if (! $user) {
                 return true;
@@ -290,19 +290,19 @@ class StatusController extends Controller
         if ($status->in_reply_to_id) {
             $parent = Status::find($status->in_reply_to_id);
             if ($parent && ($parent->profile_id == $user->profile_id) || ($status->profile_id == $user->profile_id) || $user->is_admin) {
-                Cache::forget('_api:statuses:recent_9:' . $status->profile_id);
-                Cache::forget('profile:status_count:' . $status->profile_id);
-                Cache::forget('profile:embed:' . $status->profile_id);
+                Cache::forget('_api:statuses:recent_9:'.$status->profile_id);
+                Cache::forget('profile:status_count:'.$status->profile_id);
+                Cache::forget('profile:embed:'.$status->profile_id);
                 StatusService::del($status->id, true);
-                Cache::forget('profile:status_count:' . $status->profile_id);
+                Cache::forget('profile:status_count:'.$status->profile_id);
                 $status->uri ? RemoteStatusDelete::dispatch($status) : StatusDelete::dispatch($status);
             }
         } elseif ($status->profile_id == $user->profile_id || $user->is_admin == true) {
-            Cache::forget('_api:statuses:recent_9:' . $status->profile_id);
-            Cache::forget('profile:status_count:' . $status->profile_id);
-            Cache::forget('profile:embed:' . $status->profile_id);
+            Cache::forget('_api:statuses:recent_9:'.$status->profile_id);
+            Cache::forget('profile:status_count:'.$status->profile_id);
+            Cache::forget('profile:embed:'.$status->profile_id);
             StatusService::del($status->id, true);
-            Cache::forget('profile:status_count:' . $status->profile_id);
+            Cache::forget('profile:status_count:'.$status->profile_id);
             $status->uri ? RemoteStatusDelete::dispatch($status) : StatusDelete::dispatch($status);
         }
 
@@ -356,7 +356,7 @@ class StatusController extends Controller
             ReblogService::add($profile->id, $status->id);
         }
 
-        Cache::forget('status:' . $status->id . ':sharedby:userid:' . $user->id);
+        Cache::forget('status:'.$status->id.':sharedby:userid:'.$user->id);
         StatusService::del($status->id);
 
         if ($request->ajax()) {
@@ -370,7 +370,7 @@ class StatusController extends Controller
 
     public function showActivityPub(Request $request, $status)
     {
-        $key = 'pf:status:ap:v1:sid:' . $status['id'];
+        $key = 'pf:status:ap:v1:sid:'.$status['id'];
 
         return Cache::remember($key, 3600, function () use ($status) {
             $status = Status::findOrFail($status['id']);
@@ -412,7 +412,7 @@ class StatusController extends Controller
         $status->media->each(function ($media) use ($licenseId) {
             $media->license = $licenseId;
             $media->save();
-            Cache::forget('status:transformer:media:attachments:' . $media->status_id);
+            Cache::forget('status:transformer:media:attachments:'.$media->status_id);
         });
 
         return redirect($status->url());
@@ -506,7 +506,7 @@ class StatusController extends Controller
             return response()->json(0);
         }
 
-        Cache::forget('profile:home-timeline-cursor:' . $request->user()->id);
+        Cache::forget('profile:home-timeline-cursor:'.$request->user()->id);
 
         foreach ($views as $view) {
             if (! isset($view['sid']) || ! isset($view['pid'])) {

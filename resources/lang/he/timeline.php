@@ -2,6 +2,6 @@
 
 return [
 
-  'emptyPersonalTimeline' => 'ציר הזמן שלך ריק.',
+    'emptyPersonalTimeline' => 'ציר הזמן שלך ריק.',
 
 ];

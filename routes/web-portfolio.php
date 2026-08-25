@@ -9,7 +9,7 @@ Route::domain(config('portfolio.domain'))->group(function () {
     Route::post('api/portfolio/self/update-settings.json', 'PortfolioController@storeSettings');
     Route::get('api/portfolio/{username}/feed', 'PortfolioController@getFeed');
 
-    Route::prefix(config('portfolio.path'))->group(function() {
+    Route::prefix(config('portfolio.path'))->group(function () {
         Route::get('/', 'PortfolioController@index');
         Route::get('settings', 'PortfolioController@settings')->name('portfolio.settings');
         Route::post('settings', 'PortfolioController@store');

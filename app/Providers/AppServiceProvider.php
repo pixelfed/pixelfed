@@ -108,8 +108,8 @@ class AppServiceProvider extends ServiceProvider
                 : 'missing';
 
             return [
-                Limit::perHour(20)->by('app-code-verify:ip:' . $request->ip()),
-                Limit::perHour(10)->by('app-code-verify:email:' . $emailKey),
+                Limit::perHour(20)->by('app-code-verify:ip:'.$request->ip()),
+                Limit::perHour(10)->by('app-code-verify:email:'.$emailKey),
             ];
         });
 
@@ -125,8 +125,8 @@ class AppServiceProvider extends ServiceProvider
             $user = $request->user('web');
 
             $actor = $user
-                ? 'u:' . $user->getAuthIdentifier()
-                : 'ip:' . $request->ip();
+                ? 'u:'.$user->getAuthIdentifier()
+                : 'ip:'.$request->ip();
 
             $tooMany = function (Request $request, array $headers) {
                 return response()->json([

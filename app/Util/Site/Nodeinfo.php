@@ -20,7 +20,7 @@ class Nodeinfo
 
             $statuses = InstanceService::totalLocalStatuses();
 
-            $features = ['features' => \App\Util\Site\Config::get()['features']];
+            $features = ['features' => Config::get()['features']];
             unset($features['features']['hls']);
 
             return [

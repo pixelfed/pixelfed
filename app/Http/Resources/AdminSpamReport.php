@@ -5,14 +5,15 @@ namespace App\Http\Resources;
 use App\Services\StatusService;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
+use Illuminate\Support\Carbon;
 
 /**
  * @property int $id
  * @property string $type
  * @property int|null $item_id
  * @property string|null $item_type
- * @property \Illuminate\Support\Carbon|null $read_at
- * @property \Illuminate\Support\Carbon $created_at
+ * @property Carbon|null $read_at
+ * @property Carbon $created_at
  */
 class AdminSpamReport extends JsonResource
 {

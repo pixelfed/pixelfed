@@ -8,6 +8,6 @@ return [
         'create_group' => [
             'admins' => env('GROUPS_ACL_CREATE_ADMINS', true),
             'users' => env('GROUPS_ACL_CREATE_USERS', true),
-        ]
-    ]
+        ],
+    ],
 ];

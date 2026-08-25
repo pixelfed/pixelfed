@@ -57,7 +57,7 @@ class InboxWorker implements ShouldQueue
 
         if ($this->verifySignature($headers, $payload) == true) {
             if (isset($payload['id'])) {
-                $lockKey = 'pf:ap:user-inbox:activity:' . hash('sha256', $payload['id']);
+                $lockKey = 'pf:ap:user-inbox:activity:'.hash('sha256', $payload['id']);
                 if (! Cache::add($lockKey, 1, 3600)) {
                     // Already processed after valid signature check
                     return 1;
@@ -122,7 +122,7 @@ class InboxWorker implements ShouldQueue
             }
         }
         if (
-            !$keyDomain || !$idDomain || !$actorDomain
+            ! $keyDomain || ! $idDomain || ! $actorDomain
             || $keyDomain !== $idDomain || $keyDomain !== $actorDomain
         ) {
             return false;

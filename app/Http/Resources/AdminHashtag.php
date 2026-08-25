@@ -2,7 +2,10 @@
 
 namespace App\Http\Resources;
 
+use Illuminate\Contracts\Support\Arrayable;
+use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
+use Illuminate\Support\Carbon;
 
 /**
  * @property int $id
@@ -13,15 +16,15 @@ use Illuminate\Http\Resources\Json\JsonResource;
  * @property bool $is_nsfw
  * @property bool $is_banned
  * @property int|null $cached_count
- * @property \Illuminate\Support\Carbon $created_at
+ * @property Carbon $created_at
  */
 class AdminHashtag extends JsonResource
 {
     /**
      * Transform the resource into an array.
      *
-     * @param  \Illuminate\Http\Request  $request
-     * @return array|\Illuminate\Contracts\Support\Arrayable|\JsonSerializable
+     * @param  Request  $request
+     * @return array|Arrayable|\JsonSerializable
      */
     public function toArray($request)
     {

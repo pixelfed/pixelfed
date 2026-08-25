@@ -2,7 +2,10 @@
 
 namespace App\Http\Resources;
 
+use Illuminate\Contracts\Support\Arrayable;
+use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
+use Illuminate\Support\Carbon;
 
 /**
  * @property int $id
@@ -13,20 +16,20 @@ use Illuminate\Http\Resources\Json\JsonResource;
  * @property bool $banned
  * @property int|null $user_count
  * @property int|null $status_count
- * @property \Illuminate\Support\Carbon|null $last_crawled_at
+ * @property Carbon|null $last_crawled_at
  * @property string|null $notes
  * @property string|null $base_domain
  * @property bool|null $ban_subdomains
- * @property \Illuminate\Support\Carbon|null $actors_last_synced_at
- * @property \Illuminate\Support\Carbon $created_at
+ * @property Carbon|null $actors_last_synced_at
+ * @property Carbon $created_at
  */
 class AdminInstance extends JsonResource
 {
     /**
      * Transform the resource into an array.
      *
-     * @param  \Illuminate\Http\Request  $request
-     * @return array|\Illuminate\Contracts\Support\Arrayable|\JsonSerializable
+     * @param  Request  $request
+     * @return array|Arrayable|\JsonSerializable
      */
     public function toArray($request)
     {

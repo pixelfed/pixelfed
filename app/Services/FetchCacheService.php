@@ -70,11 +70,13 @@ class FetchCacheService
 
         if (! $res->ok()) {
             Cache::put($key, 1, $ttl);
+
             return false;
         }
 
         $result = $res->json();
         Cache::put($key, $result, $ttl);
+
         return $result;
     }
 }

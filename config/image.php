@@ -43,5 +43,5 @@ return [
         'decodeAnimation' => true,
         'blendingColor' => env('IMAGE_BLENDINGCOLOR', 'ffffff'),
         'strip' => env('IMAGE_STRIP', true),
-    ]
+    ],
 ];

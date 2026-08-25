@@ -4,13 +4,14 @@ namespace App\Http\Middleware;
 
 use Auth;
 use Closure;
+use Illuminate\Http\Request;
 
 class Admin
 {
     /**
      * Handle an incoming request.
      *
-     * @param  \Illuminate\Http\Request  $request
+     * @param  Request  $request
      * @return mixed
      */
     public function handle($request, Closure $next)

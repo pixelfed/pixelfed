@@ -3,19 +3,20 @@
 namespace App;
 
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Carbon;
 
 /**
  * @property int $id
  * @property int $follower_id
  * @property int $following_id
  * @property array|null $activity
- * @property \Illuminate\Support\Carbon|null $handled_at
- * @property \Illuminate\Support\Carbon|null $created_at
- * @property \Illuminate\Support\Carbon|null $updated_at
- * @property-read \App\Profile $target
- * @property-read \App\Profile $actor
- * @property-read \App\Profile $follower
- * @property-read \App\Profile $following
+ * @property Carbon|null $handled_at
+ * @property Carbon|null $created_at
+ * @property Carbon|null $updated_at
+ * @property-read Profile $target
+ * @property-read Profile $actor
+ * @property-read Profile $follower
+ * @property-read Profile $following
  */
 class FollowRequest extends Model
 {

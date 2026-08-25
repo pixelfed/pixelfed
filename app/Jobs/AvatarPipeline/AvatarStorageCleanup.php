@@ -2,24 +2,28 @@
 
 namespace App\Jobs\AvatarPipeline;
 
+use App\Avatar;
+use App\Services\AvatarService;
 use Illuminate\Bus\Queueable;
-use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Contracts\Queue\ShouldBeUniqueUntilProcessing;
+use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
 use Illuminate\Queue\InteractsWithQueue;
-use Illuminate\Queue\SerializesModels;
 use Illuminate\Queue\Middleware\WithoutOverlapping;
-use App\Services\AvatarService;
-use App\Avatar;
+use Illuminate\Queue\SerializesModels;
 
-class AvatarStorageCleanup implements ShouldQueue, ShouldBeUniqueUntilProcessing
+class AvatarStorageCleanup implements ShouldBeUniqueUntilProcessing, ShouldQueue
 {
     use Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
 
     public $avatar;
+
     public $tries = 3;
+
     public $maxExceptions = 3;
+
     public $timeout = 900;
+
     public $failOnTimeout = true;
 
     /**
@@ -34,7 +38,7 @@ class AvatarStorageCleanup implements ShouldQueue, ShouldBeUniqueUntilProcessing
      */
     public function uniqueId(): string
     {
-        return 'avatar:storage:cleanup:' . $this->avatar->profile_id;
+        return 'avatar:storage:cleanup:'.$this->avatar->profile_id;
     }
 
     /**
@@ -62,6 +66,5 @@ class AvatarStorageCleanup implements ShouldQueue, ShouldBeUniqueUntilProcessing
     {
         AvatarService::cleanup($this->avatar, true);
 
-        return;
     }
 }
