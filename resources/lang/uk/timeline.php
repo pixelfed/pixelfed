@@ -2,6 +2,6 @@
 
 return [
 
-  'emptyPersonalTimeline' => 'Ваша стрічка порожня.',
+    'emptyPersonalTimeline' => 'Ваша стрічка порожня.',
 
 ];
