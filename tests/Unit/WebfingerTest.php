@@ -9,7 +9,7 @@ use Tests\TestCase;
 class WebfingerTest extends TestCase
 {
     #[Test]
-    public function webfingerTest()
+    public function webfinger_test()
     {
         $expected = [
             'domain' => 'pixelfed.org',
