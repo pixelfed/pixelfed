@@ -753,7 +753,7 @@ class Helpers
             ?? null;
 
         if ($attributedTo !== null) {
-            $author = self::extractActivityPubUrl($attributedTo);
+            $author = self::extractAttributedTo($attributedTo);
 
             if (! $author) {
                 return false;
