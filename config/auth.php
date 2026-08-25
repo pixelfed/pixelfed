@@ -80,6 +80,7 @@ return [
         // 	'database' => [
         // 		'model' => App\User::class,
         // 		'sync_passwords' => false,
+        //      'locate_users_by' => 'mail',
         // 		'sync_attributes' => [
         // 			'name' => 'cn',
         // 			'email' => 'mail',
