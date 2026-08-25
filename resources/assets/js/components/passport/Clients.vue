@@ -384,10 +384,21 @@
              * Destroy the given client.
              */
             destroy(client) {
+                if (!confirm('Are you sure you want to delete this OAuth client? Any applications using it will stop working immediately.')) {
+                    return;
+                }
+
                 axios.delete('/oauth/clients/' + client.id)
-                        .then(response => {
-                            this.getClients();
-                        });
+                    .then(response => {
+                        this.getClients();
+                    })
+                    .catch(error => {
+                        if (error.response && error.response.data && error.response.data.error) {
+                            alert(error.response.data.error);
+                        } else {
+                            alert('Failed to delete client. Please try again.');
+                        }
+                    });
             }
         }
     }

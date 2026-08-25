@@ -110,7 +110,7 @@ Route::domain(config('pixelfed.domain.app'))->middleware(['validemail', 'twofact
             ]);
 
             Route::delete('/clients/{client_id}', [
-                'uses' => '\Laravel\Passport\Http\Controllers\ClientController@destroy',
+                'uses' => '\App\Http\Controllers\OAuth\OAuthClientController@destroy',
                 'as' => 'clients.destroy',
             ]);
 
