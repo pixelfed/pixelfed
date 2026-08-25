@@ -68,7 +68,7 @@ class Kernel extends HttpKernel
             VerifyCsrfToken::class,
             SubstituteBindings::class,
             CreateFreshApiToken::class,
-            // 'restricted',
+            'restricted',
         ],
 
         'oauth-web' => [
@@ -112,6 +112,6 @@ class Kernel extends HttpKernel
         'interstitial' => AccountInterstitial::class,
         'scopes' => CheckScopes::class,
         'scope' => CheckForAnyScope::class,
-        // 'restricted'    => \App\Http\Middleware\RestrictedAccess::class,
+        'restricted'    => \App\Http\Middleware\RestrictedAccess::class,
     ];
 }
