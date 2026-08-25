@@ -558,7 +558,7 @@ class ApiV1Controller extends Controller
         $min_id = $request->min_id;
 
         if (! $max_id && ! $min_id) {
-            $min_id = 1;
+            $min_id = 0;
         }
         $napi = $request->has(self::PF_API_ENTITY_KEY);
 
@@ -585,7 +585,7 @@ class ApiV1Controller extends Controller
                 }
             }
         }
-        $dir = $min_id ? '>' : '<';
+        $dir = $min_id !== null ? '>' : '<';
         $id = $min_id ?? $max_id;
         if ($request->has('page')) {
             $res = DB::table('followers')
@@ -672,7 +672,7 @@ class ApiV1Controller extends Controller
         $min_id = $request->min_id;
 
         if (! $max_id && ! $min_id) {
-            $min_id = 1;
+            $min_id = 0;
         }
 
         $napi = $request->has(self::PF_API_ENTITY_KEY);
@@ -701,7 +701,7 @@ class ApiV1Controller extends Controller
             }
         }
 
-        $dir = $min_id ? '>' : '<';
+        $dir = $min_id !== null ? '>' : '<';
         $id = $min_id ?? $max_id;
         if ($request->has('page')) {
             $res = DB::table('followers')
@@ -804,7 +804,7 @@ class ApiV1Controller extends Controller
         $min_id = $request->min_id;
 
         if (! $max_id && ! $min_id) {
-            $min_id = 1;
+            $min_id = 0;
         }
 
         $pid = $request->user()->profile_id;
@@ -832,7 +832,7 @@ class ApiV1Controller extends Controller
             $visibility = $following ? ['public', 'unlisted', 'private'] : ['public', 'unlisted'];
         }
 
-        $dir = $min_id ? '>' : '<';
+        $dir = $min_id !== null ? '>' : '<';
         $id = $min_id ?? $max_id;
         $res = Status::select(
             'profile_id',
