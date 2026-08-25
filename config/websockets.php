@@ -1,5 +1,20 @@
 <?php
 
+use BeyondCode\LaravelWebSockets\API\FetchChannel;
+use BeyondCode\LaravelWebSockets\API\FetchChannels;
+use BeyondCode\LaravelWebSockets\API\FetchUsers;
+use BeyondCode\LaravelWebSockets\API\TriggerEvent;
+use BeyondCode\LaravelWebSockets\Apps\ConfigAppManager;
+use BeyondCode\LaravelWebSockets\ChannelManagers\LocalChannelManager;
+use BeyondCode\LaravelWebSockets\ChannelManagers\RedisChannelManager;
+use BeyondCode\LaravelWebSockets\Dashboard\Http\Middleware\Authorize;
+use BeyondCode\LaravelWebSockets\Server\HealthHandler;
+use BeyondCode\LaravelWebSockets\Server\WebSocketHandler;
+use BeyondCode\LaravelWebSockets\Statistics\Collectors\MemoryCollector;
+use BeyondCode\LaravelWebSockets\Statistics\Collectors\RedisCollector;
+use BeyondCode\LaravelWebSockets\Statistics\Stores\DatabaseStore;
+use React\Promise\FulfilledPromise;
+
 return [
 
     /*
@@ -21,7 +36,7 @@ return [
 
         'middleware' => [
             'web',
-            \BeyondCode\LaravelWebSockets\Dashboard\Http\Middleware\Authorize::class,
+            Authorize::class,
         ],
 
     ],
@@ -42,7 +57,7 @@ return [
         |
         */
 
-        'app' => \BeyondCode\LaravelWebSockets\Apps\ConfigAppManager::class,
+        'app' => ConfigAppManager::class,
 
     ],
 
@@ -120,7 +135,7 @@ return [
                 |
                 */
 
-                'channel_manager' => \BeyondCode\LaravelWebSockets\ChannelManagers\LocalChannelManager::class,
+                'channel_manager' => LocalChannelManager::class,
 
                 /*
                 |--------------------------------------------------------------------------
@@ -133,7 +148,7 @@ return [
                 |
                 */
 
-                'collector' => \BeyondCode\LaravelWebSockets\Statistics\Collectors\MemoryCollector::class,
+                'collector' => MemoryCollector::class,
 
             ],
 
@@ -151,7 +166,7 @@ return [
                 |
                 */
 
-                'channel_manager' => \BeyondCode\LaravelWebSockets\ChannelManagers\RedisChannelManager::class,
+                'channel_manager' => RedisChannelManager::class,
 
                 /*
                 |--------------------------------------------------------------------------
@@ -164,7 +179,7 @@ return [
                 |
                 */
 
-                'collector' => \BeyondCode\LaravelWebSockets\Statistics\Collectors\RedisCollector::class,
+                'collector' => RedisCollector::class,
 
             ],
 
@@ -185,7 +200,7 @@ return [
         |
         */
 
-        'store' => \BeyondCode\LaravelWebSockets\Statistics\Stores\DatabaseStore::class,
+        'store' => DatabaseStore::class,
 
         /*
         |--------------------------------------------------------------------------
@@ -267,17 +282,17 @@ return [
 
     'handlers' => [
 
-        'websocket' => \BeyondCode\LaravelWebSockets\Server\WebSocketHandler::class,
+        'websocket' => WebSocketHandler::class,
 
-        'health' => \BeyondCode\LaravelWebSockets\Server\HealthHandler::class,
+        'health' => HealthHandler::class,
 
-        'trigger_event' => \BeyondCode\LaravelWebSockets\API\TriggerEvent::class,
+        'trigger_event' => TriggerEvent::class,
 
-        'fetch_channels' => \BeyondCode\LaravelWebSockets\API\FetchChannels::class,
+        'fetch_channels' => FetchChannels::class,
 
-        'fetch_channel' => \BeyondCode\LaravelWebSockets\API\FetchChannel::class,
+        'fetch_channel' => FetchChannel::class,
 
-        'fetch_users' => \BeyondCode\LaravelWebSockets\API\FetchUsers::class,
+        'fetch_users' => FetchUsers::class,
 
     ],
 
@@ -294,6 +309,6 @@ return [
     |
     */
 
-    'promise_resolver' => \React\Promise\FulfilledPromise::class,
+    'promise_resolver' => FulfilledPromise::class,
 
 ];

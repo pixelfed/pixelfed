@@ -51,8 +51,8 @@ return [
              *   abusing this
              */
             'enabled' => env('PF_LOGIN_WITH_MASTODON_ENFORCE_MAX_USES', true),
-            'limit' => env('PF_LOGIN_WITH_MASTODON_MAX_USES_LIMIT', 3)
-        ]
+            'limit' => env('PF_LOGIN_WITH_MASTODON_MAX_USES_LIMIT', 3),
+        ],
     ],
 
     'oidc' => [
@@ -83,7 +83,7 @@ return [
          *   The scopes to request from the OIDC provider, typically including
          *   'openid' (required), 'profile', and 'email' for basic user information
          */
-        'scopes' =>  env('PF_OIDC_SCOPES', 'openid profile email'),
+        'scopes' => env('PF_OIDC_SCOPES', 'openid profile email'),
 
         /*
          *   Authorization URL
@@ -119,7 +119,7 @@ return [
          *   The field from the OIDC profile response to use as the username
          *   Default is 'preferred_username' but can be changed based on your provider
          */
-        'field_username' => env('PF_OIDC_USERNAME_FIELD', "preferred_username"),
+        'field_username' => env('PF_OIDC_USERNAME_FIELD', 'preferred_username'),
 
         /*
          *   ID Field
