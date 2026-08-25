@@ -726,7 +726,7 @@ class StoryApiV1Controller extends Controller
             $n->profile_id = $dm->to_id;
             $n->actor_id = $dm->from_id;
             $n->item_id = $dm->id;
-            $n->item_type = 'App\DirectMessage';
+            $n->item_type = \App\DirectMessage::class;
             $n->action = 'story:comment';
             $n->save();
         } else {

@@ -47,7 +47,7 @@ class GroupMemberInvite implements ShouldQueue
         $notification->actor_id = $actor->id;
         $notification->action = 'group:invite';
         $notification->item_id = $invite->group_id;
-        $notification->item_type = 'App\Models\Group';
+        $notification->item_type = \App\Models\Group::class;
         $notification->save();
     }
 }

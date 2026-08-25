@@ -73,7 +73,7 @@ class UnlikePipeline implements ShouldQueue
             ->whereActorId($actor->id)
             ->whereAction('group:like')
             ->whereItemId($status->id)
-            ->whereItemType('App\Status')
+            ->whereItemType(\App\Status::class)
             ->first();
 
         if ($exists) {

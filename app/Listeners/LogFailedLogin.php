@@ -34,7 +34,7 @@ class LogFailedLogin
         $log = new AccountLog;
         $log->user_id = $user->id;
         $log->item_id = $user->id;
-        $log->item_type = 'App\User';
+        $log->item_type = \App\User::class;
         $log->action = 'auth.failed';
         $log->message = 'Failed login attempt';
         $log->link = null;

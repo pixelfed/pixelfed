@@ -127,11 +127,11 @@ class RemoteStatusDelete implements ShouldBeUniqueUntilProcessing, ShouldQueue
             }
         }
 
-        AccountInterstitial::where('item_type', 'App\Status')
+        AccountInterstitial::where('item_type', \App\Status::class)
             ->where('item_id', $status->id)
             ->delete();
         Bookmark::whereStatusId($status->id)->delete();
-        CollectionItem::whereObjectType('App\Status')
+        CollectionItem::whereObjectType(\App\Status::class)
             ->whereObjectId($status->id)
             ->get()
             ->each(function ($col) {
@@ -140,7 +140,7 @@ class RemoteStatusDelete implements ShouldBeUniqueUntilProcessing, ShouldQueue
             });
         $dms = DirectMessage::whereStatusId($status->id)->get();
         foreach ($dms as $dm) {
-            $not = Notification::whereItemType('App\DirectMessage')
+            $not = Notification::whereItemType(\App\DirectMessage::class)
                 ->whereItemId($dm->id)
                 ->first();
             if ($not) {
@@ -157,7 +157,7 @@ class RemoteStatusDelete implements ShouldBeUniqueUntilProcessing, ShouldQueue
             });
         $mediaTags = MediaTag::where('status_id', $status->id)->get();
         foreach ($mediaTags as $mtag) {
-            $not = Notification::whereItemType('App\MediaTag')
+            $not = Notification::whereItemType(\App\MediaTag::class)
                 ->whereItemId($mtag->id)
                 ->first();
             if ($not) {
@@ -167,10 +167,10 @@ class RemoteStatusDelete implements ShouldBeUniqueUntilProcessing, ShouldQueue
             $mtag->delete();
         }
         Mention::whereStatusId($status->id)->forceDelete();
-        Notification::whereItemType('App\Status')
+        Notification::whereItemType(\App\Status::class)
             ->whereItemId($status->id)
             ->forceDelete();
-        Report::whereObjectType('App\Status')
+        Report::whereObjectType(\App\Status::class)
             ->whereObjectId($status->id)
             ->delete();
         StatusArchived::whereStatusId($status->id)->delete();

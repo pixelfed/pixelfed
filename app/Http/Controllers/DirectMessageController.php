@@ -208,7 +208,7 @@ class DirectMessageController extends Controller
 
         $nf = UserFilter::whereUserId($recipient->id)
             ->whereFilterableId($profile->id)
-            ->whereFilterableType('App\Profile')
+            ->whereFilterableType(\App\Profile::class)
             ->whereFilterType('dm.mute')
             ->exists();
 
@@ -218,7 +218,7 @@ class DirectMessageController extends Controller
             $notification->actor_id = $profile->id;
             $notification->action = 'dm';
             $notification->item_id = $dm->id;
-            $notification->item_type = "App\DirectMessage";
+            $notification->item_type = \App\DirectMessage::class;
             $notification->save();
         }
 
@@ -574,7 +574,7 @@ class DirectMessageController extends Controller
             $q = mb_substr($q, 1);
         }
 
-        $blocked = UserFilter::whereFilterableType('App\Profile')
+        $blocked = UserFilter::whereFilterableType(\App\Profile::class)
             ->whereFilterType('block')
             ->whereFilterableId($request->user()->profile_id)
             ->pluck('user_id');
@@ -654,7 +654,7 @@ class DirectMessageController extends Controller
             [
                 'user_id' => $pid,
                 'filterable_id' => $fid,
-                'filterable_type' => 'App\Profile',
+                'filterable_type' => \App\Profile::class,
                 'filter_type' => 'dm.mute',
             ]
         );
@@ -676,7 +676,7 @@ class DirectMessageController extends Controller
 
         $f = UserFilter::whereUserId($pid)
             ->whereFilterableId($fid)
-            ->whereFilterableType('App\Profile')
+            ->whereFilterableType(\App\Profile::class)
             ->whereFilterType('dm.mute')
             ->firstOrFail();
 

@@ -21,7 +21,7 @@ return new class extends Migration
     public function up(): void
     {
         UserFilter::whereFilterType('block')
-        ->whereFilterableType('App\Profile')
+        ->whereFilterableType(\App\Profile::class)
         ->chunk(10, function($filters) {
         	foreach($filters as $filter) {
         		$actor = Profile::whereNull('status')->find($filter->user_id);

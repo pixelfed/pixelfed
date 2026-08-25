@@ -71,7 +71,7 @@ class UnlikePipeline implements ShouldQueue
                 ->whereActorId($actor->id)
                 ->whereAction('like')
                 ->whereItemId($status->id)
-                ->whereItemType('App\Status')
+                ->whereItemType(\App\Status::class)
                 ->chunkById(100, function ($notifications) {
                     foreach ($notifications as $notification) {
                         $notification->forceDelete();

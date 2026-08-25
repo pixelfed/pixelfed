@@ -61,12 +61,12 @@ class NewCommentPipeline implements ShouldQueue
         $groupId = $status->group_id;
         $postId = $status->id;
 
-        if ($parentClass === 'App\Models\GroupPost') {
+        if ($parentClass === \App\Models\GroupPost::class) {
             $parent->reply_count = GroupPostService::getCommentCount($parent->id, false);
             $parent->save();
             GroupPostService::del($groupId, $postId);
             GroupFeedService::del($groupId, $postId);
-        } elseif ($parentClass === 'App\Models\GroupComment') {
+        } elseif ($parentClass === \App\Models\GroupComment::class) {
             $gp = GroupPost::whereId($parent->status_id)->firstOrFail();
             if ($gp->group_id !== $status->group_id) {
                 return;

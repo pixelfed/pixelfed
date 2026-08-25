@@ -36,7 +36,7 @@ class Bouncer
             $uid = $status->profile->user_id;
             $ids = AccountInterstitial::whereUserId($uid)
                 ->whereType('post.autospam')
-                ->whereItemType('App\Status')
+                ->whereItemType(\App\Status::class)
                 ->whereNotNull('appeal_handled_at')
                 ->latest()
                 ->take(5)
@@ -117,7 +117,7 @@ class Bouncer
         $ai->user_id = $status->profile->user_id;
         $ai->type = 'post.autospam';
         $ai->view = 'account.moderation.post.autospam';
-        $ai->item_type = 'App\Status';
+        $ai->item_type = \App\Status::class;
         $ai->item_id = $status->id;
         $ai->has_media = (bool) $media->count();
         $ai->blurhash = $media->count() ? $media->first()->blurhash : null;
@@ -152,7 +152,7 @@ class Bouncer
         $notification->actor_id = $status->profile_id;
         $notification->action = 'autospam.warning';
         $notification->item_id = $status->id;
-        $notification->item_type = "App\Status";
+        $notification->item_type = \App\Status::class;
         $notification->save();
 
         StatusService::del($status->id);

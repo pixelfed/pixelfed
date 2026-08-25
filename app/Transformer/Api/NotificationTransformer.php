@@ -27,11 +27,11 @@ class NotificationTransformer extends Fractal\TransformerAbstract
             }
         }
 
-        if ($n->item_id && $n->item_type == 'App\Status') {
+        if ($n->item_id && $n->item_type == \App\Status::class) {
             $res['status'] = StatusService::get($n->item_id, false);
         }
 
-        if ($n->item_id && $n->item_type == 'App\ModLog') {
+        if ($n->item_id && $n->item_type == \App\ModLog::class) {
             $ml = $n->item;
             if ($ml && $ml->object_uid) {
                 $res['modlog'] = [
@@ -41,7 +41,7 @@ class NotificationTransformer extends Fractal\TransformerAbstract
             }
         }
 
-        if ($n->item_id && $n->item_type == 'App\MediaTag') {
+        if ($n->item_id && $n->item_type == \App\MediaTag::class) {
             $ml = $n->item;
             if ($ml && $ml->tagged_username) {
                 $np = StatusService::get($ml->status_id, false);

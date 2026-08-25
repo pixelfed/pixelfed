@@ -104,7 +104,7 @@ class LoginController extends Controller
         $log = new AccountLog;
         $log->user_id = $user->id;
         $log->item_id = $user->id;
-        $log->item_type = 'App\User';
+        $log->item_type = \App\User::class;
         $log->action = 'auth.login';
         $log->message = 'Account Login';
         $log->link = null;

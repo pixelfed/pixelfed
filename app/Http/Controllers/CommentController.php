@@ -48,7 +48,7 @@ class CommentController extends Controller
         }
 
         $filtered = UserFilter::whereUserId($status->profile_id)
-            ->whereFilterableType('App\Profile')
+            ->whereFilterableType(\App\Profile::class)
             ->whereIn('filter_type', ['block'])
             ->whereFilterableId($profile->id)
             ->exists();

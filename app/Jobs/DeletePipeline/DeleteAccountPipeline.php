@@ -138,7 +138,7 @@ class DeleteAccountPipeline implements ShouldQueue
 
         RemoteAuth::whereUserId($user->id)->delete();
 
-        AccountLog::whereItemType('App\User')->whereItemId($user->id)->forceDelete();
+        AccountLog::whereItemType(\App\User::class)->whereItemId($user->id)->forceDelete();
 
         AccountInterstitial::whereUserId($user->id)->delete();
 

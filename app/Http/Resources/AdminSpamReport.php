@@ -31,7 +31,7 @@ class AdminSpamReport extends JsonResource
             'created_at' => $this->created_at,
         ];
 
-        if ($this->item_id && $this->item_type === 'App\Status') {
+        if ($this->item_id && $this->item_type === \App\Status::class) {
             $res['status'] = StatusService::get($this->item_id, false);
         }
 

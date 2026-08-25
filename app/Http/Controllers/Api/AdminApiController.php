@@ -77,7 +77,7 @@ class AdminApiController extends Controller
                     'item_type' => $report->item_type,
                     'created_at' => $report->created_at,
                 ];
-                if ($report->item_type === 'App\\Status') {
+                if ($report->item_type === \App\Status::class) {
                     $status = StatusService::get($report->item_id, false);
                     if (! $status) {
                         return;
@@ -172,7 +172,7 @@ class AdminApiController extends Controller
 
         if ($action == 'dismiss-all') {
             AccountInterstitial::whereType('post.autospam')
-                ->whereItemType('App\Status')
+                ->whereItemType(\App\Status::class)
                 ->whereNull('appeal_handled_at')
                 ->whereUserId($appeal->user_id)
                 ->update(['appeal_handled_at' => $now, 'is_spam' => true]);
@@ -213,7 +213,7 @@ class AdminApiController extends Controller
 
         if ($action == 'approve-all') {
             AccountInterstitial::whereType('post.autospam')
-                ->whereItemType('App\Status')
+                ->whereItemType(\App\Status::class)
                 ->whereNull('appeal_handled_at')
                 ->whereUserId($appeal->user_id)
                 ->get()
@@ -272,7 +272,7 @@ class AdminApiController extends Controller
                     $r['reported_by_account'] = AccountService::get($report->profile_id, true);
                 }
 
-                if ($report->object_type === 'App\\Status') {
+                if ($report->object_type === \App\Status::class) {
                     $status = StatusService::get($report->object_id, false);
                     if (! $status) {
                         return;
@@ -285,7 +285,7 @@ class AdminApiController extends Controller
                     }
                 }
 
-                if ($report->object_type === 'App\\Profile') {
+                if ($report->object_type === \App\Profile::class) {
                     $acct = AccountService::get($report->object_id, true);
                     if ($acct) {
                         $r['account'] = $acct;

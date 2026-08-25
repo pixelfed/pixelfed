@@ -87,7 +87,7 @@ class LikePipeline implements ShouldQueue
                         'actor_id' => $actor->id,
                         'action' => 'like',
                         'item_id' => $status->id,
-                        'item_type' => 'App\Status',
+                        'item_type' => \App\Status::class,
                     ]
                 );
 

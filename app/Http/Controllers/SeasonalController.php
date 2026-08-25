@@ -225,7 +225,7 @@ class SeasonalController extends Controller
 
         $log = AccountLog::firstOrCreate([
             [
-                'item_type' => 'App\User',
+                'item_type' => \App\User::class,
                 'item_id' => $user->id,
                 'user_id' => $user->id,
                 'action' => 'seasonal.my2020.view',

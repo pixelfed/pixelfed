@@ -254,7 +254,7 @@ class Profile extends Model
     public function mutedIds()
     {
         return UserFilter::whereUserId($this->id)
-            ->whereFilterableType('App\Profile')
+            ->whereFilterableType(\App\Profile::class)
             ->whereFilterType('mute')
             ->pluck('filterable_id');
     }
@@ -262,7 +262,7 @@ class Profile extends Model
     public function blockedIds()
     {
         return UserFilter::whereUserId($this->id)
-            ->whereFilterableType('App\Profile')
+            ->whereFilterableType(\App\Profile::class)
             ->whereFilterType('block')
             ->pluck('filterable_id');
     }
