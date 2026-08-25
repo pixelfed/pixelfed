@@ -42,11 +42,11 @@ class RemoteOidcTest extends TestCase
 
         config(['remote-auth.oidc.enabled' => true]);
 
-        $oauthData = array(
+        $oauthData = [
             "sub" => str_random(10),
             "preferred_username" => fake()->unique()->userName,
             "email" => fake()->unique()->freeEmail,
-        );
+        ];
 
         $this->partialMock(UserOidcService::class, function (MockInterface $mock) use ($oauthData) {
             $mock->shouldReceive('getAccessToken')->once()->andReturn(new AccessToken(["access_token" => "token" ]));
@@ -82,11 +82,11 @@ class RemoteOidcTest extends TestCase
 
         config(['remote-auth.oidc.enabled' => true]);
 
-        $oauthData = array(
+        $oauthData = [
             "sub" => str_random(10),
             "preferred_username" => $user->username,
             "email" => $user->email,
-        );
+        ];
 
         UserOidcMapping::create([
             'oidc_id' => $oauthData['sub'],
