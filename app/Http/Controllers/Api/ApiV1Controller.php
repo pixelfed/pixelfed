@@ -4747,7 +4747,7 @@ class ApiV1Controller extends Controller
 
     public function accountRemoveFollowById(Request $request, $id)
     {
-        abort_if(! $request->user(), 403);
+        abort_if(! $request->user() || ! $request->user()->token(), 403);
         abort_unless($request->user()->tokenCan('follow'), 403);
 
         $pid = $request->user()->profile_id;
