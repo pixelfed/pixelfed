@@ -98,7 +98,9 @@
         "post-autoload-dump": [
             "Illuminate\\Foundation\\ComposerScripts::postAutoloadDump",
             "@php artisan package:discover --ansi"
-        ]
+        ],
+        "lint": "./vendor/bin/pint",
+        "lint:test": "./vendor/bin/pint --test"
     },
     "config": {
         "preferred-install": "dist",
