@@ -2,6 +2,8 @@
 
 ## [Unreleased](https://github.com/pixelfed/pixelfed/compare/v0.12.10...dev)
 
+-   Fix ApiV1Controller, ensure follow notifications have an account ([e1235dfd7](https://github.com/pixelfed/pixelfed/commit/e1235dfd7))
+-   ([](https://github.com/pixelfed/pixelfed/commit/))
 -   ([](https://github.com/pixelfed/pixelfed/commit/))
 
 ## [v0.12.9 (2026-08-25)](https://github.com/pixelfed/pixelfed/compare/v0.12.9...dev)

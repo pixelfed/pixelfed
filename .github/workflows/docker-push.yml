@@ -1,12 +1,16 @@
 name: Build Branch Image
 
-# Fires on push to either branch, but each branch only ever produces its own
-# tag — a push to staging never touches the 'latest'/dev image and vice versa.
 on:
   push:
     branches:
       - dev
       - staging
+      - unstable
+
+# Cancel an in-flight build for a branch if a new push arrives before it finishes — avoids wasting runner minutes racing two builds of the same branch.
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
 
 permissions:
   contents: read
@@ -18,22 +22,13 @@ env:
 jobs:
   build-and-push:
     runs-on: ubuntu-latest
+    timeout-minutes: 30
     steps:
       - name: Checkout
         uses: actions/checkout@v4
 
-      - name: Determine branch tag
-        id: vars
-        run: |
-          if [ "${{ github.ref_name }}" = "dev" ]; then
-            echo "branch_tag=dev" >> "$GITHUB_OUTPUT"
-          elif [ "${{ github.ref_name }}" = "staging" ]; then
-            echo "branch_tag=staging" >> "$GITHUB_OUTPUT"
-          else
-            echo "Unexpected branch: ${{ github.ref_name }}" >&2
-            exit 1
-          fi
-          echo "short_sha=$(echo ${GITHUB_SHA} | cut -c1-12)" >> "$GITHUB_OUTPUT"
+      - name: Set up QEMU
+        uses: docker/setup-qemu-action@v3
 
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v3
@@ -45,16 +40,24 @@ jobs:
           username: ${{ github.actor }}
           password: ${{ secrets.GITHUB_TOKEN }}
 
+      - name: Extract metadata
+        id: meta
+        uses: docker/metadata-action@v5
+        with:
+          images: ${{ env.IMAGE_NAME }}
+          tags: |
+            type=raw,value=${{ github.ref_name == 'dev' && 'latest' || github.ref_name }}
+            type=sha,format=short,prefix=${{ github.ref_name == 'dev' && 'latest' || github.ref_name }}-
+
       - name: Build and push
         uses: docker/build-push-action@v6
         with:
           context: .
           push: true
-          # Branch tag (latest/staging) plus an immutable sha tag for that
-          # same branch, so you can always pin/rollback to an exact build
-          # even after 'latest' or 'staging' has moved on.
-          tags: |
-            ${{ env.IMAGE_NAME }}:${{ steps.vars.outputs.branch_tag }}
-            ${{ env.IMAGE_NAME }}:${{ steps.vars.outputs.branch_tag }}-${{ steps.vars.outputs.short_sha }}
-          cache-from: type=gha
-          cache-to: type=gha,mode=max
+          platforms: linux/amd64,linux/arm64
+          tags: ${{ steps.meta.outputs.tags }}
+          labels: ${{ steps.meta.outputs.labels }}
+          cache-from: type=gha,scope=${{ github.ref_name }}
+          cache-to: type=gha,mode=max,scope=${{ github.ref_name }}
+          sbom: true
+          provenance: true
