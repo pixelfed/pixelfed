@@ -1,7 +1,6 @@
 includes:
     - vendor/larastan/larastan/extension.neon
     - vendor/nesbot/carbon/extension.neon
-    - phpstan-baseline.neon
 
 parameters:
     # Level 10 is the highest level
@@ -30,8 +29,5 @@ parameters:
         - bootstrap/cache/*
         - storage/
         - vendor/
-        - app/Console/Commands/ImportCities.php
-        - app/Http/Controllers/SettingsController.php
-        - app/Observers/FollowerObserver.php
 
     reportUnmatchedIgnoredErrors: false
