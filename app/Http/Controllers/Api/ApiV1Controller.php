@@ -488,6 +488,14 @@ class ApiV1Controller extends Controller
             }
         }
 
+        if ($request->has('show_atom')) {
+            $showAtom = $request->boolean('show_atom');
+            if ($settings->show_atom != $showAtom) {
+                $settings->show_atom = $showAtom;
+                $changes = true;
+            }
+        }
+
         if ($changes) {
             $settings->other = $other;
             $settings->compose_settings = $composeSettings;
@@ -911,7 +919,7 @@ class ApiV1Controller extends Controller
         $blocked = UserFilter::whereUserId($target->id)
             ->whereFilterType('block')
             ->whereFilterableId($user->profile_id)
-            ->whereFilterableType(\App\Profile::class)
+            ->whereFilterableType(Profile::class)
             ->exists();
 
         if ($blocked == true) {
@@ -1168,7 +1176,7 @@ class ApiV1Controller extends Controller
 
         $blocks = UserFilter::select('filterable_id', 'filterable_type', 'filter_type', 'user_id')
             ->whereUserId($user->profile_id)
-            ->whereFilterableType(\App\Profile::class)
+            ->whereFilterableType(Profile::class)
             ->whereFilterType('block')
             ->orderByDesc('id')
             ->simplePaginate($limit)
@@ -1286,7 +1294,7 @@ class ApiV1Controller extends Controller
         $filter = UserFilter::firstOrCreate([
             'user_id' => $pid,
             'filterable_id' => $profile->id,
-            'filterable_type' => \App\Profile::class,
+            'filterable_type' => Profile::class,
             'filter_type' => 'block',
         ]);
 
@@ -1323,7 +1331,7 @@ class ApiV1Controller extends Controller
 
         $filter = UserFilter::whereUserId($pid)
             ->whereFilterableId($profile->id)
-            ->whereFilterableType(\App\Profile::class)
+            ->whereFilterableType(Profile::class)
             ->whereFilterType('block')
             ->first();
 
@@ -2304,7 +2312,7 @@ class ApiV1Controller extends Controller
         }
 
         $mutes = UserFilter::whereUserId($user->profile_id)
-            ->whereFilterableType(\App\Profile::class)
+            ->whereFilterableType(Profile::class)
             ->whereFilterType('mute')
             ->orderByDesc('id')
             ->simplePaginate($limit)
@@ -2388,7 +2396,7 @@ class ApiV1Controller extends Controller
         $filter = UserFilter::firstOrCreate([
             'user_id' => $pid,
             'filterable_id' => $account->id,
-            'filterable_type' => \App\Profile::class,
+            'filterable_type' => Profile::class,
             'filter_type' => 'mute',
         ]);
 
@@ -2424,7 +2432,7 @@ class ApiV1Controller extends Controller
 
         $filter = UserFilter::whereUserId($pid)
             ->whereFilterableId($profile->id)
-            ->whereFilterableType(\App\Profile::class)
+            ->whereFilterableType(Profile::class)
             ->whereFilterType('mute')
             ->first();
 
@@ -3970,7 +3978,7 @@ class ApiV1Controller extends Controller
                     $count = $collection->items()->count();
                     $item = CollectionItem::firstOrCreate([
                         'collection_id' => $collection->id,
-                        'object_type' => \App\Status::class,
+                        'object_type' => Status::class,
                         'object_id' => $status->id,
                     ], [
                         'order' => $count,
