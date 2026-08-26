@@ -4,6 +4,8 @@ namespace App\Jobs\AvatarPipeline;
 
 use App\Avatar;
 use App\Profile;
+use App\Services\AccountService;
+use App\Services\LandingCacheService;
 use App\Util\Media\ImageDriverManager;
 use Cache;
 use Carbon\Carbon;
@@ -96,6 +98,10 @@ class AvatarOptimize implements ShouldQueue
             $avatar->last_processed_at = Carbon::now();
             $avatar->save();
             Cache::forget('avatar:'.$avatar->profile_id);
+            AccountService::del($avatar->profile_id);
+            if (LandingCacheService::profileBacksContact((int) $avatar->profile_id)) {
+                LandingCacheService::invalidateContact();
+            }
             $this->deleteOldAvatar($avatar->media_path, $this->current);
 
             if ((bool) config_cache('pixelfed.cloud_storage') && (bool) config_cache('instance.avatar.local_to_cloud')) {
@@ -132,5 +138,9 @@ class AvatarOptimize implements ShouldQueue
         $avatar->save();
         Storage::delete($avatar->media_path);
         Cache::forget('avatar:'.$avatar->profile_id);
+        AccountService::del($avatar->profile_id);
+        if (LandingCacheService::profileBacksContact((int) $avatar->profile_id)) {
+            LandingCacheService::invalidateContact();
+        }
     }
 }

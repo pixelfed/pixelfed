@@ -77,6 +77,22 @@
       </div>
     </div>
   </div>
+  <hr>
+  <p class="h6 text-uppercase text-center">INSTANCE CACHE</p>
+  @if(session('status'))
+  <div class="alert alert-success">{{ session('status') }}</div>
+  @endif
+  <div class="card shadow-none border">
+    <div class="card-body">
+      <p class="mb-2">
+        Clears the cached payloads behind the landing page, <code>/api/v1/instance</code>, <code>/api/v2/instance</code>, and nodeinfo (admin profile, rules, banner blurhash, user and post counts). Safe to run at any time; the values will repopulate on the next request.
+      </p>
+      <form method="POST" action="{{ route('admin.settings.system.clear-instance-cache') }}" class="mb-0">
+        @csrf
+        <button type="submit" class="btn btn-outline-danger font-weight-bold">Clear Instance Cache</button>
+      </form>
+    </div>
+  </div>
 @endsection
 
 @push('styles')

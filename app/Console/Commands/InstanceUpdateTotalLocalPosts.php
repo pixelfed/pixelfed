@@ -3,7 +3,7 @@
 namespace App\Console\Commands;
 
 use App\Services\ConfigCacheService;
-use Cache;
+use App\Services\LandingCacheService;
 use DB;
 use Illuminate\Console\Command;
 use Storage;
@@ -42,7 +42,7 @@ class InstanceUpdateTotalLocalPosts extends Command
             return;
         }
         $this->updateAndCache();
-        Cache::forget('api:nodeinfo');
+        LandingCacheService::invalidateStats();
 
     }
 

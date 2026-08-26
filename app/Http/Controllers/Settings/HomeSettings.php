@@ -7,6 +7,7 @@ use App\EmailVerification;
 use App\Mail\PasswordChange;
 use App\Media;
 use App\Services\AccountService;
+use App\Services\LandingCacheService;
 use App\Services\PronounService;
 use App\Util\Lexer\Autolink;
 use App\Util\Lexer\PrettyNumber;
@@ -102,6 +103,9 @@ trait HomeSettings
             Cache::forget('user:account:id:'.$user->id);
             AccountService::forgetAccountSettings($profile->id);
             AccountService::del($profile->id);
+            if (LandingCacheService::profileBacksContact((int) $profile->id)) {
+                LandingCacheService::invalidateContact();
+            }
 
             return redirect('/settings/home')->with('status', 'Profile successfully updated!');
         }

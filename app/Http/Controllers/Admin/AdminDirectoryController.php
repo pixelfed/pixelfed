@@ -6,6 +6,7 @@ use App\Http\Controllers\PixelfedDirectoryController;
 use App\Models\ConfigCache;
 use App\Services\AccountService;
 use App\Services\ConfigCacheService;
+use App\Services\LandingCacheService;
 use App\Services\StatusService;
 use App\Status;
 use App\User;
@@ -226,7 +227,7 @@ trait AdminDirectoryController
             $res['banner_image'] = $path;
             ConfigCacheService::put('app.banner_image', url(Storage::url($path)));
 
-            Cache::forget('api:v1:instance-data-response-v1');
+            LandingCacheService::invalidateBanner();
         }
 
         $config->v = json_encode($res);
@@ -322,7 +323,7 @@ trait AdminDirectoryController
         $directory->save();
         $bannerImage->v = url(Storage::url('public/headers/default.jpg'));
         $bannerImage->save();
-        Cache::forget('api:v1:instance-data-response-v1');
+        LandingCacheService::invalidateBanner();
         ConfigCacheService::put('pixelfed.directory', $directory);
 
         return $bannerImage->v;
