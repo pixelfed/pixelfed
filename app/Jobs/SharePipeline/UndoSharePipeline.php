@@ -54,7 +54,7 @@ class UndoSharePipeline implements ShouldQueue
                 ->whereActorId($status->profile_id)
                 ->whereAction('share')
                 ->whereItemId($status->reblog_of_id)
-                ->whereItemType('App\Status')
+                ->whereItemType(\App\Status::class)
                 ->first();
 
             if ($notification) {

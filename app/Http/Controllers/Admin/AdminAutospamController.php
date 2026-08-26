@@ -114,7 +114,7 @@ trait AdminAutospamController
 
     public function postAutospamTrainSpamApi(Request $request)
     {
-        $aiCount = AccountInterstitial::whereItemType('App\Status')
+        $aiCount = AccountInterstitial::whereItemType(\App\Status::class)
             ->whereIsSpam(true)
             ->count();
         abort_if($aiCount < 100, 422, 'You don\'t have enough data to pre-train against.');

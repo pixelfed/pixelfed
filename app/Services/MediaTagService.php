@@ -78,7 +78,7 @@ class MediaTagService
         $n->profile_id = $tag->profile_id;
         $n->actor_id = $p->id;
         $n->item_id = $tag->id;
-        $n->item_type = 'App\MediaTag';
+        $n->item_type = \App\MediaTag::class;
         $n->action = 'tagged';
         $n->save();
 

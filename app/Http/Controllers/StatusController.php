@@ -265,7 +265,7 @@ class StatusController extends Controller
             $ai->user_id = $status->profile->user_id;
             $ai->type = 'post.removed';
             $ai->view = 'account.moderation.post.removed';
-            $ai->item_type = 'App\Status';
+            $ai->item_type = \App\Status::class;
             $ai->item_id = $status->id;
             $ai->has_media = (bool) $media->count();
             $ai->blurhash = $media->count() ? $media->first()->blurhash : null;

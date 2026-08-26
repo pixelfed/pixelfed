@@ -85,7 +85,7 @@ class CleanupLegacyAccountMovePipeline implements ShouldQueue
             throw new Exception('Invalid move accounts');
         }
 
-        UserFilter::where('filterable_type', 'App\Profile')
+        UserFilter::where('filterable_type', \App\Profile::class)
             ->where('filterable_id', $actorAccount['id'])
             ->update(['filterable_id' => $targetAccount['id']]);
 

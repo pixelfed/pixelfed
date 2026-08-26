@@ -68,7 +68,7 @@ class UserFilterObserver
 
     protected function filterCreate(UserFilter $userFilter)
     {
-        if ($userFilter->filterable_type !== 'App\Profile') {
+        if ($userFilter->filterable_type !== \App\Profile::class) {
             return;
         }
 
@@ -87,7 +87,7 @@ class UserFilterObserver
 
     protected function filterDelete(UserFilter $userFilter)
     {
-        if ($userFilter->filterable_type !== 'App\Profile') {
+        if ($userFilter->filterable_type !== \App\Profile::class) {
             return;
         }
 

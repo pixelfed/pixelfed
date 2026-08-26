@@ -44,7 +44,7 @@ class JoinApproved implements ShouldQueue
         $n->profile_id = $member->profile_id;
         $n->actor_id = $member->profile_id;
         $n->item_id = $member->group_id;
-        $n->item_type = 'App\Models\Group';
+        $n->item_type = \App\Models\Group::class;
         $n->save();
 
         GroupService::del($member->group_id);

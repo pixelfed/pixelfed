@@ -50,7 +50,7 @@ class AdminNewAutospam extends Mailable
         $reported_account = null;
         $url = url('/i/admin/reports/autospam/'.$this->report->id.'?ref=email');
 
-        if ($data['item_type'] === 'App\Status') {
+        if ($data['item_type'] === \App\Status::class) {
             $reported_status = StatusService::get($this->report->item_id, false);
             $reported_account = AccountService::get($reported_status['account']['id'], true);
         }
