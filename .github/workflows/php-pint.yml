@@ -9,11 +9,13 @@ on:
       - main
       - dev
       - staging
+      - unstable
   pull_request:
     branches:
       - main
       - dev
       - staging
+      - unstable
 
 jobs:
   lint:
@@ -21,7 +23,7 @@ jobs:
     strategy:
       fail-fast: true
       matrix:
-        php: [8.4]
+        php: [8.5]
 
     steps:
       - name: Checkout code
