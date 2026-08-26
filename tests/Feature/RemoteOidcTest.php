@@ -6,6 +6,7 @@ use App\Models\UserOidcMapping;
 use App\Services\UserOidcService;
 use App\User;
 use Auth;
+use Illuminate\Support\Str;
 use League\OAuth2\Client\Provider\GenericResourceOwner;
 use League\OAuth2\Client\Token\AccessToken;
 use Mockery\Adapter\Phpunit\MockeryPHPUnitIntegration;
@@ -42,7 +43,7 @@ class RemoteOidcTest extends TestCase
         config(['remote-auth.oidc.enabled' => true]);
 
         $oauthData = [
-            'sub' => str_random(10),
+            'sub' => Str::random(10),
             'preferred_username' => fake()->unique()->userName,
             'email' => fake()->unique()->freeEmail,
         ];
@@ -83,7 +84,7 @@ class RemoteOidcTest extends TestCase
         config(['remote-auth.oidc.enabled' => true]);
 
         $oauthData = [
-            'sub' => str_random(10),
+            'sub' => Str::random(10),
             'preferred_username' => $user->username,
             'email' => $user->email,
         ];
