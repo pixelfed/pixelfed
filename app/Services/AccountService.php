@@ -126,7 +126,7 @@ class AccountService
 
             $settings = $user->settings;
             $other = array_merge(self::defaultSettings()['other'], $settings->other ?? []);
-            $compose = array_merge(self::defaultSettings()['compose_settings'], $settings->compose_settings);
+            $compose = array_merge(self::defaultSettings()['compose_settings'], $settings->compose_settings ?? []);
 
             return [
                 'reduce_motion' => (bool) $settings->reduce_motion,
