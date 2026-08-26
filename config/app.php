@@ -1,8 +1,6 @@
 <?php
 
 use App\Util\Lexer\PrettyNumber;
-use Buzz\LaravelHCaptcha\CaptchaFacade;
-use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\Artisan;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Blade;
@@ -35,8 +33,6 @@ use Illuminate\Support\Facades\URL;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Facades\View;
 use Illuminate\Support\Str;
-use ProtoneMedia\LaravelFFMpeg\Support\FFMpeg;
-use Stevebauman\Purify\Facades\Purify;
 
 return [
 
@@ -169,7 +165,6 @@ return [
     */
 
     'aliases' => [
-
         'App' => Illuminate\Support\Facades\App::class,
         'Artisan' => Artisan::class,
         'Auth' => Auth::class,
@@ -181,7 +176,6 @@ return [
         'Cookie' => Cookie::class,
         'Crypt' => Crypt::class,
         'DB' => DB::class,
-        'Eloquent' => Model::class,
         'Event' => Event::class,
         'File' => File::class,
         'Gate' => Gate::class,
@@ -206,9 +200,6 @@ return [
         'Str' => Str::class,
 
         'PrettyNumber' => PrettyNumber::class,
-        'Purify' => Purify::class,
-        'FFMpeg' => FFMpeg::class,
-        'Captcha' => CaptchaFacade::class,
     ],
 
 ];
