@@ -8,11 +8,13 @@ use App\Models\Poll;
 use App\Models\StatusEdit;
 use App\Services\AccountService;
 use App\Services\StatusService;
-use Auth;
+use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
+use Illuminate\Support\Carbon;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
-use Storage;
 
 /**
  * @property int $id
@@ -32,13 +34,13 @@ use Storage;
  * @property int $reply_count
  * @property bool $local
  * @property string|null $place
- * @property \Illuminate\Support\Carbon|null $created_at
- * @property \Illuminate\Support\Carbon|null $updated_at
- * @property \Illuminate\Support\Carbon|null $deleted_at
- * @property \Illuminate\Support\Carbon|null $edited_at
- * @property-read \App\Profile $profile
- * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Media> $media
- * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Mention> $mentions
+ * @property Carbon|null $created_at
+ * @property Carbon|null $updated_at
+ * @property Carbon|null $deleted_at
+ * @property Carbon|null $edited_at
+ * @property-read Profile $profile
+ * @property-read Collection<int, Media> $media
+ * @property-read Collection<int, Mention> $mentions
  */
 class Status extends Model
 {

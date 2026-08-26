@@ -16,9 +16,9 @@ use Illuminate\Http\File;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
 use Illuminate\Support\Facades\Http;
+use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
-use Log;
-use Storage;
 
 class RemoteFollowImportRecent implements ShouldQueue
 {

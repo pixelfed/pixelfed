@@ -20,8 +20,8 @@ use App\Services\StatusService;
 use App\Status;
 use App\User;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
-use Storage;
 
 class GroupController extends GroupFederationController
 {

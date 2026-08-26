@@ -7,9 +7,7 @@ use App\Media;
 use App\Services\MediaService;
 use App\Services\StatusService;
 use App\Util\Media\Blurhash;
-use Cache;
 use FFMpeg;
-use Log;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldBeUniqueUntilProcessing;
 use Illuminate\Contracts\Queue\ShouldQueue;
@@ -17,6 +15,8 @@ use Illuminate\Foundation\Bus\Dispatchable;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\Middleware\WithoutOverlapping;
 use Illuminate\Queue\SerializesModels;
+use Illuminate\Support\Facades\Cache;
+use Illuminate\Support\Facades\Log;
 
 class VideoThumbnail implements ShouldBeUniqueUntilProcessing, ShouldQueue
 {

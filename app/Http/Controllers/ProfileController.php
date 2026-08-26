@@ -15,11 +15,11 @@ use App\Transformer\ActivityPub\ProfileTransformer;
 use App\User;
 use App\UserFilter;
 use App\UserSetting;
-use Auth;
-use Cache;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Cache;
+use Illuminate\Support\Facades\View;
 use League\Fractal;
-use View;
 
 class ProfileController extends Controller
 {
@@ -224,7 +224,7 @@ class ProfileController extends Controller
         $pid = Auth::user()->profile->id;
         $blocks = UserFilter::whereUserId($profile->id)
             ->whereFilterType('block')
-            ->whereFilterableType(\App\Profile::class)
+            ->whereFilterableType(Profile::class)
             ->pluck('filterable_id')
             ->toArray();
         if (in_array($pid, $blocks)) {

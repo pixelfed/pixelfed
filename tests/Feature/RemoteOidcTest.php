@@ -5,7 +5,7 @@ namespace Tests\Feature;
 use App\Models\UserOidcMapping;
 use App\Services\UserOidcService;
 use App\User;
-use Auth;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Str;
 use League\OAuth2\Client\Provider\GenericResourceOwner;
 use League\OAuth2\Client\Token\AccessToken;

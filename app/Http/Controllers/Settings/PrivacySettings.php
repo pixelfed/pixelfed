@@ -7,10 +7,10 @@ use App\Profile;
 use App\Services\AccountService;
 use App\Services\RelationshipService;
 use App\UserFilter;
-use Auth;
-use Cache;
-use DB;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Cache;
+use Illuminate\Support\Facades\DB;
 
 trait PrivacySettings
 {
@@ -133,7 +133,7 @@ trait PrivacySettings
         DB::transaction(function () use ($fid, $pid) {
             $filter = UserFilter::whereUserId($pid)
                 ->whereFilterableId($fid)
-                ->whereFilterableType(\App\Profile::class)
+                ->whereFilterableType(Profile::class)
                 ->whereFilterType('mute')
                 ->firstOrFail();
             $filter->delete();
@@ -162,7 +162,7 @@ trait PrivacySettings
         DB::transaction(function () use ($fid, $pid) {
             $filter = UserFilter::whereUserId($pid)
                 ->whereFilterableId($fid)
-                ->whereFilterableType(\App\Profile::class)
+                ->whereFilterableType(Profile::class)
                 ->whereFilterType('block')
                 ->firstOrFail();
             $filter->delete();

@@ -9,8 +9,8 @@ use App\Services\CollectionService;
 use App\Services\FollowerService;
 use App\Services\StatusService;
 use App\Status;
-use Auth;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 
 class CollectionController extends Controller
 {
@@ -155,7 +155,7 @@ class CollectionController extends Controller
 
         $item = CollectionItem::firstOrCreate([
             'collection_id' => $collection->id,
-            'object_type' => \App\Status::class,
+            'object_type' => Status::class,
             'object_id' => $status->id,
         ], [
             'order' => $count,
@@ -294,7 +294,7 @@ class CollectionController extends Controller
             ->findOrFail($postId);
 
         $item = CollectionItem::whereCollectionId($collection->id)
-            ->whereObjectType(\App\Status::class)
+            ->whereObjectType(Status::class)
             ->whereObjectId($status->id)
             ->firstOrFail();
 

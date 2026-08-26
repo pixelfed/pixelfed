@@ -4,7 +4,7 @@ namespace App\Services;
 
 use App\Models\HashtagRelated;
 use App\StatusHashtag;
-use DB;
+use Illuminate\Support\Facades\DB;
 
 class HashtagRelatedService
 {

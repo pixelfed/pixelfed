@@ -7,10 +7,10 @@ use App\Jobs\AvatarPipeline\RemoteAvatarFetch;
 use App\Profile;
 use App\Services\AccountService;
 use App\Util\Lexer\PrettyNumber;
-use Cache;
 use Illuminate\Console\Command;
+use Illuminate\Support\Facades\Cache;
+use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
-use Storage;
 
 class AvatarStorage extends Command
 {

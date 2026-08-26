@@ -5,8 +5,8 @@ namespace App\Http\Controllers;
 use App\Hashtag;
 use App\HashtagFollow;
 use App\Services\HashtagService;
-use Auth;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 
 class HashtagFollowController extends Controller
 {

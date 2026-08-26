@@ -22,10 +22,10 @@ use App\Story;
 use App\Util\Media\ImageDriverManager;
 use FFMpeg;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
 use Intervention\Image\Encoders\JpegEncoder;
 use Intervention\Image\Encoders\PngEncoder;
-use Storage;
 
 class StoryComposeController extends Controller
 {

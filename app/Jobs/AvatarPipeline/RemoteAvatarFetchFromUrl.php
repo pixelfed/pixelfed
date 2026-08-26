@@ -6,12 +6,12 @@ use App\Avatar;
 use App\Profile;
 use App\Services\AccountService;
 use App\Services\MediaStorageService;
-use Cache;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
+use Illuminate\Support\Facades\Cache;
 
 class RemoteAvatarFetchFromUrl implements ShouldQueue
 {

@@ -4,8 +4,8 @@ namespace App\Console\Commands;
 
 use App\Jobs\StatusPipeline\StatusDelete;
 use App\Status;
-use DB;
 use Illuminate\Console\Command;
+use Illuminate\Support\Facades\DB;
 
 class StatusDedupe extends Command
 {

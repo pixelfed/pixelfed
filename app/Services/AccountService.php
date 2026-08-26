@@ -8,7 +8,7 @@ use App\Status;
 use App\Transformer\Api\AccountTransformer;
 use App\User;
 use App\UserSetting;
-use Cache;
+use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Str;
 use League\Fractal;

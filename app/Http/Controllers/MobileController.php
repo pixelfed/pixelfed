@@ -3,9 +3,9 @@
 namespace App\Http\Controllers;
 
 use App\Page;
-use Cache;
 use Illuminate\Http\Request;
-use View;
+use Illuminate\Support\Facades\Cache;
+use Illuminate\Support\Facades\View;
 
 class MobileController extends Controller
 {

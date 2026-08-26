@@ -3,10 +3,10 @@
 namespace App\Console\Commands;
 
 use App\Services\ConfigCacheService;
-use Cache;
-use DB;
 use Illuminate\Console\Command;
-use Storage;
+use Illuminate\Support\Facades\Cache;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Storage;
 
 class InstanceUpdateTotalLocalPosts extends Command
 {

@@ -5,8 +5,8 @@ namespace App\Http\Controllers;
 use App\Contact;
 use App\Jobs\ContactPipeline\ContactPipeline;
 use App\Rules\MaxMultiLine;
-use Auth;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 
 class ContactController extends Controller
 {

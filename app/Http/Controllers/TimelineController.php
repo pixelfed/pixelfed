@@ -2,12 +2,13 @@
 
 namespace App\Http\Controllers;
 
+use App\Profile;
 use App\Status;
 use App\Transformer\Api\StatusTimelineTransformer;
 use App\UserFilter;
-use Auth;
-use Cache;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Cache;
 use League\Fractal;
 use League\Fractal\Serializer\ArraySerializer;
 
@@ -72,7 +73,7 @@ class TimelineController extends Controller
         });
 
         $filtered = UserFilter::whereUserId($user->profile_id)
-            ->whereFilterableType(\App\Profile::class)
+            ->whereFilterableType(Profile::class)
             ->whereIn('filter_type', ['mute', 'block'])
             ->pluck('filterable_id')->toArray();
 

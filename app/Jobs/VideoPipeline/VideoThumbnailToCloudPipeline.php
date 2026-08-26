@@ -7,7 +7,6 @@ use App\Services\MediaService;
 use App\Services\ResilientMediaStorageService;
 use App\Services\StatusService;
 use App\Util\Media\Blurhash;
-use Cache;
 use FFMpeg;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldBeUniqueUntilProcessing;
@@ -16,7 +15,8 @@ use Illuminate\Foundation\Bus\Dispatchable;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\Middleware\WithoutOverlapping;
 use Illuminate\Queue\SerializesModels;
-use Storage;
+use Illuminate\Support\Facades\Cache;
+use Illuminate\Support\Facades\Storage;
 
 class VideoThumbnailToCloudPipeline implements ShouldBeUniqueUntilProcessing, ShouldQueue
 {

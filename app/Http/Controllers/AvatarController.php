@@ -4,9 +4,9 @@ namespace App\Http\Controllers;
 
 use App\Avatar;
 use App\Jobs\AvatarPipeline\AvatarOptimize;
-use Auth;
-use Cache;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Str;
 
 class AvatarController extends Controller

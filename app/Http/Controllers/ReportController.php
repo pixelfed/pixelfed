@@ -7,8 +7,8 @@ use App\Models\Group;
 use App\Profile;
 use App\Report;
 use App\Status;
-use Auth;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 
 class ReportController extends Controller
 {
@@ -150,10 +150,10 @@ class ReportController extends Controller
             case 'post':
             case 'comment':
                 $object = Status::findOrFail($object_id);
-                $object_type = \App\Status::class;
+                $object_type = Status::class;
                 $exists = Report::whereUserId(Auth::id())
                     ->whereObjectId($object->id)
-                    ->whereObjectType(\App\Status::class)
+                    ->whereObjectType(Status::class)
                     ->count();
 
                 $rpid = $object->profile_id;
@@ -161,20 +161,20 @@ class ReportController extends Controller
 
             case 'user':
                 $object = Profile::findOrFail($object_id);
-                $object_type = \App\Profile::class;
+                $object_type = Profile::class;
                 $exists = Report::whereUserId(Auth::id())
                     ->whereObjectId($object->id)
-                    ->whereObjectType(\App\Profile::class)
+                    ->whereObjectType(Profile::class)
                     ->count();
                 $rpid = $object->id;
                 break;
 
             case 'group':
                 $object = Group::findOrFail($object_id);
-                $object_type = \App\Models\Group::class;
+                $object_type = Group::class;
                 $exists = Report::whereUserId(Auth::id())
                     ->whereObjectId($object->id)
-                    ->whereObjectType(\App\Models\Group::class)
+                    ->whereObjectType(Group::class)
                     ->count();
                 $rpid = $object->profile_id;
                 break;

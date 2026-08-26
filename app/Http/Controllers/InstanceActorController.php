@@ -3,7 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\InstanceActor;
-use Cache;
+use Illuminate\Support\Facades\Cache;
 
 class InstanceActorController extends Controller
 {

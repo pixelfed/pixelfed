@@ -13,11 +13,11 @@ use App\Jobs\MediaPipeline\MediaSyncLicensePipeline;
 use App\ProfileSponsor;
 use App\Services\AccountService;
 use App\UserSetting;
-use Auth;
-use Cache;
 use Carbon\Carbon;
-use Cookie;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Cache;
+use Illuminate\Support\Facades\Cookie;
 use Illuminate\Support\Facades\Redis;
 use Illuminate\Support\Str;
 
@@ -133,11 +133,11 @@ class SettingsController extends Controller
         $user = Auth::user();
         abort_if(! config('pixelfed.account_deletion'), 403);
         abort_if($user->is_admin, 403);
-    
+
         $this->validate($request, [
             'confirm' => 'required|accepted',
         ]);
-    
+
         $profile = $user->profile;
         $ts = Carbon::now()->addMonth();
         $user->email = $user->id;

@@ -20,10 +20,10 @@ use App\Services\StatusService;
 use App\Services\TrendingHashtagService;
 use App\Services\UserFilterService;
 use App\Status;
-use Auth;
-use Cache;
-use DB;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Cache;
+use Illuminate\Support\Facades\DB;
 
 class DiscoverController extends Controller
 {

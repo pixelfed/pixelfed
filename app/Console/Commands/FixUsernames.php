@@ -5,8 +5,8 @@ namespace App\Console\Commands;
 use App\Profile;
 use App\User;
 use App\Util\Lexer\RestrictedNames;
-use DB;
 use Illuminate\Console\Command;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Str;
 
 class FixUsernames extends Command
