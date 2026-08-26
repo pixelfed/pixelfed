@@ -18,7 +18,15 @@
   - Added IMAGE_DRIVER to .env files (planning on moving to vips default)
   - Applied pint rules to /resources lang files
   - Update github action laravel tests to use php 8.5
-
+- ([#6802](https://github.com/pixelfed/pixelfed/pull/6802))
+  - Laravel Shift Preshift class changes
+  - Fix: INSTANCE_CUR_REG_NOTIFY_ADMIN_ON_VERIFY - 6758
+  - Fix RESTRICTED_INSTANCE
+  - Fixes 6695 - First follower/following record (id=1) never appears in Followers/Following API
+  - Fixes 6643 - OAuth token check
+  - Fixes 6657 - Exact error message(s) on composer
+  - Fixes 6776 - OAuth client secret not displayed after creation
+  - Fixes 6777 - Added error on PAT creation when OAUTH_PAT_ENABLED is false
 
 ## [v0.12.9 (2026-08-25)](https://github.com/pixelfed/pixelfed/compare/v0.12.9...dev)
 
