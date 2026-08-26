@@ -126,12 +126,15 @@ class AccountService
 
             $settings = $user->settings;
             $other = array_merge(self::defaultSettings()['other'], $settings->other ?? []);
+            $compose = array_merge(self::defaultSettings()['compose_settings'], $settings->compose_settings);
 
             return [
                 'reduce_motion' => (bool) $settings->reduce_motion,
                 'high_contrast_mode' => (bool) $settings->high_contrast_mode,
                 'video_autoplay' => (bool) $settings->video_autoplay,
-                'media_descriptions' => (bool) $settings->media_descriptions,
+                'media_descriptions' => (bool) $compose['media_descriptions'],
+                'default_scope' => (string) $compose['default_scope'],
+                'default_license' => (int) $compose['default_license'],
                 'crawlable' => (bool) $settings->crawlable,
                 'show_profile_follower_count' => (bool) $settings->show_profile_follower_count,
                 'show_profile_following_count' => (bool) $settings->show_profile_following_count,
