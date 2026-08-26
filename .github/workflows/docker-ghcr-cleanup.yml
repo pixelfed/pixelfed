@@ -1,0 +1,26 @@
+name: Cleanup Old GHCR Container Images
+
+on:
+  schedule:
+    - cron: '30 3 * * 0'   # weekly, Sunday 03:30 UTC
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  packages: write
+
+jobs:
+  cleanup:
+    runs-on: ubuntu-latest
+    if: github.repository == 'pixelfed/pixelfed'
+    steps:
+      - name: Clean up old images
+        uses: dataaxiom/ghcr-cleanup-action@v1
+        with:
+          owner: pixelfed
+          package: pixelfed
+
+          exclude-tags: 'latest,staging,unstable,stable,v*.*.*'
+          older-than: 6 months
+          delete-untagged: true
+          keep-n-tagged: 25

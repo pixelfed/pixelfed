@@ -2,7 +2,23 @@
 
 ## [Unreleased](https://github.com/pixelfed/pixelfed/compare/v0.12.10...dev)
 
+-   Fix ApiV1Controller, ensure follow notifications have an account ([e1235dfd7](https://github.com/pixelfed/pixelfed/commit/e1235dfd7))
 -   ([](https://github.com/pixelfed/pixelfed/commit/))
+-   ([](https://github.com/pixelfed/pixelfed/commit/))
+
+- ([#6794](https://github.com/pixelfed/pixelfed/pull/6794))
+  - Fixed the Github action for the docker images
+  - Added an automatic cleanup for GHCR docker images
+  - Merged some translations
+  - Applied some pint fixes to /public /bootstrap /tests
+
+- ([#6796](https://github.com/pixelfed/pixelfed/pull/6796))
+  - Upgraded the intervention image laravel package v3 to v4
+  - Added orientation fix to image processor
+  - Added IMAGE_DRIVER to .env files (planning on moving to vips default)
+  - Applied pint rules to /resources lang files
+  - Update github action laravel tests to use php 8.5
+
 
 ## [v0.12.9 (2026-08-25)](https://github.com/pixelfed/pixelfed/compare/v0.12.9...dev)
 
