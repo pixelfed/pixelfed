@@ -39,7 +39,9 @@ RUN chown -R www-data:www-data /var/www/html \
     && find /var/www/html -type d -exec chmod 755 {} \; \
     && chmod -R ug+rwx /var/www/html/storage /var/www/html/bootstrap/cache
 
-RUN composer install --no-ansi --no-interaction --optimize-autoloader
+RUN composer install --no-ansi --no-interaction --optimize-autoloader \
+    && php artisan optimize:clear \
+    && php artisan package:discover --ansi
 
 USER www-data
 
