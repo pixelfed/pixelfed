@@ -496,6 +496,14 @@ class ApiV1Controller extends Controller
             }
         }
 
+        if ($request->has('is_suggestable')) {
+            $isSuggestable = $request->boolean('is_suggestable');
+            if ($profile->is_suggestable != $isSuggestable) {
+                $$profile->is_suggestable = $isSuggestable;
+                $changes = true;
+            }
+        }
+
         if ($changes) {
             $settings->other = $other;
             $settings->compose_settings = $composeSettings;
