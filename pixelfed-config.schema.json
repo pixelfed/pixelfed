@@ -1,0 +1,1998 @@
+{
+    "$schema": "https://json-schema.org/draft/2020-12/schema",
+    "title": "Pixelfed Instance Configuration",
+    "description": "JSON Schema for all configurable Pixelfed options. x-env: environment variable name. x-config-cache: true when editable at runtime via the admin panel. x-sensitive: true when the value is a secret and must not be logged or displayed.",
+    "type": "object",
+    "properties": {
+        "about.title": {
+            "description": "",
+            "type": "string",
+            "x-config-cache": true,
+            "x-group": "branding"
+        },
+        "account.autofollow": {
+            "description": "Automatically follow a set of accounts when a new user registers.",
+            "type": "boolean",
+            "x-config-cache": true,
+            "x-group": "accounts"
+        },
+        "account.autofollow_usernames": {
+            "description": "Comma-separated list of local usernames that new users will automatically follow.",
+            "type": "string",
+            "x-config-cache": true,
+            "x-group": "accounts"
+        },
+        "app.banner_image": {
+            "description": "Path to the instance banner image shown on the landing page.",
+            "type": "string",
+            "x-config-cache": true,
+            "x-group": "branding"
+        },
+        "app.debug": {
+            "description": "Enable detailed error pages. Must be false in production.",
+            "type": "boolean",
+            "default": false,
+            "x-env": "APP_DEBUG",
+            "x-config-cache": false,
+            "x-group": "application"
+        },
+        "app.description": {
+            "description": "A longer description of the instance.",
+            "type": "string",
+            "default": "Pixelfed is an image sharing platform, an ethical alternative to centralized platforms.",
+            "x-env": "PF_DESCRIPTION",
+            "x-config-cache": true,
+            "x-group": "branding"
+        },
+        "app.dev_log": {
+            "description": "",
+            "type": "boolean",
+            "default": false,
+            "x-env": "PIXELFED_DEV_LOG",
+            "x-config-cache": false,
+            "x-group": "application"
+        },
+        "app.env": {
+            "description": "Application environment.",
+            "type": "string",
+            "default": "production",
+            "enum": [
+                "production",
+                "local",
+                "testing"
+            ],
+            "x-env": "APP_ENV",
+            "x-config-cache": false,
+            "x-group": "application"
+        },
+        "app.fallback_locale": {
+            "description": "",
+            "type": "string",
+            "default": "en",
+            "x-env": "APP_FALLBACK_LOCALE",
+            "x-config-cache": false,
+            "x-group": "application"
+        },
+        "app.key": {
+            "description": "",
+            "type": [
+                "string",
+                "null"
+            ],
+            "x-env": "APP_KEY",
+            "x-config-cache": false,
+            "x-group": "application"
+        },
+        "app.locale": {
+            "description": "",
+            "type": "string",
+            "default": "en",
+            "x-env": "APP_LOCALE",
+            "x-config-cache": false,
+            "x-group": "application"
+        },
+        "app.name": {
+            "description": "The name of your Pixelfed instance.",
+            "type": "string",
+            "default": "Pixelfed",
+            "x-env": "APP_NAME",
+            "x-config-cache": true,
+            "x-group": "branding"
+        },
+        "app.rules": {
+            "description": "JSON-encoded array of instance rules shown during registration.",
+            "type": [
+                "string",
+                "null"
+            ],
+            "x-env": "PF_RULES",
+            "x-config-cache": true,
+            "x-group": "branding"
+        },
+        "app.short_description": {
+            "description": "A short one-line description of the instance shown on the landing page.",
+            "type": "string",
+            "default": "Pixelfed is an image sharing platform, an ethical alternative to centralized platforms.",
+            "x-env": "PF_SHORT_DESCRIPTION",
+            "x-config-cache": true,
+            "x-group": "branding"
+        },
+        "app.url": {
+            "description": "The canonical HTTPS URL of this instance (no trailing slash).",
+            "type": "string",
+            "default": "https://localhost",
+            "format": "uri",
+            "x-env": "APP_URL",
+            "x-config-cache": false,
+            "x-group": "application"
+        },
+        "autospam.enabled": {
+            "description": "",
+            "type": "boolean",
+            "default": false,
+            "x-env": "PF_BOUNCER_ENABLED",
+            "x-config-cache": false,
+            "x-group": "features"
+        },
+        "autospam.ignored_tokens": {
+            "description": "",
+            "type": "string",
+            "default": "the,a,of,and",
+            "x-env": "PF_AUTOSPAM_IGNORED_TOKENS",
+            "x-config-cache": false,
+            "x-group": "features"
+        },
+        "autospam.live_filters.enabled": {
+            "description": "",
+            "type": "boolean",
+            "default": false,
+            "x-env": "PF_AUTOSPAM_LIVE_FILTERS_ENABLED",
+            "x-config-cache": false,
+            "x-group": "features"
+        },
+        "autospam.live_filters.filters": {
+            "description": "",
+            "type": "string",
+            "default": "",
+            "x-env": "PF_AUTOSPAM_LIVE_FILTERS_CSV",
+            "x-config-cache": false,
+            "x-group": "features"
+        },
+        "autospam.nlp.enabled": {
+            "description": "Enable NLP-based autospam detection.",
+            "type": "boolean",
+            "x-config-cache": true,
+            "x-group": "features"
+        },
+        "autospam.nlp.spam_sample_limit": {
+            "description": "",
+            "type": "integer",
+            "default": 200,
+            "x-env": "PF_AUTOSPAM_NLP_SPAM_SAMPLE_LIMIT",
+            "x-config-cache": false,
+            "x-group": "features"
+        },
+        "captcha.active.login": {
+            "description": "Show captcha on the login form.",
+            "type": "boolean",
+            "default": false,
+            "x-env": "CAPTCHA_ENABLED_ON_LOGIN",
+            "x-config-cache": true,
+            "x-group": "captcha"
+        },
+        "captcha.active.register": {
+            "description": "Show captcha on the registration form.",
+            "type": "boolean",
+            "default": false,
+            "x-env": "CAPTCHA_ENABLED_ON_REGISTER",
+            "x-config-cache": true,
+            "x-group": "captcha"
+        },
+        "captcha.enabled": {
+            "description": "Enable hCaptcha globally.",
+            "type": "boolean",
+            "default": false,
+            "x-env": "CAPTCHA_ENABLED",
+            "x-config-cache": true,
+            "x-group": "captcha"
+        },
+        "captcha.secret": {
+            "description": "hCaptcha secret key (private, used for server-side verification).",
+            "type": "string",
+            "default": "default_secret",
+            "x-env": "CAPTCHA_SECRET",
+            "x-config-cache": true,
+            "x-group": "captcha",
+            "x-sensitive": true
+        },
+        "captcha.sitekey": {
+            "description": "hCaptcha site key (public, used in the browser widget).",
+            "type": "string",
+            "default": "default_sitekey",
+            "x-env": "CAPTCHA_SITEKEY",
+            "x-config-cache": true,
+            "x-group": "captcha",
+            "x-sensitive": true
+        },
+        "captcha.triggers.login.attempts": {
+            "description": "Number of failed login attempts that trigger the captcha.",
+            "type": "integer",
+            "default": 2,
+            "minimum": 1,
+            "x-env": "CAPTCHA_TRIGGERS_LOGIN_ATTEMPTS",
+            "x-config-cache": true,
+            "x-group": "captcha"
+        },
+        "captcha.triggers.login.enabled": {
+            "description": "Automatically show captcha on login after N failed attempts.",
+            "type": "boolean",
+            "default": false,
+            "x-env": "CAPTCHA_TRIGGERS_LOGIN_ENABLED",
+            "x-config-cache": true,
+            "x-group": "captcha"
+        },
+        "config.discover.features": {
+            "description": "",
+            "type": "string",
+            "x-config-cache": true,
+            "x-group": "general"
+        },
+        "federation.activitypub.authorized_fetch": {
+            "description": "Require HTTP Signatures on all incoming ActivityPub fetch requests (ghost mode).",
+            "type": "boolean",
+            "default": false,
+            "x-env": "AUTHORIZED_FETCH",
+            "x-config-cache": true,
+            "x-group": "federation"
+        },
+        "federation.activitypub.delivery.concurrency": {
+            "description": "Number of concurrent ActivityPub delivery workers.",
+            "type": "integer",
+            "default": 10,
+            "minimum": 1,
+            "x-env": "ACTIVITYPUB_DELIVERY_CONCURRENCY",
+            "x-config-cache": false,
+            "x-group": "federation"
+        },
+        "federation.activitypub.delivery.logger.enabled": {
+            "description": "",
+            "type": "boolean",
+            "default": false,
+            "x-env": "AP_LOGGER_ENABLED",
+            "x-config-cache": false,
+            "x-group": "federation"
+        },
+        "federation.activitypub.delivery.timeout": {
+            "description": "HTTP timeout in seconds for ActivityPub delivery requests.",
+            "type": "integer",
+            "default": 30,
+            "minimum": 1,
+            "x-env": "ACTIVITYPUB_DELIVERY_TIMEOUT",
+            "x-config-cache": false,
+            "x-group": "federation"
+        },
+        "federation.activitypub.enabled": {
+            "description": "Enable ActivityPub federation with other Fediverse instances.",
+            "type": "boolean",
+            "default": false,
+            "x-env": "ACTIVITY_PUB",
+            "x-config-cache": true,
+            "x-group": "federation"
+        },
+        "federation.activitypub.inbox": {
+            "description": "",
+            "type": "boolean",
+            "default": true,
+            "x-env": "AP_INBOX",
+            "x-config-cache": false,
+            "x-group": "federation"
+        },
+        "federation.activitypub.ingest.store_notes_without_followers": {
+            "description": "",
+            "type": "boolean",
+            "default": false,
+            "x-env": "AP_INGEST_STORE_NOTES_WITHOUT_FOLLOWERS",
+            "x-config-cache": false,
+            "x-group": "federation"
+        },
+        "federation.activitypub.outbox": {
+            "description": "",
+            "type": "boolean",
+            "default": true,
+            "x-env": "AP_OUTBOX",
+            "x-config-cache": false,
+            "x-group": "federation"
+        },
+        "federation.activitypub.remoteFollow": {
+            "description": "Enable the remote-follow / interact dialog for federated users.",
+            "type": "boolean",
+            "default": true,
+            "x-env": "AP_REMOTE_FOLLOW",
+            "x-config-cache": false,
+            "x-group": "federation"
+        },
+        "federation.activitypub.sharedInbox": {
+            "description": "",
+            "type": "boolean",
+            "default": true,
+            "x-env": "AP_SHAREDINBOX",
+            "x-config-cache": false,
+            "x-group": "federation"
+        },
+        "federation.atom.enabled": {
+            "description": "",
+            "type": "boolean",
+            "default": true,
+            "x-env": "ATOM_FEEDS",
+            "x-config-cache": false,
+            "x-group": "federation"
+        },
+        "federation.avatars.store_local": {
+            "description": "",
+            "type": "boolean",
+            "default": true,
+            "x-env": "REMOTE_AVATARS",
+            "x-config-cache": false,
+            "x-group": "federation"
+        },
+        "federation.custom_emoji.enabled": {
+            "description": "Enable support for custom emoji from remote instances.",
+            "type": "boolean",
+            "default": false,
+            "x-env": "CUSTOM_EMOJI",
+            "x-config-cache": true,
+            "x-group": "federation"
+        },
+        "federation.custom_emoji.max_size": {
+            "description": "",
+            "type": "integer",
+            "default": 2000000,
+            "x-env": "CUSTOM_EMOJI_MAX_SIZE",
+            "x-config-cache": false,
+            "x-group": "federation"
+        },
+        "federation.migration": {
+            "description": "Allow users to migrate their account to/from other ActivityPub instances.",
+            "type": "boolean",
+            "default": true,
+            "x-env": "PF_ACCT_MIGRATION_ENABLED",
+            "x-config-cache": true,
+            "x-group": "federation"
+        },
+        "federation.network_timeline": {
+            "description": "Enable the federated network timeline.",
+            "type": "boolean",
+            "default": true,
+            "x-env": "PF_NETWORK_TIMELINE",
+            "x-config-cache": false,
+            "x-group": "federation"
+        },
+        "federation.network_timeline_days_falloff": {
+            "description": "",
+            "type": "integer",
+            "default": 90,
+            "x-env": "PF_NETWORK_TIMELINE_DAYS_FALLOFF",
+            "x-config-cache": false,
+            "x-group": "federation"
+        },
+        "federation.nodeinfo.enabled": {
+            "description": "",
+            "type": "boolean",
+            "default": true,
+            "x-env": "NODEINFO",
+            "x-config-cache": false,
+            "x-group": "federation"
+        },
+        "federation.webfinger.enabled": {
+            "description": "",
+            "type": "boolean",
+            "default": true,
+            "x-env": "WEBFINGER",
+            "x-config-cache": false,
+            "x-group": "federation"
+        },
+        "filesystems.cloud": {
+            "description": "Which cloud filesystem driver to use when cloud storage is enabled.",
+            "type": "string",
+            "default": "s3",
+            "enum": [
+                "s3",
+                "spaces"
+            ],
+            "x-env": "FILESYSTEM_CLOUD",
+            "x-config-cache": false,
+            "x-group": "storage"
+        },
+        "filesystems.default": {
+            "description": "",
+            "type": "string",
+            "default": "local",
+            "x-env": "DANGEROUSLY_SET_FILESYSTEM_DRIVER",
+            "x-config-cache": false,
+            "x-group": "storage"
+        },
+        "filesystems.disks.alt-primary.bucket": {
+            "description": "",
+            "type": [
+                "string",
+                "null"
+            ],
+            "x-env": "ALT_PRI_AWS_BUCKET",
+            "x-config-cache": false,
+            "x-group": "storage"
+        },
+        "filesystems.disks.alt-primary.enabled": {
+            "description": "",
+            "type": "boolean",
+            "default": false,
+            "x-env": "ALT_PRI_ENABLED",
+            "x-config-cache": false,
+            "x-group": "storage"
+        },
+        "filesystems.disks.alt-primary.endpoint": {
+            "description": "",
+            "type": [
+                "string",
+                "null"
+            ],
+            "x-env": "ALT_PRI_AWS_ENDPOINT",
+            "x-config-cache": false,
+            "x-group": "storage"
+        },
+        "filesystems.disks.alt-primary.key": {
+            "description": "",
+            "type": [
+                "string",
+                "null"
+            ],
+            "x-env": "ALT_PRI_AWS_ACCESS_KEY_ID",
+            "x-config-cache": false,
+            "x-group": "storage"
+        },
+        "filesystems.disks.alt-primary.region": {
+            "description": "",
+            "type": [
+                "string",
+                "null"
+            ],
+            "x-env": "ALT_PRI_AWS_DEFAULT_REGION",
+            "x-config-cache": false,
+            "x-group": "storage"
+        },
+        "filesystems.disks.alt-primary.secret": {
+            "description": "",
+            "type": [
+                "string",
+                "null"
+            ],
+            "x-env": "ALT_PRI_AWS_SECRET_ACCESS_KEY",
+            "x-config-cache": false,
+            "x-group": "storage"
+        },
+        "filesystems.disks.alt-primary.url": {
+            "description": "",
+            "type": [
+                "string",
+                "null"
+            ],
+            "x-env": "ALT_PRI_AWS_URL",
+            "x-config-cache": false,
+            "x-group": "storage"
+        },
+        "filesystems.disks.alt-primary.use_path_style_endpoint": {
+            "description": "",
+            "type": "boolean",
+            "default": false,
+            "x-env": "ALT_PRI_AWS_USE_PATH_STYLE_ENDPOINT",
+            "x-config-cache": false,
+            "x-group": "storage"
+        },
+        "filesystems.disks.alt-secondary.bucket": {
+            "description": "",
+            "type": [
+                "string",
+                "null"
+            ],
+            "x-env": "ALT_SEC_AWS_BUCKET",
+            "x-config-cache": false,
+            "x-group": "storage"
+        },
+        "filesystems.disks.alt-secondary.enabled": {
+            "description": "",
+            "type": "boolean",
+            "default": false,
+            "x-env": "ALT_SEC_ENABLED",
+            "x-config-cache": false,
+            "x-group": "storage"
+        },
+        "filesystems.disks.alt-secondary.endpoint": {
+            "description": "",
+            "type": [
+                "string",
+                "null"
+            ],
+            "x-env": "ALT_SEC_AWS_ENDPOINT",
+            "x-config-cache": false,
+            "x-group": "storage"
+        },
+        "filesystems.disks.alt-secondary.key": {
+            "description": "",
+            "type": [
+                "string",
+                "null"
+            ],
+            "x-env": "ALT_SEC_AWS_ACCESS_KEY_ID",
+            "x-config-cache": false,
+            "x-group": "storage"
+        },
+        "filesystems.disks.alt-secondary.region": {
+            "description": "",
+            "type": [
+                "string",
+                "null"
+            ],
+            "x-env": "ALT_SEC_AWS_DEFAULT_REGION",
+            "x-config-cache": false,
+            "x-group": "storage"
+        },
+        "filesystems.disks.alt-secondary.secret": {
+            "description": "",
+            "type": [
+                "string",
+                "null"
+            ],
+            "x-env": "ALT_SEC_AWS_SECRET_ACCESS_KEY",
+            "x-config-cache": false,
+            "x-group": "storage"
+        },
+        "filesystems.disks.alt-secondary.url": {
+            "description": "",
+            "type": [
+                "string",
+                "null"
+            ],
+            "x-env": "ALT_SEC_AWS_URL",
+            "x-config-cache": false,
+            "x-group": "storage"
+        },
+        "filesystems.disks.alt-secondary.use_path_style_endpoint": {
+            "description": "",
+            "type": "boolean",
+            "default": false,
+            "x-env": "ALT_SEC_AWS_USE_PATH_STYLE_ENDPOINT",
+            "x-config-cache": false,
+            "x-group": "storage"
+        },
+        "filesystems.disks.backup.bucket": {
+            "description": "",
+            "type": [
+                "string",
+                "null"
+            ],
+            "x-env": "PF_BACKUP_BUCKET",
+            "x-config-cache": false,
+            "x-group": "storage"
+        },
+        "filesystems.disks.backup.driver": {
+            "description": "",
+            "type": "string",
+            "default": "s3",
+            "x-env": "PF_BACKUP_DRIVER",
+            "x-config-cache": false,
+            "x-group": "storage"
+        },
+        "filesystems.disks.backup.endpoint": {
+            "description": "",
+            "type": [
+                "string",
+                "null"
+            ],
+            "x-env": "PF_BACKUP_ENDPOINT",
+            "x-config-cache": false,
+            "x-group": "storage"
+        },
+        "filesystems.disks.backup.key": {
+            "description": "",
+            "type": [
+                "string",
+                "null"
+            ],
+            "x-env": "PF_BACKUP_KEY",
+            "x-config-cache": false,
+            "x-group": "storage"
+        },
+        "filesystems.disks.backup.region": {
+            "description": "",
+            "type": [
+                "string",
+                "null"
+            ],
+            "x-env": "PF_BACKUP_REGION",
+            "x-config-cache": false,
+            "x-group": "storage"
+        },
+        "filesystems.disks.backup.root": {
+            "description": "",
+            "type": "string",
+            "default": "/",
+            "x-env": "PF_BACKUP_ROOT",
+            "x-config-cache": false,
+            "x-group": "storage"
+        },
+        "filesystems.disks.backup.secret": {
+            "description": "",
+            "type": [
+                "string",
+                "null"
+            ],
+            "x-env": "PF_BACKUP_SECRET",
+            "x-config-cache": false,
+            "x-group": "storage"
+        },
+        "filesystems.disks.s3.bucket": {
+            "description": "S3 bucket name.",
+            "type": [
+                "string",
+                "null"
+            ],
+            "x-env": "AWS_BUCKET",
+            "x-config-cache": true,
+            "x-group": "storage"
+        },
+        "filesystems.disks.s3.endpoint": {
+            "description": "Custom S3-compatible API endpoint (e.g. for MinIO or Backblaze B2).",
+            "type": [
+                "string",
+                "null"
+            ],
+            "x-env": "AWS_ENDPOINT",
+            "x-config-cache": true,
+            "x-group": "storage"
+        },
+        "filesystems.disks.s3.key": {
+            "description": "AWS / S3-compatible access key ID.",
+            "type": [
+                "string",
+                "null"
+            ],
+            "x-env": "AWS_ACCESS_KEY_ID",
+            "x-config-cache": true,
+            "x-group": "storage",
+            "x-sensitive": true
+        },
+        "filesystems.disks.s3.options.request_checksum_calculation": {
+            "description": "",
+            "type": "string",
+            "default": "WHEN_SUPPORTED",
+            "x-env": "AWS_REQUEST_CHECKSUM_CALCULATION",
+            "x-config-cache": false,
+            "x-group": "storage"
+        },
+        "filesystems.disks.s3.options.response_checksum_validation": {
+            "description": "",
+            "type": "string",
+            "default": "WHEN_SUPPORTED",
+            "x-env": "AWS_RESPONSE_CHECKSUM_VALIDATION",
+            "x-config-cache": false,
+            "x-group": "storage"
+        },
+        "filesystems.disks.s3.region": {
+            "description": "AWS region (e.g. us-east-1).",
+            "type": [
+                "string",
+                "null"
+            ],
+            "x-env": "AWS_DEFAULT_REGION",
+            "x-config-cache": true,
+            "x-group": "storage"
+        },
+        "filesystems.disks.s3.secret": {
+            "description": "AWS / S3-compatible secret access key.",
+            "type": [
+                "string",
+                "null"
+            ],
+            "x-env": "AWS_SECRET_ACCESS_KEY",
+            "x-config-cache": true,
+            "x-group": "storage",
+            "x-sensitive": true
+        },
+        "filesystems.disks.s3.url": {
+            "description": "Custom public URL prefix for S3 objects (CDN or path rewrite).",
+            "type": [
+                "string",
+                "null"
+            ],
+            "x-env": "AWS_URL",
+            "x-config-cache": true,
+            "x-group": "storage"
+        },
+        "filesystems.disks.s3.use_path_style_endpoint": {
+            "description": "Use path-style S3 URLs instead of subdomain-style (required for MinIO).",
+            "type": "boolean",
+            "default": false,
+            "x-env": "AWS_USE_PATH_STYLE_ENDPOINT",
+            "x-config-cache": true,
+            "x-group": "storage"
+        },
+        "filesystems.disks.s3.visibility": {
+            "description": "Default object visibility in S3.",
+            "type": "string",
+            "default": "public",
+            "enum": [
+                "public",
+                "private"
+            ],
+            "x-env": "AWS_VISIBILITY",
+            "x-config-cache": true,
+            "x-group": "storage"
+        },
+        "filesystems.disks.spaces.bucket": {
+            "description": "DigitalOcean Spaces bucket name.",
+            "type": [
+                "string",
+                "null"
+            ],
+            "x-env": "DO_SPACES_BUCKET",
+            "x-config-cache": true,
+            "x-group": "storage"
+        },
+        "filesystems.disks.spaces.endpoint": {
+            "description": "DigitalOcean Spaces endpoint URL.",
+            "type": [
+                "string",
+                "null"
+            ],
+            "x-env": "DO_SPACES_ENDPOINT",
+            "x-config-cache": true,
+            "x-group": "storage"
+        },
+        "filesystems.disks.spaces.key": {
+            "description": "DigitalOcean Spaces access key.",
+            "type": [
+                "string",
+                "null"
+            ],
+            "x-env": "DO_SPACES_KEY",
+            "x-config-cache": true,
+            "x-group": "storage",
+            "x-sensitive": true
+        },
+        "filesystems.disks.spaces.region": {
+            "description": "DigitalOcean Spaces region.",
+            "type": [
+                "string",
+                "null"
+            ],
+            "x-env": "DO_SPACES_REGION",
+            "x-config-cache": true,
+            "x-group": "storage"
+        },
+        "filesystems.disks.spaces.root": {
+            "description": "",
+            "type": "string",
+            "default": "",
+            "x-env": "DO_SPACES_ROOT",
+            "x-config-cache": false,
+            "x-group": "storage"
+        },
+        "filesystems.disks.spaces.secret": {
+            "description": "DigitalOcean Spaces secret key.",
+            "type": [
+                "string",
+                "null"
+            ],
+            "x-env": "DO_SPACES_SECRET",
+            "x-config-cache": true,
+            "x-group": "storage",
+            "x-sensitive": true
+        },
+        "filesystems.disks.spaces.url": {
+            "description": "Public CDN URL prefix for DigitalOcean Spaces objects.",
+            "type": [
+                "string",
+                "null"
+            ],
+            "x-env": "AWS_URL",
+            "x-config-cache": true,
+            "x-group": "storage"
+        },
+        "filesystems.disks.spaces.use_path_style_endpoint": {
+            "description": "Use path-style URLs for DigitalOcean Spaces.",
+            "type": "boolean",
+            "x-config-cache": true,
+            "x-group": "storage"
+        },
+        "filesystems.disks.spaces.visibility": {
+            "description": "Default object visibility for DigitalOcean Spaces.",
+            "type": "string",
+            "enum": [
+                "public",
+                "private"
+            ],
+            "x-config-cache": true,
+            "x-group": "storage"
+        },
+        "instance.admin.pid": {
+            "description": "Profile ID of the primary admin account shown on the landing page.",
+            "type": [
+                "integer",
+                "null"
+            ],
+            "x-env": "PF_ADMIN_PID",
+            "x-config-cache": true,
+            "x-group": "branding"
+        },
+        "instance.admin_invites.enabled": {
+            "description": "",
+            "type": "boolean",
+            "default": true,
+            "x-env": "PF_ADMIN_INVITES_ENABLED",
+            "x-config-cache": false,
+            "x-group": "features"
+        },
+        "instance.allow_new_account_dms": {
+            "description": "",
+            "type": "boolean",
+            "default": true,
+            "x-env": "INSTANCE_ALLOW_NEW_DMS",
+            "x-config-cache": false,
+            "x-group": "features"
+        },
+        "instance.avatar.local_to_cloud": {
+            "description": "Store local user avatars on cloud/S3 storage.",
+            "type": "boolean",
+            "default": false,
+            "x-env": "PF_LOCAL_AVATAR_TO_CLOUD",
+            "x-config-cache": true,
+            "x-group": "features"
+        },
+        "instance.banner.blurhash": {
+            "description": "BlurHash placeholder string for the instance banner image.",
+            "type": "string",
+            "default": "UzJR]l{wHZRjM}R%XRkCH?X9xaWEjZj]kAjt",
+            "x-env": "INSTANCE_BANNER_BLURHASH",
+            "x-config-cache": true,
+            "x-group": "branding"
+        },
+        "instance.contact.enabled": {
+            "description": "Enable the public contact form.",
+            "type": "boolean",
+            "default": false,
+            "x-env": "INSTANCE_CONTACT_FORM",
+            "x-config-cache": false,
+            "x-group": "notifications"
+        },
+        "instance.contact.max_per_day": {
+            "description": "",
+            "type": "integer",
+            "default": 1,
+            "x-env": "INSTANCE_CONTACT_MAX_PER_DAY",
+            "x-config-cache": false,
+            "x-group": "notifications"
+        },
+        "instance.curated_registration.captcha_enabled": {
+            "description": "Require captcha during curated registration flow.",
+            "type": [
+                "string",
+                "null"
+            ],
+            "x-env": "INSTANCE_CUR_REG_CAPTCHA",
+            "x-config-cache": false,
+            "x-group": "registration"
+        },
+        "instance.curated_registration.enabled": {
+            "description": "Enable curated (filtered) registration: users apply and admins approve.",
+            "type": "boolean",
+            "default": false,
+            "x-env": "INSTANCE_CUR_REG",
+            "x-config-cache": true,
+            "x-group": "registration"
+        },
+        "instance.curated_registration.notify.admin.on_user_response": {
+            "description": "",
+            "type": "boolean",
+            "default": false,
+            "x-env": "INSTANCE_CUR_REG_NOTIFY_ADMIN_ON_USER_RESPONSE",
+            "x-config-cache": false,
+            "x-group": "registration"
+        },
+        "instance.curated_registration.notify.admin.on_verify_email.bundle": {
+            "description": "",
+            "type": "boolean",
+            "default": false,
+            "x-env": "INSTANCE_CUR_REG_NOTIFY_ADMIN_ON_VERIFY_BUNDLE",
+            "x-config-cache": false,
+            "x-group": "registration"
+        },
+        "instance.curated_registration.notify.admin.on_verify_email.cc_addresses": {
+            "description": "",
+            "type": [
+                "string",
+                "null"
+            ],
+            "x-env": "INSTANCE_CUR_REG_NOTIFY_ADMIN_ON_VERIFY_CC",
+            "x-config-cache": false,
+            "x-group": "registration"
+        },
+        "instance.curated_registration.notify.admin.on_verify_email.enabled": {
+            "description": "",
+            "type": "boolean",
+            "default": false,
+            "x-env": "INSTANCE_CUR_REG_NOTIFY_ADMIN_ON_VERIFY",
+            "x-config-cache": false,
+            "x-group": "registration"
+        },
+        "instance.curated_registration.notify.admin.on_verify_email.max_per_day": {
+            "description": "",
+            "type": "integer",
+            "default": 10,
+            "x-env": "INSTANCE_CUR_REG_NOTIFY_ADMIN_ON_VERIFY_MPD",
+            "x-config-cache": false,
+            "x-group": "registration"
+        },
+        "instance.curated_registration.notify.admin.on_verify_email.to_usernames": {
+            "description": "",
+            "type": [
+                "string",
+                "null"
+            ],
+            "x-env": "INSTANCE_CUR_REG_NOTIFY_ADMIN_TO_USERNAMES",
+            "x-config-cache": false,
+            "x-group": "registration"
+        },
+        "instance.curated_registration.resend_confirmation_limit": {
+            "description": "Maximum times an applicant may resend their confirmation email.",
+            "type": "integer",
+            "default": 5,
+            "minimum": 1,
+            "x-env": "INSTANCE_CUR_REG_RESEND_LIMIT",
+            "x-config-cache": false,
+            "x-group": "registration"
+        },
+        "instance.curated_registration.state.only_enabled_on_closed_reg": {
+            "description": "",
+            "type": "boolean",
+            "default": true,
+            "x-env": "INSTANCE_CUR_REG_STATE_ONLY_ON_CLOSED",
+            "x-config-cache": false,
+            "x-group": "registration"
+        },
+        "instance.custom_filters.max_content_scan_limit": {
+            "description": "",
+            "type": "integer",
+            "default": 2500,
+            "x-env": "PF_CF_CONTENT_SCAN_LIMIT",
+            "x-config-cache": false,
+            "x-group": "features"
+        },
+        "instance.custom_filters.max_create_per_hour": {
+            "description": "",
+            "type": "integer",
+            "default": 20,
+            "x-env": "PF_CF_MAX_CREATE_PER_HOUR",
+            "x-config-cache": false,
+            "x-group": "features"
+        },
+        "instance.custom_filters.max_filters_per_user": {
+            "description": "",
+            "type": "integer",
+            "default": 20,
+            "x-env": "PF_CF_MAX_FILTERS_PER_USER",
+            "x-config-cache": false,
+            "x-group": "features"
+        },
+        "instance.custom_filters.max_keyword_length": {
+            "description": "",
+            "type": "integer",
+            "default": 40,
+            "x-env": "PF_CF_MAX_KEYWORD_LENGTH",
+            "x-config-cache": false,
+            "x-group": "features"
+        },
+        "instance.custom_filters.max_keywords_per_filter": {
+            "description": "",
+            "type": "integer",
+            "default": 10,
+            "x-env": "PF_CF_MAX_KEYWORDS_PER_FILTER",
+            "x-config-cache": false,
+            "x-group": "features"
+        },
+        "instance.custom_filters.max_pattern_length": {
+            "description": "",
+            "type": "integer",
+            "default": 10000,
+            "x-env": "PF_CF_MAX_PATTERN_LENGTH",
+            "x-config-cache": false,
+            "x-group": "features"
+        },
+        "instance.custom_filters.max_reported_matches": {
+            "description": "",
+            "type": "integer",
+            "default": 10,
+            "x-env": "PF_CF_MAX_REPORTED_MATCHES",
+            "x-config-cache": false,
+            "x-group": "features"
+        },
+        "instance.custom_filters.max_updates_per_hour": {
+            "description": "",
+            "type": "integer",
+            "default": 40,
+            "x-env": "PF_CF_MAX_UPDATES_PER_HOUR",
+            "x-config-cache": false,
+            "x-group": "features"
+        },
+        "instance.description": {
+            "description": "",
+            "type": "string",
+            "default": "Pixelfed - Photo sharing for everyone",
+            "x-env": "INSTANCE_DESCRIPTION",
+            "x-config-cache": false,
+            "x-group": "branding"
+        },
+        "instance.discover.beagle_api": {
+            "description": "",
+            "type": "boolean",
+            "default": true,
+            "x-env": "PF_INSTANCE_USE_BEAGLE_API",
+            "x-config-cache": false,
+            "x-group": "discovery"
+        },
+        "instance.discover.loops.enabled": {
+            "description": "",
+            "type": "boolean",
+            "default": false,
+            "x-env": "EXP_LOOPS",
+            "x-config-cache": false,
+            "x-group": "discovery"
+        },
+        "instance.discover.public": {
+            "description": "Make the Discover page publicly accessible to logged-out visitors.",
+            "type": "boolean",
+            "default": false,
+            "x-env": "INSTANCE_DISCOVER_PUBLIC",
+            "x-config-cache": false,
+            "x-group": "discovery"
+        },
+        "instance.discover.tags.is_public": {
+            "description": "",
+            "type": "boolean",
+            "default": false,
+            "x-env": "INSTANCE_PUBLIC_HASHTAGS",
+            "x-config-cache": false,
+            "x-group": "discovery"
+        },
+        "instance.email": {
+            "description": "Public contact email address shown in the instance metadata.",
+            "type": [
+                "string",
+                "null"
+            ],
+            "format": "email",
+            "x-env": "INSTANCE_CONTACT_EMAIL",
+            "x-config-cache": false,
+            "x-group": "notifications"
+        },
+        "instance.embed.post": {
+            "description": "Allow individual posts to be embedded in external sites.",
+            "type": "boolean",
+            "default": true,
+            "x-env": "INSTANCE_POST_EMBEDS",
+            "x-config-cache": true,
+            "x-group": "features"
+        },
+        "instance.embed.profile": {
+            "description": "Allow profile pages to be embedded in external sites.",
+            "type": "boolean",
+            "default": true,
+            "x-env": "INSTANCE_PROFILE_EMBEDS",
+            "x-config-cache": true,
+            "x-group": "features"
+        },
+        "instance.enable_cc": {
+            "description": "",
+            "type": "boolean",
+            "default": true,
+            "x-env": "ENABLE_CONFIG_CACHE",
+            "x-config-cache": false,
+            "x-group": "application"
+        },
+        "instance.force_https_urls": {
+            "description": "",
+            "type": "boolean",
+            "default": true,
+            "x-env": "FORCE_HTTPS_URLS",
+            "x-config-cache": false,
+            "x-group": "application"
+        },
+        "instance.has_legal_notice": {
+            "description": "Display a legal notice link in the footer.",
+            "type": "boolean",
+            "default": false,
+            "x-env": "INSTANCE_LEGAL_NOTICE",
+            "x-config-cache": true,
+            "x-group": "features"
+        },
+        "instance.hide_nsfw_on_public_feeds": {
+            "description": "",
+            "type": "boolean",
+            "default": false,
+            "x-env": "PF_HIDE_NSFW_ON_PUBLIC_FEEDS",
+            "x-config-cache": false,
+            "x-group": "discovery"
+        },
+        "instance.label.covid.enabled": {
+            "description": "",
+            "type": "boolean",
+            "default": true,
+            "x-env": "ENABLE_COVID_LABEL",
+            "x-config-cache": false,
+            "x-group": "features"
+        },
+        "instance.label.covid.org": {
+            "description": "",
+            "type": "string",
+            "default": "visit the WHO website",
+            "x-env": "COVID_LABEL_ORG",
+            "x-config-cache": false,
+            "x-group": "features"
+        },
+        "instance.label.covid.url": {
+            "description": "",
+            "type": "string",
+            "default": "https://www.who.int/emergencies/diseases/novel-coronavirus-2019/advice-for-public",
+            "x-env": "COVID_LABEL_URL",
+            "x-config-cache": false,
+            "x-group": "features"
+        },
+        "instance.landing.show_directory": {
+            "description": "Show the user directory section on the landing page.",
+            "type": "boolean",
+            "default": true,
+            "x-env": "INSTANCE_LANDING_SHOW_DIRECTORY",
+            "x-config-cache": true,
+            "x-group": "discovery"
+        },
+        "instance.landing.show_explore": {
+            "description": "Show the explore/trending section on the landing page.",
+            "type": "boolean",
+            "default": true,
+            "x-env": "INSTANCE_LANDING_SHOW_EXPLORE",
+            "x-config-cache": true,
+            "x-group": "discovery"
+        },
+        "instance.notifications.gc.delete_after_days": {
+            "description": "",
+            "type": "integer",
+            "default": 365,
+            "x-env": "INSTANCE_NOTIFY_AUTO_GC_DEL_AFTER_DAYS",
+            "x-config-cache": false,
+            "x-group": "notifications"
+        },
+        "instance.notifications.gc.enabled": {
+            "description": "",
+            "type": "boolean",
+            "default": false,
+            "x-env": "INSTANCE_NOTIFY_AUTO_GC",
+            "x-config-cache": false,
+            "x-group": "notifications"
+        },
+        "instance.notifications.nag.api_key": {
+            "description": "",
+            "type": "boolean",
+            "default": false,
+            "x-env": "PIXELFED_PUSHGATEWAY_KEY",
+            "x-config-cache": false,
+            "x-group": "notifications"
+        },
+        "instance.notifications.nag.enabled": {
+            "description": "",
+            "type": "boolean",
+            "default": true,
+            "x-env": "INSTANCE_NOTIFY_APP_GATEWAY",
+            "x-config-cache": false,
+            "x-group": "notifications"
+        },
+        "instance.oauth.pat.enabled": {
+            "description": "",
+            "type": "boolean",
+            "default": false,
+            "x-env": "OAUTH_PAT_ENABLED",
+            "x-config-cache": false,
+            "x-group": "api"
+        },
+        "instance.oauth.pat.id": {
+            "description": "",
+            "type": [
+                "string",
+                "null"
+            ],
+            "x-env": "OAUTH_PAT_ID",
+            "x-config-cache": false,
+            "x-group": "api"
+        },
+        "instance.oauth.refresh_expiration": {
+            "description": "OAuth refresh token lifetime in days.",
+            "type": "integer",
+            "default": 400,
+            "minimum": 1,
+            "x-env": "OAUTH_REFRESH_DAYS",
+            "x-config-cache": false,
+            "x-group": "api"
+        },
+        "instance.oauth.token_expiration": {
+            "description": "OAuth access token lifetime in days.",
+            "type": "integer",
+            "default": 365,
+            "minimum": 1,
+            "x-env": "OAUTH_TOKEN_DAYS",
+            "x-config-cache": false,
+            "x-group": "api"
+        },
+        "instance.page.404.body": {
+            "description": "",
+            "type": "string",
+            "default": "The link you followed may be broken, or the page may have been removed. <a href=\"/\">Go back to Pixelfed.</a>",
+            "x-env": "PAGE_404_BODY",
+            "x-config-cache": false,
+            "x-group": "branding"
+        },
+        "instance.page.404.header": {
+            "description": "",
+            "type": "string",
+            "default": "Sorry, this page isn't available.",
+            "x-env": "PAGE_404_HEADER",
+            "x-config-cache": false,
+            "x-group": "branding"
+        },
+        "instance.page.503.body": {
+            "description": "",
+            "type": "string",
+            "default": "Our service is in maintenance mode, please try again later.",
+            "x-env": "PAGE_503_BODY",
+            "x-config-cache": false,
+            "x-group": "branding"
+        },
+        "instance.page.503.header": {
+            "description": "",
+            "type": "string",
+            "default": "Service Unavailable",
+            "x-env": "PAGE_503_HEADER",
+            "x-config-cache": false,
+            "x-group": "branding"
+        },
+        "instance.parental_controls.enabled": {
+            "description": "",
+            "type": "boolean",
+            "default": false,
+            "x-env": "INSTANCE_PARENTAL_CONTROLS",
+            "x-config-cache": false,
+            "x-group": "features"
+        },
+        "instance.parental_controls.limits.max_children": {
+            "description": "",
+            "type": "integer",
+            "default": 1,
+            "x-env": "INSTANCE_PARENTAL_CONTROLS_MAX_CHILDREN",
+            "x-config-cache": false,
+            "x-group": "features"
+        },
+        "instance.parental_controls.limits.respect_open_registration": {
+            "description": "",
+            "type": "boolean",
+            "default": true,
+            "x-env": "INSTANCE_PARENTAL_CONTROLS_RESPECT_OPENREG",
+            "x-config-cache": false,
+            "x-group": "features"
+        },
+        "instance.reports.email.autospam": {
+            "description": "",
+            "type": "boolean",
+            "default": false,
+            "x-env": "INSTANCE_REPORTS_EMAIL_AUTOSPAM",
+            "x-config-cache": false,
+            "x-group": "notifications"
+        },
+        "instance.reports.email.enabled": {
+            "description": "Send email notifications to admins when a new report is filed.",
+            "type": "boolean",
+            "default": false,
+            "x-env": "INSTANCE_REPORTS_EMAIL_ENABLED",
+            "x-config-cache": false,
+            "x-group": "notifications"
+        },
+        "instance.reports.email.to": {
+            "description": "Comma-separated email addresses that receive report notifications.",
+            "type": [
+                "string",
+                "null"
+            ],
+            "x-env": "INSTANCE_REPORTS_EMAIL_ADDRESSES",
+            "x-config-cache": false,
+            "x-group": "notifications"
+        },
+        "instance.restricted.enabled": {
+            "description": "Run as a restricted (private) instance where content is not publicly visible.",
+            "type": "boolean",
+            "default": false,
+            "x-env": "RESTRICTED_INSTANCE",
+            "x-config-cache": false,
+            "x-group": "features"
+        },
+        "instance.show_peers": {
+            "description": "Expose the list of federated peer instances via the API.",
+            "type": "boolean",
+            "default": false,
+            "x-env": "INSTANCE_SHOW_PEERS",
+            "x-config-cache": false,
+            "x-group": "discovery"
+        },
+        "instance.software-update.disable_failed_warning": {
+            "description": "",
+            "type": "boolean",
+            "default": false,
+            "x-env": "INSTANCE_SOFTWARE_UPDATE_DISABLE_FAILED_WARNING",
+            "x-config-cache": false,
+            "x-group": "application"
+        },
+        "instance.stats.total_local_posts": {
+            "description": "Cached count of total local posts (managed internally).",
+            "type": "integer",
+            "x-config-cache": true,
+            "x-group": "application"
+        },
+        "instance.stories.enabled": {
+            "description": "Enable ephemeral Stories feature.",
+            "type": "boolean",
+            "default": false,
+            "x-env": "STORIES_ENABLED",
+            "x-config-cache": true,
+            "x-group": "features"
+        },
+        "instance.timeline.home.cache_ttl": {
+            "description": "",
+            "type": "integer",
+            "default": 900,
+            "x-env": "PF_HOME_TIMELINE_CACHE_TTL",
+            "x-config-cache": false,
+            "x-group": "discovery"
+        },
+        "instance.timeline.home.cached": {
+            "description": "",
+            "type": "boolean",
+            "default": false,
+            "x-env": "PF_HOME_TIMELINE_CACHE",
+            "x-config-cache": false,
+            "x-group": "discovery"
+        },
+        "instance.timeline.local.cached": {
+            "description": "",
+            "type": "boolean",
+            "default": false,
+            "x-env": "INSTANCE_PUBLIC_TIMELINE_CACHED",
+            "x-config-cache": false,
+            "x-group": "discovery"
+        },
+        "instance.timeline.local.is_public": {
+            "description": "Make the local timeline publicly accessible to logged-out visitors.",
+            "type": "boolean",
+            "default": false,
+            "x-env": "INSTANCE_PUBLIC_LOCAL_TIMELINE",
+            "x-config-cache": false,
+            "x-group": "discovery"
+        },
+        "instance.timeline.network.cache_dropoff": {
+            "description": "",
+            "type": "integer",
+            "default": 100,
+            "x-env": "INSTANCE_NETWORK_TIMELINE_CACHE_DROPOFF",
+            "x-config-cache": false,
+            "x-group": "discovery"
+        },
+        "instance.timeline.network.cached": {
+            "description": "",
+            "type": "boolean",
+            "default": false,
+            "x-env": "INSTANCE_NETWORK_TIMELINE_CACHED",
+            "x-config-cache": false,
+            "x-group": "discovery"
+        },
+        "instance.timeline.network.max_hours_old": {
+            "description": "",
+            "type": "integer",
+            "default": 2160,
+            "x-env": "INSTANCE_NETWORK_TIMELINE_CACHE_MAX_HOUR_INGEST",
+            "x-config-cache": false,
+            "x-group": "discovery"
+        },
+        "instance.total_count_estimate": {
+            "description": "",
+            "type": "boolean",
+            "default": false,
+            "x-env": "INSTANCE_TOTAL_POSTS_COUNT_ESTIMATE",
+            "x-config-cache": false,
+            "x-group": "application"
+        },
+        "instance.user_filters.max_domain_blocks": {
+            "description": "Maximum number of domains a user can block.",
+            "type": "integer",
+            "default": 100,
+            "minimum": 0,
+            "x-env": "PF_MAX_DOMAIN_BLOCKS",
+            "x-config-cache": true,
+            "x-group": "accounts"
+        },
+        "instance.user_filters.max_user_blocks": {
+            "description": "Maximum number of accounts a user can block.",
+            "type": "integer",
+            "default": 200,
+            "minimum": 0,
+            "x-env": "PF_MAX_USER_BLOCKS",
+            "x-config-cache": true,
+            "x-group": "accounts"
+        },
+        "instance.user_filters.max_user_mutes": {
+            "description": "Maximum number of accounts a user can mute.",
+            "type": "integer",
+            "default": 500,
+            "minimum": 0,
+            "x-env": "PF_MAX_USER_MUTES",
+            "x-config-cache": true,
+            "x-group": "accounts"
+        },
+        "instance.username.banned": {
+            "description": "",
+            "type": [
+                "string",
+                "null"
+            ],
+            "x-env": "BANNED_USERNAMES",
+            "x-config-cache": false,
+            "x-group": "accounts"
+        },
+        "instance.username.remote.custom": {
+            "description": "",
+            "type": [
+                "string",
+                "null"
+            ],
+            "x-env": "USERNAME_REMOTE_CUSTOM_TEXT",
+            "x-config-cache": false,
+            "x-group": "accounts"
+        },
+        "media.delete_local_after_cloud": {
+            "description": "Delete local copies of media files after successfully uploading them to cloud storage.",
+            "type": "boolean",
+            "default": true,
+            "x-env": "MEDIA_DELETE_LOCAL_AFTER_CLOUD",
+            "x-config-cache": true,
+            "x-group": "media"
+        },
+        "media.exif.database": {
+            "description": "",
+            "type": "boolean",
+            "default": false,
+            "x-env": "MEDIA_EXIF_DATABASE",
+            "x-config-cache": false,
+            "x-group": "media"
+        },
+        "media.hls.bitrate": {
+            "description": "",
+            "type": "integer",
+            "default": 1000,
+            "x-env": "MEDIA_HLS_BITRATE",
+            "x-config-cache": false,
+            "x-group": "media"
+        },
+        "media.hls.debug": {
+            "description": "",
+            "type": "boolean",
+            "default": false,
+            "x-env": "MEDIA_HLS_DEBUG",
+            "x-config-cache": false,
+            "x-group": "media"
+        },
+        "media.hls.enabled": {
+            "description": "Enable HLS streaming support for videos (requires FFmpeg).",
+            "type": "boolean",
+            "default": false,
+            "x-env": "MEDIA_HLS_ENABLED",
+            "x-config-cache": false,
+            "x-group": "media"
+        },
+        "media.hls.ice": {
+            "description": "",
+            "type": "string",
+            "default": "stun:stun.l.google.com:19302",
+            "x-env": "MEDIA_HLS_P2P_ICE_SERVER",
+            "x-config-cache": false,
+            "x-group": "media"
+        },
+        "media.hls.p2p": {
+            "description": "Enable WebTorrent P2P video delivery (requires HLS).",
+            "type": "boolean",
+            "default": false,
+            "x-env": "MEDIA_HLS_P2P",
+            "x-config-cache": false,
+            "x-group": "media"
+        },
+        "media.hls.p2p_debug": {
+            "description": "",
+            "type": "boolean",
+            "default": false,
+            "x-env": "MEDIA_HLS_P2P_DEBUG",
+            "x-config-cache": false,
+            "x-group": "media"
+        },
+        "media.hls.tracker": {
+            "description": "",
+            "type": "string",
+            "default": "wss://tracker.webtorrent.dev",
+            "x-env": "MEDIA_HLS_P2P_TRACKER",
+            "x-config-cache": false,
+            "x-group": "media"
+        },
+        "media.image_optimize.catch_unoptimized_media_hour_limit": {
+            "description": "",
+            "type": "boolean",
+            "default": false,
+            "x-env": "PF_CATCHUNOPTIMIZEDMEDIA",
+            "x-config-cache": false,
+            "x-group": "media"
+        },
+        "media.storage.remote.cloud": {
+            "description": "",
+            "type": "boolean",
+            "default": false,
+            "x-env": "MEDIA_REMOTE_STORE_CLOUD",
+            "x-config-cache": false,
+            "x-group": "media"
+        },
+        "pixelfed.account_delete_after": {
+            "description": "",
+            "type": "boolean",
+            "default": false,
+            "x-env": "ACCOUNT_DELETE_AFTER",
+            "x-config-cache": false,
+            "x-group": "accounts"
+        },
+        "pixelfed.account_deletion": {
+            "description": "",
+            "type": "boolean",
+            "default": true,
+            "x-env": "ACCOUNT_DELETION",
+            "x-config-cache": false,
+            "x-group": "accounts"
+        },
+        "pixelfed.allow_app_registration": {
+            "description": "Allow third-party apps to register OAuth clients via the API.",
+            "type": "boolean",
+            "default": true,
+            "x-env": "PF_ALLOW_APP_REGISTRATION",
+            "x-config-cache": true,
+            "x-group": "api"
+        },
+        "pixelfed.app_registration_confirm_rate_limit_attempts": {
+            "description": "Maximum confirmation attempts before rate-limiting kicks in.",
+            "type": "integer",
+            "default": 20,
+            "minimum": 1,
+            "x-env": "PF_IARC_RL_ATTEMPTS",
+            "x-config-cache": true,
+            "x-group": "api"
+        },
+        "pixelfed.app_registration_confirm_rate_limit_decay": {
+            "description": "Rate-limit decay window for app registration confirmations, in seconds.",
+            "type": "integer",
+            "default": 1800,
+            "minimum": 1,
+            "x-env": "PF_IARC_RL_ATTEMPTS",
+            "x-config-cache": true,
+            "x-group": "api"
+        },
+        "pixelfed.app_registration_rate_limit_attempts": {
+            "description": "Maximum app-registration attempts before rate-limiting kicks in.",
+            "type": "integer",
+            "default": 3,
+            "minimum": 1,
+            "x-env": "PF_IAR_RL_ATTEMPTS",
+            "x-config-cache": true,
+            "x-group": "api"
+        },
+        "pixelfed.app_registration_rate_limit_decay": {
+            "description": "Rate-limit decay window for app registrations, in seconds.",
+            "type": "integer",
+            "default": 1800,
+            "minimum": 1,
+            "x-env": "PF_IAR_RL_DECAY",
+            "x-config-cache": true,
+            "x-group": "api"
+        },
+        "pixelfed.bouncer.cloud_ips.ban_api": {
+            "description": "",
+            "type": "boolean",
+            "default": false,
+            "x-env": "PF_BOUNCER_BAN_CLOUD_API",
+            "x-config-cache": false,
+            "x-group": "features"
+        },
+        "pixelfed.bouncer.cloud_ips.ban_api_strict_mode": {
+            "description": "",
+            "type": "boolean",
+            "default": false,
+            "x-env": "PF_BOUNCER_BAN_CLOUD_API_STRICT_MODE",
+            "x-config-cache": false,
+            "x-group": "features"
+        },
+        "pixelfed.bouncer.cloud_ips.ban_logins": {
+            "description": "",
+            "type": "boolean",
+            "default": false,
+            "x-env": "PF_BOUNCER_BAN_CLOUD_LOGINS",
+            "x-config-cache": false,
+            "x-group": "features"
+        },
+        "pixelfed.bouncer.cloud_ips.ban_signups": {
+            "description": "",
+            "type": "boolean",
+            "default": false,
+            "x-env": "PF_BOUNCER_BAN_CLOUD_SIGNUPS",
+            "x-config-cache": false,
+            "x-group": "features"
+        },
+        "pixelfed.bouncer.enabled": {
+            "description": "Enable the Bouncer spam/abuse detection system.",
+            "type": "boolean",
+            "default": false,
+            "x-env": "PF_BOUNCER_ENABLED",
+            "x-config-cache": true,
+            "x-group": "features"
+        },
+        "pixelfed.cloud_storage": {
+            "description": "Store uploaded media on cloud/S3-compatible object storage instead of locally.",
+            "type": "boolean",
+            "default": false,
+            "x-env": "PF_ENABLE_CLOUD",
+            "x-config-cache": true,
+            "x-group": "storage"
+        },
+        "pixelfed.directory": {
+            "description": "",
+            "type": "string",
+            "x-config-cache": true,
+            "x-group": "application"
+        },
+        "pixelfed.directory.has_submitted": {
+            "description": "",
+            "type": "string",
+            "x-config-cache": true,
+            "x-group": "application"
+        },
+        "pixelfed.directory.is_synced": {
+            "description": "",
+            "type": "string",
+            "x-config-cache": true,
+            "x-group": "application"
+        },
+        "pixelfed.directory.latest_response": {
+            "description": "",
+            "type": "string",
+            "x-config-cache": true,
+            "x-group": "application"
+        },
+        "pixelfed.directory.submission-key": {
+            "description": "",
+            "type": "string",
+            "x-config-cache": true,
+            "x-group": "application"
+        },
+        "pixelfed.directory.submission-ts": {
+            "description": "",
+            "type": "string",
+            "x-config-cache": true,
+            "x-group": "application"
+        },
+        "pixelfed.directory.testimonials": {
+            "description": "",
+            "type": "string",
+            "x-config-cache": true,
+            "x-group": "application"
+        },
+        "pixelfed.domain.admin": {
+            "description": "",
+            "type": [
+                "string",
+                "null"
+            ],
+            "x-env": "ADMIN_DOMAIN",
+            "x-config-cache": false,
+            "x-group": "application"
+        },
+        "pixelfed.domain.app": {
+            "description": "",
+            "type": [
+                "string",
+                "null"
+            ],
+            "x-env": "APP_DOMAIN",
+            "x-config-cache": false,
+            "x-group": "application"
+        },
+        "pixelfed.enforce_account_limit": {
+            "description": "Enforce the per-user storage quota.",
+            "type": "boolean",
+            "default": true,
+            "x-env": "LIMIT_ACCOUNT_SIZE",
+            "x-config-cache": true,
+            "x-group": "accounts"
+        },
+        "pixelfed.enforce_email_verification": {
+            "description": "Require new users to verify their email address before using the site.",
+            "type": "boolean",
+            "default": true,
+            "x-env": "ENFORCE_EMAIL_VERIFICATION",
+            "x-config-cache": true,
+            "x-group": "registration"
+        },
+        "pixelfed.enforce_max_users": {
+            "description": "Stop accepting registrations once the user limit is reached.",
+            "type": "boolean",
+            "default": true,
+            "x-env": "PF_ENFORCE_MAX_USERS",
+            "x-config-cache": false,
+            "x-group": "accounts"
+        },
+        "pixelfed.image_quality": {
+            "description": "JPEG/WebP compression quality applied when optimizing images (1–100).",
+            "type": "integer",
+            "default": 80,
+            "minimum": 1,
+            "maximum": 100,
+            "x-env": "IMAGE_QUALITY",
+            "x-config-cache": true,
+            "x-group": "media"
+        },
+        "pixelfed.import.instagram.enabled": {
+            "description": "Allow users to import their Instagram archive.",
+            "type": "boolean",
+            "default": false,
+            "x-env": "IMPORT_INSTAGRAM",
+            "x-config-cache": true,
+            "x-group": "features"
+        },
+        "pixelfed.import.instagram.limits.posts": {
+            "description": "",
+            "type": "integer",
+            "default": 100,
+            "x-env": "IMPORT_INSTAGRAM_POST_LIMIT",
+            "x-config-cache": false,
+            "x-group": "features"
+        },
+        "pixelfed.import.instagram.limits.size": {
+            "description": "",
+            "type": "integer",
+            "default": 5000,
+            "x-env": "IMPORT_INSTAGRAM_SIZE_LIMIT",
+            "x-config-cache": false,
+            "x-group": "features"
+        },
+        "pixelfed.max_account_size": {
+            "description": "Per-user storage quota in kilobytes.",
+            "type": "integer",
+            "default": 1000000,
+            "minimum": 1,
+            "x-env": "MAX_ACCOUNT_SIZE",
+            "x-config-cache": true,
+            "x-group": "accounts"
+        },
+        "pixelfed.max_album_length": {
+            "description": "Maximum number of photos allowed in a single album post.",
+            "type": "integer",
+            "default": 4,
+            "minimum": 1,
+            "maximum": 100,
+            "x-env": "MAX_ALBUM_LENGTH",
+            "x-config-cache": true,
+            "x-group": "media"
+        },
+        "pixelfed.max_altext_length": {
+            "description": "Maximum character length for image alt text.",
+            "type": "integer",
+            "default": 1000,
+            "minimum": 1,
+            "x-env": "PF_MEDIA_MAX_ALTTEXT_LENGTH",
+            "x-config-cache": true,
+            "x-group": "media"
+        },
+        "pixelfed.max_avatar_size": {
+            "description": "Maximum allowed size for a profile avatar upload, in kilobytes.",
+            "type": "integer",
+            "default": 2000,
+            "minimum": 1,
+            "x-env": "MAX_AVATAR_SIZE",
+            "x-config-cache": true,
+            "x-group": "media"
+        },
+        "pixelfed.max_bio_length": {
+            "description": "Maximum character length for user profile bios.",
+            "type": "integer",
+            "default": 125,
+            "minimum": 1,
+            "x-env": "MAX_BIO_LENGTH",
+            "x-config-cache": true,
+            "x-group": "content"
+        },
+        "pixelfed.max_caption_length": {
+            "description": "Maximum character length for post captions.",
+            "type": "integer",
+            "default": 500,
+            "minimum": 1,
+            "x-env": "MAX_CAPTION_LENGTH",
+            "x-config-cache": true,
+            "x-group": "content"
+        },
+        "pixelfed.max_collection_length": {
+            "description": "Maximum number of posts in a user collection.",
+            "type": "integer",
+            "default": 100,
+            "minimum": 1,
+            "x-env": "PF_MAX_COLLECTION_LENGTH",
+            "x-config-cache": true,
+            "x-group": "media"
+        },
+        "pixelfed.max_name_length": {
+            "description": "Maximum character length for display names.",
+            "type": "integer",
+            "default": 30,
+            "minimum": 1,
+            "x-env": "MAX_NAME_LENGTH",
+            "x-config-cache": true,
+            "x-group": "content"
+        },
+        "pixelfed.max_photo_size": {
+            "description": "Maximum allowed size for a single photo upload, in kilobytes.",
+            "type": "integer",
+            "default": 15000,
+            "minimum": 1,
+            "x-env": "MAX_PHOTO_SIZE",
+            "x-config-cache": true,
+            "x-group": "media"
+        },
+        "pixelfed.max_users": {
+            "description": "Maximum number of local user accounts allowed on this instance.",
+            "type": "integer",
+            "default": 1000,
+            "minimum": 1,
+            "x-env": "PF_MAX_USERS",
+            "x-config-cache": false,
+            "x-group": "accounts"
+        },
+        "pixelfed.media_fast_process": {
+            "description": "",
+            "type": "boolean",
+            "default": true,
+            "x-env": "PF_MEDIA_FAST_PROCESS",
+            "x-config-cache": false,
+            "x-group": "media"
+        },
+        "pixelfed.media_types": {
+            "description": "Comma-separated list of allowed upload MIME types.",
+            "type": "string",
+            "default": "image/jpeg,image/jpg,image/png,image/gif",
+            "x-env": "MEDIA_TYPES",
+            "x-config-cache": true,
+            "x-group": "media"
+        },
+        "pixelfed.memory_limit": {
+            "description": "PHP memory_limit used exclusively during image processing jobs.",
+            "type": "string",
+            "default": "1024M",
+            "x-env": "MEMORY_LIMIT",
+            "x-config-cache": false,
+            "x-group": "media"
+        },
+        "pixelfed.min_password_length": {
+            "description": "Minimum character length for user passwords.",
+            "type": "integer",
+            "default": 8,
+            "minimum": 6,
+            "x-env": "MIN_PASSWORD_LENGTH",
+            "x-config-cache": true,
+            "x-group": "content"
+        },
+        "pixelfed.oauth_enabled": {
+            "description": "Enable OAuth2 / Mastodon-compatible mobile APIs.",
+            "type": "boolean",
+            "default": true,
+            "x-env": "OAUTH_ENABLED",
+            "x-config-cache": true,
+            "x-group": "api"
+        },
+        "pixelfed.open_registration": {
+            "description": "Allow new users to register an account.",
+            "type": "boolean",
+            "default": true,
+            "x-env": "OPEN_REGISTRATION",
+            "x-config-cache": true,
+            "x-group": "registration"
+        },
+        "pixelfed.optimize_image": {
+            "description": "Resize and compress image uploads on ingest.",
+            "type": "boolean",
+            "default": true,
+            "x-env": "PF_OPTIMIZE_IMAGES",
+            "x-config-cache": true,
+            "x-group": "media"
+        },
+        "pixelfed.optimize_video": {
+            "description": "Transcode and optimize video uploads on ingest.",
+            "type": "boolean",
+            "default": true,
+            "x-env": "PF_OPTIMIZE_VIDEOS",
+            "x-config-cache": true,
+            "x-group": "media"
+        },
+        "pixelfed.user_invites.enabled": {
+            "description": "",
+            "type": "boolean",
+            "default": false,
+            "x-env": "PF_USER_INVITES",
+            "x-config-cache": false,
+            "x-group": "accounts"
+        },
+        "pixelfed.user_invites.limit.daily": {
+            "description": "",
+            "type": "integer",
+            "default": 0,
+            "x-env": "PF_USER_INVITES_DAILY_LIMIT",
+            "x-config-cache": false,
+            "x-group": "accounts"
+        },
+        "pixelfed.user_invites.limit.monthly": {
+            "description": "",
+            "type": "integer",
+            "default": 0,
+            "x-env": "PF_USER_INVITES_MONTHLY_LIMIT",
+            "x-config-cache": false,
+            "x-group": "accounts"
+        },
+        "pixelfed.user_invites.limit.total": {
+            "description": "",
+            "type": "integer",
+            "default": 0,
+            "x-env": "PF_USER_INVITES_TOTAL_LIMIT",
+            "x-config-cache": false,
+            "x-group": "accounts"
+        },
+        "system.user_mode": {
+            "description": "",
+            "type": "string",
+            "x-config-cache": true,
+            "x-group": "application"
+        },
+        "uikit.custom.css": {
+            "description": "Custom CSS injected into every page.",
+            "type": "string",
+            "x-config-cache": true,
+            "x-group": "branding"
+        },
+        "uikit.custom.js": {
+            "description": "Custom JavaScript injected into every page.",
+            "type": "string",
+            "x-config-cache": true,
+            "x-group": "branding"
+        },
+        "uikit.show_custom.css": {
+            "description": "Enable injection of the custom CSS snippet.",
+            "type": "boolean",
+            "x-config-cache": true,
+            "x-group": "branding"
+        },
+        "uikit.show_custom.js": {
+            "description": "Enable injection of the custom JavaScript snippet.",
+            "type": "boolean",
+            "x-config-cache": true,
+            "x-group": "branding"
+        }
+    }
+}

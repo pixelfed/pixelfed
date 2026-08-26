@@ -33,6 +33,16 @@ jobs:
           cp .env.testing .env
           php artisan key:generate
 
+      - name: Check config schema is up to date
+        run: |
+          php artisan config:schema --pretty --output=/tmp/schema-check.json
+          if ! diff -q pixelfed-config.schema.json /tmp/schema-check.json > /dev/null 2>&1; then
+            echo "::error::pixelfed-config.schema.json is out of date."
+            echo "Run 'php artisan config:schema --pretty --output=pixelfed-config.schema.json' and commit the result."
+            diff pixelfed-config.schema.json /tmp/schema-check.json
+            exit 1
+          fi
+
       - name: Run tests
         run: php artisan test
         continue-on-error: false
