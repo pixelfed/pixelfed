@@ -63,7 +63,7 @@
 
                             <!-- Delete Button -->
                             <td style="vertical-align: middle;">
-                                <a class="btn btn-outline-danger btn-sm py-1" @click="destroy(client)" href="">
+                                <a class="btn btn-outline-danger btn-sm py-1" @click.prevent="destroy(client)" href="#">
                                     Delete
                                 </a>
                             </td>
