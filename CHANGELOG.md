@@ -31,6 +31,8 @@
     -   Fixes 6776 - OAuth client secret not displayed after creation
     -   Fixes 6777 - Added error on PAT creation when OAUTH_PAT_ENABLED is false
     -   Fixes 6803 - Fix deleting oauth client
+-   ([#6815](https://github.com/pixelfed/pixelfed/pull/6802))
+    -   Major Refactor: convert string-based routes to ::class array syntax required by laravel 13+ - #6814
 
 ## [v0.12.9 (2026-08-25)](https://github.com/pixelfed/pixelfed/compare/v0.12.9...dev)
 
