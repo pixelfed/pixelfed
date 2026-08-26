@@ -1,0 +1,1705 @@
+parameters:
+	ignoreErrors:
+		-
+			message: '#^Call to static method forget\(\) on an unknown class Cache\.$#'
+			identifier: class.notFound
+			count: 1
+			path: app/Console/Commands/AvatarDefaultMigration.php
+
+		-
+			message: '#^Call to static method forget\(\) on an unknown class Cache\.$#'
+			identifier: class.notFound
+			count: 2
+			path: app/Console/Commands/AvatarStorage.php
+
+		-
+			message: '#^Relation ''avatar'' is not found in App\\Profile model\.$#'
+			identifier: larastan.relationExistence
+			count: 6
+			path: app/Console/Commands/AvatarStorage.php
+
+		-
+			message: '#^Call to static method get\(\) on an unknown class Cache\.$#'
+			identifier: class.notFound
+			count: 1
+			path: app/Console/Commands/AvatarStorageDeepClean.php
+
+		-
+			message: '#^Call to static method has\(\) on an unknown class Cache\.$#'
+			identifier: class.notFound
+			count: 2
+			path: app/Console/Commands/AvatarStorageDeepClean.php
+
+		-
+			message: '#^Call to static method put\(\) on an unknown class Cache\.$#'
+			identifier: class.notFound
+			count: 1
+			path: app/Console/Commands/AvatarStorageDeepClean.php
+
+		-
+			message: '#^Call to static method clear\(\) on an unknown class Cache\.$#'
+			identifier: class.notFound
+			count: 1
+			path: app/Console/Commands/FixDuplicateProfiles.php
+
+		-
+			message: '#^Relation ''profile'' is not found in App\\User model\.$#'
+			identifier: larastan.relationExistence
+			count: 1
+			path: app/Console/Commands/FixMissingUserProfile.php
+
+		-
+			message: '#^Call to static method rememberForever\(\) on an unknown class Cache\.$#'
+			identifier: class.notFound
+			count: 4
+			path: app/Console/Commands/GenerateInstanceActor.php
+
+		-
+			message: '#^Call to static method forget\(\) on an unknown class Cache\.$#'
+			identifier: class.notFound
+			count: 1
+			path: app/Console/Commands/InstanceUpdateTotalLocalPosts.php
+
+		-
+			message: '#^Call to static method forget\(\) on an unknown class Cache\.$#'
+			identifier: class.notFound
+			count: 1
+			path: app/Console/Commands/SoftwareUpdateRefresh.php
+
+		-
+			message: '#^Call to static method remember\(\) on an unknown class Cache\.$#'
+			identifier: class.notFound
+			count: 1
+			path: app/Console/Commands/SoftwareUpdateRefresh.php
+
+		-
+			message: '#^Access to an undefined property App\\Events\\Notification\\NewPublicPost\:\:\$fractal\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Events/Notification/NewPublicPost.php
+
+		-
+			message: '#^Call to static method forget\(\) on an unknown class Cache\.$#'
+			identifier: class.notFound
+			count: 2
+			path: app/Http/Controllers/AccountController.php
+
+		-
+			message: '#^Call to static method to\(\) on an unknown class Mail\.$#'
+			identifier: class.notFound
+			count: 1
+			path: app/Http/Controllers/AccountController.php
+
+		-
+			message: '#^Do not use Auth\:\:user\(\) in a class that has access to the request\. Use \$request\-\>user\(\) instead\.$#'
+			identifier: larastan.noAuthFacadeInRequestScope
+			count: 6
+			path: app/Http/Controllers/AccountController.php
+
+		-
+			message: '#^Call to static method collection\(\) on an unknown class App\\Http\\Controllers\\AdminProfile\.$#'
+			identifier: class.notFound
+			count: 1
+			path: app/Http/Controllers/AdminController.php
+
+		-
+			message: '#^Call to static method forget\(\) on an unknown class Cache\.$#'
+			identifier: class.notFound
+			count: 84
+			path: app/Http/Controllers/AdminController.php
+
+		-
+			message: '#^Call to static method get\(\) on an unknown class Cache\.$#'
+			identifier: class.notFound
+			count: 2
+			path: app/Http/Controllers/AdminController.php
+
+		-
+			message: '#^Call to static method put\(\) on an unknown class Cache\.$#'
+			identifier: class.notFound
+			count: 2
+			path: app/Http/Controllers/AdminController.php
+
+		-
+			message: '#^Call to static method remember\(\) on an unknown class Cache\.$#'
+			identifier: class.notFound
+			count: 14
+			path: app/Http/Controllers/AdminController.php
+
+		-
+			message: '#^Call to static method to\(\) on an unknown class Mail\.$#'
+			identifier: class.notFound
+			count: 1
+			path: app/Http/Controllers/AdminController.php
+
+		-
+			message: '#^Relation ''profile'' is not found in App\\Story model\.$#'
+			identifier: larastan.relationExistence
+			count: 1
+			path: app/Http/Controllers/AdminController.php
+
+		-
+			message: '#^Relation ''reportedUser'' is not found in App\\Report model\.$#'
+			identifier: larastan.relationExistence
+			count: 2
+			path: app/Http/Controllers/AdminController.php
+
+		-
+			message: '#^Relation ''reporter'' is not found in App\\Report model\.$#'
+			identifier: larastan.relationExistence
+			count: 2
+			path: app/Http/Controllers/AdminController.php
+
+		-
+			message: '#^Relation ''status'' is not found in App\\Media model\.$#'
+			identifier: larastan.relationExistence
+			count: 2
+			path: app/Http/Controllers/AdminController.php
+
+		-
+			message: '#^Relation ''status'' is not found in App\\Report model\.$#'
+			identifier: larastan.relationExistence
+			count: 3
+			path: app/Http/Controllers/AdminController.php
+
+		-
+			message: '#^Relation ''user'' is not found in App\\AccountInterstitial model\.$#'
+			identifier: larastan.relationExistence
+			count: 1
+			path: app/Http/Controllers/AdminController.php
+
+		-
+			message: '#^Relation ''user'' is not found in App\\OauthClient model\.$#'
+			identifier: larastan.relationExistence
+			count: 2
+			path: app/Http/Controllers/AdminController.php
+
+		-
+			message: '#^Undefined variable\: \$meta$#'
+			identifier: variable.undefined
+			count: 1
+			path: app/Http/Controllers/AdminController.php
+
+		-
+			message: '#^Undefined variable\: \$status$#'
+			identifier: variable.undefined
+			count: 5
+			path: app/Http/Controllers/AdminController.php
+
+		-
+			message: '#^Relation ''profile'' is not found in App\\Models\\AdminShadowFilter model\.$#'
+			identifier: larastan.relationExistence
+			count: 1
+			path: app/Http/Controllers/AdminShadowFilterController.php
+
+		-
+			message: '#^Call to static method forget\(\) on an unknown class Cache\.$#'
+			identifier: class.notFound
+			count: 19
+			path: app/Http/Controllers/Api/AdminApiController.php
+
+		-
+			message: '#^Call to static method remember\(\) on an unknown class Cache\.$#'
+			identifier: class.notFound
+			count: 2
+			path: app/Http/Controllers/Api/AdminApiController.php
+
+		-
+			message: '#^Call to static method forget\(\) on an unknown class Cache\.$#'
+			identifier: class.notFound
+			count: 64
+			path: app/Http/Controllers/Api/ApiV1Controller.php
+
+		-
+			message: '#^Call to static method get\(\) on an unknown class Cache\.$#'
+			identifier: class.notFound
+			count: 1
+			path: app/Http/Controllers/Api/ApiV1Controller.php
+
+		-
+			message: '#^Call to static method has\(\) on an unknown class Cache\.$#'
+			identifier: class.notFound
+			count: 5
+			path: app/Http/Controllers/Api/ApiV1Controller.php
+
+		-
+			message: '#^Call to static method put\(\) on an unknown class Cache\.$#'
+			identifier: class.notFound
+			count: 4
+			path: app/Http/Controllers/Api/ApiV1Controller.php
+
+		-
+			message: '#^Call to static method remember\(\) on an unknown class Cache\.$#'
+			identifier: class.notFound
+			count: 13
+			path: app/Http/Controllers/Api/ApiV1Controller.php
+
+		-
+			message: '#^Call to static method set\(\) on an unknown class Cache\.$#'
+			identifier: class.notFound
+			count: 2
+			path: app/Http/Controllers/Api/ApiV1Controller.php
+
+		-
+			message: '#^Relation ''actor'' is not found in App\\Like model\.$#'
+			identifier: larastan.relationExistence
+			count: 1
+			path: app/Http/Controllers/Api/ApiV1Controller.php
+
+		-
+			message: '#^Relation ''status'' is not found in App\\Like model\.$#'
+			identifier: larastan.relationExistence
+			count: 1
+			path: app/Http/Controllers/Api/ApiV1Controller.php
+
+		-
+			message: '#^Call to static method forget\(\) on an unknown class Cache\.$#'
+			identifier: class.notFound
+			count: 17
+			path: app/Http/Controllers/Api/ApiV1Dot1Controller.php
+
+		-
+			message: '#^Call to static method has\(\) on an unknown class Cache\.$#'
+			identifier: class.notFound
+			count: 1
+			path: app/Http/Controllers/Api/ApiV1Dot1Controller.php
+
+		-
+			message: '#^Call to static method put\(\) on an unknown class Cache\.$#'
+			identifier: class.notFound
+			count: 1
+			path: app/Http/Controllers/Api/ApiV1Dot1Controller.php
+
+		-
+			message: '#^Call to static method remember\(\) on an unknown class Cache\.$#'
+			identifier: class.notFound
+			count: 1
+			path: app/Http/Controllers/Api/ApiV1Dot1Controller.php
+
+		-
+			message: '#^Call to static method to\(\) on an unknown class Mail\.$#'
+			identifier: class.notFound
+			count: 2
+			path: app/Http/Controllers/Api/ApiV1Dot1Controller.php
+
+		-
+			message: '#^Call to static method filters\(\) on an unknown class App\\Http\\Controllers\\Api\\UserFilterService\.$#'
+			identifier: class.notFound
+			count: 3
+			path: app/Http/Controllers/Api/ApiV2Controller.php
+
+		-
+			message: '#^Call to static method follows\(\) on an unknown class App\\Http\\Controllers\\Api\\FollowerService\.$#'
+			identifier: class.notFound
+			count: 1
+			path: app/Http/Controllers/Api/ApiV2Controller.php
+
+		-
+			message: '#^Call to static method get\(\) on an unknown class App\\Http\\Controllers\\Api\\ReblogService\.$#'
+			identifier: class.notFound
+			count: 3
+			path: app/Http/Controllers/Api/ApiV2Controller.php
+
+		-
+			message: '#^Call to static method get\(\) on an unknown class App\\Http\\Controllers\\Api\\StatusService\.$#'
+			identifier: class.notFound
+			count: 3
+			path: app/Http/Controllers/Api/ApiV2Controller.php
+
+		-
+			message: '#^Call to static method getMastodon\(\) on an unknown class App\\Http\\Controllers\\Api\\StatusService\.$#'
+			identifier: class.notFound
+			count: 6
+			path: app/Http/Controllers/Api/ApiV2Controller.php
+
+		-
+			message: '#^Call to static method liked\(\) on an unknown class App\\Http\\Controllers\\Api\\LikeService\.$#'
+			identifier: class.notFound
+			count: 3
+			path: app/Http/Controllers/Api/ApiV2Controller.php
+
+		-
+			message: '#^Call to static method table\(\) on an unknown class App\\Http\\Controllers\\Api\\DB\.$#'
+			identifier: class.notFound
+			count: 3
+			path: app/Http/Controllers/Api/ApiV2Controller.php
+
+		-
+			message: '#^Call to static method forget\(\) on an unknown class Cache\.$#'
+			identifier: class.notFound
+			count: 1
+			path: app/Http/Controllers/Api/BaseApiController.php
+
+		-
+			message: '#^Call to static method has\(\) on an unknown class Cache\.$#'
+			identifier: class.notFound
+			count: 1
+			path: app/Http/Controllers/Api/BaseApiController.php
+
+		-
+			message: '#^Call to static method put\(\) on an unknown class Cache\.$#'
+			identifier: class.notFound
+			count: 1
+			path: app/Http/Controllers/Api/BaseApiController.php
+
+		-
+			message: '#^Do not use Auth\:\:user\(\) in a class that has access to the request\. Use \$request\-\>user\(\) instead\.$#'
+			identifier: larastan.noAuthFacadeInRequestScope
+			count: 1
+			path: app/Http/Controllers/Api/BaseApiController.php
+
+		-
+			message: '#^Call to static method remember\(\) on an unknown class Cache\.$#'
+			identifier: class.notFound
+			count: 1
+			path: app/Http/Controllers/Auth/RegisterController.php
+
+		-
+			message: '#^Call to static method forget\(\) on an unknown class Cache\.$#'
+			identifier: class.notFound
+			count: 3
+			path: app/Http/Controllers/AvatarController.php
+
+		-
+			message: '#^Do not use Auth\:\:user\(\) in a class that has access to the request\. Use \$request\-\>user\(\) instead\.$#'
+			identifier: larastan.noAuthFacadeInRequestScope
+			count: 2
+			path: app/Http/Controllers/AvatarController.php
+
+		-
+			message: '#^Do not use Auth\:\:user\(\) in a class that has access to the request\. Use \$request\-\>user\(\) instead\.$#'
+			identifier: larastan.noAuthFacadeInRequestScope
+			count: 2
+			path: app/Http/Controllers/CircleController.php
+
+		-
+			message: '#^Do not use Auth\:\:check\(\) in a class that has access to the request\. Use \$request\-\>user\(\) \!\=\= null instead\.$#'
+			identifier: larastan.noAuthFacadeInRequestScope
+			count: 2
+			path: app/Http/Controllers/CollectionController.php
+
+		-
+			message: '#^Do not use Auth\:\:user\(\) in a class that has access to the request\. Use \$request\-\>user\(\) instead\.$#'
+			identifier: larastan.noAuthFacadeInRequestScope
+			count: 2
+			path: app/Http/Controllers/CollectionController.php
+
+		-
+			message: '#^Call to static method follows\(\) on an unknown class App\\Http\\Controllers\\FollowerService\.$#'
+			identifier: class.notFound
+			count: 1
+			path: app/Http/Controllers/CommentController.php
+
+		-
+			message: '#^Do not use Auth\:\:check\(\) in a class that has access to the request\. Use \$request\-\>user\(\) \!\=\= null instead\.$#'
+			identifier: larastan.noAuthFacadeInRequestScope
+			count: 1
+			path: app/Http/Controllers/CommentController.php
+
+		-
+			message: '#^Do not use Auth\:\:user\(\) in a class that has access to the request\. Use \$request\-\>user\(\) instead\.$#'
+			identifier: larastan.noAuthFacadeInRequestScope
+			count: 1
+			path: app/Http/Controllers/CommentController.php
+
+		-
+			message: '#^Call to static method forget\(\) on an unknown class Cache\.$#'
+			identifier: class.notFound
+			count: 11
+			path: app/Http/Controllers/ComposeController.php
+
+		-
+			message: '#^Call to static method remember\(\) on an unknown class Cache\.$#'
+			identifier: class.notFound
+			count: 3
+			path: app/Http/Controllers/ComposeController.php
+
+		-
+			message: '#^Do not use Auth\:\:user\(\) in a class that has access to the request\. Use \$request\-\>user\(\) instead\.$#'
+			identifier: larastan.noAuthFacadeInRequestScope
+			count: 1
+			path: app/Http/Controllers/ComposeController.php
+
+		-
+			message: '#^Do not use Auth\:\:check\(\) in a class that has access to the request\. Use \$request\-\>user\(\) \!\=\= null instead\.$#'
+			identifier: larastan.noAuthFacadeInRequestScope
+			count: 1
+			path: app/Http/Controllers/ContactController.php
+
+		-
+			message: '#^Do not use Auth\:\:user\(\) in a class that has access to the request\. Use \$request\-\>user\(\) instead\.$#'
+			identifier: larastan.noAuthFacadeInRequestScope
+			count: 1
+			path: app/Http/Controllers/ContactController.php
+
+		-
+			message: '#^Relation ''keywords'' is not found in App\\Models\\CustomFilter model\.$#'
+			identifier: larastan.relationExistence
+			count: 1
+			path: app/Http/Controllers/CustomFilterController.php
+
+		-
+			message: '#^Relation ''author'' is not found in App\\DirectMessage model\.$#'
+			identifier: larastan.relationExistence
+			count: 1
+			path: app/Http/Controllers/DirectMessageController.php
+
+		-
+			message: '#^Relation ''recipient'' is not found in App\\DirectMessage model\.$#'
+			identifier: larastan.relationExistence
+			count: 1
+			path: app/Http/Controllers/DirectMessageController.php
+
+		-
+			message: '#^Relation ''status'' is not found in App\\DirectMessage model\.$#'
+			identifier: larastan.relationExistence
+			count: 2
+			path: app/Http/Controllers/DirectMessageController.php
+
+		-
+			message: '#^Call to static method remember\(\) on an unknown class Cache\.$#'
+			identifier: class.notFound
+			count: 3
+			path: app/Http/Controllers/DiscoverController.php
+
+		-
+			message: '#^Do not use Auth\:\:check\(\) in a class that has access to the request\. Use \$request\-\>user\(\) \!\=\= null instead\.$#'
+			identifier: larastan.noAuthFacadeInRequestScope
+			count: 3
+			path: app/Http/Controllers/DiscoverController.php
+
+		-
+			message: '#^Do not use Auth\:\:user\(\) in a class that has access to the request\. Use \$request\-\>user\(\) instead\.$#'
+			identifier: larastan.noAuthFacadeInRequestScope
+			count: 1
+			path: app/Http/Controllers/DiscoverController.php
+
+		-
+			message: '#^Call to static method get\(\) on an unknown class Cache\.$#'
+			identifier: class.notFound
+			count: 2
+			path: app/Http/Controllers/FederationController.php
+
+		-
+			message: '#^Call to static method put\(\) on an unknown class Cache\.$#'
+			identifier: class.notFound
+			count: 2
+			path: app/Http/Controllers/FederationController.php
+
+		-
+			message: '#^Undefined variable\: \$status$#'
+			identifier: variable.undefined
+			count: 9
+			path: app/Http/Controllers/Groups/GroupsPostController.php
+
+		-
+			message: '#^Do not use Auth\:\:user\(\) in a class that has access to the request\. Use \$request\-\>user\(\) instead\.$#'
+			identifier: larastan.noAuthFacadeInRequestScope
+			count: 1
+			path: app/Http/Controllers/HashtagFollowController.php
+
+		-
+			message: '#^Relation ''hashtag'' is not found in App\\HashtagFollow model\.$#'
+			identifier: larastan.relationExistence
+			count: 1
+			path: app/Http/Controllers/HashtagFollowController.php
+
+		-
+			message: '#^Call to static method info\(\) on an unknown class Log\.$#'
+			identifier: class.notFound
+			count: 1
+			path: app/Http/Controllers/ImportController.php
+
+		-
+			message: '#^Do not use Auth\:\:user\(\) in a class that has access to the request\. Use \$request\-\>user\(\) instead\.$#'
+			identifier: larastan.noAuthFacadeInRequestScope
+			count: 7
+			path: app/Http/Controllers/ImportController.php
+
+		-
+			message: '#^Call to static method error\(\) on an unknown class Log\.$#'
+			identifier: class.notFound
+			count: 1
+			path: app/Http/Controllers/ImportPostController.php
+
+		-
+			message: '#^Relation ''status'' is not found in App\\Models\\ImportPost model\.$#'
+			identifier: larastan.relationExistence
+			count: 1
+			path: app/Http/Controllers/ImportPostController.php
+
+		-
+			message: '#^Call to static method rememberForever\(\) on an unknown class Cache\.$#'
+			identifier: class.notFound
+			count: 1
+			path: app/Http/Controllers/InstanceActorController.php
+
+		-
+			message: '#^Call to static method remember\(\) on an unknown class Cache\.$#'
+			identifier: class.notFound
+			count: 2
+			path: app/Http/Controllers/InternalApiController.php
+
+		-
+			message: '#^Do not use Auth\:\:check\(\) in a class that has access to the request\. Use \$request\-\>user\(\) \!\=\= null instead\.$#'
+			identifier: larastan.noAuthFacadeInRequestScope
+			count: 2
+			path: app/Http/Controllers/InternalApiController.php
+
+		-
+			message: '#^Do not use Auth\:\:user\(\) in a class that has access to the request\. Use \$request\-\>user\(\) instead\.$#'
+			identifier: larastan.noAuthFacadeInRequestScope
+			count: 8
+			path: app/Http/Controllers/InternalApiController.php
+
+		-
+			message: '#^Relation ''status'' is not found in App\\DirectMessage model\.$#'
+			identifier: larastan.relationExistence
+			count: 1
+			path: app/Http/Controllers/InternalApiController.php
+
+		-
+			message: '#^Do not use Auth\:\:user\(\) in a class that has access to the request\. Use \$request\-\>user\(\) instead\.$#'
+			identifier: larastan.noAuthFacadeInRequestScope
+			count: 1
+			path: app/Http/Controllers/MicroController.php
+
+		-
+			message: '#^Call to static method make\(\) on an unknown class View\.$#'
+			identifier: class.notFound
+			count: 2
+			path: app/Http/Controllers/MobileController.php
+
+		-
+			message: '#^Call to static method remember\(\) on an unknown class Cache\.$#'
+			identifier: class.notFound
+			count: 2
+			path: app/Http/Controllers/MobileController.php
+
+		-
+			message: '#^Do not use Auth\:\:check\(\) in a class that has access to the request\. Use \$request\-\>user\(\) \!\=\= null instead\.$#'
+			identifier: larastan.noAuthFacadeInRequestScope
+			count: 3
+			path: app/Http/Controllers/NewsroomController.php
+
+		-
+			message: '#^Call to static method forget\(\) on an unknown class Cache\.$#'
+			identifier: class.notFound
+			count: 2
+			path: app/Http/Controllers/PageController.php
+
+		-
+			message: '#^Call to static method remember\(\) on an unknown class Cache\.$#'
+			identifier: class.notFound
+			count: 1
+			path: app/Http/Controllers/PixelfedDirectoryController.php
+
+		-
+			message: '#^Call to static method forget\(\) on an unknown class Cache\.$#'
+			identifier: class.notFound
+			count: 5
+			path: app/Http/Controllers/PortfolioController.php
+
+		-
+			message: '#^Call to static method remember\(\) on an unknown class Cache\.$#'
+			identifier: class.notFound
+			count: 3
+			path: app/Http/Controllers/PortfolioController.php
+
+		-
+			message: '#^Undefined variable\: \$metadata$#'
+			identifier: variable.undefined
+			count: 1
+			path: app/Http/Controllers/PortfolioController.php
+
+		-
+			message: '#^Call to static method forget\(\) on an unknown class Cache\.$#'
+			identifier: class.notFound
+			count: 2
+			path: app/Http/Controllers/ProfileAliasController.php
+
+		-
+			message: '#^Call to static method remember\(\) on an unknown class Cache\.$#'
+			identifier: class.notFound
+			count: 9
+			path: app/Http/Controllers/ProfileController.php
+
+		-
+			message: '#^Do not use Auth\:\:check\(\) in a class that has access to the request\. Use \$request\-\>user\(\) \!\=\= null instead\.$#'
+			identifier: larastan.noAuthFacadeInRequestScope
+			count: 3
+			path: app/Http/Controllers/ProfileController.php
+
+		-
+			message: '#^Do not use Auth\:\:user\(\) in a class that has access to the request\. Use \$request\-\>user\(\) instead\.$#'
+			identifier: larastan.noAuthFacadeInRequestScope
+			count: 3
+			path: app/Http/Controllers/ProfileController.php
+
+		-
+			message: '#^Call to static method forget\(\) on an unknown class Cache\.$#'
+			identifier: class.notFound
+			count: 2
+			path: app/Http/Controllers/ProfileMigrationController.php
+
+		-
+			message: '#^Call to static method get\(\) on an unknown class Cache\.$#'
+			identifier: class.notFound
+			count: 1
+			path: app/Http/Controllers/PublicApiController.php
+
+		-
+			message: '#^Call to static method put\(\) on an unknown class Cache\.$#'
+			identifier: class.notFound
+			count: 1
+			path: app/Http/Controllers/PublicApiController.php
+
+		-
+			message: '#^Call to static method remember\(\) on an unknown class Cache\.$#'
+			identifier: class.notFound
+			count: 3
+			path: app/Http/Controllers/PublicApiController.php
+
+		-
+			message: '#^Do not use Auth\:\:check\(\) in a class that has access to the request\. Use \$request\-\>user\(\) \!\=\= null instead\.$#'
+			identifier: larastan.noAuthFacadeInRequestScope
+			count: 3
+			path: app/Http/Controllers/PublicApiController.php
+
+		-
+			message: '#^Do not use Auth\:\:user\(\) in a class that has access to the request\. Use \$request\-\>user\(\) instead\.$#'
+			identifier: larastan.noAuthFacadeInRequestScope
+			count: 1
+			path: app/Http/Controllers/PublicApiController.php
+
+		-
+			message: '#^Do not use Auth\:\:user\(\) in a class that has access to the request\. Use \$request\-\>user\(\) instead\.$#'
+			identifier: larastan.noAuthFacadeInRequestScope
+			count: 1
+			path: app/Http/Controllers/ReportController.php
+
+		-
+			message: '#^Relation ''media'' is not found in App\\Status model\.$#'
+			identifier: larastan.relationExistence
+			count: 1
+			path: app/Http/Controllers/SearchController.php
+
+		-
+			message: '#^Relation ''posts'' is not found in App\\Hashtag model\.$#'
+			identifier: larastan.relationExistence
+			count: 1
+			path: app/Http/Controllers/SearchController.php
+
+		-
+			message: '#^Call to static method make\(\) on an unknown class View\.$#'
+			identifier: class.notFound
+			count: 4
+			path: app/Http/Controllers/SiteController.php
+
+		-
+			message: '#^Call to static method remember\(\) on an unknown class Cache\.$#'
+			identifier: class.notFound
+			count: 5
+			path: app/Http/Controllers/SiteController.php
+
+		-
+			message: '#^Do not use Auth\:\:check\(\) in a class that has access to the request\. Use \$request\-\>user\(\) \!\=\= null instead\.$#'
+			identifier: larastan.noAuthFacadeInRequestScope
+			count: 1
+			path: app/Http/Controllers/SiteController.php
+
+		-
+			message: '#^Call to static method remember\(\) on an unknown class Cache\.$#'
+			identifier: class.notFound
+			count: 1
+			path: app/Http/Controllers/SpaController.php
+
+		-
+			message: '#^Call to static method forget\(\) on an unknown class Cache\.$#'
+			identifier: class.notFound
+			count: 11
+			path: app/Http/Controllers/StatusController.php
+
+		-
+			message: '#^Call to static method remember\(\) on an unknown class Cache\.$#'
+			identifier: class.notFound
+			count: 2
+			path: app/Http/Controllers/StatusController.php
+
+		-
+			message: '#^Do not use Auth\:\:check\(\) in a class that has access to the request\. Use \$request\-\>user\(\) \!\=\= null instead\.$#'
+			identifier: larastan.noAuthFacadeInRequestScope
+			count: 1
+			path: app/Http/Controllers/StatusController.php
+
+		-
+			message: '#^Do not use Auth\:\:user\(\) in a class that has access to the request\. Use \$request\-\>user\(\) instead\.$#'
+			identifier: larastan.noAuthFacadeInRequestScope
+			count: 8
+			path: app/Http/Controllers/StatusController.php
+
+		-
+			message: '#^Relation ''media'' is not found in App\\Status model\.$#'
+			identifier: larastan.relationExistence
+			count: 2
+			path: app/Http/Controllers/StatusController.php
+
+		-
+			message: '#^Call to static method error\(\) on an unknown class Log\.$#'
+			identifier: class.notFound
+			count: 1
+			path: app/Http/Controllers/Stories/StoryApiV1Controller.php
+
+		-
+			message: '#^Call to static method forget\(\) on an unknown class Cache\.$#'
+			identifier: class.notFound
+			count: 1
+			path: app/Http/Controllers/StoryController.php
+
+		-
+			message: '#^Call to static method remember\(\) on an unknown class Cache\.$#'
+			identifier: class.notFound
+			count: 3
+			path: app/Http/Controllers/StoryController.php
+
+		-
+			message: '#^Relation ''profile'' is not found in App\\Story model\.$#'
+			identifier: larastan.relationExistence
+			count: 1
+			path: app/Http/Controllers/StoryController.php
+
+		-
+			message: '#^Call to static method remember\(\) on an unknown class Cache\.$#'
+			identifier: class.notFound
+			count: 1
+			path: app/Http/Controllers/TimelineController.php
+
+		-
+			message: '#^Do not use Auth\:\:check\(\) in a class that has access to the request\. Use \$request\-\>user\(\) \!\=\= null instead\.$#'
+			identifier: larastan.noAuthFacadeInRequestScope
+			count: 1
+			path: app/Http/Controllers/TimelineController.php
+
+		-
+			message: '#^Instantiated class App\\Transformer\\Api\\StatusTimelineTransformer not found\.$#'
+			identifier: class.notFound
+			count: 1
+			path: app/Http/Controllers/TimelineController.php
+
+		-
+			message: '#^Relation ''profile'' is not found in App\\Status model\.$#'
+			identifier: larastan.relationExistence
+			count: 1
+			path: app/Http/Controllers/TimelineController.php
+
+		-
+			message: '#^Do not use Auth\:\:check\(\) in a class that has access to the request\. Use \$request\-\>user\(\) \!\=\= null instead\.$#'
+			identifier: larastan.noAuthFacadeInRequestScope
+			count: 3
+			path: app/Http/Controllers/UserInviteController.php
+
+		-
+			message: '#^Do not use Auth\:\:user\(\) in a class that has access to the request\. Use \$request\-\>user\(\) instead\.$#'
+			identifier: larastan.noAuthFacadeInRequestScope
+			count: 1
+			path: app/Http/Controllers/UserInviteController.php
+
+		-
+			message: '#^Class Laravel\\Passport\\Http\\Middleware\\CheckForAnyScope not found\.$#'
+			identifier: class.notFound
+			count: 1
+			path: app/Http/Kernel.php
+
+		-
+			message: '#^Class Laravel\\Passport\\Http\\Middleware\\CheckScopes not found\.$#'
+			identifier: class.notFound
+			count: 1
+			path: app/Http/Kernel.php
+
+		-
+			message: '#^Do not use Auth\:\:check\(\) in a class that has access to the request\. Use \$request\-\>user\(\) \!\=\= null instead\.$#'
+			identifier: larastan.noAuthFacadeInRequestScope
+			count: 1
+			path: app/Http/Middleware/AccountInterstitial.php
+
+		-
+			message: '#^Do not use Auth\:\:check\(\) in a class that has access to the request\. Use \$request\-\>user\(\) \!\=\= null instead\.$#'
+			identifier: larastan.noAuthFacadeInRequestScope
+			count: 1
+			path: app/Http/Middleware/Admin.php
+
+		-
+			message: '#^Do not use Auth\:\:user\(\) in a class that has access to the request\. Use \$request\-\>user\(\) instead\.$#'
+			identifier: larastan.noAuthFacadeInRequestScope
+			count: 1
+			path: app/Http/Middleware/Admin.php
+
+		-
+			message: '#^Do not use Auth\:\:check\(\) in a class that has access to the request\. Use \$request\-\>user\(\) \!\=\= null instead\.$#'
+			identifier: larastan.noAuthFacadeInRequestScope
+			count: 1
+			path: app/Http/Middleware/Api/Admin.php
+
+		-
+			message: '#^Do not use Auth\:\:user\(\) in a class that has access to the request\. Use \$request\-\>user\(\) instead\.$#'
+			identifier: larastan.noAuthFacadeInRequestScope
+			count: 1
+			path: app/Http/Middleware/Api/Admin.php
+
+		-
+			message: '#^Do not use Auth\:\:check\(\) in a class that has access to the request\. Use \$request\-\>user\(\) \!\=\= null instead\.$#'
+			identifier: larastan.noAuthFacadeInRequestScope
+			count: 1
+			path: app/Http/Middleware/DangerZone.php
+
+		-
+			message: '#^Call to static method get\(\) on an unknown class Session\.$#'
+			identifier: class.notFound
+			count: 1
+			path: app/Http/Middleware/Localization.php
+
+		-
+			message: '#^Call to static method has\(\) on an unknown class Session\.$#'
+			identifier: class.notFound
+			count: 1
+			path: app/Http/Middleware/Localization.php
+
+		-
+			message: '#^Call to static method forget\(\) on an unknown class Cache\.$#'
+			identifier: class.notFound
+			count: 2
+			path: app/Jobs/AutospamPipeline/AutospamUpdateCachedDataPipeline.php
+
+		-
+			message: '#^Call to static method forget\(\) on an unknown class Cache\.$#'
+			identifier: class.notFound
+			count: 2
+			path: app/Jobs/AvatarPipeline/AvatarOptimize.php
+
+		-
+			message: '#^Call to static method forget\(\) on an unknown class Cache\.$#'
+			identifier: class.notFound
+			count: 1
+			path: app/Jobs/AvatarPipeline/RemoteAvatarFetchFromUrl.php
+
+		-
+			message: '#^Call to static method forget\(\) on an unknown class Cache\.$#'
+			identifier: class.notFound
+			count: 4
+			path: app/Jobs/CommentPipeline/CommentPipeline.php
+
+		-
+			message: '#^Call to static method get\(\) on an unknown class Cache\.$#'
+			identifier: class.notFound
+			count: 1
+			path: app/Jobs/CommentPipeline/CommentPipeline.php
+
+		-
+			message: '#^Call to static method info\(\) on an unknown class Log\.$#'
+			identifier: class.notFound
+			count: 4
+			path: app/Jobs/CommentPipeline/CommentPipeline.php
+
+		-
+			message: '#^Call to static method to\(\) on an unknown class Mail\.$#'
+			identifier: class.notFound
+			count: 1
+			path: app/Jobs/ContactPipeline/ContactPipeline.php
+
+		-
+			message: '#^Call to static method remember\(\) on an unknown class Cache\.$#'
+			identifier: class.notFound
+			count: 1
+			path: app/Jobs/DeletePipeline/FanoutDeletePipeline.php
+
+		-
+			message: '#^Call to static method error\(\) on an unknown class Log\.$#'
+			identifier: class.notFound
+			count: 1
+			path: app/Jobs/FollowPipeline/FollowPipeline.php
+
+		-
+			message: '#^Call to static method forget\(\) on an unknown class Cache\.$#'
+			identifier: class.notFound
+			count: 2
+			path: app/Jobs/FollowPipeline/FollowPipeline.php
+
+		-
+			message: '#^Call to static method has\(\) on an unknown class Cache\.$#'
+			identifier: class.notFound
+			count: 2
+			path: app/Jobs/FollowPipeline/FollowServiceWarmCache.php
+
+		-
+			message: '#^Call to static method put\(\) on an unknown class Cache\.$#'
+			identifier: class.notFound
+			count: 4
+			path: app/Jobs/FollowPipeline/FollowServiceWarmCache.php
+
+		-
+			message: '#^Call to static method forget\(\) on an unknown class Cache\.$#'
+			identifier: class.notFound
+			count: 1
+			path: app/Jobs/FollowPipeline/UnfollowPipeline.php
+
+		-
+			message: '#^Call to static method get\(\) on an unknown class Cache\.$#'
+			identifier: class.notFound
+			count: 2
+			path: app/Jobs/FollowPipeline/UnfollowPipeline.php
+
+		-
+			message: '#^Call to static method put\(\) on an unknown class Cache\.$#'
+			identifier: class.notFound
+			count: 2
+			path: app/Jobs/FollowPipeline/UnfollowPipeline.php
+
+		-
+			message: '#^Call to static method forget\(\) on an unknown class Cache\.$#'
+			identifier: class.notFound
+			count: 1
+			path: app/Jobs/GroupPipeline/GroupMediaPipeline.php
+
+		-
+			message: '#^Call to static method error\(\) on an unknown class Log\.$#'
+			identifier: class.notFound
+			count: 1
+			path: app/Jobs/GroupsPipeline/ImageResizePipeline.php
+
+		-
+			message: '#^Call to static method error\(\) on an unknown class Log\.$#'
+			identifier: class.notFound
+			count: 1
+			path: app/Jobs/ImageOptimizePipeline/ImageResize.php
+
+		-
+			message: '#^Call to static method info\(\) on an unknown class Log\.$#'
+			identifier: class.notFound
+			count: 2
+			path: app/Jobs/ImageOptimizePipeline/ImageResize.php
+
+		-
+			message: '#^Call to static method error\(\) on an unknown class Log\.$#'
+			identifier: class.notFound
+			count: 1
+			path: app/Jobs/ImageOptimizePipeline/ImageThumbnail.php
+
+		-
+			message: '#^Call to static method error\(\) on an unknown class Log\.$#'
+			identifier: class.notFound
+			count: 3
+			path: app/Jobs/ImageOptimizePipeline/ImageUpdate.php
+
+		-
+			message: '#^Call to static method set\(\) on an unknown class Cache\.$#'
+			identifier: class.notFound
+			count: 1
+			path: app/Jobs/InboxPipeline/DeleteWorker.php
+
+		-
+			message: '#^Undefined variable\: \$key$#'
+			identifier: variable.undefined
+			count: 1
+			path: app/Jobs/InboxPipeline/DeleteWorker.php
+
+		-
+			message: '#^Call to static method add\(\) on an unknown class Cache\.$#'
+			identifier: class.notFound
+			count: 1
+			path: app/Jobs/InboxPipeline/InboxValidator.php
+
+		-
+			message: '#^Call to static method add\(\) on an unknown class Cache\.$#'
+			identifier: class.notFound
+			count: 1
+			path: app/Jobs/InboxPipeline/InboxWorker.php
+
+		-
+			message: '#^Call to static method get\(\) on an unknown class Cache\.$#'
+			identifier: class.notFound
+			count: 1
+			path: app/Jobs/InternalPipeline/NotificationEpochUpdatePipeline.php
+
+		-
+			message: '#^Call to static method put\(\) on an unknown class Cache\.$#'
+			identifier: class.notFound
+			count: 1
+			path: app/Jobs/InternalPipeline/NotificationEpochUpdatePipeline.php
+
+		-
+			message: '#^Call to static method forget\(\) on an unknown class Cache\.$#'
+			identifier: class.notFound
+			count: 1
+			path: app/Jobs/MediaPipeline/MediaSyncLicensePipeline.php
+
+		-
+			message: '#^Call to static method forget\(\) on an unknown class Cache\.$#'
+			identifier: class.notFound
+			count: 1
+			path: app/Jobs/ModPipeline/HandleSpammerPipeline.php
+
+		-
+			message: '#^Call to static method forget\(\) on an unknown class App\\Jobs\\MovePipeline\\Cache\.$#'
+			identifier: class.notFound
+			count: 1
+			path: app/Jobs/MovePipeline/MoveMigrateFollowersPipeline.php
+
+		-
+			message: '#^Call to static method forget\(\) on an unknown class Cache\.$#'
+			identifier: class.notFound
+			count: 1
+			path: app/Jobs/ProfilePipeline/HandleUpdateActivity.php
+
+		-
+			message: '#^Call to static method info\(\) on an unknown class Log\.$#'
+			identifier: class.notFound
+			count: 10
+			path: app/Jobs/RemoteFollowPipeline/RemoteFollowImportRecent.php
+
+		-
+			message: '#^Call to static method defaultHandlerFromContext\(\) on an unknown class HttpSignatures\\GuzzleHttpSignatures\.$#'
+			identifier: class.notFound
+			count: 1
+			path: app/Jobs/RemoteFollowPipeline/RemoteFollowPipeline.php
+
+		-
+			message: '#^Instantiated class HttpSignatures\\Context not found\.$#'
+			identifier: class.notFound
+			count: 1
+			path: app/Jobs/RemoteFollowPipeline/RemoteFollowPipeline.php
+
+		-
+			message: '#^Call to static method info\(\) on an unknown class Log\.$#'
+			identifier: class.notFound
+			count: 2
+			path: app/Jobs/StatusPipeline/StatusActivityPubDeliver.php
+
+		-
+			message: '#^Call to static method forget\(\) on an unknown class Cache\.$#'
+			identifier: class.notFound
+			count: 1
+			path: app/Jobs/StatusPipeline/StatusDelete.php
+
+		-
+			message: '#^Call to static method forget\(\) on an unknown class Cache\.$#'
+			identifier: class.notFound
+			count: 1
+			path: app/Jobs/StatusPipeline/StatusEntityLexer.php
+
+		-
+			message: '#^Call to static method info\(\) on an unknown class Log\.$#'
+			identifier: class.notFound
+			count: 2
+			path: app/Jobs/StatusPipeline/StatusLocalUpdateActivityPubDeliverPipeline.php
+
+		-
+			message: '#^Relation ''media'' is not found in App\\Status model\.$#'
+			identifier: larastan.relationExistence
+			count: 1
+			path: app/Jobs/StatusPipeline/StatusRemoteUpdatePipeline.php
+
+		-
+			message: '#^Call to static method forget\(\) on an unknown class Cache\.$#'
+			identifier: class.notFound
+			count: 4
+			path: app/Jobs/StatusPipeline/StatusReplyPipeline.php
+
+		-
+			message: '#^Call to static method get\(\) on an unknown class Cache\.$#'
+			identifier: class.notFound
+			count: 1
+			path: app/Jobs/StatusPipeline/StatusReplyPipeline.php
+
+		-
+			message: '#^Call to static method error\(\) on an unknown class Log\.$#'
+			identifier: class.notFound
+			count: 7
+			path: app/Jobs/StoryPipeline/StoryFetch.php
+
+		-
+			message: '#^Call to static method get\(\) on an unknown class Cache\.$#'
+			identifier: class.notFound
+			count: 1
+			path: app/Jobs/StoryPipeline/StoryFetch.php
+
+		-
+			message: '#^Call to static method info\(\) on an unknown class Log\.$#'
+			identifier: class.notFound
+			count: 5
+			path: app/Jobs/StoryPipeline/StoryFetch.php
+
+		-
+			message: '#^Call to static method put\(\) on an unknown class Cache\.$#'
+			identifier: class.notFound
+			count: 1
+			path: app/Jobs/StoryPipeline/StoryFetch.php
+
+		-
+			message: '#^Call to static method warning\(\) on an unknown class Log\.$#'
+			identifier: class.notFound
+			count: 23
+			path: app/Jobs/StoryPipeline/StoryFetch.php
+
+		-
+			message: '#^Call to static method rememberForever\(\) on an unknown class Cache\.$#'
+			identifier: class.notFound
+			count: 1
+			path: app/Jobs/VideoPipeline/VideoHlsPipeline.php
+
+		-
+			message: '#^Call to static method error\(\) on an unknown class Log\.$#'
+			identifier: class.notFound
+			count: 1
+			path: app/Jobs/VideoPipeline/VideoThumbnail.php
+
+		-
+			message: '#^Call to static method forget\(\) on an unknown class Cache\.$#'
+			identifier: class.notFound
+			count: 4
+			path: app/Jobs/VideoPipeline/VideoThumbnail.php
+
+		-
+			message: '#^Call to static method forget\(\) on an unknown class Cache\.$#'
+			identifier: class.notFound
+			count: 4
+			path: app/Jobs/VideoPipeline/VideoThumbnailToCloudPipeline.php
+
+		-
+			message: '#^Call to static method error\(\) on an unknown class Log\.$#'
+			identifier: class.notFound
+			count: 1
+			path: app/Models/CustomFilter.php
+
+		-
+			message: '#^Relation ''customFilter'' is not found in App\\Models\\CustomFilterKeyword model\.$#'
+			identifier: larastan.relationExistence
+			count: 1
+			path: app/Models/CustomFilter.php
+
+		-
+			message: '#^Call to static method forget\(\) on an unknown class Cache\.$#'
+			identifier: class.notFound
+			count: 2
+			path: app/Observers/StatusObserver.php
+
+		-
+			message: '#^Call to static method remember\(\) on an unknown class Cache\.$#'
+			identifier: class.notFound
+			count: 3
+			path: app/Profile.php
+
+		-
+			message: '#^Call to an undefined static method Laravel\\Passport\\Passport\:\:personalAccessClientId\(\)\.$#'
+			identifier: staticMethod.notFound
+			count: 1
+			path: app/Providers/AppServiceProvider.php
+
+		-
+			message: '#^Call to static method forget\(\) on an unknown class Cache\.$#'
+			identifier: class.notFound
+			count: 3
+			path: app/Services/AccountService.php
+
+		-
+			message: '#^Call to static method has\(\) on an unknown class Cache\.$#'
+			identifier: class.notFound
+			count: 2
+			path: app/Services/AccountService.php
+
+		-
+			message: '#^Call to static method put\(\) on an unknown class Cache\.$#'
+			identifier: class.notFound
+			count: 2
+			path: app/Services/AccountService.php
+
+		-
+			message: '#^Call to static method remember\(\) on an unknown class Cache\.$#'
+			identifier: class.notFound
+			count: 6
+			path: app/Services/AccountService.php
+
+		-
+			message: '#^Relation ''profile'' is not found in App\\User model\.$#'
+			identifier: larastan.relationExistence
+			count: 1
+			path: app/Services/AccountService.php
+
+		-
+			message: '#^Call to static method info\(\) on an unknown class Log\.$#'
+			identifier: class.notFound
+			count: 1
+			path: app/Services/ActivityPubDeliveryService.php
+
+		-
+			message: '#^Call to static method remember\(\) on an unknown class Cache\.$#'
+			identifier: class.notFound
+			count: 1
+			path: app/Services/ActivityPubFetchService.php
+
+		-
+			message: '#^Call to static method forget\(\) on an unknown class Cache\.$#'
+			identifier: class.notFound
+			count: 2
+			path: app/Services/AdminShadowFilterService.php
+
+		-
+			message: '#^Call to static method remember\(\) on an unknown class Cache\.$#'
+			identifier: class.notFound
+			count: 1
+			path: app/Services/AdminShadowFilterService.php
+
+		-
+			message: '#^Call to static method remember\(\) on an unknown class Cache\.$#'
+			identifier: class.notFound
+			count: 5
+			path: app/Services/AdminStatsService.php
+
+		-
+			message: '#^Call to static method remember\(\) on an unknown class Cache\.$#'
+			identifier: class.notFound
+			count: 1
+			path: app/Services/AutolinkService.php
+
+		-
+			message: '#^Call to static method get\(\) on an unknown class Cache\.$#'
+			identifier: class.notFound
+			count: 1
+			path: app/Services/AvatarService.php
+
+		-
+			message: '#^Call to static method put\(\) on an unknown class Cache\.$#'
+			identifier: class.notFound
+			count: 2
+			path: app/Services/ConfigCacheService.php
+
+		-
+			message: '#^Call to static method remember\(\) on an unknown class Cache\.$#'
+			identifier: class.notFound
+			count: 1
+			path: app/Services/ConfigCacheService.php
+
+		-
+			message: '#^Call to static method forget\(\) on an unknown class Cache\.$#'
+			identifier: class.notFound
+			count: 8
+			path: app/Services/FollowerService.php
+
+		-
+			message: '#^Call to static method get\(\) on an unknown class Cache\.$#'
+			identifier: class.notFound
+			count: 2
+			path: app/Services/FollowerService.php
+
+		-
+			message: '#^Call to static method remember\(\) on an unknown class Cache\.$#'
+			identifier: class.notFound
+			count: 4
+			path: app/Services/FollowerService.php
+
+		-
+			message: '#^Call to static method forget\(\) on an unknown class Cache\.$#'
+			identifier: class.notFound
+			count: 1
+			path: app/Services/GroupPostService.php
+
+		-
+			message: '#^Call to static method remember\(\) on an unknown class Cache\.$#'
+			identifier: class.notFound
+			count: 2
+			path: app/Services/GroupPostService.php
+
+		-
+			message: '#^Call to static method forget\(\) on an unknown class Cache\.$#'
+			identifier: class.notFound
+			count: 5
+			path: app/Services/GroupService.php
+
+		-
+			message: '#^Call to static method has\(\) on an unknown class Cache\.$#'
+			identifier: class.notFound
+			count: 1
+			path: app/Services/GroupService.php
+
+		-
+			message: '#^Call to static method put\(\) on an unknown class Cache\.$#'
+			identifier: class.notFound
+			count: 1
+			path: app/Services/GroupService.php
+
+		-
+			message: '#^Call to static method remember\(\) on an unknown class Cache\.$#'
+			identifier: class.notFound
+			count: 8
+			path: app/Services/GroupService.php
+
+		-
+			message: '#^Call to static method forget\(\) on an unknown class Cache\.$#'
+			identifier: class.notFound
+			count: 1
+			path: app/Services/Groups/GroupAccountService.php
+
+		-
+			message: '#^Call to static method remember\(\) on an unknown class Cache\.$#'
+			identifier: class.notFound
+			count: 1
+			path: app/Services/Groups/GroupAccountService.php
+
+		-
+			message: '#^Call to static method forget\(\) on an unknown class Cache\.$#'
+			identifier: class.notFound
+			count: 1
+			path: app/Services/Groups/GroupCommentService.php
+
+		-
+			message: '#^Call to static method remember\(\) on an unknown class Cache\.$#'
+			identifier: class.notFound
+			count: 1
+			path: app/Services/Groups/GroupCommentService.php
+
+		-
+			message: '#^Call to static method forget\(\) on an unknown class Cache\.$#'
+			identifier: class.notFound
+			count: 1
+			path: app/Services/Groups/GroupMediaService.php
+
+		-
+			message: '#^Call to static method remember\(\) on an unknown class Cache\.$#'
+			identifier: class.notFound
+			count: 1
+			path: app/Services/Groups/GroupMediaService.php
+
+		-
+			message: '#^Call to static method forget\(\) on an unknown class Cache\.$#'
+			identifier: class.notFound
+			count: 1
+			path: app/Services/Groups/GroupPostService.php
+
+		-
+			message: '#^Call to static method remember\(\) on an unknown class Cache\.$#'
+			identifier: class.notFound
+			count: 1
+			path: app/Services/Groups/GroupPostService.php
+
+		-
+			message: '#^Call to static method forget\(\) on an unknown class Cache\.$#'
+			identifier: class.notFound
+			count: 4
+			path: app/Services/ImportService.php
+
+		-
+			message: '#^Call to static method remember\(\) on an unknown class Cache\.$#'
+			identifier: class.notFound
+			count: 3
+			path: app/Services/ImportService.php
+
+		-
+			message: '#^Call to static method get\(\) on an unknown class Cache\.$#'
+			identifier: class.notFound
+			count: 1
+			path: app/Services/MarkerService.php
+
+		-
+			message: '#^Call to static method put\(\) on an unknown class Cache\.$#'
+			identifier: class.notFound
+			count: 1
+			path: app/Services/MarkerService.php
+
+		-
+			message: '#^Call to static method forget\(\) on an unknown class Cache\.$#'
+			identifier: class.notFound
+			count: 1
+			path: app/Services/MediaService.php
+
+		-
+			message: '#^Call to static method remember\(\) on an unknown class Cache\.$#'
+			identifier: class.notFound
+			count: 1
+			path: app/Services/MediaService.php
+
+		-
+			message: '#^Call to static method forget\(\) on an unknown class Cache\.$#'
+			identifier: class.notFound
+			count: 1
+			path: app/Services/MediaTagService.php
+
+		-
+			message: '#^Call to static method remember\(\) on an unknown class Cache\.$#'
+			identifier: class.notFound
+			count: 1
+			path: app/Services/MediaTagService.php
+
+		-
+			message: '#^Call to static method forget\(\) on an unknown class Cache\.$#'
+			identifier: class.notFound
+			count: 1
+			path: app/Services/NotificationAppGatewayService.php
+
+		-
+			message: '#^Call to static method remember\(\) on an unknown class Cache\.$#'
+			identifier: class.notFound
+			count: 1
+			path: app/Services/NotificationAppGatewayService.php
+
+		-
+			message: '#^Call to static method forget\(\) on an unknown class Cache\.$#'
+			identifier: class.notFound
+			count: 1
+			path: app/Services/NotificationService.php
+
+		-
+			message: '#^Call to static method get\(\) on an unknown class Cache\.$#'
+			identifier: class.notFound
+			count: 1
+			path: app/Services/NotificationService.php
+
+		-
+			message: '#^Call to static method remember\(\) on an unknown class Cache\.$#'
+			identifier: class.notFound
+			count: 2
+			path: app/Services/NotificationService.php
+
+		-
+			message: '#^Relation ''item'' is not found in App\\Notification model\.$#'
+			identifier: larastan.relationExistence
+			count: 1
+			path: app/Services/NotificationService.php
+
+		-
+			message: '#^Call to static method forget\(\) on an unknown class Cache\.$#'
+			identifier: class.notFound
+			count: 1
+			path: app/Services/PlaceService.php
+
+		-
+			message: '#^Call to static method remember\(\) on an unknown class Cache\.$#'
+			identifier: class.notFound
+			count: 1
+			path: app/Services/PlaceService.php
+
+		-
+			message: '#^Called ''first'' on Laravel collection, but could have been retrieved as a query\.$#'
+			identifier: larastan.noUnnecessaryCollectionCall
+			count: 1
+			path: app/Services/PollService.php
+
+		-
+			message: '#^Call to static method forget\(\) on an unknown class Cache\.$#'
+			identifier: class.notFound
+			count: 3
+			path: app/Services/PronounService.php
+
+		-
+			message: '#^Call to static method remember\(\) on an unknown class Cache\.$#'
+			identifier: class.notFound
+			count: 1
+			path: app/Services/PronounService.php
+
+		-
+			message: '#^Call to static method get\(\) on an unknown class Cache\.$#'
+			identifier: class.notFound
+			count: 1
+			path: app/Services/SnowflakeService.php
+
+		-
+			message: '#^Call to static method increment\(\) on an unknown class Cache\.$#'
+			identifier: class.notFound
+			count: 1
+			path: app/Services/SnowflakeService.php
+
+		-
+			message: '#^Call to static method put\(\) on an unknown class Cache\.$#'
+			identifier: class.notFound
+			count: 2
+			path: app/Services/SnowflakeService.php
+
+		-
+			message: '#^Relation ''hashtags'' is not found in App\\Status model\.$#'
+			identifier: larastan.relationExistence
+			count: 1
+			path: app/Services/StatusHashtagService.php
+
+		-
+			message: '#^Relation ''media'' is not found in App\\StatusHashtag model\.$#'
+			identifier: larastan.relationExistence
+			count: 1
+			path: app/Services/StatusHashtagService.php
+
+		-
+			message: '#^Call to an undefined static method App\\Services\\PollService\:\:storyPoll\(\)\.$#'
+			identifier: staticMethod.notFound
+			count: 1
+			path: app/Services/StoryService.php
+
+		-
+			message: '#^Called ''count'' on Laravel collection, but could have been retrieved as a query\.$#'
+			identifier: larastan.noUnnecessaryCollectionCall
+			count: 1
+			path: app/Services/StoryService.php
+
+		-
+			message: '#^Relation ''statuses'' is not found in App\\Profile model\.$#'
+			identifier: larastan.relationExistence
+			count: 1
+			path: app/Services/SuggestionService.php
+
+		-
+			message: '#^Call to static method remember\(\) on an unknown class Cache\.$#'
+			identifier: class.notFound
+			count: 3
+			path: app/Transformer/Api/AccountTransformer.php
+
+		-
+			message: '#^Relation ''media'' is not found in App\\Status model\.$#'
+			identifier: larastan.relationExistence
+			count: 1
+			path: app/Transformer/Api/Mastodon/v1/NotificationTransformer.php
+
+		-
+			message: '#^Call to static method make\(\) on an unknown class Validator\.$#'
+			identifier: class.notFound
+			count: 3
+			path: app/Util/ActivityPub/Helpers.php
+
+		-
+			message: '#^Call to static method remember\(\) on an unknown class Cache\.$#'
+			identifier: class.notFound
+			count: 3
+			path: app/Util/ActivityPub/Helpers.php
+
+		-
+			message: '#^Call to static method forget\(\) on an unknown class Cache\.$#'
+			identifier: class.notFound
+			count: 12
+			path: app/Util/ActivityPub/Inbox.php
+
+		-
+			message: '#^Called ''count'' on Laravel collection, but could have been retrieved as a query\.$#'
+			identifier: larastan.noUnnecessaryCollectionCall
+			count: 1
+			path: app/Util/ActivityPub/Inbox.php
+
+		-
+			message: '#^Call to static method make\(\) on an unknown class Validator\.$#'
+			identifier: class.notFound
+			count: 1
+			path: app/Util/ActivityPub/Validator/Accept.php
+
+		-
+			message: '#^Call to static method make\(\) on an unknown class Validator\.$#'
+			identifier: class.notFound
+			count: 1
+			path: app/Util/ActivityPub/Validator/Add.php
+
+		-
+			message: '#^Call to static method make\(\) on an unknown class Validator\.$#'
+			identifier: class.notFound
+			count: 1
+			path: app/Util/ActivityPub/Validator/Announce.php
+
+		-
+			message: '#^Call to static method make\(\) on an unknown class Validator\.$#'
+			identifier: class.notFound
+			count: 1
+			path: app/Util/ActivityPub/Validator/Follow.php
+
+		-
+			message: '#^Call to static method make\(\) on an unknown class Validator\.$#'
+			identifier: class.notFound
+			count: 1
+			path: app/Util/ActivityPub/Validator/Like.php
+
+		-
+			message: '#^Call to static method make\(\) on an unknown class Validator\.$#'
+			identifier: class.notFound
+			count: 1
+			path: app/Util/ActivityPub/Validator/MoveValidator.php
+
+		-
+			message: '#^Call to static method make\(\) on an unknown class Validator\.$#'
+			identifier: class.notFound
+			count: 1
+			path: app/Util/ActivityPub/Validator/RejectValidator.php
+
+		-
+			message: '#^Call to static method make\(\) on an unknown class Validator\.$#'
+			identifier: class.notFound
+			count: 1
+			path: app/Util/ActivityPub/Validator/StoryValidator.php
+
+		-
+			message: '#^Call to static method make\(\) on an unknown class Validator\.$#'
+			identifier: class.notFound
+			count: 1
+			path: app/Util/ActivityPub/Validator/UndoFollow.php
+
+		-
+			message: '#^Call to static method make\(\) on an unknown class Validator\.$#'
+			identifier: class.notFound
+			count: 1
+			path: app/Util/ActivityPub/Validator/UpdatePersonValidator.php
+
+		-
+			message: '#^Unsafe usage of new static\(\)\.$#'
+			identifier: new.static
+			count: 1
+			path: app/Util/Lexer/Autolink.php
+
+		-
+			message: '#^Method App\\Util\\Lexer\\Extractor\:\:extractCashtagsWithIndices\(\) should return array but return statement is missing\.$#'
+			identifier: return.missing
+			count: 1
+			path: app/Util/Lexer/Extractor.php
+
+		-
+			message: '#^Call to static method remember\(\) on an unknown class Cache\.$#'
+			identifier: class.notFound
+			count: 1
+			path: app/Util/Localization/Localization.php
+
+		-
+			message: '#^Call to static method forget\(\) on an unknown class Cache\.$#'
+			identifier: class.notFound
+			count: 2
+			path: app/Util/Media/Image.php
+
+		-
+			message: '#^Call to static method info\(\) on an unknown class Log\.$#'
+			identifier: class.notFound
+			count: 3
+			path: app/Util/Media/Image.php
+
+		-
+			message: '#^Call to static method forget\(\) on an unknown class Cache\.$#'
+			identifier: class.notFound
+			count: 2
+			path: app/Util/Sentiment/Bouncer.php
+
+		-
+			message: '#^Call to static method remember\(\) on an unknown class Cache\.$#'
+			identifier: class.notFound
+			count: 2
+			path: app/Util/Sentiment/Bouncer.php
+
+		-
+			message: '#^Call to static method forget\(\) on an unknown class Cache\.$#'
+			identifier: class.notFound
+			count: 1
+			path: app/Util/Site/Config.php
+
+		-
+			message: '#^Call to static method remember\(\) on an unknown class Cache\.$#'
+			identifier: class.notFound
+			count: 1
+			path: app/Util/Site/Config.php
+
+		-
+			message: '#^Access to an undefined property Tests\\Unit\\ActivityPub\\AudienceScopeTest\:\:\$mastodon\.$#'
+			identifier: property.notFound
+			count: 3
+			path: tests/Unit/ActivityPub/AudienceScopeTest.php
+
+		-
+			message: '#^Access to an undefined property Tests\\Unit\\ActivityPub\\AudienceScopeTest\:\:\$pleroma\.$#'
+			identifier: property.notFound
+			count: 3
+			path: tests/Unit/ActivityPub/AudienceScopeTest.php

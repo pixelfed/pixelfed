@@ -2542,6 +2542,10 @@ class ApiV1Controller extends Controller
                     return isset($n['status'], $n['status']['id']);
                 }
 
+                if (in_array($n['type'], ['follow'])) {
+                    return isset($n['account'], $n['account']['id']);
+                }
+
                 if (! $pe) {
                     if (in_array($n['type'], [
                         'tagged',

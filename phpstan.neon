@@ -1,0 +1,37 @@
+includes:
+    - vendor/larastan/larastan/extension.neon
+    - vendor/nesbot/carbon/extension.neon
+    - phpstan-baseline.neon
+
+parameters:
+    # Level 10 is the highest level
+    level: 0
+
+    # Laravel specific configurations
+    noModelMake: true
+    noUnnecessaryCollectionCall: true
+    checkModelProperties: true
+    checkOctaneCompatibility: true
+    noEnvCallsOutsideOfConfig: true
+    checkModelAppends: true
+    checkModelMethodVisibility: true
+    checkAuthCallsWhenInRequestScope: true
+
+    checkMissingTranslations: false
+    translationDirectories:
+        - resources/lang
+
+    paths:
+        - app/
+        - routes/
+        - tests/
+
+    excludePaths:
+        - bootstrap/cache/*
+        - storage/
+        - vendor/
+        - app/Console/Commands/ImportCities.php
+        - app/Http/Controllers/SettingsController.php
+        - app/Observers/FollowerObserver.php
+
+    reportUnmatchedIgnoredErrors: false
