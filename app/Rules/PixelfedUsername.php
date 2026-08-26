@@ -5,13 +5,14 @@ namespace App\Rules;
 use App\Util\Lexer\RestrictedNames;
 use Closure;
 use Illuminate\Contracts\Validation\ValidationRule;
+use Illuminate\Translation\PotentiallyTranslatedString;
 
 class PixelfedUsername implements ValidationRule
 {
     /**
      * Run the validation rule.
      *
-     * @param  \Closure(string): \Illuminate\Translation\PotentiallyTranslatedString  $fail
+     * @param  Closure(string): PotentiallyTranslatedString  $fail
      */
     public function validate(string $attribute, mixed $value, Closure $fail): void
     {
@@ -19,7 +20,7 @@ class PixelfedUsername implements ValidationRule
         $underscore = substr_count($value, '_');
         $period = substr_count($value, '.');
 
-        if (ends_with($value, ['.php', '.js', '.css'])) {
+        if (str_ends_with($value, ['.php', '.js', '.css'])) {
             $fail('Username is invalid.');
 
             return;

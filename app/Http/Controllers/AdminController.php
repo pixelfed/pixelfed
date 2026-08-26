@@ -30,6 +30,7 @@ use App\User;
 use Cache;
 use DB;
 use Illuminate\Http\Request;
+use Illuminate\Support\Str;
 use Illuminate\Validation\Rule;
 use Mail;
 use Storage;
@@ -371,7 +372,7 @@ class AdminController extends Controller
         ]);
         $changed = false;
         $changedFields = [];
-        $slug = str_slug($request->input('title'));
+        $slug = Str::slug($request->input('title'));
         if (Newsroom::whereSlug($slug)->exists()) {
             $slug = $slug.'-'.str_random(4);
         }
@@ -438,7 +439,7 @@ class AdminController extends Controller
         ]);
         $changed = false;
         $changedFields = [];
-        $slug = str_slug($request->input('title'));
+        $slug = Str::slug($request->input('title'));
         if (Newsroom::whereSlug($slug)->exists()) {
             $slug = $slug.'-'.str_random(4);
         }
@@ -510,7 +511,7 @@ class AdminController extends Controller
         $key = 'exception_report:';
         $decrypted = decrypt($request->input('payload'));
 
-        if (! starts_with($decrypted, $key)) {
+        if (! str_starts_with($decrypted, $key)) {
             abort(403, 'Can only decrypt error diagnostics');
         }
 

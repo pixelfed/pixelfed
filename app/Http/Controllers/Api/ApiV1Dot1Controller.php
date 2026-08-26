@@ -34,11 +34,13 @@ use App\Services\PublicTimelineService;
 use App\Services\PushNotificationService;
 use App\Services\SanitizeService;
 use App\Services\StatusService;
+use App\Services\UserAgentService;
 use App\Services\UserRoleService;
 use App\Services\UserStorageService;
 use App\Status;
 use App\StatusArchived;
 use App\Story;
+use App\Transformer\Api\AccountTransformer;
 use App\User;
 use App\UserSetting;
 use App\Util\Lexer\RestrictedNames;
@@ -48,7 +50,6 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\RateLimiter;
 use Illuminate\Support\Str;
-use App\Services\UserAgentService;
 use League\Fractal;
 use League\Fractal\Serializer\ArraySerializer;
 use Mail;
@@ -126,10 +127,10 @@ class ApiV1Dot1Controller extends Controller
                 if (! $object) {
                     return $this->error('Invalid object id', 400, ['error_code' => 'ERROR_INVALID_OBJECT_ID']);
                 }
-                $object_type = \App\Status::class;
+                $object_type = Status::class;
                 $exists = Report::whereUserId($user->id)
                     ->whereObjectId($object->id)
-                    ->whereObjectType(\App\Status::class)
+                    ->whereObjectType(Status::class)
                     ->count();
 
                 $rpid = $object->profile_id;
@@ -140,10 +141,10 @@ class ApiV1Dot1Controller extends Controller
                 if (! $object) {
                     return $this->error('Invalid object id', 400, ['error_code' => 'ERROR_INVALID_OBJECT_ID']);
                 }
-                $object_type = \App\Profile::class;
+                $object_type = Profile::class;
                 $exists = Report::whereUserId($user->id)
                     ->whereObjectId($object->id)
-                    ->whereObjectType(\App\Profile::class)
+                    ->whereObjectType(Profile::class)
                     ->count();
                 $rpid = $object->id;
                 break;
@@ -159,10 +160,10 @@ class ApiV1Dot1Controller extends Controller
                 if (! Follower::whereProfileId($user->profile_id)->whereFollowingId($object->profile_id)->exists()) {
                     return $this->error('Invalid object id', 400, ['error_code' => 'ERROR_INVALID_OBJECT_ID']);
                 }
-                $object_type = \App\Story::class;
+                $object_type = Story::class;
                 $exists = Report::whereUserId($user->id)
                     ->whereObjectId($object->id)
-                    ->whereObjectType(\App\Story::class)
+                    ->whereObjectType(Story::class)
                     ->count();
 
                 $rpid = $object->profile_id;
@@ -204,7 +205,7 @@ class ApiV1Dot1Controller extends Controller
     /**
      * DELETE /api/v1.1/accounts/avatar
      *
-     * @return \App\Transformer\Api\AccountTransformer
+     * @return AccountTransformer
      */
     public function deleteAvatar(Request $request)
     {
@@ -286,7 +287,7 @@ class ApiV1Dot1Controller extends Controller
     /**
      * POST /api/v1.1/accounts/change-password
      *
-     * @return \App\Transformer\Api\AccountTransformer
+     * @return AccountTransformer
      */
     public function accountChangePassword(Request $request)
     {
@@ -313,7 +314,7 @@ class ApiV1Dot1Controller extends Controller
         $log = new AccountLog;
         $log->user_id = $user->id;
         $log->item_id = $user->id;
-        $log->item_type = \App\User::class;
+        $log->item_type = User::class;
         $log->action = 'account.edit.password';
         $log->message = 'Password changed';
         $log->link = null;
@@ -548,7 +549,7 @@ class ApiV1Dot1Controller extends Controller
                     $underscore = substr_count($value, '_');
                     $period = substr_count($value, '.');
 
-                    if (ends_with($value, ['.php', '.js', '.css'])) {
+                    if (str_ends_with($value, ['.php', '.js', '.css'])) {
                         return $fail('Username is invalid.');
                     }
 
