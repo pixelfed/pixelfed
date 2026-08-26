@@ -2,6 +2,6 @@
 
 return [
 
-  'emptyPersonalTimeline' => 'Mae eich llinell amser yn wag.',
-  
+    'emptyPersonalTimeline' => 'Mae eich llinell amser yn wag.',
+
 ];

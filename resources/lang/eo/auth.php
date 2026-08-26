@@ -13,7 +13,7 @@ return [
     |
     */
 
-    'failed'   => 'Tiuj ĉi akreditaĵojn ne kongruas kun niajn registraĵojn.',
+    'failed' => 'Tiuj ĉi akreditaĵojn ne kongruas kun niajn registraĵojn.',
     'throttle' => 'Tro saluton provojn. Bonvolu provu refoje post :seconds sekundoj.',
 
 ];
