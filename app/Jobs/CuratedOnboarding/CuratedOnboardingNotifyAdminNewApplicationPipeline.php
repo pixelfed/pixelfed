@@ -71,27 +71,29 @@ class CuratedOnboardingNotifyAdminNewApplicationPipeline implements ShouldQueue
         $adminUsernames = config('instance.curated_registration.notify.admin.on_verify_email.to_usernames');
         $ccAddresses = config('instance.curated_registration.notify.admin.on_verify_email.cc_addresses');
 
-        if (empty($adminUsernames)) {
+        $ccEmails = ! empty($ccAddresses) ? array_filter(array_map('trim', explode(',', $ccAddresses))) : [];
+
+        // If specific admin usernames are configured, notify only those admins.
+        // Otherwise, fall back to notifying all admin users.
+        if (! empty($adminUsernames)) {
+            $usernames = array_filter(array_map('trim', explode(',', $adminUsernames)));
+            $admins = User::where('is_admin', true)->whereIn('username', $usernames)->get();
+        } else {
+            $admins = User::where('is_admin', true)->get();
+        }
+
+        if ($admins->isEmpty() && empty($ccEmails)) {
             return;
         }
 
-        $usernames = array_filter(array_map('trim', explode(',', $adminUsernames)));
-
-        $ccEmails = ! empty($ccAddresses) ? array_filter(array_map('trim', explode(',', $ccAddresses))) : [];
-
-        $admins = User::where('is_admin', true)->whereIn('username', $usernames)->get();
-        $hasIncludedCC = false;
-
         foreach ($admins as $admin) {
-            if ($admin && $admin->email) {
-                $mailer = Mail::to($admin->email);
-                if ($ccEmails && ! $hasIncludedCC) {
-                    $mailer->cc($ccEmails);
-                    $hasIncludedCC = true;
-                }
-                $mailer->send(new CuratedRegisterNotifyAdmin($cr));
+            if ($admin->email) {
+                Mail::to($admin->email)->send(new CuratedRegisterNotifyAdmin($cr));
             }
         }
 
+        if ($ccEmails) {
+            Mail::to($ccEmails)->send(new CuratedRegisterNotifyAdmin($cr));
+        }
     }
 }

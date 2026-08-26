@@ -239,7 +239,7 @@ class FixDuplicateProfiles extends Command
     protected function checkUserFilter($id, $oid)
     {
         UserFilter::whereUserId($oid)->update(['user_id' => $id]);
-        UserFilter::whereFilterableType('App\Profile')->whereFilterableId($oid)->update(['filterable_id' => $id]);
+        UserFilter::whereFilterableType(\App\Profile::class)->whereFilterableId($oid)->update(['filterable_id' => $id]);
     }
 
     protected function checkUserPronoun($id, $oid)

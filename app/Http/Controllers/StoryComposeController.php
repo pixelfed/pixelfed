@@ -143,7 +143,7 @@ class StoryComposeController extends Controller
             if ($localFs) {
                 $fpath = storage_path('app/'.$path);
 
-                $img = $this->imageManager->read($fpath);
+                $img = $this->imageManager->decodePath($fpath);
                 $quality = config_cache('pixelfed.image_quality');
                 $encoder = in_array($photo->getMimeType(), ['image/jpeg', 'image/jpg']) ?
                     new JpegEncoder($quality) :
@@ -156,7 +156,7 @@ class StoryComposeController extends Controller
 
                 $fileContent = $disk->get($path);
 
-                $img = $this->imageManager->read($fileContent);
+                $img = $this->imageManager->decodeBinary($fileContent);
                 $quality = config_cache('pixelfed.image_quality');
                 $encoder = in_array($photo->getMimeType(), ['image/jpeg', 'image/jpg']) ?
                     new JpegEncoder($quality) :
@@ -215,7 +215,7 @@ class StoryComposeController extends Controller
                 $path = storage_path('app/'.$story->path);
                 $extension = pathinfo($path, PATHINFO_EXTENSION);
 
-                $img = $this->imageManager->read($path);
+                $img = $this->imageManager->decodePath($path);
                 $img = $img->crop($width, $height, $x, $y);
                 $img = $img->coverDown(1080, 1920);
 
@@ -233,7 +233,7 @@ class StoryComposeController extends Controller
 
                 $fileContent = $disk->get($story->path);
 
-                $img = $this->imageManager->read($fileContent);
+                $img = $this->imageManager->decodeBinary($fileContent);
                 $img = $img->crop($width, $height, $x, $y);
                 $img = $img->coverDown(1080, 1920);
 
@@ -460,7 +460,7 @@ class StoryComposeController extends Controller
         abort_if(! FollowerService::follows($pid, $story->profile_id), 422, 'Cannot report a story from an account you do not follow');
 
         if (Report::whereProfileId($pid)
-            ->whereObjectType('App\Story')
+            ->whereObjectType(\App\Story::class)
             ->whereObjectId($story->id)
             ->exists()
         ) {
@@ -474,7 +474,7 @@ class StoryComposeController extends Controller
         $report->profile_id = $pid;
         $report->user_id = $request->user()->id;
         $report->object_id = $story->id;
-        $report->object_type = 'App\Story';
+        $report->object_type = \App\Story::class;
         $report->reported_profile_id = $story->profile_id;
         $report->type = $type;
         $report->message = null;
@@ -550,7 +550,7 @@ class StoryComposeController extends Controller
             $n->profile_id = $dm->to_id;
             $n->actor_id = $dm->from_id;
             $n->item_id = $dm->id;
-            $n->item_type = 'App\DirectMessage';
+            $n->item_type = \App\DirectMessage::class;
             $n->action = 'story:react';
             $n->save();
         } else {
@@ -627,7 +627,7 @@ class StoryComposeController extends Controller
             $n->profile_id = $dm->to_id;
             $n->actor_id = $dm->from_id;
             $n->item_id = $dm->id;
-            $n->item_type = 'App\DirectMessage';
+            $n->item_type = \App\DirectMessage::class;
             $n->action = 'story:comment';
             $n->save();
         } else {
