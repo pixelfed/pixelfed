@@ -35,6 +35,28 @@ class StoryApiV1Controller extends Controller
 
     const RECENT_TTL = 300;
 
+    /**
+     * Allowed characters in story text overlays.
+     *
+     * Accepts: Unicode letters (\p{L}), combining marks (\p{M}), digits
+     * (\p{N}), space separators (\p{Zs}, including ASCII space and NBSP),
+     * punctuation (\p{P}), and symbols (\p{S}, which includes single-
+     * codepoint emoji and regional-indicator flags).
+     *
+     * Rejects, by omission: control chars (\p{Cc} — incl. tab, newline,
+     * NUL), format chars (\p{Cf} — zero-width space/joiner, BOM, bidi
+     * overrides, tag chars, Mongolian vowel separator), private use
+     * (\p{Co}), unassigned (\p{Cn}), surrogates (\p{Cs}). Uses \p{Zs}
+     * rather than \s because Perl-compat \s also matches some legacy
+     * format characters like U+180E. This blocks the common invisible-
+     * character and bidi-spoofing attack vectors.
+     *
+     * Tradeoff: ZWJ-composed emoji sequences (e.g. 👨‍👩‍👧, 🏳️‍🌈) are rejected
+     * because U+200D ZERO WIDTH JOINER is \p{Cf}. Single-codepoint emoji
+     * and regional-indicator country flags still work.
+     */
+    const TEXT_OVERLAY_PATTERN = '/^[\p{L}\p{M}\p{N}\p{Zs}\p{P}\p{S}]*$/u';
+
     public function carousel(Request $request)
     {
         abort_if(! (bool) config_cache('instance.stories.enabled') || ! $request->user(), 404);
@@ -455,7 +477,7 @@ class StoryApiV1Controller extends Controller
 
                         switch ($type) {
                             case 'text':
-                                if (! preg_match('/^[a-zA-Z0-9\s\p{P}\p{S}]*$/u', $content)) {
+                                if (! preg_match(self::TEXT_OVERLAY_PATTERN, $content)) {
                                     throw ValidationException::withMessages([
                                         "overlays.{$index}.content" => 'Text overlays contain unsupported characters.',
                                     ]);
