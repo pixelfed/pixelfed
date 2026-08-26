@@ -202,7 +202,8 @@ class Image
                 }
             }
 
-            $img = $this->imageManager->read($fileContents);
+            $img = $this->imageManager->decodeBinary($fileContents);
+            $img = $img->orient();
 
             $ratio = $this->getAspect($img->width(), $img->height(), $thumbnail);
             $aspect = $ratio['dimensions'];

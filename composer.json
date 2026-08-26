@@ -18,8 +18,8 @@
         "buzz/laravel-h-captcha": "^1.0.4",
         "endroid/qr-code": "^6.0",
         "guzzlehttp/guzzle": "^7.10",
-        "intervention/image-laravel": "^1.5",
-        "intervention/image-driver-vips": "^1.0",
+        "intervention/image-laravel": "^4.1",
+        "intervention/image-driver-vips": "^4.1",
         "jenssegers/agent": "^2.6",
         "laravel-notification-channels/expo": "^2.0.0",
         "laravel-notification-channels/webpush": "^10.2",
@@ -52,6 +52,7 @@
     },
     "require-dev": {
         "fakerphp/faker": "^1.23",
+        "larastan/larastan": "^3.0",
         "laravel/pint": "^1.13",
         "laravel/telescope": "^5.5",
         "mockery/mockery": "^1.6",
@@ -98,7 +99,11 @@
         "post-autoload-dump": [
             "Illuminate\\Foundation\\ComposerScripts::postAutoloadDump",
             "@php artisan package:discover --ansi"
-        ]
+        ],
+        "analyse": "./vendor/bin/phpstan analyse --memory-limit=512M",
+        "lint": "./vendor/bin/pint",
+        "lint:test": "./vendor/bin/pint --test"
+
     },
     "config": {
         "preferred-install": "dist",

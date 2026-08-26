@@ -9,12 +9,16 @@ use Tests\TestCase;
 class NoteAttachmentTest extends TestCase
 {
     protected array $pixelfed;
+
     protected array $pleroma;
+
     protected array $mastodon;
+
     protected array $invalidType;
+
     protected array $invalidMime;
 
-    public function setUp(): void
+    protected function setUp(): void
     {
         parent::setUp();
 
@@ -44,17 +48,16 @@ class NoteAttachmentTest extends TestCase
     }
 
     #[Test]
-    public function invalidAttachmentType()
+    public function invalid_attachment_type()
     {
         $valid = Helpers::verifyAttachments($this->invalidType);
         $this->assertFalse($valid);
     }
 
     #[Test]
-    public function invalidMimeType()
+    public function invalid_mime_type()
     {
         $valid = Helpers::verifyAttachments($this->invalidMime);
         $this->assertFalse($valid);
     }
 }
-
