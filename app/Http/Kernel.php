@@ -10,6 +10,7 @@ use App\Http\Middleware\EncryptCookies;
 use App\Http\Middleware\FrameGuard;
 use App\Http\Middleware\Localization;
 use App\Http\Middleware\RedirectIfAuthenticated;
+use App\Http\Middleware\RestrictedAccess;
 use App\Http\Middleware\TrimStrings;
 use App\Http\Middleware\TrustProxies;
 use App\Http\Middleware\TwoFactorAuth;
@@ -88,13 +89,13 @@ class Kernel extends HttpKernel
     ];
 
     /**
-     * The application's route middleware.
+     * The application's middleware aliases.
      *
-     * These middleware may be assigned to groups or used individually.
+     * Aliases may be used instead of class names to conveniently assign middleware to routes and groups.
      *
      * @var array
      */
-    protected $routeMiddleware = [
+    protected $middlewareAliases = [
         'api.admin' => Middleware\Api\Admin::class,
         'admin' => Admin::class,
         'auth' => Authenticate::class,
@@ -112,6 +113,6 @@ class Kernel extends HttpKernel
         'interstitial' => AccountInterstitial::class,
         'scopes' => CheckScopes::class,
         'scope' => CheckForAnyScope::class,
-        'restricted'    => \App\Http\Middleware\RestrictedAccess::class,
+        'restricted' => RestrictedAccess::class,
     ];
 }
