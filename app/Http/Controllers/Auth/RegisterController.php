@@ -10,6 +10,7 @@ use App\Util\Lexer\RestrictedNames;
 use Illuminate\Auth\Events\Registered;
 use Illuminate\Foundation\Auth\RegistersUsers;
 use Illuminate\Http\Request;
+use Illuminate\Http\Response;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Validator;
 use Purify;
@@ -76,7 +77,7 @@ class RegisterController extends Controller
                 $underscore = substr_count($value, '_');
                 $period = substr_count($value, '.');
 
-                if (ends_with($value, ['.php', '.js', '.css'])) {
+                if (str_ends_with($value, ['.php', '.js', '.css'])) {
                     return $fail('Username is invalid.');
                 }
 
@@ -151,7 +152,7 @@ class RegisterController extends Controller
      * Create a new user instance after a valid registration.
      *
      *
-     * @return \App\User
+     * @return User
      */
     public function create(array $data)
     {
@@ -172,7 +173,7 @@ class RegisterController extends Controller
     /**
      * Show the application registration form.
      *
-     * @return \Illuminate\Http\Response
+     * @return Response
      */
     public function showRegistrationForm()
     {
@@ -207,7 +208,7 @@ class RegisterController extends Controller
     /**
      * Handle a registration request for the application.
      *
-     * @return \Illuminate\Http\Response
+     * @return Response
      */
     public function register(Request $request)
     {

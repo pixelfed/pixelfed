@@ -23,7 +23,6 @@
         "laravel-notification-channels/expo": "^2.0.0",
         "laravel-notification-channels/webpush": "^10.2",
         "laravel/framework": "^12.0",
-        "laravel/helpers": "^1.1",
         "laravel/horizon": "^5.0",
         "laravel/passport": "^13.4.4",
         "laravel/pulse": "^1.3",

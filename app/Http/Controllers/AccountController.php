@@ -23,6 +23,7 @@ use Auth;
 use Cache;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
+use Illuminate\Support\Arr;
 use Illuminate\Support\Str;
 use League\Fractal;
 use League\Fractal\Serializer\ArraySerializer;
@@ -569,7 +570,7 @@ class AccountController extends Controller
             $codes = json_decode($backupCodes, true);
             foreach ($codes as $c) {
                 if (hash_equals($c, $code)) {
-                    $codes = array_flatten(array_diff($codes, [$code]));
+                    $codes = Arr::flatten(array_diff($codes, [$code]));
                     $user->{'2fa_backup_codes'} = json_encode($codes);
                     $user->save();
                     $request->session()->push('2fa.session.active', true);
@@ -598,7 +599,7 @@ class AccountController extends Controller
         $limit = $request->input('limit') ?? 40;
 
         $mutes = UserFilter::whereUserId($user->profile_id)
-            ->whereFilterableType(\App\Profile::class)
+            ->whereFilterableType(Profile::class)
             ->whereFilterType('mute')
             ->simplePaginate($limit)
             ->pluck('filterable_id');
@@ -631,7 +632,7 @@ class AccountController extends Controller
 
         $blocked = UserFilter::select('filterable_id', 'filterable_type', 'filter_type', 'user_id')
             ->whereUserId($user->profile_id)
-            ->whereFilterableType(\App\Profile::class)
+            ->whereFilterableType(Profile::class)
             ->whereFilterType('block')
             ->simplePaginate($limit)
             ->pluck('filterable_id');
