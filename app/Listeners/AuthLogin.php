@@ -6,7 +6,7 @@ use App\Jobs\AvatarPipeline\CreateAvatar;
 use App\Profile;
 use App\UserDevice;
 use App\UserSetting;
-use DB;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Str;
 
 class AuthLogin

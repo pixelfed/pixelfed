@@ -3,8 +3,8 @@
 namespace App\Util\ActivityPub\Validator;
 
 use Closure;
+use Illuminate\Support\Facades\Validator;
 use Illuminate\Validation\Rule;
-use Validator;
 
 class UpdatePersonValidator
 {

@@ -9,8 +9,8 @@ use App\Services\WebfingerService;
 use App\Status;
 use App\Util\ActivityPub\Helpers;
 use App\Util\Lexer\Autolink;
-use Auth;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Str;
 

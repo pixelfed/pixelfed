@@ -4,13 +4,13 @@ namespace App\Http\Controllers\Settings;
 
 use App\AccountLog;
 use App\UserDevice;
-use Auth;
 use BaconQrCode\Renderer\Image\SvgImageBackEnd;
 use BaconQrCode\Renderer\ImageRenderer;
 use BaconQrCode\Renderer\RendererStyle\RendererStyle;
 use BaconQrCode\Writer;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Str;
 use PragmaRX\Google2FA\Google2FA;
 

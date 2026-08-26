@@ -5,9 +5,9 @@ namespace App\Http\Controllers\Import;
 use App\ImportData;
 use App\ImportJob;
 use App\Jobs\ImportPipeline\ImportInstagram;
-use Auth;
-use DB;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Str;
 
 trait Instagram

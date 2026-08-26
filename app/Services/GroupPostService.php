@@ -5,7 +5,7 @@ namespace App\Services;
 use App\Models\GroupComment;
 use App\Models\GroupPost;
 use App\Transformer\Api\GroupPostTransformer;
-use Cache;
+use Illuminate\Support\Facades\Cache;
 use League\Fractal;
 use League\Fractal\Serializer\ArraySerializer;
 

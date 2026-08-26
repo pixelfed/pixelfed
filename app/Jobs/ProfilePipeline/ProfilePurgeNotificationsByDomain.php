@@ -4,7 +4,6 @@ namespace App\Jobs\ProfilePipeline;
 
 use App\Notification;
 use App\Services\NotificationService;
-use DB;
 use Illuminate\Bus\Batchable;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldBeUniqueUntilProcessing;
@@ -13,6 +12,7 @@ use Illuminate\Foundation\Bus\Dispatchable;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\Middleware\WithoutOverlapping;
 use Illuminate\Queue\SerializesModels;
+use Illuminate\Support\Facades\DB;
 
 class ProfilePurgeNotificationsByDomain implements ShouldBeUniqueUntilProcessing, ShouldQueue
 {

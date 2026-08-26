@@ -3,8 +3,8 @@
 namespace App\Console\Commands;
 
 use App\Hashtag;
-use DB;
 use Illuminate\Console\Command;
+use Illuminate\Support\Facades\DB;
 
 class HashtagCachedCountUpdate extends Command
 {

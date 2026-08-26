@@ -10,8 +10,8 @@ use App\Models\UserDomainBlock;
 use App\Profile;
 use App\User;
 use App\UserSetting;
-use DB;
 use Illuminate\Console\Command;
+use Illuminate\Support\Facades\DB;
 
 use function Laravel\Prompts\search;
 

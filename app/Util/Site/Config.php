@@ -2,7 +2,7 @@
 
 namespace App\Util\Site;
 
-use Cache;
+use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Str;
 
 class Config

@@ -3,9 +3,10 @@
 namespace App\Services;
 
 use App\Models\ImportPost;
-use Cache;
-use DB;
+use Carbon\Carbon;
 use Illuminate\Database\QueryException;
+use Illuminate\Support\Facades\Cache;
+use Illuminate\Support\Facades\DB;
 
 class ImportService
 {
@@ -303,7 +304,7 @@ class ImportService
     {
         try {
             $fullYear = $year < 50 ? 2000 + $year : 1900 + $year;
-            $date = \Carbon\Carbon::createFromDate($fullYear, $month, $day);
+            $date = Carbon::createFromDate($fullYear, $month, $day);
             $nextDay = $date->addDay();
 
             $nextYear2Digit = (int) $nextDay->format('y');

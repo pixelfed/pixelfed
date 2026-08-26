@@ -10,9 +10,9 @@ use App\Models\ProfileMigration;
 use App\Services\AccountService;
 use App\Services\WebfingerService;
 use App\Util\ActivityPub\Helpers;
-use Cache;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Bus;
+use Illuminate\Support\Facades\Cache;
 
 class ProfileMigrationController extends Controller
 {

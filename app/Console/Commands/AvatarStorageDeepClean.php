@@ -4,9 +4,9 @@ namespace App\Console\Commands;
 
 use App\Avatar;
 use App\Jobs\AvatarPipeline\AvatarStorageCleanup;
-use Cache;
 use Illuminate\Console\Command;
-use Storage;
+use Illuminate\Support\Facades\Cache;
+use Illuminate\Support\Facades\Storage;
 
 class AvatarStorageDeepClean extends Command
 {

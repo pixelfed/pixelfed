@@ -8,7 +8,7 @@ use App\Models\ImportPost;
 use App\Services\ImportService;
 use App\Services\ProfileStatusService;
 use App\Status;
-use Cache;
+use Illuminate\Support\Facades\Cache;
 
 class StatusObserver
 {

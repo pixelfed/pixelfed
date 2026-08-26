@@ -12,10 +12,10 @@ use App\Services\ConfigCacheService;
 use App\Services\FilesystemService;
 use App\User;
 use App\Util\Site\Config;
-use Artisan;
-use Cache;
-use DB;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Artisan;
+use Illuminate\Support\Facades\Cache;
+use Illuminate\Support\Facades\DB;
 
 trait AdminSettingsController
 {

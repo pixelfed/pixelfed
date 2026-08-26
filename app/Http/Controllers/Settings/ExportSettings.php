@@ -6,12 +6,12 @@ use App\Status;
 use App\Transformer\ActivityPub\ProfileTransformer;
 use App\Transformer\Api\StatusTransformer as StatusApiTransformer;
 use App\UserFilter;
-use Auth;
-use Cache;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Cache;
+use Illuminate\Support\Facades\Storage;
 use League\Fractal;
 use League\Fractal\Serializer\ArraySerializer;
-use Storage;
 
 trait ExportSettings
 {

@@ -3,7 +3,7 @@
 namespace App\Services;
 
 use App\Profile;
-use Cache;
+use Illuminate\Support\Facades\Cache;
 use Purify;
 
 class AutolinkService

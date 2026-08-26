@@ -3,9 +3,10 @@
 namespace App;
 
 use App\Util\Lexer\Bearcap;
-use Auth;
 use Illuminate\Database\Eloquent\Model;
-use Storage;
+use Illuminate\Support\Carbon;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Storage;
 
 /**
  * @property int $id
@@ -14,10 +15,10 @@ use Storage;
  * @property string|null $bearcap_token
  * @property array|null $story
  * @property int $view_count
- * @property \Illuminate\Support\Carbon|null $expires_at
- * @property \Illuminate\Support\Carbon|null $created_at
- * @property \Illuminate\Support\Carbon|null $updated_at
- * @property-read \App\Profile $profile
+ * @property Carbon|null $expires_at
+ * @property Carbon|null $created_at
+ * @property Carbon|null $updated_at
+ * @property-read Profile $profile
  */
 class Story extends Model
 {

@@ -14,8 +14,8 @@ use Illuminate\Http\File;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Storage;
 use League\Flysystem\UnableToWriteFile;
-use Storage;
 
 class ImageS3UploadPipeline implements ShouldQueue
 {

@@ -17,10 +17,10 @@ use App\StatusView;
 use App\Transformer\ActivityPub\Verb\Note;
 use App\Transformer\ActivityPub\Verb\Question;
 use App\Util\Media\License;
-use Auth;
-use Cache;
-use DB;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Cache;
+use Illuminate\Support\Facades\DB;
 use League\Fractal;
 
 class StatusController extends Controller

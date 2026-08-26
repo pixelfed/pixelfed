@@ -4,12 +4,12 @@ namespace App\Util\Media;
 
 use App\Media;
 use App\Services\StatusService;
-use Cache;
+use Illuminate\Support\Facades\Cache;
+use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Storage;
 use Intervention\Image\Encoders\JpegEncoder;
 use Intervention\Image\Encoders\PngEncoder;
 use Intervention\Image\Encoders\WebpEncoder;
-use Log;
-use Storage;
 
 class Image
 {
@@ -302,11 +302,11 @@ class Image
     public function setBaseName($basePath, $thumbnail, $extension)
     {
         $pathInfo = pathinfo($basePath);
-        $dir = isset($pathInfo['dirname']) && $pathInfo['dirname'] !== '.' ? $pathInfo['dirname'] . '/' : '';
+        $dir = isset($pathInfo['dirname']) && $pathInfo['dirname'] !== '.' ? $pathInfo['dirname'].'/' : '';
         $filename = $pathInfo['filename'];
-        $name = ($thumbnail == true) ? $filename . '_thumb' : $filename;
-        $basePath = $dir . $name . '.' . $extension;
-    
+        $name = ($thumbnail == true) ? $filename.'_thumb' : $filename;
+        $basePath = $dir.$name.'.'.$extension;
+
         return ['path' => $basePath, 'png' => false];
     }
 

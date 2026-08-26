@@ -7,10 +7,10 @@ use App\Services\AccountService;
 use App\Services\InstanceService;
 use App\Services\StatusService;
 use App\User;
-use Cache;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Cache;
+use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
-use Storage;
 
 class PixelfedDirectoryController extends Controller
 {

@@ -3,8 +3,8 @@
 namespace App\Http\Controllers;
 
 use App\Newsroom;
-use Auth;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Redis;
 use Illuminate\Support\Str;
 

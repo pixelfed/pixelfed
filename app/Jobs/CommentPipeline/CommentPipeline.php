@@ -3,18 +3,19 @@
 namespace App\Jobs\CommentPipeline;
 
 use App\Notification;
+use App\Profile;
 use App\Services\NotificationService;
 use App\Services\StatusService;
 use App\Status;
 use App\UserFilter;
-use Cache;
-use DB;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
-use Log;
+use Illuminate\Support\Facades\Cache;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
 
 class CommentPipeline implements ShouldQueue
 {
@@ -106,7 +107,7 @@ class CommentPipeline implements ShouldQueue
         }
 
         $filtered = UserFilter::whereUserId($target->id)
-            ->whereFilterableType(\App\Profile::class)
+            ->whereFilterableType(Profile::class)
             ->whereIn('filter_type', ['mute', 'block'])
             ->whereFilterableId($actor->id)
             ->exists();
@@ -122,7 +123,7 @@ class CommentPipeline implements ShouldQueue
                 $notification->actor_id = $actor->id;
                 $notification->action = 'comment';
                 $notification->item_id = $comment->id;
-                $notification->item_type = \App\Status::class;
+                $notification->item_type = Status::class;
                 $notification->save();
 
                 NotificationService::setNotification($notification);

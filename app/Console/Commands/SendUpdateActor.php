@@ -7,7 +7,7 @@ use App\Profile;
 use App\User;
 use App\Util\ActivityPub\Helpers;
 use Illuminate\Console\Command;
-use Storage;
+use Illuminate\Support\Facades\Storage;
 use Symfony\Component\HttpKernel\Exception\HttpException;
 
 class SendUpdateActor extends Command

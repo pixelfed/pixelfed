@@ -4,8 +4,8 @@ namespace App\Services;
 
 use App\Media;
 use App\Transformer\Api\MediaTransformer;
-use Cache;
 use Illuminate\Support\Arr;
+use Illuminate\Support\Facades\Cache;
 use League\Fractal;
 use League\Fractal\Serializer\ArraySerializer;
 

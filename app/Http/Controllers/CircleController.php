@@ -3,8 +3,8 @@
 namespace App\Http\Controllers;
 
 use App\Circle;
-use Auth;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Validation\Rule;
 
 class CircleController extends Controller

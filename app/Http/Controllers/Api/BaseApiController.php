@@ -13,9 +13,9 @@ use App\Services\StatusService;
 use App\Status;
 use App\StatusArchived;
 use App\Transformer\Api\StatusStatelessTransformer;
-use Auth;
-use Cache;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Cache;
 use League\Fractal;
 use League\Fractal\Serializer\ArraySerializer;
 

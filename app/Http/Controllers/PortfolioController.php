@@ -7,9 +7,9 @@ use App\Services\AccountService;
 use App\Services\StatusService;
 use App\Status;
 use App\User;
-use Cache;
-use DB;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Cache;
+use Illuminate\Support\Facades\DB;
 
 class PortfolioController extends Controller
 {

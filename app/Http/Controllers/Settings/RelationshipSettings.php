@@ -2,8 +2,8 @@
 
 namespace App\Http\Controllers\Settings;
 
-use Auth;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 
 trait RelationshipSettings
 {

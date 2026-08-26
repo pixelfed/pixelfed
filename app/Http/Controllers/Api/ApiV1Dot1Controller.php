@@ -44,15 +44,15 @@ use App\Transformer\Api\AccountTransformer;
 use App\User;
 use App\UserSetting;
 use App\Util\Lexer\RestrictedNames;
-use Cache;
-use DB;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Cache;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\RateLimiter;
 use Illuminate\Support\Str;
 use League\Fractal;
 use League\Fractal\Serializer\ArraySerializer;
-use Mail;
 
 class ApiV1Dot1Controller extends Controller
 {

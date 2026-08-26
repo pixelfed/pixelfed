@@ -6,8 +6,8 @@ use App\Mail\UserInviteMail;
 use App\Services\EmailService;
 use App\User;
 use App\UserInvite;
-use Auth;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Str;
 

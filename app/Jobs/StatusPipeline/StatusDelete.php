@@ -22,7 +22,6 @@ use App\StatusHashtag;
 use App\StatusView;
 use App\Transformer\ActivityPub\Verb\DeleteNote;
 use App\Util\ActivityPub\HttpSignature;
-use Cache;
 use GuzzleHttp\Client;
 use GuzzleHttp\Pool;
 use Illuminate\Bus\Queueable;
@@ -30,6 +29,7 @@ use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
+use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Log;
 use League\Fractal;
 use League\Fractal\Serializer\ArraySerializer;
@@ -120,7 +120,7 @@ class StatusDelete implements ShouldQueue
 
         Bookmark::whereStatusId($status->id)->delete();
 
-        CollectionItem::whereObjectType(\App\Status::class)
+        CollectionItem::whereObjectType(Status::class)
             ->whereObjectId($status->id)
             ->get()
             ->each(function ($col) {
@@ -130,7 +130,7 @@ class StatusDelete implements ShouldQueue
 
         $dms = DirectMessage::whereStatusId($status->id)->get();
         foreach ($dms as $dm) {
-            $not = Notification::whereItemType(\App\DirectMessage::class)
+            $not = Notification::whereItemType(DirectMessage::class)
                 ->whereItemId($dm->id)
                 ->first();
             if ($not) {
@@ -143,7 +143,7 @@ class StatusDelete implements ShouldQueue
 
         $mediaTags = MediaTag::where('status_id', $status->id)->get();
         foreach ($mediaTags as $mtag) {
-            $not = Notification::whereItemType(\App\MediaTag::class)
+            $not = Notification::whereItemType(MediaTag::class)
                 ->whereItemId($mtag->id)
                 ->first();
             if ($not) {
@@ -154,11 +154,11 @@ class StatusDelete implements ShouldQueue
         }
         Mention::whereStatusId($status->id)->forceDelete();
 
-        Notification::whereItemType(\App\Status::class)
+        Notification::whereItemType(Status::class)
             ->whereItemId($status->id)
             ->forceDelete();
 
-        Report::whereObjectType(\App\Status::class)
+        Report::whereObjectType(Status::class)
             ->whereObjectId($status->id)
             ->delete();
 
@@ -167,7 +167,7 @@ class StatusDelete implements ShouldQueue
         StatusView::whereStatusId($status->id)->delete();
         Status::whereInReplyToId($status->id)->update(['in_reply_to_id' => null]);
 
-        AccountInterstitial::where('item_type', \App\Status::class)
+        AccountInterstitial::where('item_type', Status::class)
             ->where('item_id', $status->id)
             ->delete();
 

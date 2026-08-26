@@ -7,12 +7,12 @@ use App\Models\GroupPost;
 use App\Models\GroupPostHashtag;
 use App\Util\Lexer\Autolink;
 use App\Util\Lexer\Extractor;
-use DB;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 
 class NewPostPipeline implements ShouldQueue

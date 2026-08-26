@@ -9,11 +9,11 @@ use App\Services\StatusService;
 use App\User;
 use App\Util\ActivityPub\Helpers;
 use App\Util\Localization\Localization;
-use Auth;
-use Cache;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Cache;
+use Illuminate\Support\Facades\View;
 use Illuminate\Support\Str;
-use View;
 
 class SiteController extends Controller
 {

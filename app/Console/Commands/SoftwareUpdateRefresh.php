@@ -3,8 +3,8 @@
 namespace App\Console\Commands;
 
 use App\Services\Internal\SoftwareUpdateService;
-use Cache;
 use Illuminate\Console\Command;
+use Illuminate\Support\Facades\Cache;
 
 class SoftwareUpdateRefresh extends Command
 {

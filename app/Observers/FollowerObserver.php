@@ -5,7 +5,7 @@ namespace App\Observers;
 use App\Follower;
 use App\Jobs\HomeFeedPipeline\FeedFollowPipeline;
 use App\Services\FollowerService;
-use Cache;
+use Illuminate\Support\Facades\Cache;
 
 class FollowerObserver
 {

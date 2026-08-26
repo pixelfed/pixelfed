@@ -45,14 +45,14 @@ use App\User;
 use App\UserDevice;
 use App\UserFilter;
 use App\UserSetting;
-use DB;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
-use Storage;
+use Illuminate\Support\Facades\Storage;
 
 class DeleteAccountPipeline implements ShouldQueue
 {
@@ -138,7 +138,7 @@ class DeleteAccountPipeline implements ShouldQueue
 
         RemoteAuth::whereUserId($user->id)->delete();
 
-        AccountLog::whereItemType(\App\User::class)->whereItemId($user->id)->forceDelete();
+        AccountLog::whereItemType(User::class)->whereItemId($user->id)->forceDelete();
 
         AccountInterstitial::whereUserId($user->id)->delete();
 

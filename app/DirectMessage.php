@@ -2,8 +2,8 @@
 
 namespace App;
 
-use Auth;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Facades\Auth;
 
 class DirectMessage extends Model
 {

@@ -7,8 +7,9 @@ use App\Follower;
 use App\Like;
 use App\Status;
 use App\StatusHashtag;
-use Auth;
+use App\User;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Cache;
 
 class SeasonalController extends Controller
@@ -225,7 +226,7 @@ class SeasonalController extends Controller
 
         $log = AccountLog::firstOrCreate([
             [
-                'item_type' => \App\User::class,
+                'item_type' => User::class,
                 'item_id' => $user->id,
                 'user_id' => $user->id,
                 'action' => 'seasonal.my2020.view',

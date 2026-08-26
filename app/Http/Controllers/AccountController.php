@@ -19,15 +19,15 @@ use App\Services\UserFilterService;
 use App\Transformer\Api\Mastodon\v1\AccountTransformer;
 use App\User;
 use App\UserFilter;
-use Auth;
-use Cache;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Arr;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Cache;
+use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Str;
 use League\Fractal;
 use League\Fractal\Serializer\ArraySerializer;
-use Mail;
 use PragmaRX\Google2FA\Google2FA;
 
 class AccountController extends Controller
