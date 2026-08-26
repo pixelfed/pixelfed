@@ -3,7 +3,7 @@
 namespace App;
 
 use Illuminate\Database\Eloquent\Model;
-use App\Services\UserAgentService;
+use Jenssegers\Agent\Agent;
 
 class UserDevice extends Model
 {
@@ -28,6 +28,9 @@ class UserDevice extends Model
             return 'Unknown';
         }
 
-        return new UserAgentService($this->user_agent);
+        $agent = new Agent;
+        $agent->setUserAgent($this->user_agent);
+
+        return $agent;
     }
 }

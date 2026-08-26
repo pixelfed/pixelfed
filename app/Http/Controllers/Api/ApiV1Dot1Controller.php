@@ -34,7 +34,6 @@ use App\Services\PublicTimelineService;
 use App\Services\PushNotificationService;
 use App\Services\SanitizeService;
 use App\Services\StatusService;
-use App\Services\UserAgentService;
 use App\Services\UserRoleService;
 use App\Services\UserStorageService;
 use App\Status;
@@ -50,6 +49,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\RateLimiter;
 use Illuminate\Support\Str;
+use Jenssegers\Agent\Agent;
 use League\Fractal;
 use League\Fractal\Serializer\ArraySerializer;
 use Mail;
@@ -342,7 +342,7 @@ class ApiV1Dot1Controller extends Controller
         if (config('pixelfed.bouncer.cloud_ips.ban_signups')) {
             abort_if(BouncerService::checkIp($request->ip()), 404);
         }
-        $agent = new UserAgentService;
+        $agent = new Agent;
         $currentIp = $request->ip();
 
         $activity = AccountLog::whereUserId($user->id)
