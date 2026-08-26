@@ -14,9 +14,9 @@ return [
     */
 
     'password' => 'Pasahitzak gutxienez 6 karaktere izan behar ditu, eta konfirmazio pasahitzarekin bat etorri behar da.',
-    'reset'    => 'Pasahitza aldatu da!',
-    'sent'     => 'E-postara pasahitza aldatzeko esteka bidali dizugu.',
-    'token'    => 'Pasahitza aldatzeko "token"-ak ez du balio.',
-    'user'     => 'Ez dugu aurkitu pasahitz hori duen erabiltzailerik.',
+    'reset' => 'Pasahitza aldatu da!',
+    'sent' => 'E-postara pasahitza aldatzeko esteka bidali dizugu.',
+    'token' => 'Pasahitza aldatzeko "token"-ak ez du balio.',
+    'user' => 'Ez dugu aurkitu pasahitz hori duen erabiltzailerik.',
 
 ];

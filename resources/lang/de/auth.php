@@ -13,7 +13,7 @@ return [
     |
     */
 
-    'failed'   => 'Diese Anmeldeinformationen stimmen nicht mit unseren Daten überein.',
+    'failed' => 'Diese Anmeldeinformationen stimmen nicht mit unseren Daten überein.',
     'throttle' => 'Zu viele Anmeldeversuche. Versuche es in :seconds Sekunden erneut.',
 
 ];
