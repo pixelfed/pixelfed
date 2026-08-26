@@ -79,7 +79,7 @@ class SharePipeline implements ShouldQueue
                 'profile_id' => $target->id,
                 'actor_id' => $actor->id,
                 'action' => 'share',
-                'item_type' => 'App\Status',
+                'item_type' => \App\Status::class,
                 'item_id' => $status->reblog_of_id ?? $status->id,
             ]
         );

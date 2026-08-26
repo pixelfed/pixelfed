@@ -37,7 +37,7 @@ class AdminShadowFilterController extends Controller
                     ->pluck('id')
                     ->toArray();
 
-                return $q->where('item_type', 'App\Profile')->whereIn('item_id', $ids);
+                return $q->where('item_type', \App\Profile::class)->whereIn('item_id', $ids);
             })
             ->latest()
             ->paginate(10)

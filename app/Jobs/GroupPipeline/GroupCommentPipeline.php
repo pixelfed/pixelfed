@@ -87,7 +87,7 @@ class GroupCommentPipeline implements ShouldQueue
             $notification->actor_id = $actor->id;
             $notification->action = 'group:comment';
             $notification->item_id = $comment->id;
-            $notification->item_type = "App\Status";
+            $notification->item_type = \App\Status::class;
             $notification->save();
 
             return $notification;

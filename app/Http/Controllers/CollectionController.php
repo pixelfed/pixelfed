@@ -155,7 +155,7 @@ class CollectionController extends Controller
 
         $item = CollectionItem::firstOrCreate([
             'collection_id' => $collection->id,
-            'object_type' => 'App\Status',
+            'object_type' => \App\Status::class,
             'object_id' => $status->id,
         ], [
             'order' => $count,
@@ -294,7 +294,7 @@ class CollectionController extends Controller
             ->findOrFail($postId);
 
         $item = CollectionItem::whereCollectionId($collection->id)
-            ->whereObjectType('App\Status')
+            ->whereObjectType(\App\Status::class)
             ->whereObjectId($status->id)
             ->firstOrFail();
 

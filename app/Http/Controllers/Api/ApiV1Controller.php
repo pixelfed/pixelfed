@@ -558,7 +558,7 @@ class ApiV1Controller extends Controller
         $min_id = $request->min_id;
 
         if (! $max_id && ! $min_id) {
-            $min_id = 1;
+            $min_id = 0;
         }
         $napi = $request->has(self::PF_API_ENTITY_KEY);
 
@@ -585,7 +585,7 @@ class ApiV1Controller extends Controller
                 }
             }
         }
-        $dir = $min_id ? '>' : '<';
+        $dir = $min_id !== null ? '>' : '<';
         $id = $min_id ?? $max_id;
         if ($request->has('page')) {
             $res = DB::table('followers')
@@ -672,7 +672,7 @@ class ApiV1Controller extends Controller
         $min_id = $request->min_id;
 
         if (! $max_id && ! $min_id) {
-            $min_id = 1;
+            $min_id = 0;
         }
 
         $napi = $request->has(self::PF_API_ENTITY_KEY);
@@ -701,7 +701,7 @@ class ApiV1Controller extends Controller
             }
         }
 
-        $dir = $min_id ? '>' : '<';
+        $dir = $min_id !== null ? '>' : '<';
         $id = $min_id ?? $max_id;
         if ($request->has('page')) {
             $res = DB::table('followers')
@@ -804,7 +804,7 @@ class ApiV1Controller extends Controller
         $min_id = $request->min_id;
 
         if (! $max_id && ! $min_id) {
-            $min_id = 1;
+            $min_id = 0;
         }
 
         $pid = $request->user()->profile_id;
@@ -832,7 +832,7 @@ class ApiV1Controller extends Controller
             $visibility = $following ? ['public', 'unlisted', 'private'] : ['public', 'unlisted'];
         }
 
-        $dir = $min_id ? '>' : '<';
+        $dir = $min_id !== null ? '>' : '<';
         $id = $min_id ?? $max_id;
         $res = Status::select(
             'profile_id',
@@ -911,7 +911,7 @@ class ApiV1Controller extends Controller
         $blocked = UserFilter::whereUserId($target->id)
             ->whereFilterType('block')
             ->whereFilterableId($user->profile_id)
-            ->whereFilterableType('App\Profile')
+            ->whereFilterableType(\App\Profile::class)
             ->exists();
 
         if ($blocked == true) {
@@ -1168,7 +1168,7 @@ class ApiV1Controller extends Controller
 
         $blocks = UserFilter::select('filterable_id', 'filterable_type', 'filter_type', 'user_id')
             ->whereUserId($user->profile_id)
-            ->whereFilterableType('App\Profile')
+            ->whereFilterableType(\App\Profile::class)
             ->whereFilterType('block')
             ->orderByDesc('id')
             ->simplePaginate($limit)
@@ -1286,7 +1286,7 @@ class ApiV1Controller extends Controller
         $filter = UserFilter::firstOrCreate([
             'user_id' => $pid,
             'filterable_id' => $profile->id,
-            'filterable_type' => 'App\Profile',
+            'filterable_type' => \App\Profile::class,
             'filter_type' => 'block',
         ]);
 
@@ -1323,7 +1323,7 @@ class ApiV1Controller extends Controller
 
         $filter = UserFilter::whereUserId($pid)
             ->whereFilterableId($profile->id)
-            ->whereFilterableType('App\Profile')
+            ->whereFilterableType(\App\Profile::class)
             ->whereFilterType('block')
             ->first();
 
@@ -2304,7 +2304,7 @@ class ApiV1Controller extends Controller
         }
 
         $mutes = UserFilter::whereUserId($user->profile_id)
-            ->whereFilterableType('App\Profile')
+            ->whereFilterableType(\App\Profile::class)
             ->whereFilterType('mute')
             ->orderByDesc('id')
             ->simplePaginate($limit)
@@ -2388,7 +2388,7 @@ class ApiV1Controller extends Controller
         $filter = UserFilter::firstOrCreate([
             'user_id' => $pid,
             'filterable_id' => $account->id,
-            'filterable_type' => 'App\Profile',
+            'filterable_type' => \App\Profile::class,
             'filter_type' => 'mute',
         ]);
 
@@ -2424,7 +2424,7 @@ class ApiV1Controller extends Controller
 
         $filter = UserFilter::whereUserId($pid)
             ->whereFilterableId($profile->id)
-            ->whereFilterableType('App\Profile')
+            ->whereFilterableType(\App\Profile::class)
             ->whereFilterType('mute')
             ->first();
 
@@ -3970,7 +3970,7 @@ class ApiV1Controller extends Controller
                     $count = $collection->items()->count();
                     $item = CollectionItem::firstOrCreate([
                         'collection_id' => $collection->id,
-                        'object_type' => 'App\Status',
+                        'object_type' => \App\Status::class,
                         'object_id' => $status->id,
                     ], [
                         'order' => $count,
@@ -4751,7 +4751,7 @@ class ApiV1Controller extends Controller
 
     public function accountRemoveFollowById(Request $request, $id)
     {
-        abort_if(! $request->user(), 403);
+        abort_if(! $request->user() || ! $request->user()->token(), 403);
         abort_unless($request->user()->tokenCan('follow'), 403);
 
         $pid = $request->user()->profile_id;

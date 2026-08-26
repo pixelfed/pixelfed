@@ -184,7 +184,7 @@ class InternalApiController extends Controller
                     $ai->user_id = $status->profile->user_id;
                     $ai->type = 'post.cw';
                     $ai->view = 'account.moderation.post.cw';
-                    $ai->item_type = 'App\Status';
+                    $ai->item_type = \App\Status::class;
                     $ai->item_id = $status->id;
                     $ai->has_media = (bool) $media->count();
                     $ai->blurhash = $media->count() ? $media->first()->blurhash : null;
@@ -226,7 +226,7 @@ class InternalApiController extends Controller
                     $ai = AccountInterstitial::whereUserId($status->profile->user_id)
                         ->whereType('post.cw')
                         ->whereItemId($status->id)
-                        ->whereItemType('App\Status')
+                        ->whereItemType(\App\Status::class)
                         ->first();
                     $ai->delete();
                 }
@@ -255,7 +255,7 @@ class InternalApiController extends Controller
                     $ai->user_id = $status->profile->user_id;
                     $ai->type = 'post.unlist';
                     $ai->view = 'account.moderation.post.unlist';
-                    $ai->item_type = 'App\Status';
+                    $ai->item_type = \App\Status::class;
                     $ai->item_id = $status->id;
                     $ai->has_media = (bool) $media->count();
                     $ai->blurhash = $media->count() ? $media->first()->blurhash : null;

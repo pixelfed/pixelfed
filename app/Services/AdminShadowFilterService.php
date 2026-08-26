@@ -11,7 +11,7 @@ class AdminShadowFilterService
 
     public static function queryFilter($name = 'hide_from_public_feeds')
     {
-        return AdminShadowFilter::whereItemType('App\Profile')
+        return AdminShadowFilter::whereItemType(\App\Profile::class)
             ->whereActive(1)
             ->where('hide_from_public_feeds', true)
             ->pluck('item_id')
@@ -26,7 +26,7 @@ class AdminShadowFilterService
         }
 
         return Cache::remember($key, 86400, function () {
-            return AdminShadowFilter::whereItemType('App\Profile')
+            return AdminShadowFilter::whereItemType(\App\Profile::class)
                 ->whereActive(1)
                 ->where('hide_from_public_feeds', true)
                 ->pluck('item_id')

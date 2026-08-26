@@ -30,12 +30,12 @@ class Report extends Model
         $class = $this->object_type;
 
         switch ($class) {
-            case 'App\Status':
+            case \App\Status::class:
                 $column = 'id';
                 break;
 
             default:
-                $class = 'App\Status';
+                $class = \App\Status::class;
                 $column = 'id';
                 break;
         }

@@ -224,7 +224,7 @@ class ProfileController extends Controller
         $pid = Auth::user()->profile->id;
         $blocks = UserFilter::whereUserId($profile->id)
             ->whereFilterType('block')
-            ->whereFilterableType('App\Profile')
+            ->whereFilterableType(\App\Profile::class)
             ->pluck('filterable_id')
             ->toArray();
         if (in_array($pid, $blocks)) {
