@@ -143,7 +143,7 @@ class StoryComposeController extends Controller
             if ($localFs) {
                 $fpath = storage_path('app/'.$path);
 
-                $img = $this->imageManager->read($fpath);
+                $img = $this->imageManager->decodePath($fpath);
                 $quality = config_cache('pixelfed.image_quality');
                 $encoder = in_array($photo->getMimeType(), ['image/jpeg', 'image/jpg']) ?
                     new JpegEncoder($quality) :
@@ -156,7 +156,7 @@ class StoryComposeController extends Controller
 
                 $fileContent = $disk->get($path);
 
-                $img = $this->imageManager->read($fileContent);
+                $img = $this->imageManager->decodeBinary($fileContent);
                 $quality = config_cache('pixelfed.image_quality');
                 $encoder = in_array($photo->getMimeType(), ['image/jpeg', 'image/jpg']) ?
                     new JpegEncoder($quality) :
@@ -215,7 +215,7 @@ class StoryComposeController extends Controller
                 $path = storage_path('app/'.$story->path);
                 $extension = pathinfo($path, PATHINFO_EXTENSION);
 
-                $img = $this->imageManager->read($path);
+                $img = $this->imageManager->decodePath($path);
                 $img = $img->crop($width, $height, $x, $y);
                 $img = $img->coverDown(1080, 1920);
 
@@ -233,7 +233,7 @@ class StoryComposeController extends Controller
 
                 $fileContent = $disk->get($story->path);
 
-                $img = $this->imageManager->read($fileContent);
+                $img = $this->imageManager->decodeBinary($fileContent);
                 $img = $img->crop($width, $height, $x, $y);
                 $img = $img->coverDown(1080, 1920);
 

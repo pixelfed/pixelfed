@@ -34,7 +34,7 @@ class ImageDriverManager
             self::getDriverClass(),
             autoOrientation: (bool) ($options['autoOrientation'] ?? true),
             decodeAnimation: (bool) ($options['decodeAnimation'] ?? true),
-            blendingColor: (string) ($options['blendingColor'] ?? 'ffffff'),
+            backgroundColor: (string) ($options['backgroundColor'] ?? 'ffffff'),
             strip: (bool) ($options['strip'] ?? true)
         );
     }
