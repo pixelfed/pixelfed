@@ -50,6 +50,7 @@ use App\Util\ActivityPub\Validator\MoveValidator;
 use App\Util\ActivityPub\Validator\RejectValidator;
 use App\Util\ActivityPub\Validator\UpdatePersonValidator;
 use Cache;
+use Illuminate\Support\Arr;
 use Illuminate\Support\Facades\Bus;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Str;
@@ -421,7 +422,7 @@ class Inbox
         }
         $actor = $this->actorFirstOrCreate($this->payload['actor']);
         $profile = Profile::whereNull('domain')
-            ->whereUsername(array_last(explode('/', $to[0])))
+            ->whereUsername(Arr::last(explode('/', $to[0])))
             ->firstOrFail();
 
         if (! $actor || in_array($actor->id, $profile->blockedIds()->toArray())) {
@@ -536,7 +537,7 @@ class Inbox
 
         $nf = UserFilter::whereUserId($profile->id)
             ->whereFilterableId($actor->id)
-            ->whereFilterableType(\App\Profile::class)
+            ->whereFilterableType(Profile::class)
             ->whereFilterType('dm.mute')
             ->exists();
 
@@ -546,7 +547,7 @@ class Inbox
             $notification->actor_id = $actor->id;
             $notification->action = 'dm';
             $notification->item_id = $dm->id;
-            $notification->item_type = \App\DirectMessage::class;
+            $notification->item_type = DirectMessage::class;
             $notification->save();
 
             if (NotificationAppGatewayService::enabled()) {
@@ -675,7 +676,7 @@ class Inbox
                 'actor_id' => $actor->id,
                 'action' => 'share',
                 'item_id' => $parent->id,
-                'item_type' => \App\Status::class,
+                'item_type' => Status::class,
             ]
         );
 
@@ -813,7 +814,7 @@ class Inbox
                     }
                     $notifications = Notification::whereActorId($status->profile_id)
                         ->whereItemId($status->id)
-                        ->whereItemType(\App\Status::class)
+                        ->whereItemType(Status::class)
                         ->get();
                     foreach ($notifications as $notification) {
                         $notification->forceDelete();
@@ -948,7 +949,7 @@ class Inbox
                     ->whereActorId($profile->id)
                     ->whereAction('share')
                     ->whereItemId($status->id)
-                    ->whereItemType(\App\Status::class)
+                    ->whereItemType(Status::class)
                     ->get();
                 foreach ($notifications as $notification) {
                     $notification->forceDelete();
@@ -976,7 +977,7 @@ class Inbox
                     ->whereActorId($profile->id)
                     ->whereAction('follow')
                     ->whereItemId($following->id)
-                    ->whereItemType(\App\Profile::class)
+                    ->whereItemType(Profile::class)
                     ->get();
                 foreach ($notifications as $notification) {
                     $notification->forceDelete();
@@ -1010,7 +1011,7 @@ class Inbox
                     ->whereActorId($profile->id)
                     ->whereAction('like')
                     ->whereItemId($status->id)
-                    ->whereItemType(\App\Status::class)
+                    ->whereItemType(Status::class)
                     ->get();
 
                 foreach ($notifications as $notification) {
@@ -1195,7 +1196,7 @@ class Inbox
         $n->profile_id = $dm->to_id;
         $n->actor_id = $dm->from_id;
         $n->item_id = $dm->id;
-        $n->item_type = \App\DirectMessage::class;
+        $n->item_type = DirectMessage::class;
         $n->action = 'story:react';
         $n->save();
     }
@@ -1314,7 +1315,7 @@ class Inbox
         $n->profile_id = $dm->to_id;
         $n->actor_id = $dm->from_id;
         $n->item_id = $dm->id;
-        $n->item_type = \App\DirectMessage::class;
+        $n->item_type = DirectMessage::class;
         $n->action = 'story:comment';
         $n->save();
     }

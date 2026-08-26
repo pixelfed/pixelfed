@@ -41,7 +41,7 @@ class StoryApiV1Controller extends Controller
         $pid = $request->user()->profile_id;
 
         if (config('database.default') == 'pgsql') {
-            $s = Cache::remember(self::RECENT_KEY . $pid, self::RECENT_TTL, function () use ($pid) {
+            $s = Cache::remember(self::RECENT_KEY.$pid, self::RECENT_TTL, function () use ($pid) {
                 return Story::select('stories.*', 'followers.following_id')
                     ->leftJoin('followers', 'followers.following_id', 'stories.profile_id')
                     ->where('followers.profile_id', $pid)
@@ -59,7 +59,7 @@ class StoryApiV1Controller extends Controller
                     ->unique('profile_id');
             });
         } else {
-            $s = Cache::remember(self::RECENT_KEY . $pid, self::RECENT_TTL, function () use ($pid) {
+            $s = Cache::remember(self::RECENT_KEY.$pid, self::RECENT_TTL, function () use ($pid) {
                 return Story::select('stories.*', 'followers.following_id')
                     ->leftJoin('followers', 'followers.following_id', 'stories.profile_id')
                     ->where('followers.profile_id', $pid)
@@ -93,7 +93,7 @@ class StoryApiV1Controller extends Controller
                     url("/i/rs/{$profile['id']}");
 
                 return [
-                    'id' => 'pfs:' . $profile['id'],
+                    'id' => 'pfs:'.$profile['id'],
                     'user' => [
                         'id' => (string) $profile['id'],
                         'username' => $profile['username'],
@@ -154,7 +154,7 @@ class StoryApiV1Controller extends Controller
         $pid = $request->user()->profile_id;
 
         if (config('database.default') == 'pgsql') {
-            $s = Cache::remember(self::RECENT_KEY . $pid, self::RECENT_TTL, function () use ($pid) {
+            $s = Cache::remember(self::RECENT_KEY.$pid, self::RECENT_TTL, function () use ($pid) {
                 return Story::select('stories.*', 'followers.following_id')
                     ->leftJoin('followers', 'followers.following_id', 'stories.profile_id')
                     ->where('followers.profile_id', $pid)
@@ -172,7 +172,7 @@ class StoryApiV1Controller extends Controller
                     ->unique('profile_id');
             });
         } else {
-            $s = Cache::remember(self::RECENT_KEY . $pid, self::RECENT_TTL, function () use ($pid) {
+            $s = Cache::remember(self::RECENT_KEY.$pid, self::RECENT_TTL, function () use ($pid) {
                 return Story::select('stories.*', 'followers.following_id')
                     ->leftJoin('followers', 'followers.following_id', 'stories.profile_id')
                     ->where('followers.profile_id', $pid)
@@ -206,7 +206,7 @@ class StoryApiV1Controller extends Controller
                     url("/i/rs/{$profile['id']}");
 
                 return [
-                    'id' => 'pfs:' . $profile['id'],
+                    'id' => 'pfs:'.$profile['id'],
                     'user' => [
                         'id' => (string) $profile['id'],
                         'username' => $profile['username'],
@@ -269,7 +269,7 @@ class StoryApiV1Controller extends Controller
             'file' => [
                 'required',
                 'mimetypes:image/jpeg,image/jpg,image/png,video/mp4',
-                'max:' . config_cache('pixelfed.max_photo_size'),
+                'max:'.config_cache('pixelfed.max_photo_size'),
             ],
             'duration' => 'sometimes|integer|min:0|max:30',
         ]);
@@ -296,7 +296,7 @@ class StoryApiV1Controller extends Controller
         $story->path = $path;
         $story->local = true;
         $story->size = $photo->getSize();
-        $story->bearcap_token = str_random(64);
+        $story->bearcap_token = Str::random(64);
         $story->expires_at = now()->addMinutes(1440);
         $story->save();
 
@@ -306,7 +306,7 @@ class StoryApiV1Controller extends Controller
             'code' => 200,
             'msg' => 'Successfully added',
             'media_id' => (string) $story->id,
-            'media_url' => url(Storage::url($url)) . '?v=' . time(),
+            'media_url' => url(Storage::url($url)).'?v='.time(),
             'media_type' => $story->type,
         ];
 
@@ -420,7 +420,7 @@ class StoryApiV1Controller extends Controller
         if ($count >= Story::MAX_PER_DAY) {
             return response()->json([
                 'code' => 418,
-                'error' => 'You’ve reached your daily limit of ' . Story::MAX_PER_DAY . ' Stories.',
+                'error' => 'You’ve reached your daily limit of '.Story::MAX_PER_DAY.' Stories.',
             ], 418, [], JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES);
         }
 
@@ -578,7 +578,7 @@ class StoryApiV1Controller extends Controller
 
         $rows = DB::table('profiles as p')
             ->select('p.id', 'p.username')
-            ->where('p.username', 'like', $q . '%')
+            ->where('p.username', 'like', $q.'%')
             ->whereExists(function ($sub) use ($pid) {
                 $sub->select(DB::raw(1))
                     ->from('followers as f')
@@ -658,7 +658,7 @@ class StoryApiV1Controller extends Controller
             if ($story->local == false) {
                 StoryViewDeliver::dispatch($story, $authed)->onQueue('story');
             }
-            Cache::forget('stories:recent:by_id:' . $pid);
+            Cache::forget('stories:recent:by_id:'.$pid);
             StoryService::addSeen($pid, $story->id);
         }
 
@@ -726,7 +726,7 @@ class StoryApiV1Controller extends Controller
             $n->profile_id = $dm->to_id;
             $n->actor_id = $dm->from_id;
             $n->item_id = $dm->id;
-            $n->item_type = \App\DirectMessage::class;
+            $n->item_type = DirectMessage::class;
             $n->action = 'story:comment';
             $n->save();
         } else {
@@ -753,7 +753,7 @@ class StoryApiV1Controller extends Controller
         }
 
         $storagePath = MediaPathService::story($user->profile);
-        $path = $photo->storePubliclyAs($storagePath, Str::random(random_int(2, 12)) . '_' . Str::random(random_int(32, 35)) . '_' . Str::random(random_int(1, 14)) . '.' . $photo->extension());
+        $path = $photo->storePubliclyAs($storagePath, Str::random(random_int(2, 12)).'_'.Str::random(random_int(32, 35)).'_'.Str::random(random_int(1, 14)).'.'.$photo->extension());
 
         return $path;
     }

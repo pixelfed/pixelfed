@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "c6e65b6fc21bd97e1f3e7533ec4bde30",
+    "content-hash": "3f9605bcb018445854695b1622c79767",
     "packages": [
         {
             "name": "aws/aws-crt-php",
@@ -2456,63 +2456,6 @@
                 "source": "https://github.com/laravel/framework"
             },
             "time": "2026-08-25T14:18:36+00:00"
-        },
-        {
-            "name": "laravel/helpers",
-            "version": "v1.8.3",
-            "source": {
-                "type": "git",
-                "url": "https://github.com/laravel/helpers.git",
-                "reference": "5915be977c7cc05fe2498d561b8c026ee56567dd"
-            },
-            "dist": {
-                "type": "zip",
-                "url": "https://api.github.com/repos/laravel/helpers/zipball/5915be977c7cc05fe2498d561b8c026ee56567dd",
-                "reference": "5915be977c7cc05fe2498d561b8c026ee56567dd",
-                "shasum": ""
-            },
-            "require": {
-                "illuminate/support": "~5.8.0|^6.0|^7.0|^8.0|^9.0|^10.0|^11.0|^12.0|^13.0",
-                "php": "^7.2.0|^8.0"
-            },
-            "require-dev": {
-                "phpstan/phpstan": "^1.10",
-                "phpunit/phpunit": "^7.0|^8.0|^9.0|^10.0|^11.0|^12.0"
-            },
-            "type": "library",
-            "extra": {
-                "branch-alias": {
-                    "dev-master": "1.x-dev"
-                }
-            },
-            "autoload": {
-                "files": [
-                    "src/helpers.php"
-                ]
-            },
-            "notification-url": "https://packagist.org/downloads/",
-            "license": [
-                "MIT"
-            ],
-            "authors": [
-                {
-                    "name": "Taylor Otwell",
-                    "email": "taylor@laravel.com"
-                },
-                {
-                    "name": "Dries Vints",
-                    "email": "dries@laravel.com"
-                }
-            ],
-            "description": "Provides backwards compatibility for helpers in the latest Laravel release.",
-            "keywords": [
-                "helpers",
-                "laravel"
-            ],
-            "support": {
-                "source": "https://github.com/laravel/helpers/tree/v1.8.3"
-            },
-            "time": "2026-03-17T16:40:11+00:00"
         },
         {
             "name": "laravel/horizon",

@@ -12,6 +12,7 @@ use App\User;
 use Illuminate\Auth\Events\Registered;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Str;
 
 class ParentalControlsController extends Controller
 {
@@ -94,7 +95,7 @@ class ParentalControlsController extends Controller
         $pc = new ParentalControls;
         $pc->parent_id = $request->user()->id;
         $pc->email = $request->input('email');
-        $pc->verify_code = str_random(32);
+        $pc->verify_code = Str::random(32);
         $pc->permissions = $state;
         $pc->save();
 
