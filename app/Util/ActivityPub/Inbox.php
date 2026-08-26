@@ -50,6 +50,7 @@ use App\Util\ActivityPub\Validator\MoveValidator;
 use App\Util\ActivityPub\Validator\RejectValidator;
 use App\Util\ActivityPub\Validator\UpdatePersonValidator;
 use Cache;
+use Illuminate\Support\Arr;
 use Illuminate\Support\Facades\Bus;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Str;
@@ -76,7 +77,6 @@ class Inbox
     public function handle()
     {
         $this->handleVerb();
-
     }
 
     public function handleVerb()
@@ -174,7 +174,8 @@ class Inbox
     {
         $activity = $this->payload['object'];
 
-        if (isset($activity['inReplyTo']) &&
+        if (
+            isset($activity['inReplyTo']) &&
             ! empty($activity['inReplyTo']) &&
             Helpers::validateUrl($activity['inReplyTo'])
         ) {
@@ -219,7 +220,6 @@ class Inbox
                 StoryFetch::dispatch($this->payload);
                 break;
         }
-
     }
 
     public function handleCreateActivity()
@@ -253,8 +253,12 @@ class Inbox
         $cc = isset($activity['cc']) ? $activity['cc'] : [];
 
         // JSON-LD allows for arrays with one element to be represented with just the value alone
-        if (is_string($to)) $to = [$to];
-        if (is_string($cc)) $cc = [$cc];
+        if (is_string($to)) {
+            $to = [$to];
+        }
+        if (is_string($cc)) {
+            $cc = [$cc];
+        }
 
         if ($activity['type'] == 'Question') {
             // $this->handlePollCreate();
@@ -262,7 +266,8 @@ class Inbox
             return;
         }
 
-        if (is_array($to) &&
+        if (
+            is_array($to) &&
             is_array($cc) &&
             count($to) == 1 &&
             count($cc) == 0 &&
@@ -275,14 +280,12 @@ class Inbox
 
         if ($activity['type'] == 'Note' && ! empty($activity['inReplyTo'])) {
             $this->handleNoteReply();
-
         } elseif ($activity['type'] == 'Note' && ! empty($activity['attachment'])) {
             if (! $this->verifyNoteAttachment()) {
                 return;
             }
             $this->handleNoteCreate();
         }
-
     }
 
     public function handleNoteReply()
@@ -297,7 +300,6 @@ class Inbox
         $url = isset($activity['url']) ? $activity['url'] : $activity['id'];
 
         Helpers::statusFirstOrFetch($url, true);
-
     }
 
     public function handlePollCreate()
@@ -309,7 +311,6 @@ class Inbox
         }
         $url = isset($activity['url']) ? $activity['url'] : $activity['id'];
         Helpers::statusFirstOrFetch($url);
-
     }
 
     public function handleNoteCreate()
@@ -320,7 +321,8 @@ class Inbox
             return;
         }
 
-        if (isset($activity['inReplyTo']) &&
+        if (
+            isset($activity['inReplyTo']) &&
             isset($activity['name']) &&
             ! isset($activity['content']) &&
             ! isset($activity['attachment']) &&
@@ -356,7 +358,6 @@ class Inbox
             $actor,
             $activity
         );
-
     }
 
     public function handlePollVote()
@@ -410,7 +411,6 @@ class Inbox
         $poll->save();
 
         PollService::del($status->id);
-
     }
 
     public function handleDirectMessage()
@@ -422,7 +422,7 @@ class Inbox
         }
         $actor = $this->actorFirstOrCreate($this->payload['actor']);
         $profile = Profile::whereNull('domain')
-            ->whereUsername(array_last(explode('/', $to[0])))
+            ->whereUsername(Arr::last(explode('/', $to[0])))
             ->firstOrFail();
 
         if (! $actor || in_array($actor->id, $profile->blockedIds()->toArray())) {
@@ -537,7 +537,7 @@ class Inbox
 
         $nf = UserFilter::whereUserId($profile->id)
             ->whereFilterableId($actor->id)
-            ->whereFilterableType('App\Profile')
+            ->whereFilterableType(Profile::class)
             ->whereFilterType('dm.mute')
             ->exists();
 
@@ -547,7 +547,7 @@ class Inbox
             $notification->actor_id = $actor->id;
             $notification->action = 'dm';
             $notification->item_id = $dm->id;
-            $notification->item_type = "App\DirectMessage";
+            $notification->item_type = DirectMessage::class;
             $notification->save();
 
             if (NotificationAppGatewayService::enabled()) {
@@ -559,7 +559,6 @@ class Inbox
                 }
             }
         }
-
     }
 
     public function handleFollowActivity()
@@ -567,11 +566,11 @@ class Inbox
         $actor = $this->actorFirstOrCreate($this->payload['actor']);
         $target = $this->actorFirstOrCreate($this->payload['object']);
 
-        if ($target->moved_to_profile_id) {
-            return;
-        }        
-        
         if (! $actor || ! $target) {
+            return;
+        }
+
+        if ($target && $target->moved_to_profile_id) {
             return;
         }
 
@@ -638,7 +637,6 @@ class Inbox
         RelationshipService::refresh($actor->id, $target->id);
         AccountService::del($actor->id);
         AccountService::del($target->id);
-
     }
 
     public function handleAnnounceActivity()
@@ -678,7 +676,7 @@ class Inbox
                 'actor_id' => $actor->id,
                 'action' => 'share',
                 'item_id' => $parent->id,
-                'item_type' => 'App\Status',
+                'item_type' => Status::class,
             ]
         );
 
@@ -686,7 +684,6 @@ class Inbox
         $parent->save();
 
         ReblogService::addPostReblog($parent->profile_id, $status->id);
-
     }
 
     public function handleAcceptActivity()
@@ -817,7 +814,7 @@ class Inbox
                     }
                     $notifications = Notification::whereActorId($status->profile_id)
                         ->whereItemId($status->id)
-                        ->whereItemType('App\Status')
+                        ->whereItemType(Status::class)
                         ->get();
                     foreach ($notifications as $notification) {
                         $notification->forceDelete();
@@ -845,7 +842,6 @@ class Inbox
                     return;
             }
         }
-
     }
 
     public function handleLikeActivity()
@@ -885,7 +881,6 @@ class Inbox
             $status->save();
             LikePipeline::dispatch($like);
         }
-
     }
 
     public function handleRejectActivity()
@@ -901,7 +896,6 @@ class Inbox
 
         FollowRequest::whereFollowerId($profile->id)->whereFollowingId($actor->id)->forceDelete();
         RelationshipService::refresh($actor->id, $profile->id);
-
     }
 
     public function handleUndoActivity()
@@ -955,7 +949,7 @@ class Inbox
                     ->whereActorId($profile->id)
                     ->whereAction('share')
                     ->whereItemId($status->id)
-                    ->whereItemType('App\Status')
+                    ->whereItemType(Status::class)
                     ->get();
                 foreach ($notifications as $notification) {
                     $notification->forceDelete();
@@ -983,7 +977,7 @@ class Inbox
                     ->whereActorId($profile->id)
                     ->whereAction('follow')
                     ->whereItemId($following->id)
-                    ->whereItemType('App\Profile')
+                    ->whereItemType(Profile::class)
                     ->get();
                 foreach ($notifications as $notification) {
                     $notification->forceDelete();
@@ -1017,7 +1011,7 @@ class Inbox
                     ->whereActorId($profile->id)
                     ->whereAction('like')
                     ->whereItemId($status->id)
-                    ->whereItemType('App\Status')
+                    ->whereItemType(Status::class)
                     ->get();
 
                 foreach ($notifications as $notification) {
@@ -1086,7 +1080,6 @@ class Inbox
             $story->view_count++;
             $story->save();
         }
-
     }
 
     public function handleStoryReactionActivity()
@@ -1203,10 +1196,9 @@ class Inbox
         $n->profile_id = $dm->to_id;
         $n->actor_id = $dm->from_id;
         $n->item_id = $dm->id;
-        $n->item_type = 'App\DirectMessage';
+        $n->item_type = DirectMessage::class;
         $n->action = 'story:react';
         $n->save();
-
     }
 
     public function handleStoryReplyActivity()
@@ -1323,10 +1315,9 @@ class Inbox
         $n->profile_id = $dm->to_id;
         $n->actor_id = $dm->from_id;
         $n->item_id = $dm->id;
-        $n->item_type = 'App\DirectMessage';
+        $n->item_type = DirectMessage::class;
         $n->action = 'story:comment';
         $n->save();
-
     }
 
     public function handleFlagActivity()
@@ -1425,7 +1416,6 @@ class Inbox
             'object' => $object,
         ];
         $report->save();
-
     }
 
     public function handleUpdateActivity()

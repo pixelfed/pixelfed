@@ -95,7 +95,7 @@ class UnfollowPipeline implements ShouldQueue
                 ->whereAction('follow')
                 ->whereActorId($actor)
                 ->whereItemId($target)
-                ->whereItemType('App\Profile')
+                ->whereItemType(\App\Profile::class)
                 ->get()
                 ->each(function ($n) {
                     NotificationService::del($n->profile_id, $n->id);

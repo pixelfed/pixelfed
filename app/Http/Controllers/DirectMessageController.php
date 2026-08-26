@@ -25,6 +25,7 @@ use App\UserFilter;
 use App\Util\ActivityPub\Helpers;
 use App\Util\Lexer\Autolink;
 use Illuminate\Http\Request;
+use Illuminate\Support\Arr;
 use Illuminate\Support\Str;
 
 class DirectMessageController extends Controller
@@ -208,7 +209,7 @@ class DirectMessageController extends Controller
 
         $nf = UserFilter::whereUserId($recipient->id)
             ->whereFilterableId($profile->id)
-            ->whereFilterableType('App\Profile')
+            ->whereFilterableType(Profile::class)
             ->whereFilterType('dm.mute')
             ->exists();
 
@@ -218,7 +219,7 @@ class DirectMessageController extends Controller
             $notification->actor_id = $profile->id;
             $notification->action = 'dm';
             $notification->item_id = $dm->id;
-            $notification->item_type = "App\DirectMessage";
+            $notification->item_type = DirectMessage::class;
             $notification->save();
         }
 
@@ -508,7 +509,7 @@ class DirectMessageController extends Controller
         $dm->to_id = $recipient->id;
         $dm->from_id = $profile->id;
         $dm->status_id = $status->id;
-        $dm->type = array_first(explode('/', $media->mime)) == 'video' ? 'video' : 'photo';
+        $dm->type = Arr::first(explode('/', $media->mime)) == 'video' ? 'video' : 'photo';
         $dm->is_hidden = $hidden;
         $dm->save();
 
@@ -574,7 +575,7 @@ class DirectMessageController extends Controller
             $q = mb_substr($q, 1);
         }
 
-        $blocked = UserFilter::whereFilterableType('App\Profile')
+        $blocked = UserFilter::whereFilterableType(Profile::class)
             ->whereFilterType('block')
             ->whereFilterableId($request->user()->profile_id)
             ->pluck('user_id');
@@ -654,7 +655,7 @@ class DirectMessageController extends Controller
             [
                 'user_id' => $pid,
                 'filterable_id' => $fid,
-                'filterable_type' => 'App\Profile',
+                'filterable_type' => Profile::class,
                 'filter_type' => 'dm.mute',
             ]
         );
@@ -676,7 +677,7 @@ class DirectMessageController extends Controller
 
         $f = UserFilter::whereUserId($pid)
             ->whereFilterableId($fid)
-            ->whereFilterableType('App\Profile')
+            ->whereFilterableType(Profile::class)
             ->whereFilterType('dm.mute')
             ->firstOrFail();
 

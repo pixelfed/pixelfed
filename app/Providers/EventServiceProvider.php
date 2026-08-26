@@ -2,8 +2,11 @@
 
 namespace App\Providers;
 
+use App\Listeners\AuthLogin;
+use App\Listeners\LogFailedLogin;
+use Illuminate\Auth\Events\Failed;
+use Illuminate\Auth\Events\Login;
 use Illuminate\Foundation\Support\Providers\EventServiceProvider as ServiceProvider;
-use Illuminate\Support\Facades\Event;
 
 class EventServiceProvider extends ServiceProvider
 {
@@ -13,11 +16,11 @@ class EventServiceProvider extends ServiceProvider
      * @var array
      */
     protected $listen = [
-        'Illuminate\Auth\Events\Login' => [
-            'App\Listeners\AuthLogin',
+        Login::class => [
+            AuthLogin::class,
         ],
-        'Illuminate\Auth\Events\Failed' => [
-            'App\Listeners\LogFailedLogin',
+        Failed::class => [
+            LogFailedLogin::class,
         ],
     ];
 
@@ -29,7 +32,5 @@ class EventServiceProvider extends ServiceProvider
     public function boot()
     {
         parent::boot();
-
-        //
     }
 }

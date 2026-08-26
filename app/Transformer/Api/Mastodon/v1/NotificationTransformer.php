@@ -30,7 +30,7 @@ class NotificationTransformer extends Fractal\TransformerAbstract
     public function includeStatus(Notification $notification)
     {
         $item = $notification;
-        if ($item->item_id && $item->item_type == 'App\Status') {
+        if ($item->item_id && $item->item_type == \App\Status::class) {
             $status = Status::with('media')->find($item->item_id);
             if ($status) {
                 return $this->item($status, new StatusTransformer);

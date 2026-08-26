@@ -18,6 +18,7 @@ use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Str;
 
 class StatusTagsPipeline implements ShouldQueue
 {
@@ -94,9 +95,9 @@ class StatusTagsPipeline implements ShouldQueue
 
                 if (config('database.default') === 'pgsql') {
                     $hashtag = DB::transaction(function () use ($name) {
-                        $slug = str_slug($name, '-', false);
+                        $slug = Str::slug($name, '-', false);
 
-                        // Use slug for lookup (case-insensitive via str_slug normalization)
+                        // Use slug for lookup (case-insensitive via Str::slug normalization)
                         $existing = Hashtag::where('slug', $slug)
                             ->lockForUpdate()
                             ->first();
@@ -112,7 +113,7 @@ class StatusTagsPipeline implements ShouldQueue
                     });
                 } else {
                     $hashtag = DB::transaction(function () use ($name) {
-                        $baseSlug = str_slug($name, '-', false);
+                        $baseSlug = Str::slug($name, '-', false);
                         $slug = $baseSlug;
                         $counter = 1;
 

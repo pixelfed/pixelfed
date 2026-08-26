@@ -150,10 +150,10 @@ class ReportController extends Controller
             case 'post':
             case 'comment':
                 $object = Status::findOrFail($object_id);
-                $object_type = 'App\Status';
+                $object_type = \App\Status::class;
                 $exists = Report::whereUserId(Auth::id())
                     ->whereObjectId($object->id)
-                    ->whereObjectType('App\Status')
+                    ->whereObjectType(\App\Status::class)
                     ->count();
 
                 $rpid = $object->profile_id;
@@ -161,20 +161,20 @@ class ReportController extends Controller
 
             case 'user':
                 $object = Profile::findOrFail($object_id);
-                $object_type = 'App\Profile';
+                $object_type = \App\Profile::class;
                 $exists = Report::whereUserId(Auth::id())
                     ->whereObjectId($object->id)
-                    ->whereObjectType('App\Profile')
+                    ->whereObjectType(\App\Profile::class)
                     ->count();
                 $rpid = $object->id;
                 break;
 
             case 'group':
                 $object = Group::findOrFail($object_id);
-                $object_type = 'App\Models\Group';
+                $object_type = \App\Models\Group::class;
                 $exists = Report::whereUserId(Auth::id())
                     ->whereObjectId($object->id)
-                    ->whereObjectType('App\Models\Group')
+                    ->whereObjectType(\App\Models\Group::class)
                     ->count();
                 $rpid = $object->profile_id;
                 break;

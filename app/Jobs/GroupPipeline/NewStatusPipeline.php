@@ -18,6 +18,7 @@ use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
+use Illuminate\Support\Str;
 
 class NewStatusPipeline implements ShouldQueue
 {
@@ -75,7 +76,7 @@ class NewStatusPipeline implements ShouldQueue
             }
 
             DB::transaction(function () use ($status, $tag, $gp) {
-                $slug = str_slug($tag, '-', false);
+                $slug = Str::slug($tag, '-', false);
                 $hashtag = Hashtag::firstOrCreate(
                     ['name' => $tag, 'slug' => $slug]
                 );

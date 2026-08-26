@@ -72,7 +72,7 @@ class TimelineController extends Controller
         });
 
         $filtered = UserFilter::whereUserId($user->profile_id)
-            ->whereFilterableType('App\Profile')
+            ->whereFilterableType(\App\Profile::class)
             ->whereIn('filter_type', ['mute', 'block'])
             ->pluck('filterable_id')->toArray();
 

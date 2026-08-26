@@ -88,7 +88,7 @@ class MentionPipeline implements ShouldQueue
             ->whereActorId($actor->id)
             ->whereIn('action', ['mention', 'comment'])
             ->whereItemId($status->id)
-            ->whereItemType('App\Status')
+            ->whereItemType(\App\Status::class)
             ->count();
 
         if ($actor->id === $target || $exists !== 0) {
@@ -100,7 +100,7 @@ class MentionPipeline implements ShouldQueue
                 'profile_id' => $target,
                 'actor_id' => $actor->id,
                 'action' => 'mention',
-                'item_type' => 'App\Status',
+                'item_type' => \App\Status::class,
                 'item_id' => $status->id,
             ]
         );

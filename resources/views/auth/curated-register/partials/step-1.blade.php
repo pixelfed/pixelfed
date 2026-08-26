@@ -1,5 +1,5 @@
 @php
-$id = str_random(14);
+$id = Str::random(14);
 @endphp
 <h1 class="text-center">Before you continue.</h1>
 @if(config_cache('app.rules') && strlen(config_cache('app.rules')) > 5)
