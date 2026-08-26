@@ -70,7 +70,6 @@ services:
 
     volumes:
       - ./storage:/var/www/html/storage
-      - ./bootstrap/cache:/var/www/html/bootstrap/cache
     depends_on:
       - db
       - redis
@@ -101,7 +100,6 @@ services:
       PHP_OPCACHE_ENABLE: "1"
     volumes:
       - ./storage:/var/www/html/storage
-      - ./bootstrap/cache:/var/www/html/bootstrap/cache
     depends_on:
       - db
       - redis
@@ -138,7 +136,6 @@ services:
       PHP_OPCACHE_ENABLE: "1"
     volumes:
       - ./storage:/var/www/html/storage
-      - ./bootstrap/cache:/var/www/html/bootstrap/cache
     depends_on:
       - db
       - redis
