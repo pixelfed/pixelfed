@@ -50,7 +50,8 @@
 
                             <!-- Secret -->
                             <td style="vertical-align: middle;">
-                                <code>{{ client.secret }}</code>
+                                <code v-if="client.plain_secret">{{ client.plain_secret }}</code>
+                                <span v-else class="text-muted font-italic">Hidden (only shown at creation)</span>
                             </td>
 
                             <!-- Edit Button -->
@@ -69,6 +70,48 @@
                         </tr>
                     </tbody>
                 </table>
+            </div>
+        </div>
+
+        <!-- Client Secret Modal -->
+        <div class="modal fade" id="modal-client-secret" tabindex="-1" role="dialog">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h4 class="modal-title">
+                            Client Created
+                        </h4>
+
+                        <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                    </div>
+
+                    <div class="modal-body">
+                        <div class="alert alert-warning">
+                            <strong>Important:</strong> Copy your client secret now. It will not be shown again.
+                        </div>
+
+                        <div class="form-group">
+                            <label class="font-weight-bold">Client ID</label>
+                            <input type="text" class="form-control" :value="newClientId" readonly>
+                        </div>
+
+                        <div class="form-group">
+                            <label class="font-weight-bold">Client Secret</label>
+                            <div class="input-group">
+                                <input type="text" class="form-control" :value="newClientSecret" readonly ref="secretInput">
+                                <div class="input-group-append">
+                                    <button class="btn btn-outline-secondary" type="button" @click="copySecret">
+                                        Copy
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-primary font-weight-bold" data-dismiss="modal">Done</button>
+                    </div>
+                </div>
             </div>
         </div>
 
@@ -263,6 +306,9 @@
             return {
                 clients: [],
 
+                newClientId: '',
+                newClientSecret: '',
+
                 createForm: {
                     errors: [],
                     name: '',
@@ -363,6 +409,12 @@
 
                 axios[method](uri, form)
                     .then(response => {
+                        // If this was a creation (POST), show the secret to the user
+                        if (method === 'post' && response.data.plain_secret) {
+                            this.newClientId = response.data.id;
+                            this.newClientSecret = response.data.plain_secret;
+                        }
+
                         this.getClients();
 
                         form.name = '';
@@ -370,6 +422,13 @@
                         form.errors = [];
 
                         $(modal).modal('hide');
+
+                        // Show the secret modal after creation
+                        if (method === 'post' && this.newClientSecret) {
+                            this.$nextTick(() => {
+                                $('#modal-client-secret').modal('show');
+                            });
+                        }
                     })
                     .catch(error => {
                         if (typeof error.response.data === 'object') {
@@ -378,6 +437,18 @@
                             form.errors = ['Something went wrong. Please try again.'];
                         }
                     });
+            },
+
+            /**
+             * Copy the client secret to clipboard.
+             */
+            copySecret() {
+                if (navigator.clipboard) {
+                    navigator.clipboard.writeText(this.newClientSecret);
+                } else {
+                    this.$refs.secretInput.select();
+                    document.execCommand('copy');
+                }
             },
 
             /**
