@@ -1,5 +1,4 @@
 name: Build Tagged Release Image
-
 # Fires only when a tag matching semver-with-v-prefix is pushed, e.g. v0.12.9
 # (matches https://github.com/OWNER/REPO/tags style version tags).
 # A push to main/staging does NOT trigger this — only an actual tag push does.
@@ -7,6 +6,10 @@ on:
   push:
     tags:
       - 'v*.*.*'
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: false
 
 permissions:
   contents: read
@@ -18,6 +21,7 @@ env:
 jobs:
   build-and-push:
     runs-on: ubuntu-latest
+    timeout-minutes: 30
     steps:
       - name: Checkout tag
         uses: actions/checkout@v4
@@ -31,18 +35,19 @@ jobs:
         run: |
           TAG_NAME="${{ github.ref_name }}"
           echo "tag_name=${TAG_NAME}" >> "$GITHUB_OUTPUT"
-
           # GitHub's "latest release" API endpoint automatically excludes
           # drafts and pre-releases, so this is a more reliable check than
           # just pattern-matching the tag string for '-rc'/'-beta' etc.
           LATEST=$(gh api "repos/${{ github.repository }}/releases/latest" --jq .tag_name 2>/dev/null || echo "")
-
           if [ "$TAG_NAME" = "$LATEST" ]; then
             echo "is_latest=true" >> "$GITHUB_OUTPUT"
           else
             echo "is_latest=false" >> "$GITHUB_OUTPUT"
           fi
           echo "Tag: $TAG_NAME | Latest published release: ${LATEST:-<none>} | is_latest=$( [ "$TAG_NAME" = "$LATEST" ] && echo true || echo false )"
+
+      - name: Set up QEMU
+        uses: docker/setup-qemu-action@v3
 
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v3
@@ -57,25 +62,32 @@ jobs:
       - name: Build tags list
         id: tags
         run: |
-          TAGS="${{ env.IMAGE_NAME }}:${{ steps.latest.outputs.tag_name }}"
-          if [ "${{ steps.latest.outputs.is_latest }}" = "true" ]; then
-            TAGS="${TAGS} ${{ env.IMAGE_NAME }}:stable"
-          fi
-          echo "tags<<EOF" >> "$GITHUB_OUTPUT"
-          echo "$TAGS" >> "$GITHUB_OUTPUT"
-          echo "EOF" >> "$GITHUB_OUTPUT"
+          # One tag per line — build-push-action's `tags:` input requires
+          # newline-separated entries, not space-separated.
+          {
+            echo "tags<<EOF"
+            echo "${{ env.IMAGE_NAME }}:${{ steps.latest.outputs.tag_name }}"
+            if [ "${{ steps.latest.outputs.is_latest }}" = "true" ]; then
+              echo "${{ env.IMAGE_NAME }}:stable"
+            fi
+            echo "EOF"
+          } >> "$GITHUB_OUTPUT"
 
       - name: Build and push
         uses: docker/build-push-action@v6
         with:
           context: .
           push: true
+          platforms: linux/amd64,linux/arm64
           tags: ${{ steps.tags.outputs.tags }}
-          cache-from: type=gha
-          cache-to: type=gha,mode=max
+          cache-from: type=gha,scope=release
+          cache-to: type=gha,mode=max,scope=release
+          sbom: true
+          provenance: true
 
       - name: Summary
         run: |
           echo "### Release image build" >> "$GITHUB_STEP_SUMMARY"
           echo "- Tag pushed: \`${{ steps.latest.outputs.tag_name }}\`" >> "$GITHUB_STEP_SUMMARY"
           echo "- Also tagged 'stable': \`${{ steps.latest.outputs.is_latest }}\`" >> "$GITHUB_STEP_SUMMARY"
+          echo "- Platforms: linux/amd64, linux/arm64" >> "$GITHUB_STEP_SUMMARY"
