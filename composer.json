@@ -100,7 +100,10 @@
             "Illuminate\\Foundation\\ComposerScripts::postAutoloadDump",
             "@php artisan package:discover --ansi"
         ],
-        "analyse": "./vendor/bin/phpstan analyse --memory-limit=512M"
+        "analyse": "./vendor/bin/phpstan analyse --memory-limit=512M",
+        "lint": "./vendor/bin/pint",
+        "lint:test": "./vendor/bin/pint --test"
+
     },
     "config": {
         "preferred-install": "dist",
