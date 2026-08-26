@@ -374,7 +374,7 @@ class AdminController extends Controller
         $changedFields = [];
         $slug = Str::slug($request->input('title'));
         if (Newsroom::whereSlug($slug)->exists()) {
-            $slug = $slug.'-'.str_random(4);
+            $slug = $slug.'-'.Str::random(4);
         }
         $news = Newsroom::findOrFail($id);
         $fields = [
@@ -441,7 +441,7 @@ class AdminController extends Controller
         $changedFields = [];
         $slug = Str::slug($request->input('title'));
         if (Newsroom::whereSlug($slug)->exists()) {
-            $slug = $slug.'-'.str_random(4);
+            $slug = $slug.'-'.Str::random(4);
         }
         $news = new Newsroom;
         $fields = [

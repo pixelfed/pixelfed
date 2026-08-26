@@ -20,6 +20,7 @@ use App\Services\StatusService;
 use App\Status;
 use App\User;
 use Illuminate\Http\Request;
+use Illuminate\Support\Str;
 use Storage;
 
 class GroupController extends GroupFederationController
@@ -198,7 +199,7 @@ class GroupController extends GroupFederationController
                     Storage::delete($metadata['avatar']['path']);
                 }
 
-                $fileName = 'avatar_'.strtolower(str_random($len)).'.'.$avatar->extension();
+                $fileName = 'avatar_'.strtolower(Str::random($len)).'.'.$avatar->extension();
                 $path = $avatar->storePubliclyAs('public/g/'.$group->id.'/meta', $fileName);
                 $url = url(Storage::url($path));
                 $metadata['avatar'] = [
@@ -220,7 +221,7 @@ class GroupController extends GroupFederationController
                     Storage::delete($metadata['header']['path']);
                 }
 
-                $fileName = 'header_'.strtolower(str_random($len)).'.'.$header->extension();
+                $fileName = 'header_'.strtolower(Str::random($len)).'.'.$header->extension();
                 $path = $header->storePubliclyAs('public/g/'.$group->id.'/meta', $fileName);
                 $url = url(Storage::url($path));
                 $metadata['header'] = [

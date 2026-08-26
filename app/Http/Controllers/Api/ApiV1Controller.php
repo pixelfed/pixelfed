@@ -322,7 +322,7 @@ class ApiV1Controller extends Controller
                 $currentAvatar = storage_path('app/'.$av->media_path);
                 $file = $request->file('avatar');
                 $path = "public/avatars/{$profile->id}";
-                $name = strtolower(str_random(6)).'.'.$file->guessExtension();
+                $name = strtolower(Str::random(6)).'.'.$file->guessExtension();
                 $request->file('avatar')->storePubliclyAs($path, $name);
                 $av->media_path = "{$path}/{$name}";
                 $av->save();

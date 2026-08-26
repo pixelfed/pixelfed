@@ -4,6 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Str;
 
 class CuratedRegister extends Model
 {
@@ -60,7 +61,7 @@ class CuratedRegister extends Model
 
     public function emailReplyUrl()
     {
-        return url('/auth/sign_up/concierge?sid='.$this->id.'&code='.$this->verify_code.'&sc='.str_random(8));
+        return url('/auth/sign_up/concierge?sid='.$this->id.'&code='.$this->verify_code.'&sc='.Str::random(8));
     }
 
     public function adminReviewUrl()

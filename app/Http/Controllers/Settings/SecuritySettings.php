@@ -11,6 +11,7 @@ use BaconQrCode\Renderer\RendererStyle\RendererStyle;
 use BaconQrCode\Writer;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
+use Illuminate\Support\Str;
 use PragmaRX\Google2FA\Google2FA;
 
 trait SecuritySettings
@@ -67,7 +68,7 @@ trait SecuritySettings
     {
         $keys = [];
         for ($i = 0; $i < 11; $i++) {
-            $key = str_random(24);
+            $key = Str::random(24);
             $keys[] = $key;
         }
 

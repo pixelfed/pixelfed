@@ -7,6 +7,7 @@ use App\Jobs\AvatarPipeline\AvatarOptimize;
 use Auth;
 use Cache;
 use Illuminate\Http\Request;
+use Illuminate\Support\Str;
 
 class AvatarController extends Controller
 {
@@ -56,7 +57,7 @@ class AvatarController extends Controller
         $path = $this->buildPath($id);
         $dir = storage_path('app/'.$path);
         $this->checkDir($dir);
-        $name = str_random(20).'_avatar.'.$file->guessExtension();
+        $name = Str::random(20).'_avatar.'.$file->guessExtension();
         $res = ['root' => 'storage/app/'.$path, 'name' => $name, 'storage' => $path];
 
         return $res;
