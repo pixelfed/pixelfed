@@ -44,11 +44,17 @@ class PlaceController extends Controller
 
     public function directoryCities(Request $request, $country)
     {
-        $country = ucfirst(urldecode($country));
-        $places = Place::whereCountry($country)
+        $country = urldecode($country);
+        $operator = config('database.default') === 'pgsql' ? 'ilike' : '=';
+
+        $places = Place::where('country', $operator, $country)
             ->orderBy('name', 'asc')
             ->distinct('name')
             ->simplePaginate(48);
+
+        if ($places->isEmpty()) {
+            abort(404, 'Country not found');
+        }
 
         return view('discover.places.directory.cities', compact('places'));
     }

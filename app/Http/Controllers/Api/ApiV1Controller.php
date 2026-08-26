@@ -346,22 +346,23 @@ class ApiV1Controller extends Controller
             $website = $request->input('website');
             if ($website != $profile->website) {
                 if ($website) {
-                    if (! strpos($website, '.')) {
+                    // Validate URL scheme FIRST
+                    if (! Str::startsWith($website, ['http://', 'https://'])) {
                         $website = null;
-                    }
+                    } else {
+                        if (! strpos($website, '.')) {
+                            $website = null;
+                        }
 
-                    if ($website && ! strpos($website, '://')) {
-                        $website = 'https://'.$website;
-                    }
+                        $host = parse_url($website, PHP_URL_HOST);
 
-                    $host = parse_url($website, PHP_URL_HOST);
-
-                    $bannedInstances = InstanceService::getBannedDomains();
-                    if (in_array($host, $bannedInstances)) {
-                        $website = null;
+                        $bannedInstances = InstanceService::getBannedDomains();
+                        if (in_array($host, $bannedInstances)) {
+                            $website = null;
+                        }
                     }
                 }
-                $profile->website = $website ? $website : null;
+                $profile->website = $website;
                 $changes = true;
             }
         }
@@ -882,7 +883,7 @@ class ApiV1Controller extends Controller
      * POST /api/v1/accounts/{id}/follow
      *
      * @param  int  $id
-     * @return \App\Transformer\Api\RelationshipTransformer
+     * @return RelationshipTransformer
      */
     public function accountFollowById(Request $request, $id)
     {
@@ -982,7 +983,7 @@ class ApiV1Controller extends Controller
      * POST /api/v1/accounts/{id}/unfollow
      *
      * @param  int  $id
-     * @return \App\Transformer\Api\RelationshipTransformer
+     * @return RelationshipTransformer
      */
     public function accountUnfollowById(Request $request, $id)
     {
@@ -1056,7 +1057,7 @@ class ApiV1Controller extends Controller
      * GET /api/v1/accounts/relationships
      *
      * @param  array|int  $id
-     * @return \App\Services\RelationshipService
+     * @return RelationshipService
      */
     public function accountRelationshipsById(Request $request)
     {
@@ -1090,8 +1091,8 @@ class ApiV1Controller extends Controller
                 }
 
                 return $napi ?
-                 RelationshipService::getWithDate($pid, $id) :
-                 RelationshipService::get($pid, $id);
+                    RelationshipService::getWithDate($pid, $id) :
+                    RelationshipService::get($pid, $id);
             });
 
         return $this->json($res);
@@ -1206,7 +1207,7 @@ class ApiV1Controller extends Controller
      * POST /api/v1/accounts/{id}/block
      *
      * @param  int  $id
-     * @return \App\Transformer\Api\RelationshipTransformer
+     * @return RelationshipTransformer
      */
     public function accountBlockById(Request $request, $id)
     {
@@ -1269,7 +1270,7 @@ class ApiV1Controller extends Controller
             $selfProfile = $user->profile;
             $selfProfile->following_count = Follower::whereProfileId($pid)->count();
             $selfProfile->save();
-            FollowerService::remove($pid, $profile->pid);
+            FollowerService::remove($pid, $profile->id);
             AccountService::del($pid);
             AccountService::del($profile->id);
         }
@@ -1301,7 +1302,7 @@ class ApiV1Controller extends Controller
      * POST /api/v1/accounts/{id}/unblock
      *
      * @param  int  $id
-     * @return \App\Transformer\Api\RelationshipTransformer
+     * @return RelationshipTransformer
      */
     public function accountUnblockById(Request $request, $id)
     {
@@ -2087,7 +2088,8 @@ class ApiV1Controller extends Controller
                         StatusService::del($media->status_id);
                     }
                 }
-            });
+            }
+        );
 
         if (! $executed) {
             return response()->json([
@@ -2540,6 +2542,10 @@ class ApiV1Controller extends Controller
                     return isset($n['status'], $n['status']['id']);
                 }
 
+                if (in_array($n['type'], ['follow'])) {
+                    return isset($n['account'], $n['account']['id']);
+                }
+
                 if (! $pe) {
                     if (in_array($n['type'], [
                         'tagged',
@@ -2607,8 +2613,8 @@ class ApiV1Controller extends Controller
 
         $this->validate($request, [
             'page' => 'sometimes|integer|max:40',
-            'min_id' => 'sometimes|integer|min:0|max:'.PHP_INT_MAX,
-            'max_id' => 'sometimes|integer|min:0|max:'.PHP_INT_MAX,
+            'min_id' => 'nullable|integer|min:0|max:'.PHP_INT_MAX,
+            'max_id' => 'nullable|integer|min:0|max:'.PHP_INT_MAX,
             'limit' => 'sometimes|integer|min:1',
             'include_reblogs' => 'sometimes',
         ]);
@@ -2629,11 +2635,11 @@ class ApiV1Controller extends Controller
         $includeReblogs = $request->filled('include_reblogs') ? $request->boolean('include_reblogs') : $userEnableReblogs;
 
         $nullFields = $includeReblogs ?
-        ['in_reply_to_id'] :
-        ['in_reply_to_id', 'reblog_of_id'];
+            ['in_reply_to_id'] :
+            ['in_reply_to_id', 'reblog_of_id'];
         $inTypes = $includeReblogs ?
-        ['photo', 'photo:album', 'video', 'video:album', 'photo:video:album', 'share'] :
-        ['photo', 'photo:album', 'video', 'video:album', 'photo:video:album'];
+            ['photo', 'photo:album', 'video', 'video:album', 'photo:video:album', 'share'] :
+            ['photo', 'photo:album', 'video', 'video:album', 'photo:video:album'];
         AccountService::setLastActive($request->user()->id);
 
         $cachedFilters = CustomFilter::getCachedFiltersForAccount($pid);
@@ -3433,69 +3439,105 @@ class ApiV1Controller extends Controller
 
         $user = $request->user();
         $pid = $user->profile_id;
-        $status = StatusService::getMastodon($id, false);
         $pe = $request->has(self::PF_API_ENTITY_KEY);
+
+        $status = StatusService::getMastodon(
+            $id,
+            false,
+            $pid
+        );
 
         if (! $status || ! isset($status['account'])) {
             return response('', 404);
         }
 
-        if ($status && isset($status['account'], $status['account']['acct']) && strpos($status['account']['acct'], '@') != -1) {
-            $domain = parse_url($status['account']['url'], PHP_URL_HOST);
-            abort_if(in_array($domain, InstanceService::getBannedDomains()), 404);
+        if (
+            isset($status['account']['acct']) &&
+            strpos($status['account']['acct'], '@') !== false
+        ) {
+            $domain = parse_url(
+                $status['account']['url'],
+                PHP_URL_HOST
+            );
+
+            abort_if(
+                in_array($domain, InstanceService::getBannedDomains()),
+                404
+            );
         }
 
-        if (intval($status['account']['id']) !== intval($user->profile_id)) {
-            if ($status['visibility'] == 'private') {
-                if (! FollowerService::follows($user->profile_id, $status['account']['id'])) {
-                    return response('', 404);
-                }
-            } else {
-                if (! in_array($status['visibility'], ['public', 'unlisted'])) {
-                    return response('', 404);
-                }
-            }
-        }
+        $filters = UserFilterService::filters($pid);
 
         $ancestors = [];
         $descendants = [];
 
         if ($status['in_reply_to_id']) {
-            $ancestors[] = $pe ?
-            StatusService::get($status['in_reply_to_id'], false) :
-            StatusService::getMastodon($status['in_reply_to_id'], false);
+            $ancestor = $pe
+                ? StatusService::get(
+                    $status['in_reply_to_id'],
+                    false,
+                    false,
+                    $pid
+                )
+                : StatusService::getMastodon(
+                    $status['in_reply_to_id'],
+                    false,
+                    $pid
+                );
+
+            if (
+                $ancestor &&
+                isset($ancestor['account']['id']) &&
+                ! in_array($ancestor['account']['id'], $filters)
+            ) {
+                $ancestors[] = $ancestor;
+            }
         }
 
         if ($status['replies_count']) {
-            $filters = UserFilterService::filters($pid);
-
             $descendants = DB::table('statuses')
                 ->where('in_reply_to_id', $id)
                 ->limit(20)
                 ->pluck('id')
-                ->map(function ($sid) use ($pe) {
-                    return $pe ?
-                     StatusService::get($sid, false) :
-                     StatusService::getMastodon($sid, false);
+                ->map(function ($sid) use ($pe, $pid) {
+                    return $pe
+                        ? StatusService::get(
+                            $sid,
+                            false,
+                            false,
+                            $pid
+                        )
+                        : StatusService::getMastodon(
+                            $sid,
+                            false,
+                            $pid
+                        );
                 })
                 ->filter(function ($post) use ($filters) {
-                    return $post && isset($post['account'], $post['account']['id']) && ! in_array($post['account']['id'], $filters);
+                    return $post &&
+                        isset($post['account']['id']) &&
+                        ! in_array($post['account']['id'], $filters);
                 })
                 ->map(function ($status) use ($pid) {
-                    $status['favourited'] = LikeService::liked($pid, $status['id']);
-                    $status['reblogged'] = ReblogService::get($pid, $status['id']);
+                    $status['favourited'] = LikeService::liked(
+                        $pid,
+                        $status['id']
+                    );
+
+                    $status['reblogged'] = ReblogService::get(
+                        $pid,
+                        $status['id']
+                    );
 
                     return $status;
                 })
                 ->values();
         }
 
-        $res = [
+        return $this->json([
             'ancestors' => $ancestors,
             'descendants' => $descendants,
-        ];
-
-        return $this->json($res);
+        ]);
     }
 
     /**
@@ -3545,7 +3587,7 @@ class ApiV1Controller extends Controller
 
         abort_if(
             ! $status->type ||
-            ! in_array($status->type, ['photo', 'photo:album', 'photo:video:album', 'reply', 'text', 'video', 'video:album']),
+                ! in_array($status->type, ['photo', 'photo:album', 'photo:video:album', 'reply', 'text', 'video', 'video:album']),
             404,
         );
 
@@ -3646,7 +3688,7 @@ class ApiV1Controller extends Controller
 
         abort_if(
             ! $status->type ||
-            ! in_array($status->type, ['photo', 'photo:album', 'photo:video:album', 'reply', 'text', 'video', 'video:album']),
+                ! in_array($status->type, ['photo', 'photo:album', 'photo:video:album', 'reply', 'text', 'video', 'video:album']),
             404,
         );
 
@@ -3812,11 +3854,25 @@ class ApiV1Controller extends Controller
 
         if ($in_reply_to_id) {
             $parent = Status::findOrFail($in_reply_to_id);
+
+            abort_unless(
+                StatusService::isVisibleTo(
+                    $parent->profile_id,
+                    $parent->scope,
+                    $profile->id
+                ),
+                404
+            );
             if ($parent->comments_disabled) {
                 return $this->json('Comments have been disabled on this post', 422);
             }
             $blocks = UserFilterService::blocks($parent->profile_id);
             abort_if(in_array($profile->id, $blocks), 422, 'Cannot reply to this post at this time.');
+
+            $visibility = StatusService::clampReplyVisibility(
+                $visibility,
+                $parent->scope
+            );
 
             $status = new Status;
             $status->caption = $content;
@@ -3834,10 +3890,11 @@ class ApiV1Controller extends Controller
         }
 
         if ($ids) {
-            if (Media::whereUserId($user->id)
-                ->whereNull('status_id')
-                ->find($ids)
-                ->count() == 0
+            if (
+                Media::whereUserId($user->id)
+                    ->whereNull('status_id')
+                    ->find($ids)
+                    ->count() == 0
             ) {
                 abort(400, 'Invalid media_ids');
             }
@@ -4159,6 +4216,7 @@ class ApiV1Controller extends Controller
 
         $res = StatusHashtag::whereHashtagId($tag->id)
             ->where('status_id', $dir, $id)
+            ->whereIn('status_visibility', ['public', 'unlisted'])
             ->orderBy('status_id', 'desc')
             ->limit(100)
             ->pluck('status_id')
@@ -4174,11 +4232,11 @@ class ApiV1Controller extends Controller
                         return false;
                     }
                 }
-                // if ($i['visibility'] === 'private') {
-                //     if ((int) $i['account']['id'] !== $pid) {
-                //         return FollowerService::follows($pid, $i['account']['id'], true);
-                //     }
-                // }
+                if ($i['visibility'] === 'private') {
+                    if ((int) $i['account']['id'] !== $pid) {
+                        return FollowerService::follows($pid, $i['account']['id'], true);
+                    }
+                }
                 if ($onlyMedia == true) {
                     if (! isset($i['media_attachments']) || ! count($i['media_attachments'])) {
                         return false;
@@ -4420,15 +4478,14 @@ class ApiV1Controller extends Controller
             $limit = 10;
         }
         $pid = $request->user()->profile_id;
-        $status = StatusService::getMastodon($id, false);
-        abort_if(! $status, 404);
-        abort_if(isset($status['account'], $account['account']['moved']['id']), 404, 'Account moved');
+        $status = StatusService::getMastodon(
+            $id,
+            false,
+            $pid
+        );
 
-        if ($status['visibility'] == 'private') {
-            if ($pid != $status['account']['id']) {
-                abort_unless(FollowerService::follows($pid, $status['account']['id']), 404);
-            }
-        }
+        abort_if(! $status, 404);
+        abort_if(isset($status['account'], $status['account']['moved'], $status['account']['moved']['id']), 404, 'Account moved');
 
         $sortBy = $request->input('sort', 'all');
 
@@ -4470,7 +4527,12 @@ class ApiV1Controller extends Controller
             return ! in_array($post->profile_id, $filters);
         })
             ->map(function ($post) use ($pid) {
-                $status = StatusService::get($post->id, false);
+                $status = StatusService::get(
+                    $post->id,
+                    false,
+                    false,
+                    $pid
+                );
 
                 if (! $status || ! isset($status['id'])) {
                     return false;
@@ -4690,6 +4752,7 @@ class ApiV1Controller extends Controller
     public function accountRemoveFollowById(Request $request, $id)
     {
         abort_if(! $request->user(), 403);
+        abort_unless($request->user()->tokenCan('follow'), 403);
 
         $pid = $request->user()->profile_id;
 

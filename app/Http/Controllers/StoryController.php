@@ -121,7 +121,7 @@ class StoryController extends StoryComposeController
         $profile = Profile::findOrFail($id);
 
         if ($authed != $profile->id && ! FollowerService::follows($authed, $profile->id)) {
-            return abort([], 403);
+            abort(403);
         }
 
         $stories = Story::whereProfileId($profile->id)

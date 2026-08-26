@@ -91,11 +91,14 @@ class StoryExpire implements ShouldQueue
         if (Storage::exists($old) == true) {
             $dir = implode('/', $paths);
             Storage::move($old, $newPath);
-            Storage::delete($old);
             $story->bearcap_token = null;
             $story->path = $newPath;
             $story->save();
-            Storage::deleteDirectory($dir);
+
+            $remainingFiles = Storage::files($dir);
+            if (empty($remainingFiles)) {
+                Storage::deleteDirectory($dir);
+            }
         }
     }
 

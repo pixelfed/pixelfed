@@ -6,7 +6,7 @@ return [
 		'comment' => 'Comentar',
 		'commented' => 'Comentat',
 		'comments' => 'Comentaris',
-		'like' => 'Agradar',
+		'like' => 'M\'agrada',
 		'liked' => 'Agradat',
 		'likes' => 'Aquò m\'agrada',
 		'share' => 'Partejar',
@@ -23,11 +23,11 @@ return [
 		'oops' => 'Ops!',
 		'other' => 'Autre',
 		'readMore' => 'Ne legir mai',
-		'success' => 'Capitada',
+		'success' => 'Succès',
 		'proceed' => 'Contunhar',
 		'next' => 'Seguent',
 		'close' => 'Tampar',
-		'clickHere' => 'clicatz aicí',
+		'clickHere' => 'Clicatz aicí',
 
 		'sensitive' => 'Sensible',
 		'sensitiveContent' => 'Contengut sensible',
@@ -57,10 +57,10 @@ return [
 
 		// Self links
 		'profile' => 'Perfil',
-		'drive' => 'Drive',
+		'drive' => 'Nívol',
 		'settings' => 'Paramètres',
-		'compose' => 'Ajustar una novèla',
-		'logout' => '',
+		'compose' => 'Apondre',
+		'logout' => 'Desconnexion',
 
 		// Nav footer
 		'about' => 'A prepaus',
@@ -91,7 +91,7 @@ return [
 
 		'followed' => 's\'es abonat a',
 		'mentioned' => 'a mencionat',
-		'you' => 'vos',
+		'you' => 'Vos',
 
 		'yourApplication' => 'Vòstra candidatura a rejónher',
 		'applicationApproved' => 'es estada aprovada!',
@@ -99,7 +99,7 @@ return [
 
 		'dm' => 'messatge privat',
 		'groupPost' => 'gropar las publicacions',
-		'modlog' => 'modlog',
+		'modlog' => 'jornal de moderacion',
 		'post' => 'publicacion',
 		'story' => 'istòria',
 		'noneFound' => 'Cap de notificacion pas trobada',
@@ -129,8 +129,8 @@ return [
 	],
 
 	'menu' => [
-		'viewPost' => 'Veire publicacion',
-		'viewProfile' => 'Veire perfil',
+		'viewPost' => 'Veire la publicacion',
+		'viewProfile' => 'Veire lo perfil',
 		'moderationTools' => 'Aisinas de moderacion',
 		'report' => 'Senhalar',
 		'archive' => 'Archivar',
@@ -140,19 +140,19 @@ return [
 		'selectOneOption' => 'Seleccionatz una de las opcions que seguentas',
 		'unlistFromTimelines' => 'Tirar dels fils',
 		'addCW' => 'Apondre un avertiment',
-		'removeCW' => 'Lo tèxte es rescondut jos l’avertiment',
+		'removeCW' => 'Tirar l\'avertiment de contengut',
 		'markAsSpammer' => 'Marcar coma abusaire',
-		'markAsSpammerText' => 'Tirar dels fils + apondon d’avertiment per las futuras publicacions',
+		'markAsSpammerText' => 'Tirar dels flux + apondon un avertiment de contengut per las publicacions existentas e futuras',
 		'spam' => 'Messatge indesirable',
 		'sensitive' => 'Contengut sensible',
 		'abusive' => 'Abusiu o prejudiciable',
 		'underageAccount' => 'Compte de menor',
-		'copyrightInfringement' => 'Violacion de dreches d’autor',
+		'copyrightInfringement' => 'Violacion dels dreches d’autor',
 		'impersonation' => 'Usurpacion d’identitat',
 		'scamOrFraud' => 'Engan o fraud',
 		'confirmReport' => 'Confirmar lo senhalament',
 		'confirmReportText' => 'Volètz vertadièrament senhalar aquesta publicacion ?',
-		'reportSent' => 'Senhalament enviat !',
+		'reportSent' => 'Senhalament enviat!',
 		'reportSentText' => 'Avèm plan recebut vòstre senhalament.',
 		'reportSentError' => 'Una error s\'es producha en senhalant la publicacion.',
 

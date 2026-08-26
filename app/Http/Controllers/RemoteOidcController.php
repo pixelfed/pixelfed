@@ -46,7 +46,7 @@ class RemoteOidcController extends Controller
         abort_unless($request->input('state'), 400);
         abort_unless($request->input('code'), 400);
 
-        abort_unless(hash_equals($request->session()->pull('oauth2state'), $request->input('state')), 400, 'invalid state');
+        abort_unless(hash_equals((string)$request->session()->pull('oauth2state'), (string)$request->input('state')), 400, 'invalid state');
 
         $accessToken = $provider->getAccessToken('authorization_code', [
             'code' => $request->get('code'),

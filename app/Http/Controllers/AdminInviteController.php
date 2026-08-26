@@ -123,7 +123,7 @@ class AdminInviteController extends Controller
         $emailRules = [
             'required',
             'string',
-            'email',
+            'email:strict,rfc,dns,spoof,filter',
             'max:255',
             'unique:users',
             function ($attribute, $value, $fail) {
@@ -189,7 +189,7 @@ class AdminInviteController extends Controller
             'email' => [
                 'required',
                 'string',
-                'email',
+                'email:strict,rfc,dns,spoof,filter',
                 'max:255',
                 'unique:users',
                 function ($attribute, $value, $fail) {

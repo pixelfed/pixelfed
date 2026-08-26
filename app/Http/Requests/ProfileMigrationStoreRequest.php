@@ -71,7 +71,9 @@ class ProfileMigrationStoreRequest extends FormRequest
             return 'The new account does not contain an alias to your current account.';
         }
         $curAcctUrl = $this->user()->profile->permalink();
-        if (! in_array($curAcctUrl, $pr['alsoKnownAs'])) {
+        $aka = (array) $pr['alsoKnownAs'];
+        
+        if (empty($aka) || ! in_array($curAcctUrl, $aka)) {
             return 'The new account does not contain an alias to your current account.';
         }
 

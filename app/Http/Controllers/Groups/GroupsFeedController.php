@@ -30,7 +30,7 @@ class GroupsFeedController extends Controller
         $initial = $request->has('initial');
 
         if ($initial) {
-            $res = Cache::remember('groups:self:feed:'.$pid, 900, function () use ($pid) {
+            $res = Cache::remember('groups:self:feed:' . $pid, 900, function () use ($pid) {
                 return $this->getSelfFeedV0($pid, 5, null);
             });
         } else {
@@ -76,6 +76,7 @@ class GroupsFeedController extends Controller
         $cid = $request->user()->profile_id;
 
         $group = Group::findOrFail($id);
+        abort_if(! $group->isMember($cid), 404);
         abort_if(! $group->isMember($pid), 404);
 
         $feed = GroupPost::whereGroupId($id)

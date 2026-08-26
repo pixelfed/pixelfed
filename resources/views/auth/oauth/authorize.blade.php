@@ -81,6 +81,7 @@
 
                                 <input type="hidden" name="state" value="{{ $request->state }}">
                                 <input type="hidden" name="client_id" value="{{ $client->id }}">
+                                <input type="hidden" name="auth_token" value="{{ $authToken }}">
                                 <button class="btn btn-outline-danger font-weight-bold">Cancel</button>
                             </form>
                         </div>

@@ -1,5 +1,7 @@
 <?php
 
+use Illuminate\Support\Facades\Route;
+
 Route::domain(config('pixelfed.domain.app'))->middleware(['validemail', 'twofactor', 'localization'])->group(function () {
     Route::get('/', 'SiteController@home')->name('timeline.personal');
     Route::redirect('/home', '/')->name('home');
@@ -51,23 +53,22 @@ Route::domain(config('pixelfed.domain.app'))->middleware(['validemail', 'twofact
 
     Route::group([
         'as' => 'passport.',
-        'prefix' => config('passport.path', 'oauth'),
+        'prefix' => 'oauth',
+        'middleware' => ['oauth-web'],
     ], function () {
         Route::post('/token', [
             'uses' => '\App\Http\Controllers\OAuth\ApiTokenController@issueToken',
             'as' => 'token',
-            'middleware' => 'throttle',
+            'middleware' => 'throttle:10,1',
         ]);
 
         Route::get('/authorize', [
             'uses' => '\Laravel\Passport\Http\Controllers\AuthorizationController@authorize',
             'as' => 'authorizations.authorize',
-            'middleware' => 'web',
+            'middleware' => ['throttle:10,1'],
         ]);
 
-        $guard = config('passport.guard', null);
-
-        Route::middleware(['web', $guard ? 'auth:'.$guard : 'auth'])->group(function () {
+        Route::middleware(['auth:web', 'validemail'])->group(function () {
             Route::post('/token/refresh', [
                 'uses' => '\Laravel\Passport\Http\Controllers\TransientTokenController@refresh',
                 'as' => 'token.refresh',
@@ -114,26 +115,30 @@ Route::domain(config('pixelfed.domain.app'))->middleware(['validemail', 'twofact
             ]);
 
             Route::get('/scopes', [
-                'uses' => '\Laravel\Passport\Http\Controllers\ScopeController@all',
+                'uses' => 'PersonalAccessTokenController@scopes',
                 'as' => 'scopes.index',
             ]);
 
             Route::get('/personal-access-tokens', [
-                'uses' => '\Laravel\Passport\Http\Controllers\PersonalAccessTokenController@forUser',
+                'uses' => 'PersonalAccessTokenController@index',
                 'as' => 'personal.tokens.index',
             ]);
 
             Route::post('/personal-access-tokens', [
-                'uses' => '\Laravel\Passport\Http\Controllers\PersonalAccessTokenController@store',
+                'uses' => 'PersonalAccessTokenController@store',
                 'as' => 'personal.tokens.store',
-            ]);
+            ])->middleware(['throttle:oauth-pat']);
+
+            Route::post('/personal-access-tokens/{token_id}/renew', [
+                'uses' => 'PersonalAccessTokenController@renew',
+                'as' => 'personal.tokens.renew',
+            ])->middleware(['throttle:oauth-pat']);
 
             Route::delete('/personal-access-tokens/{token_id}', [
-                'uses' => '\Laravel\Passport\Http\Controllers\PersonalAccessTokenController@destroy',
+                'uses' => 'PersonalAccessTokenController@destroy',
                 'as' => 'personal.tokens.destroy',
             ]);
         });
-
     });
 
     Route::get('discover', 'DiscoverController@home')->name('discover');

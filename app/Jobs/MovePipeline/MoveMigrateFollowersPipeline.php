@@ -145,6 +145,13 @@ class MoveMigrateFollowersPipeline implements ShouldQueue
                         'following_id' => $targetPid,
                     ]);
 
+                    $followerProfile = Profile::find($follower->id);
+                    if ($followerProfile) {
+                        $followerProfile->following_count = Follower::where('profile_id', $follower->id)->count();
+                        $followerProfile->save();
+                        Cache::forget('profile:following_count:'.$follower->id);
+                    }
+
                     // If the remote user has migrated to a different instance,
                     // send a follow request for each local follower to the new
                     // instance

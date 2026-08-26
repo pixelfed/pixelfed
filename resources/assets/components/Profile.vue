@@ -11,7 +11,7 @@
                             <div class="card-body ft-std">
                                 <div class="d-flex justify-content-between align-items-center" style="gap: 1rem;">
                                     <div class="d-flex align-items-center flex-shrink-1" style="gap: 1rem;">
-                                        <img :src="profile.moved.avatar" width="50" height="50" class="rounded-circle">
+                                        <img :src="profile.moved.avatar" width="50" height="50" class="rounded-circle" onerror="this.onerror=null;this.src='/storage/avatars/default.jpg?v=0';">
                                         <p class="h3 font-weight-light mb-0 text-break">&commat;{{ profile.moved.acct }}</p>
                                     </div>
 

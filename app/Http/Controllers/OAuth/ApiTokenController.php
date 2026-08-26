@@ -24,11 +24,12 @@ class ApiTokenController extends AccessTokenController
 
                 if ($token) {
                     $data['created_at'] = $token->created_at->toIso8601String();
+                    $response->setContent(json_encode($data));
                 }
             }
         }
 
-        return response()->json($data, $response->getStatusCode());
+        return $response;
     }
 
     private function getTokenIdFromJwt(string $jwt): ?string

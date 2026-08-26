@@ -41,11 +41,12 @@ class StoryApiV1Controller extends Controller
         $pid = $request->user()->profile_id;
 
         if (config('database.default') == 'pgsql') {
-            $s = Cache::remember(self::RECENT_KEY.$pid, self::RECENT_TTL, function () use ($pid) {
+            $s = Cache::remember(self::RECENT_KEY . $pid, self::RECENT_TTL, function () use ($pid) {
                 return Story::select('stories.*', 'followers.following_id')
                     ->leftJoin('followers', 'followers.following_id', 'stories.profile_id')
                     ->where('followers.profile_id', $pid)
                     ->where('stories.active', true)
+                    ->get()
                     ->map(function ($s) {
                         $r = new \StdClass;
                         $r->id = $s->id;
@@ -58,7 +59,7 @@ class StoryApiV1Controller extends Controller
                     ->unique('profile_id');
             });
         } else {
-            $s = Cache::remember(self::RECENT_KEY.$pid, self::RECENT_TTL, function () use ($pid) {
+            $s = Cache::remember(self::RECENT_KEY . $pid, self::RECENT_TTL, function () use ($pid) {
                 return Story::select('stories.*', 'followers.following_id')
                     ->leftJoin('followers', 'followers.following_id', 'stories.profile_id')
                     ->where('followers.profile_id', $pid)
@@ -92,7 +93,7 @@ class StoryApiV1Controller extends Controller
                     url("/i/rs/{$profile['id']}");
 
                 return [
-                    'id' => 'pfs:'.$profile['id'],
+                    'id' => 'pfs:' . $profile['id'],
                     'user' => [
                         'id' => (string) $profile['id'],
                         'username' => $profile['username'],
@@ -153,11 +154,12 @@ class StoryApiV1Controller extends Controller
         $pid = $request->user()->profile_id;
 
         if (config('database.default') == 'pgsql') {
-            $s = Cache::remember(self::RECENT_KEY.$pid, self::RECENT_TTL, function () use ($pid) {
+            $s = Cache::remember(self::RECENT_KEY . $pid, self::RECENT_TTL, function () use ($pid) {
                 return Story::select('stories.*', 'followers.following_id')
                     ->leftJoin('followers', 'followers.following_id', 'stories.profile_id')
                     ->where('followers.profile_id', $pid)
                     ->where('stories.active', true)
+                    ->get()
                     ->map(function ($s) {
                         $r = new \StdClass;
                         $r->id = $s->id;
@@ -170,7 +172,7 @@ class StoryApiV1Controller extends Controller
                     ->unique('profile_id');
             });
         } else {
-            $s = Cache::remember(self::RECENT_KEY.$pid, self::RECENT_TTL, function () use ($pid) {
+            $s = Cache::remember(self::RECENT_KEY . $pid, self::RECENT_TTL, function () use ($pid) {
                 return Story::select('stories.*', 'followers.following_id')
                     ->leftJoin('followers', 'followers.following_id', 'stories.profile_id')
                     ->where('followers.profile_id', $pid)
@@ -204,7 +206,7 @@ class StoryApiV1Controller extends Controller
                     url("/i/rs/{$profile['id']}");
 
                 return [
-                    'id' => 'pfs:'.$profile['id'],
+                    'id' => 'pfs:' . $profile['id'],
                     'user' => [
                         'id' => (string) $profile['id'],
                         'username' => $profile['username'],
@@ -267,7 +269,7 @@ class StoryApiV1Controller extends Controller
             'file' => [
                 'required',
                 'mimetypes:image/jpeg,image/jpg,image/png,video/mp4',
-                'max:'.config_cache('pixelfed.max_photo_size'),
+                'max:' . config_cache('pixelfed.max_photo_size'),
             ],
             'duration' => 'sometimes|integer|min:0|max:30',
         ]);
@@ -304,7 +306,7 @@ class StoryApiV1Controller extends Controller
             'code' => 200,
             'msg' => 'Successfully added',
             'media_id' => (string) $story->id,
-            'media_url' => url(Storage::url($url)).'?v='.time(),
+            'media_url' => url(Storage::url($url)) . '?v=' . time(),
             'media_type' => $story->type,
         ];
 
@@ -418,7 +420,7 @@ class StoryApiV1Controller extends Controller
         if ($count >= Story::MAX_PER_DAY) {
             return response()->json([
                 'code' => 418,
-                'error' => 'You’ve reached your daily limit of '.Story::MAX_PER_DAY.' Stories.',
+                'error' => 'You’ve reached your daily limit of ' . Story::MAX_PER_DAY . ' Stories.',
             ], 418, [], JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES);
         }
 
@@ -429,8 +431,17 @@ class StoryApiV1Controller extends Controller
             $path = $this->storeMedia($photo, $user);
 
             $allowedOverlayFields = [
-                'absoluteScale', 'absoluteX', 'absoluteY', 'color',
-                'content', 'fontSize', 'rotation', 'scale', 'x', 'y', 'type',
+                'absoluteScale',
+                'absoluteX',
+                'absoluteY',
+                'color',
+                'content',
+                'fontSize',
+                'rotation',
+                'scale',
+                'x',
+                'y',
+                'type',
             ];
 
             $filteredOverlays = [];
@@ -538,7 +549,6 @@ class StoryApiV1Controller extends Controller
             ];
 
             return response()->json($res);
-
         } catch (\Exception $e) {
             DB::rollback();
             \Log::error('Story creation failed', [
@@ -568,7 +578,7 @@ class StoryApiV1Controller extends Controller
 
         $rows = DB::table('profiles as p')
             ->select('p.id', 'p.username')
-            ->where('p.username', 'like', $q.'%')
+            ->where('p.username', 'like', $q . '%')
             ->whereExists(function ($sub) use ($pid) {
                 $sub->select(DB::raw(1))
                     ->from('followers as f')
@@ -582,7 +592,6 @@ class StoryApiV1Controller extends Controller
                 if ($item && $item->id) {
                     return AccountService::get($item->id, true);
                 }
-
             })
             ->filter()
             ->values();
@@ -649,7 +658,7 @@ class StoryApiV1Controller extends Controller
             if ($story->local == false) {
                 StoryViewDeliver::dispatch($story, $authed)->onQueue('story');
             }
-            Cache::forget('stories:recent:by_id:'.$pid);
+            Cache::forget('stories:recent:by_id:' . $pid);
             StoryService::addSeen($pid, $story->id);
         }
 
@@ -667,6 +676,9 @@ class StoryApiV1Controller extends Controller
         $text = $request->input('caption');
 
         $story = Story::findOrFail($request->input('sid'));
+
+        $following = Follower::whereProfileId($pid)->whereFollowingId($story->profile_id)->exists();
+        abort_if(! $following, 403, 'Invalid permission');
 
         abort_if(! $story->can_reply, 422);
 
@@ -741,7 +753,7 @@ class StoryApiV1Controller extends Controller
         }
 
         $storagePath = MediaPathService::story($user->profile);
-        $path = $photo->storePubliclyAs($storagePath, Str::random(random_int(2, 12)).'_'.Str::random(random_int(32, 35)).'_'.Str::random(random_int(1, 14)).'.'.$photo->extension());
+        $path = $photo->storePubliclyAs($storagePath, Str::random(random_int(2, 12)) . '_' . Str::random(random_int(32, 35)) . '_' . Str::random(random_int(1, 14)) . '.' . $photo->extension());
 
         return $path;
     }

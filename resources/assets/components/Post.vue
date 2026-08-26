@@ -40,6 +40,7 @@
                         v-on:follow="follow()"
                         v-on:unfollow="unfollow()"
                         v-on:counter-change="counterChange"
+                        v-on:comment-likes-modal="openCommentLikesModal"
                         />
                 </div>
 
@@ -93,7 +94,7 @@
         <likes-modal
             v-if="showLikesModal"
             ref="likesModal"
-            :status="shadowStatus"
+            :status="likesModalPost"
             :profile="user"
         />
 
@@ -165,6 +166,7 @@
                 media: undefined,
                 mediaIndex: 0,
                 showLikesModal: false,
+                likesModalPost: {},
                 isReply: false,
                 reply: {},
                 showSharesModal: false,
@@ -367,6 +369,7 @@
             },
 
             openLikesModal() {
+                this.likesModalPost = this.post.reblog ? this.post.reblog : this.post;
                 this.showLikesModal = true;
                 this.$nextTick(() => {
                     this.$refs.likesModal.open();
@@ -459,6 +462,18 @@
 
             handleUnpinned() {
                 this.post.pinned = false;
+            },
+
+            openCommentLikesModal(post) {
+                if(post.reblog != null) {
+                    this.likesModalPost = post.reblog;
+                } else {
+                    this.likesModalPost = post;
+                }
+                this.showLikesModal = true;
+                this.$nextTick(() => {
+                    this.$refs.likesModal.open();
+                });
             },
         }
     }

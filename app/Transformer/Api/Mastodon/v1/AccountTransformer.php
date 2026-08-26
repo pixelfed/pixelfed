@@ -3,6 +3,7 @@
 namespace App\Transformer\Api\Mastodon\v1;
 
 use App\Profile;
+use App\Services\AccountService;
 use League\Fractal;
 
 class AccountTransformer extends Fractal\TransformerAbstract
@@ -12,7 +13,7 @@ class AccountTransformer extends Fractal\TransformerAbstract
         $local = $profile->domain == null;
         $username = $local ? $profile->username : explode('@', substr($profile->username, 1))[0];
 
-        return [
+        $res = [
             'id' => (string) $profile->id,
             'username' => $username,
             'acct' => $username,
@@ -34,5 +35,18 @@ class AccountTransformer extends Fractal\TransformerAbstract
             'moved' => null,
             'fields' => [],
         ];
+
+        if ($profile->moved_to_profile_id) {
+            $newProfile = AccountService::get($profile->moved_to_profile_id);
+            if ($newProfile && isset($newProfile['id'], $newProfile['acct'])) {
+                $res['moved'] = [
+                    'id' => $newProfile['id'],
+                    'acct' => $newProfile['acct'],
+                    'avatar' => $newProfile['avatar'],
+                ];
+            }
+        }
+
+        return $res;
     }
 }

@@ -32,6 +32,7 @@ class FollowerObserver
     public function deleted(Follower $follower)
     {
         FollowerService::remove($follower->profile_id, (string) $follower->following_id);
+        FeedUnfollowPipeline::dispatch($follower->profile_id, $follower->following_id)->onQueue('feed');
     }
 
     /**

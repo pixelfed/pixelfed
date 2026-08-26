@@ -2,7 +2,13 @@
 
 namespace App\Exceptions;
 
+use GuzzleHttp\Exception\ConnectException;
 use Illuminate\Foundation\Exceptions\Handler as ExceptionHandler;
+use Illuminate\Http\Client\ConnectionException;
+use Illuminate\Http\Exceptions\HttpResponseException;
+use Illuminate\Http\Request;
+use Illuminate\Http\Response;
+use Illuminate\Validation\ValidationException;
 use League\OAuth2\Server\Exception\OAuthServerException;
 use Throwable;
 
@@ -15,8 +21,8 @@ class Handler extends ExceptionHandler
      */
     protected $dontReport = [
         OAuthServerException::class,
-        \GuzzleHttp\Exception\ConnectException::class,
-        \Illuminate\Http\Client\ConnectionException::class,
+        ConnectException::class,
+        ConnectionException::class,
     ];
 
     /**
@@ -51,7 +57,7 @@ class Handler extends ExceptionHandler
             return app()->environment() !== 'production';
         });
 
-        $this->reportable(function (\Illuminate\Http\Client\ConnectionException $e) {
+        $this->reportable(function (ConnectionException $e) {
             return app()->environment() !== 'production';
         });
     }
@@ -59,24 +65,30 @@ class Handler extends ExceptionHandler
     /**
      * Render an exception into an HTTP response.
      *
-     * @param  \Illuminate\Http\Request  $request
+     * @param  Request  $request
      * @param  \Exception  $exception
-     * @return \Illuminate\Http\Response
+     * @return Response
      */
     public function render($request, Throwable $exception)
     {
-        if ($exception instanceof \Illuminate\Validation\ValidationException && $request->wantsJson()) {
-            return response()->json(
-                [
+        if ($request->wantsJson()) {
+            if ($exception instanceof HttpResponseException) {
+                return $exception->getResponse();
+            }
+
+            if ($exception instanceof ValidationException) {
+                return response()->json([
                     'message' => $exception->getMessage(),
                     'errors' => $exception->validator->getMessageBag(),
-                ],
-                method_exists($exception, 'getStatusCode') ? $exception->getStatusCode() : 500
-            );
-        } elseif ($request->wantsJson()) {
+                ], $exception->status);
+            }
+
+            $isHttp = $this->isHttpException($exception);
+
             return response()->json(
                 ['error' => $exception->getMessage()],
-                method_exists($exception, 'getStatusCode') ? $exception->getStatusCode() : 500
+                $isHttp ? $exception->getStatusCode() : 500,
+                $isHttp ? $exception->getHeaders() : [],
             );
         }
 

@@ -46,7 +46,7 @@ class DeleteCommentPipeline implements ShouldQueue
     {
         $groupId = $this->status->group_id;
         $postId = $this->status->id;
-        if($this->status->)
+
         $parent = $this->parent;
         $parent->reply_count = GroupComment::whereStatusId($parent->id)->count();
         $parent->save();

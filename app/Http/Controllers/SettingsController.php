@@ -150,6 +150,9 @@ class SettingsController extends Controller
         $profile->save();
         Cache::forget('profiles:private');
         AccountService::del($profile->id);
+        DB::table('oauth_access_tokens')->where('user_id', $user->id)->delete();
+        DB::table('oauth_refresh_tokens')->where('user_id', $user->id)->delete();
+        OauthClient::where('user_id', $user->id)->delete();
         Auth::logout();
         DeleteAccountPipeline::dispatch($user)->onQueue('low');
 

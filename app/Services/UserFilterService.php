@@ -4,7 +4,7 @@ namespace App\Services;
 
 use App\Models\UserDomainBlock;
 use App\UserFilter;
-use Cache;
+use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Redis;
 
 class UserFilterService
@@ -15,74 +15,67 @@ class UserFilterService
 
     const USER_DOMAIN_KEY = 'pf:services:domain-blocks:ids:';
 
+    const EMPTY_SENTINEL = '-1';
+
+    const FILTER_TTL = 2592000;
+
     public static function mutes(int $profile_id)
     {
-        $key = self::USER_MUTES_KEY.$profile_id;
-        $warm = Cache::has($key.':cached-v0');
-        if ($warm) {
-            return Redis::zrevrange($key, 0, -1) ?? [];
-        } else {
-            if (Redis::zrevrange($key, 0, -1)) {
-                return Redis::zrevrange($key, 0, -1);
-            }
-            $ids = UserFilter::whereFilterType('mute')
-                ->whereUserId($profile_id)
-                ->pluck('filterable_id')
-                ->map(function ($id) {
-                    $acct = AccountService::get($id, true);
-                    if (! $acct) {
-                        return false;
-                    }
-
-                    return $acct['id'];
-                })
-                ->filter(function ($res) {
-                    return $res;
-                })
-                ->values()
-                ->toArray();
-            foreach ($ids as $muted_id) {
-                Redis::zadd($key, (int) $muted_id, (int) $muted_id);
-            }
-            Cache::set($key.':cached-v0', 1, 7776000);
-
-            return $ids;
-        }
+        return self::getFilterIds($profile_id, 'mute', self::USER_MUTES_KEY);
     }
 
     public static function blocks(int $profile_id)
     {
-        $key = self::USER_BLOCKS_KEY.$profile_id;
-        $warm = Cache::has($key.':cached-v0');
-        if ($warm) {
-            return Redis::zrevrange($key, 0, -1) ?? [];
-        } else {
-            if (Redis::zrevrange($key, 0, -1)) {
-                return Redis::zrevrange($key, 0, -1);
-            }
-            $ids = UserFilter::whereFilterType('block')
-                ->whereUserId($profile_id)
-                ->pluck('filterable_id')
-                ->map(function ($id) {
-                    $acct = AccountService::get($id, true);
-                    if (! $acct) {
-                        return false;
-                    }
+        return self::getFilterIds($profile_id, 'block', self::USER_BLOCKS_KEY);
+    }
 
-                    return $acct['id'];
-                })
-                ->filter(function ($res) {
-                    return $res;
-                })
-                ->values()
-                ->toArray();
-            foreach ($ids as $blocked_id) {
-                Redis::zadd($key, (int) $blocked_id, (int) $blocked_id);
-            }
-            Cache::set($key.':cached-v0', 1, 7776000);
+    protected static function getFilterIds(int $profile_id, string $type, string $keyPrefix)
+    {
+        $key = $keyPrefix.$profile_id;
 
-            return $ids;
+        $ids = Redis::zrevrange($key, 0, -1);
+        if (! empty($ids)) {
+            Redis::expire($key, self::FILTER_TTL);
+
+            return array_values(array_filter($ids, fn ($id) => $id !== self::EMPTY_SENTINEL));
         }
+
+        Cache::forget($key.':cached-v0');
+
+        $ids = UserFilter::whereFilterType($type)
+            ->whereUserId($profile_id)
+            ->pluck('filterable_id')
+            ->map(fn ($id) => AccountService::get($id, true)['id'] ?? false)
+            ->filter()
+            ->values()
+            ->toArray();
+
+        if (empty($ids)) {
+            Redis::zadd($key, 0, self::EMPTY_SENTINEL);
+        } else {
+            foreach ($ids as $id) {
+                Redis::zadd($key, (int) $id, (int) $id);
+            }
+        }
+        Redis::expire($key, self::FILTER_TTL);
+
+        return $ids;
+    }
+
+    protected static function addToFilter(string $key, int $filterable_id)
+    {
+        Redis::zadd($key, $filterable_id, $filterable_id);
+        Redis::zrem($key, self::EMPTY_SENTINEL);
+        Redis::expire($key, self::FILTER_TTL);
+    }
+
+    protected static function removeFromFilter(string $key, $filterable_id)
+    {
+        Redis::zrem($key, $filterable_id);
+        if (Redis::zcard($key) === 0) {
+            Redis::zadd($key, 0, self::EMPTY_SENTINEL);
+        }
+        Redis::expire($key, self::FILTER_TTL);
     }
 
     public static function filters(int $profile_id)
@@ -96,10 +89,9 @@ class UserFilterService
             return false;
         }
         $key = self::USER_MUTES_KEY.$profile_id;
-        $mutes = self::mutes($profile_id);
-        $exists = in_array($muted_id, $mutes);
+        $exists = in_array($muted_id, self::mutes($profile_id));
         if (! $exists) {
-            Redis::zadd($key, $muted_id, $muted_id);
+            self::addToFilter($key, $muted_id);
         }
 
         return true;
@@ -111,10 +103,9 @@ class UserFilterService
             return false;
         }
         $key = self::USER_MUTES_KEY.$profile_id;
-        $mutes = self::mutes($profile_id);
-        $exists = in_array($muted_id, $mutes);
+        $exists = in_array($muted_id, self::mutes($profile_id));
         if ($exists) {
-            Redis::zrem($key, $muted_id);
+            self::removeFromFilter($key, $muted_id);
         }
 
         return true;
@@ -128,7 +119,7 @@ class UserFilterService
         $key = self::USER_BLOCKS_KEY.$profile_id;
         $exists = in_array($blocked_id, self::blocks($profile_id));
         if (! $exists) {
-            Redis::zadd($key, $blocked_id, $blocked_id);
+            self::addToFilter($key, $blocked_id);
         }
 
         return true;
@@ -142,7 +133,7 @@ class UserFilterService
         $key = self::USER_BLOCKS_KEY.$profile_id;
         $exists = in_array($blocked_id, self::blocks($profile_id));
         if ($exists) {
-            Redis::zrem($key, $blocked_id);
+            self::removeFromFilter($key, $blocked_id);
         }
 
         return $exists;
@@ -150,12 +141,12 @@ class UserFilterService
 
     public static function blockCount(int $profile_id)
     {
-        return Redis::zcard(self::USER_BLOCKS_KEY.$profile_id);
+        return count(self::blocks($profile_id));
     }
 
     public static function muteCount(int $profile_id)
     {
-        return Redis::zcard(self::USER_MUTES_KEY.$profile_id);
+        return count(self::mutes($profile_id));
     }
 
     public static function domainBlocks($pid, $purge = false)
@@ -169,6 +160,7 @@ class UserFilterService
             21600,
             function () use ($pid) {
                 return UserDomainBlock::whereProfileId($pid)->pluck('domain')->toArray();
-            });
+            }
+        );
     }
 }

@@ -36,37 +36,6 @@
 								<announcements-card v-on:show-tips="showTips = $event"></announcements-card>
 							</div> -->
 
-							<!-- <div v-if="index == 2 && showSuggestions == true && suggestions.length" class="card status-card rounded-0 shadow-none border">
-								<div class="card-header d-flex align-items-center justify-content-between bg-white border-0 pb-0">
-									<h6 class="text-muted font-weight-bold mb-0">Suggestions For You</h6>
-									<span class="cursor-pointer text-muted" v-on:click="hideSuggestions"><i class="fas fa-times"></i></span>
-								</div>
-								<div class="card-body row mx-0">
-									<div class="col-12 col-md-4 mb-3" v-for="(rec, index) in suggestions">
-										<div class="card">
-											<div class="card-body text-center pt-3">
-												<p class="mb-0">
-													<a :href="'/'+rec.username">
-														<img :src="rec.avatar" class="img-fluid rounded-circle cursor-pointer" width="45px" height="45px" onerror="this.onerror=null;this.src='/storage/avatars/default.png?v=2'" alt="avatar">
-													</a>
-												</p>
-												<div class="py-3">
-													<p class="font-weight-bold text-dark cursor-pointer mb-0">
-														<a :href="'/'+rec.username" class="text-decoration-none text-dark">
-															{{rec.username}}
-														</a>
-													</p>
-													<p class="small text-muted mb-0">{{rec.message}}</p>
-												</div>
-												<p class="mb-0">
-													<a class="btn btn-primary btn-block font-weight-bold py-0" href="#" @click.prevent="expRecFollow(rec.id, index)">Follow</a>
-												</p>
-											</div>
-										</div>
-									</div>
-								</div>
-							</div> -->
-
 							<!-- <div v-if="index == 4 && showHashtagPosts && hashtagPosts.length" class="card status-card rounded-0 shadow-none border border-top-0">
 								<div class="card-header bg-white border-0 mb-0">
 									<div class="d-flex align-items-center justify-content-between pt-2">
@@ -304,31 +273,6 @@
 							<notification-card></notification-card>
 						</div>
 
-						<div v-show="showSuggestions == true && suggestions.length && config.ab && config.ab.rec == true" class="mb-4">
-							<div class="card shadow-none border">
-								<div class="card-header bg-white d-flex align-items-center justify-content-between">
-									<a class="small text-muted cursor-pointer" href="#" @click.prevent="refreshSuggestions" ref="suggestionRefresh"><i class="fas fa-sync-alt"></i></a>
-									<div class="small text-dark text-uppercase font-weight-bold">Suggestions</div>
-									<div class="small text-muted cursor-pointer" v-on:click="hideSuggestions"><i class="fas fa-times"></i></div>
-								</div>
-								<div class="card-body pt-0">
-									<div v-for="(rec, index) in suggestions" class="media align-items-center mt-3">
-										<a :href="'/'+rec.username">
-											<img :src="rec.avatar" width="32px" height="32px" class="rounded-circle mr-3" onerror="this.onerror=null;this.src='/storage/avatars/default.png?v=2'" alt="avatar">
-										</a>
-										<div class="media-body">
-											<p class="mb-0 font-weight-bold small">
-												<a :href="'/'+rec.username" class="text-decoration-none text-dark">
-													{{rec.username}}
-												</a>
-											</p>
-											<p class="mb-0 small text-muted">{{rec.message}}</p>
-										</div>
-									</div>
-								</div>
-							</div>
-						</div>
-
 						<footer>
 							<div class="container px-0 pb-5">
 								<p class="mb-2 small text-justify">
@@ -447,7 +391,6 @@
 				profile: {},
 				min_id: 0,
 				max_id: 0,
-				suggestions: {},
 				loading: true,
 				replies: [],
 				replyId: null,
@@ -464,7 +407,6 @@
 				followingCursor: 1,
 				followingMore: true,
 				lightboxMedia: false,
-				showSuggestions: true,
 				showReadMore: true,
 				replyStatus: {},
 				replyText: '',
@@ -549,12 +491,6 @@
 
 			if(this.config.ab.spa === true) {
 				this.showPromo = localStorage.getItem('pf_metro_ui.exp.spa' + new Date().getMonth()) == 'false' ? false : true;
-			}
-
-			if(localStorage.getItem('pf_metro_ui.exp.rec') == 'false') {
-				this.showSuggestions = false;
-			} else {
-				this.showSuggestions = true;
 			}
 
 			if(localStorage.getItem('pf_metro_ui.exp.rm') == 'false') {
@@ -748,18 +684,6 @@
 				return;
 			},
 
-			expRec() {
-				//return;
-
-				if(this.config.ab.rec == false) {
-					return;
-				}
-				axios.get('/api/local/exp/rec')
-				.then(res => {
-					this.suggestions = res.data;
-				})
-			},
-
 			owner(status) {
 				return this.profile.id === status.account.id;
 			},
@@ -772,11 +696,6 @@
 				return this.owner(status) || this.admin();
 			},
 
-			hideSuggestions() {
-				localStorage.setItem('pf_metro_ui.exp.rec', false);
-				this.showSuggestions = false;
-			},
-
 			emojiReaction(status) {
 				let em = event.target.innerText;
 				if(this.replyText.length == 0) {
@@ -786,41 +705,6 @@
 					this.replyText += em + ' ';
 					$('textarea[name="comment"]').focus();
 				}
-			},
-
-			refreshSuggestions() {
-				return;
-
-				let el = event.target.parentNode;
-				if(el.classList.contains('disabled') == true) {
-					return;
-				}
-				axios.get('/api/local/exp/rec', {
-					params: {
-						refresh: true
-					}
-				})
-				.then(res => {
-					this.suggestions = res.data;
-
-					if (el.classList) {
-						el.classList.add('disabled');
-						el.classList.add('text-light');
-					}
-					else {
-						el.className += ' ' + 'disabled text-light';
-					}
-					setTimeout(function() {
-						el.setAttribute('href', '#');
-						if (el.classList) {
-							el.classList.remove('disabled');
-							el.classList.remove('text-light');
-						}
-						else {
-							el.className = el.className.replace(new RegExp('(^|\\b)' + className.split(' ').join('|') + '(\\b|$)', 'gi'), 'disabled text-light');
-						}
-					}, 10000);
-				});
 			},
 
 			fetchHashtagPosts() {

@@ -11,6 +11,7 @@ use App\Jobs\ModPipeline\HandleSpammerPipeline;
 use App\Profile;
 use App\Services\BookmarkService;
 use App\Services\DiscoverService;
+use App\Services\FollowerService;
 use App\Services\ModLogService;
 use App\Services\PublicTimelineService;
 use App\Services\StatusService;
@@ -91,12 +92,23 @@ class InternalApiController extends Controller
         $this->validate($request, [
             'limit' => 'nullable|int|min:1|max:6',
         ]);
+        $user = $request->user();
         $parent = Status::whereScope('public')->findOrFail($id);
         $limit = $request->input('limit') ?? 3;
         $children = Status::whereInReplyToId($parent->id)
             ->orderBy('created_at', 'desc')
-            ->take($limit)
-            ->get();
+            ->take($limit * 3)
+            ->get()
+            ->filter(function ($s) use ($user) {
+                if (in_array($s->scope, ['public', 'unlisted'])) {
+                    return true;
+                }
+                if ($s->scope === 'private') {
+                    return $user && ($s->profile_id === $user->profile_id
+                        || FollowerService::follows($user->profile_id, $s->profile_id));
+                }
+                return false;
+            })->take($limit);
         $resource = new Fractal\Resource\Collection($children, new StatusTransformer);
         $res = $this->fractal->createData($resource)->toArray();
 
@@ -326,9 +338,9 @@ class InternalApiController extends Controller
             'only_media' => 'nullable',
             'pinned' => 'nullable',
             'exclude_replies' => 'nullable',
-            'max_id' => 'nullable|integer|min:0|max:'.PHP_INT_MAX,
-            'since_id' => 'nullable|integer|min:0|max:'.PHP_INT_MAX,
-            'min_id' => 'nullable|integer|min:0|max:'.PHP_INT_MAX,
+            'max_id' => 'nullable|integer|min:0|max:' . PHP_INT_MAX,
+            'since_id' => 'nullable|integer|min:0|max:' . PHP_INT_MAX,
+            'min_id' => 'nullable|integer|min:0|max:' . PHP_INT_MAX,
             'limit' => 'nullable|integer|min:1|max:24',
         ]);
 
@@ -346,7 +358,7 @@ class InternalApiController extends Controller
                 return response()->json([]);
             }
             $pid = Auth::user()->profile->id;
-            $following = Cache::remember('profile:following:'.$pid, now()->addMinutes(1440), function () use ($pid) {
+            $following = Cache::remember('profile:following:' . $pid, now()->addMinutes(1440), function () use ($pid) {
                 $following = Follower::whereProfileId($pid)->pluck('following_id');
 
                 return $following->push($pid)->toArray();
@@ -355,7 +367,7 @@ class InternalApiController extends Controller
         } else {
             if (Auth::check()) {
                 $pid = Auth::user()->profile->id;
-                $following = Cache::remember('profile:following:'.$pid, now()->addMinutes(1440), function () use ($pid) {
+                $following = Cache::remember('profile:following:' . $pid, now()->addMinutes(1440), function () use ($pid) {
                     $following = Follower::whereProfileId($pid)->pluck('following_id');
 
                     return $following->push($pid)->toArray();
@@ -399,12 +411,12 @@ class InternalApiController extends Controller
 
     public function remoteProfile(Request $request, $id)
     {
-        return redirect('/i/web/profile/'.$id);
+        return redirect('/i/web/profile/' . $id);
     }
 
     public function remoteStatus(Request $request, $profileId, $statusId)
     {
-        return redirect('/i/web/post/'.$statusId);
+        return redirect('/i/web/post/' . $statusId);
     }
 
     public function requestEmailVerification(Request $request)

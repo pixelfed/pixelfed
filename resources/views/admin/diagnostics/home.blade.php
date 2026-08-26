@@ -298,11 +298,6 @@
 
                                 	<tr>
                                 		<td><span class="badge badge-primary">EXP</span></td>
-                                		<td><strong>EXP_LC</strong></td>
-                                		<td><span>{{config_cache('exp.lc') ? '✅ true' : '❌ false' }}</span></td>
-                                	</tr>
-                                	<tr>
-                                		<td><span class="badge badge-primary">EXP</span></td>
                                 		<td><strong>EXP_TOP</strong></td>
                                 		<td><span>{{config_cache('exp.top') ? '✅ true' : '❌ false' }}</span></td>
                                 	</tr>
@@ -504,11 +499,6 @@
                                 	</tr>
                                 	<tr>
                                 		<td><span class="badge badge-primary">INSTANCE</span></td>
-                                		<td><strong>EXP_LOOPS</strong></td>
-                                		<td><span>{{config_cache('instance.discover.loops.enabled') ? '✅ true' : '❌ false' }}</span></td>
-                                	</tr>
-                                	<tr>
-                                		<td><span class="badge badge-primary">INSTANCE</span></td>
                                 		<td><strong>INSTANCE_PUBLIC_HASHTAGS</strong></td>
                                 		<td><span>{{config_cache('instance.discover.tags.is_public') ? '✅ true' : '❌ false' }}</span></td>
                                 	</tr>
@@ -603,21 +593,6 @@
                                 		<td><span class="badge badge-primary">INSTANCE</span></td>
                                 		<td><strong>OAUTH_PAT_ID</strong></td>
                                 		<td><span>"{{config_cache('instance.oauth.pat.id')}}"</span></td>
-                                	</tr>
-                                	<tr>
-                                		<td><span class="badge badge-primary">INSTANCE</span></td>
-                                		<td><strong>ENABLE_COVID_LABEL</strong></td>
-                                		<td><span>{{config_cache('instance.label.covid.enabled') ? '✅ true' : '❌ false' }}</span></td>
-                                	</tr>
-                                	<tr>
-                                		<td><span class="badge badge-primary">INSTANCE</span></td>
-                                		<td><strong>COVID_LABEL_URL</strong></td>
-                                		<td><span>"{{config_cache('instance.label.covid.url')}}"</span></td>
-                                	</tr>
-                                	<tr>
-                                		<td><span class="badge badge-primary">INSTANCE</span></td>
-                                		<td><strong>COVID_LABEL_ORG</strong></td>
-                                		<td><span>"{{config_cache('instance.label.covid.org')}}"</span></td>
                                 	</tr>
                                 	<tr>
                                 		<td><span class="badge badge-primary">INSTANCE</span></td>

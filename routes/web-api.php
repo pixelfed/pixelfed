@@ -53,8 +53,6 @@ Route::domain(config('pixelfed.domain.app'))->middleware(['validemail', 'twofact
             Route::get('status/{id}/replies', 'InternalApiController@statusReplies');
             Route::post('moderator/action', 'InternalApiController@modAction');
             Route::get('discover/categories', 'InternalApiController@discoverCategories');
-            Route::get('loops', 'DiscoverController@loopsApi');
-            Route::post('loops/watch', 'DiscoverController@loopWatch');
             Route::get('discover/tag', 'DiscoverController@getHashtags');
             Route::get('statuses/{id}/replies', 'Api\ApiV1Controller@statusReplies');
             Route::get('statuses/{id}/state', 'Api\ApiV1Controller@statusState');
@@ -95,8 +93,6 @@ Route::domain(config('pixelfed.domain.app'))->middleware(['validemail', 'twofact
                 Route::get('comments/{username}/status/{postId}', 'PublicApiController@statusComments');
                 Route::post('moderator/action', 'InternalApiController@modAction');
                 Route::get('discover/categories', 'InternalApiController@discoverCategories');
-                Route::get('loops', 'DiscoverController@loopsApi');
-                Route::post('loops/watch', 'DiscoverController@loopWatch');
                 Route::get('discover/tag', 'DiscoverController@getHashtags');
                 Route::get('discover/posts/trending', 'DiscoverController@trendingApi');
                 Route::get('discover/posts/hashtags', 'DiscoverController@trendingHashtags');
@@ -124,7 +120,6 @@ Route::domain(config('pixelfed.domain.app'))->middleware(['validemail', 'twofact
 
         Route::group(['prefix' => 'local'], function () {
             // Route::post('status/compose', 'InternalApiController@composePost')->middleware('throttle:maxPostsPerHour,60')->middleware('throttle:maxPostsPerDay,1440');
-            Route::get('exp/rec', 'ApiController@userRecommendations');
             Route::post('discover/tag/subscribe', 'HashtagFollowController@store');
             Route::get('discover/tag/list', 'HashtagFollowController@getTags');
             // Route::get('profile/sponsor/{id}', 'ProfileSponsorController@get');

@@ -148,6 +148,7 @@ class ReportController extends Controller
 
         switch ($object_type) {
             case 'post':
+            case 'comment':
                 $object = Status::findOrFail($object_id);
                 $object_type = 'App\Status';
                 $exists = Report::whereUserId(Auth::id())

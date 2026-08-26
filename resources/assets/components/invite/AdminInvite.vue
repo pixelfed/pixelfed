@@ -368,11 +368,15 @@ u                                maxlength="30"
             },
 
             validateEmail() {
-                if(!this.form.email || !this.form.email.length) {
+                const email = this.form?.email?.trim();
+
+                if (!email || email.length > 254) {
                     return false;
                 }
 
-                return /^[a-zA-Z]+[a-zA-Z0-9_.-]+@[a-zA-Z0-9_.-]+[a-zA-Z]$/i.test(this.form.email);
+                const pattern = /^[a-zA-Z0-9.!#$%&'*+\/=?^_`{|}~-]+@[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?(?:\.[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?)+$/;
+
+                return pattern.test(email);
             },
 
             handleRegistration() {

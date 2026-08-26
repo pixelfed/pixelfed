@@ -29,7 +29,7 @@ class CommentController extends Controller
         }
         $this->validate($request, [
             'item' => 'required|integer|min:1',
-            'comment' => 'required|string|max:'.config_cache('pixelfed.max_caption_length'),
+            'comment' => 'required|string|max:' . config_cache('pixelfed.max_caption_length'),
             'sensitive' => 'nullable|boolean',
         ]);
         $comment = $request->input('comment');
@@ -40,8 +40,11 @@ class CommentController extends Controller
         $profile = $user->profile;
         $status = Status::findOrFail($statusId);
 
-        if ($status->comments_disabled == true) {
-            return;
+        abort_if($status->comments_disabled == true, 404);
+        abort_if($status->scope === 'direct', 404);
+
+        if ($status->scope === 'private' && $status->profile_id !== $profile->id) {
+            abort_if(! FollowerService::follows($profile->id, $status->profile_id), 404);
         }
 
         $filtered = UserFilter::whereUserId($status->profile_id)

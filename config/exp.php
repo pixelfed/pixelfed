@@ -7,15 +7,6 @@
  */
 
 return [
-	// Hidden like counts (deprecated)
-	'lc' => env('EXP_LC', false),
-
-	// Recommendations (deprecated)
-	'rec' => false,
-
-	// Loops feature (deprecated)
-	'loops' => false,
-
 	// Text only posts (alpha)
 	'top' => env('EXP_TOP', false),
 
@@ -38,9 +29,6 @@ return [
 
 	// HLS Live Streaming
 	'hls' => env('HLS_LIVE', false),
-
-	// Post Update/Edits
-	'pue' => env('EXP_PUE', true),
 
 	'autolink' => env('EXP_AUTOLINK_V2', false),
 ];
