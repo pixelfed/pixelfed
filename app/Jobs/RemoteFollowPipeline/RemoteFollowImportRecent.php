@@ -170,7 +170,7 @@ class RemoteFollowImportRecent implements ShouldQueue
         $profile = $this->profile;
         $supported = $this->supported;
         $attachments = $activity['object']['attachment'];
-        $caption = str_limit($activity['object']['content'], 125);
+        $caption = Str::limit($activity['object']['content'], 125);
 
         if (Status::whereUrl($activity['id'])->count() !== 0) {
             return true;

@@ -7,6 +7,7 @@ use App\Profile;
 use App\UserDevice;
 use App\UserSetting;
 use DB;
+use Illuminate\Support\Str;
 
 class AuthLogin
 {
@@ -117,7 +118,7 @@ class AuthLogin
             return UserDevice::firstOrCreate([
                 'user_id' => $user->id,
                 'ip' => request()->ip(),
-                'user_agent' => str_limit(request()->userAgent(), 180),
+                'user_agent' => Str::limit(request()->userAgent(), 180),
             ]);
         });
     }
