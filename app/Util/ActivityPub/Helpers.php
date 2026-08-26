@@ -193,16 +193,6 @@ class Helpers
             return false;
         }
 
-        if (empty(self::resolvePublicIps($host))) {
-            return false;
-        }
-
-        if (! $disableDNSCheck && self::shouldCheckDNS()) {
-            if (! self::hasValidDNS($host)) {
-                return false;
-            }
-        }
-
         if ($forceBanCheck || self::shouldCheckBans()) {
             if (self::isHostBanned($host)) {
                 return false;
