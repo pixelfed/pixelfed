@@ -27,6 +27,7 @@
   - Fixes 6657 - Exact error message(s) on composer
   - Fixes 6776 - OAuth client secret not displayed after creation
   - Fixes 6777 - Added error on PAT creation when OAUTH_PAT_ENABLED is false
+  - Fixes 6803 - Fix deleting oauth client
 
 ## [v0.12.9 (2026-08-25)](https://github.com/pixelfed/pixelfed/compare/v0.12.9...dev)
 
