@@ -5,6 +5,7 @@ namespace App\Console\Commands;
 use App\Hashtag;
 use App\StatusHashtag;
 use Illuminate\Console\Command;
+use Illuminate\Support\Str;
 
 class FixHashtags extends Command
 {
@@ -55,7 +56,7 @@ class FixHashtags extends Command
         $this->info('Found '.Hashtag::count().' total hashtags!');
         $count = 0;
         foreach (Hashtag::lazyById(100, 'id') as $tag) {
-            $slug = str_slug($tag->name, '-', false);
+            $slug = Str::slug($tag->name, '-', false);
             if ($slug === $tag->slug) {
                 continue;
             }
@@ -63,7 +64,7 @@ class FixHashtags extends Command
             if (! $count) {
                 continue;
             }
-            $this->info($count.':'.$tag->slug.' : '.str_slug($tag->name, '-', false));
+            $this->info($count.':'.$tag->slug.' : '.Str::slug($tag->name, '-', false));
 
         }
 

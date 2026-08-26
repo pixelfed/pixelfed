@@ -7,6 +7,7 @@ use App\DiscoverCategoryHashtag;
 use App\Hashtag;
 use App\Media;
 use Illuminate\Http\Request;
+use Illuminate\Support\Str;
 
 trait AdminDiscoverController
 {
@@ -31,7 +32,7 @@ trait AdminDiscoverController
         ]);
 
         $name = $request->input('name');
-        $slug = str_slug($name);
+        $slug = Str::slug($name);
         $active = $request->input('active');
         $media = (int) $request->input('media');
 
@@ -62,7 +63,7 @@ trait AdminDiscoverController
             'hashtags' => 'nullable|string',
         ]);
         $name = $request->input('name');
-        $slug = str_slug($name);
+        $slug = Str::slug($name);
         $active = $request->input('active');
         $media = (int) $request->input('media');
         $media = Media::findOrFail($media);

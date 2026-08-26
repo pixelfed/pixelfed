@@ -9,6 +9,7 @@ use App\UserInvite;
 use Auth;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Mail;
+use Illuminate\Support\Str;
 
 class UserInviteController extends Controller
 {
@@ -55,8 +56,8 @@ class UserInviteController extends Controller
         $invite->profile_id = Auth::user()->profile_id;
         $invite->email = $email;
         $invite->message = $request->input('message');
-        $invite->key = str_random(random_int(6, 9)).'_'.str_random(random_int(14, 20)).'_'.str_random(random_int(32, 64));
-        $invite->token = str_random(random_int(32, 69));
+        $invite->key = Str::random(random_int(6, 9)).'_'.Str::random(random_int(14, 20)).'_'.Str::random(random_int(32, 64));
+        $invite->token = Str::random(random_int(32, 69));
         $invite->save();
 
         // Mail::to($email)->send(new UserInviteMail($invite));
