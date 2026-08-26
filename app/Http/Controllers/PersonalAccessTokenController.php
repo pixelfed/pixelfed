@@ -52,6 +52,12 @@ class PersonalAccessTokenController extends Controller
 
     public function store(Request $request): JsonResponse
     {
+        if (! config('instance.oauth.pat.enabled')) {
+            return response()->json([
+                'error' => 'Personal access tokens are not enabled on this instance. Please contact your administrator.',
+            ], 403);
+        }
+
         $allowedScopes = collect(Passport::scopeIds())
             ->filter(function (string $scope) use ($request) {
                 return $this->userCanUseScope($request->user(), $scope);
@@ -67,10 +73,16 @@ class PersonalAccessTokenController extends Controller
 
         $scopes = array_values(array_unique($validated['scopes'] ?? []));
 
-        $result = $request->user()->createToken(
-            $validated['name'],
-            $scopes
-        );
+        try {
+            $result = $request->user()->createToken(
+                $validated['name'],
+                $scopes
+            );
+        } catch (\RuntimeException $e) {
+            return response()->json([
+                'error' => 'Unable to create personal access token. The server may not have a personal access client configured. Please contact your administrator.',
+            ], 500);
+        }
 
         return response()->json([
             'accessToken' => $result->accessToken,
