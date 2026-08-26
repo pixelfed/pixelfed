@@ -4,6 +4,7 @@
 
 -   Fix ApiV1Controller, ensure follow notifications have an account ([e1235dfd7](https://github.com/pixelfed/pixelfed/commit/e1235dfd7))
 -   Update AccountService to include settings ([59f57b1](https://github.com/pixelfed/pixelfed/commit/59f57b1))
+-   Update ApiV1Controller, add show_atom support to update_credentials endpoint ([4e2e49f84](https://github.com/pixelfed/pixelfed/commit/4e2e49f84))
 -   ([](https://github.com/pixelfed/pixelfed/commit/))
 -   ([](https://github.com/pixelfed/pixelfed/commit/))
 
