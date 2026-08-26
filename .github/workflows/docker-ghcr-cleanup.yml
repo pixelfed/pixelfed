@@ -1,4 +1,4 @@
-name: Cleanup Old Container Images
+name: Cleanup Old GHCR Container Images
 
 on:
   schedule:
@@ -12,9 +12,6 @@ permissions:
 jobs:
   cleanup:
     runs-on: ubuntu-latest
-    # Only run in the upstream repo — forks shouldn't run scheduled jobs
-    # against their own packages using this hardcoded config, and cron
-    # triggers fire on forks too unless guarded like this.
     if: github.repository == 'pixelfed/pixelfed'
     steps:
       - name: Clean up old images
