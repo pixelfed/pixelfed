@@ -5,31 +5,31 @@ use App\Http\Middleware\Admin;
 use App\Http\Middleware\Api\Admin as ApiAdmin;
 use App\Http\Middleware\DangerZone;
 use App\Http\Middleware\EmailVerificationCheck;
-use App\Http\Middleware\EncryptCookies;
 use App\Http\Middleware\FrameGuard;
 use App\Http\Middleware\Localization;
 use App\Http\Middleware\RedirectIfAuthenticated;
 use App\Http\Middleware\RestrictedAccess;
-use App\Http\Middleware\TrimStrings;
-use App\Http\Middleware\TrustProxies;
 use App\Http\Middleware\TwoFactorAuth;
-use App\Http\Middleware\VerifyCsrfToken;
 use GuzzleHttp\Exception\ConnectException;
 use Illuminate\Auth\Middleware\Authenticate;
 use Illuminate\Auth\Middleware\AuthenticateWithBasicAuth;
 use Illuminate\Auth\Middleware\Authorize;
 use Illuminate\Console\Scheduling\Schedule;
 use Illuminate\Cookie\Middleware\AddQueuedCookiesToResponse;
+use Illuminate\Cookie\Middleware\EncryptCookies;
 use Illuminate\Foundation\Application;
 use Illuminate\Foundation\Configuration\Exceptions;
 use Illuminate\Foundation\Configuration\Middleware;
 use Illuminate\Foundation\Http\Middleware\ConvertEmptyStringsToNull;
 use Illuminate\Foundation\Http\Middleware\PreventRequestsDuringMaintenance;
+use Illuminate\Foundation\Http\Middleware\TrimStrings;
 use Illuminate\Foundation\Http\Middleware\ValidatePostSize;
+use Illuminate\Foundation\Http\Middleware\VerifyCsrfToken;
 use Illuminate\Http\Client\ConnectionException;
 use Illuminate\Http\Exceptions\HttpResponseException;
 use Illuminate\Http\Middleware\HandleCors;
 use Illuminate\Http\Middleware\SetCacheHeaders;
+use Illuminate\Http\Middleware\TrustProxies;
 use Illuminate\Routing\Middleware\SubstituteBindings;
 use Illuminate\Routing\Middleware\ThrottleRequests;
 use Illuminate\Routing\Middleware\ValidateSignature;
@@ -101,6 +101,11 @@ return Application::configure(basePath: dirname(__DIR__))
 
         $middleware->group('api', [
             'bindings',
+        ]);
+
+        $middleware->validateCsrfTokens(except: [
+            '/api/v1/*',
+            'oauth/token',
         ]);
 
         $middleware->alias([
