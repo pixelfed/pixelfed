@@ -26,7 +26,7 @@ jobs:
         id: vars
         run: |
           if [ "${{ github.ref_name }}" = "dev" ]; then
-            echo "branch_tag=latest" >> "$GITHUB_OUTPUT"
+            echo "branch_tag=dev" >> "$GITHUB_OUTPUT"
           elif [ "${{ github.ref_name }}" = "staging" ]; then
             echo "branch_tag=staging" >> "$GITHUB_OUTPUT"
           else
