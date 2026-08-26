@@ -118,7 +118,7 @@ class AccountService
     {
         $key = self::CACHE_PF_ACCT_SETTINGS_KEY.$pid;
 
-        return Cache::remember($key, 14400, function () use ($pid) {
+        return Cache::remember($key, 604800, function () use ($pid) {
             $user = User::with('profile')->whereProfileId($pid)->whereNull('status')->first();
             if (! $user) {
                 return [];
