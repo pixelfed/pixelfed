@@ -73,7 +73,7 @@ class StoryComposeController extends Controller
         $story->path = $path;
         $story->local = true;
         $story->size = $photo->getSize();
-        $story->bearcap_token = str_random(64);
+        $story->bearcap_token = Str::random(64);
         $story->expires_at = now()->addMinutes(1440);
         $story->save();
 
@@ -460,7 +460,7 @@ class StoryComposeController extends Controller
         abort_if(! FollowerService::follows($pid, $story->profile_id), 422, 'Cannot report a story from an account you do not follow');
 
         if (Report::whereProfileId($pid)
-            ->whereObjectType(\App\Story::class)
+            ->whereObjectType(Story::class)
             ->whereObjectId($story->id)
             ->exists()
         ) {
@@ -474,7 +474,7 @@ class StoryComposeController extends Controller
         $report->profile_id = $pid;
         $report->user_id = $request->user()->id;
         $report->object_id = $story->id;
-        $report->object_type = \App\Story::class;
+        $report->object_type = Story::class;
         $report->reported_profile_id = $story->profile_id;
         $report->type = $type;
         $report->message = null;
@@ -550,7 +550,7 @@ class StoryComposeController extends Controller
             $n->profile_id = $dm->to_id;
             $n->actor_id = $dm->from_id;
             $n->item_id = $dm->id;
-            $n->item_type = \App\DirectMessage::class;
+            $n->item_type = DirectMessage::class;
             $n->action = 'story:react';
             $n->save();
         } else {
@@ -627,7 +627,7 @@ class StoryComposeController extends Controller
             $n->profile_id = $dm->to_id;
             $n->actor_id = $dm->from_id;
             $n->item_id = $dm->id;
-            $n->item_type = \App\DirectMessage::class;
+            $n->item_type = DirectMessage::class;
             $n->action = 'story:comment';
             $n->save();
         } else {

@@ -7,6 +7,7 @@ use App\User;
 use App\Util\Lexer\RestrictedNames;
 use DB;
 use Illuminate\Console\Command;
+use Illuminate\Support\Str;
 
 class FixUsernames extends Command
 {
@@ -86,14 +87,14 @@ class FixUsernames extends Command
 
                 switch ($opt) {
                     case $opts[0]:
-                        $new = 'user_'.str_random(6);
+                        $new = 'user_'.Str::random(6);
                         $this->info('New username: '.$new);
                         break;
 
                     case $opts[1]:
                         $new = htmlspecialchars($old, ENT_QUOTES, 'UTF-8');
                         if (strlen($new) < 6) {
-                            $new = $new.'_'.str_random(4);
+                            $new = $new.'_'.Str::random(4);
                         }
                         $this->info('New username: '.$new);
                         break;
@@ -108,7 +109,7 @@ class FixUsernames extends Command
                         break;
 
                     default:
-                        $new = 'user_'.str_random(6);
+                        $new = 'user_'.Str::random(6);
                         break;
                 }
 

@@ -16,6 +16,7 @@ use Illuminate\Http\File;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
 use Illuminate\Support\Facades\Http;
+use Illuminate\Support\Str;
 use Log;
 use Storage;
 
@@ -222,7 +223,7 @@ class RemoteFollowImportRecent implements ShouldQueue
             $info = pathinfo($url);
             $url = str_replace(' ', '%20', $url);
             $img = file_get_contents($url);
-            $file = '/tmp/'.str_random(64);
+            $file = '/tmp/'.Str::random(64);
             file_put_contents($file, $img);
             $path = Storage::putFile($storagePath, new File($file), 'public');
 

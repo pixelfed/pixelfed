@@ -13,6 +13,7 @@ use Illuminate\Http\Request;
 use Illuminate\Http\Response;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Validator;
+use Illuminate\Support\Str;
 use Purify;
 
 class RegisterController extends Controller
@@ -50,7 +51,7 @@ class RegisterController extends Controller
     public function getRegisterToken()
     {
         return \Cache::remember('pf:register:rt', 900, function () {
-            return str_random(40);
+            return Str::random(40);
         });
     }
 
