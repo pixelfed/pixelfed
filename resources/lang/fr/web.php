@@ -32,6 +32,7 @@ return [
 		'sensitive' => 'Sensible',
 		'sensitiveContent' => 'Contenu sensible',
 		'sensitiveContentWarning' => 'Le contenu de cette publication peut être sensible',
+		'javascript' => 'Activez JavaScript SVP pour consulter ce contenu.',
 	],
 
 	'site' => [
@@ -69,6 +70,7 @@ return [
 		'language' => 'Langue',
 		'privacy' => 'Confidentialité',
 		'terms' => 'Conditions',
+        'mobileApps' => 'Applis mobiles',
 
 		// Temporary links
 		'backToPreviousDesign' => 'Revenir au design précédent'
@@ -222,4 +224,41 @@ return [
         'feed' => 'Fil',
     ],
 
+    'powered_by_pixelfed' => 'Propulsé par Pixelfed',
+
+    'landing' => [
+        'login'         =>    'Se connecter',
+        'signup'        =>    'Créer un compte',
+        'about'         =>    'À propos',
+        'directory'     =>    'Annuaire',
+        'explore'       =>    'Explorer',
+        'decentralized_by_pixelfed' => 'Média social décentralisé de partage de photo, propulsé par <a href="https://pixelfed.org" target="_blank">Pixelfed</a>',
+        'posts'         =>    'Publications',
+        'active_users'  =>    'Utilisateurs actifs',
+        'total_users'   =>    'Utilisateurs au total',
+        'managed_by'    =>    'Géré par',
+        'server_rules'  =>    'Règles du serveur',
+        'supported_features' => 'Fonctionnalités prises en charge',
+        'features' => [
+            'photo_posts'   =>  'Publication de photos',
+            'photo_albums'  =>  'Albums photos',
+            'photo_filters' =>  'Filtres',
+            'collections'   =>  'Collections',
+            'comments'      =>  'Commentaires',
+            'hashtags'      =>  'Hashtags',
+            'likes'         =>  'J\'aime',
+            'notifications' =>  'Notifications',
+            'shares'        =>  'Partages',
+            'share_up_to_n_photos' =>  'Vous pouvez partager jusqu\'à <span class="font-weight-bold">{num_photos}</span> photos* à la fois avec des légendes d\'une longueur maximale de <span class="font-weight-bold">{caption_length}</span> caractères.',
+            'share_up_to_n_photos_videos'   =>  'Vous pouvez partager jusqu\'à <span class="font-weight-bold">{num_photos}</span> photos* ou <span class="font-weight-bold">{num_video}</span> vidéo* à la fois avec des légendes d\'une longueur maximale de <span class="font-weight-bold">{caption_length}</span> caractères.',
+            'file_size'     => '* la taille maximale des fichiers est {max_size}',
+            'federation'    => 'Fédération',
+            'mobile_app'    => 'Application mobile',
+            'stories'       => 'Stories',
+            'videos'        => 'Vidéos',
+        ],
+        'discover_accounts' => 'Découvrir des comptes et personnes',
+        'nothing_to_show'   => 'Rien à montrer pour le moment… Revenez plus tard.',
+        'explore_trending'  => 'Parcourir les tendances',
+    ],
 ];

@@ -26,7 +26,7 @@
 
                             <div class="col-md-12">
                                 <label for="email" class="small font-weight-bold text-muted mb-0">{{__("auth.emailAddress")}}</label>
-                                <input id="email" type="email" class="form-control{{ $errors->has('email') ? ' is-invalid' : '' }}" name="email" value="{{ old('email') }}" placeholder="{{__('Email')}}" required autofocus>
+                                <input id="email" type="email" class="form-control{{ $errors->has('email') ? ' is-invalid' : '' }}" name="email" value="{{ old('email') }}" placeholder="{{__('auth.email')}}" required autofocus>
 
                                 @if ($errors->has('email'))
                                     <span class="invalid-feedback">
@@ -36,7 +36,7 @@
 
                                 <div class="help-text small text-right mb-0">
                                     <a href="{{ route('email.forgot') }}" class="small text-muted font-weight-bold">
-                                        {{ __('Forgot Email') }}
+                                        {{ __('auth.forgotEmail') }}
                                     </a>
                                 </div>
                             </div>
@@ -46,7 +46,7 @@
 
                             <div class="col-md-12">
                                 <label for="password" class="small font-weight-bold text-muted mb-0">{{ __("auth.password")}}</label>
-                                <input id="password" type="password" class="form-control{{ $errors->has('password') ? ' is-invalid' : '' }}" name="password" placeholder="{{__('Password')}}" required>
+                                <input id="password" type="password" class="form-control{{ $errors->has('password') ? ' is-invalid' : '' }}" name="password" placeholder="{{__('auth.password')}}" required>
 
                                 @if ($errors->has('password'))
                                     <span class="invalid-feedback">

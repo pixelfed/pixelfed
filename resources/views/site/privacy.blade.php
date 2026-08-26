@@ -1,9 +1,15 @@
 @extends('layouts.app')
 
 @section('content')
-<div class="container mt-5">  
+<div class="container mt-5">
   <div class="col-12">
-    <p class="font-weight-bold text-lighter text-uppercase">Privacy Policy</p>
+    <p class="font-weight-bold text-lighter text-uppercase">
+			@if($page && $page->title)
+				{!! $page->title !!}
+			@else
+				Privacy Policy
+			@endif
+		</p>
     <div class="card border shadow-none">
       <div class="card-body p-md-5 text-justify mx-md-3">
         @if($page && $page->content)
@@ -91,5 +97,5 @@
 </div>
 @endsection
 @push('meta')
-<meta property="og:description" content="Privacy Policy">
+<meta property="og:description" content="@if($page && $page->title) {!! $page->title !!} @else Privacy Policy @endif">
 @endpush
