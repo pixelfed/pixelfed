@@ -48,7 +48,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\RateLimiter;
 use Illuminate\Support\Str;
-use Jenssegers\Agent\Agent;
+use App\Services\UserAgentService;
 use League\Fractal;
 use League\Fractal\Serializer\ArraySerializer;
 use Mail;
@@ -341,7 +341,7 @@ class ApiV1Dot1Controller extends Controller
         if (config('pixelfed.bouncer.cloud_ips.ban_signups')) {
             abort_if(BouncerService::checkIp($request->ip()), 404);
         }
-        $agent = new Agent;
+        $agent = new UserAgentService;
         $currentIp = $request->ip();
 
         $activity = AccountLog::whereUserId($user->id)
