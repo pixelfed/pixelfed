@@ -3,6 +3,8 @@
 namespace App;
 
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\HasManyThrough;
 
 class StatusHashtag extends Model
 {
@@ -13,22 +15,22 @@ class StatusHashtag extends Model
         'status_visibility',
     ];
 
-    public function status()
+    public function status(): BelongsTo
     {
         return $this->belongsTo(Status::class);
     }
 
-    public function hashtag()
+    public function hashtag(): BelongsTo
     {
         return $this->belongsTo(Hashtag::class);
     }
 
-    public function profile()
+    public function profile(): BelongsTo
     {
         return $this->belongsTo(Profile::class);
     }
 
-    public function media()
+    public function media(): HasManyThrough
     {
         return $this->hasManyThrough(
             Media::class,

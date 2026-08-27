@@ -10,6 +10,9 @@ use App\Services\AccountService;
 use App\Services\StatusService;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\Relations\HasManyThrough;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\Auth;
@@ -85,12 +88,12 @@ class Status extends Model
 
     const MAX_LINKS = 5;
 
-    public function profile()
+    public function profile(): BelongsTo
     {
         return $this->belongsTo(Profile::class);
     }
 
-    public function media()
+    public function media(): HasMany
     {
         return $this->hasMany(Media::class);
     }
@@ -283,7 +286,7 @@ class Status extends Model
         return $this->hasOne(Conversation::class);
     }
 
-    public function hashtags()
+    public function hashtags(): HasManyThrough
     {
         return $this->hasManyThrough(
             Hashtag::class,

@@ -3,6 +3,7 @@
 namespace App;
 
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\MorphTo;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
 class Notification extends Model
@@ -28,7 +29,7 @@ class Notification extends Model
         return $this->belongsTo(Profile::class, 'profile_id', 'id');
     }
 
-    public function item()
+    public function item(): MorphTo
     {
         return $this->morphTo();
     }

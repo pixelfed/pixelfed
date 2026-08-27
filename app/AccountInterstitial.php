@@ -3,6 +3,7 @@
 namespace App;
 
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 class AccountInterstitial extends Model
 {
@@ -16,14 +17,14 @@ class AccountInterstitial extends Model
         ];
     }
 
-    public function user()
+    public function user(): BelongsTo
     {
         return $this->belongsTo(User::class);
     }
 
     public function status()
     {
-        if ($this->item_type != \App\Status::class) {
+        if ($this->item_type != Status::class) {
             return;
         }
 

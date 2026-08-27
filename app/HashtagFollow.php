@@ -3,6 +3,7 @@
 namespace App;
 
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 class HashtagFollow extends Model
 {
@@ -14,7 +15,7 @@ class HashtagFollow extends Model
 
     const MAX_LIMIT = 25;
 
-    public function hashtag()
+    public function hashtag(): BelongsTo
     {
         return $this->belongsTo(Hashtag::class);
     }
