@@ -20,9 +20,9 @@ use Purify;
 
 trait HomeSettings
 {
-    public function home(Request $request)
+    public function home()
     {
-        $id = $request->user()->profile_id;
+        $id = request()->user()->profile_id;
         $storage = [];
         $used = Media::whereProfileId($id)->sum('size');
         $storage['limit'] = config_cache('pixelfed.max_account_size') * 1024;
