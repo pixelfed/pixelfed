@@ -62,7 +62,7 @@ class StoryService
                     'can_reply' => (bool) $s->can_reply,
                     'can_react' => (bool) $s->can_react,
                     'poll' => null,  // 'poll' => $s->type == 'poll' ? PollService::storyPoll($s->id) : null, once PollService actually exists.
-                    ];
+                ];
             })
             ->toArray();
     }
