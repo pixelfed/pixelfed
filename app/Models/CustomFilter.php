@@ -5,6 +5,7 @@ namespace App\Models;
 use App\Profile;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\Cache;
+use Illuminate\Support\Facades\Log;
 
 class CustomFilter extends Model
 {

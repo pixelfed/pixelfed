@@ -10,6 +10,7 @@ use App\Http\Controllers\Settings\RelationshipSettings;
 use App\Http\Controllers\Settings\SecuritySettings;
 use App\Jobs\DeletePipeline\DeleteAccountPipeline;
 use App\Jobs\MediaPipeline\MediaSyncLicensePipeline;
+use App\OauthClient;
 use App\ProfileSponsor;
 use App\Services\AccountService;
 use App\UserSetting;
@@ -18,6 +19,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Cookie;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Redis;
 use Illuminate\Support\Str;
 

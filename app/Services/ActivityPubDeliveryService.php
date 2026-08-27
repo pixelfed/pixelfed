@@ -4,6 +4,7 @@ namespace App\Services;
 
 use App\Util\ActivityPub\Helpers;
 use App\Util\ActivityPub\HttpSignature;
+use Illuminate\Support\Facades\Log;
 
 class ActivityPubDeliveryService
 {
