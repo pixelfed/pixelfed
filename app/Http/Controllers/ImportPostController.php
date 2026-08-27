@@ -185,7 +185,7 @@ class ImportPostController extends Controller
                 ImportService::getPostCount($pid, true);
             } catch (\Exception $e) {
                 $errors[] = $e->getMessage();
-                \Log::error('Import error: '.$e->getMessage());
+                Log::error('Import error: '.$e->getMessage());
 
                 continue;
             }

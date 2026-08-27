@@ -51,7 +51,7 @@ class RegisterController extends Controller
 
     public function getRegisterToken()
     {
-        return \Cache::remember('pf:register:rt', 900, function () {
+        return Cache::remember('pf:register:rt', 900, function () {
             return Str::random(40);
         });
     }

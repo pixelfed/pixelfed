@@ -552,7 +552,7 @@ class StoryApiV1Controller extends Controller
             return response()->json($res);
         } catch (\Exception $e) {
             DB::rollback();
-            \Log::error('Story creation failed', [
+            Log::error('Story creation failed', [
                 'user_id' => $user->id,
                 'error' => $e->getMessage(),
             ]);

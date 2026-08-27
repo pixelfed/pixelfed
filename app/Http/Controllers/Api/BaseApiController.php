@@ -16,6 +16,7 @@ use App\Transformer\Api\StatusStatelessTransformer;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Cache;
+use Illuminate\Support\Facades\DB;
 use League\Fractal;
 use League\Fractal\Serializer\ArraySerializer;
 
@@ -141,7 +142,7 @@ class BaseApiController extends Controller
         $user = $request->user();
         $limit = $request->input('limit', 10);
 
-        $res = \DB::table('likes')
+        $res = DB::table('likes')
             ->whereProfileId($user->profile_id)
             ->latest()
             ->simplePaginate($limit)
