@@ -3,7 +3,7 @@ includes:
     - vendor/nesbot/carbon/extension.neon
 
 parameters:
-    level: 0
+    level: 0 #Larascan supports 0-9. 10 is not required
 
     paths:
         - app/
