@@ -20,9 +20,9 @@ use Purify;
 
 trait HomeSettings
 {
-    public function home()
+    public function home(Request $request)
     {
-        $id = Auth::user()->profile_id;
+        $id = $request->user()->profile_id;
         $storage = [];
         $used = Media::whereProfileId($id)->sum('size');
         $storage['limit'] = config_cache('pixelfed.max_account_size') * 1024;
@@ -50,7 +50,7 @@ trait HomeSettings
         $bio = $request->filled('bio') ? strip_tags(Purify::clean($request->input('bio'))) : null;
         $website = $request->input('website');
         $language = $request->input('language');
-        $user = Auth::user();
+        $user = $request->user();
         $profile = $user->profile;
         $pronouns = $request->input('pronouns');
         $existingPronouns = PronounService::get($profile->id);
@@ -176,7 +176,7 @@ trait HomeSettings
         ]);
         $changes = false;
         $email = $request->input('email');
-        $user = Auth::user();
+        $user = $request->user();
         $profile = $user->profile;
 
         $validate = config_cache('pixelfed.enforce_email_verification');
