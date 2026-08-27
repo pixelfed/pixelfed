@@ -187,12 +187,12 @@ class GroupsPostController extends Controller
         }
 
         GroupService::log(
-            $status->group_id,
+            $gp->group_id,
             $request->user()->profile_id,
             'group:status:deleted',
             [
                 'type' => $gp->type,
-                'status_id' => $status->id,
+                'status_id' => $gp->id,
                 'original' => $cached,
             ],
             GroupPost::class,
@@ -234,7 +234,7 @@ class GroupsPostController extends Controller
         // }
 
         if ($gp->in_reply_to_id) {
-            $parent = GroupPost::find($status->in_reply_to_id);
+            $parent = GroupPost::find($gp->in_reply_to_id);
             if ($parent) {
                 $parent->reply_count = GroupPost::whereInReplyToId($parent->id)->count();
                 $parent->save();
@@ -244,9 +244,9 @@ class GroupsPostController extends Controller
 
         GroupPostService::del($group->id, $gp->id);
         GroupFeedService::del($group->id, $gp->id);
-        if ($status->profile_id == $user->profile->id || $user->is_admin == true) {
-            // Cache::forget('profile:status_count:'.$status->profile_id);
-            StatusDelete::dispatch($status);
+        if ($gp->profile_id == $user->profile->id || $user->is_admin == true) {
+            // Cache::forget('profile:status_count:'.$gp->profile_id);
+            StatusDelete::dispatch($gp);
         }
 
         if ($request->wantsJson()) {
