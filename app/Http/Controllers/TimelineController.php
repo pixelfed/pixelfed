@@ -4,7 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Profile;
 use App\Status;
-use App\Transformer\Api\StatusTransformer;
+use App\Transformer\Api\StatusTimelineTransformer;
 use App\UserFilter;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -136,7 +136,7 @@ class TimelineController extends Controller
                 ->simplePaginate($limit);
         }
 
-        $fractal = new Fractal\Resource\Collection($timeline, new StatusTransformer);
+        $fractal = new Fractal\Resource\Collection($timeline, new StatusTimelineTransformer);
         $res = $this->fractal->createData($fractal)->toArray();
 
         return response()->json($res, 200, [], JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES);
