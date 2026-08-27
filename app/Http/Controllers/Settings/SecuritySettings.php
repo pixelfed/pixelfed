@@ -15,9 +15,9 @@ use PragmaRX\Google2FA\Google2FA;
 
 trait SecuritySettings
 {
-    public function security(Request $request)
+    public function security()
     {
-        $user = $request->user();
+        $user = request()->user();
 
         $activity = AccountLog::whereUserId($user->id)
             ->orderBy('created_at', 'desc')

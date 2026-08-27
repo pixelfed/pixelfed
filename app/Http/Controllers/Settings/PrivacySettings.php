@@ -14,9 +14,9 @@ use Illuminate\Support\Facades\DB;
 
 trait PrivacySettings
 {
-    public function privacy(Request $request)
+    public function privacy()
     {
-        $user = $request->user();
+        $user = request()->user();
         $settings = $user->settings;
         $profile = $user->profile;
         $is_private = $profile->is_private;
@@ -114,9 +114,9 @@ trait PrivacySettings
         return redirect(route('settings.privacy'))->with('status', 'Settings successfully updated!');
     }
 
-    public function mutedUsers(Request $request)
+    public function mutedUsers()
     {
-        $pid = $request->user()->profile->id;
+        $pid = request()->user()->profile->id;
         $ids = (new UserFilter)->mutedUserIds($pid);
         $users = Profile::whereIn('id', $ids)->simplePaginate(15);
 
@@ -143,9 +143,9 @@ trait PrivacySettings
         return redirect()->back();
     }
 
-    public function blockedUsers(Request $request)
+    public function blockedUsers()
     {
-        $pid = $request->user()->profile->id;
+        $pid = request()->user()->profile->id;
         $ids = (new UserFilter)->blockedUserIds($pid);
         $users = Profile::whereIn('id', $ids)->simplePaginate(15);
 
