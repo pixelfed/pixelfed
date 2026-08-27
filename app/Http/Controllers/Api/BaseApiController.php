@@ -88,7 +88,7 @@ class BaseApiController extends Controller
         ]);
 
         try {
-            $user = $request->user();
+            $user = Auth::user();
             $profile = $user->profile;
             $file = $request->file('upload');
             $path = (new AvatarController)->getPath($user, $file);

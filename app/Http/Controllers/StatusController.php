@@ -18,6 +18,7 @@ use App\Transformer\ActivityPub\Verb\Note;
 use App\Transformer\ActivityPub\Verb\Question;
 use App\Util\Media\License;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\DB;
 use League\Fractal;
@@ -220,10 +221,10 @@ class StatusController extends Controller
         abort_if($status->uri, 404);
 
         if ($status->visibility == 'private' || $user->is_private) {
-            if (! $request->user()) {
+            if (! Auth::check()) {
                 abort(403);
             }
-            $pid = $request->user()->profile;
+            $pid = Auth::user()->profile;
             if ($user->followedBy($pid) == false && $user->id !== $pid->id) {
                 abort(403);
             }
@@ -251,7 +252,7 @@ class StatusController extends Controller
 
         $status = Status::findOrFail($request->input('item'));
 
-        $user = $request->user();
+        $user = Auth::user();
 
         if (
             $status->profile_id != $user->profile->id &&
@@ -320,7 +321,7 @@ class StatusController extends Controller
             'item' => 'required|integer|min:1',
         ]);
 
-        $user = $request->user();
+        $user = Auth::user();
         $profile = $user->profile;
         $status = Status::whereScope('public')
             ->findOrFail($request->input('item'));
@@ -329,11 +330,11 @@ class StatusController extends Controller
 
         $count = $status->reblogs_count;
         $defaultCaption = config_cache('database.default') === 'mysql' ? null : '';
-        $exists = Status::whereProfileId($request->user()->profile->id)
+        $exists = Status::whereProfileId(Auth::user()->profile->id)
             ->whereReblogOfId($status->id)
             ->exists();
         if ($exists == true) {
-            $shares = Status::whereProfileId($request->user()->profile->id)
+            $shares = Status::whereProfileId(Auth::user()->profile->id)
                 ->whereReblogOfId($status->id)
                 ->get();
             foreach ($shares as $share) {
@@ -385,7 +386,7 @@ class StatusController extends Controller
     public function edit(Request $request, $username, $id)
     {
         $this->authCheck();
-        $user = $request->user()->profile;
+        $user = Auth::user()->profile;
         $status = Status::whereProfileId($user->id)
             ->with(['media'])
             ->findOrFail($id);
@@ -397,7 +398,7 @@ class StatusController extends Controller
     public function editStore(Request $request, $username, $id)
     {
         $this->authCheck();
-        $user = $request->user()->profile;
+        $user = Auth::user()->profile;
         $status = Status::whereProfileId($user->id)
             ->with(['media'])
             ->findOrFail($id);
@@ -419,7 +420,7 @@ class StatusController extends Controller
 
     protected function authCheck()
     {
-        if (! request()->user()) {
+        if (Auth::check() == false) {
             abort(403);
         }
     }
@@ -478,7 +479,7 @@ class StatusController extends Controller
             'disableComments' => 'required|boolean',
         ]);
 
-        $user = $request->user();
+        $user = Auth::user();
         $id = $request->input('item');
         $state = $request->input('disableComments');
 

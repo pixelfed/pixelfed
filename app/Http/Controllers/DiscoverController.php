@@ -21,6 +21,7 @@ use App\Services\TrendingHashtagService;
 use App\Services\UserFilterService;
 use App\Status;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\DB;
 
@@ -28,7 +29,7 @@ class DiscoverController extends Controller
 {
     public function home(Request $request)
     {
-        abort_if(! $request->user() && config('instance.discover.public') == false, 403);
+        abort_if(! Auth::check() && config('instance.discover.public') == false, 403);
 
         return view('discover.home');
     }
@@ -38,7 +39,7 @@ class DiscoverController extends Controller
         if ($request->user()) {
             return redirect('/i/web/hashtag/'.$hashtag.'?src=pd');
         }
-        abort_if(! config('instance.discover.tags.is_public') && ! $request->user(), 403);
+        abort_if(! config('instance.discover.tags.is_public') && ! Auth::check(), 403);
 
         $tag = Hashtag::whereName($hashtag)
             ->orWhere('slug', $hashtag)
@@ -179,7 +180,7 @@ class DiscoverController extends Controller
                 ->pluck('id');
         });
 
-        $filtered = $request->user() !== null ? UserFilterService::filters($request->user()->profile_id) : [];
+        $filtered = Auth::check() ? UserFilterService::filters(Auth::user()->profile_id) : [];
 
         $res = $ids->map(function ($s) {
             return StatusService::get($s);

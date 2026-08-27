@@ -9,14 +9,15 @@ use App\Services\AccountService;
 use App\Services\RelationshipService;
 use App\UserFilter;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\DB;
 
 trait PrivacySettings
 {
-    public function privacy(Request $request)
+    public function privacy()
     {
-        $user = $request->user();
+        $user = Auth::user();
         $settings = $user->settings;
         $profile = $user->profile;
         $is_private = $profile->is_private;
@@ -114,9 +115,9 @@ trait PrivacySettings
         return redirect(route('settings.privacy'))->with('status', 'Settings successfully updated!');
     }
 
-    public function mutedUsers(Request $request)
+    public function mutedUsers()
     {
-        $pid = $request->user()->profile->id;
+        $pid = Auth::user()->profile->id;
         $ids = (new UserFilter)->mutedUserIds($pid);
         $users = Profile::whereIn('id', $ids)->simplePaginate(15);
 
@@ -129,7 +130,7 @@ trait PrivacySettings
             'profile_id' => 'required|integer|min:1',
         ]);
         $fid = $request->input('profile_id');
-        $pid = $request->user()->profile->id;
+        $pid = Auth::user()->profile->id;
         DB::transaction(function () use ($fid, $pid) {
             $filter = UserFilter::whereUserId($pid)
                 ->whereFilterableId($fid)
@@ -143,9 +144,9 @@ trait PrivacySettings
         return redirect()->back();
     }
 
-    public function blockedUsers(Request $request)
+    public function blockedUsers()
     {
-        $pid = $request->user()->profile->id;
+        $pid = Auth::user()->profile->id;
         $ids = (new UserFilter)->blockedUserIds($pid);
         $users = Profile::whereIn('id', $ids)->simplePaginate(15);
 
@@ -158,7 +159,7 @@ trait PrivacySettings
             'profile_id' => 'required|integer|min:1',
         ]);
         $fid = $request->input('profile_id');
-        $pid = $request->user()->profile->id;
+        $pid = Auth::user()->profile->id;
         DB::transaction(function () use ($fid, $pid) {
             $filter = UserFilter::whereUserId($pid)
                 ->whereFilterableId($fid)
@@ -210,8 +211,8 @@ trait PrivacySettings
         $duration = $request->input('duration');
         // $newRequests = $request->input('newrequests');
 
-        $profile = $request->user()->profile;
-        $settings = $request->user()->settings;
+        $profile = Auth::user()->profile;
+        $settings = Auth::user()->settings;
 
         if ($mode !== 'keep-all') {
             switch ($mode) {

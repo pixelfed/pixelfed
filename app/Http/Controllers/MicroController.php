@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Status;
 use App\Transformer\Api\StatusTransformer;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Validation\Rule;
 use League\Fractal\Manager;
@@ -39,7 +40,7 @@ class MicroController extends Controller
                 ]),
             ],
         ]);
-        $profile = $request->user()->profile;
+        $profile = Auth::user()->profile;
         $title = $request->input('title');
         $content = $request->input('content');
         $visibility = $request->input('visibility');

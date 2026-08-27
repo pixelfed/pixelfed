@@ -6,6 +6,7 @@ use App\Contact;
 use App\Jobs\ContactPipeline\ContactPipeline;
 use App\Rules\MaxMultiLine;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 
 class ContactController extends Controller
 {
@@ -19,7 +20,7 @@ class ContactController extends Controller
     public function store(Request $request)
     {
         abort_if(! config('instance.contact.enabled'), 404);
-        abort_if(! $request->user(), 403);
+        abort_if(! Auth::check(), 403);
 
         $this->validate($request, [
             'message' => ['required', 'string', 'min:5', new MaxMultiLine('500')],
@@ -28,7 +29,7 @@ class ContactController extends Controller
 
         $message = $request->input('message');
         $request_response = $request->input('request_response') == 'on' ? true : false;
-        $user = $request->user();
+        $user = Auth::user();
 
         $max = config('instance.contact.max_per_day');
         $contact = Contact::whereUserId($user->id)
