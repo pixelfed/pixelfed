@@ -1,38 +1,35 @@
-name: PHP - Larastan
-permissions:
-  contents: read
-  pull-requests: write
+name: Static Analysis
 
 on:
   push:
-    branches:
-      - main
-      - dev
-      - staging
+    branches: [staging, dev]
   pull_request:
-    branches:
-      - main
-      - dev
-      - staging
+    branches: [staging, dev]
 
 jobs:
-  phpstan:
+  larastan:
     runs-on: ubuntu-latest
 
     steps:
       - name: Checkout code
-        uses: actions/checkout@v7
+        uses: actions/checkout@v4
 
       - name: Setup PHP
         uses: shivammathur/setup-php@v2
         with:
-          php-version: '8.5' # Or your desired PHP version
-          extensions: mbstring, pdo_mysql # Add necessary extensions
-          ini-values: post_max_size=256M, upload_max_filesize=256M
+          php-version: '8.5'
+          extensions: mbstring, pdo_sqlite, bcmath, intl
           coverage: none
 
+      - name: Cache Composer dependencies
+        uses: actions/cache@v4
+        with:
+          path: vendor
+          key: composer-8.5-${{ hashFiles('composer.lock') }}
+          restore-keys: composer-8.5-
+
       - name: Install Composer dependencies
-        run: composer install --no-interaction --no-progress
+        run: composer install --no-interaction --no-progress --prefer-dist
 
       - name: Run Larastan
-        run: ./vendor/bin/phpstan analyse
+        run: vendor/bin/phpstan analyse --memory-limit=512M
