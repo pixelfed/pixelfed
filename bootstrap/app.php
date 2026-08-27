@@ -38,8 +38,8 @@ use Illuminate\Session\Middleware\StartSession;
 use Illuminate\Support\Facades\Route;
 use Illuminate\Validation\ValidationException;
 use Illuminate\View\Middleware\ShareErrorsFromSession;
-use Laravel\Passport\Http\Middleware\CheckForAnyScope;
-use Laravel\Passport\Http\Middleware\CheckScopes;
+use Laravel\Passport\Http\Middleware\CheckToken;
+use Laravel\Passport\Http\Middleware\CheckTokenForAnyScope;
 use Laravel\Passport\Http\Middleware\CreateFreshApiToken;
 use League\OAuth2\Server\Exception\OAuthServerException;
 use Symfony\Component\HttpKernel\Exception\HttpExceptionInterface;
@@ -124,8 +124,8 @@ return Application::configure(basePath: dirname(__DIR__))
             'twofactor' => TwoFactorAuth::class,
             'validemail' => EmailVerificationCheck::class,
             'interstitial' => AccountInterstitial::class,
-            'scopes' => CheckScopes::class,
-            'scope' => CheckForAnyScope::class,
+            'scopes' => CheckToken::class,
+            'scope' => CheckTokenForAnyScope::class,
             'restricted' => RestrictedAccess::class,
         ]);
     })
