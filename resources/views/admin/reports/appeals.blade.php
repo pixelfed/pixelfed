@@ -38,7 +38,7 @@
 							<span class="d-inline-block text-truncate">
 								<p class="mb-0 small font-weight-bold text-primary">{{$appeal->type}}</p>
 								@if($appeal->item_type)
-								<p class="mb-0 font-weight-bold">{{starts_with($appeal->item_type, 'App\\') ? explode('\\',$appeal->item_type)[1] : $appeal->item_type}}</p>
+								<p class="mb-0 font-weight-bold">{{str_starts_with($appeal->item_type, 'App\\') ? explode('\\',$appeal->item_type)[1] : $appeal->item_type}}</p>
 								@endif
 							</span>
 						</div>
