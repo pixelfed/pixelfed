@@ -3,22 +3,7 @@ includes:
     - vendor/nesbot/carbon/extension.neon
 
 parameters:
-    # Level 10 is the highest level
     level: 0
-
-    # Laravel specific configurations
-    noModelMake: true
-    noUnnecessaryCollectionCall: true
-    checkModelProperties: true
-    checkOctaneCompatibility: true
-    noEnvCallsOutsideOfConfig: true
-    checkModelAppends: true
-    checkModelMethodVisibility: true
-    checkAuthCallsWhenInRequestScope: true
-
-    checkMissingTranslations: false
-    translationDirectories:
-        - resources/lang
 
     paths:
         - app/
@@ -29,5 +14,30 @@ parameters:
         - bootstrap/cache/*
         - storage/
         - vendor/
+
+    # Laravel-specific analysis
+    databaseMigrationsPath:
+        - database/migrations
+    configDirectories:
+        - config
+    translationDirectories:
+        - resources/lang
+
+    # Feature checks
+    noModelMake: true
+    noUnnecessaryCollectionCall: true
+    checkModelProperties: true
+    checkOctaneCompatibility: true
+    noEnvCallsOutsideOfConfig: true
+    checkModelAppends: true
+    checkModelMethodVisibility: true
+    checkAuthCallsWhenInRequestScope: true
+    parseModelCastsMethod: true
+    enableMigrationCache: true
+    checkMissingTranslations: false
+
+    # Ignore intentional patterns
+    ignoreErrors:
+        - '#Unsafe usage of new static#'
 
     reportUnmatchedIgnoredErrors: false
