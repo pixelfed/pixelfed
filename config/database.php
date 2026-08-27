@@ -52,7 +52,7 @@ return [
             'charset' => 'utf8mb4',
             'collation' => 'utf8mb4_unicode_ci',
             'prefix' => '',
-            'strict' => true,
+            'strict' => env('DB_STRICT', true),
             'engine' => null,
             'dump' => [
                 'use_single_transaction',
@@ -73,7 +73,7 @@ return [
             'collation' => env('DB_COLLATION', 'utf8mb4_unicode_ci'),
             'prefix' => '',
             'prefix_indexes' => true,
-            'strict' => true,
+            'strict' => env('DB_STRICT', true),
             'engine' => null,
             'options' => extension_loaded('pdo_mysql') ? array_filter([
                 (class_exists('Pdo\Mysql') ? Mysql::ATTR_SSL_CA : PDO::MYSQL_ATTR_SSL_CA) => env('MYSQL_ATTR_SSL_CA'),
