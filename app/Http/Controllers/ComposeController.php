@@ -172,7 +172,7 @@ class ComposeController extends Controller
             ],
         ]);
 
-        $user = Auth::user();
+        $user = $request->user();
         abort_if($user->has_roles && ! UserRoleService::can('can-post', $user->id), 403, 'Invalid permissions for this action');
 
         $limitKey = 'compose:rate-limit:media-updates:'.$user->id;

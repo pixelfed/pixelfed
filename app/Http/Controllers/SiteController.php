@@ -10,7 +10,6 @@ use App\User;
 use App\Util\ActivityPub\Helpers;
 use App\Util\Localization\Localization;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\View;
 use Illuminate\Support\Str;
@@ -19,7 +18,7 @@ class SiteController extends Controller
 {
     public function home(Request $request)
     {
-        if (Auth::check()) {
+        if ($request->user() !== null) {
             return $this->homeTimeline($request);
         } else {
             return $this->homeGuest();

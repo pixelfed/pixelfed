@@ -7,7 +7,6 @@ use App\Status;
 use App\Transformer\Api\StatusTimelineTransformer;
 use App\UserFilter;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Cache;
 use League\Fractal;
 use League\Fractal\Serializer\ArraySerializer;
@@ -54,7 +53,7 @@ class TimelineController extends Controller
             'limit' => 'nullable|integer|max:30',
         ]);
 
-        if (config('instance.timeline.local.is_public') == false && ! Auth::check()) {
+        if (config('instance.timeline.local.is_public') == false && ! $request->user()) {
             abort(403, 'Authentication required.');
         }
 
