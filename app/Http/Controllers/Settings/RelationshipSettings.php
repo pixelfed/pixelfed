@@ -3,7 +3,6 @@
 namespace App\Http\Controllers\Settings;
 
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Auth;
 
 trait RelationshipSettings
 {
@@ -14,7 +13,7 @@ trait RelationshipSettings
         ]);
 
         $mode = $request->input('mode') ?? 'followers';
-        $profile = Auth::user()->profile;
+        $profile = $request->user()->profile;
 
         switch ($mode) {
             case 'following':
