@@ -10,14 +10,13 @@ use App\Services\FollowerService;
 use App\Services\StatusService;
 use App\Status;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Auth;
 
 class CollectionController extends Controller
 {
     public function create(Request $request)
     {
-        abort_if(! Auth::check(), 403);
-        $profile = Auth::user()->profile;
+        abort_if(! $request->user(), 403);
+        $profile = $request->user()->profile;
 
         $collection = Collection::firstOrCreate([
             'profile_id' => $profile->id,
@@ -49,7 +48,7 @@ class CollectionController extends Controller
 
     public function index(Request $request)
     {
-        abort_if(! Auth::check(), 403);
+        abort_if(! $request->user(), 403);
 
         return $request->all();
     }
@@ -83,7 +82,7 @@ class CollectionController extends Controller
             'description' => 'nullable|max:500',
             'visibility' => 'required|alpha|in:public,private,draft',
         ]);
-        $profile = Auth::user()->profile;
+        $profile = $request->user()->profile;
         $collection = Collection::whereProfileId($profile->id)->findOrFail($id);
         if ($collection->items()->count() == 0) {
             abort(404);
