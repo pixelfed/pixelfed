@@ -38,7 +38,9 @@
     -   refactor: replace short facade aliases with fully-qualified imports
     -   refactor: update larascan with best practices for laravel 12+
     -   fix larascan errors blocking full scans.
-
+-   ([#6856](https://github.com/pixelfed/pixelfed/pull/6856))
+    -   Testing: Refactored the testing environment
+    -   Testing: Added 250+ tests
 ## [v0.12.9 (2026-08-25)](https://github.com/pixelfed/pixelfed/compare/v0.12.9...dev)
 
 -   Account Migration fix ([2fd3162f404](https://github.com/pixelfed/pixelfed/commit/2fd3162f4041bf82a51018ffbe3e1509b6576e33))
