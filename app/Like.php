@@ -12,7 +12,7 @@ class Like extends Model
 
     const MAX_PER_DAY = 1500;
 
-    protected $fillable = ['profile_id', 'status_id', 'status_profile_id'];
+    protected $guarded = [];
 
     protected function casts(): array
     {

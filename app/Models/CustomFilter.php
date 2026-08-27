@@ -12,11 +12,7 @@ class CustomFilter extends Model
 {
     public $shouldInvalidateCache = false;
 
-    protected $fillable = [
-        'title', 'phrase', 'context', 'expires_at', 'action', 'profile_id',
-    ];
-
-    protected $guarded = ['shouldInvalidateCache'];
+    protected $guarded = [];
 
     protected function casts(): array
     {
