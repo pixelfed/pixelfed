@@ -587,12 +587,7 @@
                                 	<tr>
                                 		<td><span class="badge badge-primary">INSTANCE</span></td>
                                 		<td><strong>OAUTH_PAT_ENABLED</strong></td>
-                                		<td><span>{{config_cache('instance.oauth.pat.enabled') ? '✅ true' : '❌ false' }}</span></td>
-                                	</tr>
-                                	<tr>
-                                		<td><span class="badge badge-primary">INSTANCE</span></td>
-                                		<td><strong>OAUTH_PAT_ID</strong></td>
-                                		<td><span>"{{config_cache('instance.oauth.pat.id')}}"</span></td>
+                                		<td><span>{{config_cache('instance.oauth.pat_enabled') ? '✅ true' : '❌ false' }}</span></td>
                                 	</tr>
                                 	<tr>
                                 		<td><span class="badge badge-primary">INSTANCE</span></td>

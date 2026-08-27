@@ -154,10 +154,6 @@ class AppServiceProvider extends ServiceProvider
         Passport::useTokenModel(OAuthToken::class);
         Passport::tokensExpireIn(now()->addDays(config('instance.oauth.token_expiration', 356)));
         Passport::refreshTokensExpireIn(now()->addDays(config('instance.oauth.refresh_expiration', 400)));
-        Passport::enableImplicitGrant();
-        if (config('instance.oauth.pat.enabled')) {
-            Passport::personalAccessClientId(config('instance.oauth.pat.id'));
-        }
 
         Passport::tokensCan([
             'read' => 'Full read access to your account',
