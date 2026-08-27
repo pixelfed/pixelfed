@@ -39,7 +39,7 @@ class SettingsController extends Controller
 
     public function accessibility()
     {
-        $settings = Auth::user()->settings;
+        $settings = request()->user()->settings;
 
         return view('settings.accessibility', compact('settings'));
     }
@@ -96,7 +96,7 @@ class SettingsController extends Controller
 
     public function removeAccountTemporary(Request $request)
     {
-        $user = Auth::user();
+        $user = $request->user();
         abort_if(! config('pixelfed.account_deletion'), 403);
         abort_if($user->is_admin, 403);
 
@@ -105,7 +105,7 @@ class SettingsController extends Controller
 
     public function removeAccountTemporarySubmit(Request $request)
     {
-        $user = Auth::user();
+        $user = $request->user();
         abort_if(! config('pixelfed.account_deletion'), 403);
         abort_if($user->is_admin, 403);
         $profile = $user->profile;
@@ -121,7 +121,7 @@ class SettingsController extends Controller
 
     public function removeAccountPermanent(Request $request)
     {
-        $user = Auth::user();
+        $user = $request->user();
         abort_if($user->is_admin, 403);
 
         return view('settings.remove.permanent');
@@ -132,7 +132,7 @@ class SettingsController extends Controller
         if (config('pixelfed.account_deletion') == false) {
             abort(404);
         }
-        $user = Auth::user();
+        $user = $request->user();
         abort_if(! config('pixelfed.account_deletion'), 403);
         abort_if($user->is_admin, 403);
 
@@ -163,7 +163,7 @@ class SettingsController extends Controller
 
     public function requestFullExport(Request $request)
     {
-        $user = Auth::user();
+        $user = $request->user();
 
         return view('settings.export.show');
     }
@@ -192,7 +192,7 @@ class SettingsController extends Controller
             'liberapay' => null,
             'opencollective' => null,
         ];
-        $sponsors = ProfileSponsor::whereProfileId(Auth::user()->profile->id)->first();
+        $sponsors = ProfileSponsor::whereProfileId(request()->user()->profile->id)->first();
         $sponsors = $sponsors ? json_decode($sponsors->sponsors, true) : $default;
 
         return view('settings.sponsor', compact('sponsors'));
@@ -233,7 +233,7 @@ class SettingsController extends Controller
         ];
 
         $sponsors = ProfileSponsor::firstOrCreate([
-            'profile_id' => Auth::user()->profile_id ?? Auth::user()->profile->id,
+            'profile_id' => $request->user()->profile_id ?? $request->user()->profile->id,
         ]);
         $sponsors->sponsors = json_encode($res);
         $sponsors->save();

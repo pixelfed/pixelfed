@@ -66,7 +66,7 @@ class ProfileController extends Controller
     {
         $carousel = (bool) $request->filled('carousel');
         $username = $user->username;
-        $loggedIn = Auth::check();
+        $loggedIn = $request->user() !== null;
         $isPrivate = false;
         $isBlocked = false;
         if (! $loggedIn) {
@@ -117,10 +117,10 @@ class ProfileController extends Controller
             $isBlocked = $this->blockedProfileCheck($user);
 
             $owner = $loggedIn && Auth::id() === $user->user_id;
-            $is_following = ($owner == false && Auth::check()) ? $user->followedBy(Auth::user()->profile) : false;
+            $is_following = ($owner == false && $request->user() !== null) ? $user->followedBy($request->user()->profile) : false;
 
             if ($isPrivate == true || $isBlocked == true) {
-                $requested = Auth::check() ? FollowRequest::whereFollowerId(Auth::user()->profile_id)
+                $requested = $request->user() !== null ? FollowRequest::whereFollowerId($request->user()->profile_id)
                     ->whereFollowingId($user->id)
                     ->exists() : false;
 
@@ -187,11 +187,11 @@ class ProfileController extends Controller
 
     protected function privateProfileCheck(Profile $profile, $loggedIn)
     {
-        if (! Auth::check()) {
+        if (! request()->user()) {
             return true;
         }
 
-        $user = Auth::user()->profile;
+        $user = request()->user()->profile;
         if ($user->id == $profile->id || ! $profile->is_private) {
             return false;
         }
@@ -221,7 +221,7 @@ class ProfileController extends Controller
 
     protected function blockedProfileCheck(Profile $profile)
     {
-        $pid = Auth::user()->profile->id;
+        $pid = request()->user()->profile->id;
         $blocks = UserFilter::whereUserId($profile->id)
             ->whereFilterType('block')
             ->whereFilterableType(Profile::class)
@@ -330,11 +330,11 @@ class ProfileController extends Controller
             ->withHeaders($data['headers']);
     }
 
-    public function meRedirect()
+    public function meRedirect(Request $request)
     {
-        abort_if(! Auth::check(), 404);
+        abort_if(! $request->user(), 404);
 
-        return redirect(Auth::user()->url());
+        return redirect($request->user()->url());
     }
 
     public function embed(Request $request, $username)
@@ -383,7 +383,7 @@ class ProfileController extends Controller
         abort_if(! (bool) config_cache('instance.stories.enabled') || ! $request->user(), 404);
         $profile = Profile::whereNull('domain')->whereUsername($username)->firstOrFail();
         $pid = $profile->id;
-        $authed = Auth::user()->profile_id;
+        $authed = $request->user()->profile_id;
         abort_if($pid != $authed && ! FollowerService::follows($authed, $pid), 404);
         $exists = Story::whereProfileId($pid)
             ->whereActive(true)

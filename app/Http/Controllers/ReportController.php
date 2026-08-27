@@ -116,7 +116,7 @@ class ReportController extends Controller
             'msg' => 'nullable|string|max:150',
         ]);
 
-        $profile = Auth::user()->profile;
+        $profile = $request->user()->profile;
         $reportType = $request->input('report');
         $object_id = $request->input('id');
         $object_type = $request->input('type');
