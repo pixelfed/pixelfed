@@ -108,88 +108,58 @@ Route::domain(config('pixelfed.domain.app'))->middleware(['validemail', 'twofact
         'prefix' => 'oauth',
         'middleware' => ['oauth-web'],
     ], function () {
-        Route::post('/token', [
-            'uses' => [ApiTokenController::class, 'issueToken'],
-            'as' => 'token',
-            'middleware' => 'throttle:10,1',
-        ]);
+        Route::post('/token', [ApiTokenController::class, 'issueToken'])
+            ->name('token')
+            ->middleware('throttle:10,1');
 
-        Route::get('/authorize', [
-            'uses' => [AuthorizationController::class, 'authorize'],
-            'as' => 'authorizations.authorize',
-            'middleware' => ['throttle:10,1'],
-        ]);
+        Route::get('/authorize', [AuthorizationController::class, 'authorize'])
+            ->name('authorizations.authorize')
+            ->middleware('throttle:10,1');
 
         Route::middleware(['auth:web', 'validemail'])->group(function () {
-            Route::post('/token/refresh', [
-                'uses' => [TransientTokenController::class, 'refresh'],
-                'as' => 'token.refresh',
-            ]);
+            Route::post('/token/refresh', [TransientTokenController::class, 'refresh'])
+                ->name('token.refresh');
 
-            Route::post('/authorize', [
-                'uses' => [OobAuthorizationController::class, 'approve'],
-                'as' => 'authorizations.approve',
-            ]);
+            Route::post('/authorize', [OobAuthorizationController::class, 'approve'])
+                ->name('authorizations.approve');
 
-            Route::delete('/authorize', [
-                'uses' => [DenyAuthorizationController::class, 'deny'],
-                'as' => 'authorizations.deny',
-            ]);
+            Route::delete('/authorize', [DenyAuthorizationController::class, 'deny'])
+                ->name('authorizations.deny');
 
-            Route::get('/tokens', [
-                'uses' => [AuthorizedAccessTokenController::class, 'forUser'],
-                'as' => 'tokens.index',
-            ]);
+            Route::get('/tokens', [AuthorizedAccessTokenController::class, 'forUser'])
+                ->name('tokens.index');
 
-            Route::delete('/tokens/{token_id}', [
-                'uses' => [AuthorizedAccessTokenController::class, 'destroy'],
-                'as' => 'tokens.destroy',
-            ]);
+            Route::delete('/tokens/{token_id}', [AuthorizedAccessTokenController::class, 'destroy'])
+                ->name('tokens.destroy');
 
-            Route::get('/clients', [
-                'uses' => [ClientController::class, 'forUser'],
-                'as' => 'clients.index',
-            ]);
+            Route::get('/clients', [ClientController::class, 'forUser'])
+                ->name('clients.index');
 
-            Route::post('/clients', [
-                'uses' => [ClientController::class, 'store'],
-                'as' => 'clients.store',
-            ]);
+            Route::post('/clients', [ClientController::class, 'store'])
+                ->name('clients.store');
 
-            Route::put('/clients/{client_id}', [
-                'uses' => [ClientController::class, 'update'],
-                'as' => 'clients.update',
-            ]);
+            Route::put('/clients/{client_id}', [ClientController::class, 'update'])
+                ->name('clients.update');
 
-            Route::delete('/clients/{client_id}', [
-                'uses' => [OAuthClientController::class, 'destroy'],
-                'as' => 'clients.destroy',
-            ]);
+            Route::delete('/clients/{client_id}', [OAuthClientController::class, 'destroy'])
+                ->name('clients.destroy');
 
-            Route::get('/scopes', [
-                'uses' => [PersonalAccessTokenController::class, 'scopes'],
-                'as' => 'scopes.index',
-            ]);
+            Route::get('/scopes', [PersonalAccessTokenController::class, 'scopes'])
+                ->name('scopes.index');
 
-            Route::get('/personal-access-tokens', [
-                'uses' => [PersonalAccessTokenController::class, 'index'],
-                'as' => 'personal.tokens.index',
-            ]);
+            Route::get('/personal-access-tokens', [PersonalAccessTokenController::class, 'index'])
+                ->name('personal.tokens.index');
 
-            Route::post('/personal-access-tokens', [
-                'uses' => [PersonalAccessTokenController::class, 'store'],
-                'as' => 'personal.tokens.store',
-            ])->middleware(['throttle:oauth-pat']);
+            Route::post('/personal-access-tokens', [PersonalAccessTokenController::class, 'store'])
+                ->name('personal.tokens.store')
+                ->middleware('throttle:oauth-pat');
 
-            Route::post('/personal-access-tokens/{token_id}/renew', [
-                'uses' => [PersonalAccessTokenController::class, 'renew'],
-                'as' => 'personal.tokens.renew',
-            ])->middleware(['throttle:oauth-pat']);
+            Route::post('/personal-access-tokens/{token_id}/renew', [PersonalAccessTokenController::class, 'renew'])
+                ->name('personal.tokens.renew')
+                ->middleware('throttle:oauth-pat');
 
-            Route::delete('/personal-access-tokens/{token_id}', [
-                'uses' => [PersonalAccessTokenController::class, 'destroy'],
-                'as' => 'personal.tokens.destroy',
-            ]);
+            Route::delete('/personal-access-tokens/{token_id}', [PersonalAccessTokenController::class, 'destroy'])
+                ->name('personal.tokens.destroy');
         });
     });
 
