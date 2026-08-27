@@ -9,9 +9,7 @@ class CuratedRegisterTemplate extends Model
 {
     use HasFactory;
 
-    protected $fillable = [
-        'name', 'description', 'content', 'is_active', 'order',
-    ];
+    protected $guarded = [];
 
     protected function casts(): array
     {

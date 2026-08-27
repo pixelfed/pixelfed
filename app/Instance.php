@@ -6,13 +6,7 @@ use Illuminate\Database\Eloquent\Model;
 
 class Instance extends Model
 {
-    protected $fillable = [
-        'domain',
-        'banned',
-        'auto_cw',
-        'unlisted',
-        'notes',
-    ];
+    protected $guarded = [];
 
     protected function casts(): array
     {

@@ -7,9 +7,7 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 class CustomFilterKeyword extends Model
 {
-    protected $fillable = [
-        'keyword', 'whole_word', 'custom_filter_id',
-    ];
+    protected $guarded = [];
 
     protected function casts(): array
     {

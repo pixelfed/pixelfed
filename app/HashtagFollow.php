@@ -7,11 +7,7 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 class HashtagFollow extends Model
 {
-    protected $fillable = [
-        'user_id',
-        'profile_id',
-        'hashtag_id',
-    ];
+    protected $guarded = [];
 
     const MAX_LIMIT = 25;
 

@@ -8,12 +8,7 @@ class UIKit extends Model
 {
     protected $table = 'uikit';
 
-    protected $fillable = [
-        'k',
-        'v',
-        'defv',
-        'dhis',
-    ];
+    protected $guarded = [];
 
     public static function section($k)
     {

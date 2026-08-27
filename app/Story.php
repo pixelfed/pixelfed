@@ -34,7 +34,7 @@ class Story extends Model
      */
     public $incrementing = false;
 
-    protected $fillable = ['profile_id', 'view_count'];
+    protected $guarded = [];
 
     protected $visible = ['id'];
 
