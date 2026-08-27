@@ -36,6 +36,8 @@
 -   ([#6835](https://github.com/pixelfed/pixelfed/pull/6835))
     -   refactor: migrate to modern Laravel 13+ bootstrap/app.php
     -   refactor: replace short facade aliases with fully-qualified imports
+    -   refactor: update larascan with best practices for laravel 12+
+    -   fix larascan errors blocking full scans.
 
 ## [v0.12.9 (2026-08-25)](https://github.com/pixelfed/pixelfed/compare/v0.12.9...dev)
 
