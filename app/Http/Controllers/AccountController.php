@@ -62,7 +62,7 @@ class AccountController extends Controller
         $allowed = ['like', 'follow'];
         $timeago = Carbon::now()->subMonths(3);
 
-        $profile = Auth::user()->profile;
+        $profile = $request->user()->profile;
         $following = $profile->following->pluck('id');
 
         $notifications = Notification::whereIn('actor_id', $following)
@@ -387,7 +387,7 @@ class AccountController extends Controller
 
     public function followRequests(Request $request)
     {
-        $pid = Auth::user()->profile->id;
+        $pid = $request->user()->profile->id;
         $followers = FollowRequest::whereFollowingId($pid)->orderBy('id', 'desc')->whereIsRejected(0)->simplePaginate(10);
 
         return view('account.follow-requests', compact('followers'));
@@ -395,7 +395,7 @@ class AccountController extends Controller
 
     public function followRequestsJson(Request $request)
     {
-        $pid = Auth::user()->profile_id;
+        $pid = $request->user()->profile_id;
         $followers = FollowRequest::whereFollowingId($pid)->orderBy('id', 'desc')->whereIsRejected(0)->get();
         $res = [
             'count' => $followers->count(),
@@ -424,7 +424,7 @@ class AccountController extends Controller
             'id' => 'required|integer|min:1',
         ]);
 
-        $pid = Auth::user()->profile->id;
+        $pid = $request->user()->profile->id;
         $action = $request->input('action') === 'accept' ? 'accept' : 'reject';
         $id = $request->input('id');
         $followRequest = FollowRequest::whereFollowingId($pid)->findOrFail($id);
@@ -492,7 +492,7 @@ class AccountController extends Controller
             'trustDevice' => 'nullable',
         ]);
 
-        $user = Auth::user();
+        $user = $request->user();
         $password = $request->input('password');
         $trustDevice = $request->input('trustDevice') == 'on';
         $next = $request->session()->get('redirectNext', '/');
@@ -531,7 +531,7 @@ class AccountController extends Controller
         $this->validate($request, [
             'code' => 'required|string|max:32',
         ]);
-        $user = Auth::user();
+        $user = $request->user();
         $code = $request->input('code');
         $google2fa = new Google2FA;
         $verify = $google2fa->verifyKey($user->{'2fa_secret'}, $code);

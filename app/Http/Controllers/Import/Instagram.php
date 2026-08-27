@@ -6,7 +6,6 @@ use App\ImportData;
 use App\ImportJob;
 use App\Jobs\ImportPipeline\ImportInstagram;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Str;
@@ -27,7 +26,7 @@ trait Instagram
         if ((bool) config_cache('pixelfed.import.instagram.enabled') != true) {
             abort(404, 'Feature not enabled');
         }
-        $completed = ImportJob::whereProfileId(Auth::user()->profile->id)
+        $completed = ImportJob::whereProfileId($request->user()->profile->id)
             ->whereService('instagram')
             ->whereNotNull('completed_at')
             ->exists();
@@ -44,7 +43,7 @@ trait Instagram
         if ((bool) config_cache('pixelfed.import.instagram.enabled') != true) {
             abort(404, 'Feature not enabled');
         }
-        $profile = Auth::user()->profile;
+        $profile = request()->user()->profile;
         $exists = ImportJob::whereProfileId($profile->id)
             ->whereService('instagram')
             ->whereNull('completed_at')
@@ -71,7 +70,7 @@ trait Instagram
         if ((bool) config_cache('pixelfed.import.instagram.enabled') != true) {
             abort(404, 'Feature not enabled');
         }
-        $profile = Auth::user()->profile;
+        $profile = $request->user()->profile;
         $job = ImportJob::whereProfileId($profile->id)
             ->whereNull('completed_at')
             ->whereUuid($uuid)
@@ -93,7 +92,7 @@ trait Instagram
         ]);
         $media = $request->file('media');
 
-        $profile = Auth::user()->profile;
+        $profile = $request->user()->profile;
         $job = ImportJob::whereProfileId($profile->id)
             ->whereNull('completed_at')
             ->whereUuid($uuid)
@@ -132,7 +131,7 @@ trait Instagram
         if ((bool) config_cache('pixelfed.import.instagram.enabled') != true) {
             abort(404, 'Feature not enabled');
         }
-        $profile = Auth::user()->profile;
+        $profile = $request->user()->profile;
         $job = ImportJob::whereProfileId($profile->id)
             ->whereNull('completed_at')
             ->whereUuid($uuid)
@@ -150,7 +149,7 @@ trait Instagram
         $this->validate($request, [
             'media' => 'required|file|max:1000',
         ]);
-        $profile = Auth::user()->profile;
+        $profile = $request->user()->profile;
         $job = ImportJob::whereProfileId($profile->id)
             ->whereNull('completed_at')
             ->whereUuid($uuid)
@@ -176,7 +175,7 @@ trait Instagram
         if ((bool) config_cache('pixelfed.import.instagram.enabled') != true) {
             abort(404, 'Feature not enabled');
         }
-        $profile = Auth::user()->profile;
+        $profile = $request->user()->profile;
         $job = ImportJob::whereProfileId($profile->id)
             ->whereService('instagram')
             ->whereNull('completed_at')
@@ -192,7 +191,7 @@ trait Instagram
         if ((bool) config_cache('pixelfed.import.instagram.enabled') != true) {
             abort(404, 'Feature not enabled');
         }
-        $profile = Auth::user()->profile;
+        $profile = $request->user()->profile;
 
         try {
             $import = ImportJob::whereProfileId($profile->id)
