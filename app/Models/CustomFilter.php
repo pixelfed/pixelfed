@@ -383,7 +383,7 @@ class CustomFilter extends Model
                         $keywordMatches = array_slice($matches[0], 0, $maxReportedMatches);
                     }
                 } catch (\Throwable $e) {
-                    \Log::error('Filter regex error: '.$e->getMessage(), [
+                    Log::error('Filter regex error: '.$e->getMessage(), [
                         'filter_id' => $filter->id,
                     ]);
                 }

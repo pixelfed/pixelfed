@@ -203,7 +203,7 @@ trait Instagram
                 ->firstOrFail();
             ImportInstagram::dispatch($import);
         } catch (\Exception $e) {
-            \Log::info($e);
+            Log::info($e);
         }
 
         return redirect(route('settings'))->with(['status' => 'Import successful! It may take a few minutes to finish.']);
