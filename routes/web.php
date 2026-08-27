@@ -227,8 +227,8 @@ Route::domain(config('pixelfed.domain.app'))->middleware(['validemail', 'twofact
         Route::post('verify-email/request', [InternalApiController::class, 'requestEmailVerificationStore']);
         Route::get('confirm-email/{userToken}/{randomToken}', [AccountController::class, 'confirmVerifyEmail']);
 
-        Route::get('auth/sudo', [AccountController::class, 'sudoMode']);
-        Route::post('auth/sudo', [AccountController::class, 'sudoModeVerify']);
+        Route::get('auth/sudo', [AccountController::class, 'confirmPassword'])->name('password.confirm');
+        Route::post('auth/sudo', [AccountController::class, 'confirmPasswordStore']);
         Route::get('auth/checkpoint', [AccountController::class, 'twoFactorCheckpoint']);
         Route::post('auth/checkpoint', [AccountController::class, 'twoFactorVerify']);
 

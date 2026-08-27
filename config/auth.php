@@ -1,5 +1,7 @@
 <?php
 
+use App\User;
+
 return [
 
     /*
@@ -14,7 +16,7 @@ return [
     */
 
     'defaults' => [
-        'guard'     => 'web',
+        'guard' => 'web',
         'passwords' => 'users',
     ],
 
@@ -37,12 +39,12 @@ return [
 
     'guards' => [
         'web' => [
-            'driver'   => 'session',
+            'driver' => 'session',
             'provider' => 'users',
         ],
 
         'api' => [
-            'driver'   => 'passport',
+            'driver' => 'passport',
             'provider' => 'users',
         ],
     ],
@@ -66,10 +68,10 @@ return [
 
     'providers' => [
 
-    	// Comment out or remove below for LDAP
+        // Comment out or remove below for LDAP
         'users' => [
             'driver' => 'eloquent',
-            'model'  => App\User::class,
+            'model' => User::class,
         ],
 
         // Uncomment below for LDAP
@@ -106,11 +108,24 @@ return [
     'passwords' => [
         'users' => [
             'provider' => 'users',
-            'table'    => 'password_resets',
-            'expire'   => 60,
+            'table' => 'password_resets',
+            'expire' => 60,
             'throttle' => 60,
         ],
     ],
 
     'in_app_registration' => (bool) env('APP_REGISTER', true),
+
+    /*
+    |--------------------------------------------------------------------------
+    | Password Confirmation Timeout
+    |--------------------------------------------------------------------------
+    |
+    | Here you may define the amount of seconds before a password confirmation
+    | times out and the user is prompted to re-enter their password via the
+    | confirmation screen. By default, the timeout lasts for three hours.
+    |
+    */
+
+    'password_timeout' => env('AUTH_PASSWORD_TIMEOUT', 1800),
 ];

@@ -24,6 +24,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Arr;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Cache;
+use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Str;
 use League\Fractal;
@@ -471,54 +472,26 @@ class AccountController extends Controller
         return response()->json(['msg' => 'success'], 200);
     }
 
-    public function sudoMode(Request $request)
+    public function confirmPassword(Request $request)
     {
-        if ($request->session()->has('sudoModeAttempts') && $request->session()->get('sudoModeAttempts') >= 3) {
-            $request->session()->pull('2fa.session.active');
-            $request->session()->pull('redirectNext');
-            $request->session()->pull('sudoModeAttempts');
-            Auth::logout();
-
-            return redirect(route('login'));
-        }
-
         return view('auth.sudo');
     }
 
-    public function sudoModeVerify(Request $request)
+    public function confirmPasswordStore(Request $request)
     {
         $this->validate($request, [
             'password' => 'required|string|max:500',
-            'trustDevice' => 'nullable',
         ]);
 
-        $user = Auth::user();
-        $password = $request->input('password');
-        $trustDevice = $request->input('trustDevice') == 'on';
-        $next = $request->session()->get('redirectNext', '/');
-        if ($request->session()->has('sudoModeAttempts')) {
-            $count = (int) $request->session()->get('sudoModeAttempts');
-            $request->session()->put('sudoModeAttempts', $count + 1);
-        } else {
-            $request->session()->put('sudoModeAttempts', 1);
-        }
-        if (password_verify($password, $user->password) === true) {
-            $request->session()->put('sudoMode', time());
-            if ($trustDevice == true) {
-                $request->session()->put('sudoTrustDevice', 1);
-            }
-
-            // Fix wrong scheme when using reverse proxy
-            if (! str_contains($next, 'https') && config('instance.force_https_urls', true)) {
-                $next = Str::of($next)->replace('http', 'https')->toString();
-            }
-
-            return redirect($next);
-        } else {
+        if (! Hash::check($request->password, $request->user()->password)) {
             return redirect()
                 ->back()
                 ->withErrors(['password' => __('auth.failed')]);
         }
+
+        $request->session()->passwordConfirmed();
+
+        return redirect()->intended();
     }
 
     public function twoFactorCheckpoint(Request $request)

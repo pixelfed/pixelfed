@@ -3,7 +3,6 @@
 use App\Http\Middleware\AccountInterstitial;
 use App\Http\Middleware\Admin;
 use App\Http\Middleware\Api\Admin as ApiAdmin;
-use App\Http\Middleware\DangerZone;
 use App\Http\Middleware\EmailVerificationCheck;
 use App\Http\Middleware\FrameGuard;
 use App\Http\Middleware\Localization;
@@ -14,6 +13,7 @@ use GuzzleHttp\Exception\ConnectException;
 use Illuminate\Auth\Middleware\Authenticate;
 use Illuminate\Auth\Middleware\AuthenticateWithBasicAuth;
 use Illuminate\Auth\Middleware\Authorize;
+use Illuminate\Auth\Middleware\RequirePassword;
 use Illuminate\Console\Scheduling\Schedule;
 use Illuminate\Cookie\Middleware\AddQueuedCookiesToResponse;
 use Illuminate\Cookie\Middleware\EncryptCookies;
@@ -116,7 +116,7 @@ return Application::configure(basePath: dirname(__DIR__))
             'bindings' => SubstituteBindings::class,
             'cache.headers' => SetCacheHeaders::class,
             'can' => Authorize::class,
-            'dangerzone' => DangerZone::class,
+            'dangerzone' => RequirePassword::class,
             'localization' => Localization::class,
             'guest' => RedirectIfAuthenticated::class,
             'signed' => ValidateSignature::class,
@@ -185,6 +185,13 @@ return Application::configure(basePath: dirname(__DIR__))
             if ($request->wantsJson()) {
                 if ($e instanceof HttpResponseException) {
                     return $e->getResponse();
+                }
+
+                if ($e instanceof \Illuminate\Auth\AuthenticationException) {
+                    return response()->json(
+                        ['error' => $e->getMessage()],
+                        401,
+                    );
                 }
 
                 if ($e instanceof ValidationException) {

@@ -100,6 +100,13 @@
             "@php artisan package:discover --ansi"
         ],
         "analyse": "./vendor/bin/phpstan analyse --memory-limit=512M",
+        "test": [
+            "docker compose -f docker-compose.test.yml up -d --wait",
+            "./vendor/bin/pest --compact",
+            "docker compose -f docker-compose.test.yml down"
+        ],
+        "test:filter": "./vendor/bin/pest --compact --filter",
+        "test:quick": "./vendor/bin/pest --compact",
         "lint": "./vendor/bin/pint",
         "lint:test": "./vendor/bin/pint --test"
 
