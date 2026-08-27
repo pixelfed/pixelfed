@@ -79,8 +79,11 @@ class RegisterController extends Controller
                 $underscore = substr_count($value, '_');
                 $period = substr_count($value, '.');
 
-                if (str_ends_with($value, ['.php', '.js', '.css'])) {
-                    return $fail('Username is invalid.');
+                $disallowedExtensions = ['.php', '.js', '.css', '.html', '.htm', '.json', '.xml', '.env', '.sh', '.exe', '.bat'];
+                foreach ($disallowedExtensions as $ext) {
+                    if (str_ends_with($value, $ext)) {
+                        return $fail('Username is invalid. No common file extensions.');
+                    }
                 }
 
                 if (($dash + $underscore + $period) > 1) {

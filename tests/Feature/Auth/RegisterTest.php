@@ -18,21 +18,33 @@ it('renders the registration page when open registration is enabled', function (
         ->assertOk();
 });
 
-it('crashes with str_ends_with TypeError on valid registration data', function () {
-    // BUG: RegisterController.php:82 passes array to str_ends_with().
-    // This is a real bug that prevents registration.
+it('creates a user with valid registration data', function () {
     config(['pixelfed.open_registration' => true]);
     config(['pixelfed.max_users' => 1000]);
+    config(['instance.enable_cc' => false]);
 
-    $this->post('/register', [
+    // Visit the register page first to seed the RT token in cache
+    $this->get('/register')->assertOk();
+    $rt = cache()->get('pf:register:rt');
+
+    $response = $this->post('/register', [
         'name' => 'Test User',
         'username' => 'testuser',
-        'email' => 'test@example.com',
+        'email' => 'testregistration@gmail.com',
         'password' => 'SecurePass123!',
         'password_confirmation' => 'SecurePass123!',
         'agree' => 'on',
-    ])->assertServerError();
-})->group('known-bugs');
+        'agecheck' => 'on',
+        'rt' => $rt,
+    ]);
+
+    $response->assertRedirect();
+    $response->assertSessionHasNoErrors();
+
+    $this->assertDatabaseHas('users', [
+        'username' => 'testuser',
+    ]);
+});
 
 it('rejects registration with missing required fields', function () {
     config(['pixelfed.open_registration' => true]);
@@ -42,8 +54,7 @@ it('rejects registration with missing required fields', function () {
         ->assertSessionHasErrors();
 });
 
-it('crashes on registration with a duplicate username', function () {
-    // BUG: Same str_ends_with TypeError.
+it('rejects registration with a duplicate username', function () {
     config(['pixelfed.open_registration' => true]);
     config(['pixelfed.max_users' => 1000]);
 
@@ -56,11 +67,11 @@ it('crashes on registration with a duplicate username', function () {
         'password' => 'SecurePass123!',
         'password_confirmation' => 'SecurePass123!',
         'agree' => 'on',
-    ])->assertServerError();
-})->group('known-bugs');
+    ])->assertRedirect()
+        ->assertSessionHasErrors(['username']);
+});
 
-it('crashes on registration with a duplicate email', function () {
-    // BUG: Same str_ends_with TypeError.
+it('rejects registration with a duplicate email', function () {
     config(['pixelfed.open_registration' => true]);
     config(['pixelfed.max_users' => 1000]);
 
@@ -73,8 +84,9 @@ it('crashes on registration with a duplicate email', function () {
         'password' => 'SecurePass123!',
         'password_confirmation' => 'SecurePass123!',
         'agree' => 'on',
-    ])->assertServerError();
-})->group('known-bugs');
+    ])->assertRedirect()
+        ->assertSessionHasErrors(['email']);
+});
 
 it('blocks registration when open registration is disabled', function () {
     config(['pixelfed.open_registration' => false]);
