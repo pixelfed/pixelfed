@@ -29,9 +29,9 @@ trait ExportSettings
         return view('settings.dataexport');
     }
 
-    public function exportAccount()
+    public function exportAccount(Request $request)
     {
-        $profile = request()->user()->profile;
+        $profile = $request->user()->profile;
         $fractal = new Fractal\Manager;
         $fractal->setSerializer(new ArraySerializer);
         $resource = new Fractal\Resource\Item($profile, new ProfileTransformer);
@@ -45,9 +45,9 @@ trait ExportSettings
         ]);
     }
 
-    public function exportFollowing()
+    public function exportFollowing(Request $request)
     {
-        $profile = request()->user()->profile;
+        $profile = $request->user()->profile;
         $userId = Auth::id();
 
         $userExportPath = 'user_exports/'.$userId;
@@ -109,9 +109,9 @@ trait ExportSettings
         }
     }
 
-    public function exportFollowers()
+    public function exportFollowers(Request $request)
     {
-        $profile = request()->user()->profile;
+        $profile = $request->user()->profile;
         $userId = Auth::id();
 
         $userExportPath = 'user_exports/'.$userId;
@@ -173,16 +173,16 @@ trait ExportSettings
         }
     }
 
-    public function exportMuteBlockList()
+    public function exportMuteBlockList(Request $request)
     {
-        $profile = request()->user()->profile;
+        $profile = $request->user()->profile;
         $exists = UserFilter::select('id')
             ->whereUserId($profile->id)
             ->exists();
         if (! $exists) {
             return redirect()->back();
         }
-        $data = Cache::remember('account:export:profile:muteblocklist:'.request()->user()->profile->id, now()->addMinutes(60), function () use ($profile) {
+        $data = Cache::remember('account:export:profile:muteblocklist:'.$request->user()->profile->id, now()->addMinutes(60), function () use ($profile) {
             return json_encode([
                 'muted' => $profile->mutedProfileUrls(),
                 'blocked' => $profile->blockedProfileUrls(),

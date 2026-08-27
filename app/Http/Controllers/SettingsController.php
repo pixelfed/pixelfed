@@ -37,9 +37,9 @@ class SettingsController extends Controller
         $this->middleware('auth');
     }
 
-    public function accessibility()
+    public function accessibility(Request $request)
     {
-        $settings = request()->user()->settings;
+        $settings = $request->user()->settings;
 
         return view('settings.accessibility', compact('settings'));
     }
@@ -185,14 +185,14 @@ class SettingsController extends Controller
         return response()->json([200])->cookie($cookie);
     }
 
-    public function sponsor()
+    public function sponsor(Request $request)
     {
         $default = [
             'patreon' => null,
             'liberapay' => null,
             'opencollective' => null,
         ];
-        $sponsors = ProfileSponsor::whereProfileId(request()->user()->profile->id)->first();
+        $sponsors = ProfileSponsor::whereProfileId($request->user()->profile->id)->first();
         $sponsors = $sponsors ? json_decode($sponsors->sponsors, true) : $default;
 
         return view('settings.sponsor', compact('sponsors'));
