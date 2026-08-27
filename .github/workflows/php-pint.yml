@@ -1,4 +1,4 @@
-name: PHP - Pint
+name: Code Style
 
 on:
   push:

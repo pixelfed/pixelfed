@@ -1,4 +1,4 @@
-name: PHP - Laravel Tests
+name: Laravel Test Suite
 
 on:
   push:
