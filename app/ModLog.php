@@ -8,7 +8,7 @@ class ModLog extends Model
 {
     protected $visible = ['id'];
 
-    protected $fillable = ['*'];
+    protected $guarded = [];
 
     public function admin()
     {
