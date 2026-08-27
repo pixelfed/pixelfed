@@ -7,14 +7,11 @@
 -   Update ApiV1Controller, add show_atom support to update_credentials endpoint ([4e2e49f84](https://github.com/pixelfed/pixelfed/commit/4e2e49f84))
 -   Update ApiV1Controller, add is_suggestable to update_credentials endpoint ([7937d91c3](https://github.com/pixelfed/pixelfed/commit/7937d91c3))
 -   ([](https://github.com/pixelfed/pixelfed/commit/))
-
 -   ([#6794](https://github.com/pixelfed/pixelfed/pull/6794))
-
     -   Fixed the Github action for the docker images
     -   Added an automatic cleanup for GHCR docker images
     -   Merged some translations
     -   Applied some pint fixes to /public /bootstrap /tests
-
 -   ([#6796](https://github.com/pixelfed/pixelfed/pull/6796))
     -   Upgraded the intervention image laravel package v3 to v4
     -   Added orientation fix to image processor
@@ -38,6 +35,9 @@
     -   refactor: replace short facade aliases with fully-qualified imports
     -   refactor: update larascan with best practices for laravel 12+
     -   fix larascan errors blocking full scans.
+-   ([#6856](https://github.com/pixelfed/pixelfed/pull/6856))
+    -   Testing: Refactored the testing environment
+    -   Testing: Added 250+ tests
 
 ## [v0.12.9 (2026-08-25)](https://github.com/pixelfed/pixelfed/compare/v0.12.9...dev)
 
