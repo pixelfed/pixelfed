@@ -52,7 +52,7 @@ class PersonalAccessTokenController extends Controller
 
     public function store(Request $request): JsonResponse
     {
-        if (! config('instance.oauth.pat.enabled')) {
+        if (! config('instance.oauth.pat_enabled')) {
             return response()->json([
                 'error' => 'Personal access tokens are not enabled on this instance. Please contact your administrator.',
             ], 403);
