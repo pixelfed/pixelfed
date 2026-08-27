@@ -10,9 +10,7 @@ class CuratedRegister extends Model
 {
     use HasFactory;
 
-    protected $fillable = [
-        'user_has_responded',
-    ];
+    protected $guarded = [];
 
     protected function casts(): array
     {

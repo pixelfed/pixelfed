@@ -17,11 +17,6 @@ class User extends Authenticatable implements OAuthenticatable
 {
     use HasApiTokens, HasFactory, HasPushSubscriptions, Notifiable, SoftDeletes, UserRateLimit;
 
-    /**
-     * The attributes that should be mutated to dates.
-     *
-     * @var array
-     */
     protected function casts(): array
     {
         return [
@@ -37,22 +32,7 @@ class User extends Authenticatable implements OAuthenticatable
      *
      * @var array
      */
-    protected $fillable = [
-        'name',
-        'username',
-        'email',
-        'password',
-        'app_register_ip',
-        'email_verified_at',
-        'last_active_at',
-        'register_source',
-        'expo_token',
-        'notify_enabled',
-        'notify_like',
-        'notify_follow',
-        'notify_mention',
-        'notify_comment',
-    ];
+    protected $guarded = [];
 
     /**
      * The attributes that should be hidden for arrays.
