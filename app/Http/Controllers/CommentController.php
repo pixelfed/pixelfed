@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Jobs\CommentPipeline\CommentPipeline;
 use App\Jobs\StatusPipeline\NewStatusPipeline;
 use App\Profile;
+use App\Services\FollowerService;
 use App\Services\StatusService;
 use App\Status;
 use App\Transformer\Api\StatusTransformer;

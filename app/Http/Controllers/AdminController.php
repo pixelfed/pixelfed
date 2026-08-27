@@ -12,6 +12,7 @@ use App\Http\Controllers\Admin\AdminMediaController;
 use App\Http\Controllers\Admin\AdminReportController;
 use App\Http\Controllers\Admin\AdminSettingsController;
 use App\Http\Controllers\Admin\AdminUserController;
+use App\Http\Resources\AdminProfile;
 use App\Instance;
 use App\Jobs\AdminPipeline\AdminProfileActionPipeline;
 use App\Mail\AdminMessageResponse;
