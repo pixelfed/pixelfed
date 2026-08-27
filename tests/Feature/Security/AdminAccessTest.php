@@ -126,14 +126,13 @@ describe('API admin routes deny non-admin users', function () {
     });
 
     it('blocks non-admin from v1 admin domain blocks', function () {
-        // BUG: Route uses CheckForAnyScope middleware which was removed in Passport 13.
-        // This entire endpoint is broken until the middleware is updated.
         $user = User::factory()->create(['is_admin' => false]);
         $user->refresh();
         Passport::actingAs($user, ['admin:read']);
 
-        $this->getJson('/api/v1/admin/domain_blocks');
-    })->skip('CheckForAnyScope middleware removed in Passport 13 - route broken');
+        $this->getJson('/api/v1/admin/domain_blocks')
+            ->assertForbidden();
+    });
 
     it('blocks non-admin from internal admin API', function () {
         $user = User::factory()->create(['is_admin' => false]);
@@ -162,16 +161,17 @@ describe('admin write operations deny non-admin users', function () {
 
         $this->postJson('/api/v1/admin/domain_blocks', [
             'domain' => 'evil.example.com',
-        ]);
-    })->skip('CheckForAnyScope middleware removed in Passport 13 - route broken');
+        ])->assertForbidden();
+    });
 
     it('blocks non-admin from deleting domain blocks', function () {
         $user = User::factory()->create(['is_admin' => false]);
         $user->refresh();
         Passport::actingAs($user, ['admin:write']);
 
-        $this->deleteJson('/api/v1/admin/domain_blocks/1');
-    })->skip('CheckForAnyScope middleware removed in Passport 13 - route broken');
+        $this->deleteJson('/api/v1/admin/domain_blocks/1')
+            ->assertForbidden();
+    });
 });
 
 describe('unauthenticated admin access', function () {
@@ -187,8 +187,9 @@ describe('unauthenticated admin access', function () {
     });
 
     it('returns 401 for unauthenticated v1 admin API', function () {
-        $this->getJson('/api/v1/admin/domain_blocks');
-    })->skip('CheckForAnyScope middleware removed in Passport 13 - route broken');
+        $this->getJson('/api/v1/admin/domain_blocks')
+            ->assertUnauthorized();
+    });
 });
 
 describe('admin access granted to admin users', function () {
@@ -225,6 +226,7 @@ describe('admin access granted to admin users', function () {
         $admin->refresh();
         Passport::actingAs($admin, ['admin:read']);
 
-        $this->getJson('/api/v1/admin/domain_blocks');
-    })->skip('CheckForAnyScope middleware removed in Passport 13 - route broken');
+        $this->getJson('/api/v1/admin/domain_blocks')
+            ->assertOk();
+    });
 });

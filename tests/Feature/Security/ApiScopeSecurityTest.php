@@ -114,8 +114,8 @@ describe('non-admin tokens cannot access admin endpoints', function () {
 
         $this->postJson('/api/v1/admin/domain_blocks', [
             'domain' => 'test.example.com',
-        ]);
-    })->skip('CheckForAnyScope middleware removed in Passport 13 - route broken');
+        ])->assertForbidden();
+    });
 });
 
 describe('cross-user access prevention', function () {
