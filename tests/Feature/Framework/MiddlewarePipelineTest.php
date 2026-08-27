@@ -83,6 +83,10 @@ it('applies admin middleware to admin routes', function () {
 });
 
 it('adds X-Frame-Options header via FrameGuard', function () {
+    // TODO: Replace custom App\Http\Middleware\FrameGuard with Laravel's built-in
+    // security headers. In Laravel 12+ this can be handled via:
+    //   $middleware->withSecurityHeaders(['X-Frame-Options' => 'SAMEORIGIN'])
+    // in bootstrap/app.php, eliminating the need for a custom middleware class.
     $this->get('/login')
         ->assertHeader('X-Frame-Options', 'SAMEORIGIN');
 });
