@@ -3,6 +3,7 @@
 namespace App;
 
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 class Report extends Model
 {
@@ -20,7 +21,7 @@ class Report extends Model
         return url('/i/admin/reports/show/'.$this->id);
     }
 
-    public function reporter()
+    public function reporter(): BelongsTo
     {
         return $this->belongsTo(Profile::class, 'profile_id');
     }
@@ -30,12 +31,12 @@ class Report extends Model
         $class = $this->object_type;
 
         switch ($class) {
-            case \App\Status::class:
+            case Status::class:
                 $column = 'id';
                 break;
 
             default:
-                $class = \App\Status::class;
+                $class = Status::class;
                 $column = 'id';
                 break;
         }
@@ -43,12 +44,12 @@ class Report extends Model
         return (new $class)->where($column, $this->object_id)->first();
     }
 
-    public function status()
+    public function status(): BelongsTo
     {
         return $this->belongsTo(Status::class, 'object_id');
     }
 
-    public function reportedUser()
+    public function reportedUser(): BelongsTo
     {
         return $this->belongsTo(Profile::class, 'reported_profile_id', 'id');
     }

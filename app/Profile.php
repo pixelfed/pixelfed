@@ -6,6 +6,8 @@ use App\Models\ProfileAlias;
 use App\Services\FollowerService;
 use App\Util\Lexer\PrettyNumber;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\Cache;
@@ -88,7 +90,7 @@ class Profile extends Model
         return $this->username.'@'.$domain;
     }
 
-    public function statuses()
+    public function statuses(): HasMany
     {
         return $this->hasMany(Status::class);
     }
@@ -179,7 +181,7 @@ class Profile extends Model
         return $this->hasMany(Like::class);
     }
 
-    public function avatar()
+    public function avatar(): HasOne
     {
         return $this->hasOne(Avatar::class)->withDefault([
             'media_path' => 'public/avatars/default.jpg',

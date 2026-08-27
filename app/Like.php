@@ -3,6 +3,7 @@
 namespace App;
 
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
 class Like extends Model
@@ -20,12 +21,12 @@ class Like extends Model
         ];
     }
 
-    public function actor()
+    public function actor(): BelongsTo
     {
         return $this->belongsTo(Profile::class, 'profile_id', 'id');
     }
 
-    public function status()
+    public function status(): BelongsTo
     {
         return $this->belongsTo(Status::class);
     }
