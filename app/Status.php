@@ -9,6 +9,7 @@ use App\Models\StatusEdit;
 use App\Services\AccountService;
 use App\Services\StatusService;
 use Illuminate\Database\Eloquent\Collection;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
@@ -47,7 +48,7 @@ use Illuminate\Support\Str;
  */
 class Status extends Model
 {
-    use HasSnowflakePrimary, SoftDeletes;
+    use HasFactory, HasSnowflakePrimary, SoftDeletes;
 
     /**
      * Indicates if the IDs are auto-incrementing.
