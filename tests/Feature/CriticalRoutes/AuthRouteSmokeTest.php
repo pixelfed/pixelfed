@@ -84,21 +84,17 @@ test('settings developers page loads after password confirmation', function () {
         ->assertStatus(200);
 });
 
-test('oauth clients endpoint fails due to legacy route syntax', function () {
-    // BUG: The oauth routes use legacy array 'uses' syntax which causes
-    // ReflectionFunction TypeError in Laravel 12 + Livewire.
-    // Fix: fix/oauth-route-syntax branch converts to modern fluent syntax.
+test('oauth clients endpoint works for authenticated user', function () {
     $this->actingAs($this->user, 'web')
         ->getJson('/oauth/clients')
-        ->assertStatus(500);
-})->group('known-bugs');
+        ->assertOk();
+});
 
-test('oauth personal access tokens fails due to legacy route syntax', function () {
-    // BUG: Same as above - legacy route syntax causes ReflectionFunction TypeError.
+test('oauth personal access tokens endpoint works', function () {
     $this->actingAs($this->user, 'web')
         ->getJson('/oauth/personal-access-tokens')
-        ->assertStatus(500);
-})->group('known-bugs');
+        ->assertOk();
+});
 
 test('direct messages page loads', function () {
     $this->actingAs($this->user)
