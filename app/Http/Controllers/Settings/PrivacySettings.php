@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Settings;
 
 use App\Follower;
+use App\Jobs\HomeFeedPipeline\FeedUnfollowPipeline;
 use App\Profile;
 use App\Services\AccountService;
 use App\Services\RelationshipService;
