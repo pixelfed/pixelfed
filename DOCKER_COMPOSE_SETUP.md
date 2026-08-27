@@ -54,6 +54,7 @@ This setup uses `serversideup/php:8.4-fpm-nginx` as the base image and is design
    docker compose exec pixelfed php artisan instance:actor
    docker compose exec pixelfed php artisan import:cities
    docker compose exec pixelfed php artisan passport:keys
+   docker compose exec pixelfed php artisan php artisan passport:client --personal --no-interaction
    ```
 
 6. **Create admin user:**
