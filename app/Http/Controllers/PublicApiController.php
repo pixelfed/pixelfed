@@ -19,6 +19,7 @@ use App\Services\UserFilterService;
 use App\Status;
 use App\Transformer\Api\StatusStatelessTransformer;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Cache;
 use League\Fractal;
 use League\Fractal\Pagination\IlluminatePaginatorAdapter;
@@ -92,7 +93,7 @@ class PublicApiController extends Controller
         $profile = Profile::whereUsername($username)->whereNull('status')->firstOrFail();
         $status = Status::whereProfileId($profile->id)->findOrFail($postid);
         $this->scopeCheck($profile, $status);
-        if (! $request->user()) {
+        if (! Auth::check()) {
             $res = [
                 'user' => [],
                 'likes' => [],
@@ -133,8 +134,8 @@ class PublicApiController extends Controller
         $status = Status::whereProfileId($profile->id)->whereCommentsDisabled(false)->findOrFail($postId);
         $this->scopeCheck($profile, $status);
 
-        if ($request->user() !== null) {
-            $p = $request->user()->profile;
+        if (Auth::check()) {
+            $p = Auth::user()->profile;
             $scope = $p->id == $status->profile_id || FollowerService::follows($p->id, $profile->id) ? ['public', 'private', 'unlisted'] : ['public', 'unlisted'];
         } else {
             $scope = ['public', 'unlisted'];
@@ -177,7 +178,7 @@ class PublicApiController extends Controller
 
     protected function scopeCheck(Profile $profile, Status $status)
     {
-        if ($profile->is_private == true && ! request()->user()) {
+        if ($profile->is_private == true && Auth::check() == false) {
             abort(404);
         }
 
@@ -186,7 +187,7 @@ class PublicApiController extends Controller
             case 'unlisted':
                 break;
             case 'private':
-                $user = request()->user() !== null ? request()->user() : false;
+                $user = Auth::check() ? Auth::user() : false;
                 if (! $user) {
                     abort(403);
                 } else {
@@ -633,7 +634,7 @@ class PublicApiController extends Controller
 
     public function relationships(Request $request)
     {
-        if (! $request->user()) {
+        if (! Auth::check()) {
             return response()->json([]);
         }
 

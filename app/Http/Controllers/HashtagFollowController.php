@@ -21,7 +21,7 @@ class HashtagFollowController extends Controller
             'name' => 'required|alpha_num|min:1|max:124|exists:hashtags,name',
         ]);
 
-        $user = $request->user();
+        $user = Auth::user();
         $profile = $user->profile;
         $tag = $request->input('name');
 

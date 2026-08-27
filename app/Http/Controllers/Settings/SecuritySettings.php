@@ -10,14 +10,15 @@ use BaconQrCode\Renderer\RendererStyle\RendererStyle;
 use BaconQrCode\Writer;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Str;
 use PragmaRX\Google2FA\Google2FA;
 
 trait SecuritySettings
 {
-    public function security(Request $request)
+    public function security()
     {
-        $user = $request->user();
+        $user = Auth::user();
 
         $activity = AccountLog::whereUserId($user->id)
             ->orderBy('created_at', 'desc')
@@ -34,7 +35,7 @@ trait SecuritySettings
 
     public function securityTwoFactorSetup(Request $request)
     {
-        $user = $request->user();
+        $user = Auth::user();
         if ($user->{'2fa_enabled'} && $user->{'2fa_secret'}) {
             return redirect(route('account.security'));
         }
@@ -76,7 +77,7 @@ trait SecuritySettings
 
     public function securityTwoFactorSetupStore(Request $request)
     {
-        $user = $request->user();
+        $user = Auth::user();
         if ($user->{'2fa_enabled'} && $user->{'2fa_secret'}) {
             abort(403, 'Two factor auth is already setup.');
         }
@@ -99,7 +100,7 @@ trait SecuritySettings
 
     public function securityTwoFactorEdit(Request $request)
     {
-        $user = $request->user();
+        $user = Auth::user();
 
         if (! $user->{'2fa_enabled'} || ! $user->{'2fa_secret'}) {
             abort(403);
@@ -110,7 +111,7 @@ trait SecuritySettings
 
     public function securityTwoFactorRecoveryCodes(Request $request)
     {
-        $user = $request->user();
+        $user = Auth::user();
 
         if (! $user->{'2fa_enabled'} || ! $user->{'2fa_secret'} || ! $user->{'2fa_backup_codes'}) {
             abort(403);
@@ -122,7 +123,7 @@ trait SecuritySettings
 
     public function securityTwoFactorRecoveryCodesRegenerate(Request $request)
     {
-        $user = $request->user();
+        $user = Auth::user();
 
         if (! $user->{'2fa_enabled'} || ! $user->{'2fa_secret'}) {
             abort(403);
@@ -136,7 +137,7 @@ trait SecuritySettings
 
     public function securityTwoFactorUpdate(Request $request)
     {
-        $user = $request->user();
+        $user = Auth::user();
 
         if (! $user->{'2fa_enabled'} || ! $user->{'2fa_secret'} || ! $user->{'2fa_backup_codes'}) {
             abort(403);

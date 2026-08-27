@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Avatar;
 use App\Jobs\AvatarPipeline\AvatarOptimize;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Str;
 
@@ -22,7 +23,7 @@ class AvatarController extends Controller
         ]);
 
         try {
-            $user = $request->user();
+            $user = Auth::user();
             $profile = $user->profile;
             $file = $request->file('avatar');
             $path = $this->getPath($user, $file);
@@ -113,7 +114,7 @@ class AvatarController extends Controller
 
     public function deleteAvatar(Request $request)
     {
-        $user = $request->user();
+        $user = Auth::user();
         $profile = $user->profile;
 
         $avatar = $profile->avatar;

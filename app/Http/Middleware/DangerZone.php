@@ -29,7 +29,7 @@ class DangerZone
 
             return redirect(route('login'));
         }
-        if (! $request->user()) {
+        if (! Auth::check()) {
             return redirect(route('login'));
         }
         if (! $request->is('i/auth/sudo') && $request->session()->get('sudoTrustDevice') != 1) {

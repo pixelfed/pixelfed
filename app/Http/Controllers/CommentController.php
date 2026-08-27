@@ -11,6 +11,7 @@ use App\Status;
 use App\Transformer\Api\StatusTransformer;
 use App\UserFilter;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use League\Fractal;
 use League\Fractal\Serializer\ArraySerializer;
@@ -25,7 +26,7 @@ class CommentController extends Controller
 
     public function store(Request $request)
     {
-        if (! $request->user()) {
+        if (Auth::check() === false) {
             abort(403);
         }
         $this->validate($request, [
@@ -37,7 +38,7 @@ class CommentController extends Controller
         $statusId = $request->input('item');
         $nsfw = $request->input('sensitive', false);
 
-        $user = $request->user();
+        $user = Auth::user();
         $profile = $user->profile;
         $status = Status::findOrFail($statusId);
 

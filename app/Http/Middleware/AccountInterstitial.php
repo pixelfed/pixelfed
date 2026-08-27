@@ -4,6 +4,7 @@ namespace App\Http\Middleware;
 
 use Closure;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 
 class AccountInterstitial
 {
@@ -28,7 +29,7 @@ class AccountInterstitial
             'site/kb/community-guidelines',
         ];
 
-        if ($request->user() !== null && ! $request->is($ar)) {
+        if (Auth::check() && ! $request->is($ar)) {
             if ($request->user()->has_interstitial) {
                 if ($request->wantsJson()) {
                     $res = ['_refresh' => true, 'error' => 403, 'message' => \App\AccountInterstitial::JSON_MESSAGE];
