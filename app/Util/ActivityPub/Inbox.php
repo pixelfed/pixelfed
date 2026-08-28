@@ -30,6 +30,7 @@ use App\Profile;
 use App\Services\AccountService;
 use App\Services\FollowerService;
 use App\Services\NotificationAppGatewayService;
+use App\Services\NotificationService;
 use App\Services\PollService;
 use App\Services\PushNotificationService;
 use App\Services\ReblogService;
@@ -543,13 +544,7 @@ class Inbox
             ->exists();
 
         if ($profile->domain == null && $hidden == false && ! $nf) {
-            $notification = new Notification;
-            $notification->profile_id = $profile->id;
-            $notification->actor_id = $actor->id;
-            $notification->action = 'dm';
-            $notification->item_id = $dm->id;
-            $notification->item_type = DirectMessage::class;
-            $notification->save();
+            NotificationService::createNotification($profile->id, $actor->id, 'dm', $dm->id, DirectMessage::class);
 
             if (NotificationAppGatewayService::enabled()) {
                 if (PushNotificationService::check('mention', $profile->id)) {
@@ -671,15 +666,7 @@ class Inbox
             'local' => false,
         ]);
 
-        Notification::firstOrCreate(
-            [
-                'profile_id' => $parent->profile_id,
-                'actor_id' => $actor->id,
-                'action' => 'share',
-                'item_id' => $parent->id,
-                'item_type' => Status::class,
-            ]
-        );
+        NotificationService::firstOrCreateNotification($parent->profile_id, $actor->id, 'share', $parent->id, Status::class);
 
         $parent->reblogs_count = $parent->reblogs_count + 1;
         $parent->save();
@@ -1200,13 +1187,7 @@ class Inbox
             ]
         );
 
-        $n = new Notification;
-        $n->profile_id = $dm->to_id;
-        $n->actor_id = $dm->from_id;
-        $n->item_id = $dm->id;
-        $n->item_type = DirectMessage::class;
-        $n->action = 'story:react';
-        $n->save();
+        NotificationService::createNotification($dm->to_id, $dm->from_id, 'story:react', $dm->id, DirectMessage::class);
     }
 
     public function handleStoryReplyActivity()
@@ -1319,13 +1300,7 @@ class Inbox
             ]
         );
 
-        $n = new Notification;
-        $n->profile_id = $dm->to_id;
-        $n->actor_id = $dm->from_id;
-        $n->item_id = $dm->id;
-        $n->item_type = DirectMessage::class;
-        $n->action = 'story:comment';
-        $n->save();
+        NotificationService::createNotification($dm->to_id, $dm->from_id, 'story:comment', $dm->id, DirectMessage::class);
     }
 
     public function handleFlagActivity()

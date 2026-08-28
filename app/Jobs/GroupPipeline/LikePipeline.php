@@ -5,6 +5,7 @@ namespace App\Jobs\GroupPipeline;
 use App\Like;
 use App\Notification;
 use App\Services\FractalService;
+use App\Services\NotificationService;
 use App\Services\StatusService;
 use App\Status;
 use App\Transformer\ActivityPub\Verb\Like as LikeTransformer;
@@ -77,13 +78,7 @@ class LikePipeline implements ShouldQueue
         }
 
         try {
-            $notification = new Notification;
-            $notification->profile_id = $status->profile_id;
-            $notification->actor_id = $actor->id;
-            $notification->action = 'group:like';
-            $notification->item_id = $status->id;
-            $notification->item_type = Status::class;
-            $notification->save();
+            NotificationService::createNotification($status->profile_id, $actor->id, 'group:like', $status->id, Status::class);
 
         } catch (\Exception $e) {
         }

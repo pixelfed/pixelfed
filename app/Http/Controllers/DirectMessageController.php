@@ -8,13 +8,13 @@ use App\Jobs\DirectPipeline\DirectDeliverPipeline;
 use App\Jobs\StatusPipeline\StatusDelete;
 use App\Media;
 use App\Models\Conversation;
-use App\Notification;
 use App\Profile;
 use App\Services\AccountService;
 use App\Services\FollowerService;
 use App\Services\MediaBlocklistService;
 use App\Services\MediaPathService;
 use App\Services\MediaService;
+use App\Services\NotificationService;
 use App\Services\StatusService;
 use App\Services\UserFilterService;
 use App\Services\UserRoleService;
@@ -215,13 +215,7 @@ class DirectMessageController extends Controller
             ->exists();
 
         if ($recipient->domain == null && $hidden == false && ! $nf) {
-            $notification = new Notification;
-            $notification->profile_id = $recipient->id;
-            $notification->actor_id = $profile->id;
-            $notification->action = 'dm';
-            $notification->item_id = $dm->id;
-            $notification->item_type = DirectMessage::class;
-            $notification->save();
+            NotificationService::createNotification($recipient->id, $profile->id, 'dm', $dm->id, DirectMessage::class);
         }
 
         if ($recipient->domain) {

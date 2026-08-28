@@ -3,8 +3,8 @@
 namespace App\Jobs\SharePipeline;
 
 use App\Jobs\HomeFeedPipeline\FeedInsertPipeline;
-use App\Notification;
 use App\Services\FractalService;
+use App\Services\NotificationService;
 use App\Services\ReblogService;
 use App\Services\StatusService;
 use App\Status;
@@ -73,15 +73,7 @@ class SharePipeline implements ShouldQueue
         $parent->save();
         StatusService::del($parent->id);
 
-        Notification::firstOrCreate(
-            [
-                'profile_id' => $target->id,
-                'actor_id' => $actor->id,
-                'action' => 'share',
-                'item_type' => Status::class,
-                'item_id' => $status->reblog_of_id ?? $status->id,
-            ]
-        );
+        NotificationService::firstOrCreateNotification($target->id, $actor->id, 'share', $status->reblog_of_id ?? $status->id, Status::class);
 
         FeedInsertPipeline::dispatch($status->id, $status->profile_id)->onQueue('feed');
 
