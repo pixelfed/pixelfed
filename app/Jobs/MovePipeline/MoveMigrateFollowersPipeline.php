@@ -7,12 +7,13 @@ use App\Http\Controllers\FollowerController;
 use App\Profile;
 use App\Util\ActivityPub\Helpers;
 use DateTime;
-use DB;
 use Exception;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Queue\Queueable;
 use Illuminate\Queue\Middleware\ThrottlesExceptionsWithRedis;
 use Illuminate\Queue\Middleware\WithoutOverlapping;
+use Illuminate\Support\Facades\Cache;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 
 class MoveMigrateFollowersPipeline implements ShouldQueue
@@ -101,7 +102,7 @@ class MoveMigrateFollowersPipeline implements ShouldQueue
         try {
             $targetAccount = Helpers::profileFetch($target);
             $actorAccount = Helpers::profileFetch($actor);
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             Log::warning('MoveMigrateFollowersPipeline: Failed to fetch profiles: '.$e->getMessage());
             throw $e;
         }

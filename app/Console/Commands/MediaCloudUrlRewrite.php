@@ -6,7 +6,7 @@ use App\Avatar;
 use App\Media;
 use Illuminate\Console\Command;
 use Illuminate\Contracts\Console\PromptsForMissingInput;
-use Storage;
+use Illuminate\Support\Facades\Storage;
 
 use function Laravel\Prompts\select;
 

@@ -13,9 +13,10 @@ use App\Services\StatusService;
 use App\Status;
 use App\StatusArchived;
 use App\Transformer\Api\StatusStatelessTransformer;
-use Auth;
-use Cache;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Cache;
+use Illuminate\Support\Facades\DB;
 use League\Fractal;
 use League\Fractal\Serializer\ArraySerializer;
 
@@ -87,7 +88,7 @@ class BaseApiController extends Controller
         ]);
 
         try {
-            $user = Auth::user();
+            $user = $request->user();
             $profile = $user->profile;
             $file = $request->file('upload');
             $path = (new AvatarController)->getPath($user, $file);
@@ -141,7 +142,7 @@ class BaseApiController extends Controller
         $user = $request->user();
         $limit = $request->input('limit', 10);
 
-        $res = \DB::table('likes')
+        $res = DB::table('likes')
             ->whereProfileId($user->profile_id)
             ->latest()
             ->simplePaginate($limit)

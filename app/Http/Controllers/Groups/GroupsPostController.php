@@ -35,7 +35,7 @@ class GroupsPostController extends Controller
     {
         $this->validate($request, [
             'group_id' => 'required|exists:groups,id',
-            'caption' => 'sometimes|string|max:' . config_cache('pixelfed.max_caption_length'),
+            'caption' => 'sometimes|string|max:'.config_cache('pixelfed.max_caption_length'),
             'pollOptions' => 'sometimes|array|min:1|max:4',
         ]);
 
@@ -107,7 +107,7 @@ class GroupsPostController extends Controller
         }
         if ($type == 'video') {
             $video = $request->file('video');
-            $storagePath = 'public/g/' . $group->id . '/p/' . $status->id;
+            $storagePath = 'public/g/'.$group->id.'/p/'.$status->id;
             $path = $video->storePublicly($storagePath);
             $hash = \hash_file('sha256', $video);
 
@@ -137,9 +137,9 @@ class GroupsPostController extends Controller
             $gp->id
         );
 
-        $s = GroupPostService::get($status->group_id, $status->id);
+        $s = GroupPostService::get($gp->group_id, $gp->id);
         GroupFeedService::add($group->id, $gp->id);
-        Cache::forget('groups:self:feed:' . $pid);
+        Cache::forget('groups:self:feed:'.$pid);
 
         $s['pf_type'] = $type;
         $s['visibility'] = 'public';
@@ -169,9 +169,9 @@ class GroupsPostController extends Controller
         $group = Group::findOrFail($gid);
         abort_if(! $group->isMember($pid), 403, 'Not a member of group.');
 
-        $gp = GroupPost::whereGroupId($status->group_id)->findOrFail($request->input('id'));
+        $gp = GroupPost::whereGroupId($group->id)->findOrFail($request->input('id'));
         abort_if($gp->profile_id != $pid && $group->profile_id != $pid, 403);
-        $cached = GroupPostService::get($status->group_id, $status->id);
+        $cached = GroupPostService::get($gp->group_id, $gp->id);
 
         if ($cached) {
             $cached = collect($cached)->filter(function ($r, $k) {
@@ -187,12 +187,12 @@ class GroupsPostController extends Controller
         }
 
         GroupService::log(
-            $status->group_id,
+            $gp->group_id,
             $request->user()->profile_id,
             'group:status:deleted',
             [
                 'type' => $gp->type,
-                'status_id' => $status->id,
+                'status_id' => $gp->id,
                 'original' => $cached,
             ],
             GroupPost::class,
@@ -233,8 +233,8 @@ class GroupsPostController extends Controller
         //  $u->save();
         // }
 
-        if ($status->in_reply_to_id) {
-            $parent = GroupPost::find($status->in_reply_to_id);
+        if ($gp->in_reply_to_id) {
+            $parent = GroupPost::find($gp->in_reply_to_id);
             if ($parent) {
                 $parent->reply_count = GroupPost::whereInReplyToId($parent->id)->count();
                 $parent->save();
@@ -244,9 +244,9 @@ class GroupsPostController extends Controller
 
         GroupPostService::del($group->id, $gp->id);
         GroupFeedService::del($group->id, $gp->id);
-        if ($status->profile_id == $user->profile->id || $user->is_admin == true) {
-            // Cache::forget('profile:status_count:'.$status->profile_id);
-            StatusDelete::dispatch($status);
+        if ($gp->profile_id == $user->profile->id || $user->is_admin == true) {
+            // Cache::forget('profile:status_count:'.$gp->profile_id);
+            StatusDelete::dispatch($gp);
         }
 
         if ($request->wantsJson()) {

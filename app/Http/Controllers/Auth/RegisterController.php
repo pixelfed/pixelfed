@@ -11,6 +11,7 @@ use Illuminate\Auth\Events\Registered;
 use Illuminate\Foundation\Auth\RegistersUsers;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
+use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Str;
@@ -50,7 +51,7 @@ class RegisterController extends Controller
 
     public function getRegisterToken()
     {
-        return \Cache::remember('pf:register:rt', 900, function () {
+        return Cache::remember('pf:register:rt', 900, function () {
             return Str::random(40);
         });
     }
@@ -78,8 +79,11 @@ class RegisterController extends Controller
                 $underscore = substr_count($value, '_');
                 $period = substr_count($value, '.');
 
-                if (str_ends_with($value, ['.php', '.js', '.css'])) {
-                    return $fail('Username is invalid.');
+                $disallowedExtensions = ['.php', '.js', '.css', '.html', '.htm', '.json', '.xml', '.env', '.sh', '.exe', '.bat'];
+                foreach ($disallowedExtensions as $ext) {
+                    if (str_ends_with($value, $ext)) {
+                        return $fail('Username is invalid. No common file extensions.');
+                    }
                 }
 
                 if (($dash + $underscore + $period) > 1) {

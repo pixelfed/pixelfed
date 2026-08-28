@@ -7,12 +7,12 @@ use App\Notification;
 use App\Services\NotificationService;
 use App\Services\StatusService;
 use App\Status;
-use DB;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
+use Illuminate\Support\Facades\DB;
 
 class GroupCommentPipeline implements ShouldQueue
 {
@@ -87,7 +87,7 @@ class GroupCommentPipeline implements ShouldQueue
             $notification->actor_id = $actor->id;
             $notification->action = 'group:comment';
             $notification->item_id = $comment->id;
-            $notification->item_type = \App\Status::class;
+            $notification->item_type = Status::class;
             $notification->save();
 
             return $notification;

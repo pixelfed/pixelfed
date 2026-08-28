@@ -49,12 +49,12 @@ use App\Util\ActivityPub\Validator\Like as LikeValidator;
 use App\Util\ActivityPub\Validator\MoveValidator;
 use App\Util\ActivityPub\Validator\RejectValidator;
 use App\Util\ActivityPub\Validator\UpdatePersonValidator;
-use Cache;
 use Illuminate\Support\Arr;
 use Illuminate\Support\Facades\Bus;
+use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
-use Storage;
 use Throwable;
 
 class Inbox
@@ -1393,7 +1393,7 @@ class Inbox
                     $obc = $objects->count();
                 }
             }
-            $count = Status::whereProfileId($accountId)->find($objects)->count();
+            $count = Status::whereProfileId($accountId)->whereIn('id', $objects)->count();
             if ($obc !== $count) {
                 return;
             }

@@ -28,7 +28,7 @@ class StatusFactory extends Factory
             'reblogs_count' => 0,
             'reply_count' => 0,
             'local' => true,
-            'place' => null,
+            'rendered' => '',
         ];
     }
 

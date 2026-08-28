@@ -6,13 +6,13 @@ use App\Notification;
 use App\Services\NotificationService;
 use App\Services\StatusService;
 use App\Status;
-use Cache;
-use DB;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
+use Illuminate\Support\Facades\Cache;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 
 class StatusReplyPipeline implements ShouldQueue
@@ -90,7 +90,7 @@ class StatusReplyPipeline implements ShouldQueue
             ->whereActorId($actor->id)
             ->whereIn('action', ['mention', 'comment'])
             ->whereItemId($status->id)
-            ->whereItemType(\App\Status::class)
+            ->whereItemType(Status::class)
             ->count();
 
         if ($actor->id === $target || $exists !== 0) {
@@ -122,7 +122,7 @@ class StatusReplyPipeline implements ShouldQueue
                 $notification->actor_id = $actor->id;
                 $notification->action = 'comment';
                 $notification->item_id = $status->id;
-                $notification->item_type = \App\Status::class;
+                $notification->item_type = Status::class;
                 $notification->save();
 
                 NotificationService::setNotification($notification);

@@ -12,6 +12,7 @@ use App\Http\Controllers\Admin\AdminMediaController;
 use App\Http\Controllers\Admin\AdminReportController;
 use App\Http\Controllers\Admin\AdminSettingsController;
 use App\Http\Controllers\Admin\AdminUserController;
+use App\Http\Resources\AdminProfile;
 use App\Instance;
 use App\Jobs\AdminPipeline\AdminProfileActionPipeline;
 use App\Mail\AdminMessageResponse;
@@ -27,13 +28,13 @@ use App\Services\StoryService;
 use App\Status;
 use App\Story;
 use App\User;
-use Cache;
-use DB;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Cache;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Mail;
+use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
 use Illuminate\Validation\Rule;
-use Mail;
-use Storage;
 
 class AdminController extends Controller
 {

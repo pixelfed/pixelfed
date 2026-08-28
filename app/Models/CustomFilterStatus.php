@@ -7,9 +7,7 @@ use Illuminate\Database\Eloquent\Model;
 
 class CustomFilterStatus extends Model
 {
-    protected $fillable = [
-        'custom_filter_id', 'status_id',
-    ];
+    protected $guarded = [];
 
     public function customFilter()
     {

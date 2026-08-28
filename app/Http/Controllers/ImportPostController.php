@@ -8,6 +8,7 @@ use App\Models\ImportPost;
 use App\Services\ImportService;
 use App\User;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Log;
 
 class ImportPostController extends Controller
 {
@@ -184,7 +185,7 @@ class ImportPostController extends Controller
                 ImportService::getPostCount($pid, true);
             } catch (\Exception $e) {
                 $errors[] = $e->getMessage();
-                \Log::error('Import error: '.$e->getMessage());
+                Log::error('Import error: '.$e->getMessage());
 
                 continue;
             }

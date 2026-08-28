@@ -4,7 +4,6 @@ namespace App\Jobs\DeletePipeline;
 
 use App\Profile;
 use App\Util\ActivityPub\HttpSignature;
-use Cache;
 use GuzzleHttp\Client;
 use GuzzleHttp\Pool;
 use Illuminate\Bus\Queueable;
@@ -12,6 +11,7 @@ use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
+use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Log;
 
 class FanoutDeletePipeline implements ShouldQueue

@@ -4,8 +4,8 @@ namespace App\Util\ActivityPub;
 
 use App\Models\InstanceActor;
 use App\Profile;
-use Artisan;
 use DateTime;
+use Illuminate\Support\Facades\Artisan;
 use Illuminate\Support\Facades\Cache;
 
 class HttpSignature

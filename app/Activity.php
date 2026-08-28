@@ -6,7 +6,7 @@ use Illuminate\Database\Eloquent\Model;
 
 class Activity extends Model
 {
-    protected $fillable = ['data', 'to_id', 'from_id', 'object_type'];
+    protected $guarded = [];
 
     protected function casts(): array
     {

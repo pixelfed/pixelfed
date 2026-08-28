@@ -2,28 +2,21 @@
 
 namespace App\Jobs\GroupsPipeline;
 
-use App\Util\Media\Image;
+use App\Models\GroupComment;
+use App\Services\GroupFeedService;
+use App\Services\GroupPostService;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
-use App\Models\Group;
-use App\Models\GroupComment;
-use App\Models\GroupPost;
-use App\Models\GroupHashtag;
-use App\Models\GroupPostHashtag;
-use App\Services\GroupFeedService;
-use App\Services\GroupPostService;
-use App\Util\Lexer\Autolink;
-use App\Util\Lexer\Extractor;
-use DB;
 
 class DeleteCommentPipeline implements ShouldQueue
 {
     use Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
 
     protected $parent;
+
     protected $status;
 
     /**
@@ -54,6 +47,6 @@ class DeleteCommentPipeline implements ShouldQueue
         GroupPostService::del($groupId, $postId);
         GroupFeedService::del($groupId, $postId);
         GroupPostService::del($groupId, $parent->id);
-        return;
+
     }
 }

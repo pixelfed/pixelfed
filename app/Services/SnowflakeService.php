@@ -2,8 +2,8 @@
 
 namespace App\Services;
 
-use Cache;
 use Illuminate\Support\Carbon;
+use Illuminate\Support\Facades\Cache;
 
 class SnowflakeService
 {

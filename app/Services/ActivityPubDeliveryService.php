@@ -4,6 +4,7 @@ namespace App\Services;
 
 use App\Util\ActivityPub\Helpers;
 use App\Util\ActivityPub\HttpSignature;
+use Illuminate\Support\Facades\Log;
 
 class ActivityPubDeliveryService
 {
@@ -51,7 +52,7 @@ class ActivityPubDeliveryService
         abort_if($this->sender->domain != null || $this->sender->status != null, 400);
 
         if (config('app.env') !== 'production') {
-            \Log::info('Skipped delivery to '.$this->to);
+            Log::info('Skipped delivery to '.$this->to);
 
             return;
         }

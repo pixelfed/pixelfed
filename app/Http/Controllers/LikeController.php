@@ -7,9 +7,9 @@ use App\Jobs\LikePipeline\UnlikePipeline;
 use App\Like;
 use App\Services\StatusService;
 use App\Status;
-use Auth;
-use Cache;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Cache;
 
 class LikeController extends Controller
 {

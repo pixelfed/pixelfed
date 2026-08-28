@@ -12,9 +12,10 @@ use App\Profile;
 use App\Services\AccountService;
 use App\Services\AutospamService;
 use App\Services\ConfigCacheService;
-use Cache;
-use DB;
+use App\Status;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Cache;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Storage;
 
 trait AdminAutospamController
@@ -114,7 +115,7 @@ trait AdminAutospamController
 
     public function postAutospamTrainSpamApi(Request $request)
     {
-        $aiCount = AccountInterstitial::whereItemType(\App\Status::class)
+        $aiCount = AccountInterstitial::whereItemType(Status::class)
             ->whereIsSpam(true)
             ->count();
         abort_if($aiCount < 100, 422, 'You don\'t have enough data to pre-train against.');

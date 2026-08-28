@@ -4,12 +4,12 @@ namespace App\Jobs\MediaPipeline;
 
 use App\Media;
 use App\Services\StatusService;
-use Cache;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
+use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Log;
 
 class MediaSyncLicensePipeline implements ShouldQueue

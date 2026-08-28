@@ -24,12 +24,12 @@ use App\Services\SanitizeService;
 use App\Services\UserFilterService;
 use App\Status;
 use App\Util\Media\License;
-use Cache;
 use Carbon\Carbon;
+use Illuminate\Support\Facades\Cache;
+use Illuminate\Support\Facades\Validator;
 use Illuminate\Validation\Rule;
 use League\Uri\Uri;
 use Purify;
-use Validator;
 
 class Helpers
 {

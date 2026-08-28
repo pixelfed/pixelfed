@@ -4,7 +4,7 @@ namespace App\Console\Commands;
 
 use App\User;
 use Illuminate\Console\Command;
-use Storage;
+use Illuminate\Support\Facades\Storage;
 
 class ImportUploadCleanStorage extends Command
 {

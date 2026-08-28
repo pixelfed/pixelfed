@@ -7,9 +7,9 @@ use App\Services\AccountService;
 use App\Services\StatusService;
 use App\Status;
 use App\User;
-use Cache;
-use DB;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Cache;
+use Illuminate\Support\Facades\DB;
 
 class PortfolioController extends Controller
 {
@@ -146,7 +146,7 @@ class PortfolioController extends Controller
         $portfolio->show_bio = $request->input('show_bio') === 'on';
         $portfolio->profile_layout = $request->input('layout');
         $portfolio->profile_container = $request->input('layout_container');
-        $portfolio->metadata = $metadata;
+        $portfolio->metadata = null;
         $portfolio->save();
 
         return redirect('/'.$request->user()->username);

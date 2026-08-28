@@ -23,6 +23,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Arr;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
 use Illuminate\Validation\Rule;
@@ -551,7 +552,7 @@ class StoryApiV1Controller extends Controller
             return response()->json($res);
         } catch (\Exception $e) {
             DB::rollback();
-            \Log::error('Story creation failed', [
+            Log::error('Story creation failed', [
                 'user_id' => $user->id,
                 'error' => $e->getMessage(),
             ]);

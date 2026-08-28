@@ -13,12 +13,12 @@ use App\Services\UserRoleService;
 use App\Story;
 use App\StoryView;
 use App\Transformer\ActivityPub\Verb\StoryVerb;
-use Cache;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Cache;
+use Illuminate\Support\Facades\Storage;
 use League\Fractal\Manager;
 use League\Fractal\Resource\Item;
 use League\Fractal\Serializer\ArraySerializer;
-use Storage;
 
 class StoryController extends StoryComposeController
 {

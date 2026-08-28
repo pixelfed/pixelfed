@@ -12,8 +12,8 @@ use App\Status;
 use App\Util\Lexer\Nickname;
 use App\Util\Site\Nodeinfo;
 use App\Util\Webfinger\Webfinger;
-use Cache;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Cache;
 
 class FederationController extends Controller
 {

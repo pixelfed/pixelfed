@@ -19,9 +19,8 @@ use App\Services\UserFilterService;
 use App\Status; // StatusMediaContainerTransformer,
 use App\Transformer\Api\StatusTransformer;
 use App\User;
-use Auth;
-use Cache;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Redis;
 use Illuminate\Validation\Rule;
 use League\Fractal;
@@ -69,7 +68,7 @@ class InternalApiController extends Controller
 
     public function directMessage(Request $request, $profileId, $threadId)
     {
-        $profile = Auth::user()->profile;
+        $profile = $request->user()->profile;
 
         if ($profileId != $profile->id) {
             abort(403);
@@ -107,6 +106,7 @@ class InternalApiController extends Controller
                     return $user && ($s->profile_id === $user->profile_id
                         || FollowerService::follows($user->profile_id, $s->profile_id));
                 }
+
                 return false;
             })->take($limit);
         $resource = new Fractal\Resource\Collection($children, new StatusTransformer);
@@ -133,7 +133,7 @@ class InternalApiController extends Controller
 
     public function modAction(Request $request)
     {
-        abort_unless(Auth::user()->is_admin, 400);
+        abort_unless($request->user()->is_admin, 400);
         $this->validate($request, [
             'action' => [
                 'required',
@@ -166,7 +166,7 @@ class InternalApiController extends Controller
                 $status->is_nsfw = true;
                 $status->save();
                 ModLogService::boot()
-                    ->user(Auth::user())
+                    ->user($request->user())
                     ->objectUid($status->profile->user_id)
                     ->objectId($status->id)
                     ->objectType('App\Status::class')
@@ -184,7 +184,7 @@ class InternalApiController extends Controller
                     $ai->user_id = $status->profile->user_id;
                     $ai->type = 'post.cw';
                     $ai->view = 'account.moderation.post.cw';
-                    $ai->item_type = \App\Status::class;
+                    $ai->item_type = Status::class;
                     $ai->item_id = $status->id;
                     $ai->has_media = (bool) $media->count();
                     $ai->blurhash = $media->count() ? $media->first()->blurhash : null;
@@ -211,7 +211,7 @@ class InternalApiController extends Controller
                 $status->is_nsfw = false;
                 $status->save();
                 ModLogService::boot()
-                    ->user(Auth::user())
+                    ->user($request->user())
                     ->objectUid($status->profile->user_id)
                     ->objectId($status->id)
                     ->objectType('App\Status::class')
@@ -226,7 +226,7 @@ class InternalApiController extends Controller
                     $ai = AccountInterstitial::whereUserId($status->profile->user_id)
                         ->whereType('post.cw')
                         ->whereItemId($status->id)
-                        ->whereItemType(\App\Status::class)
+                        ->whereItemType(Status::class)
                         ->first();
                     $ai->delete();
                 }
@@ -237,7 +237,7 @@ class InternalApiController extends Controller
                 $status->save();
                 PublicTimelineService::del($status->id);
                 ModLogService::boot()
-                    ->user(Auth::user())
+                    ->user($request->user())
                     ->objectUid($status->profile->user_id)
                     ->objectId($status->id)
                     ->objectType('App\Status::class')
@@ -255,7 +255,7 @@ class InternalApiController extends Controller
                     $ai->user_id = $status->profile->user_id;
                     $ai->type = 'post.unlist';
                     $ai->view = 'account.moderation.post.unlist';
-                    $ai->item_type = \App\Status::class;
+                    $ai->item_type = Status::class;
                     $ai->item_id = $status->id;
                     $ai->has_media = (bool) $media->count();
                     $ai->blurhash = $media->count() ? $media->first()->blurhash : null;
@@ -281,7 +281,7 @@ class InternalApiController extends Controller
             case 'spammer':
                 HandleSpammerPipeline::dispatch($status->profile);
                 ModLogService::boot()
-                    ->user(Auth::user())
+                    ->user($request->user())
                     ->objectUid($status->profile->user_id)
                     ->objectId($status->id)
                     ->objectType('App\User::class')
@@ -338,9 +338,9 @@ class InternalApiController extends Controller
             'only_media' => 'nullable',
             'pinned' => 'nullable',
             'exclude_replies' => 'nullable',
-            'max_id' => 'nullable|integer|min:0|max:' . PHP_INT_MAX,
-            'since_id' => 'nullable|integer|min:0|max:' . PHP_INT_MAX,
-            'min_id' => 'nullable|integer|min:0|max:' . PHP_INT_MAX,
+            'max_id' => 'nullable|integer|min:0|max:'.PHP_INT_MAX,
+            'since_id' => 'nullable|integer|min:0|max:'.PHP_INT_MAX,
+            'min_id' => 'nullable|integer|min:0|max:'.PHP_INT_MAX,
             'limit' => 'nullable|integer|min:1|max:24',
         ]);
 
@@ -354,20 +354,20 @@ class InternalApiController extends Controller
             ['photo', 'photo:album', 'video', 'video:album', 'share', 'reply'];
 
         if ($profile->is_private) {
-            if (! Auth::check()) {
+            if (! $request->user()) {
                 return response()->json([]);
             }
-            $pid = Auth::user()->profile->id;
-            $following = Cache::remember('profile:following:' . $pid, now()->addMinutes(1440), function () use ($pid) {
+            $pid = $request->user()->profile->id;
+            $following = Cache::remember('profile:following:'.$pid, now()->addMinutes(1440), function () use ($pid) {
                 $following = Follower::whereProfileId($pid)->pluck('following_id');
 
                 return $following->push($pid)->toArray();
             });
             $visibility = in_array($profile->id, $following) == true ? ['public', 'unlisted', 'private'] : [];
         } else {
-            if (Auth::check()) {
-                $pid = Auth::user()->profile->id;
-                $following = Cache::remember('profile:following:' . $pid, now()->addMinutes(1440), function () use ($pid) {
+            if ($request->user() !== null) {
+                $pid = $request->user()->profile->id;
+                $following = Cache::remember('profile:following:'.$pid, now()->addMinutes(1440), function () use ($pid) {
                     $following = Follower::whereProfileId($pid)->pluck('following_id');
 
                     return $following->push($pid)->toArray();
@@ -411,12 +411,12 @@ class InternalApiController extends Controller
 
     public function remoteProfile(Request $request, $id)
     {
-        return redirect('/i/web/profile/' . $id);
+        return redirect('/i/web/profile/'.$id);
     }
 
     public function remoteStatus(Request $request, $profileId, $statusId)
     {
-        return redirect('/i/web/post/' . $statusId);
+        return redirect('/i/web/post/'.$statusId);
     }
 
     public function requestEmailVerification(Request $request)

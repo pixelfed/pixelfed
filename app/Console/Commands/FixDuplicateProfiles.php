@@ -28,9 +28,9 @@ use App\Story;
 use App\StoryView;
 use App\User;
 use App\UserFilter;
-use Cache;
-use DB;
 use Illuminate\Console\Command;
+use Illuminate\Support\Facades\Cache;
+use Illuminate\Support\Facades\DB;
 
 class FixDuplicateProfiles extends Command
 {
@@ -239,7 +239,7 @@ class FixDuplicateProfiles extends Command
     protected function checkUserFilter($id, $oid)
     {
         UserFilter::whereUserId($oid)->update(['user_id' => $id]);
-        UserFilter::whereFilterableType(\App\Profile::class)->whereFilterableId($oid)->update(['filterable_id' => $id]);
+        UserFilter::whereFilterableType(Profile::class)->whereFilterableId($oid)->update(['filterable_id' => $id]);
     }
 
     protected function checkUserPronoun($id, $oid)

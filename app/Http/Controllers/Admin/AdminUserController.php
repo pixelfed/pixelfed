@@ -9,8 +9,8 @@ use App\Profile;
 use App\Services\AccountService;
 use App\Services\ModLogService;
 use App\User;
-use Cache;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Mail;
 
 trait AdminUserController

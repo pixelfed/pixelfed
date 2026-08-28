@@ -8,11 +8,17 @@ use App\Models\Poll;
 use App\Models\StatusEdit;
 use App\Services\AccountService;
 use App\Services\StatusService;
-use Auth;
+use Illuminate\Database\Eloquent\Collection;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\Relations\HasManyThrough;
 use Illuminate\Database\Eloquent\SoftDeletes;
+use Illuminate\Support\Carbon;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
-use Storage;
 
 /**
  * @property int $id
@@ -32,17 +38,17 @@ use Storage;
  * @property int $reply_count
  * @property bool $local
  * @property string|null $place
- * @property \Illuminate\Support\Carbon|null $created_at
- * @property \Illuminate\Support\Carbon|null $updated_at
- * @property \Illuminate\Support\Carbon|null $deleted_at
- * @property \Illuminate\Support\Carbon|null $edited_at
- * @property-read \App\Profile $profile
- * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Media> $media
- * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Mention> $mentions
+ * @property Carbon|null $created_at
+ * @property Carbon|null $updated_at
+ * @property Carbon|null $deleted_at
+ * @property Carbon|null $edited_at
+ * @property-read Profile $profile
+ * @property-read Collection<int, Media> $media
+ * @property-read Collection<int, Mention> $mentions
  */
 class Status extends Model
 {
-    use HasSnowflakePrimary, SoftDeletes;
+    use HasFactory, HasSnowflakePrimary, SoftDeletes;
 
     /**
      * Indicates if the IDs are auto-incrementing.
@@ -83,12 +89,12 @@ class Status extends Model
 
     const MAX_LINKS = 5;
 
-    public function profile()
+    public function profile(): BelongsTo
     {
         return $this->belongsTo(Profile::class);
     }
 
-    public function media()
+    public function media(): HasMany
     {
         return $this->hasMany(Media::class);
     }
@@ -281,7 +287,7 @@ class Status extends Model
         return $this->hasOne(Conversation::class);
     }
 
-    public function hashtags()
+    public function hashtags(): HasManyThrough
     {
         return $this->hasManyThrough(
             Hashtag::class,

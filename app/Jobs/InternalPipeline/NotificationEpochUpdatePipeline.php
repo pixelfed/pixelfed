@@ -4,7 +4,6 @@ namespace App\Jobs\InternalPipeline;
 
 use App\Notification;
 use App\Services\NotificationService;
-use Cache;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldBeUniqueUntilProcessing;
 use Illuminate\Contracts\Queue\ShouldQueue;
@@ -12,6 +11,7 @@ use Illuminate\Foundation\Bus\Dispatchable;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\Middleware\WithoutOverlapping;
 use Illuminate\Queue\SerializesModels;
+use Illuminate\Support\Facades\Cache;
 
 class NotificationEpochUpdatePipeline implements ShouldBeUniqueUntilProcessing, ShouldQueue
 {

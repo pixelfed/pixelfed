@@ -2,15 +2,15 @@
 
 namespace App\Http\Middleware;
 
-use Auth;
 use Closure;
+use Illuminate\Http\Request;
 
 class AccountInterstitial
 {
     /**
      * Handle an incoming request.
      *
-     * @param  \Illuminate\Http\Request  $request
+     * @param  Request  $request
      * @return mixed
      */
     public function handle($request, Closure $next)
@@ -28,7 +28,7 @@ class AccountInterstitial
             'site/kb/community-guidelines',
         ];
 
-        if (Auth::check() && ! $request->is($ar)) {
+        if ($request->user() !== null && ! $request->is($ar)) {
             if ($request->user()->has_interstitial) {
                 if ($request->wantsJson()) {
                     $res = ['_refresh' => true, 'error' => 403, 'message' => \App\AccountInterstitial::JSON_MESSAGE];

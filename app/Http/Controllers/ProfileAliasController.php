@@ -7,8 +7,8 @@ use App\Models\ProfileMigration;
 use App\Services\AccountService;
 use App\Services\WebfingerService;
 use App\Util\Lexer\Nickname;
-use Cache;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Cache;
 
 class ProfileAliasController extends Controller
 {

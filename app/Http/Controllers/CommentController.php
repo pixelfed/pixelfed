@@ -4,13 +4,14 @@ namespace App\Http\Controllers;
 
 use App\Jobs\CommentPipeline\CommentPipeline;
 use App\Jobs\StatusPipeline\NewStatusPipeline;
+use App\Profile;
+use App\Services\FollowerService;
 use App\Services\StatusService;
 use App\Status;
 use App\Transformer\Api\StatusTransformer;
 use App\UserFilter;
-use Auth;
-use DB;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 use League\Fractal;
 use League\Fractal\Serializer\ArraySerializer;
 use Purify;
@@ -24,19 +25,19 @@ class CommentController extends Controller
 
     public function store(Request $request)
     {
-        if (Auth::check() === false) {
+        if (! $request->user()) {
             abort(403);
         }
         $this->validate($request, [
             'item' => 'required|integer|min:1',
-            'comment' => 'required|string|max:' . config_cache('pixelfed.max_caption_length'),
+            'comment' => 'required|string|max:'.config_cache('pixelfed.max_caption_length'),
             'sensitive' => 'nullable|boolean',
         ]);
         $comment = $request->input('comment');
         $statusId = $request->input('item');
         $nsfw = $request->input('sensitive', false);
 
-        $user = Auth::user();
+        $user = $request->user();
         $profile = $user->profile;
         $status = Status::findOrFail($statusId);
 
@@ -48,7 +49,7 @@ class CommentController extends Controller
         }
 
         $filtered = UserFilter::whereUserId($status->profile_id)
-            ->whereFilterableType(\App\Profile::class)
+            ->whereFilterableType(Profile::class)
             ->whereIn('filter_type', ['block'])
             ->whereFilterableId($profile->id)
             ->exists();

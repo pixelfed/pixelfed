@@ -4,9 +4,9 @@ namespace App\Http\Controllers;
 
 use App\Page;
 use App\Services\ConfigCacheService;
-use Auth;
-use Cache;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Cache;
 
 class PageController extends Controller
 {

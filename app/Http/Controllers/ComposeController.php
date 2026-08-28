@@ -28,10 +28,10 @@ use App\Transformer\Api\MediaTransformer;
 use App\UserFilter;
 use App\Util\Media\Filter;
 use App\Util\Media\License;
-use Auth;
-use Cache;
-use DB;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Cache;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Str;
 use League\Fractal;
 use League\Fractal\Serializer\ArraySerializer;
@@ -172,7 +172,7 @@ class ComposeController extends Controller
             ],
         ]);
 
-        $user = Auth::user();
+        $user = $request->user();
         abort_if($user->has_roles && ! UserRoleService::can('can-post', $user->id), 403, 'Invalid permissions for this action');
 
         $limitKey = 'compose:rate-limit:media-updates:'.$user->id;
@@ -260,7 +260,7 @@ class ComposeController extends Controller
 
         abort_if($user->has_roles && ! UserRoleService::can('can-post', $user->id), 403, 'Invalid permissions for this action');
 
-        $blocked = UserFilter::whereFilterableType(\App\Profile::class)
+        $blocked = UserFilter::whereFilterableType(Profile::class)
             ->whereFilterType('block')
             ->whereFilterableId($request->user()->profile_id)
             ->pluck('user_id');
@@ -326,7 +326,7 @@ class ComposeController extends Controller
         if (! $tag) {
             return [];
         }
-        Notification::whereItemType(\App\MediaTag::class)
+        Notification::whereItemType(MediaTag::class)
             ->whereItemId($tag->id)
             ->whereProfileId($profile_id)
             ->whereAction('tagged')
@@ -440,7 +440,7 @@ class ComposeController extends Controller
             return [];
         }
 
-        $blocked = UserFilter::whereFilterableType(\App\Profile::class)
+        $blocked = UserFilter::whereFilterableType(Profile::class)
             ->whereFilterType('block')
             ->whereFilterableId($request->user()->profile_id)
             ->pluck('user_id')
@@ -662,7 +662,7 @@ class ComposeController extends Controller
                     $count = $collection->items()->count();
                     CollectionItem::firstOrCreate([
                         'collection_id' => $collection->id,
-                        'object_type' => \App\Status::class,
+                        'object_type' => Status::class,
                         'object_id' => $status->id,
                     ], [
                         'order' => $count,

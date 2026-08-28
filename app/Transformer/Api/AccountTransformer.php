@@ -7,7 +7,7 @@ use App\Services\AccountService;
 use App\Services\PronounService;
 use App\User;
 use App\UserSetting;
-use Cache;
+use Illuminate\Support\Facades\Cache;
 use League\Fractal;
 
 class AccountTransformer extends Fractal\TransformerAbstract

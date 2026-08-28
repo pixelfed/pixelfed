@@ -19,15 +19,7 @@ class GroupPost extends Model
      */
     public $incrementing = false;
 
-    protected $fillable = [
-        'remote_url',
-        'group_id',
-        'profile_id',
-        'type',
-        'caption',
-        'visibility',
-        'is_nsfw',
-    ];
+    protected $guarded = [];
 
     public function mediaPath()
     {

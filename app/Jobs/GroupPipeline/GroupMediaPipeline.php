@@ -4,13 +4,13 @@ namespace App\Jobs\GroupPipeline;
 
 use App\Media;
 use App\Services\MediaStorageService;
-use Cache;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
 use Illuminate\Http\File;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
+use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Storage;
 
 class GroupMediaPipeline implements ShouldQueue

@@ -12,8 +12,8 @@ use App\Status;
 use Illuminate\Console\Command;
 use Illuminate\Database\QueryException;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
-use Storage;
 
 class TransformImports extends Command
 {

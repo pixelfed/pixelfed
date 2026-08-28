@@ -3,8 +3,8 @@
 namespace App\Transformer\ActivityPub\Verb;
 
 use App\Story;
+use Illuminate\Support\Facades\Storage;
 use League\Fractal;
-use Storage;
 
 class StoryVerb extends Fractal\TransformerAbstract
 {

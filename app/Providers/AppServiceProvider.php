@@ -27,18 +27,18 @@ use App\Status;
 use App\StatusHashtag;
 use App\User;
 use App\UserFilter;
-use Auth;
-use Horizon;
 use Illuminate\Cache\RateLimiting\Limit;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Http\Request;
 use Illuminate\Pagination\Paginator;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Gate;
 use Illuminate\Support\Facades\RateLimiter;
 use Illuminate\Support\Facades\Schema;
 use Illuminate\Support\Facades\URL;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\ServiceProvider;
+use Laravel\Horizon\Horizon;
 use Laravel\Passport\Passport;
 use Laravel\Pulse\Facades\Pulse;
 
@@ -108,8 +108,8 @@ class AppServiceProvider extends ServiceProvider
                 : 'missing';
 
             return [
-                Limit::perHour(20)->by('app-code-verify:ip:' . $request->ip()),
-                Limit::perHour(10)->by('app-code-verify:email:' . $emailKey),
+                Limit::perHour(20)->by('app-code-verify:ip:'.$request->ip()),
+                Limit::perHour(10)->by('app-code-verify:email:'.$emailKey),
             ];
         });
 
@@ -125,8 +125,8 @@ class AppServiceProvider extends ServiceProvider
             $user = $request->user('web');
 
             $actor = $user
-                ? 'u:' . $user->getAuthIdentifier()
-                : 'ip:' . $request->ip();
+                ? 'u:'.$user->getAuthIdentifier()
+                : 'ip:'.$request->ip();
 
             $tooMany = function (Request $request, array $headers) {
                 return response()->json([
@@ -154,10 +154,6 @@ class AppServiceProvider extends ServiceProvider
         Passport::useTokenModel(OAuthToken::class);
         Passport::tokensExpireIn(now()->addDays(config('instance.oauth.token_expiration', 356)));
         Passport::refreshTokensExpireIn(now()->addDays(config('instance.oauth.refresh_expiration', 400)));
-        Passport::enableImplicitGrant();
-        if (config('instance.oauth.pat.enabled')) {
-            Passport::personalAccessClientId(config('instance.oauth.pat.id'));
-        }
 
         Passport::tokensCan([
             'read' => 'Full read access to your account',
@@ -178,7 +174,8 @@ class AppServiceProvider extends ServiceProvider
 
         URL::forceRootUrl(config('app.url'));
 
-        // Model::preventLazyLoading(true);
+        // Model::shouldBeStrict(! $this->app->isProduction()); // In the future replace this instead of preventLazyLoading
+        Model::preventLazyLoading(true);
     }
 
     /**

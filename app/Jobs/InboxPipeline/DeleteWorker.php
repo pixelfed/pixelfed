@@ -6,7 +6,6 @@ use App\Jobs\DeletePipeline\DeleteRemoteProfilePipeline;
 use App\Profile;
 use App\Util\ActivityPub\Helpers;
 use App\Util\ActivityPub\HttpSignature;
-use Cache;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
@@ -94,7 +93,6 @@ class DeleteWorker implements ShouldQueue
                 $actorDelete = Profile::whereRemoteUrl($actor)->exists();
                 if ($actorDelete) {
                     if ($this->verifySignature($headers, $payload) == true) {
-                        Cache::set($key, false);
                         $profile = Profile::whereNotNull('domain')
                             ->whereNull('status')
                             ->whereRemoteUrl($actor)

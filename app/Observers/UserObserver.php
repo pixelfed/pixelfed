@@ -11,7 +11,7 @@ use App\Profile;
 use App\Services\FollowerService;
 use App\User;
 use App\UserSetting;
-use DB;
+use Illuminate\Support\Facades\DB;
 
 class UserObserver
 {

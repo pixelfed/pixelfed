@@ -5,8 +5,8 @@ namespace App\Http\Controllers;
 use App\Services\AccountService;
 use App\Services\StatusService;
 use App\Util\Localization\Localization;
-use Cache;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Cache;
 use League\CommonMark\CommonMarkConverter;
 
 class SpaController extends Controller

@@ -4,7 +4,7 @@ namespace App\Services\Groups;
 
 use App\Models\GroupMedia;
 use App\Services\HashidService;
-use Cache;
+use Illuminate\Support\Facades\Cache;
 
 class GroupMediaService
 {

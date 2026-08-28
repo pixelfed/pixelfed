@@ -11,7 +11,7 @@ class Page extends Model
         'page',
     ];
 
-    protected $fillable = ['slug'];
+    protected $guarded = [];
 
     public function url()
     {

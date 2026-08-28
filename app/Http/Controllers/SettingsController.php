@@ -10,14 +10,16 @@ use App\Http\Controllers\Settings\RelationshipSettings;
 use App\Http\Controllers\Settings\SecuritySettings;
 use App\Jobs\DeletePipeline\DeleteAccountPipeline;
 use App\Jobs\MediaPipeline\MediaSyncLicensePipeline;
+use App\OauthClient;
 use App\ProfileSponsor;
 use App\Services\AccountService;
 use App\UserSetting;
-use Auth;
-use Cache;
 use Carbon\Carbon;
-use Cookie;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Cache;
+use Illuminate\Support\Facades\Cookie;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Redis;
 use Illuminate\Support\Str;
 
@@ -35,9 +37,9 @@ class SettingsController extends Controller
         $this->middleware('auth');
     }
 
-    public function accessibility()
+    public function accessibility(Request $request)
     {
-        $settings = Auth::user()->settings;
+        $settings = $request->user()->settings;
 
         return view('settings.accessibility', compact('settings'));
     }
@@ -94,7 +96,7 @@ class SettingsController extends Controller
 
     public function removeAccountTemporary(Request $request)
     {
-        $user = Auth::user();
+        $user = $request->user();
         abort_if(! config('pixelfed.account_deletion'), 403);
         abort_if($user->is_admin, 403);
 
@@ -103,7 +105,7 @@ class SettingsController extends Controller
 
     public function removeAccountTemporarySubmit(Request $request)
     {
-        $user = Auth::user();
+        $user = $request->user();
         abort_if(! config('pixelfed.account_deletion'), 403);
         abort_if($user->is_admin, 403);
         $profile = $user->profile;
@@ -119,7 +121,7 @@ class SettingsController extends Controller
 
     public function removeAccountPermanent(Request $request)
     {
-        $user = Auth::user();
+        $user = $request->user();
         abort_if($user->is_admin, 403);
 
         return view('settings.remove.permanent');
@@ -130,14 +132,14 @@ class SettingsController extends Controller
         if (config('pixelfed.account_deletion') == false) {
             abort(404);
         }
-        $user = Auth::user();
+        $user = $request->user();
         abort_if(! config('pixelfed.account_deletion'), 403);
         abort_if($user->is_admin, 403);
-    
+
         $this->validate($request, [
             'confirm' => 'required|accepted',
         ]);
-    
+
         $profile = $user->profile;
         $ts = Carbon::now()->addMonth();
         $user->email = $user->id;
@@ -161,7 +163,7 @@ class SettingsController extends Controller
 
     public function requestFullExport(Request $request)
     {
-        $user = Auth::user();
+        $user = $request->user();
 
         return view('settings.export.show');
     }
@@ -183,14 +185,14 @@ class SettingsController extends Controller
         return response()->json([200])->cookie($cookie);
     }
 
-    public function sponsor()
+    public function sponsor(Request $request)
     {
         $default = [
             'patreon' => null,
             'liberapay' => null,
             'opencollective' => null,
         ];
-        $sponsors = ProfileSponsor::whereProfileId(Auth::user()->profile->id)->first();
+        $sponsors = ProfileSponsor::whereProfileId($request->user()->profile->id)->first();
         $sponsors = $sponsors ? json_decode($sponsors->sponsors, true) : $default;
 
         return view('settings.sponsor', compact('sponsors'));
@@ -231,7 +233,7 @@ class SettingsController extends Controller
         ];
 
         $sponsors = ProfileSponsor::firstOrCreate([
-            'profile_id' => Auth::user()->profile_id ?? Auth::user()->profile->id,
+            'profile_id' => $request->user()->profile_id ?? $request->user()->profile->id,
         ]);
         $sponsors->sponsors = json_encode($res);
         $sponsors->save();

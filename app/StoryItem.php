@@ -3,16 +3,17 @@
 namespace App;
 
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Carbon;
+use Illuminate\Support\Facades\Storage;
 use Pixelfed\Snowflake\HasSnowflakePrimary;
-use Storage;
 
 /**
  * @property int $id
  * @property int $story_id
  * @property string|null $media_path
- * @property \Illuminate\Support\Carbon|null $expires_at
- * @property \Illuminate\Support\Carbon|null $created_at
- * @property \Illuminate\Support\Carbon|null $updated_at
+ * @property Carbon|null $expires_at
+ * @property Carbon|null $created_at
+ * @property Carbon|null $updated_at
  */
 class StoryItem extends Model
 {

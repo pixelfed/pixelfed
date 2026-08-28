@@ -3,21 +3,22 @@
 namespace App;
 
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Carbon;
 
 /**
  * @property int $id
  * @property int $profile_id
  * @property int $following_id
  * @property bool|null $local_profile
- * @property \Illuminate\Support\Carbon|null $created_at
- * @property \Illuminate\Support\Carbon|null $updated_at
- * @property-read \App\Profile $actor
- * @property-read \App\Profile $target
- * @property-read \App\Profile $profile
+ * @property Carbon|null $created_at
+ * @property Carbon|null $updated_at
+ * @property-read Profile $actor
+ * @property-read Profile $target
+ * @property-read Profile $profile
  */
 class Follower extends Model
 {
-    protected $fillable = ['profile_id', 'following_id', 'local_profile'];
+    protected $guarded = [];
 
     const MAX_FOLLOWING = 7500;
 

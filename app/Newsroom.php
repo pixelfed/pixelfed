@@ -8,7 +8,7 @@ class Newsroom extends Model
 {
     protected $table = 'newsroom';
 
-    protected $fillable = ['title'];
+    protected $guarded = [];
 
     protected function casts(): array
     {

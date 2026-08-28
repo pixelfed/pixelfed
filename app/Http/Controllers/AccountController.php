@@ -19,15 +19,16 @@ use App\Services\UserFilterService;
 use App\Transformer\Api\Mastodon\v1\AccountTransformer;
 use App\User;
 use App\UserFilter;
-use Auth;
-use Cache;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Arr;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Cache;
+use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Str;
 use League\Fractal;
 use League\Fractal\Serializer\ArraySerializer;
-use Mail;
 use PragmaRX\Google2FA\Google2FA;
 
 class AccountController extends Controller
@@ -62,7 +63,7 @@ class AccountController extends Controller
         $allowed = ['like', 'follow'];
         $timeago = Carbon::now()->subMonths(3);
 
-        $profile = Auth::user()->profile;
+        $profile = $request->user()->profile;
         $following = $profile->following->pluck('id');
 
         $notifications = Notification::whereIn('actor_id', $following)
@@ -387,7 +388,7 @@ class AccountController extends Controller
 
     public function followRequests(Request $request)
     {
-        $pid = Auth::user()->profile->id;
+        $pid = $request->user()->profile->id;
         $followers = FollowRequest::whereFollowingId($pid)->orderBy('id', 'desc')->whereIsRejected(0)->simplePaginate(10);
 
         return view('account.follow-requests', compact('followers'));
@@ -395,7 +396,7 @@ class AccountController extends Controller
 
     public function followRequestsJson(Request $request)
     {
-        $pid = Auth::user()->profile_id;
+        $pid = $request->user()->profile_id;
         $followers = FollowRequest::whereFollowingId($pid)->orderBy('id', 'desc')->whereIsRejected(0)->get();
         $res = [
             'count' => $followers->count(),
@@ -424,7 +425,7 @@ class AccountController extends Controller
             'id' => 'required|integer|min:1',
         ]);
 
-        $pid = Auth::user()->profile->id;
+        $pid = $request->user()->profile->id;
         $action = $request->input('action') === 'accept' ? 'accept' : 'reject';
         $id = $request->input('id');
         $followRequest = FollowRequest::whereFollowingId($pid)->findOrFail($id);
@@ -471,54 +472,26 @@ class AccountController extends Controller
         return response()->json(['msg' => 'success'], 200);
     }
 
-    public function sudoMode(Request $request)
+    public function confirmPassword(Request $request)
     {
-        if ($request->session()->has('sudoModeAttempts') && $request->session()->get('sudoModeAttempts') >= 3) {
-            $request->session()->pull('2fa.session.active');
-            $request->session()->pull('redirectNext');
-            $request->session()->pull('sudoModeAttempts');
-            Auth::logout();
-
-            return redirect(route('login'));
-        }
-
         return view('auth.sudo');
     }
 
-    public function sudoModeVerify(Request $request)
+    public function confirmPasswordStore(Request $request)
     {
         $this->validate($request, [
             'password' => 'required|string|max:500',
-            'trustDevice' => 'nullable',
         ]);
 
-        $user = Auth::user();
-        $password = $request->input('password');
-        $trustDevice = $request->input('trustDevice') == 'on';
-        $next = $request->session()->get('redirectNext', '/');
-        if ($request->session()->has('sudoModeAttempts')) {
-            $count = (int) $request->session()->get('sudoModeAttempts');
-            $request->session()->put('sudoModeAttempts', $count + 1);
-        } else {
-            $request->session()->put('sudoModeAttempts', 1);
-        }
-        if (password_verify($password, $user->password) === true) {
-            $request->session()->put('sudoMode', time());
-            if ($trustDevice == true) {
-                $request->session()->put('sudoTrustDevice', 1);
-            }
-
-            // Fix wrong scheme when using reverse proxy
-            if (! str_contains($next, 'https') && config('instance.force_https_urls', true)) {
-                $next = Str::of($next)->replace('http', 'https')->toString();
-            }
-
-            return redirect($next);
-        } else {
+        if (! Hash::check($request->password, $request->user()->password)) {
             return redirect()
                 ->back()
                 ->withErrors(['password' => __('auth.failed')]);
         }
+
+        $request->session()->passwordConfirmed();
+
+        return redirect()->intended();
     }
 
     public function twoFactorCheckpoint(Request $request)
@@ -531,7 +504,7 @@ class AccountController extends Controller
         $this->validate($request, [
             'code' => 'required|string|max:32',
         ]);
-        $user = Auth::user();
+        $user = $request->user();
         $code = $request->input('code');
         $google2fa = new Google2FA;
         $verify = $google2fa->verifyKey($user->{'2fa_secret'}, $code);

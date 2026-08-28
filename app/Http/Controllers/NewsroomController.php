@@ -3,7 +3,6 @@
 namespace App\Http\Controllers;
 
 use App\Newsroom;
-use Auth;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Redis;
 use Illuminate\Support\Str;
@@ -12,7 +11,7 @@ class NewsroomController extends Controller
 {
     public function index(Request $request)
     {
-        if (Auth::check()) {
+        if ($request->user() !== null) {
             $posts = Newsroom::whereNotNull('published_at')->latest()->paginate(9);
         } else {
             $posts = Newsroom::whereNotNull('published_at')
@@ -53,7 +52,7 @@ class NewsroomController extends Controller
 
     public function timelineApi(Request $request)
     {
-        abort_if(! Auth::check(), 404);
+        abort_if(! $request->user(), 404);
 
         $key = 'newsroom:read:profileid:'.$request->user()->profile_id;
         $read = Redis::smembers($key);
@@ -79,7 +78,7 @@ class NewsroomController extends Controller
 
     public function markAsRead(Request $request)
     {
-        abort_if(! Auth::check(), 404);
+        abort_if(! $request->user(), 404);
 
         $this->validate($request, [
             'id' => 'required|integer|min:1',

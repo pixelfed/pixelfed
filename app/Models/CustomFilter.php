@@ -4,17 +4,15 @@ namespace App\Models;
 
 use App\Profile;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Support\Facades\Cache;
+use Illuminate\Support\Facades\Log;
 
 class CustomFilter extends Model
 {
     public $shouldInvalidateCache = false;
 
-    protected $fillable = [
-        'title', 'phrase', 'context', 'expires_at', 'action', 'profile_id',
-    ];
-
-    protected $guarded = ['shouldInvalidateCache'];
+    protected $guarded = [];
 
     protected function casts(): array
     {
@@ -70,7 +68,7 @@ class CustomFilter extends Model
         return $this->belongsTo(Profile::class, 'profile_id');
     }
 
-    public function keywords()
+    public function keywords(): HasMany
     {
         return $this->hasMany(CustomFilterKeyword::class);
     }
@@ -382,7 +380,7 @@ class CustomFilter extends Model
                         $keywordMatches = array_slice($matches[0], 0, $maxReportedMatches);
                     }
                 } catch (\Throwable $e) {
-                    \Log::error('Filter regex error: '.$e->getMessage(), [
+                    Log::error('Filter regex error: '.$e->getMessage(), [
                         'filter_id' => $filter->id,
                     ]);
                 }

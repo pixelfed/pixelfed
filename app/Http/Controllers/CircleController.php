@@ -3,7 +3,6 @@
 namespace App\Http\Controllers;
 
 use App\Circle;
-use Auth;
 use Illuminate\Http\Request;
 use Illuminate\Validation\Rule;
 
@@ -16,7 +15,7 @@ class CircleController extends Controller
 
     public function home(Request $request)
     {
-        $circles = Circle::whereProfileId(Auth::user()->profile->id)
+        $circles = Circle::whereProfileId($request->user()->profile->id)
             ->orderByDesc('created_at')
             ->paginate(10);
 
@@ -46,7 +45,7 @@ class CircleController extends Controller
         ]);
 
         $circle = Circle::firstOrCreate([
-            'profile_id' => Auth::user()->profile->id,
+            'profile_id' => $request->user()->profile->id,
             'name' => $request->input('name'),
         ], [
             'description' => $request->input('description'),

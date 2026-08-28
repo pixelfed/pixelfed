@@ -5,7 +5,7 @@ namespace App\Services;
 use App\Jobs\InternalPipeline\NotificationEpochUpdatePipeline;
 use App\Notification;
 use App\Transformer\Api\NotificationTransformer;
-use Cache;
+use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Redis;
 use League\Fractal;
 use League\Fractal\Serializer\ArraySerializer;

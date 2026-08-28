@@ -17,6 +17,8 @@ class NewPublicPost implements ShouldBroadcastNow
 
     protected $status;
 
+    protected $fractal;
+
     /**
      * Create a new event instance.
      *
@@ -25,6 +27,7 @@ class NewPublicPost implements ShouldBroadcastNow
     public function __construct(Status $status)
     {
         $this->status = $status;
+        $this->fractal = new Fractal\Manager;
     }
 
     public function broadcastAs()
