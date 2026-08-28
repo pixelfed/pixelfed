@@ -3,15 +3,13 @@
 namespace App\Jobs\DeletePipeline;
 
 use App\Models\Profile;
-use App\Util\ActivityPub\HttpSignature;
+use App\Services\ActivityPubDeliveryService;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
-use Illuminate\Http\Client\Pool;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
 use Illuminate\Support\Facades\Cache;
-use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Log;
 
 class FanoutDeletePipeline implements ShouldQueue
@@ -68,51 +66,12 @@ class FanoutDeletePipeline implements ShouldQueue
                 ],
             ];
 
-            $payload = json_encode($activity);
-            $version = config('pixelfed.version');
-            $appUrl = config('app.url');
-            $userAgent = "(Pixelfed/{$version}; +{$appUrl})";
-            $timeout = config('federation.activitypub.delivery.timeout');
-
-            Http::pool(function (Pool $pool) use ($audience, $activity, $profile, $payload, $userAgent, $timeout) {
-                foreach ($audience as $url) {
-                    $curlHeaders = HttpSignature::sign($profile, $url, $activity, [
-                        'Content-Type' => 'application/ld+json; profile="https://www.w3.org/ns/activitystreams"',
-                        'User-Agent' => $userAgent,
-                    ]);
-
-                    $headers = $this->parseCurlHeaders($curlHeaders);
-
-                    $pool->withHeaders($headers)
-                        ->timeout($timeout)
-                        ->withBody($payload, 'application/ld+json; profile="https://www.w3.org/ns/activitystreams"')
-                        ->post($url);
-                }
-            });
+            ActivityPubDeliveryService::pool($profile, $audience, $activity);
         } catch (\Exception $e) {
             Log::warning("FanoutDeletePipeline: Failed to fanout delete for profile {$profile->id}: ".$e->getMessage());
             throw $e;
         }
 
         return 1;
-    }
-
-    /**
-     * Convert curl-format header array ("Header: value") to associative array.
-     *
-     * @param  array<int, string>  $curlHeaders
-     * @return array<string, string>
-     */
-    private function parseCurlHeaders(array $curlHeaders): array
-    {
-        $headers = [];
-        foreach ($curlHeaders as $header) {
-            $parts = explode(': ', $header, 2);
-            if (count($parts) === 2) {
-                $headers[$parts[0]] = $parts[1];
-            }
-        }
-
-        return $headers;
     }
 }
