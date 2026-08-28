@@ -5,8 +5,8 @@ namespace App\Util\ActivityPub\Inbox;
 use App\DirectMessage;
 use App\Jobs\StoryPipeline\StoryFetch;
 use App\Models\Conversation;
-use App\Notification;
 use App\Services\FollowerService;
+use App\Services\NotificationService;
 use App\Services\SanitizeService;
 use App\Services\StoryIndexService;
 use App\Status;
@@ -217,12 +217,6 @@ trait HandlesStories
             ]
         );
 
-        $n = new Notification;
-        $n->profile_id = $dm->to_id;
-        $n->actor_id = $dm->from_id;
-        $n->item_id = $dm->id;
-        $n->item_type = DirectMessage::class;
-        $n->action = $dmType;
-        $n->save();
+        NotificationService::createNotification($dm->to_id, $dm->from_id, $dmType, $dm->id, DirectMessage::class);
     }
 }

@@ -19,6 +19,7 @@ use App\Models\StatusHashtag;
 use App\Models\StatusView;
 use App\Services\ActivityPubDeliveryService;
 use App\Services\CollectionService;
+use App\Services\FractalService;
 use App\Services\NotificationService;
 use App\Services\StatusService;
 use App\Transformer\ActivityPub\Verb\DeleteNote;
@@ -29,8 +30,6 @@ use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Log;
-use League\Fractal;
-use League\Fractal\Serializer\ArraySerializer;
 
 class StatusDelete implements ShouldQueue
 {
@@ -184,10 +183,7 @@ class StatusDelete implements ShouldQueue
 
         $audience = $status->profile->getAudienceInbox();
 
-        $fractal = new Fractal\Manager;
-        $fractal->setSerializer(new ArraySerializer);
-        $resource = new Fractal\Resource\Item($status, new DeleteNote);
-        $activity = $fractal->createData($resource)->toArray();
+        $activity = FractalService::item($status, new DeleteNote);
 
         $this->unlinkRemoveMedia($status);
 

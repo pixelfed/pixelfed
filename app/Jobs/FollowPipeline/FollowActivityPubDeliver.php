@@ -3,6 +3,7 @@
 namespace App\Jobs\FollowPipeline;
 
 use App\Models\FollowRequest;
+use App\Services\FractalService;
 use App\Transformer\ActivityPub\Verb\Follow;
 use App\Util\ActivityPub\Helpers;
 use Illuminate\Bus\Queueable;
@@ -10,8 +11,6 @@ use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
-use League\Fractal;
-use League\Fractal\Serializer\ArraySerializer;
 
 class FollowActivityPubDeliver implements ShouldQueue
 {
@@ -51,10 +50,7 @@ class FollowActivityPubDeliver implements ShouldQueue
             return;
         }
 
-        $fractal = new Fractal\Manager;
-        $fractal->setSerializer(new ArraySerializer);
-        $resource = new Fractal\Resource\Item($follow, new Follow);
-        $activity = $fractal->createData($resource)->toArray();
+        $activity = FractalService::item($follow, new Follow);
         $url = $target->sharedInbox ?? $target->inbox_url;
 
         Helpers::sendSignedObject($actor, $url, $activity);

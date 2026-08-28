@@ -5,8 +5,6 @@ namespace App\Services\Groups;
 use App\Models\GroupComment;
 use App\Transformer\Api\GroupPostTransformer;
 use Illuminate\Support\Facades\Cache;
-use League\Fractal;
-use League\Fractal\Serializer\ArraySerializer;
 
 class GroupCommentService
 {
@@ -26,10 +24,7 @@ class GroupCommentService
                 return null;
             }
 
-            $fractal = new Fractal\Manager;
-            $fractal->setSerializer(new ArraySerializer);
-            $resource = new Fractal\Resource\Item($gp, new GroupPostTransformer);
-            $res = $fractal->createData($resource)->toArray();
+            $res = FractalService::item($gp, new GroupPostTransformer);
 
             $res['pf_type'] = 'group:post:comment';
             $res['url'] = $gp->url();

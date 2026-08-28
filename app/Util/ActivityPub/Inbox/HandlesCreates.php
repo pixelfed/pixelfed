@@ -11,6 +11,7 @@ use App\Notification;
 use App\Profile;
 use App\Services\FollowerService;
 use App\Services\NotificationAppGatewayService;
+use App\Services\NotificationService;
 use App\Services\PollService;
 use App\Services\PushNotificationService;
 use App\Services\SanitizeService;
@@ -409,13 +410,7 @@ trait HandlesCreates
             return;
         }
 
-        $notification = new Notification;
-        $notification->profile_id = $profile->id;
-        $notification->actor_id = $actor->id;
-        $notification->action = 'dm';
-        $notification->item_id = $dm->id;
-        $notification->item_type = DirectMessage::class;
-        $notification->save();
+        NotificationService::createNotification($profile->id, $actor->id, 'dm', $dm->id, DirectMessage::class);
 
         if (NotificationAppGatewayService::enabled()) {
             if (PushNotificationService::check('mention', $profile->id)) {

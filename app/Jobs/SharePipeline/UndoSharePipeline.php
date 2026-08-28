@@ -6,6 +6,7 @@ use App\Jobs\HomeFeedPipeline\FeedRemovePipeline;
 use App\Models\Notification;
 use App\Models\Status;
 use App\Services\ActivityPubDeliveryService;
+use App\Services\FractalService;
 use App\Services\ReblogService;
 use App\Services\StatusService;
 use App\Transformer\ActivityPub\Verb\UndoAnnounce;
@@ -14,8 +15,6 @@ use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
-use League\Fractal;
-use League\Fractal\Serializer\ArraySerializer;
 
 class UndoSharePipeline implements ShouldQueue
 {
@@ -82,10 +81,7 @@ class UndoSharePipeline implements ShouldQueue
         $status = $this->status;
         $profile = $status->profile;
 
-        $fractal = new Fractal\Manager;
-        $fractal->setSerializer(new ArraySerializer);
-        $resource = new Fractal\Resource\Item($status, new UndoAnnounce);
-        $activity = $fractal->createData($resource)->toArray();
+        $activity = FractalService::item($status, new UndoAnnounce);
 
         $audience = $status->profile->getAudienceInbox();
 

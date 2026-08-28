@@ -4,12 +4,12 @@ namespace App\Jobs\FollowPipeline;
 
 use App\Jobs\PushNotificationPipeline\FollowPushNotifyPipeline;
 use App\Models\Follower;
-use App\Models\Notification;
 use App\Models\Profile;
 use App\Models\User;
 use App\Services\AccountService;
 use App\Services\FollowerService;
 use App\Services\NotificationAppGatewayService;
+use App\Services\NotificationService;
 use App\Services\PushNotificationService;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
@@ -78,13 +78,7 @@ class FollowPipeline implements ShouldQueue
 
         if ($target->user_id && $target->domain === null) {
             try {
-                $notification = new Notification;
-                $notification->profile_id = $target->id;
-                $notification->actor_id = $actor->id;
-                $notification->action = 'follow';
-                $notification->item_id = $target->id;
-                $notification->item_type = Profile::class;
-                $notification->save();
+                NotificationService::createNotification($target->id, $actor->id, 'follow', $target->id, Profile::class);
             } catch (\Exception $e) {
                 Log::error($e);
             }
