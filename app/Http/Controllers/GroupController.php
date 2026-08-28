@@ -490,6 +490,9 @@ class GroupController extends GroupFederationController
                 );
 
                 return response()->json([200]);
+
+            default:
+                return response()->json([200]);
         }
     }
 

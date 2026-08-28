@@ -118,6 +118,8 @@ class InstallController extends Controller
         }
 
         $this->createConfiguration($request);
+
+        return response('ok');
     }
 
     protected function createConfiguration($request): void
@@ -216,5 +218,7 @@ class InstallController extends Controller
         } catch (\PDOException $e) {
             return response($e, 400);
         }
+
+        return response('ok');
     }
 }

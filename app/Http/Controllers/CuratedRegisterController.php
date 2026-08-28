@@ -333,6 +333,9 @@ class CuratedRegisterController extends Controller
                 $request->session()->pull('cur-reg');
 
                 return view('auth.curated-register.index', compact('step', 'verifiedEmail'));
+
+            default:
+                return redirect(route('help.email-confirmation-issues'));
         }
     }
 
