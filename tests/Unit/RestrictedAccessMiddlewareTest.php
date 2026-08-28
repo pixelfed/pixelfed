@@ -3,6 +3,7 @@
 namespace Tests\Unit;
 
 use App\Http\Middleware\RestrictedAccess;
+use App\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Config;
@@ -56,7 +57,7 @@ class RestrictedAccessMiddlewareTest extends TestCase
     {
         Config::set('instance.restricted.enabled', true);
 
-        $this->actingAs(\App\User::factory()->make());
+        $this->actingAs(User::factory()->make());
 
         $request = Request::create('/discover', 'GET');
         $response = $this->middleware->handle($request, $this->passThrough());

@@ -2,7 +2,6 @@
 
 use App\User;
 use Illuminate\Foundation\Testing\LazilyRefreshDatabase;
-use Illuminate\Support\Facades\Route;
 
 uses(LazilyRefreshDatabase::class);
 

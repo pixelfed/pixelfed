@@ -1,6 +1,5 @@
 <?php
 
-use App\Jobs\FollowPipeline\FollowPipeline;
 use App\Jobs\HomeFeedPipeline\FeedInsertPipeline;
 use App\Jobs\StatusPipeline\StatusDelete;
 use App\Status;

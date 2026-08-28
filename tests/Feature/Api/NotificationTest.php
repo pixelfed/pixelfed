@@ -1,7 +1,7 @@
 <?php
 
-use App\Like;
 use App\Notification;
+use App\Profile;
 use App\Status;
 use App\User;
 use Illuminate\Foundation\Testing\LazilyRefreshDatabase;
@@ -62,7 +62,7 @@ describe('GET /api/v1/notifications', function () {
             'actor_id' => $user->profile_id,
             'action' => 'follow',
             'item_id' => $other->profile_id,
-            'item_type' => \App\Profile::class,
+            'item_type' => Profile::class,
         ]);
 
         Passport::actingAs($user, ['read']);

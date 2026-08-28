@@ -3,7 +3,6 @@
 use App\User;
 use Illuminate\Foundation\Testing\LazilyRefreshDatabase;
 use Illuminate\Http\UploadedFile;
-use Illuminate\Support\Facades\Storage;
 
 uses(LazilyRefreshDatabase::class);
 

@@ -4,6 +4,7 @@ use App\Follower;
 use App\Profile;
 use App\Status;
 use App\User;
+use App\UserFilter;
 use Illuminate\Foundation\Testing\LazilyRefreshDatabase;
 use Laravel\Passport\Passport;
 
@@ -77,7 +78,7 @@ describe('blocked users', function () {
         ]);
 
         // Blocker blocks the user
-        \App\UserFilter::create([
+        UserFilter::create([
             'user_id' => $blocker->profile_id,
             'filterable_id' => $user->profile_id,
             'filterable_type' => Profile::class,
