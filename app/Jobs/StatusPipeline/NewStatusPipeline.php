@@ -24,9 +24,18 @@ class NewStatusPipeline implements ShouldQueue
      */
     public $deleteWhenMissingModels = true;
 
-    public $timeout = 5;
+    public $timeout = 30;
 
-    public $tries = 1;
+    public $tries = 3;
+
+    public $maxExceptions = 1;
+
+    /**
+     * The number of seconds to wait before retrying.
+     *
+     * @var array<int, int>
+     */
+    public $backoff = [5, 10];
 
     /**
      * Create a new job instance.
