@@ -2,6 +2,7 @@
 
 namespace App\Jobs\ProfilePipeline;
 
+use App\Services\FractalService;
 use App\Transformer\ActivityPub\Verb\Move;
 use App\Util\ActivityPub\HttpSignature;
 use GuzzleHttp\Client;
@@ -15,8 +16,6 @@ use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\Middleware\WithoutOverlapping;
 use Illuminate\Queue\SerializesModels;
 use Illuminate\Support\Facades\Log;
-use League\Fractal;
-use League\Fractal\Serializer\ArraySerializer;
 
 class ProfileMigrationDeliverMoveActivityPipeline implements ShouldBeUniqueUntilProcessing, ShouldQueue
 {
@@ -91,10 +90,7 @@ class ProfileMigrationDeliverMoveActivityPipeline implements ShouldBeUniqueUntil
         $audience = $profile->getAudienceInbox();
         $activitypubObject = new Move;
 
-        $fractal = new Fractal\Manager;
-        $fractal->setSerializer(new ArraySerializer);
-        $resource = new Fractal\Resource\Item($migration, $activitypubObject);
-        $activity = $fractal->createData($resource)->toArray();
+        $activity = FractalService::item($migration, $activitypubObject);
 
         $payload = json_encode($activity);
 

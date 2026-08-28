@@ -4,6 +4,7 @@ namespace App\Jobs\LikePipeline;
 
 use App\Like;
 use App\Notification;
+use App\Services\FractalService;
 use App\Services\StatusService;
 use App\Status;
 use App\Transformer\ActivityPub\Verb\UndoLike as LikeTransformer;
@@ -15,8 +16,6 @@ use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\Middleware\WithoutOverlapping;
 use Illuminate\Queue\SerializesModels;
 use Illuminate\Support\Facades\DB;
-use League\Fractal;
-use League\Fractal\Serializer\ArraySerializer;
 
 class UnlikePipeline implements ShouldQueue
 {
@@ -95,10 +94,7 @@ class UnlikePipeline implements ShouldQueue
         $status = $like->status;
         $actor = $like->actor;
 
-        $fractal = new Fractal\Manager;
-        $fractal->setSerializer(new ArraySerializer);
-        $resource = new Fractal\Resource\Item($like, new LikeTransformer);
-        $activity = $fractal->createData($resource)->toArray();
+        $activity = FractalService::item($like, new LikeTransformer);
 
         $url = $status->profile->sharedInbox ?? $status->profile->inbox_url;
 

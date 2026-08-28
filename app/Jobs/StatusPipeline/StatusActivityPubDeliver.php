@@ -3,6 +3,7 @@
 namespace App\Jobs\StatusPipeline;
 
 use App\Profile;
+use App\Services\FractalService;
 use App\Status;
 use App\Transformer\ActivityPub\Verb\CreateNote;
 use App\Transformer\ActivityPub\Verb\CreateQuestion;
@@ -15,8 +16,6 @@ use Illuminate\Foundation\Bus\Dispatchable;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
 use Illuminate\Support\Facades\Log;
-use League\Fractal;
-use League\Fractal\Serializer\ArraySerializer;
 
 class StatusActivityPubDeliver implements ShouldQueue
 {
@@ -115,10 +114,7 @@ class StatusActivityPubDeliver implements ShouldQueue
                 break;
         }
 
-        $fractal = new Fractal\Manager;
-        $fractal->setSerializer(new ArraySerializer);
-        $resource = new Fractal\Resource\Item($status, $activitypubObject);
-        $activity = $fractal->createData($resource)->toArray();
+        $activity = FractalService::item($status, $activitypubObject);
 
         $payload = json_encode($activity);
 

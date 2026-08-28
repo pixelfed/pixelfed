@@ -111,28 +111,7 @@ class Bouncer
 
     protected function handle($status)
     {
-        $media = $status->media;
-
-        $ai = new AccountInterstitial;
-        $ai->user_id = $status->profile->user_id;
-        $ai->type = 'post.autospam';
-        $ai->view = 'account.moderation.post.autospam';
-        $ai->item_type = Status::class;
-        $ai->item_id = $status->id;
-        $ai->has_media = (bool) $media->count();
-        $ai->blurhash = $media->count() ? $media->first()->blurhash : null;
-        $ai->meta = json_encode([
-            'caption' => $status->caption,
-            'created_at' => $status->created_at,
-            'type' => $status->type,
-            'url' => $status->url(),
-            'is_nsfw' => $status->is_nsfw,
-            'scope' => $status->scope,
-            'reblog' => $status->reblog_of_id,
-            'likes_count' => $status->likes_count,
-            'reblogs_count' => $status->reblogs_count,
-        ]);
-        $ai->save();
+        $ai = AccountInterstitial::createFromStatus($status, 'post.autospam', 'account.moderation.post.autospam');
 
         if (config('instance.reports.email.enabled') && config('instance.reports.email.autospam')) {
             AutospamNotifyAdminViaEmail::dispatch($ai);

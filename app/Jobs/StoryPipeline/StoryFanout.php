@@ -3,6 +3,7 @@
 namespace App\Jobs\StoryPipeline;
 
 use App\Services\FollowerService;
+use App\Services\FractalService;
 use App\Services\StoryService;
 use App\Story;
 use App\Transformer\ActivityPub\Verb\CreateStory;
@@ -14,8 +15,6 @@ use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
-use League\Fractal;
-use League\Fractal\Serializer\ArraySerializer;
 
 class StoryFanout implements ShouldQueue
 {
@@ -63,10 +62,7 @@ class StoryFanout implements ShouldQueue
             return;
         }
 
-        $fractal = new Fractal\Manager;
-        $fractal->setSerializer(new ArraySerializer);
-        $resource = new Fractal\Resource\Item($story, new CreateStory);
-        $activity = $fractal->createData($resource)->toArray();
+        $activity = FractalService::item($story, new CreateStory);
 
         $payload = json_encode($activity);
 

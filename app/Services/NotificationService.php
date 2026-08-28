@@ -7,8 +7,6 @@ use App\Notification;
 use App\Transformer\Api\NotificationTransformer;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Redis;
-use League\Fractal;
-use League\Fractal\Serializer\ArraySerializer;
 
 class NotificationService
 {
@@ -276,11 +274,7 @@ class NotificationService
                 return null;
             }
 
-            $fractal = new Fractal\Manager;
-            $fractal->setSerializer(new ArraySerializer);
-            $resource = new Fractal\Resource\Item($n, new NotificationTransformer);
-
-            return $fractal->createData($resource)->toArray();
+            return FractalService::item($n, new NotificationTransformer);
         });
 
         if (! $notification) {
@@ -297,11 +291,7 @@ class NotificationService
     public static function setNotification(Notification $notification)
     {
         return Cache::remember('service:notification:'.$notification->id, self::ITEM_CACHE_TTL, function () use ($notification) {
-            $fractal = new Fractal\Manager;
-            $fractal->setSerializer(new ArraySerializer);
-            $resource = new Fractal\Resource\Item($notification, new NotificationTransformer);
-
-            return $fractal->createData($resource)->toArray();
+            return FractalService::item($notification, new NotificationTransformer);
         });
     }
 
