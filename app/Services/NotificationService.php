@@ -304,7 +304,7 @@ class NotificationService
      * @param  int  $itemId  The related item ID
      * @param  string  $itemType  The related item class (e.g. Status::class)
      */
-    public static function createNotification(int $profileId, int $actorId, string $action, int $itemId, string $itemType): Notification
+    public static function createNotification(int $profileId, int $actorId, ?string $action, int $itemId, string $itemType): Notification
     {
         $notification = new Notification;
         $notification->profile_id = $profileId;
