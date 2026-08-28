@@ -4,6 +4,7 @@ namespace App\Mail;
 
 use App\Services\AccountService;
 use App\Services\StatusService;
+use App\Status;
 use Illuminate\Bus\Queueable;
 use Illuminate\Mail\Mailable;
 use Illuminate\Mail\Mailables\Content;
@@ -29,7 +30,7 @@ class AdminNewAutospam extends Mailable
     /**
      * Get the message envelope.
      *
-     * @return \Illuminate\Mail\Mailables\Envelope
+     * @return Envelope
      */
     public function envelope()
     {
@@ -41,7 +42,7 @@ class AdminNewAutospam extends Mailable
     /**
      * Get the message content definition.
      *
-     * @return \Illuminate\Mail\Mailables\Content
+     * @return Content
      */
     public function content()
     {
@@ -50,7 +51,7 @@ class AdminNewAutospam extends Mailable
         $reported_account = null;
         $url = url('/i/admin/reports/autospam/'.$this->report->id.'?ref=email');
 
-        if ($data['item_type'] === \App\Status::class) {
+        if ($data['item_type'] === Status::class) {
             $reported_status = StatusService::get($this->report->item_id, false);
             $reported_account = AccountService::get($reported_status['account']['id'], true);
         }

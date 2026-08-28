@@ -5,6 +5,7 @@ namespace App\Jobs\LikePipeline;
 use App\Like;
 use App\Notification;
 use App\Services\StatusService;
+use App\Status;
 use App\Transformer\ActivityPub\Verb\UndoLike as LikeTransformer;
 use App\Util\ActivityPub\Helpers;
 use Illuminate\Bus\Queueable;
@@ -71,7 +72,7 @@ class UnlikePipeline implements ShouldQueue
                 ->whereActorId($actor->id)
                 ->whereAction('like')
                 ->whereItemId($status->id)
-                ->whereItemType(\App\Status::class)
+                ->whereItemType(Status::class)
                 ->chunkById(100, function ($notifications) {
                     foreach ($notifications as $notification) {
                         $notification->forceDelete();

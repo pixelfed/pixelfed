@@ -8,6 +8,7 @@ use App\Notification;
 use App\Services\NotificationAppGatewayService;
 use App\Services\PushNotificationService;
 use App\Services\StatusService;
+use App\Status;
 use App\Transformer\ActivityPub\Verb\Like as LikeTransformer;
 use App\User;
 use App\Util\ActivityPub\Helpers;
@@ -87,7 +88,7 @@ class LikePipeline implements ShouldQueue
                         'actor_id' => $actor->id,
                         'action' => 'like',
                         'item_id' => $status->id,
-                        'item_type' => \App\Status::class,
+                        'item_type' => Status::class,
                     ]
                 );
 

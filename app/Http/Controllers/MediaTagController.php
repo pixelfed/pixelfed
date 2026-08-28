@@ -41,7 +41,7 @@ class MediaTagController extends Controller
         if (! $tag) {
             return [];
         }
-        Notification::whereItemType(\App\MediaTag::class)
+        Notification::whereItemType(MediaTag::class)
             ->whereItemId($tag->id)
             ->whereProfileId($profile_id)
             ->whereAction('tagged')
