@@ -2,9 +2,10 @@
 
 namespace App\Http\Controllers;
 
-use App\Hashtag;
-use App\Instance;
-use App\Like;
+use App\Models\Hashtag;
+use App\Models\Instance;
+use App\Models\Like;
+use App\Models\Status;
 use App\Services\AccountService;
 use App\Services\AdminShadowFilterService;
 use App\Services\BookmarkService;
@@ -19,7 +20,6 @@ use App\Services\StatusHashtagService;
 use App\Services\StatusService;
 use App\Services\TrendingHashtagService;
 use App\Services\UserFilterService;
-use App\Status;
 use Illuminate\Contracts\View\View;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\RedirectResponse;

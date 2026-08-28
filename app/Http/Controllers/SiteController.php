@@ -2,11 +2,11 @@
 
 namespace App\Http\Controllers;
 
-use App\Page;
-use App\Profile;
+use App\Models\Page;
+use App\Models\Profile;
+use App\Models\User;
 use App\Services\FollowerService;
 use App\Services\StatusService;
-use App\User;
 use App\Util\ActivityPub\Helpers;
 use App\Util\Localization\Localization;
 use Illuminate\Contracts\View\View as ViewContract;

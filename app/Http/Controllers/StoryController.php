@@ -3,15 +3,15 @@
 namespace App\Http\Controllers;
 
 use App\Jobs\StoryPipeline\StoryViewDeliver;
-use App\Profile;
+use App\Models\Profile;
+use App\Models\Story;
+use App\Models\StoryView;
 use App\Services\AccountService;
 use App\Services\FollowerService;
 use App\Services\PollService;
 use App\Services\StoryIndexService;
 use App\Services\StoryService;
 use App\Services\UserRoleService;
-use App\Story;
-use App\StoryView;
 use App\Transformer\ActivityPub\Verb\StoryVerb;
 use Illuminate\Contracts\View\View;
 use Illuminate\Http\JsonResponse;

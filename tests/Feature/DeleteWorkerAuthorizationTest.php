@@ -1,7 +1,7 @@
 <?php
 
 use App\Jobs\InboxPipeline\DeleteWorker;
-use App\Profile;
+use App\Models\Profile;
 use Illuminate\Foundation\Testing\LazilyRefreshDatabase;
 
 uses(LazilyRefreshDatabase::class);

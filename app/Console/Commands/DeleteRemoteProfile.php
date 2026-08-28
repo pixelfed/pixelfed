@@ -3,7 +3,7 @@
 namespace App\Console\Commands;
 
 use App\Jobs\DeletePipeline\DeleteRemoteProfilePipeline;
-use App\Profile;
+use App\Models\Profile;
 use Illuminate\Console\Command;
 
 use function Laravel\Prompts\confirm;

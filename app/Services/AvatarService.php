@@ -2,9 +2,9 @@
 
 namespace App\Services;
 
-use App\Avatar;
 use App\Jobs\AvatarPipeline\AvatarStorageLargePurge;
-use App\Profile;
+use App\Models\Avatar;
+use App\Models\Profile;
 use Exception;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Storage;

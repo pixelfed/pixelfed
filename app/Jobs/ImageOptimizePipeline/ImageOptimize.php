@@ -2,7 +2,7 @@
 
 namespace App\Jobs\ImageOptimizePipeline;
 
-use App\Media;
+use App\Models\Media;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;

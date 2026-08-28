@@ -4,11 +4,11 @@ namespace App\Http\Controllers\Admin;
 
 use App\Jobs\DeletePipeline\DeleteAccountPipeline;
 use App\Mail\AdminMessage;
-use App\ModLog;
-use App\Profile;
+use App\Models\ModLog;
+use App\Models\Profile;
+use App\Models\User;
 use App\Services\AccountService;
 use App\Services\ModLogService;
-use App\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Mail;

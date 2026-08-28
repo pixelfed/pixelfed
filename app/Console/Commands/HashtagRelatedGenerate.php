@@ -2,10 +2,10 @@
 
 namespace App\Console\Commands;
 
-use App\Hashtag;
+use App\Models\Hashtag;
 use App\Models\HashtagRelated;
+use App\Models\StatusHashtag;
 use App\Services\HashtagRelatedService;
-use App\StatusHashtag;
 use Illuminate\Console\Command;
 use Illuminate\Contracts\Console\PromptsForMissingInput;
 

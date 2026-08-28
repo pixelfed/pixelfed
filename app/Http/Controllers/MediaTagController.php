@@ -2,8 +2,8 @@
 
 namespace App\Http\Controllers;
 
-use App\MediaTag;
-use App\Notification;
+use App\Models\MediaTag;
+use App\Models\Notification;
 use App\Services\MediaTagService;
 use Illuminate\Http\Request;
 

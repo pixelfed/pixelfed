@@ -2,7 +2,7 @@
 
 namespace App\Transformer\Api;
 
-use App\StoryItem;
+use App\Models\StoryItem;
 use League\Fractal;
 
 class StoryItemTransformer extends Fractal\TransformerAbstract

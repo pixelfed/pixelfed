@@ -2,8 +2,8 @@
 
 namespace App\Listeners;
 
-use App\AccountLog;
-use App\User;
+use App\Models\AccountLog;
+use App\Models\User;
 
 class LogFailedLogin
 {

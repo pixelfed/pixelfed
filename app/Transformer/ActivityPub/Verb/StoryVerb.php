@@ -2,7 +2,7 @@
 
 namespace App\Transformer\ActivityPub\Verb;
 
-use App\Story;
+use App\Models\Story;
 use Illuminate\Support\Facades\Storage;
 use League\Fractal;
 

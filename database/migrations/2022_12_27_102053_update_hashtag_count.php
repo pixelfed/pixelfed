@@ -1,6 +1,6 @@
 <?php
 
-use App\Hashtag;
+use App\Models\Hashtag;
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Support\Facades\DB;
 

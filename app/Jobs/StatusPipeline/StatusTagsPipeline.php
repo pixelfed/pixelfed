@@ -2,14 +2,14 @@
 
 namespace App\Jobs\StatusPipeline;
 
-use App\Hashtag;
 use App\Jobs\MentionPipeline\MentionPipeline;
-use App\Mention;
+use App\Models\Hashtag;
+use App\Models\Mention;
+use App\Models\StatusHashtag;
 use App\Services\AccountService;
 use App\Services\CustomEmojiService;
 use App\Services\StatusService;
 use App\Services\TrendingHashtagService;
-use App\StatusHashtag;
 use App\Util\ActivityPub\Helpers;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;

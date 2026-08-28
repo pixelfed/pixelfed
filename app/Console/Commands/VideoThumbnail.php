@@ -3,7 +3,7 @@
 namespace App\Console\Commands;
 
 use App\Jobs\VideoPipeline\VideoThumbnail as Pipeline;
-use App\Media;
+use App\Models\Media;
 use Illuminate\Console\Command;
 
 class VideoThumbnail extends Command

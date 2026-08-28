@@ -2,7 +2,7 @@
 
 namespace App\Console\Commands;
 
-use App\EmailVerification;
+use App\Models\EmailVerification;
 use Illuminate\Console\Command;
 
 class PasswordResetGC extends Command

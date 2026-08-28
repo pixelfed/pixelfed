@@ -2,8 +2,8 @@
 
 namespace App\Services;
 
-use App\Story;
-use App\StoryView;
+use App\Models\Story;
+use App\Models\StoryView;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Redis;
 use Illuminate\Support\Facades\Storage;

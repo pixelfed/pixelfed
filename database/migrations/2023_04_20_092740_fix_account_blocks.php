@@ -1,14 +1,14 @@
 <?php
 
-use App\Follower;
-use App\Notification;
-use App\Profile;
+use App\Models\Follower;
+use App\Models\Notification;
+use App\Models\Profile;
+use App\Models\UserFilter;
 use App\Services\AccountService;
 use App\Services\FollowerService;
 use App\Services\NotificationService;
 use App\Services\RelationshipService;
 use App\Services\UserFilterService;
-use App\UserFilter;
 use Illuminate\Database\Migrations\Migration;
 
 return new class extends Migration

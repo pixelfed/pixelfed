@@ -2,7 +2,7 @@
 
 namespace App\Jobs\HomeFeedPipeline;
 
-use App\Hashtag;
+use App\Models\Hashtag;
 use App\Services\HashtagFollowService;
 use App\Services\HomeTimelineService;
 use App\Services\StatusService;

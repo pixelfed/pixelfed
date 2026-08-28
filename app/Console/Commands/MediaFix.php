@@ -2,7 +2,7 @@
 
 namespace App\Console\Commands;
 
-use App\Media;
+use App\Models\Media;
 use App\Util\Media\Filter;
 use Illuminate\Console\Command;
 

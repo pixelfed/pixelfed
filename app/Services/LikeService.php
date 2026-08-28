@@ -2,7 +2,7 @@
 
 namespace App\Services;
 
-use App\Like;
+use App\Models\Like;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Redis;
 

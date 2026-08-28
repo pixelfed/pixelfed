@@ -5,9 +5,9 @@ namespace App\Observers;
 use App\Jobs\HomeFeedPipeline\FeedRemovePipeline;
 use App\Jobs\HomeFeedPipeline\FeedRemoveRemotePipeline;
 use App\Models\ImportPost;
+use App\Models\Status;
 use App\Services\ImportService;
 use App\Services\ProfileStatusService;
-use App\Status;
 use Illuminate\Support\Facades\Cache;
 
 class StatusObserver

@@ -2,11 +2,11 @@
 
 namespace App\Http\Controllers;
 
-use App\Follower;
 use App\Http\Resources\ImportStatus;
+use App\Models\Follower;
 use App\Models\ImportPost;
+use App\Models\User;
 use App\Services\ImportService;
-use App\User;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;

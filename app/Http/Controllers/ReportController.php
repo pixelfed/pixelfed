@@ -4,9 +4,9 @@ namespace App\Http\Controllers;
 
 use App\Jobs\ReportPipeline\ReportNotifyAdminViaEmail;
 use App\Models\Group;
-use App\Profile;
-use App\Report;
-use App\Status;
+use App\Models\Profile;
+use App\Models\Report;
+use App\Models\Status;
 use Illuminate\Contracts\View\View;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\RedirectResponse;

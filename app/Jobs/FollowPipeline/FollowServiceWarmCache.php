@@ -2,8 +2,8 @@
 
 namespace App\Jobs\FollowPipeline;
 
-use App\Follower;
-use App\Profile;
+use App\Models\Follower;
+use App\Models\Profile;
 use App\Services\AccountService;
 use App\Services\FollowerService;
 use Illuminate\Bus\Queueable;

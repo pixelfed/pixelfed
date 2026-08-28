@@ -2,10 +2,10 @@
 
 namespace App\Http\Controllers;
 
-// use App\Profile;
-// use App\Status;
+// use App\Models\Profile;
+// use App\Models\Status;
 // use App\Transformer\Api\StatusTimelineTransformer;
-// use App\UserFilter;
+// use App\Models\UserFilter;
 use Illuminate\Contracts\View\View;
 use Illuminate\Http\Request;
 

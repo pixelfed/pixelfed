@@ -2,7 +2,7 @@
 
 namespace App\Http\Controllers;
 
-use App\Media;
+use App\Models\Media;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 

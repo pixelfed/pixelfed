@@ -2,17 +2,17 @@
 
 namespace App\Http\Controllers\Admin;
 
-use App\AccountInterstitial;
 use App\Http\Resources\AdminSpamReport;
 use App\Jobs\AutospamPipeline\AutospamPretrainNonSpamPipeline;
 use App\Jobs\AutospamPipeline\AutospamPretrainPipeline;
 use App\Jobs\AutospamPipeline\AutospamUpdateCachedDataPipeline;
+use App\Models\AccountInterstitial;
 use App\Models\AutospamCustomTokens;
-use App\Profile;
+use App\Models\Profile;
+use App\Models\Status;
 use App\Services\AccountService;
 use App\Services\AutospamService;
 use App\Services\ConfigCacheService;
-use App\Status;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\DB;

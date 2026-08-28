@@ -2,10 +2,10 @@
 
 namespace App\Http\Controllers\Admin;
 
-use App\DiscoverCategory;
-use App\DiscoverCategoryHashtag;
-use App\Hashtag;
-use App\Media;
+use App\Models\DiscoverCategory;
+use App\Models\DiscoverCategoryHashtag;
+use App\Models\Hashtag;
+use App\Models\Media;
 use Illuminate\Http\Request;
 use Illuminate\Support\Str;
 

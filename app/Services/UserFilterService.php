@@ -3,7 +3,7 @@
 namespace App\Services;
 
 use App\Models\UserDomainBlock;
-use App\UserFilter;
+use App\Models\UserFilter;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Redis;
 

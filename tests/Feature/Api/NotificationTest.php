@@ -1,9 +1,9 @@
 <?php
 
-use App\Notification;
-use App\Profile;
-use App\Status;
-use App\User;
+use App\Models\Notification;
+use App\Models\Profile;
+use App\Models\Status;
+use App\Models\User;
 use Illuminate\Foundation\Testing\LazilyRefreshDatabase;
 use Laravel\Passport\Passport;
 

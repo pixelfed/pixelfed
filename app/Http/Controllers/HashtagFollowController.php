@@ -2,8 +2,8 @@
 
 namespace App\Http\Controllers;
 
-use App\Hashtag;
-use App\HashtagFollow;
+use App\Models\Hashtag;
+use App\Models\HashtagFollow;
 use App\Services\HashtagService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;

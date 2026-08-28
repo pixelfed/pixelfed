@@ -2,7 +2,7 @@
 
 namespace App\Observers;
 
-use App\Avatar;
+use App\Models\Avatar;
 use App\Services\AccountService;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;

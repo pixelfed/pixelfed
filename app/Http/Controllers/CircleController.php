@@ -2,7 +2,7 @@
 
 namespace App\Http\Controllers;
 
-use App\Circle;
+use App\Models\Circle;
 use Illuminate\Contracts\View\View;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;

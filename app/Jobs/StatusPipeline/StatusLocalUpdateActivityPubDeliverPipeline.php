@@ -2,7 +2,7 @@
 
 namespace App\Jobs\StatusPipeline;
 
-use App\Status;
+use App\Models\Status;
 use App\Transformer\ActivityPub\Verb\UpdateNote;
 use App\Util\ActivityPub\HttpSignature;
 use GuzzleHttp\Client;

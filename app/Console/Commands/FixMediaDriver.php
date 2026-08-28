@@ -4,7 +4,7 @@ namespace App\Console\Commands;
 
 use App\Jobs\ImageOptimizePipeline\ImageOptimize;
 use App\Jobs\MediaPipeline\MediaFixLocalFilesystemCleanupPipeline;
-use App\Media;
+use App\Models\Media;
 use Illuminate\Console\Command;
 use Illuminate\Support\Facades\Storage;
 use League\Flysystem\MountManager;

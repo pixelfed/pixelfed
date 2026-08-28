@@ -3,10 +3,10 @@
 namespace App\Jobs\SharePipeline;
 
 use App\Jobs\HomeFeedPipeline\FeedInsertPipeline;
-use App\Notification;
+use App\Models\Notification;
+use App\Models\Status;
 use App\Services\ReblogService;
 use App\Services\StatusService;
-use App\Status;
 use App\Transformer\ActivityPub\Verb\Announce;
 use App\Util\ActivityPub\HttpSignature;
 use GuzzleHttp\Client;

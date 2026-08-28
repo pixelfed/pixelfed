@@ -1,10 +1,10 @@
 <?php
 
-use App\Follower;
-use App\Profile;
-use App\Status;
-use App\User;
-use App\UserFilter;
+use App\Models\Follower;
+use App\Models\Profile;
+use App\Models\Status;
+use App\Models\User;
+use App\Models\UserFilter;
 use Illuminate\Foundation\Testing\LazilyRefreshDatabase;
 use Laravel\Passport\Passport;
 

@@ -2,8 +2,8 @@
 
 namespace App\Services;
 
-use App\Profile;
-use App\User;
+use App\Models\Profile;
+use App\Models\User;
 use Illuminate\Support\Str;
 
 class MediaPathService

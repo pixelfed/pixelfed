@@ -1,6 +1,6 @@
 <?php
 
-use App\Status;
+use App\Models\Status;
 use Illuminate\Database\Migrations\Migration;
 
 class AddMissingReblogOfIdTypesToStatusesTable extends Migration

@@ -2,7 +2,7 @@
 
 namespace App\Services;
 
-use App\Profile;
+use App\Models\Profile;
 use Illuminate\Support\Facades\Cache;
 use Purify;
 

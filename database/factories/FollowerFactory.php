@@ -2,8 +2,8 @@
 
 namespace Database\Factories;
 
-use App\Follower;
-use App\Profile;
+use App\Models\Follower;
+use App\Models\Profile;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
 class FollowerFactory extends Factory

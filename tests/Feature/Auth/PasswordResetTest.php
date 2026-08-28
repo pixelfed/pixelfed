@@ -1,6 +1,6 @@
 <?php
 
-use App\User;
+use App\Models\User;
 use Illuminate\Auth\Notifications\ResetPassword;
 use Illuminate\Foundation\Testing\LazilyRefreshDatabase;
 use Illuminate\Support\Facades\Hash;

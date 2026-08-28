@@ -2,9 +2,9 @@
 
 namespace App\Console\Commands;
 
-use App\Avatar;
+use App\Models\Avatar;
+use App\Models\User;
 use App\Services\AccountService;
-use App\User;
 use Illuminate\Console\Command;
 use Illuminate\Contracts\Console\PromptsForMissingInput;
 use Illuminate\Support\Facades\Cache;

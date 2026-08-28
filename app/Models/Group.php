@@ -3,7 +3,6 @@
 namespace App\Models;
 
 use App\HasSnowflakePrimary;
-use App\Profile;
 use App\Services\GroupService;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;

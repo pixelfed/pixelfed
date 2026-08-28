@@ -1,8 +1,8 @@
 <?php
 
-use App\Report;
-use App\Status;
-use App\User;
+use App\Models\Report;
+use App\Models\Status;
+use App\Models\User;
 use Illuminate\Foundation\Testing\LazilyRefreshDatabase;
 
 uses(LazilyRefreshDatabase::class);

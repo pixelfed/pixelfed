@@ -2,12 +2,12 @@
 
 namespace App\Util\Sentiment;
 
-use App\AccountInterstitial;
 use App\Jobs\ReportPipeline\AutospamNotifyAdminViaEmail;
-use App\Notification;
+use App\Models\AccountInterstitial;
+use App\Models\Notification;
+use App\Models\Status;
 use App\Services\AutospamService;
 use App\Services\StatusService;
-use App\Status;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Str;
 

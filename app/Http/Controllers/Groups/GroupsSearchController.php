@@ -2,12 +2,12 @@
 
 namespace App\Http\Controllers\Groups;
 
-use App\Follower;
 use App\Http\Controllers\Controller;
+use App\Models\Follower;
 use App\Models\Group;
 use App\Models\GroupInvitation;
 use App\Models\GroupMember;
-use App\Profile;
+use App\Models\Profile;
 use App\Services\AccountService;
 use App\Services\Groups\GroupActivityPubService;
 use App\Services\GroupService;

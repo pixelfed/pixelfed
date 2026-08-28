@@ -2,9 +2,9 @@
 
 namespace App\Jobs\ProfilePipeline;
 
-use App\Follower;
 use App\Http\Controllers\FollowerController;
-use App\Profile;
+use App\Models\Follower;
+use App\Models\Profile;
 use App\Services\AccountService;
 use Illuminate\Bus\Batchable;
 use Illuminate\Bus\Queueable;

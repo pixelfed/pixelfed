@@ -2,8 +2,8 @@
 
 namespace App\Console\Commands;
 
-use App\Avatar;
-use App\Media;
+use App\Models\Avatar;
+use App\Models\Media;
 use Illuminate\Console\Command;
 use Illuminate\Contracts\Console\PromptsForMissingInput;
 use Illuminate\Support\Facades\Storage;

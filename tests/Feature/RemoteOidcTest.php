@@ -2,9 +2,9 @@
 
 namespace Tests\Feature;
 
+use App\Models\User;
 use App\Models\UserOidcMapping;
 use App\Services\UserOidcService;
-use App\User;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Str;
 use League\OAuth2\Client\Provider\GenericResourceOwner;

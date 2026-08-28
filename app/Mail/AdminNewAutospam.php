@@ -2,9 +2,9 @@
 
 namespace App\Mail;
 
+use App\Models\Status;
 use App\Services\AccountService;
 use App\Services\StatusService;
-use App\Status;
 use Illuminate\Bus\Queueable;
 use Illuminate\Mail\Mailable;
 use Illuminate\Mail\Mailables\Content;

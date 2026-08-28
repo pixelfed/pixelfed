@@ -4,8 +4,8 @@ namespace App\Http\Controllers;
 
 use App\Mail\InAppRegisterEmailVerify;
 use App\Models\AppRegister;
+use App\Models\User;
 use App\Services\AccountService;
-use App\User;
 use App\Util\Lexer\RestrictedNames;
 use Illuminate\Contracts\View\View;
 use Illuminate\Http\JsonResponse;

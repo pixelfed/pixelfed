@@ -2,8 +2,9 @@
 
 namespace App\Http\Controllers;
 
-use App\Follower;
-use App\Profile;
+use App\Models\Follower;
+use App\Models\Profile;
+use App\Models\Status;
 use App\Services\AccountService;
 use App\Services\BookmarkService;
 use App\Services\FollowerService;
@@ -16,7 +17,6 @@ use App\Services\RelationshipService;
 use App\Services\SnowflakeService;
 use App\Services\StatusService;
 use App\Services\UserFilterService;
-use App\Status;
 use App\Transformer\Api\StatusStatelessTransformer;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;

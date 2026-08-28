@@ -2,7 +2,7 @@
 
 namespace App\Http\Controllers;
 
-use App\ProfileSponsor;
+use App\Models\ProfileSponsor;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 

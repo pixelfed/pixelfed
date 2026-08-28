@@ -3,8 +3,8 @@
 namespace App\Console\Commands;
 
 use App\Models\DefaultDomainBlock;
+use App\Models\User;
 use App\Models\UserDomainBlock;
-use App\User;
 use Illuminate\Console\Command;
 
 use function Laravel\Prompts\confirm;

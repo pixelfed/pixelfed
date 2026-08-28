@@ -3,8 +3,8 @@
 namespace App\Jobs\ImportPipeline;
 
 use App\Jobs\VideoPipeline\VideoThumbnailToCloudPipeline;
-use App\Media;
 use App\Models\ImportPost;
+use App\Models\Media;
 use App\Services\MediaStorageService;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldBeUniqueUntilProcessing;

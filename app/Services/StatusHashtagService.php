@@ -2,9 +2,9 @@
 
 namespace App\Services;
 
-use App\Hashtag;
-use App\Status;
-use App\StatusHashtag;
+use App\Models\Hashtag;
+use App\Models\Status;
+use App\Models\StatusHashtag;
 use App\Transformer\Api\HashtagTransformer;
 use League\Fractal;
 use League\Fractal\Serializer\ArraySerializer;

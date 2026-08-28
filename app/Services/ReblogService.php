@@ -2,7 +2,7 @@
 
 namespace App\Services;
 
-use App\Status;
+use App\Models\Status;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Redis;
 use Illuminate\Support\Lottery;

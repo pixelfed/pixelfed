@@ -2,10 +2,10 @@
 
 namespace App\Jobs\MovePipeline;
 
-use App\Follower;
-use App\Profile;
+use App\Models\Follower;
+use App\Models\Profile;
+use App\Models\UserFilter;
 use App\Services\AccountService;
-use App\UserFilter;
 use App\Util\ActivityPub\Helpers;
 use DateTime;
 use Exception;

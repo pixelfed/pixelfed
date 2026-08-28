@@ -3,7 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Http\Resources\DirectoryProfile;
-use App\Profile;
+use App\Models\Profile;
 use Illuminate\Contracts\View\View;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;

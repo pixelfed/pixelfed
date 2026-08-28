@@ -2,8 +2,8 @@
 
 namespace App\Console\Commands;
 
-use App\Avatar;
 use App\Jobs\AvatarPipeline\AvatarStorageCleanup;
+use App\Models\Avatar;
 use Illuminate\Console\Command;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Storage;
