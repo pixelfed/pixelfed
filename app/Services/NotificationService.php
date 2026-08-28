@@ -320,6 +320,36 @@ class NotificationService
         return $notification;
     }
 
+    /**
+     * Create a notification only if one doesn't already exist for this actor+action+item combination.
+     *
+     * Use this for actions that can be triggered multiple times but should only notify once,
+     * such as shares/boosts (a user can only boost a post once) and mentions.
+     *
+     * @param  int  $profileId  The recipient profile ID
+     * @param  int  $actorId  The actor profile ID who triggered the notification
+     * @param  string  $action  The notification action (e.g. 'share', 'mention')
+     * @param  int  $itemId  The related item ID
+     * @param  string  $itemType  The related item class (e.g. Status::class)
+     */
+    public static function firstOrCreateNotification(int $profileId, int $actorId, string $action, int $itemId, string $itemType): Notification
+    {
+        $notification = Notification::firstOrCreate([
+            'profile_id' => $profileId,
+            'actor_id' => $actorId,
+            'action' => $action,
+            'item_id' => $itemId,
+            'item_type' => $itemType,
+        ]);
+
+        if ($notification->wasRecentlyCreated) {
+            self::setNotification($notification);
+            self::set($notification->profile_id, $notification->id);
+        }
+
+        return $notification;
+    }
+
     public static function warmCache($id, $stop = 400, $force = false)
     {
         if (self::count($id) == 0 || $force == true) {

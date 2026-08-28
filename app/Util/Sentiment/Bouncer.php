@@ -4,8 +4,8 @@ namespace App\Util\Sentiment;
 
 use App\AccountInterstitial;
 use App\Jobs\ReportPipeline\AutospamNotifyAdminViaEmail;
-use App\Notification;
 use App\Services\AutospamService;
+use App\Services\NotificationService;
 use App\Services\StatusService;
 use App\Status;
 use Illuminate\Support\Facades\Cache;
@@ -126,13 +126,7 @@ class Bouncer
         // $status->is_nsfw = true;
         $status->save();
 
-        $notification = new Notification;
-        $notification->profile_id = $status->profile_id;
-        $notification->actor_id = $status->profile_id;
-        $notification->action = 'autospam.warning';
-        $notification->item_id = $status->id;
-        $notification->item_type = Status::class;
-        $notification->save();
+        NotificationService::createNotification($status->profile_id, $status->profile_id, 'autospam.warning', $status->id, Status::class);
 
         StatusService::del($status->id);
 
