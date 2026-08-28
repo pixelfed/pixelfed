@@ -22,7 +22,7 @@ use Illuminate\Foundation\Application;
 use Illuminate\Foundation\Configuration\Exceptions;
 use Illuminate\Foundation\Configuration\Middleware;
 use Illuminate\Foundation\Http\Middleware\ConvertEmptyStringsToNull;
-use Illuminate\Foundation\Http\Middleware\PreventRequestForgery;
+use Illuminate\Foundation\Http\Middleware\ValidateCsrfToken;
 use Illuminate\Foundation\Http\Middleware\PreventRequestsDuringMaintenance;
 use Illuminate\Foundation\Http\Middleware\TrimStrings;
 use Illuminate\Foundation\Http\Middleware\ValidatePostSize;
@@ -83,7 +83,7 @@ return Application::configure(basePath: dirname(__DIR__))
             StartSession::class,
             AuthenticateSession::class,
             ShareErrorsFromSession::class,
-            PreventRequestForgery::class,
+            ValidateCsrfToken::class,
             SubstituteBindings::class,
             CreateFreshApiToken::class,
             'restricted',
@@ -95,7 +95,7 @@ return Application::configure(basePath: dirname(__DIR__))
             AddQueuedCookiesToResponse::class,
             StartSession::class,
             ShareErrorsFromSession::class,
-            PreventRequestForgery::class,
+            ValidateCsrfToken::class,
             SubstituteBindings::class,
             CreateFreshApiToken::class,
         ]);
