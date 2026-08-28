@@ -4,11 +4,11 @@ namespace App\Jobs\LikePipeline;
 
 use App\Jobs\PushNotificationPipeline\LikePushNotifyPipeline;
 use App\Models\Like;
-use App\Models\Notification;
 use App\Models\Status;
 use App\Models\User;
 use App\Services\FractalService;
 use App\Services\NotificationAppGatewayService;
+use App\Services\NotificationService;
 use App\Services\PushNotificationService;
 use App\Services\StatusService;
 use App\Transformer\ActivityPub\Verb\Like as LikeTransformer;
@@ -81,14 +81,8 @@ class LikePipeline implements ShouldQueue
 
         if ($status->uri === null && $status->object_url === null && $status->url === null) {
             DB::transaction(function () use ($status, $actor) {
-                $notification = Notification::firstOrCreate(
-                    [
-                        'profile_id' => $status->profile_id,
-                        'actor_id' => $actor->id,
-                        'action' => 'like',
-                        'item_id' => $status->id,
-                        'item_type' => Status::class,
-                    ]
+                $notification = NotificationService::firstOrCreateNotification(
+                    $status->profile_id, $actor->id, 'like', $status->id, Status::class
                 );
 
                 if ($notification->wasRecentlyCreated) {
