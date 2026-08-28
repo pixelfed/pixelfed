@@ -1,5 +1,6 @@
 <?php
 
+use App\Models\CustomFilter;
 use Illuminate\Support\Str;
 
 return [
@@ -143,6 +144,22 @@ return [
         'CACHE_PREFIX',
         Str::slug(env('APP_NAME', 'laravel'), '_').'_cache'
     ),
+
+    /*
+    |--------------------------------------------------------------------------
+    | Serializable Classes
+    |--------------------------------------------------------------------------
+    |
+    | Controls which PHP classes may be unserialized from cache. Set to false
+    | to block all object unserialization (recommended), or provide an array
+    | of class names that are allowed. This hardens the cache layer against
+    | PHP deserialization gadget chain attacks.
+    |
+    */
+
+    'serializable_classes' => [
+        CustomFilter::class,
+    ],
 
     'limiter' => env('CACHE_LIMITER_DRIVER', 'redis'),
 ];
