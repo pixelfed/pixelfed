@@ -6,6 +6,7 @@ use App\AccountLog;
 use App\Http\Controllers\Controller;
 use App\Services\BouncerService;
 use App\User;
+use Illuminate\Contracts\View\View;
 use Illuminate\Foundation\Auth\AuthenticatesUsers;
 use Illuminate\Http\Request;
 use Illuminate\Validation\ValidationException;
@@ -47,7 +48,7 @@ class LoginController extends Controller
         $this->middleware('guest')->except('logout');
     }
 
-    public function showLoginForm()
+    public function showLoginForm(): View
     {
         if (config('pixelfed.bouncer.cloud_ips.ban_logins')) {
             abort_if(BouncerService::checkIp(request()->ip()), 404);
@@ -60,9 +61,8 @@ class LoginController extends Controller
      * Validate the user login request.
      *
      * @param  Request  $request
-     * @return void
      */
-    public function validateLogin($request)
+    public function validateLogin($request): void
     {
         if (config('pixelfed.bouncer.cloud_ips.ban_logins')) {
             abort_if(BouncerService::checkIp($request->ip()), 404);
@@ -96,7 +96,7 @@ class LoginController extends Controller
      * @param  mixed  $user
      * @return mixed
      */
-    protected function authenticated($request, $user)
+    protected function authenticated($request, $user): void
     {
         if ($user->status == 'deleted') {
             return;
@@ -121,7 +121,7 @@ class LoginController extends Controller
      *
      * @throws ValidationException
      */
-    protected function sendFailedLoginResponse(Request $request)
+    protected function sendFailedLoginResponse(Request $request): void
     {
         if (config('captcha.triggers.login.enabled')) {
             if ($request->session()->has('login_attempts')) {

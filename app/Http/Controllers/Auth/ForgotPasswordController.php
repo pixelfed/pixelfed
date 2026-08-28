@@ -37,10 +37,8 @@ class ForgotPasswordController extends Controller
 
     /**
      * Display the form to request a password reset link.
-     *
-     * @return View
      */
-    public function showLinkRequestForm()
+    public function showLinkRequestForm(): View
     {
         if (config('pixelfed.bouncer.cloud_ips.ban_logins')) {
             abort_if(BouncerService::checkIp(request()->ip()), 404);
@@ -53,10 +51,8 @@ class ForgotPasswordController extends Controller
 
     /**
      * Validate the email for the given request.
-     *
-     * @return void
      */
-    public function validateEmail(Request $request)
+    public function validateEmail(Request $request): void
     {
         if (config('pixelfed.bouncer.cloud_ips.ban_logins')) {
             abort_if(BouncerService::checkIp($request->ip()), 404);
@@ -84,11 +80,10 @@ class ForgotPasswordController extends Controller
      * Get the response for a failed password reset link.
      *
      * @param  string  $response
-     * @return RedirectResponse
      *
      * @throws ValidationException
      */
-    public function sendResetLinkFailedResponse(Request $request, $response)
+    public function sendResetLinkFailedResponse(Request $request, $response): RedirectResponse
     {
         if ($request->wantsJson()) {
             throw ValidationException::withMessages([

@@ -17,7 +17,11 @@ use App\StatusView;
 use App\Transformer\ActivityPub\Verb\Note;
 use App\Transformer\ActivityPub\Verb\Question;
 use App\Util\Media\License;
+use Illuminate\Contracts\View\View;
+use Illuminate\Http\JsonResponse;
+use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
+use Illuminate\Http\Response;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\DB;
 use League\Fractal;
@@ -107,7 +111,7 @@ class StatusController extends Controller
         return view($template, compact('user', 'status'));
     }
 
-    public function shortcodeRedirect(Request $request, $id)
+    public function shortcodeRedirect(Request $request, $id): RedirectResponse
     {
         $hid = HashidService::decode($id);
         abort_if(! $hid, 404);
@@ -115,7 +119,7 @@ class StatusController extends Controller
         return redirect('/i/web/post/'.$hid);
     }
 
-    public function showId(int $id)
+    public function showId(int $id): RedirectResponse
     {
         abort(404);
         $status = Status::whereNull('reblog_of_id')
@@ -125,7 +129,7 @@ class StatusController extends Controller
         return redirect($status->url());
     }
 
-    public function showEmbed(Request $request, $username, int $id)
+    public function showEmbed(Request $request, $username, int $id): Response
     {
         if (! (bool) config_cache('instance.embed.post')) {
             $res = view('status.embed-removed');
@@ -232,16 +236,16 @@ class StatusController extends Controller
         return $this->showActivityPub($request, $status);
     }
 
-    public function compose()
+    public function compose(): View
     {
         $this->authCheck();
 
         return view('status.compose');
     }
 
-    public function store(Request $request) {}
+    public function store(Request $request): void {}
 
-    public function delete(Request $request)
+    public function delete(Request $request): JsonResponse|RedirectResponse
     {
         $this->authCheck();
 
@@ -382,7 +386,7 @@ class StatusController extends Controller
         });
     }
 
-    public function edit(Request $request, $username, $id)
+    public function edit(Request $request, $username, $id): View
     {
         $this->authCheck();
         $user = $request->user()->profile;
@@ -394,7 +398,7 @@ class StatusController extends Controller
         return view('status.edit', compact('user', 'status', 'licenses'));
     }
 
-    public function editStore(Request $request, $username, $id)
+    public function editStore(Request $request, $username, $id): RedirectResponse
     {
         $this->authCheck();
         $user = $request->user()->profile;
@@ -417,7 +421,7 @@ class StatusController extends Controller
         return redirect($status->url());
     }
 
-    protected function authCheck()
+    protected function authCheck(): void
     {
         if (! request()->user()) {
             abort(403);
@@ -431,7 +435,7 @@ class StatusController extends Controller
         return in_array($visibility, $allowed) ? $visibility : 'public';
     }
 
-    public static function mimeTypeCheck($mimes)
+    public static function mimeTypeCheck($mimes): string
     {
         $allowed = explode(',', config_cache('pixelfed.media_types'));
         if (! isset($allowed['image/jpg'])) {
@@ -470,7 +474,7 @@ class StatusController extends Controller
         return 'text';
     }
 
-    public function toggleVisibility(Request $request)
+    public function toggleVisibility(Request $request): JsonResponse
     {
         $this->authCheck();
         $this->validate($request, [
@@ -494,7 +498,7 @@ class StatusController extends Controller
         return response()->json([200]);
     }
 
-    public function storeView(Request $request)
+    public function storeView(Request $request): JsonResponse
     {
         abort_if(! $request->user(), 403);
 

@@ -6,6 +6,8 @@ use App\Mail\UserInviteMail;
 use App\Services\EmailService;
 use App\User;
 use App\UserInvite;
+use Illuminate\Contracts\View\View;
+use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Mail;
@@ -13,7 +15,7 @@ use Illuminate\Support\Str;
 
 class UserInviteController extends Controller
 {
-    public function create(Request $request)
+    public function create(Request $request): View
     {
         abort_if(! config('pixelfed.user_invites.enabled'), 404);
         abort_unless($request->user() !== null, 403);
@@ -21,7 +23,7 @@ class UserInviteController extends Controller
         return view('settings.invites.create');
     }
 
-    public function show(Request $request)
+    public function show(Request $request): View
     {
         abort_if(! config('pixelfed.user_invites.enabled'), 404);
         abort_unless($request->user() !== null, 403);
@@ -32,7 +34,7 @@ class UserInviteController extends Controller
         return view('settings.invites.home', compact('invites', 'limit', 'used'));
     }
 
-    public function store(Request $request)
+    public function store(Request $request): RedirectResponse
     {
         abort_if(! config('pixelfed.user_invites.enabled'), 404);
         abort_unless($request->user() !== null, 403);
@@ -65,7 +67,7 @@ class UserInviteController extends Controller
         return redirect(route('settings.invites'));
     }
 
-    public function redeem(Request $request, $key, $token)
+    public function redeem(Request $request, $key, $token): View
     {
         abort_if(! config('pixelfed.user_invites.enabled'), 404);
         // if($request->user()) {
@@ -83,7 +85,7 @@ class UserInviteController extends Controller
         // ], 200, [], JSON_PRETTY_PRINT|JSON_UNESCAPED_SLASHES);
     }
 
-    public function redeemVerify(Request $request, $key, $token)
+    public function redeemVerify(Request $request, $key, $token): RedirectResponse
     {
         abort_if(! config('pixelfed.user_invites.enabled'), 404);
         // if($request->user()) {
@@ -108,7 +110,7 @@ class UserInviteController extends Controller
         return redirect('/i/invite/verified');
     }
 
-    public function verified(Request $request)
+    public function verified(Request $request): View
     {
         abort_if(! config('pixelfed.user_invites.enabled'), 404);
         // if($request->user()) {

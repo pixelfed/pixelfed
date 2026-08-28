@@ -15,7 +15,10 @@ use App\Transformer\ActivityPub\ProfileTransformer;
 use App\User;
 use App\UserFilter;
 use App\UserSetting;
+use Illuminate\Contracts\View\View as ViewContract;
+use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
+use Illuminate\Http\Response;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\View;
@@ -62,7 +65,7 @@ class ProfileController extends Controller
         return $this->buildProfile($request, $user);
     }
 
-    protected function buildProfile(Request $request, $user)
+    protected function buildProfile(Request $request, $user): ViewContract
     {
         $carousel = (bool) $request->filled('carousel');
         $username = $user->username;
@@ -185,7 +188,7 @@ class ProfileController extends Controller
         return redirect($user->url());
     }
 
-    protected function privateProfileCheck(Profile $profile, $loggedIn)
+    protected function privateProfileCheck(Profile $profile, $loggedIn): bool
     {
         if (! request()->user()) {
             return true;
@@ -204,7 +207,7 @@ class ProfileController extends Controller
         return false;
     }
 
-    public static function accountCheck(Profile $profile)
+    public static function accountCheck(Profile $profile): ViewContract
     {
         switch ($profile->status) {
             case 'disabled':
@@ -219,7 +222,7 @@ class ProfileController extends Controller
         return abort(404);
     }
 
-    protected function blockedProfileCheck(Profile $profile)
+    protected function blockedProfileCheck(Profile $profile): bool
     {
         $pid = request()->user()->profile->id;
         $blocks = UserFilter::whereUserId($profile->id)
@@ -330,14 +333,14 @@ class ProfileController extends Controller
             ->withHeaders($data['headers']);
     }
 
-    public function meRedirect(Request $request)
+    public function meRedirect(Request $request): RedirectResponse
     {
         abort_if(! $request->user(), 404);
 
         return redirect($request->user()->url());
     }
 
-    public function embed(Request $request, $username)
+    public function embed(Request $request, $username): Response
     {
         $res = view('profile.embed-removed');
 
@@ -378,7 +381,7 @@ class ProfileController extends Controller
         return response($res)->withHeaders(['X-Frame-Options' => 'ALLOWALL']);
     }
 
-    public function stories(Request $request, $username)
+    public function stories(Request $request, $username): ViewContract
     {
         abort_if(! (bool) config_cache('instance.stories.enabled') || ! $request->user(), 404);
         $profile = Profile::whereNull('domain')->whereUsername($username)->firstOrFail();

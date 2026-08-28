@@ -8,6 +8,8 @@ use App\Like;
 use App\Status;
 use App\StatusHashtag;
 use App\User;
+use Illuminate\Contracts\View\View;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Cache;
@@ -19,7 +21,7 @@ class SeasonalController extends Controller
         $this->middleware('auth');
     }
 
-    public function yearInReview()
+    public function yearInReview(): View
     {
         abort_if(now()->gt('2021-03-01 00:00:00'), 404);
         abort_if(config('database.default') != 'mysql', 404);
@@ -29,7 +31,7 @@ class SeasonalController extends Controller
         return view('account.yir', compact('profile'));
     }
 
-    public function getData(Request $request)
+    public function getData(Request $request): JsonResponse
     {
         abort_if(now()->gt('2021-03-01 00:00:00'), 404);
         abort_if(config('database.default') != 'mysql', 404);
@@ -217,7 +219,7 @@ class SeasonalController extends Controller
         return response()->json(array_merge($res, $shared));
     }
 
-    public function store(Request $request)
+    public function store(Request $request): JsonResponse
     {
         abort_if(now()->gt('2021-03-01 00:00:00'), 404);
         abort_if(config('database.default') != 'mysql', 404);

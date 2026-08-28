@@ -14,13 +14,15 @@ use App\Services\AccountService;
 use App\Services\FollowerService;
 use App\Services\LiveStreamService;
 use App\User;
+use Illuminate\Contracts\View\View;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
 
 class LiveStreamController extends Controller
 {
-    public function createStream(Request $request)
+    public function createStream(Request $request): array
     {
         abort_if(! config('livestreaming.enabled'), 400);
         abort_if(! $request->user(), 403);
@@ -121,7 +123,7 @@ class LiveStreamController extends Controller
         return response()->json($res, 200, [], JSON_UNESCAPED_SLASHES);
     }
 
-    public function showProfilePlayer(Request $request, $username)
+    public function showProfilePlayer(Request $request, $username): View
     {
         abort_if(! config('livestreaming.enabled'), 400);
 
@@ -136,7 +138,7 @@ class LiveStreamController extends Controller
         return view('live.player', compact('id'));
     }
 
-    public function deleteStream(Request $request)
+    public function deleteStream(Request $request): array
     {
         abort_if(! config('livestreaming.enabled'), 400);
         abort_if(! $request->user(), 403);
@@ -230,7 +232,7 @@ class LiveStreamController extends Controller
         return $res;
     }
 
-    public function editStream(Request $request)
+    public function editStream(Request $request): void
     {
         abort_if(! config('livestreaming.enabled'), 400);
         abort_if(! $request->user(), 403);
@@ -247,7 +249,7 @@ class LiveStreamController extends Controller
 
     }
 
-    public function deleteChatComment(Request $request)
+    public function deleteChatComment(Request $request): void
     {
         abort_if(! config('livestreaming.enabled'), 400);
         abort_if(! $request->user(), 403);
@@ -273,7 +275,7 @@ class LiveStreamController extends Controller
 
     }
 
-    public function banChatUser(Request $request)
+    public function banChatUser(Request $request): void
     {
         abort_if(! config('livestreaming.enabled'), 400);
         abort_if(! $request->user(), 403);
@@ -291,7 +293,7 @@ class LiveStreamController extends Controller
 
     }
 
-    public function pinChatComment(Request $request)
+    public function pinChatComment(Request $request): void
     {
         abort_if(! config('livestreaming.enabled'), 400);
         abort_if(! $request->user(), 403);
@@ -312,7 +314,7 @@ class LiveStreamController extends Controller
 
     }
 
-    public function unpinChatComment(Request $request)
+    public function unpinChatComment(Request $request): void
     {
         abort_if(! config('livestreaming.enabled'), 400);
         abort_if(! $request->user(), 403);
@@ -333,7 +335,7 @@ class LiveStreamController extends Controller
 
     }
 
-    public function getConfig(Request $request)
+    public function getConfig(Request $request): JsonResponse
     {
         $res = [
             'enabled' => (bool) config('livestreaming.enabled'),
@@ -385,7 +387,7 @@ class LiveStreamController extends Controller
         abort(400);
     }
 
-    public function clientBroadcastFinish(Request $request)
+    public function clientBroadcastFinish(Request $request): array
     {
         abort_if(! config('livestreaming.enabled'), 400);
         abort_if($request->ip() != '127.0.0.1', 400);
@@ -404,7 +406,7 @@ class LiveStreamController extends Controller
         return [];
     }
 
-    protected function parseStreamUrl($url)
+    protected function parseStreamUrl($url): array
     {
         $name = null;
         $key = null;

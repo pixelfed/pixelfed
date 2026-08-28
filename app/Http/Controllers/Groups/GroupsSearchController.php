@@ -22,7 +22,7 @@ class GroupsSearchController extends Controller
         $this->middleware('auth');
     }
 
-    public function inviteFriendsToGroup(Request $request)
+    public function inviteFriendsToGroup(Request $request): array
     {
         abort_if(! $request->user(), 404);
         $this->validate($request, [
@@ -184,7 +184,7 @@ class GroupsSearchController extends Controller
         return $res;
     }
 
-    public function searchAddRecent(Request $request)
+    public function searchAddRecent(Request $request): int
     {
         $this->validate($request, [
             'q' => 'required|min:2|max:40',

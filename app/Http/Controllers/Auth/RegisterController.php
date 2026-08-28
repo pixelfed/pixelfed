@@ -8,7 +8,9 @@ use App\Services\EmailService;
 use App\User;
 use App\Util\Lexer\RestrictedNames;
 use Illuminate\Auth\Events\Registered;
+use Illuminate\Contracts\View\View;
 use Illuminate\Foundation\Auth\RegistersUsers;
+use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
 use Illuminate\Support\Facades\Cache;
@@ -180,7 +182,7 @@ class RegisterController extends Controller
      *
      * @return Response
      */
-    public function showRegistrationForm()
+    public function showRegistrationForm(): RedirectResponse|View
     {
         if ((bool) config_cache('pixelfed.open_registration')) {
             if (config('pixelfed.bouncer.cloud_ips.ban_signups')) {

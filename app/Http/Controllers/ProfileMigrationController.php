@@ -10,6 +10,8 @@ use App\Models\ProfileMigration;
 use App\Services\AccountService;
 use App\Services\WebfingerService;
 use App\Util\ActivityPub\Helpers;
+use Illuminate\Contracts\View\View;
+use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Bus;
 use Illuminate\Support\Facades\Cache;
@@ -21,7 +23,7 @@ class ProfileMigrationController extends Controller
         $this->middleware('auth');
     }
 
-    public function index(Request $request)
+    public function index(Request $request): RedirectResponse|View
     {
         abort_if((bool) config_cache('federation.activitypub.enabled') === false, 404);
         if ((bool) config_cache('federation.migration') === false) {
@@ -34,7 +36,7 @@ class ProfileMigrationController extends Controller
         return view('settings.migration.index', compact('hasExistingMigration'));
     }
 
-    public function store(ProfileMigrationStoreRequest $request)
+    public function store(ProfileMigrationStoreRequest $request): RedirectResponse
     {
         abort_if((bool) config_cache('federation.activitypub.enabled') === false, 404);
         $acct = WebfingerService::rawGet($request->safe()->acct);

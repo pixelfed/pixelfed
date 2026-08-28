@@ -20,6 +20,9 @@ use App\Transformer\Api\Mastodon\v1\AccountTransformer;
 use App\User;
 use App\UserFilter;
 use Carbon\Carbon;
+use Illuminate\Contracts\View\View;
+use Illuminate\Http\JsonResponse;
+use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Arr;
 use Illuminate\Support\Facades\Auth;
@@ -47,12 +50,12 @@ class AccountController extends Controller
         $this->middleware('auth');
     }
 
-    public function notifications(Request $request)
+    public function notifications(Request $request): View
     {
         return view('account.activity');
     }
 
-    public function followingActivity(Request $request)
+    public function followingActivity(Request $request): View
     {
         $this->validate($request, [
             'page' => 'nullable|min:1|max:3',
@@ -77,7 +80,7 @@ class AccountController extends Controller
         return view('account.following', compact('profile', 'notifications'));
     }
 
-    public function verifyEmail(Request $request)
+    public function verifyEmail(Request $request): View
     {
         $recentSent = EmailVerification::whereUserId(Auth::id())
             ->whereDate('created_at', '>', now()->subHours(12))->count();
@@ -85,7 +88,7 @@ class AccountController extends Controller
         return view('account.verify_email', compact('recentSent'));
     }
 
-    public function sendVerifyEmail(Request $request)
+    public function sendVerifyEmail(Request $request): RedirectResponse
     {
         $recentAttempt = EmailVerification::whereUserId(Auth::id())
             ->whereDate('created_at', '>', now()->subHours(12))->count();
@@ -112,7 +115,7 @@ class AccountController extends Controller
         return redirect()->back()->with('status', 'Verification email sent!');
     }
 
-    public function confirmVerifyEmail(Request $request, $userToken, $randomToken)
+    public function confirmVerifyEmail(Request $request, $userToken, $randomToken): RedirectResponse
     {
         $verify = EmailVerification::where('user_token', $userToken)
             ->where('created_at', '>', now()->subHours(24))
@@ -130,12 +133,12 @@ class AccountController extends Controller
         }
     }
 
-    public function direct()
+    public function direct(): View
     {
         return view('account.direct');
     }
 
-    public function directMessage(Request $request, $id)
+    public function directMessage(Request $request, $id): View
     {
         $profile = Profile::where('id', '!=', $request->user()->profile_id)
             ->findOrFail($id);
@@ -143,7 +146,7 @@ class AccountController extends Controller
         return view('account.directmessage', compact('id'));
     }
 
-    public function mute(Request $request)
+    public function mute(Request $request): JsonResponse|RedirectResponse
     {
         $this->validate($request, [
             'type' => 'required|string|in:user',
@@ -197,7 +200,7 @@ class AccountController extends Controller
         }
     }
 
-    public function unmute(Request $request)
+    public function unmute(Request $request): JsonResponse|RedirectResponse
     {
         $this->validate($request, [
             'type' => 'required|string|in:user',
@@ -249,7 +252,7 @@ class AccountController extends Controller
         }
     }
 
-    public function block(Request $request)
+    public function block(Request $request): JsonResponse|RedirectResponse
     {
         $this->validate($request, [
             'type' => 'required|string|in:user',
@@ -335,7 +338,7 @@ class AccountController extends Controller
         }
     }
 
-    public function unblock(Request $request)
+    public function unblock(Request $request): JsonResponse|RedirectResponse
     {
         $this->validate($request, [
             'type' => 'required|string|in:user',
@@ -386,7 +389,7 @@ class AccountController extends Controller
         }
     }
 
-    public function followRequests(Request $request)
+    public function followRequests(Request $request): View
     {
         $pid = $request->user()->profile->id;
         $followers = FollowRequest::whereFollowingId($pid)->orderBy('id', 'desc')->whereIsRejected(0)->simplePaginate(10);
@@ -394,7 +397,7 @@ class AccountController extends Controller
         return view('account.follow-requests', compact('followers'));
     }
 
-    public function followRequestsJson(Request $request)
+    public function followRequestsJson(Request $request): JsonResponse
     {
         $pid = $request->user()->profile_id;
         $followers = FollowRequest::whereFollowingId($pid)->orderBy('id', 'desc')->whereIsRejected(0)->get();
@@ -418,7 +421,7 @@ class AccountController extends Controller
         return response()->json($res, 200, [], JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES);
     }
 
-    public function followRequestHandle(Request $request)
+    public function followRequestHandle(Request $request): JsonResponse
     {
         $this->validate($request, [
             'action' => 'required|string|max:10',
@@ -472,12 +475,12 @@ class AccountController extends Controller
         return response()->json(['msg' => 'success'], 200);
     }
 
-    public function confirmPassword(Request $request)
+    public function confirmPassword(Request $request): View
     {
         return view('auth.sudo');
     }
 
-    public function confirmPasswordStore(Request $request)
+    public function confirmPasswordStore(Request $request): RedirectResponse
     {
         $this->validate($request, [
             'password' => 'required|string|max:500',
@@ -494,12 +497,12 @@ class AccountController extends Controller
         return redirect()->intended();
     }
 
-    public function twoFactorCheckpoint(Request $request)
+    public function twoFactorCheckpoint(Request $request): View
     {
         return view('auth.checkpoint');
     }
 
-    public function twoFactorVerify(Request $request)
+    public function twoFactorVerify(Request $request): RedirectResponse
     {
         $this->validate($request, [
             'code' => 'required|string|max:32',
@@ -536,7 +539,7 @@ class AccountController extends Controller
         }
     }
 
-    protected function twoFactorBackupCheck($request, $code, User $user)
+    protected function twoFactorBackupCheck($request, $code, User $user): bool
     {
         $backupCodes = $user->{'2fa_backup_codes'};
         if ($backupCodes) {
@@ -558,9 +561,9 @@ class AccountController extends Controller
         }
     }
 
-    public function accountRestored(Request $request) {}
+    public function accountRestored(Request $request): void {}
 
-    public function accountMutes(Request $request)
+    public function accountMutes(Request $request): JsonResponse
     {
         abort_if(! $request->user(), 403);
 
@@ -591,7 +594,7 @@ class AccountController extends Controller
         return response()->json($res, 200, ['Link' => $links]);
     }
 
-    public function accountBlocks(Request $request)
+    public function accountBlocks(Request $request): JsonResponse
     {
         abort_if(! $request->user(), 403);
 
@@ -625,17 +628,17 @@ class AccountController extends Controller
 
     }
 
-    public function accountBlocksV2(Request $request)
+    public function accountBlocksV2(Request $request): JsonResponse
     {
         return response()->json(UserFilterService::blocks($request->user()->profile_id), 200, [], JSON_UNESCAPED_SLASHES);
     }
 
-    public function accountMutesV2(Request $request)
+    public function accountMutesV2(Request $request): JsonResponse
     {
         return response()->json(UserFilterService::mutes($request->user()->profile_id), 200, [], JSON_UNESCAPED_SLASHES);
     }
 
-    public function accountFiltersV2(Request $request)
+    public function accountFiltersV2(Request $request): JsonResponse
     {
         return response()->json(UserFilterService::filters($request->user()->profile_id), 200, [], JSON_UNESCAPED_SLASHES);
     }

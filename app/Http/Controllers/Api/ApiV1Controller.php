@@ -81,7 +81,9 @@ use App\Util\Localization\Localization;
 use App\Util\Media\Filter;
 use App\Util\Media\License;
 use Carbon\Carbon;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
+use Illuminate\Http\Response;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\RateLimiter;
@@ -103,7 +105,7 @@ class ApiV1Controller extends Controller
         $this->fractal->setSerializer(new ArraySerializer);
     }
 
-    public function json($res, $code = 200, $headers = [])
+    public function json($res, $code = 200, $headers = []): JsonResponse
     {
         return response()->json($res, $code, $headers, JSON_UNESCAPED_SLASHES);
     }
@@ -1362,7 +1364,7 @@ class ApiV1Controller extends Controller
      *
      * @return array
      */
-    public function customEmojis()
+    public function customEmojis(): Response
     {
         return response(CustomEmojiService::all())->header('Content-Type', 'application/json');
     }
@@ -1374,7 +1376,7 @@ class ApiV1Controller extends Controller
      *
      * @return array
      */
-    public function accountDomainBlocks(Request $request)
+    public function accountDomainBlocks(Request $request): JsonResponse
     {
         abort_if(! $request->user() || ! $request->user()->token(), 403);
         abort_unless($request->user()->tokenCan('read'), 403);
@@ -1389,7 +1391,7 @@ class ApiV1Controller extends Controller
      *
      * @return array
      */
-    public function accountEndorsements(Request $request)
+    public function accountEndorsements(Request $request): JsonResponse
     {
         abort_if(! $request->user() || ! $request->user()->token(), 403);
         abort_unless($request->user()->tokenCan('read'), 403);
@@ -1643,7 +1645,7 @@ class ApiV1Controller extends Controller
      *
      * @return array
      */
-    public function accountFilters(Request $request)
+    public function accountFilters(Request $request): JsonResponse
     {
         abort_if(! $request->user() || ! $request->user()->token(), 403);
         abort_unless($request->user()->tokenCan('read'), 403);
@@ -1791,7 +1793,7 @@ class ApiV1Controller extends Controller
      *
      * @return null
      */
-    public function accountSuggestions(Request $request)
+    public function accountSuggestions(Request $request): JsonResponse
     {
         abort_if(! $request->user() || ! $request->user()->token(), 403);
         abort_unless($request->user()->tokenCan('read'), 403);
@@ -1896,7 +1898,7 @@ class ApiV1Controller extends Controller
      *
      * @return null
      */
-    public function accountLists(Request $request)
+    public function accountLists(Request $request): JsonResponse
     {
         abort_if(! $request->user() || ! $request->user()->token(), 403);
         abort_unless($request->user()->tokenCan('read'), 403);
@@ -1910,7 +1912,7 @@ class ApiV1Controller extends Controller
      * @param  int  $id
      * @return null
      */
-    public function accountListsById(Request $request, $id)
+    public function accountListsById(Request $request, $id): JsonResponse
     {
         abort_if(! $request->user() || ! $request->user()->token(), 403);
         abort_unless($request->user()->tokenCan('read'), 403);
@@ -3562,7 +3564,7 @@ class ApiV1Controller extends Controller
      * @param  int  $id
      * @return StatusTransformer
      */
-    public function statusCard(Request $request, $id)
+    public function statusCard(Request $request, $id): JsonResponse
     {
         abort_if(! $request->user() || ! $request->user()->token(), 403);
         abort_unless($request->user()->tokenCan('read'), 403);

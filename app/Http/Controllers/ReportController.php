@@ -7,6 +7,9 @@ use App\Models\Group;
 use App\Profile;
 use App\Report;
 use App\Status;
+use Illuminate\Contracts\View\View;
+use Illuminate\Http\JsonResponse;
+use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 
@@ -19,7 +22,7 @@ class ReportController extends Controller
         $this->middleware('auth');
     }
 
-    public function showForm(Request $request)
+    public function showForm(Request $request): View
     {
         $this->validate($request, [
             'type' => 'required|alpha_dash|in:comment,group,post,user',
@@ -52,62 +55,62 @@ class ReportController extends Controller
         return view('report.form');
     }
 
-    public function notInterestedForm(Request $request)
+    public function notInterestedForm(Request $request): View
     {
         return view('report.not-interested');
     }
 
-    public function spamForm(Request $request)
+    public function spamForm(Request $request): View
     {
         return view('report.spam');
     }
 
-    public function spamCommentForm(Request $request)
+    public function spamCommentForm(Request $request): View
     {
         return view('report.spam.comment');
     }
 
-    public function spamPostForm(Request $request)
+    public function spamPostForm(Request $request): View
     {
         return view('report.spam.post');
     }
 
-    public function spamProfileForm(Request $request)
+    public function spamProfileForm(Request $request): View
     {
         return view('report.spam.profile');
     }
 
-    public function sensitiveCommentForm(Request $request)
+    public function sensitiveCommentForm(Request $request): View
     {
         return view('report.sensitive.comment');
     }
 
-    public function sensitivePostForm(Request $request)
+    public function sensitivePostForm(Request $request): View
     {
         return view('report.sensitive.post');
     }
 
-    public function sensitiveProfileForm(Request $request)
+    public function sensitiveProfileForm(Request $request): View
     {
         return view('report.sensitive.profile');
     }
 
-    public function abusiveCommentForm(Request $request)
+    public function abusiveCommentForm(Request $request): View
     {
         return view('report.abusive.comment');
     }
 
-    public function abusivePostForm(Request $request)
+    public function abusivePostForm(Request $request): View
     {
         return view('report.abusive.post');
     }
 
-    public function abusiveProfileForm(Request $request)
+    public function abusiveProfileForm(Request $request): View
     {
         return view('report.abusive.profile');
     }
 
-    public function formStore(Request $request)
+    public function formStore(Request $request): JsonResponse|RedirectResponse
     {
         $this->validate($request, [
             'report' => 'required|alpha_dash',

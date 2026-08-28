@@ -7,6 +7,7 @@ use App\Http\Resources\ImportStatus;
 use App\Models\ImportPost;
 use App\Services\ImportService;
 use App\User;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;
 
@@ -17,7 +18,7 @@ class ImportPostController extends Controller
         $this->middleware('auth');
     }
 
-    public function getConfig(Request $request)
+    public function getConfig(Request $request): array
     {
         return [
             'enabled' => config('import.instagram.enabled'),
@@ -42,7 +43,7 @@ class ImportPostController extends Controller
         ];
     }
 
-    public function getProcessingCount(Request $request)
+    public function getProcessingCount(Request $request): JsonResponse
     {
         abort_unless(config('import.instagram.enabled'), 404);
 
@@ -62,7 +63,7 @@ class ImportPostController extends Controller
         ]);
     }
 
-    public function getImportedFiles(Request $request)
+    public function getImportedFiles(Request $request): JsonResponse
     {
         abort_unless(config('import.instagram.enabled'), 404);
 
@@ -96,7 +97,7 @@ class ImportPostController extends Controller
         return preg_replace($groupedHashtagRegex, '$0 ', $val);
     }
 
-    public function store(Request $request)
+    public function store(Request $request): array
     {
         abort_unless(config('import.instagram.enabled'), 404);
         $this->checkPermissions($request);
@@ -198,7 +199,7 @@ class ImportPostController extends Controller
         ];
     }
 
-    public function storeMedia(Request $request)
+    public function storeMedia(Request $request): array
     {
         abort_unless(config('import.instagram.enabled'), 404);
 
@@ -246,7 +247,7 @@ class ImportPostController extends Controller
         ];
     }
 
-    private function determinePostType($exts)
+    private function determinePostType($exts): string
     {
         if ($exts->count() > 1) {
             if ($exts->contains('mp4')) {
@@ -275,7 +276,7 @@ class ImportPostController extends Controller
         }
     }
 
-    private function sanitizeFilename($filename)
+    private function sanitizeFilename($filename): string
     {
         $parts = explode('.', $filename);
         $extension = array_pop($parts);
@@ -286,7 +287,7 @@ class ImportPostController extends Controller
         return $safeFilename.'.'.$extension;
     }
 
-    protected function checkPermissions($request, $abortOnFail = true)
+    protected function checkPermissions($request, $abortOnFail = true): bool
     {
         $user = $request->user();
 
@@ -298,7 +299,7 @@ class ImportPostController extends Controller
             if (! $abortOnFail) {
                 return true;
             } else {
-                return;
+                return true;
             }
         }
 
@@ -396,5 +397,7 @@ class ImportPostController extends Controller
         if (! $abortOnFail) {
             return true;
         }
+
+        return true;
     }
 }

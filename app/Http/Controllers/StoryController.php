@@ -13,6 +13,9 @@ use App\Services\UserRoleService;
 use App\Story;
 use App\StoryView;
 use App\Transformer\ActivityPub\Verb\StoryVerb;
+use Illuminate\Contracts\View\View;
+use Illuminate\Http\JsonResponse;
+use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Storage;
@@ -169,7 +172,7 @@ class StoryController extends StoryComposeController
         return response()->json($stories, 200, [], JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES);
     }
 
-    public function viewed(Request $request)
+    public function viewed(Request $request): array
     {
         abort_if(! (bool) config_cache('instance.stories.enabled') || ! $request->user(), 404);
 
@@ -218,7 +221,7 @@ class StoryController extends StoryComposeController
         return ['code' => 200];
     }
 
-    public function exists(Request $request, $id)
+    public function exists(Request $request, $id): JsonResponse
     {
         abort_if(! (bool) config_cache('instance.stories.enabled') || ! $request->user(), 404);
         $user = $request->user();
@@ -231,7 +234,7 @@ class StoryController extends StoryComposeController
             ->exists());
     }
 
-    public function iRedirect(Request $request)
+    public function iRedirect(Request $request): RedirectResponse
     {
         abort_if(! (bool) config_cache('instance.stories.enabled') || ! $request->user(), 404);
 
@@ -242,7 +245,7 @@ class StoryController extends StoryComposeController
         return redirect("/stories/{$username}");
     }
 
-    public function viewers(Request $request)
+    public function viewers(Request $request): JsonResponse
     {
         abort_if(! (bool) config_cache('instance.stories.enabled') || ! $request->user(), 404);
 
@@ -273,7 +276,7 @@ class StoryController extends StoryComposeController
         return response()->json($viewers, 200, [], JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES);
     }
 
-    public function remoteStory(Request $request, $id)
+    public function remoteStory(Request $request, $id): RedirectResponse|View
     {
         abort_if(! (bool) config_cache('instance.stories.enabled') || ! $request->user(), 404);
 
@@ -304,7 +307,7 @@ class StoryController extends StoryComposeController
         return PollService::storyResults($sid);
     }
 
-    public function getActivityObject(Request $request, $username, $id)
+    public function getActivityObject(Request $request, $username, $id): JsonResponse|RedirectResponse
     {
         abort_if(! (bool) config_cache('instance.stories.enabled'), 404);
 
@@ -331,7 +334,7 @@ class StoryController extends StoryComposeController
         return response()->json($res, 200, [], JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES);
     }
 
-    public function showSystemStory()
+    public function showSystemStory(): void
     {
         // return view('stories.system');
     }
