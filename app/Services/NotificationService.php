@@ -295,6 +295,31 @@ class NotificationService
         });
     }
 
+    /**
+     * Create a notification, register it in the cache, and add it to the recipient's feed.
+     *
+     * @param  int  $profileId  The recipient profile ID
+     * @param  int  $actorId  The actor profile ID who triggered the notification
+     * @param  string  $action  The notification action (e.g. 'comment', 'like', 'follow')
+     * @param  int  $itemId  The related item ID
+     * @param  string  $itemType  The related item class (e.g. Status::class)
+     */
+    public static function createNotification(int $profileId, int $actorId, string $action, int $itemId, string $itemType): Notification
+    {
+        $notification = new Notification;
+        $notification->profile_id = $profileId;
+        $notification->actor_id = $actorId;
+        $notification->action = $action;
+        $notification->item_id = $itemId;
+        $notification->item_type = $itemType;
+        $notification->save();
+
+        self::setNotification($notification);
+        self::set($notification->profile_id, $notification->id);
+
+        return $notification;
+    }
+
     public static function warmCache($id, $stop = 400, $force = false)
     {
         if (self::count($id) == 0 || $force == true) {
