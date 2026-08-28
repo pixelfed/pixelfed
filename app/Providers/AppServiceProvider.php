@@ -176,8 +176,10 @@ class AppServiceProvider extends ServiceProvider
 
         URL::forceRootUrl(config('app.url'));
 
-        // Model::shouldBeStrict(! $this->app->isProduction()); // In the future replace this instead of preventLazyLoading
-        Model::preventLazyLoading(true);
+        // Enable strict testing in dev/test only (false in production)
+        Model::preventLazyLoading(! $this->app->isProduction());
+        Model::preventSilentlyDiscardingAttributes(! $this->app->isProduction());
+        Model::preventAccessingMissingAttributes(! $this->app->isProduction());
     }
 
     /**
