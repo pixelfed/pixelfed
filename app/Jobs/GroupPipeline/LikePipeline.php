@@ -5,6 +5,8 @@ namespace App\Jobs\GroupPipeline;
 use App\Models\Like;
 use App\Models\Notification;
 use App\Models\Status;
+use App\Services\FractalService;
+use App\Services\NotificationService;
 use App\Services\StatusService;
 use App\Transformer\ActivityPub\Verb\Like as LikeTransformer;
 use App\Util\ActivityPub\Helpers;
@@ -13,8 +15,6 @@ use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
-use League\Fractal;
-use League\Fractal\Serializer\ArraySerializer;
 
 class LikePipeline implements ShouldQueue
 {
@@ -78,13 +78,7 @@ class LikePipeline implements ShouldQueue
         }
 
         try {
-            $notification = new Notification;
-            $notification->profile_id = $status->profile_id;
-            $notification->actor_id = $actor->id;
-            $notification->action = 'group:like';
-            $notification->item_id = $status->id;
-            $notification->item_type = Status::class;
-            $notification->save();
+            NotificationService::createNotification($status->profile_id, $actor->id, 'group:like', $status->id, Status::class);
 
         } catch (\Exception $e) {
         }
@@ -96,10 +90,7 @@ class LikePipeline implements ShouldQueue
         $status = $this->like->status;
         $actor = $this->like->actor;
 
-        $fractal = new Fractal\Manager;
-        $fractal->setSerializer(new ArraySerializer);
-        $resource = new Fractal\Resource\Item($like, new LikeTransformer);
-        $activity = $fractal->createData($resource)->toArray();
+        $activity = FractalService::item($like, new LikeTransformer);
 
         $url = $status->profile->sharedInbox ?? $status->profile->inbox_url;
 

@@ -2,7 +2,7 @@
 
 namespace App\Util\ActivityPub\Inbox;
 
-use App\Notification;
+use App\Services\NotificationService;
 use App\Services\ReblogService;
 use App\Status;
 use App\Util\ActivityPub\Helpers;
@@ -39,13 +39,7 @@ trait HandlesAnnouncements
             'local' => false,
         ]);
 
-        Notification::firstOrCreate([
-            'profile_id' => $parent->profile_id,
-            'actor_id' => $actor->id,
-            'action' => 'share',
-            'item_id' => $parent->id,
-            'item_type' => Status::class,
-        ]);
+        NotificationService::firstOrCreateNotification($parent->profile_id, $actor->id, 'share', $parent->id, Status::class);
 
         $parent->reblogs_count = $parent->reblogs_count + 1;
         $parent->save();

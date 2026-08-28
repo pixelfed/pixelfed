@@ -3,9 +3,10 @@
 namespace App\Jobs\SharePipeline;
 
 use App\Jobs\HomeFeedPipeline\FeedInsertPipeline;
-use App\Models\Notification;
 use App\Models\Status;
 use App\Services\ActivityPubDeliveryService;
+use App\Services\FractalService;
+use App\Services\NotificationService;
 use App\Services\ReblogService;
 use App\Services\StatusService;
 use App\Transformer\ActivityPub\Verb\Announce;
@@ -14,8 +15,6 @@ use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
-use League\Fractal;
-use League\Fractal\Serializer\ArraySerializer;
 
 class SharePipeline implements ShouldQueue
 {
@@ -72,15 +71,7 @@ class SharePipeline implements ShouldQueue
         $parent->save();
         StatusService::del($parent->id);
 
-        Notification::firstOrCreate(
-            [
-                'profile_id' => $target->id,
-                'actor_id' => $actor->id,
-                'action' => 'share',
-                'item_type' => Status::class,
-                'item_id' => $status->reblog_of_id ?? $status->id,
-            ]
-        );
+        NotificationService::firstOrCreateNotification($target->id, $actor->id, 'share', $status->reblog_of_id ?? $status->id, Status::class);
 
         FeedInsertPipeline::dispatch($status->id, $status->profile_id)->onQueue('feed');
 
@@ -95,10 +86,7 @@ class SharePipeline implements ShouldQueue
         $status = $this->status;
         $profile = $status->profile;
 
-        $fractal = new Fractal\Manager;
-        $fractal->setSerializer(new ArraySerializer);
-        $resource = new Fractal\Resource\Item($status, new Announce);
-        $activity = $fractal->createData($resource)->toArray();
+        $activity = FractalService::item($status, new Announce);
 
         $audience = $status->profile->getAudienceInbox();
 

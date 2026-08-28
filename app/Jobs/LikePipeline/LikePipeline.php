@@ -7,6 +7,7 @@ use App\Models\Like;
 use App\Models\Notification;
 use App\Models\Status;
 use App\Models\User;
+use App\Services\FractalService;
 use App\Services\NotificationAppGatewayService;
 use App\Services\PushNotificationService;
 use App\Services\StatusService;
@@ -19,8 +20,6 @@ use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\Middleware\WithoutOverlapping;
 use Illuminate\Queue\SerializesModels;
 use Illuminate\Support\Facades\DB;
-use League\Fractal;
-use League\Fractal\Serializer\ArraySerializer;
 
 class LikePipeline implements ShouldQueue
 {
@@ -124,10 +123,7 @@ class LikePipeline implements ShouldQueue
         $status = $like->status;
         $actor = $like->actor;
 
-        $fractal = new Fractal\Manager;
-        $fractal->setSerializer(new ArraySerializer);
-        $resource = new Fractal\Resource\Item($like, new LikeTransformer);
-        $activity = $fractal->createData($resource)->toArray();
+        $activity = FractalService::item($like, new LikeTransformer);
 
         $url = $status->profile->sharedInbox ?? $status->profile->inbox_url;
 

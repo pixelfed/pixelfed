@@ -4,8 +4,8 @@ namespace App\Jobs\GroupPipeline;
 
 use App\Models\Group;
 use App\Models\GroupInvitation;
-use App\Models\Notification;
 use App\Models\Profile;
+use App\Services\NotificationService;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
@@ -43,12 +43,6 @@ class GroupMemberInvite implements ShouldQueue
             return;
         }
 
-        $notification = new Notification;
-        $notification->profile_id = $target->id;
-        $notification->actor_id = $actor->id;
-        $notification->action = 'group:invite';
-        $notification->item_id = $invite->group_id;
-        $notification->item_type = Group::class;
-        $notification->save();
+        NotificationService::createNotification($target->id, $actor->id, 'group:invite', $invite->group_id, Group::class);
     }
 }

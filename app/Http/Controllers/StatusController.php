@@ -262,32 +262,7 @@ class StatusController extends Controller
             $user->is_admin == true &&
             $status->uri == null
         ) {
-            $media = $status->media;
-
-            $ai = new AccountInterstitial;
-            $ai->user_id = $status->profile->user_id;
-            $ai->type = 'post.removed';
-            $ai->view = 'account.moderation.post.removed';
-            $ai->item_type = Status::class;
-            $ai->item_id = $status->id;
-            $ai->has_media = (bool) $media->count();
-            $ai->blurhash = $media->count() ? $media->first()->blurhash : null;
-            $ai->meta = json_encode([
-                'caption' => $status->caption,
-                'created_at' => $status->created_at,
-                'type' => $status->type,
-                'url' => $status->url(),
-                'is_nsfw' => $status->is_nsfw,
-                'scope' => $status->scope,
-                'reblog' => $status->reblog_of_id,
-                'likes_count' => $status->likes_count,
-                'reblogs_count' => $status->reblogs_count,
-            ]);
-            $ai->save();
-
-            $u = $status->profile->user;
-            $u->has_interstitial = true;
-            $u->save();
+            AccountInterstitial::createFromStatus($status, 'post.removed', 'account.moderation.post.removed');
         }
 
         if ($status->in_reply_to_id) {
