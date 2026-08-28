@@ -2,8 +2,8 @@
 
 namespace App\Http\Controllers\Settings;
 
-use App\AccountLog;
-use App\UserDevice;
+use App\Models\AccountLog;
+use App\Models\UserDevice;
 use BaconQrCode\Renderer\Image\SvgImageBackEnd;
 use BaconQrCode\Renderer\ImageRenderer;
 use BaconQrCode\Renderer\RendererStyle\RendererStyle;

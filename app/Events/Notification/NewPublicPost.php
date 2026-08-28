@@ -2,7 +2,7 @@
 
 namespace App\Events\Notification;
 
-use App\Status;
+use App\Models\Status;
 use App\Transformer\Api\StatusTransformer;
 use Illuminate\Broadcasting\Channel;
 use Illuminate\Broadcasting\InteractsWithSockets;

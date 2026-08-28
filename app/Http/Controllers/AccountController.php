@@ -2,23 +2,23 @@
 
 namespace App\Http\Controllers;
 
-use App\EmailVerification;
-use App\Follower;
-use App\FollowRequest;
 use App\Jobs\FollowPipeline\FollowAcceptPipeline;
 use App\Jobs\FollowPipeline\FollowPipeline;
 use App\Jobs\FollowPipeline\FollowRejectPipeline;
 use App\Mail\ConfirmEmail;
-use App\Notification;
-use App\Profile;
+use App\Models\EmailVerification;
+use App\Models\Follower;
+use App\Models\FollowRequest;
+use App\Models\Notification;
+use App\Models\Profile;
+use App\Models\User;
+use App\Models\UserFilter;
 use App\Services\AccountService;
 use App\Services\FollowerService;
 use App\Services\NotificationService;
 use App\Services\RelationshipService;
 use App\Services\UserFilterService;
 use App\Transformer\Api\Mastodon\v1\AccountTransformer;
-use App\User;
-use App\UserFilter;
 use Carbon\Carbon;
 use Illuminate\Contracts\View\View;
 use Illuminate\Http\JsonResponse;

@@ -1,8 +1,8 @@
 <?php
 
-use App\Follower;
-use App\Status;
-use App\User;
+use App\Models\Follower;
+use App\Models\Status;
+use App\Models\User;
 use Illuminate\Foundation\Testing\LazilyRefreshDatabase;
 use Laravel\Passport\Passport;
 

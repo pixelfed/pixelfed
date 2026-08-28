@@ -3,7 +3,7 @@
 namespace App\Services;
 
 use App\Jobs\InternalPipeline\NotificationEpochUpdatePipeline;
-use App\Notification;
+use App\Models\Notification;
 use App\Transformer\Api\NotificationTransformer;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Redis;

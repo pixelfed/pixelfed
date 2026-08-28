@@ -2,7 +2,7 @@
 
 namespace App\Http\Controllers;
 
-use App\MediaBlocklist;
+use App\Models\MediaBlocklist;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 

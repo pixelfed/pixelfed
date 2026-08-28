@@ -2,8 +2,8 @@
 
 namespace App\Console\Commands;
 
-use App\Profile;
-use App\User;
+use App\Models\Profile;
+use App\Models\User;
 use Illuminate\Console\Command;
 
 use function Laravel\Prompts\confirm;

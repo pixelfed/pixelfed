@@ -2,9 +2,9 @@
 
 namespace App\Console\Commands;
 
-use App\Instance;
-use App\Profile;
-use App\User;
+use App\Models\Instance;
+use App\Models\Profile;
+use App\Models\User;
 use App\Util\ActivityPub\Helpers;
 use Illuminate\Console\Command;
 use Illuminate\Support\Facades\Storage;

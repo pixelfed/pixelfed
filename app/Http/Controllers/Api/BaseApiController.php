@@ -2,16 +2,16 @@
 
 namespace App\Http\Controllers\Api;
 
-use App\Avatar;
 use App\Http\Controllers\AvatarController;
 use App\Http\Controllers\Controller;
 use App\Jobs\AvatarPipeline\AvatarOptimize;
 use App\Jobs\NotificationPipeline\NotificationWarmUserCache;
+use App\Models\Avatar;
+use App\Models\Status;
+use App\Models\StatusArchived;
 use App\Services\AccountService;
 use App\Services\NotificationService;
 use App\Services\StatusService;
-use App\Status;
-use App\StatusArchived;
 use App\Transformer\Api\StatusStatelessTransformer;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;

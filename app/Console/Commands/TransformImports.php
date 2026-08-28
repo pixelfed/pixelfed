@@ -2,13 +2,13 @@
 
 namespace App\Console\Commands;
 
-use App\Media;
 use App\Models\ImportPost;
-use App\Profile;
+use App\Models\Media;
+use App\Models\Profile;
+use App\Models\Status;
 use App\Services\AccountService;
 use App\Services\ImportService;
 use App\Services\MediaPathService;
-use App\Status;
 use Illuminate\Console\Command;
 use Illuminate\Database\QueryException;
 use Illuminate\Support\Facades\DB;

@@ -2,11 +2,11 @@
 
 namespace App\Http\Controllers;
 
-use App\Hashtag;
-use App\Place;
-use App\Profile;
+use App\Models\Hashtag;
+use App\Models\Place;
+use App\Models\Profile;
+use App\Models\Status;
 use App\Services\WebfingerService;
-use App\Status;
 use App\Util\ActivityPub\Helpers;
 use App\Util\Lexer\Autolink;
 use Illuminate\Contracts\View\View;

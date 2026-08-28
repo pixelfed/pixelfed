@@ -4,8 +4,8 @@ namespace App\Console\Commands;
 
 use App\Jobs\StoryPipeline\StoryExpire;
 use App\Jobs\StoryPipeline\StoryRotateMedia;
+use App\Models\Story;
 use App\Services\StoryService;
-use App\Story;
 use Illuminate\Console\Command;
 
 class StoryGC extends Command

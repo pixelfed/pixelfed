@@ -2,11 +2,11 @@
 
 namespace App\Http\Controllers\Api\V1;
 
-use App\Hashtag;
-use App\HashtagFollow;
 use App\Http\Controllers\Controller;
 use App\Http\Resources\MastoApi\FollowedTagResource;
 use App\Jobs\HomeFeedPipeline\HashtagUnfollowPipeline;
+use App\Models\Hashtag;
+use App\Models\HashtagFollow;
 use App\Services\AccountService;
 use App\Services\HashtagFollowService;
 use App\Services\HashtagRelatedService;

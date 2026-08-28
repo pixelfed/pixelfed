@@ -2,7 +2,7 @@
 
 namespace App\Http\Controllers;
 
-use App\Page;
+use App\Models\Page;
 use App\Services\ConfigCacheService;
 use Illuminate\Contracts\View\View;
 use Illuminate\Http\JsonResponse;

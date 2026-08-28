@@ -2,19 +2,19 @@
 
 namespace App\Http\Controllers;
 
-use App\AccountInterstitial;
-use App\Follower;
-use App\FollowRequest;
-use App\Profile;
+use App\Models\AccountInterstitial;
+use App\Models\Follower;
+use App\Models\FollowRequest;
+use App\Models\Profile;
+use App\Models\Status;
+use App\Models\Story;
+use App\Models\User;
+use App\Models\UserFilter;
+use App\Models\UserSetting;
 use App\Services\AccountService;
 use App\Services\FollowerService;
 use App\Services\StatusService;
-use App\Status;
-use App\Story;
 use App\Transformer\ActivityPub\ProfileTransformer;
-use App\User;
-use App\UserFilter;
-use App\UserSetting;
 use Illuminate\Contracts\View\View as ViewContract;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;

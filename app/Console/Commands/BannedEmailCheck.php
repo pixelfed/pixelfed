@@ -2,8 +2,8 @@
 
 namespace App\Console\Commands;
 
+use App\Models\User;
 use App\Services\EmailService;
-use App\User;
 use Illuminate\Console\Command;
 
 class BannedEmailCheck extends Command

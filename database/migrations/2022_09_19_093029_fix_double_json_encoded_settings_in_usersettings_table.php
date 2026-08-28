@@ -1,6 +1,6 @@
 <?php
 
-use App\UserSetting;
+use App\Models\UserSetting;
 use Illuminate\Database\Migrations\Migration;
 
 class FixDoubleJsonEncodedSettingsInUsersettingsTable extends Migration

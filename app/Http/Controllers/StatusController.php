@@ -2,18 +2,18 @@
 
 namespace App\Http\Controllers;
 
-use App\AccountInterstitial;
 use App\Jobs\SharePipeline\SharePipeline;
 use App\Jobs\SharePipeline\UndoSharePipeline;
 use App\Jobs\StatusPipeline\RemoteStatusDelete;
 use App\Jobs\StatusPipeline\StatusDelete;
-use App\Profile;
+use App\Models\AccountInterstitial;
+use App\Models\Profile;
+use App\Models\Status;
+use App\Models\StatusView;
 use App\Services\AccountService;
 use App\Services\HashidService;
 use App\Services\ReblogService;
 use App\Services\StatusService;
-use App\Status;
-use App\StatusView;
 use App\Transformer\ActivityPub\Verb\Note;
 use App\Transformer\ActivityPub\Verb\Question;
 use App\Util\Media\License;

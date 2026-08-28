@@ -3,7 +3,7 @@
 namespace App\Http\Controllers\Groups;
 
 use App\Http\Controllers\Controller;
-use App\Notification;
+use App\Models\Notification;
 use App\Services\AccountService;
 use App\Services\GroupService;
 use App\Services\StatusService;

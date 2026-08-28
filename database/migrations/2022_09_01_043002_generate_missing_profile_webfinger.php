@@ -1,6 +1,6 @@
 <?php
 
-use App\Profile;
+use App\Models\Profile;
 use Illuminate\Database\Migrations\Migration;
 
 class GenerateMissingProfileWebfinger extends Migration

@@ -2,7 +2,7 @@
 
 namespace App\Util\Media;
 
-use App\Media;
+use App\Models\Media;
 use App\Services\StatusService;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Log;

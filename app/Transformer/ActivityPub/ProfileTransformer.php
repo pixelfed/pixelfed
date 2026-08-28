@@ -2,7 +2,7 @@
 
 namespace App\Transformer\ActivityPub;
 
-use App\Profile;
+use App\Models\Profile;
 use App\Services\AccountService;
 use League\Fractal;
 

@@ -2,9 +2,9 @@
 
 namespace App\Services;
 
-use App\ModLog;
-use App\Notification;
-use App\User;
+use App\Models\ModLog;
+use App\Models\Notification;
+use App\Models\User;
 
 class ModLogService
 {

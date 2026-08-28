@@ -2,8 +2,8 @@
 
 namespace App\Console\Commands;
 
-use App\Profile;
-use App\Status;
+use App\Models\Profile;
+use App\Models\Status;
 use Illuminate\Console\Command;
 
 class FixRemotePostCount extends Command

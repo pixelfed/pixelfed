@@ -2,13 +2,13 @@
 
 namespace App\Transformer\Api;
 
-use App\MediaTag;
-use App\ModLog;
-use App\Notification;
+use App\Models\MediaTag;
+use App\Models\ModLog;
+use App\Models\Notification;
+use App\Models\Status;
 use App\Services\AccountService;
 use App\Services\RelationshipService;
 use App\Services\StatusService;
-use App\Status;
 use League\Fractal;
 
 class NotificationTransformer extends Fractal\TransformerAbstract

@@ -3,7 +3,7 @@
 namespace App\Console\Commands;
 
 use App\Jobs\StatusPipeline\StatusDelete;
-use App\Status;
+use App\Models\Status;
 use Illuminate\Console\Command;
 use Illuminate\Support\Facades\DB;
 

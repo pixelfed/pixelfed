@@ -3,12 +3,12 @@
 namespace App\Http\Controllers;
 
 use App\Models\RemoteAuth;
+use App\Models\User;
 use App\Rules\PixelfedUsername;
 use App\Services\Account\RemoteAuthService;
 use App\Services\EmailService;
 use App\Services\MediaStorageService;
 use App\Services\SanitizeService;
-use App\User;
 use App\Util\ActivityPub\Helpers;
 use App\Util\Lexer\RestrictedNames;
 use Illuminate\Auth\Events\Registered;

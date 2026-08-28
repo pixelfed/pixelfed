@@ -3,7 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\AdminShadowFilter;
-use App\Profile;
+use App\Models\Profile;
 use App\Services\AccountService;
 use App\Services\AdminShadowFilterService;
 use Illuminate\Contracts\View\View;

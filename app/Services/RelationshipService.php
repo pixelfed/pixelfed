@@ -2,10 +2,10 @@
 
 namespace App\Services;
 
-use App\Follower;
-use App\FollowRequest;
-use App\Profile;
-use App\UserFilter;
+use App\Models\Follower;
+use App\Models\FollowRequest;
+use App\Models\Profile;
+use App\Models\UserFilter;
 use Illuminate\Support\Facades\Cache;
 
 class RelationshipService

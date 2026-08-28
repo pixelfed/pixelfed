@@ -2,13 +2,24 @@
 
 namespace App\Providers;
 
-use App\Avatar;
-use App\Follower;
-use App\HashtagFollow;
-use App\Like;
+use App\Models\AccountInterstitial;
+use App\Models\Avatar;
+use App\Models\DirectMessage;
+use App\Models\Follower;
+use App\Models\HashtagFollow;
+use App\Models\Like;
+use App\Models\Media;
+use App\Models\MediaTag;
+use App\Models\ModLog;
+use App\Models\Notification;
 use App\Models\OAuthToken;
-use App\ModLog;
-use App\Notification;
+use App\Models\Profile;
+use App\Models\Report;
+use App\Models\Status;
+use App\Models\StatusHashtag;
+use App\Models\Story;
+use App\Models\User;
+use App\Models\UserFilter;
 use App\Observers\AvatarObserver;
 use App\Observers\FollowerObserver;
 use App\Observers\HashtagFollowObserver;
@@ -20,15 +31,11 @@ use App\Observers\StatusHashtagObserver;
 use App\Observers\StatusObserver;
 use App\Observers\UserFilterObserver;
 use App\Observers\UserObserver;
-use App\Profile;
 use App\Services\AccountService;
 use App\Services\UserOidcService;
-use App\Status;
-use App\StatusHashtag;
-use App\User;
-use App\UserFilter;
 use Illuminate\Cache\RateLimiting\Limit;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\Relation;
 use Illuminate\Http\Request;
 use Illuminate\Pagination\Paginator;
 use Illuminate\Support\Facades\Auth;
@@ -69,6 +76,23 @@ class AppServiceProvider extends ServiceProvider
         User::observe(UserObserver::class);
         Status::observe(StatusObserver::class);
         UserFilter::observe(UserFilterObserver::class);
+
+        Relation::morphMap([
+            'App\AccountInterstitial' => AccountInterstitial::class,
+            'App\DirectMessage' => DirectMessage::class,
+            'App\Follower' => Follower::class,
+            'App\Like' => Like::class,
+            'App\Media' => Media::class,
+            'App\MediaTag' => MediaTag::class,
+            'App\Notification' => Notification::class,
+            'App\Profile' => Profile::class,
+            'App\Report' => Report::class,
+            'App\Status' => Status::class,
+            'App\Story' => Story::class,
+            'App\User' => User::class,
+            'App\UserFilter' => UserFilter::class,
+        ]);
+
         Horizon::auth(function ($request) {
             return Auth::check() && $request->user()->is_admin;
         });

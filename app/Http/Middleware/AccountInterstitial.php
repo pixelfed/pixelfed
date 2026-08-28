@@ -31,7 +31,7 @@ class AccountInterstitial
         if ($request->user() !== null && ! $request->is($ar)) {
             if ($request->user()->has_interstitial) {
                 if ($request->wantsJson()) {
-                    $res = ['_refresh' => true, 'error' => 403, 'message' => \App\AccountInterstitial::JSON_MESSAGE];
+                    $res = ['_refresh' => true, 'error' => 403, 'message' => \App\Models\AccountInterstitial::JSON_MESSAGE];
 
                     return response()->json($res, 403);
                 } else {

@@ -3,9 +3,9 @@
 namespace App\Http\Controllers;
 
 use App\Mail\UserInviteMail;
+use App\Models\User;
+use App\Models\UserInvite;
 use App\Services\EmailService;
-use App\User;
-use App\UserInvite;
 use Illuminate\Contracts\View\View;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;

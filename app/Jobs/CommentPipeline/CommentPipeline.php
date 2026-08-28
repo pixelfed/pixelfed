@@ -2,12 +2,12 @@
 
 namespace App\Jobs\CommentPipeline;
 
-use App\Notification;
-use App\Profile;
+use App\Models\Notification;
+use App\Models\Profile;
+use App\Models\Status;
+use App\Models\UserFilter;
 use App\Services\NotificationService;
 use App\Services\StatusService;
-use App\Status;
-use App\UserFilter;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;

@@ -1,8 +1,8 @@
 <?php
 
-use App\Bookmark;
+use App\Models\Bookmark;
+use App\Models\Status;
 use App\Services\FollowerService;
-use App\Status;
 use Illuminate\Database\Migrations\Migration;
 
 return new class extends Migration

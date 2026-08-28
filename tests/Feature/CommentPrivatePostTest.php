@@ -1,9 +1,9 @@
 <?php
 
-use App\Follower;
+use App\Models\Follower;
+use App\Models\Status;
+use App\Models\User;
 use App\Services\FollowerService;
-use App\Status;
-use App\User;
 use Illuminate\Foundation\Testing\LazilyRefreshDatabase;
 
 uses(LazilyRefreshDatabase::class);

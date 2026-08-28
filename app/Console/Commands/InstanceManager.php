@@ -2,8 +2,8 @@
 
 namespace App\Console\Commands;
 
-use App\Instance;
 use App\Jobs\InstancePipeline\FetchNodeinfoPipeline;
+use App\Models\Instance;
 use App\Services\InstanceService;
 use Illuminate\Console\Command;
 

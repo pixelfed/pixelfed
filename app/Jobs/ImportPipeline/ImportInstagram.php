@@ -2,12 +2,12 @@
 
 namespace App\Jobs\ImportPipeline;
 
-use App\ImportData;
-use App\ImportJob;
 use App\Jobs\ImageOptimizePipeline\ImageOptimize;
-use App\Media;
-use App\Profile;
-use App\Status;
+use App\Models\ImportData;
+use App\Models\ImportJob;
+use App\Models\Media;
+use App\Models\Profile;
+use App\Models\Status;
 use Carbon\Carbon;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;

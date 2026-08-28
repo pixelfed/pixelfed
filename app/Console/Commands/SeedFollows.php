@@ -2,9 +2,9 @@
 
 namespace App\Console\Commands;
 
-use App\Follower;
 use App\Jobs\FollowPipeline\FollowPipeline;
-use App\Profile;
+use App\Models\Follower;
+use App\Models\Profile;
 use Exception;
 use Illuminate\Console\Command;
 

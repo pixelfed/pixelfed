@@ -2,7 +2,7 @@
 
 namespace App\Services;
 
-use App\Profile;
+use App\Models\Profile;
 use App\Util\ActivityPub\Helpers;
 use App\Util\Webfinger\WebfingerUrl;
 use Illuminate\Http\Client\ConnectionException;

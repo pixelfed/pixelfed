@@ -1,7 +1,7 @@
 <?php
 
 use App\Jobs\StatusPipeline\StatusDelete;
-use App\Status;
+use App\Models\Status;
 use Illuminate\Database\Migrations\Migration;
 
 return new class extends Migration

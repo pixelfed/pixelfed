@@ -2,7 +2,7 @@
 
 namespace App\Http\Controllers;
 
-use App\Place;
+use App\Models\Place;
 use App\Services\PlaceService;
 use App\Services\StatusService;
 use Illuminate\Contracts\View\View;

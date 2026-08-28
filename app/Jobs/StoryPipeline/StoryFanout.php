@@ -2,9 +2,9 @@
 
 namespace App\Jobs\StoryPipeline;
 
+use App\Models\Story;
 use App\Services\FollowerService;
 use App\Services\StoryService;
-use App\Story;
 use App\Transformer\ActivityPub\Verb\CreateStory;
 use App\Util\ActivityPub\HttpSignature;
 use Illuminate\Bus\Queueable;

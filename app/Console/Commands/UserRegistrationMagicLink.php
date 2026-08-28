@@ -2,8 +2,8 @@
 
 namespace App\Console\Commands;
 
-use App\EmailVerification;
-use App\User;
+use App\Models\EmailVerification;
+use App\Models\User;
 use Illuminate\Console\Command;
 
 class UserRegistrationMagicLink extends Command

@@ -2,9 +2,9 @@
 
 namespace App\Services;
 
-use App\Follower;
+use App\Models\Follower;
+use App\Models\Status;
 use App\Models\UserDomainBlock;
-use App\Status;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Redis;
 

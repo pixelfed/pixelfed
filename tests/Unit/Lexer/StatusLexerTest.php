@@ -2,7 +2,7 @@
 
 namespace Tests\Unit\Lexer;
 
-use App\Status;
+use App\Models\Status;
 use App\Util\Lexer\Autolink;
 use App\Util\Lexer\Extractor;
 use PHPUnit\Framework\Attributes\Test;

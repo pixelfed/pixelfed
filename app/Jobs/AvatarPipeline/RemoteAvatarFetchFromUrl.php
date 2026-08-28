@@ -2,8 +2,8 @@
 
 namespace App\Jobs\AvatarPipeline;
 
-use App\Avatar;
-use App\Profile;
+use App\Models\Avatar;
+use App\Models\Profile;
 use App\Services\AccountService;
 use App\Services\MediaStorageService;
 use Illuminate\Bus\Queueable;

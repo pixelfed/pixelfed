@@ -3,8 +3,8 @@
 namespace App\Http\Controllers;
 
 use App\Models\AdminInvite;
+use App\Models\User;
 use App\Services\EmailService;
-use App\User;
 use App\Util\Lexer\RestrictedNames;
 use Illuminate\Auth\Events\Registered;
 use Illuminate\Contracts\View\View;

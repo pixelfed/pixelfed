@@ -2,15 +2,15 @@
 
 namespace App\Jobs\FollowPipeline;
 
-use App\Follower;
 use App\Jobs\PushNotificationPipeline\FollowPushNotifyPipeline;
-use App\Notification;
-use App\Profile;
+use App\Models\Follower;
+use App\Models\Notification;
+use App\Models\Profile;
+use App\Models\User;
 use App\Services\AccountService;
 use App\Services\FollowerService;
 use App\Services\NotificationAppGatewayService;
 use App\Services\PushNotificationService;
-use App\User;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;

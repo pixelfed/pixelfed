@@ -3,14 +3,14 @@
 namespace App\Http\Controllers\Groups;
 
 use App\Http\Controllers\Controller;
-use App\Instance;
 use App\Models\Group;
 use App\Models\GroupBlock;
 use App\Models\GroupInteraction;
 use App\Models\GroupMember;
 use App\Models\GroupPost;
 use App\Models\GroupReport;
-use App\Profile;
+use App\Models\Instance;
+use App\Models\Profile;
 use App\Services\Groups\GroupAccountService;
 use App\Services\Groups\GroupPostService;
 use App\Services\GroupService;

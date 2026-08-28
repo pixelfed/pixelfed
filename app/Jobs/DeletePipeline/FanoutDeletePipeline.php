@@ -2,7 +2,7 @@
 
 namespace App\Jobs\DeletePipeline;
 
-use App\Profile;
+use App\Models\Profile;
 use App\Util\ActivityPub\HttpSignature;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;

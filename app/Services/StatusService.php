@@ -2,7 +2,7 @@
 
 namespace App\Services;
 
-use App\Status;
+use App\Models\Status;
 use App\Transformer\Api\StatusStatelessTransformer;
 use Illuminate\Support\Facades\Cache;
 use League\Fractal;

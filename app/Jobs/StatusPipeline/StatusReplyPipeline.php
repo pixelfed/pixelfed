@@ -2,10 +2,10 @@
 
 namespace App\Jobs\StatusPipeline;
 
-use App\Notification;
+use App\Models\Notification;
+use App\Models\Status;
 use App\Services\NotificationService;
 use App\Services\StatusService;
-use App\Status;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;

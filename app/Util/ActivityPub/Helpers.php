@@ -2,17 +2,18 @@
 
 namespace App\Util\ActivityPub;
 
-use App\Instance;
 use App\Jobs\AvatarPipeline\RemoteAvatarFetch;
 use App\Jobs\HomeFeedPipeline\FeedInsertRemotePipeline;
 use App\Jobs\InstancePipeline\FetchNodeinfoPipeline;
 use App\Jobs\MediaPipeline\MediaStoragePipeline;
 use App\Jobs\StatusPipeline\StatusReplyPipeline;
 use App\Jobs\StatusPipeline\StatusTagsPipeline;
-use App\Media;
+use App\Models\Instance;
+use App\Models\Media;
 use App\Models\ModeratedProfile;
 use App\Models\Poll;
-use App\Profile;
+use App\Models\Profile;
+use App\Models\Status;
 use App\Services\Account\AccountStatService;
 use App\Services\ActivityPubDeliveryService;
 use App\Services\ActivityPubFetchService;
@@ -22,7 +23,6 @@ use App\Services\MediaPathService;
 use App\Services\NetworkTimelineService;
 use App\Services\SanitizeService;
 use App\Services\UserFilterService;
-use App\Status;
 use App\Util\Media\License;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\Cache;
