@@ -4,7 +4,7 @@ namespace App\Util\ActivityPub\Inbox;
 
 use App\Jobs\ProfilePipeline\HandleUpdateActivity;
 use App\Jobs\StatusPipeline\StatusRemoteUpdatePipeline;
-use App\Status;
+use App\Models\Status;
 use App\Util\ActivityPub\Helpers;
 use App\Util\ActivityPub\Validator\UpdatePersonValidator;
 

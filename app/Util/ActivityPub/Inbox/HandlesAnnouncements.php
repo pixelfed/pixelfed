@@ -2,9 +2,9 @@
 
 namespace App\Util\ActivityPub\Inbox;
 
+use App\Models\Status;
 use App\Services\NotificationService;
 use App\Services\ReblogService;
-use App\Status;
 use App\Util\ActivityPub\Helpers;
 
 trait HandlesAnnouncements

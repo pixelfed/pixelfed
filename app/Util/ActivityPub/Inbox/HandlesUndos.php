@@ -2,16 +2,16 @@
 
 namespace App\Util\ActivityPub\Inbox;
 
-use App\Follower;
-use App\FollowRequest;
 use App\Jobs\HomeFeedPipeline\FeedRemoveRemotePipeline;
-use App\Like;
-use App\Profile;
+use App\Models\Follower;
+use App\Models\FollowRequest;
+use App\Models\Like;
+use App\Models\Profile;
+use App\Models\Status;
 use App\Services\FollowerService;
 use App\Services\ReblogService;
 use App\Services\RelationshipService;
 use App\Services\StatusService;
-use App\Status;
 use App\Util\ActivityPub\Helpers;
 
 trait HandlesUndos

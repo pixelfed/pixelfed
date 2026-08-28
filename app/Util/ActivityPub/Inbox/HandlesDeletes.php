@@ -6,10 +6,10 @@ use App\Jobs\DeletePipeline\DeleteRemoteProfilePipeline;
 use App\Jobs\HomeFeedPipeline\FeedRemoveRemotePipeline;
 use App\Jobs\StatusPipeline\RemoteStatusDelete;
 use App\Jobs\StoryPipeline\StoryExpire;
-use App\Notification;
-use App\Profile;
-use App\Status;
-use App\Story;
+use App\Models\Notification;
+use App\Models\Profile;
+use App\Models\Status;
+use App\Models\Story;
 use App\Util\ActivityPub\Helpers;
 
 trait HandlesDeletes
