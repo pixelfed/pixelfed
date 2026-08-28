@@ -35,6 +35,7 @@ use App\Services\PushNotificationService;
 use App\Services\ReblogService;
 use App\Services\RelationshipService;
 use App\Services\SanitizeService;
+use App\Services\StatusService;
 use App\Services\StoryIndexService;
 use App\Services\UserFilterService;
 use App\Status;
@@ -1004,9 +1005,16 @@ class Inbox
                 if (AccountService::blocksDomain($status->profile_id, $profile->domain) == true) {
                     return;
                 }
-                Like::whereProfileId($profile->id)
+                $deleted = Like::whereProfileId($profile->id)
                     ->whereStatusId($status->id)
                     ->forceDelete();
+
+                if ($deleted > 0 && $status->likes_count > 0) {
+                    $status->likes_count = $status->likes_count - 1;
+                    $status->saveQuietly();
+                    StatusService::del($status->id);
+                }
+
                 $notifications = Notification::whereProfileId($status->profile_id)
                     ->whereActorId($profile->id)
                     ->whereAction('like')

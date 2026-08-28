@@ -226,12 +226,11 @@ class InternalApiController extends Controller
                     ->accessLevel('admin')
                     ->save();
                 if ($status->uri == null) {
-                    $ai = AccountInterstitial::whereUserId($status->profile->user_id)
+                    AccountInterstitial::whereUserId($status->profile->user_id)
                         ->whereType('post.cw')
                         ->whereItemId($status->id)
                         ->whereItemType(Status::class)
-                        ->first();
-                    $ai->delete();
+                        ->delete();
                 }
                 break;
 
