@@ -2,8 +2,8 @@
 
 namespace App\Http\Controllers;
 
-use App\AccountInterstitial;
-use App\Status;
+use App\Models\AccountInterstitial;
+use App\Models\Status;
 use Illuminate\Contracts\View\View;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;

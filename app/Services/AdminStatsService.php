@@ -2,15 +2,15 @@
 
 namespace App\Services;
 
-use App\Avatar;
-use App\Contact;
-use App\FailedJob;
-use App\Instance;
-use App\Media;
-use App\Profile;
-use App\Report;
-use App\Status;
-use App\User;
+use App\Models\Avatar;
+use App\Models\Contact;
+use App\Models\FailedJob;
+use App\Models\Instance;
+use App\Models\Media;
+use App\Models\Profile;
+use App\Models\Report;
+use App\Models\Status;
+use App\Models\User;
 use App\Util\Lexer\PrettyNumber;
 use Carbon\Carbon;
 use DateInterval;

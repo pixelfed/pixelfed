@@ -2,7 +2,7 @@
 
 namespace App\Jobs\ProfilePipeline;
 
-use App\Notification;
+use App\Models\Notification;
 use App\Services\NotificationService;
 use Illuminate\Bus\Batchable;
 use Illuminate\Bus\Queueable;

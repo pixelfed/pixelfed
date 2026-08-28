@@ -2,9 +2,9 @@
 
 namespace App\Http\Controllers\Import;
 
-use App\ImportData;
-use App\ImportJob;
 use App\Jobs\ImportPipeline\ImportInstagram;
+use App\Models\ImportData;
+use App\Models\ImportJob;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;

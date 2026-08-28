@@ -3,7 +3,7 @@
 namespace App\Jobs\InboxPipeline;
 
 use App\Jobs\DeletePipeline\DeleteRemoteProfilePipeline;
-use App\Profile;
+use App\Models\Profile;
 use App\Util\ActivityPub\Helpers;
 use App\Util\ActivityPub\HttpSignature;
 use Illuminate\Bus\Queueable;

@@ -2,8 +2,8 @@
 
 namespace App\Services;
 
-use App\MediaTag;
-use App\Notification;
+use App\Models\MediaTag;
+use App\Models\Notification;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Redis;
 

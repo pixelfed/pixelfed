@@ -2,12 +2,12 @@
 
 namespace App\Http\Controllers\Settings;
 
-use App\Follower;
 use App\Jobs\HomeFeedPipeline\FeedUnfollowPipeline;
-use App\Profile;
+use App\Models\Follower;
+use App\Models\Profile;
+use App\Models\UserFilter;
 use App\Services\AccountService;
 use App\Services\RelationshipService;
-use App\UserFilter;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\DB;

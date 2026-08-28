@@ -2,8 +2,8 @@
 
 namespace App\Http\Controllers;
 
-use App\Avatar;
 use App\Jobs\AvatarPipeline\AvatarOptimize;
+use App\Models\Avatar;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;

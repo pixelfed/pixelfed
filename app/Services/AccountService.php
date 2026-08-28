@@ -2,12 +2,12 @@
 
 namespace App\Services;
 
+use App\Models\Profile;
+use App\Models\Status;
+use App\Models\User;
 use App\Models\UserDomainBlock;
-use App\Profile;
-use App\Status;
+use App\Models\UserSetting;
 use App\Transformer\Api\AccountTransformer;
-use App\User;
-use App\UserSetting;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Str;

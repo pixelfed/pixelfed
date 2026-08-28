@@ -2,8 +2,8 @@
 
 namespace App\Http\Controllers;
 
-use App\Contact;
 use App\Jobs\ContactPipeline\ContactPipeline;
+use App\Models\Contact;
 use App\Rules\MaxMultiLine;
 use Illuminate\Contracts\View\View;
 use Illuminate\Http\RedirectResponse;

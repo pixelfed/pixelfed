@@ -1,8 +1,8 @@
 <?php
 
-use App\Profile;
-use App\Status;
-use App\User;
+use App\Models\Profile;
+use App\Models\Status;
+use App\Models\User;
 use Illuminate\Foundation\Testing\LazilyRefreshDatabase;
 use Illuminate\Support\Carbon;
 

@@ -3,9 +3,9 @@
 namespace App\Http\Controllers\Auth;
 
 use App\Http\Controllers\Controller;
+use App\Models\User;
 use App\Services\BouncerService;
 use App\Services\EmailService;
-use App\User;
 use App\Util\Lexer\RestrictedNames;
 use Illuminate\Auth\Events\Registered;
 use Illuminate\Contracts\View\View;

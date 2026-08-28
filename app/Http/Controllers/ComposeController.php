@@ -2,17 +2,19 @@
 
 namespace App\Http\Controllers;
 
-use App\Collection;
-use App\CollectionItem;
-use App\Hashtag;
 use App\Jobs\ImageOptimizePipeline\ImageOptimize;
 use App\Jobs\StatusPipeline\NewStatusPipeline;
 use App\Jobs\VideoPipeline\VideoThumbnail;
-use App\Media;
-use App\MediaTag;
+use App\Models\Collection;
+use App\Models\CollectionItem;
+use App\Models\Hashtag;
+use App\Models\Media;
+use App\Models\MediaTag;
+use App\Models\Notification;
 use App\Models\Poll;
-use App\Notification;
-use App\Profile;
+use App\Models\Profile;
+use App\Models\Status;
+use App\Models\UserFilter;
 use App\Services\AccountService;
 use App\Services\CollectionService;
 use App\Services\MediaBlocklistService;
@@ -23,9 +25,7 @@ use App\Services\PlaceService;
 use App\Services\SnowflakeService;
 use App\Services\UserRoleService;
 use App\Services\UserStorageService;
-use App\Status;
 use App\Transformer\Api\MediaTransformer;
-use App\UserFilter;
 use App\Util\Media\Filter;
 use App\Util\Media\License;
 use Illuminate\Contracts\View\View;

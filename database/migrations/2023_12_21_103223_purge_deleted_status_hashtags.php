@@ -1,6 +1,6 @@
 <?php
 
-use App\StatusHashtag;
+use App\Models\StatusHashtag;
 use Illuminate\Database\Migrations\Migration;
 
 return new class extends Migration

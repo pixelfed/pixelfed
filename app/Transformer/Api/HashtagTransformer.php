@@ -2,7 +2,7 @@
 
 namespace App\Transformer\Api;
 
-use App\Hashtag;
+use App\Models\Hashtag;
 use League\Fractal;
 
 class HashtagTransformer extends Fractal\TransformerAbstract

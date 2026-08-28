@@ -2,8 +2,8 @@
 
 namespace App\Http\Requests\Status;
 
-use App\Media;
-use App\Status;
+use App\Models\Media;
+use App\Models\Status;
 use Closure;
 use Illuminate\Contracts\Validation\ValidationRule;
 use Illuminate\Foundation\Http\FormRequest;

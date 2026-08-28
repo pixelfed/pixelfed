@@ -3,7 +3,7 @@
 namespace App\Console\Commands;
 
 use App\Jobs\ImageOptimizePipeline\ImageOptimize;
-use App\Media;
+use App\Models\Media;
 use Illuminate\Console\Command;
 
 class CatchUnoptimizedMedia extends Command

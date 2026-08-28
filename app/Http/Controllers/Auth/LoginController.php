@@ -2,10 +2,10 @@
 
 namespace App\Http\Controllers\Auth;
 
-use App\AccountLog;
 use App\Http\Controllers\Controller;
+use App\Models\AccountLog;
+use App\Models\User;
 use App\Services\BouncerService;
-use App\User;
 use Illuminate\Contracts\View\View;
 use Illuminate\Foundation\Auth\AuthenticatesUsers;
 use Illuminate\Http\Request;

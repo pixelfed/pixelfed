@@ -2,7 +2,7 @@
 
 namespace App\Util\Media;
 
-use App\Media;
+use App\Models\Media;
 use App\Util\Blurhash\Blurhash as BlurhashEngine;
 
 class Blurhash

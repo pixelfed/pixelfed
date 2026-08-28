@@ -2,8 +2,8 @@
 
 namespace App\Console\Commands;
 
-use App\Profile;
-use App\User;
+use App\Models\Profile;
+use App\Models\User;
 use App\Util\Lexer\RestrictedNames;
 use Illuminate\Console\Command;
 use Illuminate\Support\Facades\DB;

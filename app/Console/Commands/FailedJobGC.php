@@ -2,7 +2,7 @@
 
 namespace App\Console\Commands;
 
-use App\FailedJob;
+use App\Models\FailedJob;
 use Illuminate\Console\Command;
 
 class FailedJobGC extends Command

@@ -2,12 +2,12 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\User;
 use App\Models\UserOidcMapping;
 use App\Rules\EmailNotBanned;
 use App\Rules\PixelfedUsername;
 use App\Services\EmailService;
 use App\Services\UserOidcService;
-use App\User;
 use Illuminate\Auth\Events\Registered;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;

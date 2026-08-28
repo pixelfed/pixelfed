@@ -2,13 +2,13 @@
 
 namespace App\Http\Controllers;
 
-use App\Collection;
-use App\CollectionItem;
+use App\Models\Collection;
+use App\Models\CollectionItem;
+use App\Models\Status;
 use App\Services\AccountService;
 use App\Services\CollectionService;
 use App\Services\FollowerService;
 use App\Services\StatusService;
-use App\Status;
 use Illuminate\Contracts\View\View;
 use Illuminate\Http\Request;
 

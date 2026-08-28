@@ -2,23 +2,23 @@
 
 namespace App\Http\Controllers;
 
-use App\AccountInterstitial;
-use App\Bookmark;
-use App\DirectMessage;
-use App\DiscoverCategory;
-use App\Follower;
 use App\Jobs\ModPipeline\HandleSpammerPipeline;
-use App\Profile;
+use App\Models\AccountInterstitial;
+use App\Models\Bookmark;
+use App\Models\DirectMessage;
+use App\Models\DiscoverCategory;
+use App\Models\Follower;
+use App\Models\Profile;
+use App\Models\Status;
+use App\Models\User;
 use App\Services\BookmarkService;
 use App\Services\DiscoverService;
 use App\Services\FollowerService;
 use App\Services\ModLogService;
 use App\Services\PublicTimelineService;
-use App\Services\StatusService;
+use App\Services\StatusService; // StatusMediaContainerTransformer,
 use App\Services\UserFilterService;
-use App\Status; // StatusMediaContainerTransformer,
 use App\Transformer\Api\StatusTransformer;
-use App\User;
 use Illuminate\Contracts\View\View;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\RedirectResponse;

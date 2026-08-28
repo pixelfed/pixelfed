@@ -3,9 +3,9 @@
 namespace App\Console\Commands;
 
 use App\Jobs\DeletePipeline\DeleteAccountPipeline;
-use App\Profile;
+use App\Models\Profile;
+use App\Models\User;
 use App\Services\AccountService;
-use App\User;
 use Illuminate\Console\Command;
 use Illuminate\Contracts\Console\PromptsForMissingInput;
 

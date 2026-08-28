@@ -2,12 +2,12 @@
 
 namespace App\Http\Controllers;
 
-use App\AccountLog;
-use App\Follower;
-use App\Like;
-use App\Status;
-use App\StatusHashtag;
-use App\User;
+use App\Models\AccountLog;
+use App\Models\Follower;
+use App\Models\Like;
+use App\Models\Status;
+use App\Models\StatusHashtag;
+use App\Models\User;
 use Illuminate\Contracts\View\View;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;

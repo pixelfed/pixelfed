@@ -2,7 +2,7 @@
 
 namespace App\Observers;
 
-use App\Profile;
+use App\Models\Profile;
 use App\Services\AccountService;
 
 class ProfileObserver

@@ -3,14 +3,14 @@
 namespace App\Jobs\LikePipeline;
 
 use App\Jobs\PushNotificationPipeline\LikePushNotifyPipeline;
-use App\Like;
-use App\Notification;
+use App\Models\Like;
+use App\Models\Notification;
+use App\Models\Status;
+use App\Models\User;
 use App\Services\NotificationAppGatewayService;
 use App\Services\PushNotificationService;
 use App\Services\StatusService;
-use App\Status;
 use App\Transformer\ActivityPub\Verb\Like as LikeTransformer;
-use App\User;
 use App\Util\ActivityPub\Helpers;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;

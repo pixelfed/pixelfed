@@ -2,7 +2,6 @@
 
 namespace App\Http\Controllers;
 
-use App\Contact;
 use App\Http\Controllers\Admin\AdminAutospamController;
 use App\Http\Controllers\Admin\AdminDirectoryController;
 use App\Http\Controllers\Admin\AdminDiscoverController;
@@ -13,21 +12,22 @@ use App\Http\Controllers\Admin\AdminReportController;
 use App\Http\Controllers\Admin\AdminSettingsController;
 use App\Http\Controllers\Admin\AdminUserController;
 use App\Http\Resources\AdminProfile;
-use App\Instance;
 use App\Jobs\AdminPipeline\AdminProfileActionPipeline;
 use App\Mail\AdminMessageResponse;
+use App\Models\Contact;
 use App\Models\CustomEmoji;
-use App\Newsroom;
-use App\OauthClient;
-use App\Profile;
+use App\Models\Instance;
+use App\Models\Newsroom;
+use App\Models\OauthClient;
+use App\Models\Profile;
+use App\Models\Status;
+use App\Models\Story;
+use App\Models\User;
 use App\Services\AccountService;
 use App\Services\AdminStatsService;
 use App\Services\ConfigCacheService;
 use App\Services\StatusService;
 use App\Services\StoryService;
-use App\Status;
-use App\Story;
-use App\User;
 use Illuminate\Contracts\View\View;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\RedirectResponse;

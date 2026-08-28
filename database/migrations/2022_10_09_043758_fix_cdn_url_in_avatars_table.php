@@ -1,6 +1,6 @@
 <?php
 
-use App\Avatar;
+use App\Models\Avatar;
 use App\Services\AccountService;
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Support\Facades\Cache;

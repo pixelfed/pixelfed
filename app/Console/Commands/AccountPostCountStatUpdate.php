@@ -2,10 +2,10 @@
 
 namespace App\Console\Commands;
 
-use App\Profile;
+use App\Models\Profile;
+use App\Models\Status;
 use App\Services\Account\AccountStatService;
 use App\Services\AccountService;
-use App\Status;
 use Illuminate\Console\Command;
 
 class AccountPostCountStatUpdate extends Command

@@ -4,7 +4,7 @@ namespace App\Jobs\GroupPipeline;
 
 use App\Models\Group;
 use App\Models\GroupMember;
-use App\Notification;
+use App\Models\Notification;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;

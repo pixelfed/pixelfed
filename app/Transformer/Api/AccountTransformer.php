@@ -2,11 +2,11 @@
 
 namespace App\Transformer\Api;
 
-use App\Profile;
+use App\Models\Profile;
+use App\Models\User;
+use App\Models\UserSetting;
 use App\Services\AccountService;
 use App\Services\PronounService;
-use App\User;
-use App\UserSetting;
 use Illuminate\Support\Facades\Cache;
 use League\Fractal;
 

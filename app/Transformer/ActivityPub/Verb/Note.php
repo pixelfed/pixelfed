@@ -3,8 +3,8 @@
 namespace App\Transformer\ActivityPub\Verb;
 
 use App\Models\CustomEmoji;
+use App\Models\Status;
 use App\Services\MediaService;
-use App\Status;
 use App\Util\Lexer\Autolink;
 use Illuminate\Support\Str;
 use League\Fractal;

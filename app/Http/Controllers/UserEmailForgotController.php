@@ -3,8 +3,8 @@
 namespace App\Http\Controllers;
 
 use App\Mail\UserEmailForgotReminder;
+use App\Models\User;
 use App\Models\UserEmailForgot;
-use App\User;
 use Illuminate\Contracts\View\View;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;

@@ -2,10 +2,10 @@
 
 namespace App\Jobs\StoryPipeline;
 
+use App\Models\Story;
 use App\Services\MediaPathService;
 use App\Services\StoryIndexService;
 use App\Services\StoryService;
-use App\Story;
 use App\Util\ActivityPub\Helpers;
 use App\Util\ActivityPub\Validator\StoryValidator;
 use App\Util\Lexer\Bearcap;

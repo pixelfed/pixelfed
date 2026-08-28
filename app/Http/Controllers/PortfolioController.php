@@ -3,10 +3,10 @@
 namespace App\Http\Controllers;
 
 use App\Models\Portfolio;
+use App\Models\Status;
+use App\Models\User;
 use App\Services\AccountService;
 use App\Services\StatusService;
-use App\Status;
-use App\User;
 use Illuminate\Contracts\View\View;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;

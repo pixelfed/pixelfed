@@ -2,8 +2,8 @@
 
 namespace App\Console\Commands;
 
-use App\Instance;
 use App\Jobs\InstancePipeline\FetchNodeinfoPipeline;
+use App\Models\Instance;
 use Illuminate\Console\Command;
 
 use function Laravel\Prompts\progress;

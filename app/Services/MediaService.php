@@ -2,7 +2,7 @@
 
 namespace App\Services;
 
-use App\Media;
+use App\Models\Media;
 use App\Transformer\Api\MediaTransformer;
 use Illuminate\Support\Arr;
 use Illuminate\Support\Facades\Cache;

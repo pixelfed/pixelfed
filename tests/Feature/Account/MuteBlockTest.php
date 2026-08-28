@@ -1,8 +1,8 @@
 <?php
 
-use App\Profile;
-use App\User;
-use App\UserFilter;
+use App\Models\Profile;
+use App\Models\User;
+use App\Models\UserFilter;
 use Illuminate\Foundation\Testing\LazilyRefreshDatabase;
 
 uses(LazilyRefreshDatabase::class);

@@ -2,8 +2,8 @@
 
 use App\Jobs\HomeFeedPipeline\FeedInsertPipeline;
 use App\Jobs\StatusPipeline\StatusDelete;
-use App\Status;
-use App\User;
+use App\Models\Status;
+use App\Models\User;
 use Illuminate\Foundation\Testing\LazilyRefreshDatabase;
 use Illuminate\Support\Facades\Queue;
 

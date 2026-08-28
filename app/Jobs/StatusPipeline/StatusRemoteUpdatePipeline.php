@@ -2,13 +2,13 @@
 
 namespace App\Jobs\StatusPipeline;
 
-use App\Media;
+use App\Models\Media;
+use App\Models\ModLog;
+use App\Models\Profile;
+use App\Models\Status;
 use App\Models\StatusEdit;
-use App\ModLog;
-use App\Profile;
 use App\Services\SanitizeService;
 use App\Services\StatusService;
-use App\Status;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;

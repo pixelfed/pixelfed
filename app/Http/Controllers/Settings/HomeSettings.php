@@ -2,13 +2,13 @@
 
 namespace App\Http\Controllers\Settings;
 
-use App\AccountLog;
-use App\EmailVerification;
 use App\Mail\PasswordChange;
-use App\Media;
+use App\Models\AccountLog;
+use App\Models\EmailVerification;
+use App\Models\Media;
+use App\Models\User;
 use App\Services\AccountService;
 use App\Services\PronounService;
-use App\User;
 use App\Util\Lexer\Autolink;
 use App\Util\Lexer\PrettyNumber;
 use App\Util\Localization\Localization;

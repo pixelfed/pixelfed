@@ -2,7 +2,7 @@
 
 namespace App\Jobs\FollowPipeline;
 
-use App\FollowRequest;
+use App\Models\FollowRequest;
 use App\Transformer\ActivityPub\Verb\RejectFollow;
 use App\Util\ActivityPub\Helpers;
 use Illuminate\Bus\Queueable;

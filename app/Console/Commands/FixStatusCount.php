@@ -2,7 +2,7 @@
 
 namespace App\Console\Commands;
 
-use App\Profile;
+use App\Models\Profile;
 use Illuminate\Console\Command;
 
 class FixStatusCount extends Command
