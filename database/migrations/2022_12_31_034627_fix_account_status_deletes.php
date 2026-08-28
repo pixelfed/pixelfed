@@ -1,10 +1,8 @@
 <?php
 
-use Illuminate\Database\Migrations\Migration;
-use Illuminate\Database\Schema\Blueprint;
-use Illuminate\Support\Facades\Schema;
-use App\Status;
 use App\Jobs\StatusPipeline\StatusDelete;
+use App\Status;
+use Illuminate\Database\Migrations\Migration;
 
 return new class extends Migration
 {
@@ -15,7 +13,9 @@ return new class extends Migration
      */
     public function up()
     {
-       Status::doesntHave('profile')->get()->each(function($status) { StatusDelete::dispatch($status); });
+        Status::doesntHave('profile')->get()->each(function ($status) {
+            StatusDelete::dispatch($status);
+        });
     }
 
     /**

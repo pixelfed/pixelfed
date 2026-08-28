@@ -1,8 +1,8 @@
 <?php
 
-use Illuminate\Support\Facades\Schema;
-use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Database\Migrations\Migration;
+use Illuminate\Database\Schema\Blueprint;
+use Illuminate\Support\Facades\Schema;
 
 class AddRepliesCountToStatusesTable extends Migration
 {
@@ -27,7 +27,7 @@ class AddRepliesCountToStatusesTable extends Migration
     public function down()
     {
         Schema::table('statuses', function (Blueprint $table) {
-            $table->dropColumn(['reply_count','comments_disabled']);
+            $table->dropColumn(['reply_count', 'comments_disabled']);
         });
     }
 }
