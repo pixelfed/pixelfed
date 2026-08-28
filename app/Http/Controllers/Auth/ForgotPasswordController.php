@@ -5,8 +5,10 @@ namespace App\Http\Controllers\Auth;
 use App\Http\Controllers\Controller;
 use App\Services\BouncerService;
 use Illuminate\Foundation\Auth\SendsPasswordResetEmails;
+use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Validation\ValidationException;
+use Illuminate\View\View;
 
 class ForgotPasswordController extends Controller
 {
@@ -36,7 +38,7 @@ class ForgotPasswordController extends Controller
     /**
      * Display the form to request a password reset link.
      *
-     * @return \Illuminate\View\View
+     * @return View
      */
     public function showLinkRequestForm()
     {
@@ -82,9 +84,9 @@ class ForgotPasswordController extends Controller
      * Get the response for a failed password reset link.
      *
      * @param  string  $response
-     * @return \Illuminate\Http\RedirectResponse
+     * @return RedirectResponse
      *
-     * @throws \Illuminate\Validation\ValidationException
+     * @throws ValidationException
      */
     public function sendResetLinkFailedResponse(Request $request, $response)
     {

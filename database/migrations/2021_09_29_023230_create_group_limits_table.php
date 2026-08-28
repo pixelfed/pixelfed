@@ -16,10 +16,10 @@ class CreateGroupLimitsTable extends Migration
         Schema::create('group_limits', function (Blueprint $table) {
             $table->id();
             $table->bigInteger('group_id')->unsigned()->index();
-			$table->bigInteger('profile_id')->unsigned()->index();
-			$table->json('limits')->nullable();
-			$table->json('metadata')->nullable();
-			$table->unique(['group_id', 'profile_id']);
+            $table->bigInteger('profile_id')->unsigned()->index();
+            $table->json('limits')->nullable();
+            $table->json('metadata')->nullable();
+            $table->unique(['group_id', 'profile_id']);
             $table->timestamps();
         });
     }

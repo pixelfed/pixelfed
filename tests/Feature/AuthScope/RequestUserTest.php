@@ -1,5 +1,6 @@
 <?php
 
+use App\Status;
 use App\User;
 use Illuminate\Foundation\Testing\LazilyRefreshDatabase;
 use Laravel\Passport\Passport;
@@ -68,7 +69,7 @@ describe('controllers using $request->user() (web)', function () {
     it('StatusController: status show page works for public status', function () {
         $user = User::factory()->create();
         $user->refresh();
-        $status = \App\Status::factory()->create([
+        $status = Status::factory()->create([
             'profile_id' => $user->profile_id,
             'type' => 'photo',
             'scope' => 'public',

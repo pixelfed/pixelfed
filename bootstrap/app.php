@@ -10,6 +10,7 @@ use App\Http\Middleware\RedirectIfAuthenticated;
 use App\Http\Middleware\RestrictedAccess;
 use App\Http\Middleware\TwoFactorAuth;
 use GuzzleHttp\Exception\ConnectException;
+use Illuminate\Auth\AuthenticationException;
 use Illuminate\Auth\Middleware\Authenticate;
 use Illuminate\Auth\Middleware\AuthenticateWithBasicAuth;
 use Illuminate\Auth\Middleware\Authorize;
@@ -23,8 +24,8 @@ use Illuminate\Foundation\Configuration\Middleware;
 use Illuminate\Foundation\Http\Middleware\ConvertEmptyStringsToNull;
 use Illuminate\Foundation\Http\Middleware\PreventRequestsDuringMaintenance;
 use Illuminate\Foundation\Http\Middleware\TrimStrings;
+use Illuminate\Foundation\Http\Middleware\ValidateCsrfToken;
 use Illuminate\Foundation\Http\Middleware\ValidatePostSize;
-use Illuminate\Foundation\Http\Middleware\VerifyCsrfToken;
 use Illuminate\Http\Client\ConnectionException;
 use Illuminate\Http\Exceptions\HttpResponseException;
 use Illuminate\Http\Middleware\HandleCors;
@@ -82,7 +83,7 @@ return Application::configure(basePath: dirname(__DIR__))
             StartSession::class,
             AuthenticateSession::class,
             ShareErrorsFromSession::class,
-            VerifyCsrfToken::class,
+            ValidateCsrfToken::class,
             SubstituteBindings::class,
             CreateFreshApiToken::class,
             'restricted',
@@ -94,12 +95,13 @@ return Application::configure(basePath: dirname(__DIR__))
             AddQueuedCookiesToResponse::class,
             StartSession::class,
             ShareErrorsFromSession::class,
-            VerifyCsrfToken::class,
+            ValidateCsrfToken::class,
             SubstituteBindings::class,
             CreateFreshApiToken::class,
         ]);
 
         $middleware->group('api', [
+            'throttle:api',
             'bindings',
         ]);
 
@@ -187,7 +189,7 @@ return Application::configure(basePath: dirname(__DIR__))
                     return $e->getResponse();
                 }
 
-                if ($e instanceof \Illuminate\Auth\AuthenticationException) {
+                if ($e instanceof AuthenticationException) {
                     return response()->json(
                         ['error' => $e->getMessage()],
                         401,

@@ -4,6 +4,7 @@ namespace App\Services;
 
 use App\Follower;
 use App\FollowRequest;
+use App\Profile;
 use App\UserFilter;
 use Illuminate\Support\Facades\Cache;
 
@@ -29,12 +30,12 @@ class RelationshipService
                 'following' => Follower::whereProfileId($aid)->whereFollowingId($tid)->exists(),
                 'followed_by' => Follower::whereProfileId($tid)->whereFollowingId($aid)->exists(),
                 'blocking' => UserFilter::whereUserId($aid)
-                    ->whereFilterableType(\App\Profile::class)
+                    ->whereFilterableType(Profile::class)
                     ->whereFilterableId($tid)
                     ->whereFilterType('block')
                     ->exists(),
                 'muting' => UserFilter::whereUserId($aid)
-                    ->whereFilterableType(\App\Profile::class)
+                    ->whereFilterableType(Profile::class)
                     ->whereFilterableId($tid)
                     ->whereFilterType('mute')
                     ->exists(),

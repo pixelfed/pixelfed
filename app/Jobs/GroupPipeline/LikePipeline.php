@@ -5,6 +5,7 @@ namespace App\Jobs\GroupPipeline;
 use App\Like;
 use App\Notification;
 use App\Services\StatusService;
+use App\Status;
 use App\Transformer\ActivityPub\Verb\Like as LikeTransformer;
 use App\Util\ActivityPub\Helpers;
 use Illuminate\Bus\Queueable;
@@ -69,7 +70,7 @@ class LikePipeline implements ShouldQueue
             ->whereActorId($actor->id)
             ->whereAction('group:like')
             ->whereItemId($status->id)
-            ->whereItemType(\App\Status::class)
+            ->whereItemType(Status::class)
             ->count();
 
         if ($actor->id === $status->profile_id || $exists !== 0) {
@@ -82,7 +83,7 @@ class LikePipeline implements ShouldQueue
             $notification->actor_id = $actor->id;
             $notification->action = 'group:like';
             $notification->item_id = $status->id;
-            $notification->item_type = \App\Status::class;
+            $notification->item_type = Status::class;
             $notification->save();
 
         } catch (\Exception $e) {

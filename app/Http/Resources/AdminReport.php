@@ -4,9 +4,11 @@ namespace App\Http\Resources;
 
 use App\Services\AccountService;
 use App\Services\StatusService;
+use App\Status;
 use App\Story;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
+use Illuminate\Support\Carbon;
 
 /**
  * @property int $id
@@ -16,8 +18,8 @@ use Illuminate\Http\Resources\Json\JsonResource;
  * @property string $object_type
  * @property int $reported_profile_id
  * @property string|null $message
- * @property \Illuminate\Support\Carbon|null $admin_seen
- * @property \Illuminate\Support\Carbon $created_at
+ * @property Carbon|null $admin_seen
+ * @property Carbon $created_at
  */
 class AdminReport extends JsonResource
 {
@@ -41,11 +43,11 @@ class AdminReport extends JsonResource
             'created_at' => $this->created_at,
         ];
 
-        if ($this->object_id && $this->object_type === \App\Status::class) {
+        if ($this->object_id && $this->object_type === Status::class) {
             $res['status'] = StatusService::get($this->object_id, false);
         }
 
-        if ($this->object_id && $this->object_type === \App\Story::class) {
+        if ($this->object_id && $this->object_type === Story::class) {
             $story = Story::find($this->object_id);
             if ($story) {
                 $res['story'] = $story->toAdminEntity();

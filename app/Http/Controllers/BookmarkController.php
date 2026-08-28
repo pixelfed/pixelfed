@@ -50,7 +50,7 @@ class BookmarkController extends Controller
 
         $bookmark = Bookmark::firstOrCreate([
             'status_id' => $status->id,
-            'profile_id' => $user->profile_id
+            'profile_id' => $user->profile_id,
         ]);
 
         if (! $bookmark->wasRecentlyCreated) {

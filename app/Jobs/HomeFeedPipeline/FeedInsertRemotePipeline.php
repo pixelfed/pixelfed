@@ -3,6 +3,7 @@
 namespace App\Jobs\HomeFeedPipeline;
 
 use App\Models\UserDomainBlock;
+use App\Profile;
 use App\Services\FollowerService;
 use App\Services\HomeTimelineService;
 use App\Services\StatusService;
@@ -113,7 +114,7 @@ class FeedInsertRemotePipeline implements ShouldBeUniqueUntilProcessing, ShouldQ
             $skipIds = UserDomainBlock::where('domain', $domain)->pluck('profile_id')->toArray();
         }
 
-        $filters = UserFilter::whereFilterableType(\App\Profile::class)
+        $filters = UserFilter::whereFilterableType(Profile::class)
             ->whereFilterableId($status['account']['id'])
             ->whereIn('filter_type', ['mute', 'block'])
             ->pluck('user_id')

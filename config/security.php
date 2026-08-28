@@ -16,7 +16,7 @@ return [
                 'daily' => env('PF_AUTH_FORGOT_EMAIL_MAX_DAILY', 100),
                 'weekly' => env('PF_AUTH_FORGOT_EMAIL_MAX_WEEKLY', 200),
                 'monthly' => env('PF_AUTH_FORGOT_EMAIL_MAX_MONTHLY', 500),
-            ]
-        ]
-    ]
+            ],
+        ],
+    ],
 ];

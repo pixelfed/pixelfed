@@ -67,12 +67,14 @@ class MediaDeletePipeline implements ShouldBeUniqueUntilProcessing, ShouldQueue
         // Verify media exists
         if (! $media) {
             Log::info('MediaDeletePipeline: Media no longer exists, skipping job');
+
             return 1;
         }
-    
+
         // Verify media is still orphaned before deleting
         if ($media->status_id !== null) {
             Log::info("MediaDeletePipeline: Media {$media->id} is attached to status {$media->status_id}, skipping deletion");
+
             return 1;
         }
 
@@ -81,6 +83,7 @@ class MediaDeletePipeline implements ShouldBeUniqueUntilProcessing, ShouldQueue
 
         if (! $path) {
             Log::info("MediaDeletePipeline: Media {$media->id} has no path, skipping deletion");
+
             return 1;
         }
 

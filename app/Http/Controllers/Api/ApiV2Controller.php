@@ -385,11 +385,11 @@ class ApiV2Controller extends Controller
         }
 
         // Get request parameters
-        $limit = min((int) $request->get('limit', 20), 40); // Max 40 items
-        $maxId = $request->get('max_id');
-        $minId = $request->get('min_id');
-        $sinceId = $request->get('since_id');
-        $ancestorsLimit = min((int) $request->get('ancestors_limit', 10), 20); // Max 20 ancestors
+        $limit = min((int) $request->input('limit', 20), 40); // Max 40 items
+        $maxId = $request->input('max_id');
+        $minId = $request->input('min_id');
+        $sinceId = $request->input('since_id');
+        $ancestorsLimit = min((int) $request->input('ancestors_limit', 10), 20); // Max 20 ancestors
 
         $ancestors = $this->getAncestors($id, $ancestorsLimit, $pe, $pid);
         $descendants = $this->getDescendantsPaginated($id, $limit, $maxId, $minId, $sinceId, $pe, $pid);
@@ -603,10 +603,10 @@ class ApiV2Controller extends Controller
 
         // Same visibility checks as above...
 
-        $limit = min((int) $request->get('limit', 20), 40);
-        $maxId = $request->get('max_id');
-        $minId = $request->get('min_id');
-        $sinceId = $request->get('since_id');
+        $limit = min((int) $request->input('limit', 20), 40);
+        $maxId = $request->input('max_id');
+        $minId = $request->input('min_id');
+        $sinceId = $request->input('since_id');
 
         $descendants = $this->getDescendantsPaginated($id, $limit, $maxId, $minId, $sinceId, $pe, $pid);
 
@@ -633,7 +633,7 @@ class ApiV2Controller extends Controller
             return response('', 404);
         }
 
-        $limit = min((int) $request->get('limit', 10), 20);
+        $limit = min((int) $request->input('limit', 10), 20);
         $ancestors = $this->getAncestors($id, $limit, $pe, $pid);
 
         return $this->json($ancestors);

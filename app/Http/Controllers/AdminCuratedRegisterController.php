@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Mail\CuratedRegisterAcceptUser;
 use App\Mail\CuratedRegisterRejectUser;
 use App\Mail\CuratedRegisterRequestDetailsFromUser;
+use App\Mail\CuratedRegisterSendMessage;
 use App\Models\CuratedRegister;
 use App\Models\CuratedRegisterActivity;
 use App\Models\CuratedRegisterTemplate;
@@ -201,7 +202,7 @@ class AdminCuratedRegisterController extends Controller
         $activity = new CuratedRegisterActivity;
         $activity->message = $request->input('message');
 
-        return new \App\Mail\CuratedRegisterRequestDetailsFromUser($record, $activity);
+        return new CuratedRegisterRequestDetailsFromUser($record, $activity);
     }
 
     public function previewMessageShow(Request $request, $id)
@@ -210,7 +211,7 @@ class AdminCuratedRegisterController extends Controller
         abort_if($record->email_verified_at === null, 400, 'Cannot message an unverified email');
         $record->message = $request->input('message');
 
-        return new \App\Mail\CuratedRegisterSendMessage($record);
+        return new CuratedRegisterSendMessage($record);
     }
 
     public function apiHandleReject(Request $request, $id)

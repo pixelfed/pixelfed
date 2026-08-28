@@ -34,7 +34,6 @@ use Illuminate\Pagination\Paginator;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Gate;
 use Illuminate\Support\Facades\RateLimiter;
-use Illuminate\Support\Facades\Schema;
 use Illuminate\Support\Facades\URL;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\ServiceProvider;
@@ -58,7 +57,6 @@ class AppServiceProvider extends ServiceProvider
         Passport::$clientUuids = false;
         Passport::authorizationView('auth.oauth.authorize');
 
-        Schema::defaultStringLength(191);
         Paginator::useBootstrap();
         Avatar::observe(AvatarObserver::class);
         Follower::observe(FollowerObserver::class);
@@ -95,6 +93,10 @@ class AppServiceProvider extends ServiceProvider
                 ];
             });
         }
+
+        RateLimiter::for('api', function (Request $request) {
+            return Limit::perMinute(512)->by($request->user()?->id ?: $request->ip());
+        });
 
         RateLimiter::for('app-signup', function (Request $request) {
             return Limit::perDay(100)->by($request->ip());
@@ -174,8 +176,10 @@ class AppServiceProvider extends ServiceProvider
 
         URL::forceRootUrl(config('app.url'));
 
-        // Model::shouldBeStrict(! $this->app->isProduction()); // In the future replace this instead of preventLazyLoading
-        Model::preventLazyLoading(true);
+        // Enable strict testing in dev/test only (false in production)
+        // Model::preventLazyLoading(! $this->app->isProduction());
+        // Model::preventSilentlyDiscardingAttributes(! $this->app->isProduction());
+        // Model::preventAccessingMissingAttributes(! $this->app->isProduction());
     }
 
     /**

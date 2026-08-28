@@ -2,6 +2,7 @@
 
 namespace App\Jobs\GroupPipeline;
 
+use App\Models\Group;
 use App\Models\GroupMember;
 use App\Notification;
 use Illuminate\Bus\Queueable;
@@ -41,7 +42,7 @@ class JoinRejected implements ShouldQueue
         $n->profile_id = $member->profile_id;
         $n->actor_id = $member->profile_id;
         $n->item_id = $member->group_id;
-        $n->item_type = \App\Models\Group::class;
+        $n->item_type = Group::class;
         $n->action = 'group.join.rejected';
         $n->save();
     }

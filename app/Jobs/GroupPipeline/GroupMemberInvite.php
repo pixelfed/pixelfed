@@ -2,6 +2,7 @@
 
 namespace App\Jobs\GroupPipeline;
 
+use App\Models\Group;
 use App\Models\GroupInvitation;
 use App\Notification;
 use App\Profile;
@@ -47,7 +48,7 @@ class GroupMemberInvite implements ShouldQueue
         $notification->actor_id = $actor->id;
         $notification->action = 'group:invite';
         $notification->item_id = $invite->group_id;
-        $notification->item_type = \App\Models\Group::class;
+        $notification->item_type = Group::class;
         $notification->save();
     }
 }

@@ -1,8 +1,10 @@
 <?php
 
+use App\Mail\PasswordChange;
 use App\User;
 use Illuminate\Foundation\Testing\LazilyRefreshDatabase;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Mail;
 
 uses(LazilyRefreshDatabase::class);
 
@@ -81,7 +83,7 @@ describe('profile update', function () {
 
 describe('password change', function () {
     it('changes password with correct current password', function () {
-        \Illuminate\Support\Facades\Mail::fake();
+        Mail::fake();
 
         $user = User::factory()->create([
             'password' => Hash::make('old-password'),
@@ -100,7 +102,7 @@ describe('password change', function () {
         $user->refresh();
         expect(Hash::check('new-secure-pass-123', $user->password))->toBeTrue();
 
-        \Illuminate\Support\Facades\Mail::assertSent(\App\Mail\PasswordChange::class);
+        Mail::assertSent(PasswordChange::class);
     });
 
     it('rejects password change with wrong current password', function () {

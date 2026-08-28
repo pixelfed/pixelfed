@@ -34,7 +34,7 @@ class AutospamPretrainPipeline implements ShouldQueue
     {
         $classifier = $this->classifier;
 
-        $aiCount = AccountInterstitial::whereItemType(\App\Status::class)
+        $aiCount = AccountInterstitial::whereItemType(Status::class)
             ->whereIsSpam(true)
             ->count();
 
@@ -42,7 +42,7 @@ class AutospamPretrainPipeline implements ShouldQueue
             return;
         }
 
-        AccountInterstitial::whereItemType(\App\Status::class)
+        AccountInterstitial::whereItemType(Status::class)
             ->whereIsSpam(true)
             ->inRandomOrder()
             ->take(config('autospam.nlp.spam_sample_limit'))

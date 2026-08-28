@@ -33,7 +33,7 @@ class CreateAccountInterstitialsTable extends Migration
             $table->timestamps();
         });
 
-        Schema::table('users', function(Blueprint $table) {
+        Schema::table('users', function (Blueprint $table) {
             $table->boolean('has_interstitial')->default(false)->index();
         });
     }

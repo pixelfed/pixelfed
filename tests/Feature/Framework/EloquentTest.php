@@ -4,6 +4,7 @@ use App\Profile;
 use App\Status;
 use App\User;
 use Illuminate\Foundation\Testing\LazilyRefreshDatabase;
+use Illuminate\Support\Carbon;
 
 uses(LazilyRefreshDatabase::class);
 
@@ -45,7 +46,7 @@ describe('User model', function () {
     it('casts email_verified_at to datetime', function () {
         $user = User::factory()->create();
 
-        expect($user->email_verified_at)->toBeInstanceOf(\Illuminate\Support\Carbon::class);
+        expect($user->email_verified_at)->toBeInstanceOf(Carbon::class);
     });
 
     it('hides sensitive attributes in serialization', function () {
