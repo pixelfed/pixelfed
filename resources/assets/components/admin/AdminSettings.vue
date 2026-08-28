@@ -1034,7 +1034,7 @@
                     }
 
                     if(this.mediaTypes.mov) {
-                        res += 'video/mov,'
+                        res += 'video/quicktime,'
                     }
 
                     if(res.endsWith(',')) {
@@ -1096,12 +1096,24 @@
             },
 
             setMediaTypes() {
+                const mimeToKey = {
+                    'image/jpeg': 'jpeg',
+                    'image/png': 'png',
+                    'image/gif': 'gif',
+                    'image/webp': 'webp',
+                    'image/avif': 'avif',
+                    'image/heic': 'heic',
+                    'video/mp4': 'mp4',
+                    'video/quicktime': 'mov',
+                    'video/x-m4v': 'mov',
+                    'video/mov': 'mov',
+                };
                 const types = this.media.media_types.split(',');
                 if(types && types.length) {
                     types.forEach((type) => {
-                        let mime = type.split('/')[1];
-                        if(['jpeg', 'png', 'gif', 'webp', 'avif', 'heic', 'mp4', 'mov'].includes(mime)) {
-                            this.mediaTypes[mime] = true;
+                        const key = mimeToKey[type];
+                        if(key) {
+                            this.mediaTypes[key] = true;
                         }
                     })
                 }

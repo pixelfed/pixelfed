@@ -685,8 +685,8 @@ class StoryFetch implements ShouldQueue
             'image/avif' => ['avif'],
             'video/mp4' => ['mp4'],
             'video/webm' => ['webm'],
-            'video/mov' => ['mov'],
             'video/quicktime' => ['mov', 'qt'],
+            'video/x-m4v' => ['m4v'],
         ];
 
         foreach ($mimeTypes as $mimeType) {
