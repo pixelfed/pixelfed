@@ -14,12 +14,12 @@ class MediaTagController extends Controller
         $this->middleware('auth');
     }
 
-    public function usernameLookup(Request $request)
+    public function usernameLookup(Request $request): void
     {
         abort(404);
     }
 
-    public function untagProfile(Request $request)
+    public function untagProfile(Request $request): array
     {
         abort_if(! $request->user(), 403);
 

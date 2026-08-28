@@ -13,6 +13,9 @@ use App\Util\ActivityPub\Helpers;
 use App\Util\Lexer\RestrictedNames;
 use GuzzleHttp\Exception\RequestException;
 use Illuminate\Auth\Events\Registered;
+use Illuminate\Contracts\View\View;
+use Illuminate\Http\JsonResponse;
+use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
@@ -22,7 +25,7 @@ use Purify;
 
 class RemoteAuthController extends Controller
 {
-    public function start(Request $request)
+    public function start(Request $request): RedirectResponse|View
     {
         abort_unless((
             config_cache('pixelfed.open_registration') &&
@@ -38,7 +41,7 @@ class RemoteAuthController extends Controller
         return view('auth.remote.start');
     }
 
-    public function startRedirect(Request $request)
+    public function startRedirect(Request $request): RedirectResponse
     {
         return redirect('/login');
     }
@@ -83,7 +86,7 @@ class RemoteAuthController extends Controller
         return response()->json($res);
     }
 
-    public function redirect(Request $request)
+    public function redirect(Request $request): JsonResponse
     {
         abort_unless((
             config_cache('pixelfed.open_registration') &&
@@ -184,7 +187,7 @@ class RemoteAuthController extends Controller
         return response()->json($res);
     }
 
-    public function preflight(Request $request)
+    public function preflight(Request $request): RedirectResponse
     {
         abort_unless((
             config_cache('pixelfed.open_registration') &&
@@ -201,7 +204,7 @@ class RemoteAuthController extends Controller
         return redirect()->away($request->session()->pull('oauth_redirect_to'));
     }
 
-    public function handleCallback(Request $request)
+    public function handleCallback(Request $request): RedirectResponse
     {
         abort_unless((
             config_cache('pixelfed.open_registration') &&
@@ -239,7 +242,7 @@ class RemoteAuthController extends Controller
         return redirect('/login');
     }
 
-    public function onboarding(Request $request)
+    public function onboarding(Request $request): RedirectResponse|View
     {
         abort_unless((
             config_cache('pixelfed.open_registration') &&
@@ -255,7 +258,7 @@ class RemoteAuthController extends Controller
         return view('auth.remote.onboarding');
     }
 
-    public function sessionCheck(Request $request)
+    public function sessionCheck(Request $request): JsonResponse
     {
         abort_unless((
             config_cache('pixelfed.open_registration') &&
@@ -306,7 +309,7 @@ class RemoteAuthController extends Controller
         ]);
     }
 
-    public function sessionGetMastodonData(Request $request)
+    public function sessionGetMastodonData(Request $request): JsonResponse
     {
         abort_unless((
             config_cache('pixelfed.open_registration') &&
@@ -344,7 +347,7 @@ class RemoteAuthController extends Controller
         return response()->json($res);
     }
 
-    public function sessionValidateUsername(Request $request)
+    public function sessionValidateUsername(Request $request): JsonResponse
     {
         abort_unless((
             config_cache('pixelfed.open_registration') &&
@@ -376,7 +379,7 @@ class RemoteAuthController extends Controller
         ]);
     }
 
-    public function sessionValidateEmail(Request $request)
+    public function sessionValidateEmail(Request $request): JsonResponse
     {
         abort_unless((
             config_cache('pixelfed.open_registration') &&
@@ -408,7 +411,7 @@ class RemoteAuthController extends Controller
         ]);
     }
 
-    public function sessionGetMastodonFollowers(Request $request)
+    public function sessionGetMastodonFollowers(Request $request): JsonResponse
     {
         abort_unless((
             config_cache('pixelfed.open_registration') &&
@@ -442,7 +445,7 @@ class RemoteAuthController extends Controller
         ]);
     }
 
-    public function handleSubmit(Request $request)
+    public function handleSubmit(Request $request): array
     {
         abort_unless((
             config_cache('pixelfed.open_registration') &&
@@ -527,7 +530,7 @@ class RemoteAuthController extends Controller
         ];
     }
 
-    public function storeBio(Request $request)
+    public function storeBio(Request $request): array
     {
         abort_unless((
             config_cache('pixelfed.open_registration') &&
@@ -552,7 +555,7 @@ class RemoteAuthController extends Controller
         return [200];
     }
 
-    public function accountToId(Request $request)
+    public function accountToId(Request $request): array
     {
         abort_unless((
             config_cache('pixelfed.open_registration') &&
@@ -593,14 +596,14 @@ class RemoteAuthController extends Controller
                     return [];
                 }
             } catch (RequestException $e) {
-                return;
+                return [];
             } catch (\Exception $e) {
                 return [];
             }
         }
     }
 
-    public function storeAvatar(Request $request)
+    public function storeAvatar(Request $request): array
     {
         abort_unless((
             config_cache('pixelfed.open_registration') &&
@@ -628,7 +631,7 @@ class RemoteAuthController extends Controller
         return [200];
     }
 
-    public function finishUp(Request $request)
+    public function finishUp(Request $request): array
     {
         abort_unless((
             config_cache('pixelfed.open_registration') &&
@@ -651,7 +654,7 @@ class RemoteAuthController extends Controller
         return [200];
     }
 
-    public function handleLogin(Request $request)
+    public function handleLogin(Request $request): array
     {
         abort_unless((
             config_cache('pixelfed.open_registration') &&

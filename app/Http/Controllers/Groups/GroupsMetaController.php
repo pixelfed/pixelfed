@@ -14,7 +14,7 @@ class GroupsMetaController extends Controller
         $this->middleware('auth');
     }
 
-    public function deleteGroup(Request $request)
+    public function deleteGroup(Request $request): array
     {
         abort_if(! $request->user(), 404);
         $id = $request->input('gid');

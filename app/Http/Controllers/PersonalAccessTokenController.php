@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
+use Illuminate\Http\Response;
 use Illuminate\Validation\Rule;
 use Laravel\Passport\Passport;
 use Laravel\Passport\Token;
@@ -118,7 +119,7 @@ class PersonalAccessTokenController extends Controller
         ]);
     }
 
-    public function destroy(Request $request, string $token)
+    public function destroy(Request $request, string $token): Response
     {
         $token = $request->user()
             ->tokens()

@@ -18,7 +18,7 @@ class MicroController extends Controller
         $this->middleware('auth');
     }
 
-    public function composeText(Request $request)
+    public function composeText(Request $request): array
     {
         $this->validate($request, [
             'type' => [

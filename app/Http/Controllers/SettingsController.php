@@ -15,6 +15,9 @@ use App\ProfileSponsor;
 use App\Services\AccountService;
 use App\UserSetting;
 use Carbon\Carbon;
+use Illuminate\Contracts\View\View;
+use Illuminate\Http\JsonResponse;
+use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Cache;
@@ -37,14 +40,14 @@ class SettingsController extends Controller
         $this->middleware('auth');
     }
 
-    public function accessibility(Request $request)
+    public function accessibility(Request $request): View
     {
         $settings = $request->user()->settings;
 
         return view('settings.accessibility', compact('settings'));
     }
 
-    public function accessibilityStore(Request $request)
+    public function accessibilityStore(Request $request): RedirectResponse
     {
         $user = $request->user();
         $settings = $user->settings;
@@ -69,32 +72,32 @@ class SettingsController extends Controller
         return redirect(route('settings.accessibility'))->with('status', 'Settings successfully updated!');
     }
 
-    public function notifications()
+    public function notifications(): View
     {
         return view('settings.notifications');
     }
 
-    public function applications()
+    public function applications(): View
     {
         return view('settings.applications');
     }
 
-    public function dataImport()
+    public function dataImport(): View
     {
         return view('settings.import.home');
     }
 
-    public function dataImportInstagram()
+    public function dataImportInstagram(): void
     {
         abort(404);
     }
 
-    public function developers()
+    public function developers(): View
     {
         return view('settings.developers');
     }
 
-    public function removeAccountTemporary(Request $request)
+    public function removeAccountTemporary(Request $request): View
     {
         $user = $request->user();
         abort_if(! config('pixelfed.account_deletion'), 403);
@@ -103,7 +106,7 @@ class SettingsController extends Controller
         return view('settings.remove.temporary');
     }
 
-    public function removeAccountTemporarySubmit(Request $request)
+    public function removeAccountTemporarySubmit(Request $request): RedirectResponse
     {
         $user = $request->user();
         abort_if(! config('pixelfed.account_deletion'), 403);
@@ -119,7 +122,7 @@ class SettingsController extends Controller
         return redirect('/');
     }
 
-    public function removeAccountPermanent(Request $request)
+    public function removeAccountPermanent(Request $request): View
     {
         $user = $request->user();
         abort_if($user->is_admin, 403);
@@ -127,7 +130,7 @@ class SettingsController extends Controller
         return view('settings.remove.permanent');
     }
 
-    public function removeAccountPermanentSubmit(Request $request)
+    public function removeAccountPermanentSubmit(Request $request): RedirectResponse
     {
         if (config('pixelfed.account_deletion') == false) {
             abort(404);
@@ -161,14 +164,14 @@ class SettingsController extends Controller
         return redirect('/');
     }
 
-    public function requestFullExport(Request $request)
+    public function requestFullExport(Request $request): View
     {
         $user = $request->user();
 
         return view('settings.export.show');
     }
 
-    public function metroDarkMode(Request $request)
+    public function metroDarkMode(Request $request): JsonResponse
     {
         $this->validate($request, [
             'mode' => 'required|string|in:light,dark',
@@ -185,7 +188,7 @@ class SettingsController extends Controller
         return response()->json([200])->cookie($cookie);
     }
 
-    public function sponsor(Request $request)
+    public function sponsor(Request $request): View
     {
         $default = [
             'patreon' => null,
@@ -198,7 +201,7 @@ class SettingsController extends Controller
         return view('settings.sponsor', compact('sponsors'));
     }
 
-    public function sponsorStore(Request $request)
+    public function sponsorStore(Request $request): RedirectResponse
     {
         $this->validate($request, [
             'patreon' => 'nullable|string',
@@ -242,7 +245,7 @@ class SettingsController extends Controller
         return redirect(route('settings'))->with('status', 'Sponsor settings successfully updated!');
     }
 
-    public function timelineSettings(Request $request)
+    public function timelineSettings(Request $request): View
     {
         $uid = $request->user()->id;
         $pid = $request->user()->profile_id;
@@ -267,7 +270,7 @@ class SettingsController extends Controller
         return view('settings.timeline', compact('top', 'replies', 'userSettings'));
     }
 
-    public function updateTimelineSettings(Request $request)
+    public function updateTimelineSettings(Request $request): RedirectResponse
     {
         $pid = $request->user()->profile_id;
         $uid = $request->user()->id;
@@ -294,7 +297,7 @@ class SettingsController extends Controller
         return redirect(route('settings'))->with('status', 'Timeline settings successfully updated!');
     }
 
-    public function mediaSettings(Request $request)
+    public function mediaSettings(Request $request): View
     {
         $setting = UserSetting::whereUserId($request->user()->id)->firstOrFail();
         $compose = $setting->compose_settings ? (
@@ -307,7 +310,7 @@ class SettingsController extends Controller
         return view('settings.media', compact('compose'));
     }
 
-    public function updateMediaSettings(Request $request)
+    public function updateMediaSettings(Request $request): RedirectResponse
     {
         $this->validate($request, [
             'default' => 'required|int|min:1|max:16',
@@ -361,7 +364,7 @@ class SettingsController extends Controller
         return redirect(route('settings'))->with('status', 'Media settings successfully updated!');
     }
 
-    public function filtersHome(Request $request)
+    public function filtersHome(Request $request): View
     {
         return view('settings.filters.home');
     }

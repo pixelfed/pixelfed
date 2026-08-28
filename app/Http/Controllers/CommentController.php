@@ -18,7 +18,7 @@ use Purify;
 
 class CommentController extends Controller
 {
-    public function showAll(Request $request, $username, int $id)
+    public function showAll(Request $request, $username, int $id): void
     {
         abort(404);
     }

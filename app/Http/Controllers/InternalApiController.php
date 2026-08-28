@@ -19,6 +19,9 @@ use App\Services\UserFilterService;
 use App\Status; // StatusMediaContainerTransformer,
 use App\Transformer\Api\StatusTransformer;
 use App\User;
+use Illuminate\Contracts\View\View;
+use Illuminate\Http\JsonResponse;
+use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Redis;
@@ -38,15 +41,15 @@ class InternalApiController extends Controller
     }
 
     // deprecated v2 compose api
-    public function compose(Request $request)
+    public function compose(Request $request): RedirectResponse
     {
         return redirect('/');
     }
 
     // deprecated
-    public function discover(Request $request) {}
+    public function discover(Request $request): void {}
 
-    public function discoverPosts(Request $request)
+    public function discoverPosts(Request $request): JsonResponse
     {
         $pid = $request->user()->profile_id;
         $filters = UserFilterService::filters($pid);
@@ -66,7 +69,7 @@ class InternalApiController extends Controller
         return response()->json(compact('posts'));
     }
 
-    public function directMessage(Request $request, $profileId, $threadId)
+    public function directMessage(Request $request, $profileId, $threadId): JsonResponse
     {
         $profile = $request->user()->profile;
 
@@ -86,7 +89,7 @@ class InternalApiController extends Controller
         return response()->json(compact('msg', 'profile', 'thread'), 200, [], JSON_PRETTY_PRINT);
     }
 
-    public function statusReplies(Request $request, int $id)
+    public function statusReplies(Request $request, int $id): JsonResponse
     {
         $this->validate($request, [
             'limit' => 'nullable|int|min:1|max:6',
@@ -115,9 +118,9 @@ class InternalApiController extends Controller
         return response()->json($res);
     }
 
-    public function stories(Request $request) {}
+    public function stories(Request $request): void {}
 
-    public function discoverCategories(Request $request)
+    public function discoverCategories(Request $request): JsonResponse
     {
         $categories = DiscoverCategory::whereActive(true)->orderBy('order')->take(10)->get();
         $res = $categories->map(function ($item) {
@@ -131,7 +134,7 @@ class InternalApiController extends Controller
         return response()->json($res);
     }
 
-    public function modAction(Request $request)
+    public function modAction(Request $request): array
     {
         abort_unless($request->user()->is_admin, 400);
         $this->validate($request, [
@@ -300,12 +303,12 @@ class InternalApiController extends Controller
         return ['msg' => 200];
     }
 
-    public function composePost(Request $request)
+    public function composePost(Request $request): void
     {
         abort(400, 'Endpoint deprecated');
     }
 
-    public function bookmarks(Request $request)
+    public function bookmarks(Request $request): JsonResponse
     {
         $pid = $request->user()->profile_id;
         $res = Bookmark::whereProfileId($pid)
@@ -332,7 +335,7 @@ class InternalApiController extends Controller
         return response()->json($res);
     }
 
-    public function accountStatuses(Request $request, $id)
+    public function accountStatuses(Request $request, $id): JsonResponse
     {
         $this->validate($request, [
             'only_media' => 'nullable',
@@ -409,17 +412,17 @@ class InternalApiController extends Controller
         return response()->json($res);
     }
 
-    public function remoteProfile(Request $request, $id)
+    public function remoteProfile(Request $request, $id): RedirectResponse
     {
         return redirect('/i/web/profile/'.$id);
     }
 
-    public function remoteStatus(Request $request, $profileId, $statusId)
+    public function remoteStatus(Request $request, $profileId, $statusId): RedirectResponse
     {
         return redirect('/i/web/post/'.$statusId);
     }
 
-    public function requestEmailVerification(Request $request)
+    public function requestEmailVerification(Request $request): View
     {
         $pid = $request->user()->profile_id;
         $exists = Redis::sismember('email:manual', $pid);
@@ -427,7 +430,7 @@ class InternalApiController extends Controller
         return view('account.email.request_verification', compact('exists'));
     }
 
-    public function requestEmailVerificationStore(Request $request)
+    public function requestEmailVerificationStore(Request $request): RedirectResponse
     {
         $pid = $request->user()->profile_id;
         Redis::sadd('email:manual', $pid);

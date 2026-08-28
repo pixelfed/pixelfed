@@ -24,6 +24,7 @@ use App\Status;
 use App\UserFilter;
 use App\Util\ActivityPub\Helpers;
 use App\Util\Lexer\Autolink;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Arr;
 use Illuminate\Support\Str;
@@ -135,7 +136,7 @@ class DirectMessageController extends Controller
         return response()->json($mappedDms->values());
     }
 
-    public function create(Request $request)
+    public function create(Request $request): JsonResponse
     {
         $this->validate($request, [
             'to_id' => 'required',
@@ -243,7 +244,7 @@ class DirectMessageController extends Controller
         return response()->json($res);
     }
 
-    public function thread(Request $request)
+    public function thread(Request $request): JsonResponse
     {
         $this->validate($request, [
             'pid' => 'required',
@@ -420,7 +421,7 @@ class DirectMessageController extends Controller
         return [200];
     }
 
-    public function get(Request $request, $id)
+    public function get(Request $request, $id): JsonResponse
     {
         $user = $request->user();
         abort_if($user->has_roles && ! UserRoleService::can('can-direct-message', $user->id), 403, 'Invalid permissions for this action');
@@ -432,7 +433,7 @@ class DirectMessageController extends Controller
         return response()->json($dm, 200, [], JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES);
     }
 
-    public function mediaUpload(Request $request)
+    public function mediaUpload(Request $request): array
     {
         $this->validate($request, [
             'file' => [
@@ -614,7 +615,7 @@ class DirectMessageController extends Controller
         return response()->json(FollowerService::getMutualsWithProfiles($user->profile_id, 10));
     }
 
-    public function read(Request $request)
+    public function read(Request $request): JsonResponse
     {
         $this->validate($request, [
             'pid' => 'required',
@@ -640,7 +641,7 @@ class DirectMessageController extends Controller
         return response()->json($dms->pluck('id'));
     }
 
-    public function mute(Request $request)
+    public function mute(Request $request): array
     {
         $this->validate($request, [
             'id' => 'required',
@@ -663,7 +664,7 @@ class DirectMessageController extends Controller
         return [200];
     }
 
-    public function unmute(Request $request)
+    public function unmute(Request $request): array
     {
         $this->validate($request, [
             'id' => 'required',
@@ -686,7 +687,7 @@ class DirectMessageController extends Controller
         return [200];
     }
 
-    public function remoteDeliver($dm)
+    public function remoteDeliver($dm): void
     {
         $profile = $dm->author;
         $url = $dm->recipient->sharedInbox ?? $dm->recipient->inbox_url;
@@ -744,7 +745,7 @@ class DirectMessageController extends Controller
         DirectDeliverPipeline::dispatch($profile, $url, $body)->onQueue('high');
     }
 
-    public function remoteDelete($dm)
+    public function remoteDelete($dm): void
     {
         $profile = $dm->author;
         $url = $dm->recipient->sharedInbox ?? $dm->recipient->inbox_url;

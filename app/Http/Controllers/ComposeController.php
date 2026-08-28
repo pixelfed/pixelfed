@@ -28,6 +28,8 @@ use App\Transformer\Api\MediaTransformer;
 use App\UserFilter;
 use App\Util\Media\Filter;
 use App\Util\Media\License;
+use Illuminate\Contracts\View\View;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Cache;
@@ -47,12 +49,12 @@ class ComposeController extends Controller
         $this->fractal->setSerializer(new ArraySerializer);
     }
 
-    public function show(Request $request)
+    public function show(Request $request): View
     {
         return view('status.compose');
     }
 
-    public function mediaUpload(Request $request)
+    public function mediaUpload(Request $request): JsonResponse
     {
         abort_if(! $request->user(), 403);
 
@@ -210,7 +212,7 @@ class ComposeController extends Controller
         return $res;
     }
 
-    public function mediaDelete(Request $request)
+    public function mediaDelete(Request $request): JsonResponse
     {
         abort_if(! $request->user(), 403);
 
@@ -302,7 +304,7 @@ class ComposeController extends Controller
         return $results;
     }
 
-    public function searchUntag(Request $request)
+    public function searchUntag(Request $request): array
     {
         abort_if(! $request->user(), 403);
 
@@ -776,7 +778,7 @@ class ComposeController extends Controller
         return $status->url();
     }
 
-    public function mediaProcessingCheck(Request $request)
+    public function mediaProcessingCheck(Request $request): array
     {
         $this->validate($request, [
             'id' => 'required|integer|min:1',
@@ -813,7 +815,7 @@ class ComposeController extends Controller
         ];
     }
 
-    public function composeSettings(Request $request)
+    public function composeSettings(Request $request): JsonResponse
     {
         $uid = $request->user()->id;
         abort_if($request->user()->has_roles && ! UserRoleService::can('can-post', $request->user()->id), 403, 'Invalid permissions for this action');
@@ -843,7 +845,7 @@ class ComposeController extends Controller
         return response()->json($res, 200, [], JSON_UNESCAPED_SLASHES);
     }
 
-    public function createPoll(Request $request)
+    public function createPoll(Request $request): array
     {
         $this->validate($request, [
             'caption' => 'nullable|string|max:'.config_cache('pixelfed.max_caption_length'),

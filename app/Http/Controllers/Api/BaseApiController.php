@@ -13,6 +13,7 @@ use App\Services\StatusService;
 use App\Status;
 use App\StatusArchived;
 use App\Transformer\Api\StatusStatelessTransformer;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Cache;
@@ -31,7 +32,7 @@ class BaseApiController extends Controller
         $this->fractal->setSerializer(new ArraySerializer);
     }
 
-    public function notifications(Request $request)
+    public function notifications(Request $request): JsonResponse
     {
         abort_if(! $request->user(), 403);
 
@@ -79,7 +80,7 @@ class BaseApiController extends Controller
         return response()->json($res);
     }
 
-    public function avatarUpdate(Request $request)
+    public function avatarUpdate(Request $request): JsonResponse
     {
         abort_if(! $request->user(), 403);
 
@@ -116,7 +117,7 @@ class BaseApiController extends Controller
         ]);
     }
 
-    public function verifyCredentials(Request $request)
+    public function verifyCredentials(Request $request): JsonResponse
     {
         abort_if(! $request->user(), 403);
 
@@ -130,7 +131,7 @@ class BaseApiController extends Controller
         return response()->json($res);
     }
 
-    public function accountLikes(Request $request)
+    public function accountLikes(Request $request): JsonResponse
     {
         abort_if(! $request->user(), 403);
 
@@ -161,7 +162,7 @@ class BaseApiController extends Controller
         return response()->json($res);
     }
 
-    public function archive(Request $request, $id)
+    public function archive(Request $request, $id): array
     {
         abort_if(! $request->user(), 403);
 
@@ -189,7 +190,7 @@ class BaseApiController extends Controller
         return [200];
     }
 
-    public function unarchive(Request $request, $id)
+    public function unarchive(Request $request, $id): array
     {
         abort_if(! $request->user(), 403);
 
@@ -216,7 +217,7 @@ class BaseApiController extends Controller
         return [200];
     }
 
-    public function archivedPosts(Request $request)
+    public function archivedPosts(Request $request): array
     {
         abort_if(! $request->user(), 403);
 

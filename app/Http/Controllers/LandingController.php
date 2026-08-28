@@ -4,11 +4,13 @@ namespace App\Http\Controllers;
 
 use App\Http\Resources\DirectoryProfile;
 use App\Profile;
+use Illuminate\Contracts\View\View;
+use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 
 class LandingController extends Controller
 {
-    public function directoryRedirect(Request $request)
+    public function directoryRedirect(Request $request): RedirectResponse|View
     {
         if ($request->user()) {
             return redirect('/');
@@ -19,7 +21,7 @@ class LandingController extends Controller
         return view('site.index');
     }
 
-    public function exploreRedirect(Request $request)
+    public function exploreRedirect(Request $request): RedirectResponse|View
     {
         if ($request->user()) {
             return redirect('/');

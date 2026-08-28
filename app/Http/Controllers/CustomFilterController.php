@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\CustomFilter;
 use App\Models\CustomFilterKeyword;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\DB;
@@ -15,7 +16,7 @@ class CustomFilterController extends Controller
     // const ACTIVE_TYPES = ['home', 'public', 'tags', 'notifications', 'thread', 'profile', 'groups'];
     const ACTIVE_TYPES = ['home', 'public', 'tags'];
 
-    public function index(Request $request)
+    public function index(Request $request): JsonResponse
     {
         abort_if(! $request->user() || ! $request->user()->token(), 403);
         abort_unless($request->user()->tokenCan('read'), 403);
@@ -46,7 +47,7 @@ class CustomFilterController extends Controller
         return response()->json($filters);
     }
 
-    public function show(Request $request, $id)
+    public function show(Request $request, $id): JsonResponse
     {
         abort_if(! $request->user() || ! $request->user()->token(), 403);
         abort_unless($request->user()->tokenCan('read'), 403);
@@ -75,7 +76,7 @@ class CustomFilterController extends Controller
         return response()->json($res);
     }
 
-    public function store(Request $request)
+    public function store(Request $request): JsonResponse
     {
         abort_if(! $request->user() || ! $request->user()->token(), 403);
         abort_unless($request->user()->tokenCan('write'), 403);
@@ -243,7 +244,7 @@ class CustomFilterController extends Controller
         }
     }
 
-    public function update(Request $request, $id)
+    public function update(Request $request, $id): JsonResponse
     {
         abort_if(! $request->user() || ! $request->user()->token(), 403);
         abort_unless($request->user()->tokenCan('write'), 403);
@@ -488,7 +489,7 @@ class CustomFilterController extends Controller
         }
     }
 
-    public function delete(Request $request, $id)
+    public function delete(Request $request, $id): JsonResponse
     {
         abort_if(! $request->user() || ! $request->user()->token(), 403);
         abort_unless($request->user()->tokenCan('write'), 403);

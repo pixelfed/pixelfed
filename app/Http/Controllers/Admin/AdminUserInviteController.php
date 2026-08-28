@@ -5,6 +5,8 @@ namespace App\Http\Controllers\Admin;
 use App\Http\Controllers\Controller;
 use App\Mail\AdminInviteEmail;
 use App\Models\AdminInvite;
+use Illuminate\Contracts\View\View;
+use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Mail;
 
@@ -17,19 +19,19 @@ class AdminUserInviteController extends Controller
         $this->middleware('twofactor');
     }
 
-    public function index()
+    public function index(): View
     {
         $invites = AdminInvite::orderByDesc('created_at')->simplePaginate(25);
 
         return view('admin.users.invites.home', ['invites' => $invites]);
     }
 
-    public function create()
+    public function create(): View
     {
         return view('admin.users.invites.create');
     }
 
-    public function store(Request $request)
+    public function store(Request $request): RedirectResponse
     {
         $this->validate($request, [
             'name' => 'nullable|string|max:255',
@@ -61,7 +63,7 @@ class AdminUserInviteController extends Controller
             ->with('status', 'Invite created <a href="'.$invite->url().'" class="text-white" style="text-decoration: underline;">'.$invite->url().'</a>.');
     }
 
-    public function expire(AdminInvite $invite)
+    public function expire(AdminInvite $invite): array
     {
         $invite->max_uses = 1;
         $invite->expires_at = now()->subHours(2);

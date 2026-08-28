@@ -8,6 +8,7 @@ use App\Models\GroupCategory;
 use App\Models\GroupMember;
 use App\Services\Groups\GroupAccountService;
 use App\Services\GroupService;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 
 class GroupsApiController extends Controller
@@ -27,14 +28,14 @@ class GroupsApiController extends Controller
         return GroupService::config();
     }
 
-    public function getGroupAccount(Request $request, $gid, $pid)
+    public function getGroupAccount(Request $request, $gid, $pid): JsonResponse
     {
         $res = GroupAccountService::get($gid, $pid);
 
         return response()->json($res);
     }
 
-    public function getGroupCategories(Request $request)
+    public function getGroupCategories(Request $request): JsonResponse
     {
         $res = GroupService::categories();
 
@@ -58,12 +59,12 @@ class GroupsApiController extends Controller
         return $groups;
     }
 
-    public function getRecommendedGroups(Request $request)
+    public function getRecommendedGroups(Request $request): array
     {
         return [];
     }
 
-    public function getSelfGroups(Request $request)
+    public function getSelfGroups(Request $request): JsonResponse
     {
         $selfOnly = $request->input('self') == true;
         $memberOnly = $request->input('member') == true;

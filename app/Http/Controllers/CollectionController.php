@@ -9,11 +9,12 @@ use App\Services\CollectionService;
 use App\Services\FollowerService;
 use App\Services\StatusService;
 use App\Status;
+use Illuminate\Contracts\View\View;
 use Illuminate\Http\Request;
 
 class CollectionController extends Controller
 {
-    public function create(Request $request)
+    public function create(Request $request): View
     {
         abort_if(! $request->user(), 403);
         $profile = $request->user()->profile;
@@ -28,7 +29,7 @@ class CollectionController extends Controller
         return view('collection.create', compact('collection'));
     }
 
-    public function show(Request $request, $id)
+    public function show(Request $request, $id): View
     {
         $user = $request->user();
         $collection = CollectionService::getCollection($id);
@@ -269,7 +270,7 @@ class CollectionController extends Controller
             });
     }
 
-    public function deleteId(Request $request)
+    public function deleteId(Request $request): int
     {
         abort_if(! $request->user(), 403);
         $this->validate($request, [

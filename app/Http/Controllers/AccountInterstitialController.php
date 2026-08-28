@@ -4,6 +4,8 @@ namespace App\Http\Controllers;
 
 use App\AccountInterstitial;
 use App\Status;
+use Illuminate\Contracts\View\View;
+use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 
 class AccountInterstitialController extends Controller
@@ -13,7 +15,7 @@ class AccountInterstitialController extends Controller
         $this->middleware('auth');
     }
 
-    public function get(Request $request)
+    public function get(Request $request): RedirectResponse|View
     {
         $interstitial = $request->user()
             ->interstitials()
@@ -34,7 +36,7 @@ class AccountInterstitialController extends Controller
         return view($view, compact('interstitial', 'meta'));
     }
 
-    public function read(Request $request)
+    public function read(Request $request): RedirectResponse
     {
         $this->validate($request, [
             'id' => 'required',

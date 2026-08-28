@@ -27,13 +27,14 @@ use App\Services\SnowflakeService;
 use App\Services\StatusService;
 use App\Status;
 use App\User;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\DB;
 
 class AdminApiController extends Controller
 {
-    public function supported(Request $request)
+    public function supported(Request $request): JsonResponse
     {
         abort_if(! $request->user() || ! $request->user()->token(), 404);
 
@@ -300,7 +301,7 @@ class AdminApiController extends Controller
         return $reports;
     }
 
-    public function modReportHandle(Request $request)
+    public function modReportHandle(Request $request): array
     {
         abort_if(! $request->user() || ! $request->user()->token(), 404);
 

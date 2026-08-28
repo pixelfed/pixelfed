@@ -196,12 +196,12 @@ trait AdminReportController
         } else {
             $appeals = new class
             {
-                public function count()
+                public function count(): int
                 {
                     return 0;
                 }
 
-                public function render() {}
+                public function render(): void {}
             };
         }
 

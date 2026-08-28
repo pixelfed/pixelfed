@@ -9,12 +9,12 @@ class DeckController extends Controller
         $this->middleware('auth');
     }
 
-    public function home()
+    public function home(): View
     {
         return view('deck.index');
     }
 
-    public function insights()
+    public function insights(): View
     {
         return view('deck.insights.index');
     }

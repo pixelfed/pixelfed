@@ -3,11 +3,12 @@
 namespace App\Http\Controllers;
 
 use App\Util\ActivityPub\Helpers;
+use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 
 class AuthorizeInteractionController extends Controller
 {
-    public function get(Request $request)
+    public function get(Request $request): RedirectResponse
     {
         $request->validate([
             'uri' => 'required|url',
