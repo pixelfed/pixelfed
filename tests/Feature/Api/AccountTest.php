@@ -1,6 +1,5 @@
 <?php
 
-use App\Profile;
 use App\Status;
 use App\User;
 use Illuminate\Foundation\Testing\LazilyRefreshDatabase;

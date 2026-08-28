@@ -1,5 +1,7 @@
 <?php
 
+use App\Providers\AppServiceProvider;
+use Illuminate\Auth\SessionGuard;
 use Illuminate\Foundation\Testing\LazilyRefreshDatabase;
 use Illuminate\Support\Facades\Route;
 
@@ -21,7 +23,7 @@ it('boots the application without errors', function () {
 });
 
 it('registers the AppServiceProvider', function () {
-    expect(app()->getProvider(\App\Providers\AppServiceProvider::class))->not->toBeNull();
+    expect(app()->getProvider(AppServiceProvider::class))->not->toBeNull();
 });
 
 it('resolves the Passport token guard', function () {
@@ -34,7 +36,7 @@ it('resolves the Passport token guard', function () {
 it('resolves the web session guard', function () {
     $guard = auth()->guard('web');
 
-    expect($guard)->toBeInstanceOf(\Illuminate\Auth\SessionGuard::class);
+    expect($guard)->toBeInstanceOf(SessionGuard::class);
 });
 
 it('has routes loaded', function () {
