@@ -8,13 +8,13 @@ use App\Services\StoryService;
 use App\Story;
 use App\Transformer\ActivityPub\Verb\DeleteStory;
 use App\Util\ActivityPub\HttpSignature;
-use GuzzleHttp\Client;
-use GuzzleHttp\Pool;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
+use Illuminate\Http\Client\Pool;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
+use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Storage;
 use League\Fractal;
 use League\Fractal\Serializer\ArraySerializer;
@@ -125,39 +125,45 @@ class StoryExpire implements ShouldQueue
 
         $payload = json_encode($activity);
 
-        $client = new Client([
-            'timeout' => config('federation.activitypub.delivery.timeout'),
-        ]);
+        $version = config('pixelfed.version');
+        $appUrl = config('app.url');
+        $userAgent = "(Pixelfed/{$version}; +{$appUrl})";
+        $timeout = config('federation.activitypub.delivery.timeout');
 
-        $requests = function ($audience) use ($client, $activity, $profile, $payload) {
+        Http::pool(function (Pool $pool) use ($audience, $activity, $profile, $payload, $userAgent, $timeout) {
             foreach ($audience as $url) {
-                $version = config('pixelfed.version');
-                $appUrl = config('app.url');
-                $headers = HttpSignature::sign($profile, $url, $activity, [
+                $curlHeaders = HttpSignature::sign($profile, $url, $activity, [
                     'Content-Type' => 'application/ld+json; profile="https://www.w3.org/ns/activitystreams"',
-                    'User-Agent' => "(Pixelfed/{$version}; +{$appUrl})",
+                    'User-Agent' => $userAgent,
                 ]);
-                yield function () use ($client, $url, $headers, $payload) {
-                    return $client->postAsync($url, [
-                        'curl' => [
-                            CURLOPT_HTTPHEADER => $headers,
-                            CURLOPT_POSTFIELDS => $payload,
-                            CURLOPT_HEADER => true,
-                        ],
-                    ]);
-                };
+
+                $headers = $this->parseCurlHeaders($curlHeaders);
+
+                $pool->withHeaders($headers)
+                    ->timeout($timeout)
+                    ->withBody($payload, 'application/ld+json; profile="https://www.w3.org/ns/activitystreams"')
+                    ->post($url);
             }
-        };
+        });
+    }
 
-        $pool = new Pool($client, $requests($audience), [
-            'concurrency' => config('federation.activitypub.delivery.concurrency'),
-            'fulfilled' => function ($response, $index) {},
-            'rejected' => function ($reason, $index) {},
-        ]);
+    /**
+     * Convert curl-format header array ("Header: value") to associative array.
+     *
+     * @param  array<int, string>  $curlHeaders
+     * @return array<string, string>
+     */
+    private function parseCurlHeaders(array $curlHeaders): array
+    {
+        $headers = [];
+        foreach ($curlHeaders as $header) {
+            $parts = explode(': ', $header, 2);
+            if (count($parts) === 2) {
+                $headers[$parts[0]] = $parts[1];
+            }
+        }
 
-        $promise = $pool->promise();
-
-        $promise->wait();
+        return $headers;
     }
 
     protected function handleRemoteExpiry()

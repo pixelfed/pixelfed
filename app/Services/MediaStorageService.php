@@ -8,11 +8,11 @@ use App\Jobs\StatusPipeline\NewStatusPipeline;
 use App\Media;
 use App\Status;
 use App\Util\ActivityPub\Helpers;
-use GuzzleHttp\Client;
-use GuzzleHttp\Exception\RequestException;
+use Illuminate\Http\Client\ConnectionException;
 use Illuminate\Http\File;
 use Illuminate\Support\Arr;
 use Illuminate\Support\Facades\Cache;
+use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
 
@@ -44,14 +44,17 @@ class MediaStorageService
 
     public static function head($url)
     {
-        $c = new Client;
         try {
-            $r = $c->request('HEAD', $url);
-        } catch (RequestException $e) {
+            $r = Http::head($url);
+        } catch (ConnectionException $e) {
             return false;
         }
 
-        $h = Arr::mapWithKeys($r->getHeaders(), function ($item, $key) {
+        if (! $r->successful()) {
+            return false;
+        }
+
+        $h = Arr::mapWithKeys($r->headers(), function ($item, $key) {
             return [strtolower($key) => last($item)];
         });
 
