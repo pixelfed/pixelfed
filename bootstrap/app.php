@@ -10,6 +10,7 @@ use App\Http\Middleware\RedirectIfAuthenticated;
 use App\Http\Middleware\RestrictedAccess;
 use App\Http\Middleware\TwoFactorAuth;
 use GuzzleHttp\Exception\ConnectException;
+use Illuminate\Auth\AuthenticationException;
 use Illuminate\Auth\Middleware\Authenticate;
 use Illuminate\Auth\Middleware\AuthenticateWithBasicAuth;
 use Illuminate\Auth\Middleware\Authorize;
@@ -100,6 +101,7 @@ return Application::configure(basePath: dirname(__DIR__))
         ]);
 
         $middleware->group('api', [
+            'throttle:api',
             'bindings',
         ]);
 
@@ -187,7 +189,7 @@ return Application::configure(basePath: dirname(__DIR__))
                     return $e->getResponse();
                 }
 
-                if ($e instanceof \Illuminate\Auth\AuthenticationException) {
+                if ($e instanceof AuthenticationException) {
                     return response()->json(
                         ['error' => $e->getMessage()],
                         401,
