@@ -4,6 +4,7 @@ namespace App\Services\Groups;
 
 use App\Models\Group;
 use App\Models\GroupPost;
+use App\Services\FractalService;
 use App\Transformer\Api\GroupPostTransformer;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Cache;

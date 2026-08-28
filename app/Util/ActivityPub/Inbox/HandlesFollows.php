@@ -2,9 +2,9 @@
 
 namespace App\Util\ActivityPub\Inbox;
 
-use App\Follower;
-use App\FollowRequest;
 use App\Jobs\FollowPipeline\FollowPipeline;
+use App\Models\Follower;
+use App\Models\FollowRequest;
 use App\Services\FollowerService;
 use App\Services\RelationshipService;
 use App\Util\ActivityPub\Helpers;

@@ -1,13 +1,13 @@
 <?php
 
-use App\Follower;
 use App\Jobs\DeletePipeline\FanoutDeletePipeline;
 use App\Jobs\StatusPipeline\StatusActivityPubDeliver;
-use App\Profile;
+use App\Models\Follower;
+use App\Models\Profile;
+use App\Models\Status;
+use App\Models\User;
 use App\Services\ActivityPubFetchService;
 use App\Services\MediaStorageService;
-use App\Status;
-use App\User;
 use Illuminate\Foundation\Testing\LazilyRefreshDatabase;
 use Illuminate\Http\Client\ConnectionException;
 use Illuminate\Support\Facades\Cache;

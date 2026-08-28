@@ -3,6 +3,7 @@
 namespace App\Services\Groups;
 
 use App\Models\GroupComment;
+use App\Services\FractalService;
 use App\Transformer\Api\GroupPostTransformer;
 use Illuminate\Support\Facades\Cache;
 

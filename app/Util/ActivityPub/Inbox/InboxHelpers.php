@@ -2,8 +2,8 @@
 
 namespace App\Util\ActivityPub\Inbox;
 
-use App\Notification;
-use App\Profile;
+use App\Models\Notification;
+use App\Models\Profile;
 use App\Services\AccountService;
 use App\Services\UserFilterService;
 use App\Util\ActivityPub\Helpers;

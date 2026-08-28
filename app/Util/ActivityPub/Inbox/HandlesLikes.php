@@ -3,7 +3,7 @@
 namespace App\Util\ActivityPub\Inbox;
 
 use App\Jobs\LikePipeline\LikePipeline;
-use App\Like;
+use App\Models\Like;
 use App\Util\ActivityPub\Helpers;
 
 trait HandlesLikes
