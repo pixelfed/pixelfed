@@ -174,8 +174,10 @@ class AppServiceProvider extends ServiceProvider
 
         URL::forceRootUrl(config('app.url'));
 
-        // Model::shouldBeStrict(! $this->app->isProduction()); // In the future replace this instead of preventLazyLoading
+        // Model::shouldBeStrict(true); // In the future replace all three with just
         Model::preventLazyLoading(true);
+        Model::preventSilentlyDiscardingAttributes(true);
+        Model::preventAccessingMissingAttributes(true);
     }
 
     /**
