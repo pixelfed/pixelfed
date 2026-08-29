@@ -83,6 +83,27 @@ return [
             ],
         ],
 
+        // Source disk for admin:MediaMoveStorageCloudToCloud (cold migration).
+        // After pointing AWS_* at the NEW bucket, keep the OLD bucket's
+        // credentials here as AWS_OLD_* so existing data can be copied across
+        // to the new bucket and media URLs rewritten.
+        's3-old' => [
+            'driver' => 's3',
+            'key' => env('AWS_OLD_ACCESS_KEY_ID'),
+            'secret' => env('AWS_OLD_SECRET_ACCESS_KEY'),
+            'region' => env('AWS_OLD_DEFAULT_REGION'),
+            'bucket' => env('AWS_OLD_BUCKET'),
+            'visibility' => env('AWS_OLD_VISIBILITY', 'public'),
+            'url' => env('AWS_OLD_URL'),
+            'endpoint' => env('AWS_OLD_ENDPOINT'),
+            'use_path_style_endpoint' => env('AWS_OLD_USE_PATH_STYLE_ENDPOINT', false),
+            'throw' => true,
+            'options' => [
+                'request_checksum_calculation' => env('AWS_OLD_REQUEST_CHECKSUM_CALCULATION', 'WHEN_SUPPORTED'),
+                'response_checksum_validation' => env('AWS_OLD_RESPONSE_CHECKSUM_VALIDATION', 'WHEN_SUPPORTED'),
+            ],
+        ],
+
         'alt-primary' => [
             'enabled' => env('ALT_PRI_ENABLED', false),
             'driver' => 's3',
