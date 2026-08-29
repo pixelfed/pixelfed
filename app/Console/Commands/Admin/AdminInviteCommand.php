@@ -8,7 +8,7 @@ use Illuminate\Console\Command;
 use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\Validator;
 
-class AdminInviteCommand extends Command
+final class AdminInviteCommand extends Command
 {
     /**
      * The name and signature of the console command.
@@ -62,7 +62,7 @@ class AdminInviteCommand extends Command
         };
     }
 
-    protected function handleExpiredInvites()
+    protected function handleExpiredInvites(): void
     {
         AdminInvite::whereNotNull('expires_at')->where('expires_at', '<', now())->delete();
     }
@@ -81,7 +81,7 @@ class AdminInviteCommand extends Command
         $message = $this->ask('Invite Message (optional)', 'You\'ve been invited to join');
 
         $this->info('Set maximum # of invite uses, use 0 for unlimited');
-        $max_uses = $this->ask('Max uses', 1);
+        $max_uses = $this->ask('Max uses', '1');
 
         $expires = match ($this->choice(
             'Set an invite expiry date?',
@@ -95,7 +95,7 @@ class AdminInviteCommand extends Command
             'Yes - expire after 24 hours' => now()->addHours(24),
             'No - invite never expires' => null,
             'Custom - let me pick an expiry date' => now()->addDays(
-                (int) $this->ask('Custom expiry date in days', 14)
+                (int) $this->ask('Custom expiry date in days', '14')
             ),
         };
 
@@ -145,7 +145,9 @@ class AdminInviteCommand extends Command
             AdminInvite::all(['invite_code', 'max_uses', 'uses', 'expires_at'])->map(function ($invite) {
                 return [
                     'invite_code' => $invite->invite_code,
-                    'uses_left' => $invite->max_uses ? ($invite->max_uses - $invite->uses) : '∞',
+                    'uses_left' => $invite->max_uses !== null && $invite->max_uses > 0
+                        ? ($invite->max_uses - $invite->uses)
+                        : '∞',
                     'expires_at' => $invite->expires_at ? $invite->expires_at->diffForHumans() : 'never',
                 ];
             })->toArray()
@@ -156,7 +158,7 @@ class AdminInviteCommand extends Command
 
     protected function expire(): int
     {
-        $token = $this->anticipate('Enter invite code to expire', function ($val) {
+        $token = $this->anticipate('Enter invite code to expire', function (string $val) {
             return AdminInvite::query()
                 ->where('invite_code', 'like', "%$val%")
                 ->pluck('invite_code')
