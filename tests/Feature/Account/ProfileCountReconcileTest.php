@@ -1,6 +1,7 @@
 <?php
 
 use App\Models\Follower;
+use App\Models\Profile;
 use App\Models\Status;
 use App\Models\User;
 use App\Services\Account\AccountStatService;
@@ -185,5 +186,60 @@ describe('admin:fixProfileCounts command', function () {
     it('rejects an invalid --type', function () {
         $this->artisan('admin:fixProfileCounts', ['id' => '1', '--type' => 'bogus'])
             ->assertExitCode(1);
+    });
+
+    it('requires --scope when using --all', function () {
+        $this->artisan('admin:fixProfileCounts', ['--all' => true, '--force' => true])
+            ->assertExitCode(1);
+    });
+
+    it('rejects an invalid --scope', function () {
+        $this->artisan('admin:fixProfileCounts', ['--all' => true, '--scope' => 'bogus', '--force' => true])
+            ->assertExitCode(1);
+    });
+
+    it('rejects --active combined with a non-local --scope', function () {
+        $this->artisan('admin:fixProfileCounts', ['--active' => ['30'], '--scope' => 'remote'])
+            ->assertExitCode(1);
+    });
+
+    it('with --scope=local only reconciles local profiles', function () {
+        $localUser = User::factory()->create();
+        $localUser->refresh();
+        $local = $localUser->profile;
+        $local->followers_count = 100; // drift
+        $local->save();
+
+        $remote = Profile::create([
+            'username' => 'remote@x.example',
+            'domain' => 'x.example',
+            'followers_count' => 100, // drift, must be left alone
+        ]);
+
+        $this->artisan('admin:fixProfileCounts', ['--all' => true, '--scope' => 'local', '--force' => true])
+            ->assertExitCode(0);
+
+        expect((int) $local->fresh()->followers_count)->toBe(0);
+        expect((int) $remote->fresh()->followers_count)->toBe(100);
+    });
+
+    it('with --scope=remote only reconciles remote profiles', function () {
+        $localUser = User::factory()->create();
+        $localUser->refresh();
+        $local = $localUser->profile;
+        $local->followers_count = 100; // drift, must be left alone
+        $local->save();
+
+        $remote = Profile::create([
+            'username' => 'remote2@x.example',
+            'domain' => 'x.example',
+            'followers_count' => 100, // drift
+        ]);
+
+        $this->artisan('admin:fixProfileCounts', ['--all' => true, '--scope' => 'remote', '--force' => true])
+            ->assertExitCode(0);
+
+        expect((int) $local->fresh()->followers_count)->toBe(100);
+        expect((int) $remote->fresh()->followers_count)->toBe(0);
     });
 });
