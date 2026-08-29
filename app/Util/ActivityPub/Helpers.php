@@ -199,6 +199,18 @@ class Helpers
             }
         }
 
+        // SSRF guard: when DNS verification is enabled, reject any host that
+        // resolves into a non-global (private/reserved/link-local) range. This
+        // closes the bypass where a public-looking hostname (e.g.
+        // metadata.google.internal) resolves to a reserved address such as
+        // 169.254.169.254. resolvePublicIps() fails closed: it returns an empty
+        // array if the host does not resolve or any resolved IP is non-global.
+        if ($disableDNSCheck !== true && self::shouldCheckDNS()) {
+            if (empty(self::resolvePublicIps($host))) {
+                return false;
+            }
+        }
+
         return $uri->toString();
     }
 
