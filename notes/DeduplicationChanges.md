@@ -1,4 +1,6 @@
-# Username validation - this was in 8+ places with `new ValidUsername,`
+# Username validation boilerplate
+`new ValidUsername,`
+replaces
 ```
               function ($attribute, $value, $fail) {
                     $dash = substr_count($value, '-');
@@ -31,4 +33,30 @@
                         return $fail('Username cannot be used.');
                     }
                 },
-                ```
+```
+
+# Notification boilerplate
+`NotificationService::createNotification($recipient->id, $profile->id, 'dm', $dm->id, DirectMessage::class);`
+`NotificationService::firstOrCreateNotification($parent->profile_id, $actor->id, 'share', $parent->id, Status::class);`
+replaces repeated
+```
+            $notification = new Notification;
+            $notification->profile_id = $recipient->id;
+            $notification->actor_id = $profile->id;
+            $notification->action = 'dm';
+            $notification->item_id = $dm->id;
+            $notification->item_type = DirectMessage::class;
+            $notification->save();
+```
+
+# fractal boilerplate for items and collection
+`$activity = FractalService::item($follow, new AcceptFollow);`
+`return FractalService::collection($media, new MediaTransformer);`
+
+replaces
+```
+            $fractal = new Fractal\Manager;
+            $fractal->setSerializer(new ArraySerializer);
+            $resource = new Fractal\Resource\Item($follow, new AcceptFollow);
+            $activity = $fractal->createData($resource)->toArray();
+```
