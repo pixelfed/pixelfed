@@ -4,7 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\RemoteAuth;
 use App\Models\User;
-use App\Rules\PixelfedUsername;
+use App\Rules\ValidUsername;
 use App\Services\Account\RemoteAuthService;
 use App\Services\EmailService;
 use App\Services\MediaStorageService;
@@ -365,7 +365,7 @@ class RemoteAuthController extends Controller
                 'required',
                 'min:2',
                 'max:30',
-                new PixelfedUsername,
+                new ValidUsername,
             ],
         ]);
         $username = strtolower($request->input('username'));
@@ -467,7 +467,7 @@ class RemoteAuthController extends Controller
                 'min:2',
                 'max:30',
                 'unique:users,username',
-                new PixelfedUsername,
+                new ValidUsername,
             ],
             'password' => 'required|string|min:8|confirmed',
             'name' => 'nullable|max:30',
