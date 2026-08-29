@@ -99,8 +99,8 @@ return [
             'use_path_style_endpoint' => env('AWS_OLD_USE_PATH_STYLE_ENDPOINT', false),
             'throw' => true,
             'options' => [
-                'request_checksum_calculation' => env('AWS_REQUEST_CHECKSUM_CALCULATION', 'WHEN_SUPPORTED'),
-                'response_checksum_validation' => env('AWS_RESPONSE_CHECKSUM_VALIDATION', 'WHEN_SUPPORTED'),
+                'request_checksum_calculation' => env('AWS_OLD_REQUEST_CHECKSUM_CALCULATION', 'WHEN_SUPPORTED'),
+                'response_checksum_validation' => env('AWS_OLD_RESPONSE_CHECKSUM_VALIDATION', 'WHEN_SUPPORTED'),
             ],
         ],
 
