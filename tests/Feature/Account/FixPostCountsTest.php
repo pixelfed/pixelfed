@@ -4,6 +4,7 @@ use App\Models\Like;
 use App\Models\Status;
 use App\Models\User;
 use Illuminate\Foundation\Testing\LazilyRefreshDatabase;
+use Illuminate\Support\Facades\DB;
 
 uses(LazilyRefreshDatabase::class);
 
@@ -135,7 +136,7 @@ it('reports a drifted comments count in both the detected and resynced output', 
 it('displays a null reply_count as 0 rather than blank', function () {
     // Force reply_count to NULL at the DB level; only boosts will drift.
     $status = makeStatus(['reblogs_count' => 3]);
-    \DB::table('statuses')->where('id', $status->id)->update(['reply_count' => null]);
+    DB::table('statuses')->where('id', $status->id)->update(['reply_count' => null]);
 
     // Boosts drift 3 -> 0; comments not drifted, so it must not print blank.
     $this->artisan('admin:fixPostCounts', ['id' => (string) $status->id])
