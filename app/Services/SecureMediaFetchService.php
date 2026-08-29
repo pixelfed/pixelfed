@@ -23,7 +23,6 @@ use Psr\Http\Message\ResponseInterface;
  *   - never lets the HTTP client follow redirects automatically, instead
  *     re-validating and re-resolving every hop;
  *   - enforces a hard byte cap.
- *
  */
 class SecureMediaFetchService
 {
