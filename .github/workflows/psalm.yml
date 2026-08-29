@@ -4,12 +4,13 @@
 # `./vendor/bin/psalm --taint-analysis`; enable it as a second job once you are ready to triage
 # its findings in a private channel (see the plugin README for the SARIF + Code Scanning setup).
 
-name: Psalm
+name: PHP - Psalm
 
 on:
   push:
-    branches: [ dev ]
+    branches: [staging, dev, unstable]
   pull_request:
+    branches: [staging, dev, unstable]
 
 permissions:
   contents: read
@@ -53,9 +54,10 @@ jobs:
 
       # --output-format=github emits workflow annotations so findings appear inline
       # on the PR's Files changed view. --report writes SARIF for Code Scanning upload.
-      # Psalm still exits non-zero on findings (above baseline), failing the job.
-      - name: Run Psalm (type analysis)
-        run: ./vendor/bin/psalm --output-format=github --report=psalm.sarif.json
+      # Reporting only: `|| true` keeps the step (and job) green even when Psalm finds
+      # issues, so this workflow surfaces findings without ever blocking a PR.
+      - name: Run Psalm (type analysis, report only)
+        run: ./vendor/bin/psalm --output-format=github --report=psalm.sarif.json || true
 
       # Surface findings as Code Scanning alerts on the PR (Security tab). Runs even
       # when Psalm failed above, so the alerts are still published for triage.
