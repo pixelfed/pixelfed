@@ -1,5 +1,5 @@
 # Username validation boilerplate
-`new ValidUsername,`
+- `new ValidUsername,`
 replaces
 ```
               function ($attribute, $value, $fail) {
@@ -36,8 +36,8 @@ replaces
 ```
 
 # Notification boilerplate
-`NotificationService::createNotification($recipient->id, $profile->id, 'dm', $dm->id, DirectMessage::class);`
-`NotificationService::firstOrCreateNotification($parent->profile_id, $actor->id, 'share', $parent->id, Status::class);`
+- `NotificationService::createNotification($recipient->id, $profile->id, 'dm', $dm->id, DirectMessage::class);`
+- `NotificationService::firstOrCreateNotification($parent->profile_id, $actor->id, 'share', $parent->id, Status::class);`
 replaces repeated
 ```
             $notification = new Notification;
@@ -50,8 +50,8 @@ replaces repeated
 ```
 
 # fractal boilerplate for items and collection
-`$activity = FractalService::item($follow, new AcceptFollow);`
-`return FractalService::collection($media, new MediaTransformer);`
+- `$activity = FractalService::item($follow, new AcceptFollow);`
+- `return FractalService::collection($media, new MediaTransformer);`
 
 replaces
 ```
