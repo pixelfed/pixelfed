@@ -3,7 +3,6 @@
 namespace App\Console\Commands;
 
 use App\Models\Profile;
-use App\Models\Status;
 use App\Services\Account\AccountStatService;
 use App\Services\AccountService;
 use Illuminate\Console\Command;
@@ -61,20 +60,17 @@ class AccountPostCountStatUpdate extends Command
             return;
         }
 
-        $statusCount = Status::whereProfileId($id)->count();
-        if ($statusCount != $acct['statuses_count']) {
-            $profile = Profile::find($id);
-            if (! $profile) {
-                AccountStatService::removeFromPostCount($id);
+        $profile = Profile::find($id);
+        if (! $profile) {
+            AccountStatService::removeFromPostCount($id);
 
-                return;
-            }
-
-            $profile->status_count = $statusCount;
-            $profile->save();
-
-            AccountService::del($id);
+            return;
         }
+
+        // Reconcile only the status_count column (this queue is fed by
+        // status create/delete events). Shared recompute logic lives in
+        // AccountStatService so it stays consistent with admin:fixProfileCounts.
+        AccountStatService::reconcileProfileCounts($profile, ['statuses']);
 
         AccountStatService::removeFromPostCount($id);
     }
