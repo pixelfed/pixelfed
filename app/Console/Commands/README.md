@@ -13,6 +13,7 @@ full argument and option list.
 | Folder | Namespace | Purpose |
 | --- | --- | --- |
 | `Admin/` | `App\Console\Commands\Admin` | Instance administration and operator tooling |
+| `Deprecated/` | `App\Console\Commands\Deprecated` | Historical one-off migrations whose root issue is already resolved; kept for reference only |
 | `Dev/` | `App\Console\Commands\Dev` | Local development and localization build helpers |
 | `FixBugs/` | `App\Console\Commands\FixBugs` | One-off repair and data-fix utilities |
 | `Install/` | `App\Console\Commands\Install` | Installation and upgrade |
@@ -70,8 +71,7 @@ full argument and option list.
 | `admin:fixProfileCounts` | Resync a profile's cached counts (followers, following, statuses) from source tables; supports bulk `--all`/`--active`. |
 | `fix:usernames` | Fix invalid usernames. |
 | `app:hashtag-related-generate` | Generate related-hashtag data for a given tag. |
-| `media:fix` | Repair media filter data (legacy, requires v0.10.8+). |
-| `status:dedup` | Remove duplicate statuses from before the unique-URI migration. |
+| `media:fix` | Null out media `filter_class` values no longer present in `Filter::classes()`. Still relevant: image filters remain an active feature. |
 
 ## Install
 
@@ -105,6 +105,17 @@ These are primarily invoked by the scheduler (see `bootstrap/app.php`) rather th
 | `story:gc` | Clear expired stories. |
 | `app:transform-imports` | Transform completed imports into statuses. |
 | `app:weekly-instance-scan` | Scan instance nodeinfo weekly. |
+
+## Deprecated
+
+Historical one-off migrations whose underlying issue is already resolved in the
+current codebase. Retained for reference and rare legacy-data recovery; not
+expected to be needed on a current install.
+
+| Command | Description | Why deprecated |
+| --- | --- | --- |
+| `status:dedup` | Remove duplicate statuses from before the unique-URI migration. | `statuses.uri` has had a unique index since the 2019 `add_unique_to_statuses_table` migration, so duplicate URIs can no longer be inserted. |
+| `fix:avatars` | Replace old SVG identicon avatars with the default PNG/JPG avatar. | SVG identicon avatars are no longer generated anywhere; new avatars default to `public/avatars/default.jpg`. |
 
 ## Status (debug/diagnostics)
 
