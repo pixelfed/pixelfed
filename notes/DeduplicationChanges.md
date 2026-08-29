@@ -2,6 +2,7 @@
 - `ActivityPubDeliveryService::pool($profile, $audience, $activity);`
 
 replaces
+
 ```
         $payload = json_encode($activity);
 
@@ -44,7 +45,9 @@ replaces
 
 # Username validation boilerplate
 - `new ValidUsername,`
+
 replaces
+
 ```
               function ($attribute, $value, $fail) {
                     $dash = substr_count($value, '-');
@@ -82,7 +85,9 @@ replaces
 # Notification boilerplate
 - `NotificationService::createNotification($recipient->id, $profile->id, 'dm', $dm->id, DirectMessage::class);`
 - `NotificationService::firstOrCreateNotification($parent->profile_id, $actor->id, 'share', $parent->id, Status::class);`
-replaces repeated
+
+replaces
+
 ```
             $notification = new Notification;
             $notification->profile_id = $recipient->id;
@@ -98,6 +103,7 @@ replaces repeated
 - `return FractalService::collection($media, new MediaTransformer);`
 
 replaces
+
 ```
             $fractal = new Fractal\Manager;
             $fractal->setSerializer(new ArraySerializer);
