@@ -20,7 +20,7 @@ class EmojiMoveStorageLocalToCloud extends Command
      * @var string
      */
     protected $signature = 'admin:EmojiMoveStorageLocalToCloud
-        {--limit=1000 : Max emoji rows to process this run}
+        {--limit=0 : Max emoji rows to process this run (0 = no limit, process all)}
         {--dry-run : Report what would happen without copying or writing}
         {--keep-local : Do not delete local files after verifying the cloud copy}
         {--force : Skip confirmation prompts}';
@@ -76,7 +76,7 @@ class EmojiMoveStorageLocalToCloud extends Command
         $query = CustomEmoji::whereNull('uri')
             ->whereNotNull('media_path')
             ->orderByDesc('id')
-            ->limit($limit);
+            ->when($limit > 0, fn ($q) => $q->limit($limit));
 
         $bar = $this->output->createProgressBar($query->count());
         $bar->start();
