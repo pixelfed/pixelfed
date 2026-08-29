@@ -9,14 +9,14 @@ use Illuminate\Console\Command;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Schema;
 
-class UserStatus extends Command
+class StatusUser extends Command
 {
     /**
      * The name and signature of the console command.
      *
      * @var string
      */
-    protected $signature = 'user:status {id : Username or numeric user id}
+    protected $signature = 'status:user {id : Username or numeric user id}
         {--logs=10 : Number of recent account log entries to show}';
 
     /**
