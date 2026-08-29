@@ -2,6 +2,7 @@
 
 namespace App\Services;
 
+use App\Models\Like;
 use App\Models\Status;
 use App\Transformer\Api\StatusStatelessTransformer;
 use Illuminate\Support\Facades\Cache;
@@ -393,5 +394,93 @@ class StatusService
         self::refresh($id);
 
         return true;
+    }
+
+    /**
+     * Canonical source-of-truth like count for a status.
+     */
+    public static function recalculateLikeCount($id): int
+    {
+        return (int) Like::whereStatusId($id)->count();
+    }
+
+    /**
+     * Canonical source-of-truth boost/reblog count for a status.
+     */
+    public static function recalculateReblogCount($id): int
+    {
+        return (int) Status::whereReblogOfId($id)->count();
+    }
+
+    /**
+     * Canonical source-of-truth reply/comment count for a status.
+     */
+    public static function recalculateReplyCount($id): int
+    {
+        return (int) Status::whereInReplyToId($id)->count();
+    }
+
+    /**
+     * Reconcile a status's cached count columns (likes_count, reblogs_count,
+     * reply_count) against source-of-truth tables. Only writes and busts the
+     * cache when a column actually drifted.
+     *
+     * @param  array<int, string>  $only  Restrict to a subset of
+     *                                    ['likes','boosts','comments'].
+     * @return array<string, array{cached:int,live:int,drifted:bool}>
+     *                                                                Per-metric before/after summary.
+     */
+    public static function reconcileStatusCounts($status, array $only = ['likes', 'boosts', 'comments']): array
+    {
+        if (! $status instanceof Status) {
+            $status = Status::find($status);
+        }
+
+        if (! $status) {
+            return [];
+        }
+
+        $summary = [];
+        $changed = false;
+
+        if (in_array('likes', $only, true)) {
+            $cached = (int) $status->likes_count;
+            $live = self::recalculateLikeCount($status->id);
+            $drift = $cached !== $live;
+            if ($drift) {
+                $status->likes_count = $live;
+                $changed = true;
+            }
+            $summary['likes'] = ['cached' => $cached, 'live' => $live, 'drifted' => $drift];
+        }
+
+        if (in_array('boosts', $only, true)) {
+            $cached = (int) $status->reblogs_count;
+            $live = self::recalculateReblogCount($status->id);
+            $drift = $cached !== $live;
+            if ($drift) {
+                $status->reblogs_count = $live;
+                $changed = true;
+            }
+            $summary['boosts'] = ['cached' => $cached, 'live' => $live, 'drifted' => $drift];
+        }
+
+        if (in_array('comments', $only, true)) {
+            $cached = (int) $status->reply_count;
+            $live = self::recalculateReplyCount($status->id);
+            $drift = $cached !== $live;
+            if ($drift) {
+                $status->reply_count = $live;
+                $changed = true;
+            }
+            $summary['comments'] = ['cached' => $cached, 'live' => $live, 'drifted' => $drift];
+        }
+
+        if ($changed) {
+            $status->save();
+            self::del($status->id, true);
+        }
+
+        return $summary;
     }
 }

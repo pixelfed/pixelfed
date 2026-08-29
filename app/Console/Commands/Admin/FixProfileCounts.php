@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Console\Commands\FixBugs;
+namespace App\Console\Commands\Admin;
 
 use App\Jobs\FollowPipeline\FollowServiceWarmCache;
 use App\Models\Profile;
