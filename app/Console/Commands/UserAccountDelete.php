@@ -242,7 +242,7 @@ class UserAccountDelete extends Command
             placeholder: 'john.appleseed',
             options: fn (string $value) => strlen($value) > 0
                 ? User::withTrashed()
-                    ->whereStatus('deleted')
+                    ->whereIn('status', ['deleted', 'delete'])
                     ->where('username', 'like', "%{$value}%")
                     ->pluck('username', 'id')
                     ->all()
