@@ -11,7 +11,7 @@ uses(LazilyRefreshDatabase::class);
 
 /*
 |--------------------------------------------------------------------------
-| admin:MigrateLocalMediaURL
+| admin:MigrateLocalS3MediaURL
 |--------------------------------------------------------------------------
 |
 | Rebuilds stale local media URLs (cdn_url, thumbnail_url, optimized_url)
@@ -67,7 +67,7 @@ function makeStatusWithStaleMedia(string $staleHost = 'https://s3.old.example'):
 it('rebuilds stale thumbnail_url and optimized_url but leaves correct cdn_url', function () {
     $media = makeStatusWithStaleMedia();
 
-    $this->artisan('admin:MigrateLocalMediaURL', ['id' => (string) $media->status_id, '--force' => true])
+    $this->artisan('admin:MigrateLocalS3MediaURL', ['id' => (string) $media->status_id, '--force' => true])
         ->assertExitCode(0);
 
     $media->refresh();
@@ -82,7 +82,7 @@ it('does not change anything in dry-run mode', function () {
     $media = makeStatusWithStaleMedia();
     $originalThumb = $media->thumbnail_url;
 
-    $this->artisan('admin:MigrateLocalMediaURL', ['id' => (string) $media->status_id, '--dry-run' => true])
+    $this->artisan('admin:MigrateLocalS3MediaURL', ['id' => (string) $media->status_id, '--dry-run' => true])
         ->assertExitCode(0);
 
     expect($media->fresh()->thumbnail_url)->toBe($originalThumb);
@@ -108,7 +108,7 @@ it('leaves already-correct media untouched', function () {
 
     $updatedAt = $media->fresh()->updated_at;
 
-    $this->artisan('admin:MigrateLocalMediaURL', ['id' => (string) $status->id, '--force' => true])
+    $this->artisan('admin:MigrateLocalS3MediaURL', ['id' => (string) $status->id, '--force' => true])
         ->assertExitCode(0);
 
     expect($media->fresh()->updated_at->eq($updatedAt))->toBeTrue();
@@ -131,7 +131,7 @@ it('never rewrites remote media', function () {
         'order' => 0,
     ]);
 
-    $this->artisan('admin:MigrateLocalMediaURL', ['id' => (string) $status->id, '--force' => true])
+    $this->artisan('admin:MigrateLocalS3MediaURL', ['id' => (string) $status->id, '--force' => true])
         ->assertExitCode(0);
 
     // Unchanged: remote media is skipped.
@@ -139,7 +139,7 @@ it('never rewrites remote media', function () {
 });
 
 it('requires an id or --all', function () {
-    $this->artisan('admin:MigrateLocalMediaURL')
+    $this->artisan('admin:MigrateLocalS3MediaURL')
         ->assertExitCode(1);
 });
 
@@ -147,7 +147,7 @@ it('refuses to run on a local-storage instance', function () {
     // Simulate local storage: cloud disabled.
     ConfigCacheService::put('pixelfed.cloud_storage', false);
 
-    $this->artisan('admin:MigrateLocalMediaURL', ['--all' => true, '--force' => true])
+    $this->artisan('admin:MigrateLocalS3MediaURL', ['--all' => true, '--force' => true])
         ->expectsOutputToContain('Cloud storage is not enabled')
         ->assertExitCode(1);
 });
@@ -158,7 +158,7 @@ it('with --oldDomain only rewrites URLs on that host', function () {
     $media->optimized_url = 'https://other.example/'.$media->media_path;
     $media->save();
 
-    $this->artisan('admin:MigrateLocalMediaURL', [
+    $this->artisan('admin:MigrateLocalS3MediaURL', [
         'id' => (string) $media->status_id,
         '--oldDomain' => 's3.old.example',
         '--force' => true,
@@ -174,7 +174,7 @@ it('with --oldDomain only rewrites URLs on that host', function () {
 it('with --newDomain override rewrites to the given host', function () {
     $media = makeStatusWithStaleMedia('https://s3.old.example');
 
-    $this->artisan('admin:MigrateLocalMediaURL', [
+    $this->artisan('admin:MigrateLocalS3MediaURL', [
         'id' => (string) $media->status_id,
         '--newDomain' => 'media.example',
         '--force' => true,

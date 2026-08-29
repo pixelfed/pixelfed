@@ -2,27 +2,24 @@
 
 namespace App\Console\Commands;
 
-use App\Models\Avatar;
 use App\Models\Media;
 use App\Models\Status;
-use App\Services\AccountService;
 use App\Services\MediaService;
 use App\Services\StatusService;
 use Illuminate\Console\Command;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
 
-class MigrateLocalMediaURL extends Command
+class MigrateLocalS3MediaURL extends Command
 {
     /**
      * The name and signature of the console command.
      *
      * @var string
      */
-    protected $signature = 'admin:MigrateLocalMediaURL
+    protected $signature = 'admin:MigrateLocalS3MediaURL
         {id? : A status id (or post URL) to fix; omit with --all}
         {--all : Scan every local media row and fix any with a stale host}
-        {--avatars : Also rebuild stale avatar cdn_urls (implied by --all)}
         {--oldDomain= : Only rewrite URLs whose host matches this old backend (default: rewrite all stale hosts)}
         {--newDomain= : Target host to rewrite to (default: the configured cloud disk host from .env)}
         {--dry-run : Report what would change without writing}
@@ -33,7 +30,7 @@ class MigrateLocalMediaURL extends Command
      *
      * @var string
      */
-    protected $description = 'Rebuild stale local media URLs (cdn_url, thumbnail_url, optimized_url, avatars) from their storage paths using the configured cloud disk. Replaces media:cloud-url-rewrite.';
+    protected $description = 'Rewrite stale local media cloud URLs (cdn_url, thumbnail_url, optimized_url) from their storage paths to the configured S3/cloud host. Replaces media:cloud-url-rewrite.';
 
     /**
      * The target host to rewrite URLs to.
@@ -91,10 +88,9 @@ class MigrateLocalMediaURL extends Command
 
         $id = $this->argument('id');
         $all = $this->option('all');
-        $avatarsOnly = $this->option('avatars') && ! $all && ! $id;
 
-        if (! $id && ! $all && ! $avatarsOnly) {
-            $this->error('Provide a status id/URL, or pass --all (optionally --avatars).');
+        if (! $id && ! $all) {
+            $this->error('Provide a status id/URL, or pass --all.');
 
             return 1;
         }
@@ -123,12 +119,6 @@ class MigrateLocalMediaURL extends Command
 
         if ($id) {
             return $this->handleSingle($id);
-        }
-
-        if ($avatarsOnly) {
-            $this->migrateAvatars();
-
-            return 0;
         }
 
         return $this->handleAll();
@@ -201,14 +191,6 @@ class MigrateLocalMediaURL extends Command
 
     protected function handleAll(): int
     {
-        if (! $this->option('dry-run') && ! $this->option('force')) {
-            if (! $this->confirm('Rebuild stale URLs for all local media rows?', true)) {
-                $this->comment('Aborted.');
-
-                return 0;
-            }
-        }
-
         $fixed = 0;
         $scanned = 0;
         $affectedStatusIds = [];
@@ -238,13 +220,6 @@ class MigrateLocalMediaURL extends Command
         $this->info('Scanned '.$scanned.' local media rows; '.($this->option('dry-run') ? 'would fix ' : 'fixed ').$fixed.'.');
         if ($fixed > 0 && ! $this->option('dry-run')) {
             $this->comment('Caches busted for '.count($affectedStatusIds).' affected status(es).');
-        }
-
-        // --all always includes avatars (parity with the old command's
-        // "Migrate All"); --avatars can also be passed explicitly.
-        $this->migrateAvatars();
-
-        if (! $this->option('dry-run')) {
             $this->comment('Tip: run `php artisan cache:clear` if any stale URLs remain cached elsewhere.');
         }
 
@@ -252,51 +227,8 @@ class MigrateLocalMediaURL extends Command
     }
 
     /**
-     * Rebuild stale avatar cdn_urls from their media_path.
-     */
-    protected function migrateAvatars(): void
-    {
-        $this->newLine();
-        $this->info('Checking avatars...');
-
-        $fixed = 0;
-        $scanned = 0;
-
-        Avatar::whereNotNull('cdn_url')->lazyById(1000, 'id')->each(function ($avatar) use (&$fixed, &$scanned) {
-            $scanned++;
-
-            if (! $avatar->cdn_url || ! $avatar->media_path) {
-                return;
-            }
-            if (Str::startsWith((string) $avatar->media_path, 'http')) {
-                return;
-            }
-            $host = parse_url($avatar->cdn_url, PHP_URL_HOST);
-            if (! $this->shouldRewrite($host)) {
-                return;
-            }
-
-            $rebuilt = $this->targetUrl($avatar->media_path);
-            if (! $rebuilt) {
-                return;
-            }
-
-            $this->line('  avatar '.$avatar->id.' (profile '.$avatar->profile_id.'): '.$host.' -> '.$this->newHost);
-
-            if (! $this->option('dry-run')) {
-                $avatar->cdn_url = $rebuilt;
-                $avatar->save();
-                AccountService::del($avatar->profile_id);
-            }
-            $fixed++;
-        });
-
-        $this->info('Scanned '.$scanned.' avatars; '.($this->option('dry-run') ? 'would fix ' : 'fixed ').$fixed.'.');
-    }
-
-    /**
      * Rebuild any stale URL field on a single media row from its storage path.
-     * Only writes when a field's host differs from the cloud host.
+     * Only writes when a field's host differs from the target host.
      *
      * @return bool whether the row was (or would be) changed
      */
