@@ -14,6 +14,7 @@ use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Storage;
 
 class StoryExpire implements ShouldQueue
@@ -85,17 +86,38 @@ class StoryExpire implements ShouldQueue
         $path = array_pop($paths);
         $newPath = $base.$path;
 
-        if (Storage::exists($old) == true) {
-            $dir = implode('/', $paths);
-            Storage::move($old, $newPath);
-            $story->bearcap_token = null;
-            $story->path = $newPath;
-            $story->save();
+        // Archive on the same disk the story media lives on. When the instance
+        // is configured for cloud storage this is S3, and $disk->move() is
+        // performed by the Flysystem S3 adapter (server-side copy + delete).
+        $disk = config('filesystems.default') === 'local'
+            ? Storage::disk('local')
+            : Storage::disk(config('filesystems.default'));
 
-            $remainingFiles = Storage::files($dir);
-            if (empty($remainingFiles)) {
-                Storage::deleteDirectory($dir);
-            }
+        if (! $disk->exists($old)) {
+            return;
+        }
+
+        try {
+            $disk->move($old, $newPath);
+        } catch (\Throwable $e) {
+            Log::error('StoryExpire: failed to archive story media', [
+                'story_id' => $story->id,
+                'from' => $old,
+                'to' => $newPath,
+                'error' => $e->getMessage(),
+            ]);
+
+            return;
+        }
+
+        $story->bearcap_token = null;
+        $story->path = $newPath;
+        $story->save();
+
+        $dir = implode('/', $paths);
+        $remainingFiles = $disk->files($dir);
+        if (empty($remainingFiles)) {
+            $disk->deleteDirectory($dir);
         }
     }
 
@@ -130,8 +152,12 @@ class StoryExpire implements ShouldQueue
 
         $path = $story->path;
 
-        if (Storage::exists($path) == true) {
-            Storage::delete($path);
+        $disk = config('filesystems.default') === 'local'
+            ? Storage::disk('local')
+            : Storage::disk(config('filesystems.default'));
+
+        if ($disk->exists($path)) {
+            $disk->delete($path);
         }
 
         $story->views()->delete();
