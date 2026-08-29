@@ -5,12 +5,14 @@ namespace Tests\Feature;
 use App\Models\User;
 use App\Models\UserOidcMapping;
 use App\Services\UserOidcService;
+use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Str;
 use League\OAuth2\Client\Provider\GenericResourceOwner;
 use League\OAuth2\Client\Token\AccessToken;
 use Mockery\Adapter\Phpunit\MockeryPHPUnitIntegration;
 use Mockery\MockInterface;
+use PHPUnit\Framework\Attributes\Test;
 use Tests\TestCase;
 
 class RemoteOidcTest extends TestCase
@@ -128,15 +130,15 @@ class RemoteOidcTest extends TestCase
         config(['remote-auth.oidc.field_username' => 'preferred_username']);
 
         $dataset = [
-            'john.doe@domain.com'                         => 'johndoe',
-            'test+user@part1@domain.com'                  => 'testuser',
-            'user!#$%^&*()_test'                          => 'user_test',
-            'jean-luc.picard'                             => 'jeanlucpicard',
+            'john.doe@domain.com' => 'johndoe',
+            'test+user@part1@domain.com' => 'testuser',
+            'user!#$%^&*()_test' => 'user_test',
+            'jean-luc.picard' => 'jeanlucpicard',
             'supercalifragilisticexpialidøcious@test.com' => 'supercalifragilisticexpialidci',
-            'hélène_renåud'                               => 'hlne_renud',
-            '123456789'                                   => '123456789',
-            '  user _ name  '                             => 'user_name',
-            'foo+bar@sub.domain.co.uk'                    => 'foobar',
+            'hélène_renåud' => 'hlne_renud',
+            '123456789' => '123456789',
+            '  user _ name  ' => 'user_name',
+            'foo+bar@sub.domain.co.uk' => 'foobar',
         ];
 
         foreach ($dataset as $input => $expected) {
@@ -146,10 +148,10 @@ class RemoteOidcTest extends TestCase
             $originalUserCount = User::count();
 
             $oauthData = [
-                'sub'                => str_random(10),
-                'name'               => fake()->name,
+                'sub' => Str::random(10),
+                'name' => fake()->name,
                 'preferred_username' => $input,
-                'email'              => fake()->unique()->freeEmail,
+                'email' => fake()->unique()->freeEmail,
             ];
 
             $this->partialMock(UserOidcService::class, function (MockInterface $mock) use ($oauthData) {
@@ -167,7 +169,7 @@ class RemoteOidcTest extends TestCase
 
             $this->assertNotNull($mappedUser, "Mapping not found for : {$input}");
             $this->assertEquals($expected, $mappedUser->user->username, "Username not valid : {$input}");
-            $this->assertDatabaseCount('users', $originalUserCount+1);
+            $this->assertDatabaseCount('users', $originalUserCount + 1);
         }
     }
 }

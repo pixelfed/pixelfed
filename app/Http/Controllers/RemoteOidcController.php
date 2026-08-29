@@ -121,9 +121,11 @@ class RemoteOidcController extends Controller
         return Auth::guard();
     }
 
-    private function ensure_valid_username($starting_username) {
+    private function ensure_valid_username($starting_username)
+    {
         $starting_username = explode('@', $starting_username)[0];
         $temp_username = preg_replace('/[^a-z0-9_]+/i', '', $starting_username);
+
         return substr($temp_username, 0, 30);
     }
 }
