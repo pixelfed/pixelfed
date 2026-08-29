@@ -1,5 +1,5 @@
 # ActivityPub Delivery boilerplate
-- `ActivityPubDeliveryService::pool($profile, $audience, $activity);`
+- `ActivityPubDeliveryService::pool($profile, $audience, $activity);` in app/Services/ActivityPubDeliveryService.php
 
 replaces
 
