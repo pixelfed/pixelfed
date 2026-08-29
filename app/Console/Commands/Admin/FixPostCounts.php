@@ -241,7 +241,7 @@ class FixPostCounts extends Command
         // Inline recompute of the selected metrics via the shared reconciler.
         StatusService::reconcileStatusCounts($status, $metrics);
         $status->refresh();
-        $this->info('  resynced to likes='.$status->likes_count.', boosts='.$status->reblogs_count.', comments='.$status->reply_count.'.');
+        $this->info('  resynced to likes='.(int) $status->likes_count.', boosts='.(int) $status->reblogs_count.', comments='.(int) $status->reply_count.'.');
 
         return true;
     }
