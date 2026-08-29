@@ -50,19 +50,23 @@ jobs:
         run: vendor/bin/psalm --output-format=github --report=psalm.sarif.json || true
 
       # Psalm only writes the SARIF file when it runs far enough to produce a report.
-      # If it crashed early (e.g. bad config), fall back to a minimal valid SARIF so
-      # the upload step has a real file and never hard-fails the job.
-      - name: Ensure SARIF file exists
+      # If it crashed early (e.g. bad config), skip the upload rather than pushing a
+      # blank SARIF, which would clear existing Code Scanning alerts.
+      - name: Check for SARIF report
+        id: sarif
         if: ${{ !cancelled() }}
         run: |
-          if [ ! -f psalm.sarif.json ]; then
-            echo '{"version":"2.1.0","$schema":"https://json.schemastore.org/sarif-2.1.0.json","runs":[{"tool":{"driver":{"name":"Psalm","rules":[]}},"results":[]}]}' > psalm.sarif.json
+          if [ -f psalm.sarif.json ]; then
+            echo "exists=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "exists=false" >> "$GITHUB_OUTPUT"
+            echo "::warning::Psalm did not produce psalm.sarif.json; skipping Code Scanning upload."
           fi
 
       # Surface findings as Code Scanning alerts on the PR (Security tab). Runs even
-      # when the Psalm step is skipped/failed, so the alerts are still published.
+      # when the Psalm step failed, but only when a real SARIF file was produced.
       - name: Upload SARIF to Code Scanning
-        if: ${{ !cancelled() }}
+        if: ${{ !cancelled() && steps.sarif.outputs.exists == 'true' }}
         uses: github/codeql-action/upload-sarif@v4
         with:
           sarif_file: psalm.sarif.json
