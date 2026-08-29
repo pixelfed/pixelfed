@@ -3,13 +3,11 @@
 namespace App\Console\Commands;
 
 use App\Jobs\FollowPipeline\FollowServiceWarmCache;
-use App\Models\Follower;
 use App\Models\Profile;
-use App\Services\AccountService;
+use App\Services\Account\AccountStatService;
 use App\Services\FollowerService;
 use Illuminate\Console\Command;
 use Illuminate\Support\Facades\Cache;
-use Illuminate\Support\Facades\DB;
 
 class FixProfileCounts extends Command
 {
@@ -22,7 +20,8 @@ class FixProfileCounts extends Command
         {id? : Profile id or username to resync (omit with --all)}
         {--all : Scan all profiles and resync any with drifted counts}
         {--dispatch : Queue FollowServiceWarmCache for follower/following instead of recomputing inline}
-        {--dry-run : Report drift without changing anything}';
+        {--dry-run : Report drift without changing anything}
+        {--force : Skip the confirmation prompt (for scheduled/unattended runs)}';
 
     /**
      * The console command description.
@@ -30,13 +29,6 @@ class FixProfileCounts extends Command
      * @var string
      */
     protected $description = 'Resync a profile\'s cached counts (followers, following, statuses) from source-of-truth tables';
-
-    /**
-     * Visible scopes counted for status_count (matches profile status semantics).
-     *
-     * @var array<int, string>
-     */
-    protected const STATUS_SCOPES = ['public', 'private', 'unlisted'];
 
     /**
      * Execute the console command.
@@ -78,7 +70,7 @@ class FixProfileCounts extends Command
 
         // --all: scan every profile, only touch/report the ones that drifted.
         $dryRun = $this->option('dry-run');
-        if (! $dryRun && ! $this->confirm('Resync cached counts for all drifted profiles?', true)) {
+        if (! $dryRun && ! $this->option('force') && ! $this->confirm('Resync cached counts for all drifted profiles?', true)) {
             $this->comment('Aborted.');
 
             return 0;
@@ -107,17 +99,24 @@ class FixProfileCounts extends Command
      */
     protected function resyncOne(Profile $profile): bool
     {
-        $liveFollowers = (int) Follower::whereFollowingId($profile->id)->count();
-        $liveFollowing = (int) Follower::whereProfileId($profile->id)->count();
-        $liveStatuses = (int) $this->liveStatusCount($profile);
+        // Compute drift for all three metrics using the canonical
+        // source-of-truth logic (shared with the scheduled updater).
+        $followers = [
+            'cached' => (int) $profile->followers_count,
+            'live' => AccountStatService::recalculateFollowerCount($profile->id),
+        ];
+        $following = [
+            'cached' => (int) $profile->following_count,
+            'live' => AccountStatService::recalculateFollowingCount($profile->id),
+        ];
+        $statuses = [
+            'cached' => (int) $profile->status_count,
+            'live' => AccountStatService::recalculateStatusCount($profile->id),
+        ];
 
-        $cachedFollowers = (int) $profile->followers_count;
-        $cachedFollowing = (int) $profile->following_count;
-        $cachedStatuses = (int) $profile->status_count;
-
-        $followersDrift = $liveFollowers !== $cachedFollowers;
-        $followingDrift = $liveFollowing !== $cachedFollowing;
-        $statusesDrift = $liveStatuses !== $cachedStatuses;
+        $followersDrift = $followers['cached'] !== $followers['live'];
+        $followingDrift = $following['cached'] !== $following['live'];
+        $statusesDrift = $statuses['cached'] !== $statuses['live'];
 
         if (! $followersDrift && ! $followingDrift && ! $statusesDrift) {
             // No drift: stay silent.
@@ -127,67 +126,36 @@ class FixProfileCounts extends Command
         // Drift detected: report exactly what drifted.
         $this->warn($profile->username.' (id '.$profile->id.') drift detected:');
         if ($followersDrift) {
-            $this->line('  followers: cached='.$cachedFollowers.' live='.$liveFollowers);
+            $this->line('  followers: cached='.$followers['cached'].' live='.$followers['live']);
         }
         if ($followingDrift) {
-            $this->line('  following: cached='.$cachedFollowing.' live='.$liveFollowing);
+            $this->line('  following: cached='.$following['cached'].' live='.$following['live']);
         }
         if ($statusesDrift) {
-            $this->line('  statuses:  cached='.$cachedStatuses.' live='.$liveStatuses);
+            $this->line('  statuses:  cached='.$statuses['cached'].' live='.$statuses['live']);
         }
 
         if ($this->option('dry-run')) {
             return true;
         }
 
-        // status_count is always recomputed inline (no queue involved).
-        if ($statusesDrift) {
-            $profile->status_count = $liveStatuses;
-        }
-
         if ($this->option('dispatch') && ($followersDrift || $followingDrift)) {
-            // Persist any status fix first, then let the warm-cache job own
-            // the follower/following columns and rebuild the Redis sets.
-            if ($statusesDrift) {
-                $profile->save();
-                Cache::forget('profile:status_count:'.$profile->id);
-            }
+            // Fix status_count now (via the shared reconciler), then let the
+            // warm-cache job own the follower/following columns and rebuild
+            // the Redis sets.
+            AccountStatService::reconcileProfileCounts($profile, ['statuses']);
             Cache::forget(FollowerService::FOLLOWERS_SYNC_KEY.$profile->id);
             Cache::forget(FollowerService::FOLLOWING_SYNC_KEY.$profile->id);
             FollowServiceWarmCache::dispatch($profile->id)->onQueue('low');
-            $this->info('  queued FollowServiceWarmCache for profile '.$profile->id.'; statuses='.$profile->status_count.'.');
+            $this->info('  queued FollowServiceWarmCache for profile '.$profile->id.'; statuses='.$statuses['live'].'.');
 
             return true;
         }
 
-        // Inline recompute of the drifted columns from source-of-truth tables.
-        if ($followersDrift) {
-            $profile->followers_count = (int) DB::table('followers')->whereFollowingId($profile->id)->count();
-        }
-        if ($followingDrift) {
-            $profile->following_count = (int) DB::table('followers')->whereProfileId($profile->id)->count();
-        }
-        $profile->save();
-
-        // Bust the derived caches so reads reflect the corrected values.
-        Cache::forget('profile:follower_count:'.$profile->id);
-        Cache::forget('profile:following_count:'.$profile->id);
-        Cache::forget('profile:status_count:'.$profile->id);
-        AccountService::del($profile->id);
-
+        // Inline recompute of all drifted columns via the shared reconciler.
+        AccountStatService::reconcileProfileCounts($profile);
         $this->info('  resynced to followers='.$profile->followers_count.', following='.$profile->following_count.', statuses='.$profile->status_count.'.');
 
         return true;
-    }
-
-    /**
-     * Source-of-truth status count for a profile.
-     */
-    protected function liveStatusCount(Profile $profile): int
-    {
-        return $profile->statuses()
-            ->getQuery()
-            ->whereIn('scope', self::STATUS_SCOPES)
-            ->count();
     }
 }
