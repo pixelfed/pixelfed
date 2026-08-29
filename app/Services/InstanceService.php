@@ -34,7 +34,9 @@ class InstanceService
     public static function getByDomain($domain)
     {
         return Cache::remember(self::CACHE_KEY_BY_DOMAIN.$domain, 3600, function () use ($domain) {
-            return Instance::whereDomain($domain)->first();
+            $instance = Instance::whereDomain($domain)->first();
+
+            return $instance ? $instance->toArray() : null;
         });
     }
 
