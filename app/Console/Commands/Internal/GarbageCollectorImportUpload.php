@@ -6,7 +6,7 @@ use App\Models\ImportPost;
 use App\Services\ImportService;
 use Illuminate\Console\Command;
 
-class ImportUploadGarbageCollection extends Command
+class GarbageCollectorImportUpload extends Command
 {
     /**
      * The name and signature of the console command.

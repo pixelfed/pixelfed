@@ -5,7 +5,7 @@ namespace App\Console\Commands\Internal;
 use Illuminate\Console\Command;
 use Illuminate\Support\Facades\DB;
 
-class DatabaseSessionGarbageCollector extends Command
+class GarbageCollectorDatabaseSession extends Command
 {
     /**
      * The name and signature of the console command.
