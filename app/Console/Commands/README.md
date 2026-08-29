@@ -13,6 +13,7 @@ full argument and option list.
 | Folder | Namespace | Purpose |
 | --- | --- | --- |
 | `Admin/` | `App\Console\Commands\Admin` | Instance administration and operator tooling |
+| `Deprecated/` | `App\Console\Commands\Deprecated` | Historical one-off migrations whose root issue is already resolved; kept for reference only |
 | `Dev/` | `App\Console\Commands\Dev` | Local development and localization build helpers |
 | `FixBugs/` | `App\Console\Commands\FixBugs` | One-off repair and data-fix utilities |
 | `Install/` | `App\Console\Commands\Install` | Installation and upgrade |
@@ -70,8 +71,7 @@ full argument and option list.
 | `admin:fixProfileCounts` | Resync a profile's cached counts (followers, following, statuses) from source tables; supports bulk `--all`/`--active`. |
 | `fix:usernames` | Fix invalid usernames. |
 | `app:hashtag-related-generate` | Generate related-hashtag data for a given tag. |
-| `media:fix` | Repair media filter data (legacy, requires v0.10.8+). |
-| `status:dedup` | Remove duplicate statuses from before the unique-URI migration. |
+| `media:fix` | Null out media `filter_class` values no longer present in `Filter::classes()`. Still relevant: image filters remain an active feature. |
 
 ## Install
 
@@ -105,6 +105,17 @@ These are primarily invoked by the scheduler (see `bootstrap/app.php`) rather th
 | `story:gc` | Clear expired stories. |
 | `app:transform-imports` | Transform completed imports into statuses. |
 | `app:weekly-instance-scan` | Scan instance nodeinfo weekly. |
+
+## Deprecated
+
+Historical one-off migrations whose underlying issue is already resolved in the
+current codebase. Retained for reference and rare legacy-data recovery; not
+expected to be needed on a current install.
+
+| Command | Description | Why deprecated |
+| --- | --- | --- |
+| `status:dedup` | Remove duplicate statuses from before the unique-URI migration. | `statuses.uri` has had a unique index since the 2019 `add_unique_to_statuses_table` migration, so duplicate URIs can no longer be inserted. |
+| `fix:avatars` | Replace old SVG identicon avatars with the default PNG/JPG avatar. | SVG identicon avatars are no longer generated anywhere; new avatars default to `public/avatars/default.jpg`. |
 
 ## Status (debug/diagnostics)
 
@@ -150,18 +161,26 @@ exist), and there are no duplicate command names.
 The items below are cleanup opportunities, not failures. Nothing here is deleted
 automatically — these are recommendations for a maintainer to confirm.
 
-### Likely obsolete (legacy one-off migrations)
+### Deprecated (root issue resolved — moved to `Deprecated/`)
 
-These were written to repair specific historical data states and are unlikely to
-be needed on a current install. Candidates for removal after confirming they are
-no longer required:
+These were written to repair specific historical data states that can no longer
+occur in the current codebase. They have been moved to `Deprecated/`:
 
-- `FixBugs/MediaFix.php` (`media:fix`) — repairs image-filter data and refuses to
-  run below v0.10.8. Image filters are a deprecated feature.
-- `FixBugs/StatusDedupe.php` (`status:dedup`) — dedupes statuses created *before*
-  the unique-URI migration; not compatible with Postgres.
-- `FixBugs/AvatarDefaultMigration.php` (`fix:avatars`) — replaces old SVG
-  identicon avatars, a long-since-removed avatar style.
+- `Deprecated/StatusDedupe.php` (`status:dedup`) — dedupes statuses created
+  *before* the unique-URI migration. The unique index on `statuses.uri` has
+  existed since 2019 (`add_unique_to_statuses_table`), so duplicates can no
+  longer be inserted.
+- `Deprecated/AvatarDefaultMigration.php` (`fix:avatars`) — replaces old SVG
+  identicon avatars. No code generates SVG identicon avatars anymore; the
+  default is now `public/avatars/default.jpg`.
+
+### Reviewed but kept
+
+- `FixBugs/MediaFix.php` (`media:fix`) — considered for deprecation, but **image
+  filters are still an active feature**: `filter_class` is validated and written
+  in `ComposeController`, `ApiV1Controller`, and `ApiV2Controller`, and
+  `Filter::classes()` returns a live list. The command still repairs media that
+  reference filter classes since removed from the set, so it stays in `FixBugs/`.
 
 ### Missing descriptions (metadata only)
 

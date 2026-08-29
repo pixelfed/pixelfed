@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Console\Commands\FixBugs;
+namespace App\Console\Commands\Deprecated;
 
 use App\Models\Avatar;
 use Illuminate\Console\Command;

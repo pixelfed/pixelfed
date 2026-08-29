@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Console\Commands\FixBugs;
+namespace App\Console\Commands\Deprecated;
 
 use App\Jobs\StatusPipeline\StatusDelete;
 use App\Models\Status;
