@@ -35,9 +35,7 @@ class StoryService
 
     public static function getById($id)
     {
-        return Cache::remember(self::STORY_KEY.'by-id:id-'.$id, 3600, function () use ($id) {
-            return Story::find($id);
-        });
+        return Story::find($id);
     }
 
     public static function delById($id)

@@ -76,7 +76,19 @@ class ProfileController extends Controller
             $key = 'profile:settings:'.$user->id;
             $ttl = now()->addHours(6);
             $settings = Cache::remember($key, $ttl, function () use ($user) {
-                return $user->user->settings;
+                $s = optional($user->user)->settings;
+
+                return [
+                    'crawlable' => $s->crawlable ?? true,
+                    'following' => [
+                        'count' => $s->show_profile_following_count ?? true,
+                        'list' => $s->show_profile_following ?? false,
+                    ],
+                    'followers' => [
+                        'count' => $s->show_profile_follower_count ?? true,
+                        'list' => $s->show_profile_followers ?? false,
+                    ],
+                ];
             });
 
             if ($user->is_private == true) {
@@ -89,17 +101,6 @@ class ProfileController extends Controller
             $is_following = false;
 
             $profile = $user;
-            $settings = [
-                'crawlable' => $settings->crawlable,
-                'following' => [
-                    'count' => $settings->show_profile_following_count,
-                    'list' => $settings->show_profile_following,
-                ],
-                'followers' => [
-                    'count' => $settings->show_profile_follower_count,
-                    'list' => $settings->show_profile_followers,
-                ],
-            ];
 
             if ($carousel) {
                 return view('profile.show_carousel', compact('profile', 'settings'));
@@ -110,7 +111,19 @@ class ProfileController extends Controller
             $key = 'profile:settings:'.$user->id;
             $ttl = now()->addHours(6);
             $settings = Cache::remember($key, $ttl, function () use ($user) {
-                return $user->user->settings;
+                $s = optional($user->user)->settings;
+
+                return [
+                    'crawlable' => $s->crawlable ?? true,
+                    'following' => [
+                        'count' => $s->show_profile_following_count ?? true,
+                        'list' => $s->show_profile_following ?? false,
+                    ],
+                    'followers' => [
+                        'count' => $s->show_profile_follower_count ?? true,
+                        'list' => $s->show_profile_followers ?? false,
+                    ],
+                ];
             });
 
             if ($user->is_private == true) {
@@ -132,17 +145,6 @@ class ProfileController extends Controller
 
             $is_admin = is_null($user->domain) ? $user->user->is_admin : false;
             $profile = $user;
-            $settings = [
-                'crawlable' => $settings->crawlable,
-                'following' => [
-                    'count' => $settings->show_profile_following_count,
-                    'list' => $settings->show_profile_following,
-                ],
-                'followers' => [
-                    'count' => $settings->show_profile_follower_count,
-                    'list' => $settings->show_profile_followers,
-                ],
-            ];
             if ($carousel) {
                 return view('profile.show_carousel', compact('profile', 'settings'));
             }
