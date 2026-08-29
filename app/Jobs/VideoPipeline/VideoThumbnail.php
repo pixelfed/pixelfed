@@ -108,7 +108,12 @@ class VideoThumbnail implements ShouldBeUniqueUntilProcessing, ShouldQueue
                     $media->blurhash = $blurhash;
                     $media->save();
                 }
-            } catch (\Exception $e) {
+            } catch (\Throwable $e) {
+                // \Throwable, not \Exception: the failure this guard exists for is a
+                // memory_limit exhaustion, which surfaces as \Error (or a fatal), not
+                // \Exception. Catching only \Exception here would let the very case
+                // that strands the video (pixelfed#2652) slip through and skip the
+                // MediaStoragePipeline dispatch below.
                 if (config('app.dev_log')) {
                     Log::error('Video blurhash generation failed: '.$e->getMessage());
                 }
