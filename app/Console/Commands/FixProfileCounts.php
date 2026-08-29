@@ -20,7 +20,8 @@ class FixProfileCounts extends Command
         {id? : Profile id or username to resync (omit with --all)}
         {--all : Scan all profiles and resync any with drifted counts}
         {--dispatch : Queue FollowServiceWarmCache for follower/following instead of recomputing inline}
-        {--dry-run : Report drift without changing anything}';
+        {--dry-run : Report drift without changing anything}
+        {--force : Skip the confirmation prompt (for scheduled/unattended runs)}';
 
     /**
      * The console command description.
@@ -69,7 +70,7 @@ class FixProfileCounts extends Command
 
         // --all: scan every profile, only touch/report the ones that drifted.
         $dryRun = $this->option('dry-run');
-        if (! $dryRun && ! $this->confirm('Resync cached counts for all drifted profiles?', true)) {
+        if (! $dryRun && ! $this->option('force') && ! $this->confirm('Resync cached counts for all drifted profiles?', true)) {
             $this->comment('Aborted.');
 
             return 0;
