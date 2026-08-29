@@ -1,0 +1,58 @@
+name: PHP - Psalm
+
+on:
+  push:
+    branches: [staging, dev, unstable]
+  pull_request:
+    branches: [staging, dev, unstable]
+
+permissions:
+  contents: read
+  # Required for github/codeql-action/upload-sarif to publish Code Scanning alerts.
+  security-events: write
+
+concurrency:
+  group: psalm-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  psalm:
+    name: Psalm type analysis
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v7
+
+      - name: Setup PHP
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: '8.5'
+          extensions: mbstring, pdo_sqlite, bcmath, intl
+          coverage: none
+
+      - name: Cache Composer dependencies
+        uses: actions/cache@v6
+        with:
+          path: vendor
+          key: composer-8.5-${{ hashFiles('composer.lock') }}
+          restore-keys: composer-8.5-
+
+      - name: Install Composer dependencies
+        run: composer install --no-interaction --no-progress --prefer-dist
+
+      # --output-format=github emits workflow annotations so findings appear inline
+      # on the PR's Files changed view. --report writes SARIF for Code Scanning upload.
+      # Reporting only: `|| true` keeps the step (and job) green even when Psalm finds
+      # issues, so this workflow surfaces findings without ever blocking a PR.
+      - name: Run Psalm (type analysis, report only)
+        run: vendor/bin/psalm --output-format=github --report=psalm.sarif.json || true
+
+      # Surface findings as Code Scanning alerts on the PR (Security tab). Runs even
+      # when the Psalm step is skipped/failed, so the alerts are still published.
+      - name: Upload SARIF to Code Scanning
+        if: ${{ !cancelled() }}
+        uses: github/codeql-action/upload-sarif@v3
+        with:
+          sarif_file: psalm.sarif.json
+          category: psalm
