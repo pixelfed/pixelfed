@@ -24,8 +24,6 @@ use Psr\Http\Message\ResponseInterface;
  *     re-validating and re-resolving every hop;
  *   - enforces a hard byte cap.
  *
- * This mirrors the hardening in ActivityPubFetchService (the CVE-2026-71246
- * fix) but returns raw media bytes / headers instead of JSON.
  */
 class SecureMediaFetchService
 {
