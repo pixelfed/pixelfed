@@ -8,7 +8,7 @@ use Illuminate\Console\Command;
 use function Laravel\Prompts\confirm;
 use function Laravel\Prompts\info;
 
-class CaptchaToggleCommand extends Command
+final class CaptchaToggleCommand extends Command
 {
     /**
      * The name and signature of the console command.
@@ -27,7 +27,7 @@ class CaptchaToggleCommand extends Command
     /**
      * Execute the console command.
      */
-    public function handle()
+    public function handle(): void
     {
         $captchaEnabled = (bool) config_cache('captcha.enabled');
 
