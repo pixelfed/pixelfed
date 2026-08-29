@@ -8,14 +8,14 @@ use App\Models\User;
 use Illuminate\Console\Command;
 use Illuminate\Support\Str;
 
-class ProfileStatus extends Command
+class StatusProfile extends Command
 {
     /**
      * The name and signature of the console command.
      *
      * @var string
      */
-    protected $signature = 'profile:status {id : Profile id, username, user@domain, @user@domain, webfinger, or remote_url}';
+    protected $signature = 'status:profile {id : Profile id, username, user@domain, @user@domain, webfinger, or remote_url}';
 
     /**
      * The console command description.
@@ -212,7 +212,7 @@ class ProfileStatus extends Command
             ['last_active_at', $this->format($user->last_active_at)],
         ];
         $this->table(['User Field', 'Value'], $rows);
-        $this->comment('Tip: run `user:status '.$user->username.'` for full auth diagnostics.');
+        $this->comment('Tip: run `status:user '.$user->username.'` for full auth diagnostics.');
     }
 
     protected function dumpInstance(Profile $profile): void
