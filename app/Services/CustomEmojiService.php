@@ -11,6 +11,17 @@ use Illuminate\Support\Facades\Storage;
 
 class CustomEmojiService
 {
+    /**
+     * Allowed image mime types for imported custom emoji.
+     */
+    public const ALLOWED_MIME_TYPES = [
+        'image/jpeg',
+        'image/jpg',
+        'image/png',
+        'image/gif',
+        'image/webp',
+    ];
+
     public static function get($shortcode)
     {
         if ((bool) config_cache('federation.custom_emoji.enabled') == false) {
@@ -85,7 +96,7 @@ class CustomEmojiService
                 ! isset($json['icon']['url']) ||
                 ! isset($json['icon']['type']) ||
                 $json['icon']['type'] !== 'Image' ||
-                ! in_array($json['icon']['mediaType'], ['image/jpeg', 'image/png', 'image/jpg'])
+                ! in_array($json['icon']['mediaType'], self::ALLOWED_MIME_TYPES, true)
             ) {
                 return;
             }
@@ -158,7 +169,7 @@ class CustomEmojiService
             return false;
         }
 
-        if (! in_array($head['mime'], ['image/jpeg', 'image/png', 'image/jpg'], true)) {
+        if (! in_array($head['mime'], self::ALLOWED_MIME_TYPES, true)) {
             return false;
         }
 
