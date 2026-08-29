@@ -25,6 +25,7 @@ use App\Services\SanitizeService;
 use App\Services\UserFilterService;
 use App\Util\Media\License;
 use Carbon\Carbon;
+use Illuminate\Database\UniqueConstraintViolationException;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Validation\Rule;
@@ -1141,7 +1142,9 @@ class Helpers
             }
 
             $mediaModel = self::createMediaAttachment($media, $status, $key);
-            self::handleMediaStorage($mediaModel);
+            if ($mediaModel) {
+                self::handleMediaStorage($mediaModel);
+            }
         }
 
         $status->viewType();
@@ -1170,16 +1173,35 @@ class Helpers
     }
 
     /**
-     * Create media attachment record
+     * Create media attachment record.
+     *
+     * Idempotent on the (status_id, media_path) unique key: if a row already
+     * exists (e.g. a re-fetch, an Announce racing another inbox job, or a
+     * duplicate url within one activity's attachments) the existing row is
+     * returned instead of triggering a duplicate-key violation.
+     *
+     * @return Media|null the newly created model, or null when the attachment
+     *                    already existed (so the caller can skip re-storage)
      */
-    public static function createMediaAttachment(array $media, Status $status, int $key): Media
+    public static function createMediaAttachment(array $media, Status $status, int $key): ?Media
     {
+        // Fast path: already imported for this status.
+        if (Media::whereStatusId($status->id)->whereMediaPath($media['url'])->exists()) {
+            return null;
+        }
+
         $mediaModel = new Media;
 
         self::setBasicMediaAttributes($mediaModel, $media, $status, $key);
         self::setOptionalMediaAttributes($mediaModel, $media);
 
-        $mediaModel->save();
+        try {
+            $mediaModel->save();
+        } catch (UniqueConstraintViolationException $e) {
+            // Lost a race with a concurrent inbox job that inserted the same
+            // (status_id, media_path). Treat as already-imported.
+            return null;
+        }
 
         return $mediaModel;
     }
