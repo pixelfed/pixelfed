@@ -18,8 +18,9 @@ class FixProfileCounts extends Command
      */
     protected $signature = 'admin:fixProfileCounts
         {id? : Profile id or username to resync (omit with --all)}
-        {--all : Scan all profiles and resync any with drifted counts}
+        {--all : Scan all profiles and resync any with drifted counts (requires --scope)}
         {--active=* : Scan only local accounts active within N days (default 30). Bulk mode; mutually exclusive with --all}
+        {--scope= : Which profiles to scan in --all mode: local, remote, or both}
         {--type= : Restrict to a single metric: followers, following, or statuses (default: all three)}
         {--dispatch : Queue FollowServiceWarmCache for follower/following instead of recomputing inline}
         {--dry-run : Report drift without changing anything}
@@ -38,11 +39,18 @@ class FixProfileCounts extends Command
     protected const METRICS = ['followers', 'following', 'statuses'];
 
     /**
+     * Valid --scope values for --all mode.
+     *
+     * @var array<int, string>
+     */
+    protected const SCOPES = ['local', 'remote', 'both'];
+
+    /**
      * The console command description.
      *
      * @var string
      */
-    protected $description = 'Resync a profile\'s cached counts (followers, following, statuses) from source-of-truth tables. Use --all or --active for bulk reconciliation.';
+    protected $description = 'Resync a profile\'s cached counts (followers, following, statuses) from source-of-truth tables. Use --all --scope=local|remote|both, or --active, for bulk reconciliation.';
 
     /**
      * Execute the console command.
@@ -78,6 +86,27 @@ class FixProfileCounts extends Command
             return 1;
         }
 
+        $scope = $this->option('scope');
+        if ($scope !== null && ! in_array($scope, self::SCOPES, true)) {
+            $this->error('Invalid --scope "'.$scope.'". Use one of: '.implode(', ', self::SCOPES).'.');
+
+            return 1;
+        }
+
+        if ($all && $scope === null) {
+            $this->error('--all requires --scope (local, remote, or both).');
+
+            return 1;
+        }
+
+        if ($active && $scope !== null && $scope !== 'local') {
+            // --active filters on users.last_active_at, which only exists for
+            // local accounts, so remote/both make no sense here.
+            $this->error('--active only applies to local accounts; --scope must be omitted or "local".');
+
+            return 1;
+        }
+
         if ($id) {
             $profile = ctype_digit((string) $id)
                 ? Profile::find($id)
@@ -97,11 +126,11 @@ class FixProfileCounts extends Command
         // Bulk mode (--all or --active): scan and only touch drifted profiles.
         $dryRun = $this->option('dry-run');
 
-        $scope = $active
+        $scopeLabel = $active
             ? 'local accounts active in the last '.$activeDays.' days'
-            : 'all drifted profiles';
+            : $scope.' profiles';
 
-        if (! $dryRun && ! $this->option('force') && ! $this->confirm('Resync cached counts for '.$scope.'?', true)) {
+        if (! $dryRun && ! $this->option('force') && ! $this->confirm('Resync cached counts for '.$scopeLabel.'?', true)) {
             $this->comment('Aborted.');
 
             return 0;
@@ -118,7 +147,14 @@ class FixProfileCounts extends Command
                     $q->whereNotNull('last_active_at')
                         ->where('last_active_at', '>=', $cutoff);
                 });
+        } elseif ($scope === 'local') {
+            // Local profiles have no domain.
+            $query->whereNull('domain');
+        } elseif ($scope === 'remote') {
+            // Remote/federated profiles have a domain set.
+            $query->whereNotNull('domain');
         }
+        // scope === 'both' applies no domain filter.
 
         $fixed = 0;
         $scanned = 0;
@@ -130,7 +166,7 @@ class FixProfileCounts extends Command
         });
 
         $this->newLine();
-        $this->info('Scanned '.$scanned.' profiles ('.$scope.'); '.($this->option('dry-run') ? 'drifted' : 'resynced').': '.$fixed.'.');
+        $this->info('Scanned '.$scanned.' profiles ('.$scopeLabel.'); '.($this->option('dry-run') ? 'drifted' : 'resynced').': '.$fixed.'.');
 
         return 0;
     }
