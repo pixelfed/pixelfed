@@ -102,6 +102,7 @@
         "analyse": "./vendor/bin/phpstan analyse --memory-limit=512M",
         "psalm": "./vendor/bin/psalm",
         "psalm:baseline": "./vendor/bin/psalm --update-baseline",
+        "psalm:report": "./vendor/bin/psalm --ignore-baseline --no-cache --show-info=true --report=psalm-report.txt --report-show-info=true",
         "test": [
             "docker compose -f docker-compose.test.yml up -d --wait",
             "./vendor/bin/pest --compact",
