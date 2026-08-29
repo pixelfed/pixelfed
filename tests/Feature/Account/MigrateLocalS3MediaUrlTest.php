@@ -34,7 +34,9 @@ beforeEach(function () {
         'use_path_style_endpoint' => true,
         'visibility' => 'public',
     ]);
-    // Enable cloud storage (config_cache reads from ConfigCacheService).
+    // Enable cloud storage. config_cache() falls through to config() when
+    // instance.enable_cc is off (as in CI), so set both to be safe.
+    Config::set('pixelfed.cloud_storage', true);
     ConfigCacheService::put('pixelfed.cloud_storage', true);
 });
 
@@ -144,7 +146,8 @@ it('requires an id or --all', function () {
 });
 
 it('refuses to run on a local-storage instance', function () {
-    // Simulate local storage: cloud disabled.
+    // Simulate local storage: cloud disabled (set both, see beforeEach).
+    Config::set('pixelfed.cloud_storage', false);
     ConfigCacheService::put('pixelfed.cloud_storage', false);
 
     $this->artisan('admin:MigrateLocalS3MediaURL', ['--all' => true, '--force' => true])
