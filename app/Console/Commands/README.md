@@ -69,6 +69,7 @@ full argument and option list.
 | `media:fix-nonlocal-driver` | Repair filesystem records when `FILESYSTEM_DRIVER` is not set to local. |
 | `app:fix-missing-user-profile` | Interactively create a missing profile for an affected user. |
 | `admin:fixProfileCounts` | Resync a profile's cached counts (followers, following, statuses) from source tables; supports bulk `--all`/`--active`. |
+| `admin:fixPostCounts` | Resync a post's cached counts (likes, boosts, comments) from source tables; supports bulk `--all`/`--active`. |
 | `fix:usernames` | Fix invalid usernames. |
 | `app:hashtag-related-generate` | Generate related-hashtag data for a given tag. |
 | `media:fix` | Null out media `filter_class` values no longer present in `Filter::classes()`. Still relevant: image filters remain an active feature. |
