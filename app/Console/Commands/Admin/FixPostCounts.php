@@ -240,8 +240,14 @@ class FixPostCounts extends Command
 
         // Inline recompute of the selected metrics via the shared reconciler.
         StatusService::reconcileStatusCounts($status, $metrics);
-        $status->refresh();
-        $this->info('  resynced to likes='.(int) $status->likes_count.', boosts='.(int) $status->reblogs_count.', comments='.(int) $status->reply_count.'.');
+
+        // Report only the metrics that actually changed, as before -> after,
+        // so the summary can never imply a metric was touched when it wasn't.
+        $changes = [];
+        foreach ($drifted as $metric => $m) {
+            $changes[] = $metric.' '.$m['cached'].'->'.$m['live'];
+        }
+        $this->info('  resynced: '.implode(', ', $changes).'.');
 
         return true;
     }
