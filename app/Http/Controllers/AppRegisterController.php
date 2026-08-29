@@ -308,7 +308,7 @@ class AppRegisterController extends Controller
                 $underscore = substr_count($value, '_');
                 $period = substr_count($value, '.');
 
-                if (str_ends_with($value, ['.php', '.js', '.css'])) {
+                if (Str::endsWith($value, ['.php', '.js', '.css'])) {
                     return $fail('Username is invalid.');
                 }
 

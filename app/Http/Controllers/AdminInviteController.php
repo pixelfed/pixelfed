@@ -14,6 +14,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Validator;
+use Illuminate\Support\Str;
 use Purify;
 
 class AdminInviteController extends Controller
@@ -73,7 +74,7 @@ class AdminInviteController extends Controller
                 $underscore = substr_count($value, '_');
                 $period = substr_count($value, '.');
 
-                if (str_ends_with($value, ['.php', '.js', '.css'])) {
+                if (Str::endsWith($value, ['.php', '.js', '.css'])) {
                     return $fail('Username is invalid.');
                 }
 
@@ -161,7 +162,7 @@ class AdminInviteController extends Controller
                     $underscore = substr_count($value, '_');
                     $period = substr_count($value, '.');
 
-                    if (str_ends_with($value, ['.php', '.js', '.css'])) {
+                    if (Str::endsWith($value, ['.php', '.js', '.css'])) {
                         return $fail('Username is invalid.');
                     }
 

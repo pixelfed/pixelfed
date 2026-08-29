@@ -223,7 +223,8 @@ class ApiV1Dot1Controller extends Controller
 
         $avatar = $user->profile->avatar;
 
-        if ($avatar->media_path == 'public/avatars/default.png' ||
+        if (
+            $avatar->media_path == 'public/avatars/default.png' ||
             $avatar->media_path == 'public/avatars/default.jpg'
         ) {
             return AccountService::get($user->profile_id);
@@ -551,7 +552,7 @@ class ApiV1Dot1Controller extends Controller
                     $underscore = substr_count($value, '_');
                     $period = substr_count($value, '.');
 
-                    if (str_ends_with($value, ['.php', '.js', '.css'])) {
+                    if (Str::endsWith($value, ['.php', '.js', '.css'])) {
                         return $fail('Username is invalid.');
                     }
 
@@ -804,7 +805,8 @@ class ApiV1Dot1Controller extends Controller
                 'lat' => $place->lat,
                 'long' => $place->long,
             ],
-            'posts' => $posts];
+            'posts' => $posts,
+        ];
     }
 
     public function moderatePost(Request $request, $id)
