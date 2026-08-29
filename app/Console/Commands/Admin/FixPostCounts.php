@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Console\Commands\FixBugs;
+namespace App\Console\Commands\Admin;
 
 use App\Models\Status;
 use App\Services\StatusService;
