@@ -89,7 +89,7 @@ class AvatarStorageDeepClean extends Command
         $bar->finish();
     }
 
-    protected function updateCache($id)
+    protected function updateCache($id): void
     {
         Cache::put('cmd:asdp', $id);
         if ($this->counter % 5 === 0) {
@@ -97,7 +97,7 @@ class AvatarStorageDeepClean extends Command
         }
     }
 
-    protected function activeCheck()
+    protected function activeCheck(): bool
     {
         if (Storage::exists('avatar-deep-clean.json') || Cache::has('cmd:asdp')) {
             return false;
@@ -106,7 +106,7 @@ class AvatarStorageDeepClean extends Command
         return true;
     }
 
-    protected function handleAvatar($avatar)
+    protected function handleAvatar(Avatar $avatar): void
     {
         $this->updateCache($avatar->id);
         $queues = ['feed', 'mmo', 'feed', 'mmo', 'feed', 'feed', 'mmo', 'low'];

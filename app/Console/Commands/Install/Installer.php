@@ -59,7 +59,7 @@ class Installer extends Command
         $this->welcome();
     }
 
-    protected function welcome()
+    protected function welcome(): void
     {
         $this->info('       ____  _           ______         __  ');
         $this->info('      / __ \(_)  _____  / / __/__  ____/ /  ');
@@ -75,7 +75,7 @@ class Installer extends Command
         $this->installerSteps();
     }
 
-    protected function installerSteps()
+    protected function installerSteps(): void
     {
         $this->envCheck();
         $this->envCreate();
@@ -97,6 +97,9 @@ class Installer extends Command
         $this->resetArtisanCache();
     }
 
+    /**
+     * @return void
+     */
     protected function envCheck()
     {
         if (file_exists(base_path('.env')) &&
@@ -111,7 +114,7 @@ class Installer extends Command
         }
     }
 
-    protected function envCreate()
+    protected function envCreate(): void
     {
         $this->line('');
         $this->info('Creating .env if required');
@@ -120,6 +123,11 @@ class Installer extends Command
         }
     }
 
+    /**
+     * @return int|null
+     *
+     * @psalm-return 1|null
+     */
     protected function checkPHPRequiredDependencies()
     {
         $this->line(' ');
@@ -161,6 +169,11 @@ class Installer extends Command
 
     }
 
+    /**
+     * @return int|null
+     *
+     * @psalm-return 1|null
+     */
     protected function checkFFmpegDependencies()
     {
         $this->line(' ');
@@ -181,7 +194,7 @@ class Installer extends Command
         }
     }
 
-    protected function checkOptimiseDependencies()
+    protected function checkOptimiseDependencies(): void
     {
         $this->line(' ');
         $this->info('Checking for Optional Media Optimisation dependencies...');
@@ -203,6 +216,9 @@ class Installer extends Command
         }
     }
 
+    /**
+     * @return void
+     */
     protected function checkDiskPermissions()
     {
         $this->line('');
@@ -226,7 +242,7 @@ class Installer extends Command
         }
     }
 
-    protected function envProd()
+    protected function envProd(): void
     {
         $this->line('');
         $this->info('Enabling production');
@@ -236,6 +252,9 @@ class Installer extends Command
         $this->call('key:generate', ['--force' => true]);
     }
 
+    /**
+     * @return void
+     */
     protected function instanceDB()
     {
         $this->line('');
@@ -270,6 +289,9 @@ class Installer extends Command
         $this->info('- Connected to DB Successfully');
     }
 
+    /**
+     * @return void
+     */
     protected function instanceRedis()
     {
         $this->line('');
@@ -302,7 +324,7 @@ class Installer extends Command
         }
     }
 
-    protected function instanceURL()
+    protected function instanceURL(): void
     {
         $this->line('');
         $this->info('Instance URL Settings:');
@@ -342,7 +364,7 @@ class Installer extends Command
         $this->updateEnvFile('SESSION_DOMAIN', $domain);
     }
 
-    protected function activityPubSettings()
+    protected function activityPubSettings(): void
     {
         $this->line('');
         $this->info('Federation Settings:');
@@ -355,7 +377,7 @@ class Installer extends Command
         $this->updateEnvFile('AP_SHAREDINBOX', $activitypub_federation);
     }
 
-    protected function laravelSettings()
+    protected function laravelSettings(): void
     {
         $this->line('');
         $this->info('Laravel Settings (Defaults are recommended):');
@@ -374,7 +396,7 @@ class Installer extends Command
         $this->updateEnvFile('HORIZON_PREFIX', $horizon);
     }
 
-    protected function instanceSettings()
+    protected function instanceSettings(): void
     {
         $this->line('');
         $this->info('Instance Settings:');
@@ -398,7 +420,7 @@ class Installer extends Command
         $this->updateEnvFile('EXP_EMC', $enable_mobile_apis);
     }
 
-    protected function mediaSettings()
+    protected function mediaSettings(): void
     {
         $this->line('');
         $this->info('Media Settings:');
@@ -444,7 +466,7 @@ class Installer extends Command
         $this->updateEnvFile('MAX_ALBUM_LENGTH', $max_album_length);
     }
 
-    protected function dbMigrations()
+    protected function dbMigrations(): void
     {
         $this->line('');
         $this->info('Note: We recommend running database migrations now!');
@@ -477,6 +499,9 @@ class Installer extends Command
         }
     }
 
+    /**
+     * @return void
+     */
     protected function setupPrep()
     {
         if (! $this->migrationsRan) {
@@ -507,14 +532,14 @@ class Installer extends Command
         }
     }
 
-    protected function validateEnv()
+    protected function validateEnv(): void
     {
         $this->checkEnvKeys('APP_KEY', 'key:generate failed?');
         $this->checkEnvKeys('APP_ENV', 'APP_ENV value should be production');
         $this->checkEnvKeys('APP_DEBUG', 'APP_DEBUG value should be false');
     }
 
-    protected function resetArtisanCache()
+    protected function resetArtisanCache(): void
     {
         $this->call('config:clear');
         $this->call('config:cache');
@@ -527,7 +552,7 @@ class Installer extends Command
     // Installer Functions
     // ####
 
-    protected function checkEnvKeys($key, $error)
+    protected function checkEnvKeys(string $key, string $error): void
     {
         $envPath = app()->environmentFilePath();
         $payload = file_get_contents($envPath);
@@ -538,7 +563,7 @@ class Installer extends Command
         }
     }
 
-    protected function updateEnvFile($key, $value)
+    protected function updateEnvFile(string $key, $value): void
     {
         $envPath = app()->environmentFilePath();
         $payload = file_get_contents($envPath);
@@ -555,7 +580,7 @@ class Installer extends Command
         }
     }
 
-    protected function existingEnv($needle, $haystack)
+    protected function existingEnv($needle, string|false $haystack): string|false
     {
         preg_match("/^{$needle}=[^\r\n]*/m", $haystack, $matches);
         if ($matches && count($matches)) {
@@ -565,7 +590,10 @@ class Installer extends Command
         return false;
     }
 
-    protected function storeEnv($payload)
+    /**
+     * @return void
+     */
+    protected function storeEnv(string $payload)
     {
         $envPath = app()->environmentFilePath();
         $tempPath = $envPath.'.tmp';

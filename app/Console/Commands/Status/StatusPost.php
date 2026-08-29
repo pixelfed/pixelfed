@@ -33,7 +33,7 @@ class StatusPost extends Command
      */
     protected $longStatusCols = ['caption', 'cw_summary'];
 
-    public function handle()
+    public function handle(): int
     {
         $id = $this->resolveId($this->argument('id'));
 

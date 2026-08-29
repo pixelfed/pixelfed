@@ -26,7 +26,7 @@ class AccountPostCountStatUpdate extends Command
     /**
      * Execute the console command.
      */
-    public function handle()
+    public function handle(): int
     {
         $chunkSize = 100;
         $lastId = 0;
@@ -51,6 +51,9 @@ class AccountPostCountStatUpdate extends Command
         return 0;
     }
 
+    /**
+     * @return void
+     */
     private function processAccount($id)
     {
         $acct = AccountService::get($id, true);

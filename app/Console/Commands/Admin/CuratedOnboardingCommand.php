@@ -59,7 +59,7 @@ class CuratedOnboardingCommand extends Command
         }
     }
 
-    protected function stats()
+    protected function stats(): void
     {
         $total = CuratedRegister::count();
         $approved = CuratedRegister::whereIsApproved(true)->whereIsRejected(false)->whereNotNull('email_verified_at')->count();
@@ -74,6 +74,9 @@ class CuratedOnboardingCommand extends Command
         );
     }
 
+    /**
+     * @return void
+     */
     protected function edit()
     {
         $id = search(

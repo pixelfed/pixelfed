@@ -127,7 +127,7 @@ class AvatarStorage extends Command
         return $this->handleChoice($choice);
     }
 
-    protected function handleChoice($id)
+    protected function handleChoice(array|string $id)
     {
         switch ($id) {
             case 'Cancel':
@@ -147,6 +147,9 @@ class AvatarStorage extends Command
         }
     }
 
+    /**
+     * @return void
+     */
     protected function uploadDefaultAvatar()
     {
         if (! $this->confirm('Are you sure you want to upload the default avatar to the cloud storage disk?')) {
@@ -159,6 +162,9 @@ class AvatarStorage extends Command
         $this->info($disk->url('cache/avatars/default.jpg'));
     }
 
+    /**
+     * @return void
+     */
     protected function uploadAvatarsToCloud()
     {
         if (! (bool) config_cache('pixelfed.cloud_storage') || ! config('instance.avatar.local_to_cloud')) {
@@ -206,6 +212,9 @@ class AvatarStorage extends Command
         });
     }
 
+    /**
+     * @return void
+     */
     protected function refetchRemoteAvatars()
     {
         if (! $this->confirm('Are you sure you want to refetch all remote avatars? This could take a while.')) {
@@ -247,7 +256,7 @@ class AvatarStorage extends Command
         $this->line(' ');
     }
 
-    protected function incr($name)
+    protected function incr(string $name): void
     {
         switch ($name) {
             case 'found':
@@ -264,6 +273,9 @@ class AvatarStorage extends Command
         }
     }
 
+    /**
+     * @return void
+     */
     protected function fixMissingAvatars()
     {
         if (! $this->confirm('Are you sure you want to fix missing avatars?')) {

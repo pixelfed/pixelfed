@@ -26,6 +26,8 @@ class InstanceUpdateTotalLocalPosts extends Command
 
     /**
      * Execute the console command.
+     *
+     * @return void
      */
     public function handle()
     {
@@ -46,12 +48,12 @@ class InstanceUpdateTotalLocalPosts extends Command
 
     }
 
-    protected function checkForCache()
+    protected function checkForCache(): bool
     {
         return Storage::exists('total_local_posts.json');
     }
 
-    protected function initCache()
+    protected function initCache(): void
     {
         $res = [
             'count' => $this->getTotalLocalPosts(),
@@ -60,12 +62,12 @@ class InstanceUpdateTotalLocalPosts extends Command
         ConfigCacheService::put('instance.stats.total_local_posts', $res['count']);
     }
 
-    protected function getCached()
+    protected function getCached(): ?array
     {
         return Storage::json('total_local_posts.json');
     }
 
-    protected function updateAndCache()
+    protected function updateAndCache(): void
     {
         $res = [
             'count' => $this->getTotalLocalPosts(),

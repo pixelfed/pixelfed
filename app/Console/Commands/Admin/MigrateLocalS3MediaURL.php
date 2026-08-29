@@ -42,7 +42,7 @@ class MigrateLocalS3MediaURL extends Command
      */
     protected ?string $oldHost = null;
 
-    public function handle()
+    public function handle(): int
     {
         // This command only makes sense for instances serving media from a
         // cloud/object-storage backend. Local-storage instances (PF_ENABLE_CLOUD
@@ -294,7 +294,7 @@ class MigrateLocalS3MediaURL extends Command
         return true;
     }
 
-    protected function bustCaches($statusId): void
+    protected function bustCaches(int $statusId): void
     {
         MediaService::del($statusId);
         StatusService::del($statusId, true);

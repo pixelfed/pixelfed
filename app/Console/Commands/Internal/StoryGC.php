@@ -45,7 +45,7 @@ class StoryGC extends Command
         $this->rotateMedia();
     }
 
-    protected function archiveExpiredStories()
+    protected function archiveExpiredStories(): void
     {
         $stories = Story::whereActive(true)
             ->where('expires_at', '<', now())
@@ -56,6 +56,9 @@ class StoryGC extends Command
         }
     }
 
+    /**
+     * @return void
+     */
     protected function rotateMedia()
     {
         $queue = StoryService::rotateQueue();

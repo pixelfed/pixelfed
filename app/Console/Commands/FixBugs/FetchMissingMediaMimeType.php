@@ -27,7 +27,7 @@ class FetchMissingMediaMimeType extends Command
     /**
      * Execute the console command.
      */
-    public function handle()
+    public function handle(): void
     {
         foreach (Media::whereNotNull(['remote_url', 'status_id'])->whereNull('mime')->lazyByIdDesc(50, 'id') as $media) {
             $res = Http::retry(2, 100, throw: false)->head($media->remote_url);

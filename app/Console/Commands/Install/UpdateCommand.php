@@ -40,7 +40,7 @@ class UpdateCommand extends Command
         $this->update();
     }
 
-    public function update()
+    public function update(): void
     {
         $this->info('Starting update...');
         $this->line(' ');

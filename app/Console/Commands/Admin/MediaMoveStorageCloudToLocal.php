@@ -8,6 +8,7 @@ use App\Services\MediaService;
 use App\Services\StatusService;
 use App\Util\Lexer\PrettyNumber;
 use Illuminate\Console\Command;
+use Illuminate\Filesystem\FilesystemAdapter;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
 
@@ -35,7 +36,7 @@ class MediaMoveStorageCloudToLocal extends Command
 
     protected int $movedBytes = 0;
 
-    public function handle()
+    public function handle(): int
     {
         $localDisk = Storage::disk('local');
         $cloudDisk = Storage::disk(config('filesystems.cloud'));
@@ -107,7 +108,7 @@ class MediaMoveStorageCloudToLocal extends Command
     /**
      * @return string one of moved|skipped|failed
      */
-    protected function migrateOne(Media $media, $localDisk, $cloudDisk): string
+    protected function migrateOne(Media $media, FilesystemAdapter $localDisk, FilesystemAdapter $cloudDisk): string
     {
         if (Str::startsWith((string) $media->media_path, 'http')) {
             return 'skipped';

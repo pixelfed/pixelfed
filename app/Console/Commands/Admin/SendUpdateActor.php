@@ -116,7 +116,12 @@ class SendUpdateActor extends Command
         return Command::SUCCESS;
     }
 
-    protected function updateObject($profile)
+    /**
+     * @return ((string|string[])[]|mixed|string)[]
+     *
+     * @psalm-return array{'@context': list{'https://w3id.org/security/v1', 'https://www.w3.org/ns/activitystreams', array{manuallyApprovesFollowers: 'as:manuallyApprovesFollowers'}}, id: mixed, actor: mixed, type: 'Update', object: mixed}
+     */
+    protected function updateObject(Profile $profile): array
     {
         return [
             '@context' => [
@@ -133,7 +138,7 @@ class SendUpdateActor extends Command
         ];
     }
 
-    protected function touchStorageCache($domain)
+    protected function touchStorageCache($domain): void
     {
         $path = 'actor-update-cache/'.$domain;
         if (! Storage::exists($path)) {
@@ -141,20 +146,25 @@ class SendUpdateActor extends Command
         }
     }
 
-    protected function getStorageCache($domain)
+    protected function getStorageCache($domain): ?string
     {
         $path = 'actor-update-cache/'.$domain;
 
         return Storage::get($path);
     }
 
-    protected function updateStorageCache($domain, $value)
+    protected function updateStorageCache($domain, int $value): void
     {
         $path = 'actor-update-cache/'.$domain;
         Storage::put($path, $value);
     }
 
-    protected function actorObject($profile)
+    /**
+     * @return ((mixed|string)[]|bool|mixed|string)[]
+     *
+     * @psalm-return array{id: mixed, type: 'Person', following: string, followers: string, inbox: string, outbox: string, preferredUsername: mixed, name: mixed, summary: mixed, url: mixed, manuallyApprovesFollowers: bool, publicKey: array{id: string, owner: mixed, publicKeyPem: mixed}, icon: array{type: 'Image', mediaType: 'image/jpeg', url: mixed}, endpoints: array{sharedInbox: string}}
+     */
+    protected function actorObject($profile): array
     {
         $permalink = $profile->permalink();
 

@@ -26,6 +26,8 @@ class WeeklyInstanceScan extends Command
 
     /**
      * Execute the console command.
+     *
+     * @return void
      */
     public function handle()
     {
@@ -40,7 +42,7 @@ class WeeklyInstanceScan extends Command
         );
     }
 
-    protected function updateInstanceStats($instance)
+    protected function updateInstanceStats($instance): void
     {
         FetchNodeinfoPipeline::dispatch($instance)->onQueue('intbg');
     }

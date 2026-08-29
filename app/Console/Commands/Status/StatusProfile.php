@@ -6,6 +6,7 @@ use App\Models\Instance;
 use App\Models\Profile;
 use App\Models\User;
 use Illuminate\Console\Command;
+use Illuminate\Support\Carbon;
 use Illuminate\Support\Str;
 
 class StatusProfile extends Command
@@ -33,7 +34,7 @@ class StatusProfile extends Command
 
     protected $longText = ['bio', 'note', 'private_key', 'public_key'];
 
-    public function handle()
+    public function handle(): int
     {
         $id = $this->argument('id');
 
@@ -316,7 +317,7 @@ class StatusProfile extends Command
         }
     }
 
-    protected function attr($model, string $key)
+    protected function attr(Profile $model, string $key)
     {
         return $model->getAttributes()[$key] ?? null;
     }
@@ -339,7 +340,7 @@ class StatusProfile extends Command
         }
     }
 
-    protected function format($value): string
+    protected function format(int|string|Carbon|null $value): string
     {
         if ($value === null) {
             return 'null';

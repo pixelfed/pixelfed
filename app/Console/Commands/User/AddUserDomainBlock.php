@@ -29,6 +29,8 @@ class AddUserDomainBlock extends Command
 
     /**
      * Execute the console command.
+     *
+     * @return void
      */
     public function handle()
     {
@@ -44,7 +46,10 @@ class AddUserDomainBlock extends Command
 
     }
 
-    protected function validateDomain($domain)
+    /**
+     * @return null|string
+     */
+    protected function validateDomain(string $domain)
     {
         if (! strpos($domain, '.')) {
             return;
@@ -79,7 +84,7 @@ class AddUserDomainBlock extends Command
         return $domain;
     }
 
-    protected function processBlocks($domain)
+    protected function processBlocks($domain): void
     {
         DefaultDomainBlock::updateOrCreate([
             'domain' => $domain,
@@ -91,6 +96,10 @@ class AddUserDomainBlock extends Command
         );
     }
 
+    /**
+     * @param  int|value-of<TSteps>  $user
+     * @return void
+     */
     protected function performTask($user, $domain)
     {
         if (! $user->profile_id || $user->delete_after) {

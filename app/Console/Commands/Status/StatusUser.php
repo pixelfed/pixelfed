@@ -6,6 +6,7 @@ use App\Models\AccountLog;
 use App\Models\Profile;
 use App\Models\User;
 use Illuminate\Console\Command;
+use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Schema;
 
@@ -52,7 +53,7 @@ class StatusUser extends Command
         'app_register_ip',
     ];
 
-    public function handle()
+    public function handle(): int
     {
         $id = $this->argument('id');
 
@@ -311,7 +312,7 @@ class StatusUser extends Command
         }
     }
 
-    protected function attrOf($model, string $key)
+    protected function attrOf(Profile $model, string $key)
     {
         return $model->getAttributes()[$key] ?? null;
     }
@@ -447,7 +448,7 @@ class StatusUser extends Command
     /**
      * Human-friendly value formatting.
      */
-    protected function format($value): string
+    protected function format(string|int|Carbon|null $value): string
     {
         if ($value === null) {
             return 'null';

@@ -27,6 +27,8 @@ class DeleteRemoteProfile extends Command
 
     /**
      * Execute the console command.
+     *
+     * @return never
      */
     public function handle()
     {

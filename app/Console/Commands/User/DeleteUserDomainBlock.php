@@ -28,6 +28,8 @@ class DeleteUserDomainBlock extends Command
 
     /**
      * Execute the console command.
+     *
+     * @return void
      */
     public function handle()
     {
@@ -43,7 +45,10 @@ class DeleteUserDomainBlock extends Command
 
     }
 
-    protected function validateDomain($domain)
+    /**
+     * @return null|string
+     */
+    protected function validateDomain(string $domain)
     {
         if (! strpos($domain, '.')) {
             return;
@@ -76,6 +81,9 @@ class DeleteUserDomainBlock extends Command
         return $domain;
     }
 
+    /**
+     * @return void
+     */
     protected function processUnblocks($domain)
     {
         DefaultDomainBlock::whereDomain($domain)->delete();
@@ -91,7 +99,7 @@ class DeleteUserDomainBlock extends Command
         );
     }
 
-    protected function performTask($domainBlock)
+    protected function performTask($domainBlock): void
     {
         $domainBlock->deleteQuietly();
     }

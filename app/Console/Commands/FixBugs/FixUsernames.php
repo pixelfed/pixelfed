@@ -48,7 +48,7 @@ class FixUsernames extends Command
         $this->restrictedCheck();
     }
 
-    protected function restrictedCheck()
+    protected function restrictedCheck(): void
     {
         $affected = collect([]);
 
@@ -133,6 +133,9 @@ class FixUsernames extends Command
         $this->versionZeroTenNineFix();
     }
 
+    /**
+     * @return void
+     */
     protected function versionZeroTenNineFix()
     {
         $profiles = Profile::whereNotNull('domain')

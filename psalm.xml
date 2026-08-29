@@ -45,6 +45,8 @@
         <RedundantCast errorLevel="info"/>
         <RedundantCondition errorLevel="info"/>
         <UnnecessaryVarAnnotation errorLevel="suppress"/>
+        <!-- Eloquent dynamic where{Column}() query builder methods that Psalm cannot resolve -->
+        <UndefinedMagicMethod errorLevel="suppress"/>
     </issueHandlers>
 
     <forbiddenFunctions>

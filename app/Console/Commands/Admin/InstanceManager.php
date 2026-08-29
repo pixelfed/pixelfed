@@ -71,6 +71,9 @@ class InstanceManager extends Command
         }
     }
 
+    /**
+     * @return void
+     */
     protected function recalculateStats()
     {
         $instanceCount = Instance::count();
@@ -87,11 +90,14 @@ class InstanceManager extends Command
         );
     }
 
-    protected function updateInstanceStats($instance)
+    protected function updateInstanceStats($instance): void
     {
         FetchNodeinfoPipeline::dispatch($instance)->onQueue('intbg');
     }
 
+    /**
+     * @return never
+     */
     protected function unlistInstance()
     {
         $id = search(
@@ -132,6 +138,9 @@ class InstanceManager extends Command
         exit;
     }
 
+    /**
+     * @return never
+     */
     protected function relistInstance()
     {
         $id = search(
@@ -172,6 +181,9 @@ class InstanceManager extends Command
         exit;
     }
 
+    /**
+     * @return never
+     */
     protected function banInstance()
     {
         $id = search(
@@ -212,6 +224,9 @@ class InstanceManager extends Command
         exit;
     }
 
+    /**
+     * @return never
+     */
     protected function unbanInstance()
     {
         $id = search(
@@ -252,7 +267,7 @@ class InstanceManager extends Command
         exit;
     }
 
-    protected function viewBannedInstances()
+    protected function viewBannedInstances(): void
     {
         $data = Instance::whereBanned(true)
             ->get(['domain', 'user_count', 'status_count'])
@@ -270,7 +285,7 @@ class InstanceManager extends Command
         );
     }
 
-    protected function viewUnlistedInstances()
+    protected function viewUnlistedInstances(): void
     {
         $data = Instance::whereUnlisted(true)
             ->get(['domain', 'user_count', 'status_count', 'banned'])

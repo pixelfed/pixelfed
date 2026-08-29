@@ -7,6 +7,7 @@ use App\Services\MediaService;
 use App\Services\StatusService;
 use App\Util\Lexer\PrettyNumber;
 use Illuminate\Console\Command;
+use Illuminate\Filesystem\FilesystemAdapter;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
 
@@ -33,7 +34,7 @@ class MediaMoveStorageCloudToCloud extends Command
 
     protected int $movedBytes = 0;
 
-    public function handle()
+    public function handle(): int
     {
         $sourceName = (string) $this->option('sourceDisk');
         $destName = config('filesystems.cloud');
@@ -133,7 +134,7 @@ class MediaMoveStorageCloudToCloud extends Command
     /**
      * @return string one of moved|skipped|failed
      */
-    protected function migrateOne(Media $media, $sourceDisk, $destDisk, string $sourceHost, string $destHost): string
+    protected function migrateOne(Media $media, FilesystemAdapter $sourceDisk, FilesystemAdapter $destDisk, string $sourceHost, string $destHost): string
     {
         if (Str::startsWith((string) $media->media_path, 'http')) {
             return 'skipped';
@@ -253,7 +254,7 @@ class MediaMoveStorageCloudToCloud extends Command
         return true;
     }
 
-    protected function diskHost($disk): ?string
+    protected function diskHost(FilesystemAdapter $disk): ?string
     {
         try {
             $url = $disk->url('probe');

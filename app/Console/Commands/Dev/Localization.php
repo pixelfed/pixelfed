@@ -16,7 +16,7 @@ class Localization extends Command
         parent::__construct();
     }
 
-    public function handle()
+    public function handle(): void
     {
         $languages = $this->discoverLangs();
 
@@ -28,6 +28,9 @@ class Localization extends Command
         $this->info('All language files have been processed successfully!');
     }
 
+    /**
+     * @return void
+     */
     protected function buildTranslations(string $lang)
     {
         $path = base_path("resources/lang/{$lang}");
@@ -81,7 +84,7 @@ class Localization extends Command
         return $output;
     }
 
-    protected function saveTranslations(array $translations, string $lang)
+    protected function saveTranslations(array $translations, string $lang): void
     {
         $directory = public_path('_lang');
         if (! File::isDirectory($directory)) {

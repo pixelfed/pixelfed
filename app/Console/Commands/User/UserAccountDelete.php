@@ -7,6 +7,7 @@ use App\Models\Profile;
 use App\Models\User;
 use App\Util\ActivityPub\HttpSignature;
 use Illuminate\Console\Command;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Http\Client\PendingRequest;
 use Illuminate\Http\Client\Pool;
 use Illuminate\Http\Client\Response;
@@ -279,7 +280,10 @@ class UserAccountDelete extends Command
         ];
     }
 
-    protected function sharedInboxQuery()
+    /**
+     * @psalm-return Builder<Instance>
+     */
+    protected function sharedInboxQuery(): Builder
     {
         return Instance::query()
             ->whereNotNull('shared_inbox')

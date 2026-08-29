@@ -92,7 +92,7 @@ trait ManagesMediaStorageEnv
         $this->storeEnv($payload);
     }
 
-    protected function existingEnv($needle, $haystack)
+    protected function existingEnv($needle, $haystack): string|false
     {
         preg_match("/^{$needle}=[^\r\n]*/m", $haystack, $matches);
         if ($matches && count($matches)) {

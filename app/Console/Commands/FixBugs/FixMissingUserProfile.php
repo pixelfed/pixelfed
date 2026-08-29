@@ -33,6 +33,8 @@ class FixMissingUserProfile extends Command
 
     /**
      * Execute the console command.
+     *
+     * @return void
      */
     public function handle()
     {
@@ -131,7 +133,10 @@ class FixMissingUserProfile extends Command
         }
     }
 
-    protected function applyDefaultDomainBlocks($user)
+    /**
+     * @return void
+     */
+    protected function applyDefaultDomainBlocks(?User $user)
     {
         if ($user->profile_id == null) {
             return;

@@ -18,6 +18,11 @@ class GenerateInstanceActor extends Command
         parent::__construct();
     }
 
+    /**
+     * @return int|null
+     *
+     * @psalm-return 0|null
+     */
     public function handle()
     {
         if (Schema::hasTable('instance_actors') == false) {

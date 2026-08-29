@@ -42,6 +42,8 @@ class HashtagRelatedGenerate extends Command implements PromptsForMissingInput
 
     /**
      * Execute the console command.
+     *
+     * @return void
      */
     public function handle()
     {

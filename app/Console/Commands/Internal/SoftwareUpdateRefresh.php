@@ -25,7 +25,7 @@ class SoftwareUpdateRefresh extends Command
     /**
      * Execute the console command.
      */
-    public function handle()
+    public function handle(): void
     {
         $key = SoftwareUpdateService::cacheKey();
         Cache::forget($key);

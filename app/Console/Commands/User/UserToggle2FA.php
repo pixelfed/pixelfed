@@ -36,6 +36,8 @@ class UserToggle2FA extends Command implements PromptsForMissingInput
 
     /**
      * Execute the console command.
+     *
+     * @return void
      */
     public function handle()
     {
