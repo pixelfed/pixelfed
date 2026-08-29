@@ -5,7 +5,7 @@ namespace App\Console\Commands\Internal;
 use App\Models\FailedJob;
 use Illuminate\Console\Command;
 
-class FailedJobGC extends Command
+class GarbageCollectorFailedJob extends Command
 {
     /**
      * The name and signature of the console command.

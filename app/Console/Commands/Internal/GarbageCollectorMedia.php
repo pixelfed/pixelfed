@@ -6,7 +6,7 @@ use App\Models\Media;
 use App\Services\MediaStorageService;
 use Illuminate\Console\Command;
 
-class MediaGarbageCollector extends Command
+class GarbageCollectorMedia extends Command
 {
     /**
      * The name and signature of the console command.
