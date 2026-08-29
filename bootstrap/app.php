@@ -146,8 +146,8 @@ return Application::configure(basePath: dirname(__DIR__))
         if ((bool) config_cache('pixelfed.cloud_storage') && (bool) config_cache('media.delete_local_after_cloud')) {
             // Upload any local stragglers to cloud and GC verified local copies.
             $schedule->command('admin:MediaMoveStorageLocalToCloud --force --limit=500')->hourlyAt(15);
-            // Same for local custom emoji.
-            $schedule->command('admin:EmojiMoveStorageLocalToCloud --force --limit=1000')->dailyAt('04:35');
+            // Same for local custom emoji (no limit: keep all emoji on cloud).
+            $schedule->command('admin:EmojiMoveStorageLocalToCloud --force')->dailyAt('04:35');
         }
 
         if (config('import.instagram.enabled')) {
