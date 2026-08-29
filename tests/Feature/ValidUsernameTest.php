@@ -1,13 +1,13 @@
 <?php
 
-use App\Rules\PixelfedUsername;
+use App\Rules\ValidUsername;
 
 /**
- * Run the PixelfedUsername rule and return the failure message, or null if it passed.
+ * Run the ValidUsername rule and return the failure message, or null if it passed.
  */
 function validateUsername(string $value): ?string
 {
-    $rule = new PixelfedUsername;
+    $rule = new ValidUsername;
     $message = null;
     $rule->validate('username', $value, function ($msg) use (&$message) {
         $message = $msg;
@@ -16,7 +16,7 @@ function validateUsername(string $value): ?string
     return $message;
 }
 
-describe('PixelfedUsername', function () {
+describe('ValidUsername', function () {
     it('accepts a simple alphanumeric username', function () {
         expect(validateUsername('dansup'))->toBeNull();
     });

@@ -4,7 +4,7 @@ namespace App\Http\Controllers\Auth;
 
 use App\Http\Controllers\Controller;
 use App\Models\User;
-use App\Rules\PixelfedUsername;
+use App\Rules\ValidUsername;
 use App\Services\BouncerService;
 use App\Services\EmailService;
 use Illuminate\Auth\Events\Registered;
@@ -76,7 +76,7 @@ class RegisterController extends Controller
             'min:2',
             'max:30',
             'unique:users',
-            new PixelfedUsername,
+            new ValidUsername,
         ];
 
         $emailRules = [

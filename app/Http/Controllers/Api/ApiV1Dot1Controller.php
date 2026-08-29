@@ -26,7 +26,7 @@ use App\Models\Story;
 use App\Models\User;
 use App\Models\UserSetting;
 use App\Rules\ExpoPushTokenRule;
-use App\Rules\PixelfedUsername;
+use App\Rules\ValidUsername;
 use App\Services\AccountService;
 use App\Services\BouncerService;
 use App\Services\EmailService;
@@ -547,7 +547,7 @@ class ApiV1Dot1Controller extends Controller
                 'min:2',
                 'max:30',
                 'unique:users',
-                new PixelfedUsername,
+                new ValidUsername,
             ],
             'password' => 'required|string|min:8',
         ]);

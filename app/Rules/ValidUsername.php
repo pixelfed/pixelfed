@@ -8,7 +8,7 @@ use Illuminate\Contracts\Validation\ValidationRule;
 use Illuminate\Support\Str;
 use Illuminate\Translation\PotentiallyTranslatedString;
 
-class PixelfedUsername implements ValidationRule
+class ValidUsername implements ValidationRule
 {
     /**
      * Run the validation rule.

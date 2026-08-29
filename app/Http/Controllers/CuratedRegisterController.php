@@ -6,7 +6,7 @@ use App\Jobs\CuratedOnboarding\CuratedOnboardingNotifyAdminNewApplicationPipelin
 use App\Mail\CuratedRegisterConfirmEmail;
 use App\Models\CuratedRegister;
 use App\Models\CuratedRegisterActivity;
-use App\Rules\PixelfedUsername;
+use App\Rules\ValidUsername;
 use App\Services\EmailService;
 use Illuminate\Contracts\View\View;
 use Illuminate\Http\RedirectResponse;
@@ -361,7 +361,7 @@ class CuratedRegisterController extends Controller
                 'max:30',
                 'unique:curated_registers',
                 'unique:users',
-                new PixelfedUsername,
+                new ValidUsername,
             ],
             'email' => [
                 'required',

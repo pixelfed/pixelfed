@@ -5,7 +5,7 @@ namespace App\Http\Controllers;
 use App\Mail\InAppRegisterEmailVerify;
 use App\Models\AppRegister;
 use App\Models\User;
-use App\Rules\PixelfedUsername;
+use App\Rules\ValidUsername;
 use App\Services\AccountService;
 use Illuminate\Contracts\View\View;
 use Illuminate\Http\JsonResponse;
@@ -303,7 +303,7 @@ class AppRegisterController extends Controller
             'min:2',
             'max:30',
             'unique:users',
-            new PixelfedUsername,
+            new ValidUsername,
         ];
     }
 

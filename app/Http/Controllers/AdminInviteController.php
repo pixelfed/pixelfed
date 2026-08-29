@@ -4,7 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\AdminInvite;
 use App\Models\User;
-use App\Rules\PixelfedUsername;
+use App\Rules\ValidUsername;
 use App\Services\EmailService;
 use Illuminate\Auth\Events\Registered;
 use Illuminate\Contracts\View\View;
@@ -68,7 +68,7 @@ class AdminInviteController extends Controller
             'min:2',
             'max:30',
             'unique:users',
-            new PixelfedUsername,
+            new ValidUsername,
         ];
 
         $rules = ['username' => $usernameRules];
@@ -126,7 +126,7 @@ class AdminInviteController extends Controller
                 'min:2',
                 'max:30',
                 'unique:users',
-                new PixelfedUsername,
+                new ValidUsername,
             ],
             'name' => 'nullable|string|max:'.config('pixelfed.max_name_length'),
             'email' => [
