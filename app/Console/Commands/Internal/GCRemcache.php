@@ -4,7 +4,7 @@ namespace App\Console\Commands\Internal;
 
 use Illuminate\Console\Command;
 
-class RemcacheGarbageCollector extends Command
+class GCRemcache extends Command
 {
     /**
      * The name and signature of the console command.
