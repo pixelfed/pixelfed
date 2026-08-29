@@ -2,7 +2,7 @@
 
 namespace App\Http\Controllers;
 
-use App\Status;
+use App\Models\Status;
 use App\Transformer\Api\StatusTransformer;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
@@ -18,7 +18,7 @@ class MicroController extends Controller
         $this->middleware('auth');
     }
 
-    public function composeText(Request $request)
+    public function composeText(Request $request): array
     {
         $this->validate($request, [
             'type' => [

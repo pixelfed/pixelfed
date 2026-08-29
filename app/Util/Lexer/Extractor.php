@@ -9,9 +9,9 @@
 
 namespace App\Util\Lexer;
 
+use App\Models\Status;
 use App\Services\AutolinkService;
 use App\Services\TrendingHashtagService;
-use App\Status;
 
 /**
  * Twitter Extractor Class.

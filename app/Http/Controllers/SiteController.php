@@ -2,13 +2,15 @@
 
 namespace App\Http\Controllers;
 
-use App\Page;
-use App\Profile;
+use App\Models\Page;
+use App\Models\Profile;
+use App\Models\User;
 use App\Services\FollowerService;
 use App\Services\StatusService;
-use App\User;
 use App\Util\ActivityPub\Helpers;
 use App\Util\Localization\Localization;
+use Illuminate\Contracts\View\View as ViewContract;
+use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\View;
@@ -25,12 +27,12 @@ class SiteController extends Controller
         }
     }
 
-    public function homeGuest()
+    public function homeGuest(): ViewContract
     {
         return view('site.index');
     }
 
-    public function homeTimeline(Request $request)
+    public function homeTimeline(Request $request): RedirectResponse|ViewContract
     {
         if ($request->has('force_old_ui')) {
             return view('timeline.home', ['layout' => 'feed']);
@@ -39,7 +41,7 @@ class SiteController extends Controller
         return redirect('/i/web');
     }
 
-    public function changeLocale(Request $request, $locale)
+    public function changeLocale(Request $request, $locale): RedirectResponse
     {
         // todo: add other locales after pushing new l10n strings
         $locales = Localization::languages();
@@ -66,7 +68,7 @@ class SiteController extends Controller
         });
     }
 
-    public function language()
+    public function language(): View
     {
         return view('site.language');
     }
@@ -103,7 +105,7 @@ class SiteController extends Controller
         return View::make('site.terms')->with(compact('page'))->render();
     }
 
-    public function redirectUrl(Request $request)
+    public function redirectUrl(Request $request): View
     {
         abort_if(! $request->user(), 404);
         $this->validate($request, [
@@ -115,7 +117,7 @@ class SiteController extends Controller
         return view('site.redirect', compact('url'));
     }
 
-    public function followIntent(Request $request)
+    public function followIntent(Request $request): View
     {
         $this->validate($request, [
             'user' => 'string|min:1|max:30|exists:users,username',
@@ -128,7 +130,7 @@ class SiteController extends Controller
         return view('site.intents.follow', compact('profile', 'user', 'following'));
     }
 
-    public function legacyProfileRedirect(Request $request, $username)
+    public function legacyProfileRedirect(Request $request, $username): RedirectResponse
     {
         $username = Str::contains($username, '@') ? '@'.$username : $username;
         if (str_contains($username, '@')) {
@@ -151,7 +153,7 @@ class SiteController extends Controller
         return redirect($url);
     }
 
-    public function legacyWebfingerRedirect(Request $request, $username, $domain)
+    public function legacyWebfingerRedirect(Request $request, $username, $domain): RedirectResponse
     {
         $un = '@'.$username.'@'.$domain;
         $profile = Profile::whereUsername($un)
@@ -178,7 +180,7 @@ class SiteController extends Controller
         return View::make('site.legal-notice')->with(compact('page'))->render();
     }
 
-    public function curatedOnboarding(Request $request)
+    public function curatedOnboarding(Request $request): RedirectResponse|View
     {
         if ($request->user()) {
             return redirect('/i/web');

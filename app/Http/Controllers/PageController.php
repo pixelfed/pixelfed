@@ -2,8 +2,11 @@
 
 namespace App\Http\Controllers;
 
-use App\Page;
+use App\Models\Page;
 use App\Services\ConfigCacheService;
+use Illuminate\Contracts\View\View;
+use Illuminate\Http\JsonResponse;
+use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Cache;
@@ -15,7 +18,7 @@ class PageController extends Controller
         $this->middleware(['auth', 'admin']);
     }
 
-    protected function cacheKeys()
+    protected function cacheKeys(): array
     {
         return [
             '/site/about' => 'site:about',
@@ -26,7 +29,7 @@ class PageController extends Controller
         ];
     }
 
-    protected function authCheck($admin_only = false)
+    protected function authCheck($admin_only = false): void
     {
         $auth = $admin_only ?
             Auth::check() && Auth::user()->is_admin == true :
@@ -36,7 +39,7 @@ class PageController extends Controller
         }
     }
 
-    public function edit(Request $request)
+    public function edit(Request $request): RedirectResponse|View
     {
         $this->authCheck(true);
         $this->validate($request, [
@@ -51,7 +54,7 @@ class PageController extends Controller
         return view('admin.pages.edit', compact('page'));
     }
 
-    public function store(Request $request)
+    public function store(Request $request): JsonResponse
     {
         $this->validate($request, [
             'slug' => 'required|string',
@@ -75,7 +78,7 @@ class PageController extends Controller
         return response()->json(['msg' => 200]);
     }
 
-    public function delete(Request $request)
+    public function delete(Request $request): RedirectResponse
     {
         $this->validate($request, [
             'id' => 'required|integer|min:1|exists:pages,id',
@@ -90,7 +93,7 @@ class PageController extends Controller
         return redirect(route('admin.settings.pages'));
     }
 
-    public function generatePage(Request $request)
+    public function generatePage(Request $request): RedirectResponse
     {
         $this->validate($request, [
             'page' => 'required|string|in:about,terms,privacy,community_guidelines,legal_notice',

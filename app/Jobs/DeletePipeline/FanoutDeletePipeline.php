@@ -2,10 +2,8 @@
 
 namespace App\Jobs\DeletePipeline;
 
-use App\Profile;
-use App\Util\ActivityPub\HttpSignature;
-use GuzzleHttp\Client;
-use GuzzleHttp\Pool;
+use App\Models\Profile;
+use App\Services\ActivityPubDeliveryService;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
@@ -53,10 +51,6 @@ class FanoutDeletePipeline implements ShouldQueue
         }
 
         try {
-            $client = new Client([
-                'timeout' => config('federation.activitypub.delivery.timeout'),
-            ]);
-
             $audience = Cache::remember('pf:ap:known_instances', now()->addHours(6), function () {
                 return Profile::whereNotNull('sharedInbox')->groupBy('sharedInbox')->pluck('sharedInbox')->toArray();
             });
@@ -72,37 +66,7 @@ class FanoutDeletePipeline implements ShouldQueue
                 ],
             ];
 
-            $payload = json_encode($activity);
-
-            $requests = function ($audience) use ($client, $activity, $profile, $payload) {
-                foreach ($audience as $url) {
-                    $version = config('pixelfed.version');
-                    $appUrl = config('app.url');
-                    $headers = HttpSignature::sign($profile, $url, $activity, [
-                        'Content-Type' => 'application/ld+json; profile="https://www.w3.org/ns/activitystreams"',
-                        'User-Agent' => "(Pixelfed/{$version}; +{$appUrl})",
-                    ]);
-                    yield function () use ($client, $url, $headers, $payload) {
-                        return $client->postAsync($url, [
-                            'curl' => [
-                                CURLOPT_HTTPHEADER => $headers,
-                                CURLOPT_POSTFIELDS => $payload,
-                                CURLOPT_HEADER => true,
-                            ],
-                        ]);
-                    };
-                }
-            };
-
-            $pool = new Pool($client, $requests($audience), [
-                'concurrency' => config('federation.activitypub.delivery.concurrency'),
-                'fulfilled' => function ($response, $index) {},
-                'rejected' => function ($reason, $index) {},
-            ]);
-
-            $promise = $pool->promise();
-
-            $promise->wait();
+            ActivityPubDeliveryService::pool($profile, $audience, $activity);
         } catch (\Exception $e) {
             Log::warning("FanoutDeletePipeline: Failed to fanout delete for profile {$profile->id}: ".$e->getMessage());
             throw $e;

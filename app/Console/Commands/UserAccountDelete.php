@@ -2,17 +2,17 @@
 
 namespace App\Console\Commands;
 
-use App\Instance;
-use App\Profile;
-use App\User;
+use App\Models\Instance;
+use App\Models\Profile;
+use App\Models\User;
 use App\Util\ActivityPub\HttpSignature;
-use GuzzleHttp\Client;
-use GuzzleHttp\Pool;
-use GuzzleHttp\Psr7\Request;
 use Illuminate\Console\Command;
+use Illuminate\Http\Client\PendingRequest;
+use Illuminate\Http\Client\Pool;
+use Illuminate\Http\Client\Response;
 use Illuminate\Support\Collection;
+use Illuminate\Support\Facades\Http;
 use JsonException;
-use Psr\Http\Message\ResponseInterface;
 
 use function Laravel\Prompts\confirm;
 use function Laravel\Prompts\search;
@@ -289,23 +289,21 @@ class UserAccountDelete extends Command
             ->distinct();
     }
 
-    protected function makeHttpClient(): Client
+    protected function makeHttpClient(): PendingRequest
     {
-        return new Client([
-            'timeout' => 10.0,
-            'connect_timeout' => 5.0,
-            'http_errors' => false,
-            'allow_redirects' => false,
-            'version' => '1.1',
-            'headers' => [
+        return Http::timeout(10)
+            ->connectTimeout(5)
+            ->withOptions([
+                'allow_redirects' => false,
+            ])
+            ->withHeaders([
                 'User-Agent' => 'Pixelfed ('.config('app.url').')',
                 'Accept' => 'application/activity+json, application/ld+json; profile="https://www.w3.org/ns/activitystreams"',
-            ],
-        ]);
+            ]);
     }
 
     protected function sendBatch(
-        Client $client,
+        PendingRequest $client,
         string $privateKey,
         string $keyId,
         string $digest,
@@ -320,27 +318,43 @@ class UserAccountDelete extends Command
         $httpFailed = [];
         $retryable = [];
 
-        $requests = function () use ($urls, $privateKey, $keyId, $digest, $payload, $payloadLen) {
-            foreach ($urls as $url) {
+        $urlList = $urls->values()->all();
+
+        $responses = Http::pool(function (Pool $pool) use ($urlList, $privateKey, $keyId, $digest, $payload, $payloadLen) {
+            foreach ($urlList as $url) {
                 $headers = HttpSignature::signRawWithDigest($privateKey, $keyId, $url, $digest);
                 $headers['Content-Type'] = 'application/ld+json; profile="https://www.w3.org/ns/activitystreams"';
                 $headers['Content-Length'] = (string) $payloadLen;
-                yield $url => new Request('POST', $url, $headers, $payload);
-            }
-        };
 
-        $pool = new Pool($client, $requests(), [
-            'concurrency' => $concurrency,
-            'fulfilled' => function (ResponseInterface $response, string $url) use (&$delivered, &$httpFailed, &$retryable, $verboseErrors) {
-                $status = $response->getStatusCode();
+                $pool->as($url)
+                    ->timeout(10)
+                    ->connectTimeout(5)
+                    ->withOptions(['allow_redirects' => false])
+                    ->withHeaders($headers)
+                    ->withBody($payload, 'application/ld+json; profile="https://www.w3.org/ns/activitystreams"')
+                    ->post($url);
+            }
+        });
+
+        foreach ($urlList as $url) {
+            $response = $responses[$url] ?? null;
+
+            if (! $response) {
+                $retryable[$url] = 'No response';
+
+                continue;
+            }
+
+            if ($response instanceof Response) {
+                $status = $response->status();
 
                 if ($status >= 200 && $status < 300) {
                     $delivered[$url] = $status;
 
-                    return;
+                    continue;
                 }
 
-                $body = mb_substr((string) $response->getBody(), 0, 500);
+                $body = mb_substr((string) $response->body(), 0, 500);
 
                 if ($verboseErrors) {
                     $this->warn("  [{$status}] {$url} — {$body}");
@@ -349,28 +363,25 @@ class UserAccountDelete extends Command
                 if ($this->isRetryableStatus($status)) {
                     $retryable[$url] = "HTTP {$status}";
 
-                    return;
+                    continue;
                 }
 
                 $httpFailed[$url] = [
                     'status' => $status,
                     'body' => $body,
                 ];
-            },
-            'rejected' => function ($reason, string $url) use (&$retryable, $verboseErrors) {
-                $message = $reason instanceof \Throwable
-                    ? $reason->getMessage()
-                    : (string) $reason;
+            } else {
+                $message = $response instanceof \Throwable
+                    ? $response->getMessage()
+                    : (string) $response;
 
                 if ($verboseErrors) {
                     $this->error("  [TRANSPORT] {$url} — {$message}");
                 }
 
                 $retryable[$url] = $message;
-            },
-        ]);
-
-        $pool->promise()->wait();
+            }
+        }
 
         return [
             'delivered' => $delivered,
@@ -398,27 +409,22 @@ class UserAccountDelete extends Command
         $this->line($payload);
         $this->newLine();
 
-        $client = new Client([
-            'timeout' => 15.0,
-            'connect_timeout' => 5.0,
-            'http_errors' => false,
-            'allow_redirects' => false,
-        ]);
-
         try {
-            $response = $client->post($url, [
-                'headers' => $headers,
-                'body' => $payload,
-            ]);
+            $response = Http::timeout(15)
+                ->connectTimeout(5)
+                ->withOptions(['allow_redirects' => false])
+                ->withHeaders($headers)
+                ->withBody($payload, 'application/ld+json; profile="https://www.w3.org/ns/activitystreams"')
+                ->post($url);
 
-            $status = $response->getStatusCode();
-            $body = (string) $response->getBody();
+            $status = $response->status();
+            $body = $response->body();
 
             $this->info("Response status: {$status}");
             $this->newLine();
 
             $this->info('Response headers:');
-            foreach ($response->getHeaders() as $name => $values) {
+            foreach ($response->headers() as $name => $values) {
                 $this->line("  {$name}: ".implode(', ', $values));
             }
             $this->newLine();

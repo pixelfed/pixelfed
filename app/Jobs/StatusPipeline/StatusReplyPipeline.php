@@ -2,10 +2,10 @@
 
 namespace App\Jobs\StatusPipeline;
 
-use App\Notification;
+use App\Models\Notification;
+use App\Models\Status;
 use App\Services\NotificationService;
 use App\Services\StatusService;
-use App\Status;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
@@ -117,16 +117,7 @@ class StatusReplyPipeline implements ShouldQueue
 
         if ($target->user_id && $target->domain === null) {
             DB::transaction(function () use ($target, $actor, $status) {
-                $notification = new Notification;
-                $notification->profile_id = $target->id;
-                $notification->actor_id = $actor->id;
-                $notification->action = 'comment';
-                $notification->item_id = $status->id;
-                $notification->item_type = Status::class;
-                $notification->save();
-
-                NotificationService::setNotification($notification);
-                NotificationService::set($notification->profile_id, $notification->id);
+                NotificationService::createNotification($target->id, $actor->id, 'comment', $status->id, Status::class);
             });
         }
 

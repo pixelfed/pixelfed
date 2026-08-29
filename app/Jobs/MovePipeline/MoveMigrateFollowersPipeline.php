@@ -2,9 +2,9 @@
 
 namespace App\Jobs\MovePipeline;
 
-use App\Follower;
 use App\Http\Controllers\FollowerController;
-use App\Profile;
+use App\Models\Follower;
+use App\Models\Profile;
 use App\Util\ActivityPub\Helpers;
 use DateTime;
 use Exception;

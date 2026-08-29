@@ -3,7 +3,7 @@
 namespace App\Jobs\VideoPipeline;
 
 use App\Jobs\MediaPipeline\MediaStoragePipeline;
-use App\Media;
+use App\Models\Media;
 use App\Services\MediaService;
 use App\Services\StatusService;
 use App\Util\Media\Blurhash;

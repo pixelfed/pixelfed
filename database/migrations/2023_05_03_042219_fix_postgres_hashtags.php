@@ -1,7 +1,7 @@
 <?php
 
-use App\Hashtag;
-use App\StatusHashtag;
+use App\Models\Hashtag;
+use App\Models\StatusHashtag;
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Support\Facades\Cache;
 

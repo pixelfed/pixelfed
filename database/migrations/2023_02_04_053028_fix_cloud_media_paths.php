@@ -1,6 +1,6 @@
 <?php
 
-use App\Media;
+use App\Models\Media;
 use App\Services\MediaService;
 use App\Services\StatusService;
 use Illuminate\Database\Migrations\Migration;

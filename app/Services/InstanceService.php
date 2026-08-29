@@ -2,7 +2,7 @@
 
 namespace App\Services;
 
-use App\Instance;
+use App\Models\Instance;
 use App\Util\Blurhash\Blurhash;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\DB;

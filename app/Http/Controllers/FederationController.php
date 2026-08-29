@@ -5,19 +5,21 @@ namespace App\Http\Controllers;
 use App\Jobs\InboxPipeline\DeleteWorker;
 use App\Jobs\InboxPipeline\InboxValidator;
 use App\Jobs\InboxPipeline\InboxWorker;
-use App\Profile;
+use App\Models\Profile;
+use App\Models\Status;
 use App\Services\AccountService;
 use App\Services\InstanceService;
-use App\Status;
 use App\Util\Lexer\Nickname;
 use App\Util\Site\Nodeinfo;
 use App\Util\Webfinger\Webfinger;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
+use Illuminate\Http\Response;
 use Illuminate\Support\Facades\Cache;
 
 class FederationController extends Controller
 {
-    public function nodeinfoWellKnown()
+    public function nodeinfoWellKnown(): JsonResponse
     {
         abort_if(! config('federation.nodeinfo.enabled'), 404);
 
@@ -25,7 +27,7 @@ class FederationController extends Controller
             ->header('Access-Control-Allow-Origin', '*');
     }
 
-    public function nodeinfo()
+    public function nodeinfo(): JsonResponse
     {
         abort_if(! config('federation.nodeinfo.enabled'), 404);
 
@@ -33,7 +35,7 @@ class FederationController extends Controller
             ->header('Access-Control-Allow-Origin', '*');
     }
 
-    public function webfinger(Request $request)
+    public function webfinger(Request $request): JsonResponse|Response
     {
         if (! config('federation.webfinger.enabled') ||
             ! $request->has('resource') ||
@@ -127,7 +129,7 @@ class FederationController extends Controller
             ->header('Access-Control-Allow-Origin', '*');
     }
 
-    public function hostMeta(Request $request)
+    public function hostMeta(Request $request): Response
     {
         abort_if(! config('federation.webfinger.enabled'), 404);
 
@@ -159,7 +161,7 @@ class FederationController extends Controller
         return response(json_encode($res, JSON_UNESCAPED_SLASHES))->header('Content-Type', 'application/activity+json');
     }
 
-    public function userInbox(Request $request, $username)
+    public function userInbox(Request $request, $username): void
     {
         abort_if(! (bool) config_cache('federation.activitypub.enabled'), 404);
         abort_if(! config('federation.activitypub.inbox'), 404);
@@ -212,7 +214,7 @@ class FederationController extends Controller
 
     }
 
-    public function sharedInbox(Request $request)
+    public function sharedInbox(Request $request): void
     {
         abort_if(! (bool) config_cache('federation.activitypub.enabled'), 404);
         abort_if(! config('federation.activitypub.sharedInbox'), 404);
@@ -268,7 +270,7 @@ class FederationController extends Controller
 
     }
 
-    public function userFollowing(Request $request, $username)
+    public function userFollowing(Request $request, $username): JsonResponse
     {
         abort_if(! (bool) config_cache('federation.activitypub.enabled'), 404);
 
@@ -286,7 +288,7 @@ class FederationController extends Controller
         return response()->json($obj)->header('Content-Type', 'application/activity+json');
     }
 
-    public function userFollowers(Request $request, $username)
+    public function userFollowers(Request $request, $username): JsonResponse
     {
         abort_if(! (bool) config_cache('federation.activitypub.enabled'), 404);
         $id = AccountService::usernameToId($username);

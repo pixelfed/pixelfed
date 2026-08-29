@@ -2,9 +2,6 @@
 
 namespace App\Http\Controllers\Api;
 
-use App\AccountLog;
-use App\EmailVerification;
-use App\Follower;
 use App\Http\Controllers\Controller;
 use App\Http\Controllers\StatusController;
 use App\Http\Resources\StatusStateless;
@@ -16,10 +13,18 @@ use App\Jobs\StatusPipeline\StatusDelete;
 use App\Jobs\VideoPipeline\VideoThumbnail;
 use App\Mail\ConfirmAppEmail;
 use App\Mail\PasswordChange;
-use App\Media;
-use App\Place;
-use App\Profile;
-use App\Report;
+use App\Models\AccountLog;
+use App\Models\EmailVerification;
+use App\Models\Follower;
+use App\Models\Media;
+use App\Models\Place;
+use App\Models\Profile;
+use App\Models\Report;
+use App\Models\Status;
+use App\Models\StatusArchived;
+use App\Models\Story;
+use App\Models\User;
+use App\Models\UserSetting;
 use App\Rules\ExpoPushTokenRule;
 use App\Services\AccountService;
 use App\Services\BouncerService;
@@ -37,13 +42,10 @@ use App\Services\StatusService;
 use App\Services\UserAgentService;
 use App\Services\UserRoleService;
 use App\Services\UserStorageService;
-use App\Status;
-use App\StatusArchived;
-use App\Story;
 use App\Transformer\Api\AccountTransformer;
-use App\User;
-use App\UserSetting;
 use App\Util\Lexer\RestrictedNames;
+use Illuminate\Http\JsonResponse;
+use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\DB;
@@ -64,12 +66,12 @@ class ApiV1Dot1Controller extends Controller
         $this->fractal->setSerializer(new ArraySerializer);
     }
 
-    public function json($res, $code = 200, $headers = [])
+    public function json($res, $code = 200, $headers = []): JsonResponse
     {
         return response()->json($res, $code, $headers, JSON_UNESCAPED_SLASHES);
     }
 
-    public function error($msg, $code = 400, $extra = [], $headers = [])
+    public function error($msg, $code = 400, $extra = [], $headers = []): JsonResponse
     {
         $res = [
             'msg' => $msg,
@@ -504,7 +506,7 @@ class ApiV1Dot1Controller extends Controller
         return $this->json($res);
     }
 
-    public function inAppRegistrationPreFlightCheck(Request $request)
+    public function inAppRegistrationPreFlightCheck(Request $request): array
     {
         return [
             'open' => (bool) config_cache('pixelfed.open_registration'),
@@ -512,7 +514,7 @@ class ApiV1Dot1Controller extends Controller
         ];
     }
 
-    public function inAppRegistration(Request $request)
+    public function inAppRegistration(Request $request): JsonResponse
     {
         abort_if($request->user(), 404);
         abort_unless((bool) config_cache('pixelfed.open_registration'), 404);
@@ -621,7 +623,7 @@ class ApiV1Dot1Controller extends Controller
         ]);
     }
 
-    public function inAppRegistrationEmailRedirect(Request $request)
+    public function inAppRegistrationEmailRedirect(Request $request): RedirectResponse
     {
         $this->validate($request, [
             'ut' => 'required',
@@ -642,7 +644,7 @@ class ApiV1Dot1Controller extends Controller
         return redirect()->away($url);
     }
 
-    public function inAppRegistrationConfirm(Request $request)
+    public function inAppRegistrationConfirm(Request $request): JsonResponse
     {
         abort_if($request->user(), 404);
         abort_unless((bool) config_cache('pixelfed.open_registration'), 404);
@@ -685,7 +687,7 @@ class ApiV1Dot1Controller extends Controller
         ]);
     }
 
-    public function archive(Request $request, $id)
+    public function archive(Request $request, $id): array
     {
         abort_if(! $request->user() || ! $request->user()->token(), 403);
         abort_unless($request->user()->tokenCan('write'), 403);
@@ -718,7 +720,7 @@ class ApiV1Dot1Controller extends Controller
         return [200];
     }
 
-    public function unarchive(Request $request, $id)
+    public function unarchive(Request $request, $id): array
     {
         abort_if(! $request->user() || ! $request->user()->token(), 403);
         abort_unless($request->user()->tokenCan('write'), 403);
@@ -767,7 +769,7 @@ class ApiV1Dot1Controller extends Controller
         return StatusStateless::collection($statuses);
     }
 
-    public function placesById(Request $request, $id, $slug)
+    public function placesById(Request $request, $id, $slug): array
     {
         abort_if(! $request->user() || ! $request->user()->token(), 403);
         abort_unless($request->user()->tokenCan('read'), 403);
@@ -930,7 +932,7 @@ class ApiV1Dot1Controller extends Controller
         return $settings->other;
     }
 
-    public function setWebSettings(Request $request)
+    public function setWebSettings(Request $request): array
     {
         abort_if(! $request->user() || ! $request->user()->token(), 403);
         abort_unless($request->user()->tokenCan('write'), 403);
@@ -1369,7 +1371,7 @@ class ApiV1Dot1Controller extends Controller
         return $this->json($res);
     }
 
-    public function nagState(Request $request)
+    public function nagState(Request $request): array
     {
         abort_unless((bool) config_cache('pixelfed.oauth_enabled'), 404);
 

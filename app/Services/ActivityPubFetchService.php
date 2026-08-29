@@ -4,12 +4,11 @@ namespace App\Services;
 
 use App\Util\ActivityPub\Helpers;
 use App\Util\ActivityPub\HttpSignature;
-use GuzzleHttp\Psr7\Uri as GuzzleUri;
-use GuzzleHttp\Psr7\UriResolver;
 use Illuminate\Http\Client\ConnectionException;
 use Illuminate\Http\Client\RequestException;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Http;
+use League\Uri\BaseUri;
 use Psr\Http\Message\ResponseInterface;
 
 class ActivityPubFetchService
@@ -228,10 +227,7 @@ class ActivityPubFetchService
         }
 
         try {
-            $resolved = UriResolver::resolve(
-                new GuzzleUri($baseUrl),
-                new GuzzleUri($location)
-            );
+            $resolved = BaseUri::from($baseUrl)->resolve($location);
 
             $url = (string) $resolved;
 

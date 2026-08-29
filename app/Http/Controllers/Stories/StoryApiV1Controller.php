@@ -2,8 +2,6 @@
 
 namespace App\Http\Controllers\Stories;
 
-use App\DirectMessage;
-use App\Follower;
 use App\Http\Controllers\Controller;
 use App\Http\Resources\StoryView as StoryViewResource;
 use App\Jobs\StoryPipeline\StoryDelete;
@@ -11,14 +9,17 @@ use App\Jobs\StoryPipeline\StoryFanout;
 use App\Jobs\StoryPipeline\StoryReplyDeliver;
 use App\Jobs\StoryPipeline\StoryViewDeliver;
 use App\Models\Conversation;
-use App\Notification;
+use App\Models\DirectMessage;
+use App\Models\Follower;
+use App\Models\Notification;
+use App\Models\Status;
+use App\Models\Story;
+use App\Models\StoryView;
 use App\Services\AccountService;
 use App\Services\MediaPathService;
 use App\Services\StoryIndexService;
 use App\Services\StoryService;
-use App\Status;
-use App\Story;
-use App\StoryView;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Arr;
 use Illuminate\Support\Facades\Cache;
@@ -36,7 +37,7 @@ class StoryApiV1Controller extends Controller
 
     const RECENT_TTL = 300;
 
-    public function carousel(Request $request)
+    public function carousel(Request $request): JsonResponse
     {
         abort_if(! (bool) config_cache('instance.stories.enabled') || ! $request->user(), 404);
         $pid = $request->user()->profile_id;
@@ -149,7 +150,7 @@ class StoryApiV1Controller extends Controller
         return response()->json($res, 200, [], JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES);
     }
 
-    public function selfCarousel(Request $request)
+    public function selfCarousel(Request $request): JsonResponse
     {
         abort_if(! (bool) config_cache('instance.stories.enabled') || ! $request->user(), 404);
         $pid = $request->user()->profile_id;
@@ -314,7 +315,7 @@ class StoryApiV1Controller extends Controller
         return $res;
     }
 
-    public function publish(Request $request)
+    public function publish(Request $request): array
     {
         abort_if(! (bool) config_cache('instance.stories.enabled') || ! $request->user(), 404);
 
@@ -349,7 +350,7 @@ class StoryApiV1Controller extends Controller
         ];
     }
 
-    public function carouselNext(Request $request)
+    public function carouselNext(Request $request): JsonResponse
     {
         abort_if(! (bool) config_cache('instance.stories.enabled') || ! $request->user(), 404);
         $pid = (int) $request->user()->profile_id;
@@ -380,7 +381,7 @@ class StoryApiV1Controller extends Controller
         );
     }
 
-    public function publishNext(Request $request)
+    public function publishNext(Request $request): JsonResponse
     {
         abort_if(! (bool) config_cache('instance.stories.enabled') || ! $request->user(), 404);
 
@@ -565,7 +566,7 @@ class StoryApiV1Controller extends Controller
         }
     }
 
-    public function mentionAutocomplete(Request $request)
+    public function mentionAutocomplete(Request $request): JsonResponse
     {
         abort_if(! (bool) config_cache('instance.stories.enabled') || ! $request->user(), 404);
 
@@ -600,7 +601,7 @@ class StoryApiV1Controller extends Controller
         return response()->json($rows);
     }
 
-    public function delete(Request $request, $id)
+    public function delete(Request $request, $id): array
     {
         abort_if(! (bool) config_cache('instance.stories.enabled') || ! $request->user(), 404);
 
@@ -622,7 +623,7 @@ class StoryApiV1Controller extends Controller
         ];
     }
 
-    public function viewed(Request $request)
+    public function viewed(Request $request): array
     {
         abort_if(! (bool) config_cache('instance.stories.enabled') || ! $request->user(), 404);
 
@@ -666,7 +667,7 @@ class StoryApiV1Controller extends Controller
         return ['code' => 200];
     }
 
-    public function comment(Request $request)
+    public function comment(Request $request): array
     {
         abort_if(! (bool) config_cache('instance.stories.enabled') || ! $request->user(), 404);
         $this->validate($request, [

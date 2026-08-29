@@ -2,7 +2,7 @@
 
 namespace App\Jobs\InstancePipeline;
 
-use App\Instance;
+use App\Models\Instance;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;

@@ -8,18 +8,20 @@ use App\Jobs\GroupsPipeline\ImageS3UploadPipeline;
 use App\Jobs\GroupsPipeline\NewPostPipeline;
 use App\Jobs\StatusPipeline\StatusDelete;
 use App\Jobs\VideoPipeline\VideoThumbnail;
-use App\Media;
 use App\Models\Group;
 use App\Models\GroupLike;
 use App\Models\GroupMedia;
 use App\Models\GroupPost;
-use App\Profile;
+use App\Models\Media;
+use App\Models\Profile;
 use App\Services\Groups\GroupFeedService;
 use App\Services\Groups\GroupMediaService;
 use App\Services\Groups\GroupPostService;
 use App\Services\Groups\GroupsLikeService;
 use App\Services\GroupService;
 use App\Services\PollService;
+use Illuminate\Http\JsonResponse;
+use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Bus;
 use Illuminate\Support\Facades\Cache;
@@ -155,7 +157,7 @@ class GroupsPostController extends Controller
         return $s;
     }
 
-    public function deletePost(Request $request)
+    public function deletePost(Request $request): JsonResponse|RedirectResponse
     {
         abort_if(! $request->user(), 403);
 
@@ -372,7 +374,7 @@ class GroupsPostController extends Controller
         return $response;
     }
 
-    public function getGroupMedia(Request $request)
+    public function getGroupMedia(Request $request): JsonResponse
     {
         $this->validate($request, [
             'gid' => 'required',

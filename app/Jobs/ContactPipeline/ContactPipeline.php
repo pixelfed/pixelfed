@@ -2,8 +2,8 @@
 
 namespace App\Jobs\ContactPipeline;
 
-use App\Contact;
 use App\Mail\ContactAdmin;
+use App\Models\Contact;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;

@@ -2,12 +2,12 @@
 
 namespace App\Util\Sentiment;
 
-use App\AccountInterstitial;
 use App\Jobs\ReportPipeline\AutospamNotifyAdminViaEmail;
-use App\Notification;
+use App\Models\AccountInterstitial;
+use App\Models\Status;
 use App\Services\AutospamService;
+use App\Services\NotificationService;
 use App\Services\StatusService;
-use App\Status;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Str;
 
@@ -111,28 +111,7 @@ class Bouncer
 
     protected function handle($status)
     {
-        $media = $status->media;
-
-        $ai = new AccountInterstitial;
-        $ai->user_id = $status->profile->user_id;
-        $ai->type = 'post.autospam';
-        $ai->view = 'account.moderation.post.autospam';
-        $ai->item_type = Status::class;
-        $ai->item_id = $status->id;
-        $ai->has_media = (bool) $media->count();
-        $ai->blurhash = $media->count() ? $media->first()->blurhash : null;
-        $ai->meta = json_encode([
-            'caption' => $status->caption,
-            'created_at' => $status->created_at,
-            'type' => $status->type,
-            'url' => $status->url(),
-            'is_nsfw' => $status->is_nsfw,
-            'scope' => $status->scope,
-            'reblog' => $status->reblog_of_id,
-            'likes_count' => $status->likes_count,
-            'reblogs_count' => $status->reblogs_count,
-        ]);
-        $ai->save();
+        $ai = AccountInterstitial::createFromStatus($status, 'post.autospam', 'account.moderation.post.autospam');
 
         if (config('instance.reports.email.enabled') && config('instance.reports.email.autospam')) {
             AutospamNotifyAdminViaEmail::dispatch($ai);
@@ -147,13 +126,7 @@ class Bouncer
         // $status->is_nsfw = true;
         $status->save();
 
-        $notification = new Notification;
-        $notification->profile_id = $status->profile_id;
-        $notification->actor_id = $status->profile_id;
-        $notification->action = 'autospam.warning';
-        $notification->item_id = $status->id;
-        $notification->item_type = Status::class;
-        $notification->save();
+        NotificationService::createNotification($status->profile_id, $status->profile_id, 'autospam.warning', $status->id, Status::class);
 
         StatusService::del($status->id);
 

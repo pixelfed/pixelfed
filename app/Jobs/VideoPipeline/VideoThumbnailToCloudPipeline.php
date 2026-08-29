@@ -2,7 +2,7 @@
 
 namespace App\Jobs\VideoPipeline;
 
-use App\Media;
+use App\Models\Media;
 use App\Services\MediaService;
 use App\Services\ResilientMediaStorageService;
 use App\Services\StatusService;

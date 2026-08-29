@@ -2,7 +2,7 @@
 
 namespace App\Transformer\Api;
 
-use App\Profile;
+use App\Models\Profile;
 use League\Fractal;
 
 class AccountWithStatusesTransformer extends Fractal\TransformerAbstract

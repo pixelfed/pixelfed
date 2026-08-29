@@ -1,8 +1,8 @@
 <?php
 
-use App\Like;
-use App\Status;
-use App\User;
+use App\Models\Like;
+use App\Models\Status;
+use App\Models\User;
 use Illuminate\Foundation\Testing\LazilyRefreshDatabase;
 use Laravel\Passport\Passport;
 

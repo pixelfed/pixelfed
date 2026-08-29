@@ -2,13 +2,14 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\User;
 use App\Models\UserOidcMapping;
 use App\Rules\EmailNotBanned;
 use App\Rules\PixelfedUsername;
 use App\Services\EmailService;
 use App\Services\UserOidcService;
-use App\User;
 use Illuminate\Auth\Events\Registered;
+use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
@@ -19,7 +20,7 @@ class RemoteOidcController extends Controller
 {
     protected $fractal;
 
-    public function start(UserOidcService $provider, Request $request)
+    public function start(UserOidcService $provider, Request $request): RedirectResponse
     {
         abort_unless((bool) config('remote-auth.oidc.enabled'), 404);
         if ($request->user()) {
@@ -35,7 +36,7 @@ class RemoteOidcController extends Controller
         return redirect($url);
     }
 
-    public function handleCallback(UserOidcService $provider, Request $request)
+    public function handleCallback(UserOidcService $provider, Request $request): RedirectResponse
     {
         abort_unless((bool) config('remote-auth.oidc.enabled'), 404);
 

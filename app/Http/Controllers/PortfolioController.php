@@ -3,10 +3,12 @@
 namespace App\Http\Controllers;
 
 use App\Models\Portfolio;
+use App\Models\Status;
+use App\Models\User;
 use App\Services\AccountService;
 use App\Services\StatusService;
-use App\Status;
-use App\User;
+use Illuminate\Contracts\View\View;
+use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\DB;
@@ -19,12 +21,12 @@ class PortfolioController extends Controller
 
     const RECENT_FEED_KEY = 'pf:portfolio:recent-feed:';
 
-    public function index(Request $request)
+    public function index(Request $request): View
     {
         return view('portfolio.index');
     }
 
-    public function show(Request $request, $username)
+    public function show(Request $request, $username): RedirectResponse|View
     {
         $user = User::whereUsername($username)->first();
 
@@ -54,7 +56,7 @@ class PortfolioController extends Controller
         return view('portfolio.show', compact('user', 'portfolio'));
     }
 
-    public function showPost(Request $request, $username, $id)
+    public function showPost(Request $request, $username, $id): View
     {
         $authed = $request->user();
         $post = StatusService::get($id);
@@ -77,7 +79,7 @@ class PortfolioController extends Controller
         return view('portfolio.show_post', compact('user', 'post', 'authed'));
     }
 
-    public function myRedirect(Request $request)
+    public function myRedirect(Request $request): RedirectResponse
     {
         abort_if(! $request->user(), 404);
 
@@ -98,7 +100,7 @@ class PortfolioController extends Controller
         return redirect($url);
     }
 
-    public function settings(Request $request)
+    public function settings(Request $request): RedirectResponse|View
     {
         if (! $request->user()) {
             return redirect(route('home'));
@@ -116,7 +118,7 @@ class PortfolioController extends Controller
         return view('portfolio.settings', compact('portfolio'));
     }
 
-    public function store(Request $request)
+    public function store(Request $request): RedirectResponse
     {
         abort_unless($request->user(), 404);
 
@@ -320,7 +322,7 @@ class PortfolioController extends Controller
         return $res;
     }
 
-    public function storeSettings(Request $request)
+    public function storeSettings(Request $request): int
     {
         abort_if(! $request->user(), 403);
 

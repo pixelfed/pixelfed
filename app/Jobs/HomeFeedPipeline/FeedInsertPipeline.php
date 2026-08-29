@@ -2,12 +2,12 @@
 
 namespace App\Jobs\HomeFeedPipeline;
 
+use App\Models\Profile;
 use App\Models\UserDomainBlock;
-use App\Profile;
+use App\Models\UserFilter;
 use App\Services\FollowerService;
 use App\Services\HomeTimelineService;
 use App\Services\StatusService;
-use App\UserFilter;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldBeUniqueUntilProcessing;
 use Illuminate\Contracts\Queue\ShouldQueue;

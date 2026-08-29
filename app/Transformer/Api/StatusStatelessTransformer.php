@@ -3,6 +3,7 @@
 namespace App\Transformer\Api;
 
 use App\Models\CustomEmoji;
+use App\Models\Status;
 use App\Services\AccountService;
 use App\Services\HashidService;
 use App\Services\LikeService;
@@ -12,7 +13,6 @@ use App\Services\PollService;
 use App\Services\StatusHashtagService;
 use App\Services\StatusMentionService;
 use App\Services\StatusService;
-use App\Status;
 use App\Util\Lexer\Autolink;
 use League\Fractal;
 

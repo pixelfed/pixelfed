@@ -1,7 +1,7 @@
 <?php
 
-use App\Instance;
-use App\Profile;
+use App\Models\Instance;
+use App\Models\Profile;
 use Illuminate\Database\Migrations\Migration;
 
 return new class extends Migration

@@ -2,19 +2,16 @@
 
 namespace App\Jobs\StatusPipeline;
 
-use App\Status;
+use App\Models\Status;
+use App\Services\ActivityPubDeliveryService;
+use App\Services\FractalService;
 use App\Transformer\ActivityPub\Verb\UpdateNote;
-use App\Util\ActivityPub\HttpSignature;
-use GuzzleHttp\Client;
-use GuzzleHttp\Pool;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
 use Illuminate\Support\Facades\Log;
-use League\Fractal;
-use League\Fractal\Serializer\ArraySerializer;
 
 class StatusLocalUpdateActivityPubDeliverPipeline implements ShouldQueue
 {
@@ -48,7 +45,6 @@ class StatusLocalUpdateActivityPubDeliverPipeline implements ShouldQueue
     {
         $status = $this->status;
 
-        // Verify status exists
         if (! $status) {
             Log::info('StatusLocalUpdateActivityPubDeliverPipeline: Status no longer exists, skipping job');
 
@@ -57,17 +53,11 @@ class StatusLocalUpdateActivityPubDeliverPipeline implements ShouldQueue
 
         $profile = $status->profile;
 
-        // Verify profile exists
         if (! $profile) {
             Log::info("StatusLocalUpdateActivityPubDeliverPipeline: Profile no longer exists for status {$status->id}, skipping job");
 
             return;
         }
-
-        // ignore group posts
-        // if($status->group_id != null) {
-        //     return;
-        // }
 
         if ($status->local == false || $status->url || $status->uri) {
             return;
@@ -76,13 +66,11 @@ class StatusLocalUpdateActivityPubDeliverPipeline implements ShouldQueue
         $audience = $status->profile->getAudienceInbox();
 
         if (empty($audience) || ! in_array($status->scope, ['public', 'unlisted', 'private'])) {
-            // Return on profiles with no remote followers
             return;
         }
 
         switch ($status->type) {
             case 'poll':
-                // Polls not yet supported
                 return;
 
             default:
@@ -90,47 +78,8 @@ class StatusLocalUpdateActivityPubDeliverPipeline implements ShouldQueue
                 break;
         }
 
-        $fractal = new Fractal\Manager;
-        $fractal->setSerializer(new ArraySerializer);
-        $resource = new Fractal\Resource\Item($status, $activitypubObject);
-        $activity = $fractal->createData($resource)->toArray();
+        $activity = FractalService::item($status, $activitypubObject);
 
-        $payload = json_encode($activity);
-
-        $client = new Client([
-            'timeout' => config('federation.activitypub.delivery.timeout'),
-        ]);
-
-        $version = config('pixelfed.version');
-        $appUrl = config('app.url');
-        $userAgent = "(Pixelfed/{$version}; +{$appUrl})";
-
-        $requests = function ($audience) use ($client, $activity, $profile, $payload, $userAgent) {
-            foreach ($audience as $url) {
-                $headers = HttpSignature::sign($profile, $url, $activity, [
-                    'Content-Type' => 'application/ld+json; profile="https://www.w3.org/ns/activitystreams"',
-                    'User-Agent' => $userAgent,
-                ]);
-                yield function () use ($client, $url, $headers, $payload) {
-                    return $client->postAsync($url, [
-                        'curl' => [
-                            CURLOPT_HTTPHEADER => $headers,
-                            CURLOPT_POSTFIELDS => $payload,
-                            CURLOPT_HEADER => true,
-                        ],
-                    ]);
-                };
-            }
-        };
-
-        $pool = new Pool($client, $requests($audience), [
-            'concurrency' => config('federation.activitypub.delivery.concurrency'),
-            'fulfilled' => function ($response, $index) {},
-            'rejected' => function ($reason, $index) {},
-        ]);
-
-        $promise = $pool->promise();
-
-        $promise->wait();
+        ActivityPubDeliveryService::pool($profile, $audience, $activity);
     }
 }

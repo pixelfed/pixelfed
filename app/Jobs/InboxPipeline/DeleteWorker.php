@@ -3,7 +3,7 @@
 namespace App\Jobs\InboxPipeline;
 
 use App\Jobs\DeletePipeline\DeleteRemoteProfilePipeline;
-use App\Profile;
+use App\Models\Profile;
 use App\Util\ActivityPub\Helpers;
 use App\Util\ActivityPub\HttpSignature;
 use Illuminate\Bus\Queueable;
@@ -156,6 +156,7 @@ class DeleteWorker implements ShouldQueue
         $id = Helpers::validateUrl($bodyDecoded['id']);
         $keyDomain = parse_url($keyId, PHP_URL_HOST);
         $idDomain = parse_url($id, PHP_URL_HOST);
+        $actorDomain = parse_url($bodyDecoded['actor'] ?? '', PHP_URL_HOST);
         if (isset($bodyDecoded['object'])
             && is_array($bodyDecoded['object'])
             && isset($bodyDecoded['object']['attributedTo'])
@@ -172,7 +173,10 @@ class DeleteWorker implements ShouldQueue
                 return false;
             }
         }
-        if (! $keyDomain || ! $idDomain || $keyDomain !== $idDomain) {
+        if (
+            ! $keyDomain || ! $idDomain || ! $actorDomain
+            || $keyDomain !== $idDomain || $keyDomain !== $actorDomain
+        ) {
             return false;
         }
         $actor = Profile::whereKeyId($keyId)->first();

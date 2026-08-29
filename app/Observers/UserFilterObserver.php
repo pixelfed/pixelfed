@@ -4,9 +4,9 @@ namespace App\Observers;
 
 use App\Jobs\HomeFeedPipeline\FeedFollowPipeline;
 use App\Jobs\HomeFeedPipeline\FeedUnfollowPipeline;
-use App\Profile;
+use App\Models\Profile;
+use App\Models\UserFilter;
 use App\Services\UserFilterService;
-use App\UserFilter;
 
 class UserFilterObserver
 {

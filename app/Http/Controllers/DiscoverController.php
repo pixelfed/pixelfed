@@ -2,9 +2,10 @@
 
 namespace App\Http\Controllers;
 
-use App\Hashtag;
-use App\Instance;
-use App\Like;
+use App\Models\Hashtag;
+use App\Models\Instance;
+use App\Models\Like;
+use App\Models\Status;
 use App\Services\AccountService;
 use App\Services\AdminShadowFilterService;
 use App\Services\BookmarkService;
@@ -19,21 +20,23 @@ use App\Services\StatusHashtagService;
 use App\Services\StatusService;
 use App\Services\TrendingHashtagService;
 use App\Services\UserFilterService;
-use App\Status;
+use Illuminate\Contracts\View\View;
+use Illuminate\Http\JsonResponse;
+use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\DB;
 
 class DiscoverController extends Controller
 {
-    public function home(Request $request)
+    public function home(Request $request): View
     {
         abort_if(! $request->user() && config('instance.discover.public') == false, 403);
 
         return view('discover.home');
     }
 
-    public function showTags(Request $request, $hashtag)
+    public function showTags(Request $request, $hashtag): RedirectResponse|View
     {
         if ($request->user()) {
             return redirect('/i/web/hashtag/'.$hashtag.'?src=pd');
@@ -126,17 +129,17 @@ class DiscoverController extends Controller
         return $res;
     }
 
-    public function profilesDirectory(Request $request)
+    public function profilesDirectory(Request $request): RedirectResponse
     {
         return redirect('/')->with('statusRedirect', 'The Profile Directory is unavailable at this time.');
     }
 
-    public function profilesDirectoryApi(Request $request)
+    public function profilesDirectoryApi(Request $request): array
     {
         return ['error' => 'Temporarily unavailable.'];
     }
 
-    public function trendingApi(Request $request)
+    public function trendingApi(Request $request): JsonResponse
     {
         abort_if(config('instance.discover.public') == false && ! $request->user(), 403);
 
@@ -202,7 +205,7 @@ class DiscoverController extends Controller
         return $res;
     }
 
-    public function trendingPlaces(Request $request)
+    public function trendingPlaces(Request $request): array
     {
         return [];
     }
@@ -378,7 +381,7 @@ class DiscoverController extends Controller
         return $res;
     }
 
-    public function discoverAccountsPopular(Request $request)
+    public function discoverAccountsPopular(Request $request): JsonResponse
     {
         abort_if(! $request->user(), 403);
 

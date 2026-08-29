@@ -2,10 +2,11 @@
 
 namespace App\Http\Controllers;
 
-// use App\Profile;
-// use App\Status;
+// use App\Models\Profile;
+// use App\Models\Status;
 // use App\Transformer\Api\StatusTimelineTransformer;
-// use App\UserFilter;
+// use App\Models\UserFilter;
+use Illuminate\Contracts\View\View;
 use Illuminate\Http\Request;
 
 // use Illuminate\Support\Facades\Cache;
@@ -24,7 +25,7 @@ class TimelineController extends Controller
         // $this->fractal->setSerializer(new ArraySerializer);
     }
 
-    public function local(Request $request)
+    public function local(Request $request): View
     {
         $this->validate($request, [
             'layout' => 'nullable|string|in:grid,feed',
@@ -34,7 +35,7 @@ class TimelineController extends Controller
         return view('timeline.local', compact('layout'));
     }
 
-    public function network(Request $request)
+    public function network(Request $request): View
     {
         abort_if(config('federation.network_timeline') == false, 404);
         $this->validate($request, [

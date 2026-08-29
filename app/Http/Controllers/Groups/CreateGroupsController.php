@@ -15,7 +15,7 @@ class CreateGroupsController extends Controller
         $this->middleware('auth');
     }
 
-    public function checkCreatePermission(Request $request)
+    public function checkCreatePermission(Request $request): array
     {
         abort_if(! $request->user(), 404);
         $pid = $request->user()->profile_id;
@@ -30,7 +30,7 @@ class CreateGroupsController extends Controller
         return ['permission' => (bool) $allowed];
     }
 
-    public function storeGroup(Request $request)
+    public function storeGroup(Request $request): array
     {
         abort_if(! $request->user(), 404);
 

@@ -3,10 +3,13 @@
 namespace App\Http\Controllers;
 
 use App\Models\AdminInvite;
+use App\Models\User;
 use App\Services\EmailService;
-use App\User;
 use App\Util\Lexer\RestrictedNames;
 use Illuminate\Auth\Events\Registered;
+use Illuminate\Contracts\View\View;
+use Illuminate\Http\JsonResponse;
+use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
@@ -20,7 +23,7 @@ class AdminInviteController extends Controller
         abort_if(! config('instance.admin_invites.enabled'), 404);
     }
 
-    public function index(Request $request, $code)
+    public function index(Request $request, $code): RedirectResponse|View
     {
         if ($request->user()) {
             return redirect('/');
@@ -29,7 +32,7 @@ class AdminInviteController extends Controller
         return view('invite.admin_invite', compact('code'));
     }
 
-    public function apiVerifyCheck(Request $request)
+    public function apiVerifyCheck(Request $request): JsonResponse
     {
         $this->validate($request, [
             'token' => 'required',
@@ -48,7 +51,7 @@ class AdminInviteController extends Controller
         return response()->json($res);
     }
 
-    public function apiUsernameCheck(Request $request)
+    public function apiUsernameCheck(Request $request): JsonResponse
     {
         $this->validate($request, [
             'token' => 'required',
@@ -108,7 +111,7 @@ class AdminInviteController extends Controller
         return response()->json([]);
     }
 
-    public function apiEmailCheck(Request $request)
+    public function apiEmailCheck(Request $request): JsonResponse
     {
         $this->validate($request, [
             'token' => 'required',
@@ -144,7 +147,7 @@ class AdminInviteController extends Controller
         return response()->json([]);
     }
 
-    public function apiRegister(Request $request)
+    public function apiRegister(Request $request): JsonResponse|RedirectResponse
     {
         $this->validate($request, [
             'token' => 'required',

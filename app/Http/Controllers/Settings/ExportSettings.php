@@ -2,10 +2,10 @@
 
 namespace App\Http\Controllers\Settings;
 
-use App\Status;
+use App\Models\Status;
+use App\Models\UserFilter;
 use App\Transformer\ActivityPub\ProfileTransformer;
 use App\Transformer\Api\StatusTransformer as StatusApiTransformer;
-use App\UserFilter;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Cache;

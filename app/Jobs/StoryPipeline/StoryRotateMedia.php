@@ -2,8 +2,8 @@
 
 namespace App\Jobs\StoryPipeline;
 
+use App\Models\Story;
 use App\Services\StoryIndexService;
-use App\Story;
 use Exception;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;

@@ -3,13 +3,14 @@
 namespace App\Jobs\MentionPipeline;
 
 use App\Jobs\PushNotificationPipeline\MentionPushNotifyPipeline;
-use App\Mention;
-use App\Notification;
+use App\Models\Mention;
+use App\Models\Notification;
+use App\Models\Status;
+use App\Models\User;
 use App\Services\NotificationAppGatewayService;
+use App\Services\NotificationService;
 use App\Services\PushNotificationService;
 use App\Services\StatusService;
-use App\Status;
-use App\User;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
@@ -95,15 +96,7 @@ class MentionPipeline implements ShouldQueue
             return;
         }
 
-        Notification::firstOrCreate(
-            [
-                'profile_id' => $target,
-                'actor_id' => $actor->id,
-                'action' => 'mention',
-                'item_type' => Status::class,
-                'item_id' => $status->id,
-            ]
-        );
+        NotificationService::firstOrCreateNotification($target, $actor->id, 'mention', $status->id, Status::class);
 
         StatusService::del($status->id);
 

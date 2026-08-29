@@ -4,12 +4,12 @@ namespace App\Http\Controllers;
 
 use App\Jobs\CommentPipeline\CommentPipeline;
 use App\Jobs\StatusPipeline\NewStatusPipeline;
-use App\Profile;
+use App\Models\Profile;
+use App\Models\Status;
+use App\Models\UserFilter;
 use App\Services\FollowerService;
 use App\Services\StatusService;
-use App\Status;
 use App\Transformer\Api\StatusTransformer;
-use App\UserFilter;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use League\Fractal;
@@ -18,7 +18,7 @@ use Purify;
 
 class CommentController extends Controller
 {
-    public function showAll(Request $request, $username, int $id)
+    public function showAll(Request $request, $username, int $id): void
     {
         abort(404);
     }

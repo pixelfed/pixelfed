@@ -2,7 +2,8 @@
 
 namespace App\Http\Controllers;
 
-use App\MediaBlocklist;
+use App\Models\MediaBlocklist;
+use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 
 class MediaBlocklistController extends Controller
@@ -13,7 +14,7 @@ class MediaBlocklistController extends Controller
         $this->middleware('admin');
     }
 
-    public function add(Request $request)
+    public function add(Request $request): RedirectResponse
     {
         $this->validate($request, [
             'hash' => 'required|string|size:64',
@@ -36,7 +37,7 @@ class MediaBlocklistController extends Controller
         return redirect('/i/admin/media?layout=banned');
     }
 
-    public function delete(Request $request)
+    public function delete(Request $request): RedirectResponse
     {
         $this->validate($request, [
             'id' => 'required|integer',

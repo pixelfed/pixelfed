@@ -2,8 +2,8 @@
 
 namespace App\Util\Site;
 
+use App\Models\User;
 use App\Services\InstanceService;
-use App\User;
 use Illuminate\Support\Facades\Cache;
 
 class Nodeinfo

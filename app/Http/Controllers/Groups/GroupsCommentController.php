@@ -18,13 +18,15 @@ use App\Services\Groups\GroupPostService;
 use App\Services\Groups\GroupsLikeService;
 use App\Services\GroupService;
 use App\Util\Lexer\Autolink;
+use Illuminate\Http\JsonResponse;
+use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Cache;
 use Purify;
 
 class GroupsCommentController extends Controller
 {
-    public function getComments(Request $request)
+    public function getComments(Request $request): array
     {
         $this->validate($request, [
             'gid' => 'required',
@@ -233,7 +235,7 @@ class GroupsCommentController extends Controller
         return $s;
     }
 
-    public function deleteComment(Request $request)
+    public function deleteComment(Request $request): JsonResponse|RedirectResponse
     {
         abort_if(! $request->user(), 403);
 

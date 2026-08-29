@@ -3,7 +3,7 @@
 namespace App\Jobs\ProfilePipeline;
 
 use App\Jobs\AvatarPipeline\RemoteAvatarFetchFromUrl;
-use App\Profile;
+use App\Models\Profile;
 use App\Services\SanitizeService;
 use App\Util\Lexer\Autolink;
 use Illuminate\Bus\Queueable;

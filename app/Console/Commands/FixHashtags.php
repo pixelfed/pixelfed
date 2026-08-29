@@ -2,8 +2,8 @@
 
 namespace App\Console\Commands;
 
-use App\Hashtag;
-use App\StatusHashtag;
+use App\Models\Hashtag;
+use App\Models\StatusHashtag;
 use Illuminate\Console\Command;
 use Illuminate\Support\Str;
 

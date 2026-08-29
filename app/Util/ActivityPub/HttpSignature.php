@@ -3,7 +3,7 @@
 namespace App\Util\ActivityPub;
 
 use App\Models\InstanceActor;
-use App\Profile;
+use App\Models\Profile;
 use DateTime;
 use Illuminate\Support\Facades\Artisan;
 use Illuminate\Support\Facades\Cache;

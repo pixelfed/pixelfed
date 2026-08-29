@@ -4,9 +4,12 @@ namespace App\Http\Controllers;
 
 use App\Mail\InAppRegisterEmailVerify;
 use App\Models\AppRegister;
+use App\Models\User;
 use App\Services\AccountService;
-use App\User;
 use App\Util\Lexer\RestrictedNames;
+use Illuminate\Contracts\View\View;
+use Illuminate\Http\JsonResponse;
+use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\DB;
@@ -22,7 +25,7 @@ class AppRegisterController extends Controller
 
     private const VERIFY_CODE_TTL_SECONDS = 3600;
 
-    public function index(Request $request)
+    public function index(Request $request): RedirectResponse|View
     {
         abort_unless(config('auth.in_app_registration'), 404);
         $open = (bool) config_cache('pixelfed.open_registration');
@@ -33,7 +36,7 @@ class AppRegisterController extends Controller
         return view('auth.iar');
     }
 
-    public function store(Request $request)
+    public function store(Request $request): RedirectResponse
     {
         abort_unless(config('auth.in_app_registration'), 404);
         $open = (bool) config_cache('pixelfed.open_registration');
@@ -98,7 +101,7 @@ class AppRegisterController extends Controller
         return redirect()->away("pixelfed://verifyEmail?{$queryParams}");
     }
 
-    public function verifyCode(Request $request)
+    public function verifyCode(Request $request): JsonResponse|RedirectResponse
     {
         abort_unless(config('auth.in_app_registration'), 404);
 
@@ -130,7 +133,7 @@ class AppRegisterController extends Controller
         ]);
     }
 
-    public function resendVerification(Request $request)
+    public function resendVerification(Request $request): RedirectResponse|View
     {
         abort_unless(config('auth.in_app_registration'), 404);
         $open = (bool) config_cache('pixelfed.open_registration');
@@ -141,7 +144,7 @@ class AppRegisterController extends Controller
         return view('auth.iar-resend');
     }
 
-    public function resendVerificationStore(Request $request)
+    public function resendVerificationStore(Request $request): RedirectResponse
     {
         abort_unless(config('auth.in_app_registration'), 404);
         $open = (bool) config_cache('pixelfed.open_registration');
@@ -211,7 +214,7 @@ class AppRegisterController extends Controller
         return redirect()->away("pixelfed://verifyEmail?{$queryParams}");
     }
 
-    public function onboarding(Request $request)
+    public function onboarding(Request $request): JsonResponse|RedirectResponse
     {
         abort_unless(config('auth.in_app_registration'), 404);
         $open = (bool) config_cache('pixelfed.open_registration');
@@ -293,7 +296,7 @@ class AppRegisterController extends Controller
         ]);
     }
 
-    protected function validateUsernameRule()
+    protected function validateUsernameRule(): array
     {
         return [
             'required',

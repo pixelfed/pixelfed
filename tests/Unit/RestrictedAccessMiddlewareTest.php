@@ -3,7 +3,7 @@
 namespace Tests\Unit;
 
 use App\Http\Middleware\RestrictedAccess;
-use App\User;
+use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Config;

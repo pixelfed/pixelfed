@@ -3,18 +3,20 @@
 namespace App\Http\Controllers\Groups;
 
 use App\Http\Controllers\Controller;
-use App\Instance;
 use App\Models\Group;
 use App\Models\GroupBlock;
 use App\Models\GroupInteraction;
 use App\Models\GroupMember;
 use App\Models\GroupPost;
 use App\Models\GroupReport;
-use App\Profile;
+use App\Models\Instance;
+use App\Models\Profile;
 use App\Services\Groups\GroupAccountService;
 use App\Services\Groups\GroupPostService;
 use App\Services\GroupService;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
+use Symfony\Component\HttpFoundation\StreamedResponse;
 
 class GroupsAdminController extends Controller
 {
@@ -23,7 +25,7 @@ class GroupsAdminController extends Controller
         $this->middleware('auth');
     }
 
-    public function getAdminTabs(Request $request, $id)
+    public function getAdminTabs(Request $request, $id): JsonResponse
     {
         abort_if(! $request->user(), 404);
         $group = Group::findOrFail($id);
@@ -42,7 +44,7 @@ class GroupsAdminController extends Controller
         return response()->json($tabs);
     }
 
-    public function getInteractionLogs(Request $request, $id)
+    public function getInteractionLogs(Request $request, $id): JsonResponse
     {
         abort_if(! $request->user(), 404);
         $group = Group::findOrFail($id);
@@ -66,7 +68,7 @@ class GroupsAdminController extends Controller
         return response()->json($logs, 200, [], JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES);
     }
 
-    public function getBlocks(Request $request, $id)
+    public function getBlocks(Request $request, $id): JsonResponse
     {
         abort_if(! $request->user(), 404);
         $group = Group::findOrFail($id);
@@ -83,7 +85,7 @@ class GroupsAdminController extends Controller
         return response()->json($blocks, 200, [], JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES);
     }
 
-    public function exportBlocks(Request $request, $id)
+    public function exportBlocks(Request $request, $id): StreamedResponse
     {
         abort_if(! $request->user(), 404);
         $group = Group::findOrFail($id);
@@ -305,7 +307,7 @@ class GroupsAdminController extends Controller
         }
     }
 
-    public function getReportList(Request $request, $id)
+    public function getReportList(Request $request, $id): JsonResponse
     {
         abort_if(! $request->user(), 404);
         $group = Group::findOrFail($id);

@@ -1,8 +1,8 @@
 <?php
 
 use App\Models\ModeratedProfile;
-use App\ModLog;
-use App\Profile;
+use App\Models\ModLog;
+use App\Models\Profile;
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;

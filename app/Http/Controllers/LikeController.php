@@ -4,9 +4,9 @@ namespace App\Http\Controllers;
 
 use App\Jobs\LikePipeline\LikePipeline;
 use App\Jobs\LikePipeline\UnlikePipeline;
-use App\Like;
+use App\Models\Like;
+use App\Models\Status;
 use App\Services\StatusService;
-use App\Status;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Cache;

@@ -48,10 +48,8 @@ class ResetPasswordController extends Controller
 
     /**
      * Get the password reset validation rules.
-     *
-     * @return array
      */
-    protected function rules()
+    protected function rules(): array
     {
         usleep(random_int(100000, 3000000));
 
@@ -73,10 +71,8 @@ class ResetPasswordController extends Controller
 
     /**
      * Get the password reset validation error messages.
-     *
-     * @return array
      */
-    protected function validationErrorMessages()
+    protected function validationErrorMessages(): array
     {
         return [
             'password.max' => 'Passwords should not exceed 72 characters.',
@@ -93,7 +89,7 @@ class ResetPasswordController extends Controller
      *
      * @return Factory|View
      */
-    public function showResetForm(Request $request)
+    public function showResetForm(Request $request): View
     {
         if (config('pixelfed.bouncer.cloud_ips.ban_logins')) {
             abort_if(BouncerService::checkIp($request->ip()), 404);
@@ -151,7 +147,7 @@ class ResetPasswordController extends Controller
      * @param  string  $response
      * @return RedirectResponse|JsonResponse
      */
-    protected function sendResetFailedResponse(Request $request, $response)
+    protected function sendResetFailedResponse(Request $request, $response): RedirectResponse
     {
         if ($request->wantsJson()) {
             throw ValidationException::withMessages(['email' => [trans($response)]]);

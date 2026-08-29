@@ -2,7 +2,7 @@
 
 namespace App\Services;
 
-use App\Status;
+use App\Models\Status;
 use App\Transformer\Api\StatusStatelessTransformer;
 use Illuminate\Support\Facades\Cache;
 use League\Fractal;
@@ -261,11 +261,7 @@ class StatusService
             return null;
         }
 
-        $fractal = new Fractal\Manager;
-        $fractal->setSerializer(new ArraySerializer);
-        $resource = new Fractal\Resource\Item($status, new StatusStatelessTransformer);
-
-        return $fractal->createData($resource)->toArray();
+        return FractalService::item($status, new StatusStatelessTransformer);
     }
 
     public static function del($id, $purge = false)

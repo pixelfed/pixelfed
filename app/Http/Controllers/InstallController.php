@@ -2,13 +2,15 @@
 
 namespace App\Http\Controllers;
 
-use App\User;
+use App\Models\User;
+use Illuminate\Contracts\View\View;
 use Illuminate\Http\Request;
+use Illuminate\Http\Response;
 use Illuminate\Support\Facades\Artisan;
 
 class InstallController extends Controller
 {
-    public function index(Request $request)
+    public function index(Request $request): View
     {
         abort_if(file_exists(base_path('.env')), 404);
 
@@ -97,7 +99,7 @@ class InstallController extends Controller
         return $this->checkDatabase($request);
     }
 
-    protected function checkDatabase($request)
+    protected function checkDatabase($request): Response
     {
         abort_if(file_exists(base_path('.env')), 404);
 
@@ -116,9 +118,11 @@ class InstallController extends Controller
         }
 
         $this->createConfiguration($request);
+
+        return response('ok');
     }
 
-    protected function createConfiguration($request)
+    protected function createConfiguration($request): void
     {
         abort_if(file_exists(base_path('.env')), 404);
         $source = base_path('.env.example');
@@ -185,7 +189,7 @@ class InstallController extends Controller
         }
     }
 
-    protected function updateConfig($key, $value)
+    protected function updateConfig($key, $value): void
     {
         $f = file_get_contents(base_path('.env'));
         if (strpos($f, $key) !== false) {
@@ -198,7 +202,7 @@ class InstallController extends Controller
         file_put_contents(base_path('.env'), $u);
     }
 
-    public function precheckDatabase(Request $request)
+    public function precheckDatabase(Request $request): Response
     {
         abort_if(file_exists(base_path('.env')), 404);
         $driver = $request->input('db_driver', 'mysql');
@@ -214,5 +218,7 @@ class InstallController extends Controller
         } catch (\PDOException $e) {
             return response($e, 400);
         }
+
+        return response('ok');
     }
 }

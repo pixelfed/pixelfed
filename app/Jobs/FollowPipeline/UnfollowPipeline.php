@@ -2,11 +2,11 @@
 
 namespace App\Jobs\FollowPipeline;
 
-use App\Follower;
-use App\FollowRequest;
 use App\Jobs\HomeFeedPipeline\FeedUnfollowPipeline;
-use App\Notification;
-use App\Profile;
+use App\Models\Follower;
+use App\Models\FollowRequest;
+use App\Models\Notification;
+use App\Models\Profile;
 use App\Services\AccountService;
 use App\Services\FollowerService;
 use App\Services\NotificationService;

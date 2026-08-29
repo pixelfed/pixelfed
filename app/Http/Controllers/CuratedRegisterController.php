@@ -8,6 +8,8 @@ use App\Models\CuratedRegister;
 use App\Models\CuratedRegisterActivity;
 use App\Services\EmailService;
 use App\Util\Lexer\RestrictedNames;
+use Illuminate\Contracts\View\View;
+use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Mail;
@@ -15,7 +17,7 @@ use Illuminate\Support\Str;
 
 class CuratedRegisterController extends Controller
 {
-    public function preCheck($allowWhenDisabled = false)
+    public function preCheck($allowWhenDisabled = false): void
     {
         if (! $allowWhenDisabled) {
             abort_unless((bool) config_cache('instance.curated_registration.enabled'), 404);
@@ -30,14 +32,14 @@ class CuratedRegisterController extends Controller
         }
     }
 
-    public function index(Request $request)
+    public function index(Request $request): View
     {
         abort_if($request->user(), 404);
 
         return view('auth.curated-register.index', ['step' => 1]);
     }
 
-    public function concierge(Request $request)
+    public function concierge(Request $request): View
     {
         abort_if($request->user(), 404);
         $this->preCheck(true);
@@ -48,14 +50,14 @@ class CuratedRegisterController extends Controller
         return view('auth.curated-register.concierge', compact('emailConfirmed'));
     }
 
-    public function conciergeResponseSent(Request $request)
+    public function conciergeResponseSent(Request $request): View
     {
         $this->preCheck(true);
 
         return view('auth.curated-register.user_response_sent');
     }
 
-    public function conciergeFormShow(Request $request)
+    public function conciergeFormShow(Request $request): View
     {
         abort_if($request->user(), 404);
         $this->preCheck(true);
@@ -76,7 +78,7 @@ class CuratedRegisterController extends Controller
         return view('auth.curated-register.concierge_form', compact('activity', 'showCaptcha'));
     }
 
-    public function conciergeFormStore(Request $request)
+    public function conciergeFormStore(Request $request): RedirectResponse|View
     {
         abort_if($request->user(), 404);
         $this->preCheck(true);
@@ -122,7 +124,7 @@ class CuratedRegisterController extends Controller
         return view('auth.curated-register.user_response_sent');
     }
 
-    public function conciergeStore(Request $request)
+    public function conciergeStore(Request $request): RedirectResponse
     {
         abort_if($request->user(), 404);
         $this->preCheck(true);
@@ -166,7 +168,7 @@ class CuratedRegisterController extends Controller
         return redirect('/auth/sign_up/concierge/form');
     }
 
-    public function confirmEmail(Request $request)
+    public function confirmEmail(Request $request): RedirectResponse|View
     {
         if ($request->user()) {
             return redirect(route('help.email-confirmation-issues'));
@@ -176,7 +178,7 @@ class CuratedRegisterController extends Controller
         return view('auth.curated-register.confirm_email');
     }
 
-    public function emailConfirmed(Request $request)
+    public function emailConfirmed(Request $request): RedirectResponse|View
     {
         if ($request->user()) {
             return redirect(route('help.email-confirmation-issues'));
@@ -186,7 +188,7 @@ class CuratedRegisterController extends Controller
         return view('auth.curated-register.email_confirmed');
     }
 
-    public function resendConfirmation(Request $request)
+    public function resendConfirmation(Request $request): RedirectResponse|View
     {
         if ($request->user()) {
             return redirect(route('help.email-confirmation-issues'));
@@ -196,7 +198,7 @@ class CuratedRegisterController extends Controller
         return view('auth.curated-register.resend-confirmation');
     }
 
-    public function resendConfirmationProcess(Request $request)
+    public function resendConfirmationProcess(Request $request): RedirectResponse|View
     {
         if ($request->user()) {
             return redirect(route('help.email-confirmation-issues'));
@@ -262,7 +264,7 @@ class CuratedRegisterController extends Controller
         return view('auth.curated-register.resent-confirmation');
     }
 
-    public function confirmEmailHandle(Request $request)
+    public function confirmEmailHandle(Request $request): RedirectResponse|View
     {
         if ($request->user()) {
             return redirect(route('help.email-confirmation-issues'));
@@ -298,7 +300,7 @@ class CuratedRegisterController extends Controller
         return view('auth.curated-register.email_confirmed');
     }
 
-    public function proceed(Request $request)
+    public function proceed(Request $request): RedirectResponse|View
     {
         if ($request->user()) {
             return redirect(route('help.email-confirmation-issues'));
@@ -331,10 +333,13 @@ class CuratedRegisterController extends Controller
                 $request->session()->pull('cur-reg');
 
                 return view('auth.curated-register.index', compact('step', 'verifiedEmail'));
+
+            default:
+                return redirect(route('help.email-confirmation-issues'));
         }
     }
 
-    protected function stepTwo($request)
+    protected function stepTwo($request): void
     {
         if ($request->filled('reason')) {
             $request->session()->put('cur-reg.form-reason', $request->input('reason'));
@@ -407,7 +412,7 @@ class CuratedRegisterController extends Controller
         $request->session()->put('cur-reg.form-password', $request->input('password'));
     }
 
-    protected function stepThree($request)
+    protected function stepThree($request): void
     {
         $this->validate($request, [
             'email' => [

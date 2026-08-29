@@ -2,9 +2,9 @@
 
 namespace App\Services;
 
-use App\Follower;
 use App\Jobs\FollowPipeline\FollowServiceWarmCache;
-use App\Profile;
+use App\Models\Follower;
+use App\Models\Profile;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Redis;

@@ -2,15 +2,15 @@
 
 namespace App\Observers;
 
-use App\Follower;
 use App\Jobs\AvatarPipeline\CreateAvatar;
 use App\Jobs\FollowPipeline\FollowPipeline;
 use App\Models\DefaultDomainBlock;
+use App\Models\Follower;
+use App\Models\Profile;
+use App\Models\User;
 use App\Models\UserDomainBlock;
-use App\Profile;
+use App\Models\UserSetting;
 use App\Services\FollowerService;
-use App\User;
-use App\UserSetting;
 use Illuminate\Support\Facades\DB;
 
 class UserObserver

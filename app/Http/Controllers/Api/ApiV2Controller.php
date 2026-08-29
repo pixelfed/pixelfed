@@ -6,7 +6,9 @@ use App\Http\Controllers\Controller;
 use App\Jobs\ImageOptimizePipeline\ImageOptimize;
 use App\Jobs\MediaPipeline\MediaDeletePipeline;
 use App\Jobs\VideoPipeline\VideoThumbnail;
-use App\Media;
+use App\Models\Media;
+use App\Models\User;
+use App\Models\UserSetting;
 use App\Services\AccountService;
 use App\Services\FollowerService;
 use App\Services\InstanceService;
@@ -20,10 +22,9 @@ use App\Services\UserFilterService;
 use App\Services\UserRoleService;
 use App\Services\UserStorageService;
 use App\Transformer\Api\Mastodon\v1\MediaTransformer;
-use App\User;
-use App\UserSetting;
 use App\Util\Media\Filter;
 use App\Util\Site\Nodeinfo;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\DB;
@@ -35,12 +36,12 @@ class ApiV2Controller extends Controller
 {
     const PF_API_ENTITY_KEY = '_pe';
 
-    public function json($res, $code = 200, $headers = [])
+    public function json($res, $code = 200, $headers = []): JsonResponse
     {
         return response()->json($res, $code, $headers, JSON_UNESCAPED_SLASHES);
     }
 
-    public function instance(Request $request)
+    public function instance(Request $request): JsonResponse
     {
         $contact = Cache::remember('api:v1:instance-data:contact', 604800, function () {
             if (config_cache('instance.admin.pid')) {
@@ -409,7 +410,7 @@ class ApiV2Controller extends Controller
      * Get ancestors (parent posts) with depth limit
      * Optimized for existing indexes
      */
-    private function getAncestors($statusId, $limit, $pe, $pid)
+    private function getAncestors($statusId, $limit, $pe, $pid): array
     {
         $ancestors = [];
         $currentId = $statusId;
@@ -460,7 +461,7 @@ class ApiV2Controller extends Controller
      * Get descendants (replies) with efficient cursor pagination
      * Optimized for existing indexes: statuses_in_reply_to_id_index
      */
-    private function getDescendantsPaginated($statusId, $limit, $maxId, $minId, $sinceId, $pe, $pid)
+    private function getDescendantsPaginated($statusId, $limit, $maxId, $minId, $sinceId, $pe, $pid): array
     {
         // Build efficient query using existing indexes
         // Uses statuses_in_reply_to_id_index for fast filtering
@@ -543,7 +544,7 @@ class ApiV2Controller extends Controller
     /**
      * Alternative method using Laravel's cursor pagination (if you prefer)
      */
-    private function getDescendantsCursorPaginated($statusId, $limit, $cursor, $pe, $pid)
+    private function getDescendantsCursorPaginated($statusId, $limit, $cursor, $pe, $pid): array
     {
         $filters = UserFilterService::filters($pid);
 

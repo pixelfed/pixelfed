@@ -3,8 +3,10 @@
 namespace App\Http\Controllers;
 
 use App\Mail\UserEmailForgotReminder;
+use App\Models\User;
 use App\Models\UserEmailForgot;
-use App\User;
+use Illuminate\Contracts\View\View;
+use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Mail;
@@ -17,7 +19,7 @@ class UserEmailForgotController extends Controller
         abort_unless(config('security.forgot-email.enabled'), 404);
     }
 
-    public function index(Request $request)
+    public function index(Request $request): View
     {
         abort_if($request->user(), 404);
 
@@ -76,7 +78,7 @@ class UserEmailForgotController extends Controller
         return $this->storeHandle($request, $user);
     }
 
-    protected function storeHandle($request, $user)
+    protected function storeHandle($request, $user): RedirectResponse
     {
         UserEmailForgot::create([
             'user_id' => $user->id,
@@ -91,7 +93,7 @@ class UserEmailForgotController extends Controller
         return redirect()->back()->with(['status' => 'Successfully sent an email reminder!']);
     }
 
-    public static function checkLimits()
+    public static function checkLimits(): bool
     {
         $limits = self::getLimits();
 
@@ -107,7 +109,7 @@ class UserEmailForgotController extends Controller
         return true;
     }
 
-    public static function getLimits($forget = false)
+    public static function getLimits($forget = false): array
     {
         return [
             'max' => config('security.forgot-email.limits.max'),

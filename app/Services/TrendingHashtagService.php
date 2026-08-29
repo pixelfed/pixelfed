@@ -2,8 +2,8 @@
 
 namespace App\Services;
 
-use App\Hashtag;
-use App\StatusHashtag;
+use App\Models\Hashtag;
+use App\Models\StatusHashtag;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\DB;
 

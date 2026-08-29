@@ -2,7 +2,7 @@
 
 namespace App\Services;
 
-use App\MediaBlocklist;
+use App\Models\MediaBlocklist;
 
 class MediaBlocklistService
 {

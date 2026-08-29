@@ -2,14 +2,14 @@
 
 namespace App\Console\Commands;
 
-use App\Follower;
 use App\Jobs\AvatarPipeline\CreateAvatar;
 use App\Jobs\FollowPipeline\FollowPipeline;
 use App\Models\DefaultDomainBlock;
+use App\Models\Follower;
+use App\Models\Profile;
+use App\Models\User;
 use App\Models\UserDomainBlock;
-use App\Profile;
-use App\User;
-use App\UserSetting;
+use App\Models\UserSetting;
 use Illuminate\Console\Command;
 use Illuminate\Support\Facades\DB;
 

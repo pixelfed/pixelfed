@@ -2,9 +2,9 @@
 
 namespace App\Console\Commands;
 
-use App\Avatar;
 use App\Jobs\AvatarPipeline\RemoteAvatarFetch;
-use App\Profile;
+use App\Models\Avatar;
+use App\Models\Profile;
 use App\Services\AccountService;
 use App\Util\Lexer\PrettyNumber;
 use Illuminate\Console\Command;

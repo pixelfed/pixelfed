@@ -2,12 +2,12 @@
 
 namespace App\Http\Controllers;
 
-use App\Bookmark;
+use App\Models\Bookmark;
+use App\Models\Status;
 use App\Services\AccountService;
 use App\Services\BookmarkService;
 use App\Services\FollowerService;
 use App\Services\UserRoleService;
-use App\Status;
 use Illuminate\Http\Request;
 
 class BookmarkController extends Controller

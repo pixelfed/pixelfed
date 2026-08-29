@@ -2,8 +2,8 @@
 
 namespace App\Http\Controllers;
 
-use App\MediaTag;
-use App\Notification;
+use App\Models\MediaTag;
+use App\Models\Notification;
 use App\Services\MediaTagService;
 use Illuminate\Http\Request;
 
@@ -14,12 +14,12 @@ class MediaTagController extends Controller
         $this->middleware('auth');
     }
 
-    public function usernameLookup(Request $request)
+    public function usernameLookup(Request $request): void
     {
         abort(404);
     }
 
-    public function untagProfile(Request $request)
+    public function untagProfile(Request $request): array
     {
         abort_if(! $request->user(), 403);
 

@@ -3,10 +3,9 @@
 namespace App\Jobs\GroupPipeline;
 
 use App\Models\GroupPost;
-use App\Notification;
+use App\Models\Status;
 use App\Services\NotificationService;
 use App\Services\StatusService;
-use App\Status;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
@@ -77,23 +76,13 @@ class GroupCommentPipeline implements ShouldQueue
             return;
         }
 
-        $notification = DB::transaction(function () use ($target, $actor, $comment) {
+        DB::transaction(function () use ($target, $actor, $comment) {
             $actorName = $actor->username;
             $actorUrl = $actor->url();
             $text = "{$actorName}  commented on your group post.";
             $html = "<a href='{$actorUrl}' class='profile-link'>{$actorName}</a> commented on your group post.";
-            $notification = new Notification;
-            $notification->profile_id = $target->id;
-            $notification->actor_id = $actor->id;
-            $notification->action = 'group:comment';
-            $notification->item_id = $comment->id;
-            $notification->item_type = Status::class;
-            $notification->save();
 
-            return $notification;
+            return NotificationService::createNotification($target->id, $actor->id, 'group:comment', $comment->id, Status::class);
         });
-
-        NotificationService::setNotification($notification);
-        NotificationService::set($notification->profile_id, $notification->id);
     }
 }

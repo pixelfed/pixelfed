@@ -2,7 +2,6 @@
 
 namespace App\Models;
 
-use App\Status;
 use Illuminate\Database\Eloquent\Model;
 
 class CustomFilterStatus extends Model

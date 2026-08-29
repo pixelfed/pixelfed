@@ -3,7 +3,7 @@
 namespace App\Services;
 
 use App\Models\AdminShadowFilter;
-use App\Profile;
+use App\Models\Profile;
 use Illuminate\Support\Facades\Cache;
 
 class AdminShadowFilterService
