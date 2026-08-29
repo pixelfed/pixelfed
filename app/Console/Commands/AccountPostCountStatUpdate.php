@@ -69,7 +69,7 @@ class AccountPostCountStatUpdate extends Command
 
         // Reconcile only the status_count column (this queue is fed by
         // status create/delete events). Shared recompute logic lives in
-        // AccountStatService so it stays consistent with fix:profilecounts.
+        // AccountStatService so it stays consistent with admin:fixProfileCounts.
         AccountStatService::reconcileProfileCounts($profile, ['statuses']);
 
         AccountStatService::removeFromPostCount($id);
