@@ -142,7 +142,7 @@ return [
 
     'prefix' => env(
         'CACHE_PREFIX',
-        Str::slug(env('APP_NAME', 'laravel'), '_').'_cache'
+        Str::slug(env('APP_NAME', 'laravel'), '_') . '_cache'
     ),
 
     /*
@@ -157,9 +157,7 @@ return [
     |
     */
 
-    'serializable_classes' => [
-        CustomFilter::class,
-    ],
+    'serializable_classes' => true,
 
     'limiter' => env('CACHE_LIMITER_DRIVER', 'redis'),
 ];
