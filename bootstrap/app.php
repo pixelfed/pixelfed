@@ -143,7 +143,8 @@ return Application::configure(basePath: dirname(__DIR__))
         $schedule->command('passport:purge')->everyFourHours(20)->onOneServer();
 
         if ((bool) config_cache('pixelfed.cloud_storage') && (bool) config_cache('media.delete_local_after_cloud')) {
-            $schedule->command('media:s3gc')->hourlyAt(15);
+            // Upload any local stragglers to cloud and GC verified local copies.
+            $schedule->command('admin:MediaMoveStorageLocalToCloud --force --limit=500')->hourlyAt(15);
         }
 
         if (config('import.instagram.enabled')) {
