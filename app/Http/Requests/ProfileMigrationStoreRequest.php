@@ -3,7 +3,7 @@
 namespace App\Http\Requests;
 
 use App\Models\ProfileMigration;
-use App\Services\FetchCacheService;
+use App\Services\ActivityPubFetchService;
 use App\Services\WebfingerService;
 use Illuminate\Contracts\Validation\ValidationRule;
 use Illuminate\Foundation\Http\FormRequest;
@@ -16,8 +16,10 @@ class ProfileMigrationStoreRequest extends FormRequest
      */
     public function authorize(): bool
     {
-        if ((bool) config_cache('federation.activitypub.enabled') === false ||
-            (bool) config_cache('federation.migration') === false) {
+        if (
+            (bool) config_cache('federation.activitypub.enabled') === false ||
+            (bool) config_cache('federation.migration') === false
+        ) {
             return false;
         }
         if (! $this->user() || $this->user()->status) {
@@ -64,7 +66,11 @@ class ProfileMigrationStoreRequest extends FormRequest
         if (! $acct) {
             return 'The new account you provided is not responding to our requests.';
         }
-        $pr = FetchCacheService::getJson($acct);
+        $prRes = ActivityPubFetchService::get($acct, true);
+        if (empty($prRes)) {
+            return 'Invalid response.';
+        }
+        $pr = json_decode($prRes, true);
         if (! $pr || ! isset($pr['alsoKnownAs'])) {
             return 'Invalid account lookup response.';
         }

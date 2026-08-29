@@ -4,8 +4,8 @@ namespace App\Http\Controllers;
 
 use App\Models\AdminInvite;
 use App\Models\User;
+use App\Rules\ValidUsername;
 use App\Services\EmailService;
-use App\Util\Lexer\RestrictedNames;
 use Illuminate\Auth\Events\Registered;
 use Illuminate\Contracts\View\View;
 use Illuminate\Http\JsonResponse;
@@ -14,7 +14,6 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Validator;
-use Illuminate\Support\Str;
 use Purify;
 
 class AdminInviteController extends Controller
@@ -69,37 +68,7 @@ class AdminInviteController extends Controller
             'min:2',
             'max:30',
             'unique:users',
-            function ($attribute, $value, $fail) {
-                $dash = substr_count($value, '-');
-                $underscore = substr_count($value, '_');
-                $period = substr_count($value, '.');
-
-                if (Str::endsWith($value, ['.php', '.js', '.css'])) {
-                    return $fail('Username is invalid.');
-                }
-
-                if (($dash + $underscore + $period) > 1) {
-                    return $fail('Username is invalid. Can only contain one dash (-), period (.) or underscore (_).');
-                }
-
-                if (! ctype_alnum($value[0])) {
-                    return $fail('Username is invalid. Must start with a letter or number.');
-                }
-
-                if (! ctype_alnum($value[strlen($value) - 1])) {
-                    return $fail('Username is invalid. Must end with a letter or number.');
-                }
-
-                $val = str_replace(['_', '.', '-'], '', $value);
-                if (! ctype_alnum($val)) {
-                    return $fail('Username is invalid. Username must be alpha-numeric and may contain dashes (-), periods (.) and underscores (_).');
-                }
-
-                $restricted = RestrictedNames::get();
-                if (in_array(strtolower($value), array_map('strtolower', $restricted))) {
-                    return $fail('Username cannot be used.');
-                }
-            },
+            new ValidUsername,
         ];
 
         $rules = ['username' => $usernameRules];
@@ -157,37 +126,7 @@ class AdminInviteController extends Controller
                 'min:2',
                 'max:30',
                 'unique:users',
-                function ($attribute, $value, $fail) {
-                    $dash = substr_count($value, '-');
-                    $underscore = substr_count($value, '_');
-                    $period = substr_count($value, '.');
-
-                    if (Str::endsWith($value, ['.php', '.js', '.css'])) {
-                        return $fail('Username is invalid.');
-                    }
-
-                    if (($dash + $underscore + $period) > 1) {
-                        return $fail('Username is invalid. Can only contain one dash (-), period (.) or underscore (_).');
-                    }
-
-                    if (! ctype_alnum($value[0])) {
-                        return $fail('Username is invalid. Must start with a letter or number.');
-                    }
-
-                    if (! ctype_alnum($value[strlen($value) - 1])) {
-                        return $fail('Username is invalid. Must end with a letter or number.');
-                    }
-
-                    $val = str_replace(['_', '.', '-'], '', $value);
-                    if (! ctype_alnum($val)) {
-                        return $fail('Username is invalid. Username must be alpha-numeric and may contain dashes (-), periods (.) and underscores (_).');
-                    }
-
-                    $restricted = RestrictedNames::get();
-                    if (in_array(strtolower($value), array_map('strtolower', $restricted))) {
-                        return $fail('Username cannot be used.');
-                    }
-                },
+                new ValidUsername,
             ],
             'name' => 'nullable|string|max:'.config('pixelfed.max_name_length'),
             'email' => [

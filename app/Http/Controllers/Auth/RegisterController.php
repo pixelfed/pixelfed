@@ -4,9 +4,9 @@ namespace App\Http\Controllers\Auth;
 
 use App\Http\Controllers\Controller;
 use App\Models\User;
+use App\Rules\ValidUsername;
 use App\Services\BouncerService;
 use App\Services\EmailService;
-use App\Util\Lexer\RestrictedNames;
 use Illuminate\Auth\Events\Registered;
 use Illuminate\Contracts\View\View;
 use Illuminate\Foundation\Auth\RegistersUsers;
@@ -76,44 +76,7 @@ class RegisterController extends Controller
             'min:2',
             'max:30',
             'unique:users',
-            function ($attribute, $value, $fail) {
-                $dash = substr_count($value, '-');
-                $underscore = substr_count($value, '_');
-                $period = substr_count($value, '.');
-
-                $disallowedExtensions = ['.php', '.js', '.css', '.html', '.htm', '.json', '.xml', '.env', '.sh', '.exe', '.bat'];
-                foreach ($disallowedExtensions as $ext) {
-                    if (str_ends_with($value, $ext)) {
-                        return $fail('Username is invalid. No common file extensions.');
-                    }
-                }
-
-                if (($dash + $underscore + $period) > 1) {
-                    return $fail('Username is invalid. Can only contain one dash (-), period (.) or underscore (_).');
-                }
-
-                if (! ctype_alnum($value[0])) {
-                    return $fail('Username is invalid. Must start with a letter or number.');
-                }
-
-                if (! ctype_alnum($value[strlen($value) - 1])) {
-                    return $fail('Username is invalid. Must end with a letter or number.');
-                }
-
-                $val = str_replace(['_', '.', '-'], '', $value);
-                if (! ctype_alnum($val)) {
-                    return $fail('Username is invalid. Username must be alpha-numeric and may contain dashes (-), periods (.) and underscores (_).');
-                }
-
-                if (! preg_match('/[a-zA-Z]/', $value)) {
-                    return $fail('Username is invalid. Must contain at least one alphabetical character.');
-                }
-
-                $restricted = RestrictedNames::get();
-                if (in_array(strtolower($value), array_map('strtolower', $restricted))) {
-                    return $fail('Username cannot be used.');
-                }
-            },
+            new ValidUsername,
         ];
 
         $emailRules = [

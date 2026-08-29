@@ -5,7 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\User;
 use App\Models\UserOidcMapping;
 use App\Rules\EmailNotBanned;
-use App\Rules\PixelfedUsername;
+use App\Rules\ValidUsername;
 use App\Services\EmailService;
 use App\Services\UserOidcService;
 use Illuminate\Auth\Events\Registered;
@@ -96,7 +96,7 @@ class RemoteOidcController extends Controller
                 'min:2',
                 'max:30',
                 'unique:users,username',
-                new PixelfedUsername,
+                new ValidUsername,
             ],
             'name' => 'nullable|max:30',
         ]);
