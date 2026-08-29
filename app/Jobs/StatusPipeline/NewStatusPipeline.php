@@ -2,8 +2,8 @@
 
 namespace App\Jobs\StatusPipeline;
 
-use App\Media;
-use App\Status;
+use App\Models\Media;
+use App\Models\Status;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
@@ -24,9 +24,18 @@ class NewStatusPipeline implements ShouldQueue
      */
     public $deleteWhenMissingModels = true;
 
-    public $timeout = 5;
+    public $timeout = 30;
 
-    public $tries = 1;
+    public $tries = 3;
+
+    public $maxExceptions = 1;
+
+    /**
+     * The number of seconds to wait before retrying.
+     *
+     * @var array<int, int>
+     */
+    public $backoff = [5, 10];
 
     /**
      * Create a new job instance.

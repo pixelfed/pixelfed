@@ -5,7 +5,7 @@ namespace Tests\Unit;
 use App\Jobs\CuratedOnboarding\CuratedOnboardingNotifyAdminNewApplicationPipeline;
 use App\Mail\CuratedRegisterNotifyAdmin;
 use App\Models\CuratedRegister;
-use App\User;
+use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\Config;
 use Illuminate\Support\Facades\Mail;

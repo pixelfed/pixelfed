@@ -2,7 +2,7 @@
 
 namespace App\Jobs\MediaPipeline;
 
-use App\Media;
+use App\Models\Media;
 use App\Services\MediaStorageService;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;

@@ -24,7 +24,7 @@ return [
     'paths' => [
         '.well-known/*',
         'api/*',
-        'oauth/*'
+        'oauth/*',
     ],
 
     /*

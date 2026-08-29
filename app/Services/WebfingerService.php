@@ -2,9 +2,10 @@
 
 namespace App\Services;
 
-use App\Profile;
+use App\Models\Profile;
 use App\Util\ActivityPub\Helpers;
 use App\Util\Webfinger\WebfingerUrl;
+use Illuminate\Http\Client\ConnectionException;
 use Illuminate\Support\Facades\Http;
 
 class WebfingerService
@@ -77,7 +78,7 @@ class WebfingerService
                 ])
                 ->timeout(20)
                 ->get($url);
-        } catch (\Illuminate\Http\Client\ConnectionException $e) {
+        } catch (ConnectionException $e) {
             return [];
         }
 

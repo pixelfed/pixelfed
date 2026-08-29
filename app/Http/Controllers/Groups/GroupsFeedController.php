@@ -11,6 +11,7 @@ use App\Services\Groups\GroupsLikeService;
 use App\Services\GroupService;
 use App\Services\RelationshipService;
 use App\Services\UserFilterService;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Cache;
 
@@ -21,7 +22,7 @@ class GroupsFeedController extends Controller
         $this->middleware('auth');
     }
 
-    public function getSelfFeed(Request $request)
+    public function getSelfFeed(Request $request): JsonResponse
     {
         abort_if(! $request->user(), 404);
         $pid = $request->user()->profile_id;
@@ -30,7 +31,7 @@ class GroupsFeedController extends Controller
         $initial = $request->has('initial');
 
         if ($initial) {
-            $res = Cache::remember('groups:self:feed:' . $pid, 900, function () use ($pid) {
+            $res = Cache::remember('groups:self:feed:'.$pid, 900, function () use ($pid) {
                 return $this->getSelfFeedV0($pid, 5, null);
             });
         } else {

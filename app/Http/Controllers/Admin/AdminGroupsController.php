@@ -8,8 +8,8 @@ use App\Models\GroupInteraction;
 use App\Models\GroupMember;
 use App\Models\GroupPost;
 use App\Models\GroupReport;
-use Cache;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Cache;
 
 trait AdminGroupsController
 {

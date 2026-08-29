@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
+use Illuminate\Http\Response;
 use Illuminate\Validation\Rule;
 use Laravel\Passport\Passport;
 use Laravel\Passport\Token;
@@ -52,7 +53,7 @@ class PersonalAccessTokenController extends Controller
 
     public function store(Request $request): JsonResponse
     {
-        if (! config('instance.oauth.pat.enabled')) {
+        if (! config('instance.oauth.pat_enabled')) {
             return response()->json([
                 'error' => 'Personal access tokens are not enabled on this instance. Please contact your administrator.',
             ], 403);
@@ -118,7 +119,7 @@ class PersonalAccessTokenController extends Controller
         ]);
     }
 
-    public function destroy(Request $request, string $token)
+    public function destroy(Request $request, string $token): Response
     {
         $token = $request->user()
             ->tokens()

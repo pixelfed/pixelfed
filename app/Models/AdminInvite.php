@@ -7,16 +7,7 @@ use Illuminate\Support\Str;
 
 class AdminInvite extends Model
 {
-    protected $fillable = [
-        'name',
-        'description',
-        'message',
-        'max_uses',
-        'uses',
-        'skip_email_verification',
-        'expires_at',
-        'admin_user_id',
-    ];
+    protected $guarded = [];
 
     protected function casts(): array
     {

@@ -2,7 +2,8 @@
 
 namespace App\Jobs\FollowPipeline;
 
-use App\FollowRequest;
+use App\Models\FollowRequest;
+use App\Services\FractalService;
 use App\Transformer\ActivityPub\Verb\RejectFollow;
 use App\Util\ActivityPub\Helpers;
 use Illuminate\Bus\Queueable;
@@ -11,8 +12,6 @@ use Illuminate\Foundation\Bus\Dispatchable;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
 use Illuminate\Support\Facades\Log;
-use League\Fractal;
-use League\Fractal\Serializer\ArraySerializer;
 
 class FollowRejectPipeline implements ShouldQueue
 {
@@ -75,10 +74,7 @@ class FollowRejectPipeline implements ShouldQueue
         }
 
         try {
-            $fractal = new Fractal\Manager;
-            $fractal->setSerializer(new ArraySerializer);
-            $resource = new Fractal\Resource\Item($follow, new RejectFollow);
-            $activity = $fractal->createData($resource)->toArray();
+            $activity = FractalService::item($follow, new RejectFollow);
             $url = $actor->sharedInbox ?? $actor->inbox_url;
 
             Helpers::sendSignedObject($target, $url, $activity);

@@ -2,25 +2,27 @@
 
 namespace App\Http\Controllers\Settings;
 
-use App\AccountLog;
-use App\EmailVerification;
 use App\Mail\PasswordChange;
-use App\Media;
+use App\Models\AccountLog;
+use App\Models\EmailVerification;
+use App\Models\Media;
+use App\Models\User;
 use App\Services\AccountService;
 use App\Services\PronounService;
 use App\Util\Lexer\Autolink;
 use App\Util\Lexer\PrettyNumber;
-use Cache;
+use App\Util\Localization\Localization;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Mail;
 use Purify;
 
 trait HomeSettings
 {
-    public function home()
+    public function home(Request $request)
     {
-        $id = Auth::user()->profile_id;
+        $id = $request->user()->profile_id;
         $storage = [];
         $used = Media::whereProfileId($id)->sum('size');
         $storage['limit'] = config_cache('pixelfed.max_account_size') * 1024;
@@ -48,7 +50,7 @@ trait HomeSettings
         $bio = $request->filled('bio') ? strip_tags(Purify::clean($request->input('bio'))) : null;
         $website = $request->input('website');
         $language = $request->input('language');
-        $user = Auth::user();
+        $user = $request->user();
         $profile = $user->profile;
         $pronouns = $request->input('pronouns');
         $existingPronouns = PronounService::get($profile->id);
@@ -78,7 +80,7 @@ trait HomeSettings
             }
 
             if ($user->language != $language &&
-                in_array($language, \App\Util\Localization\Localization::languages())
+                in_array($language, Localization::languages())
             ) {
                 $changes = true;
                 $user->language = $language;
@@ -128,7 +130,7 @@ trait HomeSettings
 
         $user = $request->user();
 
-        if (!password_verify($current, $user->password)) {
+        if (! password_verify($current, $user->password)) {
             return redirect()->back()->with('error', 'There was an error with your request! Please try again.');
         }
 
@@ -138,7 +140,7 @@ trait HomeSettings
         $log = new AccountLog;
         $log->user_id = $user->id;
         $log->item_id = $user->id;
-        $log->item_type = \App\User::class;
+        $log->item_type = User::class;
         $log->action = 'account.edit.password';
         $log->message = $revokeSessions
             ? 'Password changed and all sessions revoked'
@@ -174,7 +176,7 @@ trait HomeSettings
         ]);
         $changes = false;
         $email = $request->input('email');
-        $user = Auth::user();
+        $user = $request->user();
         $profile = $user->profile;
 
         $validate = config_cache('pixelfed.enforce_email_verification');
@@ -193,7 +195,7 @@ trait HomeSettings
             $log = new AccountLog;
             $log->user_id = $user->id;
             $log->item_id = $user->id;
-            $log->item_type = \App\User::class;
+            $log->item_type = User::class;
             $log->action = 'account.edit.email';
             $log->message = 'Email changed';
             $log->link = null;

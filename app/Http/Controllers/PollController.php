@@ -4,9 +4,9 @@ namespace App\Http\Controllers;
 
 use App\Models\Poll;
 use App\Models\PollVote;
+use App\Models\Status;
 use App\Services\FollowerService;
 use App\Services\PollService;
-use App\Status;
 use Illuminate\Http\Request;
 
 class PollController extends Controller

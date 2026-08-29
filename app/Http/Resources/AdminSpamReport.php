@@ -2,17 +2,19 @@
 
 namespace App\Http\Resources;
 
+use App\Models\Status;
 use App\Services\StatusService;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
+use Illuminate\Support\Carbon;
 
 /**
  * @property int $id
  * @property string $type
  * @property int|null $item_id
  * @property string|null $item_type
- * @property \Illuminate\Support\Carbon|null $read_at
- * @property \Illuminate\Support\Carbon $created_at
+ * @property Carbon|null $read_at
+ * @property Carbon $created_at
  */
 class AdminSpamReport extends JsonResource
 {
@@ -31,7 +33,7 @@ class AdminSpamReport extends JsonResource
             'created_at' => $this->created_at,
         ];
 
-        if ($this->item_id && $this->item_type === \App\Status::class) {
+        if ($this->item_id && $this->item_type === Status::class) {
             $res['status'] = StatusService::get($this->item_id, false);
         }
 

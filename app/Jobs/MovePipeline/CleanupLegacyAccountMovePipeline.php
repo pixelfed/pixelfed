@@ -2,10 +2,10 @@
 
 namespace App\Jobs\MovePipeline;
 
-use App\Follower;
-use App\Profile;
+use App\Models\Follower;
+use App\Models\Profile;
+use App\Models\UserFilter;
 use App\Services\AccountService;
-use App\UserFilter;
 use App\Util\ActivityPub\Helpers;
 use DateTime;
 use Exception;
@@ -85,7 +85,7 @@ class CleanupLegacyAccountMovePipeline implements ShouldQueue
             throw new Exception('Invalid move accounts');
         }
 
-        UserFilter::where('filterable_type', \App\Profile::class)
+        UserFilter::where('filterable_type', Profile::class)
             ->where('filterable_id', $actorAccount['id'])
             ->update(['filterable_id' => $targetAccount['id']]);
 

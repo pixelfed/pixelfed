@@ -13,8 +13,10 @@ return new class extends Migration
     {
         Schema::table('instances', function (Blueprint $table) {
             $indexes = Schema::getIndexes('instances');
-            $indexesFound = collect($indexes)->map(function($i) { return $i['name']; })->toArray();
-            if (!in_array('instances_nodeinfo_last_fetched_index', $indexesFound)) {
+            $indexesFound = collect($indexes)->map(function ($i) {
+                return $i['name'];
+            })->toArray();
+            if (! in_array('instances_nodeinfo_last_fetched_index', $indexesFound)) {
                 $table->index('nodeinfo_last_fetched');
             }
         });
@@ -27,7 +29,9 @@ return new class extends Migration
     {
         Schema::table('instances', function (Blueprint $table) {
             $indexes = Schema::getIndexes('instances');
-            $indexesFound = collect($indexes)->map(function($i) { return $i['name']; })->toArray();
+            $indexesFound = collect($indexes)->map(function ($i) {
+                return $i['name'];
+            })->toArray();
             if (in_array('instances_nodeinfo_last_fetched_index', $indexesFound)) {
                 $table->dropIndex('instances_nodeinfo_last_fetched_index');
             }

@@ -2,7 +2,7 @@
 
 namespace App\Services;
 
-use App\User;
+use App\Models\User;
 use App\Util\Site\Nodeinfo;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Str;

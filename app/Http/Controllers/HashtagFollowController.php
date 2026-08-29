@@ -2,11 +2,11 @@
 
 namespace App\Http\Controllers;
 
-use App\Hashtag;
-use App\HashtagFollow;
+use App\Models\Hashtag;
+use App\Models\HashtagFollow;
 use App\Services\HashtagService;
-use Auth;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 
 class HashtagFollowController extends Controller
 {
@@ -15,13 +15,13 @@ class HashtagFollowController extends Controller
         $this->middleware('auth');
     }
 
-    public function store(Request $request)
+    public function store(Request $request): array
     {
         $this->validate($request, [
             'name' => 'required|alpha_num|min:1|max:124|exists:hashtags,name',
         ]);
 
-        $user = Auth::user();
+        $user = $request->user();
         $profile = $user->profile;
         $tag = $request->input('name');
 

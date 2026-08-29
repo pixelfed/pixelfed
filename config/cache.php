@@ -17,7 +17,7 @@ return [
     |
     */
 
-    'default' => env('CACHE_DRIVER', 'file'),
+    'default' => env('CACHE_STORE', env('CACHE_DRIVER', 'file')),
 
     /*
     |--------------------------------------------------------------------------
@@ -143,6 +143,20 @@ return [
         'CACHE_PREFIX',
         Str::slug(env('APP_NAME', 'laravel'), '_').'_cache'
     ),
+
+    /*
+    |--------------------------------------------------------------------------
+    | Serializable Classes
+    |--------------------------------------------------------------------------
+    |
+    | Controls which PHP classes may be unserialized from cache. Set to false
+    | to block all object unserialization (recommended), or provide an array
+    | of class names that are allowed. This hardens the cache layer against
+    | PHP deserialization gadget chain attacks.
+    |
+    */
+
+    'serializable_classes' => true,
 
     'limiter' => env('CACHE_LIMITER_DRIVER', 'redis'),
 ];

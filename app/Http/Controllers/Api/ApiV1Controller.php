@@ -2,19 +2,10 @@
 
 namespace App\Http\Controllers\Api;
 
-use App\Avatar;
-use App\Bookmark;
-use App\Collection;
-use App\CollectionItem;
-use App\DirectMessage;
-use App\Follower;
-use App\FollowRequest;
-use App\Hashtag;
 use App\Http\Controllers\AccountController;
 use App\Http\Controllers\Controller;
 use App\Http\Controllers\FollowerController;
 use App\Http\Controllers\StatusController;
-use App\Instance;
 use App\Jobs\AvatarPipeline\AvatarOptimize;
 use App\Jobs\CommentPipeline\CommentPipeline;
 use App\Jobs\FollowPipeline\FollowAcceptPipeline;
@@ -33,12 +24,26 @@ use App\Jobs\SharePipeline\UndoSharePipeline;
 use App\Jobs\StatusPipeline\NewStatusPipeline;
 use App\Jobs\StatusPipeline\StatusDelete;
 use App\Jobs\VideoPipeline\VideoThumbnail;
-use App\Like;
-use App\Media;
+use App\Models\Avatar;
+use App\Models\Bookmark;
+use App\Models\Collection;
+use App\Models\CollectionItem;
 use App\Models\Conversation;
 use App\Models\CustomFilter;
-use App\Notification;
-use App\Profile;
+use App\Models\DirectMessage;
+use App\Models\Follower;
+use App\Models\FollowRequest;
+use App\Models\Hashtag;
+use App\Models\Instance;
+use App\Models\Like;
+use App\Models\Media;
+use App\Models\Notification;
+use App\Models\Profile;
+use App\Models\Status;
+use App\Models\StatusHashtag;
+use App\Models\User;
+use App\Models\UserFilter;
+use App\Models\UserSetting;
 use App\Services\AccountService;
 use App\Services\AdminShadowFilterService;
 use App\Services\BookmarkService;
@@ -65,31 +70,28 @@ use App\Services\StatusService;
 use App\Services\UserFilterService;
 use App\Services\UserRoleService;
 use App\Services\UserStorageService;
-use App\Status;
-use App\StatusHashtag;
 use App\Transformer\Api\Mastodon\v1\AccountTransformer;
 use App\Transformer\Api\Mastodon\v1\MediaTransformer;
 use App\Transformer\Api\Mastodon\v1\NotificationTransformer;
 use App\Transformer\Api\Mastodon\v1\StatusTransformer;
 use App\Transformer\Api\RelationshipTransformer;
-use App\User;
-use App\UserFilter;
-use App\UserSetting;
 use App\Util\Lexer\Autolink;
 use App\Util\Lexer\PrettyNumber;
 use App\Util\Localization\Localization;
 use App\Util\Media\Filter;
 use App\Util\Media\License;
-use Cache;
 use Carbon\Carbon;
-use DB;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
+use Illuminate\Http\Response;
+use Illuminate\Support\Facades\Cache;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\RateLimiter;
+use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
 use Laravel\Passport\Client;
 use League\Fractal;
 use League\Fractal\Serializer\ArraySerializer;
-use Storage;
 
 class ApiV1Controller extends Controller
 {
@@ -103,7 +105,7 @@ class ApiV1Controller extends Controller
         $this->fractal->setSerializer(new ArraySerializer);
     }
 
-    public function json($res, $code = 200, $headers = [])
+    public function json($res, $code = 200, $headers = []): JsonResponse
     {
         return response()->json($res, $code, $headers, JSON_UNESCAPED_SLASHES);
     }
@@ -1362,7 +1364,7 @@ class ApiV1Controller extends Controller
      *
      * @return array
      */
-    public function customEmojis()
+    public function customEmojis(): Response
     {
         return response(CustomEmojiService::all())->header('Content-Type', 'application/json');
     }
@@ -1374,7 +1376,7 @@ class ApiV1Controller extends Controller
      *
      * @return array
      */
-    public function accountDomainBlocks(Request $request)
+    public function accountDomainBlocks(Request $request): JsonResponse
     {
         abort_if(! $request->user() || ! $request->user()->token(), 403);
         abort_unless($request->user()->tokenCan('read'), 403);
@@ -1389,7 +1391,7 @@ class ApiV1Controller extends Controller
      *
      * @return array
      */
-    public function accountEndorsements(Request $request)
+    public function accountEndorsements(Request $request): JsonResponse
     {
         abort_if(! $request->user() || ! $request->user()->token(), 403);
         abort_unless($request->user()->tokenCan('read'), 403);
@@ -1643,7 +1645,7 @@ class ApiV1Controller extends Controller
      *
      * @return array
      */
-    public function accountFilters(Request $request)
+    public function accountFilters(Request $request): JsonResponse
     {
         abort_if(! $request->user() || ! $request->user()->token(), 403);
         abort_unless($request->user()->tokenCan('read'), 403);
@@ -1791,7 +1793,7 @@ class ApiV1Controller extends Controller
      *
      * @return null
      */
-    public function accountSuggestions(Request $request)
+    public function accountSuggestions(Request $request): JsonResponse
     {
         abort_if(! $request->user() || ! $request->user()->token(), 403);
         abort_unless($request->user()->tokenCan('read'), 403);
@@ -1896,7 +1898,7 @@ class ApiV1Controller extends Controller
      *
      * @return null
      */
-    public function accountLists(Request $request)
+    public function accountLists(Request $request): JsonResponse
     {
         abort_if(! $request->user() || ! $request->user()->token(), 403);
         abort_unless($request->user()->tokenCan('read'), 403);
@@ -1910,7 +1912,7 @@ class ApiV1Controller extends Controller
      * @param  int  $id
      * @return null
      */
-    public function accountListsById(Request $request, $id)
+    public function accountListsById(Request $request, $id): JsonResponse
     {
         abort_if(! $request->user() || ! $request->user()->token(), 403);
         abort_unless($request->user()->tokenCan('read'), 403);
@@ -3562,7 +3564,7 @@ class ApiV1Controller extends Controller
      * @param  int  $id
      * @return StatusTransformer
      */
-    public function statusCard(Request $request, $id)
+    public function statusCard(Request $request, $id): JsonResponse
     {
         abort_if(! $request->user() || ! $request->user()->token(), 403);
         abort_unless($request->user()->tokenCan('read'), 403);

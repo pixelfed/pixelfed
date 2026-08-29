@@ -1,29 +1,14 @@
 name: PHP - Pint
-permissions:
-  contents: read
-  pull-requests: write
 
 on:
   push:
-    branches:
-      - main
-      - dev
-      - staging
-      - unstable
+    branches: [staging, dev, unstable]
   pull_request:
-    branches:
-      - main
-      - dev
-      - staging
-      - unstable
+    branches: [staging, dev, unstable]
 
 jobs:
-  lint:
+  pint:
     runs-on: ubuntu-latest
-    strategy:
-      fail-fast: true
-      matrix:
-        php: [8.5]
 
     steps:
       - name: Checkout code
@@ -32,15 +17,19 @@ jobs:
       - name: Setup PHP
         uses: shivammathur/setup-php@v2
         with:
-          php-version: ${{ matrix.php }}
-          extensions: json, dom, curl, libxml, mbstring
+          php-version: '8.5'
+          extensions: mbstring
           coverage: none
 
-      - name: Install Pint
-        run: composer global require laravel/pint
+      - name: Cache Composer dependencies
+        uses: actions/cache@v6
+        with:
+          path: vendor
+          key: composer-8.5-${{ hashFiles('composer.lock') }}
+          restore-keys: composer-8.5-
+
+      - name: Install Composer dependencies
+        run: composer install --no-interaction --no-progress --prefer-dist
 
       - name: Run Pint
-        run: pint --test
-
-      # - name: Commit linted files
-      #   uses: stefanzweifel/git-auto-commit-action@v5
+        run: vendor/bin/pint --test

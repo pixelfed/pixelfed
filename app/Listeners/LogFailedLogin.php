@@ -2,7 +2,8 @@
 
 namespace App\Listeners;
 
-use App\AccountLog;
+use App\Models\AccountLog;
+use App\Models\User;
 
 class LogFailedLogin
 {
@@ -34,7 +35,7 @@ class LogFailedLogin
         $log = new AccountLog;
         $log->user_id = $user->id;
         $log->item_id = $user->id;
-        $log->item_type = \App\User::class;
+        $log->item_type = User::class;
         $log->action = 'auth.failed';
         $log->message = 'Failed login attempt';
         $log->link = null;

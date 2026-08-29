@@ -28,3 +28,8 @@ Dockerfile
 README.md
 .editorconfig
 .phpunit.result.cache
+
+# Psalm reports and cache
+storage/psalm-reports
+psalm.sarif.json
+.psalm-cache

@@ -2,13 +2,11 @@
 
 namespace Tests\Feature;
 
-use PHPUnit\Framework\Attributes\Test;
+use App\Models\User;
 use App\Models\UserOidcMapping;
 use App\Services\UserOidcService;
-use App\User;
-use Auth;
-use Faker\Factory as Faker;
-use Illuminate\Foundation\Testing\RefreshDatabase;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Str;
 use League\OAuth2\Client\Provider\GenericResourceOwner;
 use League\OAuth2\Client\Token\AccessToken;
 use Mockery\Adapter\Phpunit\MockeryPHPUnitIntegration;

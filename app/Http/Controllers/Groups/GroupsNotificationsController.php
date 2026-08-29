@@ -3,10 +3,11 @@
 namespace App\Http\Controllers\Groups;
 
 use App\Http\Controllers\Controller;
-use App\Notification;
+use App\Models\Notification;
 use App\Services\AccountService;
 use App\Services\GroupService;
 use App\Services\StatusService;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 
 class GroupsNotificationsController extends Controller
@@ -16,7 +17,7 @@ class GroupsNotificationsController extends Controller
         $this->middleware('auth');
     }
 
-    public function selfGlobalNotifications(Request $request)
+    public function selfGlobalNotifications(Request $request): JsonResponse
     {
         abort_if(! $request->user(), 404);
         $pid = $request->user()->profile_id;

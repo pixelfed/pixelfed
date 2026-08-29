@@ -2,20 +2,22 @@
 
 namespace App\Http\Controllers\Api;
 
-use App\Avatar;
 use App\Http\Controllers\AvatarController;
 use App\Http\Controllers\Controller;
 use App\Jobs\AvatarPipeline\AvatarOptimize;
 use App\Jobs\NotificationPipeline\NotificationWarmUserCache;
+use App\Models\Avatar;
+use App\Models\Status;
+use App\Models\StatusArchived;
 use App\Services\AccountService;
 use App\Services\NotificationService;
 use App\Services\StatusService;
-use App\Status;
-use App\StatusArchived;
 use App\Transformer\Api\StatusStatelessTransformer;
-use Auth;
-use Cache;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Cache;
+use Illuminate\Support\Facades\DB;
 use League\Fractal;
 use League\Fractal\Serializer\ArraySerializer;
 
@@ -30,7 +32,7 @@ class BaseApiController extends Controller
         $this->fractal->setSerializer(new ArraySerializer);
     }
 
-    public function notifications(Request $request)
+    public function notifications(Request $request): JsonResponse
     {
         abort_if(! $request->user(), 403);
 
@@ -78,7 +80,7 @@ class BaseApiController extends Controller
         return response()->json($res);
     }
 
-    public function avatarUpdate(Request $request)
+    public function avatarUpdate(Request $request): JsonResponse
     {
         abort_if(! $request->user(), 403);
 
@@ -87,7 +89,7 @@ class BaseApiController extends Controller
         ]);
 
         try {
-            $user = Auth::user();
+            $user = $request->user();
             $profile = $user->profile;
             $file = $request->file('upload');
             $path = (new AvatarController)->getPath($user, $file);
@@ -115,7 +117,7 @@ class BaseApiController extends Controller
         ]);
     }
 
-    public function verifyCredentials(Request $request)
+    public function verifyCredentials(Request $request): JsonResponse
     {
         abort_if(! $request->user(), 403);
 
@@ -129,7 +131,7 @@ class BaseApiController extends Controller
         return response()->json($res);
     }
 
-    public function accountLikes(Request $request)
+    public function accountLikes(Request $request): JsonResponse
     {
         abort_if(! $request->user(), 403);
 
@@ -141,7 +143,7 @@ class BaseApiController extends Controller
         $user = $request->user();
         $limit = $request->input('limit', 10);
 
-        $res = \DB::table('likes')
+        $res = DB::table('likes')
             ->whereProfileId($user->profile_id)
             ->latest()
             ->simplePaginate($limit)
@@ -160,7 +162,7 @@ class BaseApiController extends Controller
         return response()->json($res);
     }
 
-    public function archive(Request $request, $id)
+    public function archive(Request $request, $id): array
     {
         abort_if(! $request->user(), 403);
 
@@ -188,7 +190,7 @@ class BaseApiController extends Controller
         return [200];
     }
 
-    public function unarchive(Request $request, $id)
+    public function unarchive(Request $request, $id): array
     {
         abort_if(! $request->user(), 403);
 
@@ -215,7 +217,7 @@ class BaseApiController extends Controller
         return [200];
     }
 
-    public function archivedPosts(Request $request)
+    public function archivedPosts(Request $request): array
     {
         abort_if(! $request->user(), 403);
 

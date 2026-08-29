@@ -6,29 +6,29 @@ use Illuminate\Support\Facades\Schema;
 
 class CreateConfigCachesTable extends Migration
 {
-	/**
-	 * Run the migrations.
-	 *
-	 * @return void
-	 */
-	public function up()
-	{
-		Schema::create('config_cache', function (Blueprint $table) {
-			$table->id();
-			$table->string('k')->unique()->index();
-			$table->text('v')->nullable();
-			$table->json('metadata')->nullable();
-			$table->timestamps();
-		});
-	}
+    /**
+     * Run the migrations.
+     *
+     * @return void
+     */
+    public function up()
+    {
+        Schema::create('config_cache', function (Blueprint $table) {
+            $table->id();
+            $table->string('k')->unique()->index();
+            $table->text('v')->nullable();
+            $table->json('metadata')->nullable();
+            $table->timestamps();
+        });
+    }
 
-	/**
-	 * Reverse the migrations.
-	 *
-	 * @return void
-	 */
-	public function down()
-	{
-		Schema::dropIfExists('config_cache');
-	}
+    /**
+     * Reverse the migrations.
+     *
+     * @return void
+     */
+    public function down()
+    {
+        Schema::dropIfExists('config_cache');
+    }
 }

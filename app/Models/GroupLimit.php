@@ -9,10 +9,7 @@ class GroupLimit extends Model
 {
     use HasFactory;
 
-    protected $fillable = [
-        'profile_id',
-        'group_id',
-    ];
+    protected $guarded = [];
 
     protected function casts(): array
     {

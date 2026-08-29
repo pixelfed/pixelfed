@@ -2,25 +2,26 @@
 
 namespace App\Http\Controllers;
 
-use App\Contact;
 use App\Jobs\ContactPipeline\ContactPipeline;
+use App\Models\Contact;
 use App\Rules\MaxMultiLine;
-use Auth;
+use Illuminate\Contracts\View\View;
+use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 
 class ContactController extends Controller
 {
-    public function show(Request $request)
+    public function show(Request $request): View
     {
         abort_if(! config('instance.email') && ! config('instance.contact.enabled'), 404);
 
         return view('site.contact');
     }
 
-    public function store(Request $request)
+    public function store(Request $request): RedirectResponse
     {
         abort_if(! config('instance.contact.enabled'), 404);
-        abort_if(! Auth::check(), 403);
+        abort_if(! $request->user(), 403);
 
         $this->validate($request, [
             'message' => ['required', 'string', 'min:5', new MaxMultiLine('500')],
@@ -29,7 +30,7 @@ class ContactController extends Controller
 
         $message = $request->input('message');
         $request_response = $request->input('request_response') == 'on' ? true : false;
-        $user = Auth::user();
+        $user = $request->user();
 
         $max = config('instance.contact.max_per_day');
         $contact = Contact::whereUserId($user->id)
@@ -52,7 +53,7 @@ class ContactController extends Controller
         return redirect()->back()->with('status', 'Success - Your message has been sent to admins.');
     }
 
-    public function showAdminResponse(Request $request, $id)
+    public function showAdminResponse(Request $request, $id): View
     {
         abort_if(! $request->user(), 404);
         $uid = $request->user()->id;

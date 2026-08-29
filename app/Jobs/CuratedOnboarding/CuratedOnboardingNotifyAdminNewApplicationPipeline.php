@@ -4,7 +4,7 @@ namespace App\Jobs\CuratedOnboarding;
 
 use App\Mail\CuratedRegisterNotifyAdmin;
 use App\Models\CuratedRegister;
-use App\User;
+use App\Models\User;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;

@@ -5,7 +5,7 @@ namespace App\Services\Groups;
 use App\Models\GroupMember;
 use App\Services\AccountService;
 use App\Services\GroupService;
-use Cache;
+use Illuminate\Support\Facades\Cache;
 
 class GroupAccountService
 {

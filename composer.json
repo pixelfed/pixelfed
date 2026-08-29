@@ -16,7 +16,6 @@
         "bacon/bacon-qr-code": "^3.0",
         "brick/math": "^0.14",
         "buzz/laravel-h-captcha": "^1.0.4",
-        "endroid/qr-code": "^6.0",
         "guzzlehttp/guzzle": "^7.10",
         "intervention/image-driver-vips": "^4.1",
         "intervention/image-laravel": "^4.1",
@@ -33,7 +32,6 @@
         "league/oauth2-client": "^2.8",
         "league/uri": "^7.4",
         "matomo/device-detector": "^6.5",
-        "nesbot/carbon": "^3.10",
         "pbmedia/laravel-ffmpeg": "^8.0",
         "phpseclib/phpseclib": "~3.0",
         "pixelfed/fractal": "^0.18.0",
@@ -46,7 +44,7 @@
         "spatie/laravel-image-optimizer": "^1.8.2",
         "stevebauman/purify": "^6.2.0",
         "symfony/http-client": "^7.3",
-        "symfony/http-foundation": "7.4.13",
+        "symfony/http-foundation": "^7.4.13",
         "symfony/mailgun-mailer": "^7.3"
     },
     "require-dev": {
@@ -56,7 +54,8 @@
         "laravel/telescope": "^5.5",
         "mockery/mockery": "^1.6",
         "nunomaduro/collision": "^8.8",
-        "pestphp/pest": "^4.0"
+        "pestphp/pest": "^4.0",
+        "psalm/plugin-laravel": "^3"
     },
     "autoload": {
         "classmap": [
@@ -100,6 +99,13 @@
             "@php artisan package:discover --ansi"
         ],
         "analyse": "./vendor/bin/phpstan analyse --memory-limit=512M",
+        "test": [
+            "docker compose -f docker-compose.test.yml up -d --wait",
+            "./vendor/bin/pest --compact",
+            "docker compose -f docker-compose.test.yml down"
+        ],
+        "test:filter": "./vendor/bin/pest --compact --filter",
+        "test:quick": "./vendor/bin/pest --compact",
         "lint": "./vendor/bin/pint",
         "lint:test": "./vendor/bin/pint --test"
 
@@ -111,6 +117,9 @@
         "allow-plugins": {
             "pestphp/pest-plugin": true,
             "php-http/discovery": true
+        },
+        "platform": {
+            "php": "8.3.0"
         }
     },
     "prefer-stable": true

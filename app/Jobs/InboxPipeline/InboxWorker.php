@@ -2,16 +2,16 @@
 
 namespace App\Jobs\InboxPipeline;
 
-use App\Profile;
+use App\Models\Profile;
 use App\Util\ActivityPub\Helpers;
 use App\Util\ActivityPub\HttpSignature;
-use Cache;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
 use Illuminate\Http\Client\ConnectionException;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
+use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Http;
 
 class InboxWorker implements ShouldQueue
@@ -57,7 +57,7 @@ class InboxWorker implements ShouldQueue
 
         if ($this->verifySignature($headers, $payload) == true) {
             if (isset($payload['id'])) {
-                $lockKey = 'pf:ap:user-inbox:activity:' . hash('sha256', $payload['id']);
+                $lockKey = 'pf:ap:user-inbox:activity:'.hash('sha256', $payload['id']);
                 if (! Cache::add($lockKey, 1, 3600)) {
                     // Already processed after valid signature check
                     return 1;
@@ -122,7 +122,7 @@ class InboxWorker implements ShouldQueue
             }
         }
         if (
-            !$keyDomain || !$idDomain || !$actorDomain
+            ! $keyDomain || ! $idDomain || ! $actorDomain
             || $keyDomain !== $idDomain || $keyDomain !== $actorDomain
         ) {
             return false;

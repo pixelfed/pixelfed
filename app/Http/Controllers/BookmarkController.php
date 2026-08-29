@@ -2,12 +2,12 @@
 
 namespace App\Http\Controllers;
 
-use App\Bookmark;
+use App\Models\Bookmark;
+use App\Models\Status;
 use App\Services\AccountService;
 use App\Services\BookmarkService;
 use App\Services\FollowerService;
 use App\Services\UserRoleService;
-use App\Status;
 use Illuminate\Http\Request;
 
 class BookmarkController extends Controller
@@ -50,7 +50,7 @@ class BookmarkController extends Controller
 
         $bookmark = Bookmark::firstOrCreate([
             'status_id' => $status->id,
-            'profile_id' => $user->profile_id
+            'profile_id' => $user->profile_id,
         ]);
 
         if (! $bookmark->wasRecentlyCreated) {

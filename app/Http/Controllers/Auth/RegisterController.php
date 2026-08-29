@@ -3,14 +3,17 @@
 namespace App\Http\Controllers\Auth;
 
 use App\Http\Controllers\Controller;
+use App\Models\User;
+use App\Rules\ValidUsername;
 use App\Services\BouncerService;
 use App\Services\EmailService;
-use App\User;
-use App\Util\Lexer\RestrictedNames;
 use Illuminate\Auth\Events\Registered;
+use Illuminate\Contracts\View\View;
 use Illuminate\Foundation\Auth\RegistersUsers;
+use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
+use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Str;
@@ -50,7 +53,7 @@ class RegisterController extends Controller
 
     public function getRegisterToken()
     {
-        return \Cache::remember('pf:register:rt', 900, function () {
+        return Cache::remember('pf:register:rt', 900, function () {
             return Str::random(40);
         });
     }
@@ -73,41 +76,7 @@ class RegisterController extends Controller
             'min:2',
             'max:30',
             'unique:users',
-            function ($attribute, $value, $fail) {
-                $dash = substr_count($value, '-');
-                $underscore = substr_count($value, '_');
-                $period = substr_count($value, '.');
-
-                if (str_ends_with($value, ['.php', '.js', '.css'])) {
-                    return $fail('Username is invalid.');
-                }
-
-                if (($dash + $underscore + $period) > 1) {
-                    return $fail('Username is invalid. Can only contain one dash (-), period (.) or underscore (_).');
-                }
-
-                if (! ctype_alnum($value[0])) {
-                    return $fail('Username is invalid. Must start with a letter or number.');
-                }
-
-                if (! ctype_alnum($value[strlen($value) - 1])) {
-                    return $fail('Username is invalid. Must end with a letter or number.');
-                }
-
-                $val = str_replace(['_', '.', '-'], '', $value);
-                if (! ctype_alnum($val)) {
-                    return $fail('Username is invalid. Username must be alpha-numeric and may contain dashes (-), periods (.) and underscores (_).');
-                }
-
-                if (! preg_match('/[a-zA-Z]/', $value)) {
-                    return $fail('Username is invalid. Must contain at least one alphabetical character.');
-                }
-
-                $restricted = RestrictedNames::get();
-                if (in_array(strtolower($value), array_map('strtolower', $restricted))) {
-                    return $fail('Username cannot be used.');
-                }
-            },
+            new ValidUsername,
         ];
 
         $emailRules = [
@@ -176,7 +145,7 @@ class RegisterController extends Controller
      *
      * @return Response
      */
-    public function showRegistrationForm()
+    public function showRegistrationForm(): RedirectResponse|View
     {
         if ((bool) config_cache('pixelfed.open_registration')) {
             if (config('pixelfed.bouncer.cloud_ips.ban_signups')) {

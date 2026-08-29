@@ -2,8 +2,8 @@
 
 namespace App\Services;
 
+use App\Models\User;
 use App\Services\Internal\BeagleService;
-use App\User;
 use Illuminate\Support\Str;
 
 class AdminSettingsService

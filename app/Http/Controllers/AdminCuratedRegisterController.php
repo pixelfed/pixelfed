@@ -5,10 +5,14 @@ namespace App\Http\Controllers;
 use App\Mail\CuratedRegisterAcceptUser;
 use App\Mail\CuratedRegisterRejectUser;
 use App\Mail\CuratedRegisterRequestDetailsFromUser;
+use App\Mail\CuratedRegisterSendMessage;
 use App\Models\CuratedRegister;
 use App\Models\CuratedRegisterActivity;
 use App\Models\CuratedRegisterTemplate;
-use App\User;
+use App\Models\User;
+use Illuminate\Contracts\View\View;
+use Illuminate\Http\JsonResponse;
+use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Str;
@@ -20,7 +24,7 @@ class AdminCuratedRegisterController extends Controller
         $this->middleware(['auth', 'admin']);
     }
 
-    public function index(Request $request)
+    public function index(Request $request): View
     {
         $this->validate($request, [
             'filter' => 'sometimes|in:open,all,awaiting,approved,rejected,responses',
@@ -64,7 +68,7 @@ class AdminCuratedRegisterController extends Controller
         return view('admin.curated-register.index', compact('records', 'filter'));
     }
 
-    public function show(Request $request, $id)
+    public function show(Request $request, $id): View
     {
         $record = CuratedRegister::findOrFail($id);
 
@@ -201,7 +205,7 @@ class AdminCuratedRegisterController extends Controller
         $activity = new CuratedRegisterActivity;
         $activity->message = $request->input('message');
 
-        return new \App\Mail\CuratedRegisterRequestDetailsFromUser($record, $activity);
+        return new CuratedRegisterRequestDetailsFromUser($record, $activity);
     }
 
     public function previewMessageShow(Request $request, $id)
@@ -210,10 +214,10 @@ class AdminCuratedRegisterController extends Controller
         abort_if($record->email_verified_at === null, 400, 'Cannot message an unverified email');
         $record->message = $request->input('message');
 
-        return new \App\Mail\CuratedRegisterSendMessage($record);
+        return new CuratedRegisterSendMessage($record);
     }
 
-    public function apiHandleReject(Request $request, $id)
+    public function apiHandleReject(Request $request, $id): array
     {
         $this->validate($request, [
             'action' => 'required|in:reject-email,reject-silent',
@@ -232,7 +236,7 @@ class AdminCuratedRegisterController extends Controller
         return [200];
     }
 
-    public function apiHandleApprove(Request $request, $id)
+    public function apiHandleApprove(Request $request, $id): array
     {
         $record = CuratedRegister::findOrFail($id);
         abort_if($record->email_verified_at === null, 400, 'Cannot reject an unverified email');
@@ -260,26 +264,26 @@ class AdminCuratedRegisterController extends Controller
         return [200];
     }
 
-    public function templates(Request $request)
+    public function templates(Request $request): View
     {
         $templates = CuratedRegisterTemplate::paginate(10);
 
         return view('admin.curated-register.templates', compact('templates'));
     }
 
-    public function templateCreate(Request $request)
+    public function templateCreate(Request $request): View
     {
         return view('admin.curated-register.template-create');
     }
 
-    public function templateEdit(Request $request, $id)
+    public function templateEdit(Request $request, $id): View
     {
         $template = CuratedRegisterTemplate::findOrFail($id);
 
         return view('admin.curated-register.template-edit', compact('template'));
     }
 
-    public function templateEditStore(Request $request, $id)
+    public function templateEditStore(Request $request, $id): RedirectResponse
     {
         $this->validate($request, [
             'name' => 'required|string|max:30',
@@ -297,7 +301,7 @@ class AdminCuratedRegisterController extends Controller
         return redirect()->back()->with('status', 'Successfully updated template!');
     }
 
-    public function templateDelete(Request $request, $id)
+    public function templateDelete(Request $request, $id): RedirectResponse
     {
         $template = CuratedRegisterTemplate::findOrFail($id);
         $template->delete();
@@ -305,7 +309,7 @@ class AdminCuratedRegisterController extends Controller
         return redirect(route('admin.curated-onboarding.templates'))->with('status', 'Successfully deleted template!');
     }
 
-    public function templateStore(Request $request)
+    public function templateStore(Request $request): RedirectResponse
     {
         $this->validate($request, [
             'name' => 'required|string|max:30',
@@ -323,7 +327,7 @@ class AdminCuratedRegisterController extends Controller
         return redirect(route('admin.curated-onboarding.templates'))->with('status', 'Successfully created new template!');
     }
 
-    public function getActiveTemplates(Request $request)
+    public function getActiveTemplates(Request $request): JsonResponse
     {
         $templates = CuratedRegisterTemplate::whereIsActive(true)
             ->orderBy('order')

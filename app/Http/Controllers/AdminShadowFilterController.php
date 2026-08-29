@@ -3,9 +3,11 @@
 namespace App\Http\Controllers;
 
 use App\Models\AdminShadowFilter;
-use App\Profile;
+use App\Models\Profile;
 use App\Services\AccountService;
 use App\Services\AdminShadowFilterService;
+use Illuminate\Contracts\View\View;
+use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 
 class AdminShadowFilterController extends Controller
@@ -15,7 +17,7 @@ class AdminShadowFilterController extends Controller
         $this->middleware(['auth', 'admin']);
     }
 
-    public function home(Request $request)
+    public function home(Request $request): View
     {
         $filter = $request->input('filter');
         $searchQuery = $request->input('q');
@@ -37,7 +39,7 @@ class AdminShadowFilterController extends Controller
                     ->pluck('id')
                     ->toArray();
 
-                return $q->where('item_type', \App\Profile::class)->whereIn('item_id', $ids);
+                return $q->where('item_type', Profile::class)->whereIn('item_id', $ids);
             })
             ->latest()
             ->paginate(10)
@@ -46,12 +48,12 @@ class AdminShadowFilterController extends Controller
         return view('admin.asf.home', compact('filters'));
     }
 
-    public function create(Request $request)
+    public function create(Request $request): View
     {
         return view('admin.asf.create');
     }
 
-    public function edit(Request $request, $id)
+    public function edit(Request $request, $id): View
     {
         $filter = AdminShadowFilter::findOrFail($id);
         $profile = AccountService::get($filter->item_id);
@@ -59,7 +61,7 @@ class AdminShadowFilterController extends Controller
         return view('admin.asf.edit', compact('filter', 'profile'));
     }
 
-    public function store(Request $request)
+    public function store(Request $request): RedirectResponse
     {
         $this->validate($request, [
             'username' => 'required',
@@ -96,7 +98,7 @@ class AdminShadowFilterController extends Controller
         return redirect('/i/admin/asf/home');
     }
 
-    public function storeEdit(Request $request, $id)
+    public function storeEdit(Request $request, $id): RedirectResponse
     {
         $this->validate($request, [
             'active' => 'sometimes',

@@ -2,8 +2,8 @@
 
 namespace App\Services;
 
-use App\Media;
-use App\User;
+use App\Models\Media;
+use App\Models\User;
 
 class UserStorageService
 {

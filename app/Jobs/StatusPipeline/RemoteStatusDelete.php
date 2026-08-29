@@ -2,26 +2,26 @@
 
 namespace App\Jobs\StatusPipeline;
 
-use App\AccountInterstitial;
-use App\Bookmark;
-use App\CollectionItem;
-use App\DirectMessage;
 use App\Jobs\MediaPipeline\MediaDeletePipeline;
-use App\Like;
-use App\Media;
-use App\MediaTag;
-use App\Mention;
-use App\Notification;
-use App\Report;
+use App\Models\AccountInterstitial;
+use App\Models\Bookmark;
+use App\Models\CollectionItem;
+use App\Models\DirectMessage;
+use App\Models\Like;
+use App\Models\Media;
+use App\Models\MediaTag;
+use App\Models\Mention;
+use App\Models\Notification;
+use App\Models\Report;
+use App\Models\Status;
+use App\Models\StatusArchived;
+use App\Models\StatusHashtag;
+use App\Models\StatusView;
 use App\Services\Account\AccountStatService;
 use App\Services\AccountService;
 use App\Services\CollectionService;
 use App\Services\NotificationService;
 use App\Services\StatusService;
-use App\Status;
-use App\StatusArchived;
-use App\StatusHashtag;
-use App\StatusView;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldBeUniqueUntilProcessing;
 use Illuminate\Contracts\Queue\ShouldQueue;
@@ -127,11 +127,11 @@ class RemoteStatusDelete implements ShouldBeUniqueUntilProcessing, ShouldQueue
             }
         }
 
-        AccountInterstitial::where('item_type', \App\Status::class)
+        AccountInterstitial::where('item_type', Status::class)
             ->where('item_id', $status->id)
             ->delete();
         Bookmark::whereStatusId($status->id)->delete();
-        CollectionItem::whereObjectType(\App\Status::class)
+        CollectionItem::whereObjectType(Status::class)
             ->whereObjectId($status->id)
             ->get()
             ->each(function ($col) {
@@ -140,7 +140,7 @@ class RemoteStatusDelete implements ShouldBeUniqueUntilProcessing, ShouldQueue
             });
         $dms = DirectMessage::whereStatusId($status->id)->get();
         foreach ($dms as $dm) {
-            $not = Notification::whereItemType(\App\DirectMessage::class)
+            $not = Notification::whereItemType(DirectMessage::class)
                 ->whereItemId($dm->id)
                 ->first();
             if ($not) {
@@ -157,7 +157,7 @@ class RemoteStatusDelete implements ShouldBeUniqueUntilProcessing, ShouldQueue
             });
         $mediaTags = MediaTag::where('status_id', $status->id)->get();
         foreach ($mediaTags as $mtag) {
-            $not = Notification::whereItemType(\App\MediaTag::class)
+            $not = Notification::whereItemType(MediaTag::class)
                 ->whereItemId($mtag->id)
                 ->first();
             if ($not) {
@@ -167,10 +167,10 @@ class RemoteStatusDelete implements ShouldBeUniqueUntilProcessing, ShouldQueue
             $mtag->delete();
         }
         Mention::whereStatusId($status->id)->forceDelete();
-        Notification::whereItemType(\App\Status::class)
+        Notification::whereItemType(Status::class)
             ->whereItemId($status->id)
             ->forceDelete();
-        Report::whereObjectType(\App\Status::class)
+        Report::whereObjectType(Status::class)
             ->whereObjectId($status->id)
             ->delete();
         StatusArchived::whereStatusId($status->id)->delete();

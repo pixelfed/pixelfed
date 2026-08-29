@@ -2,22 +2,22 @@
 
 namespace App\Jobs\AvatarPipeline;
 
-use App\Avatar;
-use App\Profile;
+use App\Models\Avatar;
+use App\Models\Profile;
 use App\Util\Media\ImageDriverManager;
-use Cache;
 use Carbon\Carbon;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
+use Illuminate\Support\Facades\Cache;
+use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
 use Intervention\Image\Encoders\AvifEncoder;
 use Intervention\Image\Encoders\JpegEncoder;
 use Intervention\Image\Encoders\PngEncoder;
 use Intervention\Image\Encoders\WebpEncoder;
-use Storage;
 
 class AvatarOptimize implements ShouldQueue
 {

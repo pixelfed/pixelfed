@@ -12,6 +12,8 @@ use App\Services\PollService;
 use App\Services\StatusHashtagService;
 use App\Services\StatusMentionService;
 use App\Util\Lexer\Autolink;
+use Illuminate\Contracts\Support\Arrayable;
+use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
 
 class StatusStateless extends JsonResource
@@ -19,8 +21,8 @@ class StatusStateless extends JsonResource
     /**
      * Transform the resource into an array.
      *
-     * @param  \Illuminate\Http\Request  $request
-     * @return array|\Illuminate\Contracts\Support\Arrayable|\JsonSerializable
+     * @param  Request  $request
+     * @return array|Arrayable|\JsonSerializable
      */
     public function toArray($request)
     {

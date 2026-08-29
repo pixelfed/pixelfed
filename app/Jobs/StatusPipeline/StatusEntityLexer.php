@@ -2,27 +2,27 @@
 
 namespace App\Jobs\StatusPipeline;
 
-use App\Hashtag;
 use App\Jobs\HomeFeedPipeline\FeedInsertPipeline;
 use App\Jobs\MentionPipeline\MentionPipeline;
-use App\Mention;
-use App\Profile;
+use App\Models\Hashtag;
+use App\Models\Mention;
+use App\Models\Profile;
+use App\Models\Status;
+use App\Models\StatusHashtag;
 use App\Services\AdminShadowFilterService;
 use App\Services\PublicTimelineService;
 use App\Services\StatusService;
 use App\Services\UserFilterService;
-use App\Status;
-use App\StatusHashtag;
 use App\Util\Lexer\Autolink;
 use App\Util\Lexer\Extractor;
 use App\Util\Sentiment\Bouncer;
-use Cache;
-use DB;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
+use Illuminate\Support\Facades\Cache;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Str;
 

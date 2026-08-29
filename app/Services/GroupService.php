@@ -8,9 +8,9 @@ use App\Models\GroupInteraction;
 use App\Models\GroupLimit;
 use App\Models\GroupMember;
 use App\Models\GroupPost;
-use App\Profile;
+use App\Models\Profile;
 use App\Util\ActivityPub\Helpers;
-use Cache;
+use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Str;
 use Purify;
 

@@ -2,8 +2,8 @@
 
 namespace App\Services;
 
-use App\Story;
-use App\StoryView;
+use App\Models\Story;
+use App\Models\StoryView;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Redis;
 use Illuminate\Support\Facades\Storage;
@@ -35,9 +35,7 @@ class StoryService
 
     public static function getById($id)
     {
-        return Cache::remember(self::STORY_KEY.'by-id:id-'.$id, 3600, function () use ($id) {
-            return Story::find($id);
-        });
+        return Story::find($id);
     }
 
     public static function delById($id)
@@ -61,7 +59,7 @@ class StoryService
                     'media' => url(Storage::url($s->path)),
                     'can_reply' => (bool) $s->can_reply,
                     'can_react' => (bool) $s->can_react,
-                    'poll' => $s->type == 'poll' ? PollService::storyPoll($s->id) : null,
+                    'poll' => null,  // 'poll' => $s->type == 'poll' ? PollService::storyPoll($s->id) : null, once PollService actually exists.
                 ];
             })
             ->toArray();
@@ -126,7 +124,7 @@ class StoryService
                     'sum' => (int) Story::sum('size'),
                     'average' => (int) Story::avg('size'),
                 ],
-                'avg_spu' => $total ? (int) ($total / Story::groupBy('profile_id')->pluck('profile_id')->count()) : 'N/A',
+                'avg_spu' => $total ? (int) ($total / Story::distinct()->count('profile_id')) : 'N/A',
                 'avg_duration' => (int) floor(Story::avg('duration')),
                 'avg_type' => $total ? Story::selectRaw('type, count(id) as count')->groupBy('type')->orderByDesc('count')->first()->type : 'N/A',
             ];

@@ -3,21 +3,18 @@
 namespace App\Jobs\SharePipeline;
 
 use App\Jobs\HomeFeedPipeline\FeedRemovePipeline;
-use App\Notification;
+use App\Models\Notification;
+use App\Models\Status;
+use App\Services\ActivityPubDeliveryService;
+use App\Services\FractalService;
 use App\Services\ReblogService;
 use App\Services\StatusService;
-use App\Status;
 use App\Transformer\ActivityPub\Verb\UndoAnnounce;
-use App\Util\ActivityPub\HttpSignature;
-use GuzzleHttp\Client;
-use GuzzleHttp\Pool;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
-use League\Fractal;
-use League\Fractal\Serializer\ArraySerializer;
 
 class UndoSharePipeline implements ShouldQueue
 {
@@ -54,7 +51,7 @@ class UndoSharePipeline implements ShouldQueue
                 ->whereActorId($status->profile_id)
                 ->whereAction('share')
                 ->whereItemId($status->reblog_of_id)
-                ->whereItemType(\App\Status::class)
+                ->whereItemType(Status::class)
                 ->first();
 
             if ($notification) {
@@ -84,10 +81,7 @@ class UndoSharePipeline implements ShouldQueue
         $status = $this->status;
         $profile = $status->profile;
 
-        $fractal = new Fractal\Manager;
-        $fractal->setSerializer(new ArraySerializer);
-        $resource = new Fractal\Resource\Item($status, new UndoAnnounce);
-        $activity = $fractal->createData($resource)->toArray();
+        $activity = FractalService::item($status, new UndoAnnounce);
 
         $audience = $status->profile->getAudienceInbox();
 
@@ -95,43 +89,7 @@ class UndoSharePipeline implements ShouldQueue
             return 1;
         }
 
-        $payload = json_encode($activity);
-
-        $client = new Client([
-            'timeout' => config('federation.activitypub.delivery.timeout'),
-        ]);
-
-        $version = config('pixelfed.version');
-        $appUrl = config('app.url');
-        $userAgent = "(Pixelfed/{$version}; +{$appUrl})";
-
-        $requests = function ($audience) use ($client, $activity, $profile, $payload, $userAgent) {
-            foreach ($audience as $url) {
-                $headers = HttpSignature::sign($profile, $url, $activity, [
-                    'Content-Type' => 'application/ld+json; profile="https://www.w3.org/ns/activitystreams"',
-                    'User-Agent' => $userAgent,
-                ]);
-                yield function () use ($client, $url, $headers, $payload) {
-                    return $client->postAsync($url, [
-                        'curl' => [
-                            CURLOPT_HTTPHEADER => $headers,
-                            CURLOPT_POSTFIELDS => $payload,
-                            CURLOPT_HEADER => true,
-                        ],
-                    ]);
-                };
-            }
-        };
-
-        $pool = new Pool($client, $requests($audience), [
-            'concurrency' => config('federation.activitypub.delivery.concurrency'),
-            'fulfilled' => function ($response, $index) {},
-            'rejected' => function ($reason, $index) {},
-        ]);
-
-        $promise = $pool->promise();
-
-        $promise->wait();
+        ActivityPubDeliveryService::pool($profile, $audience, $activity);
 
         $status->delete();
 

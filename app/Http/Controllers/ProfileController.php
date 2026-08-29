@@ -2,24 +2,27 @@
 
 namespace App\Http\Controllers;
 
-use App\AccountInterstitial;
-use App\Follower;
-use App\FollowRequest;
-use App\Profile;
+use App\Models\AccountInterstitial;
+use App\Models\Follower;
+use App\Models\FollowRequest;
+use App\Models\Profile;
+use App\Models\Status;
+use App\Models\Story;
+use App\Models\User;
+use App\Models\UserFilter;
+use App\Models\UserSetting;
 use App\Services\AccountService;
 use App\Services\FollowerService;
 use App\Services\StatusService;
-use App\Status;
-use App\Story;
 use App\Transformer\ActivityPub\ProfileTransformer;
-use App\User;
-use App\UserFilter;
-use App\UserSetting;
-use Auth;
-use Cache;
+use Illuminate\Contracts\View\View as ViewContract;
+use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
+use Illuminate\Http\Response;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Cache;
+use Illuminate\Support\Facades\View;
 use League\Fractal;
-use View;
 
 class ProfileController extends Controller
 {
@@ -62,18 +65,30 @@ class ProfileController extends Controller
         return $this->buildProfile($request, $user);
     }
 
-    protected function buildProfile(Request $request, $user)
+    protected function buildProfile(Request $request, $user): ViewContract
     {
         $carousel = (bool) $request->filled('carousel');
         $username = $user->username;
-        $loggedIn = Auth::check();
+        $loggedIn = $request->user() !== null;
         $isPrivate = false;
         $isBlocked = false;
         if (! $loggedIn) {
             $key = 'profile:settings:'.$user->id;
             $ttl = now()->addHours(6);
             $settings = Cache::remember($key, $ttl, function () use ($user) {
-                return $user->user->settings;
+                $s = optional($user->user)->settings;
+
+                return [
+                    'crawlable' => $s->crawlable ?? true,
+                    'following' => [
+                        'count' => $s->show_profile_following_count ?? true,
+                        'list' => $s->show_profile_following ?? false,
+                    ],
+                    'followers' => [
+                        'count' => $s->show_profile_follower_count ?? true,
+                        'list' => $s->show_profile_followers ?? false,
+                    ],
+                ];
             });
 
             if ($user->is_private == true) {
@@ -86,17 +101,6 @@ class ProfileController extends Controller
             $is_following = false;
 
             $profile = $user;
-            $settings = [
-                'crawlable' => $settings->crawlable,
-                'following' => [
-                    'count' => $settings->show_profile_following_count,
-                    'list' => $settings->show_profile_following,
-                ],
-                'followers' => [
-                    'count' => $settings->show_profile_follower_count,
-                    'list' => $settings->show_profile_followers,
-                ],
-            ];
 
             if ($carousel) {
                 return view('profile.show_carousel', compact('profile', 'settings'));
@@ -107,7 +111,19 @@ class ProfileController extends Controller
             $key = 'profile:settings:'.$user->id;
             $ttl = now()->addHours(6);
             $settings = Cache::remember($key, $ttl, function () use ($user) {
-                return $user->user->settings;
+                $s = optional($user->user)->settings;
+
+                return [
+                    'crawlable' => $s->crawlable ?? true,
+                    'following' => [
+                        'count' => $s->show_profile_following_count ?? true,
+                        'list' => $s->show_profile_following ?? false,
+                    ],
+                    'followers' => [
+                        'count' => $s->show_profile_follower_count ?? true,
+                        'list' => $s->show_profile_followers ?? false,
+                    ],
+                ];
             });
 
             if ($user->is_private == true) {
@@ -117,10 +133,10 @@ class ProfileController extends Controller
             $isBlocked = $this->blockedProfileCheck($user);
 
             $owner = $loggedIn && Auth::id() === $user->user_id;
-            $is_following = ($owner == false && Auth::check()) ? $user->followedBy(Auth::user()->profile) : false;
+            $is_following = ($owner == false && $request->user() !== null) ? $user->followedBy($request->user()->profile) : false;
 
             if ($isPrivate == true || $isBlocked == true) {
-                $requested = Auth::check() ? FollowRequest::whereFollowerId(Auth::user()->profile_id)
+                $requested = $request->user() !== null ? FollowRequest::whereFollowerId($request->user()->profile_id)
                     ->whereFollowingId($user->id)
                     ->exists() : false;
 
@@ -129,17 +145,6 @@ class ProfileController extends Controller
 
             $is_admin = is_null($user->domain) ? $user->user->is_admin : false;
             $profile = $user;
-            $settings = [
-                'crawlable' => $settings->crawlable,
-                'following' => [
-                    'count' => $settings->show_profile_following_count,
-                    'list' => $settings->show_profile_following,
-                ],
-                'followers' => [
-                    'count' => $settings->show_profile_follower_count,
-                    'list' => $settings->show_profile_followers,
-                ],
-            ];
             if ($carousel) {
                 return view('profile.show_carousel', compact('profile', 'settings'));
             }
@@ -185,13 +190,13 @@ class ProfileController extends Controller
         return redirect($user->url());
     }
 
-    protected function privateProfileCheck(Profile $profile, $loggedIn)
+    protected function privateProfileCheck(Profile $profile, $loggedIn): bool
     {
-        if (! Auth::check()) {
+        if (! request()->user()) {
             return true;
         }
 
-        $user = Auth::user()->profile;
+        $user = request()->user()->profile;
         if ($user->id == $profile->id || ! $profile->is_private) {
             return false;
         }
@@ -204,7 +209,7 @@ class ProfileController extends Controller
         return false;
     }
 
-    public static function accountCheck(Profile $profile)
+    public static function accountCheck(Profile $profile): ViewContract
     {
         switch ($profile->status) {
             case 'disabled':
@@ -219,12 +224,12 @@ class ProfileController extends Controller
         return abort(404);
     }
 
-    protected function blockedProfileCheck(Profile $profile)
+    protected function blockedProfileCheck(Profile $profile): bool
     {
-        $pid = Auth::user()->profile->id;
+        $pid = request()->user()->profile->id;
         $blocks = UserFilter::whereUserId($profile->id)
             ->whereFilterType('block')
-            ->whereFilterableType(\App\Profile::class)
+            ->whereFilterableType(Profile::class)
             ->pluck('filterable_id')
             ->toArray();
         if (in_array($pid, $blocks)) {
@@ -330,14 +335,14 @@ class ProfileController extends Controller
             ->withHeaders($data['headers']);
     }
 
-    public function meRedirect()
+    public function meRedirect(Request $request): RedirectResponse
     {
-        abort_if(! Auth::check(), 404);
+        abort_if(! $request->user(), 404);
 
-        return redirect(Auth::user()->url());
+        return redirect($request->user()->url());
     }
 
-    public function embed(Request $request, $username)
+    public function embed(Request $request, $username): Response
     {
         $res = view('profile.embed-removed');
 
@@ -378,12 +383,12 @@ class ProfileController extends Controller
         return response($res)->withHeaders(['X-Frame-Options' => 'ALLOWALL']);
     }
 
-    public function stories(Request $request, $username)
+    public function stories(Request $request, $username): ViewContract
     {
         abort_if(! (bool) config_cache('instance.stories.enabled') || ! $request->user(), 404);
         $profile = Profile::whereNull('domain')->whereUsername($username)->firstOrFail();
         $pid = $profile->id;
-        $authed = Auth::user()->profile_id;
+        $authed = $request->user()->profile_id;
         abort_if($pid != $authed && ! FollowerService::follows($authed, $pid), 404);
         $exists = Story::whereProfileId($pid)
             ->whereActive(true)

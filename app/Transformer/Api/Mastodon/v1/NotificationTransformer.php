@@ -2,8 +2,8 @@
 
 namespace App\Transformer\Api\Mastodon\v1;
 
-use App\Notification;
-use App\Status;
+use App\Models\Notification;
+use App\Models\Status;
 use League\Fractal;
 
 class NotificationTransformer extends Fractal\TransformerAbstract
@@ -30,7 +30,7 @@ class NotificationTransformer extends Fractal\TransformerAbstract
     public function includeStatus(Notification $notification)
     {
         $item = $notification;
-        if ($item->item_id && $item->item_type == \App\Status::class) {
+        if ($item->item_id && $item->item_type == Status::class) {
             $status = Status::with('media')->find($item->item_id);
             if ($status) {
                 return $this->item($status, new StatusTransformer);

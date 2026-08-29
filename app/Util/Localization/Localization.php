@@ -2,8 +2,8 @@
 
 namespace App\Util\Localization;
 
-use Cache;
 use Illuminate\Support\Arr;
+use Illuminate\Support\Facades\Cache;
 
 class Localization
 {

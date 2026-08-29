@@ -2,13 +2,24 @@
 
 namespace App\Providers;
 
-use App\Avatar;
-use App\Follower;
-use App\HashtagFollow;
-use App\Like;
+use App\Models\AccountInterstitial;
+use App\Models\Avatar;
+use App\Models\DirectMessage;
+use App\Models\Follower;
+use App\Models\HashtagFollow;
+use App\Models\Like;
+use App\Models\Media;
+use App\Models\MediaTag;
+use App\Models\ModLog;
+use App\Models\Notification;
 use App\Models\OAuthToken;
-use App\ModLog;
-use App\Notification;
+use App\Models\Profile;
+use App\Models\Report;
+use App\Models\Status;
+use App\Models\StatusHashtag;
+use App\Models\Story;
+use App\Models\User;
+use App\Models\UserFilter;
 use App\Observers\AvatarObserver;
 use App\Observers\FollowerObserver;
 use App\Observers\HashtagFollowObserver;
@@ -20,25 +31,20 @@ use App\Observers\StatusHashtagObserver;
 use App\Observers\StatusObserver;
 use App\Observers\UserFilterObserver;
 use App\Observers\UserObserver;
-use App\Profile;
 use App\Services\AccountService;
 use App\Services\UserOidcService;
-use App\Status;
-use App\StatusHashtag;
-use App\User;
-use App\UserFilter;
-use Auth;
-use Horizon;
 use Illuminate\Cache\RateLimiting\Limit;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\Relation;
 use Illuminate\Http\Request;
 use Illuminate\Pagination\Paginator;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Gate;
 use Illuminate\Support\Facades\RateLimiter;
-use Illuminate\Support\Facades\Schema;
 use Illuminate\Support\Facades\URL;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\ServiceProvider;
+use Laravel\Horizon\Horizon;
 use Laravel\Passport\Passport;
 use Laravel\Pulse\Facades\Pulse;
 
@@ -58,7 +64,6 @@ class AppServiceProvider extends ServiceProvider
         Passport::$clientUuids = false;
         Passport::authorizationView('auth.oauth.authorize');
 
-        Schema::defaultStringLength(191);
         Paginator::useBootstrap();
         Avatar::observe(AvatarObserver::class);
         Follower::observe(FollowerObserver::class);
@@ -71,6 +76,23 @@ class AppServiceProvider extends ServiceProvider
         User::observe(UserObserver::class);
         Status::observe(StatusObserver::class);
         UserFilter::observe(UserFilterObserver::class);
+
+        Relation::morphMap([
+            'App\AccountInterstitial' => AccountInterstitial::class,
+            'App\DirectMessage' => DirectMessage::class,
+            'App\Follower' => Follower::class,
+            'App\Like' => Like::class,
+            'App\Media' => Media::class,
+            'App\MediaTag' => MediaTag::class,
+            'App\Notification' => Notification::class,
+            'App\Profile' => Profile::class,
+            'App\Report' => Report::class,
+            'App\Status' => Status::class,
+            'App\Story' => Story::class,
+            'App\User' => User::class,
+            'App\UserFilter' => UserFilter::class,
+        ]);
+
         Horizon::auth(function ($request) {
             return Auth::check() && $request->user()->is_admin;
         });
@@ -96,6 +118,10 @@ class AppServiceProvider extends ServiceProvider
             });
         }
 
+        RateLimiter::for('api', function (Request $request) {
+            return Limit::perMinute(512)->by($request->user()?->id ?: $request->ip());
+        });
+
         RateLimiter::for('app-signup', function (Request $request) {
             return Limit::perDay(100)->by($request->ip());
         });
@@ -108,8 +134,8 @@ class AppServiceProvider extends ServiceProvider
                 : 'missing';
 
             return [
-                Limit::perHour(20)->by('app-code-verify:ip:' . $request->ip()),
-                Limit::perHour(10)->by('app-code-verify:email:' . $emailKey),
+                Limit::perHour(20)->by('app-code-verify:ip:'.$request->ip()),
+                Limit::perHour(10)->by('app-code-verify:email:'.$emailKey),
             ];
         });
 
@@ -125,8 +151,8 @@ class AppServiceProvider extends ServiceProvider
             $user = $request->user('web');
 
             $actor = $user
-                ? 'u:' . $user->getAuthIdentifier()
-                : 'ip:' . $request->ip();
+                ? 'u:'.$user->getAuthIdentifier()
+                : 'ip:'.$request->ip();
 
             $tooMany = function (Request $request, array $headers) {
                 return response()->json([
@@ -154,10 +180,6 @@ class AppServiceProvider extends ServiceProvider
         Passport::useTokenModel(OAuthToken::class);
         Passport::tokensExpireIn(now()->addDays(config('instance.oauth.token_expiration', 356)));
         Passport::refreshTokensExpireIn(now()->addDays(config('instance.oauth.refresh_expiration', 400)));
-        Passport::enableImplicitGrant();
-        if (config('instance.oauth.pat.enabled')) {
-            Passport::personalAccessClientId(config('instance.oauth.pat.id'));
-        }
 
         Passport::tokensCan([
             'read' => 'Full read access to your account',
@@ -178,7 +200,10 @@ class AppServiceProvider extends ServiceProvider
 
         URL::forceRootUrl(config('app.url'));
 
-        // Model::preventLazyLoading(true);
+        // Enable strict testing in dev/test only (false in production)
+        // Model::preventLazyLoading(! $this->app->isProduction());
+        // Model::preventSilentlyDiscardingAttributes(! $this->app->isProduction());
+        // Model::preventAccessingMissingAttributes(! $this->app->isProduction());
     }
 
     /**

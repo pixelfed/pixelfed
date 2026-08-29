@@ -2,12 +2,10 @@
 
 namespace App\Services;
 
-use App\Media;
+use App\Models\Media;
 use App\Transformer\Api\MediaTransformer;
-use Cache;
 use Illuminate\Support\Arr;
-use League\Fractal;
-use League\Fractal\Serializer\ArraySerializer;
+use Illuminate\Support\Facades\Cache;
 
 class MediaService
 {
@@ -20,11 +18,8 @@ class MediaService
             if (! $media) {
                 return [];
             }
-            $fractal = new Fractal\Manager;
-            $fractal->setSerializer(new ArraySerializer);
-            $resource = new Fractal\Resource\Collection($media, new MediaTransformer);
 
-            return $fractal->createData($resource)->toArray();
+            return FractalService::collection($media, new MediaTransformer);
         });
     }
 

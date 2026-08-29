@@ -2,8 +2,8 @@
 
 namespace App\Util\ActivityPub\Validator;
 
+use Illuminate\Support\Facades\Validator;
 use Illuminate\Validation\Rule;
-use Validator;
 
 class MoveValidator
 {

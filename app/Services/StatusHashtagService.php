@@ -2,12 +2,10 @@
 
 namespace App\Services;
 
-use App\Hashtag;
-use App\Status;
-use App\StatusHashtag;
+use App\Models\Hashtag;
+use App\Models\Status;
+use App\Models\StatusHashtag;
 use App\Transformer\Api\HashtagTransformer;
-use League\Fractal;
-use League\Fractal\Serializer\ArraySerializer;
 
 class StatusHashtagService
 {
@@ -89,10 +87,6 @@ class StatusHashtagService
             return [];
         }
 
-        $fractal = new Fractal\Manager;
-        $fractal->setSerializer(new ArraySerializer);
-        $resource = new Fractal\Resource\Collection($status->hashtags, new HashtagTransformer);
-
-        return $fractal->createData($resource)->toArray();
+        return FractalService::collection($status->hashtags, new HashtagTransformer);
     }
 }

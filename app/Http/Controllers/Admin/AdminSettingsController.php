@@ -4,18 +4,18 @@ namespace App\Http\Controllers\Admin;
 
 use App\Models\ConfigCache;
 use App\Models\InstanceActor;
-use App\Page;
-use App\Profile;
+use App\Models\Page;
+use App\Models\Profile;
+use App\Models\User;
 use App\Services\AccountService;
 use App\Services\AdminSettingsService;
 use App\Services\ConfigCacheService;
 use App\Services\FilesystemService;
-use App\User;
 use App\Util\Site\Config;
-use Artisan;
-use Cache;
-use DB;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Artisan;
+use Illuminate\Support\Facades\Cache;
+use Illuminate\Support\Facades\DB;
 
 trait AdminSettingsController
 {

@@ -2,30 +2,31 @@
 
 namespace App\Http\Controllers;
 
-use App\DirectMessage;
 use App\Jobs\StoryPipeline\StoryDelete;
 use App\Jobs\StoryPipeline\StoryFanout;
 use App\Jobs\StoryPipeline\StoryReactionDeliver;
 use App\Jobs\StoryPipeline\StoryReplyDeliver;
 use App\Models\Conversation;
+use App\Models\DirectMessage;
+use App\Models\Notification;
 use App\Models\Poll;
 use App\Models\PollVote;
-use App\Notification;
-use App\Report;
+use App\Models\Report;
+use App\Models\Status;
+use App\Models\Story;
 use App\Services\FollowerService;
 use App\Services\MediaPathService;
 use App\Services\StoryIndexService;
 use App\Services\StoryService;
 use App\Services\UserRoleService;
-use App\Status;
-use App\Story;
 use App\Util\Media\ImageDriverManager;
 use FFMpeg;
+use Illuminate\Contracts\View\View;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
 use Intervention\Image\Encoders\JpegEncoder;
 use Intervention\Image\Encoders\PngEncoder;
-use Storage;
 
 class StoryComposeController extends Controller
 {
@@ -171,7 +172,7 @@ class StoryComposeController extends Controller
         return $path;
     }
 
-    public function cropPhoto(Request $request)
+    public function cropPhoto(Request $request): array
     {
         abort_if(! (bool) config_cache('instance.stories.enabled') || ! $request->user(), 404);
 
@@ -255,7 +256,7 @@ class StoryComposeController extends Controller
         ];
     }
 
-    public function publishStory(Request $request)
+    public function publishStory(Request $request): array
     {
         abort_if(! (bool) config_cache('instance.stories.enabled') || ! $request->user(), 404);
 
@@ -291,7 +292,7 @@ class StoryComposeController extends Controller
         ];
     }
 
-    public function apiV1Delete(Request $request, $id)
+    public function apiV1Delete(Request $request, $id): array
     {
         abort_if(! (bool) config_cache('instance.stories.enabled') || ! $request->user(), 404);
 
@@ -313,7 +314,7 @@ class StoryComposeController extends Controller
         ];
     }
 
-    public function compose(Request $request)
+    public function compose(Request $request): View
     {
         abort_if(! (bool) config_cache('instance.stories.enabled') || ! $request->user(), 404);
         $user = $request->user();
@@ -330,7 +331,7 @@ class StoryComposeController extends Controller
         return $request->all();
     }
 
-    public function publishStoryPoll(Request $request)
+    public function publishStoryPoll(Request $request): array
     {
         abort_if(! (bool) config_cache('instance.stories.enabled') || ! $request->user(), 404);
 
@@ -390,7 +391,7 @@ class StoryComposeController extends Controller
         ];
     }
 
-    public function storyPollVote(Request $request)
+    public function storyPollVote(Request $request): int
     {
         abort_if(! (bool) config_cache('instance.stories.enabled') || ! $request->user(), 404);
 
@@ -483,7 +484,7 @@ class StoryComposeController extends Controller
         return [200];
     }
 
-    public function react(Request $request)
+    public function react(Request $request): int
     {
         abort_if(! (bool) config_cache('instance.stories.enabled') || ! $request->user(), 404);
         $this->validate($request, [
@@ -562,7 +563,7 @@ class StoryComposeController extends Controller
         return 200;
     }
 
-    public function comment(Request $request)
+    public function comment(Request $request): int
     {
         abort_if(! (bool) config_cache('instance.stories.enabled') || ! $request->user(), 404);
         $this->validate($request, [

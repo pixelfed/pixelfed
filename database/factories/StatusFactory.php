@@ -2,8 +2,8 @@
 
 namespace Database\Factories;
 
-use App\Profile;
-use App\Status;
+use App\Models\Profile;
+use App\Models\Status;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
 class StatusFactory extends Factory
@@ -28,7 +28,7 @@ class StatusFactory extends Factory
             'reblogs_count' => 0,
             'reply_count' => 0,
             'local' => true,
-            'place' => null,
+            'rendered' => '',
         ];
     }
 

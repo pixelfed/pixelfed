@@ -10,6 +10,10 @@ class AudienceScopeTest extends TestCase
 {
     protected array $invalid;
 
+    protected array $mastodon;
+
+    protected array $pleroma;
+
     protected function setUp(): void
     {
         parent::setUp();

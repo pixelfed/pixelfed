@@ -31,3 +31,8 @@
 # Exceptions - these *MUST* be last
 !/bootstrap/cache/.gitignore
 !/public/vendor/horizon/.gitignore
+
+# Psalm reports and cache
+/storage/psalm-reports
+/psalm.sarif.json
+/.psalm-cache

@@ -2,25 +2,28 @@
 
 namespace App\Http\Controllers;
 
-use App\AccountInterstitial;
 use App\Jobs\SharePipeline\SharePipeline;
 use App\Jobs\SharePipeline\UndoSharePipeline;
 use App\Jobs\StatusPipeline\RemoteStatusDelete;
 use App\Jobs\StatusPipeline\StatusDelete;
-use App\Profile;
+use App\Models\AccountInterstitial;
+use App\Models\Profile;
+use App\Models\Status;
+use App\Models\StatusView;
 use App\Services\AccountService;
 use App\Services\HashidService;
 use App\Services\ReblogService;
 use App\Services\StatusService;
-use App\Status;
-use App\StatusView;
 use App\Transformer\ActivityPub\Verb\Note;
 use App\Transformer\ActivityPub\Verb\Question;
 use App\Util\Media\License;
-use Auth;
-use Cache;
-use DB;
+use Illuminate\Contracts\View\View;
+use Illuminate\Http\JsonResponse;
+use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
+use Illuminate\Http\Response;
+use Illuminate\Support\Facades\Cache;
+use Illuminate\Support\Facades\DB;
 use League\Fractal;
 
 class StatusController extends Controller
@@ -108,7 +111,7 @@ class StatusController extends Controller
         return view($template, compact('user', 'status'));
     }
 
-    public function shortcodeRedirect(Request $request, $id)
+    public function shortcodeRedirect(Request $request, $id): RedirectResponse
     {
         $hid = HashidService::decode($id);
         abort_if(! $hid, 404);
@@ -116,7 +119,7 @@ class StatusController extends Controller
         return redirect('/i/web/post/'.$hid);
     }
 
-    public function showId(int $id)
+    public function showId(int $id): RedirectResponse
     {
         abort(404);
         $status = Status::whereNull('reblog_of_id')
@@ -126,7 +129,7 @@ class StatusController extends Controller
         return redirect($status->url());
     }
 
-    public function showEmbed(Request $request, $username, int $id)
+    public function showEmbed(Request $request, $username, int $id): Response
     {
         if (! (bool) config_cache('instance.embed.post')) {
             $res = view('status.embed-removed');
@@ -221,10 +224,10 @@ class StatusController extends Controller
         abort_if($status->uri, 404);
 
         if ($status->visibility == 'private' || $user->is_private) {
-            if (! Auth::check()) {
+            if (! $request->user()) {
                 abort(403);
             }
-            $pid = Auth::user()->profile;
+            $pid = $request->user()->profile;
             if ($user->followedBy($pid) == false && $user->id !== $pid->id) {
                 abort(403);
             }
@@ -233,16 +236,16 @@ class StatusController extends Controller
         return $this->showActivityPub($request, $status);
     }
 
-    public function compose()
+    public function compose(): View
     {
         $this->authCheck();
 
         return view('status.compose');
     }
 
-    public function store(Request $request) {}
+    public function store(Request $request): void {}
 
-    public function delete(Request $request)
+    public function delete(Request $request): JsonResponse|RedirectResponse
     {
         $this->authCheck();
 
@@ -252,39 +255,14 @@ class StatusController extends Controller
 
         $status = Status::findOrFail($request->input('item'));
 
-        $user = Auth::user();
+        $user = $request->user();
 
         if (
             $status->profile_id != $user->profile->id &&
             $user->is_admin == true &&
             $status->uri == null
         ) {
-            $media = $status->media;
-
-            $ai = new AccountInterstitial;
-            $ai->user_id = $status->profile->user_id;
-            $ai->type = 'post.removed';
-            $ai->view = 'account.moderation.post.removed';
-            $ai->item_type = Status::class;
-            $ai->item_id = $status->id;
-            $ai->has_media = (bool) $media->count();
-            $ai->blurhash = $media->count() ? $media->first()->blurhash : null;
-            $ai->meta = json_encode([
-                'caption' => $status->caption,
-                'created_at' => $status->created_at,
-                'type' => $status->type,
-                'url' => $status->url(),
-                'is_nsfw' => $status->is_nsfw,
-                'scope' => $status->scope,
-                'reblog' => $status->reblog_of_id,
-                'likes_count' => $status->likes_count,
-                'reblogs_count' => $status->reblogs_count,
-            ]);
-            $ai->save();
-
-            $u = $status->profile->user;
-            $u->has_interstitial = true;
-            $u->save();
+            AccountInterstitial::createFromStatus($status, 'post.removed', 'account.moderation.post.removed');
         }
 
         if ($status->in_reply_to_id) {
@@ -321,7 +299,7 @@ class StatusController extends Controller
             'item' => 'required|integer|min:1',
         ]);
 
-        $user = Auth::user();
+        $user = $request->user();
         $profile = $user->profile;
         $status = Status::whereScope('public')
             ->findOrFail($request->input('item'));
@@ -330,11 +308,11 @@ class StatusController extends Controller
 
         $count = $status->reblogs_count;
         $defaultCaption = config_cache('database.default') === 'mysql' ? null : '';
-        $exists = Status::whereProfileId(Auth::user()->profile->id)
+        $exists = Status::whereProfileId($request->user()->profile->id)
             ->whereReblogOfId($status->id)
             ->exists();
         if ($exists == true) {
-            $shares = Status::whereProfileId(Auth::user()->profile->id)
+            $shares = Status::whereProfileId($request->user()->profile->id)
                 ->whereReblogOfId($status->id)
                 ->get();
             foreach ($shares as $share) {
@@ -383,10 +361,10 @@ class StatusController extends Controller
         });
     }
 
-    public function edit(Request $request, $username, $id)
+    public function edit(Request $request, $username, $id): View
     {
         $this->authCheck();
-        $user = Auth::user()->profile;
+        $user = $request->user()->profile;
         $status = Status::whereProfileId($user->id)
             ->with(['media'])
             ->findOrFail($id);
@@ -395,10 +373,10 @@ class StatusController extends Controller
         return view('status.edit', compact('user', 'status', 'licenses'));
     }
 
-    public function editStore(Request $request, $username, $id)
+    public function editStore(Request $request, $username, $id): RedirectResponse
     {
         $this->authCheck();
-        $user = Auth::user()->profile;
+        $user = $request->user()->profile;
         $status = Status::whereProfileId($user->id)
             ->with(['media'])
             ->findOrFail($id);
@@ -418,9 +396,9 @@ class StatusController extends Controller
         return redirect($status->url());
     }
 
-    protected function authCheck()
+    protected function authCheck(): void
     {
-        if (Auth::check() == false) {
+        if (! request()->user()) {
             abort(403);
         }
     }
@@ -432,7 +410,7 @@ class StatusController extends Controller
         return in_array($visibility, $allowed) ? $visibility : 'public';
     }
 
-    public static function mimeTypeCheck($mimes)
+    public static function mimeTypeCheck($mimes): string
     {
         $allowed = explode(',', config_cache('pixelfed.media_types'));
         if (! isset($allowed['image/jpg'])) {
@@ -471,7 +449,7 @@ class StatusController extends Controller
         return 'text';
     }
 
-    public function toggleVisibility(Request $request)
+    public function toggleVisibility(Request $request): JsonResponse
     {
         $this->authCheck();
         $this->validate($request, [
@@ -479,7 +457,7 @@ class StatusController extends Controller
             'disableComments' => 'required|boolean',
         ]);
 
-        $user = Auth::user();
+        $user = $request->user();
         $id = $request->input('item');
         $state = $request->input('disableComments');
 
@@ -495,7 +473,7 @@ class StatusController extends Controller
         return response()->json([200]);
     }
 
-    public function storeView(Request $request)
+    public function storeView(Request $request): JsonResponse
     {
         abort_if(! $request->user(), 403);
 

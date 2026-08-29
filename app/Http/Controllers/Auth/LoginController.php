@@ -2,13 +2,15 @@
 
 namespace App\Http\Controllers\Auth;
 
-use App\AccountLog;
 use App\Http\Controllers\Controller;
+use App\Models\AccountLog;
+use App\Models\User;
 use App\Services\BouncerService;
-use App\User;
+use Illuminate\Contracts\View\View;
 use Illuminate\Foundation\Auth\AuthenticatesUsers;
 use Illuminate\Http\Request;
 use Illuminate\Validation\ValidationException;
+use Symfony\Component\HttpFoundation\Response;
 
 class LoginController extends Controller
 {
@@ -46,7 +48,7 @@ class LoginController extends Controller
         $this->middleware('guest')->except('logout');
     }
 
-    public function showLoginForm()
+    public function showLoginForm(): View
     {
         if (config('pixelfed.bouncer.cloud_ips.ban_logins')) {
             abort_if(BouncerService::checkIp(request()->ip()), 404);
@@ -58,10 +60,9 @@ class LoginController extends Controller
     /**
      * Validate the user login request.
      *
-     * @param  \Illuminate\Http\Request  $request
-     * @return void
+     * @param  Request  $request
      */
-    public function validateLogin($request)
+    public function validateLogin($request): void
     {
         if (config('pixelfed.bouncer.cloud_ips.ban_logins')) {
             abort_if(BouncerService::checkIp($request->ip()), 404);
@@ -91,11 +92,11 @@ class LoginController extends Controller
     /**
      * The user has been authenticated.
      *
-     * @param  \Illuminate\Http\Request  $request
+     * @param  Request  $request
      * @param  mixed  $user
      * @return mixed
      */
-    protected function authenticated($request, $user)
+    protected function authenticated($request, $user): void
     {
         if ($user->status == 'deleted') {
             return;
@@ -104,7 +105,7 @@ class LoginController extends Controller
         $log = new AccountLog;
         $log->user_id = $user->id;
         $log->item_id = $user->id;
-        $log->item_type = \App\User::class;
+        $log->item_type = User::class;
         $log->action = 'auth.login';
         $log->message = 'Account Login';
         $log->link = null;
@@ -116,11 +117,11 @@ class LoginController extends Controller
     /**
      * Get the failed login response instance.
      *
-     * @return \Symfony\Component\HttpFoundation\Response
+     * @return Response
      *
-     * @throws \Illuminate\Validation\ValidationException
+     * @throws ValidationException
      */
-    protected function sendFailedLoginResponse(Request $request)
+    protected function sendFailedLoginResponse(Request $request): void
     {
         if (config('captcha.triggers.login.enabled')) {
             if ($request->session()->has('login_attempts')) {

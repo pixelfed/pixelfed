@@ -167,10 +167,12 @@
 
 						<div v-else>
 							<intersect v-if="hasLoaded && canLoadMore" @enter="enterIntersect">
-								<placeholder small style="margin-top: -6px" />
-								<placeholder small/>
-								<placeholder small/>
-								<placeholder small/>
+								<div>
+									<placeholder small style="margin-top: -6px" />
+									<placeholder small/>
+									<placeholder small/>
+									<placeholder small/>
+								</div>
 							</intersect>
 
 							<div v-else class="d-block" style="height: 10px;">

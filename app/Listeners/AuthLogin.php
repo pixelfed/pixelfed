@@ -3,10 +3,10 @@
 namespace App\Listeners;
 
 use App\Jobs\AvatarPipeline\CreateAvatar;
-use App\Profile;
-use App\UserDevice;
-use App\UserSetting;
-use DB;
+use App\Models\Profile;
+use App\Models\UserDevice;
+use App\Models\UserSetting;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Str;
 
 class AuthLogin

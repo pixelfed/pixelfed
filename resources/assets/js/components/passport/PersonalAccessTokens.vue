@@ -182,6 +182,13 @@
 
 <script>
     export default {
+        props: {
+            patEnabled: {
+                type: Boolean,
+                default: true
+            }
+        },
+
         data() {
             return {
                 accessToken: null,
@@ -256,6 +263,14 @@
             },
 
             showCreateTokenForm() {
+                if (!this.patEnabled) {
+                    swal({
+                        title: 'Personal Access Tokens Disabled',
+                        text: 'Personal access tokens are not enabled on this instance. Please contact your administrator.',
+                        icon: 'warning',
+                    });
+                    return;
+                }
                 $('#modal-create-token').modal('show');
             },
 
@@ -275,7 +290,9 @@
                             this.showAccessToken(response.data.accessToken);
                         })
                         .catch(error => {
-                            if (typeof error.response.data === 'object') {
+                            if (error.response && error.response.status === 403 && error.response.data.error) {
+                                this.form.errors = [error.response.data.error];
+                            } else if (typeof error.response.data === 'object' && error.response.data.errors) {
                                 this.form.errors = _.flatten(_.toArray(error.response.data.errors));
                             } else {
                                 this.form.errors = ['Something went wrong. Please try again.'];

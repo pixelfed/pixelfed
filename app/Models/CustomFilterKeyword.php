@@ -3,12 +3,11 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 class CustomFilterKeyword extends Model
 {
-    protected $fillable = [
-        'keyword', 'whole_word', 'custom_filter_id',
-    ];
+    protected $guarded = [];
 
     protected function casts(): array
     {
@@ -17,7 +16,7 @@ class CustomFilterKeyword extends Model
         ];
     }
 
-    public function customFilter()
+    public function customFilter(): BelongsTo
     {
         return $this->belongsTo(CustomFilter::class);
     }
