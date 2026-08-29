@@ -346,7 +346,13 @@ class ComposeController extends Controller
         abort_if($request->user()->has_roles && ! UserRoleService::can('can-post', $request->user()->id), 403, 'Invalid permissions for this action');
         $pid = $request->user()->profile_id;
         abort_if(! $pid, 400);
-        $q = e($request->input('q'));
+
+        $raw = e($request->input('q'));
+
+        $country = null;
+        if (str_contains($raw, ',')) {
+            [$raw, $country] = array_map('trim', explode(',', $raw, 2));
+        }
 
         $popular = Cache::remember('pf:search:location:v1:popular', 1209600, function () {
             $minId = SnowflakeService::byDate(now()->subDays(290));
@@ -388,14 +394,20 @@ class ComposeController extends Controller
                     ];
                 });
         });
-        $q = '%'.$q.'%';
+        
         $wildcard = config('database.default') === 'pgsql' ? 'ilike' : 'like';
+        $q = '%'.$raw.'%';
 
-        $places = DB::table('places')
-            ->where('name', $wildcard, $q)
-            ->limit((strlen($q) > 5 ? 360 : 30))
+        $placesQuery = DB::table('places')->where('name', $wildcard, $q);
+
+        if ($country) {
+            $placesQuery->where('country', $wildcard, '%'.$country.'%');
+        }
+
+        $places = $placesQuery
+            ->limit((strlen($raw) > 5 ? 360 : 30))
             ->get()
-            ->sortByDesc(function ($place, $key) use ($popular) {
+            ->sortByDesc(function ($place) use ($popular) {
                 return $popular->filter(function ($p) use ($place) {
                     return $p['id'] == $place->id;
                 })->map(function ($p) use ($place) {
