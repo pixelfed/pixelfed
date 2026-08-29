@@ -24,10 +24,15 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v7
 
+      # Psalm 6.5.0 crashes on PHP 8.5: its internals call the now-deprecated
+      # SplObjectStorage::attach(), and Psalm's error handler escalates the
+      # deprecation to a fatal error before it can analyze anything. Run the
+      # analyzer on 8.4 until Psalm ships a PHP 8.5-compatible release. This only
+      # affects the PHP that runs Psalm; it still analyzes the same source.
       - name: Setup PHP
         uses: shivammathur/setup-php@v2
         with:
-          php-version: '8.5'
+          php-version: '8.4'
           extensions: mbstring, pdo_sqlite, bcmath, intl
           coverage: none
 
@@ -35,8 +40,8 @@ jobs:
         uses: actions/cache@v6
         with:
           path: vendor
-          key: composer-8.5-${{ hashFiles('composer.lock') }}
-          restore-keys: composer-8.5-
+          key: composer-8.4-${{ hashFiles('composer.lock') }}
+          restore-keys: composer-8.4-
 
       - name: Install Composer dependencies
         run: composer install --no-interaction --no-progress --prefer-dist
@@ -44,15 +49,30 @@ jobs:
       # --output-format=github emits workflow annotations so findings appear inline
       # on the PR's Files changed view. --report writes SARIF for Code Scanning upload.
       # Reporting only: `|| true` keeps the step (and job) green even when Psalm finds
-      # issues, so this workflow surfaces findings without ever blocking a PR.
+      # issues (or fails to run), so this workflow surfaces findings without ever
+      # blocking a PR.
       - name: Run Psalm (type analysis, report only)
         run: vendor/bin/psalm --output-format=github --report=psalm.sarif.json || true
 
-      # Surface findings as Code Scanning alerts on the PR (Security tab). Runs even
-      # when the Psalm step is skipped/failed, so the alerts are still published.
-      - name: Upload SARIF to Code Scanning
+      # Psalm only writes the SARIF file when it runs far enough to produce a report.
+      # If it crashed early (e.g. bad config), skip the upload rather than pushing a
+      # blank SARIF, which would clear existing Code Scanning alerts.
+      - name: Check for SARIF report
+        id: sarif
         if: ${{ !cancelled() }}
-        uses: github/codeql-action/upload-sarif@v3
+        run: |
+          if [ -f psalm.sarif.json ]; then
+            echo "exists=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "exists=false" >> "$GITHUB_OUTPUT"
+            echo "::warning::Psalm did not produce psalm.sarif.json; skipping Code Scanning upload."
+          fi
+
+      # Surface findings as Code Scanning alerts on the PR (Security tab). Runs even
+      # when the Psalm step failed, but only when a real SARIF file was produced.
+      - name: Upload SARIF to Code Scanning
+        if: ${{ !cancelled() && steps.sarif.outputs.exists == 'true' }}
+        uses: github/codeql-action/upload-sarif@v4
         with:
           sarif_file: psalm.sarif.json
           category: psalm
