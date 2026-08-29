@@ -55,7 +55,8 @@
         "mockery/mockery": "^1.6",
         "nunomaduro/collision": "^8.8",
         "pestphp/pest": "^4.0",
-        "psalm/plugin-laravel": "^3"
+        "psalm/plugin-laravel": "^3",
+        "vimeo/psalm": "^6.5"
     },
     "autoload": {
         "classmap": [
@@ -99,6 +100,8 @@
             "@php artisan package:discover --ansi"
         ],
         "analyse": "./vendor/bin/phpstan analyse --memory-limit=512M",
+        "psalm": "./vendor/bin/psalm",
+        "psalm:baseline": "./vendor/bin/psalm --update-baseline",
         "test": [
             "docker compose -f docker-compose.test.yml up -d --wait",
             "./vendor/bin/pest --compact",
