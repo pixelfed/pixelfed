@@ -26,6 +26,7 @@ use App\Models\Story;
 use App\Models\User;
 use App\Models\UserSetting;
 use App\Rules\ExpoPushTokenRule;
+use App\Rules\PixelfedUsername;
 use App\Services\AccountService;
 use App\Services\BouncerService;
 use App\Services\EmailService;
@@ -43,7 +44,6 @@ use App\Services\UserAgentService;
 use App\Services\UserRoleService;
 use App\Services\UserStorageService;
 use App\Transformer\Api\AccountTransformer;
-use App\Util\Lexer\RestrictedNames;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
@@ -547,37 +547,7 @@ class ApiV1Dot1Controller extends Controller
                 'min:2',
                 'max:30',
                 'unique:users',
-                function ($attribute, $value, $fail) {
-                    $dash = substr_count($value, '-');
-                    $underscore = substr_count($value, '_');
-                    $period = substr_count($value, '.');
-
-                    if (Str::endsWith($value, ['.php', '.js', '.css'])) {
-                        return $fail('Username is invalid.');
-                    }
-
-                    if (($dash + $underscore + $period) > 1) {
-                        return $fail('Username is invalid. Can only contain one dash (-), period (.) or underscore (_).');
-                    }
-
-                    if (! ctype_alnum($value[0])) {
-                        return $fail('Username is invalid. Must start with a letter or number.');
-                    }
-
-                    if (! ctype_alnum($value[strlen($value) - 1])) {
-                        return $fail('Username is invalid. Must end with a letter or number.');
-                    }
-
-                    $val = str_replace(['_', '.', '-'], '', $value);
-                    if (! ctype_alnum($val)) {
-                        return $fail('Username is invalid. Username must be alpha-numeric and may contain dashes (-), periods (.) and underscores (_).');
-                    }
-
-                    $restricted = RestrictedNames::get();
-                    if (in_array(strtolower($value), array_map('strtolower', $restricted))) {
-                        return $fail('Username cannot be used.');
-                    }
-                },
+                new PixelfedUsername,
             ],
             'password' => 'required|string|min:8',
         ]);

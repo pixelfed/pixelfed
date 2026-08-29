@@ -52,6 +52,12 @@ class PixelfedUsername implements ValidationRule
             return;
         }
 
+        // if (! preg_match('/[a-zA-Z]/', $value)) {
+        //     $fail('Username is invalid. Must contain at least one alphabetical character.');
+
+        //     return;
+        // }
+
         $restricted = RestrictedNames::get();
         if (in_array(strtolower($value), array_map('strtolower', $restricted))) {
             $fail('Username cannot be used.');
