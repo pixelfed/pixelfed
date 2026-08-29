@@ -59,8 +59,8 @@ trait AdminReportController
                     ->orderBy('created_at', 'desc')
                     ->when($filter, function ($q, $filter) {
                         return $filter == 'open' ?
-                        $q->whereNull('admin_seen') :
-                        $q->whereNotNull('admin_seen');
+                            $q->whereNull('admin_seen') :
+                            $q->whereNotNull('admin_seen');
                     })
                     ->paginate(6);
             });
@@ -71,8 +71,8 @@ trait AdminReportController
                 ->orderBy('created_at', 'desc')
                 ->when($filter, function ($q, $filter) {
                     return $filter == 'open' ?
-                    $q->whereNull('admin_seen') :
-                    $q->whereNotNull('admin_seen');
+                        $q->whereNull('admin_seen') :
+                        $q->whereNotNull('admin_seen');
                 })
                 ->paginate(6);
         }
@@ -230,7 +230,7 @@ trait AdminReportController
 
         AccountInterstitial::chunk(500, function ($reports) {
             foreach ($reports as $report) {
-                if ($report->item_type != Status::class) {
+                if (! in_array($report->item_type, ['App\Status', 'App\Models\Status'])) {
                     continue;
                 }
 
@@ -300,7 +300,7 @@ trait AdminReportController
             ModLogService::boot()
                 ->objectUid($user->id)
                 ->objectId($user->id)
-                ->objectType('App\User::class')
+                ->objectType('App\Models\User::class')
                 ->user($request->user())
                 ->action('admin.user.delete')
                 ->accessLevel('admin')
@@ -339,7 +339,7 @@ trait AdminReportController
 
         if ($action == 'approve-all') {
             AccountInterstitial::whereType('post.autospam')
-                ->whereItemType(Status::class)
+                ->whereIn('item_type', ['App\Status', 'App\Models\Status'])
                 ->whereNull('appeal_handled_at')
                 ->whereUserId($appeal->user_id)
                 ->get()
@@ -365,7 +365,7 @@ trait AdminReportController
 
         if ($action == 'mark-spammer') {
             AccountInterstitial::whereType('post.autospam')
-                ->whereItemType(Status::class)
+                ->whereIn('item_type', ['App\Status', 'App\Models\Status'])
                 ->whereNull('appeal_handled_at')
                 ->whereUserId($appeal->user_id)
                 ->update(['appeal_handled_at' => $now, 'is_spam' => true]);
@@ -655,8 +655,8 @@ trait AdminReportController
             Report::orderBy('id', 'desc')
                 ->when($filter, function ($q, $filter) {
                     return $filter == 'open' ?
-                    $q->whereNull('admin_seen') :
-                    $q->whereNotNull('admin_seen');
+                        $q->whereNull('admin_seen') :
+                        $q->whereNotNull('admin_seen');
                 })
                 ->groupBy(['id', 'object_id', 'object_type', 'profile_id'])
                 ->cursorPaginate(6)
@@ -674,8 +674,8 @@ trait AdminReportController
             RemoteReport::orderBy('id', 'desc')
                 ->when($filter, function ($q, $filter) {
                     return $filter == 'open' ?
-                    $q->whereNull('action_taken_at') :
-                    $q->whereNotNull('action_taken_at');
+                        $q->whereNull('action_taken_at') :
+                        $q->whereNotNull('action_taken_at');
                 })
                 ->cursorPaginate(6)
                 ->withQueryString()
@@ -738,7 +738,7 @@ trait AdminReportController
                 ModLogService::boot()
                     ->objectUid($profile->id)
                     ->objectId($report->object_id)
-                    ->objectType('App\Story::class')
+                    ->objectType('App\Models\Story::class')
                     ->user(request()->user())
                     ->action('admin.user.moderate')
                     ->metadata([
@@ -766,7 +766,7 @@ trait AdminReportController
                 ModLogService::boot()
                     ->objectUid($profile->id)
                     ->objectId($report->object_id)
-                    ->objectType('App\Story::class')
+                    ->objectType('App\Models\Story::class')
                     ->user(request()->user())
                     ->action('admin.user.moderate')
                     ->metadata([
@@ -777,7 +777,7 @@ trait AdminReportController
                     ->save();
 
                 Report::where('reported_profile_id', $profile->id)
-                    ->whereObjectType(Story::class)
+                    ->whereIn('object_type', ['App\Story', 'App\Models\Story'])
                     ->whereNull('admin_seen')
                     ->update([
                         'admin_seen' => now(),
@@ -803,9 +803,9 @@ trait AdminReportController
                 return [200];
 
             case 'nsfw':
-                if ($report->object_type === Profile::class) {
+                if (in_array($report->object_type, ['App\Profile', 'App\Models\Profile'])) {
                     $profile = Profile::find($report->object_id);
-                } elseif ($report->object_type === Status::class) {
+                } elseif (in_array($report->object_type, ['App\Status', 'App\Models\Status'])) {
                     $status = Status::find($report->object_id);
                     if (! $status) {
                         return [200];
@@ -842,7 +842,7 @@ trait AdminReportController
                 ModLogService::boot()
                     ->objectUid($profile->id)
                     ->objectId($profile->id)
-                    ->objectType('App\Profile::class')
+                    ->objectType('App\Models\Profile::class')
                     ->user(request()->user())
                     ->action('admin.user.moderate')
                     ->metadata([
@@ -862,9 +862,9 @@ trait AdminReportController
                 return [200];
 
             case 'unlist':
-                if ($report->object_type === Profile::class) {
+                if (in_array($report->object_type, ['App\Profile', 'App\Models\Profile'])) {
                     $profile = Profile::find($report->object_id);
-                } elseif ($report->object_type === Status::class) {
+                } elseif (in_array($report->object_type, ['App\Status', 'App\Models\Status'])) {
                     $status = Status::find($report->object_id);
                     if (! $status) {
                         return [200];
@@ -902,7 +902,7 @@ trait AdminReportController
                 ModLogService::boot()
                     ->objectUid($profile->id)
                     ->objectId($profile->id)
-                    ->objectType('App\Profile::class')
+                    ->objectType('App\Models\Profile::class')
                     ->user(request()->user())
                     ->action('admin.user.moderate')
                     ->metadata([
@@ -921,9 +921,9 @@ trait AdminReportController
                 return [200];
 
             case 'private':
-                if ($report->object_type === Profile::class) {
+                if (in_array($report->object_type, ['App\Profile', 'App\Models\Profile'])) {
                     $profile = Profile::find($report->object_id);
-                } elseif ($report->object_type === Status::class) {
+                } elseif (in_array($report->object_type, ['App\Status', 'App\Models\Status'])) {
                     $status = Status::find($report->object_id);
                     if (! $status) {
                         return [200];
@@ -961,7 +961,7 @@ trait AdminReportController
                 ModLogService::boot()
                     ->objectUid($profile->id)
                     ->objectId($profile->id)
-                    ->objectType('App\Profile::class')
+                    ->objectType('App\Models\Profile::class')
                     ->user(request()->user())
                     ->action('admin.user.moderate')
                     ->metadata([
@@ -984,9 +984,9 @@ trait AdminReportController
                     abort(404);
                 }
 
-                if ($report->object_type === Profile::class) {
+                if (in_array($report->object_type, ['App\Profile', 'App\Models\Profile'])) {
                     $profile = Profile::find($report->object_id);
-                } elseif ($report->object_type === Status::class) {
+                } elseif (in_array($report->object_type, ['App\Status', 'App\Models\Status'])) {
                     $status = Status::find($report->object_id);
                     if (! $status) {
                         return [200];
@@ -1027,7 +1027,7 @@ trait AdminReportController
                 ModLogService::boot()
                     ->objectUid($profile->id)
                     ->objectId($profile->id)
-                    ->objectType('App\Profile::class')
+                    ->objectType('App\Models\Profile::class')
                     ->user(request()->user())
                     ->action('admin.user.delete')
                     ->accessLevel('admin')
@@ -1090,7 +1090,7 @@ trait AdminReportController
                 ModLogService::boot()
                     ->objectUid($status->profile_id)
                     ->objectId($status->profile_id)
-                    ->objectType('App\Status::class')
+                    ->objectType('App\Models\Status::class')
                     ->user(request()->user())
                     ->action('admin.status.moderate')
                     ->metadata([
@@ -1127,7 +1127,7 @@ trait AdminReportController
                 ModLogService::boot()
                     ->objectUid($status->profile_id)
                     ->objectId($status->profile_id)
-                    ->objectType('App\Status::class')
+                    ->objectType('App\Models\Status::class')
                     ->user(request()->user())
                     ->action('admin.status.moderate')
                     ->metadata([
@@ -1165,7 +1165,7 @@ trait AdminReportController
                 ModLogService::boot()
                     ->objectUid($status->profile_id)
                     ->objectId($status->profile_id)
-                    ->objectType('App\Status::class')
+                    ->objectType('App\Models\Status::class')
                     ->user(request()->user())
                     ->action('admin.status.moderate')
                     ->metadata([
@@ -1240,7 +1240,7 @@ trait AdminReportController
 
         abort_if(
             $action === 'delete-profile' &&
-            ! config('pixelfed.account_deletion'),
+                ! config('pixelfed.account_deletion'),
             404,
             "Cannot delete profile, account_deletion is disabled.\n\n Set `ACCOUNT_DELETION=true` in .env and re-cache config."
         );
@@ -1297,7 +1297,7 @@ trait AdminReportController
 
         if ($action == 'mark-all-read') {
             AccountInterstitial::whereType('post.autospam')
-                ->whereItemType(Status::class)
+                ->whereIn('item_type', ['App\Status', 'App\Models\Status'])
                 ->whereNull('appeal_handled_at')
                 ->whereUserId($appeal->user_id)
                 ->update([
@@ -1308,7 +1308,7 @@ trait AdminReportController
 
         if ($action == 'mark-all-not-spam') {
             AccountInterstitial::whereType('post.autospam')
-                ->whereItemType(Status::class)
+                ->whereIn('item_type', ['App\Status', 'App\Models\Status'])
                 ->whereUserId($appeal->user_id)
                 ->get()
                 ->each(function ($report) use ($meta) {
@@ -1356,7 +1356,7 @@ trait AdminReportController
             ModLogService::boot()
                 ->objectUid($user->id)
                 ->objectId($user->id)
-                ->objectType('App\User::class')
+                ->objectType('App\Models\User::class')
                 ->user(request()->user())
                 ->action('admin.user.delete')
                 ->accessLevel('admin')
@@ -1524,7 +1524,7 @@ trait AdminReportController
             ->user(request()->user())
             ->objectUid($user ? $user->id : null)
             ->objectId($report->id)
-            ->objectType('App\Report::class')
+            ->objectType('App\Models\Report::class')
             ->action('admin.report.moderate')
             ->metadata([
                 'action' => $request->input('action'),
