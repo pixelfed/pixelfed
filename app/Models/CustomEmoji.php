@@ -27,20 +27,32 @@ class CustomEmoji extends Model
             ->matchAll(self::SCAN_RE)
             ->map(function ($match) use ($activitypub) {
                 $tag = Cache::remember(self::CACHE_KEY.$match, 14400, function () use ($match) {
-                    return self::orderBy('id')->whereDisabled(false)->whereShortcode(':'.$match.':')->first();
+                    $emoji = self::orderBy('id')->whereDisabled(false)->whereShortcode(':'.$match.':')->first();
+
+                    if (! $emoji) {
+                        return null;
+                    }
+
+                    return [
+                        'id' => $emoji->id,
+                        'shortcode' => $emoji->shortcode,
+                        'media_path' => $emoji->media_path,
+                        'updated_at' => optional($emoji->updated_at)->toAtomString(),
+                        'disabled' => $emoji->disabled,
+                    ];
                 });
 
                 if ($tag) {
-                    $url = url('/storage/'.$tag->media_path);
+                    $url = url('/storage/'.$tag['media_path']);
 
                     if ($activitypub == true) {
                         $mediaType = Str::endsWith($url, '.png') ? 'image/png' : 'image/jpg';
 
                         return [
-                            'id' => url('emojis/'.$tag->id),
+                            'id' => url('emojis/'.$tag['id']),
                             'type' => 'Emoji',
-                            'name' => $tag->shortcode,
-                            'updated' => $tag->updated_at->toAtomString(),
+                            'name' => $tag['shortcode'],
+                            'updated' => $tag['updated_at'],
                             'icon' => [
                                 'type' => 'Image',
                                 'mediaType' => $mediaType,
@@ -52,7 +64,7 @@ class CustomEmoji extends Model
                             'shortcode' => $match,
                             'url' => $url,
                             'static_url' => $url,
-                            'visible_in_picker' => $tag->disabled == false,
+                            'visible_in_picker' => $tag['disabled'] == false,
                         ];
                     }
                 }

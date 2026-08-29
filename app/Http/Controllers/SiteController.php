@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Controllers\Concerns\ManagesCachedPages;
 use App\Models\Page;
 use App\Models\Profile;
 use App\Models\User;
@@ -18,6 +19,8 @@ use Illuminate\Support\Str;
 
 class SiteController extends Controller
 {
+    use ManagesCachedPages;
+
     public function home(Request $request)
     {
         if ($request->user() !== null) {
@@ -86,9 +89,7 @@ class SiteController extends Controller
     public function privacy(Request $request)
     {
         $page = Cache::remember('site:privacy', now()->addDays(120), function () {
-            $slug = '/site/privacy';
-
-            return Page::whereSlug($slug)->whereActive(true)->first();
+            return $this->cachedPage('/site/privacy');
         });
 
         return View::make('site.privacy')->with(compact('page'))->render();
@@ -97,9 +98,7 @@ class SiteController extends Controller
     public function terms(Request $request)
     {
         $page = Cache::remember('site:terms', now()->addDays(120), function () {
-            $slug = '/site/terms';
-
-            return Page::whereSlug($slug)->whereActive(true)->first();
+            return $this->cachedPage('/site/terms');
         });
 
         return View::make('site.terms')->with(compact('page'))->render();
@@ -171,9 +170,7 @@ class SiteController extends Controller
     public function legalNotice(Request $request)
     {
         $page = Cache::remember('site:legal-notice', now()->addDays(120), function () {
-            $slug = '/site/legal-notice';
-
-            return Page::whereSlug($slug)->whereActive(true)->first();
+            return $this->cachedPage('/site/legal-notice');
         });
         abort_if(! $page, 404);
 
