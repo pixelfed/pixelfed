@@ -66,7 +66,8 @@ class RemoteAuthController extends Controller
             return response()->json($res);
         }
 
-        if (config('remote-auth.mastodon.domains.custom') &&
+        if (
+            config('remote-auth.mastodon.domains.custom') &&
             ! config('remote-auth.mastodon.domains.only_default') &&
             strlen(config('remote-auth.mastodon.domains.custom')) > 3 &&
             strpos(config('remote-auth.mastodon.domains.custom'), '.') > -1
@@ -472,7 +473,7 @@ class RemoteAuthController extends Controller
                     $underscore = substr_count($value, '_');
                     $period = substr_count($value, '.');
 
-                    if (str_ends_with($value, ['.php', '.js', '.css'])) {
+                    if (Str::endsWith($value, ['.php', '.js', '.css'])) {
                         return $fail('Username is invalid.');
                     }
 

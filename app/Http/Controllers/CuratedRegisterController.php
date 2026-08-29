@@ -63,8 +63,10 @@ class CuratedRegisterController extends Controller
         $this->preCheck(true);
         abort_unless(
             $request->session()->has('cur-reg-con.email-confirmed') &&
-            $request->session()->has('cur-reg-con.cr-id') &&
-            $request->session()->has('cur-reg-con.ac-id'), 404);
+                $request->session()->has('cur-reg-con.cr-id') &&
+                $request->session()->has('cur-reg-con.ac-id'),
+            404
+        );
         $crid = $request->session()->get('cur-reg-con.cr-id');
         $arid = $request->session()->get('cur-reg-con.ac-id');
         $showCaptcha = config('instance.curated_registration.captcha_enabled');
@@ -85,8 +87,10 @@ class CuratedRegisterController extends Controller
         $request->session()->increment('cur-reg-con-attempt');
         abort_unless(
             $request->session()->has('cur-reg-con.email-confirmed') &&
-            $request->session()->has('cur-reg-con.cr-id') &&
-            $request->session()->has('cur-reg-con.ac-id'), 404);
+                $request->session()->has('cur-reg-con.cr-id') &&
+                $request->session()->has('cur-reg-con.ac-id'),
+            404
+        );
         $attempts = $request->session()->get('cur-reg-con-attempt');
         $messages = [];
         $rules = [
@@ -362,7 +366,7 @@ class CuratedRegisterController extends Controller
                     $underscore = substr_count($value, '_');
                     $period = substr_count($value, '.');
 
-                    if (str_ends_with($value, ['.php', '.js', '.css'])) {
+                    if (Str::endsWith($value, ['.php', '.js', '.css'])) {
                         return $fail('Username is invalid.');
                     }
 
