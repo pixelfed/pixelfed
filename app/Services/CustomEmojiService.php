@@ -11,6 +11,17 @@ use Illuminate\Support\Facades\Storage;
 
 class CustomEmojiService
 {
+    /**
+     * Allowed image mime types for imported custom emoji.
+     */
+    public const ALLOWED_MIME_TYPES = [
+        'image/jpeg',
+        'image/jpg',
+        'image/png',
+        'image/gif',
+        'image/webp',
+    ];
+
     public static function get($shortcode)
     {
         if ((bool) config_cache('federation.custom_emoji.enabled') == false) {
@@ -26,7 +37,8 @@ class CustomEmojiService
             return;
         }
 
-        if (Helpers::validateUrl($url) == false) {
+        $url = Helpers::validateUrl($url);
+        if ($url == false) {
             return;
         }
 
@@ -35,8 +47,36 @@ class CustomEmojiService
             return;
         }
 
+        // SSRF-hardened JSON fetch: resolve + pin the host to a validated
+        // public IP and refuse redirects so the emoji-document request cannot
+        // be steered into internal addresses.
+        $host = parse_url($url, PHP_URL_HOST);
+        $port = parse_url($url, PHP_URL_PORT) ?: 443;
+        $ips = $host ? Helpers::resolvePublicIps($host) : [];
+        if (empty($ips)) {
+            return;
+        }
+
         try {
-            $res = Http::acceptJson()->get($url);
+            $res = Http::acceptJson()
+                ->withOptions([
+                    'allow_redirects' => false,
+                    'curl' => [
+                        CURLOPT_RESOLVE => [
+                            $host.':'.((int) $port).':'.implode(',', array_map(
+                                fn ($ip) => str_contains($ip, ':') ? '['.$ip.']' : $ip,
+                                $ips
+                            )),
+                        ],
+                        CURLOPT_FRESH_CONNECT => true,
+                        CURLOPT_FORBID_REUSE => true,
+                        CURLOPT_PROTOCOLS => CURLPROTO_HTTPS,
+                        CURLOPT_REDIR_PROTOCOLS => CURLPROTO_HTTPS,
+                    ],
+                ])
+                ->timeout(15)
+                ->connectTimeout(5)
+                ->get($url);
         } catch (RequestException $e) {
             return;
         } catch (\Exception $e) {
@@ -56,8 +96,12 @@ class CustomEmojiService
                 ! isset($json['icon']['url']) ||
                 ! isset($json['icon']['type']) ||
                 $json['icon']['type'] !== 'Image' ||
-                ! in_array($json['icon']['mediaType'], ['image/jpeg', 'image/png', 'image/jpg'])
+                ! in_array($json['icon']['mediaType'], self::ALLOWED_MIME_TYPES, true)
             ) {
+                return;
+            }
+
+            if (Helpers::validateUrl($json['icon']['url']) == false) {
                 return;
             }
 
@@ -83,21 +127,16 @@ class CustomEmojiService
             $mediaPath = 'emoji/'.$emoji->id.$ext;
 
             try {
-                $response = Http::timeout(30)
-                    ->withOptions(['max_redirects' => 0])
-                    ->get($json['icon']['url']);
+                // SSRF-hardened: validated URL, resolved+pinned public IP,
+                // no internal redirects, size-capped.
+                $maxSize = (int) config('federation.custom_emoji.max_size');
+                $body = SecureMediaFetchService::get($json['icon']['url'], $maxSize > 0 ? $maxSize : null);
 
-                if (! $response->successful()) {
+                if ($body === false) {
                     return;
                 }
 
-                // Validate actual content type from response
-                $contentType = $response->header('Content-Type');
-                if (! in_array($contentType, ['image/jpeg', 'image/png', 'image/jpg'])) {
-                    return;
-                }
-
-                Storage::put('public/'.$mediaPath, $response->body());
+                Storage::put('public/'.$mediaPath, $body);
 
                 $emoji->media_path = $mediaPath;
                 $emoji->save();
@@ -121,27 +160,20 @@ class CustomEmojiService
 
     public static function headCheck($url)
     {
-        try {
-            $res = Http::head($url);
-        } catch (RequestException $e) {
-            return false;
-        } catch (\Exception $e) {
-            return false;
-        }
+        $maxSize = (int) config('federation.custom_emoji.max_size');
+        // SSRF-hardened HEAD: validated URL, resolved+pinned public IP, no
+        // internal redirects.
+        $head = SecureMediaFetchService::head($url, $maxSize > 0 ? $maxSize : null);
 
-        if (! $res->successful()) {
+        if (! $head) {
             return false;
         }
 
-        $type = $res->header('content-type');
-        $length = $res->header('content-length');
+        if (! in_array($head['mime'], self::ALLOWED_MIME_TYPES, true)) {
+            return false;
+        }
 
-        if (
-            ! $type ||
-            ! $length ||
-            ! in_array($type, ['image/jpeg', 'image/png', 'image/jpg']) ||
-            $length > config('federation.custom_emoji.max_size')
-        ) {
+        if ($maxSize > 0 && $head['length'] > $maxSize) {
             return false;
         }
 

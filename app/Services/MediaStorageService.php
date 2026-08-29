@@ -8,11 +8,8 @@ use App\Jobs\StatusPipeline\NewStatusPipeline;
 use App\Models\Media;
 use App\Models\Status;
 use App\Util\ActivityPub\Helpers;
-use Illuminate\Http\Client\ConnectionException;
 use Illuminate\Http\File;
-use Illuminate\Support\Arr;
 use Illuminate\Support\Facades\Cache;
-use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
 
@@ -44,35 +41,10 @@ class MediaStorageService
 
     public static function head($url)
     {
-        try {
-            $r = Http::head($url);
-        } catch (ConnectionException $e) {
-            return false;
-        }
-
-        if (! $r->successful()) {
-            return false;
-        }
-
-        $h = Arr::mapWithKeys($r->headers(), function ($item, $key) {
-            return [strtolower($key) => last($item)];
-        });
-
-        if (! isset($h['content-length'], $h['content-type'])) {
-            return false;
-        }
-
-        $len = (int) $h['content-length'];
-        $mime = $h['content-type'];
-
-        if ($len < 10 || $len > ((config_cache('pixelfed.max_photo_size') * 1000))) {
-            return false;
-        }
-
-        return [
-            'length' => $len,
-            'mime' => $mime,
-        ];
+        // SSRF-hardened: validates URL, resolves + rejects private/reserved
+        // IPs, pins the connection to the validated address, and refuses to
+        // follow redirects into internal networks. See SecureMediaFetchService.
+        return SecureMediaFetchService::head($url, (int) config_cache('pixelfed.max_photo_size') * 1000);
     }
 
     protected function cloudStore($media)
@@ -155,7 +127,8 @@ class MediaStorageService
             return;
         }
 
-        $head = $this->head($media->remote_url);
+        // Hardened HEAD (IP-validated, pinned, no internal redirects).
+        $head = $this->head($url);
 
         if (! $head) {
             return;
@@ -206,7 +179,11 @@ class MediaStorageService
         $tmpBase = storage_path('app/remcache/');
         $tmpPath = $media->profile_id.'-'.$path;
         $tmpName = $tmpBase.$tmpPath;
-        $data = file_get_contents($url, false, null, 0, $head['length']);
+        // Hardened byte fetch through the same validated, pinned, redirect-safe path.
+        $data = SecureMediaFetchService::get($url, $max_size, $head['length']);
+        if ($data === false) {
+            return;
+        }
         file_put_contents($tmpName, $data);
         $hash = hash_file('sha256', $tmpName);
 
@@ -281,7 +258,8 @@ class MediaStorageService
         $tmpBase = storage_path('app/remcache/');
         $tmpPath = 'avatar_'.$avatar->profile_id.'-'.$path;
         $tmpName = $tmpBase.$tmpPath;
-        $data = @file_get_contents($url, false, null, 0, $head['length']);
+        // Hardened byte fetch: validated URL, pinned IP, no internal redirects, size-capped.
+        $data = SecureMediaFetchService::get($url, $max_size, $head['length']);
         if (! $data) {
             return;
         }
