@@ -38,6 +38,11 @@
 -   ([#6856](https://github.com/pixelfed/pixelfed/pull/6856))
     -   Testing: Refactored the testing environment
     -   Testing: Added 250+ tests
+-   ([#6930](https://github.com/pixelfed/pixelfed/pull/6930))
+    -   added admin:fixProfileCounts command to fix the followers/following/statuses cache count locally and remotely
+    -   added admin:MigrateLocalS3MediaURL command for fixing dead CDN storage paths.
+    -   added status:user status:profile status:post command for diagnostic purposes.
+    -   added SecureMediaFetchService to enhance/harden media downloading from remote servers
 
 ## [v0.12.9 (2026-08-25)](https://github.com/pixelfed/pixelfed/compare/v0.12.9...dev)
 
