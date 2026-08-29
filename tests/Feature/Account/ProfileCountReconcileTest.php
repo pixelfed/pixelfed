@@ -14,7 +14,7 @@ uses(LazilyRefreshDatabase::class);
 |--------------------------------------------------------------------------
 |
 | Tests for the shared AccountStatService recompute helpers used by both the
-| scheduled app:account-post-count-stat-update command and fix:profilecounts.
+| scheduled app:account-post-count-stat-update command and admin:fixProfileCounts.
 | status_count must mirror the increment logic (media post types only).
 |
 */
@@ -127,7 +127,7 @@ describe('AccountStatService::reconcileProfileCounts', function () {
     });
 });
 
-describe('fix:profilecounts command', function () {
+describe('admin:fixProfileCounts command', function () {
     it('is silent for an in-sync profile and reports drift otherwise', function () {
         $user = User::factory()->create();
         $user->refresh();
@@ -136,12 +136,12 @@ describe('fix:profilecounts command', function () {
         $profile->status_count = 5; // drift
         $profile->save();
 
-        $this->artisan('fix:profilecounts', ['id' => (string) $profile->id])
+        $this->artisan('admin:fixProfileCounts', ['id' => (string) $profile->id])
             ->expectsOutputToContain('drift detected')
             ->assertExitCode(0);
 
         // Now in sync -> no drift output.
-        $this->artisan('fix:profilecounts', ['id' => (string) $profile->id])
+        $this->artisan('admin:fixProfileCounts', ['id' => (string) $profile->id])
             ->doesntExpectOutputToContain('drift detected')
             ->assertExitCode(0);
     });
@@ -154,9 +154,36 @@ describe('fix:profilecounts command', function () {
         $profile->status_count = 88;
         $profile->save();
 
-        $this->artisan('fix:profilecounts', ['id' => (string) $profile->id, '--dry-run' => true])
+        $this->artisan('admin:fixProfileCounts', ['id' => (string) $profile->id, '--dry-run' => true])
             ->assertExitCode(0);
 
         expect((int) $profile->fresh()->status_count)->toBe(88);
+    });
+
+    it('with --type restricts the fix to a single metric', function () {
+        $user = User::factory()->create();
+        $user->refresh();
+        $profile = $user->profile;
+        Status::factory()->count(2)->photo()->create(['profile_id' => $profile->id]);
+
+        // All three drifted.
+        $profile->status_count = 42;
+        $profile->followers_count = 100;
+        $profile->following_count = 50;
+        $profile->save();
+
+        $this->artisan('admin:fixProfileCounts', ['id' => (string) $profile->id, '--type' => 'statuses'])
+            ->assertExitCode(0);
+
+        $profile->refresh();
+        // Only statuses reconciled; followers/following left untouched.
+        expect((int) $profile->status_count)->toBe(2);
+        expect((int) $profile->followers_count)->toBe(100);
+        expect((int) $profile->following_count)->toBe(50);
+    });
+
+    it('rejects an invalid --type', function () {
+        $this->artisan('admin:fixProfileCounts', ['id' => '1', '--type' => 'bogus'])
+            ->assertExitCode(1);
     });
 });

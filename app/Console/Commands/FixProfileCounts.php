@@ -16,19 +16,33 @@ class FixProfileCounts extends Command
      *
      * @var string
      */
-    protected $signature = 'fix:profilecounts
+    protected $signature = 'admin:fixProfileCounts
         {id? : Profile id or username to resync (omit with --all)}
         {--all : Scan all profiles and resync any with drifted counts}
+        {--active=* : Scan only local accounts active within N days (default 30). Bulk mode; mutually exclusive with --all}
+        {--type= : Restrict to a single metric: followers, following, or statuses (default: all three)}
         {--dispatch : Queue FollowServiceWarmCache for follower/following instead of recomputing inline}
         {--dry-run : Report drift without changing anything}
         {--force : Skip the confirmation prompt (for scheduled/unattended runs)}';
+
+    /**
+     * Default active window (days) when --active is passed without a value.
+     */
+    protected const DEFAULT_ACTIVE_DAYS = 30;
+
+    /**
+     * Metrics this command can reconcile.
+     *
+     * @var array<int, string>
+     */
+    protected const METRICS = ['followers', 'following', 'statuses'];
 
     /**
      * The console command description.
      *
      * @var string
      */
-    protected $description = 'Resync a profile\'s cached counts (followers, following, statuses) from source-of-truth tables';
+    protected $description = 'Resync a profile\'s cached counts (followers, following, statuses) from source-of-truth tables. Use --all or --active for bulk reconciliation.';
 
     /**
      * Execute the console command.
@@ -39,15 +53,27 @@ class FixProfileCounts extends Command
     {
         $id = $this->argument('id');
         $all = $this->option('all');
+        $activeDays = $this->resolveActiveDays();
+        $active = $activeDays !== null;
 
-        if (! $id && ! $all) {
-            $this->error('Provide a profile id/username, or pass --all.');
+        // Exactly one mode: a single id, --all, or --active.
+        $modes = (int) (bool) $id + (int) $all + (int) $active;
+
+        if ($modes === 0) {
+            $this->error('Provide a profile id/username, or pass --all or --active.');
 
             return 1;
         }
 
-        if ($id && $all) {
-            $this->error('Pass either an id or --all, not both.');
+        if ($modes > 1) {
+            $this->error('Pass only one of: <id>, --all, or --active.');
+
+            return 1;
+        }
+
+        $type = $this->option('type');
+        if ($type !== null && ! in_array($type, self::METRICS, true)) {
+            $this->error('Invalid --type "'.$type.'". Use one of: '.implode(', ', self::METRICS).'.');
 
             return 1;
         }
@@ -68,17 +94,35 @@ class FixProfileCounts extends Command
             return 0;
         }
 
-        // --all: scan every profile, only touch/report the ones that drifted.
+        // Bulk mode (--all or --active): scan and only touch drifted profiles.
         $dryRun = $this->option('dry-run');
-        if (! $dryRun && ! $this->option('force') && ! $this->confirm('Resync cached counts for all drifted profiles?', true)) {
+
+        $scope = $active
+            ? 'local accounts active in the last '.$activeDays.' days'
+            : 'all drifted profiles';
+
+        if (! $dryRun && ! $this->option('force') && ! $this->confirm('Resync cached counts for '.$scope.'?', true)) {
             $this->comment('Aborted.');
 
             return 0;
         }
 
+        $query = Profile::whereNull('deleted_at');
+
+        if ($active) {
+            // Restrict to LOCAL profiles whose linked user logged in recently.
+            // Remote profiles have no user row, so they are excluded here.
+            $cutoff = now()->subDays($activeDays);
+            $query->whereNotNull('user_id')
+                ->whereHas('user', function ($q) use ($cutoff) {
+                    $q->whereNotNull('last_active_at')
+                        ->where('last_active_at', '>=', $cutoff);
+                });
+        }
+
         $fixed = 0;
         $scanned = 0;
-        Profile::whereNull('deleted_at')->lazyById(500)->each(function ($profile) use (&$fixed, &$scanned) {
+        $query->lazyById(500)->each(function ($profile) use (&$fixed, &$scanned) {
             $scanned++;
             if ($this->resyncOne($profile)) {
                 $fixed++;
@@ -86,9 +130,32 @@ class FixProfileCounts extends Command
         });
 
         $this->newLine();
-        $this->info('Scanned '.$scanned.' profiles; '.($this->option('dry-run') ? 'drifted' : 'resynced').': '.$fixed.'.');
+        $this->info('Scanned '.$scanned.' profiles ('.$scope.'); '.($this->option('dry-run') ? 'drifted' : 'resynced').': '.$fixed.'.');
 
         return 0;
+    }
+
+    /**
+     * Resolve the --active window in days, or null if the flag was not passed.
+     */
+    protected function resolveActiveDays(): ?int
+    {
+        $values = (array) $this->option('active');
+
+        if (empty($values)) {
+            return null;
+        }
+
+        $last = end($values);
+
+        // `--active` with no value arrives as an empty string / null.
+        if ($last === null || $last === '') {
+            return self::DEFAULT_ACTIVE_DAYS;
+        }
+
+        $days = (int) $last;
+
+        return $days > 0 ? $days : self::DEFAULT_ACTIVE_DAYS;
     }
 
     /**
@@ -99,61 +166,68 @@ class FixProfileCounts extends Command
      */
     protected function resyncOne(Profile $profile): bool
     {
-        // Compute drift for all three metrics using the canonical
+        // Which metrics to consider: a single --type, or all three.
+        $type = $this->option('type');
+        $metrics = $type !== null ? [$type] : self::METRICS;
+
+        // Compute drift only for the selected metrics, using the canonical
         // source-of-truth logic (shared with the scheduled updater).
-        $followers = [
-            'cached' => (int) $profile->followers_count,
-            'live' => AccountStatService::recalculateFollowerCount($profile->id),
-        ];
-        $following = [
-            'cached' => (int) $profile->following_count,
-            'live' => AccountStatService::recalculateFollowingCount($profile->id),
-        ];
-        $statuses = [
-            'cached' => (int) $profile->status_count,
-            'live' => AccountStatService::recalculateStatusCount($profile->id),
-        ];
+        $drift = [];
+        if (in_array('followers', $metrics, true)) {
+            $drift['followers'] = [
+                'cached' => (int) $profile->followers_count,
+                'live' => AccountStatService::recalculateFollowerCount($profile->id),
+            ];
+        }
+        if (in_array('following', $metrics, true)) {
+            $drift['following'] = [
+                'cached' => (int) $profile->following_count,
+                'live' => AccountStatService::recalculateFollowingCount($profile->id),
+            ];
+        }
+        if (in_array('statuses', $metrics, true)) {
+            $drift['statuses'] = [
+                'cached' => (int) $profile->status_count,
+                'live' => AccountStatService::recalculateStatusCount($profile->id),
+            ];
+        }
 
-        $followersDrift = $followers['cached'] !== $followers['live'];
-        $followingDrift = $following['cached'] !== $following['live'];
-        $statusesDrift = $statuses['cached'] !== $statuses['live'];
+        $drifted = array_filter($drift, fn ($m) => $m['cached'] !== $m['live']);
 
-        if (! $followersDrift && ! $followingDrift && ! $statusesDrift) {
-            // No drift: stay silent.
+        if (empty($drifted)) {
+            // No drift on the selected metrics: stay silent.
             return false;
         }
 
         // Drift detected: report exactly what drifted.
         $this->warn($profile->username.' (id '.$profile->id.') drift detected:');
-        if ($followersDrift) {
-            $this->line('  followers: cached='.$followers['cached'].' live='.$followers['live']);
-        }
-        if ($followingDrift) {
-            $this->line('  following: cached='.$following['cached'].' live='.$following['live']);
-        }
-        if ($statusesDrift) {
-            $this->line('  statuses:  cached='.$statuses['cached'].' live='.$statuses['live']);
+        foreach ($drifted as $metric => $m) {
+            $this->line('  '.str_pad($metric.':', 11).'cached='.$m['cached'].' live='.$m['live']);
         }
 
         if ($this->option('dry-run')) {
             return true;
         }
 
-        if ($this->option('dispatch') && ($followersDrift || $followingDrift)) {
-            // Fix status_count now (via the shared reconciler), then let the
-            // warm-cache job own the follower/following columns and rebuild
-            // the Redis sets.
-            AccountStatService::reconcileProfileCounts($profile, ['statuses']);
+        $followOrFollowingDrift = isset($drifted['followers']) || isset($drifted['following']);
+
+        if ($this->option('dispatch') && $followOrFollowingDrift) {
+            // Fix status_count now (if in scope), then let the warm-cache job
+            // own the follower/following columns and rebuild the Redis sets.
+            if (isset($drift['statuses'])) {
+                AccountStatService::reconcileProfileCounts($profile, ['statuses']);
+            }
             Cache::forget(FollowerService::FOLLOWERS_SYNC_KEY.$profile->id);
             Cache::forget(FollowerService::FOLLOWING_SYNC_KEY.$profile->id);
             FollowServiceWarmCache::dispatch($profile->id)->onQueue('low');
-            $this->info('  queued FollowServiceWarmCache for profile '.$profile->id.'; statuses='.$statuses['live'].'.');
+            $this->info('  queued FollowServiceWarmCache for profile '.$profile->id.'.');
 
             return true;
         }
 
-        // Inline recompute of all drifted columns via the shared reconciler.
-        AccountStatService::reconcileProfileCounts($profile);
+        // Inline recompute of the selected metrics via the shared reconciler.
+        AccountStatService::reconcileProfileCounts($profile, $metrics);
+        $profile->refresh();
         $this->info('  resynced to followers='.$profile->followers_count.', following='.$profile->following_count.', statuses='.$profile->status_count.'.');
 
         return true;
