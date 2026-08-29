@@ -138,6 +138,7 @@ return Application::configure(basePath: dirname(__DIR__))
         $schedule->command('gc:failedjobs')->dailyAt(3)->onOneServer();
         $schedule->command('gc:passwordreset')->dailyAt('09:41')->onOneServer();
         $schedule->command('gc:sessions')->twiceDaily(13, 23)->onOneServer();
+        $schedule->command('gc:remcache')->dailyAt('04:15')->onOneServer();
         $schedule->command('app:weekly-instance-scan')->weeklyOn(2, '4:20')->onOneServer();
         $schedule->command('app:cleanup-expired-app-registrations')->dailyAt(1)->onOneServer();
         $schedule->command('passport:purge')->everyFourHours(20)->onOneServer();
