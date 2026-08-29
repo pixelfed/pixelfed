@@ -5,7 +5,6 @@ namespace App\Console\Commands\Admin;
 use App\Models\CustomEmoji;
 use Illuminate\Console\Command;
 use Illuminate\Support\Facades\Cache;
-use Illuminate\Support\Facades\Storage;
 
 class ImportEmojis extends Command
 {
@@ -87,8 +86,8 @@ class ImportEmojis extends Command
             $emoji->save();
 
             $fileName = $emoji->id.'.'.$extension;
-            Storage::putFileAs('public/emoji', $entry->getPathname(), $fileName);
             $emoji->media_path = 'emoji/'.$fileName;
+            CustomEmoji::storeMediaFromFile($emoji->media_path, $entry->getPathname());
             $emoji->save();
             $imported++;
             Cache::forget('pf:custom_emoji');
