@@ -4,7 +4,7 @@ on:
   push:
     branches: [staging, dev, unstable]
   pull_request:
-    branches: [staging, dev, unstable]
+    branches: [dev]
 
 jobs:
   pint:
