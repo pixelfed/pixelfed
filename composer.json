@@ -50,14 +50,12 @@
     "require-dev": {
         "fakerphp/faker": "^1.23",
         "larastan/larastan": "^3.0",
-        "laravel/boost": "^2.7",
         "laravel/pint": "^1.13",
         "laravel/telescope": "^5.5",
         "mockery/mockery": "^1.6",
         "nunomaduro/collision": "^8.8",
         "pestphp/pest": "^4.0",
         "psalm/plugin-laravel": "^3",
-        "rector/rector": "^2.6",
         "vimeo/psalm": "^6.5"
     },
     "autoload": {
