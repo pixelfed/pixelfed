@@ -54,6 +54,9 @@ return [
             'prefix' => '',
             'strict' => env('DB_STRICT', false),
             'engine' => null,
+            'options' => extension_loaded('pdo_mysql') ? array_filter([
+                (class_exists('Pdo\Mysql') ? Mysql::ATTR_SSL_CA : PDO::MYSQL_ATTR_SSL_CA) => env('MYSQL_ATTR_SSL_CA'),
+            ]) : [],
             'dump' => [
                 'use_single_transaction',
                 'skip_lock_tables',
@@ -138,6 +141,7 @@ return [
             'scheme' => env('REDIS_SCHEME', 'tcp'),
             'path' => env('REDIS_PATH'),
             'host' => env('REDIS_HOST', '127.0.0.1'),
+            'username' => env('REDIS_USERNAME', null),
             'password' => env('REDIS_PASSWORD', null),
             'port' => env('REDIS_PORT', 6379),
             'database' => env('REDIS_DATABASE', 0),
@@ -147,6 +151,7 @@ return [
             'scheme' => env('REDIS_SCHEME', 'tcp'),
             'path' => env('REDIS_PATH'),
             'host' => env('REDIS_HOST', '127.0.0.1'),
+            'username' => env('REDIS_USERNAME', null),
             'password' => env('REDIS_PASSWORD', null),
             'port' => env('REDIS_PORT', 6379),
             'database' => env('REDIS_DATABASE_SESSION', 1),
@@ -156,6 +161,7 @@ return [
             'scheme' => env('REDIS_SCHEME', 'tcp'),
             'path' => env('REDIS_PATH'),
             'host' => env('REDIS_HOST', '127.0.0.1'),
+            'username' => env('REDIS_USERNAME', null),
             'password' => env('REDIS_PASSWORD', null),
             'port' => env('REDIS_PORT', 6379),
             'database' => env('REDIS_DATABASE_PULSE', 2),

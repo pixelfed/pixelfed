@@ -31,7 +31,7 @@ return [
 
     'lifetime' => env('SESSION_LIFETIME', 86400),
 
-    'expire_on_close' => false,
+    'expire_on_close' => env('SESSION_EXPIRE_ON_CLOSE', false),
 
     /*
     |--------------------------------------------------------------------------
@@ -44,7 +44,7 @@ return [
     |
     */
 
-    'encrypt' => false,
+    'encrypt' => env('SESSION_ENCRYPT', false),
 
     /*
     |--------------------------------------------------------------------------
@@ -83,7 +83,7 @@ return [
     |
     */
 
-    'table' => 'sessions',
+    'table' => env('SESSION_TABLE', 'sessions'),
 
     /*
     |--------------------------------------------------------------------------
@@ -122,7 +122,7 @@ return [
     |
     */
 
-    'cookie' => 'pxfs',
+    'cookie' => env('SESSION_COOKIE', 'pxfs'),
 
     /*
     |--------------------------------------------------------------------------
@@ -135,7 +135,7 @@ return [
     |
     */
 
-    'path' => '/',
+    'path' => env('SESSION_PATH', '/'),
 
     /*
     |--------------------------------------------------------------------------
@@ -174,7 +174,7 @@ return [
     |
     */
 
-    'http_only' => true,
+    'http_only' => env('SESSION_HTTP_ONLY', true),
 
     /*
     |--------------------------------------------------------------------------
@@ -189,7 +189,7 @@ return [
     |
     */
 
-    'same_site' => env('SESSION_SAME_SITE_COOKIES', 'lax'),
+    'same_site' => env('SESSION_SAME_SITE_COOKIES', env('SESSION_SAME_SITE', 'lax')),
 
     /*
     |--------------------------------------------------------------------------
@@ -202,6 +202,6 @@ return [
     |
     */
 
-    'partitioned' => false,
+    'partitioned' => env('SESSION_PARTITIONED_COOKIE', false),
 
 ];
