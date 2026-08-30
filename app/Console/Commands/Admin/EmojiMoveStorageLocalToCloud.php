@@ -5,6 +5,8 @@ namespace App\Console\Commands\Admin;
 use App\Console\Commands\Concerns\ManagesMediaStorageEnv;
 use App\Models\CustomEmoji;
 use App\Util\Lexer\PrettyNumber;
+use Aws\CommandPool;
+use Aws\S3\S3Client;
 use Illuminate\Console\Command;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Storage;
@@ -24,6 +26,8 @@ class EmojiMoveStorageLocalToCloud extends Command
         {--limit=0 : Max files to process this run (0 = no limit, process all)}
         {--offset=0 : Skip this many files before processing (for manual chunking)}
         {--workers=1 : Spawn N parallel worker processes to upload concurrently}
+        {--concurrency=0 : Use the async S3 SDK with N concurrent in-flight uploads (0 = disabled, use sync path)}
+        {--no-acl : Do not send an ACL header on async uploads (some S3-compatible stores reject it)}
         {--stride=1 : Internal: total worker count for strided sharding}
         {--shard=0 : Internal: this worker index (0-based) for strided sharding}
         {--skip-verify : Do not re-check the cloud copy size after upload (faster)}
@@ -92,6 +96,16 @@ class EmojiMoveStorageLocalToCloud extends Command
             $this->line('--- debug: local emoji directory (public/emoji) ---');
             $this->line('  dir exists: '.var_export($localDisk->exists('public/emoji'), true));
             $this->line('  file count: '.count($localDisk->files('public/emoji')));
+        }
+
+        $concurrency = max(0, (int) $this->option('concurrency'));
+
+        // Fastest path: async S3 SDK with many concurrent in-flight PutObject
+        // requests from a single process. This hides the high per-request
+        // latency of the object store far better than sequential uploads or
+        // process-level workers.
+        if ($concurrency > 0) {
+            return $this->runAsync($concurrency, $localDisk);
         }
 
         $workers = max(1, (int) $this->option('workers'));
@@ -282,6 +296,153 @@ class EmojiMoveStorageLocalToCloud extends Command
         $this->newLine();
         $this->info('All workers finished'.($failed ? " ({$failed} failed)" : '.'));
         $this->info(sprintf('Total moved=%d across %d workers in %.1fs, %.1f uploads/sec.', $totalMoved, $workers, $elapsed, $rate));
+
+        return $failed ? self::FAILURE : self::SUCCESS;
+    }
+
+    /**
+     * Upload via the async S3 SDK with a fixed number of concurrent in-flight
+     * PutObject requests. A successful PutObject response is the confirmation
+     * (no separate HEAD verify), and the local copy is deleted on success.
+     */
+    protected function runAsync(int $concurrency, $localDisk): int
+    {
+        $conf = config('filesystems.disks.s3');
+        $bucket = $conf['bucket'] ?? null;
+
+        if (! $bucket) {
+            $this->error('S3 bucket is not configured (filesystems.disks.s3.bucket).');
+
+            return self::FAILURE;
+        }
+
+        // Build an S3 client from the same disk config Flysystem uses.
+        $args = [
+            'version' => 'latest',
+            'region' => $conf['region'] ?? 'us-east-1',
+            'credentials' => [
+                'key' => $conf['key'] ?? null,
+                'secret' => $conf['secret'] ?? null,
+            ],
+        ];
+        if (! empty($conf['endpoint'])) {
+            $args['endpoint'] = $conf['endpoint'];
+        }
+        if (! empty($conf['use_path_style_endpoint'])) {
+            $args['use_path_style_endpoint'] = true;
+        }
+
+        try {
+            $client = new S3Client($args);
+        } catch (\Throwable $e) {
+            $this->error('Could not build S3 client: '.$e->getMessage());
+
+            return self::FAILURE;
+        }
+
+        $limit = (int) $this->option('limit');
+        $offset = max(0, (int) $this->option('offset'));
+        $keepLocal = (bool) $this->option('keep-local');
+        $dryRun = (bool) $this->option('dry-run');
+
+        $files = $localDisk->exists('public/emoji') ? $localDisk->files('public/emoji') : [];
+        if ($offset > 0) {
+            $files = array_slice($files, $offset);
+        }
+        if ($limit > 0) {
+            $files = array_slice($files, 0, $limit);
+        }
+
+        // Filter out placeholders/dotfiles up front.
+        $files = array_values(array_filter($files, function ($p) {
+            $name = basename($p);
+
+            return ! str_starts_with($name, '.') && $name !== 'missing.png';
+        }));
+
+        $total = count($files);
+
+        if ($total === 0) {
+            $this->info('No emoji files to migrate.');
+
+            return self::SUCCESS;
+        }
+
+        if (! $dryRun && ! $this->option('force')) {
+            if (! $this->confirm("Upload {$total} emoji to cloud using async S3 (concurrency={$concurrency})?", true)) {
+                $this->comment('Aborted.');
+
+                return self::SUCCESS;
+            }
+        }
+
+        if ($dryRun) {
+            $this->info("[dry-run] Would upload {$total} files via async S3 (concurrency={$concurrency}).");
+
+            return self::SUCCESS;
+        }
+
+        $moved = 0;
+        $failed = 0;
+        $startedAt = microtime(true);
+        $visibility = ($conf['visibility'] ?? 'public') === 'public' ? 'public-read' : 'private';
+
+        $bar = $this->output->createProgressBar($total);
+        $bar->setFormat(' %current%/%max% [%bar%] %percent:3s%%  %rate% up/s');
+        $bar->setMessage('0.0', 'rate');
+        $bar->start();
+
+        // Lazily yield a PutObject command per file so CommandPool pulls work
+        // as concurrency slots free up (keeps memory flat over large runs).
+        $sendAcl = ! $this->option('no-acl');
+        $commands = function () use ($client, $files, $bucket, $localDisk, $visibility, $sendAcl) {
+            foreach ($files as $localPath) {
+                $mediaPath = Str::after($localPath, 'public/');
+                $params = [
+                    'Bucket' => $bucket,
+                    'Key' => $mediaPath,
+                    'SourceFile' => $localDisk->path($localPath),
+                ];
+                if ($sendAcl) {
+                    $params['ACL'] = $visibility;
+                }
+                yield $client->getCommand('PutObject', $params);
+            }
+        };
+
+        $pool = new CommandPool($client, $commands(), [
+            'concurrency' => $concurrency,
+            'fulfilled' => function ($result, $iterKey) use (&$moved, $files, $localDisk, $keepLocal, $bar, $startedAt) {
+                $moved++;
+                $localPath = $files[$iterKey] ?? null;
+                if ($localPath && ! $keepLocal) {
+                    $localDisk->delete($localPath);
+                }
+                $elapsed = max(0.001, microtime(true) - $startedAt);
+                $bar->setMessage(sprintf('%.1f', $moved / $elapsed), 'rate');
+                $bar->advance();
+            },
+            'rejected' => function ($reason, $iterKey) use (&$failed, $files, $bar) {
+                $failed++;
+                $localPath = $files[$iterKey] ?? '?';
+                $msg = $reason instanceof \Throwable ? $reason->getMessage() : (string) $reason;
+                $this->warn(PHP_EOL.'Upload failed for '.$localPath.': '.$msg);
+                $bar->advance();
+            },
+        ]);
+
+        // Block until all queued uploads settle.
+        $pool->promise()->wait();
+
+        $bar->finish();
+        $this->newLine(2);
+
+        if ($moved > 0) {
+            Cache::forget('pf:custom_emoji');
+        }
+
+        $elapsed = max(0.001, microtime(true) - $startedAt);
+        $this->info(sprintf('Done. moved=%d failed=%d in %.1fs, %.1f uploads/sec (concurrency=%d).', $moved, $failed, $elapsed, $moved / $elapsed, $concurrency));
 
         return $failed ? self::FAILURE : self::SUCCESS;
     }
