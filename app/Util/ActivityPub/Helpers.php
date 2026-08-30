@@ -835,7 +835,19 @@ class Helpers
                 in_array($activity['type'], ['Create', 'Note'])) &&
             ! self::validateStatusDomains($id, $url)
         ) {
-            throw new \Exception('Invalid status domains');
+            throw new \Exception(json_encode([
+                'message' => 'Invalid status domains',
+                'checked' => [
+                    'id' => $id,
+                    'id_host' => parse_url($id, PHP_URL_HOST),
+                    'id_valid_url' => self::validateUrl($id),
+                    'url' => $url,
+                    'url_host' => parse_url($url, PHP_URL_HOST),
+                    'url_valid_url' => self::validateUrl($url),
+                ],
+                'expected' => 'id host and url host to be valid and match (case-insensitive)',
+                'payload' => $activity,
+            ]));
         }
 
         $reply_to = self::getReplyTo($activity);
