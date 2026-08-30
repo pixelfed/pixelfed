@@ -14,7 +14,7 @@ uses(LazilyRefreshDatabase::class);
 | Media storage migration commands
 |--------------------------------------------------------------------------
 |
-| unstable:MediaMoveStorageLocalToCloud / unstable:MediaMoveStorageCloudToLocal
+| admin:MediaMoveStorageLocalToCloud / unstable:MediaMoveStorageCloudToLocal
 | Move media between local and cloud disks, verify by size/sha256, GC the
 | source, and manage the PF_ENABLE_CLOUD .env flag for hot migrations.
 |
@@ -128,19 +128,19 @@ describe('unstable:MediaMoveStorageCloudToLocal', function () {
     });
 });
 
-describe('unstable:MediaMoveStorageLocalToCloud', function () {
+describe('admin:MediaMoveStorageLocalToCloud', function () {
     it('requires a configured cloud disk', function () {
         // Fake s3 disk has no url() host resolvable? Storage::fake provides a
         // url, so instead point cloud at a disk that throws.
         Config::set('filesystems.cloud', 'does-not-exist');
 
-        $this->artisan('unstable:MediaMoveStorageLocalToCloud', ['--force' => true])
+        $this->artisan('admin:MediaMoveStorageLocalToCloud', ['--force' => true])
             ->assertExitCode(1);
     });
 
     it('flips PF_ENABLE_CLOUD to true before migrating (dry-run reports it)', function () {
         // cloud currently false in the temp .env from beforeEach.
-        $this->artisan('unstable:MediaMoveStorageLocalToCloud', ['--dry-run' => true])
+        $this->artisan('admin:MediaMoveStorageLocalToCloud', ['--dry-run' => true])
             ->expectsOutputToContain('PF_ENABLE_CLOUD')
             ->assertExitCode(0);
 
