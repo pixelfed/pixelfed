@@ -119,6 +119,7 @@ class EmojiMoveStorageLocalToCloud extends Command
         $moved = 0;
         $skipped = 0;
         $failed = 0;
+        $startedAt = microtime(true);
 
         // Disk-driven: enumerate the actual emoji files on the local disk and
         // migrate each one. We intentionally do NOT filter by DB columns here —
@@ -136,8 +137,14 @@ class EmojiMoveStorageLocalToCloud extends Command
         }
 
         $showBar = $stride === 1 && ! $debug;
-        $bar = $showBar ? $this->output->createProgressBar(count($files)) : null;
-        $bar?->start();
+        $bar = null;
+        if ($showBar) {
+            $bar = $this->output->createProgressBar(count($files));
+            $bar->setFormat(" %current%/%max% [%bar%] %percent:3s%%  %rate% up/s\n  %message%");
+            $bar->setMessage('');
+            $bar->setMessage('0.0', 'rate');
+            $bar->start();
+        }
 
         foreach ($files as $i => $localPath) {
             // Strided sharding for parallel workers: only handle our slice.
@@ -165,6 +172,11 @@ class EmojiMoveStorageLocalToCloud extends Command
                 'skipped' => $skipped++,
                 default => $failed++,
             };
+
+            if ($bar) {
+                $liveElapsed = max(0.001, microtime(true) - $startedAt);
+                $bar->setMessage(sprintf('%.1f', $moved / $liveElapsed), 'rate');
+            }
             $bar?->advance();
         }
 
@@ -175,7 +187,11 @@ class EmojiMoveStorageLocalToCloud extends Command
             Cache::forget('pf:custom_emoji');
         }
 
+        $elapsed = max(0.001, microtime(true) - $startedAt);
+        $rate = $moved / $elapsed;
+
         $this->info(($this->option('dry-run') ? '[dry-run] ' : '').'Done. moved='.$moved.' skipped='.$skipped.' failed='.$failed.'.');
+        $this->info(sprintf('Elapsed %.1fs, %.1f uploads/sec.', $elapsed, $rate));
         if ($this->movedBytes) {
             $this->info('Transferred '.PrettyNumber::size($this->movedBytes).' to cloud storage.');
         }
@@ -214,6 +230,9 @@ class EmojiMoveStorageLocalToCloud extends Command
 
         $this->info("Launching {$workers} workers...");
 
+        $startedAt = microtime(true);
+        $totalMoved = 0;
+
         $procs = [];
         for ($w = 0; $w < $workers; $w++) {
             $cmd = array_merge(
@@ -235,6 +254,9 @@ class EmojiMoveStorageLocalToCloud extends Command
                     foreach (explode("\n", rtrim($out, "\n")) as $line) {
                         if ($line !== '') {
                             $this->line("[worker {$w}] ".$line);
+                            if (preg_match('/moved=(\d+)/', $line, $m)) {
+                                $totalMoved += (int) $m[1];
+                            }
                         }
                     }
                 }
@@ -254,8 +276,12 @@ class EmojiMoveStorageLocalToCloud extends Command
             Cache::forget('pf:custom_emoji');
         }
 
+        $elapsed = max(0.001, microtime(true) - $startedAt);
+        $rate = $totalMoved / $elapsed;
+
         $this->newLine();
         $this->info('All workers finished'.($failed ? " ({$failed} failed)" : '.'));
+        $this->info(sprintf('Total moved=%d across %d workers in %.1fs, %.1f uploads/sec.', $totalMoved, $workers, $elapsed, $rate));
 
         return $failed ? self::FAILURE : self::SUCCESS;
     }
