@@ -43,9 +43,9 @@ return [
 
         'database' => [
             'driver' => 'database',
-            'table' => 'cache',
-            'connection' => null,
-            'lock_connection' => null,
+            'table' => env('DB_CACHE_TABLE', 'cache'),
+            'connection' => env('DB_CACHE_CONNECTION'),
+            'lock_connection' => env('DB_CACHE_LOCK_CONNECTION'),
         ],
 
         'file' => [
@@ -75,7 +75,7 @@ return [
 
         'redis' => [
             'driver' => 'redis',
-            'lock_connection' => 'default',
+            'lock_connection' => env('REDIS_CACHE_LOCK_CONNECTION', 'default'),
             'client' => env('REDIS_CLIENT', 'predis'),
 
             'default' => [
