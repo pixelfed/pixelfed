@@ -180,6 +180,73 @@ class CustomEmojiService
         return true;
     }
 
+    /**
+     * Re-download a remote custom emoji's media from its origin
+     * (image_remote_url) and store it locally under public/{media_path}.
+     *
+     * Used by admin:resyncemoji to repair emoji whose local file is missing
+     * or corrupt. Only remote emoji (those with an origin URL) can be resynced.
+     *
+     * @return string one of: resynced|skipped|failed
+     */
+    public static function resync(CustomEmoji $emoji): string
+    {
+        if ((bool) config_cache('federation.custom_emoji.enabled') == false) {
+            return 'skipped';
+        }
+
+        // Only remote emoji have an origin URL to re-fetch from.
+        if (empty($emoji->image_remote_url)) {
+            return 'skipped';
+        }
+
+        $url = Helpers::validateUrl($emoji->image_remote_url);
+        if ($url == false) {
+            return 'skipped';
+        }
+
+        if (! self::headCheck($url)) {
+            return 'failed';
+        }
+
+        // Preserve the existing media_path when present; otherwise derive one
+        // from the emoji id and the origin URL's extension.
+        $mediaPath = $emoji->media_path;
+        if (! $mediaPath) {
+            $ext = pathinfo(parse_url($url, PHP_URL_PATH) ?? '', PATHINFO_EXTENSION);
+            $ext = $ext ? '.'.strtolower($ext) : '.png';
+            $mediaPath = 'emoji/'.$emoji->id.$ext;
+        }
+
+        try {
+            $maxSize = (int) config('federation.custom_emoji.max_size');
+            $body = SecureMediaFetchService::get($url, $maxSize > 0 ? $maxSize : null);
+
+            if ($body === false) {
+                return 'failed';
+            }
+
+            if (Storage::exists('public/'.$mediaPath)) {
+                Storage::delete('public/'.$mediaPath);
+            }
+
+            Storage::put('public/'.$mediaPath, $body);
+
+            if ($emoji->media_path !== $mediaPath) {
+                $emoji->media_path = $mediaPath;
+                $emoji->save();
+            }
+        } catch (\Throwable $e) {
+            return 'failed';
+        }
+
+        $name = str_replace(':', '', (string) $emoji->shortcode);
+        Cache::forget('pf:custom_emoji');
+        Cache::forget('pf:custom_emoji:'.$name);
+
+        return 'resynced';
+    }
+
     public static function all()
     {
         return Cache::rememberForever('pf:custom_emoji', function () {
