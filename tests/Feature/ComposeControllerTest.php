@@ -2,10 +2,10 @@
 
 namespace Tests\Feature;
 
-use Illuminate\Support\Facades\DB;
+use App\Models\User;
 use Database\Factories\ProfileFactory;
-use App\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Illuminate\Support\Facades\DB;
 use PHPUnit\Framework\Attributes\Test;
 use Tests\TestCase;
 

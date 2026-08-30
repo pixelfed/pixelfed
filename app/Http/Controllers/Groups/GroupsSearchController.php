@@ -42,24 +42,27 @@ class GroupsSearchController extends Controller
             'Invite limit reached'
         );
 
-        $profiles = collect($uid)
-            ->map(function ($u) {
-                return Profile::find($u);
-            })
-            ->filter(function ($u) use ($pid) {
-                return $u &&
-                    $u->id != $pid &&
-                    isset($u->id) &&
-                    Follower::whereFollowingId($pid)
-                        ->whereProfileId($u->id)
-                        ->exists();
-            })
-            ->filter(function ($u) use ($group, $pid) {
-                return GroupInvitation::whereGroupId($group->id)
-                    ->whereFromProfileId($pid)
-                    ->whereToProfileId($u->id)
-                    ->exists() == false;
-            })
+        $candidateIds = collect($uid)
+            ->filter(fn ($u) => $u != $pid)
+            ->unique()
+            ->values();
+
+        $profiles = Profile::whereIn('id', $candidateIds)->get();
+
+        $followedIds = Follower::whereFollowingId($pid)
+            ->whereIn('profile_id', $profiles->pluck('id'))
+            ->pluck('profile_id')
+            ->all();
+
+        $alreadyInvitedIds = GroupInvitation::whereGroupId($group->id)
+            ->whereFromProfileId($pid)
+            ->whereIn('to_profile_id', $profiles->pluck('id'))
+            ->pluck('to_profile_id')
+            ->all();
+
+        $profiles
+            ->filter(fn ($u) => in_array($u->id, $followedIds))
+            ->filter(fn ($u) => ! in_array($u->id, $alreadyInvitedIds))
             ->each(function ($u) use ($gid, $pid) {
                 $gi = new GroupInvitation;
                 $gi->group_id = $gid;
