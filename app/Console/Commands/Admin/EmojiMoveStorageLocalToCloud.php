@@ -36,7 +36,12 @@ class EmojiMoveStorageLocalToCloud extends Command
 
     public function handle(): int
     {
-        if (! (bool) config_cache('pixelfed.cloud_storage')) {
+        // Consider cloud enabled if either the live config or the (possibly
+        // 12h-cached) config_cache value says so, so a stale cache can't make
+        // this silently no-op right after cloud is turned on.
+        $cloudEnabled = (bool) config('pixelfed.cloud_storage') || (bool) config_cache('pixelfed.cloud_storage');
+
+        if (! $cloudEnabled) {
             $this->error('Cloud storage is not enabled (pixelfed.cloud_storage is false).');
 
             return self::FAILURE;

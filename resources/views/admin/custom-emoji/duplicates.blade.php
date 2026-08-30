@@ -28,7 +28,7 @@
 			<div class="list-group">
 				<div class="list-group-item">
 					<div class="media align-items-center">
-						<img src="{{url('storage/' . $emoji->media_path)}}" width="40" height="40" class="mr-3">
+						<img src="{{ $emoji->url() }}" width="40" height="40" class="mr-3">
 
 						<div class="media-body">
 							<p class="font-weight-bold mb-0">{{ $emoji->shortcode }}</p>
@@ -62,7 +62,7 @@
 				@foreach($emojis as $emoji)
 				<div class="list-group-item">
 					<div class="media align-items-center">
-						<img src="{{url('storage/' . $emoji->media_path)}}" width="40" height="40" class="mr-3">
+						<img src="{{ $emoji->url() }}" width="40" height="40" class="mr-3">
 
 						<div class="media-body">
 							<p class="font-weight-bold mb-0">{{ $emoji->shortcode }}</p>

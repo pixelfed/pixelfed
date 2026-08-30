@@ -15,7 +15,11 @@ return new class extends Migration
      */
     public function up(): void
     {
-        if (! (bool) config_cache('pixelfed.cloud_storage')) {
+        // Consider cloud enabled if either the live config or the (possibly
+        // cached) config_cache value says so; the command guards again anyway.
+        $cloudEnabled = (bool) config('pixelfed.cloud_storage') || (bool) config_cache('pixelfed.cloud_storage');
+
+        if (! $cloudEnabled) {
             return;
         }
 
