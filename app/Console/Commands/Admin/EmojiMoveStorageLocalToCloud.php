@@ -4,7 +4,8 @@ namespace App\Console\Commands\Admin;
 
 use App\Console\Commands\Concerns\ManagesMediaStorageEnv;
 use App\Models\CustomEmoji;
-use App\Util\Lexer\PrettyNumber;
+use Aws\CommandPool;
+use Aws\S3\S3Client;
 use Illuminate\Console\Command;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Storage;
@@ -20,9 +21,13 @@ class EmojiMoveStorageLocalToCloud extends Command
      * @var string
      */
     protected $signature = 'admin:EmojiMoveStorageLocalToCloud
-        {--limit=0 : Max emoji rows to process this run (0 = no limit, process all)}
-        {--dry-run : Report what would happen without copying or writing}
-        {--keep-local : Do not delete local files after verifying the cloud copy}
+        {--limit=0 : Max files to process this run (0 = no limit, process all)}
+        {--offset=0 : Skip this many files before processing (for manual chunking)}
+        {--concurrency=100 : Concurrent in-flight S3 uploads via the async SDK (0 = simple synchronous fallback)}
+        {--no-acl : Do not send an ACL header on uploads (some S3-compatible stores reject it)}
+        {--keep-local : Do not delete local files after a successful upload}
+        {--dry-run : Report what would happen without uploading or deleting}
+        {--debug : Print detailed diagnostics}
         {--force : Skip confirmation prompts}';
 
     /**
@@ -30,9 +35,7 @@ class EmojiMoveStorageLocalToCloud extends Command
      *
      * @var string
      */
-    protected $description = 'Migrate local custom emoji to cloud storage: copy up, verify by size, then delete the local copy.';
-
-    protected int $movedBytes = 0;
+    protected $description = 'Migrate local custom emoji to cloud storage (concurrent async uploads), then delete the local copy.';
 
     public function handle(): int
     {
@@ -49,9 +52,8 @@ class EmojiMoveStorageLocalToCloud extends Command
 
         try {
             $localDisk = Storage::disk('local');
-            $cloudDisk = Storage::disk(config('filesystems.cloud'));
         } catch (\Throwable $e) {
-            $this->error('Cloud disk ('.config('filesystems.cloud').') could not be resolved: '.$e->getMessage());
+            $this->error('Local disk could not be resolved: '.$e->getMessage());
 
             return self::FAILURE;
         }
@@ -63,120 +65,254 @@ class EmojiMoveStorageLocalToCloud extends Command
             return self::FAILURE;
         }
 
-        if (! $this->option('dry-run') && ! $this->option('force')) {
-            if (! $this->confirm('Begin migrating local custom emoji to cloud?', true)) {
-                $this->comment('Aborted.');
+        if ($this->option('debug')) {
+            $this->printDebug($localDisk);
+        }
 
-                return self::SUCCESS;
-            }
+        // Build the list of local emoji files to migrate. Disk-driven: the file
+        // existing locally is the source of truth for "needs moving". We do NOT
+        // filter by DB columns — federated emoji have their media stored locally
+        // too (with a uri set), so a DB filter would wrongly exclude them.
+        $files = $this->collectFiles($localDisk);
+        $total = count($files);
+
+        if ($total === 0) {
+            $this->info('No emoji files to migrate.');
+
+            return self::SUCCESS;
+        }
+
+        $concurrency = max(0, (int) $this->option('concurrency'));
+        $mode = $concurrency > 0 ? "async S3 (concurrency={$concurrency})" : 'synchronous';
+
+        if ($this->option('dry-run')) {
+            $this->info("[dry-run] Would upload {$total} emoji to cloud using {$mode}.");
+
+            return self::SUCCESS;
+        }
+
+        if (! $this->option('force') && ! $this->confirm("Upload {$total} emoji to cloud using {$mode}?", true)) {
+            $this->comment('Aborted.');
+
+            return self::SUCCESS;
+        }
+
+        return $concurrency > 0
+            ? $this->uploadAsync($files, $concurrency, $localDisk)
+            : $this->uploadSync($files, $localDisk);
+    }
+
+    /**
+     * Enumerate local emoji files, applying offset/limit and skipping the
+     * missing.png placeholder (hardcoded local /storage/emoji/missing.png
+     * onerror fallback) and dotfiles.
+     *
+     * @return list<string>
+     */
+    protected function collectFiles($localDisk): array
+    {
+        $files = $localDisk->exists('public/emoji') ? $localDisk->files('public/emoji') : [];
+
+        $offset = max(0, (int) $this->option('offset'));
+        if ($offset > 0) {
+            $files = array_slice($files, $offset);
         }
 
         $limit = (int) $this->option('limit');
+        if ($limit > 0) {
+            $files = array_slice($files, 0, $limit);
+        }
+
+        return array_values(array_filter($files, function ($p) {
+            $name = basename($p);
+
+            return ! str_starts_with($name, '.') && $name !== 'missing.png';
+        }));
+    }
+
+    /**
+     * Upload via the async S3 SDK with a fixed number of concurrent in-flight
+     * PutObject requests. A successful PutObject response is the confirmation
+     * (no separate HEAD verify); the local copy is deleted on success.
+     *
+     * @param  list<string>  $files
+     */
+    protected function uploadAsync(array $files, int $concurrency, $localDisk): int
+    {
+        $conf = config('filesystems.disks.s3');
+        $bucket = $conf['bucket'] ?? null;
+
+        if (! $bucket) {
+            $this->error('S3 bucket is not configured (filesystems.disks.s3.bucket).');
+
+            return self::FAILURE;
+        }
+
+        $args = [
+            'version' => 'latest',
+            'region' => $conf['region'] ?? 'us-east-1',
+            'credentials' => [
+                'key' => $conf['key'] ?? null,
+                'secret' => $conf['secret'] ?? null,
+            ],
+        ];
+        if (! empty($conf['endpoint'])) {
+            $args['endpoint'] = $conf['endpoint'];
+        }
+        if (! empty($conf['use_path_style_endpoint'])) {
+            $args['use_path_style_endpoint'] = true;
+        }
+
+        try {
+            $client = new S3Client($args);
+        } catch (\Throwable $e) {
+            $this->error('Could not build S3 client: '.$e->getMessage());
+
+            return self::FAILURE;
+        }
+
+        $keepLocal = (bool) $this->option('keep-local');
+        $sendAcl = ! $this->option('no-acl');
+        $visibility = ($conf['visibility'] ?? 'public') === 'public' ? 'public-read' : 'private';
+
         $moved = 0;
-        $skipped = 0;
         $failed = 0;
+        $startedAt = microtime(true);
 
-        // Local (non-federated) emoji have no uri. Remote emoji already point
-        // at their origin server and are not stored on our disks.
-        $query = CustomEmoji::whereNull('uri')
-            ->whereNotNull('media_path')
-            ->orderByDesc('id')
-            ->when($limit > 0, fn ($q) => $q->limit($limit));
-
-        $bar = $this->output->createProgressBar($query->count());
+        $bar = $this->output->createProgressBar(count($files));
+        $bar->setFormat(' %current%/%max% [%bar%] %percent:3s%%  %rate% up/s');
+        $bar->setMessage('0.0', 'rate');
         $bar->start();
 
-        foreach ($query->get() as $emoji) {
-            $result = $this->migrateOne($emoji, $localDisk, $cloudDisk);
-            match ($result) {
-                'moved' => $moved++,
-                'skipped' => $skipped++,
-                default => $failed++,
-            };
+        // Lazily yield a PutObject command per file so CommandPool pulls work as
+        // concurrency slots free up (keeps memory flat over large runs).
+        $commands = function () use ($client, $files, $bucket, $localDisk, $visibility, $sendAcl) {
+            foreach ($files as $localPath) {
+                $params = [
+                    'Bucket' => $bucket,
+                    'Key' => Str::after($localPath, 'public/'),
+                    'SourceFile' => $localDisk->path($localPath),
+                ];
+                if ($sendAcl) {
+                    $params['ACL'] = $visibility;
+                }
+                yield $client->getCommand('PutObject', $params);
+            }
+        };
+
+        $pool = new CommandPool($client, $commands(), [
+            'concurrency' => $concurrency,
+            'fulfilled' => function ($result, $iterKey) use (&$moved, $files, $localDisk, $keepLocal, $bar, $startedAt) {
+                $moved++;
+                $localPath = $files[$iterKey] ?? null;
+                if ($localPath && ! $keepLocal) {
+                    $localDisk->delete($localPath);
+                }
+                $elapsed = max(0.001, microtime(true) - $startedAt);
+                $bar->setMessage(sprintf('%.1f', $moved / $elapsed), 'rate');
+                $bar->advance();
+            },
+            'rejected' => function ($reason, $iterKey) use (&$failed, $files, $bar) {
+                $failed++;
+                $localPath = $files[$iterKey] ?? '?';
+                $msg = $reason instanceof \Throwable ? $reason->getMessage() : (string) $reason;
+                $this->warn(PHP_EOL.'Upload failed for '.$localPath.': '.$msg);
+                $bar->advance();
+            },
+        ]);
+
+        $pool->promise()->wait();
+
+        $bar->finish();
+        $this->newLine(2);
+
+        return $this->finish($moved, $failed, $startedAt, $concurrency);
+    }
+
+    /**
+     * Simple synchronous fallback (concurrency=0): upload one file at a time via
+     * the cloud disk. Slower, but has no dependency on the S3 SDK internals.
+     *
+     * @param  list<string>  $files
+     */
+    protected function uploadSync(array $files, $localDisk): int
+    {
+        $cloudDisk = Storage::disk(config('filesystems.cloud'));
+        $keepLocal = (bool) $this->option('keep-local');
+
+        $moved = 0;
+        $failed = 0;
+        $startedAt = microtime(true);
+
+        $bar = $this->output->createProgressBar(count($files));
+        $bar->setFormat(' %current%/%max% [%bar%] %percent:3s%%  %rate% up/s');
+        $bar->setMessage('0.0', 'rate');
+        $bar->start();
+
+        foreach ($files as $localPath) {
+            $mediaPath = Str::after($localPath, 'public/');
+
+            try {
+                $cloudDisk->put($mediaPath, $localDisk->get($localPath), 'public');
+                if (! $keepLocal) {
+                    $localDisk->delete($localPath);
+                }
+                $moved++;
+            } catch (\Throwable $e) {
+                $failed++;
+                $this->warn(PHP_EOL.'Upload failed for '.$localPath.': '.$e->getMessage());
+            }
+
+            $elapsed = max(0.001, microtime(true) - $startedAt);
+            $bar->setMessage(sprintf('%.1f', $moved / $elapsed), 'rate');
             $bar->advance();
         }
 
         $bar->finish();
         $this->newLine(2);
 
-        if ($moved > 0 && ! $this->option('dry-run')) {
+        return $this->finish($moved, $failed, $startedAt, 0);
+    }
+
+    /**
+     * Bust the emoji cache and print the run summary.
+     */
+    protected function finish(int $moved, int $failed, float $startedAt, int $concurrency): int
+    {
+        if ($moved > 0) {
             Cache::forget('pf:custom_emoji');
         }
 
-        $this->info(($this->option('dry-run') ? '[dry-run] ' : '').'Done. moved='.$moved.' skipped='.$skipped.' failed='.$failed.'.');
-        if ($this->movedBytes) {
-            $this->info('Transferred '.PrettyNumber::size($this->movedBytes).' to cloud storage.');
-        }
+        $elapsed = max(0.001, microtime(true) - $startedAt);
+        $this->info(sprintf(
+            'Done. moved=%d failed=%d in %.1fs, %.1f uploads/sec%s.',
+            $moved,
+            $failed,
+            $elapsed,
+            $moved / $elapsed,
+            $concurrency > 0 ? " (concurrency={$concurrency})" : ''
+        ));
 
-        return self::SUCCESS;
+        return $failed ? self::FAILURE : self::SUCCESS;
     }
 
-    /**
-     * @return string one of moved|skipped|failed
-     */
-    protected function migrateOne(CustomEmoji $emoji, $localDisk, $cloudDisk): string
+    protected function printDebug($localDisk): void
     {
-        $mediaPath = $emoji->media_path;
+        $this->line('--- debug: config ---');
+        $this->line('  config(pixelfed.cloud_storage):       '.var_export(config('pixelfed.cloud_storage'), true));
+        $this->line('  config_cache(pixelfed.cloud_storage): '.var_export(config_cache('pixelfed.cloud_storage'), true));
+        $this->line('  filesystems.cloud:                    '.config('filesystems.cloud'));
+        $this->line('  cloud host:                           '.($this->cloudHost() ?? 'null'));
+        $this->line('  local disk root:                      '.$localDisk->path(''));
 
-        if (! $mediaPath || Str::startsWith($mediaPath, 'http')) {
-            return 'skipped';
-        }
+        $this->line('--- debug: custom_emoji table ---');
+        $this->line('  total rows:            '.CustomEmoji::count());
+        $this->line('  uri IS NULL:           '.CustomEmoji::whereNull('uri')->count());
+        $this->line('  uri NOT NULL:          '.CustomEmoji::whereNotNull('uri')->count());
+        $this->line('  media_path NOT NULL:   '.CustomEmoji::whereNotNull('media_path')->count());
 
-        // Local emoji live under the public/ disk prefix; cloud objects live at
-        // the bare media_path.
-        $localPath = 'public/'.$mediaPath;
-
-        if (! $localDisk->exists($localPath)) {
-            // Already migrated (present on cloud, gone locally) or missing.
-            return 'skipped';
-        }
-
-        if ($this->option('dry-run')) {
-            return 'moved';
-        }
-
-        try {
-            $size = (int) $localDisk->size($localPath);
-            $cloudDisk->put($mediaPath, $localDisk->get($localPath), 'public');
-
-            if (! $this->verify($localPath, $mediaPath, $localDisk, $cloudDisk)) {
-                $this->warn(PHP_EOL.'Verify failed for emoji '.$emoji->id.' ('.$mediaPath.'); left local copy intact.');
-
-                return 'failed';
-            }
-
-            if (! $this->option('keep-local')) {
-                $localDisk->delete($localPath);
-            }
-
-            $this->movedBytes += $size;
-
-            Cache::forget('pf:custom_emoji:'.str_replace(':', '', (string) $emoji->shortcode));
-
-            return 'moved';
-        } catch (\Throwable $e) {
-            $this->warn(PHP_EOL.'Error migrating emoji '.$emoji->id.': '.$e->getMessage());
-
-            return 'failed';
-        }
-    }
-
-    /**
-     * Verify the cloud copy matches the local source by size. Fails closed.
-     */
-    protected function verify(string $localPath, string $cloudPath, $localDisk, $cloudDisk): bool
-    {
-        if (! $cloudDisk->exists($cloudPath)) {
-            return false;
-        }
-
-        $localSize = $localDisk->size($localPath);
-        $cloudSize = $cloudDisk->size($cloudPath);
-
-        if ($localSize === false || $cloudSize === false || $localSize !== $cloudSize) {
-            return false;
-        }
-
-        return true;
+        $this->line('--- debug: local emoji directory (public/emoji) ---');
+        $this->line('  dir exists: '.var_export($localDisk->exists('public/emoji'), true));
+        $this->line('  file count: '.count($localDisk->files('public/emoji')));
     }
 }
