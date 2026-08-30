@@ -2,12 +2,12 @@
 
 namespace App\Services;
 
-use App\Hashtag;
-use App\Profile;
-use App\Status;
+use App\Models\Hashtag;
+use App\Models\Profile;
+use App\Models\Status;
 use App\Transformer\Api\AccountTransformer;
 use App\Util\ActivityPub\Helpers;
-use DB;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Str;
 use League\Fractal;
 use League\Fractal\Serializer\ArraySerializer;

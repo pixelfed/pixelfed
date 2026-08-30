@@ -2,9 +2,9 @@
 
 namespace App\Observers;
 
-use App\ModLog;
+use App\Models\ModLog;
 use App\Services\ModLogService;
-use Log;
+use Illuminate\Support\Facades\Log;
 
 class ModLogObserver
 {

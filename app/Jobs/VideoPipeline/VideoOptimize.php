@@ -2,7 +2,7 @@
 
 namespace App\Jobs\VideoPipeline;
 
-use App\Media;
+use App\Models\Media;
 use App\Services\StatusService;
 use FFMpeg;
 use Illuminate\Bus\Queueable;
@@ -10,7 +10,7 @@ use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
-use Storage;
+use Illuminate\Support\Facades\Storage;
 
 class VideoOptimize implements ShouldQueue
 {

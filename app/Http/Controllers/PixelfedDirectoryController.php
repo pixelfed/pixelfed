@@ -3,18 +3,19 @@
 namespace App\Http\Controllers;
 
 use App\Models\ConfigCache;
+use App\Models\User;
 use App\Services\AccountService;
 use App\Services\InstanceService;
 use App\Services\StatusService;
-use App\User;
-use Cache;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Cache;
+use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
-use Storage;
 
 class PixelfedDirectoryController extends Controller
 {
-    public function get(Request $request)
+    public function get(Request $request): JsonResponse
     {
         if (! $request->filled('sk')) {
             abort(404);

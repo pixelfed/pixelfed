@@ -4,10 +4,10 @@ namespace App\Http\Controllers;
 
 use App\Http\Requests\Status\StoreStatusEditRequest;
 use App\Jobs\StatusPipeline\StatusLocalUpdateActivityPubDeliverPipeline;
+use App\Models\Status;
 use App\Models\StatusEdit;
 use App\Services\Status\UpdateStatusService;
 use App\Services\StatusService;
-use App\Status;
 use App\Util\Lexer\Autolink;
 use Illuminate\Http\Request;
 
@@ -15,8 +15,7 @@ class StatusEditController extends Controller
 {
     public function __construct()
     {
-        $this->middleware('auth');
-        abort_if(! config('exp.pue'), 404, 'Post editing is not enabled on this server.');
+        $this->middleware('auth:api');
     }
 
     public function store(StoreStatusEditRequest $request, $id)

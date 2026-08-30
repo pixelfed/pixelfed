@@ -2,10 +2,11 @@
 
 namespace App\Observers;
 
-use App\Follower;
 use App\Jobs\HomeFeedPipeline\FeedFollowPipeline;
+use App\Jobs\HomeFeedPipeline\FeedUnfollowPipeline;
+use App\Models\Follower;
 use App\Services\FollowerService;
-use Cache;
+use Illuminate\Support\Facades\Cache;
 
 class FollowerObserver
 {
@@ -32,6 +33,7 @@ class FollowerObserver
     public function deleted(Follower $follower)
     {
         FollowerService::remove($follower->profile_id, (string) $follower->following_id);
+        FeedUnfollowPipeline::dispatch($follower->profile_id, $follower->following_id)->onQueue('feed');
     }
 
     /**

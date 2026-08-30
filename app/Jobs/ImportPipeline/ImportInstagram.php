@@ -2,20 +2,20 @@
 
 namespace App\Jobs\ImportPipeline;
 
-use App\ImportData;
-use App\ImportJob;
 use App\Jobs\ImageOptimizePipeline\ImageOptimize;
-use App\Media;
-use App\Profile;
-use App\Status;
+use App\Models\ImportData;
+use App\Models\ImportJob;
+use App\Models\Media;
+use App\Models\Profile;
+use App\Models\Status;
 use Carbon\Carbon;
-use DB;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Filesystem\Filesystem;
 use Illuminate\Foundation\Bus\Dispatchable;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
+use Illuminate\Support\Facades\DB;
 
 class ImportInstagram implements ShouldQueue
 {

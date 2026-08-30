@@ -12,9 +12,6 @@ return [
 
     'discover' => [
         'public' => env('INSTANCE_DISCOVER_PUBLIC', false),
-        'loops' => [
-            'enabled' => env('EXP_LOOPS', false),
-        ],
         'tags' => [
             'is_public' => env('INSTANCE_PUBLIC_HASHTAGS', false),
         ],
@@ -77,18 +74,7 @@ return [
     'oauth' => [
         'token_expiration' => env('OAUTH_TOKEN_DAYS', 365),
         'refresh_expiration' => env('OAUTH_REFRESH_DAYS', 400),
-        'pat' => [
-            'enabled' => env('OAUTH_PAT_ENABLED', false),
-            'id' => env('OAUTH_PAT_ID'),
-        ],
-    ],
-
-    'label' => [
-        'covid' => [
-            'enabled' => env('ENABLE_COVID_LABEL', true),
-            'url' => env('COVID_LABEL_URL', 'https://www.who.int/emergencies/diseases/novel-coronavirus-2019/advice-for-public'),
-            'org' => env('COVID_LABEL_ORG', 'visit the WHO website'),
-        ],
+        'pat_enabled' => env('OAUTH_PAT_ENABLED', false),
     ],
 
     'enable_cc' => env('ENABLE_CONFIG_CACHE', true),

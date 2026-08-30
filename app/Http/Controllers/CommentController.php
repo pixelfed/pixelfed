@@ -4,27 +4,28 @@ namespace App\Http\Controllers;
 
 use App\Jobs\CommentPipeline\CommentPipeline;
 use App\Jobs\StatusPipeline\NewStatusPipeline;
+use App\Models\Profile;
+use App\Models\Status;
+use App\Models\UserFilter;
+use App\Services\FollowerService;
 use App\Services\StatusService;
-use App\Status;
 use App\Transformer\Api\StatusTransformer;
-use App\UserFilter;
-use Auth;
-use DB;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 use League\Fractal;
 use League\Fractal\Serializer\ArraySerializer;
 use Purify;
 
 class CommentController extends Controller
 {
-    public function showAll(Request $request, $username, int $id)
+    public function showAll(Request $request, $username, int $id): void
     {
         abort(404);
     }
 
     public function store(Request $request)
     {
-        if (Auth::check() === false) {
+        if (! $request->user()) {
             abort(403);
         }
         $this->validate($request, [
@@ -36,16 +37,19 @@ class CommentController extends Controller
         $statusId = $request->input('item');
         $nsfw = $request->input('sensitive', false);
 
-        $user = Auth::user();
+        $user = $request->user();
         $profile = $user->profile;
         $status = Status::findOrFail($statusId);
 
-        if ($status->comments_disabled == true) {
-            return;
+        abort_if($status->comments_disabled == true, 404);
+        abort_if($status->scope === 'direct', 404);
+
+        if ($status->scope === 'private' && $status->profile_id !== $profile->id) {
+            abort_if(! FollowerService::follows($profile->id, $status->profile_id), 404);
         }
 
         $filtered = UserFilter::whereUserId($status->profile_id)
-            ->whereFilterableType('App\Profile')
+            ->whereFilterableType(Profile::class)
             ->whereIn('filter_type', ['block'])
             ->whereFilterableId($profile->id)
             ->exists();

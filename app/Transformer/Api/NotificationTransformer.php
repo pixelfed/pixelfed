@@ -2,7 +2,10 @@
 
 namespace App\Transformer\Api;
 
-use App\Notification;
+use App\Models\MediaTag;
+use App\Models\ModLog;
+use App\Models\Notification;
+use App\Models\Status;
 use App\Services\AccountService;
 use App\Services\RelationshipService;
 use App\Services\StatusService;
@@ -27,11 +30,11 @@ class NotificationTransformer extends Fractal\TransformerAbstract
             }
         }
 
-        if ($n->item_id && $n->item_type == 'App\Status') {
+        if ($n->item_id && $n->item_type == Status::class) {
             $res['status'] = StatusService::get($n->item_id, false);
         }
 
-        if ($n->item_id && $n->item_type == 'App\ModLog') {
+        if ($n->item_id && $n->item_type == ModLog::class) {
             $ml = $n->item;
             if ($ml && $ml->object_uid) {
                 $res['modlog'] = [
@@ -41,7 +44,7 @@ class NotificationTransformer extends Fractal\TransformerAbstract
             }
         }
 
-        if ($n->item_id && $n->item_type == 'App\MediaTag') {
+        if ($n->item_id && $n->item_type == MediaTag::class) {
             $ml = $n->item;
             if ($ml && $ml->tagged_username) {
                 $np = StatusService::get($ml->status_id, false);

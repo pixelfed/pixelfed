@@ -2,8 +2,8 @@
 
 namespace App\Services;
 
-use App\Status;
-use Cache;
+use App\Models\Status;
+use Illuminate\Support\Facades\Cache;
 
 class PlaceService
 {

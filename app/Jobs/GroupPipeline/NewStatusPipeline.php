@@ -2,22 +2,23 @@
 
 namespace App\Jobs\GroupPipeline;
 
-use App\Hashtag;
 use App\Jobs\MentionPipeline\MentionPipeline;
-use App\Mention;
 use App\Models\GroupPost;
 use App\Models\GroupPostHashtag;
-use App\Profile;
+use App\Models\Hashtag;
+use App\Models\Mention;
+use App\Models\Profile;
+use App\Models\Status;
 use App\Services\StatusService;
-use App\Status;
 use App\Util\Lexer\Autolink;
 use App\Util\Lexer\Extractor;
-use DB;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Str;
 
 class NewStatusPipeline implements ShouldQueue
 {
@@ -75,7 +76,7 @@ class NewStatusPipeline implements ShouldQueue
             }
 
             DB::transaction(function () use ($status, $tag, $gp) {
-                $slug = str_slug($tag, '-', false);
+                $slug = Str::slug($tag, '-', false);
                 $hashtag = Hashtag::firstOrCreate(
                     ['name' => $tag, 'slug' => $slug]
                 );

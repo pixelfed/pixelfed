@@ -26,7 +26,9 @@ return new class extends Migration
 
         Schema::table('user_roles', function (Blueprint $table) {
             $indexes = Schema::getIndexes('user_roles');
-            $indexesFound = collect($indexes)->map(function($i) { return $i['name']; })->toArray();
+            $indexesFound = collect($indexes)->map(function ($i) {
+                return $i['name'];
+            })->toArray();
             if (in_array('user_roles_profile_id_unique', $indexesFound)) {
                 $table->dropUnique('user_roles_profile_id_unique');
             }
@@ -43,7 +45,9 @@ return new class extends Migration
 
         Schema::table('user_roles', function (Blueprint $table) {
             $indexes = Schema::getIndexes('user_roles');
-            $indexesFound = collect($indexes)->map(function($i) { return $i['name']; })->toArray();
+            $indexesFound = collect($indexes)->map(function ($i) {
+                return $i['name'];
+            })->toArray();
             if (in_array('user_roles_profile_id_unique', $indexesFound)) {
                 $table->dropUnique('user_roles_profile_id_unique');
             }

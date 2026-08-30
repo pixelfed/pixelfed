@@ -2,7 +2,7 @@
 
 namespace App\Services\Media;
 
-use Storage;
+use Illuminate\Support\Facades\Storage;
 
 class MediaHlsService
 {

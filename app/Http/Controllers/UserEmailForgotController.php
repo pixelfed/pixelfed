@@ -2,13 +2,14 @@
 
 namespace App\Http\Controllers;
 
-use Illuminate\Http\Request;
-use App\User;
+use App\Mail\UserEmailForgotReminder;
+use App\Models\User;
 use App\Models\UserEmailForgot;
+use Illuminate\Contracts\View\View;
+use Illuminate\Http\RedirectResponse;
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Mail;
-use App\Mail\UserEmailForgotReminder;
-use Illuminate\Support\Facades\RateLimiter;
 
 class UserEmailForgotController extends Controller
 {
@@ -18,23 +19,24 @@ class UserEmailForgotController extends Controller
         abort_unless(config('security.forgot-email.enabled'), 404);
     }
 
-    public function index(Request $request)
+    public function index(Request $request): View
     {
         abort_if($request->user(), 404);
+
         return view('auth.email.forgot');
     }
 
     public function store(Request $request)
     {
         $rules = [
-            'username' => 'required|min:2|max:30|exists:users'
+            'username' => 'required|min:2|max:30|exists:users',
         ];
 
         $messages = [
-            'username.exists' => 'This username is no longer active or does not exist!'
+            'username.exists' => 'This username is no longer active or does not exist!',
         ];
 
-        if((bool) config_cache('captcha.enabled')) {
+        if ((bool) config_cache('captcha.enabled')) {
             $rules['h-captcha-response'] = 'required|captcha';
             $messages['h-captcha-response.required'] = 'You need to complete the captcha!';
         }
@@ -45,9 +47,9 @@ class UserEmailForgotController extends Controller
         $this->validate($request, $rules, $messages);
         $check = self::checkLimits();
 
-        if(!$check) {
+        if (! $check) {
             return redirect()->back()->withErrors([
-                'username' => 'Please try again later, we\'ve reached our quota and cannot process any more requests at this time.'
+                'username' => 'Please try again later, we\'ve reached our quota and cannot process any more requests at this time.',
             ]);
         }
 
@@ -57,9 +59,9 @@ class UserEmailForgotController extends Controller
             ->whereIsAdmin(false)
             ->first();
 
-        if(!$user) {
+        if (! $user) {
             return redirect()->back()->withErrors([
-                'username' => 'Invalid username or account. It may not exist, or does not have a verified email, is an admin account or is disabled.'
+                'username' => 'Invalid username or account. It may not exist, or does not have a verified email, is an admin account or is disabled.',
             ]);
         }
 
@@ -67,34 +69,35 @@ class UserEmailForgotController extends Controller
             ->where('email_sent_at', '>', now()->subHours(24))
             ->count();
 
-        if($exists) {
+        if ($exists) {
             return redirect()->back()->withErrors([
-                'username' => 'An email reminder was recently sent to this account, please try again after 24 hours!'
+                'username' => 'An email reminder was recently sent to this account, please try again after 24 hours!',
             ]);
         }
 
         return $this->storeHandle($request, $user);
     }
 
-    protected function storeHandle($request, $user)
+    protected function storeHandle($request, $user): RedirectResponse
     {
         UserEmailForgot::create([
             'user_id' => $user->id,
             'ip_address' => $request->ip(),
             'user_agent' => $request->userAgent(),
-            'email_sent_at' => now()
+            'email_sent_at' => now(),
         ]);
 
         Mail::to($user->email)->send(new UserEmailForgotReminder($user));
         self::getLimits(true);
+
         return redirect()->back()->with(['status' => 'Successfully sent an email reminder!']);
     }
 
-    public static function checkLimits()
+    public static function checkLimits(): bool
     {
         $limits = self::getLimits();
 
-        if(
+        if (
             $limits['current']['hourly'] >= $limits['max']['hourly'] ||
             $limits['current']['daily'] >= $limits['max']['daily'] ||
             $limits['current']['weekly'] >= $limits['max']['weekly'] ||
@@ -106,7 +109,7 @@ class UserEmailForgotController extends Controller
         return true;
     }
 
-    public static function getLimits($forget = false)
+    public static function getLimits($forget = false): array
     {
         return [
             'max' => config('security.forgot-email.limits.max'),
@@ -114,17 +117,18 @@ class UserEmailForgotController extends Controller
                 'hourly' => self::activeCount(60, $forget),
                 'daily' => self::activeCount(1440, $forget),
                 'weekly' => self::activeCount(10080, $forget),
-                'monthly' => self::activeCount(43800, $forget)
-            ]
+                'monthly' => self::activeCount(43800, $forget),
+            ],
         ];
     }
 
     public static function activeCount($mins, $forget = false)
     {
-        if($forget) {
-            Cache::forget('pf:auth:forgot-email:active-count:dur-' . $mins);
+        if ($forget) {
+            Cache::forget('pf:auth:forgot-email:active-count:dur-'.$mins);
         }
-        return Cache::remember('pf:auth:forgot-email:active-count:dur-' . $mins, 14200, function() use($mins) {
+
+        return Cache::remember('pf:auth:forgot-email:active-count:dur-'.$mins, 14200, function () use ($mins) {
             return UserEmailForgot::where('email_sent_at', '>', now()->subMinutes($mins))->count();
         });
     }

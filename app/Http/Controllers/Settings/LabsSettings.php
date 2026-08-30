@@ -3,8 +3,8 @@
 namespace App\Http\Controllers\Settings;
 
 use App\Services\SuggestionService;
-use Cookie;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Cookie;
 
 trait LabsSettings
 {

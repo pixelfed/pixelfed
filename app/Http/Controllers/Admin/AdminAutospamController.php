@@ -2,19 +2,20 @@
 
 namespace App\Http\Controllers\Admin;
 
-use App\AccountInterstitial;
 use App\Http\Resources\AdminSpamReport;
 use App\Jobs\AutospamPipeline\AutospamPretrainNonSpamPipeline;
 use App\Jobs\AutospamPipeline\AutospamPretrainPipeline;
 use App\Jobs\AutospamPipeline\AutospamUpdateCachedDataPipeline;
+use App\Models\AccountInterstitial;
 use App\Models\AutospamCustomTokens;
-use App\Profile;
+use App\Models\Profile;
+use App\Models\Status;
 use App\Services\AccountService;
 use App\Services\AutospamService;
 use App\Services\ConfigCacheService;
-use Cache;
-use DB;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Cache;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Storage;
 
 trait AdminAutospamController
@@ -114,7 +115,7 @@ trait AdminAutospamController
 
     public function postAutospamTrainSpamApi(Request $request)
     {
-        $aiCount = AccountInterstitial::whereItemType('App\Status')
+        $aiCount = AccountInterstitial::whereItemType(Status::class)
             ->whereIsSpam(true)
             ->count();
         abort_if($aiCount < 100, 422, 'You don\'t have enough data to pre-train against.');

@@ -1,5 +1,7 @@
 <?php
 
+use Illuminate\Support\Str;
+
 return [
 
     /*
@@ -15,7 +17,7 @@ return [
     |
     */
 
-    'default' => env('CACHE_DRIVER', 'file'),
+    'default' => env('CACHE_STORE', env('CACHE_DRIVER', 'file')),
 
     /*
     |--------------------------------------------------------------------------
@@ -40,22 +42,22 @@ return [
         ],
 
         'database' => [
-            'driver'     => 'database',
-            'table'      => 'cache',
+            'driver' => 'database',
+            'table' => 'cache',
             'connection' => null,
             'lock_connection' => null,
         ],
 
         'file' => [
             'driver' => 'file',
-            'path'   => storage_path('framework/cache/data'),
+            'path' => storage_path('framework/cache/data'),
             'lock_path' => storage_path('framework/cache/data'),
         ],
 
         'memcached' => [
-            'driver'        => 'memcached',
+            'driver' => 'memcached',
             'persistent_id' => env('MEMCACHED_PERSISTENT_ID'),
-            'sasl'          => [
+            'sasl' => [
                 env('MEMCACHED_USERNAME'),
                 env('MEMCACHED_PASSWORD'),
             ],
@@ -64,8 +66,8 @@ return [
             ],
             'servers' => [
                 [
-                    'host'   => env('MEMCACHED_HOST', '127.0.0.1'),
-                    'port'   => env('MEMCACHED_PORT', 11211),
+                    'host' => env('MEMCACHED_HOST', '127.0.0.1'),
+                    'port' => env('MEMCACHED_PORT', 11211),
                     'weight' => 100,
                 ],
             ],
@@ -77,29 +79,29 @@ return [
             'client' => env('REDIS_CLIENT', 'predis'),
 
             'default' => [
-                'scheme'   => env('REDIS_SCHEME', 'tcp'),
-                'path'     => env('REDIS_PATH'),
-                'host'     => env('REDIS_HOST', 'localhost'),
+                'scheme' => env('REDIS_SCHEME', 'tcp'),
+                'path' => env('REDIS_PATH'),
+                'host' => env('REDIS_HOST', 'localhost'),
                 'password' => env('REDIS_PASSWORD', null),
-                'port'     => env('REDIS_PORT', 6379),
+                'port' => env('REDIS_PORT', 6379),
                 'database' => env('REDIS_DATABASE', 0),
             ],
 
             'session' => [
-                'scheme'   => env('REDIS_SCHEME', 'tcp'),
-                'path'     => env('REDIS_PATH'),
-                'host'     => env('REDIS_HOST', '127.0.0.1'),
+                'scheme' => env('REDIS_SCHEME', 'tcp'),
+                'path' => env('REDIS_PATH'),
+                'host' => env('REDIS_HOST', '127.0.0.1'),
                 'password' => env('REDIS_PASSWORD', null),
-                'port'     => env('REDIS_PORT', 6379),
+                'port' => env('REDIS_PORT', 6379),
                 'database' => env('REDIS_DATABASE_SESSION', 1),
             ],
 
             'pulse' => [
-                'scheme'   => env('REDIS_SCHEME', 'tcp'),
-                'path'     => env('REDIS_PATH'),
-                'host'     => env('REDIS_HOST', '127.0.0.1'),
+                'scheme' => env('REDIS_SCHEME', 'tcp'),
+                'path' => env('REDIS_PATH'),
+                'host' => env('REDIS_HOST', '127.0.0.1'),
                 'password' => env('REDIS_PASSWORD', null),
-                'port'     => env('REDIS_PORT', 6379),
+                'port' => env('REDIS_PORT', 6379),
                 'database' => env('REDIS_DATABASE_PULSE', 2),
             ],
 
@@ -139,8 +141,22 @@ return [
 
     'prefix' => env(
         'CACHE_PREFIX',
-        str_slug(env('APP_NAME', 'laravel'), '_').'_cache'
+        Str::slug(env('APP_NAME', 'laravel'), '_').'_cache'
     ),
+
+    /*
+    |--------------------------------------------------------------------------
+    | Serializable Classes
+    |--------------------------------------------------------------------------
+    |
+    | Controls which PHP classes may be unserialized from cache. Set to false
+    | to block all object unserialization (recommended), or provide an array
+    | of class names that are allowed. This hardens the cache layer against
+    | PHP deserialization gadget chain attacks.
+    |
+    */
+
+    'serializable_classes' => true,
 
     'limiter' => env('CACHE_LIMITER_DRIVER', 'redis'),
 ];

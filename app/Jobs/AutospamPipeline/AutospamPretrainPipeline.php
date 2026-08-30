@@ -2,9 +2,9 @@
 
 namespace App\Jobs\AutospamPipeline;
 
-use App\AccountInterstitial;
+use App\Models\AccountInterstitial;
+use App\Models\Status;
 use App\Services\AutospamService;
-use App\Status;
 use App\Util\Lexer\Classifier;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
@@ -34,7 +34,7 @@ class AutospamPretrainPipeline implements ShouldQueue
     {
         $classifier = $this->classifier;
 
-        $aiCount = AccountInterstitial::whereItemType('App\Status')
+        $aiCount = AccountInterstitial::whereItemType(Status::class)
             ->whereIsSpam(true)
             ->count();
 
@@ -42,7 +42,7 @@ class AutospamPretrainPipeline implements ShouldQueue
             return;
         }
 
-        AccountInterstitial::whereItemType('App\Status')
+        AccountInterstitial::whereItemType(Status::class)
             ->whereIsSpam(true)
             ->inRandomOrder()
             ->take(config('autospam.nlp.spam_sample_limit'))

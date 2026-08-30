@@ -225,18 +225,6 @@
 
 				</div>
 
-				<div v-if="config.features.label.covid.enabled && status.label && status.label.covid == true" class="card-body border-top border-bottom py-2 cursor-pointer pr-2" @click="labelRedirect()">
-					<p class="font-weight-bold d-flex justify-content-between align-items-center mb-0">
-						<span>
-							<i class="fas fa-info-circle mr-2"></i>
-							For information about COVID-19, {{config.features.label.covid.org}}
-						</span>
-						<span>
-							<i class="fas fa-chevron-right text-lighter"></i>
-						</span>
-					</p>
-				</div>
-
 				<div class="card-body">
 					<div v-if="reactionBar" class="reactions my-1 pb-2">
 						<h3 v-if="status.favourited" class="fas fa-heart text-danger pr-3 m-0 cursor-pointer" title="Like" v-on:click="likeStatus(status, $event);"></h3>
@@ -706,11 +694,6 @@
 
 			lightbox(status) {
 				window.location.href = status.media_attachments[0].url;
-			},
-
-			labelRedirect(type) {
-				let url = '/i/redirect?url=' + encodeURI(this.config.features.label.covid.url);
-				window.location.href = url;
 			},
 
 			likeStatus(status, event) {

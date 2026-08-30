@@ -2,16 +2,17 @@
 
 namespace App\Http\Middleware;
 
-use Auth;
 use Carbon\Carbon;
 use Closure;
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 
 class DangerZone
 {
     /**
      * Handle an incoming request.
      *
-     * @param  \Illuminate\Http\Request  $request
+     * @param  Request  $request
      * @return mixed
      */
     public function handle($request, Closure $next)
@@ -28,7 +29,7 @@ class DangerZone
 
             return redirect(route('login'));
         }
-        if (! Auth::check()) {
+        if (! $request->user()) {
             return redirect(route('login'));
         }
         if (! $request->is('i/auth/sudo') && $request->session()->get('sudoTrustDevice') != 1) {

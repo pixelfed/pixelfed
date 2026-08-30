@@ -2,9 +2,6 @@
 
 namespace App\Http\Controllers\Api;
 
-use App\AccountLog;
-use App\EmailVerification;
-use App\Follower;
 use App\Http\Controllers\Controller;
 use App\Http\Controllers\StatusController;
 use App\Http\Resources\StatusStateless;
@@ -16,11 +13,20 @@ use App\Jobs\StatusPipeline\StatusDelete;
 use App\Jobs\VideoPipeline\VideoThumbnail;
 use App\Mail\ConfirmAppEmail;
 use App\Mail\PasswordChange;
-use App\Media;
-use App\Place;
-use App\Profile;
-use App\Report;
+use App\Models\AccountLog;
+use App\Models\EmailVerification;
+use App\Models\Follower;
+use App\Models\Media;
+use App\Models\Place;
+use App\Models\Profile;
+use App\Models\Report;
+use App\Models\Status;
+use App\Models\StatusArchived;
+use App\Models\Story;
+use App\Models\User;
+use App\Models\UserSetting;
 use App\Rules\ExpoPushTokenRule;
+use App\Rules\ValidUsername;
 use App\Services\AccountService;
 use App\Services\BouncerService;
 use App\Services\EmailService;
@@ -34,24 +40,21 @@ use App\Services\PublicTimelineService;
 use App\Services\PushNotificationService;
 use App\Services\SanitizeService;
 use App\Services\StatusService;
+use App\Services\UserAgentService;
 use App\Services\UserRoleService;
 use App\Services\UserStorageService;
-use App\Status;
-use App\StatusArchived;
-use App\Story;
-use App\User;
-use App\UserSetting;
-use App\Util\Lexer\RestrictedNames;
-use Cache;
-use DB;
+use App\Transformer\Api\AccountTransformer;
+use Illuminate\Http\JsonResponse;
+use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Cache;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\RateLimiter;
 use Illuminate\Support\Str;
-use Jenssegers\Agent\Agent;
 use League\Fractal;
 use League\Fractal\Serializer\ArraySerializer;
-use Mail;
 
 class ApiV1Dot1Controller extends Controller
 {
@@ -63,12 +66,12 @@ class ApiV1Dot1Controller extends Controller
         $this->fractal->setSerializer(new ArraySerializer);
     }
 
-    public function json($res, $code = 200, $headers = [])
+    public function json($res, $code = 200, $headers = []): JsonResponse
     {
         return response()->json($res, $code, $headers, JSON_UNESCAPED_SLASHES);
     }
 
-    public function error($msg, $code = 400, $extra = [], $headers = [])
+    public function error($msg, $code = 400, $extra = [], $headers = []): JsonResponse
     {
         $res = [
             'msg' => $msg,
@@ -126,10 +129,10 @@ class ApiV1Dot1Controller extends Controller
                 if (! $object) {
                     return $this->error('Invalid object id', 400, ['error_code' => 'ERROR_INVALID_OBJECT_ID']);
                 }
-                $object_type = 'App\Status';
+                $object_type = Status::class;
                 $exists = Report::whereUserId($user->id)
                     ->whereObjectId($object->id)
-                    ->whereObjectType('App\Status')
+                    ->whereObjectType(Status::class)
                     ->count();
 
                 $rpid = $object->profile_id;
@@ -140,10 +143,10 @@ class ApiV1Dot1Controller extends Controller
                 if (! $object) {
                     return $this->error('Invalid object id', 400, ['error_code' => 'ERROR_INVALID_OBJECT_ID']);
                 }
-                $object_type = 'App\Profile';
+                $object_type = Profile::class;
                 $exists = Report::whereUserId($user->id)
                     ->whereObjectId($object->id)
-                    ->whereObjectType('App\Profile')
+                    ->whereObjectType(Profile::class)
                     ->count();
                 $rpid = $object->id;
                 break;
@@ -159,10 +162,10 @@ class ApiV1Dot1Controller extends Controller
                 if (! Follower::whereProfileId($user->profile_id)->whereFollowingId($object->profile_id)->exists()) {
                     return $this->error('Invalid object id', 400, ['error_code' => 'ERROR_INVALID_OBJECT_ID']);
                 }
-                $object_type = 'App\Story';
+                $object_type = Story::class;
                 $exists = Report::whereUserId($user->id)
                     ->whereObjectId($object->id)
-                    ->whereObjectType('App\Story')
+                    ->whereObjectType(Story::class)
                     ->count();
 
                 $rpid = $object->profile_id;
@@ -204,7 +207,7 @@ class ApiV1Dot1Controller extends Controller
     /**
      * DELETE /api/v1.1/accounts/avatar
      *
-     * @return \App\Transformer\Api\AccountTransformer
+     * @return AccountTransformer
      */
     public function deleteAvatar(Request $request)
     {
@@ -220,7 +223,8 @@ class ApiV1Dot1Controller extends Controller
 
         $avatar = $user->profile->avatar;
 
-        if ($avatar->media_path == 'public/avatars/default.png' ||
+        if (
+            $avatar->media_path == 'public/avatars/default.png' ||
             $avatar->media_path == 'public/avatars/default.jpg'
         ) {
             return AccountService::get($user->profile_id);
@@ -286,7 +290,7 @@ class ApiV1Dot1Controller extends Controller
     /**
      * POST /api/v1.1/accounts/change-password
      *
-     * @return \App\Transformer\Api\AccountTransformer
+     * @return AccountTransformer
      */
     public function accountChangePassword(Request $request)
     {
@@ -313,7 +317,7 @@ class ApiV1Dot1Controller extends Controller
         $log = new AccountLog;
         $log->user_id = $user->id;
         $log->item_id = $user->id;
-        $log->item_type = 'App\User';
+        $log->item_type = User::class;
         $log->action = 'account.edit.password';
         $log->message = 'Password changed';
         $log->link = null;
@@ -341,7 +345,7 @@ class ApiV1Dot1Controller extends Controller
         if (config('pixelfed.bouncer.cloud_ips.ban_signups')) {
             abort_if(BouncerService::checkIp($request->ip()), 404);
         }
-        $agent = new Agent;
+        $agent = new UserAgentService;
         $currentIp = $request->ip();
 
         $activity = AccountLog::whereUserId($user->id)
@@ -503,7 +507,7 @@ class ApiV1Dot1Controller extends Controller
         return $this->json($res);
     }
 
-    public function inAppRegistrationPreFlightCheck(Request $request)
+    public function inAppRegistrationPreFlightCheck(Request $request): array
     {
         return [
             'open' => (bool) config_cache('pixelfed.open_registration'),
@@ -511,7 +515,7 @@ class ApiV1Dot1Controller extends Controller
         ];
     }
 
-    public function inAppRegistration(Request $request)
+    public function inAppRegistration(Request $request): JsonResponse
     {
         abort_if($request->user(), 404);
         abort_unless((bool) config_cache('pixelfed.open_registration'), 404);
@@ -543,37 +547,7 @@ class ApiV1Dot1Controller extends Controller
                 'min:2',
                 'max:30',
                 'unique:users',
-                function ($attribute, $value, $fail) {
-                    $dash = substr_count($value, '-');
-                    $underscore = substr_count($value, '_');
-                    $period = substr_count($value, '.');
-
-                    if (ends_with($value, ['.php', '.js', '.css'])) {
-                        return $fail('Username is invalid.');
-                    }
-
-                    if (($dash + $underscore + $period) > 1) {
-                        return $fail('Username is invalid. Can only contain one dash (-), period (.) or underscore (_).');
-                    }
-
-                    if (! ctype_alnum($value[0])) {
-                        return $fail('Username is invalid. Must start with a letter or number.');
-                    }
-
-                    if (! ctype_alnum($value[strlen($value) - 1])) {
-                        return $fail('Username is invalid. Must end with a letter or number.');
-                    }
-
-                    $val = str_replace(['_', '.', '-'], '', $value);
-                    if (! ctype_alnum($val)) {
-                        return $fail('Username is invalid. Username must be alpha-numeric and may contain dashes (-), periods (.) and underscores (_).');
-                    }
-
-                    $restricted = RestrictedNames::get();
-                    if (in_array(strtolower($value), array_map('strtolower', $restricted))) {
-                        return $fail('Username cannot be used.');
-                    }
-                },
+                new ValidUsername,
             ],
             'password' => 'required|string|min:8',
         ]);
@@ -620,7 +594,7 @@ class ApiV1Dot1Controller extends Controller
         ]);
     }
 
-    public function inAppRegistrationEmailRedirect(Request $request)
+    public function inAppRegistrationEmailRedirect(Request $request): RedirectResponse
     {
         $this->validate($request, [
             'ut' => 'required',
@@ -641,7 +615,7 @@ class ApiV1Dot1Controller extends Controller
         return redirect()->away($url);
     }
 
-    public function inAppRegistrationConfirm(Request $request)
+    public function inAppRegistrationConfirm(Request $request): JsonResponse
     {
         abort_if($request->user(), 404);
         abort_unless((bool) config_cache('pixelfed.open_registration'), 404);
@@ -684,7 +658,7 @@ class ApiV1Dot1Controller extends Controller
         ]);
     }
 
-    public function archive(Request $request, $id)
+    public function archive(Request $request, $id): array
     {
         abort_if(! $request->user() || ! $request->user()->token(), 403);
         abort_unless($request->user()->tokenCan('write'), 403);
@@ -717,7 +691,7 @@ class ApiV1Dot1Controller extends Controller
         return [200];
     }
 
-    public function unarchive(Request $request, $id)
+    public function unarchive(Request $request, $id): array
     {
         abort_if(! $request->user() || ! $request->user()->token(), 403);
         abort_unless($request->user()->tokenCan('write'), 403);
@@ -766,7 +740,7 @@ class ApiV1Dot1Controller extends Controller
         return StatusStateless::collection($statuses);
     }
 
-    public function placesById(Request $request, $id, $slug)
+    public function placesById(Request $request, $id, $slug): array
     {
         abort_if(! $request->user() || ! $request->user()->token(), 403);
         abort_unless($request->user()->tokenCan('read'), 403);
@@ -801,7 +775,8 @@ class ApiV1Dot1Controller extends Controller
                 'lat' => $place->lat,
                 'long' => $place->long,
             ],
-            'posts' => $posts];
+            'posts' => $posts,
+        ];
     }
 
     public function moderatePost(Request $request, $id)
@@ -929,7 +904,7 @@ class ApiV1Dot1Controller extends Controller
         return $settings->other;
     }
 
-    public function setWebSettings(Request $request)
+    public function setWebSettings(Request $request): array
     {
         abort_if(! $request->user() || ! $request->user()->token(), 403);
         abort_unless($request->user()->tokenCan('write'), 403);
@@ -1368,7 +1343,7 @@ class ApiV1Dot1Controller extends Controller
         return $this->json($res);
     }
 
-    public function nagState(Request $request)
+    public function nagState(Request $request): array
     {
         abort_unless((bool) config_cache('pixelfed.oauth_enabled'), 404);
 

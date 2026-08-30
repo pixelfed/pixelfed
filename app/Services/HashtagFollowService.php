@@ -2,7 +2,7 @@
 
 namespace App\Services;
 
-use App\HashtagFollow;
+use App\Models\HashtagFollow;
 use Illuminate\Support\Facades\Redis;
 
 class HashtagFollowService

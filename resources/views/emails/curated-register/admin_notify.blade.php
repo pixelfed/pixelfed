@@ -19,7 +19,7 @@ Email: <strong>{{ $verify->email }}</strong>
 <hr>
 
 <small><strong>*The user provided the following reason to join:*</strong></small>
-<p style="font-size:9pt;">{!!str_limit(nl2br($verify->reason_to_join), 300)!!}</p>
+<p style="font-size:9pt;">{!!Str::limit(nl2br($verify->reason_to_join), 300)!!}</p>
 </x-mail::panel>
 
 <x-mail::button :url="$verify->adminReviewUrl()" color="success">

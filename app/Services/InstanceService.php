@@ -2,7 +2,7 @@
 
 namespace App\Services;
 
-use App\Instance;
+use App\Models\Instance;
 use App\Util\Blurhash\Blurhash;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\DB;
@@ -34,7 +34,9 @@ class InstanceService
     public static function getByDomain($domain)
     {
         return Cache::remember(self::CACHE_KEY_BY_DOMAIN.$domain, 3600, function () use ($domain) {
-            return Instance::whereDomain($domain)->first();
+            $instance = Instance::whereDomain($domain)->first();
+
+            return $instance ? $instance->toArray() : null;
         });
     }
 

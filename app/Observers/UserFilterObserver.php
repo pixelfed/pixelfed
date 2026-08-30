@@ -4,8 +4,9 @@ namespace App\Observers;
 
 use App\Jobs\HomeFeedPipeline\FeedFollowPipeline;
 use App\Jobs\HomeFeedPipeline\FeedUnfollowPipeline;
+use App\Models\Profile;
+use App\Models\UserFilter;
 use App\Services\UserFilterService;
-use App\UserFilter;
 
 class UserFilterObserver
 {
@@ -68,7 +69,7 @@ class UserFilterObserver
 
     protected function filterCreate(UserFilter $userFilter)
     {
-        if ($userFilter->filterable_type !== 'App\Profile') {
+        if ($userFilter->filterable_type !== Profile::class) {
             return;
         }
 
@@ -87,7 +88,7 @@ class UserFilterObserver
 
     protected function filterDelete(UserFilter $userFilter)
     {
-        if ($userFilter->filterable_type !== 'App\Profile') {
+        if ($userFilter->filterable_type !== Profile::class) {
             return;
         }
 

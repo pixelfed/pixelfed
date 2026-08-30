@@ -19,7 +19,7 @@ class BouncerService
 
             $decoded = json_decode($file, true);
 
-            if ($decoded === null || !is_array($decoded)) {
+            if ($decoded === null || ! is_array($decoded)) {
                 return [];
             }
 

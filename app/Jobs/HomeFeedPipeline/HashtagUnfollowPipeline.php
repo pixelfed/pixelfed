@@ -2,8 +2,8 @@
 
 namespace App\Jobs\HomeFeedPipeline;
 
-use App\Follower;
-use App\Hashtag;
+use App\Models\Follower;
+use App\Models\Hashtag;
 use App\Services\HomeTimelineService;
 use App\Services\StatusService;
 use Illuminate\Bus\Queueable;

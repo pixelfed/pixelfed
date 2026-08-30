@@ -2,7 +2,7 @@
 
 namespace App\Util\Site;
 
-use Cache;
+use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Str;
 
 class Config
@@ -91,13 +91,6 @@ class Config
                         'instagram' => (bool) config_cache('pixelfed.import.instagram.enabled'),
                         'mastodon' => false,
                         'pixelfed' => false,
-                    ],
-                    'label' => [
-                        'covid' => [
-                            'enabled' => (bool) config('instance.label.covid.enabled'),
-                            'org' => config('instance.label.covid.org'),
-                            'url' => config('instance.label.covid.url'),
-                        ],
                     ],
                     'hls' => $hls,
                     'groups' => (bool) config('groups.enabled'),

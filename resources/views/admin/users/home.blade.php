@@ -211,7 +211,7 @@
 
 
                                             <small class="text-muted">
-                                                {{ str_limit(strip_tags($user->profile->bio))}}
+                                                {{ Str::limit(strip_tags($user->profile->bio))}}
                                             </small>
                                             <small class="text-warning">
                                                 {{ parse_url($user->profile->website, PHP_URL_HOST) }}

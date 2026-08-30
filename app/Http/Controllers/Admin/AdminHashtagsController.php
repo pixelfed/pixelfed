@@ -2,10 +2,10 @@
 
 namespace App\Http\Controllers\Admin;
 
-use App\Hashtag;
 use App\Http\Resources\AdminHashtag;
+use App\Models\Hashtag;
+use App\Models\StatusHashtag;
 use App\Services\TrendingHashtagService;
-use App\StatusHashtag;
 use Illuminate\Http\Request;
 
 trait AdminHashtagsController

@@ -3,7 +3,7 @@
 namespace App\Services;
 
 use App\Models\UserPronoun;
-use Cache;
+use Illuminate\Support\Facades\Cache;
 
 class PronounService
 {

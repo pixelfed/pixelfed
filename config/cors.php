@@ -24,7 +24,7 @@ return [
     'paths' => [
         '.well-known/*',
         'api/*',
-        'oauth/*'
+        'oauth/*',
     ],
 
     /*
@@ -50,8 +50,7 @@ return [
     /*
      * Sets the Access-Control-Expose-Headers response header with these headers.
      */
-    // TODO: Add support for rate-limit related headers
-    'exposed_headers' => ['Link'],
+    'exposed_headers' => ['Link', 'X-RateLimit-Limit', 'X-RateLimit-Remaining'],
 
     /*
      * Sets the Access-Control-Max-Age response header when > 0.

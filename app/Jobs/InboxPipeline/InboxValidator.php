@@ -2,16 +2,16 @@
 
 namespace App\Jobs\InboxPipeline;
 
-use App\Profile;
+use App\Models\Profile;
 use App\Util\ActivityPub\Helpers;
 use App\Util\ActivityPub\HttpSignature;
-use Cache;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
 use Illuminate\Http\Client\ConnectionException;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
+use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Lottery;
 
@@ -89,7 +89,6 @@ class InboxValidator implements ShouldQueue
         } else {
             return;
         }
-
     }
 
     protected function verifySignature($headers, $profile, $payload)
@@ -104,8 +103,9 @@ class InboxValidator implements ShouldQueue
         if (! $date) {
             return false;
         }
-        if (! now()->parse($date)->gt(now()->subDays(1)) ||
-           ! now()->parse($date)->lt(now()->addDays(1))
+        if (
+            ! now()->parse($date)->gt(now()->subDays(1)) ||
+            ! now()->parse($date)->lt(now()->addDays(1))
         ) {
             return false;
         }
@@ -122,7 +122,9 @@ class InboxValidator implements ShouldQueue
         $id = Helpers::validateUrl($bodyDecoded['id']);
         $keyDomain = parse_url($keyId, PHP_URL_HOST);
         $idDomain = parse_url($id, PHP_URL_HOST);
-        if (isset($bodyDecoded['object'])
+        $actorDomain = parse_url($payload['actor'] ?? '', PHP_URL_HOST);
+        if (
+            isset($bodyDecoded['object'])
             && is_array($bodyDecoded['object'])
             && isset($bodyDecoded['object']['attributedTo'])
         ) {
@@ -138,7 +140,10 @@ class InboxValidator implements ShouldQueue
                 return false;
             }
         }
-        if (! $keyDomain || ! $idDomain || $keyDomain !== $idDomain) {
+        if (
+            ! $keyDomain || ! $idDomain || ! $actorDomain
+            || $keyDomain !== $idDomain || $keyDomain !== $actorDomain
+        ) {
             return false;
         }
         $actor = Profile::whereKeyId($keyId)->first();
@@ -172,8 +177,9 @@ class InboxValidator implements ShouldQueue
         if (! $date) {
             return;
         }
-        if (! now()->parse($date)->gt(now()->subDays(1)) ||
-           ! now()->parse($date)->lt(now()->addDays(1))
+        if (
+            ! now()->parse($date)->gt(now()->subDays(1)) ||
+            ! now()->parse($date)->lt(now()->addDays(1))
         ) {
             return;
         }

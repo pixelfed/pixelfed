@@ -2,8 +2,6 @@
 
 namespace App\Http\Controllers\Stories;
 
-use App\DirectMessage;
-use App\Follower;
 use App\Http\Controllers\Controller;
 use App\Http\Resources\StoryView as StoryViewResource;
 use App\Jobs\StoryPipeline\StoryDelete;
@@ -11,18 +9,22 @@ use App\Jobs\StoryPipeline\StoryFanout;
 use App\Jobs\StoryPipeline\StoryReplyDeliver;
 use App\Jobs\StoryPipeline\StoryViewDeliver;
 use App\Models\Conversation;
-use App\Notification;
+use App\Models\DirectMessage;
+use App\Models\Follower;
+use App\Models\Notification;
+use App\Models\Status;
+use App\Models\Story;
+use App\Models\StoryView;
 use App\Services\AccountService;
 use App\Services\MediaPathService;
 use App\Services\StoryIndexService;
 use App\Services\StoryService;
-use App\Status;
-use App\Story;
-use App\StoryView;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Arr;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
 use Illuminate\Validation\Rule;
@@ -35,7 +37,7 @@ class StoryApiV1Controller extends Controller
 
     const RECENT_TTL = 300;
 
-    public function carousel(Request $request)
+    public function carousel(Request $request): JsonResponse
     {
         abort_if(! (bool) config_cache('instance.stories.enabled') || ! $request->user(), 404);
         $pid = $request->user()->profile_id;
@@ -46,6 +48,7 @@ class StoryApiV1Controller extends Controller
                     ->leftJoin('followers', 'followers.following_id', 'stories.profile_id')
                     ->where('followers.profile_id', $pid)
                     ->where('stories.active', true)
+                    ->get()
                     ->map(function ($s) {
                         $r = new \StdClass;
                         $r->id = $s->id;
@@ -147,7 +150,7 @@ class StoryApiV1Controller extends Controller
         return response()->json($res, 200, [], JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES);
     }
 
-    public function selfCarousel(Request $request)
+    public function selfCarousel(Request $request): JsonResponse
     {
         abort_if(! (bool) config_cache('instance.stories.enabled') || ! $request->user(), 404);
         $pid = $request->user()->profile_id;
@@ -158,6 +161,7 @@ class StoryApiV1Controller extends Controller
                     ->leftJoin('followers', 'followers.following_id', 'stories.profile_id')
                     ->where('followers.profile_id', $pid)
                     ->where('stories.active', true)
+                    ->get()
                     ->map(function ($s) {
                         $r = new \StdClass;
                         $r->id = $s->id;
@@ -294,7 +298,7 @@ class StoryApiV1Controller extends Controller
         $story->path = $path;
         $story->local = true;
         $story->size = $photo->getSize();
-        $story->bearcap_token = str_random(64);
+        $story->bearcap_token = Str::random(64);
         $story->expires_at = now()->addMinutes(1440);
         $story->save();
 
@@ -311,7 +315,7 @@ class StoryApiV1Controller extends Controller
         return $res;
     }
 
-    public function publish(Request $request)
+    public function publish(Request $request): array
     {
         abort_if(! (bool) config_cache('instance.stories.enabled') || ! $request->user(), 404);
 
@@ -346,7 +350,7 @@ class StoryApiV1Controller extends Controller
         ];
     }
 
-    public function carouselNext(Request $request)
+    public function carouselNext(Request $request): JsonResponse
     {
         abort_if(! (bool) config_cache('instance.stories.enabled') || ! $request->user(), 404);
         $pid = (int) $request->user()->profile_id;
@@ -377,7 +381,7 @@ class StoryApiV1Controller extends Controller
         );
     }
 
-    public function publishNext(Request $request)
+    public function publishNext(Request $request): JsonResponse
     {
         abort_if(! (bool) config_cache('instance.stories.enabled') || ! $request->user(), 404);
 
@@ -429,8 +433,17 @@ class StoryApiV1Controller extends Controller
             $path = $this->storeMedia($photo, $user);
 
             $allowedOverlayFields = [
-                'absoluteScale', 'absoluteX', 'absoluteY', 'color',
-                'content', 'fontSize', 'rotation', 'scale', 'x', 'y', 'type',
+                'absoluteScale',
+                'absoluteX',
+                'absoluteY',
+                'color',
+                'content',
+                'fontSize',
+                'rotation',
+                'scale',
+                'x',
+                'y',
+                'type',
             ];
 
             $filteredOverlays = [];
@@ -538,10 +551,9 @@ class StoryApiV1Controller extends Controller
             ];
 
             return response()->json($res);
-
         } catch (\Exception $e) {
             DB::rollback();
-            \Log::error('Story creation failed', [
+            Log::error('Story creation failed', [
                 'user_id' => $user->id,
                 'error' => $e->getMessage(),
             ]);
@@ -554,7 +566,7 @@ class StoryApiV1Controller extends Controller
         }
     }
 
-    public function mentionAutocomplete(Request $request)
+    public function mentionAutocomplete(Request $request): JsonResponse
     {
         abort_if(! (bool) config_cache('instance.stories.enabled') || ! $request->user(), 404);
 
@@ -582,7 +594,6 @@ class StoryApiV1Controller extends Controller
                 if ($item && $item->id) {
                     return AccountService::get($item->id, true);
                 }
-
             })
             ->filter()
             ->values();
@@ -590,7 +601,7 @@ class StoryApiV1Controller extends Controller
         return response()->json($rows);
     }
 
-    public function delete(Request $request, $id)
+    public function delete(Request $request, $id): array
     {
         abort_if(! (bool) config_cache('instance.stories.enabled') || ! $request->user(), 404);
 
@@ -612,7 +623,7 @@ class StoryApiV1Controller extends Controller
         ];
     }
 
-    public function viewed(Request $request)
+    public function viewed(Request $request): array
     {
         abort_if(! (bool) config_cache('instance.stories.enabled') || ! $request->user(), 404);
 
@@ -656,7 +667,7 @@ class StoryApiV1Controller extends Controller
         return ['code' => 200];
     }
 
-    public function comment(Request $request)
+    public function comment(Request $request): array
     {
         abort_if(! (bool) config_cache('instance.stories.enabled') || ! $request->user(), 404);
         $this->validate($request, [
@@ -667,6 +678,9 @@ class StoryApiV1Controller extends Controller
         $text = $request->input('caption');
 
         $story = Story::findOrFail($request->input('sid'));
+
+        $following = Follower::whereProfileId($pid)->whereFollowingId($story->profile_id)->exists();
+        abort_if(! $following, 403, 'Invalid permission');
 
         abort_if(! $story->can_reply, 422);
 
@@ -714,7 +728,7 @@ class StoryApiV1Controller extends Controller
             $n->profile_id = $dm->to_id;
             $n->actor_id = $dm->from_id;
             $n->item_id = $dm->id;
-            $n->item_type = 'App\DirectMessage';
+            $n->item_type = DirectMessage::class;
             $n->action = 'story:comment';
             $n->save();
         } else {

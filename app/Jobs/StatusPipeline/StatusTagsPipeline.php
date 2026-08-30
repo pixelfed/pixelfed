@@ -2,14 +2,14 @@
 
 namespace App\Jobs\StatusPipeline;
 
-use App\Hashtag;
 use App\Jobs\MentionPipeline\MentionPipeline;
-use App\Mention;
+use App\Models\Hashtag;
+use App\Models\Mention;
+use App\Models\StatusHashtag;
 use App\Services\AccountService;
 use App\Services\CustomEmojiService;
 use App\Services\StatusService;
 use App\Services\TrendingHashtagService;
-use App\StatusHashtag;
 use App\Util\ActivityPub\Helpers;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
@@ -18,6 +18,7 @@ use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Str;
 
 class StatusTagsPipeline implements ShouldQueue
 {
@@ -94,30 +95,15 @@ class StatusTagsPipeline implements ShouldQueue
 
                 if (config('database.default') === 'pgsql') {
                     $hashtag = DB::transaction(function () use ($name) {
-                        $baseSlug = str_slug($name, '-', false);
-                        $slug = $baseSlug;
-                        $counter = 1;
+                        $slug = Str::slug($name, '-', false);
 
-                        $existing = Hashtag::where('name', $name)
+                        // Use slug for lookup (case-insensitive via Str::slug normalization)
+                        $existing = Hashtag::where('slug', $slug)
                             ->lockForUpdate()
                             ->first();
 
                         if ($existing) {
-                            if ($existing->slug !== $slug) {
-                                while (Hashtag::where('slug', $slug)
-                                    ->where('name', '!=', $name)
-                                    ->exists()) {
-                                    $slug = $baseSlug.'-'.$counter++;
-                                }
-                                $existing->slug = $slug;
-                                $existing->save();
-                            }
-
                             return $existing;
-                        }
-
-                        while (Hashtag::where('slug', $slug)->exists()) {
-                            $slug = $baseSlug.'-'.$counter++;
                         }
 
                         return Hashtag::create([
@@ -127,7 +113,7 @@ class StatusTagsPipeline implements ShouldQueue
                     });
                 } else {
                     $hashtag = DB::transaction(function () use ($name) {
-                        $baseSlug = str_slug($name, '-', false);
+                        $baseSlug = Str::slug($name, '-', false);
                         $slug = $baseSlug;
                         $counter = 1;
 

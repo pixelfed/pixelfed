@@ -2,9 +2,9 @@
 
 namespace App\Services;
 
-use App\ModLog;
-use App\Notification;
-use App\User;
+use App\Models\ModLog;
+use App\Models\Notification;
+use App\Models\User;
 
 class ModLogService
 {
@@ -117,7 +117,7 @@ class ModLogService
         $log = $this->log;
 
         $item_id = $log->id;
-        $item_type = 'App\ModLog';
+        $item_type = ModLog::class;
         $action = 'admin.user.modlog.comment';
 
         $admins = User::whereNull('status')
@@ -139,7 +139,7 @@ class ModLogService
 
     public function unfanout()
     {
-        Notification::whereItemType('App\ModLog')
+        Notification::whereItemType(ModLog::class)
             ->whereItemId($this->log->id)
             ->delete();
     }

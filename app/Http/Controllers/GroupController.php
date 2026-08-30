@@ -2,7 +2,6 @@
 
 namespace App\Http\Controllers;
 
-use App\Instance;
 use App\Models\Group;
 use App\Models\GroupBlock;
 use App\Models\GroupCategory;
@@ -12,15 +11,21 @@ use App\Models\GroupLimit;
 use App\Models\GroupMember;
 use App\Models\GroupPost;
 use App\Models\GroupReport;
-use App\Profile;
+use App\Models\Instance;
+use App\Models\Profile;
+use App\Models\Status;
+use App\Models\User;
 use App\Services\AccountService;
 use App\Services\GroupService;
 use App\Services\HashidService;
 use App\Services\StatusService;
-use App\Status;
-use App\User;
+use Illuminate\Contracts\View\View;
+use Illuminate\Http\JsonResponse;
+use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
-use Storage;
+use Illuminate\Http\Response;
+use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Str;
 
 class GroupController extends GroupFederationController
 {
@@ -29,7 +34,7 @@ class GroupController extends GroupFederationController
         $this->middleware('auth');
     }
 
-    public function index(Request $request)
+    public function index(Request $request): View
     {
         abort_unless(config('groups.enabled'), 404);
         abort_if(! $request->user(), 404);
@@ -37,7 +42,7 @@ class GroupController extends GroupFederationController
         return view('layouts.spa');
     }
 
-    public function home(Request $request)
+    public function home(Request $request): View
     {
         abort_unless(config('groups.enabled'), 404);
         abort_if(! $request->user(), 404);
@@ -82,7 +87,7 @@ class GroupController extends GroupFederationController
         return view('layouts.spa', compact('group', 'gp'));
     }
 
-    public function getGroup(Request $request, $id)
+    public function getGroup(Request $request, $id): JsonResponse
     {
         abort_unless(config('groups.enabled'), 404);
         $group = Group::whereNull('status')->findOrFail($id);
@@ -117,7 +122,7 @@ class GroupController extends GroupFederationController
         return $likes;
     }
 
-    public function groupSettings(Request $request, $id)
+    public function groupSettings(Request $request, $id): View
     {
         abort_unless(config('groups.enabled'), 404);
         abort_if(! $request->user(), 404);
@@ -198,7 +203,7 @@ class GroupController extends GroupFederationController
                     Storage::delete($metadata['avatar']['path']);
                 }
 
-                $fileName = 'avatar_'.strtolower(str_random($len)).'.'.$avatar->extension();
+                $fileName = 'avatar_'.strtolower(Str::random($len)).'.'.$avatar->extension();
                 $path = $avatar->storePubliclyAs('public/g/'.$group->id.'/meta', $fileName);
                 $url = url(Storage::url($path));
                 $metadata['avatar'] = [
@@ -220,7 +225,7 @@ class GroupController extends GroupFederationController
                     Storage::delete($metadata['header']['path']);
                 }
 
-                $fileName = 'header_'.strtolower(str_random($len)).'.'.$header->extension();
+                $fileName = 'header_'.strtolower(Str::random($len)).'.'.$header->extension();
                 $path = $header->storePubliclyAs('public/g/'.$group->id.'/meta', $fileName);
                 $url = url(Storage::url($path));
                 $metadata['header'] = [
@@ -270,7 +275,7 @@ class GroupController extends GroupFederationController
         return GroupService::get($group->id, $pid);
     }
 
-    public function groupLeave(Request $request, $id)
+    public function groupLeave(Request $request, $id): array
     {
         abort_unless(config('groups.enabled'), 404);
         abort_if(! $request->user(), 404);
@@ -290,7 +295,7 @@ class GroupController extends GroupFederationController
         return [200];
     }
 
-    public function cancelJoinRequest(Request $request, $id)
+    public function cancelJoinRequest(Request $request, $id): array
     {
         abort_unless(config('groups.enabled'), 404);
         abort_if(! $request->user(), 404);
@@ -309,7 +314,7 @@ class GroupController extends GroupFederationController
         return [200];
     }
 
-    public function metaBlockSearch(Request $request, $id)
+    public function metaBlockSearch(Request $request, $id): JsonResponse
     {
         abort_unless(config('groups.enabled'), 404);
         abort_if(! $request->user(), 404);
@@ -343,7 +348,7 @@ class GroupController extends GroupFederationController
         return response()->json((bool) $res, ($res ? 200 : 404));
     }
 
-    public function reportCreate(Request $request, $id)
+    public function reportCreate(Request $request, $id): Response
     {
         abort_unless(config('groups.enabled'), 404);
         abort_if(! $request->user(), 404);
@@ -411,7 +416,7 @@ class GroupController extends GroupFederationController
         return response([200]);
     }
 
-    public function reportAction(Request $request, $id)
+    public function reportAction(Request $request, $id): JsonResponse
     {
         abort_unless(config('groups.enabled'), 404);
         abort_if(! $request->user(), 404);
@@ -485,10 +490,13 @@ class GroupController extends GroupFederationController
                 );
 
                 return response()->json([200]);
+
+            default:
+                return response()->json([200]);
         }
     }
 
-    public function getMemberInteractionLimits(Request $request, $id)
+    public function getMemberInteractionLimits(Request $request, $id): JsonResponse
     {
         abort_unless(config('groups.enabled'), 404);
         abort_if(! $request->user(), 404);
@@ -612,7 +620,7 @@ class GroupController extends GroupFederationController
         abort(404, 'Invalid username');
     }
 
-    public function groupInviteLanding(Request $request, $id)
+    public function groupInviteLanding(Request $request, $id): View
     {
         abort_unless(config('groups.enabled'), 404);
         abort(404, 'Not yet implemented');
@@ -621,7 +629,7 @@ class GroupController extends GroupFederationController
         return view('groups.invite', compact('group'));
     }
 
-    public function groupShortLinkRedirect(Request $request, $hid)
+    public function groupShortLinkRedirect(Request $request, $hid): RedirectResponse
     {
         abort_unless(config('groups.enabled'), 404);
         $gid = HashidService::decode($hid);
@@ -630,7 +638,7 @@ class GroupController extends GroupFederationController
         return redirect($group->url());
     }
 
-    public function groupInviteClaim(Request $request, $id)
+    public function groupInviteClaim(Request $request, $id): View
     {
         abort_unless(config('groups.enabled'), 404);
         $group = GroupService::get($id);
@@ -639,7 +647,7 @@ class GroupController extends GroupFederationController
         return view('groups.invite-claim', compact('group'));
     }
 
-    public function groupMemberInviteCheck(Request $request, $id)
+    public function groupMemberInviteCheck(Request $request, $id): JsonResponse
     {
         abort_unless(config('groups.enabled'), 404);
         abort_if(! $request->user(), 404);
@@ -655,7 +663,7 @@ class GroupController extends GroupFederationController
         ]);
     }
 
-    public function groupMemberInviteAccept(Request $request, $id)
+    public function groupMemberInviteAccept(Request $request, $id): array
     {
         abort_unless(config('groups.enabled'), 404);
         abort_if(! $request->user(), 404);
@@ -681,7 +689,7 @@ class GroupController extends GroupFederationController
         return ['next_url' => $group->url()];
     }
 
-    public function groupMemberInviteDecline(Request $request, $id)
+    public function groupMemberInviteDecline(Request $request, $id): array
     {
         abort_unless(config('groups.enabled'), 404);
         abort_if(! $request->user(), 404);

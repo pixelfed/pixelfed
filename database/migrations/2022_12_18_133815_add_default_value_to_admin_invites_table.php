@@ -25,7 +25,6 @@ return new class extends Migration
      */
     public function down()
     {
-        Schema::table('admin_invites', function (Blueprint $table) {
-        });
+        Schema::table('admin_invites', function (Blueprint $table) {});
     }
 };

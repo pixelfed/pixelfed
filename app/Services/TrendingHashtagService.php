@@ -2,9 +2,10 @@
 
 namespace App\Services;
 
-use App\Hashtag;
-use App\StatusHashtag;
+use App\Models\Hashtag;
+use App\Models\StatusHashtag;
 use Illuminate\Support\Facades\Cache;
+use Illuminate\Support\Facades\DB;
 
 class TrendingHashtagService
 {
@@ -62,7 +63,7 @@ class TrendingHashtagService
         $skipIds = array_merge(self::getBannedHashtags(), self::getNonTrendingHashtags(), self::getNsfwHashtags());
 
         return Cache::remember(self::CACHE_KEY, config('trending.hashtags.ttl'), function () use ($minId, $skipIds) {
-            return StatusHashtag::select('hashtag_id', \DB::raw('count(*) as total'))
+            return StatusHashtag::select('hashtag_id', DB::raw('count(*) as total'))
                 ->whereNotIn('hashtag_id', $skipIds)
                 ->where('id', '>', $minId)
                 ->groupBy('hashtag_id')

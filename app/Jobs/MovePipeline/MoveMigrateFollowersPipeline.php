@@ -2,17 +2,18 @@
 
 namespace App\Jobs\MovePipeline;
 
-use App\Follower;
 use App\Http\Controllers\FollowerController;
-use App\Profile;
+use App\Models\Follower;
+use App\Models\Profile;
 use App\Util\ActivityPub\Helpers;
 use DateTime;
-use DB;
 use Exception;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Queue\Queueable;
 use Illuminate\Queue\Middleware\ThrottlesExceptionsWithRedis;
 use Illuminate\Queue\Middleware\WithoutOverlapping;
+use Illuminate\Support\Facades\Cache;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 
 class MoveMigrateFollowersPipeline implements ShouldQueue
@@ -101,7 +102,7 @@ class MoveMigrateFollowersPipeline implements ShouldQueue
         try {
             $targetAccount = Helpers::profileFetch($target);
             $actorAccount = Helpers::profileFetch($actor);
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             Log::warning('MoveMigrateFollowersPipeline: Failed to fetch profiles: '.$e->getMessage());
             throw $e;
         }
@@ -144,6 +145,13 @@ class MoveMigrateFollowersPipeline implements ShouldQueue
                         'profile_id' => $follower->id,
                         'following_id' => $targetPid,
                     ]);
+
+                    $followerProfile = Profile::find($follower->id);
+                    if ($followerProfile) {
+                        $followerProfile->following_count = Follower::where('profile_id', $follower->id)->count();
+                        $followerProfile->save();
+                        Cache::forget('profile:following_count:'.$follower->id);
+                    }
 
                     // If the remote user has migrated to a different instance,
                     // send a follow request for each local follower to the new

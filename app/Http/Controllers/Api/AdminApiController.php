@@ -2,19 +2,21 @@
 
 namespace App\Http\Controllers\Api;
 
-use App\AccountInterstitial;
 use App\Http\Controllers\Controller;
 use App\Http\Resources\AdminInstance;
 use App\Http\Resources\AdminUser;
-use App\Instance;
 use App\Jobs\DeletePipeline\DeleteAccountPipeline;
 use App\Jobs\DeletePipeline\DeleteRemoteProfilePipeline;
 use App\Jobs\StatusPipeline\StatusDelete;
+use App\Models\AccountInterstitial;
 use App\Models\Conversation;
+use App\Models\Instance;
+use App\Models\Notification;
+use App\Models\Profile;
 use App\Models\RemoteReport;
-use App\Notification;
-use App\Profile;
-use App\Report;
+use App\Models\Report;
+use App\Models\Status;
+use App\Models\User;
 use App\Services\AccountService;
 use App\Services\AdminStatsService;
 use App\Services\ConfigCacheService;
@@ -25,15 +27,14 @@ use App\Services\NotificationService;
 use App\Services\PublicTimelineService;
 use App\Services\SnowflakeService;
 use App\Services\StatusService;
-use App\Status;
-use App\User;
-use Cache;
-use DB;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Cache;
+use Illuminate\Support\Facades\DB;
 
 class AdminApiController extends Controller
 {
-    public function supported(Request $request)
+    public function supported(Request $request): JsonResponse
     {
         abort_if(! $request->user() || ! $request->user()->token(), 404);
 
@@ -77,7 +78,7 @@ class AdminApiController extends Controller
                     'item_type' => $report->item_type,
                     'created_at' => $report->created_at,
                 ];
-                if ($report->item_type === 'App\\Status') {
+                if ($report->item_type === Status::class) {
                     $status = StatusService::get($report->item_id, false);
                     if (! $status) {
                         return;
@@ -172,7 +173,7 @@ class AdminApiController extends Controller
 
         if ($action == 'dismiss-all') {
             AccountInterstitial::whereType('post.autospam')
-                ->whereItemType('App\Status')
+                ->whereItemType(Status::class)
                 ->whereNull('appeal_handled_at')
                 ->whereUserId($appeal->user_id)
                 ->update(['appeal_handled_at' => $now, 'is_spam' => true]);
@@ -213,7 +214,7 @@ class AdminApiController extends Controller
 
         if ($action == 'approve-all') {
             AccountInterstitial::whereType('post.autospam')
-                ->whereItemType('App\Status')
+                ->whereItemType(Status::class)
                 ->whereNull('appeal_handled_at')
                 ->whereUserId($appeal->user_id)
                 ->get()
@@ -272,7 +273,7 @@ class AdminApiController extends Controller
                     $r['reported_by_account'] = AccountService::get($report->profile_id, true);
                 }
 
-                if ($report->object_type === 'App\\Status') {
+                if ($report->object_type === Status::class) {
                     $status = StatusService::get($report->object_id, false);
                     if (! $status) {
                         return;
@@ -285,7 +286,7 @@ class AdminApiController extends Controller
                     }
                 }
 
-                if ($report->object_type === 'App\\Profile') {
+                if ($report->object_type === Profile::class) {
                     $acct = AccountService::get($report->object_id, true);
                     if ($acct) {
                         $r['account'] = $acct;
@@ -300,7 +301,7 @@ class AdminApiController extends Controller
         return $reports;
     }
 
-    public function modReportHandle(Request $request)
+    public function modReportHandle(Request $request): array
     {
         abort_if(! $request->user() || ! $request->user()->token(), 404);
 

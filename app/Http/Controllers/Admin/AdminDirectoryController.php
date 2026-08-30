@@ -4,13 +4,13 @@ namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\PixelfedDirectoryController;
 use App\Models\ConfigCache;
+use App\Models\Status;
+use App\Models\User;
 use App\Services\AccountService;
 use App\Services\ConfigCacheService;
 use App\Services\StatusService;
-use App\Status;
-use App\User;
-use Cache;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Validator;

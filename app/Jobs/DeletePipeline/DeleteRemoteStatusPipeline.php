@@ -2,21 +2,21 @@
 
 namespace App\Jobs\DeletePipeline;
 
-use App\Bookmark;
-use App\DirectMessage;
 use App\Jobs\MediaPipeline\MediaDeletePipeline;
-use App\Like;
-use App\Media;
-use App\MediaTag;
-use App\Mention;
-use App\Notification;
-use App\Report;
+use App\Models\Bookmark;
+use App\Models\DirectMessage;
+use App\Models\Like;
+use App\Models\Media;
+use App\Models\MediaTag;
+use App\Models\Mention;
+use App\Models\Notification;
+use App\Models\Report;
+use App\Models\Status;
+use App\Models\StatusHashtag;
+use App\Models\StatusView;
 use App\Services\Account\AccountStatService;
 use App\Services\NetworkTimelineService;
 use App\Services\StatusService;
-use App\Status;
-use App\StatusHashtag;
-use App\StatusView;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
@@ -76,7 +76,7 @@ class DeleteRemoteStatusPipeline implements ShouldQueue
             NetworkTimelineService::del($status->id);
             StatusService::del($status->id, true);
             Bookmark::whereStatusId($status->id)->delete();
-            Notification::whereItemType('App\Status')
+            Notification::whereItemType(Status::class)
                 ->whereItemId($status->id)
                 ->forceDelete();
             DirectMessage::whereStatusId($status->id)->delete();
@@ -88,7 +88,7 @@ class DeleteRemoteStatusPipeline implements ShouldQueue
                     MediaDeletePipeline::dispatch($media)->onQueue('mmo');
                 });
             Mention::whereStatusId($status->id)->forceDelete();
-            Report::whereObjectType('App\Status')->whereObjectId($status->id)->delete();
+            Report::whereObjectType(Status::class)->whereObjectId($status->id)->delete();
             StatusHashtag::whereStatusId($status->id)->delete();
             StatusView::whereStatusId($status->id)->delete();
             Status::whereReblogOfId($status->id)->forceDelete();

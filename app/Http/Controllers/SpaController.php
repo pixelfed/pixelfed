@@ -5,13 +5,15 @@ namespace App\Http\Controllers;
 use App\Services\AccountService;
 use App\Services\StatusService;
 use App\Util\Localization\Localization;
-use Cache;
+use Illuminate\Contracts\View\View;
+use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Cache;
 use League\CommonMark\CommonMarkConverter;
 
 class SpaController extends Controller
 {
-    public function index(Request $req)
+    public function index(Request $req): RedirectResponse|View
     {
         abort_unless(config('exp.spa'), 404);
         if (! $req->user()) {
@@ -21,7 +23,7 @@ class SpaController extends Controller
         return view('layouts.spa');
     }
 
-    public function webPost(Request $request, $id)
+    public function webPost(Request $request, $id): RedirectResponse|View
     {
         abort_unless(config('exp.spa'), 404);
         if ($request->user()) {
@@ -46,7 +48,7 @@ class SpaController extends Controller
         return redirect('/login');
     }
 
-    public function webProfile(Request $request, $id)
+    public function webProfile(Request $request, $id): RedirectResponse|View
     {
         abort_unless(config('exp.spa'), 404);
         if ($request->user()) {
@@ -68,7 +70,7 @@ class SpaController extends Controller
         return redirect('/login');
     }
 
-    public function updateLanguage(Request $request)
+    public function updateLanguage(Request $request): array
     {
         abort_unless(config('exp.spa'), 404);
         abort_unless($request->user(), 404);
@@ -89,7 +91,7 @@ class SpaController extends Controller
         return ['language' => $lang];
     }
 
-    public function getPrivacy(Request $request)
+    public function getPrivacy(Request $request): array
     {
         abort_unless($request->user(), 404);
         $body = $this->markdownToHtml('views/page/privacy.md');
@@ -99,7 +101,7 @@ class SpaController extends Controller
         ];
     }
 
-    public function getTerms(Request $request)
+    public function getTerms(Request $request): array
     {
         abort_unless($request->user(), 404);
         $body = $this->markdownToHtml('views/page/terms.md');
@@ -123,7 +125,7 @@ class SpaController extends Controller
             });
     }
 
-    public function usernameRedirect(Request $request, $username)
+    public function usernameRedirect(Request $request, $username): RedirectResponse
     {
         abort_unless($request->user(), 404);
         $id = AccountService::usernameToId($username);
@@ -134,7 +136,7 @@ class SpaController extends Controller
         return redirect('/i/web/profile/'.$id);
     }
 
-    public function hashtagRedirect(Request $request, $tag)
+    public function hashtagRedirect(Request $request, $tag): RedirectResponse|View
     {
         if (! $request->user()) {
             return redirect('/discover/tags/'.$tag);

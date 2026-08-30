@@ -2,11 +2,13 @@
 
 namespace App\Http\Controllers;
 
-use App\Avatar;
 use App\Jobs\AvatarPipeline\AvatarOptimize;
-use Auth;
-use Cache;
+use App\Models\Avatar;
+use Illuminate\Http\JsonResponse;
+use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Cache;
+use Illuminate\Support\Str;
 
 class AvatarController extends Controller
 {
@@ -15,14 +17,14 @@ class AvatarController extends Controller
         return $this->middleware('auth');
     }
 
-    public function store(Request $request)
+    public function store(Request $request): RedirectResponse
     {
         $this->validate($request, [
             'avatar' => 'required|mimetypes:image/jpeg,image/jpg,image/png|max:'.config('pixelfed.max_avatar_size'),
         ]);
 
         try {
-            $user = Auth::user();
+            $user = $request->user();
             $profile = $user->profile;
             $file = $request->file('avatar');
             $path = $this->getPath($user, $file);
@@ -56,13 +58,13 @@ class AvatarController extends Controller
         $path = $this->buildPath($id);
         $dir = storage_path('app/'.$path);
         $this->checkDir($dir);
-        $name = str_random(20).'_avatar.'.$file->guessExtension();
+        $name = Str::random(20).'_avatar.'.$file->guessExtension();
         $res = ['root' => 'storage/app/'.$path, 'name' => $name, 'storage' => $path];
 
         return $res;
     }
 
-    public function checkDir($path)
+    public function checkDir($path): void
     {
         if (! is_dir($path)) {
             mkdir($path);
@@ -111,9 +113,9 @@ class AvatarController extends Controller
         return $avatarpath;
     }
 
-    public function deleteAvatar(Request $request)
+    public function deleteAvatar(Request $request): JsonResponse
     {
-        $user = Auth::user();
+        $user = $request->user();
         $profile = $user->profile;
 
         $avatar = $profile->avatar;
@@ -121,7 +123,7 @@ class AvatarController extends Controller
         if ($avatar->media_path == 'public/avatars/default.png' ||
             $avatar->media_path == 'public/avatars/default.jpg'
         ) {
-            return;
+            return response()->json(200);
         }
 
         if (is_file(storage_path('app/'.$avatar->media_path))) {

@@ -13,8 +13,10 @@ return new class extends Migration
     {
         Schema::table('statuses', function (Blueprint $table) {
             $indexes = Schema::getIndexes('statuses');
-            $indexesFound = collect($indexes)->map(function($i) { return $i['name']; })->toArray();
-            if (!in_array('statuses_url_index', $indexesFound)) {
+            $indexesFound = collect($indexes)->map(function ($i) {
+                return $i['name'];
+            })->toArray();
+            if (! in_array('statuses_url_index', $indexesFound)) {
                 $table->index('url');
             }
         });
@@ -27,7 +29,9 @@ return new class extends Migration
     {
         Schema::table('statuses', function (Blueprint $table) {
             $indexes = Schema::getIndexes('statuses');
-            $indexesFound = collect($indexes)->map(function($i) { return $i['name']; })->toArray();
+            $indexesFound = collect($indexes)->map(function ($i) {
+                return $i['name'];
+            })->toArray();
             if (in_array('statuses_url_index', $indexesFound)) {
                 $table->dropIndex('statuses_url_index');
             }

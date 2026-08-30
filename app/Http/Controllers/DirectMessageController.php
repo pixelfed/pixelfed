@@ -2,29 +2,31 @@
 
 namespace App\Http\Controllers;
 
-use App\DirectMessage;
 use App\Jobs\DirectPipeline\DirectDeletePipeline;
 use App\Jobs\DirectPipeline\DirectDeliverPipeline;
 use App\Jobs\StatusPipeline\StatusDelete;
-use App\Media;
 use App\Models\Conversation;
-use App\Notification;
-use App\Profile;
+use App\Models\DirectMessage;
+use App\Models\Media;
+use App\Models\Profile;
+use App\Models\Status;
+use App\Models\UserFilter;
 use App\Services\AccountService;
 use App\Services\FollowerService;
 use App\Services\MediaBlocklistService;
 use App\Services\MediaPathService;
 use App\Services\MediaService;
+use App\Services\NotificationService;
 use App\Services\StatusService;
 use App\Services\UserFilterService;
 use App\Services\UserRoleService;
 use App\Services\UserStorageService;
 use App\Services\WebfingerService;
-use App\Status;
-use App\UserFilter;
 use App\Util\ActivityPub\Helpers;
 use App\Util\Lexer\Autolink;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Arr;
 use Illuminate\Support\Str;
 
 class DirectMessageController extends Controller
@@ -134,7 +136,7 @@ class DirectMessageController extends Controller
         return response()->json($mappedDms->values());
     }
 
-    public function create(Request $request)
+    public function create(Request $request): JsonResponse
     {
         $this->validate($request, [
             'to_id' => 'required',
@@ -208,18 +210,12 @@ class DirectMessageController extends Controller
 
         $nf = UserFilter::whereUserId($recipient->id)
             ->whereFilterableId($profile->id)
-            ->whereFilterableType('App\Profile')
+            ->whereFilterableType(Profile::class)
             ->whereFilterType('dm.mute')
             ->exists();
 
         if ($recipient->domain == null && $hidden == false && ! $nf) {
-            $notification = new Notification;
-            $notification->profile_id = $recipient->id;
-            $notification->actor_id = $profile->id;
-            $notification->action = 'dm';
-            $notification->item_id = $dm->id;
-            $notification->item_type = "App\DirectMessage";
-            $notification->save();
+            NotificationService::createNotification($recipient->id, $profile->id, 'dm', $dm->id, DirectMessage::class);
         }
 
         if ($recipient->domain) {
@@ -242,7 +238,7 @@ class DirectMessageController extends Controller
         return response()->json($res);
     }
 
-    public function thread(Request $request)
+    public function thread(Request $request): JsonResponse
     {
         $this->validate($request, [
             'pid' => 'required',
@@ -419,7 +415,7 @@ class DirectMessageController extends Controller
         return [200];
     }
 
-    public function get(Request $request, $id)
+    public function get(Request $request, $id): JsonResponse
     {
         $user = $request->user();
         abort_if($user->has_roles && ! UserRoleService::can('can-direct-message', $user->id), 403, 'Invalid permissions for this action');
@@ -431,7 +427,7 @@ class DirectMessageController extends Controller
         return response()->json($dm, 200, [], JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES);
     }
 
-    public function mediaUpload(Request $request)
+    public function mediaUpload(Request $request): array
     {
         $this->validate($request, [
             'file' => [
@@ -508,7 +504,7 @@ class DirectMessageController extends Controller
         $dm->to_id = $recipient->id;
         $dm->from_id = $profile->id;
         $dm->status_id = $status->id;
-        $dm->type = array_first(explode('/', $media->mime)) == 'video' ? 'video' : 'photo';
+        $dm->type = Arr::first(explode('/', $media->mime)) == 'video' ? 'video' : 'photo';
         $dm->is_hidden = $hidden;
         $dm->save();
 
@@ -574,7 +570,7 @@ class DirectMessageController extends Controller
             $q = mb_substr($q, 1);
         }
 
-        $blocked = UserFilter::whereFilterableType('App\Profile')
+        $blocked = UserFilter::whereFilterableType(Profile::class)
             ->whereFilterType('block')
             ->whereFilterableId($request->user()->profile_id)
             ->pluck('user_id');
@@ -613,7 +609,7 @@ class DirectMessageController extends Controller
         return response()->json(FollowerService::getMutualsWithProfiles($user->profile_id, 10));
     }
 
-    public function read(Request $request)
+    public function read(Request $request): JsonResponse
     {
         $this->validate($request, [
             'pid' => 'required',
@@ -639,7 +635,7 @@ class DirectMessageController extends Controller
         return response()->json($dms->pluck('id'));
     }
 
-    public function mute(Request $request)
+    public function mute(Request $request): array
     {
         $this->validate($request, [
             'id' => 'required',
@@ -654,7 +650,7 @@ class DirectMessageController extends Controller
             [
                 'user_id' => $pid,
                 'filterable_id' => $fid,
-                'filterable_type' => 'App\Profile',
+                'filterable_type' => Profile::class,
                 'filter_type' => 'dm.mute',
             ]
         );
@@ -662,7 +658,7 @@ class DirectMessageController extends Controller
         return [200];
     }
 
-    public function unmute(Request $request)
+    public function unmute(Request $request): array
     {
         $this->validate($request, [
             'id' => 'required',
@@ -676,7 +672,7 @@ class DirectMessageController extends Controller
 
         $f = UserFilter::whereUserId($pid)
             ->whereFilterableId($fid)
-            ->whereFilterableType('App\Profile')
+            ->whereFilterableType(Profile::class)
             ->whereFilterType('dm.mute')
             ->firstOrFail();
 
@@ -685,7 +681,7 @@ class DirectMessageController extends Controller
         return [200];
     }
 
-    public function remoteDeliver($dm)
+    public function remoteDeliver($dm): void
     {
         $profile = $dm->author;
         $url = $dm->recipient->sharedInbox ?? $dm->recipient->inbox_url;
@@ -743,7 +739,7 @@ class DirectMessageController extends Controller
         DirectDeliverPipeline::dispatch($profile, $url, $body)->onQueue('high');
     }
 
-    public function remoteDelete($dm)
+    public function remoteDelete($dm): void
     {
         $profile = $dm->author;
         $url = $dm->recipient->sharedInbox ?? $dm->recipient->inbox_url;

@@ -7,6 +7,7 @@ use App\Services\StatusService;
 use App\Util\ActivityPub\Helpers;
 use Illuminate\Http\Client\ConnectionException;
 use Illuminate\Http\Client\RequestException;
+use Illuminate\Support\Arr;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Http;
 
@@ -112,7 +113,7 @@ class BeagleService
                     $domain = parse_url($post['id'], PHP_URL_HOST);
                     if ($domain === config_cache('pixelfed.domain.app')) {
                         $parts = explode('/', $post['id']);
-                        $id = array_last($parts);
+                        $id = Arr::last($parts);
 
                         return StatusService::get($id);
                     }

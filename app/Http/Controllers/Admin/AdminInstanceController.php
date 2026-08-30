@@ -4,11 +4,11 @@ namespace App\Http\Controllers\Admin;
 
 use App\Http\Resources\AdminInstance;
 use App\Http\Resources\AdminProfile;
-use App\Instance;
-use App\Profile;
+use App\Models\Instance;
+use App\Models\Profile;
 use App\Services\InstanceService;
-use Cache;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Cache;
 use Illuminate\Validation\Rule;
 
 trait AdminInstanceController

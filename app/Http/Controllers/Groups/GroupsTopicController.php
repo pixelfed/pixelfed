@@ -9,6 +9,8 @@ use App\Models\GroupPost;
 use App\Models\GroupPostHashtag;
 use App\Services\Groups\GroupPostService;
 use App\Services\Groups\GroupsLikeService;
+use Illuminate\Contracts\View\View;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 
 class GroupsTopicController extends Controller
@@ -18,7 +20,7 @@ class GroupsTopicController extends Controller
         $this->middleware('auth');
     }
 
-    public function groupTopics(Request $request)
+    public function groupTopics(Request $request): JsonResponse
     {
         $this->validate($request, [
             'gid' => 'required',
@@ -114,7 +116,7 @@ class GroupsTopicController extends Controller
         return response()->json($posts, 200, [], JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES);
     }
 
-    public function showTopicFeed(Request $request, $gid, $tag)
+    public function showTopicFeed(Request $request, $gid, $tag): View
     {
         abort_if(! $request->user(), 404);
 

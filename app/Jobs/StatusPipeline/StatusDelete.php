@@ -2,37 +2,34 @@
 
 namespace App\Jobs\StatusPipeline;
 
-use App\AccountInterstitial;
-use App\Bookmark;
-use App\CollectionItem;
-use App\DirectMessage;
 use App\Jobs\MediaPipeline\MediaDeletePipeline;
-use App\Like;
-use App\Media;
-use App\MediaTag;
-use App\Mention;
-use App\Notification;
-use App\Report;
+use App\Models\AccountInterstitial;
+use App\Models\Bookmark;
+use App\Models\CollectionItem;
+use App\Models\DirectMessage;
+use App\Models\Like;
+use App\Models\Media;
+use App\Models\MediaTag;
+use App\Models\Mention;
+use App\Models\Notification;
+use App\Models\Report;
+use App\Models\Status;
+use App\Models\StatusArchived;
+use App\Models\StatusHashtag;
+use App\Models\StatusView;
+use App\Services\ActivityPubDeliveryService;
 use App\Services\CollectionService;
+use App\Services\FractalService;
 use App\Services\NotificationService;
 use App\Services\StatusService;
-use App\Status;
-use App\StatusArchived;
-use App\StatusHashtag;
-use App\StatusView;
 use App\Transformer\ActivityPub\Verb\DeleteNote;
-use App\Util\ActivityPub\HttpSignature;
-use Cache;
-use GuzzleHttp\Client;
-use GuzzleHttp\Pool;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
+use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Log;
-use League\Fractal;
-use League\Fractal\Serializer\ArraySerializer;
 
 class StatusDelete implements ShouldQueue
 {
@@ -120,7 +117,7 @@ class StatusDelete implements ShouldQueue
 
         Bookmark::whereStatusId($status->id)->delete();
 
-        CollectionItem::whereObjectType('App\Status')
+        CollectionItem::whereObjectType(Status::class)
             ->whereObjectId($status->id)
             ->get()
             ->each(function ($col) {
@@ -130,7 +127,7 @@ class StatusDelete implements ShouldQueue
 
         $dms = DirectMessage::whereStatusId($status->id)->get();
         foreach ($dms as $dm) {
-            $not = Notification::whereItemType('App\DirectMessage')
+            $not = Notification::whereItemType(DirectMessage::class)
                 ->whereItemId($dm->id)
                 ->first();
             if ($not) {
@@ -143,7 +140,7 @@ class StatusDelete implements ShouldQueue
 
         $mediaTags = MediaTag::where('status_id', $status->id)->get();
         foreach ($mediaTags as $mtag) {
-            $not = Notification::whereItemType('App\MediaTag')
+            $not = Notification::whereItemType(MediaTag::class)
                 ->whereItemId($mtag->id)
                 ->first();
             if ($not) {
@@ -154,11 +151,11 @@ class StatusDelete implements ShouldQueue
         }
         Mention::whereStatusId($status->id)->forceDelete();
 
-        Notification::whereItemType('App\Status')
+        Notification::whereItemType(Status::class)
             ->whereItemId($status->id)
             ->forceDelete();
 
-        Report::whereObjectType('App\Status')
+        Report::whereObjectType(Status::class)
             ->whereObjectId($status->id)
             ->delete();
 
@@ -167,7 +164,7 @@ class StatusDelete implements ShouldQueue
         StatusView::whereStatusId($status->id)->delete();
         Status::whereInReplyToId($status->id)->update(['in_reply_to_id' => null]);
 
-        AccountInterstitial::where('item_type', 'App\Status')
+        AccountInterstitial::where('item_type', Status::class)
             ->where('item_id', $status->id)
             ->delete();
 
@@ -186,50 +183,11 @@ class StatusDelete implements ShouldQueue
 
         $audience = $status->profile->getAudienceInbox();
 
-        $fractal = new Fractal\Manager;
-        $fractal->setSerializer(new ArraySerializer);
-        $resource = new Fractal\Resource\Item($status, new DeleteNote);
-        $activity = $fractal->createData($resource)->toArray();
+        $activity = FractalService::item($status, new DeleteNote);
 
         $this->unlinkRemoveMedia($status);
 
-        $payload = json_encode($activity);
-
-        $client = new Client([
-            'timeout' => config('federation.activitypub.delivery.timeout'),
-        ]);
-
-        $version = config('pixelfed.version');
-        $appUrl = config('app.url');
-        $userAgent = "(Pixelfed/{$version}; +{$appUrl})";
-
-        $requests = function ($audience) use ($client, $activity, $profile, $payload, $userAgent) {
-            foreach ($audience as $url) {
-                $headers = HttpSignature::sign($profile, $url, $activity, [
-                    'Content-Type' => 'application/ld+json; profile="https://www.w3.org/ns/activitystreams"',
-                    'User-Agent' => $userAgent,
-                ]);
-                yield function () use ($client, $url, $headers, $payload) {
-                    return $client->postAsync($url, [
-                        'curl' => [
-                            CURLOPT_HTTPHEADER => $headers,
-                            CURLOPT_POSTFIELDS => $payload,
-                            CURLOPT_HEADER => true,
-                        ],
-                    ]);
-                };
-            }
-        };
-
-        $pool = new Pool($client, $requests($audience), [
-            'concurrency' => config('federation.activitypub.delivery.concurrency'),
-            'fulfilled' => function ($response, $index) {},
-            'rejected' => function ($reason, $index) {},
-        ]);
-
-        $promise = $pool->promise();
-
-        $promise->wait();
+        ActivityPubDeliveryService::pool($profile, $audience, $activity);
 
         return 1;
     }

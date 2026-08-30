@@ -1,0 +1,68 @@
+name: PHP - Laravel Tests
+
+on:
+  push:
+    branches: [staging, dev, unstable]
+  pull_request:
+    branches: [staging, dev, unstable]
+
+jobs:
+  tests:
+    runs-on: ubuntu-latest
+
+    services:
+      redis:
+        image: redis:8
+        ports:
+          - 6379:6379
+        options: >-
+          --health-cmd "redis-cli ping"
+          --health-interval 5s
+          --health-timeout 3s
+          --health-retries 5
+
+    strategy:
+      fail-fast: true
+      matrix:
+        php: ['8.4', '8.5']
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v7
+
+      - name: Setup PHP
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: ${{ matrix.php }}
+          extensions: dom, curl, libxml, mbstring, zip, pcntl, pdo, sqlite, pdo_sqlite, bcmath, intl, gd, exif, iconv, redis
+          coverage: none
+          ini-values: memory_limit=512M
+
+      - name: Cache Composer dependencies
+        uses: actions/cache@v6
+        with:
+          path: vendor
+          key: composer-${{ matrix.php }}-${{ hashFiles('composer.lock') }}
+          restore-keys: composer-${{ matrix.php }}-
+
+      - name: Install Composer dependencies
+        run: composer install --no-interaction --no-progress --prefer-dist
+
+      - name: Prepare environment
+        run: |
+          cp .env.testing .env
+          php artisan key:generate
+          touch storage/oauth-private.key storage/oauth-public.key
+          php -r "
+            \$key = openssl_pkey_new(['private_key_bits' => 2048, 'private_key_type' => OPENSSL_KEYTYPE_RSA]);
+            openssl_pkey_export(\$key, \$private);
+            \$public = openssl_pkey_get_details(\$key)['key'];
+            file_put_contents('storage/oauth-private.key', \$private);
+            file_put_contents('storage/oauth-public.key', \$public);
+          "
+
+      - name: Run tests
+        run: vendor/bin/pest --compact
+        env:
+          REDIS_HOST: 127.0.0.1
+          REDIS_PORT: 6379

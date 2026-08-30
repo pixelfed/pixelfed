@@ -3,10 +3,11 @@
 namespace App\Listeners;
 
 use App\Jobs\AvatarPipeline\CreateAvatar;
-use App\Profile;
-use App\UserDevice;
-use App\UserSetting;
-use DB;
+use App\Models\Profile;
+use App\Models\UserDevice;
+use App\Models\UserSetting;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Str;
 
 class AuthLogin
 {
@@ -117,7 +118,7 @@ class AuthLogin
             return UserDevice::firstOrCreate([
                 'user_id' => $user->id,
                 'ip' => request()->ip(),
-                'user_agent' => str_limit(request()->userAgent(), 180),
+                'user_agent' => Str::limit(request()->userAgent(), 180),
             ]);
         });
     }
