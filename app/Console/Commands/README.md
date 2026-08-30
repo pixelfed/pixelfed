@@ -46,6 +46,7 @@ full argument and option list.
 | `regenerate:thumbnails` | Regenerate image thumbnails for all image media. |
 | `ap:update-actors` | Send Update Actor activities to known remote servers (`--force`). |
 | `video:thumbnail` | Generate missing video thumbnails. |
+| `storage:maintenance` | Sweep stale `remcache` temp files and prune empty directories left by the media/story/avatar/import flows. Supports `--hours`, `--only`/`--except` (`remcache`,`empty-dirs`), `--dry-run`. |
 
 ## Dev
 
