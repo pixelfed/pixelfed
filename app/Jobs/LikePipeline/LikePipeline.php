@@ -3,6 +3,7 @@
 namespace App\Jobs\LikePipeline;
 
 use App\Jobs\PushNotificationPipeline\LikePushNotifyPipeline;
+use App\Jobs\PushNotificationPipeline\WebPushNotifyPipeline;
 use App\Models\Like;
 use App\Models\Status;
 use App\Models\User;
@@ -96,6 +97,11 @@ class LikePipeline implements ShouldQueue
 
     protected function sendPushNotification($status, $actor)
     {
+        // Independent of the Expo gateway below — Web Push subscriptions work
+        // whether or not this instance has NotificationAppGatewayService
+        // configured at all, so this must run before those early returns.
+        WebPushNotifyPipeline::maybeDispatch($status->profile_id, 'like', $actor->username, $actor->id, $status->id);
+
         if (! NotificationAppGatewayService::enabled()) {
             return;
         }
