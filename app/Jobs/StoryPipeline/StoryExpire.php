@@ -92,8 +92,9 @@ class StoryExpire implements ShouldQueue
             $story->path = $newPath;
             $story->save();
 
-            $remainingFiles = Storage::files($dir);
-            if (empty($remainingFiles)) {
+            // Remove this story's own now-empty leaf dir the media was moved
+            // out of (public/_esm.t3/{monthHash}/{userHash}/{random}).
+            if (empty(Storage::files($dir))) {
                 Storage::deleteDirectory($dir);
             }
         }
@@ -130,8 +131,14 @@ class StoryExpire implements ShouldQueue
 
         $path = $story->path;
 
-        if (Storage::exists($path) == true) {
+        if ($path && Storage::exists($path) == true) {
             Storage::delete($path);
+
+            // Remove the now-empty leaf dir this story's media lived in.
+            $dir = implode('/', array_slice(explode('/', $path), 0, -1));
+            if ($dir !== '' && empty(Storage::files($dir))) {
+                Storage::deleteDirectory($dir);
+            }
         }
 
         $story->views()->delete();

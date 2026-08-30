@@ -238,6 +238,14 @@ class TransformImports extends Command
 
                 continue;
             }
+
+            // Files for this import post were moved OUT of imports/{userId}.
+            // Remove that directory once it holds no more files so completed
+            // imports don't leave an empty folder behind.
+            $importDir = 'imports/'.$id;
+            if ($disk->exists($importDir) && empty($disk->files($importDir))) {
+                $disk->deleteDirectory($importDir);
+            }
         }
     }
 }
