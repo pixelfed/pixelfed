@@ -106,6 +106,20 @@ class CustomEmoji extends Model
         }
     }
 
+    /**
+     * Whether the emoji media for the given media_path exists on the active disk.
+     */
+    public static function mediaExists(?string $mediaPath): bool
+    {
+        if (! $mediaPath) {
+            return false;
+        }
+
+        $target = self::storageTarget();
+
+        return $target['disk']->exists($target['prefix'].$mediaPath);
+    }
+
     public static function scan($text, $activitypub = false)
     {
         if ((bool) config_cache('federation.custom_emoji.enabled') == false) {
