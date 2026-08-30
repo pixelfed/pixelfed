@@ -37,8 +37,8 @@ full argument and option list.
 | `import:cities` | Import the cities dataset into the database. |
 | `import:emojis` | Import custom emojis from a `tar.gz` archive (supports `--prefix`/`--suffix`). |
 | `app:instance-manager` | Manage federated instances. |
-| `admin:MediaMoveStorageCloudToCloud` | Cold-migrate media from an old S3 bucket to the current cloud bucket, verifying each copy. |
-| `admin:MediaMoveStorageCloudToLocal` | Migrate cloud media back to local storage (download, verify, rewrite URLs, optionally delete cloud copy). |
+| `unstable:MediaMoveStorageCloudToCloud` | Cold-migrate media from an old S3 bucket to the current cloud bucket, verifying each copy. |
+| `unstable:MediaMoveStorageCloudToLocal` | Migrate cloud media back to local storage (download, verify, rewrite URLs, optionally delete cloud copy). |
 | `admin:MediaMoveStorageLocalToCloud` | Migrate local media to cloud storage (upload, verify, rewrite URLs, delete local copy). |
 | `admin:MigrateLocalS3MediaURL` | Rewrite stale local media cloud URLs from storage paths to the configured S3 host. Replaces the old `media:cloud-url-rewrite`. |
 | `admin:fixProfileCounts` | Resync a profile's cached counts (followers, following, statuses) from source tables; supports bulk `--all`/`--active`. |

@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Console\Commands\Admin;
+namespace App\Console\Commands\Admin\Unstable;
 
 use App\Models\Media;
 use App\Services\MediaService;
@@ -17,7 +17,7 @@ class MediaMoveStorageCloudToCloud extends Command
      *
      * @var string
      */
-    protected $signature = 'admin:MediaMoveStorageCloudToCloud
+    protected $signature = 'unstable:MediaMoveStorageCloudToCloud
         {--sourceDisk=s3-old : The disk holding the OLD bucket (default: s3-old, reads AWS_OLD_*)}
         {--limit=500 : Max media rows to process this run}
         {--dry-run : Report what would happen without copying or writing}
