@@ -20,9 +20,10 @@ class EmojiMoveStorageLocalToCloud extends Command
      * @var string
      */
     protected $signature = 'admin:EmojiMoveStorageLocalToCloud
-        {--limit=0 : Max emoji rows to process this run (0 = no limit, process all)}
+        {--limit=0 : Max files to process this run (0 = no limit, process all)}
         {--dry-run : Report what would happen without copying or writing}
         {--keep-local : Do not delete local files after verifying the cloud copy}
+        {--debug : Print detailed diagnostics}
         {--force : Skip confirmation prompts}';
 
     /**
@@ -63,6 +64,29 @@ class EmojiMoveStorageLocalToCloud extends Command
             return self::FAILURE;
         }
 
+        $debug = (bool) $this->option('debug');
+
+        // Diagnostics: what does the environment/config look like?
+        if ($debug) {
+            $this->line('--- debug: config ---');
+            $this->line('  config(pixelfed.cloud_storage):       '.var_export(config('pixelfed.cloud_storage'), true));
+            $this->line('  config_cache(pixelfed.cloud_storage): '.var_export(config_cache('pixelfed.cloud_storage'), true));
+            $this->line('  filesystems.cloud:                    '.config('filesystems.cloud'));
+            $this->line('  cloud host:                           '.($this->cloudHost() ?? 'null'));
+            $this->line('  local disk root:                      '.$localDisk->path(''));
+
+            $this->line('--- debug: custom_emoji table ---');
+            $this->line('  total rows:            '.CustomEmoji::count());
+            $this->line('  uri IS NULL:           '.CustomEmoji::whereNull('uri')->count());
+            $this->line('  uri NOT NULL:          '.CustomEmoji::whereNotNull('uri')->count());
+            $this->line('  media_path NOT NULL:   '.CustomEmoji::whereNotNull('media_path')->count());
+            $this->line('  media_path LIKE http%: '.CustomEmoji::where('media_path', 'like', 'http%')->count());
+
+            $this->line('--- debug: local emoji directory (public/emoji) ---');
+            $this->line('  dir exists: '.var_export($localDisk->exists('public/emoji'), true));
+            $this->line('  file count: '.count($localDisk->files('public/emoji')));
+        }
+
         if (! $this->option('dry-run') && ! $this->option('force')) {
             if (! $this->confirm('Begin migrating local custom emoji to cloud?', true)) {
                 $this->comment('Aborted.');
@@ -76,18 +100,33 @@ class EmojiMoveStorageLocalToCloud extends Command
         $skipped = 0;
         $failed = 0;
 
-        // Local (non-federated) emoji have no uri. Remote emoji already point
-        // at their origin server and are not stored on our disks.
-        $query = CustomEmoji::whereNull('uri')
-            ->whereNotNull('media_path')
-            ->orderByDesc('id')
-            ->when($limit > 0, fn ($q) => $q->limit($limit));
+        // Disk-driven: enumerate the actual emoji files on the local disk and
+        // migrate each one. We intentionally do NOT filter by DB columns here —
+        // the file existing locally is the source of truth for "needs moving".
+        // Federated emoji have their media stored locally too (with a uri set),
+        // so a DB filter on uri would wrongly exclude them.
+        $files = $localDisk->exists('public/emoji') ? $localDisk->files('public/emoji') : [];
 
-        $bar = $this->output->createProgressBar($query->count());
+        if ($limit > 0) {
+            $files = array_slice($files, 0, $limit);
+        }
+
+        $bar = $this->output->createProgressBar(count($files));
         $bar->start();
 
-        foreach ($query->get() as $emoji) {
-            $result = $this->migrateOne($emoji, $localDisk, $cloudDisk);
+        foreach ($files as $localPath) {
+            // Preserve dotfiles such as a directory .gitignore.
+            $filename = basename($localPath);
+            if (str_starts_with($filename, '.')) {
+                $skipped++;
+                $bar->advance();
+
+                continue;
+            }
+
+            // media_path is the local path without the public/ disk prefix.
+            $mediaPath = Str::after($localPath, 'public/');
+            $result = $this->migrateFile($localPath, $mediaPath, $localDisk, $cloudDisk, $debug);
             match ($result) {
                 'moved' => $moved++,
                 'skipped' => $skipped++,
@@ -114,24 +153,28 @@ class EmojiMoveStorageLocalToCloud extends Command
     /**
      * @return string one of moved|skipped|failed
      */
-    protected function migrateOne(CustomEmoji $emoji, $localDisk, $cloudDisk): string
+    protected function migrateFile(string $localPath, string $mediaPath, $localDisk, $cloudDisk, bool $debug = false): string
     {
-        $mediaPath = $emoji->media_path;
+        if ($cloudDisk->exists($mediaPath)) {
+            if ($debug) {
+                $this->newLine();
+                $this->line('  [skip] already on cloud: '.$mediaPath);
+            }
 
-        if (! $mediaPath || Str::startsWith($mediaPath, 'http')) {
-            return 'skipped';
-        }
+            // Present on cloud already; remove the local copy unless asked not to.
+            if (! $this->option('dry-run') && ! $this->option('keep-local')) {
+                $localDisk->delete($localPath);
+            }
 
-        // Local emoji live under the public/ disk prefix; cloud objects live at
-        // the bare media_path.
-        $localPath = 'public/'.$mediaPath;
-
-        if (! $localDisk->exists($localPath)) {
-            // Already migrated (present on cloud, gone locally) or missing.
             return 'skipped';
         }
 
         if ($this->option('dry-run')) {
+            if ($debug) {
+                $this->newLine();
+                $this->line('  [dry-run] would move: '.$localPath.' -> '.$mediaPath);
+            }
+
             return 'moved';
         }
 
@@ -140,7 +183,7 @@ class EmojiMoveStorageLocalToCloud extends Command
             $cloudDisk->put($mediaPath, $localDisk->get($localPath), 'public');
 
             if (! $this->verify($localPath, $mediaPath, $localDisk, $cloudDisk)) {
-                $this->warn(PHP_EOL.'Verify failed for emoji '.$emoji->id.' ('.$mediaPath.'); left local copy intact.');
+                $this->warn(PHP_EOL.'Verify failed for '.$mediaPath.'; left local copy intact.');
 
                 return 'failed';
             }
@@ -151,11 +194,9 @@ class EmojiMoveStorageLocalToCloud extends Command
 
             $this->movedBytes += $size;
 
-            Cache::forget('pf:custom_emoji:'.str_replace(':', '', (string) $emoji->shortcode));
-
             return 'moved';
         } catch (\Throwable $e) {
-            $this->warn(PHP_EOL.'Error migrating emoji '.$emoji->id.': '.$e->getMessage());
+            $this->warn(PHP_EOL.'Error migrating '.$mediaPath.': '.$e->getMessage());
 
             return 'failed';
         }
