@@ -115,9 +115,12 @@ class EmojiMoveStorageLocalToCloud extends Command
         $bar->start();
 
         foreach ($files as $localPath) {
-            // Preserve dotfiles such as a directory .gitignore.
             $filename = basename($localPath);
-            if (str_starts_with($filename, '.')) {
+
+            // Preserve dotfiles such as a directory .gitignore, and the
+            // missing.png placeholder which the frontend hardcodes as a local
+            // /storage/emoji/missing.png onerror fallback (must stay local).
+            if (str_starts_with($filename, '.') || $filename === 'missing.png') {
                 $skipped++;
                 $bar->advance();
 
