@@ -1,39 +1,7 @@
 <?php
 
 use App\Util\Lexer\PrettyNumber;
-use Illuminate\Support\Facades\App;
-use Illuminate\Support\Facades\Artisan;
-use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\Blade;
-use Illuminate\Support\Facades\Broadcast;
-use Illuminate\Support\Facades\Bus;
-use Illuminate\Support\Facades\Cache;
-use Illuminate\Support\Facades\Config;
-use Illuminate\Support\Facades\Cookie;
-use Illuminate\Support\Facades\Crypt;
-use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Event;
-use Illuminate\Support\Facades\File;
-use Illuminate\Support\Facades\Gate;
-use Illuminate\Support\Facades\Hash;
-use Illuminate\Support\Facades\Lang;
-use Illuminate\Support\Facades\Log;
-use Illuminate\Support\Facades\Mail;
-use Illuminate\Support\Facades\Notification;
-use Illuminate\Support\Facades\Password;
-use Illuminate\Support\Facades\Queue;
-use Illuminate\Support\Facades\Redirect;
-use Illuminate\Support\Facades\Redis;
-use Illuminate\Support\Facades\Request;
-use Illuminate\Support\Facades\Response;
-use Illuminate\Support\Facades\Route;
-use Illuminate\Support\Facades\Schema;
-use Illuminate\Support\Facades\Session;
-use Illuminate\Support\Facades\Storage;
-use Illuminate\Support\Facades\URL;
-use Illuminate\Support\Facades\Validator;
-use Illuminate\Support\Facades\View;
-use Illuminate\Support\Str;
+use Illuminate\Support\Facades\Facade;
 
 return [
 
@@ -136,6 +104,30 @@ return [
 
     'cipher' => 'AES-256-CBC',
 
+    'previous_keys' => [
+        ...array_filter(
+            explode(',', (string) env('APP_PREVIOUS_KEYS', ''))
+        ),
+    ],
+
+    /*
+    |--------------------------------------------------------------------------
+    | Maintenance Mode Driver
+    |--------------------------------------------------------------------------
+    |
+    | These configuration options determine the driver used to determine and
+    | manage Laravel's "maintenance mode" status. The "cache" driver will
+    | allow maintenance mode to be controlled across multiple machines.
+    |
+    | Supported drivers: "file", "cache"
+    |
+    */
+
+    'maintenance' => [
+        'driver' => env('APP_MAINTENANCE_DRIVER', 'file'),
+        'store' => env('APP_MAINTENANCE_STORE', 'database'),
+    ],
+
     'short_description' => env('PF_SHORT_DESCRIPTION', 'Pixelfed is an image sharing platform, an ethical alternative to centralized platforms.'),
     'description' => env('PF_DESCRIPTION', 'Pixelfed is an image sharing platform, an ethical alternative to centralized platforms.'),
     'rules' => env('PF_RULES', null),
@@ -165,42 +157,8 @@ return [
     |
     */
 
-    'aliases' => [
-        'App' => App::class,
-        'Artisan' => Artisan::class,
-        'Auth' => Auth::class,
-        'Blade' => Blade::class,
-        'Broadcast' => Broadcast::class,
-        'Bus' => Bus::class,
-        'Cache' => Cache::class,
-        'Config' => Config::class,
-        'Cookie' => Cookie::class,
-        'Crypt' => Crypt::class,
-        'DB' => DB::class,
-        'Event' => Event::class,
-        'File' => File::class,
-        'Gate' => Gate::class,
-        'Hash' => Hash::class,
-        'Lang' => Lang::class,
-        'Log' => Log::class,
-        'Mail' => Mail::class,
-        'Notification' => Notification::class,
-        'Password' => Password::class,
-        'Queue' => Queue::class,
-        'Redirect' => Redirect::class,
-        'Redis' => Redis::class,
-        'Request' => Request::class,
-        'Response' => Response::class,
-        'Route' => Route::class,
-        'Schema' => Schema::class,
-        'Session' => Session::class,
-        'Storage' => Storage::class,
-        'URL' => URL::class,
-        'Validator' => Validator::class,
-        'View' => View::class,
-        'Str' => Str::class,
-
+    'aliases' => Facade::defaultAliases()->merge([
         'PrettyNumber' => PrettyNumber::class,
-    ],
+    ])->toArray(),
 
 ];
