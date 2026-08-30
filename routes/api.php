@@ -7,6 +7,7 @@ use App\Http\Controllers\Api\ApiV1Dot1Controller;
 use App\Http\Controllers\Api\ApiV2Controller;
 use App\Http\Controllers\Api\V1\Admin\DomainBlocksController;
 use App\Http\Controllers\Api\V1\DomainBlockController;
+use App\Http\Controllers\Api\V1\PushSubscriptionController;
 use App\Http\Controllers\Api\V1\TagsController;
 use App\Http\Controllers\ApiController;
 use App\Http\Controllers\AppRegisterController;
@@ -203,6 +204,9 @@ Route::group(['prefix' => 'api'], function () use ($middleware) {
         Route::get('announcements', [ApiV1Controller::class, 'getAnnouncements'])->middleware($middleware);
         Route::get('markers', [ApiV1Controller::class, 'getMarkers'])->middleware($middleware);
         Route::post('markers', [ApiV1Controller::class, 'setMarkers'])->middleware($middleware);
+
+        Route::post('push/subscription', [PushSubscriptionController::class, 'store'])->middleware($middleware);
+        Route::delete('push/subscription', [PushSubscriptionController::class, 'destroy'])->middleware($middleware);
 
         Route::get('followed_tags', [TagsController::class, 'getFollowedTags'])->middleware($middleware);
         Route::post('tags/{id}/follow', [TagsController::class, 'followHashtag'])->middleware($middleware);
