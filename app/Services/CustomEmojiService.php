@@ -7,6 +7,7 @@ use App\Util\ActivityPub\Helpers;
 use Illuminate\Http\Client\RequestException;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Http;
+use Illuminate\Support\Facades\Storage;
 
 class CustomEmojiService
 {
@@ -117,7 +118,9 @@ class CustomEmojiService
             ]);
 
             if ($emoji->wasRecentlyCreated == false) {
-                CustomEmoji::deleteMedia($emoji->media_path);
+                if (Storage::exists('public/'.$emoji->media_path)) {
+                    Storage::delete('public/'.$emoji->media_path);
+                }
             }
 
             $ext = '.'.last(explode('/', $json['icon']['mediaType']));
@@ -133,7 +136,7 @@ class CustomEmojiService
                     return;
                 }
 
-                CustomEmoji::storeMedia($mediaPath, $body);
+                Storage::put('public/'.$mediaPath, $body);
 
                 $emoji->media_path = $mediaPath;
                 $emoji->save();
@@ -188,7 +191,7 @@ class CustomEmojiService
                 ->whereNull('uri')
                 ->get()
                 ->map(function ($emojo) {
-                    $url = CustomEmoji::urlForPath($emojo->media_path);
+                    $url = url('storage/'.$emojo->media_path);
 
                     return [
                         'shortcode' => str_replace(':', '', $emojo->shortcode),
