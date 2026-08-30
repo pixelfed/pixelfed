@@ -14,8 +14,8 @@ class ResyncEmoji extends Command
      * @var string
      */
     protected $signature = 'admin:resyncemoji
-        {--missingonly : Only resync emoji whose stored media file is missing on the active disk}
-        {--limit=0 : Max emoji to process this run (0 = no limit)}
+        {files : Comma-separated emoji filename(s) to resync, e.g. "26109.png,1234.gif"}
+        {--missingonly : Only resync the given files whose media is missing on the active disk}
         {--dry-run : Report what would happen without downloading or writing}
         {--force : Skip confirmation prompts}';
 
@@ -24,7 +24,7 @@ class ResyncEmoji extends Command
      *
      * @var string
      */
-    protected $description = 'Re-download remote custom emoji media from their origin (image_remote_url) and store on the active disk.';
+    protected $description = 'Re-download specific remote custom emoji from their origin (image_remote_url) and store on the active disk.';
 
     public function handle(): int
     {
@@ -34,81 +34,82 @@ class ResyncEmoji extends Command
             return self::FAILURE;
         }
 
+        // Parse the comma-separated filename list into distinct basenames.
+        $names = collect(explode(',', (string) $this->argument('files')))
+            ->map(fn ($n) => basename(trim($n)))
+            ->filter()
+            ->unique()
+            ->values();
+
+        if ($names->isEmpty()) {
+            $this->error('No emoji filenames provided. Example: admin:resyncemoji "26109.png,1234.gif"');
+
+            return self::FAILURE;
+        }
+
         $missingOnly = (bool) $this->option('missingonly');
         $dryRun = (bool) $this->option('dry-run');
-        $limit = max(0, (int) $this->option('limit'));
-
-        // Only remote emoji can be re-fetched (they carry an origin URL).
-        $query = CustomEmoji::whereNotNull('image_remote_url')
-            ->orderBy('id')
-            ->when($limit > 0, fn ($q) => $q->limit($limit));
-
-        $candidates = $query->get();
-        $totalCandidates = $candidates->count();
-
-        if ($totalCandidates === 0) {
-            $this->info('No remote emoji found to resync.');
-
-            return self::SUCCESS;
-        }
-
-        // With --missingonly, keep only those whose file is absent on the
-        // active disk (checks cloud when cloud storage is enabled).
-        if ($missingOnly) {
-            $this->info("Checking {$totalCandidates} remote emoji for missing media...");
-            $bar = $this->output->createProgressBar($totalCandidates);
-            $bar->start();
-            $candidates = $candidates->reject(function (CustomEmoji $emoji) use ($bar) {
-                $exists = CustomEmoji::mediaExists($emoji->media_path);
-                $bar->advance();
-
-                return $exists; // reject those that already exist
-            })->values();
-            $bar->finish();
-            $this->newLine(2);
-        }
-
-        $total = $candidates->count();
-
-        if ($total === 0) {
-            $this->info('Nothing to resync'.($missingOnly ? '; all remote emoji media present.' : '.'));
-
-            return self::SUCCESS;
-        }
-
-        if ($dryRun) {
-            $this->info("[dry-run] Would resync {$total} emoji from origin.");
-
-            return self::SUCCESS;
-        }
-
-        if (! $this->option('force') && ! $this->confirm("Resync {$total} emoji from their origin servers?", true)) {
-            $this->comment('Aborted.');
-
-            return self::SUCCESS;
-        }
 
         $resynced = 0;
         $skipped = 0;
         $failed = 0;
+        $notFound = 0;
 
-        $bar = $this->output->createProgressBar($total);
-        $bar->start();
+        foreach ($names as $name) {
+            $mediaPath = 'emoji/'.$name;
+            $emoji = CustomEmoji::whereMediaPath($mediaPath)->first();
 
-        foreach ($candidates as $emoji) {
+            if (! $emoji) {
+                $this->warn("  not found in DB: {$name} (media_path={$mediaPath})");
+                $notFound++;
+
+                continue;
+            }
+
+            if (empty($emoji->image_remote_url)) {
+                $this->warn("  skip (no origin url, local emoji): {$name}");
+                $skipped++;
+
+                continue;
+            }
+
+            if ($missingOnly && CustomEmoji::mediaExists($emoji->media_path)) {
+                $this->line("  skip (already present): {$name}");
+                $skipped++;
+
+                continue;
+            }
+
+            if ($dryRun) {
+                $this->line("  [dry-run] would resync: {$name} <- {$emoji->image_remote_url}");
+                $resynced++;
+
+                continue;
+            }
+
+            if (! $this->option('force') && ! $this->confirm("Resync {$name} from {$emoji->image_remote_url}?", true)) {
+                $this->line("  skipped: {$name}");
+                $skipped++;
+
+                continue;
+            }
+
             $result = CustomEmojiService::resync($emoji);
-            match ($result) {
-                'resynced' => $resynced++,
-                'skipped' => $skipped++,
-                default => $failed++,
-            };
-            $bar->advance();
+            if ($result === 'resynced') {
+                $resynced++;
+                $this->info("  resynced: {$name}");
+            } elseif ($result === 'skipped') {
+                $skipped++;
+                $this->warn("  skipped: {$name}");
+            } else {
+                $failed++;
+                $this->error("  failed: {$name}");
+            }
         }
 
-        $bar->finish();
-        $this->newLine(2);
-        $this->info("Done. resynced={$resynced} skipped={$skipped} failed={$failed}.");
+        $this->newLine();
+        $this->info(($dryRun ? '[dry-run] ' : '')."Done. resynced={$resynced} skipped={$skipped} failed={$failed} not_found={$notFound}.");
 
-        return $failed ? self::FAILURE : self::SUCCESS;
+        return ($failed || $notFound) ? self::FAILURE : self::SUCCESS;
     }
 }
