@@ -16,6 +16,12 @@ use Illuminate\Support\Facades\Schema;
  * Nullable because rows registered before this migration have no token
  * recorded; PushSubscriptionController treats those as legacy and cleans
  * them up on the next unsubscribe.
+ *
+ * A browser signed in through the web UI authenticates with a session cookie
+ * rather than a bearer token, and Passport's TransientToken has no id to
+ * record. Those rows hold a `session:`-prefixed hash of the session id
+ * instead, which serves the same purpose; see
+ * WebPushService::clientIdentifier().
  */
 return new class extends Migration
 {

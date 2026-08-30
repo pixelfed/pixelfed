@@ -65,7 +65,7 @@ class PushSubscriptionController extends Controller
             ContentEncoding::aes128gcm->value,
         );
 
-        $subscription->access_token_id = $user->token()->id;
+        $subscription->access_token_id = $this->clientIdentifier($request);
         $subscription->save();
 
         // notify_enabled defaults to false for every account and is only ever
@@ -95,15 +95,16 @@ class PushSubscriptionController extends Controller
         abort_unless($request->user()->tokenCan('push'), 403);
 
         $user = $request->user();
+        $identifier = $this->clientIdentifier($request);
 
-        // Per access token, matching Mastodon: unsubscribing on one device
-        // must not tear down every other device's subscription.
-        $deleted = $user->pushSubscriptions()
-            ->where('access_token_id', $user->token()->id)
-            ->delete();
+        // Per client, matching Mastodon: unsubscribing on one device must not
+        // tear down every other device's subscription.
+        $deleted = $identifier
+            ? $user->pushSubscriptions()->where('access_token_id', $identifier)->delete()
+            : 0;
 
         // Rows created before access_token_id existed have none recorded, so
-        // there is nothing to match them on. Clearing them when a token finds
+        // there is nothing to match them on. Clearing them when a client finds
         // no subscription of its own keeps unsubscribe working across the
         // upgrade, and they disappear for good once clients re-register.
         if ($deleted === 0) {
@@ -111,6 +112,20 @@ class PushSubscriptionController extends Controller
         }
 
         return $this->json([]);
+    }
+
+    /**
+     * Identifies the client making this request, so a subscription can be tied
+     * to the device that registered it. See WebPushService::clientIdentifier()
+     * for why a session-authenticated browser needs different treatment from a
+     * bearer token.
+     */
+    private function clientIdentifier(Request $request): ?string
+    {
+        return WebPushService::clientIdentifier(
+            $request->user()->token(),
+            $request->hasSession() ? $request->session()->getId() : null,
+        );
     }
 
     /**
