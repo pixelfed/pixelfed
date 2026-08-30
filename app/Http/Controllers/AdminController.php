@@ -35,6 +35,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Mail;
+use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
 use Illuminate\Validation\Rule;
 
@@ -651,8 +652,8 @@ class AdminController extends Controller
         $emoji->save();
 
         $fileName = $emoji->id.'.'.$request->emoji->extension();
+        $request->emoji->storePubliclyAs('public/emoji', $fileName);
         $emoji->media_path = 'emoji/'.$fileName;
-        CustomEmoji::storeMediaFromFile($emoji->media_path, $request->emoji->getPathname());
         $emoji->save();
         Cache::forget('pf:custom_emoji');
 
@@ -663,7 +664,7 @@ class AdminController extends Controller
     {
         abort_unless((bool) config_cache('federation.custom_emoji.enabled'), 404);
         $emoji = CustomEmoji::findOrFail($id);
-        CustomEmoji::deleteMedia($emoji->media_path);
+        Storage::delete("public/{$emoji->media_path}");
         Cache::forget('pf:custom_emoji');
         $emoji->delete();
 
