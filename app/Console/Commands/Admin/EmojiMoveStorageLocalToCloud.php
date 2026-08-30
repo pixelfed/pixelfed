@@ -184,8 +184,17 @@ class EmojiMoveStorageLocalToCloud extends Command
         $bar->setMessage('0.0', 'rate');
         $bar->start();
 
-        // Lazily yield a PutObject command per file so CommandPool pulls work as
-        // concurrency slots free up (keeps memory flat over large runs).
+        // Lazily yield a PutObject command per file, KEYED BY THE LOCAL PATH,
+        // so CommandPool pulls work as concurrency slots free up (memory stays
+        // flat) and the fulfilled/rejected callbacks receive the exact local
+        // path as their key. Combined with preserve_iterator_keys=true this
+        // avoids any index-based mapping between async results and files.
+        //
+        // Without this, CommandPool re-indexes promises and the callback key
+        // does NOT reliably map back to $files[$key] on out-of-order async
+        // completions — which mismaps results to the wrong file and can delete
+        // a local copy whose upload actually belonged to (or failed for)
+        // another file. That corruption is what left gaps on cloud.
         $commands = function () use ($client, $files, $bucket, $localDisk, $visibility, $sendAcl) {
             foreach ($files as $localPath) {
                 $params = [
@@ -196,15 +205,15 @@ class EmojiMoveStorageLocalToCloud extends Command
                 if ($sendAcl) {
                     $params['ACL'] = $visibility;
                 }
-                yield $client->getCommand('PutObject', $params);
+                yield $localPath => $client->getCommand('PutObject', $params);
             }
         };
 
         $pool = new CommandPool($client, $commands(), [
             'concurrency' => $concurrency,
-            'fulfilled' => function ($result, $iterKey) use (&$moved, $files, $localDisk, $keepLocal, $bar, $startedAt) {
+            'preserve_iterator_keys' => true,
+            'fulfilled' => function ($result, $localPath) use (&$moved, $localDisk, $keepLocal, $bar, $startedAt) {
                 $moved++;
-                $localPath = $files[$iterKey] ?? null;
                 if ($localPath && ! $keepLocal) {
                     $localDisk->delete($localPath);
                 }
@@ -212,11 +221,10 @@ class EmojiMoveStorageLocalToCloud extends Command
                 $bar->setMessage(sprintf('%.1f', $moved / $elapsed), 'rate');
                 $bar->advance();
             },
-            'rejected' => function ($reason, $iterKey) use (&$failed, $files, $bar) {
+            'rejected' => function ($reason, $localPath) use (&$failed, $bar) {
                 $failed++;
-                $localPath = $files[$iterKey] ?? '?';
                 $msg = $reason instanceof \Throwable ? $reason->getMessage() : (string) $reason;
-                $this->warn(PHP_EOL.'Upload failed for '.$localPath.': '.$msg);
+                $this->warn(PHP_EOL.'Upload failed for '.($localPath ?: '?').': '.$msg);
                 $bar->advance();
             },
         ]);
