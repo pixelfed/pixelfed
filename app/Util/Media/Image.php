@@ -123,6 +123,15 @@ class Image
             return;
         }
 
+        // The file this transform is about to supersede. When the output
+        // extension differs from what is currently stored (e.g. heic/avif -> jpg,
+        // or a thumbnail regenerated to a new extension), the new file lands at
+        // a different name and the old one would be orphaned in the media
+        // directory. Capture it now so we can delete it after a successful
+        // write. For the base image this is media_path; for a thumbnail it is
+        // the existing thumbnail_path.
+        $previousPath = $thumbnail ? $media->thumbnail_path : $media->media_path;
+
         try {
             $fileContents = null;
             $tempFile = null;
@@ -280,6 +289,11 @@ class Image
                 $media->mime = 'image/'.$outputExtension;
             }
 
+            // Remove the file we just superseded when the new output landed at a
+            // different path (extension change / thumbnail regeneration), so the
+            // old file is not orphaned in the media directory.
+            $this->deleteSupersededFile($previousPath, $converted['path'], $localFs);
+
             $media->save();
 
             if ($thumbnail) {
@@ -295,6 +309,36 @@ class Image
         } catch (\Exception $e) {
             if (config('app.dev_log')) {
                 Log::info('MediaResizeException: '.$e->getMessage().' | Could not process media id: '.$media->id);
+            }
+        }
+    }
+
+    /**
+     * Delete a previous file that a transform has just replaced, but only when
+     * the new output landed at a different path (so we never delete the file we
+     * just wrote). No-op when there was no previous path or it is unchanged.
+     */
+    protected function deleteSupersededFile(?string $previousPath, string $newPath, bool $localFs): void
+    {
+        if (! $previousPath || $previousPath === $newPath) {
+            return;
+        }
+
+        try {
+            if ($localFs) {
+                $full = storage_path('app/'.$previousPath);
+                if (is_file($full)) {
+                    @unlink($full);
+                }
+            } else {
+                $disk = Storage::disk($this->defaultDisk);
+                if ($disk->exists($previousPath)) {
+                    $disk->delete($previousPath);
+                }
+            }
+        } catch (\Exception $e) {
+            if (config('app.dev_log')) {
+                Log::info('Superseded media cleanup failed: '.$e->getMessage());
             }
         }
     }
