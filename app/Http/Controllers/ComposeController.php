@@ -396,7 +396,7 @@ class ComposeController extends Controller
                     ];
                 });
         });
-        
+
         $wildcard = config('database.default') === 'pgsql' ? 'ilike' : 'like';
         $q = '%'.$raw.'%';
 
