@@ -105,7 +105,7 @@ it('rejects an --hours value below 1', function () {
         ->assertExitCode(1);
 });
 
-it('errors when only/except leave no tasks to run', function () {
-    $this->artisan('storage:maintenance', ['--except' => 'remcache,empty-dirs'])
+it('errors when --only matches no valid task', function () {
+    $this->artisan('storage:maintenance', ['--only' => 'bogus'])
         ->assertExitCode(1);
 });

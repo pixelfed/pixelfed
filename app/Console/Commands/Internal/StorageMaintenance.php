@@ -16,7 +16,6 @@ class StorageMaintenance extends Command
     protected $signature = 'storage:maintenance
         {--hours=24 : Delete remcache files older than this many hours}
         {--only= : Comma-separated tasks to run (remcache,empty-dirs). Default: all}
-        {--except= : Comma-separated tasks to skip}
         {--dry-run : Report what would be removed without deleting}';
 
     /**
@@ -69,7 +68,7 @@ class StorageMaintenance extends Command
     }
 
     /**
-     * Determine which tasks to run from --only / --except.
+     * Determine which tasks to run from --only.
      *
      * @return list<string>
      */
@@ -78,11 +77,8 @@ class StorageMaintenance extends Command
         $all = ['remcache', 'empty-dirs'];
 
         $only = $this->parseList($this->option('only'));
-        $except = $this->parseList($this->option('except'));
 
-        $tasks = $only ? array_values(array_intersect($all, $only)) : $all;
-
-        return array_values(array_diff($tasks, $except));
+        return $only ? array_values(array_intersect($all, $only)) : $all;
     }
 
     /**
@@ -120,7 +116,7 @@ class StorageMaintenance extends Command
         $dir = storage_path('app/remcache');
 
         if (! is_dir($dir)) {
-            $this->info('remcache: directory does not exist, nothing to do.');
+            $this->verboseLine('remcache: directory does not exist, nothing to do.');
 
             return self::SUCCESS;
         }
@@ -147,7 +143,7 @@ class StorageMaintenance extends Command
             $path = $file->getPathname();
 
             if ($this->dryRun) {
-                $this->line('[dry-run] remcache: would delete '.$file->getFilename());
+                $this->verboseLine('[dry-run] remcache: would delete '.$file->getFilename());
                 $deleted++;
                 $reclaimed += $size;
 
@@ -161,7 +157,7 @@ class StorageMaintenance extends Command
         }
 
         $verb = $this->dryRun ? 'would delete' : 'deleted';
-        $this->info(sprintf('remcache: %s %d file(s), %s.', $verb, $deleted, $this->humanBytes($reclaimed)));
+        $this->verboseLine(sprintf('remcache: %s %d file(s), %s.', $verb, $deleted, $this->humanBytes($reclaimed)));
 
         return self::SUCCESS;
     }
@@ -185,12 +181,12 @@ class StorageMaintenance extends Command
             $removed = $this->pruneEmptyDirectoriesUnder($disk, $root);
 
             $verb = $this->dryRun ? 'would remove' : 'removed';
-            $this->info(sprintf('empty-dirs: %s %s %d empty dir(s).', $root, $verb, $removed));
+            $this->verboseLine(sprintf('empty-dirs: %s %s %d empty dir(s).', $root, $verb, $removed));
             $total += $removed;
         }
 
         $verb = $this->dryRun ? 'would remove' : 'removed';
-        $this->info(sprintf('empty-dirs: %s %d empty dir(s) in total.', $verb, $total));
+        $this->verboseLine(sprintf('empty-dirs: %s %d empty dir(s) in total.', $verb, $total));
     }
 
     /**
@@ -213,7 +209,7 @@ class StorageMaintenance extends Command
             }
 
             if ($this->dryRun) {
-                $this->line('[dry-run] empty-dirs: would remove '.$directory);
+                $this->verboseLine('[dry-run] empty-dirs: would remove '.$directory);
                 $removed++;
 
                 continue;
@@ -224,6 +220,17 @@ class StorageMaintenance extends Command
         }
 
         return $removed;
+    }
+
+    /**
+     * Write a line only when the command is run with -v/--verbose. The command
+     * is quiet by default; errors are always shown via $this->error().
+     */
+    private function verboseLine(string $message): void
+    {
+        if ($this->output->isVerbose()) {
+            $this->line($message);
+        }
     }
 
     private function humanBytes(int $bytes): string
