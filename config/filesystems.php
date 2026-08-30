@@ -83,7 +83,7 @@ return [
             ],
         ],
 
-        // Source disk for admin:MediaMoveStorageCloudToCloud (cold migration).
+        // Source disk for unstable:MediaMoveStorageCloudToCloud (cold migration).
         // After pointing AWS_* at the NEW bucket, keep the OLD bucket's
         // credentials here as AWS_OLD_* so existing data can be copied across
         // to the new bucket and media URLs rewritten.

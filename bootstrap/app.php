@@ -145,7 +145,7 @@ return Application::configure(basePath: dirname(__DIR__))
 
         if ((bool) config_cache('pixelfed.cloud_storage') && (bool) config_cache('media.delete_local_after_cloud')) {
             // Upload any local stragglers to cloud and GC verified local copies.
-            $schedule->command('admin:MediaMoveStorageLocalToCloud --force --limit=500')->hourlyAt(15);
+            $schedule->command('unstable:MediaMoveStorageLocalToCloud --force --limit=500')->hourlyAt(15);
         }
 
         if (config('import.instagram.enabled')) {

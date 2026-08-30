@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Console\Commands\Admin;
+namespace App\Console\Commands\Admin\Unstable;
 
 use App\Console\Commands\Concerns\ManagesMediaStorageEnv;
 use App\Models\Media;
@@ -21,7 +21,7 @@ class MediaMoveStorageLocalToCloud extends Command
      *
      * @var string
      */
-    protected $signature = 'admin:MediaMoveStorageLocalToCloud
+    protected $signature = 'unstable:MediaMoveStorageLocalToCloud
         {--limit=500 : Max media rows to process this run}
         {--dry-run : Report what would happen without copying or writing}
         {--keep-local : Do not delete local files after verifying the cloud copy}

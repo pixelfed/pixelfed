@@ -14,7 +14,7 @@ uses(LazilyRefreshDatabase::class);
 | Media storage migration commands
 |--------------------------------------------------------------------------
 |
-| admin:MediaMoveStorageLocalToCloud / admin:MediaMoveStorageCloudToLocal
+| unstable:MediaMoveStorageLocalToCloud / unstable:MediaMoveStorageCloudToLocal
 | Move media between local and cloud disks, verify by size/sha256, GC the
 | source, and manage the PF_ENABLE_CLOUD .env flag for hot migrations.
 |
@@ -74,11 +74,11 @@ function makeCloudMedia(): Media
     ]);
 }
 
-describe('admin:MediaMoveStorageCloudToLocal', function () {
+describe('unstable:MediaMoveStorageCloudToLocal', function () {
     it('downloads cloud media to local, clears cloud urls and deletes the cloud copy', function () {
         $media = makeCloudMedia();
 
-        $this->artisan('admin:MediaMoveStorageCloudToLocal', ['--force' => true])
+        $this->artisan('unstable:MediaMoveStorageCloudToLocal', ['--force' => true])
             ->assertExitCode(0);
 
         // File is now on local disk.
@@ -97,7 +97,7 @@ describe('admin:MediaMoveStorageCloudToLocal', function () {
     it('keeps the cloud copy with --keep-cloud', function () {
         $media = makeCloudMedia();
 
-        $this->artisan('admin:MediaMoveStorageCloudToLocal', ['--force' => true, '--keep-cloud' => true])
+        $this->artisan('unstable:MediaMoveStorageCloudToLocal', ['--force' => true, '--keep-cloud' => true])
             ->assertExitCode(0);
 
         expect(Storage::disk('local')->exists($media->media_path))->toBeTrue();
@@ -107,7 +107,7 @@ describe('admin:MediaMoveStorageCloudToLocal', function () {
     it('does not modify anything in dry-run', function () {
         $media = makeCloudMedia();
 
-        $this->artisan('admin:MediaMoveStorageCloudToLocal', ['--force' => true, '--dry-run' => true])
+        $this->artisan('unstable:MediaMoveStorageCloudToLocal', ['--force' => true, '--dry-run' => true])
             ->assertExitCode(0);
 
         expect(Storage::disk('local')->exists($media->media_path))->toBeFalse();
@@ -120,7 +120,7 @@ describe('admin:MediaMoveStorageCloudToLocal', function () {
         Config::set('pixelfed.cloud_storage', true);
         makeCloudMedia();
 
-        $this->artisan('admin:MediaMoveStorageCloudToLocal', ['--force' => true])
+        $this->artisan('unstable:MediaMoveStorageCloudToLocal', ['--force' => true])
             ->assertExitCode(0);
 
         expect(file_get_contents(app()->environmentFilePath()))->toContain('PF_ENABLE_CLOUD="false"');
@@ -128,19 +128,19 @@ describe('admin:MediaMoveStorageCloudToLocal', function () {
     });
 });
 
-describe('admin:MediaMoveStorageLocalToCloud', function () {
+describe('unstable:MediaMoveStorageLocalToCloud', function () {
     it('requires a configured cloud disk', function () {
         // Fake s3 disk has no url() host resolvable? Storage::fake provides a
         // url, so instead point cloud at a disk that throws.
         Config::set('filesystems.cloud', 'does-not-exist');
 
-        $this->artisan('admin:MediaMoveStorageLocalToCloud', ['--force' => true])
+        $this->artisan('unstable:MediaMoveStorageLocalToCloud', ['--force' => true])
             ->assertExitCode(1);
     });
 
     it('flips PF_ENABLE_CLOUD to true before migrating (dry-run reports it)', function () {
         // cloud currently false in the temp .env from beforeEach.
-        $this->artisan('admin:MediaMoveStorageLocalToCloud', ['--dry-run' => true])
+        $this->artisan('unstable:MediaMoveStorageLocalToCloud', ['--dry-run' => true])
             ->expectsOutputToContain('PF_ENABLE_CLOUD')
             ->assertExitCode(0);
 

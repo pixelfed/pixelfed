@@ -11,7 +11,7 @@ uses(LazilyRefreshDatabase::class);
 
 /*
 |--------------------------------------------------------------------------
-| admin:MediaMoveStorageCloudToCloud
+| unstable:MediaMoveStorageCloudToCloud
 |--------------------------------------------------------------------------
 |
 | Cold S3->S3 migration: copy existing objects from the old bucket (s3-old)
@@ -62,7 +62,7 @@ function makeOldBucketMedia(string $oldHost = 'https://cdn.pixelfed.au'): Media
 it('copies old-bucket media to the new bucket, rewrites urls and GCs the source', function () {
     $media = makeOldBucketMedia();
 
-    $this->artisan('admin:MediaMoveStorageCloudToCloud', ['--force' => true])
+    $this->artisan('unstable:MediaMoveStorageCloudToCloud', ['--force' => true])
         ->assertExitCode(0);
 
     // Copied to destination.
@@ -79,7 +79,7 @@ it('copies old-bucket media to the new bucket, rewrites urls and GCs the source'
 it('keeps the source objects with --keep-source', function () {
     $media = makeOldBucketMedia();
 
-    $this->artisan('admin:MediaMoveStorageCloudToCloud', ['--force' => true, '--keep-source' => true])
+    $this->artisan('unstable:MediaMoveStorageCloudToCloud', ['--force' => true, '--keep-source' => true])
         ->assertExitCode(0);
 
     expect(Storage::disk('s3')->exists($media->media_path))->toBeTrue();
@@ -89,7 +89,7 @@ it('keeps the source objects with --keep-source', function () {
 it('makes no changes in dry-run', function () {
     $media = makeOldBucketMedia();
 
-    $this->artisan('admin:MediaMoveStorageCloudToCloud', ['--force' => true, '--dry-run' => true])
+    $this->artisan('unstable:MediaMoveStorageCloudToCloud', ['--force' => true, '--dry-run' => true])
         ->assertExitCode(0);
 
     expect(Storage::disk('s3')->exists($media->media_path))->toBeFalse();
@@ -101,7 +101,7 @@ it('skips media already pointing at the destination host', function () {
     $media = makeOldBucketMedia('https://cdneast.pixelfed.au');
     $before = $media->cdn_url;
 
-    $this->artisan('admin:MediaMoveStorageCloudToCloud', ['--force' => true])
+    $this->artisan('unstable:MediaMoveStorageCloudToCloud', ['--force' => true])
         ->assertExitCode(0);
 
     expect($media->fresh()->cdn_url)->toBe($before);
@@ -110,6 +110,6 @@ it('skips media already pointing at the destination host', function () {
 });
 
 it('errors when source and destination are the same disk', function () {
-    $this->artisan('admin:MediaMoveStorageCloudToCloud', ['--sourceDisk' => 's3', '--force' => true])
+    $this->artisan('unstable:MediaMoveStorageCloudToCloud', ['--sourceDisk' => 's3', '--force' => true])
         ->assertExitCode(1);
 });
