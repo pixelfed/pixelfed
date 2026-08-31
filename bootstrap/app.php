@@ -5,6 +5,7 @@ use App\Http\Middleware\Admin;
 use App\Http\Middleware\Api\Admin as ApiAdmin;
 use App\Http\Middleware\EmailVerificationCheck;
 use App\Http\Middleware\FrameGuard;
+use App\Http\Middleware\GrantFirstPartyToken;
 use App\Http\Middleware\Localization;
 use App\Http\Middleware\RedirectIfAuthenticated;
 use App\Http\Middleware\RestrictedAccess;
@@ -41,6 +42,7 @@ use Illuminate\View\Middleware\ShareErrorsFromSession;
 use Laravel\Passport\Http\Middleware\CheckToken;
 use Laravel\Passport\Http\Middleware\CheckTokenForAnyScope;
 use Laravel\Passport\Http\Middleware\CreateFreshApiToken;
+use Laravel\Sanctum\Http\Middleware\EnsureFrontendRequestsAreStateful;
 use League\OAuth2\Server\Exception\OAuthServerException;
 use Symfony\Component\HttpKernel\Exception\HttpExceptionInterface;
 
@@ -100,12 +102,13 @@ return Application::configure(basePath: dirname(__DIR__))
         ]);
 
         $middleware->group('api', [
+            EnsureFrontendRequestsAreStateful::class,
             'throttle:api',
             'bindings',
+            GrantFirstPartyToken::class,
         ]);
 
         $middleware->validateCsrfTokens(except: [
-            '/api/v1/*',
             'oauth/token',
         ]);
 

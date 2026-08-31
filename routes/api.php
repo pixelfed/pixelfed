@@ -40,7 +40,7 @@ use App\Http\Controllers\Stories\StoryApiV1Controller;
 use App\Http\Controllers\StoryController;
 use App\Http\Controllers\UserAppSettingsController;
 
-$middleware = ['auth:api', 'validemail'];
+$middleware = ['auth:sanctum,api', 'validemail'];
 
 Route::post('/f/inbox', [FederationController::class, 'sharedInbox']);
 Route::post('/users/{username}/inbox', [FederationController::class, 'userInbox']);
