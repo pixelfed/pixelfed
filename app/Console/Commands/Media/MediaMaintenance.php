@@ -7,6 +7,7 @@ use App\Models\Profile;
 use App\Models\Status;
 use App\Services\MediaStorageService;
 use Illuminate\Console\Command;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\DB;
@@ -21,6 +22,8 @@ class MediaMaintenance extends Command
     protected $signature = 'media:maintenance
         {--scope= : The maintenance routine to run. Supported: orphanedMedia}
         {--server=both : Which media to target by origin: remote, local, or both}
+        {--status= : Filter by referenced status state: live, soft, or hard (deleted)}
+        {--profile= : Filter by referenced profile state: live, soft, or hard (deleted)}
         {--limit=1000 : Max media rows to process this run}
         {--dry-run : Report what would happen without detaching or deleting}
         {--force : Skip confirmation prompts}';
@@ -48,6 +51,13 @@ class MediaMaintenance extends Command
      */
     protected array $servers = ['remote', 'local', 'both'];
 
+    /**
+     * Supported --status / --profile state filter values.
+     *
+     * @var array<int, string>
+     */
+    protected array $states = ['live', 'soft', 'hard'];
+
     public function handle(): int
     {
         $scope = $this->option('scope');
@@ -71,6 +81,15 @@ class MediaMaintenance extends Command
             return self::FAILURE;
         }
 
+        foreach (['status', 'profile'] as $stateOpt) {
+            $value = $this->option($stateOpt);
+            if ($value !== null && ! in_array($value, $this->states, true)) {
+                $this->error('Invalid --'.$stateOpt.' "'.$value.'". Supported: '.implode(', ', $this->states).'.');
+
+                return self::FAILURE;
+            }
+        }
+
         return $this->{$this->scopes[$scope]}();
     }
 
@@ -87,9 +106,20 @@ class MediaMaintenance extends Command
         $limit = max(1, (int) $this->option('limit'));
         $dryRun = (bool) $this->option('dry-run');
         $server = (string) $this->option('server');
+        $statusFilter = $this->option('status');
+        $profileFilter = $this->option('profile');
+
+        // The orphaned scope by definition targets media whose status is NOT
+        // live, so --status=live can never match here.
+        if ($statusFilter === 'live') {
+            $this->warn('--status=live matches no orphaned media (orphaned means the status is soft- or hard-deleted). Nothing to do.');
+
+            return self::SUCCESS;
+        }
 
         // Media whose status_id is set but has no matching live (non-trashed)
-        // status row, filtered by origin (remote/local/both).
+        // status row, filtered by origin (remote/local/both) and optionally by
+        // the state of the referenced status/profile.
         $query = Media::whereNotNull('status_id')
             ->when($server === 'remote', fn ($q) => $q->where('remote_media', true))
             ->when($server === 'local', fn ($q) => $q->where('remote_media', false))
@@ -100,10 +130,17 @@ class MediaMaintenance extends Command
                     ->whereNull('statuses.deleted_at');
             });
 
+        $this->applyStateFilter($query, $statusFilter, 'statuses', 'media.status_id');
+        $this->applyStateFilter($query, $profileFilter, 'profiles', 'media.profile_id');
+
+        $filterDesc = '--server='.$server
+            .($statusFilter ? ' --status='.$statusFilter : '')
+            .($profileFilter ? ' --profile='.$profileFilter : '');
+
         $total = (clone $query)->count();
 
         if ($total === 0) {
-            $this->info('No orphaned media found for --server='.$server.'. Nothing to do.');
+            $this->info('No orphaned media found for ['.$filterDesc.']. Nothing to do.');
 
             return self::SUCCESS;
         }
@@ -114,7 +151,7 @@ class MediaMaintenance extends Command
         // trashed-aware) so we can annotate live vs soft/hard-deleted.
         $stateMap = $this->resolveStates($media);
 
-        $this->info('Found '.$total.' orphaned media row(s) [--server='.$server.']; processing '.$media->count().' this run (limit '.$limit.').');
+        $this->info('Found '.$total.' orphaned media row(s) ['.$filterDesc.']; processing '.$media->count().' this run (limit '.$limit.').');
 
         if ($dryRun) {
             $verbose = $this->output->isVerbose();
@@ -202,6 +239,45 @@ class MediaMaintenance extends Command
         }
 
         return self::SUCCESS;
+    }
+
+    /**
+     * Constrain the query to media whose referenced row (in $table, matched by
+     * $mediaColumn = {$table}.id) is in the requested lifecycle state.
+     *
+     *   live → referenced row exists and is not soft-deleted
+     *   soft → referenced row exists with deleted_at set
+     *   hard → referenced row does not exist at all
+     *
+     * Applied at the SQL level so it composes correctly with --limit.
+     *
+     * @param  Builder<Media>  $query
+     */
+    protected function applyStateFilter($query, ?string $state, string $table, string $mediaColumn): void
+    {
+        if ($state === null) {
+            return;
+        }
+
+        $matchRow = function ($q) use ($table, $mediaColumn) {
+            $q->select(DB::raw(1))
+                ->from($table)
+                ->whereColumn($table.'.id', $mediaColumn);
+        };
+
+        if ($state === 'hard') {
+            $query->whereNotExists($matchRow);
+
+            return;
+        }
+
+        // live or soft: a row must exist, with the appropriate deleted_at state.
+        $query->whereExists(function ($q) use ($matchRow, $table, $state) {
+            $matchRow($q);
+            $state === 'soft'
+                ? $q->whereNotNull($table.'.deleted_at')
+                : $q->whereNull($table.'.deleted_at');
+        });
     }
 
     /**
