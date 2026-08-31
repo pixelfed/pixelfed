@@ -52,13 +52,27 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\RateLimiter;
+use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Str;
+use Illuminate\Validation\Rule;
 use League\Fractal;
 use League\Fractal\Serializer\ArraySerializer;
 
 class ApiV1Dot1Controller extends Controller
 {
     protected $fractal;
+
+    const REPORT_TYPES = [
+        'spam',
+        'sensitive',
+        'abusive',
+        'underage',
+        'violence',
+        'copyright',
+        'impersonation',
+        'scam',
+        'terrorism',
+    ];
 
     public function __construct()
     {
@@ -93,115 +107,98 @@ class ApiV1Dot1Controller extends Controller
             abort_if(BouncerService::checkIp($request->ip()), 404);
         }
 
-        $report_type = $request->input('report_type');
-        $object_id = $request->input('object_id');
-        $object_type = $request->input('object_type');
+        $validator = Validator::make($request->all(), [
+            'report_type' => ['required', 'string', Rule::in(self::REPORT_TYPES)],
+            'object_id' => ['required'],
+            'object_type' => ['required', 'string', Rule::in(['post', 'user', 'story'])],
+            'message' => ['nullable', 'string'],
+        ]);
 
-        $types = [
-            'spam',
-            'sensitive',
-            'abusive',
-            'underage',
-            'violence',
-            'copyright',
-            'impersonation',
-            'scam',
-            'terrorism',
-        ];
-
-        if (! $report_type || ! $object_id || ! $object_type) {
+        if ($validator->fails()) {
             return $this->error('Invalid or missing parameters', 400, ['error_code' => 'ERROR_INVALID_PARAMS']);
         }
 
-        if (! in_array($report_type, $types)) {
-            return $this->error('Invalid report type', 400, ['error_code' => 'ERROR_TYPE_INVALID']);
+        $reportType = $request->input('report_type');
+        $objectId = $request->input('object_id');
+        $objectType = $request->input('object_type');
+
+        $message = $this->sanitizeReportMessage($request->input('message'));
+
+        if ($message === false) {
+            return $this->error('Message is too long', 400, ['error_code' => 'ERROR_MESSAGE_TOO_LONG']);
         }
 
-        if ($object_type === 'user' && $object_id == $user->profile_id) {
+        [$object, $modelClass, $reportedProfileId] = match ($objectType) {
+            'post' => [$post = Status::find($objectId), Status::class, $post?->profile_id],
+            'user' => [$profile = Profile::find($objectId), Profile::class, $profile?->id],
+            'story' => [$story = Story::whereActive(true)->find($objectId), Story::class, $story?->profile_id],
+        };
+
+        if (! $object) {
+            return $this->error('Invalid object id', 400, ['error_code' => 'ERROR_INVALID_OBJECT_ID']);
+        }
+
+        if ($objectType === 'story') {
+            $follows = Follower::whereProfileId($user->profile_id)
+                ->whereFollowingId($object->profile_id)
+                ->exists();
+
+            if (! $follows) {
+                return $this->error('Invalid object id', 400, ['error_code' => 'ERROR_INVALID_OBJECT_ID']);
+            }
+        }
+
+        if ($reportedProfileId == $user->profile_id) {
             return $this->error('Cannot self report', 400, ['error_code' => 'ERROR_NO_SELF_REPORTS']);
         }
 
-        $rpid = null;
+        $exists = Report::whereUserId($user->id)
+            ->whereObjectId($object->id)
+            ->whereObjectType($modelClass)
+            ->exists();
 
-        switch ($object_type) {
-            case 'post':
-                $object = Status::find($object_id);
-                if (! $object) {
-                    return $this->error('Invalid object id', 400, ['error_code' => 'ERROR_INVALID_OBJECT_ID']);
-                }
-                $object_type = Status::class;
-                $exists = Report::whereUserId($user->id)
-                    ->whereObjectId($object->id)
-                    ->whereObjectType(Status::class)
-                    ->count();
-
-                $rpid = $object->profile_id;
-                break;
-
-            case 'user':
-                $object = Profile::find($object_id);
-                if (! $object) {
-                    return $this->error('Invalid object id', 400, ['error_code' => 'ERROR_INVALID_OBJECT_ID']);
-                }
-                $object_type = Profile::class;
-                $exists = Report::whereUserId($user->id)
-                    ->whereObjectId($object->id)
-                    ->whereObjectType(Profile::class)
-                    ->count();
-                $rpid = $object->id;
-                break;
-
-            case 'story':
-                $object = Story::whereActive(true)->find($object_id);
-                if (! $object) {
-                    return $this->error('Invalid object id', 400, ['error_code' => 'ERROR_INVALID_OBJECT_ID']);
-                }
-                if ($object->profile_id == $user->profile_id) {
-                    return $this->error('Cannot self report', 400, ['error_code' => 'ERROR_NO_SELF_REPORTS']);
-                }
-                if (! Follower::whereProfileId($user->profile_id)->whereFollowingId($object->profile_id)->exists()) {
-                    return $this->error('Invalid object id', 400, ['error_code' => 'ERROR_INVALID_OBJECT_ID']);
-                }
-                $object_type = Story::class;
-                $exists = Report::whereUserId($user->id)
-                    ->whereObjectId($object->id)
-                    ->whereObjectType(Story::class)
-                    ->count();
-
-                $rpid = $object->profile_id;
-                break;
-
-            default:
-                return $this->error('Invalid report type', 400, ['error_code' => 'ERROR_REPORT_OBJECT_TYPE_INVALID']);
-        }
-
-        if ($exists !== 0) {
+        if ($exists) {
             return $this->error('Duplicate report', 400, ['error_code' => 'ERROR_REPORT_DUPLICATE']);
-        }
-
-        if ($object->profile_id == $user->profile_id) {
-            return $this->error('Cannot self report', 400, ['error_code' => 'ERROR_NO_SELF_REPORTS']);
         }
 
         $report = new Report;
         $report->profile_id = $user->profile_id;
         $report->user_id = $user->id;
         $report->object_id = $object->id;
-        $report->object_type = $object_type;
-        $report->reported_profile_id = $rpid;
-        $report->type = $report_type;
+        $report->object_type = $modelClass;
+        $report->reported_profile_id = $reportedProfileId;
+        $report->type = $reportType;
+        $report->message = $message;
         $report->save();
 
         if (config('instance.reports.email.enabled')) {
             ReportNotifyAdminViaEmail::dispatch($report)->onQueue('default');
         }
 
-        $res = [
+        return $this->json([
             'msg' => 'Successfully sent report',
             'code' => 200,
-        ];
+        ]);
+    }
 
-        return $this->json($res);
+    protected function sanitizeReportMessage(?string $message): string|false|null
+    {
+        if (! $message) {
+            return null;
+        }
+
+        $clean = preg_replace('/[\x00-\x08\x0B\x0C\x0E-\x1F\x7F\x{200B}-\x{200F}\x{FEFF}]/u', '', $message);
+        $clean = trim(preg_replace('/\s+/u', ' ', $clean));
+
+        if ($clean === '') {
+            return null;
+        }
+
+        if (strlen($clean) > 255) {
+            return false;
+        }
+
+        return $clean;
     }
 
     /**
