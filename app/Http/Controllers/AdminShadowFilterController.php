@@ -6,8 +6,6 @@ use App\Models\AdminShadowFilter;
 use App\Models\Profile;
 use App\Services\AccountService;
 use App\Services\AdminShadowFilterService;
-use Illuminate\Contracts\View\View;
-use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 
 class AdminShadowFilterController extends Controller
@@ -17,7 +15,7 @@ class AdminShadowFilterController extends Controller
         $this->middleware(['auth', 'admin']);
     }
 
-    public function home(Request $request): View
+    public function home(Request $request)
     {
         $filter = $request->input('filter');
         $searchQuery = $request->input('q');
@@ -39,7 +37,7 @@ class AdminShadowFilterController extends Controller
                     ->pluck('id')
                     ->toArray();
 
-                return $q->where('item_type', Profile::class)->whereIn('item_id', $ids);
+                return $q->whereIn('item_type', ['App\Profile', 'App\Models\Profile'])->whereIn('item_id', $ids);
             })
             ->latest()
             ->paginate(10)
@@ -48,12 +46,12 @@ class AdminShadowFilterController extends Controller
         return view('admin.asf.home', compact('filters'));
     }
 
-    public function create(Request $request): View
+    public function create(Request $request)
     {
         return view('admin.asf.create');
     }
 
-    public function edit(Request $request, $id): View
+    public function edit(Request $request, $id)
     {
         $filter = AdminShadowFilter::findOrFail($id);
         $profile = AccountService::get($filter->item_id);
@@ -61,7 +59,7 @@ class AdminShadowFilterController extends Controller
         return view('admin.asf.edit', compact('filter', 'profile'));
     }
 
-    public function store(Request $request): RedirectResponse
+    public function store(Request $request)
     {
         $this->validate($request, [
             'username' => 'required',
@@ -98,7 +96,7 @@ class AdminShadowFilterController extends Controller
         return redirect('/i/admin/asf/home');
     }
 
-    public function storeEdit(Request $request, $id): RedirectResponse
+    public function storeEdit(Request $request, $id)
     {
         $this->validate($request, [
             'active' => 'sometimes',
