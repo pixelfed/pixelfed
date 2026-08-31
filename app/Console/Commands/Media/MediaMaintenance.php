@@ -3,8 +3,12 @@
 namespace App\Console\Commands\Media;
 
 use App\Models\Media;
+use App\Models\Profile;
+use App\Models\Status;
 use App\Services\MediaStorageService;
 use Illuminate\Console\Command;
+use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\DB;
 
 class MediaMaintenance extends Command
@@ -16,6 +20,7 @@ class MediaMaintenance extends Command
      */
     protected $signature = 'media:maintenance
         {--scope= : The maintenance routine to run. Supported: orphanedMedia}
+        {--server=both : Which media to target by origin: remote, local, or both}
         {--limit=1000 : Max media rows to process this run}
         {--dry-run : Report what would happen without detaching or deleting}
         {--force : Skip confirmation prompts}';
@@ -36,6 +41,13 @@ class MediaMaintenance extends Command
         'orphanedMedia' => 'handleOrphanedMedia',
     ];
 
+    /**
+     * Supported --server values.
+     *
+     * @var array<int, string>
+     */
+    protected array $servers = ['remote', 'local', 'both'];
+
     public function handle(): int
     {
         $scope = $this->option('scope');
@@ -48,6 +60,13 @@ class MediaMaintenance extends Command
 
         if (! isset($this->scopes[$scope])) {
             $this->error('Unknown scope "'.$scope.'". Supported: '.implode(', ', array_keys($this->scopes)).'.');
+
+            return self::FAILURE;
+        }
+
+        $server = (string) $this->option('server');
+        if (! in_array($server, $this->servers, true)) {
+            $this->error('Invalid --server "'.$server.'". Supported: '.implode(', ', $this->servers).'.');
 
             return self::FAILURE;
         }
@@ -67,10 +86,13 @@ class MediaMaintenance extends Command
     {
         $limit = max(1, (int) $this->option('limit'));
         $dryRun = (bool) $this->option('dry-run');
+        $server = (string) $this->option('server');
 
         // Media whose status_id is set but has no matching live (non-trashed)
-        // status row.
+        // status row, filtered by origin (remote/local/both).
         $query = Media::whereNotNull('status_id')
+            ->when($server === 'remote', fn ($q) => $q->where('remote_media', true))
+            ->when($server === 'local', fn ($q) => $q->where('remote_media', false))
             ->whereNotExists(function ($q) {
                 $q->select(DB::raw(1))
                     ->from('statuses')
@@ -81,37 +103,46 @@ class MediaMaintenance extends Command
         $total = (clone $query)->count();
 
         if ($total === 0) {
-            $this->info('No orphaned media found. Nothing to do.');
+            $this->info('No orphaned media found for --server='.$server.'. Nothing to do.');
 
             return self::SUCCESS;
         }
 
         $media = $query->limit($limit)->get();
 
-        $this->info('Found '.$total.' orphaned media row(s); processing '.$media->count().' this run (limit '.$limit.').');
+        // Resolve status + profile state for the rows in this batch (batched,
+        // trashed-aware) so we can annotate live vs soft/hard-deleted.
+        $stateMap = $this->resolveStates($media);
+
+        $this->info('Found '.$total.' orphaned media row(s) [--server='.$server.']; processing '.$media->count().' this run (limit '.$limit.').');
 
         if ($dryRun) {
-            $columns = $this->output->isVerbose()
-                ? ['media_id', 'status_id', 'remote_media', 'profile_id', 'mime', 'size', 'created_at', 'media_path']
-                : ['media_id', 'status_id', 'remote_media', 'media_path'];
+            $verbose = $this->output->isVerbose();
+            $columns = $verbose
+                ? ['media_id', 'status_id', 'status_state', 'profile_id', 'profile_state', 'remote_media', 'mime', 'size', 'created_at', 'media_path']
+                : ['media_id', 'status_id', 'status_state', 'profile_id', 'profile_state', 'remote_media', 'media_path'];
 
             $this->table(
                 $columns,
-                $media->map(function ($m) {
-                    $base = [
+                $media->map(function ($m) use ($stateMap, $verbose) {
+                    $row = [
                         'media_id' => $m->id,
                         'status_id' => $m->status_id,
+                        'status_state' => $stateMap['status'][$m->status_id] ?? 'unknown',
+                        'profile_id' => $m->profile_id ?? 'null',
+                        'profile_state' => $m->profile_id ? ($stateMap['profile'][$m->profile_id] ?? 'unknown') : 'n/a',
                         'remote_media' => (bool) $m->remote_media ? 'true' : 'false',
-                        'profile_id' => $m->profile_id,
                         'mime' => $m->mime,
                         'size' => $m->size,
                         'created_at' => optional($m->created_at)->toDateTimeString(),
                         'media_path' => $m->media_path,
                     ];
 
-                    return $this->output->isVerbose()
-                        ? array_values($base)
-                        : [$base['media_id'], $base['status_id'], $base['remote_media'], $base['media_path']];
+                    if (! $verbose) {
+                        unset($row['mime'], $row['size'], $row['created_at']);
+                    }
+
+                    return array_values($row);
                 })->all()
             );
             $this->comment('[dry-run] Would detach and delete the '.$media->count().' row(s) above.');
@@ -142,13 +173,15 @@ class MediaMaintenance extends Command
 
             if ($verbose) {
                 $this->line(sprintf(
-                    '  [%d/%d] detached + dispatched delete: media_id=%d status_id=%s remote_media=%s profile_id=%s mime=%s size=%s path=%s',
+                    '  [%d/%d] detached + dispatched delete: media_id=%d status_id=%s (%s) profile_id=%s (%s) remote_media=%s mime=%s size=%s path=%s',
                     $processed,
                     $media->count(),
                     $m->id,
                     $originalStatusId ?? 'null',
-                    (bool) $m->remote_media ? 'true' : 'false',
+                    $stateMap['status'][$originalStatusId] ?? 'unknown',
                     $m->profile_id ?? 'null',
+                    $m->profile_id ? ($stateMap['profile'][$m->profile_id] ?? 'unknown') : 'n/a',
+                    (bool) $m->remote_media ? 'true' : 'false',
                     $m->mime ?? 'null',
                     $m->size ?? 'null',
                     $m->media_path ?? 'null'
@@ -169,5 +202,59 @@ class MediaMaintenance extends Command
         }
 
         return self::SUCCESS;
+    }
+
+    /**
+     * Resolve the lifecycle state of the statuses and profiles referenced by a
+     * batch of media rows.
+     *
+     * A referenced id can be:
+     *   - live         row exists and is not soft-deleted
+     *   - soft-deleted row exists with deleted_at set
+     *   - hard-deleted row does not exist at all (only meaningful for statuses)
+     *
+     * @param  Collection<int, Media>  $media
+     * @return array{status: array<int, string>, profile: array<int, string>}
+     */
+    protected function resolveStates($media): array
+    {
+        $statusIds = $media->pluck('status_id')->filter()->unique()->values();
+        $profileIds = $media->pluck('profile_id')->filter()->unique()->values();
+
+        return [
+            'status' => $this->stateFor(Status::class, $statusIds),
+            'profile' => $this->stateFor(Profile::class, $profileIds),
+        ];
+    }
+
+    /**
+     * Build an id => state map for a soft-deletable model over the given ids.
+     *
+     * @param  class-string<Model>  $model
+     * @param  Collection<int, int|string>  $ids
+     * @return array<int, string>
+     */
+    protected function stateFor(string $model, $ids): array
+    {
+        if ($ids->isEmpty()) {
+            return [];
+        }
+
+        $rows = $model::withTrashed()
+            ->whereIn('id', $ids->all())
+            ->pluck('deleted_at', 'id');
+
+        $map = [];
+        foreach ($ids as $id) {
+            if (! $rows->has($id)) {
+                $map[$id] = 'hard-deleted';
+            } elseif ($rows->get($id) !== null) {
+                $map[$id] = 'soft-deleted';
+            } else {
+                $map[$id] = 'live';
+            }
+        }
+
+        return $map;
     }
 }
