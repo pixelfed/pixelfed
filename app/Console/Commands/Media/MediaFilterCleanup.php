@@ -12,14 +12,14 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\DB;
 
-class MediaMaintenance extends Command
+class MediaFilterCleanup extends Command
 {
     /**
      * The name and signature of the console command.
      *
      * @var string
      */
-    protected $signature = 'media:maintenance
+    protected $signature = 'media:filtercleanup
         {--scope= : The maintenance routine to run. Supported: orphanedMedia}
         {--server=both : Which media to target by origin: remote, local, or both}
         {--status= : Filter by referenced status state: soft or hard (deleted)}
