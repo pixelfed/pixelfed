@@ -2,8 +2,11 @@
 
 namespace App\Providers;
 
+use App\Listeners\AuthLogin;
+use App\Listeners\LogFailedLogin;
 use App\Models\AccountInterstitial;
 use App\Models\Avatar;
+use App\Models\CustomFilter;
 use App\Models\DirectMessage;
 use App\Models\Follower;
 use App\Models\HashtagFollow;
@@ -31,14 +34,18 @@ use App\Observers\StatusHashtagObserver;
 use App\Observers\StatusObserver;
 use App\Observers\UserFilterObserver;
 use App\Observers\UserObserver;
+use App\Policies\CustomFilterPolicy;
 use App\Services\AccountService;
 use App\Services\UserOidcService;
+use Illuminate\Auth\Events\Failed;
+use Illuminate\Auth\Events\Login;
 use Illuminate\Cache\RateLimiting\Limit;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\Relation;
 use Illuminate\Http\Request;
 use Illuminate\Pagination\Paginator;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Event;
 use Illuminate\Support\Facades\Gate;
 use Illuminate\Support\Facades\RateLimiter;
 use Illuminate\Support\Facades\URL;
@@ -97,6 +104,11 @@ class AppServiceProvider extends ServiceProvider
             return Auth::check() && $request->user()->is_admin;
         });
         Validator::includeUnvalidatedArrayKeys();
+
+        Gate::policy(CustomFilter::class, CustomFilterPolicy::class);
+
+        Event::listen(Login::class, AuthLogin::class);
+        Event::listen(Failed::class, LogFailedLogin::class);
 
         Gate::define('viewPulse', function (User $user) {
             return $user->is_admin === 1;

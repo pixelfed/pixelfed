@@ -8,7 +8,7 @@ use App\Models\Story;
 use App\Services\StoryService;
 use Illuminate\Console\Command;
 
-class StoryGC extends Command
+class GarbageCollectorStory extends Command
 {
     /**
      * The name and signature of the console command.

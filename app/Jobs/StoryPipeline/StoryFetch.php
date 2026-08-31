@@ -494,16 +494,12 @@ class StoryFetch implements ShouldQueue
             }
 
             if (! $this->validateDownloadedFile($tmpName, $payload['attachment']['mediaType'])) {
-                unlink($tmpName);
-
                 return null;
             }
 
             $disk = Storage::disk(config('filesystems.default'));
             $path = $disk->putFileAs($storagePath, new File($tmpName), $fileName, 'public');
             $size = filesize($tmpName);
-
-            unlink($tmpName);
 
             if (! $path) {
                 if (config('app.dev_log')) {
@@ -520,10 +516,6 @@ class StoryFetch implements ShouldQueue
             ];
 
         } catch (Exception $e) {
-            if (file_exists($tmpName)) {
-                unlink($tmpName);
-            }
-
             if (config('app.dev_log')) {
                 Log::error('Media download failed', [
                     'url' => $mediaUrl,
@@ -532,6 +524,12 @@ class StoryFetch implements ShouldQueue
             }
 
             return null;
+        } finally {
+            // Always remove the remcache temp file, even on a non-Exception
+            // throwable or an early return, so downloads never leak temp files.
+            if (is_file($tmpName)) {
+                @unlink($tmpName);
+            }
         }
     }
 

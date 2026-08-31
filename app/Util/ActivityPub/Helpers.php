@@ -80,17 +80,18 @@ class Helpers
             $data = ['object' => $data];
         }
 
-        $activity = $data['object'];
         $mimeTypes = explode(',', config_cache('pixelfed.media_types'));
         $mediaTypes = in_array('video/mp4', $mimeTypes) ?
             ['Document', 'Image', 'Video'] :
             ['Document', 'Image'];
 
-        if (! isset($activity['attachment']) || empty($activity['attachment'])) {
+        $attachments = self::getAttachments($data);
+
+        if (empty($attachments)) {
             return false;
         }
 
-        return Validator::make($activity['attachment'], [
+        return Validator::make($attachments, [
             '*.type' => ['required', 'string', Rule::in($mediaTypes)],
             '*.url' => 'required|url',
             '*.mediaType' => ['required', 'string', Rule::in($mimeTypes)],
@@ -834,7 +835,19 @@ class Helpers
                 in_array($activity['type'], ['Create', 'Note'])) &&
             ! self::validateStatusDomains($id, $url)
         ) {
-            throw new \Exception('Invalid status domains');
+            throw new \Exception(json_encode([
+                'message' => 'Invalid status domains',
+                'checked' => [
+                    'id' => $id,
+                    'id_host' => parse_url($id, PHP_URL_HOST),
+                    'id_valid_url' => self::validateUrl($id),
+                    'url' => $url,
+                    'url_host' => parse_url($url, PHP_URL_HOST),
+                    'url_valid_url' => self::validateUrl($url),
+                ],
+                'expected' => 'id host and url host to be valid and match (case-insensitive)',
+                'payload' => $activity,
+            ]));
         }
 
         $reply_to = self::getReplyTo($activity);
@@ -1155,9 +1168,24 @@ class Helpers
      */
     public static function getAttachments(array $data): array
     {
-        return isset($data['object']) ?
-            $data['object']['attachment'] :
-            $data['attachment'];
+        $object = isset($data['object']) ?
+            $data['object'] :
+            $data;
+
+        if (! is_array($object) ||
+            ! isset($object['attachment']) ||
+            empty($object['attachment']) ||
+            ! is_array($object['attachment'])
+        ) {
+            return [];
+        }
+
+        // JSON-LD compaction can collapse a single-item attachment array into a
+        // bare object. Normalize both shapes to a list so callers can iterate
+        // uniformly (pixelfed#6588).
+        return array_is_list($object['attachment']) ?
+            $object['attachment'] :
+            [$object['attachment']];
     }
 
     /**

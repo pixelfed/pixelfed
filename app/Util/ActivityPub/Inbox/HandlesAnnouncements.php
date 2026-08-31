@@ -6,6 +6,7 @@ use App\Models\Status;
 use App\Services\NotificationService;
 use App\Services\ReblogService;
 use App\Util\ActivityPub\Helpers;
+use Illuminate\Support\Facades\Log;
 
 trait HandlesAnnouncements
 {
@@ -18,7 +19,20 @@ trait HandlesAnnouncements
             return;
         }
 
-        $parent = Helpers::statusFetch($activity);
+        try {
+            $parent = Helpers::statusFetch($activity);
+        } catch (\Exception $e) {
+            $context = json_decode($e->getMessage(), true);
+
+            Log::debug('Announce: skipped fetching status', [
+                'actor' => $actor->id,
+                'actor_domain' => $actor->domain,
+                'reason' => is_array($context) ? $context : $e->getMessage(),
+                'activity' => $activity,
+            ]);
+
+            return;
+        }
 
         if (! $parent) {
             return;

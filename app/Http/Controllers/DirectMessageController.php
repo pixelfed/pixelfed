@@ -307,13 +307,15 @@ class DirectMessageController extends Controller
         $messages = $res->filter(function ($message) {
             return $message && $message->status;
         })->map(function ($message) use ($uid) {
+            $firstMedia = $message->status->media->sortBy('order')->first();
+
             return [
                 'id' => (string) $message->id,
                 'hidden' => (bool) $message->is_hidden,
                 'isAuthor' => $uid == $message->from_id,
                 'type' => $message->type,
                 'text' => $message->status->caption,
-                'media' => $message->status->firstMedia() ? $message->status->firstMedia()->url() : null,
+                'media' => $firstMedia ? $firstMedia->url() : null,
                 'carousel' => MediaService::get($message->status_id),
                 'created_at' => $message->created_at->format('c'),
                 'timeAgo' => $message->created_at->diffForHumans(null, null, true),

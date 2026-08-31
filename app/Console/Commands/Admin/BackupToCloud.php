@@ -7,7 +7,7 @@ use Illuminate\Http\File;
 use Illuminate\Support\Facades\Storage;
 use Spatie\Backup\BackupDestination\BackupDestination;
 
-class BackupToCloud extends Command
+final class BackupToCloud extends Command
 {
     /**
      * The name and signature of the console command.
@@ -58,12 +58,26 @@ class BackupToCloud extends Command
         }
 
         $newest = $backupDestination->newestBackup();
+
+        if ($newest === null) {
+            $this->error('No backup found to upload.');
+
+            return Command::FAILURE;
+        }
+
         $name = $newest->path();
         $parts = explode('/', $name);
         $fileName = array_pop($parts);
         $storagePath = 'backups';
         $path = storage_path('app/'.$name);
         $file = $cloudDisk->putFileAs($storagePath, new File($path), $fileName, 'private');
+
+        if ($file === false) {
+            $this->error('Failed to upload the backup to cloud storage.');
+
+            return Command::FAILURE;
+        }
+
         $this->info('Backup file successfully saved!');
         $url = $cloudDisk->url($file);
         $this->table(

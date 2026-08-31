@@ -12,6 +12,7 @@ use Illuminate\Foundation\Bus\Dispatchable;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
 use Illuminate\Support\Facades\Cache;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
 use Intervention\Image\Encoders\AvifEncoder;
@@ -105,11 +106,21 @@ class AvatarOptimize implements ShouldQueue
                 $avatar->save();
             }
         } catch (\Exception $e) {
+            Log::error('AvatarOptimize failed for profile '.$this->profile->id.': '.$e->getMessage());
+
+            // The encode/upload may have failed before the old avatar file was
+            // removed. $this->current is the previous avatar's absolute path;
+            // clean it (and its now-stale directory) up so failures don't leak.
+            $this->deleteOldAvatar('', $this->current);
         }
     }
 
     protected function deleteOldAvatar($new, $current)
     {
+        if (! $current) {
+            return;
+        }
+
         if (storage_path('app/'.$new) == $current ||
              Str::endsWith($current, 'avatars/default.png') ||
              Str::endsWith($current, 'avatars/default.jpg')) {

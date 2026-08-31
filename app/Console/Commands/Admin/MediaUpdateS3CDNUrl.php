@@ -10,7 +10,7 @@ use Illuminate\Console\Command;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
 
-class MigrateLocalS3MediaURL extends Command
+class MediaUpdateS3CDNUrl extends Command
 {
     /**
      * The name and signature of the console command.

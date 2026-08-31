@@ -53,8 +53,16 @@ class StoryDelete implements ShouldQueue
         StoryService::delLatest($story->profile_id);
         StoryService::delById($story->id);
 
-        if (Storage::exists($story->path) == true) {
+        if ($story->path && Storage::exists($story->path) == true) {
             Storage::delete($story->path);
+
+            // Remove the now-empty leaf dir this story's media lived in (either
+            // the live public/_esm.t3 tree or the story_archives tree once the
+            // story has been rotated on expiry).
+            $dir = implode('/', array_slice(explode('/', $story->path), 0, -1));
+            if ($dir !== '' && empty(Storage::files($dir))) {
+                Storage::deleteDirectory($dir);
+            }
         }
 
         $story->views()->delete();

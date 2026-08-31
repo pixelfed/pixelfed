@@ -126,7 +126,10 @@ class AvatarController extends Controller
             return response()->json(200);
         }
 
-        if (is_file(storage_path('app/'.$avatar->media_path))) {
+        $oldPath = $avatar->media_path;
+        $oldFullPath = storage_path('app/'.$oldPath);
+
+        if (is_file($oldFullPath)) {
             @unlink(storage_path('app/'.$avatar->media_path));
         }
 

@@ -2,9 +2,13 @@
 
 namespace App\Models;
 
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Str;
 
+/**
+ * @method static Builder|AdminInvite whereInviteCode(string $value)
+ */
 class AdminInvite extends Model
 {
     protected $guarded = [];
@@ -20,7 +24,7 @@ class AdminInvite extends Model
     protected static function booted(): void
     {
         static::creating(function (AdminInvite $invite) {
-            $invite->invite_code = Str::uuid().Str::random(random_int(1, 6));
+            $invite->invite_code = (string) Str::uuid().Str::random(random_int(1, 6));
         });
     }
 

@@ -37,13 +37,16 @@ full argument and option list.
 | `import:cities` | Import the cities dataset into the database. |
 | `import:emojis` | Import custom emojis from a `tar.gz` archive (supports `--prefix`/`--suffix`). |
 | `app:instance-manager` | Manage federated instances. |
-| `admin:MediaMoveStorageCloudToCloud` | Cold-migrate media from an old S3 bucket to the current cloud bucket, verifying each copy. |
-| `admin:MediaMoveStorageCloudToLocal` | Migrate cloud media back to local storage (download, verify, rewrite URLs, optionally delete cloud copy). |
+| `unstable:MediaMoveStorageCloudToCloud` | Cold-migrate media from an old S3 bucket to the current cloud bucket, verifying each copy. |
+| `unstable:MediaMoveStorageCloudToLocal` | Migrate cloud media back to local storage (download, verify, rewrite URLs, optionally delete cloud copy). |
 | `admin:MediaMoveStorageLocalToCloud` | Migrate local media to cloud storage (upload, verify, rewrite URLs, delete local copy). |
 | `admin:MigrateLocalS3MediaURL` | Rewrite stale local media cloud URLs from storage paths to the configured S3 host. Replaces the old `media:cloud-url-rewrite`. |
+| `admin:fixProfileCounts` | Resync a profile's cached counts (followers, following, statuses) from source tables; supports bulk `--all`/`--active`. |
+| `admin:fixPostCounts` | Resync a post's cached counts (likes, boosts, comments) from source tables; supports bulk `--all`/`--active`. |
 | `regenerate:thumbnails` | Regenerate image thumbnails for all image media. |
 | `ap:update-actors` | Send Update Actor activities to known remote servers (`--force`). |
 | `video:thumbnail` | Generate missing video thumbnails. |
+| `storage:maintenance` | Sweep stale `remcache` temp files and prune empty directories left by the media/story/avatar/import flows. Quiet by default (`-v` for detail); supports `--hours`, `--only` (`remcache`,`empty-dirs`), `--dry-run`. |
 
 ## Dev
 
@@ -68,7 +71,6 @@ full argument and option list.
 | `fix:likes` | Recalculate like counts. |
 | `media:fix-nonlocal-driver` | Repair filesystem records when `FILESYSTEM_DRIVER` is not set to local. |
 | `app:fix-missing-user-profile` | Interactively create a missing profile for an affected user. |
-| `admin:fixProfileCounts` | Resync a profile's cached counts (followers, following, statuses) from source tables; supports bulk `--all`/`--active`. |
 | `fix:usernames` | Fix invalid usernames. |
 | `app:hashtag-related-generate` | Generate related-hashtag data for a given tag. |
 | `media:fix` | Null out media `filter_class` values no longer present in `Filter::classes()`. Still relevant: image filters remain an active feature. |
