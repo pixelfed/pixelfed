@@ -433,6 +433,7 @@ trait AdminReportController
             return redirect('/i/admin/reports/appeals');
         }
 
+        $status = null;
         switch ($appeal->type) {
             case 'post.cw':
                 $status = $appeal->status;
@@ -454,7 +455,9 @@ trait AdminReportController
 
         $appeal->appeal_handled_at = now();
         $appeal->save();
-        StatusService::del($status->id, true);
+        if ($status) {
+            StatusService::del($status->id, true);
+        }
         Cache::forget('admin-dash:reports:ai-count');
 
         return redirect('/i/admin/reports/appeals');
@@ -803,6 +806,7 @@ trait AdminReportController
                 return [200];
 
             case 'nsfw':
+                $profile = null;
                 if (in_array($report->object_type, ['App\Profile', 'App\Models\Profile'])) {
                     $profile = Profile::find($report->object_id);
                 } elseif (in_array($report->object_type, ['App\Status', 'App\Models\Status'])) {
@@ -862,6 +866,7 @@ trait AdminReportController
                 return [200];
 
             case 'unlist':
+                $profile = null;
                 if (in_array($report->object_type, ['App\Profile', 'App\Models\Profile'])) {
                     $profile = Profile::find($report->object_id);
                 } elseif (in_array($report->object_type, ['App\Status', 'App\Models\Status'])) {
@@ -921,6 +926,7 @@ trait AdminReportController
                 return [200];
 
             case 'private':
+                $profile = null;
                 if (in_array($report->object_type, ['App\Profile', 'App\Models\Profile'])) {
                     $profile = Profile::find($report->object_id);
                 } elseif (in_array($report->object_type, ['App\Status', 'App\Models\Status'])) {
@@ -984,6 +990,7 @@ trait AdminReportController
                     abort(404);
                 }
 
+                $profile = null;
                 if (in_array($report->object_type, ['App\Profile', 'App\Models\Profile'])) {
                     $profile = Profile::find($report->object_id);
                 } elseif (in_array($report->object_type, ['App\Status', 'App\Models\Status'])) {

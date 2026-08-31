@@ -1006,7 +1006,7 @@ class ApiV1Dot1Controller extends Controller
             $parts = explode('@', $pre);
             $username = $parts[0];
         }
-        $accountId = AccountService::usernameToId($username, true);
+        $accountId = AccountService::usernameToId($username);
         if (! $accountId) {
             return [];
         }
