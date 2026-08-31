@@ -15,6 +15,7 @@ use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
+use Illuminate\Support\Facades\Cache;
 
 class SharePipeline implements ShouldQueue
 {
@@ -28,6 +29,10 @@ class SharePipeline implements ShouldQueue
      * @var bool
      */
     public $deleteWhenMissingModels = true;
+
+    public $timeout = 60;
+
+    public $tries = 3;
 
     /**
      * Create a new job instance.
@@ -47,35 +52,59 @@ class SharePipeline implements ShouldQueue
     public function handle()
     {
         $status = $this->status;
-        $parent = Status::find($this->status->reblog_of_id);
+
+        if (! $status->reblog_of_id) {
+            return;
+        }
+
+        $parent = Status::find($status->reblog_of_id);
+
         if (! $parent) {
             return;
         }
+
         $actor = $status->profile;
         $target = $parent->profile;
 
-        if ($status->uri !== null) {
-            // Ignore notifications to remote statuses
+        if (! $actor || ! $target) {
             return;
         }
 
-        if ($target->id === $status->profile_id) {
-            $this->remoteAnnounceDeliver();
+        $isRemoteShare = $status->uri !== null;
 
-            return true;
-        }
+        $isSelfShare = (int) $target->id === (int) $actor->id;
+
+        $targetIsLocal = $target->domain === null;
 
         ReblogService::addPostReblog($parent->profile_id, $status->id);
 
-        $parent->reblogs_count = $parent->reblogs_count + 1;
-        $parent->save();
-        StatusService::del($parent->id);
+        if (Cache::add($this->counterGuardKey($status->id), 1, now()->addDays(30))) {
+            Status::whereId($parent->id)->increment('reblogs_count');
+            StatusService::del($parent->id);
+        }
 
-        NotificationService::firstOrCreateNotification($target->id, $actor->id, 'share', $status->reblog_of_id ?? $status->id, Status::class);
+        if ($targetIsLocal && ! $isSelfShare) {
+            NotificationService::firstOrCreateNotification(
+                $target->id,
+                $actor->id,
+                'share',
+                $status->reblog_of_id,
+                Status::class
+            );
+        }
 
         FeedInsertPipeline::dispatch($status->id, $status->profile_id)->onQueue('feed');
 
+        if ($isRemoteShare) {
+            return;
+        }
+
         return $this->remoteAnnounceDeliver();
+    }
+
+    protected function counterGuardKey($statusId)
+    {
+        return 'pf:share-pipeline:counted:'.$statusId;
     }
 
     public function remoteAnnounceDeliver()
@@ -83,16 +112,30 @@ class SharePipeline implements ShouldQueue
         if (config('app.env') !== 'production' || (bool) config_cache('federation.activitypub.enabled') == false) {
             return true;
         }
+
         $status = $this->status;
-        $profile = $status->profile;
 
-        $activity = FractalService::item($status, new Announce);
-
-        $audience = $status->profile->getAudienceInbox();
-
-        if (empty($audience) || $status->scope != 'public') {
+        if ($status->uri !== null) {
             return;
         }
+
+        $profile = $status->profile;
+
+        if (! $profile || $profile->domain !== null) {
+            return;
+        }
+
+        if ($status->scope !== 'public') {
+            return;
+        }
+
+        $audience = $profile->getAudienceInbox();
+
+        if (empty($audience)) {
+            return;
+        }
+
+        $activity = FractalService::item($status, new Announce);
 
         ActivityPubDeliveryService::pool($profile, $audience, $activity);
     }
