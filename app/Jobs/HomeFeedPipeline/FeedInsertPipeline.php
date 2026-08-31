@@ -95,7 +95,7 @@ class FeedInsertPipeline implements ShouldBeUniqueUntilProcessing, ShouldQueue
             return;
         }
 
-        if (! in_array($status['pf_type'], ['photo', 'photo:album', 'video', 'video:album', 'photo:video:album'])) {
+        if (! in_array($status['pf_type'], ['photo', 'photo:album', 'video', 'video:album', 'photo:video:album', 'share'])) {
             Log::info("FeedInsertPipeline: Status {$sid} type {$status['pf_type']} not supported, skipping job");
 
             return;
