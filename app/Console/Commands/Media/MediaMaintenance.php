@@ -91,14 +91,28 @@ class MediaMaintenance extends Command
         $this->info('Found '.$total.' orphaned media row(s); processing '.$media->count().' this run (limit '.$limit.').');
 
         if ($dryRun) {
+            $columns = $this->output->isVerbose()
+                ? ['media_id', 'status_id', 'remote_media', 'profile_id', 'mime', 'size', 'created_at', 'media_path']
+                : ['media_id', 'status_id', 'remote_media', 'media_path'];
+
             $this->table(
-                ['media_id', 'status_id', 'remote_media', 'media_path'],
-                $media->map(fn ($m) => [
-                    $m->id,
-                    $m->status_id,
-                    (bool) $m->remote_media ? 'true' : 'false',
-                    $m->media_path,
-                ])->all()
+                $columns,
+                $media->map(function ($m) {
+                    $base = [
+                        'media_id' => $m->id,
+                        'status_id' => $m->status_id,
+                        'remote_media' => (bool) $m->remote_media ? 'true' : 'false',
+                        'profile_id' => $m->profile_id,
+                        'mime' => $m->mime,
+                        'size' => $m->size,
+                        'created_at' => optional($m->created_at)->toDateTimeString(),
+                        'media_path' => $m->media_path,
+                    ];
+
+                    return $this->output->isVerbose()
+                        ? array_values($base)
+                        : [$base['media_id'], $base['status_id'], $base['remote_media'], $base['media_path']];
+                })->all()
             );
             $this->comment('[dry-run] Would detach and delete the '.$media->count().' row(s) above.');
 
@@ -111,22 +125,43 @@ class MediaMaintenance extends Command
             return self::SUCCESS;
         }
 
+        $verbose = $this->output->isVerbose();
+
         $processed = 0;
-        $bar = $this->output->createProgressBar($media->count());
-        $bar->start();
+        $bar = $verbose ? null : $this->output->createProgressBar($media->count());
+        $bar?->start();
 
         foreach ($media as $m) {
+            $originalStatusId = $m->status_id;
             // Detach in the DB before dispatching so the delete job's guard
             // sees an orphaned row (the job re-fetches the model on unserialize).
             Media::whereId($m->id)->update(['status_id' => null]);
             $m->status_id = null;
             MediaStorageService::delete($m, true);
             $processed++;
-            $bar->advance();
+
+            if ($verbose) {
+                $this->line(sprintf(
+                    '  [%d/%d] detached + dispatched delete: media_id=%d status_id=%s remote_media=%s profile_id=%s mime=%s size=%s path=%s',
+                    $processed,
+                    $media->count(),
+                    $m->id,
+                    $originalStatusId ?? 'null',
+                    (bool) $m->remote_media ? 'true' : 'false',
+                    $m->profile_id ?? 'null',
+                    $m->mime ?? 'null',
+                    $m->size ?? 'null',
+                    $m->media_path ?? 'null'
+                ));
+            } else {
+                $bar->advance();
+            }
         }
 
-        $bar->finish();
-        $this->newLine(2);
+        $bar?->finish();
+        if (! $verbose) {
+            $this->newLine(2);
+        }
         $this->info('Done. Detached and dispatched deletion for '.$processed.' orphaned media row(s).');
 
         if ($total > $processed) {
