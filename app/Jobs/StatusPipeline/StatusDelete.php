@@ -102,11 +102,16 @@ class StatusDelete implements ShouldQueue
 
     public function unlinkRemoveMedia($status)
     {
-        Media::whereStatusId($status->id)
-            ->get()
-            ->each(function ($media) {
-                MediaDeletePipeline::dispatch($media);
-            });
+        $media = Media::whereStatusId($status->id)->get();
+        // Detach media from the status before dispatching deletion. status_id
+        // has no FK/cascade, so it is not cleared when the status is deleted;
+        // detaching here ensures the row is genuinely orphaned by the time the
+        // MediaDeletePipeline guard checks it, so the delete is not skipped.
+        Media::whereStatusId($status->id)->update(['status_id' => null]);
+        $media->each(function ($m) {
+            $m->status_id = null;
+            MediaDeletePipeline::dispatch($m);
+        });
 
         if ($status->in_reply_to_id) {
             $parent = Status::findOrFail($status->in_reply_to_id);

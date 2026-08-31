@@ -82,11 +82,17 @@ class DeleteRemoteStatusPipeline implements ShouldQueue
             DirectMessage::whereStatusId($status->id)->delete();
             Like::whereStatusId($status->id)->forceDelete();
             MediaTag::whereStatusId($status->id)->delete();
-            Media::whereStatusId($status->id)
-                ->get()
-                ->each(function ($media) {
-                    MediaDeletePipeline::dispatch($media)->onQueue('mmo');
-                });
+            $media = Media::whereStatusId($status->id)->get();
+            // Detach media from the status before dispatching deletion.
+            // status_id has no FK/cascade, so it is not cleared when the status
+            // is deleted; detaching here ensures the row is genuinely orphaned
+            // by the time the MediaDeletePipeline guard checks it, so the
+            // delete is not skipped.
+            Media::whereStatusId($status->id)->update(['status_id' => null]);
+            $media->each(function ($m) {
+                $m->status_id = null;
+                MediaDeletePipeline::dispatch($m)->onQueue('mmo');
+            });
             Mention::whereStatusId($status->id)->forceDelete();
             Report::whereObjectType(Status::class)->whereObjectId($status->id)->delete();
             StatusHashtag::whereStatusId($status->id)->delete();
