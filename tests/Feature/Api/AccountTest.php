@@ -104,3 +104,59 @@ describe('GET /api/v1/accounts/relationships', function () {
             ->assertJsonIsArray();
     });
 });
+
+describe('scope enforcement on writes', function () {
+    it('rejects a token without write scope', function () {
+        $user = User::factory()->create();
+        $user->refresh();
+        $status = Status::factory()->create([
+            'profile_id' => $user->profile_id,
+            'type' => 'photo',
+        ]);
+        Passport::actingAs($user, ['read']);
+
+        $this->postJson("/api/v1/statuses/{$status->id}/favourite")
+            ->assertForbidden();
+    });
+
+    it('allows a token with write scope', function () {
+        $user = User::factory()->create();
+        $user->refresh();
+        $status = Status::factory()->create([
+            'profile_id' => $user->profile_id,
+            'type' => 'photo',
+        ]);
+        Passport::actingAs($user, ['read', 'write']);
+
+        $this->postJson("/api/v1/statuses/{$status->id}/favourite")
+            ->assertOk();
+    });
+});
+
+describe('first-party session auth', function () {
+    it('allows writes without a token', function () {
+        config(['sanctum.stateful' => ['pixelfed.test']]);
+        $user = User::factory()->create();
+        $user->refresh();
+        $status = Status::factory()->create([
+            'profile_id' => $user->profile_id,
+            'type' => 'photo',
+        ]);
+
+        $this->actingAs($user)
+            ->withHeader('Origin', config('app.url'))
+            ->postJson("/api/v1/statuses/{$status->id}/favourite")
+            ->assertOk();
+    });
+});
+
+it('applies stateful middleware to the api group', function () {
+    $route = collect(Route::getRoutes())
+        ->first(fn($r) => $r->uri() === 'api/v1/accounts/verify_credentials');
+
+    $resolved = app(\Illuminate\Routing\Router::class)
+        ->gatherRouteMiddleware($route);
+
+    expect($resolved)
+        ->toContain(\Laravel\Sanctum\Http\Middleware\EnsureFrontendRequestsAreStateful::class);
+});
