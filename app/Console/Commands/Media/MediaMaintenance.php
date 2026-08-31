@@ -22,7 +22,7 @@ class MediaMaintenance extends Command
     protected $signature = 'media:maintenance
         {--scope= : The maintenance routine to run. Supported: orphanedMedia}
         {--server=both : Which media to target by origin: remote, local, or both}
-        {--status= : Filter by referenced status state: live, soft, or hard (deleted)}
+        {--status= : Filter by referenced status state: soft or hard (deleted)}
         {--profile= : Filter by referenced profile state: live, soft, or hard (deleted)}
         {--limit=1000 : Max media rows to process this run}
         {--dry-run : Report what would happen without detaching or deleting}
@@ -52,11 +52,18 @@ class MediaMaintenance extends Command
     protected array $servers = ['remote', 'local', 'both'];
 
     /**
-     * Supported --status / --profile state filter values.
+     * Supported state filter values per option.
      *
-     * @var array<int, string>
+     * Orphaned media never has a live status, so --status only accepts the
+     * deleted states. A profile can still be live while its status is deleted,
+     * so --profile accepts all three.
+     *
+     * @var array<string, array<int, string>>
      */
-    protected array $states = ['live', 'soft', 'hard'];
+    protected array $stateOptions = [
+        'status' => ['soft', 'hard'],
+        'profile' => ['live', 'soft', 'hard'],
+    ];
 
     public function handle(): int
     {
@@ -81,10 +88,10 @@ class MediaMaintenance extends Command
             return self::FAILURE;
         }
 
-        foreach (['status', 'profile'] as $stateOpt) {
+        foreach ($this->stateOptions as $stateOpt => $allowed) {
             $value = $this->option($stateOpt);
-            if ($value !== null && ! in_array($value, $this->states, true)) {
-                $this->error('Invalid --'.$stateOpt.' "'.$value.'". Supported: '.implode(', ', $this->states).'.');
+            if ($value !== null && ! in_array($value, $allowed, true)) {
+                $this->error('Invalid --'.$stateOpt.' "'.$value.'". Supported: '.implode(', ', $allowed).'.');
 
                 return self::FAILURE;
             }
@@ -108,14 +115,6 @@ class MediaMaintenance extends Command
         $server = (string) $this->option('server');
         $statusFilter = $this->option('status');
         $profileFilter = $this->option('profile');
-
-        // The orphaned scope by definition targets media whose status is NOT
-        // live, so --status=live can never match here.
-        if ($statusFilter === 'live') {
-            $this->warn('--status=live matches no orphaned media (orphaned means the status is soft- or hard-deleted). Nothing to do.');
-
-            return self::SUCCESS;
-        }
 
         // Media whose status_id is set but has no matching live (non-trashed)
         // status row, filtered by origin (remote/local/both) and optionally by
