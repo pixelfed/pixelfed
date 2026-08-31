@@ -166,7 +166,7 @@ class AccountController extends Controller
         $action = $type.'.mute';
 
         if (! in_array($action, $this->filters)) {
-            return abort(406);
+            abort(406);
         }
         $filterable = [];
         $profile = null;
@@ -175,7 +175,7 @@ class AccountController extends Controller
             case 'user':
                 $profile = Profile::findOrFail($item);
                 if ($profile->id == $pid) {
-                    return abort(403);
+                    abort(403);
                 }
                 $class = get_class($profile);
                 $filterable['id'] = $profile->id;
@@ -213,14 +213,14 @@ class AccountController extends Controller
         $action = $type.'.mute';
 
         if (! in_array($action, $this->filters)) {
-            return abort(406);
+            abort(406);
         }
         $filterable = [];
         switch ($type) {
             case 'user':
                 $profile = Profile::findOrFail($item);
                 if ($profile->id == $pid) {
-                    return abort(403);
+                    abort(403);
                 }
                 $class = get_class($profile);
                 $filterable['id'] = $profile->id;
@@ -270,7 +270,7 @@ class AccountController extends Controller
         $item = $request->input('item');
         $action = $type.'.block';
         if (! in_array($action, $this->filters)) {
-            return abort(406);
+            abort(406);
         }
         $filterable = [];
         $profile = null;
@@ -279,7 +279,7 @@ class AccountController extends Controller
             case 'user':
                 $profile = Profile::findOrFail($item);
                 if ($profile->id == $pid || ($profile->user && $profile->user->is_admin == true)) {
-                    return abort(403);
+                    abort(403);
                 }
                 $class = get_class($profile);
                 $filterable['id'] = $profile->id;
@@ -350,14 +350,14 @@ class AccountController extends Controller
         $item = $request->input('item');
         $action = $type.'.block';
         if (! in_array($action, $this->filters)) {
-            return abort(406);
+            abort(406);
         }
         $filterable = [];
         switch ($type) {
             case 'user':
                 $profile = Profile::findOrFail($item);
                 if ($profile->id == $pid) {
-                    return abort(403);
+                    abort(403);
                 }
                 $class = get_class($profile);
                 $filterable['id'] = $profile->id;

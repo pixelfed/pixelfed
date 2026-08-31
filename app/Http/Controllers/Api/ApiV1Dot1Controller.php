@@ -1167,7 +1167,7 @@ class ApiV1Dot1Controller extends Controller
      * POST /api/v1.1/status/create
      *
      *
-     * @return StatusTransformer
+     * @return \App\Transformer\Api\StatusTransformer
      */
     public function statusCreate(Request $request)
     {

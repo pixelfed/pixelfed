@@ -50,6 +50,7 @@ class FixUsernames extends Command
 
     protected function restrictedCheck()
     {
+        /** @var \Illuminate\Support\Collection<int, \App\Models\User> $affected */
         $affected = collect([]);
 
         $restricted = RestrictedNames::get();

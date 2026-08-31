@@ -481,7 +481,7 @@ trait AdminReportController
         ];
 
         if (! in_array($action, $actions)) {
-            return abort(403);
+            abort(403);
         }
 
         $report = Report::findOrFail($id);

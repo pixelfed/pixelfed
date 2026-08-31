@@ -16,7 +16,7 @@ class Admin
     public function handle($request, Closure $next)
     {
         if (! $request->user() || $request->user()->is_admin == false) {
-            return abort(403, 'You must be an administrator to do that');
+            abort(403, 'You must be an administrator to do that');
         }
 
         return $next($request);

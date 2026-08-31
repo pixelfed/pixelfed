@@ -87,7 +87,7 @@ class PersonalAccessTokenController extends Controller
 
         return response()->json([
             'accessToken' => $result->accessToken,
-            'token' => $this->serializeToken($result->token),
+            'token' => $this->serializeToken($result->getToken()),
         ]);
     }
 
@@ -114,7 +114,7 @@ class PersonalAccessTokenController extends Controller
 
         return response()->json([
             'accessToken' => $result->accessToken,
-            'token' => $this->serializeToken($result->token),
+            'token' => $this->serializeToken($result->getToken()),
             'renewedTokenId' => $oldToken->id,
         ]);
     }

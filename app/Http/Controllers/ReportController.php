@@ -141,7 +141,7 @@ class ReportController extends Controller
 
         if (! in_array($reportType, $types)) {
             if ($request->wantsJson()) {
-                return abort(400, 'Invalid report type');
+                abort(400, 'Invalid report type');
             } else {
                 return redirect('/timeline')->with('error', 'Invalid report type');
             }
@@ -184,7 +184,7 @@ class ReportController extends Controller
 
             default:
                 if ($request->wantsJson()) {
-                    return abort(400, 'Invalid report type');
+                    abort(400, 'Invalid report type');
                 } else {
                     return redirect('/timeline')->with('error', 'Invalid report type');
                 }

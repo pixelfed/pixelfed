@@ -65,7 +65,7 @@ class DomainBlockController extends Controller
         $domain = trim($request->input('domain'));
 
         if (Helpers::validateUrl($domain) == false) {
-            return abort(500, 'Invalid domain or already blocked by server admins');
+            abort(500, 'Invalid domain or already blocked by server admins');
         }
 
         $domain = strtolower(parse_url($domain, PHP_URL_HOST));

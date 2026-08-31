@@ -221,7 +221,7 @@ class ProfileController extends Controller
                 break;
         }
 
-        return abort(404);
+        abort(404);
     }
 
     protected function blockedProfileCheck(Profile $profile): bool

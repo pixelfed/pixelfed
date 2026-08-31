@@ -224,7 +224,7 @@ class StatusUser extends Command
         // Dump every column on the profiles row, redacting crypto keys and
         // trimming long text so the table stays readable.
         $keysToRedact = ['private_key', 'public_key'];
-        $longText = ['bio', 'note', 'private_key', 'public_key'];
+        $longText = ['bio', 'note'];
         $rows = [];
         foreach ($profile->getAttributes() as $key => $value) {
             if (in_array($key, $keysToRedact, true)) {

@@ -264,7 +264,7 @@ class AppRegisterController extends Controller
 
         $user->refresh();
         $token = $user->createToken('Pixelfed App', ['read', 'write', 'follow', 'push']);
-        $tokenModel = $token->token;
+        $tokenModel = $token->getToken();
         $clientId = $tokenModel->client_id;
         $clientSecret = DB::table('oauth_clients')->where('id', $clientId)->value('secret');
         $refreshToken = RefreshToken::create([

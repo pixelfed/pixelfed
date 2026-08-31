@@ -159,7 +159,7 @@ trait Instagram
         $file = file_get_contents($media);
         $json = json_decode($file, true, 5);
         if (! $json || ! isset($json['photos'])) {
-            return abort(500);
+            abort(500);
         }
         $storagePath = "import/{$job->uuid}";
         $path = $media->storePublicly($storagePath);

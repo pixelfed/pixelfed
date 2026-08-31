@@ -142,7 +142,7 @@ class Autolink extends Regex
     protected $extractor = null;
 
     /**
-     * @var autolinkActiveUsersOnly
+     * @var bool
      */
     protected $autolinkActiveUsersOnly = false;
 
