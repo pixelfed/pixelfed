@@ -3,7 +3,9 @@
 use App\Models\Status;
 use App\Models\User;
 use Illuminate\Foundation\Testing\LazilyRefreshDatabase;
+use Illuminate\Routing\Router;
 use Laravel\Passport\Passport;
+use Laravel\Sanctum\Http\Middleware\EnsureFrontendRequestsAreStateful;
 
 uses(LazilyRefreshDatabase::class);
 
@@ -152,11 +154,11 @@ describe('first-party session auth', function () {
 
 it('applies stateful middleware to the api group', function () {
     $route = collect(Route::getRoutes())
-        ->first(fn($r) => $r->uri() === 'api/v1/accounts/verify_credentials');
+        ->first(fn ($r) => $r->uri() === 'api/v1/accounts/verify_credentials');
 
-    $resolved = app(\Illuminate\Routing\Router::class)
+    $resolved = app(Router::class)
         ->gatherRouteMiddleware($route);
 
     expect($resolved)
-        ->toContain(\Laravel\Sanctum\Http\Middleware\EnsureFrontendRequestsAreStateful::class);
+        ->toContain(EnsureFrontendRequestsAreStateful::class);
 });

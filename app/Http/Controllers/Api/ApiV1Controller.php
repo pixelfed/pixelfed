@@ -3870,6 +3870,9 @@ class ApiV1Controller extends Controller
         $cw = $user->profile->cw == true ? true : $request->boolean('sensitive', false);
         $spoilerText = $cw && $request->filled('spoiler_text') ? $request->input('spoiler_text') : null;
 
+        $status = null;
+        $parent = null;
+
         if ($in_reply_to_id) {
             $parent = Status::findOrFail($in_reply_to_id);
 

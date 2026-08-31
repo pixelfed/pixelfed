@@ -10,14 +10,14 @@ use Illuminate\Console\Command;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
 
-class StatusPost extends Command
+class StatusStatuses extends Command
 {
     /**
      * The name and signature of the console command.
      *
      * @var string
      */
-    protected $signature = 'status:post {id : Status id, or a post URL like https://host/p/username/ID}';
+    protected $signature = 'status:statuses {id : Status id, or a post URL like https://host/p/username/ID}';
 
     /**
      * The console command description.
