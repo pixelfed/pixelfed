@@ -1,4 +1,4 @@
-FROM serversideup/php:8.5-frankenphp
+FROM serversideup/php:8.5-frankenphp@sha256:c8e9d95cd6b83180662f63de646937f3b304041ac4edfbd95ff8bd684467d035
 
 WORKDIR /var/www/html
 
