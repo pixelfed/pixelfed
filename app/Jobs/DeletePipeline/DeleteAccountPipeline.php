@@ -124,8 +124,6 @@ class DeleteAccountPipeline implements ShouldQueue
             }
         });
 
-        DB::table('user_oidc_mappings')->whereUserId($user->id)->delete();
-
         CustomFilter::whereProfileId($id)->delete();
 
         StatusView::whereProfileId($id)->delete();
