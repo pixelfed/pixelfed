@@ -1,12 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<phpunit xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-         xsi:noNamespaceSchemaLocation="vendor/phpunit/phpunit/phpunit.xsd"
-         bootstrap="vendor/autoload.php"
-         colors="true"
-         cacheDirectory=".phpunit.cache"
-         backupStaticProperties="false"
-         beStrictAboutTestsThatDoNotTestAnything="false"
->
+<phpunit xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="vendor/phpunit/phpunit/phpunit.xsd" bootstrap="vendor/autoload.php" colors="true" cacheDirectory=".phpunit.cache" backupStaticProperties="false" beStrictAboutTestsThatDoNotTestAnything="false">
     <testsuites>
         <testsuite name="Unit">
             <directory>tests/Unit</directory>
@@ -34,5 +27,7 @@
         <env name="TELESCOPE_ENABLED" value="false"/>
         <env name="HORIZON_PREFIX" value="horizon-test-"/>
         <ini name="memory_limit" value="2048M"/>
+        <env name="BROADCAST_CONNECTION" value="null"/>
+        <env name="NIGHTWATCH_ENABLED" value="false"/>
     </php>
 </phpunit>
