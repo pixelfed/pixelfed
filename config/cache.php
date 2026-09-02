@@ -166,7 +166,12 @@ return [
     |
     */
 
-    'serializable_classes' => true,
+    'serializable_classes' => [
+        App\Models\Profile::class,
+        App\Models\CustomFilter::class,
+        App\Models\Report::class,
+        Illuminate\Pagination\LengthAwarePaginator::class,
+    ],
 
     'limiter' => env('CACHE_LIMITER_DRIVER', 'redis'),
 
