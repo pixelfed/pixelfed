@@ -17,6 +17,14 @@ class CustomEmoji extends Model
 
     protected $guarded = [];
 
+    /**
+     * Restrict the query to shortcodes that appear on more than one row.
+     */
+    public function scopeDuplicateShortcodes($query)
+    {
+        return $query->groupBy('shortcode')->havingRaw('count(*) > 1');
+    }
+
     public static function scan($text, $activitypub = false)
     {
         if ((bool) config_cache('federation.custom_emoji.enabled') == false) {

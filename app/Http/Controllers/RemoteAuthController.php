@@ -326,6 +326,7 @@ class RemoteAuthController extends Controller
         $token = $request->session()->get('oauth_remote_session_token');
 
         $res = RemoteAuthService::getVerifyCredentials($domain, $token);
+        abort_if(! $res || ! isset($res['acct']), 403, 'Invalid credentials');
         $res['_webfinger'] = strtolower('@'.$res['acct'].'@'.$domain);
         $res['_domain'] = strtolower($domain);
         $request->session()->put('oauth_remasto_id', $res['id']);

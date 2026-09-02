@@ -2,8 +2,10 @@
 
 namespace App\Services;
 
+use App\Models\Profile;
 use App\Models\UserDomainBlock;
 use App\Models\UserFilter;
+use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Redis;
 
@@ -81,6 +83,22 @@ class UserFilterService
     public static function filters(int $profile_id)
     {
         return array_unique(array_merge(self::mutes($profile_id), self::blocks($profile_id)));
+    }
+
+    /**
+     * Profile ids that should be excluded from profile search results for the
+     * given profile: everyone who has blocked this profile, plus the profile
+     * itself. Returned as a collection so callers can use whereNotIn().
+     *
+     * @return Collection<int, int>
+     */
+    public static function searchExcludedProfileIds(int $profile_id)
+    {
+        return UserFilter::whereFilterableType(Profile::class)
+            ->whereFilterType('block')
+            ->whereFilterableId($profile_id)
+            ->pluck('user_id')
+            ->push($profile_id);
     }
 
     public static function mute(int $profile_id, int $muted_id)

@@ -18,6 +18,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
 use League\Fractal;
 use League\Fractal\Serializer\ArraySerializer;
 
@@ -37,7 +38,7 @@ class BaseApiController extends Controller
         abort_if(! $request->user(), 403);
 
         $pid = $request->user()->profile_id;
-        $limit = $request->input('limit', 20);
+        $limit = min((int) $request->input('limit', 20), 40);
 
         $since = $request->input('since_id');
         $min = $request->input('min_id');
@@ -47,37 +48,25 @@ class BaseApiController extends Controller
             $min = 1;
         }
 
-        $maxId = null;
-        $minId = null;
+        $page = $max
+            ? NotificationService::getMaxPage($pid, $max, $limit)
+            : NotificationService::getMinPage($pid, $min ?? $since, $limit);
 
-        if ($max) {
-            $res = NotificationService::getMax($pid, $max, $limit);
-            $ids = NotificationService::getRankedMaxId($pid, $max, $limit);
-            if (! empty($ids)) {
-                $maxId = max($ids);
-                $minId = min($ids);
-            }
-        } else {
-            $res = NotificationService::getMin($pid, $min ?? $since, $limit);
-            $ids = NotificationService::getRankedMinId($pid, $min ?? $since, $limit);
-            if (! empty($ids)) {
-                $maxId = max($ids);
-                $minId = min($ids);
-            }
-        }
-
-        if (empty($res) && ! Cache::has('pf:services:notifications:hasSynced:'.$pid)) {
+        if (empty($page['data']) && ! Cache::has('pf:services:notifications:hasSynced:'.$pid)) {
             Cache::put('pf:services:notifications:hasSynced:'.$pid, 1, 1209600);
             NotificationWarmUserCache::dispatch($pid);
         }
 
-        $res = collect($res)
-            ->filter(function ($n) {
-                return isset($n['account'], $n['account']['id']);
-            })
+        $res = collect($page['data'])
+            ->filter(fn ($n) => isset($n['account']['id']))
             ->values();
 
-        return response()->json($res);
+        $headers = [];
+        if ($page['next_max_id']) {
+            $headers['Link'] = '<'.config('app.url').'/api/pixelfed/v1/notifications?limit='.$limit.'&max_id='.$page['next_max_id'].'>; rel="next"';
+        }
+
+        return response()->json($res, 200, $headers);
     }
 
     public function avatarUpdate(Request $request): JsonResponse
@@ -109,6 +98,15 @@ class BaseApiController extends Controller
             Cache::forget("avatar:{$profile->id}");
             AvatarOptimize::dispatch($user->profile, $currentAvatar);
         } catch (\Exception $e) {
+            Log::error('BaseApiController@avatarUpdate failed: '.$e->getMessage(), [
+                'user_id' => $request->user()?->id,
+                'exception' => $e,
+            ]);
+
+            return response()->json([
+                'code' => 500,
+                'msg' => 'There was an error updating your avatar. Please try again.',
+            ], 500);
         }
 
         return response()->json([

@@ -107,7 +107,6 @@ class GroupsTopicController extends Controller
                 }
                 $status['favourited'] = (bool) GroupsLikeService::liked($pid, $gp['status_id']);
                 $status['favourites_count'] = GroupsLikeService::count($gp['status_id']);
-                $status['pf_type'] = $status['pf_type'];
                 $status['visibility'] = 'public';
 
                 return $status;
