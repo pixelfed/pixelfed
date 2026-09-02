@@ -43,7 +43,7 @@ class ExportLanguages extends Command
             return Command::FAILURE;
         }
 
-        $path = base_path('resources/lang');
+        $path = base_path('lang');
         $langs = [];
 
         foreach (new \DirectoryIterator($path) as $io) {

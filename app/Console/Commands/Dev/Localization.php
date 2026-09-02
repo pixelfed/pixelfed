@@ -30,7 +30,7 @@ class Localization extends Command
 
     protected function buildTranslations(string $lang)
     {
-        $path = base_path("resources/lang/{$lang}");
+        $path = base_path("lang/{$lang}");
         $keys = [];
         $kcount = 0;
 
@@ -97,7 +97,7 @@ class Localization extends Command
 
     protected function discoverLangs(): array
     {
-        $path = base_path('resources/lang');
+        $path = base_path('lang');
         $languages = [];
 
         foreach (new \DirectoryIterator($path) as $io) {
