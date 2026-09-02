@@ -4,8 +4,7 @@ return [
 
     'verifyYourEmailAddress' => ' - Verify Your Email Address',
     'loginTitle' => 'Account Login',
-    'failed' => 'These credentials do not match our records.',
-    'throttle' => 'Too many login attempts. Please try again in :seconds seconds.',
+
     'password' => 'Password',
     'remember' => 'Remember Me',
     'forgot' => 'Forgot Password',
