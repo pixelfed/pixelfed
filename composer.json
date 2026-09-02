@@ -1,7 +1,15 @@
 {
     "name": "pixelfed/pixelfed",
     "description": "Open and ethical photo sharing platform, powered by ActivityPub federation.",
-    "keywords": ["framework", "laravel", "pixelfed", "activitypub", "social", "network", "federation"],
+    "keywords": [
+        "framework",
+        "laravel",
+        "pixelfed",
+        "activitypub",
+        "social",
+        "network",
+        "federation"
+    ],
     "license": "AGPL-3.0-only",
     "type": "project",
     "require": {
@@ -20,20 +28,20 @@
         "intervention/image-driver-vips": "^4.1",
         "intervention/image-laravel": "^4.1",
         "laravel-notification-channels/expo": "^2.0.0",
-        "laravel-notification-channels/webpush": "^10.2",
-        "laravel/framework": "^12.0",
-        "laravel/horizon": "^5.0",
+        "laravel-notification-channels/webpush": "^10.5",
+        "laravel/framework": "^13.30",
+        "laravel/horizon": "^5.44",
         "laravel/passport": "^13.4.4",
         "laravel/pulse": "^1.3",
         "laravel/sanctum": "^4.3",
         "laravel/tinker": "^3.0",
-        "laravel/ui": "^4.2",
+        "laravel/ui": "^4.6",
         "league/flysystem-aws-s3-v3": "^3.0",
         "league/iso3166": "^2.1|^4.0",
         "league/oauth2-client": "^2.8",
         "league/uri": "^7.4",
         "matomo/device-detector": "^6.5",
-        "pbmedia/laravel-ffmpeg": "^8.0",
+        "pbmedia/laravel-ffmpeg": "^8.8",
         "phpseclib/phpseclib": "~3.0",
         "pixelfed/fractal": "^0.18.0",
         "pixelfed/laravel-snowflake": "^2.0",
@@ -41,22 +49,22 @@
         "predis/predis": "^3.2",
         "pusher/pusher-php-server": "^7.2",
         "resend/resend-php": "^0.13.0",
-        "spatie/laravel-backup": "^9.2.9",
+        "spatie/laravel-backup": "^10.2",
         "spatie/laravel-image-optimizer": "^1.8.2",
-        "stevebauman/purify": "^6.2.0",
-        "symfony/http-client": "^7.3",
+        "stevebauman/purify": "^6.3",
+        "symfony/http-client": "^7.4",
         "symfony/http-foundation": "^7.4.13",
-        "symfony/mailgun-mailer": "^7.3"
+        "symfony/mailgun-mailer": "^7.4"
     },
     "require-dev": {
         "fakerphp/faker": "^1.23",
-        "larastan/larastan": "^3.0",
-        "laravel/pint": "^1.13",
-        "laravel/telescope": "^5.5",
+        "larastan/larastan": "^3.9",
+        "laravel/pint": "^1.27",
+        "laravel/telescope": "^5.18",
         "mockery/mockery": "^1.6",
         "nunomaduro/collision": "^8.8",
         "pestphp/pest": "^4.0",
-        "psalm/plugin-laravel": "^3",
+        "psalm/plugin-laravel": "^3.9",
         "vimeo/psalm": "^6.5"
     },
     "autoload": {
@@ -111,7 +119,6 @@
         "test:quick": "./vendor/bin/pest --compact",
         "lint": "./vendor/bin/pint",
         "lint:test": "./vendor/bin/pint --test"
-
     },
     "config": {
         "preferred-install": "dist",
