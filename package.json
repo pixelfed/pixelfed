@@ -81,5 +81,6 @@
     "collective": {
         "type": "opencollective",
         "url": "https://opencollective.com/pixelfed"
-    }
+    },
+    "$schema": "https://www.schemastore.org/package.json"
 }
