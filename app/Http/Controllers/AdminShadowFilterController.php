@@ -2,13 +2,13 @@
 
 namespace App\Http\Controllers;
 
-use Illuminate\Routing\Controllers\HasMiddleware;
-use Illuminate\Routing\Controllers\Middleware;
 use App\Models\AdminShadowFilter;
 use App\Models\Profile;
 use App\Services\AccountService;
 use App\Services\AdminShadowFilterService;
 use Illuminate\Http\Request;
+use Illuminate\Routing\Controllers\HasMiddleware;
+use Illuminate\Routing\Controllers\Middleware;
 
 class AdminShadowFilterController extends Controller implements HasMiddleware
 {

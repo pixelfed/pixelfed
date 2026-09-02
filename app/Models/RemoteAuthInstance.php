@@ -10,5 +10,4 @@ use Illuminate\Database\Eloquent\Model;
 class RemoteAuthInstance extends Model
 {
     use HasFactory;
-
 }

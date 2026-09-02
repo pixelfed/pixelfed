@@ -12,5 +12,4 @@ use Illuminate\Database\Eloquent\Model;
 class ConfigCache extends Model
 {
     use HasFactory;
-
 }

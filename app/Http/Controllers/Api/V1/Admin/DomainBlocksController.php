@@ -2,13 +2,13 @@
 
 namespace App\Http\Controllers\Api\V1\Admin;
 
-use Illuminate\Routing\Controllers\HasMiddleware;
-use Illuminate\Routing\Controllers\Middleware;
 use App\Http\Controllers\Api\ApiController;
 use App\Http\Resources\MastoApi\Admin\DomainBlockResource;
 use App\Models\Instance;
 use App\Services\InstanceService;
 use Illuminate\Http\Request;
+use Illuminate\Routing\Controllers\HasMiddleware;
+use Illuminate\Routing\Controllers\Middleware;
 use Illuminate\Validation\Rule;
 
 class DomainBlocksController extends ApiController implements HasMiddleware

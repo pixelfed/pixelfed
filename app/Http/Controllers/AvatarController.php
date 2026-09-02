@@ -14,10 +14,7 @@ use Illuminate\Support\Str;
 #[Middleware('auth')]
 class AvatarController extends Controller
 {
-    public function __construct()
-    {
-        return ;
-    }
+    public function __construct() {}
 
     public function store(Request $request): RedirectResponse
     {

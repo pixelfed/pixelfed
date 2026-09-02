@@ -10,5 +10,4 @@ use Illuminate\Database\Eloquent\Model;
 class UserPronoun extends Model
 {
     use HasFactory;
-
 }

@@ -8,5 +8,4 @@ use Illuminate\Routing\Attributes\Controllers\Middleware;
 class ImportController extends Controller
 {
     use Import\Instagram, Import\Mastodon;
-
 }

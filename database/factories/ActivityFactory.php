@@ -2,7 +2,6 @@
 
 namespace Database\Factories;
 
-use App\Models\Activity;
 use App\Models\Profile;
 use Illuminate\Database\Eloquent\Factories\Factory;
 

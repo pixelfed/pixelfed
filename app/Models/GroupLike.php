@@ -10,5 +10,4 @@ use Illuminate\Database\Eloquent\Model;
 class GroupLike extends Model
 {
     use HasFactory;
-
 }
