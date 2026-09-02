@@ -230,7 +230,7 @@ trait AdminReportController
 
         AccountInterstitial::chunk(500, function ($reports) {
             foreach ($reports as $report) {
-                if (! in_array($report->item_type, ['App\Status', 'App\Models\Status'])) {
+                if (! in_array($report->item_type, ['App\Status', \App\Models\Status::class])) {
                     continue;
                 }
 
@@ -339,7 +339,7 @@ trait AdminReportController
 
         if ($action == 'approve-all') {
             AccountInterstitial::whereType('post.autospam')
-                ->whereIn('item_type', ['App\Status', 'App\Models\Status'])
+                ->whereIn('item_type', ['App\Status', \App\Models\Status::class])
                 ->whereNull('appeal_handled_at')
                 ->whereUserId($appeal->user_id)
                 ->get()
@@ -365,7 +365,7 @@ trait AdminReportController
 
         if ($action == 'mark-spammer') {
             AccountInterstitial::whereType('post.autospam')
-                ->whereIn('item_type', ['App\Status', 'App\Models\Status'])
+                ->whereIn('item_type', ['App\Status', \App\Models\Status::class])
                 ->whereNull('appeal_handled_at')
                 ->whereUserId($appeal->user_id)
                 ->update(['appeal_handled_at' => $now, 'is_spam' => true]);
@@ -780,7 +780,7 @@ trait AdminReportController
                     ->save();
 
                 Report::where('reported_profile_id', $profile->id)
-                    ->whereIn('object_type', ['App\Story', 'App\Models\Story'])
+                    ->whereIn('object_type', ['App\Story', \App\Models\Story::class])
                     ->whereNull('admin_seen')
                     ->update([
                         'admin_seen' => now(),
@@ -807,9 +807,9 @@ trait AdminReportController
 
             case 'nsfw':
                 $profile = null;
-                if (in_array($report->object_type, ['App\Profile', 'App\Models\Profile'])) {
+                if (in_array($report->object_type, ['App\Profile', \App\Models\Profile::class])) {
                     $profile = Profile::find($report->object_id);
-                } elseif (in_array($report->object_type, ['App\Status', 'App\Models\Status'])) {
+                } elseif (in_array($report->object_type, ['App\Status', \App\Models\Status::class])) {
                     $status = Status::find($report->object_id);
                     if (! $status) {
                         return [200];
@@ -867,9 +867,9 @@ trait AdminReportController
 
             case 'unlist':
                 $profile = null;
-                if (in_array($report->object_type, ['App\Profile', 'App\Models\Profile'])) {
+                if (in_array($report->object_type, ['App\Profile', \App\Models\Profile::class])) {
                     $profile = Profile::find($report->object_id);
-                } elseif (in_array($report->object_type, ['App\Status', 'App\Models\Status'])) {
+                } elseif (in_array($report->object_type, ['App\Status', \App\Models\Status::class])) {
                     $status = Status::find($report->object_id);
                     if (! $status) {
                         return [200];
@@ -927,9 +927,9 @@ trait AdminReportController
 
             case 'private':
                 $profile = null;
-                if (in_array($report->object_type, ['App\Profile', 'App\Models\Profile'])) {
+                if (in_array($report->object_type, ['App\Profile', \App\Models\Profile::class])) {
                     $profile = Profile::find($report->object_id);
-                } elseif (in_array($report->object_type, ['App\Status', 'App\Models\Status'])) {
+                } elseif (in_array($report->object_type, ['App\Status', \App\Models\Status::class])) {
                     $status = Status::find($report->object_id);
                     if (! $status) {
                         return [200];
@@ -991,9 +991,9 @@ trait AdminReportController
                 }
 
                 $profile = null;
-                if (in_array($report->object_type, ['App\Profile', 'App\Models\Profile'])) {
+                if (in_array($report->object_type, ['App\Profile', \App\Models\Profile::class])) {
                     $profile = Profile::find($report->object_id);
-                } elseif (in_array($report->object_type, ['App\Status', 'App\Models\Status'])) {
+                } elseif (in_array($report->object_type, ['App\Status', \App\Models\Status::class])) {
                     $status = Status::find($report->object_id);
                     if (! $status) {
                         return [200];
@@ -1304,7 +1304,7 @@ trait AdminReportController
 
         if ($action == 'mark-all-read') {
             AccountInterstitial::whereType('post.autospam')
-                ->whereIn('item_type', ['App\Status', 'App\Models\Status'])
+                ->whereIn('item_type', ['App\Status', \App\Models\Status::class])
                 ->whereNull('appeal_handled_at')
                 ->whereUserId($appeal->user_id)
                 ->update([
@@ -1315,7 +1315,7 @@ trait AdminReportController
 
         if ($action == 'mark-all-not-spam') {
             AccountInterstitial::whereType('post.autospam')
-                ->whereIn('item_type', ['App\Status', 'App\Models\Status'])
+                ->whereIn('item_type', ['App\Status', \App\Models\Status::class])
                 ->whereUserId($appeal->user_id)
                 ->get()
                 ->each(function ($report) use ($meta) {

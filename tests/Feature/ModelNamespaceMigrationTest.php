@@ -71,13 +71,13 @@ describe('model namespace migration', function () {
     });
 
     it('models reside in App\\Models namespace', function () {
-        expect(Status::class)->toBe('App\Models\Status');
-        expect(Profile::class)->toBe('App\Models\Profile');
-        expect(User::class)->toBe('App\Models\User');
-        expect(Media::class)->toBe('App\Models\Media');
-        expect(Like::class)->toBe('App\Models\Like');
-        expect(Notification::class)->toBe('App\Models\Notification');
-        expect(Story::class)->toBe('App\Models\Story');
-        expect(Follower::class)->toBe('App\Models\Follower');
+        expect(Status::class)->toBe(\App\Models\Status::class);
+        expect(Profile::class)->toBe(\App\Models\Profile::class);
+        expect(User::class)->toBe(\App\Models\User::class);
+        expect(Media::class)->toBe(\App\Models\Media::class);
+        expect(Like::class)->toBe(\App\Models\Like::class);
+        expect(Notification::class)->toBe(\App\Models\Notification::class);
+        expect(Story::class)->toBe(\App\Models\Story::class);
+        expect(Follower::class)->toBe(\App\Models\Follower::class);
     });
 });

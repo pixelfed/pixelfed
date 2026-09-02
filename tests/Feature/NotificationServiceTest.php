@@ -62,7 +62,7 @@ describe('NotificationService::createNotification', function () {
             $user->profile_id,
             null,
             1,
-            'App\Models\Group'
+            \App\Models\Group::class
         );
 
         expect($notification->action)->toBeNull();
