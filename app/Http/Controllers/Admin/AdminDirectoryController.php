@@ -132,7 +132,7 @@ trait AdminDirectoryController
         $res['synced'] = config_cache('pixelfed.directory.is_synced') ?? false;
         $res['latest_response'] = config_cache('pixelfed.directory.latest_response') ?? null;
 
-        $path = base_path('resources/lang');
+        $path = lang_path();
         $langs = collect([]);
 
         foreach (new \DirectoryIterator($path) as $io) {
