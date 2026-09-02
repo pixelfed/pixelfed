@@ -109,14 +109,13 @@ class DeleteRemoteProfilePipeline implements ShouldQueue
 
         // Delete Story Views + Stories
         StoryView::whereProfileId($pid)->delete();
-        $stories = Story::whereProfileId($pid)->get();
-        foreach ($stories as $story) {
+        Story::whereProfileId($pid)->cursor()->each(function ($story) {
             $path = storage_path('app/'.$story->path);
             if (is_file($path)) {
                 unlink($path);
             }
             $story->forceDelete();
-        }
+        });
 
         // Delete mutes/blocks
         UserFilter::whereFilterableType(Profile::class)->whereFilterableId($pid)->delete();
