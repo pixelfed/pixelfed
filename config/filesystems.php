@@ -56,6 +56,9 @@ return [
                     'private' => 0711,
                 ],
             ],
+            'serve' => true,
+            'throw' => false,
+            'report' => false,
         ],
 
         'public' => [
@@ -64,6 +67,7 @@ return [
             'url' => env('APP_URL').'/storage',
             'visibility' => 'public',
             'throw' => true,
+            'report' => false,
         ],
 
         's3' => [
@@ -81,6 +85,7 @@ return [
                 'request_checksum_calculation' => env('AWS_REQUEST_CHECKSUM_CALCULATION', 'WHEN_SUPPORTED'),
                 'response_checksum_validation' => env('AWS_RESPONSE_CHECKSUM_VALIDATION', 'WHEN_SUPPORTED'),
             ],
+            'report' => false,
         ],
 
         'alt-primary' => [
