@@ -5,7 +5,7 @@ use App\Services\AccountService;
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Support\Facades\Cache;
 
-class FixCdnUrlInAvatarsTable extends Migration
+return new class extends Migration
 {
     /**
      * Run the migrations.
@@ -34,4 +34,4 @@ class FixCdnUrlInAvatarsTable extends Migration
      * @return void
      */
     public function down() {}
-}
+};

@@ -3,7 +3,7 @@
 use App\Models\Profile;
 use Illuminate\Database\Migrations\Migration;
 
-class GenerateMissingProfileWebfinger extends Migration
+return new class extends Migration
 {
     /**
      * Run the migrations.
@@ -33,4 +33,4 @@ class GenerateMissingProfileWebfinger extends Migration
     {
         //
     }
-}
+};

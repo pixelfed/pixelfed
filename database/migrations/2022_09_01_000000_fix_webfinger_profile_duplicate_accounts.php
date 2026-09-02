@@ -4,7 +4,7 @@ use App\Jobs\DeletePipeline\DeleteRemoteProfilePipeline;
 use App\Models\Profile;
 use Illuminate\Database\Migrations\Migration;
 
-class FixWebfingerProfileDuplicateAccounts extends Migration
+return new class extends Migration
 {
     /**
      * Run the migrations.
@@ -54,4 +54,4 @@ class FixWebfingerProfileDuplicateAccounts extends Migration
     {
         //
     }
-}
+};

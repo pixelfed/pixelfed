@@ -4,7 +4,7 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-class CreateCustomEmojiTable extends Migration
+return new class extends Migration
 {
     /**
      * Run the migrations.
@@ -44,4 +44,4 @@ class CreateCustomEmojiTable extends Migration
         Schema::dropIfExists('custom_emoji');
         Schema::dropIfExists('custom_emoji_categories');
     }
-}
+};

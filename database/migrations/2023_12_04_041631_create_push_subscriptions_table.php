@@ -4,7 +4,7 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-class CreatePushSubscriptionsTable extends Migration
+return new class extends Migration
 {
     /**
      * Run the migrations.
@@ -33,4 +33,4 @@ class CreatePushSubscriptionsTable extends Migration
     {
         Schema::connection(config('webpush.database_connection'))->dropIfExists(config('webpush.table_name'));
     }
-}
+};

@@ -4,7 +4,7 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-class UpdateMediaAddAltText extends Migration
+return new class extends Migration
 {
     /**
      * Run the migrations.
@@ -33,4 +33,4 @@ class UpdateMediaAddAltText extends Migration
             $table->dropColumn(['license', 'is_nsfw', 'version', 'remote_media', 'remote_url']);
         });
     }
-}
+};

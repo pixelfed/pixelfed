@@ -3,7 +3,7 @@
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Support\Facades\Schema;
 
-class UpdateStatusTableChangeCaptionToText extends Migration
+return new class extends Migration
 {
     /**
      * Run the migrations.
@@ -27,4 +27,4 @@ class UpdateStatusTableChangeCaptionToText extends Migration
     {
         //
     }
-}
+};
