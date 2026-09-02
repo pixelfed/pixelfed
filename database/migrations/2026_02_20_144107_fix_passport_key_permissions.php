@@ -2,7 +2,7 @@
 
 use Illuminate\Database\Migrations\Migration;
 
-class FixPassportKeyPermissions extends Migration
+return new class extends Migration
 {
     public function up(): void
     {
@@ -31,4 +31,4 @@ class FixPassportKeyPermissions extends Migration
             }
         }
     }
-}
+};

@@ -4,7 +4,7 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-class AddFetchedAtToProfilesTable extends Migration
+return new class extends Migration
 {
     /**
      * Run the migrations.
@@ -36,4 +36,4 @@ class AddFetchedAtToProfilesTable extends Migration
             $table->text('keybase_proof')->nullable()->after('post_layout');
         });
     }
-}
+};

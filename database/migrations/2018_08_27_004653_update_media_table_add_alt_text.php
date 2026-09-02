@@ -4,7 +4,7 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-class UpdateMediaTableAddAltText extends Migration
+return new class extends Migration
 {
     /**
      * Run the migrations.
@@ -35,4 +35,4 @@ class UpdateMediaTableAddAltText extends Migration
             $table->dropColumn(['original_sha256', 'optimized_sha256', 'caption', 'hls_path', 'hls_transcoded_at', 'key', 'metadata']);
         });
     }
-}
+};

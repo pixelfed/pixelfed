@@ -3,7 +3,7 @@
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Support\Facades\Schema;
 
-class AddSoftDeletesToModels extends Migration
+return new class extends Migration
 {
     /**
      * Run the migrations.
@@ -54,4 +54,4 @@ class AddSoftDeletesToModels extends Migration
     {
         //
     }
-}
+};

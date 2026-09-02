@@ -4,7 +4,7 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-class AddSoftDeleteIndexes extends Migration
+return new class extends Migration
 {
     /**
      * Run the migrations.
@@ -85,4 +85,4 @@ class AddSoftDeleteIndexes extends Migration
             $table->dropIndex('users_deleted_at_index');
         });
     }
-}
+};

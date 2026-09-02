@@ -4,7 +4,7 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-class AddLayoutToProfilesTable extends Migration
+return new class extends Migration
 {
     /**
      * Run the migrations.
@@ -30,4 +30,4 @@ class AddLayoutToProfilesTable extends Migration
             $table->dropColumn(['profile_layout', 'post_layout']);
         });
     }
-}
+};

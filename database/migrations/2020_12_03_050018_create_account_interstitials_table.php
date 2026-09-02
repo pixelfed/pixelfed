@@ -4,7 +4,7 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-class CreateAccountInterstitialsTable extends Migration
+return new class extends Migration
 {
     /**
      * Run the migrations.
@@ -50,4 +50,4 @@ class CreateAccountInterstitialsTable extends Migration
             $table->dropColumn('has_interstitial');
         });
     }
-}
+};

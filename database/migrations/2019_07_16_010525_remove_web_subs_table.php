@@ -3,7 +3,7 @@
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Support\Facades\Schema;
 
-class RemoveWebSubsTable extends Migration
+return new class extends Migration
 {
     /**
      * Run the migrations.
@@ -24,4 +24,4 @@ class RemoveWebSubsTable extends Migration
     {
         Schema::dropIfExists('web_subs');
     }
-}
+};
