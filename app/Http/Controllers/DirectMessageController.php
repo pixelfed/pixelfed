@@ -572,12 +572,7 @@ class DirectMessageController extends Controller
             $q = mb_substr($q, 1);
         }
 
-        $blocked = UserFilter::whereFilterableType(Profile::class)
-            ->whereFilterType('block')
-            ->whereFilterableId($request->user()->profile_id)
-            ->pluck('user_id');
-
-        $blocked->push($request->user()->profile_id);
+        $blocked = UserFilterService::searchExcludedProfileIds($request->user()->profile_id);
 
         $results = Profile::select('id', 'domain', 'username')
             ->whereNotIn('id', $blocked)
