@@ -130,29 +130,29 @@ class StatusDelete implements ShouldQueue
                 $col->delete();
             });
 
-        $dms = DirectMessage::whereStatusId($status->id)->get();
-        foreach ($dms as $dm) {
-            $not = Notification::whereItemType(DirectMessage::class)
-                ->whereItemId($dm->id)
-                ->first();
-            if ($not) {
-                NotificationService::del($not->profile_id, $not->id);
-                $not->forceDeleteQuietly();
-            }
-            $dm->delete();
+        $dmIds = DirectMessage::whereStatusId($status->id)->pluck('id');
+        if ($dmIds->isNotEmpty()) {
+            Notification::whereItemType(DirectMessage::class)
+                ->whereIn('item_id', $dmIds)
+                ->cursor()
+                ->each(function ($not) {
+                    NotificationService::del($not->profile_id, $not->id);
+                    $not->forceDeleteQuietly();
+                });
+            DirectMessage::whereIn('id', $dmIds)->delete();
         }
         Like::whereStatusId($status->id)->delete();
 
-        $mediaTags = MediaTag::where('status_id', $status->id)->get();
-        foreach ($mediaTags as $mtag) {
-            $not = Notification::whereItemType(MediaTag::class)
-                ->whereItemId($mtag->id)
-                ->first();
-            if ($not) {
-                NotificationService::del($not->profile_id, $not->id);
-                $not->forceDeleteQuietly();
-            }
-            $mtag->delete();
+        $mediaTagIds = MediaTag::where('status_id', $status->id)->pluck('id');
+        if ($mediaTagIds->isNotEmpty()) {
+            Notification::whereItemType(MediaTag::class)
+                ->whereIn('item_id', $mediaTagIds)
+                ->cursor()
+                ->each(function ($not) {
+                    NotificationService::del($not->profile_id, $not->id);
+                    $not->forceDeleteQuietly();
+                });
+            MediaTag::whereIn('id', $mediaTagIds)->delete();
         }
         Mention::whereStatusId($status->id)->forceDelete();
 
