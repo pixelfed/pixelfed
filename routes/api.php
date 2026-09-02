@@ -1,13 +1,13 @@
 <?php
 
 use App\Http\Controllers\AdminInviteController;
+use App\Http\Controllers\Api\Admin\DomainBlocksController;
 use App\Http\Controllers\Api\AdminApiController;
 use App\Http\Controllers\Api\ApiV1Controller;
 use App\Http\Controllers\Api\ApiV1Dot1Controller;
 use App\Http\Controllers\Api\ApiV2Controller;
-use App\Http\Controllers\Api\V1\Admin\DomainBlocksController;
-use App\Http\Controllers\Api\V1\DomainBlockController;
-use App\Http\Controllers\Api\V1\TagsController;
+use App\Http\Controllers\Api\V1Api\DomainBlockController;
+use App\Http\Controllers\Api\V1Api\TagsController;
 use App\Http\Controllers\ApiController;
 use App\Http\Controllers\AppRegisterController;
 use App\Http\Controllers\CollectionController;
