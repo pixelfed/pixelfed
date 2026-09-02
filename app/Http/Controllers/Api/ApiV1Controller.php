@@ -2522,17 +2522,11 @@ class ApiV1Controller extends Controller
         ]);
 
         $pid = $request->user()->profile_id;
-        $limit = $request->input('limit', 20);
-        $ogLimit = $request->input('limit', 20);
-        if ($limit > 40) {
-            $limit = 40;
-            $ogLimit = 40;
-        }
+        $limit = min((int) $request->input('limit', 20), 40);
 
         $since = $request->input('since_id');
         $min = $request->input('min_id');
         $max = $request->input('max_id');
-        $pe = $request->filled('_pe');
 
         if (! $since && ! $min && ! $max) {
             $min = 1;
@@ -2543,87 +2537,25 @@ class ApiV1Controller extends Controller
         }
 
         $types = $request->input('types');
-
-        if ($request->has('types')) {
-            $limit = 150;
+        if (is_string($types)) {
+            $types = [$types];
         }
+        $types = $types ? array_values(array_filter($types)) : null;
 
-        $maxId = null;
-        $minId = null;
         AccountService::setLastActive($request->user()->id);
 
-        $res = $max ?
-            NotificationService::getMaxMastodon($pid, $max, $limit) :
-            NotificationService::getMinMastodon($pid, $min ?? $since, $limit);
-        $ids = $max ?
-            NotificationService::getRankedMaxId($pid, $max, $limit) :
-            NotificationService::getRankedMinId($pid, $min ?? $since, $limit);
-        if (! empty($ids)) {
-            $maxId = max($ids);
-            $minId = min($ids);
+        $page = $max
+            ? NotificationService::getMaxMastodonPage($pid, $max, $limit, $types)
+            : NotificationService::getMinMastodonPage($pid, $min ?? $since, $limit, $types);
+
+        if (empty($page['data']) && ! Cache::has('pf:services:notifications:hasSynced:'.$pid)) {
+            Cache::put('pf:services:notifications:hasSynced:'.$pid, 1, 1209600);
+            NotificationWarmUserCache::dispatch($pid);
         }
 
-        if (empty($res)) {
-            if (! Cache::has('pf:services:notifications:hasSynced:'.$pid)) {
-                Cache::put('pf:services:notifications:hasSynced:'.$pid, 1, 1209600);
-                NotificationWarmUserCache::dispatch($pid);
-            }
-        }
-
-        if ($request->has('types')) {
-            $typesParams = collect($types)->implode('&types[]=');
-            $baseUrl = config('app.url').'/api/v1/notifications?types[]='.$typesParams.'&limit='.$ogLimit.'&';
-        } else {
-            $baseUrl = config('app.url').'/api/v1/notifications?limit='.$ogLimit.'&';
-        }
-
-        if ($minId == $maxId) {
-            $minId = null;
-        }
-
-        $res = collect($res)
-            ->map(function ($n) use ($pe) {
-                if (! $pe) {
-                    if ($n['type'] == 'comment') {
-                        $n['type'] = 'mention';
-
-                        return $n;
-                    }
-
-                    return $n;
-                }
-
-                return $n;
-            })
-            ->filter(function ($n) use ($pe) {
-                if (in_array($n['type'], ['mention', 'reblog', 'favourite'])) {
-                    return isset($n['status'], $n['status']['id']);
-                }
-
-                if (in_array($n['type'], ['follow'])) {
-                    return isset($n['account'], $n['account']['id']);
-                }
-
-                if (! $pe) {
-                    if (in_array($n['type'], [
-                        'tagged',
-                        'modlog',
-                        'story:react',
-                        'story:comment',
-                        'group:comment',
-                        'group:join:approved',
-                        'group:join:rejected',
-                    ])) {
-                        return false;
-                    }
-
-                    return isset($n['account'], $n['account']['id']);
-                }
-
-                return true;
-            })
+        $res = collect($page['data'])
             ->map(function ($n) use ($pid) {
-                if (isset($n['status'])) {
+                if (isset($n['status']['id'])) {
                     $n['status']['favourited'] = (bool) LikeService::liked($pid, $n['status']['id']);
                     $n['status']['reblogged'] = (bool) ReblogService::get($pid, $n['status']['id']);
                     $n['status']['bookmarked'] = (bool) BookmarkService::get($pid, $n['status']['id']);
@@ -2631,29 +2563,22 @@ class ApiV1Controller extends Controller
 
                 return $n;
             })
-            ->filter(function ($n) use ($types) {
-                if (! $types) {
-                    return true;
-                }
-
-                return in_array($n['type'], $types);
-            })
-            ->take($ogLimit)
             ->values();
 
-        if ($maxId) {
-            $link = '<'.$baseUrl.'max_id='.$minId.'>; rel="next"';
+        $baseUrl = config('app.url').'/api/v1/notifications?limit='.$limit.'&';
+        if ($types) {
+            $baseUrl .= 'types[]='.implode('&types[]=', $types).'&';
         }
 
-        if ($minId) {
-            $link = '<'.$baseUrl.'min_id='.$maxId.'>; rel="prev"';
+        $links = [];
+        if ($page['next_max_id']) {
+            $links[] = '<'.$baseUrl.'max_id='.$page['next_max_id'].'>; rel="next"';
+        }
+        if ($page['prev_min_id']) {
+            $links[] = '<'.$baseUrl.'min_id='.$page['prev_min_id'].'>; rel="prev"';
         }
 
-        if ($maxId && $minId) {
-            $link = '<'.$baseUrl.'max_id='.$minId.'>; rel="next",<'.$baseUrl.'min_id='.$maxId.'>; rel="prev"';
-        }
-
-        $headers = isset($link) ? ['Link' => $link] : [];
+        $headers = $links ? ['Link' => implode(',', $links)] : [];
 
         return $this->json($res, 200, $headers);
     }
