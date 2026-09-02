@@ -170,9 +170,15 @@ class AdminCuratedRegisterController extends Controller
 
     public function apiMessagePreviewStore(Request $request, $id)
     {
+        $this->validate($request, [
+            'message' => 'required|string|min:5|max:3000',
+        ]);
         $record = CuratedRegister::findOrFail($id);
 
-        return $request->all();
+        return response()->json([
+            'id' => $record->id,
+            'message' => $request->input('message'),
+        ]);
     }
 
     public function apiMessageSendStore(Request $request, $id)
@@ -195,7 +201,10 @@ class AdminCuratedRegisterController extends Controller
         $record->save();
         Mail::to($record->email)->send(new CuratedRegisterRequestDetailsFromUser($record, $activity));
 
-        return $request->all();
+        return response()->json([
+            'id' => $record->id,
+            'success' => true,
+        ]);
     }
 
     public function previewDetailsMessageShow(Request $request, $id)
