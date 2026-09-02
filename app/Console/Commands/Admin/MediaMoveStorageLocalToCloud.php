@@ -9,6 +9,7 @@ use App\Services\ResilientMediaStorageService;
 use App\Services\StatusService;
 use App\Util\Lexer\PrettyNumber;
 use Illuminate\Console\Command;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
 
@@ -49,30 +50,32 @@ class MediaMoveStorageLocalToCloud extends Command
 
         if (! $this->cloudHost()) {
             $this->error('Cloud disk ('.config('filesystems.cloud').') is not configured (no resolvable URL).');
-            $this->line('Set AWS_URL / AWS_* in your .env before migrating to cloud.');
+            $this->line('Set AWS_URL / AWS_* in your environment before migrating to cloud.');
 
             return 1;
         }
 
         // --- Ensure new uploads route to cloud during the migration --------
-        $envCloud = $this->readEnvValue('PF_ENABLE_CLOUD');
-        $cloudEnabled = filter_var($envCloud, FILTER_VALIDATE_BOOLEAN);
+        // Read the effective, live setting the same way the rest of the app
+        // does (config_cache is DB-backed and works with or without a .env
+        // file, e.g. in containers that inject config via env vars).
+        $cloudEnabled = (bool) config_cache('pixelfed.cloud_storage');
 
         if (! $cloudEnabled) {
-            $this->warn('PF_ENABLE_CLOUD is currently "'.($envCloud ?? 'unset').'".');
+            $this->warn('Cloud storage (pixelfed.cloud_storage) is currently disabled.');
             $this->line('New uploads would keep landing on LOCAL storage during this migration.');
             if ($this->option('dry-run')) {
-                $this->line('[dry-run] Would set PF_ENABLE_CLOUD=true (.env + runtime + config cache).');
-            } elseif ($this->option('force') || $this->confirm('Set PF_ENABLE_CLOUD=true now so new uploads go to cloud?', true)) {
+                $this->line('[dry-run] Would enable cloud storage (runtime + config cache, and .env if writable).');
+            } elseif ($this->option('force') || $this->confirm('Enable cloud storage now so new uploads go to cloud?', true)) {
                 $this->setStorageEnv('PF_ENABLE_CLOUD', 'true', 'pixelfed.cloud_storage', true);
-                $this->info('PF_ENABLE_CLOUD set to true (.env + live runtime + config cache).');
+                $this->info('Cloud storage enabled (live runtime + config cache).');
             } else {
                 $this->error('Aborting: refusing to migrate to cloud while new uploads stay local.');
 
                 return 1;
             }
         } else {
-            $this->info('PF_ENABLE_CLOUD is already true; new uploads route to cloud. ✓');
+            $this->info('Cloud storage is already enabled; new uploads route to cloud. ✓');
         }
 
         $this->newLine();
@@ -190,6 +193,10 @@ class MediaMoveStorageLocalToCloud extends Command
 
             return 'moved';
         } catch (\Throwable $e) {
+            Log::error('MediaMoveStorageLocalToCloud: failed to migrate media', [
+                'media_id' => $media->id,
+                'error' => $e->getMessage(),
+            ]);
             $this->warn(PHP_EOL.'Error migrating media '.$media->id.': '.$e->getMessage());
 
             return 'failed';
