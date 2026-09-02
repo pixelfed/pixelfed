@@ -271,6 +271,7 @@ class ComposeController extends Controller
             'profiles.username',
             'profiles.followers_count',
         ])
+            ->with('avatar')
             ->selectRaw('MAX(CASE WHEN followers.following_id IS NOT NULL THEN 1 ELSE 0 END) as is_followed')
             ->leftJoin('followers', function ($join) use ($currentUserId) {
                 $join->on('followers.following_id', '=', 'profiles.id')
