@@ -12,6 +12,7 @@ use Illuminate\Console\Command;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
+use Symfony\Component\Console\Helper\ProgressBar;
 
 class MediaMoveStorageLocalToCloud extends Command
 {
@@ -26,6 +27,7 @@ class MediaMoveStorageLocalToCloud extends Command
         {--limit=500 : Max media rows to process this run}
         {--dry-run : Report what would happen without copying or writing}
         {--keep-local : Do not delete local files after verifying the cloud copy}
+        {--debug : Print exactly what moves, from which local path to which cloud destination}
         {--force : Skip confirmation prompts}';
 
     /**
@@ -36,6 +38,8 @@ class MediaMoveStorageLocalToCloud extends Command
     protected $description = 'Migrate local media to cloud storage: copy up, verify (size/sha256), update URLs, then delete the local copy. Ensures new uploads go to cloud during the migration.';
 
     protected int $movedBytes = 0;
+
+    protected ?ProgressBar $bar = null;
 
     public function handle()
     {
@@ -78,6 +82,16 @@ class MediaMoveStorageLocalToCloud extends Command
             $this->info('Cloud storage is already enabled; new uploads route to cloud. ✓');
         }
 
+        if ($this->option('debug')) {
+            $this->newLine();
+            $this->line('<comment>[debug] Storage routing</comment>');
+            $this->line('  local disk   : '.config('filesystems.disks.local.root'));
+            $this->line('  cloud disk   : '.config('filesystems.cloud'));
+            $this->line('  cloud driver : '.config('filesystems.disks.'.config('filesystems.cloud').'.driver'));
+            $this->line('  cloud bucket : '.config('filesystems.disks.'.config('filesystems.cloud').'.bucket'));
+            $this->line('  cloud host   : '.$this->cloudHost());
+        }
+
         $this->newLine();
         if (! $this->option('dry-run') && ! $this->option('force')) {
             if (! $this->confirm('Begin migrating local media to cloud?', true)) {
@@ -101,8 +115,8 @@ class MediaMoveStorageLocalToCloud extends Command
             ->orderByDesc('id')
             ->limit($limit);
 
-        $bar = $this->output->createProgressBar($query->count());
-        $bar->start();
+        $this->bar = $this->output->createProgressBar($query->count());
+        $this->bar->start();
 
         foreach ($query->get() as $media) {
             $result = $this->migrateOne($media, $localDisk, $cloudDisk);
@@ -111,10 +125,10 @@ class MediaMoveStorageLocalToCloud extends Command
                 'skipped' => $skipped++,
                 default => $failed++,
             };
-            $bar->advance();
+            $this->bar->advance();
         }
 
-        $bar->finish();
+        $this->bar->finish();
         $this->newLine(2);
         $this->info(($this->option('dry-run') ? '[dry-run] ' : '').'Done. moved='.$moved.' skipped='.$skipped.' failed='.$failed.'.');
         if ($this->movedBytes) {
@@ -130,6 +144,8 @@ class MediaMoveStorageLocalToCloud extends Command
     protected function migrateOne(Media $media, $localDisk, $cloudDisk): string
     {
         if (Str::startsWith((string) $media->media_path, 'http')) {
+            $this->debugLine('media '.$media->id.' skipped: media_path is a remote URL ('.$media->media_path.')');
+
             return 'skipped';
         }
 
@@ -137,6 +153,7 @@ class MediaMoveStorageLocalToCloud extends Command
         if (! $localDisk->exists($media->media_path)) {
             // Already on cloud only? mark version and move on.
             if ($cloudDisk->exists($media->media_path)) {
+                $this->debugLine('media '.$media->id.' skipped: local file missing but already on cloud ('.$media->media_path.')');
                 if (! $this->option('dry-run') && $media->version !== '4') {
                     $media->version = 4;
                     $media->save();
@@ -145,7 +162,23 @@ class MediaMoveStorageLocalToCloud extends Command
                 return 'skipped';
             }
 
+            $this->debugLine('media '.$media->id.' skipped: local file missing and not on cloud ('.$media->media_path.')');
+
             return 'skipped';
+        }
+
+        // Basic per-item info (always on): what moves and where it lands.
+        $this->basicLine('media '.$media->id.' ('.PrettyNumber::size((int) $media->size).'): '.$media->media_path.' → '.$this->cloudDestination($media->media_path, $cloudDisk));
+
+        if ($this->option('debug')) {
+            $this->debugLine('  status_id     : '.($media->status_id ?? 'null'));
+            $this->debugLine('  primary from  : '.$localDisk->path($media->media_path));
+            $this->debugLine('  primary to    : '.$cloudDisk->url($media->media_path));
+            if ($media->thumbnail_path && $localDisk->exists($media->thumbnail_path)) {
+                $this->debugLine('  thumbnail from: '.$localDisk->path($media->thumbnail_path));
+                $this->debugLine('  thumbnail to  : '.$cloudDisk->url($media->thumbnail_path));
+            }
+            $this->debugLine('  after copy    : '.($this->option('keep-local') ? 'local kept' : 'local deleted').($this->option('dry-run') ? ' (dry-run: no changes)' : ''));
         }
 
         if ($this->option('dry-run')) {
@@ -200,6 +233,54 @@ class MediaMoveStorageLocalToCloud extends Command
             $this->warn(PHP_EOL.'Error migrating media '.$media->id.': '.$e->getMessage());
 
             return 'failed';
+        }
+    }
+
+    /**
+     * Write a line that always shows, printed cleanly above an active progress bar.
+     */
+    protected function basicLine(string $message): void
+    {
+        if ($this->bar) {
+            $this->bar->clear();
+            $this->line($message);
+            $this->bar->display();
+
+            return;
+        }
+
+        $this->line($message);
+    }
+
+    /**
+     * Write a line only when --debug is set, cleanly above an active progress bar.
+     */
+    protected function debugLine(string $message): void
+    {
+        if (! $this->option('debug')) {
+            return;
+        }
+
+        $this->basicLine('<comment>[debug]</comment> '.$message);
+    }
+
+    /**
+     * Best-effort human-readable cloud destination for a media path
+     * (bucket/key for S3-style disks, otherwise the resolved URL).
+     */
+    protected function cloudDestination(string $path, $cloudDisk): string
+    {
+        $cloud = config('filesystems.cloud');
+        $bucket = config('filesystems.disks.'.$cloud.'.bucket');
+
+        if ($bucket) {
+            return $cloud.'://'.$bucket.'/'.ltrim($path, '/');
+        }
+
+        try {
+            return $cloudDisk->url($path);
+        } catch (\Throwable $e) {
+            return $cloud.':'.$path;
         }
     }
 
