@@ -2921,7 +2921,7 @@ class ApiV1Controller extends Controller
                 ->values();
         }
 
-        $baseUrl = config('app.url').'/api/v1/timelines/home?limit='.$limit.'&';
+        $baseUrl = $napi ? config('app.url').'/api/v1/timelines/home?limit='.$limit.'&_pe=1&' : config('app.url').'/api/v1/timelines/home?limit='.$limit.'&';
         $minId = $res->map(function ($s) {
             return ['id' => $s['id']];
         })->min('id');
@@ -3209,7 +3209,7 @@ class ApiV1Controller extends Controller
             ->take($limit)
             ->values();
 
-        $baseUrl = config('app.url').'/api/v1/timelines/public?limit='.$limit.'&';
+        $baseUrl = $napi ? config('app.url').'/api/v1/timelines/public?limit='.$limit.'&_pe=1&' : config('app.url').'/api/v1/timelines/public?limit='.$limit.'&';
         if ($remote) {
             $baseUrl .= 'remote=1&';
         }
