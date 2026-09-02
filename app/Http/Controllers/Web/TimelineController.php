@@ -1,7 +1,8 @@
 <?php
 
-namespace App\Http\Controllers;
+namespace App\Http\Controllers\Web;
 
+use App\Http\Controllers\Controller;
 // use App\Models\Profile;
 // use App\Models\Status;
 // use App\Transformer\Api\StatusTimelineTransformer;

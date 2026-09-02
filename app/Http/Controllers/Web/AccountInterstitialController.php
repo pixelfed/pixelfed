@@ -1,7 +1,8 @@
 <?php
 
-namespace App\Http\Controllers;
+namespace App\Http\Controllers\Web;
 
+use App\Http\Controllers\Controller;
 use App\Models\AccountInterstitial;
 use App\Models\Status;
 use Illuminate\Contracts\View\View;

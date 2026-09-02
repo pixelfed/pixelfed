@@ -57,7 +57,7 @@
       <code><![CDATA[return abort(500);]]></code>
     </NoValue>
   </file>
-  <file src="app/Http/Controllers/PersonalAccessTokenController.php">
+  <file src="app/Http/Controllers/Web/PersonalAccessTokenController.php">
     <InaccessibleProperty>
       <code><![CDATA[$result->token]]></code>
       <code><![CDATA[$result->token]]></code>
@@ -68,7 +68,7 @@
       <code><![CDATA[return abort(404);]]></code>
     </NoValue>
   </file>
-  <file src="app/Http/Controllers/ReportController.php">
+  <file src="app/Http/Controllers/Web/ReportController.php">
     <NoValue>
       <code><![CDATA[return abort(400, 'Invalid report type');]]></code>
       <code><![CDATA[return abort(400, 'Invalid report type');]]></code>

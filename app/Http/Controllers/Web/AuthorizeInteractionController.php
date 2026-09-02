@@ -1,7 +1,8 @@
 <?php
 
-namespace App\Http\Controllers;
+namespace App\Http\Controllers\Web;
 
+use App\Http\Controllers\Controller;
 use App\Util\ActivityPub\Helpers;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;

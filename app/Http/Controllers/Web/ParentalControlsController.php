@@ -1,8 +1,9 @@
 <?php
 
-namespace App\Http\Controllers;
+namespace App\Http\Controllers\Web;
 
 use App\Http\Controllers\Auth\RegisterController;
+use App\Http\Controllers\Controller;
 use App\Jobs\ParentalControlsPipeline\DispatchChildInvitePipeline;
 use App\Models\ParentalControls;
 use App\Models\Profile;

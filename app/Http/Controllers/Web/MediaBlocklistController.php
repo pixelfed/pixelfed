@@ -1,7 +1,8 @@
 <?php
 
-namespace App\Http\Controllers;
+namespace App\Http\Controllers\Web;
 
+use App\Http\Controllers\Controller;
 use App\Models\MediaBlocklist;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;

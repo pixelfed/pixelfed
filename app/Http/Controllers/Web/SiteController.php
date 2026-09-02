@@ -1,8 +1,9 @@
 <?php
 
-namespace App\Http\Controllers;
+namespace App\Http\Controllers\Web;
 
 use App\Http\Controllers\Concerns\ManagesCachedPages;
+use App\Http\Controllers\Controller;
 use App\Models\Page;
 use App\Models\Profile;
 use App\Models\User;

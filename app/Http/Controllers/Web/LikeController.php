@@ -1,7 +1,8 @@
 <?php
 
-namespace App\Http\Controllers;
+namespace App\Http\Controllers\Web;
 
+use App\Http\Controllers\Controller;
 use App\Jobs\LikePipeline\LikePipeline;
 use App\Jobs\LikePipeline\UnlikePipeline;
 use App\Models\Like;
