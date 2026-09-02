@@ -21,6 +21,18 @@ use Illuminate\Validation\Rule;
 
 trait Reports
 {
+    const REPORT_TYPES = [
+        'spam',
+        'sensitive',
+        'abusive',
+        'underage',
+        'violence',
+        'copyright',
+        'impersonation',
+        'scam',
+        'terrorism',
+    ];
+
     public function report(Request $request)
     {
         abort_if(! $request->user() || ! $request->user()->token(), 403);

@@ -20,18 +20,6 @@ class ApiV1Dot1Controller extends Controller
 
     protected $fractal;
 
-    const REPORT_TYPES = [
-        'spam',
-        'sensitive',
-        'abusive',
-        'underage',
-        'violence',
-        'copyright',
-        'impersonation',
-        'scam',
-        'terrorism',
-    ];
-
     public function __construct()
     {
         $this->fractal = new Fractal\Manager;
