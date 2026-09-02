@@ -2,6 +2,8 @@
 
 namespace App\Http\Controllers\Groups;
 
+use Illuminate\Routing\Controllers\HasMiddleware;
+use Illuminate\Routing\Controllers\Middleware;
 use App\Http\Controllers\Controller;
 use App\Models\Group;
 use App\Models\GroupHashtag;
@@ -13,11 +15,13 @@ use Illuminate\Contracts\View\View;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 
-class GroupsTopicController extends Controller
+class GroupsTopicController extends Controller implements HasMiddleware
 {
-    public function __construct()
+    public static function middleware(): array
     {
-        $this->middleware('auth');
+        return [
+            'auth',
+        ];
     }
 
     public function groupTopics(Request $request): JsonResponse

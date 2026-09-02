@@ -2,17 +2,21 @@
 
 namespace App\Http\Controllers;
 
+use Illuminate\Routing\Controllers\HasMiddleware;
+use Illuminate\Routing\Controllers\Middleware;
 use App\Models\AdminShadowFilter;
 use App\Models\Profile;
 use App\Services\AccountService;
 use App\Services\AdminShadowFilterService;
 use Illuminate\Http\Request;
 
-class AdminShadowFilterController extends Controller
+class AdminShadowFilterController extends Controller implements HasMiddleware
 {
-    public function __construct()
+    public static function middleware(): array
     {
-        $this->middleware(['auth', 'admin']);
+        return [
+            new Middleware(['auth', 'admin']),
+        ];
     }
 
     public function home(Request $request)

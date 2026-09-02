@@ -2,6 +2,8 @@
 
 namespace App\Http\Controllers\Admin;
 
+use Illuminate\Routing\Controllers\HasMiddleware;
+use Illuminate\Routing\Controllers\Middleware;
 use App\Http\Controllers\Controller;
 use App\Mail\AdminInviteEmail;
 use App\Models\AdminInvite;
@@ -10,13 +12,15 @@ use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Mail;
 
-class AdminUserInviteController extends Controller
+class AdminUserInviteController extends Controller implements HasMiddleware
 {
-    public function __construct()
+    public static function middleware(): array
     {
-        $this->middleware('admin');
-        $this->middleware('dangerzone');
-        $this->middleware('twofactor');
+        return [
+            'admin',
+            'dangerzone',
+            'twofactor',
+        ];
     }
 
     public function index(): View

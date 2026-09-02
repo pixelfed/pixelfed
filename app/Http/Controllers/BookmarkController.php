@@ -2,6 +2,8 @@
 
 namespace App\Http\Controllers;
 
+use Illuminate\Routing\Controllers\HasMiddleware;
+use Illuminate\Routing\Controllers\Middleware;
 use App\Models\Bookmark;
 use App\Models\Status;
 use App\Services\AccountService;
@@ -10,11 +12,13 @@ use App\Services\FollowerService;
 use App\Services\UserRoleService;
 use Illuminate\Http\Request;
 
-class BookmarkController extends Controller
+class BookmarkController extends Controller implements HasMiddleware
 {
-    public function __construct()
+    public static function middleware(): array
     {
-        $this->middleware('auth');
+        return [
+            'auth',
+        ];
     }
 
     public function store(Request $request)

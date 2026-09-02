@@ -2,6 +2,8 @@
 
 namespace App\Http\Controllers;
 
+use Illuminate\Routing\Controllers\HasMiddleware;
+use Illuminate\Routing\Controllers\Middleware;
 use App\Http\Controllers\Settings\ExportSettings;
 use App\Http\Controllers\Settings\HomeSettings;
 use App\Http\Controllers\Settings\LabsSettings;
@@ -26,7 +28,7 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Redis;
 use Illuminate\Support\Str;
 
-class SettingsController extends Controller
+class SettingsController extends Controller implements HasMiddleware
 {
     use ExportSettings,
         HomeSettings,
@@ -35,9 +37,11 @@ class SettingsController extends Controller
         RelationshipSettings,
         SecuritySettings;
 
-    public function __construct()
+    public static function middleware(): array
     {
-        $this->middleware('auth');
+        return [
+            'auth',
+        ];
     }
 
     public function accessibility(Request $request): View

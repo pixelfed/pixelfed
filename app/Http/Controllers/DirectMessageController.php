@@ -2,6 +2,8 @@
 
 namespace App\Http\Controllers;
 
+use Illuminate\Routing\Controllers\HasMiddleware;
+use Illuminate\Routing\Controllers\Middleware;
 use App\Jobs\DirectPipeline\DirectDeletePipeline;
 use App\Jobs\DirectPipeline\DirectDeliverPipeline;
 use App\Jobs\StatusPipeline\StatusDelete;
@@ -29,11 +31,13 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Arr;
 use Illuminate\Support\Str;
 
-class DirectMessageController extends Controller
+class DirectMessageController extends Controller implements HasMiddleware
 {
-    public function __construct()
+    public static function middleware(): array
     {
-        $this->middleware('auth');
+        return [
+            'auth',
+        ];
     }
 
     public function browse(Request $request)

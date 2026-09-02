@@ -2,16 +2,20 @@
 
 namespace App\Http\Controllers\Groups;
 
+use Illuminate\Routing\Controllers\HasMiddleware;
+use Illuminate\Routing\Controllers\Middleware;
 use App\Http\Controllers\Controller;
 use App\Models\Group;
 use App\Services\GroupService;
 use Illuminate\Http\Request;
 
-class GroupsMetaController extends Controller
+class GroupsMetaController extends Controller implements HasMiddleware
 {
-    public function __construct()
+    public static function middleware(): array
     {
-        $this->middleware('auth');
+        return [
+            'auth',
+        ];
     }
 
     public function deleteGroup(Request $request): array

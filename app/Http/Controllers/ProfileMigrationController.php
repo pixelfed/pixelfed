@@ -2,6 +2,8 @@
 
 namespace App\Http\Controllers;
 
+use Illuminate\Routing\Controllers\HasMiddleware;
+use Illuminate\Routing\Controllers\Middleware;
 use App\Http\Requests\ProfileMigrationStoreRequest;
 use App\Jobs\ProfilePipeline\ProfileMigrationDeliverMoveActivityPipeline;
 use App\Jobs\ProfilePipeline\ProfileMigrationMoveFollowersPipeline;
@@ -16,11 +18,13 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Bus;
 use Illuminate\Support\Facades\Cache;
 
-class ProfileMigrationController extends Controller
+class ProfileMigrationController extends Controller implements HasMiddleware
 {
-    public function __construct()
+    public static function middleware(): array
     {
-        $this->middleware('auth');
+        return [
+            'auth',
+        ];
     }
 
     public function index(Request $request): RedirectResponse|View

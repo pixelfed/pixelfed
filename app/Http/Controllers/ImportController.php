@@ -2,12 +2,17 @@
 
 namespace App\Http\Controllers;
 
-class ImportController extends Controller
+use Illuminate\Routing\Controllers\HasMiddleware;
+use Illuminate\Routing\Controllers\Middleware;
+
+class ImportController extends Controller implements HasMiddleware
 {
     use Import\Instagram, Import\Mastodon;
 
-    public function __construct()
+    public static function middleware(): array
     {
-        $this->middleware('auth');
+        return [
+            'auth',
+        ];
     }
 }

@@ -2,16 +2,20 @@
 
 namespace App\Http\Controllers;
 
+use Illuminate\Routing\Controllers\HasMiddleware;
+use Illuminate\Routing\Controllers\Middleware;
 use App\Models\MediaBlocklist;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 
-class MediaBlocklistController extends Controller
+class MediaBlocklistController extends Controller implements HasMiddleware
 {
-    public function __construct()
+    public static function middleware(): array
     {
-        $this->middleware('auth');
-        $this->middleware('admin');
+        return [
+            'auth',
+            'admin',
+        ];
     }
 
     public function add(Request $request): RedirectResponse

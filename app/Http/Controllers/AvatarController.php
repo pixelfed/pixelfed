@@ -2,6 +2,8 @@
 
 namespace App\Http\Controllers;
 
+use Illuminate\Routing\Controllers\HasMiddleware;
+use Illuminate\Routing\Controllers\Middleware;
 use App\Jobs\AvatarPipeline\AvatarOptimize;
 use App\Models\Avatar;
 use Illuminate\Http\JsonResponse;
@@ -10,11 +12,18 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Str;
 
-class AvatarController extends Controller
+class AvatarController extends Controller implements HasMiddleware
 {
     public function __construct()
     {
-        return $this->middleware('auth');
+        return ;
+    }
+
+    public static function middleware(): array
+    {
+        return [
+            'auth',
+        ];
     }
 
     public function store(Request $request): RedirectResponse

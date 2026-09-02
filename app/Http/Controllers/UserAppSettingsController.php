@@ -2,17 +2,21 @@
 
 namespace App\Http\Controllers;
 
+use Illuminate\Routing\Controllers\HasMiddleware;
+use Illuminate\Routing\Controllers\Middleware;
 use App\Http\Requests\StoreUserAppSettings;
 use App\Http\Resources\UserAppSettingsResource;
 use App\Models\UserAppSettings;
 use App\Services\Account\AccountAppSettingsService;
 use Illuminate\Http\Request;
 
-class UserAppSettingsController extends Controller
+class UserAppSettingsController extends Controller implements HasMiddleware
 {
-    public function __construct()
+    public static function middleware(): array
     {
-        $this->middleware('auth');
+        return [
+            'auth',
+        ];
     }
 
     public function get(Request $request)

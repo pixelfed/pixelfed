@@ -2,6 +2,8 @@
 
 namespace App\Http\Controllers\Groups;
 
+use Illuminate\Routing\Controllers\HasMiddleware;
+use Illuminate\Routing\Controllers\Middleware;
 use App\Http\Controllers\Controller;
 use App\Models\Group;
 use App\Models\GroupPost;
@@ -15,11 +17,13 @@ use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Cache;
 
-class GroupsFeedController extends Controller
+class GroupsFeedController extends Controller implements HasMiddleware
 {
-    public function __construct()
+    public static function middleware(): array
     {
-        $this->middleware('auth');
+        return [
+            'auth',
+        ];
     }
 
     public function getSelfFeed(Request $request): JsonResponse

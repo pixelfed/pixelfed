@@ -2,19 +2,23 @@
 
 namespace App\Http\Controllers;
 
+use Illuminate\Routing\Controllers\HasMiddleware;
+use Illuminate\Routing\Controllers\Middleware;
 use App\Models\Place;
 use App\Services\PlaceService;
 use App\Services\StatusService;
 use Illuminate\Contracts\View\View;
 use Illuminate\Http\Request;
 
-class PlaceController extends Controller
+class PlaceController extends Controller implements HasMiddleware
 {
     const PLACES_CACHE_KEY = 'pf:places:sid-cache:by:placeid:';
 
-    public function __construct()
+    public static function middleware(): array
     {
-        $this->middleware('auth');
+        return [
+            'auth',
+        ];
     }
 
     public function show(Request $request, int $id, $slug): View

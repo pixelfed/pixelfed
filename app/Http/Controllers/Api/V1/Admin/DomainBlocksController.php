@@ -2,6 +2,8 @@
 
 namespace App\Http\Controllers\Api\V1\Admin;
 
+use Illuminate\Routing\Controllers\HasMiddleware;
+use Illuminate\Routing\Controllers\Middleware;
 use App\Http\Controllers\Api\ApiController;
 use App\Http\Resources\MastoApi\Admin\DomainBlockResource;
 use App\Models\Instance;
@@ -9,12 +11,14 @@ use App\Services\InstanceService;
 use Illuminate\Http\Request;
 use Illuminate\Validation\Rule;
 
-class DomainBlocksController extends ApiController
+class DomainBlocksController extends ApiController implements HasMiddleware
 {
-    public function __construct()
+    public static function middleware(): array
     {
-        $this->middleware(['auth:api', 'api.admin', 'scope:admin:read,admin:read:domain_blocks'])->only(['index', 'show']);
-        $this->middleware(['auth:api', 'api.admin', 'scope:admin:write,admin:write:domain_blocks'])->only(['create', 'update', 'delete']);
+        return [
+            new Middleware(['auth:api', 'api.admin', 'scope:admin:read,admin:read:domain_blocks'], only: ['index', 'show']),
+            new Middleware(['auth:api', 'api.admin', 'scope:admin:write,admin:write:domain_blocks'], only: ['create', 'update', 'delete']),
+        ];
     }
 
     public function index(Request $request)

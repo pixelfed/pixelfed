@@ -2,6 +2,8 @@
 
 namespace App\Http\Controllers;
 
+use Illuminate\Routing\Controllers\HasMiddleware;
+use Illuminate\Routing\Controllers\Middleware;
 use App\Http\Controllers\Admin\AdminAutospamController;
 use App\Http\Controllers\Admin\AdminDirectoryController;
 use App\Http\Controllers\Admin\AdminDiscoverController;
@@ -39,7 +41,7 @@ use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
 use Illuminate\Validation\Rule;
 
-class AdminController extends Controller
+class AdminController extends Controller implements HasMiddleware
 {
     use AdminAutospamController,
         AdminDirectoryController,
@@ -53,11 +55,13 @@ class AdminController extends Controller
         // AdminStorageController,
         AdminUserController;
 
-    public function __construct()
+    public static function middleware(): array
     {
-        $this->middleware('admin');
-        $this->middleware('dangerzone');
-        $this->middleware('twofactor');
+        return [
+            'admin',
+            'dangerzone',
+            'twofactor',
+        ];
     }
 
     public function home(): View

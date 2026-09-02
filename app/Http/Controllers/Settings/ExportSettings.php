@@ -2,6 +2,8 @@
 
 namespace App\Http\Controllers\Settings;
 
+use Illuminate\Routing\Controllers\HasMiddleware;
+use Illuminate\Routing\Controllers\Middleware;
 use App\Models\Status;
 use App\Models\UserFilter;
 use App\Transformer\ActivityPub\ProfileTransformer;
@@ -13,15 +15,17 @@ use Illuminate\Support\Facades\Storage;
 use League\Fractal;
 use League\Fractal\Serializer\ArraySerializer;
 
-trait ExportSettings
+trait ExportSettings implements HasMiddleware
 {
     private const CHUNK_SIZE = 1000;
 
     private const STORAGE_BASE = 'user_exports';
 
-    public function __construct()
+    public static function middleware(): array
     {
-        $this->middleware('auth');
+        return [
+            'auth',
+        ];
     }
 
     public function dataExport()

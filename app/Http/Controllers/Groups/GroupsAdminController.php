@@ -2,6 +2,8 @@
 
 namespace App\Http\Controllers\Groups;
 
+use Illuminate\Routing\Controllers\HasMiddleware;
+use Illuminate\Routing\Controllers\Middleware;
 use App\Http\Controllers\Controller;
 use App\Models\Group;
 use App\Models\GroupBlock;
@@ -18,11 +20,13 @@ use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Symfony\Component\HttpFoundation\StreamedResponse;
 
-class GroupsAdminController extends Controller
+class GroupsAdminController extends Controller implements HasMiddleware
 {
-    public function __construct()
+    public static function middleware(): array
     {
-        $this->middleware('auth');
+        return [
+            'auth',
+        ];
     }
 
     public function getAdminTabs(Request $request, $id): JsonResponse

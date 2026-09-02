@@ -2,15 +2,19 @@
 
 namespace App\Http\Controllers;
 
+use Illuminate\Routing\Controllers\HasMiddleware;
+use Illuminate\Routing\Controllers\Middleware;
 use App\Services\Internal\SoftwareUpdateService;
 use Illuminate\Http\Request;
 
-class SoftwareUpdateController extends Controller
+class SoftwareUpdateController extends Controller implements HasMiddleware
 {
-    public function __construct()
+    public static function middleware(): array
     {
-        $this->middleware('auth');
-        $this->middleware('admin');
+        return [
+            'auth',
+            'admin',
+        ];
     }
 
     public function getSoftwareUpdateCheck(Request $request)
