@@ -7,7 +7,6 @@ use App\Models\AccountInterstitial;
 use App\Models\Bookmark;
 use App\Models\DirectMessage;
 use App\Models\DiscoverCategory;
-use App\Models\Follower;
 use App\Models\Profile;
 use App\Models\Status;
 use App\Models\User;
@@ -23,7 +22,6 @@ use Illuminate\Contracts\View\View;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Redis;
 use Illuminate\Validation\Rule;
 use League\Fractal;
@@ -312,20 +310,12 @@ class InternalApiController extends Controller
                 return response()->json([]);
             }
             $pid = $request->user()->profile->id;
-            $following = Cache::remember('profile:following:'.$pid, now()->addMinutes(1440), function () use ($pid) {
-                $following = Follower::whereProfileId($pid)->pluck('following_id');
-
-                return $following->push($pid)->toArray();
-            });
+            $following = FollowerService::getFollowingIds($pid);
             $visibility = in_array($profile->id, $following) == true ? ['public', 'unlisted', 'private'] : [];
         } else {
             if ($request->user() !== null) {
                 $pid = $request->user()->profile->id;
-                $following = Cache::remember('profile:following:'.$pid, now()->addMinutes(1440), function () use ($pid) {
-                    $following = Follower::whereProfileId($pid)->pluck('following_id');
-
-                    return $following->push($pid)->toArray();
-                });
+                $following = FollowerService::getFollowingIds($pid);
                 $visibility = in_array($profile->id, $following) == true ? ['public', 'unlisted', 'private'] : ['public', 'unlisted'];
             } else {
                 $visibility = ['public', 'unlisted'];
