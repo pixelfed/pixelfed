@@ -4,7 +4,6 @@ namespace App\Http\Controllers\Api\V1Api;
 
 use App\Jobs\HomeFeedPipeline\FeedWarmCachePipeline;
 use App\Models\CustomFilter;
-use App\Models\Follower;
 use App\Models\Hashtag;
 use App\Models\Status;
 use App\Models\StatusHashtag;
@@ -170,11 +169,7 @@ trait Timelines
             return $this->json($res->toArray(), 200, $headers);
         }
 
-        $following = Cache::remember('profile:following:'.$pid, 1209600, function () use ($pid) {
-            $following = Follower::whereProfileId($pid)->pluck('following_id');
-
-            return $following->push($pid)->toArray();
-        });
+        $following = FollowerService::getFollowingIds($pid);
 
         $muted = UserFilterService::mutes($pid);
 

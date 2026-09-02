@@ -47,13 +47,6 @@ class CollectionController extends Controller
         return view('collection.show', compact('collection'));
     }
 
-    public function index(Request $request)
-    {
-        abort_if(! $request->user(), 403);
-
-        return $request->all();
-    }
-
     public function store(Request $request, $id)
     {
         abort_if(! $request->user(), 403);
