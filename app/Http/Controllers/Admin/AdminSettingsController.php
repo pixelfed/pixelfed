@@ -565,7 +565,17 @@ trait AdminSettingsController
         Cache::forget('api:v1:instance-data:contact');
         Config::refresh();
 
-        return $request->all();
+        return [
+            'registration_status' => $regStatus,
+            'cloud_storage' => $request->boolean('cloud_storage'),
+            'activitypub_enabled' => $request->boolean('activitypub_enabled'),
+            'authorized_fetch' => $request->boolean('authorized_fetch'),
+            'account_migration' => $request->boolean('account_migration'),
+            'mobile_apis' => $request->boolean('mobile_apis'),
+            'stories' => $request->boolean('stories'),
+            'instagram_import' => $request->boolean('instagram_import'),
+            'autospam_enabled' => $request->boolean('autospam_enabled'),
+        ];
     }
 
     public function settingsApiUpdateLandingType($request)
@@ -586,7 +596,11 @@ trait AdminSettingsController
         Cache::forget('api:v1:instance-data:contact');
         Config::refresh();
 
-        return $request->all();
+        return [
+            'current_admin' => $request->input('current_admin'),
+            'show_directory' => $request->boolean('show_directory'),
+            'show_explore' => $request->boolean('show_explore'),
+        ];
     }
 
     public function settingsApiUpdateMediaType($request)
@@ -621,7 +635,14 @@ trait AdminSettingsController
         Cache::forget('api:v1:instance-data:contact');
         Config::refresh();
 
-        return $request->all();
+        return [
+            'media_types' => $request->input('media_types'),
+            'image_quality' => $request->input('image_quality'),
+            'max_album_length' => $request->input('max_album_length'),
+            'max_photo_size' => $request->input('max_photo_size'),
+            'optimize_image' => $request->boolean('optimize_image'),
+            'optimize_video' => $request->boolean('optimize_video'),
+        ];
     }
 
     public function settingsApiUpdateBrandingType($request)
@@ -642,7 +663,11 @@ trait AdminSettingsController
         Cache::forget('api:v1:instance-data:contact');
         Config::refresh();
 
-        return $request->all();
+        return [
+            'name' => $request->input('name'),
+            'short_description' => $request->input('short_description'),
+            'long_description' => $request->input('long_description'),
+        ];
     }
 
     public function settingsApiUpdatePostsType($request)
