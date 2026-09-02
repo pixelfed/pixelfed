@@ -65,7 +65,8 @@
         "nunomaduro/collision": "^8.8",
         "pestphp/pest": "^4.0",
         "psalm/plugin-laravel": "^3.9",
-        "vimeo/psalm": "^6.5"
+        "vimeo/psalm": "^6.5",
+        "laravel/pail": "^1.2.2"
     },
     "autoload": {
         "psr-4": {
@@ -118,7 +119,22 @@
         "test:filter": "./vendor/bin/pest --compact --filter",
         "test:quick": "./vendor/bin/pest --compact",
         "lint": "./vendor/bin/pint",
-        "lint:test": "./vendor/bin/pint --test"
+        "lint:test": "./vendor/bin/pint --test",
+        "dev": [
+            "Composer\\Config::disableProcessTimeout",
+            "npx concurrently -c \"#93c5fd,#c4b5fd,#fb7185,#fdba74\" \"php artisan serve\" \"php artisan queue:listen --tries=1\" \"php artisan pail --timeout=0\" \"npm run dev\" --names=server,queue,logs,vite --kill-others"
+        ],
+        "setup": [
+            "composer install",
+            "@php -r \"file_exists('.env') || copy('.env.example', '.env');\"",
+            "@php artisan key:generate",
+            "@php artisan migrate --force",
+            "npm install",
+            "npm run build"
+        ],
+        "pre-package-uninstall": [
+            "Illuminate\\Foundation\\ComposerScripts::prePackageUninstall"
+        ]
     },
     "config": {
         "preferred-install": "dist",
