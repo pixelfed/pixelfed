@@ -21,6 +21,7 @@ use Illuminate\Cookie\Middleware\EncryptCookies;
 use Illuminate\Foundation\Application;
 use Illuminate\Foundation\Configuration\Exceptions;
 use Illuminate\Foundation\Configuration\Middleware;
+use Illuminate\Http\Request;
 use Illuminate\Foundation\Http\Middleware\ConvertEmptyStringsToNull;
 use Illuminate\Foundation\Http\Middleware\PreventRequestsDuringMaintenance;
 use Illuminate\Foundation\Http\Middleware\TrimStrings;
@@ -168,6 +169,9 @@ return Application::configure(basePath: dirname(__DIR__))
         $schedule->command('app:instance-update-total-local-posts')->twiceDailyAt(1, 13, 45)->onOneServer();
     })
     ->withExceptions(function (Exceptions $exceptions) {
+        $exceptions->shouldRenderJsonWhen(
+            fn (Request $request) => $request->is('api/*') || $request->expectsJson(),
+        );
         $exceptions->dontReport([
             OAuthServerException::class,
             ConnectionException::class,
