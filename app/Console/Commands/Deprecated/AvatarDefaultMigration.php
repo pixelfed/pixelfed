@@ -3,27 +3,17 @@
 namespace App\Console\Commands\Deprecated;
 
 use App\Models\Avatar;
+use Illuminate\Console\Attributes\Description;
+use Illuminate\Console\Attributes\Signature;
 use Illuminate\Console\Command;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Str;
 
+#[Signature('fix:avatars')]
+#[Description('Replace old svg identicon avatars with default png avatar')]
 class AvatarDefaultMigration extends Command
 {
-    /**
-     * The name and signature of the console command.
-     *
-     * @var string
-     */
-    protected $signature = 'fix:avatars';
-
-    /**
-     * The console command description.
-     *
-     * @var string
-     */
-    protected $description = 'Replace old svg identicon avatars with default png avatar';
-
     /**
      * Create a new command instance.
      *

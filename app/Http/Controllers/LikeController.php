@@ -2,26 +2,19 @@
 
 namespace App\Http\Controllers;
 
-use Illuminate\Routing\Controllers\HasMiddleware;
-use Illuminate\Routing\Controllers\Middleware;
 use App\Jobs\LikePipeline\LikePipeline;
 use App\Jobs\LikePipeline\UnlikePipeline;
 use App\Models\Like;
 use App\Models\Status;
 use App\Services\StatusService;
 use Illuminate\Http\Request;
+use Illuminate\Routing\Attributes\Controllers\Middleware;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Cache;
 
-class LikeController extends Controller implements HasMiddleware
+#[Middleware('auth')]
+class LikeController extends Controller
 {
-    public static function middleware(): array
-    {
-        return [
-            'auth',
-        ];
-    }
-
     public function store(Request $request)
     {
         $this->validate($request, [

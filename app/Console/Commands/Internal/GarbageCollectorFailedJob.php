@@ -3,24 +3,14 @@
 namespace App\Console\Commands\Internal;
 
 use App\Models\FailedJob;
+use Illuminate\Console\Attributes\Description;
+use Illuminate\Console\Attributes\Signature;
 use Illuminate\Console\Command;
 
+#[Signature('gc:failedjobs')]
+#[Description('Delete failed jobs over 1 month old')]
 class GarbageCollectorFailedJob extends Command
 {
-    /**
-     * The name and signature of the console command.
-     *
-     * @var string
-     */
-    protected $signature = 'gc:failedjobs';
-
-    /**
-     * The console command description.
-     *
-     * @var string
-     */
-    protected $description = 'Delete failed jobs over 1 month old';
-
     /**
      * Create a new command instance.
      *

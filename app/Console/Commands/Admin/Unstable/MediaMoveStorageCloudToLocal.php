@@ -7,31 +7,17 @@ use App\Models\Media;
 use App\Services\MediaService;
 use App\Services\StatusService;
 use App\Util\Lexer\PrettyNumber;
+use Illuminate\Console\Attributes\Description;
+use Illuminate\Console\Attributes\Signature;
 use Illuminate\Console\Command;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
 
+#[Signature('unstable:MediaMoveStorageCloudToLocal {--limit=500 : Max media rows to process this run} {--dry-run : Report what would happen without copying or writing} {--keep-cloud : Do not delete the cloud copy after verifying the local file} {--force : Skip confirmation prompts}')]
+#[Description('Migrate cloud media back to local storage: download, verify (size/sha256), update URLs, then optionally delete the cloud copy. Ensures new uploads stay local during the migration.')]
 class MediaMoveStorageCloudToLocal extends Command
 {
     use ManagesMediaStorageEnv;
-
-    /**
-     * The name and signature of the console command.
-     *
-     * @var string
-     */
-    protected $signature = 'unstable:MediaMoveStorageCloudToLocal
-        {--limit=500 : Max media rows to process this run}
-        {--dry-run : Report what would happen without copying or writing}
-        {--keep-cloud : Do not delete the cloud copy after verifying the local file}
-        {--force : Skip confirmation prompts}';
-
-    /**
-     * The console command description.
-     *
-     * @var string
-     */
-    protected $description = 'Migrate cloud media back to local storage: download, verify (size/sha256), update URLs, then optionally delete the cloud copy. Ensures new uploads stay local during the migration.';
 
     protected int $movedBytes = 0;
 

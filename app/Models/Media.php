@@ -3,17 +3,17 @@
 namespace App\Models;
 
 use App\Util\Media\License;
+use Illuminate\Database\Eloquent\Attributes\Unguarded;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
 
+#[Unguarded]
 class Media extends Model
 {
     use SoftDeletes;
-
-    protected $guarded = [];
 
     protected function casts(): array
     {

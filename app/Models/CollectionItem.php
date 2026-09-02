@@ -3,25 +3,15 @@
 namespace App\Models;
 
 use App\HasSnowflakePrimary;
+use Illuminate\Database\Eloquent\Attributes\Fillable;
+use Illuminate\Database\Eloquent\Attributes\Table;
 use Illuminate\Database\Eloquent\Model;
 
+#[Table(incrementing: false)]
+#[Fillable('collection_id', 'object_type', 'object_id', 'order')]
 class CollectionItem extends Model
 {
     use HasSnowflakePrimary;
-
-    public $fillable = [
-        'collection_id',
-        'object_type',
-        'object_id',
-        'order',
-    ];
-
-    /**
-     * Indicates if the IDs are auto-incrementing.
-     *
-     * @var bool
-     */
-    public $incrementing = false;
 
     public function collection()
     {

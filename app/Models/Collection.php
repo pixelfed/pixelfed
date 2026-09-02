@@ -3,20 +3,15 @@
 namespace App\Models;
 
 use App\HasSnowflakePrimary;
+use Illuminate\Database\Eloquent\Attributes\Fillable;
+use Illuminate\Database\Eloquent\Attributes\Table;
 use Illuminate\Database\Eloquent\Model;
 
+#[Table(incrementing: false)]
+#[Fillable('profile_id', 'published_at')]
 class Collection extends Model
 {
     use HasSnowflakePrimary;
-
-    /**
-     * Indicates if the IDs are auto-incrementing.
-     *
-     * @var bool
-     */
-    public $incrementing = false;
-
-    public $fillable = ['profile_id', 'published_at'];
 
     public $dates = ['published_at'];
 

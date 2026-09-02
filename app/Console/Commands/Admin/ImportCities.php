@@ -3,27 +3,17 @@
 namespace App\Console\Commands\Admin;
 
 use App\Models\Place;
+use Illuminate\Console\Attributes\Description;
+use Illuminate\Console\Attributes\Signature;
 use Illuminate\Console\Command;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Str;
 use League\ISO3166\ISO3166;
 
+#[Signature('import:cities {chunk=1000}')]
+#[Description('Import Cities to database')]
 class ImportCities extends Command
 {
-    /**
-     * The name and signature of the console command.
-     *
-     * @var string
-     */
-    protected $signature = 'import:cities {chunk=1000}';
-
-    /**
-     * The console command description.
-     *
-     * @var string
-     */
-    protected $description = 'Import Cities to database';
-
     /**
      * Checksum of city dataset.
      */

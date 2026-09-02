@@ -5,25 +5,15 @@ namespace App\Console\Commands\Status;
 use App\Models\Instance;
 use App\Models\Profile;
 use App\Models\User;
+use Illuminate\Console\Attributes\Description;
+use Illuminate\Console\Attributes\Signature;
 use Illuminate\Console\Command;
 use Illuminate\Support\Str;
 
+#[Signature('status:profile {id : Profile id, username, user@domain, @user@domain, webfinger, or remote_url}')]
+#[Description('Show detailed debug/metadata for a LOCAL or REMOTE profile (federation-aware)')]
 class StatusProfile extends Command
 {
-    /**
-     * The name and signature of the console command.
-     *
-     * @var string
-     */
-    protected $signature = 'status:profile {id : Profile id, username, user@domain, @user@domain, webfinger, or remote_url}';
-
-    /**
-     * The console command description.
-     *
-     * @var string
-     */
-    protected $description = 'Show detailed debug/metadata for a LOCAL or REMOTE profile (federation-aware)';
-
     /**
      * Columns to redact / trim.
      *

@@ -4,24 +4,14 @@ namespace App\Console\Commands\Admin;
 
 use App\Models\User;
 use App\Services\EmailService;
+use Illuminate\Console\Attributes\Description;
+use Illuminate\Console\Attributes\Signature;
 use Illuminate\Console\Command;
 
+#[Signature('email:bancheck')]
+#[Description('Checks user emails for banned domains')]
 final class BannedEmailCheck extends Command
 {
-    /**
-     * The name and signature of the console command.
-     *
-     * @var string
-     */
-    protected $signature = 'email:bancheck';
-
-    /**
-     * The console command description.
-     *
-     * @var string
-     */
-    protected $description = 'Checks user emails for banned domains';
-
     /**
      * Create a new command instance.
      *

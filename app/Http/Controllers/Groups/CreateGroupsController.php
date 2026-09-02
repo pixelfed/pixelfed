@@ -2,23 +2,16 @@
 
 namespace App\Http\Controllers\Groups;
 
-use Illuminate\Routing\Controllers\HasMiddleware;
-use Illuminate\Routing\Controllers\Middleware;
 use App\Http\Controllers\Controller;
 use App\Models\Group;
 use App\Models\GroupMember;
 use App\Services\GroupService;
 use Illuminate\Http\Request;
+use Illuminate\Routing\Attributes\Controllers\Middleware;
 
-class CreateGroupsController extends Controller implements HasMiddleware
+#[Middleware('auth')]
+class CreateGroupsController extends Controller
 {
-    public static function middleware(): array
-    {
-        return [
-            'auth',
-        ];
-    }
-
     public function checkCreatePermission(Request $request): array
     {
         abort_if(! $request->user(), 404);

@@ -4,24 +4,14 @@ namespace App\Console\Commands\Internal;
 
 use App\Models\ImportPost;
 use App\Services\ImportService;
+use Illuminate\Console\Attributes\Description;
+use Illuminate\Console\Attributes\Signature;
 use Illuminate\Console\Command;
 
+#[Signature('app:import-upload-garbage-collection')]
+#[Description('Command description')]
 class GarbageCollectorImportUpload extends Command
 {
-    /**
-     * The name and signature of the console command.
-     *
-     * @var string
-     */
-    protected $signature = 'app:import-upload-garbage-collection';
-
-    /**
-     * The console command description.
-     *
-     * @var string
-     */
-    protected $description = 'Command description';
-
     /**
      * Execute the console command.
      */

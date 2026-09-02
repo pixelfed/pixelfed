@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use Illuminate\Database\Eloquent\Attributes\Unguarded;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Carbon;
 
@@ -16,10 +17,9 @@ use Illuminate\Support\Carbon;
  * @property-read Profile $target
  * @property-read Profile $profile
  */
+#[Unguarded]
 class Follower extends Model
 {
-    protected $guarded = [];
-
     const MAX_FOLLOWING = 7500;
 
     const FOLLOW_PER_HOUR = 150;

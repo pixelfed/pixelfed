@@ -2,8 +2,6 @@
 
 namespace App\Http\Controllers\Groups;
 
-use Illuminate\Routing\Controllers\HasMiddleware;
-use Illuminate\Routing\Controllers\Middleware;
 use App\Http\Controllers\Controller;
 use App\Models\Follower;
 use App\Models\Group;
@@ -15,17 +13,12 @@ use App\Services\Groups\GroupActivityPubService;
 use App\Services\GroupService;
 use App\Util\ActivityPub\Helpers;
 use Illuminate\Http\Request;
+use Illuminate\Routing\Attributes\Controllers\Middleware;
 use Illuminate\Support\Facades\Cache;
 
-class GroupsSearchController extends Controller implements HasMiddleware
+#[Middleware('auth')]
+class GroupsSearchController extends Controller
 {
-    public static function middleware(): array
-    {
-        return [
-            'auth',
-        ];
-    }
-
     public function inviteFriendsToGroup(Request $request): array
     {
         abort_if(! $request->user(), 404);

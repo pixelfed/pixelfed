@@ -2,14 +2,14 @@
 
 namespace App\Models;
 
+use Illuminate\Database\Eloquent\Attributes\Unguarded;
+use Illuminate\Database\Eloquent\Attributes\Visible;
 use Illuminate\Database\Eloquent\Model;
 
+#[Visible('id')]
+#[Unguarded]
 class ModLog extends Model
 {
-    protected $visible = ['id'];
-
-    protected $guarded = [];
-
     public function admin()
     {
         return $this->belongsTo(User::class, 'user_id');

@@ -6,31 +6,16 @@ use App\Models\Media;
 use App\Services\MediaService;
 use App\Services\StatusService;
 use App\Util\Lexer\PrettyNumber;
+use Illuminate\Console\Attributes\Description;
+use Illuminate\Console\Attributes\Signature;
 use Illuminate\Console\Command;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
 
+#[Signature('unstable:MediaMoveStorageCloudToCloud {--sourceDisk=s3-old : The disk holding the OLD bucket (default: s3-old, reads AWS_OLD_*)} {--limit=500 : Max media rows to process this run} {--dry-run : Report what would happen without copying or writing} {--keep-source : Do not delete objects from the source bucket after verifying the copy} {--force : Skip confirmation prompts}')]
+#[Description('Cold-migrate existing media from an old S3 bucket (source disk) to the current cloud bucket, verifying each copy and rewriting media URLs one row at a time.')]
 class MediaMoveStorageCloudToCloud extends Command
 {
-    /**
-     * The name and signature of the console command.
-     *
-     * @var string
-     */
-    protected $signature = 'unstable:MediaMoveStorageCloudToCloud
-        {--sourceDisk=s3-old : The disk holding the OLD bucket (default: s3-old, reads AWS_OLD_*)}
-        {--limit=500 : Max media rows to process this run}
-        {--dry-run : Report what would happen without copying or writing}
-        {--keep-source : Do not delete objects from the source bucket after verifying the copy}
-        {--force : Skip confirmation prompts}';
-
-    /**
-     * The console command description.
-     *
-     * @var string
-     */
-    protected $description = 'Cold-migrate existing media from an old S3 bucket (source disk) to the current cloud bucket, verifying each copy and rewriting media URLs one row at a time.';
-
     protected int $movedBytes = 0;
 
     public function handle()

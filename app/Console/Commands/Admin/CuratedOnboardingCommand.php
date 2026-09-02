@@ -5,6 +5,8 @@ namespace App\Console\Commands\Admin;
 use App\Mail\CuratedRegisterConfirmEmail;
 use App\Models\CuratedRegister;
 use App\Models\CuratedRegisterActivity;
+use Illuminate\Console\Attributes\Description;
+use Illuminate\Console\Attributes\Signature;
 use Illuminate\Console\Command;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Mail;
@@ -15,22 +17,10 @@ use function Laravel\Prompts\search;
 use function Laravel\Prompts\select;
 use function Laravel\Prompts\table;
 
+#[Signature('app:curated-onboarding')]
+#[Description('Manage curated onboarding applications')]
 class CuratedOnboardingCommand extends Command
 {
-    /**
-     * The name and signature of the console command.
-     *
-     * @var string
-     */
-    protected $signature = 'app:curated-onboarding';
-
-    /**
-     * The console command description.
-     *
-     * @var string
-     */
-    protected $description = 'Manage curated onboarding applications';
-
     /**
      * Execute the console command.
      */

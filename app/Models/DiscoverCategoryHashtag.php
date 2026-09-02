@@ -2,9 +2,8 @@
 
 namespace App\Models;
 
+use Illuminate\Database\Eloquent\Attributes\Unguarded;
 use Illuminate\Database\Eloquent\Model;
 
-class DiscoverCategoryHashtag extends Model
-{
-    protected $guarded = [];
-}
+#[Unguarded]
+class DiscoverCategoryHashtag extends Model {}

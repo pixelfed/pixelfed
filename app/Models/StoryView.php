@@ -2,12 +2,12 @@
 
 namespace App\Models;
 
+use Illuminate\Database\Eloquent\Attributes\Fillable;
 use Illuminate\Database\Eloquent\Model;
 
+#[Fillable('story_id', 'profile_id')]
 class StoryView extends Model
 {
-    public $fillable = ['story_id', 'profile_id'];
-
     public function story()
     {
         return $this->belongsTo(Story::class);

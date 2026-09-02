@@ -6,32 +6,16 @@ use App\Models\Media;
 use App\Models\Status;
 use App\Services\MediaService;
 use App\Services\StatusService;
+use Illuminate\Console\Attributes\Description;
+use Illuminate\Console\Attributes\Signature;
 use Illuminate\Console\Command;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
 
+#[Signature('admin:MigrateLocalS3MediaURL {id? : A status id (or post URL) to fix; omit with --all} {--all : Scan every local media row and fix any with a stale host} {--oldDomain= : Only rewrite URLs whose host matches this old backend (default: rewrite all stale hosts)} {--newDomain= : Target host to rewrite to (default: the configured cloud disk host from .env)} {--dry-run : Report what would change without writing} {--force : Skip the confirmation prompt}')]
+#[Description('Rewrite stale local media cloud URLs (cdn_url, thumbnail_url, optimized_url) from their storage paths to the configured S3/cloud host. Replaces media:cloud-url-rewrite.')]
 class MediaUpdateS3CDNUrl extends Command
 {
-    /**
-     * The name and signature of the console command.
-     *
-     * @var string
-     */
-    protected $signature = 'admin:MigrateLocalS3MediaURL
-        {id? : A status id (or post URL) to fix; omit with --all}
-        {--all : Scan every local media row and fix any with a stale host}
-        {--oldDomain= : Only rewrite URLs whose host matches this old backend (default: rewrite all stale hosts)}
-        {--newDomain= : Target host to rewrite to (default: the configured cloud disk host from .env)}
-        {--dry-run : Report what would change without writing}
-        {--force : Skip the confirmation prompt}';
-
-    /**
-     * The console command description.
-     *
-     * @var string
-     */
-    protected $description = 'Rewrite stale local media cloud URLs (cdn_url, thumbnail_url, optimized_url) from their storage paths to the configured S3/cloud host. Replaces media:cloud-url-rewrite.';
-
     /**
      * The target host to rewrite URLs to.
      */

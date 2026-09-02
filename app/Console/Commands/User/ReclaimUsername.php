@@ -4,27 +4,17 @@ namespace App\Console\Commands\User;
 
 use App\Models\Profile;
 use App\Models\User;
+use Illuminate\Console\Attributes\Description;
+use Illuminate\Console\Attributes\Signature;
 use Illuminate\Console\Command;
 
 use function Laravel\Prompts\confirm;
 use function Laravel\Prompts\search;
 
+#[Signature('app:reclaim-username')]
+#[Description('Force delete a user and their profile to reclaim a username')]
 class ReclaimUsername extends Command
 {
-    /**
-     * The name and signature of the console command.
-     *
-     * @var string
-     */
-    protected $signature = 'app:reclaim-username';
-
-    /**
-     * The console command description.
-     *
-     * @var string
-     */
-    protected $description = 'Force delete a user and their profile to reclaim a username';
-
     /**
      * Execute the console command.
      */

@@ -2,8 +2,6 @@
 
 namespace App\Http\Controllers;
 
-use Illuminate\Routing\Controllers\HasMiddleware;
-use Illuminate\Routing\Controllers\Middleware;
 use App\Jobs\ReportPipeline\ReportNotifyAdminViaEmail;
 use App\Models\Group;
 use App\Models\Profile;
@@ -13,18 +11,13 @@ use Illuminate\Contracts\View\View;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
+use Illuminate\Routing\Attributes\Controllers\Middleware;
 use Illuminate\Support\Facades\Auth;
 
-class ReportController extends Controller implements HasMiddleware
+#[Middleware('auth')]
+class ReportController extends Controller
 {
     protected $profile;
-
-    public static function middleware(): array
-    {
-        return [
-            'auth',
-        ];
-    }
 
     public function showForm(Request $request): View
     {

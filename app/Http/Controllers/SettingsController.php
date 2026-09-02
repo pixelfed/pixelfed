@@ -2,8 +2,6 @@
 
 namespace App\Http\Controllers;
 
-use Illuminate\Routing\Controllers\HasMiddleware;
-use Illuminate\Routing\Controllers\Middleware;
 use App\Http\Controllers\Settings\ExportSettings;
 use App\Http\Controllers\Settings\HomeSettings;
 use App\Http\Controllers\Settings\LabsSettings;
@@ -21,6 +19,7 @@ use Illuminate\Contracts\View\View;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
+use Illuminate\Routing\Attributes\Controllers\Middleware;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Cookie;
@@ -28,7 +27,8 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Redis;
 use Illuminate\Support\Str;
 
-class SettingsController extends Controller implements HasMiddleware
+#[Middleware('auth')]
+class SettingsController extends Controller
 {
     use ExportSettings,
         HomeSettings,
@@ -36,13 +36,6 @@ class SettingsController extends Controller implements HasMiddleware
         PrivacySettings,
         RelationshipSettings,
         SecuritySettings;
-
-    public static function middleware(): array
-    {
-        return [
-            'auth',
-        ];
-    }
 
     public function accessibility(Request $request): View
     {

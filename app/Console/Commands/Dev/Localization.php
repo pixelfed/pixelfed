@@ -2,15 +2,15 @@
 
 namespace App\Console\Commands\Dev;
 
+use Illuminate\Console\Attributes\Description;
+use Illuminate\Console\Attributes\Signature;
 use Illuminate\Console\Command;
 use Illuminate\Support\Facades\File;
 
+#[Signature('localization:generate')]
+#[Description('Generate JSON files for all available localizations')]
 class Localization extends Command
 {
-    protected $signature = 'localization:generate';
-
-    protected $description = 'Generate JSON files for all available localizations';
-
     public function __construct()
     {
         parent::__construct();

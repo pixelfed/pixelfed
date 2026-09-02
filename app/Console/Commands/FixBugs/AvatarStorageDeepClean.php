@@ -4,26 +4,16 @@ namespace App\Console\Commands\FixBugs;
 
 use App\Jobs\AvatarPipeline\AvatarStorageCleanup;
 use App\Models\Avatar;
+use Illuminate\Console\Attributes\Description;
+use Illuminate\Console\Attributes\Signature;
 use Illuminate\Console\Command;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Storage;
 
+#[Signature('avatar:storage-deep-clean')]
+#[Description('Cleanup avatar storage')]
 class AvatarStorageDeepClean extends Command
 {
-    /**
-     * The name and signature of the console command.
-     *
-     * @var string
-     */
-    protected $signature = 'avatar:storage-deep-clean';
-
-    /**
-     * The console command description.
-     *
-     * @var string
-     */
-    protected $description = 'Cleanup avatar storage';
-
     protected $shouldKeepRunning = true;
 
     protected $counter = 0;

@@ -2,20 +2,13 @@
 
 namespace App\Http\Controllers;
 
-use Illuminate\Routing\Controllers\HasMiddleware;
-use Illuminate\Routing\Controllers\Middleware;
 use App\Util\ActivityPub\Helpers;
 use Illuminate\Http\Request;
+use Illuminate\Routing\Attributes\Controllers\Middleware;
 
-class FollowerController extends Controller implements HasMiddleware
+#[Middleware('auth')]
+class FollowerController extends Controller
 {
-    public static function middleware(): array
-    {
-        return [
-            'auth',
-        ];
-    }
-
     public function store(Request $request): void
     {
         abort(422, 'Deprecated API Endpoint, use /api/v1/accounts/{id}/follow or /api/v1/accounts/{id}/unfollow instead.');

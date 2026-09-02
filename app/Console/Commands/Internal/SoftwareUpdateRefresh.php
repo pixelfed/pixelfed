@@ -3,25 +3,15 @@
 namespace App\Console\Commands\Internal;
 
 use App\Services\Internal\SoftwareUpdateService;
+use Illuminate\Console\Attributes\Description;
+use Illuminate\Console\Attributes\Signature;
 use Illuminate\Console\Command;
 use Illuminate\Support\Facades\Cache;
 
+#[Signature('app:software-update-refresh')]
+#[Description('Refresh latest software version data')]
 class SoftwareUpdateRefresh extends Command
 {
-    /**
-     * The name and signature of the console command.
-     *
-     * @var string
-     */
-    protected $signature = 'app:software-update-refresh';
-
-    /**
-     * The console command description.
-     *
-     * @var string
-     */
-    protected $description = 'Refresh latest software version data';
-
     /**
      * Execute the console command.
      */

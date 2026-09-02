@@ -6,26 +6,16 @@ use App\Models\Media;
 use App\Models\Status;
 use App\Services\AccountService;
 use App\Services\MediaService;
+use Illuminate\Console\Attributes\Description;
+use Illuminate\Console\Attributes\Signature;
 use Illuminate\Console\Command;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
 
+#[Signature('status:statuses {id : Status id, or a post URL like https://host/p/username/ID}')]
+#[Description('Show detailed debug/metadata for a post (Status) and its media, including stored vs expected media URLs')]
 class StatusStatuses extends Command
 {
-    /**
-     * The name and signature of the console command.
-     *
-     * @var string
-     */
-    protected $signature = 'status:statuses {id : Status id, or a post URL like https://host/p/username/ID}';
-
-    /**
-     * The console command description.
-     *
-     * @var string
-     */
-    protected $description = 'Show detailed debug/metadata for a post (Status) and its media, including stored vs expected media URLs';
-
     /**
      * Sensitive/long status columns to redact or trim.
      *

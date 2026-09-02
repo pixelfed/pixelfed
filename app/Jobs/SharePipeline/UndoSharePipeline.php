@@ -13,16 +13,16 @@ use App\Transformer\ActivityPub\Verb\UndoAnnounce;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
+use Illuminate\Queue\Attributes\DeleteWhenMissingModels;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
 
+#[DeleteWhenMissingModels]
 class UndoSharePipeline implements ShouldQueue
 {
     use Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
 
     protected $status;
-
-    public $deleteWhenMissingModels = true;
 
     public function __construct(Status $status)
     {

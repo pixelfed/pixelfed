@@ -4,29 +4,15 @@ namespace App\Console\Commands\Admin;
 
 use App\Models\CustomEmoji;
 use App\Services\CustomEmojiService;
+use Illuminate\Console\Attributes\Description;
+use Illuminate\Console\Attributes\Signature;
 use Illuminate\Console\Command;
 use Illuminate\Support\Facades\Storage;
 
+#[Signature('admin:resyncemoji {files : Comma-separated emoji filename(s) to resync, e.g. "26109.png,1234.gif"} {--missingonly : Only resync the given files whose local media file is missing} {--dry-run : Report what would happen without downloading or writing} {--force : Skip confirmation prompts}')]
+#[Description('Re-download specific remote custom emoji from their origin (image_remote_url) and store them locally.')]
 class ResyncEmoji extends Command
 {
-    /**
-     * The name and signature of the console command.
-     *
-     * @var string
-     */
-    protected $signature = 'admin:resyncemoji
-        {files : Comma-separated emoji filename(s) to resync, e.g. "26109.png,1234.gif"}
-        {--missingonly : Only resync the given files whose local media file is missing}
-        {--dry-run : Report what would happen without downloading or writing}
-        {--force : Skip confirmation prompts}';
-
-    /**
-     * The console command description.
-     *
-     * @var string
-     */
-    protected $description = 'Re-download specific remote custom emoji from their origin (image_remote_url) and store them locally.';
-
     public function handle(): int
     {
         if (! (bool) config_cache('federation.custom_emoji.enabled')) {

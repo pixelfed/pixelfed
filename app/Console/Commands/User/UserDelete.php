@@ -6,6 +6,8 @@ use App\Jobs\DeletePipeline\DeleteAccountPipeline;
 use App\Models\Profile;
 use App\Models\User;
 use App\Services\AccountService;
+use Illuminate\Console\Attributes\Description;
+use Illuminate\Console\Attributes\Signature;
 use Illuminate\Console\Command;
 use Illuminate\Contracts\Console\PromptsForMissingInput;
 
@@ -13,22 +15,10 @@ use function Laravel\Prompts\select;
 use function Laravel\Prompts\table;
 use function Laravel\Prompts\text;
 
+#[Signature('user:delete {id} {--force}')]
+#[Description('Delete account')]
 class UserDelete extends Command implements PromptsForMissingInput
 {
-    /**
-     * The name and signature of the console command.
-     *
-     * @var string
-     */
-    protected $signature = 'user:delete {id} {--force}';
-
-    /**
-     * The console command description.
-     *
-     * @var string
-     */
-    protected $description = 'Delete account';
-
     /**
      * Create a new command instance.
      *

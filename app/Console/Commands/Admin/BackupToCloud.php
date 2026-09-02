@@ -2,27 +2,17 @@
 
 namespace App\Console\Commands\Admin;
 
+use Illuminate\Console\Attributes\Description;
+use Illuminate\Console\Attributes\Signature;
 use Illuminate\Console\Command;
 use Illuminate\Http\File;
 use Illuminate\Support\Facades\Storage;
 use Spatie\Backup\BackupDestination\BackupDestination;
 
+#[Signature('backup:cloud')]
+#[Description('Send backups to cloud storage')]
 final class BackupToCloud extends Command
 {
-    /**
-     * The name and signature of the console command.
-     *
-     * @var string
-     */
-    protected $signature = 'backup:cloud';
-
-    /**
-     * The console command description.
-     *
-     * @var string
-     */
-    protected $description = 'Send backups to cloud storage';
-
     /**
      * Create a new command instance.
      *

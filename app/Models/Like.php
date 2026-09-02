@@ -2,17 +2,17 @@
 
 namespace App\Models;
 
+use Illuminate\Database\Eloquent\Attributes\Unguarded;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
+#[Unguarded]
 class Like extends Model
 {
     use SoftDeletes;
 
     const MAX_PER_DAY = 1500;
-
-    protected $guarded = [];
 
     protected function casts(): array
     {

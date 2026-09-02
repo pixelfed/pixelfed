@@ -4,24 +4,14 @@ namespace App\Console\Commands\Admin;
 
 use App\Jobs\VideoPipeline\VideoThumbnail as Pipeline;
 use App\Models\Media;
+use Illuminate\Console\Attributes\Description;
+use Illuminate\Console\Attributes\Signature;
 use Illuminate\Console\Command;
 
+#[Signature('video:thumbnail')]
+#[Description('Generate missing video thumbnails')]
 class VideoThumbnail extends Command
 {
-    /**
-     * The name and signature of the console command.
-     *
-     * @var string
-     */
-    protected $signature = 'video:thumbnail';
-
-    /**
-     * The console command description.
-     *
-     * @var string
-     */
-    protected $description = 'Generate missing video thumbnails';
-
     /**
      * Create a new command instance.
      *

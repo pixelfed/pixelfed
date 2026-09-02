@@ -6,28 +6,18 @@ use App\Models\Hashtag;
 use App\Models\HashtagRelated;
 use App\Models\StatusHashtag;
 use App\Services\HashtagRelatedService;
+use Illuminate\Console\Attributes\Description;
+use Illuminate\Console\Attributes\Signature;
 use Illuminate\Console\Command;
 use Illuminate\Contracts\Console\PromptsForMissingInput;
 
 use function Laravel\Prompts\confirm;
 use function Laravel\Prompts\multiselect;
 
+#[Signature('app:hashtag-related-generate {tag}')]
+#[Description('Command description')]
 class HashtagRelatedGenerate extends Command implements PromptsForMissingInput
 {
-    /**
-     * The name and signature of the console command.
-     *
-     * @var string
-     */
-    protected $signature = 'app:hashtag-related-generate {tag}';
-
-    /**
-     * The console command description.
-     *
-     * @var string
-     */
-    protected $description = 'Command description';
-
     /**
      * Prompt for missing input arguments using the returned questions.
      *

@@ -2,27 +2,20 @@
 
 namespace App\Http\Controllers\Admin;
 
-use Illuminate\Routing\Controllers\HasMiddleware;
-use Illuminate\Routing\Controllers\Middleware;
 use App\Http\Controllers\Controller;
 use App\Mail\AdminInviteEmail;
 use App\Models\AdminInvite;
 use Illuminate\Contracts\View\View;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
+use Illuminate\Routing\Attributes\Controllers\Middleware;
 use Illuminate\Support\Facades\Mail;
 
-class AdminUserInviteController extends Controller implements HasMiddleware
+#[Middleware('admin')]
+#[Middleware('dangerzone')]
+#[Middleware('twofactor')]
+class AdminUserInviteController extends Controller
 {
-    public static function middleware(): array
-    {
-        return [
-            'admin',
-            'dangerzone',
-            'twofactor',
-        ];
-    }
-
     public function index(): View
     {
         $invites = AdminInvite::orderByDesc('created_at')->simplePaginate(25);

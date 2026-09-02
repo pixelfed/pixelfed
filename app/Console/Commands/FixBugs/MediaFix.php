@@ -4,24 +4,14 @@ namespace App\Console\Commands\FixBugs;
 
 use App\Models\Media;
 use App\Util\Media\Filter;
+use Illuminate\Console\Attributes\Description;
+use Illuminate\Console\Attributes\Signature;
 use Illuminate\Console\Command;
 
+#[Signature('media:fix')]
+#[Description('Fix media on v0.10.8+')]
 class MediaFix extends Command
 {
-    /**
-     * The name and signature of the console command.
-     *
-     * @var string
-     */
-    protected $signature = 'media:fix';
-
-    /**
-     * The console command description.
-     *
-     * @var string
-     */
-    protected $description = 'Fix media on v0.10.8+';
-
     /**
      * Create a new command instance.
      *

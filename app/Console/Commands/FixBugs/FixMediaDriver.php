@@ -5,26 +5,16 @@ namespace App\Console\Commands\FixBugs;
 use App\Jobs\ImageOptimizePipeline\ImageOptimize;
 use App\Jobs\MediaPipeline\MediaFixLocalFilesystemCleanupPipeline;
 use App\Models\Media;
+use Illuminate\Console\Attributes\Description;
+use Illuminate\Console\Attributes\Signature;
 use Illuminate\Console\Command;
 use Illuminate\Support\Facades\Storage;
 use League\Flysystem\MountManager;
 
+#[Signature('media:fix-nonlocal-driver')]
+#[Description('Fix filesystem when FILESYSTEM_DRIVER not set to local')]
 class FixMediaDriver extends Command
 {
-    /**
-     * The name and signature of the console command.
-     *
-     * @var string
-     */
-    protected $signature = 'media:fix-nonlocal-driver';
-
-    /**
-     * The console command description.
-     *
-     * @var string
-     */
-    protected $description = 'Fix filesystem when FILESYSTEM_DRIVER not set to local';
-
     /**
      * Execute the console command.
      *

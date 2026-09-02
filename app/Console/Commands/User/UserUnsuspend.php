@@ -3,24 +3,14 @@
 namespace App\Console\Commands\User;
 
 use App\Models\User;
+use Illuminate\Console\Attributes\Description;
+use Illuminate\Console\Attributes\Signature;
 use Illuminate\Console\Command;
 
+#[Signature('user:unsuspend {id}')]
+#[Description('Unsuspend a local user.')]
 class UserUnsuspend extends Command
 {
-    /**
-     * The name and signature of the console command.
-     *
-     * @var string
-     */
-    protected $signature = 'user:unsuspend {id}';
-
-    /**
-     * The console command description.
-     *
-     * @var string
-     */
-    protected $description = 'Unsuspend a local user.';
-
     /**
      * Create a new command instance.
      *

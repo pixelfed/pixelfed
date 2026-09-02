@@ -2,24 +2,14 @@
 
 namespace App\Console\Commands\Install;
 
+use Illuminate\Console\Attributes\Description;
+use Illuminate\Console\Attributes\Signature;
 use Illuminate\Console\Command;
 
+#[Signature('update')]
+#[Description('Run pixelfed schema updates between versions.')]
 class UpdateCommand extends Command
 {
-    /**
-     * The name and signature of the console command.
-     *
-     * @var string
-     */
-    protected $signature = 'update';
-
-    /**
-     * The console command description.
-     *
-     * @var string
-     */
-    protected $description = 'Run pixelfed schema updates between versions.';
-
     /**
      * Create a new command instance.
      *

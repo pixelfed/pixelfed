@@ -3,27 +3,17 @@
 namespace App\Console\Commands\Internal;
 
 use App\Services\ConfigCacheService;
+use Illuminate\Console\Attributes\Description;
+use Illuminate\Console\Attributes\Signature;
 use Illuminate\Console\Command;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Storage;
 
+#[Signature('app:instance-update-total-local-posts')]
+#[Description('Update the total number of local statuses/post count')]
 class InstanceUpdateTotalLocalPosts extends Command
 {
-    /**
-     * The name and signature of the console command.
-     *
-     * @var string
-     */
-    protected $signature = 'app:instance-update-total-local-posts';
-
-    /**
-     * The console command description.
-     *
-     * @var string
-     */
-    protected $description = 'Update the total number of local statuses/post count';
-
     /**
      * Execute the console command.
      */

@@ -4,6 +4,7 @@ namespace App\Models;
 
 use App\HasSnowflakePrimary;
 use App\Services\GroupService;
+use Illuminate\Database\Eloquent\Attributes\Table;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
@@ -22,16 +23,10 @@ use Illuminate\Support\Carbon;
  * @property Carbon|null $deleted_at
  * @property-read bool $is_local
  */
+#[Table(incrementing: false)]
 class Group extends Model
 {
     use HasFactory, HasSnowflakePrimary, SoftDeletes;
-
-    /**
-     * Indicates if the IDs are auto-incrementing.
-     *
-     * @var bool
-     */
-    public $incrementing = false;
 
     protected function casts(): array
     {

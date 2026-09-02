@@ -2,12 +2,12 @@
 
 namespace App\Models;
 
+use Illuminate\Database\Eloquent\Attributes\Unguarded;
 use Illuminate\Database\Eloquent\Model;
 
+#[Unguarded]
 class UserFilter extends Model
 {
-    protected $guarded = [];
-
     public function mutedUserIds($profile_id)
     {
         return $this->whereUserId($profile_id)

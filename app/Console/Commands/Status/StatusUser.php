@@ -5,27 +5,16 @@ namespace App\Console\Commands\Status;
 use App\Models\AccountLog;
 use App\Models\Profile;
 use App\Models\User;
+use Illuminate\Console\Attributes\Description;
+use Illuminate\Console\Attributes\Signature;
 use Illuminate\Console\Command;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Schema;
 
+#[Signature('status:user {id : Username or numeric user id} {--logs=10 : Number of recent account log entries to show}')]
+#[Description('Show detailed debug/status info for a user account (login & password reset diagnostics)')]
 class StatusUser extends Command
 {
-    /**
-     * The name and signature of the console command.
-     *
-     * @var string
-     */
-    protected $signature = 'status:user {id : Username or numeric user id}
-        {--logs=10 : Number of recent account log entries to show}';
-
-    /**
-     * The console command description.
-     *
-     * @var string
-     */
-    protected $description = 'Show detailed debug/status info for a user account (login & password reset diagnostics)';
-
     /**
      * Columns whose values must never be printed in full.
      *

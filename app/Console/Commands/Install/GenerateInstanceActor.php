@@ -3,16 +3,16 @@
 namespace App\Console\Commands\Install;
 
 use App\Models\InstanceActor;
+use Illuminate\Console\Attributes\Description;
+use Illuminate\Console\Attributes\Signature;
 use Illuminate\Console\Command;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Schema;
 
+#[Signature('instance:actor')]
+#[Description('Generate instance actor')]
 class GenerateInstanceActor extends Command
 {
-    protected $signature = 'instance:actor';
-
-    protected $description = 'Generate instance actor';
-
     public function __construct()
     {
         parent::__construct();

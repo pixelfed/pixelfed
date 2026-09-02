@@ -2,8 +2,6 @@
 
 namespace App\Http\Controllers;
 
-use Illuminate\Routing\Controllers\HasMiddleware;
-use Illuminate\Routing\Controllers\Middleware;
 use App\Http\Requests\ProfileMigrationStoreRequest;
 use App\Jobs\ProfilePipeline\ProfileMigrationDeliverMoveActivityPipeline;
 use App\Jobs\ProfilePipeline\ProfileMigrationMoveFollowersPipeline;
@@ -15,18 +13,13 @@ use App\Util\ActivityPub\Helpers;
 use Illuminate\Contracts\View\View;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
+use Illuminate\Routing\Attributes\Controllers\Middleware;
 use Illuminate\Support\Facades\Bus;
 use Illuminate\Support\Facades\Cache;
 
-class ProfileMigrationController extends Controller implements HasMiddleware
+#[Middleware('auth')]
+class ProfileMigrationController extends Controller
 {
-    public static function middleware(): array
-    {
-        return [
-            'auth',
-        ];
-    }
-
     public function index(Request $request): RedirectResponse|View
     {
         abort_if((bool) config_cache('federation.activitypub.enabled') === false, 404);

@@ -4,25 +4,15 @@ namespace App\Console\Commands\Deprecated;
 
 use App\Jobs\StatusPipeline\StatusDelete;
 use App\Models\Status;
+use Illuminate\Console\Attributes\Description;
+use Illuminate\Console\Attributes\Signature;
 use Illuminate\Console\Command;
 use Illuminate\Support\Facades\DB;
 
+#[Signature('status:dedup')]
+#[Description('Removes duplicate statuses from before unique uri migration')]
 class StatusDedupe extends Command
 {
-    /**
-     * The name and signature of the console command.
-     *
-     * @var string
-     */
-    protected $signature = 'status:dedup';
-
-    /**
-     * The console command description.
-     *
-     * @var string
-     */
-    protected $description = 'Removes duplicate statuses from before unique uri migration';
-
     /**
      * Create a new command instance.
      *

@@ -2,8 +2,6 @@
 
 namespace App\Http\Controllers;
 
-use Illuminate\Routing\Controllers\HasMiddleware;
-use Illuminate\Routing\Controllers\Middleware;
 use App\Models\Hashtag;
 use App\Models\Place;
 use App\Models\Profile;
@@ -14,11 +12,13 @@ use App\Util\Lexer\Autolink;
 use Illuminate\Contracts\View\View;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
+use Illuminate\Routing\Attributes\Controllers\Middleware;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Str;
 
-class SearchController extends Controller implements HasMiddleware
+#[Middleware('auth')]
+class SearchController extends Controller
 {
     public $tokens = [];
 
@@ -27,13 +27,6 @@ class SearchController extends Controller implements HasMiddleware
     public $hash = '';
 
     public $cacheKey = 'api:search:tag:';
-
-    public static function middleware(): array
-    {
-        return [
-            'auth',
-        ];
-    }
 
     public function searchAPI(Request $request): JsonResponse
     {

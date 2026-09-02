@@ -3,26 +3,16 @@
 namespace App\Console\Commands\Internal;
 
 use App\Services\NotificationAppGatewayService;
+use Illuminate\Console\Attributes\Description;
+use Illuminate\Console\Attributes\Signature;
 use Illuminate\Console\Command;
 
 use function Laravel\Prompts\select;
 
+#[Signature('app:push-gateway-refresh')]
+#[Description('Refresh push notification gateway support')]
 class PushGatewayRefresh extends Command
 {
-    /**
-     * The name and signature of the console command.
-     *
-     * @var string
-     */
-    protected $signature = 'app:push-gateway-refresh';
-
-    /**
-     * The console command description.
-     *
-     * @var string
-     */
-    protected $description = 'Refresh push notification gateway support';
-
     /**
      * Execute the console command.
      */

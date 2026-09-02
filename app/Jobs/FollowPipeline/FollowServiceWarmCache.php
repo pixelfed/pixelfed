@@ -9,6 +9,9 @@ use App\Services\FollowerService;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
+use Illuminate\Queue\Attributes\FailOnTimeout;
+use Illuminate\Queue\Attributes\Timeout;
+use Illuminate\Queue\Attributes\Tries;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\Middleware\WithoutOverlapping;
 use Illuminate\Queue\SerializesModels;
@@ -16,17 +19,14 @@ use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Storage;
 
+#[Tries(5)]
+#[Timeout(5000)]
+#[FailOnTimeout]
 class FollowServiceWarmCache implements ShouldQueue
 {
     use Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
 
     public $profileId;
-
-    public $tries = 5;
-
-    public $timeout = 5000;
-
-    public $failOnTimeout = false;
 
     /**
      * Get the middleware the job should pass through.

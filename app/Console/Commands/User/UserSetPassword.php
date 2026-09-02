@@ -3,25 +3,15 @@
 namespace App\Console\Commands\User;
 
 use App\Models\User;
+use Illuminate\Console\Attributes\Description;
+use Illuminate\Console\Attributes\Signature;
 use Illuminate\Console\Command;
 use Illuminate\Contracts\Console\PromptsForMissingInput;
 
+#[Signature('user:setpassword {id : Username or numeric user id}')]
+#[Description('Set/reset a user password (prompts securely, hashes with bcrypt)')]
 class UserSetPassword extends Command implements PromptsForMissingInput
 {
-    /**
-     * The name and signature of the console command.
-     *
-     * @var string
-     */
-    protected $signature = 'user:setpassword {id : Username or numeric user id}';
-
-    /**
-     * The console command description.
-     *
-     * @var string
-     */
-    protected $description = 'Set/reset a user password (prompts securely, hashes with bcrypt)';
-
     /**
      * Prompt for missing input arguments.
      *

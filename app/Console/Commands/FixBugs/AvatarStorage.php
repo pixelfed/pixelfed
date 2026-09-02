@@ -7,27 +7,17 @@ use App\Models\Avatar;
 use App\Models\Profile;
 use App\Services\AccountService;
 use App\Util\Lexer\PrettyNumber;
+use Illuminate\Console\Attributes\Description;
+use Illuminate\Console\Attributes\Signature;
 use Illuminate\Console\Command;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
 
+#[Signature('avatar:storage')]
+#[Description('Manage avatar storage')]
 class AvatarStorage extends Command
 {
-    /**
-     * The name and signature of the console command.
-     *
-     * @var string
-     */
-    protected $signature = 'avatar:storage';
-
-    /**
-     * The console command description.
-     *
-     * @var string
-     */
-    protected $description = 'Manage avatar storage';
-
     public $found = 0;
 
     public $notFetched = 0;

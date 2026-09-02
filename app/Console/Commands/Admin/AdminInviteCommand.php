@@ -4,26 +4,16 @@ namespace App\Console\Commands\Admin;
 
 use App\Mail\AdminInviteEmail;
 use App\Models\AdminInvite;
+use Illuminate\Console\Attributes\Description;
+use Illuminate\Console\Attributes\Signature;
 use Illuminate\Console\Command;
 use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\Validator;
 
+#[Signature('admin:invite')]
+#[Description('Create an invite link')]
 final class AdminInviteCommand extends Command
 {
-    /**
-     * The name and signature of the console command.
-     *
-     * @var string
-     */
-    protected $signature = 'admin:invite';
-
-    /**
-     * The console command description.
-     *
-     * @var string
-     */
-    protected $description = 'Create an invite link';
-
     /**
      * Execute the console command.
      *

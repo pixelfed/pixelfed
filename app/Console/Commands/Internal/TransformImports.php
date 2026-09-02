@@ -9,28 +9,18 @@ use App\Models\Status;
 use App\Services\AccountService;
 use App\Services\ImportService;
 use App\Services\MediaPathService;
+use Illuminate\Console\Attributes\Description;
+use Illuminate\Console\Attributes\Signature;
 use Illuminate\Console\Command;
 use Illuminate\Database\QueryException;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
 
+#[Signature('app:transform-imports')]
+#[Description('Transform imports into statuses')]
 class TransformImports extends Command
 {
-    /**
-     * The name and signature of the console command.
-     *
-     * @var string
-     */
-    protected $signature = 'app:transform-imports';
-
-    /**
-     * The console command description.
-     *
-     * @var string
-     */
-    protected $description = 'Transform imports into statuses';
-
     /**
      * Execute the console command.
      */

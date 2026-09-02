@@ -4,26 +4,16 @@ namespace App\Console\Commands\Internal;
 
 use App\Jobs\ImportPipeline\ImportMediaToCloudPipeline;
 use App\Models\ImportPost;
+use Illuminate\Console\Attributes\Description;
+use Illuminate\Console\Attributes\Signature;
 use Illuminate\Console\Command;
 
 use function Laravel\Prompts\progress;
 
+#[Signature('app:import-upload-media-to-cloud-storage {--limit=500}')]
+#[Description('Migrate media imported from Instagram to S3 cloud storage.')]
 class ImportUploadMediaToCloudStorage extends Command
 {
-    /**
-     * The name and signature of the console command.
-     *
-     * @var string
-     */
-    protected $signature = 'app:import-upload-media-to-cloud-storage {--limit=500}';
-
-    /**
-     * The console command description.
-     *
-     * @var string
-     */
-    protected $description = 'Migrate media imported from Instagram to S3 cloud storage.';
-
     /**
      * Execute the console command.
      */

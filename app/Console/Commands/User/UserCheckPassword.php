@@ -3,25 +3,15 @@
 namespace App\Console\Commands\User;
 
 use App\Models\User;
+use Illuminate\Console\Attributes\Description;
+use Illuminate\Console\Attributes\Signature;
 use Illuminate\Console\Command;
 use Illuminate\Support\Facades\Hash;
 
+#[Signature('user:checkpassword {id : Username or numeric user id}')]
+#[Description('Read-only: verify a candidate password against the stored hash and diagnose why a login is rejected. Does NOT change anything.')]
 class UserCheckPassword extends Command
 {
-    /**
-     * The name and signature of the console command.
-     *
-     * @var string
-     */
-    protected $signature = 'user:checkpassword {id : Username or numeric user id}';
-
-    /**
-     * The console command description.
-     *
-     * @var string
-     */
-    protected $description = 'Read-only: verify a candidate password against the stored hash and diagnose why a login is rejected. Does NOT change anything.';
-
     /**
      * Execute the console command.
      *

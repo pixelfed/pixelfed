@@ -3,24 +3,14 @@
 namespace App\Console\Commands\User;
 
 use App\Models\User;
+use Illuminate\Console\Attributes\Description;
+use Illuminate\Console\Attributes\Signature;
 use Illuminate\Console\Command;
 
+#[Signature('user:create {--name=} {--username=} {--email=} {--password=} {--is_admin=0} {--confirm_email=0}')]
+#[Description('Create a new user')]
 class UserCreate extends Command
 {
-    /**
-     * The name and signature of the console command.
-     *
-     * @var string
-     */
-    protected $signature = 'user:create {--name=} {--username=} {--email=} {--password=} {--is_admin=0} {--confirm_email=0}';
-
-    /**
-     * The console command description.
-     *
-     * @var string
-     */
-    protected $description = 'Create a new user';
-
     /**
      * Create a new command instance.
      *

@@ -2,8 +2,6 @@
 
 namespace App\Http\Controllers;
 
-use Illuminate\Routing\Controllers\HasMiddleware;
-use Illuminate\Routing\Controllers\Middleware;
 use App\Models\Group;
 use App\Models\GroupBlock;
 use App\Models\GroupCategory;
@@ -26,18 +24,13 @@ use Illuminate\Http\JsonResponse;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
+use Illuminate\Routing\Attributes\Controllers\Middleware;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
 
-class GroupController extends GroupFederationController implements HasMiddleware
+#[Middleware('auth')]
+class GroupController extends GroupFederationController
 {
-    public static function middleware(): array
-    {
-        return [
-            'auth',
-        ];
-    }
-
     public function index(Request $request): View
     {
         abort_unless(config('groups.enabled'), 404);

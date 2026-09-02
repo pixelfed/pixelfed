@@ -4,25 +4,15 @@ namespace App\Console\Commands\Admin;
 
 use App\Jobs\ImageOptimizePipeline\ImageThumbnail;
 use App\Models\Media;
+use Illuminate\Console\Attributes\Description;
+use Illuminate\Console\Attributes\Signature;
 use Illuminate\Console\Command;
 use Illuminate\Support\Facades\DB;
 
+#[Signature('regenerate:thumbnails')]
+#[Description('Regenerate thumbnails')]
 class RegenerateThumbnails extends Command
 {
-    /**
-     * The name and signature of the console command.
-     *
-     * @var string
-     */
-    protected $signature = 'regenerate:thumbnails';
-
-    /**
-     * The console command description.
-     *
-     * @var string
-     */
-    protected $description = 'Regenerate thumbnails';
-
     /**
      * Create a new command instance.
      *

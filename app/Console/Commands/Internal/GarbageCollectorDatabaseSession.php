@@ -2,25 +2,15 @@
 
 namespace App\Console\Commands\Internal;
 
+use Illuminate\Console\Attributes\Description;
+use Illuminate\Console\Attributes\Signature;
 use Illuminate\Console\Command;
 use Illuminate\Support\Facades\DB;
 
+#[Signature('gc:sessions')]
+#[Description('Database sessions garbage collector')]
 class GarbageCollectorDatabaseSession extends Command
 {
-    /**
-     * The name and signature of the console command.
-     *
-     * @var string
-     */
-    protected $signature = 'gc:sessions';
-
-    /**
-     * The console command description.
-     *
-     * @var string
-     */
-    protected $description = 'Database sessions garbage collector';
-
     /**
      * Create a new command instance.
      *

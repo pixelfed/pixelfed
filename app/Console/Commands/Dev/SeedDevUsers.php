@@ -3,25 +3,15 @@
 namespace App\Console\Commands\Dev;
 
 use App\Models\User;
+use Illuminate\Console\Attributes\Description;
+use Illuminate\Console\Attributes\Signature;
 use Illuminate\Console\Command;
 use Illuminate\Support\Str;
 
+#[Signature('seed:devusers')]
+#[Description('Seed dev users (admin + regular) with random passwords')]
 class SeedDevUsers extends Command
 {
-    /**
-     * The name and signature of the console command.
-     *
-     * @var string
-     */
-    protected $signature = 'seed:devusers';
-
-    /**
-     * The console command description.
-     *
-     * @var string
-     */
-    protected $description = 'Seed dev users (admin + regular) with random passwords';
-
     /**
      * Execute the console command.
      *

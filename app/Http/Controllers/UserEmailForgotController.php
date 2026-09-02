@@ -2,30 +2,23 @@
 
 namespace App\Http\Controllers;
 
-use Illuminate\Routing\Controllers\HasMiddleware;
-use Illuminate\Routing\Controllers\Middleware;
 use App\Mail\UserEmailForgotReminder;
 use App\Models\User;
 use App\Models\UserEmailForgot;
 use Illuminate\Contracts\View\View;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
+use Illuminate\Routing\Attributes\Controllers\Middleware;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Mail;
 
-class UserEmailForgotController extends Controller implements HasMiddleware
+#[Middleware('guest')]
+class UserEmailForgotController extends Controller
 {
     public function __construct()
     {
 
         abort_unless(config('security.forgot-email.enabled'), 404);
-    }
-
-    public static function middleware(): array
-    {
-        return [
-            'guest',
-        ];
     }
 
     public function index(Request $request): View

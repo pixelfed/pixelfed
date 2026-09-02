@@ -5,6 +5,10 @@ namespace App\Models;
 use App\HasSnowflakePrimary;
 use App\Services\FollowerService;
 use App\Util\Lexer\PrettyNumber;
+use Illuminate\Database\Eloquent\Attributes\Hidden;
+use Illuminate\Database\Eloquent\Attributes\Table;
+use Illuminate\Database\Eloquent\Attributes\Unguarded;
+use Illuminate\Database\Eloquent\Attributes\Visible;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
@@ -35,22 +39,13 @@ use Illuminate\Support\Facades\Storage;
  * @property-read User|null $user
  * @property-read Avatar $avatar
  */
+#[Table(incrementing: false)]
+#[Hidden('private_key')]
+#[Visible('id', 'user_id', 'username', 'name')]
+#[Unguarded]
 class Profile extends Model
 {
     use HasFactory, HasSnowflakePrimary, SoftDeletes;
-
-    /**
-     * Indicates if the IDs are auto-incrementing.
-     *
-     * @var bool
-     */
-    public $incrementing = false;
-
-    protected $hidden = ['private_key'];
-
-    protected $visible = ['id', 'user_id', 'username', 'name'];
-
-    protected $guarded = [];
 
     protected function casts(): array
     {

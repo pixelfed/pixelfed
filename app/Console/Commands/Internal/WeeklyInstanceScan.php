@@ -4,26 +4,16 @@ namespace App\Console\Commands\Internal;
 
 use App\Jobs\InstancePipeline\FetchNodeinfoPipeline;
 use App\Models\Instance;
+use Illuminate\Console\Attributes\Description;
+use Illuminate\Console\Attributes\Signature;
 use Illuminate\Console\Command;
 
 use function Laravel\Prompts\progress;
 
+#[Signature('app:weekly-instance-scan')]
+#[Description('Scan instance nodeinfo')]
 class WeeklyInstanceScan extends Command
 {
-    /**
-     * The name and signature of the console command.
-     *
-     * @var string
-     */
-    protected $signature = 'app:weekly-instance-scan';
-
-    /**
-     * The console command description.
-     *
-     * @var string
-     */
-    protected $description = 'Scan instance nodeinfo';
-
     /**
      * Execute the console command.
      */

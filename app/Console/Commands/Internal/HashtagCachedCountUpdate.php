@@ -3,25 +3,15 @@
 namespace App\Console\Commands\Internal;
 
 use App\Models\Hashtag;
+use Illuminate\Console\Attributes\Description;
+use Illuminate\Console\Attributes\Signature;
 use Illuminate\Console\Command;
 use Illuminate\Support\Facades\DB;
 
+#[Signature('app:hashtag-cached-count-update {--limit=100}')]
+#[Description('Update cached counter of hashtags')]
 class HashtagCachedCountUpdate extends Command
 {
-    /**
-     * The name and signature of the console command.
-     *
-     * @var string
-     */
-    protected $signature = 'app:hashtag-cached-count-update {--limit=100}';
-
-    /**
-     * The console command description.
-     *
-     * @var string
-     */
-    protected $description = 'Update cached counter of hashtags';
-
     /**
      * Execute the console command.
      */

@@ -2,9 +2,8 @@
 
 namespace App\Models;
 
+use Illuminate\Database\Eloquent\Attributes\Table;
 use Illuminate\Database\Eloquent\Model;
 
-class ImportData extends Model
-{
-    protected $table = 'import_datas';
-}
+#[Table('import_datas')]
+class ImportData extends Model {}

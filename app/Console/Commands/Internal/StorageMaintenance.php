@@ -2,29 +2,16 @@
 
 namespace App\Console\Commands\Internal;
 
+use Illuminate\Console\Attributes\Description;
+use Illuminate\Console\Attributes\Signature;
 use Illuminate\Console\Command;
 use Illuminate\Contracts\Filesystem\Filesystem;
 use Illuminate\Support\Facades\Storage;
 
+#[Signature('storage:maintenance {--hours=24 : Delete remcache files older than this many hours} {--only= : Comma-separated tasks to run (remcache,empty-dirs). Default: all} {--dry-run : Report what would be removed without deleting}')]
+#[Description('Reclaim leftover storage: sweep stale remcache temp files and prune empty directories left behind by the media, story, avatar and import flows.')]
 class StorageMaintenance extends Command
 {
-    /**
-     * The name and signature of the console command.
-     *
-     * @var string
-     */
-    protected $signature = 'storage:maintenance
-        {--hours=24 : Delete remcache files older than this many hours}
-        {--only= : Comma-separated tasks to run (remcache,empty-dirs). Default: all}
-        {--dry-run : Report what would be removed without deleting}';
-
-    /**
-     * The console command description.
-     *
-     * @var string
-     */
-    protected $description = 'Reclaim leftover storage: sweep stale remcache temp files and prune empty directories left behind by the media, story, avatar and import flows.';
-
     /**
      * The empty-directory trees swept by the "empty-dirs" task, keyed by the
      * disk-relative root that is itself preserved. All live on the local disk.

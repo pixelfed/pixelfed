@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use Illuminate\Database\Eloquent\Attributes\Unguarded;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Carbon;
 
@@ -13,10 +14,9 @@ use Illuminate\Support\Carbon;
  * @property Carbon|null $updated_at
  * @property-read Media|null $media
  */
+#[Unguarded]
 class DiscoverCategory extends Model
 {
-    protected $guarded = [];
-
     public function media()
     {
         return $this->belongsTo(Media::class);

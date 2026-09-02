@@ -10,27 +10,17 @@ use App\Models\Profile;
 use App\Models\User;
 use App\Models\UserDomainBlock;
 use App\Models\UserSetting;
+use Illuminate\Console\Attributes\Description;
+use Illuminate\Console\Attributes\Signature;
 use Illuminate\Console\Command;
 use Illuminate\Support\Facades\DB;
 
 use function Laravel\Prompts\search;
 
+#[Signature('app:fix-missing-user-profile')]
+#[Description('Command description')]
 class FixMissingUserProfile extends Command
 {
-    /**
-     * The name and signature of the console command.
-     *
-     * @var string
-     */
-    protected $signature = 'app:fix-missing-user-profile';
-
-    /**
-     * The console command description.
-     *
-     * @var string
-     */
-    protected $description = 'Command description';
-
     /**
      * Execute the console command.
      */

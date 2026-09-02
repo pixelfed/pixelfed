@@ -2,8 +2,6 @@
 
 namespace App\Http\Controllers;
 
-use Illuminate\Routing\Controllers\HasMiddleware;
-use Illuminate\Routing\Controllers\Middleware;
 use App\Models\ProfileAlias;
 use App\Models\ProfileMigration;
 use App\Services\AccountService;
@@ -12,17 +10,12 @@ use App\Util\Lexer\Nickname;
 use Illuminate\Contracts\View\View;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
+use Illuminate\Routing\Attributes\Controllers\Middleware;
 use Illuminate\Support\Facades\Cache;
 
-class ProfileAliasController extends Controller implements HasMiddleware
+#[Middleware('auth')]
+class ProfileAliasController extends Controller
 {
-    public static function middleware(): array
-    {
-        return [
-            'auth',
-        ];
-    }
-
     public function index(Request $request): View
     {
         $aliases = $request->user()->profile->aliases;

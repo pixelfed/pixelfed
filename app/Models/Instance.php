@@ -2,12 +2,12 @@
 
 namespace App\Models;
 
+use Illuminate\Database\Eloquent\Attributes\Unguarded;
 use Illuminate\Database\Eloquent\Model;
 
+#[Unguarded]
 class Instance extends Model
 {
-    protected $guarded = [];
-
     protected function casts(): array
     {
         return [

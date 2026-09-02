@@ -3,19 +3,14 @@
 namespace App\Models;
 
 use App\HasSnowflakePrimary;
+use Illuminate\Database\Eloquent\Attributes\Table;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
+#[Table(incrementing: false)]
 class Poll extends Model
 {
     use HasFactory, HasSnowflakePrimary;
-
-    /**
-     * Indicates if the IDs are auto-incrementing.
-     *
-     * @var bool
-     */
-    public $incrementing = false;
 
     protected function casts(): array
     {

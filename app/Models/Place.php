@@ -2,12 +2,12 @@
 
 namespace App\Models;
 
+use Illuminate\Database\Eloquent\Attributes\Visible;
 use Illuminate\Database\Eloquent\Model;
 
+#[Visible('id', 'name', 'country', 'slug')]
 class Place extends Model
 {
-    protected $visible = ['id', 'name', 'country', 'slug'];
-
     public function url()
     {
         return url('/discover/places/'.$this->id.'/'.$this->slug);

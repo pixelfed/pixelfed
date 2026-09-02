@@ -3,24 +3,14 @@
 namespace App\Console\Commands\User;
 
 use App\Models\User;
+use Illuminate\Console\Attributes\Description;
+use Illuminate\Console\Attributes\Signature;
 use Illuminate\Console\Command;
 
+#[Signature('user:table {limit=10}')]
+#[Description('Display latest users')]
 class UserTable extends Command
 {
-    /**
-     * The name and signature of the console command.
-     *
-     * @var string
-     */
-    protected $signature = 'user:table {limit=10}';
-
-    /**
-     * The console command description.
-     *
-     * @var string
-     */
-    protected $description = 'Display latest users';
-
     /**
      * Create a new command instance.
      *

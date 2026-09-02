@@ -2,8 +2,6 @@
 
 namespace App\Http\Controllers;
 
-use Illuminate\Routing\Controllers\HasMiddleware;
-use Illuminate\Routing\Controllers\Middleware;
 use App\Jobs\FollowPipeline\FollowAcceptPipeline;
 use App\Jobs\FollowPipeline\FollowPipeline;
 use App\Jobs\FollowPipeline\FollowRejectPipeline;
@@ -26,6 +24,7 @@ use Illuminate\Contracts\View\View;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
+use Illuminate\Routing\Attributes\Controllers\Middleware;
 use Illuminate\Support\Arr;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Cache;
@@ -36,7 +35,8 @@ use League\Fractal;
 use League\Fractal\Serializer\ArraySerializer;
 use PragmaRX\Google2FA\Google2FA;
 
-class AccountController extends Controller implements HasMiddleware
+#[Middleware('auth')]
+class AccountController extends Controller
 {
     protected $filters = [
         'user.mute',
@@ -46,13 +46,6 @@ class AccountController extends Controller implements HasMiddleware
     const FILTER_LIMIT_MUTE_TEXT = 'You cannot mute more than ';
 
     const FILTER_LIMIT_BLOCK_TEXT = 'You cannot block more than ';
-
-    public static function middleware(): array
-    {
-        return [
-            'auth',
-        ];
-    }
 
     public function notifications(Request $request): View
     {

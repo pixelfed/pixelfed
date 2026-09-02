@@ -5,25 +5,15 @@ namespace App\Console\Commands\FixBugs;
 use App\Models\Media;
 use App\Services\MediaService;
 use App\Services\StatusService;
+use Illuminate\Console\Attributes\Description;
+use Illuminate\Console\Attributes\Signature;
 use Illuminate\Console\Command;
 use Illuminate\Support\Facades\Http;
 
+#[Signature('app:fetch-missing-media-mime-type')]
+#[Description('Command description')]
 class FetchMissingMediaMimeType extends Command
 {
-    /**
-     * The name and signature of the console command.
-     *
-     * @var string
-     */
-    protected $signature = 'app:fetch-missing-media-mime-type';
-
-    /**
-     * The console command description.
-     *
-     * @var string
-     */
-    protected $description = 'Command description';
-
     /**
      * Execute the console command.
      */

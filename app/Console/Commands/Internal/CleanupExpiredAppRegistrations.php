@@ -3,24 +3,14 @@
 namespace App\Console\Commands\Internal;
 
 use App\Models\AppRegister;
+use Illuminate\Console\Attributes\Description;
+use Illuminate\Console\Attributes\Signature;
 use Illuminate\Console\Command;
 
+#[Signature('app:cleanup-expired-app-registrations')]
+#[Description('Command description')]
 class CleanupExpiredAppRegistrations extends Command
 {
-    /**
-     * The name and signature of the console command.
-     *
-     * @var string
-     */
-    protected $signature = 'app:cleanup-expired-app-registrations';
-
-    /**
-     * The console command description.
-     *
-     * @var string
-     */
-    protected $description = 'Command description';
-
     /**
      * Execute the console command.
      */

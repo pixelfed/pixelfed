@@ -4,28 +4,18 @@ namespace App\Console\Commands\User;
 
 use App\Models\DefaultDomainBlock;
 use App\Models\UserDomainBlock;
+use Illuminate\Console\Attributes\Description;
+use Illuminate\Console\Attributes\Signature;
 use Illuminate\Console\Command;
 
 use function Laravel\Prompts\confirm;
 use function Laravel\Prompts\progress;
 use function Laravel\Prompts\text;
 
+#[Signature('app:delete-user-domain-block')]
+#[Description('Remove a domain block for all users')]
 class DeleteUserDomainBlock extends Command
 {
-    /**
-     * The name and signature of the console command.
-     *
-     * @var string
-     */
-    protected $signature = 'app:delete-user-domain-block';
-
-    /**
-     * The console command description.
-     *
-     * @var string
-     */
-    protected $description = 'Remove a domain block for all users';
-
     /**
      * Execute the console command.
      */

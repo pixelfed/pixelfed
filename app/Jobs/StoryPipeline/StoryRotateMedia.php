@@ -8,6 +8,8 @@ use Exception;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
+use Illuminate\Queue\Attributes\Timeout;
+use Illuminate\Queue\Attributes\Tries;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
 use Illuminate\Support\Facades\DB;
@@ -16,6 +18,8 @@ use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
 use Throwable;
 
+#[Tries(3)]
+#[Timeout(300)]
 class StoryRotateMedia implements ShouldQueue
 {
     use Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
@@ -25,16 +29,6 @@ class StoryRotateMedia implements ShouldQueue
     protected $newPath;
 
     protected $oldPath;
-
-    /**
-     * The number of times the job may be attempted.
-     */
-    public $tries = 3;
-
-    /**
-     * The maximum number of seconds the job can run.
-     */
-    public $timeout = 300;
 
     /**
      * Calculate the number of seconds to wait before retrying the job.

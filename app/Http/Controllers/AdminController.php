@@ -2,8 +2,6 @@
 
 namespace App\Http\Controllers;
 
-use Illuminate\Routing\Controllers\HasMiddleware;
-use Illuminate\Routing\Controllers\Middleware;
 use App\Http\Controllers\Admin\AdminAutospamController;
 use App\Http\Controllers\Admin\AdminDirectoryController;
 use App\Http\Controllers\Admin\AdminDiscoverController;
@@ -34,6 +32,7 @@ use Illuminate\Contracts\View\View;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
+use Illuminate\Routing\Attributes\Controllers\Middleware;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Mail;
@@ -41,7 +40,10 @@ use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
 use Illuminate\Validation\Rule;
 
-class AdminController extends Controller implements HasMiddleware
+#[Middleware('admin')]
+#[Middleware('dangerzone')]
+#[Middleware('twofactor')]
+class AdminController extends Controller
 {
     use AdminAutospamController,
         AdminDirectoryController,
@@ -54,15 +56,6 @@ class AdminController extends Controller implements HasMiddleware
         AdminSettingsController,
         // AdminStorageController,
         AdminUserController;
-
-    public static function middleware(): array
-    {
-        return [
-            'admin',
-            'dangerzone',
-            'twofactor',
-        ];
-    }
 
     public function home(): View
     {

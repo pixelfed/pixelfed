@@ -2,41 +2,18 @@
 
 namespace App\Console\Commands\Install;
 
+use Illuminate\Console\Attributes\Description;
+use Illuminate\Console\Attributes\Signature;
 use Illuminate\Console\Command;
 use Illuminate\Foundation\Bootstrap\LoadEnvironmentVariables;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Redis;
 use PDO;
 
+#[Signature('install {--dangerously-overwrite-env : Re-run installation and overwrite current .env} {--domain= : Pre-fill site domain} {--name= : Pre-fill site name} {--email= : Pre-fill admin email} {--db-driver= : Pre-fill database driver (mysql/pgsql)} {--db-host= : Pre-fill database host} {--db-port= : Pre-fill database port} {--db-database= : Pre-fill database name} {--db-username= : Pre-fill database username} {--db-password= : Pre-fill database password} {--redis-host= : Pre-fill Redis host} {--redis-port= : Pre-fill Redis port} {--redis-password= : Pre-fill Redis password}')]
+#[Description('CLI Installer')]
 class Installer extends Command
 {
-    /**
-     * The name and signature of the console command.
-     *
-     * @var string
-     */
-    protected $signature = 'install 
-        {--dangerously-overwrite-env : Re-run installation and overwrite current .env}
-        {--domain= : Pre-fill site domain}
-        {--name= : Pre-fill site name}
-        {--email= : Pre-fill admin email}
-        {--db-driver= : Pre-fill database driver (mysql/pgsql)}
-        {--db-host= : Pre-fill database host}
-        {--db-port= : Pre-fill database port}
-        {--db-database= : Pre-fill database name}
-        {--db-username= : Pre-fill database username}
-        {--db-password= : Pre-fill database password}
-        {--redis-host= : Pre-fill Redis host}
-        {--redis-port= : Pre-fill Redis port}
-        {--redis-password= : Pre-fill Redis password}';
-
-    /**
-     * The console command description.
-     *
-     * @var string
-     */
-    protected $description = 'CLI Installer';
-
     protected $migrationsRan = false;
 
     /**

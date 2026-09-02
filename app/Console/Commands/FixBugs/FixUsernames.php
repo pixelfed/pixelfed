@@ -5,26 +5,16 @@ namespace App\Console\Commands\FixBugs;
 use App\Models\Profile;
 use App\Models\User;
 use App\Util\Lexer\RestrictedNames;
+use Illuminate\Console\Attributes\Description;
+use Illuminate\Console\Attributes\Signature;
 use Illuminate\Console\Command;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Str;
 
+#[Signature('fix:usernames')]
+#[Description('Fix invalid usernames')]
 class FixUsernames extends Command
 {
-    /**
-     * The name and signature of the console command.
-     *
-     * @var string
-     */
-    protected $signature = 'fix:usernames';
-
-    /**
-     * The console command description.
-     *
-     * @var string
-     */
-    protected $description = 'Fix invalid usernames';
-
     /**
      * Create a new command instance.
      *

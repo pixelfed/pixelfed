@@ -3,25 +3,15 @@
 namespace App\Console\Commands\User;
 
 use App\Models\User;
+use Illuminate\Console\Attributes\Description;
+use Illuminate\Console\Attributes\Signature;
 use Illuminate\Console\Command;
 use Illuminate\Contracts\Console\PromptsForMissingInput;
 
+#[Signature('user:verifyemail {username}')]
+#[Description('Verify user email address')]
 class UserVerifyEmail extends Command implements PromptsForMissingInput
 {
-    /**
-     * The name and signature of the console command.
-     *
-     * @var string
-     */
-    protected $signature = 'user:verifyemail {username}';
-
-    /**
-     * The console command description.
-     *
-     * @var string
-     */
-    protected $description = 'Verify user email address';
-
     /**
      * Create a new command instance.
      *

@@ -4,27 +4,17 @@ namespace App\Console\Commands\Admin;
 
 use App\Jobs\DeletePipeline\DeleteRemoteProfilePipeline;
 use App\Models\Profile;
+use Illuminate\Console\Attributes\Description;
+use Illuminate\Console\Attributes\Signature;
 use Illuminate\Console\Command;
 
 use function Laravel\Prompts\confirm;
 use function Laravel\Prompts\search;
 
+#[Signature('app:delete-remote-profile')]
+#[Description('Delete remote profile')]
 class DeleteRemoteProfile extends Command
 {
-    /**
-     * The name and signature of the console command.
-     *
-     * @var string
-     */
-    protected $signature = 'app:delete-remote-profile';
-
-    /**
-     * The console command description.
-     *
-     * @var string
-     */
-    protected $description = 'Delete remote profile';
-
     /**
      * Execute the console command.
      */

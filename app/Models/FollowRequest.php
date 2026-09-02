@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use Illuminate\Database\Eloquent\Attributes\Unguarded;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Carbon;
 
@@ -18,10 +19,9 @@ use Illuminate\Support\Carbon;
  * @property-read Profile $follower
  * @property-read Profile $following
  */
+#[Unguarded]
 class FollowRequest extends Model
 {
-    protected $guarded = [];
-
     protected function casts(): array
     {
         return [

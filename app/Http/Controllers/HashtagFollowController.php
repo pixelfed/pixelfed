@@ -2,23 +2,16 @@
 
 namespace App\Http\Controllers;
 
-use Illuminate\Routing\Controllers\HasMiddleware;
-use Illuminate\Routing\Controllers\Middleware;
 use App\Models\Hashtag;
 use App\Models\HashtagFollow;
 use App\Services\HashtagService;
 use Illuminate\Http\Request;
+use Illuminate\Routing\Attributes\Controllers\Middleware;
 use Illuminate\Support\Facades\Auth;
 
-class HashtagFollowController extends Controller implements HasMiddleware
+#[Middleware('auth')]
+class HashtagFollowController extends Controller
 {
-    public static function middleware(): array
-    {
-        return [
-            'auth',
-        ];
-    }
-
     public function store(Request $request): array
     {
         $this->validate($request, [

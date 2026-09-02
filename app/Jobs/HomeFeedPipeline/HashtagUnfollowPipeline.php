@@ -9,11 +9,19 @@ use App\Services\StatusService;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
+use Illuminate\Queue\Attributes\FailOnTimeout;
+use Illuminate\Queue\Attributes\MaxExceptions;
+use Illuminate\Queue\Attributes\Timeout;
+use Illuminate\Queue\Attributes\Tries;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Log;
 
+#[Timeout(900)]
+#[Tries(3)]
+#[MaxExceptions(1)]
+#[FailOnTimeout]
 class HashtagUnfollowPipeline implements ShouldQueue
 {
     use Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
@@ -23,14 +31,6 @@ class HashtagUnfollowPipeline implements ShouldQueue
     protected $hid;
 
     protected $slug;
-
-    public $timeout = 900;
-
-    public $tries = 3;
-
-    public $maxExceptions = 1;
-
-    public $failOnTimeout = true;
 
     /**
      * Create a new job instance.

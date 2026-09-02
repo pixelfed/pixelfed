@@ -6,10 +6,16 @@ use App\Services\FollowerService;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
+use Illuminate\Queue\Attributes\FailOnTimeout;
+use Illuminate\Queue\Attributes\Timeout;
+use Illuminate\Queue\Attributes\Tries;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
 use Illuminate\Support\Facades\Storage;
 
+#[Tries(5)]
+#[Timeout(5000)]
+#[FailOnTimeout]
 class FollowServiceWarmCacheLargeIngestPipeline implements ShouldQueue
 {
     use Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
@@ -17,12 +23,6 @@ class FollowServiceWarmCacheLargeIngestPipeline implements ShouldQueue
     public $profileId;
 
     public $followType;
-
-    public $tries = 5;
-
-    public $timeout = 5000;
-
-    public $failOnTimeout = false;
 
     /**
      * Create a new job instance.

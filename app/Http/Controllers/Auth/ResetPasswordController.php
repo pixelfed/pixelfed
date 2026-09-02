@@ -2,8 +2,6 @@
 
 namespace App\Http\Controllers\Auth;
 
-use Illuminate\Routing\Controllers\HasMiddleware;
-use Illuminate\Routing\Controllers\Middleware;
 use App\Http\Controllers\Controller;
 use App\Services\BouncerService;
 use Illuminate\Contracts\View\Factory;
@@ -11,12 +9,14 @@ use Illuminate\Foundation\Auth\ResetsPasswords;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
+use Illuminate\Routing\Attributes\Controllers\Middleware;
 use Illuminate\Support\Facades\Password;
 use Illuminate\Validation\Rules;
 use Illuminate\Validation\ValidationException;
 use Illuminate\View\View;
 
-class ResetPasswordController extends Controller implements HasMiddleware
+#[Middleware('guest')]
+class ResetPasswordController extends Controller
 {
     /*
     |--------------------------------------------------------------------------
@@ -37,13 +37,6 @@ class ResetPasswordController extends Controller implements HasMiddleware
      * @var string
      */
     protected $redirectTo = '/i/web';
-
-    public static function middleware(): array
-    {
-        return [
-            'guest',
-        ];
-    }
 
     /**
      * Get the password reset validation rules.

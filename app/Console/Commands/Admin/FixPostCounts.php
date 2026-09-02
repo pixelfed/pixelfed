@@ -4,24 +4,14 @@ namespace App\Console\Commands\Admin;
 
 use App\Models\Status;
 use App\Services\StatusService;
+use Illuminate\Console\Attributes\Description;
+use Illuminate\Console\Attributes\Signature;
 use Illuminate\Console\Command;
 
+#[Signature('admin:fixPostCounts {id? : Status id to resync (omit with --all)} {--all : Scan statuses and resync any with drifted counts (requires --scope)} {--active=* : Scan only posts by local accounts active within N days (default 30). Bulk mode; mutually exclusive with --all} {--scope= : Which statuses to scan in --all mode: local, remote, or both} {--type= : Restrict to a single metric: likes, boosts, or comments (default: all three)} {--dry-run : Report drift without changing anything} {--force : Skip the confirmation prompt (for scheduled/unattended runs)}')]
+#[Description('Resync a post\'s cached counts (likes, boosts, comments) from source-of-truth tables. Use --all --scope=local|remote|both, or --active, for bulk reconciliation.')]
 class FixPostCounts extends Command
 {
-    /**
-     * The name and signature of the console command.
-     *
-     * @var string
-     */
-    protected $signature = 'admin:fixPostCounts
-        {id? : Status id to resync (omit with --all)}
-        {--all : Scan statuses and resync any with drifted counts (requires --scope)}
-        {--active=* : Scan only posts by local accounts active within N days (default 30). Bulk mode; mutually exclusive with --all}
-        {--scope= : Which statuses to scan in --all mode: local, remote, or both}
-        {--type= : Restrict to a single metric: likes, boosts, or comments (default: all three)}
-        {--dry-run : Report drift without changing anything}
-        {--force : Skip the confirmation prompt (for scheduled/unattended runs)}';
-
     /**
      * Default active window (days) when --active is passed without a value.
      */
@@ -40,13 +30,6 @@ class FixPostCounts extends Command
      * @var array<int, string>
      */
     protected const SCOPES = ['local', 'remote', 'both'];
-
-    /**
-     * The console command description.
-     *
-     * @var string
-     */
-    protected $description = 'Resync a post\'s cached counts (likes, boosts, comments) from source-of-truth tables. Use --all --scope=local|remote|both, or --active, for bulk reconciliation.';
 
     /**
      * Execute the console command.

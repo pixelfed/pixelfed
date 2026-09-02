@@ -2,12 +2,12 @@
 
 namespace App\Models;
 
+use Illuminate\Database\Eloquent\Attributes\Unguarded;
 use Illuminate\Database\Eloquent\Model;
 
+#[Unguarded]
 class Circle extends Model
 {
-    protected $guarded = [];
-
     public function members()
     {
         return $this->hasManyThrough(

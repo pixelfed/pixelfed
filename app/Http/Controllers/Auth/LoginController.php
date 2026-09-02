@@ -2,8 +2,6 @@
 
 namespace App\Http\Controllers\Auth;
 
-use Illuminate\Routing\Controllers\HasMiddleware;
-use Illuminate\Routing\Controllers\Middleware;
 use App\Http\Controllers\Controller;
 use App\Models\AccountLog;
 use App\Models\User;
@@ -11,10 +9,12 @@ use App\Services\BouncerService;
 use Illuminate\Contracts\View\View;
 use Illuminate\Foundation\Auth\AuthenticatesUsers;
 use Illuminate\Http\Request;
+use Illuminate\Routing\Attributes\Controllers\Middleware;
 use Illuminate\Validation\ValidationException;
 use Symfony\Component\HttpFoundation\Response;
 
-class LoginController extends Controller implements HasMiddleware
+#[Middleware('guest', except: ['logout'])]
+class LoginController extends Controller
 {
     /*
     |--------------------------------------------------------------------------
@@ -39,13 +39,6 @@ class LoginController extends Controller implements HasMiddleware
     protected $maxAttempts = 5;
 
     protected $decayMinutes = 60;
-
-    public static function middleware(): array
-    {
-        return [
-            new Middleware('guest', except: ['logout']),
-        ];
-    }
 
     public function showLoginForm(): View
     {

@@ -5,27 +5,17 @@ namespace App\Console\Commands\User;
 use App\Models\Avatar;
 use App\Models\User;
 use App\Services\AccountService;
+use Illuminate\Console\Attributes\Description;
+use Illuminate\Console\Attributes\Signature;
 use Illuminate\Console\Command;
 use Illuminate\Contracts\Console\PromptsForMissingInput;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Storage;
 
+#[Signature('user:avatar-delete {username} {--force : Delete without confirmation prompts}')]
+#[Description('Delete user avatar and reset to default')]
 class UserAvatarDelete extends Command implements PromptsForMissingInput
 {
-    /**
-     * The name and signature of the console command.
-     *
-     * @var string
-     */
-    protected $signature = 'user:avatar-delete {username} {--force : Delete without confirmation prompts}';
-
-    /**
-     * The console command description.
-     *
-     * @var string
-     */
-    protected $description = 'Delete user avatar and reset to default';
-
     /**
      * @var array<int, string>
      */

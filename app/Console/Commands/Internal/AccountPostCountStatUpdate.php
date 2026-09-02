@@ -5,24 +5,14 @@ namespace App\Console\Commands\Internal;
 use App\Models\Profile;
 use App\Services\Account\AccountStatService;
 use App\Services\AccountService;
+use Illuminate\Console\Attributes\Description;
+use Illuminate\Console\Attributes\Signature;
 use Illuminate\Console\Command;
 
+#[Signature('app:account-post-count-stat-update')]
+#[Description('Update post counts from recent activities')]
 class AccountPostCountStatUpdate extends Command
 {
-    /**
-     * The name and signature of the console command.
-     *
-     * @var string
-     */
-    protected $signature = 'app:account-post-count-stat-update';
-
-    /**
-     * The console command description.
-     *
-     * @var string
-     */
-    protected $description = 'Update post counts from recent activities';
-
     /**
      * Execute the console command.
      */

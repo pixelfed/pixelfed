@@ -2,8 +2,6 @@
 
 namespace App\Http\Controllers;
 
-use Illuminate\Routing\Controllers\HasMiddleware;
-use Illuminate\Routing\Controllers\Middleware;
 use App\Http\Requests\Status\StoreStatusEditRequest;
 use App\Jobs\StatusPipeline\StatusLocalUpdateActivityPubDeliverPipeline;
 use App\Models\Status;
@@ -12,16 +10,11 @@ use App\Services\Status\UpdateStatusService;
 use App\Services\StatusService;
 use App\Util\Lexer\Autolink;
 use Illuminate\Http\Request;
+use Illuminate\Routing\Attributes\Controllers\Middleware;
 
-class StatusEditController extends Controller implements HasMiddleware
+#[Middleware('auth:api')]
+class StatusEditController extends Controller
 {
-    public static function middleware(): array
-    {
-        return [
-            'auth:api',
-        ];
-    }
-
     public function store(StoreStatusEditRequest $request, $id)
     {
         $validated = $request->validated();

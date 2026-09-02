@@ -3,21 +3,16 @@
 namespace App\Models;
 
 use App\HasSnowflakePrimary;
+use Illuminate\Database\Eloquent\Attributes\Table;
+use Illuminate\Database\Eloquent\Attributes\Unguarded;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
+#[Table(incrementing: false)]
+#[Unguarded]
 class GroupPost extends Model
 {
     use HasFactory, HasSnowflakePrimary;
-
-    /**
-     * Indicates if the IDs are auto-incrementing.
-     *
-     * @var bool
-     */
-    public $incrementing = false;
-
-    protected $guarded = [];
 
     public function mediaPath()
     {

@@ -3,31 +3,16 @@
 namespace App\Console\Commands\Admin;
 
 use App\Models\CustomEmoji;
+use Illuminate\Console\Attributes\Description;
+use Illuminate\Console\Attributes\Signature;
 use Illuminate\Console\Command;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Storage;
 
+#[Signature('import:emojis {path : Path to a tar.gz archive with the emojis} {--prefix : Define a prefix for the emjoi shortcode} {--suffix : Define a suffix for the emjoi shortcode} {--overwrite : Overwrite existing emojis} {--disabled : Import all emojis as disabled}')]
+#[Description('Import emojis to the database')]
 class ImportEmojis extends Command
 {
-    /**
-     * The name and signature of the console command.
-     *
-     * @var string
-     */
-    protected $signature = 'import:emojis
-                            {path : Path to a tar.gz archive with the emojis}
-                            {--prefix : Define a prefix for the emjoi shortcode}
-                            {--suffix : Define a suffix for the emjoi shortcode}
-                            {--overwrite : Overwrite existing emojis}
-                            {--disabled : Import all emojis as disabled}';
-
-    /**
-     * The console command description.
-     *
-     * @var string
-     */
-    protected $description = 'Import emojis to the database';
-
     /**
      * Execute the console command.
      *

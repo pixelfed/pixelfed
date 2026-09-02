@@ -2,22 +2,15 @@
 
 namespace App\Http\Controllers;
 
-use Illuminate\Routing\Controllers\HasMiddleware;
-use Illuminate\Routing\Controllers\Middleware;
 use App\Models\MediaTag;
 use App\Models\Notification;
 use App\Services\MediaTagService;
 use Illuminate\Http\Request;
+use Illuminate\Routing\Attributes\Controllers\Middleware;
 
-class MediaTagController extends Controller implements HasMiddleware
+#[Middleware('auth')]
+class MediaTagController extends Controller
 {
-    public static function middleware(): array
-    {
-        return [
-            'auth',
-        ];
-    }
-
     public function usernameLookup(Request $request): void
     {
         abort(404);

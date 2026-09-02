@@ -2,24 +2,14 @@
 
 namespace App\Console\Commands\Dev;
 
+use Illuminate\Console\Attributes\Description;
+use Illuminate\Console\Attributes\Signature;
 use Illuminate\Console\Command;
 
+#[Signature('i18n:export')]
+#[Description('Build and export js localization files.')]
 class ExportLanguages extends Command
 {
-    /**
-     * The name and signature of the console command.
-     *
-     * @var string
-     */
-    protected $signature = 'i18n:export';
-
-    /**
-     * The console command description.
-     *
-     * @var string
-     */
-    protected $description = 'Build and export js localization files.';
-
     /**
      * Create a new command instance.
      *

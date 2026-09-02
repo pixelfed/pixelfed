@@ -2,16 +2,16 @@
 
 namespace App\Models;
 
+use Illuminate\Database\Eloquent\Attributes\Unguarded;
 use Illuminate\Database\Eloquent\Model;
 
+#[Unguarded]
 class Page extends Model
 {
     const SLUG_ROOT = [
         'site',
         'page',
     ];
-
-    protected $guarded = [];
 
     public function url()
     {

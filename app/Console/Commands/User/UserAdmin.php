@@ -3,25 +3,15 @@
 namespace App\Console\Commands\User;
 
 use App\Models\User;
+use Illuminate\Console\Attributes\Description;
+use Illuminate\Console\Attributes\Signature;
 use Illuminate\Console\Command;
 use Illuminate\Contracts\Console\PromptsForMissingInput;
 
+#[Signature('user:admin {username}')]
+#[Description('Make a user an admin, or remove admin privileges.')]
 class UserAdmin extends Command implements PromptsForMissingInput
 {
-    /**
-     * The name and signature of the console command.
-     *
-     * @var string
-     */
-    protected $signature = 'user:admin {username}';
-
-    /**
-     * The console command description.
-     *
-     * @var string
-     */
-    protected $description = 'Make a user an admin, or remove admin privileges.';
-
     /**
      * Prompt for missing input arguments using the returned questions.
      *

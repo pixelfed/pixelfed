@@ -2,12 +2,12 @@
 
 namespace App\Models;
 
+use Illuminate\Database\Eloquent\Attributes\Unguarded;
 use Illuminate\Database\Eloquent\Model;
 
+#[Unguarded]
 class Bookmark extends Model
 {
-    protected $guarded = [];
-
     public function status()
     {
         return $this->belongsTo(Status::class);

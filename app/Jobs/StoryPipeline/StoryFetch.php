@@ -16,6 +16,9 @@ use Illuminate\Foundation\Bus\Dispatchable;
 use Illuminate\Http\Client\ConnectionException;
 use Illuminate\Http\Client\RequestException;
 use Illuminate\Http\File;
+use Illuminate\Queue\Attributes\Backoff;
+use Illuminate\Queue\Attributes\MaxExceptions;
+use Illuminate\Queue\Attributes\Tries;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
 use Illuminate\Support\Facades\Cache;
@@ -26,6 +29,9 @@ use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Str;
 
+#[Tries(3)]
+#[MaxExceptions(2)]
+#[Backoff([30, 60, 120])]
 class StoryFetch implements ShouldQueue
 {
     use Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
@@ -37,13 +43,6 @@ class StoryFetch implements ShouldQueue
     private const REQUEST_TIMEOUT = 30;
 
     private const MAX_REDIRECTS = 3;
-
-    // Rate limiting
-    public $tries = 3;
-
-    public $maxExceptions = 2;
-
-    public $backoff = [30, 60, 120];
 
     /**
      * Create a new job instance.

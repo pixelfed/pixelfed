@@ -3,27 +3,17 @@
 namespace App\Console\Commands\Admin;
 
 use App\Services\ConfigCacheService;
+use Illuminate\Console\Attributes\Description;
+use Illuminate\Console\Attributes\Signature;
 use Illuminate\Console\Command;
 
 use function Laravel\Prompts\confirm;
 use function Laravel\Prompts\info;
 
+#[Signature('app:captcha-toggle-command')]
+#[Description('Command description')]
 final class CaptchaToggleCommand extends Command
 {
-    /**
-     * The name and signature of the console command.
-     *
-     * @var string
-     */
-    protected $signature = 'app:captcha-toggle-command';
-
-    /**
-     * The console command description.
-     *
-     * @var string
-     */
-    protected $description = 'Command description';
-
     /**
      * Execute the console command.
      */

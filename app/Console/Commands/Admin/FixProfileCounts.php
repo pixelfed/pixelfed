@@ -6,26 +6,15 @@ use App\Jobs\FollowPipeline\FollowServiceWarmCache;
 use App\Models\Profile;
 use App\Services\Account\AccountStatService;
 use App\Services\FollowerService;
+use Illuminate\Console\Attributes\Description;
+use Illuminate\Console\Attributes\Signature;
 use Illuminate\Console\Command;
 use Illuminate\Support\Facades\Cache;
 
+#[Signature('admin:fixProfileCounts {id? : Profile id or username to resync (omit with --all)} {--all : Scan all profiles and resync any with drifted counts (requires --scope)} {--active=* : Scan only local accounts active within N days (default 30). Bulk mode; mutually exclusive with --all} {--scope= : Which profiles to scan in --all mode: local, remote, or both} {--type= : Restrict to a single metric: followers, following, or statuses (default: all three)} {--dispatch : Queue FollowServiceWarmCache for follower/following instead of recomputing inline} {--dry-run : Report drift without changing anything} {--force : Skip the confirmation prompt (for scheduled/unattended runs)}')]
+#[Description('Resync a profile\'s cached counts (followers, following, statuses) from source-of-truth tables. Use --all --scope=local|remote|both, or --active, for bulk reconciliation.')]
 class FixProfileCounts extends Command
 {
-    /**
-     * The name and signature of the console command.
-     *
-     * @var string
-     */
-    protected $signature = 'admin:fixProfileCounts
-        {id? : Profile id or username to resync (omit with --all)}
-        {--all : Scan all profiles and resync any with drifted counts (requires --scope)}
-        {--active=* : Scan only local accounts active within N days (default 30). Bulk mode; mutually exclusive with --all}
-        {--scope= : Which profiles to scan in --all mode: local, remote, or both}
-        {--type= : Restrict to a single metric: followers, following, or statuses (default: all three)}
-        {--dispatch : Queue FollowServiceWarmCache for follower/following instead of recomputing inline}
-        {--dry-run : Report drift without changing anything}
-        {--force : Skip the confirmation prompt (for scheduled/unattended runs)}';
-
     /**
      * Default active window (days) when --active is passed without a value.
      */
@@ -44,13 +33,6 @@ class FixProfileCounts extends Command
      * @var array<int, string>
      */
     protected const SCOPES = ['local', 'remote', 'both'];
-
-    /**
-     * The console command description.
-     *
-     * @var string
-     */
-    protected $description = 'Resync a profile\'s cached counts (followers, following, statuses) from source-of-truth tables. Use --all --scope=local|remote|both, or --active, for bulk reconciliation.';
 
     /**
      * Execute the console command.

@@ -2,19 +2,14 @@
 
 namespace App\Models;
 
+use Illuminate\Database\Eloquent\Attributes\Fillable;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasManyThrough;
 
+#[Fillable('status_id', 'hashtag_id', 'profile_id', 'status_visibility')]
 class StatusHashtag extends Model
 {
-    public $fillable = [
-        'status_id',
-        'hashtag_id',
-        'profile_id',
-        'status_visibility',
-    ];
-
     public function status(): BelongsTo
     {
         return $this->belongsTo(Status::class);

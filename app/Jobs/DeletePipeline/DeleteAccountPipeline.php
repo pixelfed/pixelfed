@@ -48,25 +48,25 @@ use App\Services\PublicTimelineService;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
+use Illuminate\Queue\Attributes\DeleteWhenMissingModels;
+use Illuminate\Queue\Attributes\MaxExceptions;
+use Illuminate\Queue\Attributes\Timeout;
+use Illuminate\Queue\Attributes\Tries;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Storage;
 
+#[Timeout(1800)]
+#[Tries(3)]
+#[MaxExceptions(1)]
+#[DeleteWhenMissingModels]
 class DeleteAccountPipeline implements ShouldQueue
 {
     use Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
 
     protected $user;
-
-    public $timeout = 1800;
-
-    public $tries = 3;
-
-    public $maxExceptions = 1;
-
-    public $deleteWhenMissingModels = true;
 
     public function __construct(User $user)
     {

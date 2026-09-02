@@ -6,19 +6,19 @@ use App\Models\Media;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
+use Illuminate\Queue\Attributes\MaxExceptions;
+use Illuminate\Queue\Attributes\Timeout;
+use Illuminate\Queue\Attributes\Tries;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
 use Illuminate\Support\Facades\Storage;
 
+#[Timeout(1800)]
+#[Tries(5)]
+#[MaxExceptions(1)]
 class MediaFixLocalFilesystemCleanupPipeline implements ShouldQueue
 {
     use Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
-
-    public $timeout = 1800;
-
-    public $tries = 5;
-
-    public $maxExceptions = 1;
 
     public function handle()
     {

@@ -4,6 +4,8 @@ namespace App\Models;
 
 use App\Services\AvatarService;
 use App\Util\RateLimit\User as UserRateLimit;
+use Illuminate\Database\Eloquent\Attributes\Hidden;
+use Illuminate\Database\Eloquent\Attributes\Unguarded;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Database\Eloquent\SoftDeletes;
@@ -13,6 +15,8 @@ use Laravel\Passport\Contracts\OAuthenticatable;
 use Laravel\Passport\HasApiTokens;
 use NotificationChannels\WebPush\HasPushSubscriptions;
 
+#[Unguarded]
+#[Hidden('email', 'password', 'is_admin', 'remember_token', 'email_verified_at', '2fa_enabled', '2fa_secret', '2fa_backup_codes', '2fa_setup_at', 'deleted_at', 'updated_at')]
 class User extends Authenticatable implements OAuthenticatable
 {
     use HasApiTokens, HasFactory, HasPushSubscriptions, Notifiable, SoftDeletes, UserRateLimit;
@@ -26,25 +30,6 @@ class User extends Authenticatable implements OAuthenticatable
             'last_active_at' => 'datetime',
         ];
     }
-
-    /**
-     * The attributes that are mass assignable.
-     *
-     * @var array
-     */
-    protected $guarded = [];
-
-    /**
-     * The attributes that should be hidden for arrays.
-     *
-     * @var array
-     */
-    protected $hidden = [
-        'email', 'password', 'is_admin', 'remember_token',
-        'email_verified_at', '2fa_enabled', '2fa_secret',
-        '2fa_backup_codes', '2fa_setup_at', 'deleted_at',
-        'updated_at',
-    ];
 
     public function profile(): HasOne
     {

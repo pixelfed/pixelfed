@@ -4,24 +4,14 @@ namespace App\Console\Commands\FixBugs;
 
 use App\Jobs\ImageOptimizePipeline\ImageOptimize;
 use App\Models\Media;
+use Illuminate\Console\Attributes\Description;
+use Illuminate\Console\Attributes\Signature;
 use Illuminate\Console\Command;
 
+#[Signature('media:optimize')]
+#[Description('Find and optimize media that has not yet been optimized.')]
 class CatchUnoptimizedMedia extends Command
 {
-    /**
-     * The name and signature of the console command.
-     *
-     * @var string
-     */
-    protected $signature = 'media:optimize';
-
-    /**
-     * The console command description.
-     *
-     * @var string
-     */
-    protected $description = 'Find and optimize media that has not yet been optimized.';
-
     /**
      * Create a new command instance.
      *

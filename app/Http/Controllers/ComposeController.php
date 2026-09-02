@@ -2,8 +2,6 @@
 
 namespace App\Http\Controllers;
 
-use Illuminate\Routing\Controllers\HasMiddleware;
-use Illuminate\Routing\Controllers\Middleware;
 use App\Jobs\ImageOptimizePipeline\ImageOptimize;
 use App\Jobs\StatusPipeline\NewStatusPipeline;
 use App\Jobs\VideoPipeline\VideoThumbnail;
@@ -33,6 +31,7 @@ use App\Util\Media\License;
 use Illuminate\Contracts\View\View;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
+use Illuminate\Routing\Attributes\Controllers\Middleware;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\DB;
@@ -40,7 +39,8 @@ use Illuminate\Support\Str;
 use League\Fractal;
 use League\Fractal\Serializer\ArraySerializer;
 
-class ComposeController extends Controller implements HasMiddleware
+#[Middleware('auth')]
+class ComposeController extends Controller
 {
     protected $fractal;
 
@@ -49,13 +49,6 @@ class ComposeController extends Controller implements HasMiddleware
 
         $this->fractal = new Fractal\Manager;
         $this->fractal->setSerializer(new ArraySerializer);
-    }
-
-    public static function middleware(): array
-    {
-        return [
-            'auth',
-        ];
     }
 
     public function show(Request $request): View

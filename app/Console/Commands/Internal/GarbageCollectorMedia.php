@@ -4,24 +4,14 @@ namespace App\Console\Commands\Internal;
 
 use App\Models\Media;
 use App\Services\MediaStorageService;
+use Illuminate\Console\Attributes\Description;
+use Illuminate\Console\Attributes\Signature;
 use Illuminate\Console\Command;
 
+#[Signature('media:gc')]
+#[Description('Delete media uploads not attached to any active statuses')]
 class GarbageCollectorMedia extends Command
 {
-    /**
-     * The name and signature of the console command.
-     *
-     * @var string
-     */
-    protected $signature = 'media:gc';
-
-    /**
-     * The console command description.
-     *
-     * @var string
-     */
-    protected $description = 'Delete media uploads not attached to any active statuses';
-
     /**
      * Create a new command instance.
      *

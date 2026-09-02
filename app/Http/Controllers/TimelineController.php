@@ -6,16 +6,17 @@ namespace App\Http\Controllers;
 // use App\Models\Status;
 // use App\Transformer\Api\StatusTimelineTransformer;
 // use App\Models\UserFilter;
-use Illuminate\Routing\Controllers\HasMiddleware;
-use Illuminate\Routing\Controllers\Middleware;
 use Illuminate\Contracts\View\View;
 use Illuminate\Http\Request;
+use Illuminate\Routing\Attributes\Controllers\Middleware;
 
 // use Illuminate\Support\Facades\Cache;
 // use League\Fractal;
 // use League\Fractal\Serializer\ArraySerializer;
 
-class TimelineController extends Controller implements HasMiddleware
+#[Middleware('auth')]
+#[Middleware('twofactor')]
+class TimelineController extends Controller
 {
     // protected $fractal;
 
@@ -24,14 +25,6 @@ class TimelineController extends Controller implements HasMiddleware
 
         // $this->fractal = new Fractal\Manager;
         // $this->fractal->setSerializer(new ArraySerializer);
-    }
-
-    public static function middleware(): array
-    {
-        return [
-            'auth',
-            'twofactor',
-        ];
     }
 
     public function local(Request $request): View

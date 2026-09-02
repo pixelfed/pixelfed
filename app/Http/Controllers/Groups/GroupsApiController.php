@@ -2,8 +2,6 @@
 
 namespace App\Http\Controllers\Groups;
 
-use Illuminate\Routing\Controllers\HasMiddleware;
-use Illuminate\Routing\Controllers\Middleware;
 use App\Http\Controllers\Controller;
 use App\Models\Group;
 use App\Models\GroupCategory;
@@ -12,16 +10,11 @@ use App\Services\Groups\GroupAccountService;
 use App\Services\GroupService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
+use Illuminate\Routing\Attributes\Controllers\Middleware;
 
-class GroupsApiController extends Controller implements HasMiddleware
+#[Middleware('auth')]
+class GroupsApiController extends Controller
 {
-    public static function middleware(): array
-    {
-        return [
-            'auth',
-        ];
-    }
-
     protected function toJson($group, $pid = false)
     {
         return GroupService::get($group->id, $pid);

@@ -2,8 +2,6 @@
 
 namespace App\Http\Controllers;
 
-use Illuminate\Routing\Controllers\HasMiddleware;
-use Illuminate\Routing\Controllers\Middleware;
 use App\Models\AccountLog;
 use App\Models\Follower;
 use App\Models\Like;
@@ -13,18 +11,13 @@ use App\Models\User;
 use Illuminate\Contracts\View\View;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
+use Illuminate\Routing\Attributes\Controllers\Middleware;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Cache;
 
-class SeasonalController extends Controller implements HasMiddleware
+#[Middleware('auth')]
+class SeasonalController extends Controller
 {
-    public static function middleware(): array
-    {
-        return [
-            'auth',
-        ];
-    }
-
     public function yearInReview(): View
     {
         abort_if(now()->gt('2021-03-01 00:00:00'), 404);

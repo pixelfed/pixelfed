@@ -6,26 +6,16 @@ use App\Models\Instance;
 use App\Models\Profile;
 use App\Models\User;
 use App\Util\ActivityPub\Helpers;
+use Illuminate\Console\Attributes\Description;
+use Illuminate\Console\Attributes\Signature;
 use Illuminate\Console\Command;
 use Illuminate\Support\Facades\Storage;
 use Symfony\Component\HttpKernel\Exception\HttpException;
 
+#[Signature('ap:update-actors {--force}')]
+#[Description('Send Update Actor activities to known remote servers to force updates')]
 class SendUpdateActor extends Command
 {
-    /**
-     * The name and signature of the console command.
-     *
-     * @var string
-     */
-    protected $signature = 'ap:update-actors {--force}';
-
-    /**
-     * The console command description.
-     *
-     * @var string
-     */
-    protected $description = 'Send Update Actor activities to known remote servers to force updates';
-
     /**
      * Execute the console command.
      *

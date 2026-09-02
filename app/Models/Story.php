@@ -4,6 +4,10 @@ namespace App\Models;
 
 use App\HasSnowflakePrimary;
 use App\Util\Lexer\Bearcap;
+use Illuminate\Database\Eloquent\Attributes\Hidden;
+use Illuminate\Database\Eloquent\Attributes\Table;
+use Illuminate\Database\Eloquent\Attributes\Unguarded;
+use Illuminate\Database\Eloquent\Attributes\Visible;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Support\Carbon;
@@ -22,24 +26,15 @@ use Illuminate\Support\Facades\Storage;
  * @property Carbon|null $updated_at
  * @property-read Profile $profile
  */
+#[Table(incrementing: false)]
+#[Unguarded]
+#[Visible('id')]
+#[Hidden('json')]
 class Story extends Model
 {
     use HasSnowflakePrimary;
 
     public const MAX_PER_DAY = 20;
-
-    /**
-     * Indicates if the IDs are auto-incrementing.
-     *
-     * @var bool
-     */
-    public $incrementing = false;
-
-    protected $guarded = [];
-
-    protected $visible = ['id'];
-
-    protected $hidden = ['json'];
 
     protected function casts(): array
     {

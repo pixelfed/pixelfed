@@ -6,35 +6,18 @@ use App\Models\Media;
 use App\Models\Profile;
 use App\Models\Status;
 use App\Services\MediaStorageService;
+use Illuminate\Console\Attributes\Description;
+use Illuminate\Console\Attributes\Signature;
 use Illuminate\Console\Command;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\DB;
 
+#[Signature('media:filtercleanup {--scope= : The maintenance routine to run. Supported: orphanedMedia} {--server=both : Which media to target by origin: remote, local, or both} {--status= : Filter by referenced status state: soft or hard (deleted)} {--profile= : Filter by referenced profile state: live, soft, or hard (deleted)} {--limit=1000 : Max media rows to process this run} {--dry-run : Report what would happen without detaching or deleting} {--force : Skip confirmation prompts}')]
+#[Description('Run media maintenance routines (e.g. clean up orphaned media whose status no longer exists).')]
 class MediaFilterCleanup extends Command
 {
-    /**
-     * The name and signature of the console command.
-     *
-     * @var string
-     */
-    protected $signature = 'media:filtercleanup
-        {--scope= : The maintenance routine to run. Supported: orphanedMedia}
-        {--server=both : Which media to target by origin: remote, local, or both}
-        {--status= : Filter by referenced status state: soft or hard (deleted)}
-        {--profile= : Filter by referenced profile state: live, soft, or hard (deleted)}
-        {--limit=1000 : Max media rows to process this run}
-        {--dry-run : Report what would happen without detaching or deleting}
-        {--force : Skip confirmation prompts}';
-
-    /**
-     * The console command description.
-     *
-     * @var string
-     */
-    protected $description = 'Run media maintenance routines (e.g. clean up orphaned media whose status no longer exists).';
-
     /**
      * Supported --scope values mapped to their handler methods.
      *

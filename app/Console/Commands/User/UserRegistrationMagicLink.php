@@ -4,24 +4,14 @@ namespace App\Console\Commands\User;
 
 use App\Models\EmailVerification;
 use App\Models\User;
+use Illuminate\Console\Attributes\Description;
+use Illuminate\Console\Attributes\Signature;
 use Illuminate\Console\Command;
 
+#[Signature('user:app-magic-link {--username=} {--email=}')]
+#[Description('Get the app magic link for users who register in-app but have not recieved the confirmation email')]
 class UserRegistrationMagicLink extends Command
 {
-    /**
-     * The name and signature of the console command.
-     *
-     * @var string
-     */
-    protected $signature = 'user:app-magic-link {--username=} {--email=}';
-
-    /**
-     * The console command description.
-     *
-     * @var string
-     */
-    protected $description = 'Get the app magic link for users who register in-app but have not recieved the confirmation email';
-
     /**
      * Execute the console command.
      *

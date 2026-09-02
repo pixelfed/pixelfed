@@ -16,26 +16,26 @@ use App\Util\ActivityPub\Helpers;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
+use Illuminate\Queue\Attributes\Backoff;
+use Illuminate\Queue\Attributes\DeleteWhenMissingModels;
+use Illuminate\Queue\Attributes\MaxExceptions;
+use Illuminate\Queue\Attributes\Timeout;
+use Illuminate\Queue\Attributes\Tries;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\Middleware\WithoutOverlapping;
 use Illuminate\Queue\SerializesModels;
 use Illuminate\Support\Facades\DB;
 
+#[DeleteWhenMissingModels]
+#[Timeout(30)]
+#[Tries(3)]
+#[MaxExceptions(2)]
+#[Backoff([3, 10])]
 class LikePipeline implements ShouldQueue
 {
     use Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
 
     protected $like;
-
-    public $deleteWhenMissingModels = true;
-
-    public $timeout = 30;
-
-    public $tries = 3;
-
-    public $maxExceptions = 2;
-
-    public $backoff = [3, 10];
 
     public function __construct(Like $like)
     {

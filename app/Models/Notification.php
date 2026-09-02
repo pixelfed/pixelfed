@@ -2,15 +2,15 @@
 
 namespace App\Models;
 
+use Illuminate\Database\Eloquent\Attributes\Unguarded;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\MorphTo;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
+#[Unguarded]
 class Notification extends Model
 {
     use SoftDeletes;
-
-    protected $guarded = [];
 
     protected function casts(): array
     {

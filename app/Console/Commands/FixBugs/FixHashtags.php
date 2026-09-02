@@ -4,25 +4,15 @@ namespace App\Console\Commands\FixBugs;
 
 use App\Models\Hashtag;
 use App\Models\StatusHashtag;
+use Illuminate\Console\Attributes\Description;
+use Illuminate\Console\Attributes\Signature;
 use Illuminate\Console\Command;
 use Illuminate\Support\Str;
 
+#[Signature('fix:hashtags')]
+#[Description('Fix Hashtags')]
 class FixHashtags extends Command
 {
-    /**
-     * The name and signature of the console command.
-     *
-     * @var string
-     */
-    protected $signature = 'fix:hashtags';
-
-    /**
-     * The console command description.
-     *
-     * @var string
-     */
-    protected $description = 'Fix Hashtags';
-
     /**
      * Create a new command instance.
      *

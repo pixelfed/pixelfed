@@ -4,25 +4,15 @@ namespace App\Console\Commands\Status;
 
 use App\Models\Instance;
 use App\Models\Profile;
+use Illuminate\Console\Attributes\Description;
+use Illuminate\Console\Attributes\Signature;
 use Illuminate\Console\Command;
 use Illuminate\Support\Str;
 
+#[Signature('status:instance {id : Instance id, domain (example.com), or a URL/webfinger containing a domain}')]
+#[Description('Show all metadata for a federated instance: DB columns, moderation state, sync timestamps, and related counts')]
 class StatusInstance extends Command
 {
-    /**
-     * The name and signature of the console command.
-     *
-     * @var string
-     */
-    protected $signature = 'status:instance {id : Instance id, domain (example.com), or a URL/webfinger containing a domain}';
-
-    /**
-     * The console command description.
-     *
-     * @var string
-     */
-    protected $description = 'Show all metadata for a federated instance: DB columns, moderation state, sync timestamps, and related counts';
-
     public function handle(): int
     {
         $instance = $this->resolve($this->argument('id'));

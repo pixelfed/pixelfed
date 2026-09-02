@@ -2,8 +2,6 @@
 
 namespace App\Http\Controllers\Groups;
 
-use Illuminate\Routing\Controllers\HasMiddleware;
-use Illuminate\Routing\Controllers\Middleware;
 use App\Http\Controllers\Controller;
 use App\Models\Notification;
 use App\Services\AccountService;
@@ -11,16 +9,11 @@ use App\Services\GroupService;
 use App\Services\StatusService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
+use Illuminate\Routing\Attributes\Controllers\Middleware;
 
-class GroupsNotificationsController extends Controller implements HasMiddleware
+#[Middleware('auth')]
+class GroupsNotificationsController extends Controller
 {
-    public static function middleware(): array
-    {
-        return [
-            'auth',
-        ];
-    }
-
     public function selfGlobalNotifications(Request $request): JsonResponse
     {
         abort_if(! $request->user(), 404);

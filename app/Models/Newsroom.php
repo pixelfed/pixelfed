@@ -2,14 +2,14 @@
 
 namespace App\Models;
 
+use Illuminate\Database\Eloquent\Attributes\Table;
+use Illuminate\Database\Eloquent\Attributes\Unguarded;
 use Illuminate\Database\Eloquent\Model;
 
+#[Table('newsroom')]
+#[Unguarded]
 class Newsroom extends Model
 {
-    protected $table = 'newsroom';
-
-    protected $guarded = [];
-
     protected function casts(): array
     {
         return [

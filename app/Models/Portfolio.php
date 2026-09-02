@@ -3,26 +3,14 @@
 namespace App\Models;
 
 use App\Services\AccountService;
+use Illuminate\Database\Eloquent\Attributes\Fillable;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
+#[Fillable('profile_id', 'active', 'show_captions', 'show_license', 'show_location', 'show_timestamp', 'show_link', 'show_avatar', 'show_bio', 'profile_layout', 'profile_source')]
 class Portfolio extends Model
 {
     use HasFactory;
-
-    public $fillable = [
-        'profile_id',
-        'active',
-        'show_captions',
-        'show_license',
-        'show_location',
-        'show_timestamp',
-        'show_link',
-        'show_avatar',
-        'show_bio',
-        'profile_layout',
-        'profile_source',
-    ];
 
     protected function casts(): array
     {

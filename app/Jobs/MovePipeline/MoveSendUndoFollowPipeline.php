@@ -6,11 +6,15 @@ use App\Util\ActivityPub\HttpSignature;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Queue\Queueable;
 use Illuminate\Http\Client\ConnectionException;
+use Illuminate\Queue\Attributes\MaxExceptions;
+use Illuminate\Queue\Attributes\Tries;
 use Illuminate\Queue\Middleware\ThrottlesExceptions;
 use Illuminate\Queue\Middleware\WithoutOverlapping;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Log;
 
+#[Tries(5)]
+#[MaxExceptions(3)]
 class MoveSendUndoFollowPipeline implements ShouldQueue
 {
     use Queueable;
@@ -22,20 +26,6 @@ class MoveSendUndoFollowPipeline implements ShouldQueue
     public $targetPid;
 
     public $actor;
-
-    /**
-     * The number of times the job may be attempted.
-     *
-     * @var int
-     */
-    public $tries = 5;
-
-    /**
-     * The maximum number of unhandled exceptions to allow before failing.
-     *
-     * @var int
-     */
-    public $maxExceptions = 3;
 
     /**
      * Get the middleware the job should pass through.

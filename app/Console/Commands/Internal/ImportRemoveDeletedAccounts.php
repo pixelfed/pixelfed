@@ -4,26 +4,16 @@ namespace App\Console\Commands\Internal;
 
 use App\Models\ImportPost;
 use App\Models\User;
+use Illuminate\Console\Attributes\Description;
+use Illuminate\Console\Attributes\Signature;
 use Illuminate\Console\Command;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Storage;
 
+#[Signature('app:import-remove-deleted-accounts')]
+#[Description('Command description')]
 class ImportRemoveDeletedAccounts extends Command
 {
-    /**
-     * The name and signature of the console command.
-     *
-     * @var string
-     */
-    protected $signature = 'app:import-remove-deleted-accounts';
-
-    /**
-     * The console command description.
-     *
-     * @var string
-     */
-    protected $description = 'Command description';
-
     const CACHE_KEY = 'pf:services:import:gc-accounts:skip_min_id';
 
     /**

@@ -10,11 +10,17 @@ use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
 use Illuminate\Http\Client\ConnectionException;
+use Illuminate\Queue\Attributes\MaxExceptions;
+use Illuminate\Queue\Attributes\Timeout;
+use Illuminate\Queue\Attributes\Tries;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Log;
 
+#[Timeout(300)]
+#[Tries(1)]
+#[MaxExceptions(1)]
 class DeleteWorker implements ShouldQueue
 {
     use Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
@@ -22,12 +28,6 @@ class DeleteWorker implements ShouldQueue
     protected $headers;
 
     protected $payload;
-
-    public $timeout = 300;
-
-    public $tries = 1;
-
-    public $maxExceptions = 1;
 
     /**
      * Create a new job instance.

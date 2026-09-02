@@ -8,31 +8,17 @@ use App\Services\MediaService;
 use App\Services\ResilientMediaStorageService;
 use App\Services\StatusService;
 use App\Util\Lexer\PrettyNumber;
+use Illuminate\Console\Attributes\Description;
+use Illuminate\Console\Attributes\Signature;
 use Illuminate\Console\Command;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
 
+#[Signature('admin:MediaMoveStorageLocalToCloud {--limit=500 : Max media rows to process this run} {--dry-run : Report what would happen without copying or writing} {--keep-local : Do not delete local files after verifying the cloud copy} {--force : Skip confirmation prompts}')]
+#[Description('Migrate local media to cloud storage: copy up, verify (size/sha256), update URLs, then delete the local copy. Ensures new uploads go to cloud during the migration.')]
 class MediaMoveStorageLocalToCloud extends Command
 {
     use ManagesMediaStorageEnv;
-
-    /**
-     * The name and signature of the console command.
-     *
-     * @var string
-     */
-    protected $signature = 'admin:MediaMoveStorageLocalToCloud
-        {--limit=500 : Max media rows to process this run}
-        {--dry-run : Report what would happen without copying or writing}
-        {--keep-local : Do not delete local files after verifying the cloud copy}
-        {--force : Skip confirmation prompts}';
-
-    /**
-     * The console command description.
-     *
-     * @var string
-     */
-    protected $description = 'Migrate local media to cloud storage: copy up, verify (size/sha256), update URLs, then delete the local copy. Ensures new uploads go to cloud during the migration.';
 
     protected int $movedBytes = 0;
 

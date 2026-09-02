@@ -3,25 +3,15 @@
 namespace App\Console\Commands\User;
 
 use App\Models\User;
+use Illuminate\Console\Attributes\Description;
+use Illuminate\Console\Attributes\Signature;
 use Illuminate\Console\Command;
 use Illuminate\Contracts\Console\PromptsForMissingInput;
 
+#[Signature('user:2fa {username}')]
+#[Description('Disable two factor authentication for given username')]
 class UserToggle2FA extends Command implements PromptsForMissingInput
 {
-    /**
-     * The name and signature of the console command.
-     *
-     * @var string
-     */
-    protected $signature = 'user:2fa {username}';
-
-    /**
-     * The console command description.
-     *
-     * @var string
-     */
-    protected $description = 'Disable two factor authentication for given username';
-
     /**
      * Prompt for missing input arguments using the returned questions.
      *

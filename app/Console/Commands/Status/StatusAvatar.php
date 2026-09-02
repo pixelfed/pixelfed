@@ -4,28 +4,17 @@ namespace App\Console\Commands\Status;
 
 use App\Models\Avatar;
 use App\Services\AccountService;
+use Illuminate\Console\Attributes\Description;
+use Illuminate\Console\Attributes\Signature;
 use Illuminate\Console\Command;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
 
+#[Signature('status:avatar {id : Avatar id, or a profile_id} {--check : Perform a live HEAD request against the avatar remote_url}')]
+#[Description('Show all metadata for an avatar: DB columns, storage state, owning profile, and optional live URL check')]
 class StatusAvatar extends Command
 {
-    /**
-     * The name and signature of the console command.
-     *
-     * @var string
-     */
-    protected $signature = 'status:avatar {id : Avatar id, or a profile_id}
-        {--check : Perform a live HEAD request against the avatar remote_url}';
-
-    /**
-     * The console command description.
-     *
-     * @var string
-     */
-    protected $description = 'Show all metadata for an avatar: DB columns, storage state, owning profile, and optional live URL check';
-
     public function handle(): int
     {
         $avatar = $this->resolve($this->argument('id'));

@@ -3,24 +3,14 @@
 namespace App\Console\Commands\Internal;
 
 use App\Models\EmailVerification;
+use Illuminate\Console\Attributes\Description;
+use Illuminate\Console\Attributes\Signature;
 use Illuminate\Console\Command;
 
+#[Signature('gc:passwordreset')]
+#[Description('Delete password reset tokens over 24 hours old')]
 class GarbageCollectorPasswordReset extends Command
 {
-    /**
-     * The name and signature of the console command.
-     *
-     * @var string
-     */
-    protected $signature = 'gc:passwordreset';
-
-    /**
-     * The console command description.
-     *
-     * @var string
-     */
-    protected $description = 'Delete password reset tokens over 24 hours old';
-
     /**
      * Create a new command instance.
      *

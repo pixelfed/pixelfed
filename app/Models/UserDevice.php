@@ -3,16 +3,12 @@
 namespace App\Models;
 
 use App\Services\UserAgentService;
+use Illuminate\Database\Eloquent\Attributes\Unguarded;
 use Illuminate\Database\Eloquent\Model;
 
+#[Unguarded]
 class UserDevice extends Model
 {
-    protected $guarded = [];
-
-    public $timestamps = [
-        'last_active_at',
-    ];
-
     public function user()
     {
         return $this->belongsTo(User::class);

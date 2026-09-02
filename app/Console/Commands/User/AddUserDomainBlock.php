@@ -5,28 +5,18 @@ namespace App\Console\Commands\User;
 use App\Models\DefaultDomainBlock;
 use App\Models\User;
 use App\Models\UserDomainBlock;
+use Illuminate\Console\Attributes\Description;
+use Illuminate\Console\Attributes\Signature;
 use Illuminate\Console\Command;
 
 use function Laravel\Prompts\confirm;
 use function Laravel\Prompts\progress;
 use function Laravel\Prompts\text;
 
+#[Signature('app:add-user-domain-block')]
+#[Description('Apply a domain block to all users')]
 class AddUserDomainBlock extends Command
 {
-    /**
-     * The name and signature of the console command.
-     *
-     * @var string
-     */
-    protected $signature = 'app:add-user-domain-block';
-
-    /**
-     * The console command description.
-     *
-     * @var string
-     */
-    protected $description = 'Apply a domain block to all users';
-
     /**
      * Execute the console command.
      */

@@ -5,28 +5,17 @@ namespace App\Console\Commands\Status;
 use App\Models\Media;
 use App\Models\Status;
 use App\Services\AccountService;
+use Illuminate\Console\Attributes\Description;
+use Illuminate\Console\Attributes\Signature;
 use Illuminate\Console\Command;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
 
+#[Signature('status:media {id : Media id, or a media URL/path} {--check : Perform a live HEAD request against the resolved media URL}')]
+#[Description('Show all metadata for a single media row: DB columns, computed URLs, parent status, attachment state, and cache')]
 class StatusMedia extends Command
 {
-    /**
-     * The name and signature of the console command.
-     *
-     * @var string
-     */
-    protected $signature = 'status:media {id : Media id, or a media URL/path}
-        {--check : Perform a live HEAD request against the resolved media URL}';
-
-    /**
-     * The console command description.
-     *
-     * @var string
-     */
-    protected $description = 'Show all metadata for a single media row: DB columns, computed URLs, parent status, attachment state, and cache';
-
     public function handle()
     {
         $id = $this->resolveId($this->argument('id'));

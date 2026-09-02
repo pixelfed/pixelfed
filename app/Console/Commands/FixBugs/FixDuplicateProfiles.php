@@ -28,26 +28,16 @@ use App\Models\StoryView;
 use App\Models\User;
 use App\Models\UserFilter;
 use App\Models\UserPronoun;
+use Illuminate\Console\Attributes\Description;
+use Illuminate\Console\Attributes\Signature;
 use Illuminate\Console\Command;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\DB;
 
+#[Signature('fix:profile:duplicates')]
+#[Description('Fix duplicate profiles')]
 class FixDuplicateProfiles extends Command
 {
-    /**
-     * The name and signature of the console command.
-     *
-     * @var string
-     */
-    protected $signature = 'fix:profile:duplicates';
-
-    /**
-     * The console command description.
-     *
-     * @var string
-     */
-    protected $description = 'Fix duplicate profiles';
-
     /**
      * Create a new command instance.
      *

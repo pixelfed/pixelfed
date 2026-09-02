@@ -2,8 +2,6 @@
 
 namespace App\Http\Controllers\Groups;
 
-use Illuminate\Routing\Controllers\HasMiddleware;
-use Illuminate\Routing\Controllers\Middleware;
 use App\Http\Controllers\Controller;
 use App\Jobs\GroupsPipeline\ImageResizePipeline;
 use App\Jobs\GroupsPipeline\ImageS3UploadPipeline;
@@ -25,18 +23,13 @@ use App\Services\PollService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
+use Illuminate\Routing\Attributes\Controllers\Middleware;
 use Illuminate\Support\Facades\Bus;
 use Illuminate\Support\Facades\Cache;
 
-class GroupsPostController extends Controller implements HasMiddleware
+#[Middleware('auth')]
+class GroupsPostController extends Controller
 {
-    public static function middleware(): array
-    {
-        return [
-            'auth',
-        ];
-    }
-
     public function storePost(Request $request)
     {
         $this->validate($request, [

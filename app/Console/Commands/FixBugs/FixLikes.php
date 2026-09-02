@@ -4,24 +4,14 @@ namespace App\Console\Commands\FixBugs;
 
 use App\Models\Like;
 use App\Models\Status;
+use Illuminate\Console\Attributes\Description;
+use Illuminate\Console\Attributes\Signature;
 use Illuminate\Console\Command;
 
+#[Signature('fix:likes')]
+#[Description('Fix Like counts')]
 class FixLikes extends Command
 {
-    /**
-     * The name and signature of the console command.
-     *
-     * @var string
-     */
-    protected $signature = 'fix:likes';
-
-    /**
-     * The console command description.
-     *
-     * @var string
-     */
-    protected $description = 'Fix Like counts';
-
     /**
      * Create a new command instance.
      *

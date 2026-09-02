@@ -2,14 +2,16 @@
 
 namespace App\Models;
 
+use Illuminate\Database\Eloquent\Attributes\Unguarded;
+use Illuminate\Database\Eloquent\Attributes\Visible;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
+#[Unguarded]
+#[Visible('id', 'profile_id', 'media_path', 'size')]
 class Avatar extends Model
 {
     use SoftDeletes;
-
-    protected $guarded = [];
 
     protected function casts(): array
     {
@@ -19,13 +21,6 @@ class Avatar extends Model
             'last_processed_at' => 'datetime',
         ];
     }
-
-    protected $visible = [
-        'id',
-        'profile_id',
-        'media_path',
-        'size',
-    ];
 
     public function profile()
     {

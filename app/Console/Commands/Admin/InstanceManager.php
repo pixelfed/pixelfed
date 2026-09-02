@@ -5,6 +5,8 @@ namespace App\Console\Commands\Admin;
 use App\Jobs\InstancePipeline\FetchNodeinfoPipeline;
 use App\Models\Instance;
 use App\Services\InstanceService;
+use Illuminate\Console\Attributes\Description;
+use Illuminate\Console\Attributes\Signature;
 use Illuminate\Console\Command;
 
 use function Laravel\Prompts\confirm;
@@ -13,22 +15,10 @@ use function Laravel\Prompts\search;
 use function Laravel\Prompts\select;
 use function Laravel\Prompts\table;
 
+#[Signature('app:instance-manager')]
+#[Description('Manage Instances')]
 class InstanceManager extends Command
 {
-    /**
-     * The name and signature of the console command.
-     *
-     * @var string
-     */
-    protected $signature = 'app:instance-manager';
-
-    /**
-     * The console command description.
-     *
-     * @var string
-     */
-    protected $description = 'Manage Instances';
-
     /**
      * Execute the console command.
      */

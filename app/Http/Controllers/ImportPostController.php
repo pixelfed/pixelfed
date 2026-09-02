@@ -2,8 +2,6 @@
 
 namespace App\Http\Controllers;
 
-use Illuminate\Routing\Controllers\HasMiddleware;
-use Illuminate\Routing\Controllers\Middleware;
 use App\Http\Resources\ImportStatus;
 use App\Models\Follower;
 use App\Models\ImportPost;
@@ -11,17 +9,12 @@ use App\Models\User;
 use App\Services\ImportService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
+use Illuminate\Routing\Attributes\Controllers\Middleware;
 use Illuminate\Support\Facades\Log;
 
-class ImportPostController extends Controller implements HasMiddleware
+#[Middleware('auth')]
+class ImportPostController extends Controller
 {
-    public static function middleware(): array
-    {
-        return [
-            'auth',
-        ];
-    }
-
     public function getConfig(Request $request): array
     {
         return [

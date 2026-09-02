@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use App\Services\AccountService;
+use Illuminate\Database\Eloquent\Attributes\Unguarded;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
@@ -22,11 +23,10 @@ use Illuminate\Support\Carbon;
  * @property-read User $parent
  * @property-read User $child
  */
+#[Unguarded]
 class ParentalControls extends Model
 {
     use HasFactory, SoftDeletes;
-
-    protected $guarded = [];
 
     protected function casts(): array
     {

@@ -2,8 +2,6 @@
 
 namespace App\Http\Controllers\Auth;
 
-use Illuminate\Routing\Controllers\HasMiddleware;
-use Illuminate\Routing\Controllers\Middleware;
 use App\Http\Controllers\Controller;
 use App\Models\User;
 use App\Rules\ValidUsername;
@@ -15,13 +13,15 @@ use Illuminate\Foundation\Auth\RegistersUsers;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
+use Illuminate\Routing\Attributes\Controllers\Middleware;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Str;
 use Purify;
 
-class RegisterController extends Controller implements HasMiddleware
+#[Middleware('guest')]
+class RegisterController extends Controller
 {
     /*
     |--------------------------------------------------------------------------
@@ -42,13 +42,6 @@ class RegisterController extends Controller implements HasMiddleware
      * @var string
      */
     protected $redirectTo = '/i/web';
-
-    public static function middleware(): array
-    {
-        return [
-            'guest',
-        ];
-    }
 
     public function getRegisterToken()
     {

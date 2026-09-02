@@ -2,17 +2,17 @@
 
 namespace App\Http\Controllers\Auth;
 
-use Illuminate\Routing\Controllers\HasMiddleware;
-use Illuminate\Routing\Controllers\Middleware;
 use App\Http\Controllers\Controller;
 use App\Services\BouncerService;
 use Illuminate\Foundation\Auth\SendsPasswordResetEmails;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
+use Illuminate\Routing\Attributes\Controllers\Middleware;
 use Illuminate\Validation\ValidationException;
 use Illuminate\View\View;
 
-class ForgotPasswordController extends Controller implements HasMiddleware
+#[Middleware('guest')]
+class ForgotPasswordController extends Controller
 {
     /*
     |--------------------------------------------------------------------------
@@ -26,13 +26,6 @@ class ForgotPasswordController extends Controller implements HasMiddleware
     */
 
     use SendsPasswordResetEmails;
-
-    public static function middleware(): array
-    {
-        return [
-            'guest',
-        ];
-    }
 
     /**
      * Display the form to request a password reset link.

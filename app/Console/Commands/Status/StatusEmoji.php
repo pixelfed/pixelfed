@@ -3,28 +3,17 @@
 namespace App\Console\Commands\Status;
 
 use App\Models\CustomEmoji;
+use Illuminate\Console\Attributes\Description;
+use Illuminate\Console\Attributes\Signature;
 use Illuminate\Console\Command;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
 
+#[Signature('status:emoji {id : Custom emoji id, shortcode (:blobcat:), or media filename (1234.png)} {--check : Perform a live HEAD request against the emoji image_remote_url}')]
+#[Description('Show all metadata for a custom emoji: DB columns, origin, and local storage state')]
 class StatusEmoji extends Command
 {
-    /**
-     * The name and signature of the console command.
-     *
-     * @var string
-     */
-    protected $signature = 'status:emoji {id : Custom emoji id, shortcode (:blobcat:), or media filename (1234.png)}
-        {--check : Perform a live HEAD request against the emoji image_remote_url}';
-
-    /**
-     * The console command description.
-     *
-     * @var string
-     */
-    protected $description = 'Show all metadata for a custom emoji: DB columns, origin, and local storage state';
-
     public function handle(): int
     {
         $emoji = $this->resolve($this->argument('id'));

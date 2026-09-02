@@ -7,10 +7,14 @@ use DateTime;
 use Exception;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Queue\Queueable;
+use Illuminate\Queue\Attributes\MaxExceptions;
+use Illuminate\Queue\Attributes\Tries;
 use Illuminate\Queue\Middleware\ThrottlesExceptions;
 use Illuminate\Queue\Middleware\WithoutOverlapping;
 use Illuminate\Support\Facades\DB;
 
+#[Tries(6)]
+#[MaxExceptions(3)]
 class UnfollowLegacyAccountMovePipeline implements ShouldQueue
 {
     use Queueable;
@@ -18,20 +22,6 @@ class UnfollowLegacyAccountMovePipeline implements ShouldQueue
     public $target;
 
     public $activity;
-
-    /**
-     * The number of times the job may be attempted.
-     *
-     * @var int
-     */
-    public $tries = 6;
-
-    /**
-     * The maximum number of unhandled exceptions to allow before failing.
-     *
-     * @var int
-     */
-    public $maxExceptions = 3;
 
     /**
      * Create a new job instance.

@@ -25,23 +25,23 @@ use App\Services\AccountService;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
+use Illuminate\Queue\Attributes\DeleteWhenMissingModels;
+use Illuminate\Queue\Attributes\MaxExceptions;
+use Illuminate\Queue\Attributes\Timeout;
+use Illuminate\Queue\Attributes\Tries;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
 use Illuminate\Support\Facades\Log;
 
+#[Timeout(900)]
+#[Tries(3)]
+#[MaxExceptions(1)]
+#[DeleteWhenMissingModels]
 class DeleteRemoteProfilePipeline implements ShouldQueue
 {
     use Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
 
     protected $profile;
-
-    public $timeout = 900;
-
-    public $tries = 3;
-
-    public $maxExceptions = 1;
-
-    public $deleteWhenMissingModels = true;
 
     public function __construct(Profile $profile)
     {

@@ -2,14 +2,14 @@
 
 namespace App\Models;
 
+use Illuminate\Database\Eloquent\Attributes\Unguarded;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
+#[Unguarded]
 class Mention extends Model
 {
     use SoftDeletes;
-
-    protected $guarded = [];
 
     protected function casts(): array
     {

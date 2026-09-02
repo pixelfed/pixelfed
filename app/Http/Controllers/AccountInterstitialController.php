@@ -2,23 +2,16 @@
 
 namespace App\Http\Controllers;
 
-use Illuminate\Routing\Controllers\HasMiddleware;
-use Illuminate\Routing\Controllers\Middleware;
 use App\Models\AccountInterstitial;
 use App\Models\Status;
 use Illuminate\Contracts\View\View;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
+use Illuminate\Routing\Attributes\Controllers\Middleware;
 
-class AccountInterstitialController extends Controller implements HasMiddleware
+#[Middleware('auth')]
+class AccountInterstitialController extends Controller
 {
-    public static function middleware(): array
-    {
-        return [
-            'auth',
-        ];
-    }
-
     public function get(Request $request): RedirectResponse|View
     {
         $interstitial = $request->user()

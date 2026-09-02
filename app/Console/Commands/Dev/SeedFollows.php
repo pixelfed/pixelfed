@@ -6,24 +6,14 @@ use App\Jobs\FollowPipeline\FollowPipeline;
 use App\Models\Follower;
 use App\Models\Profile;
 use Exception;
+use Illuminate\Console\Attributes\Description;
+use Illuminate\Console\Attributes\Signature;
 use Illuminate\Console\Command;
 
+#[Signature('seed:follows')]
+#[Description('Seed follows for testing')]
 class SeedFollows extends Command
 {
-    /**
-     * The name and signature of the console command.
-     *
-     * @var string
-     */
-    protected $signature = 'seed:follows';
-
-    /**
-     * The console command description.
-     *
-     * @var string
-     */
-    protected $description = 'Seed follows for testing';
-
     /**
      * Create a new command instance.
      *

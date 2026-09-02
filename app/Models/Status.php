@@ -6,6 +6,8 @@ use App\HasSnowflakePrimary;
 use App\Http\Controllers\StatusController;
 use App\Services\AccountService;
 use App\Services\StatusService;
+use Illuminate\Database\Eloquent\Attributes\Table;
+use Illuminate\Database\Eloquent\Attributes\Unguarded;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
@@ -44,18 +46,11 @@ use Illuminate\Support\Str;
  * @property-read Collection<int, Media> $media
  * @property-read Collection<int, Mention> $mentions
  */
+#[Table(incrementing: false)]
+#[Unguarded]
 class Status extends Model
 {
     use HasFactory, HasSnowflakePrimary, SoftDeletes;
-
-    /**
-     * Indicates if the IDs are auto-incrementing.
-     *
-     * @var bool
-     */
-    public $incrementing = false;
-
-    protected $guarded = [];
 
     protected function casts(): array
     {

@@ -6,24 +6,14 @@ use App\Jobs\StoryPipeline\StoryExpire;
 use App\Jobs\StoryPipeline\StoryRotateMedia;
 use App\Models\Story;
 use App\Services\StoryService;
+use Illuminate\Console\Attributes\Description;
+use Illuminate\Console\Attributes\Signature;
 use Illuminate\Console\Command;
 
+#[Signature('story:gc')]
+#[Description('Clear expired Stories')]
 class GarbageCollectorStory extends Command
 {
-    /**
-     * The name and signature of the console command.
-     *
-     * @var string
-     */
-    protected $signature = 'story:gc';
-
-    /**
-     * The console command description.
-     *
-     * @var string
-     */
-    protected $description = 'Clear expired Stories';
-
     /**
      * Create a new command instance.
      *

@@ -6,6 +6,8 @@ use App\Models\Instance;
 use App\Models\Profile;
 use App\Models\User;
 use App\Util\ActivityPub\HttpSignature;
+use Illuminate\Console\Attributes\Description;
+use Illuminate\Console\Attributes\Signature;
 use Illuminate\Console\Command;
 use Illuminate\Http\Client\PendingRequest;
 use Illuminate\Http\Client\Pool;
@@ -18,18 +20,10 @@ use function Laravel\Prompts\confirm;
 use function Laravel\Prompts\search;
 use function Laravel\Prompts\table;
 
+#[Signature('app:user-account-delete {--concurrency=50 : Number of concurrent deliveries} {--chunk=500 : Number of inbox rows to process per DB chunk} {--attempts=2 : Max attempts for retryable failures} {--target= : Send to a single inbox URL for debugging} {--verbose-errors : Log each failure to console} {--dry-run : Build payload and audience, but do not send}')]
+#[Description('Federate Account Deletion')]
 class UserAccountDelete extends Command
 {
-    protected $signature = 'app:user-account-delete
-        {--concurrency=50 : Number of concurrent deliveries}
-        {--chunk=500 : Number of inbox rows to process per DB chunk}
-        {--attempts=2 : Max attempts for retryable failures}
-        {--target= : Send to a single inbox URL for debugging}
-        {--verbose-errors : Log each failure to console}
-        {--dry-run : Build payload and audience, but do not send}';
-
-    protected $description = 'Federate Account Deletion';
-
     public function handle(): int
     {
         $user = $this->promptForDeletedUser();

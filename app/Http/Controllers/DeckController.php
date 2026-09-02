@@ -2,19 +2,12 @@
 
 namespace App\Http\Controllers;
 
-use Illuminate\Routing\Controllers\HasMiddleware;
-use Illuminate\Routing\Controllers\Middleware;
 use Illuminate\Contracts\View\View;
+use Illuminate\Routing\Attributes\Controllers\Middleware;
 
-class DeckController extends Controller implements HasMiddleware
+#[Middleware('auth')]
+class DeckController extends Controller
 {
-    public static function middleware(): array
-    {
-        return [
-            'auth',
-        ];
-    }
-
     public function home(): View
     {
         return view('deck.index');
