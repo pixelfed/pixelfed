@@ -4,7 +4,7 @@ namespace App\Services;
 
 use App\Jobs\InternalPipeline\NotificationEpochUpdatePipeline;
 use App\Models\Notification;
-use App\Status;
+use App\Models\Status;
 use App\Transformer\Api\NotificationTransformer;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Log;

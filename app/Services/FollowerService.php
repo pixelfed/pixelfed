@@ -79,6 +79,23 @@ class FollowerService
         return Redis::zrevrange(self::FOLLOWING_KEY.$id, $start, $stop);
     }
 
+    /**
+     * Return the profile ids a profile follows, including the profile's own
+     * id, as an array. Cached under the 'profile:following:{pid}' key, which
+     * is invalidated by add()/remove().
+     *
+     * @return array<int, int>
+     */
+    public static function getFollowingIds($pid)
+    {
+        return Cache::remember('profile:following:'.$pid, 1209600, function () use ($pid) {
+            return Follower::whereProfileId($pid)
+                ->pluck('following_id')
+                ->push($pid)
+                ->toArray();
+        });
+    }
+
     public static function followersPaginate($id, $page = 1, $limit = 10)
     {
         $start = $page == 1 ? 0 : $page * $limit - $limit;

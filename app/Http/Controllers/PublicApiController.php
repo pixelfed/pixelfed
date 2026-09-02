@@ -2,7 +2,6 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Follower;
 use App\Models\Profile;
 use App\Models\Status;
 use App\Services\AccountService;
@@ -390,11 +389,7 @@ class PublicApiController extends Controller
 
         $pid = $user->profile_id;
 
-        $following = Cache::remember('profile:following:'.$pid, 1209600, function () use ($pid) {
-            $following = Follower::whereProfileId($pid)->pluck('following_id');
-
-            return $following->push($pid)->toArray();
-        });
+        $following = FollowerService::getFollowingIds($pid);
 
         $filtered = $user ? UserFilterService::filters($user->profile_id) : [];
         $types = ['photo', 'photo:album', 'video', 'video:album', 'photo:video:album'];

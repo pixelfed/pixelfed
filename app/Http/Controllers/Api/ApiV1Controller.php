@@ -2727,11 +2727,7 @@ class ApiV1Controller extends Controller
             return $this->json($res->toArray(), 200, $headers);
         }
 
-        $following = Cache::remember('profile:following:'.$pid, 1209600, function () use ($pid) {
-            $following = Follower::whereProfileId($pid)->pluck('following_id');
-
-            return $following->push($pid)->toArray();
-        });
+        $following = FollowerService::getFollowingIds($pid);
 
         $muted = UserFilterService::mutes($pid);
 
