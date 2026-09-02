@@ -9,8 +9,21 @@ updates:
     open-pull-requests-limit: 10
     versioning-strategy: "increase-if-necessary"
     labels:
-      - "dependencies"
       - "composer"
+    commit-message:
+      prefix: "chore(deps)"
+      include: "scope"
+
+  - package-ecosystem: "npm"
+    directory: "/"
+    target-branch: "staging"
+    schedule:
+      interval: "weekly"
+      day: "monday"
+    open-pull-requests-limit: 10
+    versioning-strategy: "increase-if-necessary"
+    labels:
+      - "npm"
     commit-message:
       prefix: "chore(deps)"
       include: "scope"
