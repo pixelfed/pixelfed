@@ -800,6 +800,7 @@ class ApiV1Controller extends Controller
             'since_id' => 'nullable|integer|min:0|max:'.PHP_INT_MAX,
             'min_id' => 'nullable|integer|min:0|max:'.PHP_INT_MAX,
             'limit' => 'nullable|integer|min:1',
+            'only_reposts' => 'nullable',
         ]);
 
         $napi = $request->has(self::PF_API_ENTITY_KEY);
@@ -826,14 +827,20 @@ class ApiV1Controller extends Controller
         }
 
         $pid = $request->user()->profile_id;
-        $scope = $request->only_media == true ?
-            ['photo', 'photo:album', 'video', 'video:album'] :
-            ['photo', 'photo:album', 'video', 'video:album', 'share', 'reply'];
+        $onlyReblogs = $request->boolean('only_reposts');
 
-        if ($request->only_media && $request->has('media_type')) {
-            $mt = $request->input('media_type');
-            if ($mt == 'video') {
-                $scope = ['video', 'video:album'];
+        if ($onlyReblogs) {
+            $scope = ['share'];
+        } else {
+            $scope = $request->only_media == true ?
+                ['photo', 'photo:album', 'video', 'video:album'] :
+                ['photo', 'photo:album', 'video', 'video:album', 'share', 'reply'];
+
+            if ($request->only_media && $request->has('media_type')) {
+                $mt = $request->input('media_type');
+                if ($mt == 'video') {
+                    $scope = ['video', 'video:album'];
+                }
             }
         }
 
@@ -852,7 +859,8 @@ class ApiV1Controller extends Controller
 
         $dir = $min_id !== null ? '>' : '<';
         $id = $min_id ?? $max_id;
-        $res = Status::select(
+
+        $query = Status::select(
             'profile_id',
             'in_reply_to_id',
             'reblog_of_id',
@@ -863,17 +871,28 @@ class ApiV1Controller extends Controller
         )
             ->whereProfileId($profile['id'])
             ->whereNull('in_reply_to_id')
-            ->whereNull('reblog_of_id')
             ->whereIn('type', $scope)
             ->where('id', $dir, $id)
             ->whereIn('scope', $visibility)
             ->limit($limit)
-            ->orderByDesc('id')
+            ->orderByDesc('id');
+
+        if ($onlyReblogs) {
+            $query->whereNotNull('reblog_of_id');
+        } else {
+            $query->whereNull('reblog_of_id');
+        }
+
+        $res = $query
             ->get()
-            ->map(function ($s) use ($user, $napi, $profile) {
+            ->map(function ($s) use ($user, $napi, $profile, $onlyReblogs) {
                 try {
                     $status = $napi ? StatusService::get($s->id, false) : StatusService::getMastodon($s->id, false);
                 } catch (\Exception $e) {
+                    return false;
+                }
+
+                if (! $status) {
                     return false;
                 }
 
@@ -881,10 +900,31 @@ class ApiV1Controller extends Controller
                     $status['account'] = $profile;
                 }
 
-                if ($user && $status) {
-                    $status['favourited'] = (bool) LikeService::liked($user->profile_id, $s->id);
-                    $status['reblogged'] = (bool) ReblogService::get($user->profile_id, $s->id);
-                    $status['bookmarked'] = (bool) BookmarkService::get($user->profile_id, $s->id);
+                $interactionId = $s->id;
+
+                if ($onlyReblogs) {
+                    try {
+                        $reblog = $napi ? StatusService::get($s->reblog_of_id, false) : StatusService::getMastodon($s->reblog_of_id, false);
+                    } catch (\Exception $e) {
+                        return false;
+                    }
+
+                    if (
+                        ! $reblog ||
+                        ! isset($reblog['account']['id']) ||
+                        ! in_array($reblog['visibility'] ?? null, ['public', 'unlisted'])
+                    ) {
+                        return false;
+                    }
+
+                    $status['reblog'] = $reblog;
+                    $interactionId = $s->reblog_of_id;
+                }
+
+                if ($user) {
+                    $status['favourited'] = (bool) LikeService::liked($user->profile_id, $interactionId);
+                    $status['reblogged'] = (bool) ReblogService::get($user->profile_id, $interactionId);
+                    $status['bookmarked'] = (bool) BookmarkService::get($user->profile_id, $interactionId);
                 }
 
                 return $status;
