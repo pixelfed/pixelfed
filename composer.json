@@ -26,7 +26,7 @@
         "laravel/passport": "^13.4.4",
         "laravel/pulse": "^1.3",
         "laravel/sanctum": "^4.3",
-        "laravel/tinker": "^2.9",
+        "laravel/tinker": "^3.0",
         "laravel/ui": "^4.2",
         "league/flysystem-aws-s3-v3": "^3.0",
         "league/iso3166": "^2.1|^4.0",
