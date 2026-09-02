@@ -49,7 +49,7 @@ class GroupPostService
     {
         $gid = $request->input('gid');
         $sid = $request->input('sid');
-        $pid = optional($request->user())->profile_id ?? false;
+        $pid = $request->user()?->profile_id ?? false;
 
         $group = Group::findOrFail($gid);
 

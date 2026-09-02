@@ -37,7 +37,7 @@ class CustomEmoji extends Model
                         'id' => $emoji->id,
                         'shortcode' => $emoji->shortcode,
                         'media_path' => $emoji->media_path,
-                        'updated_at' => optional($emoji->updated_at)->toAtomString(),
+                        'updated_at' => $emoji->updated_at?->toAtomString(),
                         'disabled' => $emoji->disabled,
                     ];
                 });

@@ -113,7 +113,7 @@
 					<td class="font-weight-bold">{{$story->type}}</td>
 					<td class="font-weight-bold">{{$story->view_count ?? 0}}</td>
 					<td class="font-weight-bold">{{$story->created_at->diffForHumans(null, true, true, true)}}</td>
-					<td class="font-weight-bold">{{optional($story->expires_at)->diffForHumans(null, true, true, true)}}</td>
+					<td class="font-weight-bold">{{$story->expires_at?->diffForHumans(null, true, true, true)}}</td>
 					<td class="text-right">
 						<div class="dropdown">
 							<a class="btn btn-sm btn-icon-only text-light" href="#" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">

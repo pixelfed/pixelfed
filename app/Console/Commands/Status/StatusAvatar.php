@@ -52,7 +52,7 @@ class StatusAvatar extends Command
             ['cdn_url', $avatar->cdn_url ?? 'null'],
             ['remote_url', $avatar->remote_url ?? 'null'],
             ['size', $avatar->size ?? 'null'],
-            ['last_fetched_at', optional($avatar->last_fetched_at)->toDateTimeString() ?? 'null'],
+            ['last_fetched_at', $avatar->last_fetched_at?->toDateTimeString() ?? 'null'],
         ]);
 
         if ($avatar->media_path && ! Str::startsWith($avatar->media_path, 'http')) {

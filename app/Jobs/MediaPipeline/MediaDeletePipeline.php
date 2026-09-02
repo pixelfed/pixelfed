@@ -85,8 +85,8 @@ class MediaDeletePipeline implements ShouldBeUniqueUntilProcessing, ShouldQueue
                 'thumbnail_path' => $media->thumbnail_path,
                 'hls_path' => $media->hls_path,
                 'remote_media' => (bool) $media->remote_media,
-                'created_at' => optional($media->created_at)->toDateTimeString(),
-                'updated_at' => optional($media->updated_at)->toDateTimeString(),
+                'created_at' => $media->created_at?->toDateTimeString(),
+                'updated_at' => $media->updated_at?->toDateTimeString(),
             ]);
 
             return 1;

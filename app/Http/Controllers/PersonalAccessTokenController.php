@@ -141,9 +141,9 @@ class PersonalAccessTokenController extends Controller
             'name' => $token->name,
             'scopes' => $token->scopes ?? [],
             'revoked' => (bool) $token->revoked,
-            'created_at' => optional($token->created_at)->toJSON(),
-            'updated_at' => optional($token->updated_at)->toJSON(),
-            'expires_at' => optional($token->expires_at)->toJSON(),
+            'created_at' => $token->created_at?->toJSON(),
+            'updated_at' => $token->updated_at?->toJSON(),
+            'expires_at' => $token->expires_at?->toJSON(),
         ];
     }
 
