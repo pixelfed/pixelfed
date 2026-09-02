@@ -40,6 +40,7 @@ use App\Http\Controllers\Stories\StoryApiV1Controller;
 use App\Http\Controllers\StoryController;
 use App\Http\Controllers\UserAppSettingsController;
 use App\Http\Controllers\VinylHubAccountEdgeController;
+use App\Http\Controllers\VinylHubStatusOperationController;
 
 $middleware = ['auth:sanctum,api', 'validemail'];
 
@@ -52,6 +53,11 @@ Route::prefix('api/v1/internal/vinylhub/account-edge')->middleware('vinylhub.ser
     Route::post('resume', [VinylHubAccountEdgeController::class, 'resume']);
     Route::post('delete', [VinylHubAccountEdgeController::class, 'delete']);
     Route::post('delete-status', [VinylHubAccountEdgeController::class, 'deleteStatus']);
+});
+
+Route::prefix('api/v1/internal/vinylhub/status-operation')->middleware('vinylhub.service')->group(function () {
+    Route::post('create', [VinylHubStatusOperationController::class, 'create']);
+    Route::post('read', [VinylHubStatusOperationController::class, 'read']);
 });
 
 Route::post('/f/inbox', [FederationController::class, 'sharedInbox']);
