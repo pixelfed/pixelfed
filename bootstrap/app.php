@@ -25,7 +25,7 @@ use Illuminate\Http\Request;
 use Illuminate\Foundation\Http\Middleware\ConvertEmptyStringsToNull;
 use Illuminate\Foundation\Http\Middleware\PreventRequestsDuringMaintenance;
 use Illuminate\Foundation\Http\Middleware\TrimStrings;
-use Illuminate\Foundation\Http\Middleware\ValidateCsrfToken;
+use Illuminate\Foundation\Http\Middleware\PreventRequestForgery;
 use Illuminate\Foundation\Http\Middleware\ValidatePostSize;
 use Illuminate\Http\Client\ConnectionException;
 use Illuminate\Http\Exceptions\HttpResponseException;
@@ -85,7 +85,7 @@ return Application::configure(basePath: dirname(__DIR__))
             StartSession::class,
             AuthenticateSession::class,
             ShareErrorsFromSession::class,
-            ValidateCsrfToken::class,
+            PreventRequestForgery::class,
             SubstituteBindings::class,
             CreateFreshApiToken::class,
             'restricted',
@@ -97,7 +97,7 @@ return Application::configure(basePath: dirname(__DIR__))
             AddQueuedCookiesToResponse::class,
             StartSession::class,
             ShareErrorsFromSession::class,
-            ValidateCsrfToken::class,
+            PreventRequestForgery::class,
             SubstituteBindings::class,
             CreateFreshApiToken::class,
         ]);
@@ -109,7 +109,7 @@ return Application::configure(basePath: dirname(__DIR__))
             GrantFirstPartyToken::class,
         ]);
 
-        $middleware->validateCsrfTokens(except: [
+        $middleware->preventRequestForgery(except: [
             'oauth/token',
         ]);
 
