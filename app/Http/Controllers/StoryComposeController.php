@@ -323,14 +323,6 @@ class StoryComposeController extends Controller
         return view('stories.compose');
     }
 
-    public function createPoll(Request $request)
-    {
-        abort_if(! (bool) config_cache('instance.stories.enabled') || ! $request->user(), 404);
-        abort_if(! config('instance.polls.enabled'), 404);
-
-        return $request->all();
-    }
-
     public function publishStoryPoll(Request $request): array
     {
         abort_if(! (bool) config_cache('instance.stories.enabled') || ! $request->user(), 404);
