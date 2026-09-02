@@ -243,6 +243,7 @@ class SearchController extends Controller
                 $users = Profile::select('status', 'domain', 'username', 'name', 'id')
                     ->whereNull('status')
                     ->where('username', 'like', '%'.$tag.'%')
+                    ->with('avatar')
                     ->limit(20)
                     ->orderBy('domain')
                     ->get();

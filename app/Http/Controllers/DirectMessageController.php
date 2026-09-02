@@ -57,7 +57,7 @@ class DirectMessageController extends Controller
         $baseQuery = DirectMessage::select(
             'id', 'type', 'to_id', 'from_id', 'status_id',
             'is_hidden', 'meta', 'created_at', 'read_at'
-        )->with(['author', 'status', 'recipient']);
+        )->with(['author.avatar', 'status', 'recipient.avatar']);
 
         if (config('database.default') == 'pgsql') {
             $query = match ($action) {

@@ -400,10 +400,15 @@ class AccountController extends Controller
     public function followRequestsJson(Request $request): JsonResponse
     {
         $pid = $request->user()->profile_id;
-        $followers = FollowRequest::whereFollowingId($pid)->orderBy('id', 'desc')->whereIsRejected(0)->get();
+        $baseQuery = FollowRequest::whereFollowingId($pid)->whereIsRejected(0);
+        $followers = (clone $baseQuery)
+            ->with('actor.avatar')
+            ->orderBy('id', 'desc')
+            ->take(10)
+            ->get();
         $res = [
-            'count' => $followers->count(),
-            'accounts' => $followers->take(10)->map(function ($a) {
+            'count' => $baseQuery->count(),
+            'accounts' => $followers->map(function ($a) {
                 $actor = $a->actor;
 
                 return [
