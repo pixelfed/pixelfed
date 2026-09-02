@@ -8,6 +8,7 @@ use Illuminate\Http\JsonResponse;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Cache;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Str;
 
 class AvatarController extends Controller
@@ -44,6 +45,14 @@ class AvatarController extends Controller
             Cache::forget('user:account:id:'.$user->id);
             AvatarOptimize::dispatch($user->profile, $currentAvatar);
         } catch (\Exception $e) {
+            Log::error('AvatarController@store failed: '.$e->getMessage(), [
+                'user_id' => $request->user()?->id,
+                'exception' => $e,
+            ]);
+
+            return redirect()->back()->withErrors([
+                'avatar' => 'There was an error updating your avatar. Please try again.',
+            ]);
         }
 
         return redirect()->back()->with('status', 'Avatar updated successfully. It may take a few minutes to update across the site.');

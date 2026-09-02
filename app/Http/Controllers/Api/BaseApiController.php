@@ -18,6 +18,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
 use League\Fractal;
 use League\Fractal\Serializer\ArraySerializer;
 
@@ -109,6 +110,15 @@ class BaseApiController extends Controller
             Cache::forget("avatar:{$profile->id}");
             AvatarOptimize::dispatch($user->profile, $currentAvatar);
         } catch (\Exception $e) {
+            Log::error('BaseApiController@avatarUpdate failed: '.$e->getMessage(), [
+                'user_id' => $request->user()?->id,
+                'exception' => $e,
+            ]);
+
+            return response()->json([
+                'code' => 500,
+                'msg' => 'There was an error updating your avatar. Please try again.',
+            ], 500);
         }
 
         return response()->json([
