@@ -13,14 +13,12 @@ class VinylHubAccountEdgeController extends Controller
         $data = $request->validate([
             'external_subject' => ['required', 'string', 'max:255'],
             'technical_handle' => ['required', 'string', 'regex:/^vh[a-z0-9]+$/', 'min:3', 'max:30'],
-            'technical_email' => ['required', 'string', 'email:strict', 'max:255'],
             'display_seed' => ['nullable', 'string', 'max:255'],
         ]);
 
         return response()->json($service->provision(
             $data['external_subject'],
             $data['technical_handle'],
-            $data['technical_email'],
             $data['display_seed'] ?? null,
         ));
     }

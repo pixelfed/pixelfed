@@ -12,6 +12,7 @@ use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Queue;
 use Illuminate\Support\Facades\Redis;
+use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Str;
 
 uses(RefreshDatabase::class);
@@ -52,7 +53,6 @@ it('rejects ordinary callers and accepts the confidential service caller', funct
     $payload = [
         'external_subject' => 'oneid-subject-authorization',
         'technical_handle' => 'vhabc123',
-        'technical_email' => 'vhabc123@community.invalid',
         'display_seed' => 'VinylHub account',
     ];
 
@@ -68,7 +68,6 @@ it('provisions one owner identity and reuses it on repeat', function () {
     $payload = [
         'external_subject' => 'oneid-subject-repeat',
         'technical_handle' => 'vhrepeat123',
-        'technical_email' => 'vhrepeat123@community.invalid',
         'display_seed' => 'Repeat account',
     ];
 
@@ -88,6 +87,53 @@ it('provisions one owner identity and reuses it on repeat', function () {
     expect(Profile::where('username', $payload['technical_handle'])->count())->toBe(1);
     expect($firstData['credential']['scopes'])->toBe(['read', 'write', 'follow']);
     expect(collect($firstData['credential']['scopes'])->contains(fn ($scope) => str_starts_with($scope, 'admin:')))->toBeFalse();
+});
+
+it('derives an internal non-delivery email and ignores legacy caller input', function () {
+    $payload = [
+        'external_subject' => 'opaque-managed-subject',
+        'technical_handle' => 'vhinternal123',
+        'display_seed' => 'Private Source Name',
+    ];
+
+    $first = edgeRequest($this, 'postJson', '/api/v1/internal/vinylhub/account-edge/provision', $payload)
+        ->assertOk();
+    $firstData = $first->json();
+    $user = User::findOrFail($firstData['user_id']);
+
+    $legacy = edgeRequest($this, 'postJson', '/api/v1/internal/vinylhub/account-edge/provision', [
+        ...$payload,
+        'technical_email' => 'person@example.com',
+    ])->assertOk();
+
+    expect($user->email)->toBe('vhinternal123@community.invalid');
+    expect(Validator::make(['email' => $user->email], [
+        'email' => ['required', 'string', 'email:strict', 'max:255'],
+    ])->passes())->toBeTrue();
+    expect($user->email)->not->toBe('person@example.com');
+    expect($user->email)->not->toContain('Private Source Name');
+    expect($user->email)->not->toContain('opaque-managed-subject');
+    expect($firstData)->not->toHaveKey('email');
+    expect($legacy->json('user_id'))->toBe($user->id);
+});
+
+it('keeps native compatibility emails unique for distinct managed identities', function () {
+    $first = edgeRequest($this, 'postJson', '/api/v1/internal/vinylhub/account-edge/provision', [
+        'external_subject' => 'opaque-managed-first',
+        'technical_handle' => 'vhmanagedfirst',
+    ])->assertOk();
+    $second = edgeRequest($this, 'postJson', '/api/v1/internal/vinylhub/account-edge/provision', [
+        'external_subject' => 'opaque-managed-second',
+        'technical_handle' => 'vhmanagedsecond',
+    ])->assertOk();
+
+    $firstUser = User::findOrFail($first->json('user_id'));
+    $secondUser = User::findOrFail($second->json('user_id'));
+
+    expect($firstUser->email)->toBe('vhmanagedfirst@community.invalid');
+    expect($secondUser->email)->toBe('vhmanagedsecond@community.invalid');
+    expect($firstUser->email)->not->toBe($secondUser->email);
+    expect(User::whereIn('id', [$firstUser->id, $secondUser->id])->count())->toBe(2);
 });
 
 it('converges when another writer wins the mapping race', function () {
@@ -116,7 +162,6 @@ it('converges when another writer wins the mapping race', function () {
     $response = edgeRequest($this, 'postJson', '/api/v1/internal/vinylhub/account-edge/provision', [
         'external_subject' => $subject,
         'technical_handle' => 'vhracecaller',
-        'technical_email' => 'vhracecaller@community.invalid',
     ])->assertOk();
 
     expect($injected)->toBeTrue();
@@ -129,7 +174,6 @@ it('does not use source PII for the technical owner identity', function () {
     $response = edgeRequest($this, 'postJson', '/api/v1/internal/vinylhub/account-edge/provision', [
         'external_subject' => 'wechat-subject-opaque',
         'technical_handle' => 'vhopaque987',
-        'technical_email' => 'vhopaque987@community.invalid',
         'display_seed' => 'Mutable nickname',
     ])->assertOk();
 
@@ -162,7 +206,6 @@ it('repairs a mapped user with a missing profile before any repeat create', func
     edgeRequest($this, 'postJson', '/api/v1/internal/vinylhub/account-edge/provision', [
         'external_subject' => 'oneid-subject-repair',
         'technical_handle' => 'vhrepair123',
-        'technical_email' => 'vhrepair123@community.invalid',
         'display_seed' => 'Repair seed',
     ])->assertOk()->assertJsonPath('user_id', $user->id);
 
@@ -185,7 +228,6 @@ it('supports credential renewal and revocation without admin scopes', function (
     $payload = [
         'external_subject' => 'oneid-subject-token',
         'technical_handle' => 'vhtoken123',
-        'technical_email' => 'vhtoken123@community.invalid',
     ];
 
     $first = edgeRequest($this, 'postJson', '/api/v1/internal/vinylhub/account-edge/provision', $payload)->assertOk();
@@ -208,7 +250,6 @@ it('suspends, resumes, and deletes by stable service mapping', function () {
     $payload = [
         'external_subject' => 'oneid-subject-lifecycle',
         'technical_handle' => 'vhlifecycle123',
-        'technical_email' => 'vhlifecycle123@community.invalid',
     ];
 
     edgeRequest($this, 'postJson', '/api/v1/internal/vinylhub/account-edge/provision', $payload)->assertOk();
@@ -235,7 +276,6 @@ it('retains terminal delete readback after native deletion and session removal',
     $payload = [
         'external_subject' => $subject,
         'technical_handle' => 'vhterminaldelete',
-        'technical_email' => 'vhterminaldelete@community.invalid',
     ];
 
     $provision = edgeRequest($this, 'postJson', '/api/v1/internal/vinylhub/account-edge/provision', $payload)->assertOk();

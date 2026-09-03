@@ -30,7 +30,7 @@ class VinylHubAccountEdgeService
 
     public function __construct(protected AccountInitializer $initializer) {}
 
-    public function provision(string $externalSubject, string $technicalHandle, string $technicalEmail, ?string $displaySeed): array
+    public function provision(string $externalSubject, string $technicalHandle, ?string $displaySeed): array
     {
         $mapping = UserOidcMapping::where('oidc_id', $externalSubject)->first();
 
@@ -39,7 +39,7 @@ class VinylHubAccountEdgeService
         }
 
         try {
-            return DB::transaction(function () use ($externalSubject, $technicalHandle, $technicalEmail, $displaySeed) {
+            return DB::transaction(function () use ($externalSubject, $technicalHandle, $displaySeed) {
                 $mapping = UserOidcMapping::where('oidc_id', $externalSubject)->lockForUpdate()->first();
 
                 if ($mapping) {
@@ -49,7 +49,7 @@ class VinylHubAccountEdgeService
                 $user = User::create([
                     'name' => Purify::clean($displaySeed ?: $technicalHandle),
                     'username' => $technicalHandle,
-                    'email' => $technicalEmail,
+                    'email' => $this->compatibilityEmail($technicalHandle),
                     'password' => Hash::make(Str::password(64)),
                     'email_verified_at' => now(),
                     'register_source' => 'vinylhub',
@@ -335,6 +335,11 @@ class VinylHubAccountEdgeService
     protected function tokenName(): string
     {
         return (string) config('vinylhub.account_edge.token_name', 'VinylHub Community');
+    }
+
+    protected function compatibilityEmail(string $technicalHandle): string
+    {
+        return Str::lower($technicalHandle).'@community.invalid';
     }
 
     protected function lifecycle(?User $user, ?Profile $profile): string
