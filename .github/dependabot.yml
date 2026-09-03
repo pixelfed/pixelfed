@@ -6,12 +6,12 @@ updates:
     schedule:
       interval: "weekly"
       day: "monday"
-    open-pull-requests-limit: 10
+    open-pull-requests-limit: 50
     versioning-strategy: "increase-if-necessary"
     labels:
       - "composer"
     commit-message:
-      prefix: "chore(deps)"
+      prefix: "chore"
       include: "scope"
 
   - package-ecosystem: "npm"
@@ -20,10 +20,10 @@ updates:
     schedule:
       interval: "weekly"
       day: "monday"
-    open-pull-requests-limit: 10
+    open-pull-requests-limit: 50
     versioning-strategy: "increase-if-necessary"
     labels:
       - "npm"
     commit-message:
-      prefix: "chore(deps)"
+      prefix: "chore"
       include: "scope"
