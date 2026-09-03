@@ -51,8 +51,8 @@ class AdminRemoteReport extends JsonResource
             'statuses' => $statuses,
             'message' => $this->comment,
             'report_meta' => $this->report_meta,
-            'created_at' => optional($this->created_at)->format('c'),
-            'action_taken_at' => optional($this->action_taken_at)->format('c'),
+            'created_at' => $this->created_at?->format('c'),
+            'action_taken_at' => $this->action_taken_at?->format('c'),
         ];
 
         return $res;

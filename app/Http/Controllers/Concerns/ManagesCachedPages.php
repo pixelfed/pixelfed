@@ -26,7 +26,7 @@ trait ManagesCachedPages
         return [
             'title' => $page->title,
             'content' => $page->content,
-            'created_at' => optional($page->created_at)->format('M d, Y'),
+            'created_at' => $page->created_at?->format('M d, Y'),
         ];
     }
 }

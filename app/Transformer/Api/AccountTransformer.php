@@ -70,7 +70,7 @@ class AccountTransformer extends Fractal\TransformerAbstract
             'is_admin' => (bool) $is_admin,
             'created_at' => $profile->created_at->toJSON(),
             'header_bg' => $profile->header_bg,
-            'last_fetched_at' => optional($profile->last_fetched_at)->toJSON(),
+            'last_fetched_at' => $profile->last_fetched_at?->toJSON(),
             'pronouns' => PronounService::get($profile->id),
             'location' => $profile->location,
         ];
