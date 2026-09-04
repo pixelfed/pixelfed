@@ -20,6 +20,13 @@ Fresh-read only the authority needed for the task:
 - current build, migration, CI, branch/release and compiled-asset conventions;
 - implementation and tests for behavior not resolved by higher authority.
 
+Classify the requested claim as `T0 STATIC`, `T1 OWNER TEST`, `T2 OWNER
+RUNTIME / OWNER INTEGRATION` or `T3 APP COMPOSITION`. Dispatch
+`.agents/skills/test-environment/SKILL.md` for every runtime-dependent T1/T2
+command before that command is run. T0 is static evidence only. T3 is owned by
+`mirrorforce/vinyl-catalog-app`; Pixelfed may provide owner requirements and
+identities but cannot admit the composed environment.
+
 Treat closed Issues, merged PRs, old branches and conversation history as
 context unless current authority promotes a conclusion. If current authority
 or source/runtime identity conflicts, stop and report the conflict.
@@ -33,12 +40,17 @@ CHANGE_CLASSIFICATION = IMPLEMENTATION_ONLY | REPOSITORY_BEHAVIOR | ARCHITECTURE
 MODE = SPIKE | DELIVERY
 EXECUTOR = CONTROLLER_GITHUB | MACHINE_LOCAL | OTHER_AUTHORIZED_HOST
 REQUIRED_SKILLS = <names or NONE>
+ENVIRONMENT_ADMISSION = NOT_REQUIRED (T0) | PASS | BLOCKED (T1/T2)
 AUTHORITY_DRIFT = NONE | BLOCKED
 ```
 
 Use the mode stated by current authority. A difficult DELIVERY is not a SPIKE.
 Establish the exact candidate source/tree and runtime inputs before calling a
-baseline admitted.
+baseline admitted. For T1/T2, the test-environment record must include the
+exact source SHA/tree, runner, dependency identity, working directory,
+canonical command, required service identities and bounded readiness evidence.
+Do not run or promote a runtime-dependent command while admission is
+`BLOCKED` or unrecorded.
 
 ## Fail closed
 
@@ -48,6 +60,10 @@ required source/runtime identity cannot be established, the checkout is
 dirty/untracked/ownership-unknown, another writer is active, or execution
 would silently substitute an owner, framework, branch model or public
 contract.
+
+If a material T1/T2 prerequisite cannot be proven, set
+`ENVIRONMENT_ADMISSION = BLOCKED` and stop only the dependent execution; do
+not patch Pixelfed source or weaken runtime semantics to manufacture PASS.
 
 Do not reset, stash, clean, regenerate protected assets or invent fallback
 authority to bypass a blocker.

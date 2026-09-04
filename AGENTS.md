@@ -45,6 +45,7 @@ applicable:
 
 ```text
 task-preflight
+  -> test-environment  mandatory before runtime-dependent T1/T2 execution
   -> architecture-conformance  architecture-sensitive DELIVERY
   -> acceptance-evidence        completion, safety or runtime claims
   -> delivery-lifecycle         Issue/PR/Milestone/commit delivery
@@ -52,6 +53,13 @@ task-preflight
 
 Skills describe repeatable HOW only. They do not replace current Issues,
 architecture authority, supported Pixelfed commands or runtime identity.
+
+`test-environment` is a hard gate for T1 OWNER TEST and T2 OWNER RUNTIME /
+OWNER INTEGRATION execution. Before the first command that depends on runtime
+services, record exact source, runner, dependency, service and readiness
+evidence and set `ENVIRONMENT_ADMISSION = PASS`; otherwise set it `BLOCKED` and
+do not promote the dependent result. T0 STATIC has no runtime claim. T3 APP
+COMPOSITION is owned by `mirrorforce/vinyl-catalog-app`, not Pixelfed.
 
 After creating or changing this file, restart the Codex execution session
 before subsequent non-trivial source work so the instruction chain is loaded.
