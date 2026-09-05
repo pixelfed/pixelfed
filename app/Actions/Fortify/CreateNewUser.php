@@ -8,10 +8,8 @@ use App\Services\BouncerService;
 use App\Services\EmailService;
 use Illuminate\Contracts\Validation\Validator as ValidatorContract;
 use Illuminate\Http\Exceptions\HttpResponseException;
-use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Validator;
-use Illuminate\Support\Str;
 use Illuminate\Validation\ValidationException;
 use Laravel\Fortify\Contracts\CreatesNewUsers;
 use Purify;
@@ -76,18 +74,8 @@ class CreateNewUser implements CreatesNewUsers
             },
         ];
 
-        $registerTokenRules = [
-            'required',
-            function ($attribute, $value, $fail) {
-                if ($value !== self::getRegisterToken()) {
-                    return $fail('Something went wrong');
-                }
-            },
-        ];
-
         $rules = [
             'agecheck' => 'required|accepted',
-            'rt' => $registerTokenRules,
             'name' => 'nullable|string|max:'.config('pixelfed.max_name_length'),
             'username' => $usernameRules,
             'email' => $emailRules,
@@ -153,19 +141,5 @@ class CreateNewUser implements CreatesNewUsers
                 throw new HttpResponseException(redirect(route('help.instance-max-users-limit')));
             }
         }
-    }
-
-    /**
-     * Get (or refresh) the cached registration token.
-     *
-     * Single non-controller source of truth for the register token, replacing the
-     * legacy RegisterController::getRegisterToken(). Referenced by the registration
-     * views and ParentalControlsController.
-     */
-    public static function getRegisterToken(): string
-    {
-        return Cache::remember('pf:register:rt', 900, function () {
-            return Str::random(40);
-        });
     }
 }

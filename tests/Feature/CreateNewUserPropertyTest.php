@@ -52,19 +52,7 @@ beforeEach(function () {
         'captcha.enabled' => false,
         'captcha.active.register' => false,
     ]);
-
-    // Seed a known, valid register token in the array cache. The action reads
-    // the same 'pf:register:rt' key (via CreateNewUser::getRegisterToken()).
-    Cache::store('array')->forever('pf:register:rt', 'valid-register-token');
 });
-
-/**
- * The register token the action considers valid.
- */
-function validRegisterToken(): string
-{
-    return CreateNewUser::getRegisterToken();
-}
 
 /**
  * Build a fully valid registration input array.
@@ -88,7 +76,6 @@ function validRegistrationInput(int $seed): array
         'password' => $password,
         'password_confirmation' => $password,
         'agecheck' => 'on',
-        'rt' => validRegisterToken(),
     ];
 }
 
@@ -147,7 +134,6 @@ it('never persists a user when exactly one guardrail is violated across many ite
     $violations = [
         'missing_agecheck',
         'false_agecheck',
-        'wrong_rt',
         'invalid_username_ends_with_php',
         'invalid_username_double_separator',
         'banned_email',
@@ -181,10 +167,6 @@ it('never persists a user when exactly one guardrail is violated across many ite
 
             case 'false_agecheck':
                 $input['agecheck'] = '0';
-                break;
-
-            case 'wrong_rt':
-                $input['rt'] = 'not-the-valid-token-'.$i;
                 break;
 
             case 'invalid_username_ends_with_php':

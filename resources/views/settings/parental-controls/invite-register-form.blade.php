@@ -33,7 +33,6 @@
                     <form method="POST" class="px-md-3">
                         @csrf
 
-                        <input type="hidden" name="rt" value="{{ \App\Actions\Fortify\CreateNewUser::getRegisterToken() }}">
                         <div class="form-group row">
                             <div class="col-md-12">
                                 <label class="small font-weight-bold text-lighter">Name</label>

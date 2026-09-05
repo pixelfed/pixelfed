@@ -54,10 +54,6 @@ beforeEach(function () {
         'captcha.enabled' => false,
         'captcha.active.register' => false,
     ]);
-
-    // Seed a known, valid register token in the array cache. The action reads
-    // the same 'pf:register:rt' key via CreateNewUser::getRegisterToken().
-    Cache::store('array')->forever('pf:register:rt', 'valid-register-token');
 });
 
 /**
@@ -79,7 +75,6 @@ function validInput(int $seed = 0): array
         'password' => $password,
         'password_confirmation' => $password,
         'agecheck' => 'on',
-        'rt' => CreateNewUser::getRegisterToken(),
     ];
 }
 
@@ -108,19 +103,6 @@ it('throws and persists no user when agecheck is false', function () {
     // Requirement 6.1 — a non-accepted agecheck value is rejected.
     $input = validInput(2);
     $input['agecheck'] = '0';
-
-    $before = User::count();
-
-    expect(fn () => createUserAction()->create($input))
-        ->toThrow(ValidationException::class);
-
-    expect(User::count())->toBe($before);
-});
-
-it('throws and persists no user when the register token does not match', function () {
-    // Requirement 6.2 — rt must equal the cached Register_Token.
-    $input = validInput(3);
-    $input['rt'] = 'not-the-valid-token';
 
     $before = User::count();
 

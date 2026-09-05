@@ -1,6 +1,5 @@
 <?php
 
-use App\Actions\Fortify\CreateNewUser;
 use App\Models\User;
 use Illuminate\Cache\RateLimiter;
 use Illuminate\Foundation\Testing\LazilyRefreshDatabase;
@@ -73,11 +72,6 @@ beforeEach(function () {
         'pixelfed.min_password_length' => 8,
         'pixelfed.max_name_length' => 30,
     ]);
-
-    // Seed a known register token in the array cache so the rt field is known
-    // for the registration flow. CreateNewUser::getRegisterToken() reads the
-    // same 'pf:register:rt' key.
-    Cache::store('array')->forever('pf:register:rt', 'valid-register-token');
 });
 
 /*
@@ -148,7 +142,6 @@ it('registers a user with valid input and redirects to /i/web authenticated', fu
         'password' => 'sup3r-secret-pass',
         'password_confirmation' => 'sup3r-secret-pass',
         'agecheck' => 'on',
-        'rt' => CreateNewUser::getRegisterToken(),
     ]);
 
     $response->assertRedirect('/i/web');
@@ -174,7 +167,6 @@ it('rejects invalid registration, creates no user, retains non-sensitive input b
         'password' => 'sup3r-secret-pass',
         'password_confirmation' => 'sup3r-secret-pass',
         // agecheck intentionally omitted -> required|accepted fails
-        'rt' => CreateNewUser::getRegisterToken(),
     ]);
 
     $response->assertRedirect('/register');
