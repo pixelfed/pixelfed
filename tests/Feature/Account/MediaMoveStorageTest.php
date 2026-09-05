@@ -138,13 +138,35 @@ describe('admin:MediaMoveStorageLocalToCloud', function () {
             ->assertExitCode(1);
     });
 
-    it('flips PF_ENABLE_CLOUD to true before migrating (dry-run reports it)', function () {
-        // cloud currently false in the temp .env from beforeEach.
+    it('enables cloud storage before migrating (dry-run reports it)', function () {
+        // cloud currently disabled (config_cache resolves falsy in tests).
+        Config::set('pixelfed.cloud_storage', false);
+
         $this->artisan('admin:MediaMoveStorageLocalToCloud', ['--dry-run' => true])
-            ->expectsOutputToContain('PF_ENABLE_CLOUD')
+            ->expectsOutputToContain('Cloud storage')
             ->assertExitCode(0);
 
         // dry-run must not write the .env.
         expect(file_get_contents(app()->environmentFilePath()))->toContain('PF_ENABLE_CLOUD=false');
+    });
+
+    it('does not fatal when there is no .env file (containerized deploy)', function () {
+        // Point the app at an environment directory with no env file, so any
+        // attempt to read/parse .env would throw file_get_contents() errors.
+        // Cloud is disabled, so the command takes the setStorageEnv() path.
+        $emptyDir = sys_get_temp_dir().'/pf-env-missing-'.uniqid();
+        mkdir($emptyDir);
+        app()->useEnvironmentPath($emptyDir);
+        expect(is_file(app()->environmentFilePath()))->toBeFalse();
+
+        Config::set('pixelfed.cloud_storage', false);
+
+        // Regression: previously threw
+        // "file_get_contents(.env): Failed to open stream" and exited 1.
+        $this->artisan('admin:MediaMoveStorageLocalToCloud', ['--force' => true])
+            ->assertExitCode(0);
+
+        // The runtime config was still flipped even without a writable .env.
+        expect(config('pixelfed.cloud_storage'))->toBeTrue();
     });
 });

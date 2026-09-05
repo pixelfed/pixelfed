@@ -30,7 +30,7 @@ class AccountTransformer extends Fractal\TransformerAbstract
             'followers_count' => (int) $profile->followerCount(),
             'following_count' => (int) $profile->followingCount(),
             'statuses_count' => (int) $profile->statusCount(),
-            'last_status_at' => optional($profile->last_status_at)->toJSON(),
+            'last_status_at' => $profile->last_status_at?->toJSON(),
             'emojis' => [],
             'moved' => null,
             'fields' => [],

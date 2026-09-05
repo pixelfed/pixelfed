@@ -35,7 +35,7 @@ class GroupsCommentController extends Controller
             'limit' => 'nullable|integer|min:3|max:10',
         ]);
 
-        $pid = optional($request->user())->profile_id;
+        $pid = $request->user()?->profile_id;
         $gid = $request->input('gid');
         $sid = $request->input('sid');
         $cid = $request->has('cid') && $request->filled('cid') ? $request->input('cid') : false;

@@ -114,7 +114,7 @@ class GroupsFeedController extends Controller
     {
         $group = Group::findOrFail($id);
         $user = $request->user();
-        $pid = optional($user)->profile_id ?? false;
+        $pid = $user?->profile_id ?? false;
         abort_if(! $group->isMember($pid), 404);
         $max = $request->input('max_id');
         $limit = $request->limit ?? 3;
