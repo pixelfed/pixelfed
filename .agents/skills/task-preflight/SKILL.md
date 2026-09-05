@@ -9,6 +9,15 @@ Use this before non-trivial Pixelfed repository decisions or execution. It
 reconstructs current authority and identity; it does not choose Product scope
 or architecture.
 
+## Canonical routing
+
+Repository-owned repeatable Skills are canonical under
+`.agents/skills/<skill>/SKILL.md`; `.codex/` is tool-private/local unless a
+future repository contract explicitly says otherwise. The Controller/GitHub
+surface reconstructs current authority and maintains the Issue/PR/review
+surfaces. The machine-local Executor writes repository files within the
+authorized handoff and returns exact validation evidence.
+
 ## Reconstruct current truth
 
 Fresh-read only the authority needed for the task:
@@ -34,17 +43,30 @@ or source/runtime identity conflicts, stop and report the conflict.
 ## Record the task frame
 
 ```text
-CURRENT_DEFAULT = <branch and exact SHA>
-UPSTREAM_DEV = <exact SHA>
+PROGRAM_ISSUE = <current program or linked app Issue>
+OWNER_ISSUE = <current repository owner Issue>
+REPOSITORY = <owner/repository>
+CURRENT_DEFAULT_SHA = <default branch exact SHA>
+UPSTREAM / ADMITTED_BASELINE = <upstream exact SHA or admitted source/tree/runtime inputs>
 CHANGE_CLASSIFICATION = IMPLEMENTATION_ONLY | REPOSITORY_BEHAVIOR | ARCHITECTURE
 MODE = SPIKE | DELIVERY
-EXECUTOR = CONTROLLER_GITHUB | MACHINE_LOCAL | OTHER_AUTHORIZED_HOST
+AUTHORIZED_RESULT = <bounded result from current authority>
+AUTHORIZED_WRITESET = <paths or NONE>
+NON_SCOPE = <explicit exclusions>
 REQUIRED_SKILLS = <names or NONE>
+VALIDATION = <minimum sufficient validation>
+STOP_CONDITIONS = <authority, state or scope blockers>
+PR_EXPECTATION = <branch, review and merge constraints>
+INTEGRATION_GATE = <linked downstream gate or NONE>
+SUBAGENTS = PROHIBITED
+EXECUTOR = CONTROLLER_GITHUB | MACHINE_LOCAL | OTHER_AUTHORIZED_HOST
 ENVIRONMENT_ADMISSION = NOT_REQUIRED (T0) | PASS | BLOCKED (T1/T2)
 AUTHORITY_DRIFT = NONE | BLOCKED
 ```
 
 Use the mode stated by current authority. A difficult DELIVERY is not a SPIKE.
+For a machine-local handoff, preserve the fields above from the current
+Issue/program contract rather than copying volatile task scope into this Skill.
 Establish the exact candidate source/tree and runtime inputs before calling a
 baseline admitted. For T1/T2, the test-environment record must include the
 exact source SHA/tree, runner, dependency identity, working directory,

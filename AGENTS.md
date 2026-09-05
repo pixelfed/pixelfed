@@ -18,6 +18,10 @@ CI/build workflow, branch model and compiled-asset policy remain authoritative.
   Pixelfed practice. A VinylHub admitted baseline is an explicit exact source
   commit/tree plus runtime inputs recorded in the admission evidence or PR;
   moving `dev`, `latest` or an unpinned image tag is not an admitted release.
+- Repository-owned repeatable Skills are canonical under
+  `.agents/skills/<skill>/SKILL.md`. `.codex/` is tool-private/local unless a
+  future repository contract explicitly gives it another meaning; it is not a
+  second repository Skill authority.
 
 ### Delivery and safety
 
@@ -25,6 +29,10 @@ CI/build workflow, branch model and compiled-asset policy remain authoritative.
   not write directly to the default branch, rewrite upstream history or
   normalize Pixelfed's branch names. Codex sub-agents are prohibited unless
   current authority explicitly changes that rule.
+- The Controller/GitHub surface owns current authority reconstruction, Issue
+  and PR maintenance, and review. The machine-local Executor is the normal
+  repository-file writer; keep the handoff bounded to the current Issue,
+  authorized write set and recorded validation.
 - Never commit secrets, real `.env` files, private user data, durable runtime
   state, credentials or generated/compiled assets prohibited by upstream.
   Use examples, disposable fixtures and task-scoped scratch outside the
@@ -32,7 +40,8 @@ CI/build workflow, branch model and compiled-asset policy remain authoritative.
 - Classify work as implementation-only, repository behavior or architecture.
   Ownership, persistence lifecycle, dependency direction, public contracts or
   runtime-topology changes fail closed until current authority explicitly
-  admits them. M0 must not implement app #72 or app #76.
+  admits them. Current Issues and program contracts, rather than this durable
+  overlay, define volatile task scope and phase.
 - Preserve exact evidence: reviewed source/tree/runtime identities, relevant
   worktree state, observable smoke results, authorized mutations, protected
   resources and unresolved unknowns. Do not claim a stronger evidence level
@@ -60,6 +69,3 @@ services, record exact source, runner, dependency, service and readiness
 evidence and set `ENVIRONMENT_ADMISSION = PASS`; otherwise set it `BLOCKED` and
 do not promote the dependent result. T0 STATIC has no runtime claim. T3 APP
 COMPOSITION is owned by `mirrorforce/vinyl-catalog-app`, not Pixelfed.
-
-After creating or changing this file, restart the Codex execution session
-before subsequent non-trivial source work so the instruction chain is loaded.

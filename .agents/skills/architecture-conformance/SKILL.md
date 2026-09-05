@@ -25,8 +25,8 @@ For this repository, compare only applicable dimensions:
 - Pixelfed MySQL/Redis/media/status/feed/moderation lifecycle boundaries;
 - public API and migration ownership, including generated/compiled asset
   provenance;
-- explicit M0 exclusions, especially account-edge work in app #72 and durable
-  Status publication operation-key work in app #76.
+- current owner-authorized exclusions and unresolved architecture boundaries;
+  do not hard-code historical phase or app-specific task scope here.
 
 Do not turn omitted or irrelevant dimensions into new requirements.
 
