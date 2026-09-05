@@ -13,6 +13,7 @@
         "ext-json": "*",
         "ext-mbstring": "*",
         "ext-openssl": "*",
+        "ext-redis": "*",
         "bacon/bacon-qr-code": "^3.0",
         "brick/math": "^0.14",
         "buzz/laravel-h-captcha": "^1.0.4",
