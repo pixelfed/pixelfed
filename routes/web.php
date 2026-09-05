@@ -61,8 +61,6 @@ Route::domain(config('pixelfed.domain.app'))->middleware(['validemail', 'twofact
     Route::get('web/explore', [LandingController::class, 'exploreRedirect']);
     Route::get('authorize_interaction', [AuthorizeInteractionController::class, 'get']);
 
-    Auth::routes();
-
     Route::get('auth/oidc/start', [RemoteOidcController::class, 'start']);
     Route::get('auth/oidc/callback', [RemoteOidcController::class, 'handleCallback']);
 
@@ -197,8 +195,6 @@ Route::domain(config('pixelfed.domain.app'))->middleware(['validemail', 'twofact
         Route::post('verify-email/request', [InternalApiController::class, 'requestEmailVerificationStore']);
         Route::get('confirm-email/{userToken}/{randomToken}', [AccountController::class, 'confirmVerifyEmail']);
 
-        Route::get('auth/sudo', [AccountController::class, 'confirmPassword'])->name('password.confirm');
-        Route::post('auth/sudo', [AccountController::class, 'confirmPasswordStore']);
         Route::get('auth/checkpoint', [AccountController::class, 'twoFactorCheckpoint']);
         Route::post('auth/checkpoint', [AccountController::class, 'twoFactorVerify']);
 

@@ -23,8 +23,8 @@ it('resolves named routes to URLs', function (string $name, string $contains) {
     'home timeline' => ['timeline.personal', '/'],
     'settings' => ['settings', '/settings/home'],
     'discover' => ['discover', '/discover'],
-    'password.confirm' => ['password.confirm', '/i/auth/sudo'],
-    'password.request' => ['password.request', '/password/reset'],
+    'password.confirm' => ['password.confirm', '/confirm-password'],
+    'password.request' => ['password.request', '/forgot-password'],
 ]);
 
 it('does not have duplicate route names', function () {

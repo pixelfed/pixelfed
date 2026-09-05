@@ -27,7 +27,6 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Arr;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Cache;
-use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Str;
 use League\Fractal;
@@ -473,28 +472,6 @@ class AccountController extends Controller
         RelationshipService::refresh($pid, $follower->id);
 
         return response()->json(['msg' => 'success'], 200);
-    }
-
-    public function confirmPassword(Request $request): View
-    {
-        return view('auth.sudo');
-    }
-
-    public function confirmPasswordStore(Request $request): RedirectResponse
-    {
-        $this->validate($request, [
-            'password' => 'required|string|max:500',
-        ]);
-
-        if (! Hash::check($request->password, $request->user()->password)) {
-            return redirect()
-                ->back()
-                ->withErrors(['password' => __('auth.failed')]);
-        }
-
-        $request->session()->passwordConfirmed();
-
-        return redirect()->intended();
     }
 
     public function twoFactorCheckpoint(Request $request): View
