@@ -41,7 +41,7 @@
         "pragmarx/google2fa": "^9.0",
         "predis/predis": "^3.2",
         "pusher/pusher-php-server": "^7.2",
-        "resend/resend-php": "^0.13.0",
+        "resend/resend-php": "^1.12.0",
         "spatie/laravel-backup": "^9.2.9",
         "spatie/laravel-image-optimizer": "^1.8.2",
         "stevebauman/purify": "^6.2.0",

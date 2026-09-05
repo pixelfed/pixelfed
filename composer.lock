@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "d438c452baff3ac7487931d7bbbf2d68",
+    "content-hash": "45c58907f18997be064de441dc952652",
     "packages": [
         {
             "name": "aws/aws-crt-php",
@@ -6540,26 +6540,28 @@
         },
         {
             "name": "resend/resend-php",
-            "version": "v0.13.0",
+            "version": "v1.12.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/resend/resend-php.git",
-                "reference": "c74926e34472fe3e3e21f150f3e3ce56fcbf8298"
+                "reference": "a2ca2334fb890ba6e1b80cb9ef410fa1510a8820"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/resend/resend-php/zipball/c74926e34472fe3e3e21f150f3e3ce56fcbf8298",
-                "reference": "c74926e34472fe3e3e21f150f3e3ce56fcbf8298",
+                "url": "https://api.github.com/repos/resend/resend-php/zipball/a2ca2334fb890ba6e1b80cb9ef410fa1510a8820",
+                "reference": "a2ca2334fb890ba6e1b80cb9ef410fa1510a8820",
                 "shasum": ""
             },
             "require": {
-                "guzzlehttp/guzzle": "^7.5",
-                "php": "^8.1.0"
+                "guzzlehttp/guzzle": "^7.8.2 || ^8.0",
+                "guzzlehttp/psr7": "^2.6.3 || ^3.0",
+                "php": "^8.1.0",
+                "psr/http-client": "^1.0"
             },
             "require-dev": {
                 "friendsofphp/php-cs-fixer": "^3.13",
                 "mockery/mockery": "^1.6",
-                "pestphp/pest": "^2.0"
+                "pestphp/pest": "^1.0|^2.0|^3.0|^4.0|^5.0"
             },
             "type": "library",
             "autoload": {
@@ -6591,9 +6593,9 @@
             ],
             "support": {
                 "issues": "https://github.com/resend/resend-php/issues",
-                "source": "https://github.com/resend/resend-php/tree/v0.13.0"
+                "source": "https://github.com/resend/resend-php/tree/v1.12.0"
             },
-            "time": "2024-08-15T03:27:29+00:00"
+            "time": "2026-08-27T20:30:16+00:00"
         },
         {
             "name": "spatie/db-dumper",
