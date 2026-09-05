@@ -3,7 +3,6 @@
 use App\Http\Middleware\AccountInterstitial;
 use App\Http\Middleware\Admin;
 use App\Http\Middleware\Api\Admin as ApiAdmin;
-use App\Http\Middleware\CsrfSessionDebug;
 use App\Http\Middleware\EmailVerificationCheck;
 use App\Http\Middleware\FrameGuard;
 use App\Http\Middleware\GrantFirstPartyToken;
@@ -84,7 +83,6 @@ return Application::configure(basePath: dirname(__DIR__))
             FrameGuard::class,
             AddQueuedCookiesToResponse::class,
             StartSession::class,
-            CsrfSessionDebug::class,
             AuthenticateSession::class,
             ShareErrorsFromSession::class,
             ValidateCsrfToken::class,
