@@ -41,6 +41,10 @@ Documentation for Pixelfed can be found on the [Pixelfed documentation website](
 
 Pixelfed app for [YunoHost](https://yunohost.org 'YunoHost'). See [the package source code](https://github.com/YunoHost-Apps/pixelfed_ynh 'pixelfed_ynh repository on GitHub')
 
+## Deploy on RepoCloud
+
+[![Deploy on RepoCloud](https://d16t0pc4846x52.cloudfront.net/deploylobe.svg)](https://repocloud.io/details/Pixelfed/)
+
 ## License
 
 Pixelfed is open-sourced software licensed under the AGPL license.
