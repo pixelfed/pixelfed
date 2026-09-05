@@ -26,6 +26,7 @@
         <env name="PULSE_ENABLED" value="false"/>
         <env name="TELESCOPE_ENABLED" value="false"/>
         <env name="HORIZON_PREFIX" value="horizon-test-"/>
+        <env name="HONEYPOT_ENABLED" value="false"/>
         <ini name="memory_limit" value="2048M"/>
         <env name="BROADCAST_CONNECTION" value="null"/>
         <env name="NIGHTWATCH_ENABLED" value="false"/>

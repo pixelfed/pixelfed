@@ -77,10 +77,15 @@ class RestrictedAccessMiddlewareTest extends TestCase
     }
 
     #[Test]
-    public function it_allows_password_reset_routes_when_restricted()
+    public function it_allows_password_prefixed_routes_when_restricted()
     {
         Config::set('instance.restricted.enabled', true);
 
+        // The middleware whitelists the `password*` prefix. Any path under that
+        // prefix passes through unauthenticated when the instance is restricted.
+        // NOTE: Fortify's reset flow now lives at /forgot-password and
+        // /reset-password, which the `password*` entry does NOT cover; this
+        // asserts the prefix-match behavior the middleware still implements.
         $request = Request::create('/password/reset', 'GET');
         $response = $this->middleware->handle($request, $this->passThrough());
 

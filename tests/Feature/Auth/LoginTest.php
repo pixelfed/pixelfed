@@ -53,9 +53,12 @@ it('rejects login with a non-existent email', function () {
     $this->assertGuest();
 });
 
-it('redirects with errors after too many failed login attempts', function () {
+it('returns HTTP 429 after too many failed login attempts', function () {
     $user = User::factory()->create();
 
+    // The Fortify `login` limiter allows 5 attempts per 60 minutes, keyed by
+    // lowercase(email) . '|' . ip(). Exhaust the 5 allowed attempts, then the
+    // 6th request from the same email/IP is throttled with HTTP 429.
     for ($i = 0; $i < 5; $i++) {
         $this->post('/login', [
             'email' => $user->email,
@@ -66,8 +69,7 @@ it('redirects with errors after too many failed login attempts', function () {
     $this->post('/login', [
         'email' => $user->email,
         'password' => 'wrong',
-    ])->assertRedirect()
-        ->assertSessionHasErrors();
+    ])->assertStatus(429);
 });
 
 it('redirects authenticated users away from the login page', function () {

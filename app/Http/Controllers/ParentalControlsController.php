@@ -2,7 +2,7 @@
 
 namespace App\Http\Controllers;
 
-use App\Http\Controllers\Auth\RegisterController;
+use App\Actions\Fortify\CreateNewUser;
 use App\Jobs\ParentalControlsPipeline\DispatchChildInvitePipeline;
 use App\Models\ParentalControls;
 use App\Models\Profile;
@@ -139,10 +139,10 @@ class ParentalControlsController extends Controller
         $fields = $request->all();
         $fields['email'] = $pc->email;
         $defaults = UserRoleService::defaultRoles();
-        $validator = (new RegisterController)->validator($fields);
-        $valid = $validator->validate();
-        abort_if(! $valid, 404);
-        event(new Registered($user = (new RegisterController)->create($fields)));
+        $action = app(CreateNewUser::class);
+        $validator = $action->validator($fields);
+        $validator->validate();
+        event(new Registered($user = $action->persist($fields)));
         sleep(5);
         $user->has_roles = true;
         $user->parent_id = $pc->parent_id;

@@ -61,8 +61,6 @@ Route::domain(config('pixelfed.domain.app'))->middleware(['validemail', 'twofact
     Route::get('web/explore', [LandingController::class, 'exploreRedirect']);
     Route::get('authorize_interaction', [AuthorizeInteractionController::class, 'get']);
 
-    Auth::routes();
-
     Route::get('auth/oidc/start', [RemoteOidcController::class, 'start']);
     Route::get('auth/oidc/callback', [RemoteOidcController::class, 'handleCallback']);
 
@@ -86,7 +84,7 @@ Route::domain(config('pixelfed.domain.app'))->middleware(['validemail', 'twofact
     Route::post('auth/raw/mastodon/s/finish-up', [RemoteAuthController::class, 'finishUp']);
     Route::post('auth/raw/mastodon/s/login', [RemoteAuthController::class, 'handleLogin']);
     Route::get('auth/pci/{id}/{code}', [ParentalControlsController::class, 'inviteRegister']);
-    Route::post('auth/pci/{id}/{code}', [ParentalControlsController::class, 'inviteRegisterStore']);
+    Route::post('auth/pci/{id}/{code}', [ParentalControlsController::class, 'inviteRegisterStore'])->middleware('honeypot');
 
     Route::get('auth/sign_up', [SiteController::class, 'curatedOnboarding'])->name('auth.curated-onboarding');
     Route::post('auth/sign_up', [CuratedRegisterController::class, 'proceed']);
@@ -197,8 +195,6 @@ Route::domain(config('pixelfed.domain.app'))->middleware(['validemail', 'twofact
         Route::post('verify-email/request', [InternalApiController::class, 'requestEmailVerificationStore']);
         Route::get('confirm-email/{userToken}/{randomToken}', [AccountController::class, 'confirmVerifyEmail']);
 
-        Route::get('auth/sudo', [AccountController::class, 'confirmPassword'])->name('password.confirm');
-        Route::post('auth/sudo', [AccountController::class, 'confirmPasswordStore']);
         Route::get('auth/checkpoint', [AccountController::class, 'twoFactorCheckpoint']);
         Route::post('auth/checkpoint', [AccountController::class, 'twoFactorVerify']);
 
