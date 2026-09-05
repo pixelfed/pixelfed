@@ -122,7 +122,7 @@ return [
     |
     */
 
-    'cookie' => env('SESSION_COOKIE', 'pxfs'),
+    'cookie' => env('SESSION_COOKIE', 'pxfs-'.(parse_url((string) env('APP_URL'), PHP_URL_HOST) ?? '')),
 
     /*
     |--------------------------------------------------------------------------
