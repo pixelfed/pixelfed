@@ -57,7 +57,7 @@
 						</a>
 					</li>
 
-					@if((bool) config_cache('instance.curated_registration.enabled'))
+					@if((bool) config_cache('pixelfed.curated_registration.enabled'))
 					<li class="nav-item">
 						<a class="nav-link {{request()->is('*admin/curated-onboarding*')?'active':''}}" href="{{route('admin.curated-onboarding')}}">
 							<i class="ni ni-bold-right text-primary"></i>

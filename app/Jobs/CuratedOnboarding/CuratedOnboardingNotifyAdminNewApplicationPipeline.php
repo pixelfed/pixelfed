@@ -44,11 +44,11 @@ class CuratedOnboardingNotifyAdminNewApplicationPipeline implements ShouldQueue
             return;
         }
 
-        if (! config('instance.curated_registration.notify.admin.on_verify_email.enabled')) {
+        if (! config('pixelfed.curated_registration.notify.admin.on_verify_email.enabled')) {
             return;
         }
 
-        config('instance.curated_registration.notify.admin.on_verify_email.bundle') ?
+        config('pixelfed.curated_registration.notify.admin.on_verify_email.bundle') ?
             $this->handleBundled() :
             $this->handleUnbundled();
     }
@@ -68,8 +68,8 @@ class CuratedOnboardingNotifyAdminNewApplicationPipeline implements ShouldQueue
     {
         $cr = $this->cr;
 
-        $adminUsernames = config('instance.curated_registration.notify.admin.on_verify_email.to_usernames');
-        $ccAddresses = config('instance.curated_registration.notify.admin.on_verify_email.cc_addresses');
+        $adminUsernames = config('pixelfed.curated_registration.notify.admin.on_verify_email.to_usernames');
+        $ccAddresses = config('pixelfed.curated_registration.notify.admin.on_verify_email.cc_addresses');
 
         $ccEmails = ! empty($ccAddresses) ? array_filter(array_map('trim', explode(',', $ccAddresses))) : [];
 

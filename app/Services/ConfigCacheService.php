@@ -84,7 +84,7 @@ class ConfigCacheService
 
                     'autospam.nlp.enabled',
 
-                    'instance.curated_registration.enabled',
+                    'pixelfed.curated_registration.enabled',
 
                     'federation.migration',
 

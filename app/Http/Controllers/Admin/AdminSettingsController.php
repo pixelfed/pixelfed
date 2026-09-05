@@ -35,7 +35,7 @@ trait AdminSettingsController
         $availableAdmins = User::whereIsAdmin(true)->get();
         $currentAdmin = config_cache('instance.admin.pid') ? AccountService::get(config_cache('instance.admin.pid'), true) : null;
         $openReg = (bool) config_cache('pixelfed.open_registration');
-        $curOnboarding = (bool) config_cache('instance.curated_registration.enabled');
+        $curOnboarding = (bool) config_cache('pixelfed.curated_registration.enabled');
         $regState = $openReg ? 'open' : ($curOnboarding ? 'filtered' : 'closed');
         $accountMigration = (bool) config_cache('federation.migration');
 
@@ -97,7 +97,7 @@ trait AdminSettingsController
         }
 
         ConfigCacheService::put('pixelfed.open_registration', (bool) $orb);
-        ConfigCacheService::put('instance.curated_registration.enabled', (bool) $cob);
+        ConfigCacheService::put('pixelfed.curated_registration.enabled', (bool) $cob);
 
         if ($request->filled('admin_account_id')) {
             ConfigCacheService::put('instance.admin.pid', $request->admin_account_id);
@@ -334,7 +334,7 @@ trait AdminSettingsController
         $availableAdmins = User::whereIsAdmin(true)->get();
         $currentAdmin = config_cache('instance.admin.pid') ? AccountService::get(config_cache('instance.admin.pid'), true) : null;
         $openReg = (bool) config_cache('pixelfed.open_registration');
-        $curOnboarding = (bool) config_cache('instance.curated_registration.enabled');
+        $curOnboarding = (bool) config_cache('pixelfed.curated_registration.enabled');
         $regState = $openReg ? 'open' : ($curOnboarding ? 'filtered' : 'closed');
         $accountMigration = (bool) config_cache('federation.migration');
         $autoFollow = config_cache('account.autofollow_usernames');
@@ -537,7 +537,7 @@ trait AdminSettingsController
 
         $regStatus = $request->input('registration_status');
         ConfigCacheService::put('pixelfed.open_registration', $regStatus === 'open');
-        ConfigCacheService::put('instance.curated_registration.enabled', $regStatus === 'filtered');
+        ConfigCacheService::put('pixelfed.curated_registration.enabled', $regStatus === 'filtered');
         $cloudStorage = $request->boolean('cloud_storage');
         if ($cloudStorage !== (bool) config_cache('pixelfed.cloud_storage')) {
             if (! $cloudStorage) {

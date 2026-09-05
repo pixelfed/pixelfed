@@ -184,8 +184,8 @@ class SiteController extends Controller
         }
 
         $regOpen = (bool) config_cache('pixelfed.open_registration');
-        $curOnboarding = (bool) config_cache('instance.curated_registration.enabled');
-        $curOnlyClosed = (bool) config('instance.curated_registration.state.only_enabled_on_closed_reg');
+        $curOnboarding = (bool) config_cache('pixelfed.curated_registration.enabled');
+        $curOnlyClosed = (bool) config('pixelfed.curated_registration.state.only_enabled_on_closed_reg');
         if ($regOpen) {
             if ($curOnlyClosed) {
                 return redirect('/register');

@@ -33,7 +33,7 @@
                         placeholder="Your email address"
                         required />
                 </div>
-                @if(config('instance.curated_registration.captcha_enabled'))
+                @if(config('pixelfed.curated_registration.captcha_enabled'))
                 <div class="d-flex justify-content-center my-3">
                     {!! Captcha::display() !!}
                 </div>

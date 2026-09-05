@@ -31,7 +31,7 @@ class AdminSettingsService
         $cloud_disk = config('filesystems.cloud');
         $cloud_ready = ! empty(config('filesystems.disks.'.$cloud_disk.'.key')) && ! empty(config('filesystems.disks.'.$cloud_disk.'.secret'));
         $openReg = (bool) config_cache('pixelfed.open_registration');
-        $curOnboarding = (bool) config_cache('instance.curated_registration.enabled');
+        $curOnboarding = (bool) config_cache('pixelfed.curated_registration.enabled');
         $regState = $openReg ? 'open' : ($curOnboarding ? 'filtered' : 'closed');
 
         return [
@@ -169,7 +169,7 @@ class AdminSettingsService
     public static function getCuratedOnboarding()
     {
         $openReg = (bool) config_cache('pixelfed.open_registration');
-        $curOnboarding = (bool) config_cache('instance.curated_registration.enabled');
+        $curOnboarding = (bool) config_cache('pixelfed.curated_registration.enabled');
         $regState = $openReg ? 'open' : ($curOnboarding ? 'filtered' : 'closed');
 
         if ($regState !== 'filtered') {
@@ -177,11 +177,11 @@ class AdminSettingsService
         }
 
         $res = [
-            'enabled' => (bool) config_cache('instance.curated_registration.enabled'),
-            'resend_confirmation_limit' => config_cache('instance.curated_registration.resend_confirmation_limit'),
-            'captcha_enabled' => config_cache('instance.curated_registration.captcha_enabled'),
-            'state' => config_cache('instance.curated_registration.state'),
-            'notify' => config_cache('instance.curated_registration.notify'),
+            'enabled' => (bool) config_cache('pixelfed.curated_registration.enabled'),
+            'resend_confirmation_limit' => config_cache('pixelfed.curated_registration.resend_confirmation_limit'),
+            'captcha_enabled' => config_cache('pixelfed.curated_registration.captcha_enabled'),
+            'state' => config_cache('pixelfed.curated_registration.state'),
+            'notify' => config_cache('pixelfed.curated_registration.notify'),
         ];
 
         return $res;

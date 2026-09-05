@@ -39,7 +39,7 @@ class CuratedOnboardingNotifyAdminTest extends TestCase
     #[Test]
     public function it_does_not_send_when_notification_is_disabled()
     {
-        Config::set('instance.curated_registration.notify.admin.on_verify_email.enabled', false);
+        Config::set('pixelfed.curated_registration.notify.admin.on_verify_email.enabled', false);
 
         $cr = $this->createCuratedRegister();
         $admin = User::factory()->admin()->create();
@@ -53,10 +53,10 @@ class CuratedOnboardingNotifyAdminTest extends TestCase
     #[Test]
     public function it_sends_to_all_admins_when_to_usernames_is_not_configured()
     {
-        Config::set('instance.curated_registration.notify.admin.on_verify_email.enabled', true);
-        Config::set('instance.curated_registration.notify.admin.on_verify_email.bundle', false);
-        Config::set('instance.curated_registration.notify.admin.on_verify_email.to_usernames', null);
-        Config::set('instance.curated_registration.notify.admin.on_verify_email.cc_addresses', null);
+        Config::set('pixelfed.curated_registration.notify.admin.on_verify_email.enabled', true);
+        Config::set('pixelfed.curated_registration.notify.admin.on_verify_email.bundle', false);
+        Config::set('pixelfed.curated_registration.notify.admin.on_verify_email.to_usernames', null);
+        Config::set('pixelfed.curated_registration.notify.admin.on_verify_email.cc_addresses', null);
 
         $cr = $this->createCuratedRegister();
         $admin1 = User::factory()->admin()->create(['email' => 'admin1@example.com']);
@@ -79,15 +79,15 @@ class CuratedOnboardingNotifyAdminTest extends TestCase
     #[Test]
     public function it_sends_only_to_specified_admin_usernames_when_configured()
     {
-        Config::set('instance.curated_registration.notify.admin.on_verify_email.enabled', true);
-        Config::set('instance.curated_registration.notify.admin.on_verify_email.bundle', false);
-        Config::set('instance.curated_registration.notify.admin.on_verify_email.cc_addresses', null);
+        Config::set('pixelfed.curated_registration.notify.admin.on_verify_email.enabled', true);
+        Config::set('pixelfed.curated_registration.notify.admin.on_verify_email.bundle', false);
+        Config::set('pixelfed.curated_registration.notify.admin.on_verify_email.cc_addresses', null);
 
         $cr = $this->createCuratedRegister();
         $admin1 = User::factory()->admin()->create(['username' => 'targetadmin', 'email' => 'target@example.com']);
         $admin2 = User::factory()->admin()->create(['username' => 'otheradmin', 'email' => 'other@example.com']);
 
-        Config::set('instance.curated_registration.notify.admin.on_verify_email.to_usernames', 'targetadmin');
+        Config::set('pixelfed.curated_registration.notify.admin.on_verify_email.to_usernames', 'targetadmin');
 
         $job = new CuratedOnboardingNotifyAdminNewApplicationPipeline($cr);
         $job->handle();
@@ -101,10 +101,10 @@ class CuratedOnboardingNotifyAdminTest extends TestCase
     #[Test]
     public function it_sends_nothing_when_no_admin_users_exist()
     {
-        Config::set('instance.curated_registration.notify.admin.on_verify_email.enabled', true);
-        Config::set('instance.curated_registration.notify.admin.on_verify_email.bundle', false);
-        Config::set('instance.curated_registration.notify.admin.on_verify_email.to_usernames', null);
-        Config::set('instance.curated_registration.notify.admin.on_verify_email.cc_addresses', null);
+        Config::set('pixelfed.curated_registration.notify.admin.on_verify_email.enabled', true);
+        Config::set('pixelfed.curated_registration.notify.admin.on_verify_email.bundle', false);
+        Config::set('pixelfed.curated_registration.notify.admin.on_verify_email.to_usernames', null);
+        Config::set('pixelfed.curated_registration.notify.admin.on_verify_email.cc_addresses', null);
 
         $cr = $this->createCuratedRegister();
         // Only non-admin users
@@ -119,10 +119,10 @@ class CuratedOnboardingNotifyAdminTest extends TestCase
     #[Test]
     public function it_includes_cc_addresses_when_configured()
     {
-        Config::set('instance.curated_registration.notify.admin.on_verify_email.enabled', true);
-        Config::set('instance.curated_registration.notify.admin.on_verify_email.bundle', false);
-        Config::set('instance.curated_registration.notify.admin.on_verify_email.to_usernames', null);
-        Config::set('instance.curated_registration.notify.admin.on_verify_email.cc_addresses', 'cc1@example.com, cc2@example.com');
+        Config::set('pixelfed.curated_registration.notify.admin.on_verify_email.enabled', true);
+        Config::set('pixelfed.curated_registration.notify.admin.on_verify_email.bundle', false);
+        Config::set('pixelfed.curated_registration.notify.admin.on_verify_email.to_usernames', null);
+        Config::set('pixelfed.curated_registration.notify.admin.on_verify_email.cc_addresses', 'cc1@example.com, cc2@example.com');
 
         $cr = $this->createCuratedRegister();
         $admin = User::factory()->admin()->create(['email' => 'admin@example.com']);
@@ -143,10 +143,10 @@ class CuratedOnboardingNotifyAdminTest extends TestCase
     #[Test]
     public function it_sends_to_multiple_specified_admin_usernames()
     {
-        Config::set('instance.curated_registration.notify.admin.on_verify_email.enabled', true);
-        Config::set('instance.curated_registration.notify.admin.on_verify_email.bundle', false);
-        Config::set('instance.curated_registration.notify.admin.on_verify_email.cc_addresses', null);
-        Config::set('instance.curated_registration.notify.admin.on_verify_email.to_usernames', 'admin1,admin2');
+        Config::set('pixelfed.curated_registration.notify.admin.on_verify_email.enabled', true);
+        Config::set('pixelfed.curated_registration.notify.admin.on_verify_email.bundle', false);
+        Config::set('pixelfed.curated_registration.notify.admin.on_verify_email.cc_addresses', null);
+        Config::set('pixelfed.curated_registration.notify.admin.on_verify_email.to_usernames', 'admin1,admin2');
 
         $cr = $this->createCuratedRegister();
         $a1 = User::factory()->admin()->create(['username' => 'admin1', 'email' => 'a1@example.com']);

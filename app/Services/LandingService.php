@@ -54,7 +54,7 @@ class LandingService
             'show_explore_feed' => (bool) config_cache('instance.landing.show_explore'),
             'show_legal_notice_link' => (bool) config('instance.has_legal_notice'),
             'open_registration' => (bool) $openReg,
-            'curated_onboarding' => (bool) config_cache('instance.curated_registration.enabled'),
+            'curated_onboarding' => (bool) config_cache('pixelfed.curated_registration.enabled'),
             'version' => config('pixelfed.version'),
             'logo' => config('app.logo'),
             'about' => [

@@ -14,7 +14,7 @@
     </div>
 </div>
 
-@if((bool) config_cache('instance.curated_registration.enabled'))
+@if((bool) config_cache('pixelfed.curated_registration.enabled'))
 <div class="m-n2 m-lg-4">
     <div class="container-fluid mt-4">
         @include('admin.curated-register.partials.nav')

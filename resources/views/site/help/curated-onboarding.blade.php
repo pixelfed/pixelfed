@@ -5,7 +5,7 @@
     <h3 class="font-weight-bold">Curated Onboarding</h3>
 </div>
 <hr>
-@if((bool) config_cache('instance.curated_registration.enabled') == false)
+@if((bool) config_cache('pixelfed.curated_registration.enabled') == false)
 <div class="card bg-danger mb-3">
     <div class="card-body">
         @if((bool) config_cache('pixelfed.open_registration'))
@@ -21,7 +21,7 @@
 <p class="lead font-weight-bold">Curated Onboarding is our innovative approach to ensure each new member is a perfect fit for our community.</p>
 <p class="lead font-weight-light">This process goes beyond the usual sign-up routine. It's a thoughtful method to understand each applicant's intentions and aspirations within our platform.</p>
 <p class="lead font-weight-light">If you're excited to be a part of a platform that values individuality, creativity, and community, we invite you to apply to join our community. Share with us your story, and let's embark on this visual journey together!</p>
-@if((bool) config_cache('instance.curated_registration.enabled') && !request()->user())
+@if((bool) config_cache('pixelfed.curated_registration.enabled') && !request()->user())
 <p class="text-center pt-3">
     <a class="btn btn-outline-primary rounded-pill btn-lg font-weight-bold px-5" href="{{ route('auth.curated-onboarding') }}">Apply to Join <i class="far fa-arrow-right ml-2"></i></a>
 </p>

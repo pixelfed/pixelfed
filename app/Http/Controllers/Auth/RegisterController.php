@@ -167,7 +167,7 @@ class RegisterController extends Controller
                 return view('auth.register');
             }
         } else {
-            if ((bool) config_cache('instance.curated_registration.enabled') && config('instance.curated_registration.state.fallback_on_closed_reg')) {
+            if ((bool) config_cache('pixelfed.curated_registration.enabled') && config('pixelfed.curated_registration.state.fallback_on_closed_reg')) {
                 return redirect('/auth/sign_up');
             } else {
                 abort(404);

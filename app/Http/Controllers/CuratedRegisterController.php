@@ -20,15 +20,15 @@ class CuratedRegisterController extends Controller
     public function preCheck($allowWhenDisabled = false): void
     {
         if (! $allowWhenDisabled) {
-            abort_unless((bool) config_cache('instance.curated_registration.enabled'), 404);
+            abort_unless((bool) config_cache('pixelfed.curated_registration.enabled'), 404);
 
             if ((bool) config_cache('pixelfed.open_registration')) {
-                abort_if(config('instance.curated_registration.state.only_enabled_on_closed_reg'), 404);
+                abort_if(config('pixelfed.curated_registration.state.only_enabled_on_closed_reg'), 404);
             } else {
-                abort_unless(config('instance.curated_registration.state.fallback_on_closed_reg'), 404);
+                abort_unless(config('pixelfed.curated_registration.state.fallback_on_closed_reg'), 404);
             }
         } else {
-            abort_unless(config('instance.curated_registration.state.fallback_on_closed_reg'), 404);
+            abort_unless(config('pixelfed.curated_registration.state.fallback_on_closed_reg'), 404);
         }
     }
 
@@ -69,7 +69,7 @@ class CuratedRegisterController extends Controller
         );
         $crid = $request->session()->get('cur-reg-con.cr-id');
         $arid = $request->session()->get('cur-reg-con.ac-id');
-        $showCaptcha = config('instance.curated_registration.captcha_enabled');
+        $showCaptcha = config('pixelfed.curated_registration.captcha_enabled');
         if ($attempts = $request->session()->get('cur-reg-con-attempt')) {
             $showCaptcha = $attempts && $attempts >= 2;
         } else {
@@ -98,7 +98,7 @@ class CuratedRegisterController extends Controller
             'crid' => 'required|integer|min:1',
             'acid' => 'required|integer|min:1',
         ];
-        if (config('instance.curated_registration.captcha_enabled') && $attempts >= 3) {
+        if (config('pixelfed.curated_registration.captcha_enabled') && $attempts >= 3) {
             $rules['h-captcha-response'] = 'required|captcha';
             $messages['h-captcha-response.required'] = 'The captcha must be filled';
         }
@@ -141,7 +141,7 @@ class CuratedRegisterController extends Controller
             'response' => 'required_if:action,message|string|min:20|max:1000',
         ];
         $messages = [];
-        if (config('instance.curated_registration.captcha_enabled')) {
+        if (config('pixelfed.curated_registration.captcha_enabled')) {
             $rules['h-captcha-response'] = 'required|captcha';
             $messages['h-captcha-response.required'] = 'The captcha must be filled';
         }
@@ -219,7 +219,7 @@ class CuratedRegisterController extends Controller
 
         $messages = [];
 
-        if (config('instance.curated_registration.captcha_enabled')) {
+        if (config('pixelfed.curated_registration.captcha_enabled')) {
             $rules['h-captcha-response'] = 'required|captcha';
             $messages['h-captcha-response.required'] = 'The captcha must be filled';
         }
@@ -235,7 +235,7 @@ class CuratedRegisterController extends Controller
             ->whereType('user_resend_email_confirmation')
             ->count();
 
-        if ($totalCount && $totalCount >= config('instance.curated_registration.resend_confirmation_limit')) {
+        if ($totalCount && $totalCount >= config('pixelfed.curated_registration.resend_confirmation_limit')) {
             return redirect()->back()->withErrors(['email' => 'You have re-attempted too many times. To proceed with your application, please <a href="/site/contact" class="text-white" style="text-decoration: underline;">contact the admin team</a>.']);
         }
 
@@ -279,7 +279,7 @@ class CuratedRegisterController extends Controller
             'code' => 'required',
         ];
         $messages = [];
-        if (config('instance.curated_registration.captcha_enabled')) {
+        if (config('pixelfed.curated_registration.captcha_enabled')) {
             $rules['h-captcha-response'] = 'required|captcha';
             $messages['h-captcha-response.required'] = 'The captcha must be filled';
         }
@@ -297,7 +297,7 @@ class CuratedRegisterController extends Controller
         $cr->email_verified_at = now();
         $cr->save();
 
-        if (config('instance.curated_registration.notify.admin.on_verify_email.enabled')) {
+        if (config('pixelfed.curated_registration.notify.admin.on_verify_email.enabled')) {
             CuratedOnboardingNotifyAdminNewApplicationPipeline::dispatch($cr);
         }
 

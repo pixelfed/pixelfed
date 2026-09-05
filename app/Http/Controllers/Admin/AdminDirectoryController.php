@@ -65,7 +65,7 @@ trait AdminDirectoryController
         }
 
         $res['community_guidelines'] = config_cache('app.rules') ? json_decode(config_cache('app.rules'), true) : [];
-        $res['curated_onboarding'] = (bool) config_cache('instance.curated_registration.enabled');
+        $res['curated_onboarding'] = (bool) config_cache('pixelfed.curated_registration.enabled');
         $res['open_registration'] = (bool) config_cache('pixelfed.open_registration');
         $res['oauth_enabled'] = (bool) config_cache('pixelfed.oauth_enabled') &&
             (file_exists(storage_path('oauth-public.key')) || config_cache('passport.public_key')) &&
@@ -246,7 +246,7 @@ trait AdminDirectoryController
         $reqs = [];
         $reqs['feature_config'] = [
             'open_registration' => (bool) config_cache('pixelfed.open_registration'),
-            'curated_onboarding' => (bool) config_cache('instance.curated_registration.enabled'),
+            'curated_onboarding' => (bool) config_cache('pixelfed.curated_registration.enabled'),
             'activitypub_enabled' => config_cache('federation.activitypub.enabled'),
             'oauth_enabled' => (bool) config_cache('pixelfed.oauth_enabled'),
             'media_types' => Str::of(config_cache('pixelfed.media_types'))->explode(','),
