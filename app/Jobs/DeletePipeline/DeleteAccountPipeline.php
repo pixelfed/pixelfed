@@ -76,13 +76,14 @@ class DeleteAccountPipeline implements ShouldQueue
     public function handle()
     {
         $job = ImportJob::find($this->import->id);
-        if (!$job) {
+        if (! $job) {
             return;
         }
 
         $profile = Profile::find($job->profile_id);
-        if (!$profile) {
+        if (! $profile) {
             $job->delete();
+
             return;
         }
 
