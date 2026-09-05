@@ -1,8 +1,6 @@
 services:
-## MariaDB and Redis (optional)
   db:
-    image: mysql:9
-    container_name: pixelfed-db
+    image: container-registry.oracle.com/mysql/community-server@sha256:7dcc4add9183664de3a214daf85a50c3ba6cccfd7534f700b6561bf5b41885be
     restart: unless-stopped
     env_file:
       - .env
@@ -12,53 +10,51 @@ services:
       MYSQL_PASSWORD: ${DB_PASSWORD}
       MYSQL_ROOT_PASSWORD: ${DB_ROOT_PASSWORD}
     volumes:
-      - ./mysql-9-data:/var/lib/mysql
+      - pixelfed-db-data:/var/lib/mysql
     healthcheck:
-      test: ["CMD", "mysqladmin", "ping", "-h", "127.0.0.1", "-u", "root", "-p$$MYSQL_ROOT_PASSWORD"]
+      test: ["CMD-SHELL", "mysqladmin ping -h 127.0.0.1 -u root -p$${MYSQL_ROOT_PASSWORD}"]
       interval: 10s
       timeout: 5s
-      retries: 3
+      retries: 6
       start_period: 30s
     networks:
       - pixelfed-network
 
   redis:
-    image: redis:7-alpine
-    container_name: pixelfed-redis
+    image: redis@sha256:298e5b3bc566bade82f46ad5511777a4a07a294097ce16ada2f6a42be5239df5
     restart: unless-stopped
     command: redis-server --appendonly yes
     volumes:
-      - ./redis-data:/data
+      - pixelfed-redis-data:/data
     healthcheck:
       test: ["CMD", "redis-cli", "ping"]
       interval: 10s
       timeout: 3s
-      retries: 3
+      retries: 6
       start_period: 10s
     networks:
       - pixelfed-network
 
-## Pixelfed containers - App (Web/API), Horizon Queue, Scheduled task.
   pixelfed:
+    image: vinylhub/pixelfed:t2-local
+    pull_policy: build
     build:
       context: .
       dockerfile: Dockerfile
-    container_name: pixelfed-app
     restart: unless-stopped
     ports:
       - "8080:8080"
     env_file:
       - .env
     environment:
-      # SSL Configuration (handled by reverse proxy)
       SSL_MODE: "off"
-
-      # PHP Configuration
+      DB_HOST: "db"
+      DB_PORT: "3306"
+      REDIS_HOST: "redis"
+      REDIS_PORT: "6379"
       PHP_POST_MAX_SIZE: "500M"
       PHP_UPLOAD_MAX_FILE_SIZE: "500M"
       PHP_OPCACHE_ENABLE: "1"
-      
-      # Laravel Auto-run Configuration
       AUTORUN_ENABLED: "true"
       AUTORUN_LARAVEL_MIGRATION: "true"
       AUTORUN_LARAVEL_MIGRATION_ISOLATION: "true"
@@ -69,24 +65,32 @@ services:
       AUTORUN_LARAVEL_CONFIG_CACHE: "true"
 
     volumes:
-      - ./storage:/var/www/html/storage
+      - pixelfed-storage-data:/var/www/html/storage
     depends_on:
-      - db
-      - redis
+      db:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD-SHELL", "curl -fsS http://127.0.0.1:8080/api/v1/instance >/dev/null || exit 1"]
+      interval: 10s
+      timeout: 5s
+      retries: 12
+      start_period: 30s
     networks:
       - pixelfed-network
 
   horizon:
-    build:
-      context: .
-      dockerfile: Dockerfile
-    container_name: pixelfed-horizon
+    image: vinylhub/pixelfed:t2-local
     restart: unless-stopped
     command: ["php", "artisan", "horizon"]
     env_file:
       - .env
     environment:
-      # Laravel Auto-run Configuration
+      DB_HOST: "db"
+      DB_PORT: "3306"
+      REDIS_HOST: "redis"
+      REDIS_PORT: "6379"
       AUTORUN_ENABLED: "false"
       AUTORUN_LARAVEL_MIGRATION: "false"
       AUTORUN_LARAVEL_MIGRATION_ISOLATION: "false"
@@ -99,30 +103,30 @@ services:
       PHP_UPLOAD_MAX_FILE_SIZE: "500M"
       PHP_OPCACHE_ENABLE: "1"
     volumes:
-      - ./storage:/var/www/html/storage
+      - pixelfed-storage-data:/var/www/html/storage
     depends_on:
-      - db
-      - redis
+      pixelfed:
+        condition: service_healthy
     healthcheck:
       test: ["CMD", "php", "artisan", "horizon:status"]
       interval: 10s
       timeout: 5s
-      retries: 3
+      retries: 6
     networks:
       - pixelfed-network
 
   scheduler:
-    build:
-      context: .
-      dockerfile: Dockerfile
-    container_name: pixelfed-scheduler
+    image: vinylhub/pixelfed:t2-local
     restart: unless-stopped
     command: ["php", "artisan", "schedule:work"]
     stop_signal: SIGTERM
     env_file:
       - .env
     environment:
-      # Laravel Auto-run Configuration
+      DB_HOST: "db"
+      DB_PORT: "3306"
+      REDIS_HOST: "redis"
+      REDIS_PORT: "6379"
       AUTORUN_ENABLED: "false"
       AUTORUN_LARAVEL_MIGRATION: "false"
       AUTORUN_LARAVEL_MIGRATION_ISOLATION: "false"
@@ -135,12 +139,15 @@ services:
       PHP_UPLOAD_MAX_FILE_SIZE: "500M"
       PHP_OPCACHE_ENABLE: "1"
     volumes:
-      - ./storage:/var/www/html/storage
+      - pixelfed-storage-data:/var/www/html/storage
     depends_on:
-      - db
-      - redis
+      pixelfed:
+        condition: service_healthy
     healthcheck:
       test: ["CMD", "healthcheck-schedule"]
+      interval: 10s
+      timeout: 5s
+      retries: 6
       start_period: 10s
     networks:
       - pixelfed-network
@@ -148,3 +155,8 @@ services:
 networks:
   pixelfed-network:
     driver: bridge
+
+volumes:
+  pixelfed-db-data:
+  pixelfed-redis-data:
+  pixelfed-storage-data:

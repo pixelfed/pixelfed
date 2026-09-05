@@ -16,8 +16,8 @@ CI/build workflow, branch model and compiled-asset policy remain authoritative.
   with their named owners; do not add their persistence or business logic here.
 - `dev` continues to track Pixelfed's upstream `dev` according to native
   Pixelfed practice. A VinylHub admitted baseline is an explicit exact source
-  commit/tree plus runtime inputs recorded in the admission evidence or PR;
-  moving `dev`, `latest` or an unpinned image tag is not an admitted release.
+  commit/tree plus runtime inputs recorded in current owner authority; moving
+  `dev`, `latest` or an unpinned image tag is not an admitted release.
 - Repository-owned repeatable Skills are canonical under
   `.agents/skills/<skill>/SKILL.md`. `.codex/` is tool-private/local unless a
   future repository contract explicitly gives it another meaning; it is not a
@@ -54,7 +54,7 @@ applicable:
 
 ```text
 task-preflight
-  -> test-environment  mandatory before runtime-dependent T1/T2 execution
+  -> test-environment  mandatory before runtime-dependent OWNER TESTS / OWNER RUNTIME execution
   -> architecture-conformance  architecture-sensitive DELIVERY
   -> acceptance-evidence        completion, safety or runtime claims
   -> delivery-lifecycle         Issue/PR/Milestone/commit delivery
@@ -63,9 +63,27 @@ task-preflight
 Skills describe repeatable HOW only. They do not replace current Issues,
 architecture authority, supported Pixelfed commands or runtime identity.
 
-`test-environment` is a hard gate for T1 OWNER TEST and T2 OWNER RUNTIME /
-OWNER INTEGRATION execution. Before the first command that depends on runtime
-services, record exact source, runner, dependency, service and readiness
-evidence and set `ENVIRONMENT_ADMISSION = PASS`; otherwise set it `BLOCKED` and
-do not promote the dependent result. T0 STATIC has no runtime claim. T3 APP
-COMPOSITION is owned by `mirrorforce/vinyl-catalog-app`, not Pixelfed.
+`test-environment` is a hard gate for OWNER TESTS and OWNER RUNTIME execution.
+Before the first command that depends on runtime services, record exact source,
+runner, dependency, service and readiness evidence and set
+`ENVIRONMENT_ADMISSION = PASS`; otherwise set it `BLOCKED` and do not promote
+the dependent result. STATIC CHECKS have no runtime claim. LOCAL INTEGRATION is
+owned by `mirrorforce/vinyl-catalog-app`, not Pixelfed.
+
+### VinylHub owner-runtime selection
+
+For VinylHub OWNER RUNTIME, the concrete proven Docker profile in
+`.agents/skills/test-environment/SKILL.md` is the repository-local execution
+authority unless a later current Human-approved owner Issue explicitly
+supersedes it.
+
+The repository `docker-compose.yml` is the canonical local VinylHub OWNER
+RUNTIME entrypoint. It must use the exact admitted MySQL and Redis identities
+from `.agents/skills/test-environment/SKILL.md`; native CI remains a separate
+OWNER TESTS strategy. Do not infer owner-runtime identity from a moving tag or
+from an upstream-native default that is not the canonical local entrypoint.
+
+Focused SQLite/native tests may satisfy only the evidence scope they actually
+exercise. They cannot be promoted to MySQL migration/runtime OWNER RUNTIME
+evidence. A separate app-composed LOCAL INTEGRATION topology likewise cannot
+silently replace the Pixelfed OWNER RUNTIME profile.

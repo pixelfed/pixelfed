@@ -1,5 +1,7 @@
-/redis-data
+# Retired local runtime-data paths: safety-only exclusions; never mounted by Compose.
 /mysql-9-data
+/mariadb-11-data
+/redis-data
 .DS_Store
 /.bash_history
 /.bash_profile

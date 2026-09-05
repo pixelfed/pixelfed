@@ -3,10 +3,11 @@
 
 ## Description: Use a different key-value store for Redis
 ## Usage: redis-backend <image> [optimize]
-## Example: ddev redis-backend redis-alpine optimize
+## Example: ddev redis-backend redis optimize
 
 REDIS_DOCKER_IMAGE=${1:-}
 REDIS_CONFIG=${2:-}
+REDIS_PINNED_IMAGE="redis@sha256:298e5b3bc566bade82f46ad5511777a4a07a294097ce16ada2f6a42be5239df5"
 NAME=$REDIS_DOCKER_IMAGE
 
 function show_help() {
@@ -18,8 +19,7 @@ Note that not every Docker image can work right away, and you may need to overri
 the "command:" in the docker-compose.redis_extra.yaml file
 
 Available aliases:
-  redis            redis:7
-  redis-alpine     redis:7-alpine
+  redis            ${REDIS_PINNED_IMAGE}
   valkey           valkey/valkey:8
   valkey-alpine    valkey/valkey:8-alpine
 
@@ -32,9 +32,9 @@ Optional:
   optimized        Same as optimize
 
 Examples:
-  ddev redis-backend redis-alpine optimize
+  ddev redis-backend redis optimize
   ddev redis-backend valkey
-  ddev redis-backend redis:7.2-alpine
+  ddev redis-backend ${REDIS_PINNED_IMAGE}
 EOF
   exit 0
 }
@@ -65,19 +65,15 @@ function check_docker_image() {
 }
 
 function use_docker_image() {
-  [[ "$REDIS_DOCKER_IMAGE" != "redis:7" ]] && ddev dotenv set .ddev/.env.redis --redis-docker-image="$REDIS_DOCKER_IMAGE"
+  [[ "$REDIS_DOCKER_IMAGE" != "$REDIS_PINNED_IMAGE" ]] && ddev dotenv set .ddev/.env.redis --redis-docker-image="$REDIS_DOCKER_IMAGE"
   REPO=$(ddev add-on list --installed -j 2>/dev/null | docker run -i --rm ddev/ddev-utilities jq -r '.raw[] | select(.Name=="redis") | .Repository // empty' 2>/dev/null)
   ddev add-on get "${REPO:-ddev/ddev-redis}"
 }
 
 case "$REDIS_DOCKER_IMAGE" in
   redis)
-    NAME="Redis 7"
-    REDIS_DOCKER_IMAGE="redis:7"
-    ;;
-  redis-alpine)
-    NAME="Redis 7 Alpine"
-    REDIS_DOCKER_IMAGE="redis:7-alpine"
+    NAME="Redis 8.10.1 (pinned)"
+    REDIS_DOCKER_IMAGE="$REDIS_PINNED_IMAGE"
     ;;
   valkey)
     NAME="Valkey 8"

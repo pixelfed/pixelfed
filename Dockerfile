@@ -34,7 +34,13 @@ RUN install-php-extensions \
 
 COPY --chown=www-data:www-data . /var/www/html
 
-RUN chown -R www-data:www-data /var/www/html \
+RUN mkdir -p /var/www/html/storage/app/public \
+    /var/www/html/storage/framework/cache/data \
+    /var/www/html/storage/framework/sessions \
+    /var/www/html/storage/framework/views \
+    /var/www/html/storage/logs \
+    /var/www/html/bootstrap/cache \
+    && chown -R www-data:www-data /var/www/html \
     && find /var/www/html -type f -exec chmod 644 {} \; \
     && find /var/www/html -type d -exec chmod 755 {} \; \
     && chmod -R ug+rwx /var/www/html/storage /var/www/html/bootstrap/cache

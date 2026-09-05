@@ -12,7 +12,7 @@ jobs:
 
     services:
       redis:
-        image: redis:8
+        image: redis@sha256:298e5b3bc566bade82f46ad5511777a4a07a294097ce16ada2f6a42be5239df5
         ports:
           - 6379:6379
         options: >-

@@ -1,7 +1,14 @@
 # Folders
 .git/
 storage/app/public/
+storage/*.key
+storage/framework/
+storage/logs/
+storage/docker/
+# Retired local runtime-data paths: safety-only exclusions; never mounted by Compose.
 mysql-9-data/
+mariadb-11-data/
+redis-data/
 # Laravel
 ## local storage of media excluided from image
 !storage/app/public/m/
@@ -10,8 +17,11 @@ storage/app/public/m/*
 bootstrap/cache/*
 tests/
 # Docker
-mariadb-11-data/
-redis-data/
+# OWNER TESTS-only files: safety-only production build-context exclusions.
+Dockerfile.owner-tests
+Dockerfile.owner-tests.dockerignore
+docker-compose.test.yml
+docker/owner-tests-entrypoint.sh
 # Packages
 node_modules/
 vendor/

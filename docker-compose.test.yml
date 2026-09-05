@@ -1,10 +1,25 @@
 services:
   redis:
-    image: "redis:8"
-    ports:
-      - "6379:6379"
+    image: "redis@sha256:298e5b3bc566bade82f46ad5511777a4a07a294097ce16ada2f6a42be5239df5"
     healthcheck:
       test: ["CMD", "redis-cli", "ping"]
       interval: 2s
       timeout: 3s
       retries: 5
+
+  owner-tests:
+    image: vinylhub/pixelfed-owner-tests:php85
+    build:
+      context: .
+      dockerfile: Dockerfile.owner-tests
+      args:
+        PHP_BASE_IMAGE: serversideup/php:8.5-cli@sha256:057168be5fc8304ee8a86cf049d4eb9bd605a250b588ab7bd32499bfc794b05a
+        SOURCE_SHA: ${OWNER_TEST_SOURCE_SHA:?OWNER_TEST_SOURCE_SHA must be the exact current commit SHA}
+        SOURCE_TREE: ${OWNER_TEST_SOURCE_TREE:?OWNER_TEST_SOURCE_TREE must be the exact current tree SHA}
+        COMPOSER_LOCK_SHA: ${OWNER_TEST_COMPOSER_LOCK_SHA:?OWNER_TEST_COMPOSER_LOCK_SHA must be the exact composer.lock SHA256}
+    environment:
+      REDIS_HOST: redis
+      REDIS_PORT: 6379
+    depends_on:
+      redis:
+        condition: service_healthy
