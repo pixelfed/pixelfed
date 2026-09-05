@@ -29,7 +29,7 @@ it('confirms password with correct credentials', function () {
     $user->refresh();
 
     $this->actingAs($user)
-        ->post('/i/auth/sudo', [
+        ->post(route('password.confirm'), [
             'password' => 'my-password',
         ])->assertRedirect();
 
@@ -45,7 +45,7 @@ it('rejects password confirmation with wrong password', function () {
     $user->refresh();
 
     $this->actingAs($user)
-        ->post('/i/auth/sudo', [
+        ->post(route('password.confirm'), [
             'password' => 'wrong-password',
         ])->assertRedirect()
         ->assertSessionHasErrors('password');

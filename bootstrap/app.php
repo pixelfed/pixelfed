@@ -44,6 +44,7 @@ use Laravel\Passport\Http\Middleware\CheckTokenForAnyScope;
 use Laravel\Passport\Http\Middleware\CreateFreshApiToken;
 use Laravel\Sanctum\Http\Middleware\EnsureFrontendRequestsAreStateful;
 use League\OAuth2\Server\Exception\OAuthServerException;
+use Spatie\Honeypot\ProtectAgainstSpam;
 use Symfony\Component\HttpKernel\Exception\HttpExceptionInterface;
 
 return Application::configure(basePath: dirname(__DIR__))
@@ -126,6 +127,7 @@ return Application::configure(basePath: dirname(__DIR__))
             'signed' => ValidateSignature::class,
             'throttle' => ThrottleRequests::class,
             'twofactor' => TwoFactorAuth::class,
+            'honeypot' => ProtectAgainstSpam::class,
             'validemail' => EmailVerificationCheck::class,
             'interstitial' => AccountInterstitial::class,
             'scopes' => CheckToken::class,

@@ -23,10 +23,6 @@ it('creates a user with valid registration data', function () {
     config(['pixelfed.max_users' => 1000]);
     config(['instance.enable_cc' => false]);
 
-    // Visit the register page first to seed the RT token in cache
-    $this->get('/register')->assertOk();
-    $rt = cache()->get('pf:register:rt');
-
     $response = $this->post('/register', [
         'name' => 'Test User',
         'username' => 'testuser',
@@ -35,7 +31,6 @@ it('creates a user with valid registration data', function () {
         'password_confirmation' => 'SecurePass123!',
         'agree' => 'on',
         'agecheck' => 'on',
-        'rt' => $rt,
     ]);
 
     $response->assertRedirect();
