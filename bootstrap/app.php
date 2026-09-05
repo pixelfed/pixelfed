@@ -10,6 +10,7 @@ use App\Http\Middleware\Localization;
 use App\Http\Middleware\RedirectIfAuthenticated;
 use App\Http\Middleware\RestrictedAccess;
 use App\Http\Middleware\TwoFactorAuth;
+use App\Http\Middleware\VinylHubServiceAuth;
 use Illuminate\Auth\AuthenticationException;
 use Illuminate\Auth\Middleware\Authenticate;
 use Illuminate\Auth\Middleware\AuthenticateWithBasicAuth;
@@ -127,6 +128,7 @@ return Application::configure(basePath: dirname(__DIR__))
             'throttle' => ThrottleRequests::class,
             'twofactor' => TwoFactorAuth::class,
             'validemail' => EmailVerificationCheck::class,
+            'vinylhub.service' => VinylHubServiceAuth::class,
             'interstitial' => AccountInterstitial::class,
             'scopes' => CheckToken::class,
             'scope' => CheckTokenForAnyScope::class,

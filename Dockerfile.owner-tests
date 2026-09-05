@@ -1,0 +1,41 @@
+ARG PHP_BASE_IMAGE=serversideup/php:8.5-cli@sha256:057168be5fc8304ee8a86cf049d4eb9bd605a250b588ab7bd32499bfc794b05a
+FROM ${PHP_BASE_IMAGE}
+
+ARG SOURCE_SHA=unknown
+ARG SOURCE_TREE=unknown
+ARG COMPOSER_LOCK_SHA=unknown
+
+LABEL org.opencontainers.image.title="Pixelfed owner tests" \
+      org.opencontainers.image.source-sha="${SOURCE_SHA}" \
+      org.opencontainers.image.source-tree="${SOURCE_TREE}" \
+      org.opencontainers.image.composer-lock-sha="${COMPOSER_LOCK_SHA}"
+
+ENV OWNER_TEST_SOURCE_SHA="${SOURCE_SHA}" \
+    OWNER_TEST_SOURCE_TREE="${SOURCE_TREE}" \
+    OWNER_TEST_COMPOSER_LOCK_SHA="${COMPOSER_LOCK_SHA}" \
+    COMPOSER_ALLOW_SUPERUSER=1
+
+USER root
+WORKDIR /var/www/html
+
+RUN apt-get update \
+    && apt-get install -y --no-install-recommends libsqlite3-dev unzip zip \
+    && rm -rf /var/lib/apt/lists/* \
+    && install-php-extensions bcmath exif ffi gd intl
+
+COPY --chown=www-data:www-data . /var/www/html
+
+RUN mkdir -p \
+        storage/framework/cache/data \
+        storage/framework/sessions \
+        storage/framework/views \
+        storage/logs \
+        bootstrap/cache \
+    && chown -R www-data:www-data storage bootstrap/cache \
+    && composer install --no-ansi --no-interaction --prefer-dist --no-progress \
+    && chown -R www-data:www-data vendor storage bootstrap/cache
+
+COPY --chmod=755 docker/owner-tests-entrypoint.sh /usr/local/bin/pixelfed-owner-tests
+
+USER www-data
+ENTRYPOINT ["/usr/local/bin/pixelfed-owner-tests"]

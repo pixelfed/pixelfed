@@ -1,0 +1,14 @@
+.git/
+.env
+.env.*
+!.env.testing
+storage/*.key
+storage/framework/
+storage/logs/
+storage/docker/
+mysql-9-data/
+mariadb-11-data/
+redis-data/
+vendor/
+node_modules/
+.ddev/
