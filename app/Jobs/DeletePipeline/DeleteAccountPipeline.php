@@ -172,14 +172,13 @@ class DeleteAccountPipeline implements ShouldQueue
         Mention::whereProfileId($id)->forceDelete();
 
         StoryView::whereProfileId($id)->delete();
-        $stories = Story::whereProfileId($id)->get();
-        foreach ($stories as $story) {
+        Story::whereProfileId($id)->cursor()->each(function ($story) {
             $path = storage_path('app/'.$story->path);
             if (is_file($path)) {
                 unlink($path);
             }
             $story->forceDelete();
-        }
+        });
 
         UserDevice::whereUserId($user->id)->forceDelete();
         UserFilter::whereUserId($user->id)->forceDelete();
@@ -190,11 +189,10 @@ class DeleteAccountPipeline implements ShouldQueue
             ->orWhere('actor_id', $id)
             ->forceDelete();
 
-        $collections = Collection::whereProfileId($id)->get();
-        foreach ($collections as $collection) {
+        Collection::whereProfileId($id)->cursor()->each(function ($collection) {
             $collection->items()->delete();
             $collection->delete();
-        }
+        });
         Contact::whereUserId($user->id)->delete();
         HashtagFollow::whereUserId($user->id)->delete();
         OauthClient::whereUserId($user->id)->delete();

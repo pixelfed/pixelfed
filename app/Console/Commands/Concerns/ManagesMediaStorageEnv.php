@@ -12,6 +12,12 @@ use Illuminate\Support\Facades\Storage;
  * installer's vetted approach) and applying the change to the live runtime
  * so that new uploads route to the correct backend during a migration on a
  * hot (running) server, without requiring a restart.
+ *
+ * The .env write is best-effort: containerized/managed deployments often have
+ * no writable .env file (env is injected externally), so a missing or
+ * read-only file must not abort the migration. The runtime config + DB-backed
+ * config cache are the load-bearing updates; .env persistence is only a
+ * "survives a restart" convenience.
  */
 trait ManagesMediaStorageEnv
 {
@@ -20,12 +26,8 @@ trait ManagesMediaStorageEnv
      */
     protected function readEnvValue(string $key): ?string
     {
-        $envPath = app()->environmentFilePath();
-        if (! is_file($envPath)) {
-            return null;
-        }
-        $payload = file_get_contents($envPath);
-        if ($payload === false) {
+        $payload = $this->readEnvFile();
+        if ($payload === null) {
             return null;
         }
         if (! preg_match("/^{$key}=([^\r\n]*)/m", $payload, $m)) {
@@ -44,8 +46,12 @@ trait ManagesMediaStorageEnv
      */
     protected function setStorageEnv(string $envKey, string $envValue, string $configKey, $configValue): void
     {
-        // 1. Persist to .env atomically (survives restarts).
-        $this->updateEnvFile($envKey, $envValue);
+        // 1. Persist to .env atomically (survives restarts). Best-effort:
+        //    skips gracefully when there is no writable .env (e.g. containers
+        //    that inject config via real environment variables).
+        if (! $this->updateEnvFile($envKey, $envValue)) {
+            $this->warn('Could not persist '.$envKey.' to .env (missing or read-only). '.'Applied to the live runtime and config cache only; set '.$envKey.'='.$envValue.' in your environment to make it survive a restart.');
+        }
 
         // 2. Update the live runtime config for the current process.
         config([$configKey => $configValue]);
@@ -76,10 +82,30 @@ trait ManagesMediaStorageEnv
 
     // ---- Atomic .env writer (adapted from Installer) ---------------------
 
-    protected function updateEnvFile($key, $value): void
+    /**
+     * Read the .env file contents, or null when it is absent/unreadable.
+     */
+    protected function readEnvFile(): ?string
     {
         $envPath = app()->environmentFilePath();
+        if (! is_file($envPath) || ! is_readable($envPath)) {
+            return null;
+        }
         $payload = file_get_contents($envPath);
+
+        return $payload === false ? null : $payload;
+    }
+
+    /**
+     * Persist a key/value to .env. Returns true on success, false when there
+     * is no writable .env file to update (caller decides how to warn).
+     */
+    protected function updateEnvFile($key, $value): bool
+    {
+        $payload = $this->readEnvFile();
+        if ($payload === null) {
+            return false;
+        }
 
         $value = str_replace(['\\', '"', "\n", "\r"], ['\\\\', '\\"', '\\n', '\\r'], $value);
 
@@ -89,7 +115,7 @@ trait ManagesMediaStorageEnv
             $payload = $payload."\n{$key}=\"{$value}\"\n";
         }
 
-        $this->storeEnv($payload);
+        return $this->storeEnv($payload);
     }
 
     protected function existingEnv($needle, $haystack)
@@ -102,21 +128,34 @@ trait ManagesMediaStorageEnv
         return false;
     }
 
-    protected function storeEnv($payload): void
+    /**
+     * Atomically write the .env payload. Returns true on success, false when
+     * the file/directory is not writable (rather than throwing), so a hot
+     * migration can continue with runtime + config-cache updates only.
+     */
+    protected function storeEnv($payload): bool
     {
         $envPath = app()->environmentFilePath();
+
+        if (! is_writable(dirname($envPath)) || (is_file($envPath) && ! is_writable($envPath))) {
+            return false;
+        }
+
         $tempPath = $envPath.'.tmp';
 
-        $file = fopen($tempPath, 'w');
+        $file = @fopen($tempPath, 'w');
         if ($file === false) {
-            throw new \RuntimeException("Cannot write to {$tempPath}");
+            return false;
         }
         fwrite($file, $payload);
         fclose($file);
 
-        if (! rename($tempPath, $envPath)) {
+        if (! @rename($tempPath, $envPath)) {
             @unlink($tempPath);
-            throw new \RuntimeException('Cannot update .env file');
+
+            return false;
         }
+
+        return true;
     }
 }

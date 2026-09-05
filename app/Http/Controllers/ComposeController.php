@@ -14,7 +14,6 @@ use App\Models\Notification;
 use App\Models\Poll;
 use App\Models\Profile;
 use App\Models\Status;
-use App\Models\UserFilter;
 use App\Services\AccountService;
 use App\Services\CollectionService;
 use App\Services\MediaBlocklistService;
@@ -23,6 +22,7 @@ use App\Services\MediaStorageService;
 use App\Services\MediaTagService;
 use App\Services\PlaceService;
 use App\Services\SnowflakeService;
+use App\Services\UserFilterService;
 use App\Services\UserRoleService;
 use App\Services\UserStorageService;
 use App\Transformer\Api\MediaTransformer;
@@ -262,12 +262,7 @@ class ComposeController extends Controller
 
         abort_if($user->has_roles && ! UserRoleService::can('can-post', $user->id), 403, 'Invalid permissions for this action');
 
-        $blocked = UserFilter::whereFilterableType(Profile::class)
-            ->whereFilterType('block')
-            ->whereFilterableId($request->user()->profile_id)
-            ->pluck('user_id');
-
-        $blocked->push($request->user()->profile_id);
+        $blocked = UserFilterService::searchExcludedProfileIds($request->user()->profile_id);
 
         $operator = config('database.default') === 'pgsql' ? 'ilike' : 'like';
         $results = Profile::select([
@@ -454,11 +449,7 @@ class ComposeController extends Controller
             return [];
         }
 
-        $blocked = UserFilter::whereFilterableType(Profile::class)
-            ->whereFilterType('block')
-            ->whereFilterableId($request->user()->profile_id)
-            ->pluck('user_id')
-            ->push($request->user()->profile_id);
+        $blocked = UserFilterService::searchExcludedProfileIds($request->user()->profile_id);
 
         $currentUserId = $request->user()->profile_id;
         $operator = config('database.default') === 'pgsql' ? 'ilike' : 'like';

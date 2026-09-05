@@ -1034,7 +1034,7 @@ class Helpers
         if ($inReplyTo) {
             $reply_to = self::statusFirstOrFetch($inReplyTo);
             if ($reply_to) {
-                $reply_to = optional($reply_to)->id;
+                $reply_to = $reply_to?->id;
             }
         } else {
             $reply_to = null;

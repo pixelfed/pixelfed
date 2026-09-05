@@ -13,6 +13,7 @@ use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Cache;
+use Illuminate\Support\Facades\DB;
 
 class SeasonalController extends Controller
 {
@@ -50,21 +51,25 @@ class SeasonalController extends Controller
         $shared = Cache::remember($siteKey, $siteTtl, function () use ($epochStart, $epochEnd) {
             return [
                 'average' => [
-                    'posts' => round(Status::selectRaw('*, count(profile_id) as count')
-                        ->whereNull('uri')
-                        ->whereIn('type', ['photo', 'photo:album', 'video', 'video:album', 'photo:video:album'])
-                        ->where('created_at', '>', $epochStart)
-                        ->where('created_at', '<', $epochEnd)
-                        ->groupBy('profile_id')
-                        ->pluck('count')
-                        ->avg()),
+                    'posts' => round((float) DB::query()->fromSub(
+                        Status::query()
+                            ->whereNull('uri')
+                            ->whereIn('type', ['photo', 'photo:album', 'video', 'video:album', 'photo:video:album'])
+                            ->where('created_at', '>', $epochStart)
+                            ->where('created_at', '<', $epochEnd)
+                            ->groupBy('profile_id')
+                            ->selectRaw('count(*) as count'),
+                        'per_profile'
+                    )->avg('count')),
 
-                    'likes' => round(Like::selectRaw('*, count(profile_id) as count')
-                        ->where('created_at', '>', $epochStart)
-                        ->where('created_at', '<', $epochEnd)
-                        ->groupBy('profile_id')
-                        ->pluck('count')
-                        ->avg()),
+                    'likes' => round((float) DB::query()->fromSub(
+                        Like::query()
+                            ->where('created_at', '>', $epochStart)
+                            ->where('created_at', '<', $epochEnd)
+                            ->groupBy('profile_id')
+                            ->selectRaw('count(*) as count'),
+                        'per_profile'
+                    )->avg('count')),
                 ],
 
                 'popular' => [

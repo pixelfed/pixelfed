@@ -570,7 +570,7 @@ class AdminController extends Controller
             } elseif ($sort == 'remote') {
                 return $query->latest()->where('domain', '!=', config('pixelfed.domain.app'));
             } elseif ($sort == 'duplicates') {
-                return $query->latest()->groupBy('shortcode')->havingRaw('count(*) > 1');
+                return $query->latest()->duplicateShortcodes();
             } elseif ($sort == 'disabled') {
                 return $query->latest()->whereDisabled(true);
             } elseif ($sort == 'search') {
@@ -598,9 +598,9 @@ class AdminController extends Controller
             ];
 
             if ($pg) {
-                $res['duplicate'] = CustomEmoji::select('shortcode')->groupBy('shortcode')->havingRaw('count(*) > 1')->count();
+                $res['duplicate'] = CustomEmoji::select('shortcode')->duplicateShortcodes()->count();
             } else {
-                $res['duplicate'] = CustomEmoji::groupBy('shortcode')->havingRaw('count(*) > 1')->count();
+                $res['duplicate'] = CustomEmoji::duplicateShortcodes()->count();
             }
 
             return $res;

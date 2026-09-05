@@ -170,7 +170,7 @@ class MediaFilterCleanup extends Command
                         'remote_media' => (bool) $m->remote_media ? 'true' : 'false',
                         'mime' => $m->mime,
                         'size' => $m->size,
-                        'created_at' => optional($m->created_at)->toDateTimeString(),
+                        'created_at' => $m->created_at?->toDateTimeString(),
                         'media_path' => $m->media_path,
                     ];
 

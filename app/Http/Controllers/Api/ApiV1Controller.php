@@ -800,6 +800,7 @@ class ApiV1Controller extends Controller
             'since_id' => 'nullable|integer|min:0|max:'.PHP_INT_MAX,
             'min_id' => 'nullable|integer|min:0|max:'.PHP_INT_MAX,
             'limit' => 'nullable|integer|min:1',
+            'only_reposts' => 'nullable',
         ]);
 
         $napi = $request->has(self::PF_API_ENTITY_KEY);
@@ -826,14 +827,20 @@ class ApiV1Controller extends Controller
         }
 
         $pid = $request->user()->profile_id;
-        $scope = $request->only_media == true ?
-            ['photo', 'photo:album', 'video', 'video:album'] :
-            ['photo', 'photo:album', 'video', 'video:album', 'share', 'reply'];
+        $onlyReblogs = $request->boolean('only_reposts');
 
-        if ($request->only_media && $request->has('media_type')) {
-            $mt = $request->input('media_type');
-            if ($mt == 'video') {
-                $scope = ['video', 'video:album'];
+        if ($onlyReblogs) {
+            $scope = ['share'];
+        } else {
+            $scope = $request->only_media == true ?
+                ['photo', 'photo:album', 'video', 'video:album'] :
+                ['photo', 'photo:album', 'video', 'video:album', 'share', 'reply'];
+
+            if ($request->only_media && $request->has('media_type')) {
+                $mt = $request->input('media_type');
+                if ($mt == 'video') {
+                    $scope = ['video', 'video:album'];
+                }
             }
         }
 
@@ -852,7 +859,8 @@ class ApiV1Controller extends Controller
 
         $dir = $min_id !== null ? '>' : '<';
         $id = $min_id ?? $max_id;
-        $res = Status::select(
+
+        $query = Status::select(
             'profile_id',
             'in_reply_to_id',
             'reblog_of_id',
@@ -863,17 +871,28 @@ class ApiV1Controller extends Controller
         )
             ->whereProfileId($profile['id'])
             ->whereNull('in_reply_to_id')
-            ->whereNull('reblog_of_id')
             ->whereIn('type', $scope)
             ->where('id', $dir, $id)
             ->whereIn('scope', $visibility)
             ->limit($limit)
-            ->orderByDesc('id')
+            ->orderByDesc('id');
+
+        if ($onlyReblogs) {
+            $query->whereNotNull('reblog_of_id');
+        } else {
+            $query->whereNull('reblog_of_id');
+        }
+
+        $res = $query
             ->get()
-            ->map(function ($s) use ($user, $napi, $profile) {
+            ->map(function ($s) use ($user, $napi, $profile, $onlyReblogs) {
                 try {
                     $status = $napi ? StatusService::get($s->id, false) : StatusService::getMastodon($s->id, false);
                 } catch (\Exception $e) {
+                    return false;
+                }
+
+                if (! $status) {
                     return false;
                 }
 
@@ -881,10 +900,31 @@ class ApiV1Controller extends Controller
                     $status['account'] = $profile;
                 }
 
-                if ($user && $status) {
-                    $status['favourited'] = (bool) LikeService::liked($user->profile_id, $s->id);
-                    $status['reblogged'] = (bool) ReblogService::get($user->profile_id, $s->id);
-                    $status['bookmarked'] = (bool) BookmarkService::get($user->profile_id, $s->id);
+                $interactionId = $s->id;
+
+                if ($onlyReblogs) {
+                    try {
+                        $reblog = $napi ? StatusService::get($s->reblog_of_id, false) : StatusService::getMastodon($s->reblog_of_id, false);
+                    } catch (\Exception $e) {
+                        return false;
+                    }
+
+                    if (
+                        ! $reblog ||
+                        ! isset($reblog['account']['id']) ||
+                        ! in_array($reblog['visibility'] ?? null, ['public', 'unlisted'])
+                    ) {
+                        return false;
+                    }
+
+                    $status['reblog'] = $reblog;
+                    $interactionId = $s->reblog_of_id;
+                }
+
+                if ($user) {
+                    $status['favourited'] = (bool) LikeService::liked($user->profile_id, $interactionId);
+                    $status['reblogged'] = (bool) ReblogService::get($user->profile_id, $interactionId);
+                    $status['bookmarked'] = (bool) BookmarkService::get($user->profile_id, $interactionId);
                 }
 
                 return $status;
@@ -2482,17 +2522,11 @@ class ApiV1Controller extends Controller
         ]);
 
         $pid = $request->user()->profile_id;
-        $limit = $request->input('limit', 20);
-        $ogLimit = $request->input('limit', 20);
-        if ($limit > 40) {
-            $limit = 40;
-            $ogLimit = 40;
-        }
+        $limit = min((int) $request->input('limit', 20), 40);
 
         $since = $request->input('since_id');
         $min = $request->input('min_id');
         $max = $request->input('max_id');
-        $pe = $request->filled('_pe');
 
         if (! $since && ! $min && ! $max) {
             $min = 1;
@@ -2503,87 +2537,25 @@ class ApiV1Controller extends Controller
         }
 
         $types = $request->input('types');
-
-        if ($request->has('types')) {
-            $limit = 150;
+        if (is_string($types)) {
+            $types = [$types];
         }
+        $types = $types ? array_values(array_filter($types)) : null;
 
-        $maxId = null;
-        $minId = null;
         AccountService::setLastActive($request->user()->id);
 
-        $res = $max ?
-            NotificationService::getMaxMastodon($pid, $max, $limit) :
-            NotificationService::getMinMastodon($pid, $min ?? $since, $limit);
-        $ids = $max ?
-            NotificationService::getRankedMaxId($pid, $max, $limit) :
-            NotificationService::getRankedMinId($pid, $min ?? $since, $limit);
-        if (! empty($ids)) {
-            $maxId = max($ids);
-            $minId = min($ids);
+        $page = $max
+            ? NotificationService::getMaxMastodonPage($pid, $max, $limit, $types)
+            : NotificationService::getMinMastodonPage($pid, $min ?? $since, $limit, $types);
+
+        if (empty($page['data']) && ! Cache::has('pf:services:notifications:hasSynced:'.$pid)) {
+            Cache::put('pf:services:notifications:hasSynced:'.$pid, 1, 1209600);
+            NotificationWarmUserCache::dispatch($pid);
         }
 
-        if (empty($res)) {
-            if (! Cache::has('pf:services:notifications:hasSynced:'.$pid)) {
-                Cache::put('pf:services:notifications:hasSynced:'.$pid, 1, 1209600);
-                NotificationWarmUserCache::dispatch($pid);
-            }
-        }
-
-        if ($request->has('types')) {
-            $typesParams = collect($types)->implode('&types[]=');
-            $baseUrl = config('app.url').'/api/v1/notifications?types[]='.$typesParams.'&limit='.$ogLimit.'&';
-        } else {
-            $baseUrl = config('app.url').'/api/v1/notifications?limit='.$ogLimit.'&';
-        }
-
-        if ($minId == $maxId) {
-            $minId = null;
-        }
-
-        $res = collect($res)
-            ->map(function ($n) use ($pe) {
-                if (! $pe) {
-                    if ($n['type'] == 'comment') {
-                        $n['type'] = 'mention';
-
-                        return $n;
-                    }
-
-                    return $n;
-                }
-
-                return $n;
-            })
-            ->filter(function ($n) use ($pe) {
-                if (in_array($n['type'], ['mention', 'reblog', 'favourite'])) {
-                    return isset($n['status'], $n['status']['id']);
-                }
-
-                if (in_array($n['type'], ['follow'])) {
-                    return isset($n['account'], $n['account']['id']);
-                }
-
-                if (! $pe) {
-                    if (in_array($n['type'], [
-                        'tagged',
-                        'modlog',
-                        'story:react',
-                        'story:comment',
-                        'group:comment',
-                        'group:join:approved',
-                        'group:join:rejected',
-                    ])) {
-                        return false;
-                    }
-
-                    return isset($n['account'], $n['account']['id']);
-                }
-
-                return true;
-            })
+        $res = collect($page['data'])
             ->map(function ($n) use ($pid) {
-                if (isset($n['status'])) {
+                if (isset($n['status']['id'])) {
                     $n['status']['favourited'] = (bool) LikeService::liked($pid, $n['status']['id']);
                     $n['status']['reblogged'] = (bool) ReblogService::get($pid, $n['status']['id']);
                     $n['status']['bookmarked'] = (bool) BookmarkService::get($pid, $n['status']['id']);
@@ -2591,29 +2563,22 @@ class ApiV1Controller extends Controller
 
                 return $n;
             })
-            ->filter(function ($n) use ($types) {
-                if (! $types) {
-                    return true;
-                }
-
-                return in_array($n['type'], $types);
-            })
-            ->take($ogLimit)
             ->values();
 
-        if ($maxId) {
-            $link = '<'.$baseUrl.'max_id='.$minId.'>; rel="next"';
+        $baseUrl = config('app.url').'/api/v1/notifications?limit='.$limit.'&';
+        if ($types) {
+            $baseUrl .= 'types[]='.implode('&types[]=', $types).'&';
         }
 
-        if ($minId) {
-            $link = '<'.$baseUrl.'min_id='.$maxId.'>; rel="prev"';
+        $links = [];
+        if ($page['next_max_id']) {
+            $links[] = '<'.$baseUrl.'max_id='.$page['next_max_id'].'>; rel="next"';
+        }
+        if ($page['prev_min_id']) {
+            $links[] = '<'.$baseUrl.'min_id='.$page['prev_min_id'].'>; rel="prev"';
         }
 
-        if ($maxId && $minId) {
-            $link = '<'.$baseUrl.'max_id='.$minId.'>; rel="next",<'.$baseUrl.'min_id='.$maxId.'>; rel="prev"';
-        }
-
-        $headers = isset($link) ? ['Link' => $link] : [];
+        $headers = $links ? ['Link' => implode(',', $links)] : [];
 
         return $this->json($res, 200, $headers);
     }
@@ -2762,11 +2727,7 @@ class ApiV1Controller extends Controller
             return $this->json($res->toArray(), 200, $headers);
         }
 
-        $following = Cache::remember('profile:following:'.$pid, 1209600, function () use ($pid) {
-            $following = Follower::whereProfileId($pid)->pluck('following_id');
-
-            return $following->push($pid)->toArray();
-        });
+        $following = FollowerService::getFollowingIds($pid);
 
         $muted = UserFilterService::mutes($pid);
 
@@ -2921,7 +2882,7 @@ class ApiV1Controller extends Controller
                 ->values();
         }
 
-        $baseUrl = config('app.url').'/api/v1/timelines/home?limit='.$limit.'&';
+        $baseUrl = $napi ? config('app.url').'/api/v1/timelines/home?limit='.$limit.'&_pe=1&' : config('app.url').'/api/v1/timelines/home?limit='.$limit.'&';
         $minId = $res->map(function ($s) {
             return ['id' => $s['id']];
         })->min('id');
@@ -3209,7 +3170,7 @@ class ApiV1Controller extends Controller
             ->take($limit)
             ->values();
 
-        $baseUrl = config('app.url').'/api/v1/timelines/public?limit='.$limit.'&';
+        $baseUrl = $napi ? config('app.url').'/api/v1/timelines/public?limit='.$limit.'&_pe=1&' : config('app.url').'/api/v1/timelines/public?limit='.$limit.'&';
         if ($remote) {
             $baseUrl .= 'remote=1&';
         }

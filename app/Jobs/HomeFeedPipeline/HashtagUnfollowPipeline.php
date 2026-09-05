@@ -2,8 +2,8 @@
 
 namespace App\Jobs\HomeFeedPipeline;
 
-use App\Models\Follower;
 use App\Models\Hashtag;
+use App\Services\FollowerService;
 use App\Services\HomeTimelineService;
 use App\Services\StatusService;
 use Illuminate\Bus\Queueable;
@@ -11,7 +11,6 @@ use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
-use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Log;
 
 class HashtagUnfollowPipeline implements ShouldQueue
@@ -76,11 +75,7 @@ class HashtagUnfollowPipeline implements ShouldQueue
 
         $statusIds = HomeTimelineService::get($pid, 0, -1);
 
-        $followingIds = Cache::remember('profile:following:'.$pid, 1209600, function () use ($pid) {
-            $following = Follower::whereProfileId($pid)->pluck('following_id');
-
-            return $following->push($pid)->toArray();
-        });
+        $followingIds = FollowerService::getFollowingIds($pid);
 
         foreach ($statusIds as $id) {
             $status = StatusService::get($id, false);

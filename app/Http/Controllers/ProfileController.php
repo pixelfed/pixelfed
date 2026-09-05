@@ -76,7 +76,7 @@ class ProfileController extends Controller
             $key = 'profile:settings:'.$user->id;
             $ttl = now()->addHours(6);
             $settings = Cache::remember($key, $ttl, function () use ($user) {
-                $s = optional($user->user)->settings;
+                $s = $user->user?->settings;
 
                 return [
                     'crawlable' => $s->crawlable ?? true,
@@ -111,7 +111,7 @@ class ProfileController extends Controller
             $key = 'profile:settings:'.$user->id;
             $ttl = now()->addHours(6);
             $settings = Cache::remember($key, $ttl, function () use ($user) {
-                $s = optional($user->user)->settings;
+                $s = $user->user?->settings;
 
                 return [
                     'crawlable' => $s->crawlable ?? true,
