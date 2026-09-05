@@ -85,7 +85,7 @@
                         </td>
                         <td class="align-middle">
                             <p class="mb-0">
-                                {{ Str::limit(\Illuminate\Support\Str::mask($record->email, '*', 5, 10), 10) }}
+                                {{ $record->email }}
                             </p>
                         </td>
                         <td class="align-middle">{{ $record->created_at->diffForHumans() }}</td>
