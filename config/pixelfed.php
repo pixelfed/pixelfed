@@ -11,8 +11,8 @@ return [
     |
     */
     'domain' => [
-        'admin' => env('ADMIN_DOMAIN', parse_url(env('APP_URL'))),
-        'app' => env('APP_DOMAIN', parse_url(env('APP_URL'))),
+        'admin' => env('ADMIN_DOMAIN', parse_url(env('APP_URL'), PHP_URL_HOST)),
+        'app' => env('APP_DOMAIN', parse_url(env('APP_URL'), PHP_URL_HOST)),
     ],
 
     /*
