@@ -116,9 +116,11 @@ return [
     | Session Cookie Name
     |--------------------------------------------------------------------------
     |
-    | Here you may change the name of the cookie used to identify a session
-    | instance by ID. The name specified here will get used every time a
-    | new session cookie is created by the framework for every driver.
+    | Here you may change the name of the session cookie that is created by
+    | the framework. The name defaults to `pxfs-<APP_URL host>` so each
+    | instance has a unique cookie name (preventing cross-subdomain cookie
+    | collisions). Set SESSION_COOKIE explicitly to override this default
+    | (note: changing the cookie name logs out existing sessions once).
     |
     */
 
