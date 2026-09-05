@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "14279f1a369267fb9ebf6a6fc0b6205f",
+    "content-hash": "9b7917a5a2e293b22d9d36ce7f22d95b",
     "packages": [
         {
             "name": "aws/aws-crt-php",
@@ -7214,6 +7214,82 @@
                 }
             ],
             "time": "2026-02-15T19:05:20+00:00"
+        },
+        {
+            "name": "spatie/laravel-honeypot",
+            "version": "4.7.2",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/spatie/laravel-honeypot.git",
+                "reference": "b99f668c5b673ddc8abbc58743584339cc8db3a9"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/spatie/laravel-honeypot/zipball/b99f668c5b673ddc8abbc58743584339cc8db3a9",
+                "reference": "b99f668c5b673ddc8abbc58743584339cc8db3a9",
+                "shasum": ""
+            },
+            "require": {
+                "illuminate/contracts": "^11.0|^12.0|^13.0",
+                "illuminate/encryption": "^11.0|^12.0|^13.0",
+                "illuminate/http": "^11.0|^12.0|^13.0",
+                "illuminate/support": "^11.0|^12.0|^13.0",
+                "illuminate/validation": "^11.0|^12.0|^13.0",
+                "nesbot/carbon": "^2.0|^3.0",
+                "php": "^8.2",
+                "spatie/laravel-package-tools": "^1.9",
+                "symfony/http-foundation": "^7.0|^8.0"
+            },
+            "require-dev": {
+                "livewire/livewire": "^3.0|^4.0",
+                "orchestra/testbench": "^9.0|^10.0|^11.0",
+                "pestphp/pest": "^2.0|^3.0|^4.0",
+                "pestphp/pest-plugin-livewire": "^1.0|^2.1|^3.0|^4.0",
+                "spatie/pest-plugin-snapshots": "^1.1|^2.1",
+                "spatie/phpunit-snapshot-assertions": "^4.2|^5.1",
+                "spatie/test-time": "^1.2.1"
+            },
+            "type": "library",
+            "extra": {
+                "laravel": {
+                    "providers": [
+                        "Spatie\\Honeypot\\HoneypotServiceProvider"
+                    ]
+                }
+            },
+            "autoload": {
+                "psr-4": {
+                    "Spatie\\Honeypot\\": "src"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Freek Van der Herten",
+                    "email": "freek@spatie.be",
+                    "homepage": "https://spatie.be",
+                    "role": "Developer"
+                }
+            ],
+            "description": "Preventing spam submitted through forms",
+            "homepage": "https://github.com/spatie/laravel-honeypot",
+            "keywords": [
+                "laravel-honeypot",
+                "spatie"
+            ],
+            "support": {
+                "source": "https://github.com/spatie/laravel-honeypot/tree/4.7.2"
+            },
+            "funding": [
+                {
+                    "url": "https://spatie.be/open-source/support-us",
+                    "type": "custom"
+                }
+            ],
+            "time": "2026-06-25T15:09:40+00:00"
         },
         {
             "name": "spatie/laravel-image-optimizer",

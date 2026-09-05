@@ -84,7 +84,7 @@ Route::domain(config('pixelfed.domain.app'))->middleware(['validemail', 'twofact
     Route::post('auth/raw/mastodon/s/finish-up', [RemoteAuthController::class, 'finishUp']);
     Route::post('auth/raw/mastodon/s/login', [RemoteAuthController::class, 'handleLogin']);
     Route::get('auth/pci/{id}/{code}', [ParentalControlsController::class, 'inviteRegister']);
-    Route::post('auth/pci/{id}/{code}', [ParentalControlsController::class, 'inviteRegisterStore']);
+    Route::post('auth/pci/{id}/{code}', [ParentalControlsController::class, 'inviteRegisterStore'])->middleware('honeypot');
 
     Route::get('auth/sign_up', [SiteController::class, 'curatedOnboarding'])->name('auth.curated-onboarding');
     Route::post('auth/sign_up', [CuratedRegisterController::class, 'proceed']);

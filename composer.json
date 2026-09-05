@@ -43,6 +43,7 @@
         "pusher/pusher-php-server": "^7.2",
         "resend/resend-php": "^0.13.0",
         "spatie/laravel-backup": "^9.2.9",
+        "spatie/laravel-honeypot": "^4.7",
         "spatie/laravel-image-optimizer": "^1.8.2",
         "stevebauman/purify": "^6.2.0",
         "symfony/http-client": "^7.3",

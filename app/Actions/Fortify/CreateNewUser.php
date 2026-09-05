@@ -13,6 +13,8 @@ use Illuminate\Support\Facades\Validator;
 use Illuminate\Validation\ValidationException;
 use Laravel\Fortify\Contracts\CreatesNewUsers;
 use Purify;
+use Spatie\Honeypot\Exceptions\SpamException;
+use Spatie\Honeypot\SpamProtection;
 
 class CreateNewUser implements CreatesNewUsers
 {
@@ -25,12 +27,24 @@ class CreateNewUser implements CreatesNewUsers
      *
      * @param  array<string, mixed>  $input
      *
+     * Honeypot spam protection is applied here rather than as route middleware:
+     * Fortify self-registers the register route, so middleware cannot be
+     * attached inline, and attaching it to the named route at boot time does
+     * not persist to the dispatched route stack in this project. Calling
+     * SpamProtection::check() against the current request scopes the protection
+     * to registration only (login/password-reset are untouched) and honors
+     * config('honeypot.enabled'), which is disabled in the test environment.
+     * @param  array<string, mixed>  $input
+     *
      * @throws ValidationException
      * @throws HttpResponseException
+     * @throws SpamException
      */
     public function create(array $input): User
     {
         $this->ensureRegistrationIsAvailable();
+
+        app(SpamProtection::class)->check(request()->all());
 
         $this->validator($input)->validate();
 
