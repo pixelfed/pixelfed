@@ -142,7 +142,7 @@ class AdminInviteController extends Controller
                     }
                 },
             ],
-            'password' => 'required',
+            'password' => 'required|string|min:'.config('pixelfed.min_password_length'),
             'password_confirm' => 'required',
         ]);
 
