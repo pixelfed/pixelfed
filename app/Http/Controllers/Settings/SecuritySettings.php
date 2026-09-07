@@ -36,7 +36,7 @@ trait SecuritySettings
     {
         $user = $request->user();
         if ($user->{'2fa_enabled'} && $user->{'2fa_secret'}) {
-            return redirect(route('account.security'));
+            return redirect(route('settings.security'));
         }
         $backups = $this->generateBackupCodes();
         // $google2fa = new Google2FA();
