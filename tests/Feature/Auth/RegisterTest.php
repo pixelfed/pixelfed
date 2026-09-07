@@ -23,9 +23,9 @@ it('creates a user with valid registration data', function () {
     config(['pixelfed.max_users' => 1000]);
     config(['instance.enable_cc' => false]);
 
-    // Visit the register page first to seed the RT token in cache
-    $this->get('/register')->assertOk();
-    $rt = cache()->get('pf:register:rt');
+    // Disable the honeypot spam protection so the test submission isn't
+    // flagged for being submitted faster than the minimum timestamp threshold.
+    config(['honeypot.enabled' => false]);
 
     $response = $this->post('/register', [
         'name' => 'Test User',
@@ -35,7 +35,6 @@ it('creates a user with valid registration data', function () {
         'password_confirmation' => 'SecurePass123!',
         'agree' => 'on',
         'agecheck' => 'on',
-        'rt' => $rt,
     ]);
 
     $response->assertRedirect();

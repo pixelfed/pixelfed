@@ -4,6 +4,7 @@ use App\Http\Controllers\AccountController;
 use App\Http\Controllers\AccountInterstitialController;
 use App\Http\Controllers\AdminInviteController;
 use App\Http\Controllers\AppRegisterController;
+use App\Http\Controllers\Auth\RegisterController;
 use App\Http\Controllers\AuthorizeInteractionController;
 use App\Http\Controllers\AvatarController;
 use App\Http\Controllers\BookmarkController;
@@ -53,6 +54,7 @@ use Laravel\Passport\Http\Controllers\AuthorizedAccessTokenController;
 use Laravel\Passport\Http\Controllers\ClientController;
 use Laravel\Passport\Http\Controllers\DenyAuthorizationController;
 use Laravel\Passport\Http\Controllers\TransientTokenController;
+use Spatie\Honeypot\ProtectAgainstSpam;
 
 Route::domain(config('pixelfed.domain.app'))->middleware(['validemail', 'twofactor', 'localization'])->group(function () {
     Route::get('/', [SiteController::class, 'home'])->name('timeline.personal');
@@ -62,6 +64,8 @@ Route::domain(config('pixelfed.domain.app'))->middleware(['validemail', 'twofact
     Route::get('authorize_interaction', [AuthorizeInteractionController::class, 'get']);
 
     Auth::routes();
+
+    Route::post('register', [RegisterController::class, 'register'])->middleware(ProtectAgainstSpam::class);
 
     Route::get('auth/oidc/start', [RemoteOidcController::class, 'start']);
     Route::get('auth/oidc/callback', [RemoteOidcController::class, 'handleCallback']);
@@ -86,7 +90,7 @@ Route::domain(config('pixelfed.domain.app'))->middleware(['validemail', 'twofact
     Route::post('auth/raw/mastodon/s/finish-up', [RemoteAuthController::class, 'finishUp']);
     Route::post('auth/raw/mastodon/s/login', [RemoteAuthController::class, 'handleLogin']);
     Route::get('auth/pci/{id}/{code}', [ParentalControlsController::class, 'inviteRegister']);
-    Route::post('auth/pci/{id}/{code}', [ParentalControlsController::class, 'inviteRegisterStore']);
+    Route::post('auth/pci/{id}/{code}', [ParentalControlsController::class, 'inviteRegisterStore'])->middleware(ProtectAgainstSpam::class);
 
     Route::get('auth/sign_up', [SiteController::class, 'curatedOnboarding'])->name('auth.curated-onboarding');
     Route::post('auth/sign_up', [CuratedRegisterController::class, 'proceed']);

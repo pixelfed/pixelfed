@@ -13,10 +13,8 @@ use Illuminate\Foundation\Auth\RegistersUsers;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
-use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Validator;
-use Illuminate\Support\Str;
 use Purify;
 
 class RegisterController extends Controller
@@ -49,13 +47,6 @@ class RegisterController extends Controller
     public function __construct()
     {
         $this->middleware('guest');
-    }
-
-    public function getRegisterToken()
-    {
-        return Cache::remember('pf:register:rt', 900, function () {
-            return Str::random(40);
-        });
     }
 
     /**
@@ -93,18 +84,8 @@ class RegisterController extends Controller
             },
         ];
 
-        $rt = [
-            'required',
-            function ($attribute, $value, $fail) {
-                if ($value !== $this->getRegisterToken()) {
-                    return $fail('Something went wrong');
-                }
-            },
-        ];
-
         $rules = [
             'agecheck' => 'required|accepted',
-            'rt' => $rt,
             'name' => 'nullable|string|max:'.config('pixelfed.max_name_length'),
             'username' => $usernameRules,
             'email' => $emailRules,
