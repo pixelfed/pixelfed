@@ -15,7 +15,7 @@ class StatusEditController extends Controller
 {
     public function __construct()
     {
-        $this->middleware('auth:api');
+        $this->middleware('auth:sanctum,api');
     }
 
     public function store(StoreStatusEditRequest $request, $id)
