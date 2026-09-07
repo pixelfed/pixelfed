@@ -4,7 +4,10 @@ use App\Http\Controllers\AccountController;
 use App\Http\Controllers\AccountInterstitialController;
 use App\Http\Controllers\AdminInviteController;
 use App\Http\Controllers\AppRegisterController;
+use App\Http\Controllers\Auth\ForgotPasswordController;
+use App\Http\Controllers\Auth\LoginController;
 use App\Http\Controllers\Auth\RegisterController;
+use App\Http\Controllers\Auth\ResetPasswordController;
 use App\Http\Controllers\AuthorizeInteractionController;
 use App\Http\Controllers\AvatarController;
 use App\Http\Controllers\BookmarkController;
@@ -63,9 +66,16 @@ Route::domain(config('pixelfed.domain.app'))->middleware(['validemail', 'twofact
     Route::get('web/explore', [LandingController::class, 'exploreRedirect']);
     Route::get('authorize_interaction', [AuthorizeInteractionController::class, 'get']);
 
-    Auth::routes();
-
+    Route::get('register', [RegisterController::class, 'showRegistrationForm'])->name('register');
     Route::post('register', [RegisterController::class, 'register'])->middleware(ProtectAgainstSpam::class);
+
+    Route::get('login', [LoginController::class, 'showLoginForm'])->name('login');
+    Route::post('login', [LoginController::class, 'login']);
+    Route::post('logout', [LoginController::class, 'logout'])->name('logout');
+    Route::get('password/reset', [ForgotPasswordController::class, 'showLinkRequestForm'])->name('password.request');
+    Route::post('password/email', [ForgotPasswordController::class, 'sendResetLinkEmail'])->name('password.email');
+    Route::get('password/reset/{token}', [ResetPasswordController::class, 'showResetForm'])->name('password.reset');
+    Route::post('password/reset', [ResetPasswordController::class, 'reset'])->name('password.update');
 
     Route::get('auth/oidc/start', [RemoteOidcController::class, 'start']);
     Route::get('auth/oidc/callback', [RemoteOidcController::class, 'handleCallback']);
