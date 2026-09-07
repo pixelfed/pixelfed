@@ -8,56 +8,51 @@ use Illuminate\Console\Command;
 
 class CatchUnoptimizedMedia extends Command
 {
-    /**
-     * The name and signature of the console command.
-     *
-     * @var string
-     */
-    protected $signature = 'media:optimize';
+    protected $signature = 'media:optimize
+        {--limit=1000 : Maximum number of media items to queue}';
 
-    /**
-     * The console command description.
-     *
-     * @var string
-     */
     protected $description = 'Find and optimize media that has not yet been optimized.';
 
-    /**
-     * Create a new command instance.
-     *
-     * @return void
-     */
-    public function __construct()
+    public function handle(): int
     {
-        parent::__construct();
-    }
+        $hasHourLimit = (bool) config(
+            'media.image_optimize.catch_unoptimized_media_hour_limit'
+        );
 
-    /**
-     * Execute the console command.
-     *
-     * @return mixed
-     */
-    public function handle()
-    {
-        $hasLimit = (bool) config('media.image_optimize.catch_unoptimized_media_hour_limit');
-        Media::whereNull('processed_at')
-            ->when($hasLimit, function ($q, $hasLimit) {
-                $q->where('created_at', '>', now()->subHours(1));
-            })->whereNull('remote_url')
+        $limit = max(1, (int) $this->option('limit'));
+
+        $query = Media::query()
+            ->whereNull('processed_at')
+            ->whereNull('remote_url')
+            ->whereNull('deleted_at')
             ->whereNotNull('status_id')
             ->whereNotNull('media_path')
             ->whereIn('mime', [
                 'image/jpg',
                 'image/jpeg',
                 'image/png',
-            ])
-            ->chunk(50, function ($medias) {
-                foreach ($medias as $media) {
-                    if ($media->skip_optimize) {
-                        continue;
-                    }
-                    ImageOptimize::dispatch($media);
-                }
-            });
+            ]);
+
+        if ($hasHourLimit) {
+            $query->where('created_at', '>', now()->subHour());
+        }
+
+        $medias = $query
+            ->orderBy('created_at')
+            ->orderBy('id')
+            ->limit($limit)
+            ->get();
+
+        foreach ($medias as $media) {
+            if ($media->skip_optimize) {
+                continue;
+            }
+
+            ImageOptimize::dispatch($media);
+        }
+
+        $this->info("Queued {$medias->count()} media candidates.");
+
+        return self::SUCCESS;
     }
 }
