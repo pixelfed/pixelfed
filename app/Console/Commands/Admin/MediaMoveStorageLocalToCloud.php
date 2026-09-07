@@ -25,6 +25,7 @@ class MediaMoveStorageLocalToCloud extends Command
      */
     protected $signature = 'admin:MediaMoveStorageLocalToCloud
         {--limit=500 : Max media rows to process this run}
+        {--before-id= : Only process media with an ID lower than this value}
         {--dry-run : Report what would happen without copying or writing}
         {--keep-local : Do not delete local files after verifying the cloud copy}
         {--debug : Print exactly what moves, from which local path to which cloud destination}
@@ -35,107 +36,258 @@ class MediaMoveStorageLocalToCloud extends Command
      *
      * @var string
      */
-    protected $description = 'Migrate local media to cloud storage: copy up, verify (size/sha256), update URLs, then delete the local copy. Ensures new uploads go to cloud during the migration.';
+    protected $description = 'Migrate local media to cloud storage: copy up, verify, update URLs, then optionally delete the local copy.';
 
     protected int $movedBytes = 0;
 
     protected ?ProgressBar $bar = null;
 
-    public function handle()
+    public function handle(): int
     {
         try {
             $localDisk = Storage::disk('local');
             $cloudDisk = Storage::disk(config('filesystems.cloud'));
         } catch (\Throwable $e) {
-            $this->error('Cloud disk ('.config('filesystems.cloud').') could not be resolved: '.$e->getMessage());
+            $this->error(
+                'Cloud disk ('.config('filesystems.cloud').') could not be resolved: '.$e->getMessage()
+            );
 
-            return 1;
+            return self::FAILURE;
         }
 
         if (! $this->cloudHost()) {
-            $this->error('Cloud disk ('.config('filesystems.cloud').') is not configured (no resolvable URL).');
+            $this->error(
+                'Cloud disk ('.config('filesystems.cloud').') is not configured (no resolvable URL).'
+            );
             $this->line('Set AWS_URL / AWS_* in your environment before migrating to cloud.');
 
-            return 1;
+            return self::FAILURE;
         }
 
-        // --- Ensure new uploads route to cloud during the migration --------
-        // Read the effective, live setting the same way the rest of the app
-        // does (config_cache is DB-backed and works with or without a .env
-        // file, e.g. in containers that inject config via env vars).
-        $cloudEnabled = (bool) config_cache('pixelfed.cloud_storage');
-
-        if (! $cloudEnabled) {
-            $this->warn('Cloud storage (pixelfed.cloud_storage) is currently disabled.');
-            $this->line('New uploads would keep landing on LOCAL storage during this migration.');
-            if ($this->option('dry-run')) {
-                $this->line('[dry-run] Would enable cloud storage (runtime + config cache, and .env if writable).');
-            } elseif ($this->option('force') || $this->confirm('Enable cloud storage now so new uploads go to cloud?', true)) {
-                $this->setStorageEnv('PF_ENABLE_CLOUD', 'true', 'pixelfed.cloud_storage', true);
-                $this->info('Cloud storage enabled (live runtime + config cache).');
-            } else {
-                $this->error('Aborting: refusing to migrate to cloud while new uploads stay local.');
-
-                return 1;
-            }
-        } else {
-            $this->info('Cloud storage is already enabled; new uploads route to cloud. ✓');
+        if (! $this->ensureCloudStorageEnabled()) {
+            return self::FAILURE;
         }
 
         if ($this->option('debug')) {
-            $this->newLine();
-            $this->line('<comment>[debug] Storage routing</comment>');
-            $this->line('  local disk   : '.config('filesystems.disks.local.root'));
-            $this->line('  cloud disk   : '.config('filesystems.cloud'));
-            $this->line('  cloud driver : '.config('filesystems.disks.'.config('filesystems.cloud').'.driver'));
-            $this->line('  cloud bucket : '.config('filesystems.disks.'.config('filesystems.cloud').'.bucket'));
-            $this->line('  cloud host   : '.$this->cloudHost());
+            $this->printStorageDebugInfo();
         }
 
         $this->newLine();
-        if (! $this->option('dry-run') && ! $this->option('force')) {
-            if (! $this->confirm('Begin migrating local media to cloud?', true)) {
-                $this->comment('Aborted.');
 
-                return 0;
-            }
+        if (
+            ! $this->option('dry-run') &&
+            ! $this->option('force') &&
+            ! $this->confirm('Begin migrating local media to cloud?', true)
+        ) {
+            $this->comment('Aborted.');
+
+            return self::SUCCESS;
         }
 
-        $limit = (int) $this->option('limit');
+        $limit = max(1, (int) $this->option('limit'));
+        $beforeId = $this->resolveBeforeId();
+
+        if ($beforeId === false) {
+            return self::FAILURE;
+        }
+
+        $query = $this->candidateQuery($beforeId, $limit);
+
+        /*
+         * Fetch candidates exactly once.
+         *
+         * Do NOT call $query->count() here. On very large media tables that can
+         * count the entire matching dataset before we immediately execute the
+         * SELECT again. We only need the count of this bounded result set.
+         */
+        $medias = $query->get();
+
+        if ($medias->isEmpty()) {
+            $this->info('No media candidates found.');
+
+            return self::SUCCESS;
+        }
+
         $moved = 0;
         $skipped = 0;
         $failed = 0;
 
-        // Candidates: local, non-remote media not yet replicated to cloud.
-        $query = Media::whereRemoteMedia(false)
-            ->whereNotNull('media_path')
-            ->where(function ($q) {
-                $q->whereNull('cdn_url')->orWhereNull('replicated_at')->orWhereNot('version', '4');
-            })
-            ->orderByDesc('id')
-            ->limit($limit);
-
-        $this->bar = $this->output->createProgressBar($query->count());
+        $this->bar = $this->output->createProgressBar($medias->count());
         $this->bar->start();
 
-        foreach ($query->get() as $media) {
+        foreach ($medias as $media) {
             $result = $this->migrateOne($media, $localDisk, $cloudDisk);
+
             match ($result) {
                 'moved' => $moved++,
                 'skipped' => $skipped++,
                 default => $failed++,
             };
+
             $this->bar->advance();
         }
 
         $this->bar->finish();
         $this->newLine(2);
-        $this->info(($this->option('dry-run') ? '[dry-run] ' : '').'Done. moved='.$moved.' skipped='.$skipped.' failed='.$failed.'.');
+
+        $prefix = $this->option('dry-run') ? '[dry-run] ' : '';
+
+        $this->info(
+            $prefix.'Done. moved='.$moved.' skipped='.$skipped.' failed='.$failed.'.'
+        );
+
         if ($this->movedBytes) {
-            $this->info('Transferred '.PrettyNumber::size($this->movedBytes).' to cloud storage.');
+            $this->info(
+                'Transferred '.PrettyNumber::size($this->movedBytes).' to cloud storage.'
+            );
         }
 
-        return 0;
+        /*
+         * The candidates are ordered newest -> oldest, so the final ID is a
+         * safe cursor for the next run. This is especially useful when some
+         * malformed/unrecoverable rows must remain untouched.
+         */
+        $lastMedia = $medias->last();
+
+        if ($lastMedia && $medias->count() === $limit) {
+            $this->newLine();
+            $this->comment('More media may remain.');
+
+            $nextCommand = sprintf(
+                'php artisan admin:MediaMoveStorageLocalToCloud --limit=%d --before-id=%s',
+                $limit,
+                $lastMedia->id
+            );
+
+            if ($this->option('keep-local')) {
+                $nextCommand .= ' --keep-local';
+            }
+
+            if ($this->option('dry-run')) {
+                $nextCommand .= ' --dry-run';
+            }
+
+            if ($this->option('debug')) {
+                $nextCommand .= ' --debug';
+            }
+
+            if ($this->option('force')) {
+                $nextCommand .= ' --force';
+            }
+
+            $this->line('Next batch:');
+            $this->line($nextCommand);
+        }
+
+        return $failed > 0 ? self::FAILURE : self::SUCCESS;
+    }
+
+    protected function ensureCloudStorageEnabled(): bool
+    {
+        $cloudEnabled = (bool) config_cache('pixelfed.cloud_storage');
+
+        if ($cloudEnabled) {
+            $this->info('Cloud storage is already enabled; new uploads route to cloud. ✓');
+
+            return true;
+        }
+
+        $this->warn('Cloud storage (pixelfed.cloud_storage) is currently disabled.');
+        $this->line('New uploads would keep landing on LOCAL storage during this migration.');
+
+        if ($this->option('dry-run')) {
+            $this->line(
+                '[dry-run] Would enable cloud storage (runtime + config cache, and .env if writable).'
+            );
+
+            return true;
+        }
+
+        if (
+            ! $this->option('force') &&
+            ! $this->confirm(
+                'Enable cloud storage now so new uploads go to cloud?',
+                true
+            )
+        ) {
+            $this->error(
+                'Aborting: refusing to migrate to cloud while new uploads stay local.'
+            );
+
+            return false;
+        }
+
+        $this->setStorageEnv(
+            'PF_ENABLE_CLOUD',
+            'true',
+            'pixelfed.cloud_storage',
+            true
+        );
+
+        $this->info('Cloud storage enabled (live runtime + config cache).');
+
+        return true;
+    }
+
+    protected function printStorageDebugInfo(): void
+    {
+        $this->newLine();
+        $this->line('<comment>[debug] Storage routing</comment>');
+        $this->line('  local disk   : '.config('filesystems.disks.local.root'));
+        $this->line('  cloud disk   : '.config('filesystems.cloud'));
+        $this->line(
+            '  cloud driver : '.config(
+                'filesystems.disks.'.config('filesystems.cloud').'.driver'
+            )
+        );
+        $this->line(
+            '  cloud bucket : '.config(
+                'filesystems.disks.'.config('filesystems.cloud').'.bucket'
+            )
+        );
+        $this->line('  cloud host   : '.$this->cloudHost());
+
+        if ($this->option('before-id')) {
+            $this->line('  before id    : '.$this->option('before-id'));
+        }
+    }
+
+    protected function resolveBeforeId(): string|null|false
+    {
+        $beforeId = $this->option('before-id');
+
+        if ($beforeId === null || $beforeId === '') {
+            return null;
+        }
+
+        $beforeId = trim((string) $beforeId);
+
+        if (! ctype_digit($beforeId) || $beforeId === '0') {
+            $this->error('--before-id must be a positive numeric media ID.');
+
+            return false;
+        }
+
+        return $beforeId;
+    }
+
+    protected function candidateQuery(?string $beforeId, int $limit)
+    {
+        return Media::query()
+            ->whereRemoteMedia(false)
+            ->whereNotNull('media_path')
+            ->where(function ($query) {
+                $query
+                    ->whereNull('cdn_url')
+                    ->orWhereNull('replicated_at')
+                    ->orWhere('version', '!=', 4);
+            })
+            ->when(
+                $beforeId,
+                fn ($query) => $query->where('id', '<', $beforeId)
+            )
+            ->orderByDesc('id')
+            ->limit($limit);
     }
 
     /**
@@ -143,42 +295,80 @@ class MediaMoveStorageLocalToCloud extends Command
      */
     protected function migrateOne(Media $media, $localDisk, $cloudDisk): string
     {
-        if (Str::startsWith((string) $media->media_path, 'http')) {
-            $this->debugLine('media '.$media->id.' skipped: media_path is a remote URL ('.$media->media_path.')');
+        $mediaPath = (string) $media->media_path;
+
+        if (Str::startsWith($mediaPath, ['http://', 'https://'])) {
+            $this->debugLine(
+                'media '.$media->id.' skipped: media_path is a remote URL ('.$mediaPath.')'
+            );
 
             return 'skipped';
         }
 
-        // Nothing to do if the local file is gone.
-        if (! $localDisk->exists($media->media_path)) {
-            // Already on cloud only? mark version and move on.
-            if ($cloudDisk->exists($media->media_path)) {
-                $this->debugLine('media '.$media->id.' skipped: local file missing but already on cloud ('.$media->media_path.')');
-                if (! $this->option('dry-run') && $media->version !== '4') {
-                    $media->version = 4;
-                    $media->save();
+        /*
+         * If the local file no longer exists, check whether migration had
+         * actually succeeded previously but the database state was only
+         * partially updated.
+         */
+        if (! $localDisk->exists($mediaPath)) {
+            if ($cloudDisk->exists($mediaPath)) {
+                $this->debugLine(
+                    'media '.$media->id.' recovered: local file missing but cloud copy exists ('.$mediaPath.')'
+                );
+
+                if (! $this->option('dry-run')) {
+                    $this->markAsReplicated($media, $cloudDisk, false);
                 }
 
                 return 'skipped';
             }
 
-            $this->debugLine('media '.$media->id.' skipped: local file missing and not on cloud ('.$media->media_path.')');
+            $this->debugLine(
+                'media '.$media->id.' skipped: local file missing and not on cloud ('.$mediaPath.')'
+            );
 
             return 'skipped';
         }
 
-        // Basic per-item info (always on): what moves and where it lands.
-        $this->basicLine('media '.$media->id.' ('.PrettyNumber::size((int) $media->size).'): '.$media->media_path.' → '.$this->cloudDestination($media->media_path, $cloudDisk));
+        $this->basicLine(
+            'media '.$media->id.
+                ' ('.PrettyNumber::size((int) $media->size).'): '.
+                $mediaPath.
+                ' → '.
+                $this->cloudDestination($mediaPath, $cloudDisk)
+        );
 
         if ($this->option('debug')) {
-            $this->debugLine('  status_id     : '.($media->status_id ?? 'null'));
-            $this->debugLine('  primary from  : '.$localDisk->path($media->media_path));
-            $this->debugLine('  primary to    : '.$cloudDisk->url($media->media_path));
-            if ($media->thumbnail_path && $localDisk->exists($media->thumbnail_path)) {
-                $this->debugLine('  thumbnail from: '.$localDisk->path($media->thumbnail_path));
-                $this->debugLine('  thumbnail to  : '.$cloudDisk->url($media->thumbnail_path));
+            $this->debugLine(
+                '  status_id     : '.($media->status_id ?? 'null')
+            );
+
+            $this->debugLine(
+                '  primary from  : '.$localDisk->path($mediaPath)
+            );
+
+            $this->debugLine(
+                '  primary to    : '.$cloudDisk->url($mediaPath)
+            );
+
+            if (
+                $media->thumbnail_path &&
+                $localDisk->exists($media->thumbnail_path)
+            ) {
+                $this->debugLine(
+                    '  thumbnail from: '.$localDisk->path($media->thumbnail_path)
+                );
+
+                $this->debugLine(
+                    '  thumbnail to  : '.$cloudDisk->url($media->thumbnail_path)
+                );
             }
-            $this->debugLine('  after copy    : '.($this->option('keep-local') ? 'local kept' : 'local deleted').($this->option('dry-run') ? ' (dry-run: no changes)' : ''));
+
+            $this->debugLine(
+                '  after copy    : '.
+                    ($this->option('keep-local') ? 'local kept' : 'local deleted').
+                    ($this->option('dry-run') ? ' (dry-run: no changes)' : '')
+            );
         }
 
         if ($this->option('dry-run')) {
@@ -186,37 +376,61 @@ class MediaMoveStorageLocalToCloud extends Command
         }
 
         try {
-            // Copy the primary file (and thumbnail) to cloud.
-            $this->copyToCloud($media->media_path, $localDisk, $cloudDisk);
-            if ($media->thumbnail_path && $localDisk->exists($media->thumbnail_path)) {
-                $this->copyToCloud($media->thumbnail_path, $localDisk, $cloudDisk);
+            $this->copyToCloud(
+                $mediaPath,
+                $localDisk
+            );
+
+            if (
+                $media->thumbnail_path &&
+                $localDisk->exists($media->thumbnail_path)
+            ) {
+                $this->copyToCloud(
+                    $media->thumbnail_path,
+                    $localDisk
+                );
             }
 
-            // Verify the primary file before touching anything else.
-            if (! $this->verify($media->media_path, $localDisk, $cloudDisk, $media->original_sha256)) {
-                $this->warn(PHP_EOL.'Verify failed for media '.$media->id.' ('.$media->media_path.'); left local copy intact.');
+            if (
+                ! $this->verify(
+                    $mediaPath,
+                    $localDisk,
+                    $cloudDisk,
+                    $media->original_sha256
+                )
+            ) {
+                $this->warn(
+                    PHP_EOL.
+                        'Verify failed for media '.
+                        $media->id.
+                        ' ('.
+                        $mediaPath.
+                        '); left local copy intact.'
+                );
 
                 return 'failed';
             }
 
-            // Update URL fields to the cloud disk.
-            $media->cdn_url = $cloudDisk->url($media->media_path);
-            $media->optimized_url = $media->cdn_url;
-            if ($media->thumbnail_path && $cloudDisk->exists($media->thumbnail_path)) {
-                $media->thumbnail_url = $cloudDisk->url($media->thumbnail_path);
-            }
-            $media->replicated_at = now();
+            /*
+             * Mark the cloud copy as authoritative after verification.
+             *
+             * version=4 represents the migrated format/state regardless of
+             * whether --keep-local was requested. Keeping the local file
+             * should not cause this media row to be selected forever.
+             */
+            $this->markAsReplicated($media, $cloudDisk, true);
 
-            // Integrated GC: delete the verified local copy unless --keep-local.
             if (! $this->option('keep-local')) {
-                $localDisk->delete($media->media_path);
-                if ($media->thumbnail_path && $localDisk->exists($media->thumbnail_path)) {
+                $localDisk->delete($mediaPath);
+
+                if (
+                    $media->thumbnail_path &&
+                    $localDisk->exists($media->thumbnail_path)
+                ) {
                     $localDisk->delete($media->thumbnail_path);
                 }
-                $media->version = 4;
             }
 
-            $media->save();
             $this->movedBytes += (int) $media->size;
 
             if ($media->status_id) {
@@ -226,18 +440,68 @@ class MediaMoveStorageLocalToCloud extends Command
 
             return 'moved';
         } catch (\Throwable $e) {
-            Log::error('MediaMoveStorageLocalToCloud: failed to migrate media', [
-                'media_id' => $media->id,
-                'error' => $e->getMessage(),
-            ]);
-            $this->warn(PHP_EOL.'Error migrating media '.$media->id.': '.$e->getMessage());
+            Log::error(
+                'MediaMoveStorageLocalToCloud: failed to migrate media',
+                [
+                    'media_id' => $media->id,
+                    'error' => $e->getMessage(),
+                ]
+            );
+
+            $this->warn(
+                PHP_EOL.
+                    'Error migrating media '.
+                    $media->id.
+                    ': '.
+                    $e->getMessage()
+            );
 
             return 'failed';
         }
     }
 
     /**
-     * Write a line that always shows, printed cleanly above an active progress bar.
+     * Normalize all DB state that indicates the media has been replicated.
+     *
+     * $freshReplication should be true when this command just copied and
+     * verified the object. For recovery of an already-existing cloud object,
+     * we preserve replicated_at if it already has a value.
+     */
+    protected function markAsReplicated(
+        Media $media,
+        $cloudDisk,
+        bool $freshReplication
+    ): void {
+        $media->cdn_url = $cloudDisk->url($media->media_path);
+        $media->optimized_url = $media->cdn_url;
+
+        if (
+            $media->thumbnail_path &&
+            $cloudDisk->exists($media->thumbnail_path)
+        ) {
+            $media->thumbnail_url = $cloudDisk->url(
+                $media->thumbnail_path
+            );
+        }
+
+        if ($freshReplication || ! $media->replicated_at) {
+            $media->replicated_at = now();
+        }
+
+        /*
+         * version=4 denotes completed cloud migration.
+         *
+         * This must be set even with --keep-local; otherwise those rows
+         * continue matching "version != 4" forever.
+         */
+        $media->version = 4;
+
+        $media->save();
+    }
+
+    /**
+     * Write a line that always shows, printed cleanly above an active
+     * progress bar.
      */
     protected function basicLine(string $message): void
     {
@@ -253,7 +517,8 @@ class MediaMoveStorageLocalToCloud extends Command
     }
 
     /**
-     * Write a line only when --debug is set, cleanly above an active progress bar.
+     * Write a line only when --debug is set, cleanly above an active
+     * progress bar.
      */
     protected function debugLine(string $message): void
     {
@@ -284,40 +549,61 @@ class MediaMoveStorageLocalToCloud extends Command
         }
     }
 
-    protected function copyToCloud(string $path, $localDisk, $cloudDisk): void
+    protected function copyToCloud(string $path, $localDisk): void
     {
-        $p = explode('/', $path);
-        $name = array_pop($p);
-        $storagePath = implode('/', $p);
+        $parts = explode('/', $path);
+        $name = array_pop($parts);
+        $storagePath = implode('/', $parts);
 
-        // Reuse the resilient uploader (handles alt disks + retries).
-        ResilientMediaStorageService::store($storagePath, $localDisk->path($path), $name);
+        /*
+         * Reuse the resilient uploader, which handles the configured cloud
+         * destination, alternate disks, and retries.
+         */
+        ResilientMediaStorageService::store(
+            $storagePath,
+            $localDisk->path($path),
+            $name
+        );
     }
 
     /**
-     * Verify the cloud copy matches the local source by size, and by sha256
-     * when a checksum is available/cheap. Fails closed.
+     * Verify the cloud copy matches the local source by size and, when an
+     * original checksum is available, verify the local source against it.
+     *
+     * Cloud content hashing would require downloading the object, so size
+     * parity plus a known-good local SHA-256 is used here.
      */
-    protected function verify(string $path, $localDisk, $cloudDisk, ?string $expectedSha = null): bool
-    {
+    protected function verify(
+        string $path,
+        $localDisk,
+        $cloudDisk,
+        ?string $expectedSha = null
+    ): bool {
         if (! $cloudDisk->exists($path)) {
             return false;
         }
 
         $localSize = $localDisk->size($path);
         $cloudSize = $cloudDisk->size($path);
-        if ($localSize === false || $cloudSize === false || $localSize !== $cloudSize) {
+
+        if (
+            $localSize === false ||
+            $cloudSize === false ||
+            $localSize !== $cloudSize
+        ) {
             return false;
         }
 
-        // If we already have the original checksum, verify the local file still
-        // matches it (so we never delete a locally-corrupted-but-uploaded file
-        // without noticing). Cloud content hashing would require a full
-        // download, which we avoid for large media; size parity + known sha
-        // is a strong signal.
         if ($expectedSha) {
-            $localSha = @hash_file('sha256', $localDisk->path($path));
-            if ($localSha && ! hash_equals($expectedSha, $localSha)) {
+            $localSha = @hash_file(
+                'sha256',
+                $localDisk->path($path)
+            );
+
+            if (
+                $localSha &&
+                ! hash_equals($expectedSha, $localSha)
+            ) {
                 return false;
             }
         }
