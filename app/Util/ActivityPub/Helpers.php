@@ -207,7 +207,7 @@ class Helpers
         // metadata.google.internal) resolves to a reserved address such as
         // 169.254.169.254. resolvePublicIps() fails closed: it returns an empty
         // array if the host does not resolve or any resolved IP is non-global.
-        if ($disableDNSCheck !== true && self::shouldCheckDNS()) {
+        if ($disableDNSCheck !== true) {
             if (empty(self::resolvePublicIps($host))) {
                 return false;
             }
@@ -339,7 +339,7 @@ class Helpers
             'public-ips:sha256-'.
             hash('sha256', $host);
 
-        return Cache::remember($key, 60, function () use ($host) {
+        return Cache::remember($key, 86400, function () use ($host) {
             $ips = [];
 
             $aRecords = @dns_get_record($host.'.', DNS_A);
@@ -436,8 +436,7 @@ class Helpers
      */
     public static function shouldCheckDNS(): bool
     {
-        return app()->environment() === 'production' &&
-            (bool) config('security.url.verify_dns');
+        return app()->environment() === 'production';
     }
 
     /**
@@ -1172,7 +1171,8 @@ class Helpers
             $data['object'] :
             $data;
 
-        if (! is_array($object) ||
+        if (
+            ! is_array($object) ||
             ! isset($object['attachment']) ||
             empty($object['attachment']) ||
             ! is_array($object['attachment'])
