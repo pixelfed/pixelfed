@@ -90,7 +90,7 @@ class UpdatePersonValidator
             'object.icon' => 'sometimes|nullable',
             'object.icon.type' => 'sometimes|required_with:object.icon.url,object.icon.mediaType|in:Image',
             'object.icon.url' => 'sometimes|required_with:object.icon.type,object.icon.mediaType|url',
-            'object.icon.mediaType' => 'sometimes|required_with:object.icon.url,object.icon.type|in:image/jpeg,image/png,image/jpg',
+            'object.icon.mediaType' => 'sometimes|required_with:object.icon.url,object.icon.type|in:image/jpeg,image/png,image/jpg,image/gif,image/webp',
             'object.endpoints' => 'sometimes',
             'object.endpoints.sharedInbox' => [
                 'sometimes',

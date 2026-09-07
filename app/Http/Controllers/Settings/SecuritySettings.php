@@ -36,7 +36,7 @@ trait SecuritySettings
     {
         $user = $request->user();
         if ($user->{'2fa_enabled'} && $user->{'2fa_secret'}) {
-            return redirect(route('account.security'));
+            return redirect(route('settings.security'));
         }
         $backups = $this->generateBackupCodes();
         // $google2fa = new Google2FA();
@@ -81,7 +81,7 @@ trait SecuritySettings
             abort(403, 'Two factor auth is already setup.');
         }
         $this->validate($request, [
-            'code' => 'required|integer',
+            'code' => 'required|digits:6',
         ]);
         $code = $request->input('code');
         $google2fa = new Google2FA;

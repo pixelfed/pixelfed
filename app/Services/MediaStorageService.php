@@ -258,16 +258,14 @@ class MediaStorageService
         }
 
         $base = ($local ? 'public/cache/' : 'cache/').'avatars/'.$avatar->profile_id;
-        $ext = ($head['mime'] == 'image/png') ? 'png' : 'jpg';
-        $path = 'avatar_'.strtolower(Str::random(random_int(3, 6))).'.'.$ext;
         $tmpBase = storage_path('app/remcache/');
-        $tmpPath = 'avatar_'.$avatar->profile_id.'-'.$path;
-        $tmpName = $tmpBase.$tmpPath;
-        // Hardened byte fetch: validated URL, pinned IP, no internal redirects, size-capped.
         $data = SecureMediaFetchService::get($url, $max_size, $head['length']);
         if (! $data) {
             return;
         }
+
+        $tmpPath = 'avatar_'.$avatar->profile_id.'-tmp';
+        $tmpName = $tmpBase.$tmpPath;
         file_put_contents($tmpName, $data);
 
         try {
@@ -279,6 +277,9 @@ class MediaStorageService
 
                 return;
             }
+
+            $ext = ($mimeCheck === 'image/png') ? 'png' : 'jpg';
+            $path = 'avatar_'.strtolower(Str::random(random_int(3, 6))).'.'.$ext;
 
             $disk = Storage::disk($driver);
             $file = $disk->putFileAs($base, new File($tmpName), $path, 'public');
