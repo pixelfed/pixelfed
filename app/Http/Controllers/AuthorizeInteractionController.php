@@ -16,7 +16,7 @@ class AuthorizeInteractionController extends Controller
 
         abort_unless((bool) config_cache('federation.activitypub.enabled'), 404);
 
-        $uri = Helpers::validateUrl($request->input('uri'), true);
+        $uri = Helpers::validateUrl($request->input('uri'));
         abort_unless($uri, 404);
 
         if (! $request->user()) {
