@@ -81,7 +81,7 @@ trait SecuritySettings
             abort(403, 'Two factor auth is already setup.');
         }
         $this->validate($request, [
-            'code' => 'required|integer',
+            'code' => 'required|digits:6',
         ]);
         $code = $request->input('code');
         $google2fa = new Google2FA;
