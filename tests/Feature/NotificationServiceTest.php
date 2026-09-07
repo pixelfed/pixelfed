@@ -1,5 +1,6 @@
 <?php
 
+use App\Models\Group;
 use App\Models\Notification;
 use App\Models\Profile;
 use App\Models\Status;
@@ -62,7 +63,7 @@ describe('NotificationService::createNotification', function () {
             $user->profile_id,
             null,
             1,
-            'App\Models\Group'
+            Group::class
         );
 
         expect($notification->action)->toBeNull();

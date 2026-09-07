@@ -22,7 +22,7 @@ class AdminShadowFilter extends Model
 
     public function account()
     {
-        if (in_array($this->item_type, ['App\Profile', 'App\Models\Profile'])) {
+        if (in_array($this->item_type, ['App\Profile', Profile::class])) {
             return AccountService::get($this->item_id, true);
         }
     }

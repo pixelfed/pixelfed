@@ -25,18 +25,18 @@ use App\Http\Controllers\StatusController;
 use App\Http\Controllers\StoryController;
 
 Route::domain(config('pixelfed.domain.app'))->middleware(['validemail', 'twofactor', 'localization'])->group(function () {
-    Route::group(['prefix' => 'api'], function () {
+    Route::prefix('api')->group(function () {
         Route::get('search', [SearchController::class, 'searchAPI']);
         Route::post('status/view', [StatusController::class, 'storeView']);
         Route::get('v1/polls/{id}', [PollController::class, 'getPoll']);
         Route::post('v1/polls/{id}/votes', [PollController::class, 'vote']);
 
-        Route::group(['prefix' => 'web-admin'], function () {
+        Route::prefix('web-admin')->group(function () {
             Route::get('software-update/check', [SoftwareUpdateController::class, 'getSoftwareUpdateCheck']);
         });
 
-        Route::group(['prefix' => 'compose'], function () {
-            Route::group(['prefix' => 'v0'], function () {
+        Route::prefix('compose')->group(function () {
+            Route::prefix('v0')->group(function () {
                 Route::post('/media/upload', [ComposeController::class, 'mediaUpload']);
                 Route::post('/media/update', [ComposeController::class, 'mediaUpdate']);
                 Route::delete('/media/delete', [ComposeController::class, 'mediaDelete']);
@@ -53,7 +53,7 @@ Route::domain(config('pixelfed.domain.app'))->middleware(['validemail', 'twofact
             });
         });
 
-        Route::group(['prefix' => 'direct'], function () {
+        Route::prefix('direct')->group(function () {
             Route::get('browse', [DirectMessageController::class, 'browse']);
             Route::post('create', [DirectMessageController::class, 'create']);
             Route::get('thread', [DirectMessageController::class, 'thread']);
@@ -65,7 +65,7 @@ Route::domain(config('pixelfed.domain.app'))->middleware(['validemail', 'twofact
             Route::post('read', [DirectMessageController::class, 'read']);
         });
 
-        Route::group(['prefix' => 'v2'], function () {
+        Route::prefix('v2')->group(function () {
             Route::get('config', [ApiController::class, 'siteConfiguration']);
             Route::get('discover', [InternalApiController::class, 'discover']);
             Route::get('discover/posts', [InternalApiController::class, 'discoverPosts'])->middleware('auth:api');
@@ -80,8 +80,8 @@ Route::domain(config('pixelfed.domain.app'))->middleware(['validemail', 'twofact
             Route::get('statuses/{id}/state', [ApiV1Controller::class, 'statusState']);
         });
 
-        Route::group(['prefix' => 'pixelfed'], function () {
-            Route::group(['prefix' => 'v1'], function () {
+        Route::prefix('pixelfed')->group(function () {
+            Route::prefix('v1')->group(function () {
                 Route::get('accounts/verify_credentials', [ApiController::class, 'verifyCredentials']);
                 Route::get('accounts/relationships', [ApiV1Controller::class, 'accountRelationshipsById']);
                 Route::get('accounts/search', [ApiV1Controller::class, 'accountSearch']);
@@ -106,7 +106,7 @@ Route::domain(config('pixelfed.domain.app'))->middleware(['validemail', 'twofact
                 Route::get('blocks', [AccountController::class, 'accountBlocks']);
             });
 
-            Route::group(['prefix' => 'v2'], function () {
+            Route::prefix('v2')->group(function () {
                 Route::get('config', [ApiController::class, 'siteConfiguration']);
                 Route::get('discover', [InternalApiController::class, 'discover']);
                 Route::get('discover/posts', [InternalApiController::class, 'discoverPosts']);
@@ -140,7 +140,7 @@ Route::domain(config('pixelfed.domain.app'))->middleware(['validemail', 'twofact
             Route::post('web/change-language.json', [SpaController::class, 'updateLanguage']);
         });
 
-        Route::group(['prefix' => 'local'], function () {
+        Route::prefix('local')->group(function () {
             // Route::post('status/compose', [InternalApiController::class, 'composePost'])->middleware('throttle:maxPostsPerHour,60')->middleware('throttle:maxPostsPerDay,1440');
             Route::post('discover/tag/subscribe', [HashtagFollowController::class, 'store']);
             Route::get('discover/tag/list', [HashtagFollowController::class, 'getTags']);
@@ -165,7 +165,7 @@ Route::domain(config('pixelfed.domain.app'))->middleware(['validemail', 'twofact
             Route::post('import/ig/processing', [ImportPostController::class, 'getProcessingCount']);
         });
 
-        Route::group(['prefix' => 'web/stories'], function () {
+        Route::prefix('web/stories')->group(function () {
             Route::get('v1/recent', [StoryController::class, 'recent']);
             Route::get('v1/viewers', [StoryController::class, 'viewers']);
             Route::get('v1/profile/{id}', [StoryController::class, 'profile']);
@@ -183,7 +183,7 @@ Route::domain(config('pixelfed.domain.app'))->middleware(['validemail', 'twofact
             Route::delete('v1/delete/{id}', [StoryController::class, 'apiV1Delete']);
         });
 
-        Route::group(['prefix' => 'portfolio'], function () {
+        Route::prefix('portfolio')->group(function () {
             Route::post('self/curated.json', [PortfolioController::class, 'storeCurated']);
             Route::post('self/settings.json', [PortfolioController::class, 'getSettings']);
             Route::get('account/settings.json', [PortfolioController::class, 'getAccountSettings']);

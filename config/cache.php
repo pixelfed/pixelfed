@@ -9,11 +9,9 @@ return [
     | Default Cache Store
     |--------------------------------------------------------------------------
     |
-    | This option controls the default cache connection that gets used while
-    | using this caching library. This connection is used when another is
-    | not explicitly specified when executing a given caching function.
-    |
-    | Supported: "apc", "array", "database", "file", "memcached", "redis"
+    | This option controls the default cache store that will be used by the
+    | framework. This connection is utilized if another isn't explicitly
+    | specified when running a cache operation inside the application.
     |
     */
 
@@ -27,6 +25,10 @@ return [
     | Here you may define all of the cache "stores" for your application as
     | well as their drivers. You may even define multiple stores for the
     | same cache driver to group types of items stored in your caches.
+    |
+    | Supported drivers: "array", "database", "file", "memcached",
+    |                    "redis", "dynamodb", "storage", "octane",
+    |                    "session", "failover", "null"
     |
     */
 
@@ -43,15 +45,22 @@ return [
 
         'database' => [
             'driver' => 'database',
-            'table' => env('DB_CACHE_TABLE', 'cache'),
             'connection' => env('DB_CACHE_CONNECTION'),
+            'table' => env('DB_CACHE_TABLE', 'cache'),
             'lock_connection' => env('DB_CACHE_LOCK_CONNECTION'),
+            'lock_table' => env('DB_CACHE_LOCK_TABLE'),
         ],
 
         'file' => [
             'driver' => 'file',
             'path' => storage_path('framework/cache/data'),
             'lock_path' => storage_path('framework/cache/data'),
+        ],
+
+        'storage' => [
+            'driver' => 'storage',
+            'disk' => env('CACHE_STORAGE_DISK'),
+            'path' => env('CACHE_STORAGE_PATH', 'framework/cache/data'),
         ],
 
         'memcached' => [
@@ -62,7 +71,7 @@ return [
                 env('MEMCACHED_PASSWORD'),
             ],
             'options' => [
-                // Memcached::OPT_CONNECT_TIMEOUT  => 2000,
+                // Memcached::OPT_CONNECT_TIMEOUT => 2000,
             ],
             'servers' => [
                 [
@@ -75,9 +84,9 @@ return [
 
         'redis' => [
             'driver' => 'redis',
+            'connection' => env('REDIS_CACHE_CONNECTION', 'cache'),
             'lock_connection' => env('REDIS_CACHE_LOCK_CONNECTION', 'default'),
             'client' => env('REDIS_CLIENT', 'predis'),
-
             'default' => [
                 'scheme' => env('REDIS_SCHEME', 'tcp'),
                 'path' => env('REDIS_PATH'),
@@ -86,7 +95,6 @@ return [
                 'port' => env('REDIS_PORT', 6379),
                 'database' => env('REDIS_DATABASE', 0),
             ],
-
             'session' => [
                 'scheme' => env('REDIS_SCHEME', 'tcp'),
                 'path' => env('REDIS_PATH'),
@@ -95,7 +103,6 @@ return [
                 'port' => env('REDIS_PORT', 6379),
                 'database' => env('REDIS_DATABASE_SESSION', 1),
             ],
-
             'pulse' => [
                 'scheme' => env('REDIS_SCHEME', 'tcp'),
                 'path' => env('REDIS_PATH'),
@@ -104,7 +111,6 @@ return [
                 'port' => env('REDIS_PORT', 6379),
                 'database' => env('REDIS_DATABASE_PULSE', 2),
             ],
-
         ],
 
         'redis:session' => [
@@ -126,6 +132,14 @@ return [
             'driver' => 'octane',
         ],
 
+        'failover' => [
+            'driver' => 'failover',
+            'stores' => [
+                'database',
+                'array',
+            ],
+        ],
+
     ],
 
     /*
@@ -133,30 +147,27 @@ return [
     | Cache Key Prefix
     |--------------------------------------------------------------------------
     |
-    | When utilizing a RAM based store such as APC or Memcached, there might
-    | be other applications utilizing the same cache. So, we'll specify a
-    | value to get prefixed to all our keys so we can avoid collisions.
+    | When utilizing the APC, database, memcached, Redis, and DynamoDB cache
+    | stores, there might be other applications using the same cache. For
+    | that reason, you may prefix every cache key to avoid collisions.
     |
     */
 
-    'prefix' => env(
-        'CACHE_PREFIX',
-        Str::slug(env('APP_NAME', 'laravel'), '_').'_cache'
-    ),
+    'prefix' => env('CACHE_PREFIX', Str::slug((string) env('APP_NAME', 'laravel'), '_').'_cache'),
 
     /*
     |--------------------------------------------------------------------------
     | Serializable Classes
     |--------------------------------------------------------------------------
     |
-    | Controls which PHP classes may be unserialized from cache. Set to false
-    | to block all object unserialization (recommended), or provide an array
-    | of class names that are allowed. This hardens the cache layer against
-    | PHP deserialization gadget chain attacks.
+    | This value determines the classes that can be unserialized from cache
+    | storage. By default, no PHP classes will be unserialized from your
+    | cache to prevent gadget chain attacks if your APP_KEY is leaked.
     |
     */
 
     'serializable_classes' => true,
 
     'limiter' => env('CACHE_LIMITER_DRIVER', 'redis'),
+
 ];
