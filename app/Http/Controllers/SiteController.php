@@ -71,7 +71,7 @@ class SiteController extends Controller
         });
     }
 
-    public function language(): View
+    public function language(): ViewContract
     {
         return view('site.language');
     }
@@ -104,7 +104,7 @@ class SiteController extends Controller
         return View::make('site.terms')->with(compact('page'))->render();
     }
 
-    public function redirectUrl(Request $request): View
+    public function redirectUrl(Request $request): ViewContract
     {
         abort_if(! $request->user(), 404);
         $this->validate($request, [
@@ -116,7 +116,7 @@ class SiteController extends Controller
         return view('site.redirect', compact('url'));
     }
 
-    public function followIntent(Request $request): View
+    public function followIntent(Request $request): ViewContract
     {
         $this->validate($request, [
             'user' => 'string|min:1|max:30|exists:users,username',
@@ -177,7 +177,7 @@ class SiteController extends Controller
         return View::make('site.legal-notice')->with(compact('page'))->render();
     }
 
-    public function curatedOnboarding(Request $request): RedirectResponse|View
+    public function curatedOnboarding(Request $request): RedirectResponse|ViewContract
     {
         if ($request->user()) {
             return redirect('/i/web');
