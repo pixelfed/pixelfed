@@ -10,11 +10,10 @@ use App\Services\FollowerService;
 use App\Services\StatusService;
 use App\Util\ActivityPub\Helpers;
 use App\Util\Localization\Localization;
-use Illuminate\Contracts\View\View as ViewContract;
+use Illuminate\Contracts\View\View;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Cache;
-use Illuminate\Support\Facades\View;
 use Illuminate\Support\Str;
 
 class SiteController extends Controller
@@ -30,12 +29,12 @@ class SiteController extends Controller
         }
     }
 
-    public function homeGuest(): ViewContract
+    public function homeGuest(): View
     {
         return view('site.index');
     }
 
-    public function homeTimeline(Request $request): RedirectResponse|ViewContract
+    public function homeTimeline(Request $request): RedirectResponse|View
     {
         if ($request->has('force_old_ui')) {
             return view('timeline.home', ['layout' => 'feed']);
@@ -82,7 +81,7 @@ class SiteController extends Controller
             $slug = '/site/kb/community-guidelines';
             $page = Page::whereSlug($slug)->whereActive(true)->first();
 
-            return View::make('site.help.community-guidelines')->with(compact('page'))->render();
+            return view('site.help.community-guidelines', compact('page'))->render();
         });
     }
 
@@ -92,7 +91,7 @@ class SiteController extends Controller
             return $this->cachedPage('/site/privacy');
         });
 
-        return View::make('site.privacy')->with(compact('page'))->render();
+        return view('site.privacy', compact('page'))->render();
     }
 
     public function terms(Request $request)
@@ -101,7 +100,7 @@ class SiteController extends Controller
             return $this->cachedPage('/site/terms');
         });
 
-        return View::make('site.terms')->with(compact('page'))->render();
+        return view('site.terms', compact('page'))->render();
     }
 
     public function redirectUrl(Request $request): View
@@ -174,7 +173,7 @@ class SiteController extends Controller
         });
         abort_if(! $page, 404);
 
-        return View::make('site.legal-notice')->with(compact('page'))->render();
+        return view('site.legal-notice', compact('page'))->render();
     }
 
     public function curatedOnboarding(Request $request): RedirectResponse|View

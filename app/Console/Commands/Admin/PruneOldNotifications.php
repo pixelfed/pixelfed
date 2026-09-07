@@ -9,7 +9,7 @@ class PruneOldNotifications extends Command
 {
     protected $signature = 'notifications:prune-old
         {--months=18 : Keep notifications newer than this many months}
-        {--batch=10000 : Number of rows to delete per batch}';
+        {--batch=100000 : Number of rows to delete per batch}';
 
     protected $description = 'Prune notifications older than the retention period';
 
