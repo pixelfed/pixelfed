@@ -274,6 +274,7 @@ class MediaStorageService
             if (! $mimeCheck || ! in_array($mimeCheck, ['image/png', 'image/jpeg', 'image/jpg'])) {
                 $avatar->last_fetched_at = now();
                 $avatar->save();
+
                 return;
             }
 
