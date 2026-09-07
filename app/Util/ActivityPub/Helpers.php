@@ -44,6 +44,10 @@ class Helpers
 
     private const MAX_URL_LENGTH = 4096;
 
+    private const DNS_TTL_POSITIVE = 86400;
+
+    private const DNS_TTL_NEGATIVE = 300;
+
     private const LOCALHOST_DOMAINS = [
         'localhost',
         '127.0.0.1',
@@ -201,16 +205,8 @@ class Helpers
             }
         }
 
-        // SSRF guard: when DNS verification is enabled, reject any host that
-        // resolves into a non-global (private/reserved/link-local) range. This
-        // closes the bypass where a public-looking hostname (e.g.
-        // metadata.google.internal) resolves to a reserved address such as
-        // 169.254.169.254. resolvePublicIps() fails closed: it returns an empty
-        // array if the host does not resolve or any resolved IP is non-global.
-        if ($disableDNSCheck !== true) {
-            if (empty(self::resolvePublicIps($host))) {
-                return false;
-            }
+        if (empty(self::resolvePublicIps($host))) {
+            return false;
         }
 
         return $uri->toString();
@@ -327,6 +323,33 @@ class Helpers
         return $host;
     }
 
+    private static function lookupPublicIps(string $host): array
+    {
+        $records = @dns_get_record($host.'.', DNS_A | DNS_AAAA);
+
+        if (! is_array($records) || $records === []) {
+            return [];
+        }
+
+        $ips = [];
+
+        foreach ($records as $record) {
+            $ip = $record['ip'] ?? $record['ipv6'] ?? null;
+
+            if (! is_string($ip) || $ip === '' || isset($ips[$ip])) {
+                continue;
+            }
+
+            if (! self::isPublicIp($ip)) {
+                return [];
+            }
+
+            $ips[$ip] = true;
+        }
+
+        return array_keys($ips);
+    }
+
     public static function resolvePublicIps(string $host): array
     {
         $host = self::normalizeHost($host);
@@ -335,47 +358,23 @@ class Helpers
             return [];
         }
 
-        $key = self::URL_CACHE_PREFIX.
-            'public-ips:sha256-'.
-            hash('sha256', $host);
+        $key = self::URL_CACHE_PREFIX.'public-ips:'.hash('xxh128', $host);
 
-        return Cache::remember($key, 86400, function () use ($host) {
-            $ips = [];
+        $cached = Cache::get($key);
 
-            $aRecords = @dns_get_record($host.'.', DNS_A);
+        if (is_array($cached)) {
+            return $cached;
+        }
 
-            if (is_array($aRecords)) {
-                foreach ($aRecords as $record) {
-                    if (! empty($record['ip'])) {
-                        $ips[] = $record['ip'];
-                    }
-                }
-            }
+        $ips = self::lookupPublicIps($host);
 
-            $aaaaRecords = @dns_get_record($host.'.', DNS_AAAA);
+        Cache::put(
+            $key,
+            $ips,
+            $ips === [] ? self::DNS_TTL_NEGATIVE : self::DNS_TTL_POSITIVE
+        );
 
-            if (is_array($aaaaRecords)) {
-                foreach ($aaaaRecords as $record) {
-                    if (! empty($record['ipv6'])) {
-                        $ips[] = $record['ipv6'];
-                    }
-                }
-            }
-
-            $ips = array_values(array_unique($ips));
-
-            if (empty($ips)) {
-                return [];
-            }
-
-            foreach ($ips as $ip) {
-                if (! self::isPublicIp($ip)) {
-                    return [];
-                }
-            }
-
-            return $ips;
-        });
+        return $ips;
     }
 
     /**
