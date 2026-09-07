@@ -203,7 +203,7 @@ class DeleteAccountPipeline implements ShouldQueue
         ProfileSponsor::whereProfileId($id)->delete();
 
         Report::whereUserId($user->id)->forceDelete();
-        PublicTimelineService::warmCache(true, 400);
+        PublicTimelineService::deleteByProfileId($id);
         $this->deleteUserColumns($user);
         AccountService::del($user->profile_id);
         Profile::whereUserId($user->id)->delete();
