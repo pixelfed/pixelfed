@@ -103,11 +103,7 @@ Route::domain(config('pixelfed.domain.app'))->middleware(['validemail', 'twofact
     Route::get('auth/forgot/email', [UserEmailForgotController::class, 'index'])->name('email.forgot');
     Route::post('auth/forgot/email', [UserEmailForgotController::class, 'store'])->middleware('throttle:10,900,forgotEmail');
 
-    Route::group([
-        'as' => 'passport.',
-        'prefix' => 'oauth',
-        'middleware' => ['oauth-web'],
-    ], function () {
+    Route::name('passport.')->prefix('oauth')->middleware('oauth-web')->group(function () {
         Route::post('/token', [ApiTokenController::class, 'issueToken'])
             ->name('token')
             ->middleware('throttle:10,1');
@@ -175,7 +171,7 @@ Route::domain(config('pixelfed.domain.app'))->middleware(['validemail', 'twofact
     Route::get('/i/app-email-resend', [AppRegisterController::class, 'resendVerification']);
     Route::post('/i/app-email-resend', [AppRegisterController::class, 'resendVerificationStore'])->middleware('throttle:app-code-resend');
 
-    Route::group(['prefix' => 'i'], function () {
+    Route::prefix('i')->group(function () {
         Route::redirect('/', '/');
         Route::get('compose', [StatusController::class, 'compose'])->name('compose');
         Route::post('comment', [CommentController::class, 'store']);
@@ -207,7 +203,7 @@ Route::domain(config('pixelfed.domain.app'))->middleware(['validemail', 'twofact
 
         Route::post('metro/dark-mode', [SettingsController::class, 'metroDarkMode']);
 
-        Route::group(['prefix' => 'report'], function () {
+        Route::prefix('report')->group(function () {
             Route::get('/', [ReportController::class, 'showForm'])->name('report.form');
             Route::post('/', [ReportController::class, 'formStore']);
             Route::get('not-interested', [ReportController::class, 'notInterestedForm'])->name('report.not-interested');
@@ -233,7 +229,7 @@ Route::domain(config('pixelfed.domain.app'))->middleware(['validemail', 'twofact
         Route::get('web/profile/_/{id}', [InternalApiController::class, 'remoteProfile']);
         Route::get('web/post/_/{profileId}/{statusid}', [InternalApiController::class, 'remoteStatus']);
 
-        Route::group(['prefix' => 'import', 'middleware' => 'dangerzone'], function () {
+        Route::prefix('import')->middleware('dangerzone')->group(function () {
             Route::get('job/{uuid}/1', [ImportController::class, 'instagramStepOne']);
             Route::post('job/{uuid}/1', [ImportController::class, 'instagramStepOneStore']);
             Route::get('job/{uuid}/2', [ImportController::class, 'instagramStepTwo']);
@@ -261,7 +257,7 @@ Route::domain(config('pixelfed.domain.app'))->middleware(['validemail', 'twofact
         Route::get('web', [SpaController::class, 'index']);
     });
 
-    Route::group(['prefix' => 'account'], function () {
+    Route::prefix('account')->group(function () {
         Route::redirect('/', '/');
         Route::get('direct', [AccountController::class, 'direct']);
         Route::get('direct/t/{id}', [AccountController::class, 'directMessage']);
@@ -273,7 +269,7 @@ Route::domain(config('pixelfed.domain.app'))->middleware(['validemail', 'twofact
         Route::get('portfolio/{username}.rss', [PortfolioController::class, 'getRssFeed']);
     });
 
-    Route::group(['prefix' => 'settings'], function () {
+    Route::prefix('settings')->group(function () {
         Route::redirect('/', '/settings/home');
         Route::get('home', [SettingsController::class, 'home'])
             ->name('settings');
@@ -298,14 +294,14 @@ Route::domain(config('pixelfed.domain.app'))->middleware(['validemail', 'twofact
         Route::post('privacy/blocked-instances/unblock', [SettingsController::class, 'blockedInstanceUnblock'])->name('settings.privacy.blocked-instances.unblock');
         Route::get('privacy/blocked-keywords', [SettingsController::class, 'blockedKeywords'])->name('settings.privacy.blocked-keywords');
         Route::post('privacy/account', [SettingsController::class, 'privateAccountOptions'])->name('settings.privacy.account');
-        Route::group(['prefix' => 'remove', 'middleware' => 'dangerzone'], function () {
+        Route::prefix('remove')->middleware('dangerzone')->group(function () {
             Route::get('request/temporary', [SettingsController::class, 'removeAccountTemporary'])->name('settings.remove.temporary');
             Route::post('request/temporary', [SettingsController::class, 'removeAccountTemporarySubmit']);
             Route::get('request/permanent', [SettingsController::class, 'removeAccountPermanent'])->name('settings.remove.permanent');
             Route::post('request/permanent', [SettingsController::class, 'removeAccountPermanentSubmit']);
         });
 
-        Route::group(['prefix' => 'security', 'middleware' => 'dangerzone'], function () {
+        Route::prefix('security')->middleware('dangerzone')->group(function () {
             Route::get(
                 '/',
                 [SettingsController::class, 'security']
@@ -361,7 +357,7 @@ Route::domain(config('pixelfed.domain.app'))->middleware(['validemail', 'twofact
         Route::get('accessibility', [SettingsController::class, 'accessibility'])->name('settings.accessibility');
         Route::post('accessibility', [SettingsController::class, 'accessibilityStore']);
 
-        Route::group(['prefix' => 'relationships'], function () {
+        Route::prefix('relationships')->group(function () {
             Route::redirect('/', '/settings/relationships/home');
             Route::get('home', [SettingsController::class, 'relationshipsHome'])->name('settings.relationships');
         });
@@ -370,7 +366,7 @@ Route::domain(config('pixelfed.domain.app'))->middleware(['validemail', 'twofact
         Route::get('invites', [UserInviteController::class, 'show'])->name('settings.invites');
         // Route::get('sponsor', [SettingsController::class, 'sponsor'])->name('settings.sponsor');
         // Route::post('sponsor', [SettingsController::class, 'sponsorStore']);
-        Route::group(['prefix' => 'import', 'middleware' => 'dangerzone'], function () {
+        Route::prefix('import')->middleware('dangerzone')->group(function () {
             Route::get('/', [SettingsController::class, 'dataImport'])->name('settings.import');
             Route::prefix('instagram')->group(function () {
                 Route::get('/', [ImportController::class, 'instagram'])->name('settings.import.ig');
@@ -386,23 +382,23 @@ Route::domain(config('pixelfed.domain.app'))->middleware(['validemail', 'twofact
         Route::get('media', [SettingsController::class, 'mediaSettings'])->name('settings.media');
         Route::post('media', [SettingsController::class, 'updateMediaSettings']);
 
-        Route::group(['prefix' => 'account/aliases', 'middleware' => 'dangerzone'], function () {
+        Route::prefix('account/aliases')->middleware('dangerzone')->group(function () {
             Route::get('manage', [ProfileAliasController::class, 'index']);
             Route::post('manage', [ProfileAliasController::class, 'store']);
             Route::post('manage/delete', [ProfileAliasController::class, 'delete']);
         });
 
-        Route::group(['prefix' => 'account/migration', 'middleware' => 'dangerzone'], function () {
+        Route::prefix('account/migration')->middleware('dangerzone')->group(function () {
             Route::get('manage', [ProfileMigrationController::class, 'index']);
             Route::post('manage', [ProfileMigrationController::class, 'store']);
         });
 
-        Route::group(['prefix' => 'filters'], function () {
+        Route::prefix('filters')->group(function () {
             Route::get('/', [SettingsController::class, 'filtersHome'])->name('settings.filters');
         });
     });
 
-    Route::group(['prefix' => 'site'], function () {
+    Route::prefix('site')->group(function () {
         Route::redirect('/', '/');
         Route::get('about', [SiteController::class, 'about'])->name('site.about');
         Route::view('help', 'site.help')->name('site.help');
@@ -416,7 +412,7 @@ Route::domain(config('pixelfed.domain.app'))->middleware(['validemail', 'twofact
         Route::view('language', 'site.language')->name('site.language');
         Route::get('contact', [ContactController::class, 'show'])->name('site.contact');
         Route::post('contact', [ContactController::class, 'store']);
-        Route::group(['prefix' => 'kb'], function () {
+        Route::prefix('kb')->group(function () {
             Route::view('getting-started', 'site.help.getting-started')->name('help.getting-started');
             Route::view('sharing-media', 'site.help.sharing-media')->name('help.sharing-media');
             Route::view('your-profile', 'site.help.your-profile')->name('help.your-profile');
@@ -452,13 +448,13 @@ Route::domain(config('pixelfed.domain.app'))->middleware(['validemail', 'twofact
         Route::get('legal-notice', [SiteController::class, 'legalNotice']);
     });
 
-    Route::group(['prefix' => 'timeline'], function () {
+    Route::prefix('timeline')->group(function () {
         Route::redirect('/', '/');
         Route::get('public', [TimelineController::class, 'local'])->name('timeline.public');
         Route::get('network', [TimelineController::class, 'network'])->name('timeline.network');
     });
 
-    Route::group(['prefix' => 'users'], function () {
+    Route::prefix('users')->group(function () {
         Route::redirect('/', '/');
         Route::get('{user}.atom', [ProfileController::class, 'showAtomFeed'])->where('user', '.*');
         Route::get('{username}/outbox', [FederationController::class, 'userOutbox']);
@@ -467,7 +463,7 @@ Route::domain(config('pixelfed.domain.app'))->middleware(['validemail', 'twofact
         Route::get('{username}', [ProfileController::class, 'permalinkRedirect']);
     });
 
-    Route::group(['prefix' => 'installer'], function () {
+    Route::prefix('installer')->group(function () {
         Route::get('api/requirements', [InstallController::class, 'getRequirements'])->withoutMiddleware(['web']);
         Route::post('precheck/database', [InstallController::class, 'precheckDatabase'])->withoutMiddleware(['web']);
         Route::post('store', [InstallController::class, 'store'])->withoutMiddleware(['web']);
@@ -475,7 +471,7 @@ Route::domain(config('pixelfed.domain.app'))->middleware(['validemail', 'twofact
         Route::get('/{q}', [InstallController::class, 'index'])->withoutMiddleware(['web'])->where('q', '.*');
     });
 
-    Route::group(['prefix' => 'e'], function () {
+    Route::prefix('e')->group(function () {
         Route::get('terms', [MobileController::class, 'terms']);
         Route::get('privacy', [MobileController::class, 'privacy']);
     });
