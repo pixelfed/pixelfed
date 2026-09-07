@@ -2,6 +2,7 @@
 
 namespace App\Http\Resources;
 
+use App\Models\Status;
 use App\Models\Story;
 use App\Services\AccountService;
 use App\Services\StatusService;
@@ -42,11 +43,11 @@ class AdminReport extends JsonResource
             'created_at' => $this->created_at,
         ];
 
-        if ($this->object_id && in_array($this->object_type, ['App\Models\Status', 'App\Status'])) {
+        if ($this->object_id && in_array($this->object_type, [Status::class, 'App\Status'])) {
             $res['status'] = StatusService::get($this->object_id, false);
         }
 
-        if ($this->object_id && in_array($this->object_type, ['App\Models\Story', 'App\Story'])) {
+        if ($this->object_id && in_array($this->object_type, [Story::class, 'App\Story'])) {
             $story = Story::find($this->object_id);
             if ($story) {
                 $res['story'] = $story->toAdminEntity();
