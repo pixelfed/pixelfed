@@ -31,7 +31,7 @@
         "vuex": "^3.6.2",
         "vuex-router-sync": "^5.0.0",
         "webpack": "^5.72.1",
-        "webpack-cli": "^4.9.2"
+        "webpack-cli": "^7.2.3"
     },
     "dependencies": {
         "@fancyapps/fancybox": "^3.5.7",
