@@ -877,11 +877,18 @@ class ApiV1Controller extends Controller
         } else {
             $query->whereNull('reblog_of_id');
         }
-
         if ($request->filled('min_id')) {
-            $query->where('id', '>', (int) $request->input('min_id'));
+            $minId = (int) $request->input('min_id');
+
+            if ($minId > 0) {
+                $query->where('id', '>', $minId);
+            }
         } elseif ($request->filled('max_id')) {
-            $query->where('id', '<', (int) $request->input('max_id'));
+            $maxId = (int) $request->input('max_id');
+
+            if ($maxId > 0) {
+                $query->where('id', '<=', $maxId);
+            }
         }
 
         $rows = $query
