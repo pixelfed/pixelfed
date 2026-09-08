@@ -64,7 +64,7 @@
         "twitter-text": "^2.0.5",
         "vue-blurhash": "^0.1.4",
         "vue-carousel": "^0.18.0",
-        "vue-content-loader": "^0.2.3",
+        "vue-content-loader": "^2.0.1",
         "vue-cropperjs": "^4.1.0",
         "vue-i18n": "^8.27.1",
         "vue-infinite-loading": "^2.4.5",
