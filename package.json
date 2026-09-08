@@ -47,7 +47,7 @@
         "blurhash": "^2.0.5",
         "bootstrap-vue": "^2.22.0",
         "caniuse-lite": "^1.0.30001418",
-        "chart.js": "^2.7.2",
+        "chart.js": "^4.5.1",
         "filesize": "^3.6.1",
         "hls.js": "^1.5.13",
         "howler": "^2.2.0",
