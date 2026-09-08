@@ -10,6 +10,10 @@ return new class extends Migration
      */
     public function up(): void
     {
+        if (DB::getDriverName() === 'sqlite') {
+            return;
+        }
+
         DB::statement('
             ALTER TABLE `notifications`
             ADD INDEX `notifications_profile_deleted_id_index`
@@ -21,6 +25,10 @@ return new class extends Migration
 
     public function down(): void
     {
+        if (DB::getDriverName() === 'sqlite') {
+            return;
+        }
+
         DB::statement('
             ALTER TABLE `notifications`
             DROP INDEX `notifications_profile_deleted_id_index`,

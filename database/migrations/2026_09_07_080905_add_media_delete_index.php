@@ -7,6 +7,10 @@ return new class extends Migration
 {
     public function up(): void
     {
+        if (DB::getDriverName() === 'sqlite') {
+            return;
+        }
+
         DB::statement('
             ALTER TABLE `media`
             ADD INDEX `media_unoptimized_recent_index`
@@ -18,6 +22,10 @@ return new class extends Migration
 
     public function down(): void
     {
+        if (DB::getDriverName() === 'sqlite') {
+            return;
+        }
+
         DB::statement('
             ALTER TABLE `media`
             DROP INDEX `media_unoptimized_recent_index`,
