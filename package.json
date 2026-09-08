@@ -69,7 +69,7 @@
         "vue-i18n": "^8.27.1",
         "vue-infinite-loading": "^2.4.5",
         "vue-intersect": "^1.1.6",
-        "vue-loading-overlay": "^3.3.3",
+        "vue-loading-overlay": "^6.0.6",
         "vue-timeago": "^5.1.2",
         "vue-tribute": "^1.0.7",
         "webgl-media-editor": "^0.0.6",
