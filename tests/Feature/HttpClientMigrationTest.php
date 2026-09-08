@@ -110,12 +110,14 @@ describe('FanoutDeletePipeline delivery', function () {
         $job->handle();
 
         Http::assertSentCount(2);
-        Http::assertSent(fn ($request) => $request->url() === 'https://remote1.example/inbox'
-            && $request->method() === 'POST'
-            && str_contains($request->header('Content-Type')[0] ?? '', 'application/ld+json')
+        Http::assertSent(
+            fn ($request) => $request->url() === 'https://remote1.example/inbox'
+                && $request->method() === 'POST'
+                && str_contains($request->header('Content-Type')[0] ?? '', 'application/ld+json')
         );
-        Http::assertSent(fn ($request) => $request->url() === 'https://remote2.example/inbox'
-            && $request->method() === 'POST'
+        Http::assertSent(
+            fn ($request) => $request->url() === 'https://remote2.example/inbox'
+                && $request->method() === 'POST'
         );
     });
 
@@ -173,8 +175,9 @@ describe('StatusActivityPubDeliver delivery', function () {
         $job = new StatusActivityPubDeliver($status);
         $job->handle();
 
-        Http::assertSent(fn ($request) => $request->url() === 'https://remote.example/inbox'
-            && $request->method() === 'POST'
+        Http::assertSent(
+            fn ($request) => $request->url() === 'https://remote.example/inbox'
+                && $request->method() === 'POST'
         );
     });
 
@@ -211,9 +214,9 @@ describe('ActivityPubFetchService URI resolution', function () {
         $method = new ReflectionMethod(ActivityPubFetchService::class, 'resolveRedirect');
         $method->setAccessible(true);
 
-        $result = $method->invoke(null, 'https://example.com/users/alice', 'https://other.example/status/456');
+        $result = $method->invoke(null, 'https://pixelfed.com/users/alice', 'https://pixelfed.social/status/456');
 
-        expect($result)->toBe('https://other.example/status/456');
+        expect($result)->toBe('https://pixelfed.social/status/456');
     });
 
     it('returns null for empty location', function () {
