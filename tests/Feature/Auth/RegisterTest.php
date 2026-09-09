@@ -103,3 +103,36 @@ it('redirects authenticated users away from the register page', function () {
         ->get('/register')
         ->assertRedirect();
 });
+
+it('shows the registration form when enforce_max_users is on but max_users is falsy', function () {
+    // Falsy max_users means "no limit"; the GET form must not redirect to the
+    // instance-full page (must match the POST handler and the help view).
+    config(['pixelfed.open_registration' => true]);
+    config(['pixelfed.enforce_max_users' => true]);
+    config(['pixelfed.max_users' => 0]);
+
+    $this->get('/register')
+        ->assertOk();
+});
+
+it('redirects the registration form when a real max_users limit is reached', function () {
+    config(['pixelfed.open_registration' => true]);
+    config(['pixelfed.enforce_max_users' => true]);
+    config(['pixelfed.max_users' => 1]);
+
+    User::factory()->create();
+
+    $this->get('/register')
+        ->assertRedirect(route('help.instance-max-users-limit'));
+});
+
+it('shows the registration form when under a real max_users limit', function () {
+    config(['pixelfed.open_registration' => true]);
+    config(['pixelfed.enforce_max_users' => true]);
+    config(['pixelfed.max_users' => 1000]);
+
+    User::factory()->create();
+
+    $this->get('/register')
+        ->assertOk();
+});
