@@ -67,6 +67,36 @@ describe('GET /api/v1/accounts/{id}/statuses', function () {
             ->assertOk()
             ->assertJsonIsArray();
     });
+
+    it('does not duplicate the boundary status across max_id pages', function () {
+        $user = User::factory()->create();
+        $user->refresh();
+        $targetUser = User::factory()->create();
+        $targetUser->refresh();
+        Status::factory()->count(25)->create([
+            'profile_id' => $targetUser->profile_id,
+            'type' => 'photo',
+            'scope' => 'public',
+        ]);
+        Passport::actingAs($user, ['read']);
+
+        $pageOneIds = collect(
+            $this->getJson("/api/v1/accounts/{$targetUser->profile_id}/statuses?limit=20")
+                ->assertOk()
+                ->json()
+        )->pluck('id')->all();
+
+        $lastId = end($pageOneIds);
+
+        $pageTwoIds = collect(
+            $this->getJson("/api/v1/accounts/{$targetUser->profile_id}/statuses?limit=20&max_id={$lastId}")
+                ->assertOk()
+                ->json()
+        )->pluck('id')->all();
+
+        expect($pageTwoIds[0] ?? null)->not->toBe($lastId)
+            ->and(array_intersect($pageOneIds, $pageTwoIds))->toBeEmpty();
+    });
 });
 
 describe('GET /api/v1/accounts/{id}/followers', function () {
