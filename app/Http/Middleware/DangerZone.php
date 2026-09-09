@@ -17,19 +17,13 @@ class DangerZone
      */
     public function handle($request, Closure $next)
     {
-        // Only OIDC-registered users have a random unknown password and cannot
-        // complete sudo-mode password confirmation. Bypassing on the instance
-        // flag alone would drop sudo protection for local users (who have real
-        // passwords) on any OIDC-enabled instance.
+        // Only OIDC-registered users have a random unknown password and cannot complete sudo-mode password confirmation.
         if (config('remote-auth.oidc.enabled') && $request->user() && $request->user()->register_source === 'oidc') {
             return $next($request);
         }
 
         if ($request->session()->get('sudoModeAttempts') > 3) {
-            // Invalidate the whole session so no security-related flags survive
-            // the forced logout. Pulling only redirectNext/sudoModeAttempts left
-            // 2fa.session.active (and sudoMode) intact, which allowed the next
-            // login on the same session to skip the 2FA checkpoint.
+            // Invalidate the whole session
             Auth::logout();
             $request->session()->invalidate();
 
