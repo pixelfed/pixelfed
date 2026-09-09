@@ -4,8 +4,8 @@ use App\Http\Middleware\DangerZone;
 use App\Models\User;
 use Illuminate\Foundation\Testing\LazilyRefreshDatabase;
 use Illuminate\Http\Request;
-use Illuminate\Session\Store;
 use Illuminate\Session\ArraySessionHandler;
+use Illuminate\Session\Store;
 
 uses(LazilyRefreshDatabase::class);
 
