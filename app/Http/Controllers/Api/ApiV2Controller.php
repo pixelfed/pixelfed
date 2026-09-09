@@ -267,9 +267,14 @@ class ApiV2Controller extends Controller
             abort(403, 'Invalid or unsupported mime type.');
         }
 
+        // Check the blocklist against the temp upload BEFORE storing, so a
+        // blocked upload never leaves an orphaned file on disk (media:gc only
+        // reaps files that have a Media row).
+        $hash = \hash_file('sha256', $photo->getRealPath());
+        abort_if(MediaBlocklistService::exists($hash) == true, 451);
+
         $storagePath = MediaPathService::get($user, 2);
         $path = $photo->storePublicly($storagePath);
-        $hash = \hash_file('sha256', $photo);
         $license = null;
         $mime = $photo->getMimeType();
 
@@ -282,8 +287,6 @@ class ApiV2Controller extends Controller
                 $license = $compose['default_license'];
             }
         }
-
-        abort_if(MediaBlocklistService::exists($hash) == true, 451);
 
         if ($request->has('replace_id')) {
             $rpid = $request->input('replace_id');
