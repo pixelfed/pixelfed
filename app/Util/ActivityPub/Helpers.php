@@ -1500,7 +1500,29 @@ class Helpers
         $urlDomain = parse_url($url, PHP_URL_HOST);
         $domain = parse_url($res['id'], PHP_URL_HOST);
 
-        return strtolower($urlDomain) === strtolower($domain);
+        if (strtolower($urlDomain) !== strtolower($domain)) {
+            return false;
+        }
+
+        // The actor's key_id (publicKey.id) must live on the same host as the
+        // actor id. Without this, a remote actor could advertise a publicKey.id
+        // pointing at a victim's keyId URI, planting a poisoned
+        // key_id -> attacker-public-key binding in the unique profiles.key_id
+        // column. This mirrors the same-host check UpdatePersonValidator already
+        // enforces on the Update pipeline.
+        if (isset($res['publicKey']['id'])) {
+            if (! self::validateUrl($res['publicKey']['id'])) {
+                return false;
+            }
+
+            $keyDomain = parse_url($res['publicKey']['id'], PHP_URL_HOST);
+
+            if (strtolower($keyDomain) !== strtolower($domain)) {
+                return false;
+            }
+        }
+
+        return true;
     }
 
     /**
