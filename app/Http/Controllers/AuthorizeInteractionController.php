@@ -20,7 +20,13 @@ class AuthorizeInteractionController extends Controller
         abort_unless($uri, 404);
 
         if (! $request->user()) {
-            return redirect('/login?next='.urlencode($uri));
+            // Store the current Pixelfed URL so Laravel's redirect()->intended()
+            // returns here after login. The `next` query param was never
+            // consumed by the login flow, so the remote-follow interaction was
+            // lost after authenticating.
+            $request->session()->put('url.intended', $request->fullUrl());
+
+            return redirect('/login');
         }
 
         $status = Helpers::statusFetch($uri);
