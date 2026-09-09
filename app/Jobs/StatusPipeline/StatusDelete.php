@@ -165,7 +165,9 @@ class StatusDelete implements ShouldQueue
             ->delete();
 
         StatusArchived::whereStatusId($status->id)->delete();
-        StatusHashtag::whereStatusId($status->id)->delete();
+        // Model-based delete so StatusHashtagObserver::deleted() runs and
+        // decrements hashtags.cached_count (a query-builder delete bypasses it).
+        StatusHashtag::whereStatusId($status->id)->get()->each->delete();
         StatusView::whereStatusId($status->id)->delete();
         Status::whereInReplyToId($status->id)->update(['in_reply_to_id' => null]);
 
