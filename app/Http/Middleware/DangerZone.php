@@ -26,9 +26,12 @@ class DangerZone
         }
 
         if ($request->session()->get('sudoModeAttempts') > 3) {
-            $request->session()->pull('redirectNext');
-            $request->session()->pull('sudoModeAttempts');
+            // Invalidate the whole session so no security-related flags survive
+            // the forced logout. Pulling only redirectNext/sudoModeAttempts left
+            // 2fa.session.active (and sudoMode) intact, which allowed the next
+            // login on the same session to skip the 2FA checkpoint.
             Auth::logout();
+            $request->session()->invalidate();
 
             return redirect(route('login'));
         }
