@@ -91,6 +91,8 @@ class StatusEntityLexer implements ShouldQueue
         if ($profile->no_autolink == false) {
             $this->parseEntities();
         }
+
+        $this->fanout();
     }
 
     public function parseEntities()
@@ -171,7 +173,6 @@ class StatusEntityLexer implements ShouldQueue
                 MentionPipeline::dispatch($status, $m);
             });
         }
-        $this->fanout();
     }
 
     public function fanout()
