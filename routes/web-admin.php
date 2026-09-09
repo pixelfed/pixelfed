@@ -117,7 +117,6 @@ Route::domain(config('pixelfed.domain.admin'))->prefix('i/admin')->group(functio
     Route::post('asf/edit/{id}', [AdminShadowFilterController::class, 'storeEdit']);
     Route::post('asf/create', [AdminShadowFilterController::class, 'store']);
 
-    Route::get('asf/home', [AdminShadowFilterController::class, 'home']);
     Route::redirect('curated-onboarding/', 'curated-onboarding/home');
     Route::get('curated-onboarding/home', [AdminCuratedRegisterController::class, 'index'])->name('admin.curated-onboarding');
     Route::get('curated-onboarding/templates', [AdminCuratedRegisterController::class, 'templates'])->name('admin.curated-onboarding.templates');
