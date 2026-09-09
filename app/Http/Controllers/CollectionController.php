@@ -53,7 +53,11 @@ class CollectionController extends Controller
         $this->validate($request, [
             'title' => 'nullable|max:50',
             'description' => 'nullable|max:500',
-            'visibility' => 'nullable|string|in:public,private,draft',
+            // visibility is a NOT NULL column; require it here (matching publish())
+            // so an omitted value is rejected with 422 instead of writing null,
+            // which crashes on strict DBs and stores '' (permanent invisibility)
+            // on non-strict MySQL.
+            'visibility' => 'required|alpha|in:public,private,draft',
         ]);
 
         $pid = $request->user()->profile_id;
