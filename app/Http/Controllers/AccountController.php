@@ -538,7 +538,12 @@ class AccountController extends Controller
             if ($request->session()->has('2fa.attempts')) {
                 $count = (int) $request->session()->get('2fa.attempts');
                 if ($count == 3) {
+                    // Clear 2FA session state before logging out. Auth::logout()
+                    // only removes the auth credential, and login regenerates
+                    // (preserving data), so a lingering 2fa.session.active could
+                    // let the next user on a shared session skip 2FA.
                     Auth::logout();
+                    $request->session()->invalidate();
 
                     return redirect('/');
                 }
