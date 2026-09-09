@@ -86,10 +86,11 @@ class StoryService
     public static function latest($pid)
     {
         return Cache::remember(self::STORY_KEY.'latest:pid-'.$pid, 3600, function () use ($pid) {
-            return Story::whereProfileId($pid)
+            $story = Story::whereProfileId($pid)
                 ->latest()
-                ->first()
-                ->id;
+                ->first();
+
+            return $story ? $story->id : null;
         });
     }
 

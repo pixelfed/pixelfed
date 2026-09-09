@@ -143,5 +143,9 @@ class StoryExpire implements ShouldQueue
 
         $story->views()->delete();
         $story->delete();
+
+        // Invalidate the per-author latest-story cache, matching the local
+        // expiry path; otherwise latest(pid) keeps returning this deleted id.
+        StoryService::delLatest($story->profile_id);
     }
 }
