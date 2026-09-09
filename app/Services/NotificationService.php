@@ -108,7 +108,11 @@ class NotificationService
         if (! $epoch) {
             NotificationEpochUpdatePipeline::dispatch();
 
-            return 1;
+            $rec = Notification::whereDate('created_at', '>=', now()->subMonths($months)->format('Y-m-d'))
+                ->orderBy('id')
+                ->first();
+
+            return $rec ? $rec->id : 1;
         }
 
         return $epoch;
