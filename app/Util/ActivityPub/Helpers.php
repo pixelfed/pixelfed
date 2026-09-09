@@ -1433,11 +1433,20 @@ class Helpers
     {
         $profile = Profile::whereRemoteUrl($url)->first();
 
-        if ($profile && ! self::needsFetch($profile)) {
+        if (! $profile) {
+            return self::profileUpdateOrCreate($url);
+        }
+
+        if (! self::needsFetch($profile)) {
             return $profile;
         }
 
-        return self::profileUpdateOrCreate($url);
+        // Attempt a refresh, but fall back to the existing profile if it fails
+        // (network/validation error). Discarding a known-good profile here
+        // caused null dereferences in downstream activity handlers.
+        $refreshed = self::profileUpdateOrCreate($url);
+
+        return $refreshed ?? $profile;
     }
 
     /**
