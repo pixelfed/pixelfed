@@ -108,4 +108,27 @@ class StatusDeleteCleanupTest extends TestCase
 
         $this->assertNull(Status::find($status->id));
     }
+
+    #[Test]
+    public function deleting_a_status_cleans_up_even_when_the_owning_profile_is_soft_deleted()
+    {
+        // Mirrors the account-deletion flow on AP-enabled instances: the
+        // owning profile is soft-deleted before the queued StatusDelete runs.
+        config(['federation.activitypub.enabled' => true]);
+
+        $user = User::factory()->create();
+        $user->refresh();
+
+        $status = Status::factory()->create([
+            'profile_id' => $user->profile_id,
+            'type' => 'photo',
+        ]);
+
+        // Soft-delete the owning profile, as DeleteAccountPipeline does.
+        $user->profile->delete();
+
+        (new StatusDelete($status))->handle();
+
+        $this->assertNull(Status::find($status->id));
+    }
 }
