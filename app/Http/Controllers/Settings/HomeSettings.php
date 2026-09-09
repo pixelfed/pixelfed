@@ -172,7 +172,9 @@ trait HomeSettings
     public function emailUpdate(Request $request)
     {
         $this->validate($request, [
-            'email' => 'required|email|unique:users,email',
+            // Ignore the user's own row so an unchanged (pre-filled) submission
+            // is a no-op; collisions with other accounts still fail.
+            'email' => 'required|email|unique:users,email,'.$request->user()->id,
         ]);
         $changes = false;
         $email = $request->input('email');
