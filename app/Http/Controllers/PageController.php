@@ -15,7 +15,7 @@ class PageController extends Controller
 {
     public function __construct()
     {
-        $this->middleware(['auth', 'admin']);
+        $this->middleware(['auth', 'admin', 'dangerzone']);
     }
 
     protected function cacheKeys(): array
