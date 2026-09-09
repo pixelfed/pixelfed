@@ -38,6 +38,8 @@ class LandingController extends Controller
 
         return DirectoryProfile::collection(
             Profile::whereNull('domain')
+                ->where('is_private', false)
+                ->whereNull('status')
                 ->whereIsSuggestable(true)
                 ->orderByDesc('updated_at')
                 ->cursorPaginate(20)
