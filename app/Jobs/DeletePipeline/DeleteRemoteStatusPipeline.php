@@ -95,7 +95,9 @@ class DeleteRemoteStatusPipeline implements ShouldQueue
             });
             Mention::whereStatusId($status->id)->forceDelete();
             Report::whereObjectType(Status::class)->whereObjectId($status->id)->delete();
-            StatusHashtag::whereStatusId($status->id)->delete();
+            // Model-based delete so StatusHashtagObserver::deleted() runs and
+            // decrements hashtags.cached_count (a query-builder delete bypasses it).
+            StatusHashtag::whereStatusId($status->id)->get()->each->delete();
             StatusView::whereStatusId($status->id)->delete();
             Status::whereReblogOfId($status->id)->forceDelete();
             $status->forceDelete();
