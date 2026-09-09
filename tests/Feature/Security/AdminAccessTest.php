@@ -212,6 +212,19 @@ describe('admin access granted to admin users', function () {
             ->assertOk();
     });
 
+    it('allows admin to access instance stats API when is_admin is a boolean', function () {
+        // Postgres hydrates the boolean `is_admin` column to a PHP bool, so
+        // the guard must accept `true` and not just the integer 1. Force the
+        // boolean here so the test is driver-independent (SQLite hydrates 1).
+        $admin = User::factory()->admin()->create();
+        $admin->refresh();
+        $admin->is_admin = true;
+        Passport::actingAs($admin, ['admin:read']);
+
+        $this->getJson('/api/admin/instance/stats')
+            ->assertOk();
+    });
+
     it('allows admin to access admin users API', function () {
         $admin = User::factory()->admin()->create();
         $admin->refresh();
