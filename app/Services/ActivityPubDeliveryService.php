@@ -68,12 +68,48 @@ class ActivityPubDeliveryService
             'User-Agent' => "(Pixelfed/{$version}; +{$appUrl})",
         ]);
 
+        if (empty($headers)) {
+            Log::error('ActivityPub delivery failed: could not generate signature headers', [
+                'sender_id' => $this->sender->id,
+                'destination' => $this->to,
+            ]);
+
+            return false;
+        }
+
         $ch = curl_init($this->to);
         curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
         curl_setopt($ch, CURLOPT_HTTPHEADER, $headers);
         curl_setopt($ch, CURLOPT_POSTFIELDS, $payload);
         curl_setopt($ch, CURLOPT_HEADER, true);
-        curl_exec($ch);
+        curl_setopt($ch, CURLOPT_TIMEOUT, config('federation.activitypub.delivery.timeout', 30));
+
+        $response = curl_exec($ch);
+        $httpCode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
+        $error = curl_error($ch);
+        curl_close($ch);
+
+        if ($response === false) {
+            Log::error('ActivityPub delivery failed: cURL error', [
+                'sender_id' => $this->sender->id,
+                'destination' => $this->to,
+                'error' => $error,
+            ]);
+
+            return false;
+        }
+
+        if ($httpCode < 200 || $httpCode >= 300) {
+            Log::warning('ActivityPub delivery received a non-2xx response', [
+                'sender_id' => $this->sender->id,
+                'destination' => $this->to,
+                'http_code' => $httpCode,
+            ]);
+
+            return false;
+        }
+
+        return true;
     }
 
     /**
