@@ -2,6 +2,7 @@
 
 use App\Models\User;
 use Illuminate\Foundation\Testing\LazilyRefreshDatabase;
+use Illuminate\Routing\Middleware\ThrottleRequests;
 use Laravel\Passport\ClientRepository;
 
 uses(LazilyRefreshDatabase::class);
@@ -19,7 +20,7 @@ uses(LazilyRefreshDatabase::class);
 */
 
 beforeEach(function () {
-    $this->withoutMiddleware(\Illuminate\Routing\Middleware\ThrottleRequests::class);
+    $this->withoutMiddleware(ThrottleRequests::class);
     app(ClientRepository::class)->createPersonalAccessGrantClient(
         'Test Personal Access Client',
         config('auth.guards.api.provider')

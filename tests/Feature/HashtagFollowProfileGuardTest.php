@@ -1,6 +1,7 @@
 <?php
 
 use App\Models\Hashtag;
+use App\Models\Profile;
 use App\Models\User;
 use Illuminate\Foundation\Testing\LazilyRefreshDatabase;
 
@@ -40,7 +41,7 @@ it('returns 422 instead of 500 when the profile is soft-deleted', function () {
     // while leaving the still-authenticated session intact. Unset the cached
     // relation so the controller re-queries and sees null, matching what a
     // fresh request resolves after the pipeline runs in another request.
-    App\Models\Profile::whereUserId($user->id)->delete();
+    Profile::whereUserId($user->id)->delete();
     $user->unsetRelation('profile');
 
     $this->actingAs($user)
