@@ -2,6 +2,7 @@
 
 use App\Models\User;
 use Illuminate\Foundation\Testing\LazilyRefreshDatabase;
+use Illuminate\Routing\Middleware\ThrottleRequests;
 use PragmaRX\Google2FA\Google2FA;
 
 uses(LazilyRefreshDatabase::class);
@@ -19,7 +20,7 @@ uses(LazilyRefreshDatabase::class);
 */
 
 beforeEach(function () {
-    $this->withoutMiddleware(\Illuminate\Routing\Middleware\ThrottleRequests::class);
+    $this->withoutMiddleware(ThrottleRequests::class);
 });
 
 it('clears the 2fa.session.active flag when forced logout occurs', function () {
