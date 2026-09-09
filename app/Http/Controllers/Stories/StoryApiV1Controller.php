@@ -699,7 +699,7 @@ class StoryApiV1Controller extends Controller
 
         $following = Follower::whereProfileId($pid)->whereFollowingId($story->profile_id)->exists();
         abort_if(! $following, 403, 'Invalid permission');
-
+        abort_if(in_array($pid, $story->profile->blockedIds()->toArray()), 403); // Reject if the story author has blocked the commenter.
         abort_if(! $story->can_reply, 422);
 
         $status = new Status;
