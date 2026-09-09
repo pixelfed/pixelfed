@@ -6,6 +6,7 @@ use App\Jobs\FollowPipeline\FollowAcceptPipeline;
 use App\Jobs\FollowPipeline\FollowPipeline;
 use App\Jobs\FollowPipeline\FollowRejectPipeline;
 use App\Mail\ConfirmEmail;
+use App\Models\AccountLog;
 use App\Models\EmailVerification;
 use App\Models\Follower;
 use App\Models\FollowRequest;
@@ -520,6 +521,19 @@ class AccountController extends Controller
             if ($this->twoFactorBackupCheck($request, $code, $user)) {
                 return redirect('/');
             }
+
+            // Audit failed 2FA verification so brute-force attempts at the MFA
+            // layer are visible (the route throttle bounds the rate per user).
+            $log = new AccountLog;
+            $log->user_id = $user->id;
+            $log->item_id = $user->id;
+            $log->item_type = User::class;
+            $log->action = 'auth.2fa.failed';
+            $log->message = '2FA verification failed';
+            $log->link = null;
+            $log->ip_address = $request->ip();
+            $log->user_agent = $request->userAgent();
+            $log->save();
 
             if ($request->session()->has('2fa.attempts')) {
                 $count = (int) $request->session()->get('2fa.attempts');

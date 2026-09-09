@@ -196,7 +196,8 @@ Route::domain(config('pixelfed.domain.app'))->middleware(['validemail', 'twofact
         Route::get('auth/sudo', [AccountController::class, 'confirmPassword'])->name('password.confirm');
         Route::post('auth/sudo', [AccountController::class, 'confirmPasswordStore']);
         Route::get('auth/checkpoint', [AccountController::class, 'twoFactorCheckpoint']);
-        Route::post('auth/checkpoint', [AccountController::class, 'twoFactorVerify']);
+        Route::post('auth/checkpoint', [AccountController::class, 'twoFactorVerify'])
+            ->middleware('throttle:5,15');
 
         Route::get('results', [SearchController::class, 'results']);
         Route::post('visibility', [StatusController::class, 'toggleVisibility']);
