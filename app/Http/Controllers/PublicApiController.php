@@ -553,12 +553,20 @@ class PublicApiController extends Controller
                     ->get()
                     ->map(function ($s) use ($user) {
                         $status = StatusService::get($s->id);
-                        $status['favourited'] = (bool) LikeService::liked($user->profile_id, $s->id);
-                        $status['bookmarked'] = (bool) BookmarkService::get($user->profile_id, $s->id);
-                        $status['reblogged'] = (bool) ReblogService::get($user->profile_id, $s->id);
+                        if ($status && isset($status['account']) && $user) {
+                            $status['favourited'] = (bool) LikeService::liked($user->profile_id, $s->id);
+                            $status['bookmarked'] = (bool) BookmarkService::get($user->profile_id, $s->id);
+                            $status['reblogged'] = (bool) ReblogService::get($user->profile_id, $s->id);
+                        }
 
                         return $status;
-                    });
+                    })
+                    ->filter(function ($s) {
+                        // Drop statuses whose account failed to resolve (e.g. a
+                        // deleted remote profile) so we never return account=null.
+                        return $s && isset($s['account']);
+                    })
+                    ->values();
                 $res = $timeline->toArray();
             } else {
                 $timeline = Status::select(
@@ -582,12 +590,20 @@ class PublicApiController extends Controller
                     ->get()
                     ->map(function ($s) use ($user) {
                         $status = StatusService::get($s->id);
-                        $status['favourited'] = (bool) LikeService::liked($user->profile_id, $s->id);
-                        $status['bookmarked'] = (bool) BookmarkService::get($user->profile_id, $s->id);
-                        $status['reblogged'] = (bool) ReblogService::get($user->profile_id, $s->id);
+                        if ($status && isset($status['account']) && $user) {
+                            $status['favourited'] = (bool) LikeService::liked($user->profile_id, $s->id);
+                            $status['bookmarked'] = (bool) BookmarkService::get($user->profile_id, $s->id);
+                            $status['reblogged'] = (bool) ReblogService::get($user->profile_id, $s->id);
+                        }
 
                         return $status;
-                    });
+                    })
+                    ->filter(function ($s) {
+                        // Drop statuses whose account failed to resolve (e.g. a
+                        // deleted remote profile) so we never return account=null.
+                        return $s && isset($s['account']);
+                    })
+                    ->values();
                 $res = $timeline->toArray();
             }
         } else {
