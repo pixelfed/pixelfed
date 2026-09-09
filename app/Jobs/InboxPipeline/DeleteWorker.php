@@ -185,6 +185,13 @@ class DeleteWorker implements ShouldQueue
         if (! $actor) {
             return false;
         }
+        // Rebind: the profile resolved by keyId must belong to the keyId host.
+        // This rejects a poisoned or stale row whose remote_url host differs
+        // from the request's keyId host, so a planted key_id -> attacker key
+        // binding cannot authenticate.
+        if (parse_url($actor->remote_url, PHP_URL_HOST) !== $keyDomain) {
+            return false;
+        }
         $pkey = openssl_pkey_get_public($actor->public_key);
         if (! $pkey) {
             return false;
