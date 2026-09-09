@@ -1563,7 +1563,10 @@ class ApiV1Controller extends Controller
                 return $status['like_id'];
             })->filter();
 
-            $max = $ids->min() - 1;
+            // Exclusive `<` upper bound on likes.id (see query above), so the
+            // next cursor is exactly the smallest like_id on this page — no -1,
+            // which would skip the row at (min - 1).
+            $max = $ids->min();
             $min = $ids->max();
 
             $baseUrl = config('app.url').'/api/v1/favourites?limit='.$limit.'&';
