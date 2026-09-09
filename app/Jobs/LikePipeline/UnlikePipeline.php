@@ -62,6 +62,14 @@ class UnlikePipeline implements ShouldQueue
             return;
         }
 
+        // Federate the Undo BEFORE deleting the Like locally. If federation is
+        // deleted-first, a timeout leaves the Like gone and the retry is
+        // silently dropped (deleteWhenMissingModels) so the unlike never
+        // federates. Delivering first keeps the Like restorable across retries.
+        if ($actor->id !== $status->profile_id && $status->url && $actor->domain == null) {
+            $this->remoteLikeDeliver();
+        }
+
         DB::transaction(function () use ($status, $actor, $like) {
             if ($status->likes_count > 0) {
                 $status->decrement('likes_count');
@@ -80,10 +88,6 @@ class UnlikePipeline implements ShouldQueue
 
             $like->forceDelete();
         });
-
-        if ($actor->id !== $status->profile_id && $status->url && $actor->domain == null) {
-            $this->remoteLikeDeliver();
-        }
 
         StatusService::refresh($status->id);
     }
