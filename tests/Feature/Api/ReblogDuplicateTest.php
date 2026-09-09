@@ -1,5 +1,6 @@
 <?php
 
+use App\Jobs\SharePipeline\SharePipeline;
 use App\Models\Status;
 use App\Models\User;
 use Illuminate\Foundation\Testing\LazilyRefreshDatabase;
@@ -70,5 +71,5 @@ it('does not re-dispatch SharePipeline for an already-existing share', function 
     $this->postJson("/api/v1/statuses/{$status->id}/reblog")->assertOk();
 
     // SharePipeline dispatched exactly once (only for the newly-created share).
-    Bus::assertDispatchedTimes(\App\Jobs\SharePipeline\SharePipeline::class, 1);
+    Bus::assertDispatchedTimes(SharePipeline::class, 1);
 });

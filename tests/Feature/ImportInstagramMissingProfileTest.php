@@ -5,6 +5,7 @@ use App\Models\ImportJob;
 use App\Models\Profile;
 use App\Models\User;
 use Illuminate\Foundation\Testing\LazilyRefreshDatabase;
+use Illuminate\Support\Str;
 
 uses(LazilyRefreshDatabase::class);
 
@@ -29,7 +30,7 @@ it('drops the import job when the profile has been soft-deleted', function () {
     $job = new ImportJob;
     $job->profile_id = $user->profile_id;
     $job->service = 'instagram';
-    $job->uuid = (string) \Illuminate\Support\Str::uuid();
+    $job->uuid = (string) Str::uuid();
     $job->stage = 0;
     $job->save();
 
@@ -50,7 +51,7 @@ it('drops the import job when the job no longer exists', function () {
     $job = new ImportJob;
     $job->profile_id = $user->profile_id;
     $job->service = 'instagram';
-    $job->uuid = (string) \Illuminate\Support\Str::uuid();
+    $job->uuid = (string) Str::uuid();
     $job->stage = 0;
     $job->save();
 
