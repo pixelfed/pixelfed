@@ -157,6 +157,17 @@ class RemoteAuthService
                 if (! $res->ok()) {
                     return false;
                 }
+
+                $json = $res->json();
+
+                // Check the presence of the `compatible` KEY (not values) and
+                // fail closed when the body is not decodable JSON. in_array()
+                // searches values and throws a TypeError on a null body.
+                if (! $json || ! isset($json['compatible'])) {
+                    return false;
+                }
+
+                return $json['compatible'];
             } catch (RequestException $e) {
                 return false;
             } catch (ConnectionException $e) {
@@ -164,13 +175,6 @@ class RemoteAuthService
             } catch (\Exception $e) {
                 return false;
             }
-            $json = $res->json();
-
-            if (! in_array('compatible', $json)) {
-                return false;
-            }
-
-            return $res['compatible'];
         });
     }
 
