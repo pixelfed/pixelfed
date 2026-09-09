@@ -887,7 +887,7 @@ class ApiV1Controller extends Controller
             $maxId = (int) $request->input('max_id');
 
             if ($maxId > 0) {
-                $query->where('id', '<=', $maxId);
+                $query->where('id', '<', $maxId);
             }
         }
 
