@@ -4124,7 +4124,12 @@ class ApiV1Controller extends Controller
             'visibility' => 'public',
         ]);
 
-        SharePipeline::dispatch($share)->onQueue('low');
+        // Only run the share pipeline for a newly-created share; a duplicate
+        // reblog returns the existing row (matches the like-path pattern and
+        // avoids redundant queue work / counter churn).
+        if ($share->wasRecentlyCreated) {
+            SharePipeline::dispatch($share)->onQueue('low');
+        }
 
         StatusService::del($status->id);
         ReblogService::add($user->profile_id, $status->id);
