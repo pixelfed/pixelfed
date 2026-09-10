@@ -14,7 +14,6 @@ use Illuminate\Console\Scheduling\Schedule;
 */
 
 /** @var Schedule $schedule */
-
 $schedule->command('media:optimize')->hourlyAt(40)->onOneServer();
 $schedule->command('media:gc')->hourlyAt(5)->onOneServer();
 $schedule->command('horizon:snapshot')->everyFiveMinutes()->onOneServer();
