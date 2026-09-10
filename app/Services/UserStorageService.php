@@ -45,15 +45,17 @@ class UserStorageService
             return -1;
         }
 
-        if ($user->storage_used_updated_at) {
+        // Self-heal: when the storage cached counter is missing or stale, recompute from source before returning.
+        if (self::isStale($user)) {
+            $updatedVal = self::calculateStorageUsed($id);
+            $user->storage_used = $updatedVal;
+            $user->storage_used_updated_at = now();
+            $user->save();
+
             return (int) $user->storage_used;
         }
-        $updatedVal = self::calculateStorageUsed($id);
-        $user->storage_used = $updatedVal;
-        $user->storage_used_updated_at = now();
-        $user->save();
 
-        return $user->storage_used;
+        return (int) $user->storage_used;
     }
 
     public static function calculateStorageUsed($id)

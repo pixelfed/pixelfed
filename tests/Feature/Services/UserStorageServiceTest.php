@@ -62,19 +62,44 @@ it('populates storage_used on first get when never calculated', function () {
     expect($user->storage_used_updated_at)->not->toBeNull();
 });
 
-it('returns the cached value on subsequent gets without recomputing', function () {
+it('returns the cached value on subsequent gets without recomputing when fresh', function () {
     $user = User::factory()->create();
     $user->refresh();
 
-    // Seed a cached value that intentionally disagrees with actual media.
+    // Seed a fresh cached value that intentionally disagrees with actual media.
     $user->storage_used = 12345;
     $user->storage_used_updated_at = now();
     $user->save();
 
     makeMedia($user, 500000, 1);
 
-    // get() trusts the cache; it does NOT recompute here.
+    // get() trusts a fresh cache; it does NOT recompute here.
     expect(UserStorageService::get($user->id))->toBe(12345);
+});
+
+/*
+| Self-heal on read (#7169): a user stuck at the limit is unblocked on their
+| next request because get() recomputes a stale counter from source before the
+| limit check reads it. Without this, get() returned the inflated cached value
+| forever and the upload was rejected before any write-path heal could run.
+*/
+it('recomputes a stale counter from source on get', function () {
+    $user = User::factory()->create();
+    $user->refresh();
+
+    // Inflated counter, last touched beyond the stale window (the stuck user).
+    $user->storage_used = 999999;
+    $user->storage_used_updated_at = now()->subHours(UserStorageService::STALE_AFTER_HOURS + 1);
+    $user->save();
+
+    // Real usage is only 200 KB.
+    makeMedia($user, 200000, 1);
+
+    // get() self-heals: returns and persists the real value, not the stale one.
+    expect(UserStorageService::get($user->id))->toBe(200);
+
+    $user->refresh();
+    expect((int) $user->storage_used)->toBe(200);
 });
 
 /*
