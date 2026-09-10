@@ -16,7 +16,6 @@ class AdminUserInviteController extends Controller
     {
         $this->middleware('admin');
         $this->middleware('dangerzone');
-        $this->middleware('twofactor');
     }
 
     public function index(): View

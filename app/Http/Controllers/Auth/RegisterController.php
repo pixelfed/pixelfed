@@ -7,6 +7,8 @@ use App\Models\User;
 use App\Rules\ValidUsername;
 use App\Services\BouncerService;
 use App\Services\EmailService;
+use App\Services\EmailVerificationService;
+use App\Services\PendingLoginService;
 use Illuminate\Auth\Events\Registered;
 use Illuminate\Contracts\View\View;
 use Illuminate\Foundation\Auth\RegistersUsers;
@@ -179,6 +181,10 @@ class RegisterController extends Controller
     /**
      * Handle a registration request for the application.
      *
+     * When email verification is enforced the new account gets no session.
+     * It is parked on the login verify step, same as an unverified login,
+     * and only gets a session once the confirm link is opened.
+     *
      * @return Response
      */
     public function register(Request $request)
@@ -204,6 +210,13 @@ class RegisterController extends Controller
         $this->validator($request->all())->validate();
 
         event(new Registered($user = $this->create($request->all())));
+
+        if ((bool) config('pixelfed.enforce_email_verification') && is_null($user->email_verified_at)) {
+            PendingLoginService::start($request, $user, false, PendingLoginService::STEP_VERIFY);
+            EmailVerificationService::send($user);
+
+            return redirect()->route('login', ['step' => PendingLoginService::STEP_VERIFY]);
+        }
 
         $this->guard()->login($user);
 

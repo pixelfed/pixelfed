@@ -5,14 +5,10 @@ namespace App\Http\Controllers;
 use App\Jobs\FollowPipeline\FollowAcceptPipeline;
 use App\Jobs\FollowPipeline\FollowPipeline;
 use App\Jobs\FollowPipeline\FollowRejectPipeline;
-use App\Mail\ConfirmEmail;
-use App\Models\AccountLog;
-use App\Models\EmailVerification;
 use App\Models\Follower;
 use App\Models\FollowRequest;
 use App\Models\Notification;
 use App\Models\Profile;
-use App\Models\User;
 use App\Models\UserFilter;
 use App\Services\AccountService;
 use App\Services\FollowerService;
@@ -25,15 +21,10 @@ use Illuminate\Contracts\View\View;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
-use Illuminate\Support\Arr;
-use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Hash;
-use Illuminate\Support\Facades\Mail;
-use Illuminate\Support\Str;
 use League\Fractal;
 use League\Fractal\Serializer\ArraySerializer;
-use PragmaRX\Google2FA\Google2FA;
 
 class AccountController extends Controller
 {
@@ -79,59 +70,6 @@ class AccountController extends Controller
             ->simplePaginate(30);
 
         return view('account.following', compact('profile', 'notifications'));
-    }
-
-    public function verifyEmail(Request $request): View
-    {
-        $recentSent = EmailVerification::whereUserId(Auth::id())
-            ->whereDate('created_at', '>', now()->subHours(12))->count();
-
-        return view('account.verify_email', compact('recentSent'));
-    }
-
-    public function sendVerifyEmail(Request $request): RedirectResponse
-    {
-        $recentAttempt = EmailVerification::whereUserId(Auth::id())
-            ->whereDate('created_at', '>', now()->subHours(12))->count();
-
-        if ($recentAttempt > 0) {
-            return redirect()->back()->with('error', 'A verification email has already been sent recently. Please check your email, or try again later.');
-        }
-
-        EmailVerification::whereUserId(Auth::id())->delete();
-
-        $user = User::whereNull('email_verified_at')->find(Auth::id());
-        $utoken = Str::uuid().Str::random(mt_rand(5, 9));
-        $rtoken = Str::random(mt_rand(64, 70));
-
-        $verify = new EmailVerification;
-        $verify->user_id = $user->id;
-        $verify->email = $user->email;
-        $verify->user_token = $utoken;
-        $verify->random_token = $rtoken;
-        $verify->save();
-
-        Mail::to($user->email)->send(new ConfirmEmail($verify));
-
-        return redirect()->back()->with('status', 'Verification email sent!');
-    }
-
-    public function confirmVerifyEmail(Request $request, $userToken, $randomToken): RedirectResponse
-    {
-        $verify = EmailVerification::where('user_token', $userToken)
-            ->where('created_at', '>', now()->subHours(24))
-            ->where('random_token', $randomToken)
-            ->firstOrFail();
-
-        if (Auth::id() === $verify->user_id && $verify->user_token === $userToken && $verify->random_token === $randomToken) {
-            $user = User::find(Auth::id());
-            $user->email_verified_at = Carbon::now();
-            $user->save();
-
-            return redirect('/');
-        } else {
-            abort(403);
-        }
     }
 
     public function direct(): View
@@ -498,88 +436,6 @@ class AccountController extends Controller
         return redirect()->intended();
     }
 
-    public function twoFactorCheckpoint(Request $request): View
-    {
-        return view('auth.checkpoint');
-    }
-
-    public function twoFactorVerify(Request $request): RedirectResponse
-    {
-        $this->validate($request, [
-            'code' => 'required|string|max:32',
-        ]);
-        $user = $request->user();
-        $code = $request->input('code');
-        $google2fa = new Google2FA;
-        $verify = $google2fa->verifyKey($user->{'2fa_secret'}, $code);
-        if ($verify) {
-            $request->session()->push('2fa.session.active', true);
-
-            return redirect('/');
-        } else {
-
-            if ($this->twoFactorBackupCheck($request, $code, $user)) {
-                return redirect('/');
-            }
-
-            // Audit failed 2FA verification so brute-force attempts at the MFA
-            // layer are visible (the route throttle bounds the rate per user).
-            $log = new AccountLog;
-            $log->user_id = $user->id;
-            $log->item_id = $user->id;
-            $log->item_type = User::class;
-            $log->action = 'auth.2fa.failed';
-            $log->message = '2FA verification failed';
-            $log->link = null;
-            $log->ip_address = $request->ip();
-            $log->user_agent = $request->userAgent();
-            $log->save();
-
-            if ($request->session()->has('2fa.attempts')) {
-                $count = (int) $request->session()->get('2fa.attempts');
-                if ($count == 3) {
-                    // Clear 2FA session state before logging out. Auth::logout()
-                    // only removes the auth credential, and login regenerates
-                    // (preserving data), so a lingering 2fa.session.active could
-                    // let the next user on a shared session skip 2FA.
-                    Auth::logout();
-                    $request->session()->invalidate();
-
-                    return redirect('/');
-                }
-                $request->session()->put('2fa.attempts', $count + 1);
-            } else {
-                $request->session()->put('2fa.attempts', 1);
-            }
-
-            return redirect('/i/auth/checkpoint')->withErrors([
-                'code' => 'Invalid code',
-            ]);
-        }
-    }
-
-    protected function twoFactorBackupCheck($request, $code, User $user): bool
-    {
-        $backupCodes = $user->{'2fa_backup_codes'};
-        if ($backupCodes) {
-            $codes = json_decode($backupCodes, true);
-            foreach ($codes as $c) {
-                if (hash_equals($c, $code)) {
-                    $codes = Arr::flatten(array_diff($codes, [$code]));
-                    $user->{'2fa_backup_codes'} = json_encode($codes);
-                    $user->save();
-                    $request->session()->push('2fa.session.active', true);
-
-                    return true;
-                }
-            }
-
-            return false;
-        } else {
-            return false;
-        }
-    }
-
     public function accountRestored(Request $request): void {}
 
     public function accountMutes(Request $request): JsonResponse
@@ -644,7 +500,6 @@ class AccountController extends Controller
         $links = '<'.$url.'?page='.$next.'&limit='.$limit.'>; rel="next", <'.$url.'?page='.$prev.'&limit='.$limit.'>; rel="prev"';
 
         return response()->json($res, 200, ['Link' => $links]);
-
     }
 
     public function accountBlocksV2(Request $request): JsonResponse

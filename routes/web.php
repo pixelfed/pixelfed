@@ -4,6 +4,7 @@ use App\Http\Controllers\AccountController;
 use App\Http\Controllers\AccountInterstitialController;
 use App\Http\Controllers\AdminInviteController;
 use App\Http\Controllers\AppRegisterController;
+use App\Http\Controllers\Auth\LoginController;
 use App\Http\Controllers\AuthorizeInteractionController;
 use App\Http\Controllers\AvatarController;
 use App\Http\Controllers\BookmarkController;
@@ -54,14 +55,25 @@ use Laravel\Passport\Http\Controllers\ClientController;
 use Laravel\Passport\Http\Controllers\DenyAuthorizationController;
 use Laravel\Passport\Http\Controllers\TransientTokenController;
 
-Route::domain(config('pixelfed.domain.app'))->middleware(['validemail', 'twofactor', 'localization'])->group(function () {
+Route::domain(config('pixelfed.domain.app'))->middleware(['localization'])->group(function () {
     Route::get('/', [SiteController::class, 'home'])->name('timeline.personal');
     Route::redirect('/home', '/')->name('home');
     Route::get('web/directory', [LandingController::class, 'directoryRedirect']);
     Route::get('web/explore', [LandingController::class, 'exploreRedirect']);
     Route::get('authorize_interaction', [AuthorizeInteractionController::class, 'get']);
 
-    Auth::routes();
+    Auth::routes([
+        'login' => false,
+    ]);
+
+    Route::get('login', [LoginController::class, 'showLoginForm'])->name('login');
+    Route::post('login', [LoginController::class, 'login']);
+    Route::post('login/2fa', [LoginController::class, 'verifyTwoFactor'])->middleware('throttle:10,1')->name('login.2fa');
+    Route::get('login/cancel', [LoginController::class, 'cancelPendingLogin'])->name('login.cancel');
+    Route::get('login/verify/continue', [LoginController::class, 'continueAfterVerification'])->middleware('throttle:20,1')->name('login.verify.continue');
+    Route::post('login/verify/resend', [LoginController::class, 'resendVerification'])->middleware('throttle:3,10')->name('login.verify.resend');
+    Route::post('login/verify/email', [LoginController::class, 'updatePendingEmail'])->middleware('throttle:3,10')->name('login.verify.email');
+    Route::get('i/confirm-email/{userToken}/{randomToken}', [LoginController::class, 'confirmEmail'])->name('login.verify.confirm');
 
     Route::get('auth/oidc/start', [RemoteOidcController::class, 'start']);
     Route::get('auth/oidc/callback', [RemoteOidcController::class, 'handleCallback']);
@@ -112,7 +124,7 @@ Route::domain(config('pixelfed.domain.app'))->middleware(['validemail', 'twofact
             ->name('authorizations.authorize')
             ->middleware('throttle:10,1');
 
-        Route::middleware(['auth:web', 'validemail'])->group(function () {
+        Route::middleware(['auth:web'])->group(function () {
             Route::post('/token/refresh', [TransientTokenController::class, 'refresh'])
                 ->name('token.refresh');
 
@@ -187,17 +199,11 @@ Route::domain(config('pixelfed.domain.app'))->middleware(['validemail', 'twofact
         Route::get('lang/{locale}', [SiteController::class, 'changeLocale']);
         Route::get('restored', [AccountController::class, 'accountRestored']);
 
-        Route::get('verify-email', [AccountController::class, 'verifyEmail'])->name('account.verify_email');
-        Route::post('verify-email', [AccountController::class, 'sendVerifyEmail']);
-        Route::get('verify-email/request', [InternalApiController::class, 'requestEmailVerification']);
-        Route::post('verify-email/request', [InternalApiController::class, 'requestEmailVerificationStore']);
-        Route::get('confirm-email/{userToken}/{randomToken}', [AccountController::class, 'confirmVerifyEmail']);
+        // Route::get('verify-email/request', [InternalApiController::class, 'requestEmailVerification']);
+        // Route::post('verify-email/request', [InternalApiController::class, 'requestEmailVerificationStore']);
 
         Route::get('auth/sudo', [AccountController::class, 'confirmPassword'])->name('password.confirm');
         Route::post('auth/sudo', [AccountController::class, 'confirmPasswordStore']);
-        Route::get('auth/checkpoint', [AccountController::class, 'twoFactorCheckpoint']);
-        Route::post('auth/checkpoint', [AccountController::class, 'twoFactorVerify'])
-            ->middleware('throttle:5,15');
 
         Route::get('results', [SearchController::class, 'results']);
         Route::post('visibility', [StatusController::class, 'toggleVisibility']);
@@ -331,7 +337,6 @@ Route::domain(config('pixelfed.domain.app'))->middleware(['validemail', 'twofact
                 '2fa/recovery-codes',
                 [SettingsController::class, 'securityTwoFactorRecoveryCodesRegenerate']
             );
-
         });
 
         Route::get('parental-controls', [ParentalControlsController::class, 'index'])->name('settings.parental-controls')->middleware('dangerzone');
