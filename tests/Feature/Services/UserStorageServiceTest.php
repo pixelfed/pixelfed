@@ -131,21 +131,64 @@ it('increases storage_used by the added media size in KB', function () {
     expect((int) $user->storage_used)->toBe(800);
 });
 
-it('seeds from actual media when increasing an uncalculated counter', function () {
+it('recalculates from source instead of adding when the counter was never calculated', function () {
     $user = User::factory()->create();
     $user->refresh();
 
-    // Fresh user with pre-existing media but no cached counter yet.
+    // Fresh user with pre-existing media but no cached counter yet. Callers
+    // save the media row before calling increaseStorageUsed, so an
+    // uncalculated (stale) counter recomputes from source rather than adding.
     expect($user->storage_used_updated_at)->toBeNull();
-    makeMedia($user, 200000, 1); // 200 KB already on disk
+    makeMedia($user, 200000, 1); // 200 KB already on disk (the "just-saved" media)
 
-    // Add another 500 KB; base should be seeded from the 200 KB of media.
+    $result = UserStorageService::increaseStorageUsed($user->id, 200000);
+
+    // Source already includes the 200 KB row; delta is NOT re-added.
+    expect($result)->toBe(200);
+    $user->refresh();
+    expect((int) $user->storage_used)->toBe(200);
+    expect($user->storage_used_updated_at)->not->toBeNull();
+});
+
+/*
+| Self-healing: when the cached counter is older than STALE_AFTER_HOURS, the
+| upload path recalculates from source (which already includes the just-saved
+| media) instead of trusting a possibly-drifted incremental value (#7169).
+*/
+it('recalculates from source on increase when the counter is stale', function () {
+    $user = User::factory()->create();
+    $user->refresh();
+
+    // Wildly inflated counter, last touched well beyond the stale window.
+    $user->storage_used = 999999;
+    $user->storage_used_updated_at = now()->subHours(UserStorageService::STALE_AFTER_HOURS + 1);
+    $user->save();
+
+    // Actual media on disk (the just-saved upload) is 300 KB.
+    makeMedia($user, 300000, 1);
+
+    $result = UserStorageService::increaseStorageUsed($user->id, 300000);
+
+    expect($result)->toBe(300);
+    $user->refresh();
+    expect((int) $user->storage_used)->toBe(300);
+});
+
+it('trusts the incremental value on increase when the counter is fresh', function () {
+    $user = User::factory()->create();
+    $user->refresh();
+
+    // Fresh counter that intentionally disagrees with actual media; the fast
+    // path must trust it and only add the delta, not recompute.
+    $user->storage_used = 300;
+    $user->storage_used_updated_at = now();
+    $user->save();
+    makeMedia($user, 999000, 1); // disagrees with the cached 300
+
     $result = UserStorageService::increaseStorageUsed($user->id, 500000);
 
-    expect($result)->toBe(700);
-    $user->refresh();
-    expect((int) $user->storage_used)->toBe(700);
-    expect($user->storage_used_updated_at)->not->toBeNull();
+    // 300 + 500 = 800 (incremental), NOT recalculated from the 999 KB media.
+    expect($result)->toBe(800);
 });
 
 it('returns null when increasing a missing user', function () {
@@ -202,19 +245,61 @@ it('clamps decrement at zero and never goes negative', function () {
     expect((int) $user->storage_used)->toBe(0);
 });
 
-it('skips decrement when the counter was never calculated', function () {
+it('recalculates from source on decrement when the counter was never calculated', function () {
     $user = User::factory()->create();
     $user->refresh();
 
-    // Fresh user: storage_used_updated_at is null.
+    // Fresh user: storage_used_updated_at is null (treated as stale). Callers
+    // delete the media row before calling decrementStorageUsed, so the remaining
+    // media is the source of truth.
     expect($user->storage_used_updated_at)->toBeNull();
+    makeMedia($user, 150000, 1); // 150 KB of remaining media
 
     $result = UserStorageService::decrementStorageUsed($user->id, 500000);
 
-    // Skipped so a later get()/recalculate establishes the true value.
-    expect($result)->toBeNull();
+    // Recomputed from remaining media; delta is NOT subtracted on top.
+    expect($result)->toBe(150);
     $user->refresh();
-    expect($user->storage_used_updated_at)->toBeNull();
+    expect((int) $user->storage_used)->toBe(150);
+    expect($user->storage_used_updated_at)->not->toBeNull();
+});
+
+/*
+| Self-healing: when the cached counter is older than STALE_AFTER_HOURS, the
+| delete path recalculates from source (which already excludes the removed
+| media) instead of trusting a possibly-drifted incremental value (#7169).
+*/
+it('recalculates from source on decrement when the counter is stale', function () {
+    $user = User::factory()->create();
+    $user->refresh();
+
+    $user->storage_used = 999999;
+    $user->storage_used_updated_at = now()->subHours(UserStorageService::STALE_AFTER_HOURS + 1);
+    $user->save();
+
+    makeMedia($user, 250000, 1); // 250 KB remaining after the delete
+
+    $result = UserStorageService::decrementStorageUsed($user->id, 500000);
+
+    expect($result)->toBe(250);
+    $user->refresh();
+    expect((int) $user->storage_used)->toBe(250);
+});
+
+it('trusts the incremental value on decrement when the counter is fresh', function () {
+    $user = User::factory()->create();
+    $user->refresh();
+
+    // Fresh counter that disagrees with actual media; fast path must trust it.
+    $user->storage_used = 800;
+    $user->storage_used_updated_at = now();
+    $user->save();
+    makeMedia($user, 999000, 1); // disagrees with the cached 800
+
+    $result = UserStorageService::decrementStorageUsed($user->id, 500000);
+
+    // 800 - 500 = 300 (incremental), NOT recalculated from the 999 KB media.
+    expect($result)->toBe(300);
 });
 
 it('returns null when decrementing a missing user', function () {

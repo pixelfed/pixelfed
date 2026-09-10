@@ -24,6 +24,7 @@ class User extends Authenticatable implements OAuthenticatable
             'email_verified_at' => 'datetime',
             '2fa_setup_at' => 'datetime',
             'last_active_at' => 'datetime',
+            'storage_used_updated_at' => 'datetime',
         ];
     }
 
