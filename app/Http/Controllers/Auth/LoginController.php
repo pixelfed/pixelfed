@@ -12,7 +12,6 @@ use Illuminate\Contracts\View\View;
 use Illuminate\Foundation\Auth\AuthenticatesUsers;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Str;
 use Illuminate\Validation\ValidationException;
 use Laravel\Passport\Passport;
@@ -253,7 +252,7 @@ class LoginController extends Controller
         $user = EmailVerificationService::confirm($userToken, $randomToken);
 
         if (! $user) {
-            if (Auth::check()) {
+            if ($request->user() !== null) {
                 return redirect($this->redirectPath());
             }
 
@@ -264,7 +263,7 @@ class LoginController extends Controller
 
         $this->log($request, $user, 'account.email.verified', 'Email address verified');
 
-        if (Auth::check()) {
+        if ($request->user() !== null) {
             return redirect($this->redirectPath());
         }
 

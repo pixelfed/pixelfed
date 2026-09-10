@@ -1326,9 +1326,7 @@ class ApiV1Dot1Controller extends Controller
                 break;
         }
 
-        $user->storage_used = (int) $updatedAccountSize;
-        $user->storage_used_updated_at = now();
-        $user->save();
+        UserStorageService::increaseStorageUsed($user->id, $fileSize);
 
         NewStatusPipeline::dispatch($status);
 

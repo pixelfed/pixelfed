@@ -4,6 +4,7 @@ namespace App\Jobs\MediaPipeline;
 
 use App\Models\Media;
 use App\Services\Media\MediaHlsService;
+use App\Services\UserStorageService;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldBeUniqueUntilProcessing;
 use Illuminate\Contracts\Queue\ShouldQueue;
@@ -92,6 +93,8 @@ class MediaDeletePipeline implements ShouldBeUniqueUntilProcessing, ShouldQueue
             return 1;
         }
 
+        $ownerUserId = $media->user_id;
+        $ownerMediaSize = (int) $media->size;
         $path = $media->media_path;
         $thumb = $media->thumbnail_path;
 
@@ -146,6 +149,10 @@ class MediaDeletePipeline implements ShouldBeUniqueUntilProcessing, ShouldQueue
             }
 
             $media->delete();
+
+            if ($ownerUserId) {
+                UserStorageService::decrementStorageUsed($ownerUserId, $ownerMediaSize);
+            }
         } catch (\Exception $e) {
             Log::warning('MediaDeletePipeline: Failed to delete media', [
                 'media_id' => $media->id,
