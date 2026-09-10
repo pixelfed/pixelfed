@@ -2770,7 +2770,7 @@ class ApiV1Controller extends Controller
                 })
                 ->values();
 
-            $baseUrl = config('app.url').'/api/v1/timelines/home?limit='.$limit.'&';
+            $baseUrl = $napi ? config('app.url').'/api/v1/timelines/home?_pe=1limit='.$limit.'&' : config('app.url').'/api/v1/timelines/home?limit='.$limit.'&';
             $minId = $res->map(function ($s) {
                 return ['id' => $s['id']];
             })->min('id');
