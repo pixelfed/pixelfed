@@ -6,6 +6,7 @@ use App\Jobs\HomeFeedPipeline\FeedFollowPipeline;
 use App\Jobs\HomeFeedPipeline\FeedUnfollowPipeline;
 use App\Models\Follower;
 use App\Services\FollowerService;
+use App\Services\StoryIndexService;
 use Illuminate\Support\Facades\Cache;
 
 class FollowerObserver
@@ -22,6 +23,7 @@ class FollowerObserver
         }
 
         FollowerService::add($follower->profile_id, $follower->following_id);
+        app(StoryIndexService::class)->addFollowing($follower->profile_id, $follower->following_id);
         FeedFollowPipeline::dispatch($follower->profile_id, $follower->following_id)->onQueue('follow');
     }
 
@@ -33,6 +35,7 @@ class FollowerObserver
     public function deleted(Follower $follower)
     {
         FollowerService::remove($follower->profile_id, (string) $follower->following_id);
+        app(StoryIndexService::class)->removeFollowing($follower->profile_id, $follower->following_id);
         FeedUnfollowPipeline::dispatch($follower->profile_id, $follower->following_id)->onQueue('feed');
     }
 
@@ -44,5 +47,6 @@ class FollowerObserver
     public function forceDeleted(Follower $follower)
     {
         FollowerService::remove($follower->profile_id, (string) $follower->following_id);
+        app(StoryIndexService::class)->removeFollowing($follower->profile_id, $follower->following_id);
     }
 }
