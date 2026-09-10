@@ -90,7 +90,10 @@ it('adds X-Frame-Options header via FrameGuard', function () {
         ->assertHeader('X-Frame-Options', 'SAMEORIGIN');
 });
 
-it('handles TwoFactorAuth middleware for users with 2fa', function () {
+it('does not gate an already-authenticated 2fa user per-request', function () {
+    // 2FA is enforced at login time (pending-login model), not by a
+    // per-request middleware. An already-authenticated 2FA user browses
+    // normally -- no checkpoint redirect.
     $user = User::factory()->create([
         '2fa_enabled' => true,
         '2fa_secret' => 'TESTSECRET123456',
@@ -99,10 +102,10 @@ it('handles TwoFactorAuth middleware for users with 2fa', function () {
 
     $this->actingAs($user)
         ->get('/settings/home')
-        ->assertRedirect('/i/auth/checkpoint');
+        ->assertOk();
 });
 
-it('passes TwoFactorAuth middleware for users without 2fa', function () {
+it('allows an authenticated user without 2fa to browse', function () {
     $user = User::factory()->create([
         '2fa_enabled' => false,
     ]);
