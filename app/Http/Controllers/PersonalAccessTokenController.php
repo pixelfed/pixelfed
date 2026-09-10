@@ -93,6 +93,14 @@ class PersonalAccessTokenController extends Controller
 
     public function renew(Request $request, string $token_id): JsonResponse
     {
+        // renew() mints a brand-new PAT, so it must honor the same kill-switch
+        // as store(); otherwise disabling PATs only blocks creation, not renewal.
+        if (! config('instance.oauth.pat_enabled')) {
+            return response()->json([
+                'error' => 'Personal access tokens are not enabled on this instance. Please contact your administrator.',
+            ], 403);
+        }
+
         $oldToken = $request->user()
             ->tokens()
             ->with('client')

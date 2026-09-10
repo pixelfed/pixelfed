@@ -31,6 +31,15 @@ class SearchController extends Controller
         $this->middleware('auth');
     }
 
+    /**
+     * Case-insensitive LIKE operator. PostgreSQL's LIKE is case-sensitive, so
+     * use ILIKE there to match MySQL's default case-insensitive behaviour.
+     */
+    protected function likeOperator(): string
+    {
+        return config('database.default') === 'pgsql' ? 'ilike' : 'like';
+    }
+
     public function searchAPI(Request $request): JsonResponse
     {
         $this->validate($request, [
@@ -109,7 +118,7 @@ class SearchController extends Controller
                 ->whereNull('in_reply_to_id')
                 ->whereNull('reblog_of_id')
                 ->whereProfileId(Auth::user()->profile_id)
-                ->where('caption', 'like', '%'.$tag.'%')
+                ->where('caption', $this->likeOperator(), '%'.$tag.'%')
                 ->latest()
                 ->limit(10)
                 ->get();
@@ -140,7 +149,7 @@ class SearchController extends Controller
         $tokens = Cache::remember($key, $ttl, function () use ($tag) {
             $htag = Str::startsWith($tag, '#') == true ? mb_substr($tag, 1) : $tag;
             $hashtags = Hashtag::select('id', 'name', 'slug')
-                ->where('slug', 'like', '%'.$htag.'%')
+                ->where('slug', $this->likeOperator(), '%'.$htag.'%')
                 ->whereHas('posts')
                 ->limit(20)
                 ->get();
@@ -170,7 +179,7 @@ class SearchController extends Controller
         // $tokens = Cache::remember($key, $ttl, function() use($tag) {
         $htag = Str::contains($tag, ',') == true ? explode(',', $tag) : [$tag];
         $hashtags = Place::select('id', 'name', 'slug', 'country')
-            ->where('name', 'like', '%'.$htag[0].'%')
+            ->where('name', $this->likeOperator(), '%'.$htag[0].'%')
             ->paginate(20);
         $tags = [];
         if ($hashtags->count() > 0) {
@@ -242,7 +251,7 @@ class SearchController extends Controller
                 }
                 $users = Profile::select('status', 'domain', 'username', 'name', 'id')
                     ->whereNull('status')
-                    ->where('username', 'like', '%'.$tag.'%')
+                    ->where('username', $this->likeOperator(), '%'.$tag.'%')
                     ->limit(20)
                     ->orderBy('domain')
                     ->get();

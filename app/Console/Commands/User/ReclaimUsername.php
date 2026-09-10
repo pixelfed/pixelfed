@@ -37,10 +37,9 @@ class ReclaimUsername extends Command
         );
 
         $user = User::whereUsername($username)->withTrashed()->first();
-        $profile = Profile::whereUsername($username)->withTrashed()->first();
 
-        if (! $user && ! $profile) {
-            $this->error("No user or profile found with username: {$username}");
+        if (! $user) {
+            $this->error("No user found with username: {$username}");
 
             return Command::FAILURE;
         }
@@ -62,14 +61,29 @@ class ReclaimUsername extends Command
             return Command::SUCCESS;
         }
 
-        if ($user) {
-            $user->forceDelete();
-            $this->info("User {$username} has been force deleted.");
-        }
+        // Force-delete the user's OWN profiles, scoped by user_id rather than a
+        // bare username match, so we never destroy a different user's profile
+        // that happens to share the username.
+        Profile::whereUserId($user->id)
+            ->withTrashed()
+            ->get()
+            ->each
+            ->forceDelete();
+        $this->info("Profile {$username} has been force deleted.");
 
-        if ($profile) {
-            $profile->forceDelete();
-            $this->info("Profile {$username} has been force deleted.");
+        $user->forceDelete();
+        $this->info("User {$username} has been force deleted.");
+
+        // A same-username orphan profile (not linked to this user) can survive
+        // and continue to claim the username. Verify the username is genuinely
+        // free before reporting success.
+        $survivors = Profile::whereUsername($username)->withTrashed()->get();
+
+        if ($survivors->isNotEmpty()) {
+            $this->warn("Found {$survivors->count()} surviving profile(s) with username '{$username}' (IDs: {$survivors->pluck('id')->implode(', ')}).");
+            $this->error('Username could not be fully reclaimed. Manual cleanup of surviving profiles is required.');
+
+            return Command::FAILURE;
         }
 
         $this->info('Username reclaimed successfully!');

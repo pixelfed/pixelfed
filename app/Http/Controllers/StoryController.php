@@ -91,6 +91,10 @@ class StoryController extends StoryComposeController
             $url = $profile['local'] ? url("/stories/{$profile['username']}") :
                 url("/i/rs/{$profile['id']}");
 
+            // Fall back to the current story id if latest() is null (cache may
+            // have been invalidated for a just-expired author).
+            $latest = StoryService::latest($s->profile_id) ?? $s->id;
+
             return [
                 'pid' => $profile['id'],
                 'avatar' => $profile['avatar'],
@@ -102,7 +106,7 @@ class StoryController extends StoryComposeController
                     'preview_url' => url(Storage::url($s->path)),
                 ],
                 'url' => $url,
-                'seen' => StoryService::hasSeen($pid, StoryService::latest($s->profile_id)),
+                'seen' => StoryService::hasSeen($pid, $latest),
                 'sid' => $s->id,
             ];
         })

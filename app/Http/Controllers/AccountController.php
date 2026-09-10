@@ -6,6 +6,7 @@ use App\Jobs\FollowPipeline\FollowAcceptPipeline;
 use App\Jobs\FollowPipeline\FollowPipeline;
 use App\Jobs\FollowPipeline\FollowRejectPipeline;
 use App\Mail\ConfirmEmail;
+use App\Models\AccountLog;
 use App\Models\EmailVerification;
 use App\Models\Follower;
 use App\Models\FollowRequest;
@@ -521,10 +522,28 @@ class AccountController extends Controller
                 return redirect('/');
             }
 
+            // Audit failed 2FA verification so brute-force attempts at the MFA
+            // layer are visible (the route throttle bounds the rate per user).
+            $log = new AccountLog;
+            $log->user_id = $user->id;
+            $log->item_id = $user->id;
+            $log->item_type = User::class;
+            $log->action = 'auth.2fa.failed';
+            $log->message = '2FA verification failed';
+            $log->link = null;
+            $log->ip_address = $request->ip();
+            $log->user_agent = $request->userAgent();
+            $log->save();
+
             if ($request->session()->has('2fa.attempts')) {
                 $count = (int) $request->session()->get('2fa.attempts');
                 if ($count == 3) {
+                    // Clear 2FA session state before logging out. Auth::logout()
+                    // only removes the auth credential, and login regenerates
+                    // (preserving data), so a lingering 2fa.session.active could
+                    // let the next user on a shared session skip 2FA.
                     Auth::logout();
+                    $request->session()->invalidate();
 
                     return redirect('/');
                 }

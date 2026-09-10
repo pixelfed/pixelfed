@@ -51,9 +51,27 @@ class ImportInstagram implements ShouldQueue
             return;
         }
 
-        $job = ImportJob::findOrFail($this->import->id);
-        $profile = Profile::findOrFail($job->profile_id);
+        $job = ImportJob::find($this->import->id);
+        if (! $job) {
+            return;
+        }
+
+        // The profile may have been soft-deleted (e.g. account deletion) after
+        // this job was queued. findOrFail would throw inside handle() and the
+        // job would retry until it lands in failed_jobs; drop it cleanly instead.
+        $profile = Profile::find($job->profile_id);
+        if (! $profile) {
+            $job->delete();
+
+            return;
+        }
+
         $user = $profile->user;
+        if (! $user) {
+            $job->delete();
+
+            return;
+        }
         $json = $job->mediaJson();
         $collection = array_reverse($json['photos']);
         $files = $job->files;

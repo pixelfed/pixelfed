@@ -808,7 +808,7 @@ class AdminApiController extends Controller
     {
         abort_if(! $request->user() || ! $request->user()->token(), 404);
 
-        abort_unless($request->user()->is_admin === 1, 404);
+        abort_unless($request->user()->is_admin == 1, 404);
         abort_unless($request->user()->tokenCan('admin:read'), 404);
 
         if ($request->has('refresh')) {

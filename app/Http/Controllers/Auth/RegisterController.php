@@ -157,10 +157,11 @@ class RegisterController extends Controller
                 $count = User::where(function ($q) {
                     return $q->whereNull('status')->orWhereNotIn('status', ['deleted', 'delete']);
                 })->count();
-                if ($limit <= $count) {
+                // A falsy max_users means "no limit" (matches register() and the
+                // help view). Guard on $limit so 0/null/'' does not redirect.
+                if ($limit && $limit <= $count) {
                     return redirect(route('help.instance-max-users-limit'));
                 }
-                abort_if($limit <= $count, 404);
 
                 return view('auth.register');
             } else {

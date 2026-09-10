@@ -15,18 +15,12 @@ class MediaBlocklistService
 
     public static function exists($hash)
     {
-        $hashes = self::get();
-
-        return in_array($hash, $hashes) == true;
+        return MediaBlocklist::whereSha256($hash)->whereActive(true)->exists();
     }
 
     public static function remove($hash)
     {
-        if (! self::exists($hash)) {
-            return;
-        }
         MediaBlocklist::whereSha256($hash)->delete();
-
     }
 
     public static function add($hash, $metadata)

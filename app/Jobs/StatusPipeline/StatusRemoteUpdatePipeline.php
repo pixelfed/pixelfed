@@ -8,13 +8,14 @@ use App\Models\Profile;
 use App\Models\Status;
 use App\Models\StatusEdit;
 use App\Services\SanitizeService;
+use App\Services\SecureMediaFetchService;
 use App\Services\StatusService;
+use App\Util\ActivityPub\Helpers;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
-use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Log;
 use Purify;
 
@@ -117,13 +118,23 @@ class StatusRemoteUpdatePipeline implements ShouldQueue
             ]);
 
         $nm->each(function ($n, $key) use ($status) {
-            $res = Http::withOptions(['allow_redirects' => false])->retry(3, 100, throw: false)->head($n['url']);
-
-            if (! $res->successful()) {
+            // Validate the attacker-controlled attachment URL before issuing any
+            // server-side request. This rejects http://, IP-literal, and
+            // (with DNS checks) private-resolving hosts, closing the SSRF sink.
+            $url = Helpers::validateUrl($n['url']);
+            if (! $url) {
                 return;
             }
 
-            if (! in_array($res->header('content-type'), explode(',', config_cache('pixelfed.media_types')))) {
+            // Hardened HEAD: validate + resolve public IPs + pin the connection
+            // (CURLOPT_RESOLVE) + re-validate every redirect hop + byte cap.
+            // Matches the SSRF hardening applied to every other remote-media sink.
+            $res = SecureMediaFetchService::head($url);
+            if ($res === false) {
+                return;
+            }
+
+            if (! in_array($res['mime'], explode(',', config_cache('pixelfed.media_types')))) {
                 return;
             }
 
@@ -131,11 +142,11 @@ class StatusRemoteUpdatePipeline implements ShouldQueue
             $m->status_id = $status->id;
             $m->profile_id = $status->profile_id;
             $m->remote_media = true;
-            $m->media_path = $n['url'];
-            $m->mime = $res->header('content-type');
-            $m->size = $res->hasHeader('content-length') ? $res->header('content-length') : null;
+            $m->media_path = $url;
+            $m->mime = $res['mime'];
+            $m->size = $res['length'] ?? null;
             $m->caption = isset($n['name']) && ! empty($n['name']) ? Purify::clean($n['name']) : null;
-            $m->remote_url = $n['url'];
+            $m->remote_url = $url;
             $m->blurhash = isset($n['blurhash']) && (strlen($n['blurhash']) < 50) ? $n['blurhash'] : null;
             $m->width = isset($n['width']) && ! empty($n['width']) ? $n['width'] : null;
             $m->height = isset($n['height']) && ! empty($n['height']) ? $n['height'] : null;

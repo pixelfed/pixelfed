@@ -23,13 +23,16 @@ class HashtagFollowController extends Controller
 
         $user = $request->user();
         $profile = $user->profile;
+
+        abort_if(! $profile, 422, 'Profile not available for this account.');
+
         $tag = $request->input('name');
 
         $hashtag = Hashtag::whereName($tag)->firstOrFail();
 
         $hashtagFollow = HashtagFollow::firstOrCreate([
             'user_id' => $user->id,
-            'profile_id' => $user->profile_id ?? $user->profile->id,
+            'profile_id' => $user->profile_id ?? $profile->id,
             'hashtag_id' => $hashtag->id,
         ]);
 

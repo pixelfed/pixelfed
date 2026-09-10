@@ -91,6 +91,14 @@ class StoryApiV1Controller extends Controller
             ->groupBy('pid')
             ->map(function ($item) use ($pid) {
                 $profile = AccountService::get($item[0]['pid'], true);
+                $latest = StoryService::latest($profile['id']);
+
+                // No latest story (e.g. just expired): drop the author rather
+                // than ranking them seen=false off a null/deleted id.
+                if (! $latest) {
+                    return null;
+                }
+
                 $url = $profile['local'] ? url("/stories/{$profile['username']}") :
                     url("/i/rs/{$profile['id']}");
 
@@ -106,9 +114,10 @@ class StoryApiV1Controller extends Controller
                     ],
                     'nodes' => $item,
                     'url' => $url,
-                    'seen' => StoryService::hasSeen($pid, StoryService::latest($profile['id'])),
+                    'seen' => StoryService::hasSeen($pid, $latest),
                 ];
             })
+            ->filter()
             ->sortBy('seen')
             ->values();
 
@@ -204,6 +213,14 @@ class StoryApiV1Controller extends Controller
             ->groupBy('pid')
             ->map(function ($item) use ($pid) {
                 $profile = AccountService::get($item[0]['pid'], true);
+                $latest = StoryService::latest($profile['id']);
+
+                // No latest story (e.g. just expired): drop the author rather
+                // than ranking them seen=false off a null/deleted id.
+                if (! $latest) {
+                    return null;
+                }
+
                 $url = $profile['local'] ? url("/stories/{$profile['username']}") :
                     url("/i/rs/{$profile['id']}");
 
@@ -219,9 +236,10 @@ class StoryApiV1Controller extends Controller
                     ],
                     'nodes' => $item,
                     'url' => $url,
-                    'seen' => StoryService::hasSeen($pid, StoryService::latest($profile['id'])),
+                    'seen' => StoryService::hasSeen($pid, $latest),
                 ];
             })
+            ->filter()
             ->sortBy('seen')
             ->values();
 
@@ -681,7 +699,7 @@ class StoryApiV1Controller extends Controller
 
         $following = Follower::whereProfileId($pid)->whereFollowingId($story->profile_id)->exists();
         abort_if(! $following, 403, 'Invalid permission');
-
+        abort_if(in_array($pid, $story->profile->blockedIds()->toArray()), 403); // Reject if the story author has blocked the commenter.
         abort_if(! $story->can_reply, 422);
 
         $status = new Status;

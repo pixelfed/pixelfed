@@ -89,17 +89,14 @@ class PixelfedDirectoryController extends Controller
         $curatedOnboarding = (bool) config_cache('instance.curated_registration.enabled');
         $res['curated_onboarding'] = $curatedOnboarding;
 
-        $oauthEnabled = ConfigCache::whereK('pixelfed.oauth_enabled')->first();
-        if ($oauthEnabled) {
-            $keys = (file_exists(storage_path('oauth-public.key')) || config_cache('passport.public_key')) &&
-                (file_exists(storage_path('oauth-private.key')) || config_cache('passport.private_key'));
-            $res['oauth_enabled'] = (bool) $oauthEnabled && $keys;
-        }
+        // Cast the stored config value (not the ConfigCache model, which as an
+        // object always casts to true) so these flags reflect the admin's
+        // settings, matching AdminDirectoryController::buildListing().
+        $res['oauth_enabled'] = (bool) config_cache('pixelfed.oauth_enabled') &&
+            (file_exists(storage_path('oauth-public.key')) || config_cache('passport.public_key')) &&
+            (file_exists(storage_path('oauth-private.key')) || config_cache('passport.private_key'));
 
-        $activityPubEnabled = ConfigCache::whereK('federation.activitypub.enabled')->first();
-        if ($activityPubEnabled) {
-            $res['activitypub_enabled'] = (bool) $activityPubEnabled;
-        }
+        $res['activitypub_enabled'] = (bool) config_cache('federation.activitypub.enabled');
 
         $res['feature_config'] = [
             'media_types' => Str::of(config_cache('pixelfed.media_types'))->explode(','),
