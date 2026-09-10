@@ -134,7 +134,7 @@ return Application::configure(basePath: dirname(__DIR__))
         ]);
     })
     ->withSchedule(function (Schedule $schedule) {
-        require __DIR__.'/../routes/scheduledtasks.php';
+        require __DIR__.'/scheduledtasks.php';
     })
     ->withExceptions(function (Exceptions $exceptions) {
         $exceptions->shouldRenderJsonWhen(
