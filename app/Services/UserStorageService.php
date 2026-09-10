@@ -8,8 +8,6 @@ use Carbon\Carbon;
 
 class UserStorageService
 {
-    const CACHE_KEY = 'pf:services:user-storage:byId:';
-
     /**
      * How long (in hours) a cached storage_used value is trusted for
      * incremental add/subtract before the hot path recalculates it from source.
