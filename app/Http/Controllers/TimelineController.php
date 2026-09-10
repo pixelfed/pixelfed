@@ -20,7 +20,6 @@ class TimelineController extends Controller
     public function __construct()
     {
         $this->middleware('auth');
-        $this->middleware('twofactor');
         // $this->fractal = new Fractal\Manager;
         // $this->fractal->setSerializer(new ArraySerializer);
     }
