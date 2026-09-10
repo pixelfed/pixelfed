@@ -166,7 +166,12 @@ return Application::configure(basePath: dirname(__DIR__))
         $schedule->command('app:notification-epoch-update')->weeklyOn(1, '2:21')->onOneServer();
         $schedule->command('app:hashtag-cached-count-update')->hourlyAt(25)->onOneServer();
         $schedule->command('app:account-post-count-stat-update')->everySixHours(25)->onOneServer();
-        $schedule->command('user:storage:recalculate --stale=168')->weeklyOn(3, '3:30')->onOneServer()->withoutOverlapping(1440);
+        if ((bool) config_cache('pixelfed.account_storage_reconcile')) {
+            // Optional drift reconciler. The upload/delete/read paths already
+            // self-heal stale storage_used counters, so this is disabled by
+            // default and only needed to tidy accounts that never upload/delete.
+            $schedule->command('user:storage:recalculate --stale=168')->weeklyOn(3, '3:30')->onOneServer()->withoutOverlapping(1440);
+        }
         $schedule->command('app:instance-update-total-local-posts')->twiceDailyAt(1, 13, 45)->onOneServer();
     })
     ->withExceptions(function (Exceptions $exceptions) {
