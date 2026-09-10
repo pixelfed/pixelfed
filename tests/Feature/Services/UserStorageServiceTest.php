@@ -46,6 +46,46 @@ it('returns -1 for a missing user', function () {
     expect(UserStorageService::get(999999))->toBe(-1);
 });
 
+it('returns -1 for a suspended user', function () {
+    $user = User::factory()->create(['status' => 'delete']);
+    $user->refresh();
+
+    expect(UserStorageService::get($user->id))->toBe(-1);
+});
+
+/*
+| Staleness boundary: a counter is trusted right up to STALE_AFTER_HOURS and
+| recomputed only once older than the window. Pins the exact threshold used by
+| every self-heal path.
+*/
+it('treats a counter just inside the stale window as fresh', function () {
+    $user = User::factory()->create();
+    $user->refresh();
+
+    $user->storage_used = 555;
+    // 1 hour short of the window -> still fresh.
+    $user->storage_used_updated_at = now()->subHours(UserStorageService::STALE_AFTER_HOURS - 1);
+    $user->save();
+
+    makeMedia($user, 999000, 1); // disagrees; must NOT be recomputed
+
+    expect(UserStorageService::get($user->id))->toBe(555);
+});
+
+it('treats a counter just past the stale window as stale', function () {
+    $user = User::factory()->create();
+    $user->refresh();
+
+    $user->storage_used = 555;
+    $user->storage_used_updated_at = now()->subHours(UserStorageService::STALE_AFTER_HOURS + 1);
+    $user->save();
+
+    makeMedia($user, 100000, 1); // 100 KB real usage
+
+    // Past the window -> recomputed from source.
+    expect(UserStorageService::get($user->id))->toBe(100);
+});
+
 it('populates storage_used on first get when never calculated', function () {
     $user = User::factory()->create();
     $user->refresh();
@@ -136,6 +176,25 @@ it('recalculate returns zero when the user has no media', function () {
     expect((int) $user->storage_used)->toBe(0);
 });
 
+it('recalculate does not touch a suspended user', function () {
+    $user = User::factory()->create(['status' => 'delete']);
+    $user->refresh();
+
+    $user->storage_used = 999999;
+    $user->storage_used_updated_at = now();
+    $user->save();
+
+    expect(UserStorageService::recalculateUpdateStorageUsed($user->id))->toBeNull();
+
+    // Counter left untouched.
+    $user->refresh();
+    expect((int) $user->storage_used)->toBe(999999);
+});
+
+it('recalculate returns null for a missing user', function () {
+    expect(UserStorageService::recalculateUpdateStorageUsed(999999))->toBeNull();
+});
+
 /*
 | increaseStorageUsed is the fast upload path: add the stored media's size
 | (bytes) to the cached KB counter, without re-summing.
@@ -218,6 +277,32 @@ it('trusts the incremental value on increase when the counter is fresh', functio
 
 it('returns null when increasing a missing user', function () {
     expect(UserStorageService::increaseStorageUsed(999999, 500000))->toBeNull();
+});
+
+it('returns null when increasing a suspended user', function () {
+    $user = User::factory()->create(['status' => 'delete']);
+    $user->refresh();
+
+    expect(UserStorageService::increaseStorageUsed($user->id, 500000))->toBeNull();
+});
+
+/*
+| Sub-KB rounding: sizes are stored in KB via floor(bytes/1000), so a file
+| under 1000 bytes adds 0 KB. Documents the (intentional) rounding behavior
+| that keeps increase/decrement/recalculate consistent.
+*/
+it('adds zero KB when the increased size is under 1000 bytes', function () {
+    $user = User::factory()->create();
+    $user->refresh();
+
+    $user->storage_used = 500;
+    $user->storage_used_updated_at = now();
+    $user->save();
+
+    // 999 bytes -> floor(999/1000) = 0 KB.
+    $result = UserStorageService::increaseStorageUsed($user->id, 999);
+
+    expect($result)->toBe(500);
 });
 
 it('increase then decrement of the same size is a no-op on the counter', function () {
@@ -331,6 +416,27 @@ it('returns null when decrementing a missing user', function () {
     expect(UserStorageService::decrementStorageUsed(999999, 500000))->toBeNull();
 });
 
+it('returns null when decrementing a suspended user', function () {
+    $user = User::factory()->create(['status' => 'delete']);
+    $user->refresh();
+
+    expect(UserStorageService::decrementStorageUsed($user->id, 500000))->toBeNull();
+});
+
+it('subtracts zero KB when the decreased size is under 1000 bytes', function () {
+    $user = User::factory()->create();
+    $user->refresh();
+
+    $user->storage_used = 500;
+    $user->storage_used_updated_at = now();
+    $user->save();
+
+    // 999 bytes -> floor(999/1000) = 0 KB.
+    $result = UserStorageService::decrementStorageUsed($user->id, 999);
+
+    expect($result)->toBe(500);
+});
+
 /*
 | The user:storage:recalculate command repairs already-affected accounts,
 | which is how existing users escape a stale limit after upgrading (#7169).
@@ -373,4 +479,57 @@ it('recalculate command repairs all users in a bulk run', function () {
     $b->refresh();
     expect((int) $a->storage_used)->toBe(400);
     expect((int) $b->storage_used)->toBe(0);
+});
+
+it('recalculate command fails for a missing user id', function () {
+    $this->artisan('user:storage:recalculate', ['--user' => 999999])
+        ->assertExitCode(1);
+});
+
+/*
+| --stale=<hours> limits the bulk run to counters older than N hours (or
+| never calculated), so the scheduled reconciler only touches drifted rows.
+*/
+it('recalculate command with --stale only recomputes stale users', function () {
+    $fresh = User::factory()->create();
+    $stale = User::factory()->create();
+    $fresh->refresh();
+    $stale->refresh();
+
+    // Fresh user: recently updated, inflated value that must be left alone.
+    $fresh->storage_used = 111111;
+    $fresh->storage_used_updated_at = now()->subHours(1);
+    $fresh->save();
+    makeMedia($fresh, 500000, 1);
+
+    // Stale user: updated long ago, inflated value that must be corrected.
+    $stale->storage_used = 222222;
+    $stale->storage_used_updated_at = now()->subHours(200);
+    $stale->save();
+    makeMedia($stale, 300000, 2);
+
+    $this->artisan('user:storage:recalculate', ['--stale' => 168])
+        ->assertExitCode(0);
+
+    $fresh->refresh();
+    $stale->refresh();
+
+    // Fresh untouched, stale corrected to real usage.
+    expect((int) $fresh->storage_used)->toBe(111111);
+    expect((int) $stale->storage_used)->toBe(300);
+});
+
+it('recalculate command with --stale recomputes never-calculated users', function () {
+    $user = User::factory()->create();
+    $user->refresh();
+
+    // Never calculated (null timestamp) counts as stale for the filter.
+    expect($user->storage_used_updated_at)->toBeNull();
+    makeMedia($user, 250000, 1);
+
+    $this->artisan('user:storage:recalculate', ['--stale' => 168])
+        ->assertExitCode(0);
+
+    $user->refresh();
+    expect((int) $user->storage_used)->toBe(250);
 });
