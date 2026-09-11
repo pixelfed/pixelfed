@@ -25,7 +25,7 @@ class Bearcap
 
         $res = [];
 
-        $parts = Str::of($str)->substr(6)->explode('&')->toArray();
+        $parts = explode('&', Str::substr($str, 6));
 
         foreach ($parts as $part) {
             if (Str::startsWith($part, 't=')) {
