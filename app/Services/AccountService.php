@@ -61,7 +61,8 @@ class AccountService
             $account['location'],
             $account['note_text'],
             $account['pronouns'],
-            $account['website']
+            $account['website'],
+            $account['has_story'],
         );
 
         $account['avatar_static'] = $account['avatar'];

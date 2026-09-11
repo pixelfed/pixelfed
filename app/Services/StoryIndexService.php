@@ -706,4 +706,60 @@ class StoryIndexService
     {
         return config('database.redis.client') === 'predis' ? ['withscores' => true] : true;
     }
+
+    public function hasActiveStory(int $profileId): bool
+    {
+        return $this->activeStoryCount($profileId) > 0;
+    }
+
+    public function activeStoryCount(int $profileId): int
+    {
+        $min = '('.(time() - self::STORY_TTL);
+
+        return $this->redisInt(fn () => Redis::zcount($this->authorKey($profileId), $min, '+inf'));
+    }
+
+    /**
+     * Newest live story id for an author, or null. Same window as above.
+     */
+    public function latestStoryId(int $profileId): ?int
+    {
+        $min = '('.(time() - self::STORY_TTL);
+
+        $ids = $this->redisArray(fn () => Redis::zrevrangebyscore(
+            $this->authorKey($profileId),
+            '+inf',
+            $min,
+            ['limit' => [0, 1]]
+        ));
+
+        return $ids ? (int) $ids[0] : null;
+    }
+
+    /**
+     * Story ids the viewer has seen from this author. Empty if nothing is
+     * recorded (or the seen key already expired with the stories).
+     */
+    public function seenStoryIds(int $viewerId, int $authorId): array
+    {
+        return $this->redisArray(fn () => Redis::smembers($this->seenKey($viewerId, $authorId)));
+    }
+
+    /**
+     * True when the index positively knows the viewer saw this story.
+     * False means "not recorded here", not "definitely unseen".
+     */
+    public function hasSeen(int $viewerId, int $storyId): bool
+    {
+        $authorId = Redis::hget($this->storyKey($storyId), 'profile_id');
+
+        if (! $authorId) {
+            return false;
+        }
+
+        return $this->redisBool(fn () => Redis::sismember(
+            $this->seenKey($viewerId, (int) $authorId),
+            (string) $storyId
+        ));
+    }
 }
