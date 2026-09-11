@@ -4,7 +4,7 @@ namespace Tests\Feature;
 
 use App\Models\RemoteAuthInstance;
 use App\Services\Account\RemoteAuthService;
-use Illuminate\Foundation\Testing\RefreshDatabase;
+use Illuminate\Foundation\Testing\LazilyRefreshDatabase;
 use Illuminate\Http\Client\ConnectionException;
 use Illuminate\Support\Facades\Http;
 use PHPUnit\Framework\Attributes\Test;
@@ -12,7 +12,7 @@ use Tests\TestCase;
 
 class RemoteAuthServiceTest extends TestCase
 {
-    use RefreshDatabase;
+    use LazilyRefreshDatabase;
 
     private function activeInstance(string $domain = 'mastodon.example'): RemoteAuthInstance
     {
