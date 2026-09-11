@@ -81,7 +81,6 @@ use App\Util\Lexer\PrettyNumber;
 use App\Util\Localization\Localization;
 use App\Util\Media\Filter;
 use App\Util\Media\License;
-use Carbon\Carbon;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
@@ -2362,7 +2361,7 @@ class ApiV1Controller extends Controller
                 ->where('created_at', '>', now()->subHours(2))
                 ->find($rpid);
             if ($removeMedia) {
-                $dateTime = Carbon::now();
+                $dateTime = now();
                 MediaDeletePipeline::dispatch($removeMedia)
                     ->onQueue('mmo')
                     ->delay($dateTime->addMinutes(15));

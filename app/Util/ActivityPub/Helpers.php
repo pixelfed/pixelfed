@@ -555,7 +555,7 @@ class Helpers
     {
         try {
             $date = Carbon::parse($timestamp);
-            $now = Carbon::now();
+            $now = now();
             $tenYearsAgo = $now->copy()->subYears(20);
             $isMoreThanTenYearsOld = $date->lt($tenYearsAgo);
             $tomorrow = $now->copy()->addDay();
