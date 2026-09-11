@@ -1,7 +1,5 @@
 <?php
 
-namespace Tests\Feature;
-
 use App\Jobs\StatusPipeline\StatusDelete;
 use App\Models\DirectMessage;
 use App\Models\MediaTag;
@@ -9,8 +7,8 @@ use App\Models\Notification;
 use App\Models\Status;
 use App\Models\User;
 use Illuminate\Foundation\Testing\LazilyRefreshDatabase;
-use PHPUnit\Framework\Attributes\Test;
-use Tests\TestCase;
+
+uses(LazilyRefreshDatabase::class);
 
 /*
 |--------------------------------------------------------------------------
@@ -25,110 +23,97 @@ use Tests\TestCase;
 |
 */
 
-class StatusDeleteCleanupTest extends TestCase
-{
-    use LazilyRefreshDatabase;
+it('removes associated dms and their notifications when a status is deleted', function () {
+    $user = User::factory()->create();
+    $user->refresh();
 
-    #[Test]
-    public function deleting_a_status_removes_associated_dms_and_their_notifications()
-    {
-        $user = User::factory()->create();
-        $user->refresh();
+    $status = Status::factory()->create([
+        'profile_id' => $user->profile_id,
+        'type' => 'photo',
+    ]);
 
-        $status = Status::factory()->create([
-            'profile_id' => $user->profile_id,
-            'type' => 'photo',
-        ]);
+    $dm = new DirectMessage;
+    $dm->to_id = $user->profile_id;
+    $dm->from_id = $user->profile_id;
+    $dm->status_id = $status->id;
+    $dm->save();
 
-        $dm = new DirectMessage;
-        $dm->to_id = $user->profile_id;
-        $dm->from_id = $user->profile_id;
-        $dm->status_id = $status->id;
-        $dm->save();
+    $notification = Notification::create([
+        'profile_id' => $user->profile_id,
+        'actor_id' => $user->profile_id,
+        'action' => 'dm',
+        'item_type' => DirectMessage::class,
+        'item_id' => $dm->id,
+    ]);
 
-        $notification = Notification::create([
-            'profile_id' => $user->profile_id,
-            'actor_id' => $user->profile_id,
-            'action' => 'dm',
-            'item_type' => DirectMessage::class,
-            'item_id' => $dm->id,
-        ]);
+    (new StatusDelete($status))->handle();
 
-        (new StatusDelete($status))->handle();
+    expect(DirectMessage::find($dm->id))->toBeNull();
+    expect(Notification::find($notification->id))->toBeNull();
+    expect(Status::find($status->id))->toBeNull();
+});
 
-        $this->assertNull(DirectMessage::find($dm->id));
-        $this->assertNull(Notification::find($notification->id));
-        $this->assertNull(Status::find($status->id));
-    }
+it('removes associated media tags and their notifications when a status is deleted', function () {
+    $user = User::factory()->create();
+    $user->refresh();
 
-    #[Test]
-    public function deleting_a_status_removes_associated_media_tags_and_their_notifications()
-    {
-        $user = User::factory()->create();
-        $user->refresh();
+    $status = Status::factory()->create([
+        'profile_id' => $user->profile_id,
+        'type' => 'photo',
+    ]);
 
-        $status = Status::factory()->create([
-            'profile_id' => $user->profile_id,
-            'type' => 'photo',
-        ]);
+    $tag = MediaTag::create([
+        'status_id' => $status->id,
+        'media_id' => 1,
+        'profile_id' => $user->profile_id,
+        'tagged_username' => 'someone',
+    ]);
 
-        $tag = MediaTag::create([
-            'status_id' => $status->id,
-            'media_id' => 1,
-            'profile_id' => $user->profile_id,
-            'tagged_username' => 'someone',
-        ]);
+    $notification = Notification::create([
+        'profile_id' => $user->profile_id,
+        'actor_id' => $user->profile_id,
+        'action' => 'tagged',
+        'item_type' => MediaTag::class,
+        'item_id' => $tag->id,
+    ]);
 
-        $notification = Notification::create([
-            'profile_id' => $user->profile_id,
-            'actor_id' => $user->profile_id,
-            'action' => 'tagged',
-            'item_type' => MediaTag::class,
-            'item_id' => $tag->id,
-        ]);
+    (new StatusDelete($status))->handle();
 
-        (new StatusDelete($status))->handle();
+    expect(MediaTag::find($tag->id))->toBeNull();
+    expect(Notification::find($notification->id))->toBeNull();
+});
 
-        $this->assertNull(MediaTag::find($tag->id));
-        $this->assertNull(Notification::find($notification->id));
-    }
+it('still deletes a status without dms or tags', function () {
+    $user = User::factory()->create();
+    $user->refresh();
 
-    #[Test]
-    public function deleting_a_status_without_dms_or_tags_still_deletes_the_status()
-    {
-        $user = User::factory()->create();
-        $user->refresh();
+    $status = Status::factory()->create([
+        'profile_id' => $user->profile_id,
+        'type' => 'photo',
+    ]);
 
-        $status = Status::factory()->create([
-            'profile_id' => $user->profile_id,
-            'type' => 'photo',
-        ]);
+    (new StatusDelete($status))->handle();
 
-        (new StatusDelete($status))->handle();
+    expect(Status::find($status->id))->toBeNull();
+});
 
-        $this->assertNull(Status::find($status->id));
-    }
+it('cleans up even when the owning profile is soft deleted', function () {
+    // Mirrors the account-deletion flow on AP-enabled instances: the
+    // owning profile is soft-deleted before the queued StatusDelete runs.
+    config(['federation.activitypub.enabled' => true]);
 
-    #[Test]
-    public function deleting_a_status_cleans_up_even_when_the_owning_profile_is_soft_deleted()
-    {
-        // Mirrors the account-deletion flow on AP-enabled instances: the
-        // owning profile is soft-deleted before the queued StatusDelete runs.
-        config(['federation.activitypub.enabled' => true]);
+    $user = User::factory()->create();
+    $user->refresh();
 
-        $user = User::factory()->create();
-        $user->refresh();
+    $status = Status::factory()->create([
+        'profile_id' => $user->profile_id,
+        'type' => 'photo',
+    ]);
 
-        $status = Status::factory()->create([
-            'profile_id' => $user->profile_id,
-            'type' => 'photo',
-        ]);
+    // Soft-delete the owning profile, as DeleteAccountPipeline does.
+    $user->profile->delete();
 
-        // Soft-delete the owning profile, as DeleteAccountPipeline does.
-        $user->profile->delete();
+    (new StatusDelete($status))->handle();
 
-        (new StatusDelete($status))->handle();
-
-        $this->assertNull(Status::find($status->id));
-    }
-}
+    expect(Status::find($status->id))->toBeNull();
+});
