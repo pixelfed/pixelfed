@@ -332,6 +332,10 @@ Route::prefix('api')->group(function () use ($middleware) {
     });
 
     Route::prefix('v1.2')->group(function () use ($middleware) {
+        Route::prefix('discover')->group(function () use ($middleware) {
+            Route::get('accounts/popular', [ApiV1Controller::class, 'discoverAccountsPopularV2'])->middleware($middleware);
+        });
+
         Route::prefix('stories')->group(function () use ($middleware) {
             Route::get('viewers', [StoryApiV1Controller::class, 'viewers'])->middleware($middleware);
             Route::post('publish', [StoryApiV1Controller::class, 'publishNext'])->middleware($middleware);

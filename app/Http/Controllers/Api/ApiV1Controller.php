@@ -84,6 +84,8 @@ use Carbon\Carbon;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
+use Illuminate\Pagination\Cursor;
+use Illuminate\Pagination\CursorPaginator;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\RateLimiter;
@@ -4648,12 +4650,12 @@ class ApiV1Controller extends Controller
 
         $pid = $request->user()->profile_id;
 
-        $pool = Cache::remember('api:v1.1:discover:accounts:popular:pool', 14400, function () {
+        $pool = Cache::remember('api:v1.1:discover:accounts:popular:pool:v1', 14400, function () {
             return DB::table('profiles')
                 ->where('is_private', false)
                 ->whereNull('status')
                 ->orderByDesc('followers_count')
-                ->limit(100)
+                ->limit(200)
                 ->pluck('id')
                 ->toArray();
         });
@@ -4687,6 +4689,86 @@ class ApiV1Controller extends Controller
             ->values();
 
         return $this->json($res);
+    }
+
+    public function discoverAccountsPopularV2(Request $request)
+    {
+        abort_if(! $request->user() || ! $request->user()->token(), 403);
+        abort_unless($request->user()->tokenCan('read'), 403);
+
+        $pid = $request->user()->profile_id;
+        $limit = max(1, min((int) $request->input('limit', 16), 40));
+
+        $cursor = Cursor::fromEncoded($request->input('cursor'));
+        if ($cursor && ! isset($cursor->toArray()['followers_count'], $cursor->toArray()['id'])) {
+            $cursor = null;
+        }
+
+        $pool = Cache::remember('api:v1.1:discover:accounts:popular:pool:v2', 14400, function () {
+            return DB::table('profiles')
+                ->select('id', 'followers_count')
+                ->where('is_private', false)
+                ->whereNull('status')
+                ->orderByDesc('followers_count')
+                ->orderByDesc('id')
+                ->limit(200)
+                ->get()
+                ->map(fn ($p) => [
+                    'id' => (int) $p->id,
+                    'followers_count' => (int) $p->followers_count,
+                ])
+                ->all();
+        });
+
+        $poolIds = array_column($pool, 'id');
+
+        $following = DB::table('followers')
+            ->where('profile_id', $pid)
+            ->whereIn('following_id', $poolIds)
+            ->pluck('following_id')
+            ->all();
+
+        $requested = DB::table('follow_requests')
+            ->where('follower_id', $pid)
+            ->whereIn('following_id', $poolIds)
+            ->pluck('following_id')
+            ->all();
+
+        $exclude = array_flip(array_merge(
+            [$pid],
+            $following,
+            $requested,
+            UserFilterService::filters($pid),
+            AdminShadowFilterService::getHideFromPublicFeedsList()
+        ));
+
+        $candidates = collect($pool)->reject(fn ($p) => isset($exclude[$p['id']]));
+
+        if ($cursor) {
+            [$afterCount, $afterId] = array_map('intval', $cursor->parameters(['followers_count', 'id']));
+            $candidates = $candidates->filter(
+                fn ($p) => $p['followers_count'] < $afterCount
+                    || ($p['followers_count'] === $afterCount && $p['id'] < $afterId)
+            );
+        }
+
+        $paginator = (new CursorPaginator(
+            $candidates->take($limit + 1)->values(),
+            $limit,
+            $cursor,
+            ['path' => $request->url(), 'parameters' => ['followers_count', 'id']]
+        ))->withQueryString();
+
+        $accounts = collect($paginator->items())
+            ->map(fn ($p) => AccountService::get($p['id'], true))
+            ->filter()
+            ->values();
+
+        $headers = $paginator->hasMorePages()
+            ? ['Link' => '<'.$paginator->nextPageUrl().'>; rel="next"']
+            : [];
+
+        return $this->json($accounts)->withHeaders($headers);
     }
 
     /**
