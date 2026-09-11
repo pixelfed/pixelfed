@@ -185,7 +185,7 @@ class AvatarStorage extends Command
                     $avatar->cdn_url = $disk->url('cache/avatars/default.jpg');
                     $avatar->save();
                 } else {
-                    if (! $avatar->media_path || ! Str::of($avatar->media_path)->startsWith('public/avatars/')) {
+                    if (! $avatar->media_path || ! Str::startsWith($avatar->media_path, 'public/avatars/')) {
                         continue;
                     }
                     $ext = pathinfo($avatar->media_path, PATHINFO_EXTENSION);

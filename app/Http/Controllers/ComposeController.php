@@ -252,7 +252,7 @@ class ComposeController extends Controller
 
         $q = $request->input('q');
 
-        $cleanQuery = Str::of($q)->startsWith('@') ? Str::substr($q, 1) : $q;
+        $cleanQuery = Str::startsWith($q, '@') ? Str::substr($q, 1) : $q;
 
         if (strlen($cleanQuery) < 2) {
             return [];
@@ -444,7 +444,7 @@ class ComposeController extends Controller
 
         $q = $request->input('q');
 
-        $cleanQuery = Str::of($q)->startsWith('@') ? Str::substr($q, 1) : $q;
+        $cleanQuery = Str::startsWith($q, '@') ? Str::substr($q, 1) : $q;
 
         if (strlen($cleanQuery) < 2) {
             return [];
