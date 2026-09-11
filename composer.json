@@ -22,7 +22,7 @@
         "intervention/image-laravel": "^4.1",
         "laravel-notification-channels/expo": "^2.0.0",
         "laravel-notification-channels/webpush": "^10.2",
-        "laravel/framework": "^12.0",
+        "laravel/framework": "^13.0",
         "laravel/horizon": "^5.0",
         "laravel/passport": "^13.4.4",
         "laravel/pulse": "^1.3",
@@ -42,7 +42,7 @@
         "predis/predis": "^3.2",
         "pusher/pusher-php-server": "^7.2",
         "resend/resend-php": "^0.13.0",
-        "spatie/laravel-backup": "^9.2.9",
+        "spatie/laravel-backup": "^10.0",
         "spatie/laravel-honeypot": "^4.7",
         "spatie/laravel-image-optimizer": "^1.8.2",
         "stevebauman/purify": "^6.2.0",
@@ -57,9 +57,7 @@
         "laravel/telescope": "^5.5",
         "mockery/mockery": "^1.6",
         "nunomaduro/collision": "^8.8",
-        "pestphp/pest": "^4.0",
-        "psalm/plugin-laravel": "^3",
-        "vimeo/psalm": "^6.5"
+        "pestphp/pest": "^4.0"
     },
     "autoload": {
         "psr-4": {
@@ -105,9 +103,6 @@
             "@php artisan package:discover --ansi"
         ],
         "analyse": "./vendor/bin/phpstan analyse --memory-limit=512M",
-        "psalm": "./vendor/bin/psalm",
-        "psalm:baseline": "./vendor/bin/psalm --update-baseline",
-        "psalm:report": "./vendor/bin/psalm --ignore-baseline --no-cache --show-info=true --report=psalm-report.txt --report-show-info=true",
         "test": [
             "docker compose -f docker-compose.test.yml up -d --wait",
             "./vendor/bin/pest --compact",
