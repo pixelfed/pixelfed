@@ -32,8 +32,7 @@
                 <div class="card-body">
                     <form method="POST" class="px-md-3">
                         @csrf
-
-                        <input type="hidden" name="rt" value="{{ (new \App\Http\Controllers\Auth\RegisterController())->getRegisterToken() }}">
+                        @honeypot
                         <div class="form-group row">
                             <div class="col-md-12">
                                 <label class="small font-weight-bold text-lighter">Name</label>

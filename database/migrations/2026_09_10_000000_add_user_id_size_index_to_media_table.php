@@ -9,16 +9,22 @@ return new class extends Migration
 {
     protected string $table = 'media';
 
-    protected string $index = 'media_unoptimized_recent_index';
+    protected string $index = 'media_user_id_size_index';
 
-    protected array $columns = ['processed_at', 'remote_url', 'deleted_at', 'created_at', 'id'];
+    protected array $columns = ['user_id', 'size'];
 
+    /**
+     * Add a covering index for per-user storage aggregation.
+     *
+     * `SUM(size) WHERE user_id = ?` (UserStorageService::calculateStorageUsed)
+     * previously required a full table scan because media.user_id was not
+     * indexed. The composite (user_id, size) lets the aggregate be served
+     * entirely from the index. On MySQL/MariaDB this uses INPLACE/LOCK=NONE so
+     * it does not block writes on large instances; other drivers use the
+     * portable schema builder.
+     */
     public function up(): void
     {
-        // MySQL/MariaDB: use online DDL (INPLACE/LOCK=NONE) so index creation
-        // does not block writes on large instances. Other drivers (pgsql,
-        // sqlite) use the portable schema builder, which emits correct
-        // dialect-specific SQL.
         if (in_array(DB::getDriverName(), ['mysql', 'mariadb'], true)) {
             $columns = collect($this->columns)
                 ->map(fn ($column) => "`{$column}`")
