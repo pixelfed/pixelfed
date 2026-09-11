@@ -5,7 +5,7 @@ namespace Tests\Feature;
 use App\Models\User;
 use App\Models\UserOidcMapping;
 use App\Services\UserOidcService;
-use Illuminate\Foundation\Testing\RefreshDatabase;
+use Illuminate\Foundation\Testing\LazilyRefreshDatabase;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Str;
 use League\OAuth2\Client\Provider\GenericResourceOwner;
@@ -17,8 +17,8 @@ use Tests\TestCase;
 
 class RemoteOidcTest extends TestCase
 {
+    use LazilyRefreshDatabase;
     use MockeryPHPUnitIntegration;
-    use RefreshDatabase;
 
     #[Test]
     public function view_oidc_start()

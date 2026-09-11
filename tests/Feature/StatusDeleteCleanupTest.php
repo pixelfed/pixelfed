@@ -8,7 +8,7 @@ use App\Models\MediaTag;
 use App\Models\Notification;
 use App\Models\Status;
 use App\Models\User;
-use Illuminate\Foundation\Testing\RefreshDatabase;
+use Illuminate\Foundation\Testing\LazilyRefreshDatabase;
 use PHPUnit\Framework\Attributes\Test;
 use Tests\TestCase;
 
@@ -27,7 +27,7 @@ use Tests\TestCase;
 
 class StatusDeleteCleanupTest extends TestCase
 {
-    use RefreshDatabase;
+    use LazilyRefreshDatabase;
 
     #[Test]
     public function deleting_a_status_removes_associated_dms_and_their_notifications()
