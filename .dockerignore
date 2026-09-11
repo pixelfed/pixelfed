@@ -1,22 +1,22 @@
 # Folders
 .git/
-storage/app/public/
-mysql-9-data/
-# Laravel
 ## local storage of media excluided from image
 !storage/app/public/m/
 storage/app/public/m/*
+storage/app/public/
+storage/app/story_archives/
+# Laravel
 !bootstrap/cache/
 bootstrap/cache/*
 tests/
 # Docker
+mysql-9-data/
 mariadb-11-data/
 redis-data/
 # Packages
 node_modules/
 vendor/
 .ddev/
-
 #Files
 .gitignore
 .env
@@ -28,7 +28,6 @@ Dockerfile
 README.md
 .editorconfig
 .phpunit.result.cache
-
 # Psalm reports and cache
 storage/psalm-reports
 psalm.sarif.json
