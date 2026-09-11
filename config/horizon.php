@@ -271,8 +271,7 @@ return [
 
     'environments' => [
         'production' => [
-            // All values come from `defaults` above (env-configurable);
-            // nothing production-specific to override at this time.
+            // All values come from `defaults` above (env-configurable)
         ],
 
         'local' => [
