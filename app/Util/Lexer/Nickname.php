@@ -8,7 +8,7 @@ class Nickname
 {
     public static function normalizeProfileUrl($url)
     {
-        if (! Str::of($url)->contains('@')) {
+        if (! Str::contains($url, '@')) {
             return;
         }
 
@@ -19,7 +19,7 @@ class Nickname
         if (Str::startsWith($url, '@')) {
             $url = substr($url, 1);
 
-            if (! Str::of($url)->contains('@')) {
+            if (! Str::contains($url, '@')) {
                 return;
             }
         }

@@ -223,8 +223,7 @@ class AccountService
         $key = self::CACHE_KEY.'u2id:'.hash('sha256', $username);
 
         return Cache::remember($key, 14400, function () use ($username) {
-            $s = Str::of($username);
-            if ($s->contains('@') && ! $s->startsWith('@')) {
+            if (Str::contains($username, '@') && ! Str::startsWith($username, '@')) {
                 $username = "@{$username}";
             }
             $profile = DB::table('profiles')

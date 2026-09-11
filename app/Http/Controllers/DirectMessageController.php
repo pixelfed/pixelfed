@@ -555,7 +555,7 @@ class DirectMessageController extends Controller
         $q = $request->input('q');
         $r = $request->input('remote', false);
 
-        if ($r && ! Str::of($q)->contains('.')) {
+        if ($r && ! Str::contains($q, '.')) {
             return [];
         }
 
@@ -563,7 +563,7 @@ class DirectMessageController extends Controller
             Helpers::profileFetch($q);
         }
 
-        if (Str::of($q)->startsWith('@')) {
+        if (Str::startsWith($q, '@')) {
             if (strlen($q) < 3) {
                 return [];
             }

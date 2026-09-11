@@ -117,7 +117,7 @@ class AvatarService
             return;
         }
 
-        $curFile = Str::of($avatar->cdn_url)->explode('/')->last();
+        $curFile = Str::afterLast($avatar->cdn_url, '/');
 
         $files = $files->filter(function ($f) use ($curFile) {
             return ! $curFile || ! str_ends_with($f, $curFile);
