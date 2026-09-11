@@ -3,7 +3,7 @@
 namespace Tests\Feature;
 
 use App\Models\Status;
-use Illuminate\Foundation\Testing\RefreshDatabase;
+use Illuminate\Foundation\Testing\LazilyRefreshDatabase;
 use Illuminate\Support\Facades\DB;
 use PHPUnit\Framework\Attributes\Test;
 use Tests\TestCase;
@@ -23,7 +23,7 @@ use Tests\TestCase;
 
 class SeasonalAggregationTest extends TestCase
 {
-    use RefreshDatabase;
+    use LazilyRefreshDatabase;
 
     /**
      * Mirrors the aggregation used in SeasonalController::getData for
