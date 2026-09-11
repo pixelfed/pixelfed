@@ -3,7 +3,6 @@
 use App\Jobs\StoryPipeline\StoryExpire;
 use App\Models\Profile;
 use App\Models\Story;
-use App\Models\User;
 use App\Services\StoryIndexService;
 use App\Services\StoryService;
 use Illuminate\Foundation\Testing\LazilyRefreshDatabase;
@@ -48,7 +47,7 @@ it('invalidates both story caches when a remote story expires', function () {
         'expires_at' => now()->addHours(24),
     ])->save();
     $index = app(StoryIndexService::class);
-    $cacheKey = StoryService::STORY_KEY . 'latest:pid-' . $author->id;
+    $cacheKey = StoryService::STORY_KEY.'latest:pid-'.$author->id;
 
     // Index is empty, so this warms the SQL-backed cache.
     expect(StoryService::latest($author->id))->toBe($story->id);
