@@ -4648,38 +4648,45 @@ class ApiV1Controller extends Controller
 
         $pid = $request->user()->profile_id;
 
-        $ids = Cache::remember('api:v1.1:discover:accounts:popular', 14400, function () {
+        $pool = Cache::remember('api:v1.1:discover:accounts:popular:pool', 14400, function () {
             return DB::table('profiles')
                 ->where('is_private', false)
                 ->whereNull('status')
-                ->orderByDesc('profiles.followers_count')
-                ->limit(30)
-                ->get();
+                ->orderByDesc('followers_count')
+                ->limit(100)
+                ->pluck('id')
+                ->toArray();
         });
-        $filters = UserFilterService::filters($pid);
-        $asf = AdminShadowFilterService::getHideFromPublicFeedsList();
-        $ids = $ids->map(function ($profile) {
-            return AccountService::get($profile->id, true);
-        })
-            ->filter(function ($profile) {
-                return $profile && isset($profile['id'], $profile['locked']) && ! $profile['locked'];
-            })
-            ->filter(function ($profile) use ($pid) {
-                return $profile['id'] != $pid;
-            })
-            ->filter(function ($profile) use ($pid) {
-                return ! FollowerService::follows($pid, $profile['id'], false);
-            })
-            ->filter(function ($profile) use ($asf) {
-                return ! in_array($profile['id'], $asf);
-            })
-            ->filter(function ($profile) use ($filters) {
-                return ! in_array($profile['id'], $filters);
-            })
+
+        $following = DB::table('followers')
+            ->where('profile_id', $pid)
+            ->whereIn('following_id', $pool)
+            ->pluck('following_id')
+            ->toArray();
+
+        $requested = DB::table('follow_requests')
+            ->where('follower_id', $pid)
+            ->whereIn('following_id', $pool)
+            ->pluck('following_id')
+            ->toArray();
+
+        $exclude = array_flip(array_merge(
+            [$pid],
+            $following,
+            $requested,
+            UserFilterService::filters($pid),
+            AdminShadowFilterService::getHideFromPublicFeedsList()
+        ));
+
+        $res = collect($pool)
+            ->reject(fn ($id) => isset($exclude[$id]))
+            ->take(50)
+            ->map(fn ($id) => AccountService::get($id, true))
+            ->filter()
             ->take(16)
             ->values();
 
-        return $this->json($ids);
+        return $this->json($res);
     }
 
     /**
