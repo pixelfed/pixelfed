@@ -165,7 +165,9 @@ class StatusDelete implements ShouldQueue
             ->delete();
 
         StatusArchived::whereStatusId($status->id)->delete();
-        StatusHashtag::whereStatusId($status->id)->delete();
+        // Model-based delete so StatusHashtagObserver::deleted() runs and
+        // decrements hashtags.cached_count (a query-builder delete bypasses it).
+        StatusHashtag::whereStatusId($status->id)->get()->each->delete();
         StatusView::whereStatusId($status->id)->delete();
         Status::whereInReplyToId($status->id)->update(['in_reply_to_id' => null]);
 
@@ -186,7 +188,13 @@ class StatusDelete implements ShouldQueue
             return;
         }
 
-        $audience = $status->profile->getAudienceInbox();
+        // Bind the trashed-aware profile onto the status so downstream
+        // dereferences (getAudienceInbox here, and DeleteNote::transform /
+        // Status::permalink later) resolve even when the owning profile has
+        // been soft-deleted (e.g. during account deletion).
+        $status->setRelation('profile', $profile);
+
+        $audience = $profile->getAudienceInbox();
 
         $activity = FractalService::item($status, new DeleteNote);
 

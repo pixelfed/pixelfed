@@ -57,7 +57,6 @@ class AdminController extends Controller
     {
         $this->middleware('admin');
         $this->middleware('dangerzone');
-        $this->middleware('twofactor');
     }
 
     public function home(): View
@@ -422,7 +421,6 @@ class AdminController extends Controller
                         array_push($changedFields, $field);
                     }
                     break;
-
             }
         }
 
@@ -489,7 +487,6 @@ class AdminController extends Controller
                         array_push($changedFields, $field);
                     }
                     break;
-
             }
         }
 

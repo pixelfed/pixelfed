@@ -155,7 +155,9 @@ class DeleteAccountPipeline implements ShouldQueue
         MediaTag::whereProfileId($id)->delete();
         Bookmark::whereProfileId($id)->forceDelete();
         EmailVerification::whereUserId($user->id)->forceDelete();
-        StatusHashtag::whereProfileId($id)->delete();
+        // Model-based delete so StatusHashtagObserver::deleted() runs and
+        // decrements hashtags.cached_count (a query-builder delete bypasses it).
+        StatusHashtag::whereProfileId($id)->get()->each->delete();
         DirectMessage::whereFromId($id)->orWhere('to_id', $id)->delete();
         Conversation::whereFromId($id)->orWhere('to_id', $id)->delete();
         StatusArchived::whereProfileId($id)->delete();
@@ -203,7 +205,7 @@ class DeleteAccountPipeline implements ShouldQueue
         ProfileSponsor::whereProfileId($id)->delete();
 
         Report::whereUserId($user->id)->forceDelete();
-        PublicTimelineService::warmCache(true, 400);
+        PublicTimelineService::deleteByProfileId($id);
         $this->deleteUserColumns($user);
         AccountService::del($user->profile_id);
         Profile::whereUserId($user->id)->delete();

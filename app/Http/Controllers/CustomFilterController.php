@@ -180,10 +180,11 @@ class CustomFilterController extends Controller
                 }
             }
 
+            // Create the counter with a 1h TTL only on first write, then
+            // increment. increment() alone would create a TTL-less key, so the
+            // "per hour" window must be established by the add() before it.
+            Cache::add($rateKey, 0, 3600);
             Cache::increment($rateKey);
-            if (! Cache::has($rateKey)) {
-                Cache::put($rateKey, 1, 3600);
-            }
 
             Cache::forget("filters:v3:{$profile_id}");
 
@@ -445,10 +446,11 @@ class CustomFilterController extends Controller
                 }
             }
 
+            // Create the counter with a 1h TTL only on first write, then
+            // increment. increment() alone would create a TTL-less key, so the
+            // "per hour" window must be established by the add() before it.
+            Cache::add($rateKey, 0, 3600);
             Cache::increment($rateKey);
-            if (! Cache::has($rateKey)) {
-                Cache::put($rateKey, 1, 3600);
-            }
 
             Cache::forget("filters:v3:{$pid}");
 

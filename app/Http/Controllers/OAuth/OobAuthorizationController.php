@@ -43,7 +43,25 @@ class OobAuthorizationController extends ApproveAuthorizationController
      */
     protected function isOutOfBandRequest($authRequest)
     {
-        return $authRequest->getRedirectUri() === 'urn:ietf:wg:oauth:2.0:oob';
+        $redirectUri = $authRequest->getRedirectUri();
+
+        if ($redirectUri === 'urn:ietf:wg:oauth:2.0:oob') {
+            return true;
+        }
+
+        // RFC 6749 §3.1.2.3 permits a client with a single registered redirect
+        // URI to omit redirect_uri on the authorize request, in which case the
+        // league server leaves the auth request's redirect URI null. Fall back
+        // to the client's registered redirect URIs to still detect an OOB-only
+        // client. Passport's client entity types getRedirectUri() as string|array.
+        if ($redirectUri === null) {
+            $registered = $authRequest->getClient()->getRedirectUri();
+            $registered = is_array($registered) ? $registered : [$registered];
+
+            return count($registered) === 1 && $registered[0] === 'urn:ietf:wg:oauth:2.0:oob';
+        }
+
+        return false;
     }
 
     /**

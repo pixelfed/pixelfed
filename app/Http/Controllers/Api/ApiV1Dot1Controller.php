@@ -345,10 +345,18 @@ class ApiV1Dot1Controller extends Controller
         $agent = new UserAgentService;
         $currentIp = $request->ip();
 
-        $activity = AccountLog::whereUserId($user->id)
-            ->whereAction('auth.login')
+        // Deduplicate by IP while keeping the newest login per IP. A bare
+        // groupBy over SELECT * is invalid under ONLY_FULL_GROUP_BY (500 on
+        // strict MySQL/MariaDB and Postgres) and indeterminate otherwise, so
+        // select MAX(id) per ip_address and fetch those rows.
+        $activity = AccountLog::whereIn('id', function ($q) use ($user) {
+            $q->from('account_logs')
+                ->selectRaw('MAX(id)')
+                ->where('user_id', $user->id)
+                ->where('action', 'auth.login')
+                ->groupBy('ip_address');
+        })
             ->orderBy('created_at', 'desc')
-            ->groupBy('ip_address')
             ->limit(10)
             ->get()
             ->map(function ($item) use ($agent, $currentIp) {
@@ -1318,9 +1326,7 @@ class ApiV1Dot1Controller extends Controller
                 break;
         }
 
-        $user->storage_used = (int) $updatedAccountSize;
-        $user->storage_used_updated_at = now();
-        $user->save();
+        UserStorageService::increaseStorageUsed($user->id, $fileSize);
 
         NewStatusPipeline::dispatch($status);
 

@@ -44,6 +44,10 @@ class Helpers
 
     private const MAX_URL_LENGTH = 4096;
 
+    private const DNS_TTL_POSITIVE = 86400;
+
+    private const DNS_TTL_NEGATIVE = 300;
+
     private const LOCALHOST_DOMAINS = [
         'localhost',
         '127.0.0.1',
@@ -201,16 +205,8 @@ class Helpers
             }
         }
 
-        // SSRF guard: when DNS verification is enabled, reject any host that
-        // resolves into a non-global (private/reserved/link-local) range. This
-        // closes the bypass where a public-looking hostname (e.g.
-        // metadata.google.internal) resolves to a reserved address such as
-        // 169.254.169.254. resolvePublicIps() fails closed: it returns an empty
-        // array if the host does not resolve or any resolved IP is non-global.
-        if ($disableDNSCheck !== true && self::shouldCheckDNS()) {
-            if (empty(self::resolvePublicIps($host))) {
-                return false;
-            }
+        if (empty(self::resolvePublicIps($host))) {
+            return false;
         }
 
         return $uri->toString();
@@ -327,6 +323,33 @@ class Helpers
         return $host;
     }
 
+    private static function lookupPublicIps(string $host): array
+    {
+        $records = @dns_get_record($host.'.', DNS_A | DNS_AAAA);
+
+        if (! is_array($records) || $records === []) {
+            return [];
+        }
+
+        $ips = [];
+
+        foreach ($records as $record) {
+            $ip = $record['ip'] ?? $record['ipv6'] ?? null;
+
+            if (! is_string($ip) || $ip === '' || isset($ips[$ip])) {
+                continue;
+            }
+
+            if (! self::isPublicIp($ip)) {
+                return [];
+            }
+
+            $ips[$ip] = true;
+        }
+
+        return array_keys($ips);
+    }
+
     public static function resolvePublicIps(string $host): array
     {
         $host = self::normalizeHost($host);
@@ -335,47 +358,23 @@ class Helpers
             return [];
         }
 
-        $key = self::URL_CACHE_PREFIX.
-            'public-ips:sha256-'.
-            hash('sha256', $host);
+        $key = self::URL_CACHE_PREFIX.'public-ips:'.hash('xxh128', $host);
 
-        return Cache::remember($key, 60, function () use ($host) {
-            $ips = [];
+        $cached = Cache::get($key);
 
-            $aRecords = @dns_get_record($host.'.', DNS_A);
+        if (is_array($cached)) {
+            return $cached;
+        }
 
-            if (is_array($aRecords)) {
-                foreach ($aRecords as $record) {
-                    if (! empty($record['ip'])) {
-                        $ips[] = $record['ip'];
-                    }
-                }
-            }
+        $ips = self::lookupPublicIps($host);
 
-            $aaaaRecords = @dns_get_record($host.'.', DNS_AAAA);
+        Cache::put(
+            $key,
+            $ips,
+            $ips === [] ? self::DNS_TTL_NEGATIVE : self::DNS_TTL_POSITIVE
+        );
 
-            if (is_array($aaaaRecords)) {
-                foreach ($aaaaRecords as $record) {
-                    if (! empty($record['ipv6'])) {
-                        $ips[] = $record['ipv6'];
-                    }
-                }
-            }
-
-            $ips = array_values(array_unique($ips));
-
-            if (empty($ips)) {
-                return [];
-            }
-
-            foreach ($ips as $ip) {
-                if (! self::isPublicIp($ip)) {
-                    return [];
-                }
-            }
-
-            return $ips;
-        });
+        return $ips;
     }
 
     /**
@@ -436,8 +435,7 @@ class Helpers
      */
     public static function shouldCheckDNS(): bool
     {
-        return app()->environment() === 'production' &&
-            (bool) config('security.url.verify_dns');
+        return app()->environment() === 'production';
     }
 
     /**
@@ -1172,7 +1170,8 @@ class Helpers
             $data['object'] :
             $data;
 
-        if (! is_array($object) ||
+        if (
+            ! is_array($object) ||
             ! isset($object['attachment']) ||
             empty($object['attachment']) ||
             ! is_array($object['attachment'])
@@ -1434,11 +1433,20 @@ class Helpers
     {
         $profile = Profile::whereRemoteUrl($url)->first();
 
-        if ($profile && ! self::needsFetch($profile)) {
+        if (! $profile) {
+            return self::profileUpdateOrCreate($url);
+        }
+
+        if (! self::needsFetch($profile)) {
             return $profile;
         }
 
-        return self::profileUpdateOrCreate($url);
+        // Attempt a refresh, but fall back to the existing profile if it fails
+        // (network/validation error). Discarding a known-good profile here
+        // caused null dereferences in downstream activity handlers.
+        $refreshed = self::profileUpdateOrCreate($url);
+
+        return $refreshed ?? $profile;
     }
 
     /**
@@ -1501,7 +1509,29 @@ class Helpers
         $urlDomain = parse_url($url, PHP_URL_HOST);
         $domain = parse_url($res['id'], PHP_URL_HOST);
 
-        return strtolower($urlDomain) === strtolower($domain);
+        if (strtolower($urlDomain) !== strtolower($domain)) {
+            return false;
+        }
+
+        // The actor's key_id (publicKey.id) must live on the same host as the
+        // actor id. Without this, a remote actor could advertise a publicKey.id
+        // pointing at a victim's keyId URI, planting a poisoned
+        // key_id -> attacker-public-key binding in the unique profiles.key_id
+        // column. This mirrors the same-host check UpdatePersonValidator already
+        // enforces on the Update pipeline.
+        if (isset($res['publicKey']['id'])) {
+            if (! self::validateUrl($res['publicKey']['id'])) {
+                return false;
+            }
+
+            $keyDomain = parse_url($res['publicKey']['id'], PHP_URL_HOST);
+
+            if (strtolower($keyDomain) !== strtolower($domain)) {
+                return false;
+            }
+        }
+
+        return true;
     }
 
     /**

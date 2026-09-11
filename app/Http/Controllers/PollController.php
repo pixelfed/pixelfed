@@ -47,6 +47,24 @@ class PollController extends Controller
         $choice = $choices[0];
 
         $poll = Poll::findOrFail($poll_id);
+        $status = Status::findOrFail($poll->status_id);
+
+        // Mirror the getPoll scope gate: a non-public poll is only votable by
+        // the owner or a follower. Return 404 (not 403) to match getPoll so a
+        // non-follower cannot distinguish "exists but denied" from "not found".
+        // Uses `scope != 'public'` (matching getPoll) because vote returns the
+        // same PollService::get payload getPoll returns, so the write path must
+        // not grant a read the read path would refuse (e.g. unlisted polls).
+        if ($status->scope != 'public') {
+            $viewer = $request->user();
+            if ($viewer->profile_id != $status->profile_id) {
+                abort_if(
+                    ! FollowerService::follows($viewer->profile_id, $status->profile_id),
+                    404,
+                    'Poll not found.'
+                );
+            }
+        }
 
         abort_if(now()->gt($poll->expires_at), 422, 'Poll expired.');
 

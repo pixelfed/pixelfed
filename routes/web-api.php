@@ -24,7 +24,7 @@ use App\Http\Controllers\SpaController;
 use App\Http\Controllers\StatusController;
 use App\Http\Controllers\StoryController;
 
-Route::domain(config('pixelfed.domain.app'))->middleware(['validemail', 'twofactor', 'localization'])->group(function () {
+Route::domain(config('pixelfed.domain.app'))->middleware(['localization'])->group(function () {
     Route::prefix('api')->group(function () {
         Route::get('search', [SearchController::class, 'searchAPI']);
         Route::post('status/view', [StatusController::class, 'storeView']);

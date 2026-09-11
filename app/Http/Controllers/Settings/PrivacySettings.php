@@ -242,6 +242,9 @@ trait PrivacySettings
             }
         }
         $profile->is_private = true;
+        // Clear directory listing when going private so the profile can't leak
+        // into the public directory (which lists is_suggestable profiles).
+        $profile->is_suggestable = false;
         $settings->show_guests = false;
         $settings->show_discover = false;
         $settings->save();

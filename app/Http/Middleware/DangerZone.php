@@ -17,15 +17,15 @@ class DangerZone
      */
     public function handle($request, Closure $next)
     {
-        if (config('remote-auth.oidc.enabled')) {
-            // Skip for OIDC/LDAP
+        // Only OIDC-registered users have a random unknown password and cannot complete sudo-mode password confirmation.
+        if (config('remote-auth.oidc.enabled') && $request->user() && $request->user()->register_source === 'oidc') {
             return $next($request);
         }
 
         if ($request->session()->get('sudoModeAttempts') > 3) {
-            $request->session()->pull('redirectNext');
-            $request->session()->pull('sudoModeAttempts');
+            // Invalidate the whole session
             Auth::logout();
+            $request->session()->invalidate();
 
             return redirect(route('login'));
         }

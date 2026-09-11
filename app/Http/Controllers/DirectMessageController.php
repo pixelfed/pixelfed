@@ -475,11 +475,14 @@ class DirectMessageController extends Controller
             abort(403, 'Invalid or unsupported mime type.');
         }
 
+        // Check the blocklist against the temp upload BEFORE storing, so a
+        // blocked upload never leaves an orphaned file on disk (media:gc only
+        // reaps files that have a Media row).
+        $hash = \hash_file('sha256', $photo->getRealPath());
+        abort_if(MediaBlocklistService::exists($hash) == true, 451);
+
         $storagePath = MediaPathService::get($user, 2).Str::random(8);
         $path = $photo->storePublicly($storagePath);
-        $hash = \hash_file('sha256', $photo);
-
-        abort_if(MediaBlocklistService::exists($hash) == true, 451);
 
         $status = new Status;
         $status->profile_id = $profile->id;
@@ -523,9 +526,7 @@ class DirectMessageController extends Controller
             ]
         );
 
-        $user->storage_used = (int) $updatedAccountSize;
-        $user->storage_used_updated_at = now();
-        $user->save();
+        UserStorageService::increaseStorageUsed($user->id, $fileSize);
 
         if ($recipient->domain) {
             $this->remoteDeliver($dm);

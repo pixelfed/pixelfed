@@ -46,13 +46,17 @@ class StatusDedupe extends Command
 
             return;
         }
+        // Deterministically keep the earliest-fetched status per uri via
+        // MIN(id). Selecting a non-aggregated id under GROUP BY is
+        // nondeterministic and cannot be influenced by ORDER BY, so the
+        // previous query could keep an arbitrary duplicate.
         DB::table('statuses')
-            ->selectRaw('id, uri, count(uri) as occurences')
+            ->selectRaw('MIN(id) as id, uri, count(uri) as occurences')
             ->whereNull('deleted_at')
             ->whereNotNull('uri')
             ->groupBy('uri')
-            ->orderBy('created_at')
             ->having('occurences', '>', 1)
+            ->orderBy('uri')
             ->chunk(50, function ($statuses) {
                 foreach ($statuses as $status) {
                     $this->info("Found duplicate: $status->uri");

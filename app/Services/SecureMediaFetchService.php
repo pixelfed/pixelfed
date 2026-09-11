@@ -50,10 +50,10 @@ class SecureMediaFetchService
      *
      * @return string|false
      */
-    public static function get(string $url, ?int $maxBytes = null, ?int $expectedLength = null)
+    public static function get(string $url, ?int $maxBytes = null, ?int $expectedLength = null, array $headers = [])
     {
         $maxBytes = $maxBytes ?? self::defaultMaxBytes();
-        $result = (new self)->request($url, 'get', $maxBytes, $expectedLength);
+        $result = (new self)->request($url, 'get', $maxBytes, $expectedLength, $headers);
 
         if (! is_array($result)) {
             return false;
@@ -69,9 +69,16 @@ class SecureMediaFetchService
      * @return array|false For 'head': ['length'=>int,'mime'=>string].
      *                     For 'get': ['body'=>string,'length'=>int,'mime'=>string].
      */
-    protected function request(string $url, string $method, int $maxBytes, ?int $expectedLength = null)
+    protected function request(string $url, string $method, int $maxBytes, ?int $expectedLength = null, array $extraHeaders = [])
     {
         $currentUrl = $url;
+
+        // Host of the original request. Caller-supplied headers (e.g. an
+        // Authorization bearer token) are only sent to this host and are
+        // stripped on any cross-origin redirect hop, mirroring Guzzle's
+        // RedirectMiddleware credential-stripping behaviour.
+        $originHost = parse_url($url, PHP_URL_HOST);
+        $originHost = is_string($originHost) ? strtolower($originHost) : null;
 
         for ($redirects = 0; $redirects <= self::MAX_REDIRECTS; $redirects++) {
             $currentUrl = Helpers::validateUrl($currentUrl);
@@ -86,6 +93,13 @@ class SecureMediaFetchService
 
             if (! $host || strtolower((string) $scheme) !== 'https') {
                 return false;
+            }
+
+            // Only forward caller headers when the current hop is the same host
+            // as the original request; drop them across origins.
+            $headers = ['User-Agent' => self::userAgent()];
+            if (! empty($extraHeaders) && strtolower((string) $host) === $originHost) {
+                $headers = array_merge($extraHeaders, $headers);
             }
 
             // Resolve the host and reject if ANY resolved address is
@@ -116,7 +130,7 @@ class SecureMediaFetchService
                         }
                     },
                 ])
-                    ->withHeaders(['User-Agent' => self::userAgent()])
+                    ->withHeaders($headers)
                     ->timeout(self::TIMEOUT)
                     ->connectTimeout(self::CONNECT_TIMEOUT)
                     ->{$method}($currentUrl);
