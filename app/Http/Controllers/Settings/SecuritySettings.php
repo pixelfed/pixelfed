@@ -8,7 +8,6 @@ use BaconQrCode\Renderer\Image\SvgImageBackEnd;
 use BaconQrCode\Renderer\ImageRenderer;
 use BaconQrCode\Renderer\RendererStyle\RendererStyle;
 use BaconQrCode\Writer;
-use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Str;
 use PragmaRX\Google2FA\Google2FA;
@@ -88,7 +87,7 @@ trait SecuritySettings
         $verify = $google2fa->verifyKey($user->{'2fa_secret'}, $code);
         if ($verify) {
             $user->{'2fa_enabled'} = true;
-            $user->{'2fa_setup_at'} = Carbon::now();
+            $user->{'2fa_setup_at'} = now();
             $user->save();
 
             return response()->json(['msg' => 'success']);

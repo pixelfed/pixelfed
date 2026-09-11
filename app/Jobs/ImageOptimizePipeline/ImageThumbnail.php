@@ -4,7 +4,6 @@ namespace App\Jobs\ImageOptimizePipeline;
 
 use App\Models\Media;
 use App\Util\Media\Image;
-use Carbon\Carbon;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
@@ -73,7 +72,7 @@ class ImageThumbnail implements ShouldQueue
             return;
         }
 
-        $media->processed_at = Carbon::now();
+        $media->processed_at = now();
         $media->save();
 
         ImageUpdate::dispatch($media)->onQueue('mmo');
