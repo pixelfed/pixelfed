@@ -1,10 +1,10 @@
 <?php
 
 use App\Models\User;
-use Illuminate\Foundation\Testing\RefreshDatabase;
+use Illuminate\Foundation\Testing\LazilyRefreshDatabase;
 use Laravel\Passport\Passport;
 
-uses(RefreshDatabase::class);
+uses(LazilyRefreshDatabase::class);
 
 /*
 |--------------------------------------------------------------------------

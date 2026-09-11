@@ -4,14 +4,14 @@ namespace Tests\Feature;
 
 use App\Models\User;
 use Database\Factories\ProfileFactory;
-use Illuminate\Foundation\Testing\RefreshDatabase;
+use Illuminate\Foundation\Testing\LazilyRefreshDatabase;
 use Illuminate\Support\Facades\DB;
 use PHPUnit\Framework\Attributes\Test;
 use Tests\TestCase;
 
 class ComposeControllerTest extends TestCase
 {
-    use RefreshDatabase;
+    use LazilyRefreshDatabase;
 
     #[Test]
     public function search_location_can_filter_by_country()

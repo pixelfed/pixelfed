@@ -4,7 +4,7 @@ use App\Models\Page;
 use App\Models\Status;
 use App\Models\User;
 use App\Models\UserSetting;
-use Illuminate\Foundation\Testing\RefreshDatabase;
+use Illuminate\Foundation\Testing\LazilyRefreshDatabase;
 
 /*
 |--------------------------------------------------------------------------
@@ -41,7 +41,7 @@ test('discover page respects public config', function () {
 });
 
 describe('routes that require database', function () {
-    uses(RefreshDatabase::class);
+    uses(LazilyRefreshDatabase::class);
 
     test('register page loads', function () {
         $this->get('/register')
@@ -92,7 +92,7 @@ describe('routes that require database', function () {
 */
 
 describe('guest profile page (regression: cached UserSetting model)', function () {
-    uses(RefreshDatabase::class);
+    uses(LazilyRefreshDatabase::class);
 
     it('renders a public profile for an unauthenticated user', function () {
         $user = User::factory()->create();
@@ -130,7 +130,7 @@ describe('guest profile page (regression: cached UserSetting model)', function (
 });
 
 describe('static site pages (regression: cached Page model)', function () {
-    uses(RefreshDatabase::class);
+    uses(LazilyRefreshDatabase::class);
 
     it('loads terms of use twice', function () {
         $this->get('/site/terms')->assertStatus(200);
@@ -211,7 +211,7 @@ describe('static informational pages load for guests', function () {
 });
 
 describe('community guidelines page (regression: cached page render)', function () {
-    uses(RefreshDatabase::class);
+    uses(LazilyRefreshDatabase::class);
 
     it('loads the fallback twice', function () {
         // No Page row exists; the route caches the rendered view either way.
@@ -238,7 +238,7 @@ describe('community guidelines page (regression: cached page render)', function 
 });
 
 describe('public status page (regression: cached status/media services)', function () {
-    uses(RefreshDatabase::class);
+    uses(LazilyRefreshDatabase::class);
 
     it('renders a public post for a guest on repeated requests', function () {
         $user = User::factory()->create();
@@ -262,7 +262,7 @@ describe('public status page (regression: cached status/media services)', functi
 });
 
 describe('profile activitypub object (regression: cached AP object)', function () {
-    uses(RefreshDatabase::class);
+    uses(LazilyRefreshDatabase::class);
 
     beforeEach(function () {
         // config_cache() falls back to config() when the DB-backed config
