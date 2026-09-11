@@ -145,6 +145,8 @@ class CustomFilterController extends Controller
                 ->toArray();
 
             if (! empty($existingKeywords)) {
+                DB::rollBack();
+
                 return response()->json([
                     'error' => 'Duplicate keywords found',
                     'message' => 'The following keywords already exist: '.implode(', ', $existingKeywords),
@@ -314,6 +316,8 @@ class CustomFilterController extends Controller
 
             $keywordIds = collect($validatedData['keywords_attributes'])->pluck('id')->filter()->toArray();
             if (count($keywordIds) && ! CustomFilterKeyword::whereCustomFilterId($filter->id)->whereIn('id', $keywordIds)->count()) {
+                DB::rollBack();
+
                 return response()->json([
                     'error' => 'Record not found',
                 ], 404);
@@ -336,6 +340,8 @@ class CustomFilterController extends Controller
                     ->toArray();
 
                 if (! empty($existingKeywords)) {
+                    DB::rollBack();
+
                     return response()->json([
                         'error' => 'Duplicate keywords found',
                         'message' => 'The following keywords already exist: '.implode(', ', $existingKeywords),
@@ -396,6 +402,8 @@ class CustomFilterController extends Controller
                             ->first();
 
                         if (! isset($keywordData['_destroy']) && $filter->keywords()->pluck('id')->search($keywordData['id']) === false) {
+                            DB::rollBack();
+
                             return response()->json([
                                 'error' => 'Duplicate keywords found',
                                 'message' => 'The following keywords already exist: '.$keywordData['keyword'],
@@ -427,6 +435,8 @@ class CustomFilterController extends Controller
                         $maxKeywordsPerFilter = CustomFilter::getMaxKeywordsPerFilter();
 
                         if ($existingKeywordCount >= $maxKeywordsPerFilter) {
+                            DB::rollBack();
+
                             return response()->json([
                                 'error' => 'Keyword limit exceeded',
                                 'message' => 'A filter can have a maximum of '.$maxKeywordsPerFilter.' keywords.',
