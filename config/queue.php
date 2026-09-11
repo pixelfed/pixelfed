@@ -68,11 +68,6 @@ return [
             'driver' => 'redis',
             'connection' => env('REDIS_QUEUE_CONNECTION', 'default'),
             'queue' => env('REDIS_QUEUE', 'default'),
-            // Must stay greater than Horizon's supervisor `timeout`
-            // (config/horizon.php, default 300s). Otherwise a job that's
-            // still legitimately running gets treated as dead and picked up
-            // by a second worker before Horizon has a chance to time it out
-            // itself, causing the same job to run twice concurrently.
             'retry_after' => (int) env('REDIS_QUEUE_RETRY_AFTER', 330),
             'block_for' => null,
             'after_commit' => true,
