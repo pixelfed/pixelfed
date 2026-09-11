@@ -5,7 +5,6 @@ namespace App\Jobs\AvatarPipeline;
 use App\Models\Avatar;
 use App\Models\Profile;
 use App\Util\Media\ImageDriverManager;
-use Carbon\Carbon;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
@@ -94,7 +93,7 @@ class AvatarOptimize implements ShouldQueue
 
             $avatar = Avatar::whereProfileId($this->profile->id)->firstOrFail();
             $avatar->change_count = ++$avatar->change_count;
-            $avatar->last_processed_at = Carbon::now();
+            $avatar->last_processed_at = now();
             $avatar->save();
             Cache::forget('avatar:'.$avatar->profile_id);
             $this->deleteOldAvatar($avatar->media_path, $this->current);

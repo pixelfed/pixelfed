@@ -14,7 +14,6 @@ use App\Models\OauthClient;
 use App\Models\ProfileSponsor;
 use App\Models\UserSetting;
 use App\Services\AccountService;
-use Carbon\Carbon;
 use Illuminate\Contracts\View\View;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\RedirectResponse;
@@ -144,7 +143,7 @@ class SettingsController extends Controller
         ]);
 
         $profile = $user->profile;
-        $ts = Carbon::now()->addMonth();
+        $ts = now()->addMonth();
         $user->email = $user->id;
         $user->password = '';
         $user->status = 'delete';

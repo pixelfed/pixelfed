@@ -27,7 +27,6 @@ use App\Services\NotificationService;
 use App\Services\PublicTimelineService;
 use App\Services\StatusService;
 use App\Util\ActivityPub\Helpers;
-use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\DB;
@@ -495,7 +494,7 @@ trait AdminReportController
     public function handleReportAction(Report $report, $action)
     {
         $item = $report->reported();
-        $report->admin_seen = Carbon::now();
+        $report->admin_seen = now();
 
         switch ($action) {
             case 'ignore':
