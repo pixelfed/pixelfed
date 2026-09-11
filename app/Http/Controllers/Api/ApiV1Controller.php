@@ -4668,7 +4668,7 @@ class ApiV1Controller extends Controller
                 return $profile['id'] != $pid;
             })
             ->filter(function ($profile) use ($pid) {
-                return ! FollowerService::follows($pid, $profile['id'], true);
+                return ! FollowerService::follows($pid, $profile['id'], false);
             })
             ->filter(function ($profile) use ($asf) {
                 return ! in_array($profile['id'], $asf);
