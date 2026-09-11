@@ -3,10 +3,11 @@
 use App\Jobs\StoryPipeline\StoryExpire;
 use App\Models\Profile;
 use App\Models\Story;
-use App\Models\User;
+use App\Services\StoryIndexService;
 use App\Services\StoryService;
 use Illuminate\Foundation\Testing\LazilyRefreshDatabase;
 use Illuminate\Support\Facades\Cache;
+use Illuminate\Support\Facades\Redis;
 
 uses(LazilyRefreshDatabase::class);
 
@@ -38,24 +39,38 @@ function makeRemoteStory(Profile $author): Story
     return $story;
 }
 
-it('invalidates the author latest cache when a remote story expires', function () {
-    $user = User::factory()->create();
+it('invalidates both story caches when a remote story expires', function () {
     $author = Profile::factory()->create(['user_id' => null, 'domain' => 'remote.example']);
-
     $story = makeRemoteStory($author);
+    $story->forceFill([
+        'active' => true,
+        'expires_at' => now()->addHours(24),
+    ])->save();
+    $index = app(StoryIndexService::class);
     $cacheKey = StoryService::STORY_KEY.'latest:pid-'.$author->id;
 
-    // Warm the cache.
+    // Index is empty, so this warms the SQL-backed cache.
     expect(StoryService::latest($author->id))->toBe($story->id);
     expect(Cache::has($cacheKey))->toBeTrue();
 
+    // Now index it; latest() answers from Redis from here on.
+    $index->indexStory($story);
+    expect($index->hasActiveStory($author->id))->toBeTrue();
+    expect(StoryService::latest($author->id))->toBe($story->id);
+
+    $this->travel(25)->hours();
     (new StoryExpire($story))->handle();
 
-    // The row is gone and the cache no longer points at the deleted id.
+    // Row gone, SQL cache cleared.
     expect(Story::find($story->id))->toBeNull();
     expect(Cache::has($cacheKey))->toBeFalse();
 
-    // Re-resolving now returns null (author has no stories) without crashing.
+    // Index actually pruned, not just outside the 24h window.
+    expect(Redis::exists("story:{$story->id}"))->toBeFalsy();
+    expect(Redis::sismember('story:active_authors', (string) $author->id))->toBeFalsy();
+    expect($index->hasActiveStory($author->id))->toBeFalse();
+
+    // Re-resolving returns null without crashing.
     expect(StoryService::latest($author->id))->toBeNull();
 });
 
