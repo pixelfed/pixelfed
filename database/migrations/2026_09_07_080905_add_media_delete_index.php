@@ -1,36 +1,59 @@
 <?php
 
 use Illuminate\Database\Migrations\Migration;
+use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Schema;
 
 return new class extends Migration
 {
+    protected string $table = 'media';
+
+    protected string $index = 'media_unoptimized_recent_index';
+
+    protected array $columns = ['processed_at', 'remote_url', 'deleted_at', 'created_at', 'id'];
+
     public function up(): void
     {
-        if (DB::getDriverName() === 'sqlite') {
+        // MySQL/MariaDB: use online DDL (INPLACE/LOCK=NONE) so index creation
+        // does not block writes on large instances. Other drivers (pgsql,
+        // sqlite) use the portable schema builder, which emits correct
+        // dialect-specific SQL.
+        if (in_array(DB::getDriverName(), ['mysql', 'mariadb'], true)) {
+            $columns = collect($this->columns)
+                ->map(fn ($column) => "`{$column}`")
+                ->implode(', ');
+
+            DB::statement("
+                ALTER TABLE `{$this->table}`
+                ADD INDEX `{$this->index}` ({$columns}),
+                ALGORITHM=INPLACE,
+                LOCK=NONE
+            ");
+
             return;
         }
 
-        DB::statement('
-            ALTER TABLE `media`
-            ADD INDEX `media_unoptimized_recent_index`
-                (`processed_at`, `remote_url`, `deleted_at`, `created_at`, `id`),
-            ALGORITHM=INPLACE,
-            LOCK=NONE
-        ');
+        Schema::table($this->table, function (Blueprint $table) {
+            $table->index($this->columns, $this->index);
+        });
     }
 
     public function down(): void
     {
-        if (DB::getDriverName() === 'sqlite') {
+        if (in_array(DB::getDriverName(), ['mysql', 'mariadb'], true)) {
+            DB::statement("
+                ALTER TABLE `{$this->table}`
+                DROP INDEX `{$this->index}`,
+                ALGORITHM=INPLACE,
+                LOCK=NONE
+            ");
+
             return;
         }
 
-        DB::statement('
-            ALTER TABLE `media`
-            DROP INDEX `media_unoptimized_recent_index`,
-            ALGORITHM=INPLACE,
-            LOCK=NONE
-        ');
+        Schema::table($this->table, function (Blueprint $table) {
+            $table->dropIndex($this->index);
+        });
     }
 };
