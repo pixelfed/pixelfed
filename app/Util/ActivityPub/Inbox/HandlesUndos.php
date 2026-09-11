@@ -12,6 +12,7 @@ use App\Services\FollowerService;
 use App\Services\ReblogService;
 use App\Services\RelationshipService;
 use App\Services\StatusService;
+use App\Services\StoryIndexService;
 use App\Util\ActivityPub\Helpers;
 
 trait HandlesUndos
@@ -102,6 +103,8 @@ trait HandlesUndos
         Follower::whereProfileId($profile->id)
             ->whereFollowingId($following->id)
             ->delete();
+
+        app(StoryIndexService::class)->removeFollowing((int) $profile->id, (int) $following->id);
 
         FollowRequest::whereFollowingId($following->id)
             ->whereFollowerId($profile->id)

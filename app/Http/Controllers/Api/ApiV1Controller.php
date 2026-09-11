@@ -67,6 +67,7 @@ use App\Services\RelationshipService;
 use App\Services\SanitizeService;
 use App\Services\SnowflakeService;
 use App\Services\StatusService;
+use App\Services\StoryIndexService;
 use App\Services\UserFilterService;
 use App\Services\UserRoleService;
 use App\Services\UserStorageService;
@@ -1158,6 +1159,8 @@ class ApiV1Controller extends Controller
         Follower::whereProfileId($user->profile_id)
             ->whereFollowingId($target->id)
             ->delete();
+
+        app(StoryIndexService::class)->removeFollowing((int) $user->profile_id, (int) $target->id);
 
         UnfollowPipeline::dispatch($user->profile_id, $target->id)->onQueue('high');
 
