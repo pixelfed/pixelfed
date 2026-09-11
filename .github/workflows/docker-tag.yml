@@ -19,15 +19,13 @@ env:
   IMAGE_NAME: ghcr.io/${{ github.repository }}
 
 jobs:
-  build-and-push:
+  prepare:
     runs-on: ubuntu-latest
-    timeout-minutes: 60
+    timeout-minutes: 5
+    outputs:
+      tag_name: ${{ steps.latest.outputs.tag_name }}
+      is_latest: ${{ steps.latest.outputs.is_latest }}
     steps:
-      - name: Checkout tag
-        uses: actions/checkout@v4
-        with:
-          ref: ${{ github.ref }}
-
       - name: Determine if this tag is the current latest release
         id: latest
         env:
@@ -46,8 +44,78 @@ jobs:
           fi
           echo "Tag: $TAG_NAME | Latest published release: ${LATEST:-<none>} | is_latest=$( [ "$TAG_NAME" = "$LATEST" ] && echo true || echo false )"
 
-      - name: Set up QEMU
-        uses: docker/setup-qemu-action@v3
+  build:
+    needs: prepare
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - platform: linux/amd64
+            runs-on: ubuntu-latest
+          - platform: linux/arm64
+            runs-on: ubuntu-24.04-arm
+    runs-on: ${{ matrix.runs-on }}
+    timeout-minutes: 45
+    steps:
+      - name: Checkout tag
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ github.ref }}
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: Log in to GHCR
+        uses: docker/login-action@v3
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Prepare platform tag
+        id: platform
+        run: |
+          platform=${{ matrix.platform }}
+          echo "pair=${platform//\//-}" >> "$GITHUB_OUTPUT"
+
+      # Push each arch to the registry by digest only — no human-readable tag
+      # yet. Digests get stitched into one multi-arch manifest by the merge
+      # job below, which is what carries the real tags (v1.2.3, stable, etc).
+      - name: Build and push (${{ matrix.platform }})
+        id: build
+        uses: docker/build-push-action@v6
+        with:
+          context: .
+          platforms: ${{ matrix.platform }}
+          outputs: type=image,name=${{ env.IMAGE_NAME }},push-by-digest=true,name-canonical=true,push=true
+          cache-from: type=gha,scope=release-${{ steps.platform.outputs.pair }}
+          cache-to: type=gha,mode=max,scope=release-${{ steps.platform.outputs.pair }}
+
+      - name: Export digest
+        run: |
+          mkdir -p /tmp/digests
+          digest="${{ steps.build.outputs.digest }}"
+          touch "/tmp/digests/${digest#sha256:}"
+
+      - name: Upload digest
+        uses: actions/upload-artifact@v4
+        with:
+          name: digests-${{ steps.platform.outputs.pair }}
+          path: /tmp/digests/*
+          if-no-files-found: error
+          retention-days: 1
+
+  merge:
+    needs: [prepare, build]
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - name: Download digests
+        uses: actions/download-artifact@v4
+        with:
+          path: /tmp/digests
+          pattern: digests-*
+          merge-multiple: true
 
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v3
@@ -66,28 +134,27 @@ jobs:
           # newline-separated entries, not space-separated.
           {
             echo "tags<<EOF"
-            echo "${{ env.IMAGE_NAME }}:${{ steps.latest.outputs.tag_name }}"
-            if [ "${{ steps.latest.outputs.is_latest }}" = "true" ]; then
+            echo "${{ env.IMAGE_NAME }}:${{ needs.prepare.outputs.tag_name }}"
+            if [ "${{ needs.prepare.outputs.is_latest }}" = "true" ]; then
               echo "${{ env.IMAGE_NAME }}:stable"
             fi
             echo "EOF"
           } >> "$GITHUB_OUTPUT"
 
-      - name: Build and push
-        uses: docker/build-push-action@v6
-        with:
-          context: .
-          push: true
-          platforms: linux/amd64,linux/arm64
-          tags: ${{ steps.tags.outputs.tags }}
-          cache-from: type=gha,scope=release
-          cache-to: type=gha,mode=max,scope=release
-          sbom: true
-          provenance: true
+      - name: Create manifest list and push
+        working-directory: /tmp/digests
+        run: |
+          docker buildx imagetools create \
+            $(echo "${{ steps.tags.outputs.tags }}" | sed 's/^/-t /' | tr '\n' ' ') \
+            $(printf '${{ env.IMAGE_NAME }}@sha256:%s ' *)
+
+      - name: Inspect image
+        run: |
+          docker buildx imagetools inspect ${{ env.IMAGE_NAME }}:${{ needs.prepare.outputs.tag_name }}
 
       - name: Summary
         run: |
           echo "### Release image build" >> "$GITHUB_STEP_SUMMARY"
-          echo "- Tag pushed: \`${{ steps.latest.outputs.tag_name }}\`" >> "$GITHUB_STEP_SUMMARY"
-          echo "- Also tagged 'stable': \`${{ steps.latest.outputs.is_latest }}\`" >> "$GITHUB_STEP_SUMMARY"
+          echo "- Tag pushed: \`${{ needs.prepare.outputs.tag_name }}\`" >> "$GITHUB_STEP_SUMMARY"
+          echo "- Also tagged 'stable': \`${{ needs.prepare.outputs.is_latest }}\`" >> "$GITHUB_STEP_SUMMARY"
           echo "- Platforms: linux/amd64, linux/arm64" >> "$GITHUB_STEP_SUMMARY"
