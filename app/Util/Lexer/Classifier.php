@@ -44,9 +44,7 @@ class Classifier
             return collect($tokens);
         }
 
-        return Str::of($string)
-            ->lower()
-            ->matchAll('/[[:alpha:]]+/u');
+        return Str::matchAll('/[[:alpha:]]+/u', Str::lower($string));
     }
 
     /**

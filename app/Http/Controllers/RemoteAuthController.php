@@ -551,7 +551,7 @@ class RemoteAuthController extends Controller
         $domain = strtolower(parse_url($account, PHP_URL_HOST));
 
         if ($domain == $host) {
-            $username = Str::of($account)->explode('/')->last();
+            $username = Str::afterLast($account, '/');
             $user = User::where('username', $username)->first();
             if ($user) {
                 return ['id' => (string) $user->profile_id];

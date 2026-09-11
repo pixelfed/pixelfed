@@ -74,7 +74,7 @@ trait AdminDirectoryController
         $res['activitypub_enabled'] = (bool) config_cache('federation.activitypub.enabled');
 
         $res['feature_config'] = [
-            'media_types' => Str::of(config_cache('pixelfed.media_types'))->explode(','),
+            'media_types' => explode(',', config_cache('pixelfed.media_types')),
             'image_quality' => config_cache('pixelfed.image_quality'),
             'optimize_image' => (bool) config_cache('pixelfed.optimize_image'),
             'max_photo_size' => config_cache('pixelfed.max_photo_size'),
@@ -249,7 +249,7 @@ trait AdminDirectoryController
             'curated_onboarding' => (bool) config_cache('instance.curated_registration.enabled'),
             'activitypub_enabled' => config_cache('federation.activitypub.enabled'),
             'oauth_enabled' => (bool) config_cache('pixelfed.oauth_enabled'),
-            'media_types' => Str::of(config_cache('pixelfed.media_types'))->explode(','),
+            'media_types' => explode(',', config_cache('pixelfed.media_types')),
             'image_quality' => config_cache('pixelfed.image_quality'),
             'optimize_image' => config_cache('pixelfed.optimize_image'),
             'max_photo_size' => config_cache('pixelfed.max_photo_size'),
