@@ -1,48 +1,1896 @@
 # Release Notes
 
-## [Unreleased](https://github.com/pixelfed/pixelfed/compare/v0.12.10...dev)
+## [Unreleased](https://github.com/pixelfed/pixelfed/compare/v0.12.11...dev)
 
--   Fix ApiV1Controller, ensure follow notifications have an account ([e1235dfd7](https://github.com/pixelfed/pixelfed/commit/e1235dfd7))
--   Update AccountService to include settings ([59f57b1](https://github.com/pixelfed/pixelfed/commit/59f57b1))
--   Update ApiV1Controller, add show_atom support to update_credentials endpoint ([4e2e49f84](https://github.com/pixelfed/pixelfed/commit/4e2e49f84))
--   Update ApiV1Controller, add is_suggestable to update_credentials endpoint ([7937d91c3](https://github.com/pixelfed/pixelfed/commit/7937d91c3))
--   ([](https://github.com/pixelfed/pixelfed/commit/))
--   ([#6794](https://github.com/pixelfed/pixelfed/pull/6794))
-    -   Fixed the Github action for the docker images
-    -   Added an automatic cleanup for GHCR docker images
-    -   Merged some translations
-    -   Applied some pint fixes to /public /bootstrap /tests
--   ([#6796](https://github.com/pixelfed/pixelfed/pull/6796))
-    -   Upgraded the intervention image laravel package v3 to v4
-    -   Added orientation fix to image processor
-    -   Added IMAGE_DRIVER to .env files (planning on moving to vips default)
-    -   Applied pint rules to /resources lang files
-    -   Update github action laravel tests to use php 8.5
--   ([#6802](https://github.com/pixelfed/pixelfed/pull/6802))
-    -   Laravel Shift Preshift class changes
-    -   Fix: INSTANCE_CUR_REG_NOTIFY_ADMIN_ON_VERIFY - 6758
-    -   Fix RESTRICTED_INSTANCE
-    -   Fixes 6695 - First follower/following record (id=1) never appears in Followers/Following API
-    -   Fixes 6643 - OAuth token check
-    -   Fixes 6657 - Exact error message(s) on composer
-    -   Fixes 6776 - OAuth client secret not displayed after creation
-    -   Fixes 6777 - Added error on PAT creation when OAUTH_PAT_ENABLED is false
-    -   Fixes 6803 - Fix deleting oauth client
--   ([#6815](https://github.com/pixelfed/pixelfed/pull/6815))
-    -   Major Refactor: convert string-based routes to ::class array syntax required by laravel 13+ - #6814
--   ([#6835](https://github.com/pixelfed/pixelfed/pull/6835))
-    -   refactor: migrate to modern Laravel 13+ bootstrap/app.php
-    -   refactor: replace short facade aliases with fully-qualified imports
-    -   refactor: update larascan with best practices for laravel 12+
-    -   fix larascan errors blocking full scans.
--   ([#6856](https://github.com/pixelfed/pixelfed/pull/6856))
-    -   Testing: Refactored the testing environment
-    -   Testing: Added 250+ tests
--   ([#6930](https://github.com/pixelfed/pixelfed/pull/6930))
-    -   added admin:fixProfileCounts command to fix the followers/following/statuses cache count locally and remotely
-    -   added admin:MigrateLocalS3MediaURL command for fixing dead CDN storage paths.
-    -   added status:user status:profile status:post command for diagnostic purposes.
-    -   added SecureMediaFetchService to enhance/harden media downloading from remote servers
+## [v0.12.10 (2026-09-11)](https://github.com/pixelfed/pixelfed/compare/v0.12.10...dev)
+
+-   Change the collation for the hashtags table ([53e5692cf](https://github.com/pixelfed/pixelfed/commit/53e5692cfb5de282d9c541f03868f458e7ce2a6b))
+    -   Changes the collation for the hashtags table to utf8mb4_unicode_520_ci
+    -   when the driver is MySQL or MariaDB. Otherwise the default collation of
+    -   utf8mb4_unicode_ci is used which conflates all characters outside of the
+    -   basic multilingual plane. This meant that any hashtag that is using a
+    -   script not in the BMP ends up matching with any other hashtag with a
+    -   script outside the BMP if it has the same length.
+-   French translation of the site pages ([ca273cff0](https://github.com/pixelfed/pixelfed/commit/ca273cff017565eabe0d04b6449bf2ce0452f10d))
+-   New translations web.php (Chinese Simplified) \[ci skip\] ([f88d0db45](https://github.com/pixelfed/pixelfed/commit/f88d0db4563c772b13ea3d551bdd8033c8e15d7b))
+-   New translations web.php (Occitan) \[ci skip\] ([52a0e4120](https://github.com/pixelfed/pixelfed/commit/52a0e41201a3f589320e8ab101039b4d557b47e9))
+-   New translations web.php (Occitan) \[ci skip\] ([6aee03c9a](https://github.com/pixelfed/pixelfed/commit/6aee03c9a51dbc113fc1854360d1135130495d20))
+-   fix: apply EXIF orientation before resizing portrait images ([4f13ebfe3](https://github.com/pixelfed/pixelfed/commit/4f13ebfe3f34ad17742abd0f27dfe2202a3395c8))
+    -   Smartphone photos stored in landscape orientation with an EXIF rotation
+    -   tag were being saved to S3 in the wrong orientation. Image.php read the
+    -   raw pixel dimensions without first applying the EXIF tag, so portrait
+    -   photos (e.g. 4032×3024 with Orientation=6) were classified and resized
+    -   as landscape (1920×1080).
+    -   Calling orient() immediately after read() physically rotates the image
+    -   to match its EXIF orientation tag before any dimension checks or
+    -   scaling. This ensures portrait photos remain portrait after processing.
+    -   Intervention Image v3 reference:
+    -   https://image.intervention.io/v3/modifying/orientation
+-   New translations web.php (Portuguese, Brazilian) ([b7ff17d3d](https://github.com/pixelfed/pixelfed/commit/b7ff17d3dc596f2d72601e42ba70cae7c9bd8ff0))
+    -   \[ci skip\]
+    -   \[ci skip\]
+-   feat: Spanish translation ([7afc700f6](https://github.com/pixelfed/pixelfed/commit/7afc700f64934f6650e901f8877cabbd5d4f374c))
+-   feat: Spanish translation ([354afc79c](https://github.com/pixelfed/pixelfed/commit/354afc79cba3330bd41bf5cf04e5584ee6c6bcf1))
+-   Fix videos never reaching cloud storage by downscaling in Blurhash ([ef56880a7](https://github.com/pixelfed/pixelfed/commit/ef56880a74a87cc5717f74971bfb52b6e010723b))
+    -   Blurhash::generate() allocates one PHP array per pixel of the source. At
+    -   roughly 255 bytes per pixel (measured: 224 MB peak for a 720x1280 frame) a
+    -   1920x1080 frame approaches half a gigabyte.
+    -   Image thumbnails survive this because they are capped at 640x640 in
+    -   Image::\_\_construct() _and_ run under that constructor's
+    -   ini_set('memory_limit', '1024M'). Video thumbnails get neither: FFmpeg saves
+    -   them at the source video's resolution, and VideoThumbnail never raises the
+    -   limit. So a video whose frame is 1080p or larger exhausts memory_limit.
+    -   That is a PHP fatal, not an \\Exception, which has three consequences:
+    -   the catch block in VideoThumbnail::handle() does not catch it
+    -   the job never lands in failed_jobs, so nothing reports a problem
+    -   MediaStoragePipeline::dispatch() on the last line of handle() never runs
+    -   The video therefore stays on local disk permanently while images beside it
+    -   replicate normally. Reported in #2652 (2021-02-13) and diagnosed correctly in
+    -   that thread on 2021-11-04.
+    -   Two changes:
+    -   1. Blurhash::generate() downscales to 128px on the long edge before sampling.
+    -   The result is a 4x4-component DCT, so full-resolution sampling adds
+    -   essentially nothing: measured against the full-resolution hash, mean
+    -   per-channel deviation of the decoded 24x24 preview is ~7.5/255 at a 32px
+    -   sample, ~4.5/255 at 64px, ~2.5/255 at 128px, and no better at 256px. Peak
+    -   memory for the frame above drops from 224 MB to 6 MB.
+    -   This removes the ceiling for every caller rather than moving it, which is
+    -   all that raising memory_limit would have done. Existing stored hashes are
+    -   not recomputed, so nothing already published changes appearance.
+    -   2. VideoThumbnail wraps the blurhash in its own try/catch, so a decorative
+    -   step can no longer skip the replication dispatch. Change 1 covers the
+    -   fatal; this covers any ordinary exception.
+    -   Verified on a live instance with S3 cloud storage: a 1920x1080 video that
+    -   previously stranded now generates a blurhash, uploads original and thumbnail
+    -   to the bucket, sets cdn_url/thumbnail_url/replicated_at, and removes the local
+    -   copies. Existing images re-hash to visually identical previews.
+-   Update Kernel.php ([3800612fd](https://github.com/pixelfed/pixelfed/commit/3800612fdfc9a48a4327c0421facb2589a83617e))
+-   Update allowed routes for restricted access middleware ([f6f9d5368](https://github.com/pixelfed/pixelfed/commit/f6f9d5368cb30e5117d4f1ff4eb6126de0595b47))
+-   Create RestrictedAccessMiddlewareTest.php ([508b57337](https://github.com/pixelfed/pixelfed/commit/508b5733715e5a54100f287c45c3b1cd75af39ae))
+-   Refactor admin notification logic in pipeline ([ceba5af03](https://github.com/pixelfed/pixelfed/commit/ceba5af03f6befb31a5e896b2c69935bff4dc62f))
+-   Update CuratedOnboardingNotifyAdminNewApplicationPipeline.php ([a8bbbcd0e](https://github.com/pixelfed/pixelfed/commit/a8bbbcd0ee28c8e82a8b6af6e1d303254921800a))
+-   Create CuratedOnboardingNotifyAdminTest.php ([da0805c45](https://github.com/pixelfed/pixelfed/commit/da0805c455dcb5b9bbe7fe611432d28969794497))
+-   Update auth.php ([d9e55199f](https://github.com/pixelfed/pixelfed/commit/d9e55199f51d4af5c8aeee1e668afbf58f3b6cff))
+-   Replace jenssegers/agent with matomo/device-detector ([651f0de74](https://github.com/pixelfed/pixelfed/commit/651f0de74faf414f56c6d3297e10636e82479cd0))
+    -   Remove unmaintained jenssegers/agent package (no releases since 2021)
+    -   Add matomo/device-detector v6.5 as actively maintained replacement
+    -   Create App\\Services\\UserAgentService wrapper for drop-in compatibility
+    -   Update UserDevice model and ApiV1Dot1Controller to use new service
+-   Fix PSR-4 autoload: rename Webfinger.php to WebFinger.php ([47e280b90](https://github.com/pixelfed/pixelfed/commit/47e280b90dd2b02846aa88d209b5e5cb6b65d29b))
+    -   The class is App\\Rules\\WebFinger but the file was named Webfinger.php,
+    -   causing a PSR-4 compliance warning during autoload generation.
+-   Apply Pint formatting to tests/ ([de3375a9f](https://github.com/pixelfed/pixelfed/commit/de3375a9f9f7c334c7c81bba20522733d5c6566c))
+-   Apply Pint formatting to resources/ ([e8d6a48cd](https://github.com/pixelfed/pixelfed/commit/e8d6a48cddea439c8c664d4308d3c4843552f46d))
+-   Apply Pint formatting to bootstrap/ ([3b0fd708c](https://github.com/pixelfed/pixelfed/commit/3b0fd708c8814dc848abafd17f46d12800c001c5))
+-   Apply Pint formatting to public/ ([de965d410](https://github.com/pixelfed/pixelfed/commit/de965d41065faf1774974b72b8c5dd83e29f2823))
+-   Adopt short array syntax ([4c7780944](https://github.com/pixelfed/pixelfed/commit/4c77809444db6e6330db07e664aa49510b9ea250))
+    -   Since PHP 5.4 the short array syntax `\[\]` may be used instead of `array()`.
+-   Convert string references to `::class` ([19880c2ff](https://github.com/pixelfed/pixelfed/commit/19880c2ffb54899f90d000a91a85b393ebb23da7))
+    -   PHP 5.5.9 adds the new static `class` property which provides the fully qualified class name. This is preferred over using strings for class names since the `class` property references are checked by PHP.
+-   Create pint.json ([3950ace9a](https://github.com/pixelfed/pixelfed/commit/3950ace9acc7a640baf0ae7730708ceef3af3a51))
+-   Add linting scripts to composer.json ([64eb52596](https://github.com/pixelfed/pixelfed/commit/64eb52596bb80396556ced54ee60bc7e3b550ecf))
+-   Fix first follower/following record excluded from API responses ([396cf2d86](https://github.com/pixelfed/pixelfed/commit/396cf2d86164406059372840c6bc14ad306b35dd))
+    -   Fixes #6695
+    -   When no pagination params are provided, the default min_id was set to 1
+    -   and the query used 'id > 1', which excluded the very first follower row
+    -   (id=1) on fresh instances.
+    -   Changed default min_id from 1 to 0 and switched the direction check from
+    -   truthy evaluation to !== null, so the query becomes 'id > 0' which
+    -   correctly includes all records.
+-   Show detailed upload error messages instead of generic error ([5eda13081](https://github.com/pixelfed/pixelfed/commit/5eda1308171368e3ef642e78c9e6e2fd6c6e0c4c))
+    -   Fixes #6657
+    -   When media uploads fail with a 422 validation error (e.g. file too large),
+    -   the error dialog now shows the actual validation message including the
+    -   filename, instead of the generic 'An unexpected error occurred.'
+    -   Example: 'DSCF0273.JPG: The file may not be greater than 15000 kilobytes'
+    -   Also improved the default error case to surface server-provided messages
+    -   when available. Applied to both ComposeModal and ComposeClassic components.
+-   Fix OAuth scope bypass on remove_from_followers endpoint ([822e9c98c](https://github.com/pixelfed/pixelfed/commit/822e9c98cb67be107ade2cfa4fd214ab2bf298a3))
+    -   Fixes #6643
+    -   The POST /api/v1/accounts/{id}/remove_from_followers endpoint was missing
+    -   the token existence check (! $request->user()->token()). While the
+    -   tokenCan('follow') scope check was already present, the missing token
+    -   guard meant unauthenticated token-less requests could potentially bypass
+    -   the scope enforcement.
+    -   Added the standard guard pattern consistent with accountFollowById and
+    -   accountUnfollowById endpoints.
+    -   Also adds tests verifying:
+    -   Read-only tokens are denied (403)
+    -   Follow-scoped tokens succeed (200)
+    -   Unauthenticated requests are denied (403)
+-   Delete tests/Feature/Api/RemoveFollowerScopeTest.php ([906e3514c](https://github.com/pixelfed/pixelfed/commit/906e3514c69e955289b3b5e7ab34649cf852fdcc))
+-   Fix OAuth client secret not displayed after creation ([655d71ba5](https://github.com/pixelfed/pixelfed/commit/655d71ba5ce1dcc5a94bd03f345515eef1f68040))
+    -   Fixes #6630 (partial — client secret issue)
+    -   In Passport v13, client secrets are hashed at the model level and only
+    -   available as plain_secret on the response from the creation endpoint.
+    -   The previous code immediately re-fetched the client list after creation,
+    -   losing the plain secret since it's not stored or returned on GET.
+    -   Changes:
+    -   Capture plain_secret from the POST response
+    -   Show a dedicated modal with the client ID and secret after creation
+    -   Warn users to copy the secret immediately (it won't be shown again)
+    -   Add a Copy button for convenience
+    -   Show 'Hidden (only shown at creation)' in the table for existing clients
+-   Handle PAT creation gracefully when not configured ([1ab677a52](https://github.com/pixelfed/pixelfed/commit/1ab677a526eafb65c4569e5d9a27245f27780293))
+    -   Fixes #6630 (partial — PAT 500 error)
+    -   Previously, POST /oauth/personal-access-tokens would throw an unhandled
+    -   RuntimeException (HTTP 500) when:
+    -   OAUTH_PAT_ENABLED is false (the default), or
+    -   No personal access client exists in the database
+    -   Now the endpoint:
+    -   1. Returns 403 with a clear message if PAT is disabled in config
+    -   2. Catches RuntimeException from the token factory and returns 500
+    -   with an actionable error message instead of a stack trace
+-   Prevent deletion of personal access OAuth client ([53759e3ad](https://github.com/pixelfed/pixelfed/commit/53759e3ad64d2492893e503ae604b8d44592dd92))
+    -   Fixes #6630 (partial — deletion causing broken PAT)
+    -   If a user deletes the OAuth client that serves as the personal access
+    -   client, all PAT creation breaks for the entire instance with a 500 error.
+    -   Changes:
+    -   Add custom OAuthClientController@destroy that checks if the client
+    -   has the personal_access grant type before allowing deletion
+    -   Returns 403 with a clear error message if deletion is blocked
+    -   Add confirmation dialog before client deletion in the frontend
+    -   Add error handling to show server error messages to the user
+    -   This prevents accidental destruction of the PAT infrastructure.
+-   Install Larastan for static analysis ([9a9726af7](https://github.com/pixelfed/pixelfed/commit/9a9726af7c6edd745df6d86cd95c5d20afc7b86b))
+    -   Add larastan/larastan v3.10 (dev dependency)
+    -   Configure phpstan.neon at level 0 with Laravel extension
+    -   Generate baseline for existing errors (711 items)
+    -   Exclude files with missing class references
+    -   Fix one non-ignorable return type error in BearerTokenResponse
+    -   Add composer analyse script
+    -   Usage: composer analyse
+-   Create php-larastan.yml ([c840d6bd7](https://github.com/pixelfed/pixelfed/commit/c840d6bd713e36fa04703240e16e5449d7337232))
+-   polish ([0ce89e9f9](https://github.com/pixelfed/pixelfed/commit/0ce89e9f958e1686741145eaac4fce7f5e8a825b))
+-   Delete app/Comment.php ([f1ca0340e](https://github.com/pixelfed/pixelfed/commit/f1ca0340e7cf13c3a466bde1abc4fa17c9eb8a7d))
+-   Use Mastodon username convention for OIDC ([9d0b5949e](https://github.com/pixelfed/pixelfed/commit/9d0b5949e969911fa8bd84baeb7e01a41443ec10))
+-   Update Inbox, fixes #6784 ([ce64d0961](https://github.com/pixelfed/pixelfed/commit/ce64d0961dbe7c75f7a6c2f42c38a6c73be2afb5))
+-   Fix validateUrl() ([30085e870](https://github.com/pixelfed/pixelfed/commit/30085e8708c7ebfc64354595f61ce330a1fa7ad2))
+-   Add GitHub Actions workflow for Docker image build ([f6baba9b1](https://github.com/pixelfed/pixelfed/commit/f6baba9b132c1e15924627b1ed9d1954ccf214ea))
+-   Add GitHub Actions workflow for Docker tagged release ([8cecf38cf](https://github.com/pixelfed/pixelfed/commit/8cecf38cfe77b97786a70f273341a6a8bed1a165))
+-   Update docker-push.yml ([aa72592ac](https://github.com/pixelfed/pixelfed/commit/aa72592ac0873e240a2fae9dd66cf064b8d8355d))
+-   Add GitHub Actions workflow for PHP Pint linting ([e8b18f669](https://github.com/pixelfed/pixelfed/commit/e8b18f66901b1762f2018b980b7ec7dc716262ef))
+-   Add 'unstable' branch to workflow and update PHP version ([699b8af2d](https://github.com/pixelfed/pixelfed/commit/699b8af2d5d534f7665bcdec4fae13f8fecaa3d8))
+-   Fix ApiV1Controller, ensure follow notifications have an account ([e1235dfd7](https://github.com/pixelfed/pixelfed/commit/e1235dfd75f1eb4e853fa751fe178d7c3330c5e3))
+-   Lint ([91645faee](https://github.com/pixelfed/pixelfed/commit/91645faeee78ce401f5bc24bc7f4baa8f507b4f4))
+-   Update changelog ([8a728fc0d](https://github.com/pixelfed/pixelfed/commit/8a728fc0dde1875132c5e31619872268cbfc5f86))
+-   Update Docker workflow to include unstable branch ([e53917f04](https://github.com/pixelfed/pixelfed/commit/e53917f047b8fe1de72180d87e977b64b934aa56))
+-   Enhance Docker workflow with concurrency and platforms ([8e3a37553](https://github.com/pixelfed/pixelfed/commit/8e3a375534cc15cf1f227cdbacd8058fef51fbd4))
+-   Create docker-ghcr-cleanup.yml ([d4d74a96f](https://github.com/pixelfed/pixelfed/commit/d4d74a96f386ac2d7ba29ead817b4cdd9cd9740b))
+-   Rename workflow for GHCR container image cleanup ([7bf4e64d9](https://github.com/pixelfed/pixelfed/commit/7bf4e64d957b5cda455fd9a8a564974535f4e449))
+-   Upgrade images to v4 ([552a55c2d](https://github.com/pixelfed/pixelfed/commit/552a55c2d2322d3dd8377c921a2ae29a774afcfa))
+-   Update .gitignore ([6798175a8](https://github.com/pixelfed/pixelfed/commit/6798175a80d5cd824c919135738ec1ce66d346e7))
+-   Add IMAGE_DRIVER option to .env.example ([ec2b758bc](https://github.com/pixelfed/pixelfed/commit/ec2b758bc5e0dbb9dab27f5f147d352235fdb30c))
+-   Update .env.docker.example ([8b9d1c12a](https://github.com/pixelfed/pixelfed/commit/8b9d1c12a5bda68c230652e02d8cea1d81732d4d))
+-   Update .env.testing ([6eec737b7](https://github.com/pixelfed/pixelfed/commit/6eec737b78b03669ee8963164b658df4c3c801cc))
+-   Apply pint formatting to resources/ ([78b2bc323](https://github.com/pixelfed/pixelfed/commit/78b2bc3235a62d4f1f0ea2062d20c168e75b8b08))
+-   Update and rename laravel.yml to php-laravel-tests.yml ([580042f36](https://github.com/pixelfed/pixelfed/commit/580042f36d57415c827a610ad3f8d7c2d4d56afe))
+-   Update CHANGELOG.md ([0d4269017](https://github.com/pixelfed/pixelfed/commit/0d426901792cd80dbf440fa7773b1b6299f3625a))
+-   Create SeedDevUsers.php ([16b5ffff1](https://github.com/pixelfed/pixelfed/commit/16b5ffff102a0a1c53ee32ed4f4f85ceddfef4df))
+-   Update compiled assets ([6235594cf](https://github.com/pixelfed/pixelfed/commit/6235594cf526c43f8bc928fe88c859b7fea34abd))
+-   Update CHANGELOG.md ([b7f70cae7](https://github.com/pixelfed/pixelfed/commit/b7f70cae7ee6e5735c60564f7ed624a1a6537383))
+-   Update Clients.vue ([80271c900](https://github.com/pixelfed/pixelfed/commit/80271c9002a24d7026df7b389680c69239422751))
+-   Add entry for fixing oauth client deletion ([63d28a486](https://github.com/pixelfed/pixelfed/commit/63d28a4865afe47c3e1a1c714a5ace731cad5e4c))
+-   Update compiled assets ([004ce3225](https://github.com/pixelfed/pixelfed/commit/004ce3225e3cf4274f13908aef6ff672acc43f91))
+-   fix: add larastan/larastan to composer.lock to fix docker build ([2dbee8599](https://github.com/pixelfed/pixelfed/commit/2dbee8599da2844b0348dc9b630882f0dbc6c1aa))
+-   Update composer ([e4033b05b](https://github.com/pixelfed/pixelfed/commit/e4033b05bd6bdc31879cac56321f5dbfbad042bf))
+-   Update AccountService ([59f57b110](https://github.com/pixelfed/pixelfed/commit/59f57b11072a06689b4d2f6373c22b433de92594))
+-   Update CHANGELOG.md ([e69910e2b](https://github.com/pixelfed/pixelfed/commit/e69910e2b4ded537e56d312ab84eeca636eca85a))
+-   Update ApiV1Controller, add show_atom support to update_credentials endpoint ([4e2e49f84](https://github.com/pixelfed/pixelfed/commit/4e2e49f8435c143e79566a1185775a76f29bcada))
+-   Update CHANGELOG.md ([0a2b97fb9](https://github.com/pixelfed/pixelfed/commit/0a2b97fb987e164d80137e77c509a8832f2f433a))
+-   Update ApiV1Controller, add is_suggestable to update_credentials endpoint ([7937d91c3](https://github.com/pixelfed/pixelfed/commit/7937d91c3761ed3b0c14ff124723ba25ea557bf1))
+-   refactor: replace deprecated CheckForMaintenanceMode with PreventRequestsDuringMaintenance ([f363715ad](https://github.com/pixelfed/pixelfed/commit/f363715ad8e317ff118c9e65d45f039cfc7dd299))
+    -   CheckForMaintenanceMode was deprecated in Laravel 8 and will be removed in
+    -   Laravel 13. PreventRequestsDuringMaintenance is the modern replacement with
+    -   support for secret bypass tokens and pre-rendered maintenance views.
+-   Update changelog ([bb33696cc](https://github.com/pixelfed/pixelfed/commit/bb33696cc102951ceeec05d14656625201cee6da))
+-   refactor: rename $routeMiddleware to $middlewareAliases ([d2bd73c27](https://github.com/pixelfed/pixelfed/commit/d2bd73c27e9ac194769da574c805187a60e05a00))
+    -   The $routeMiddleware property was renamed to $middlewareAliases in Laravel 11.
+    -   The old name still works in 12 via backwards compatibility but is on the
+    -   deprecation path for removal in Laravel 13.
+-   Fix typo ([8f1e47540](https://github.com/pixelfed/pixelfed/commit/8f1e47540766e444dc639d89cdddc9de895995d8))
+-   refactor: convert string-based routes to ::class array syntax ([28927f6f6](https://github.com/pixelfed/pixelfed/commit/28927f6f661f17040d08b741ad4fec5a3ad0f43f))
+    -   Replace all 'Controller@method' string references with
+    -   \[Controller::class, 'method'\] array syntax across all route files.
+    -   Remove the $namespace property and ->namespace() calls from
+    -   RouteServiceProvider.
+    -   This is required for Laravel 13 compatibility where string-based
+    -   controller routing and automatic namespace prefixing will be removed.
+    -   742 route references converted across 5 route files.
+-   refactor: replace deprecated laravel/helpers with native alternatives ([edb4368b0](https://github.com/pixelfed/pixelfed/commit/edb4368b08008c977ea618c1dff96c0e61a61ceb))
+    -   Replace all deprecated helper function calls:
+    -   str_slug() → Str::slug()
+    -   starts_with() → str_starts_with()
+    -   ends_with() → str_ends_with()
+    -   array_first() → Arr::first()
+    -   array_last() → Arr::last()
+    -   array_flatten() → Arr::flatten()
+    -   Remove laravel/helpers package from composer.json as it is no longer
+    -   needed and will not be maintained for Laravel 13.
+-   refactor: use ::class syntax in EventServiceProvider ([741bc995c](https://github.com/pixelfed/pixelfed/commit/741bc995ca1133bfdf287b15a62fda56c9b36a5c))
+    -   Replace string-based event class references with proper ::class imports
+    -   for better IDE support and static analysis compatibility.
+-   fix: resolve PDO::MYSQL_ATTR_SSL_CA deprecation on PHP 8.5 ([5041e1805](https://github.com/pixelfed/pixelfed/commit/5041e180500c8566da4ea86fb5c6a30a7e6c3555))
+    -   Use Pdo\\Mysql::ATTR_SSL_CA when available (PHP 8.5+), falling back to
+    -   the legacy PDO::MYSQL_ATTR_SSL_CA constant for older PHP versions.
+    -   This eliminates the deprecation warning during Docker builds and runtime.
+-   Update CHANGELOG.md ([3bf3e1274](https://github.com/pixelfed/pixelfed/commit/3bf3e1274835e68352a834a4d2c8550e1b5454bf))
+-   refactor: replace deprecated laravel/helpers with native alternatives ([1bb05fafa](https://github.com/pixelfed/pixelfed/commit/1bb05fafa9f2027994de7552ebe3ecb7c2cac41b))
+    -   Replace all deprecated helper function calls:
+    -   str_slug() → Str::slug()
+    -   starts_with() → str_starts_with()
+    -   ends_with() → str_ends_with()
+    -   array_first() → Arr::first()
+    -   array_last() → Arr::last()
+    -   array_flatten() → Arr::flatten()
+    -   Remove laravel/helpers package from composer.json as it is no longer
+    -   needed and will not be maintained for Laravel 13.
+-   refactor: replace deprecated str_random() with Str::random() ([98267eb26](https://github.com/pixelfed/pixelfed/commit/98267eb26f738b5cd81879a7cb5bf80981391a25))
+    -   str_random() is a deprecated helper from laravel/helpers that was
+    -   missed in the initial helpers removal. Replace all 18 call sites
+    -   with the modern Str::random() equivalent.
+-   refactor: replace str_limit() with Str::limit() ([faa216b32](https://github.com/pixelfed/pixelfed/commit/faa216b32903ef070fffab8a2aca9852958ee5cf))
+    -   Replace remaining 3 deprecated str_limit() calls with Str::limit().
+    -   No other deprecated str\_\* helpers remain in the codebase.
+-   Update ContextMenu, restore Edit button ([b761107c7](https://github.com/pixelfed/pixelfed/commit/b761107c71bcab41a8f0964392c4833f74c1b85e))
+-   fix: replace str_random/str_limit/str_slug in Blade templates and tests ([30db57448](https://github.com/pixelfed/pixelfed/commit/30db57448f96c764d1a0cacb776b4ce003ee62d8))
+    -   These deprecated helpers will throw 'undefined function' errors at
+    -   runtime since laravel/helpers was removed. Replace with Str::random(),
+    -   Str::limit(), and Str::slug() respectively.
+-   fix: remove bootstrap/cache bind mount from docker-compose ([f5d166a93](https://github.com/pixelfed/pixelfed/commit/f5d166a933731a728060d02dd3e3bc8277dc75ca))
+    -   The bootstrap/cache volume mount causes stale service provider references
+    -   to persist across rebuilds. When a package is removed, the host's cached
+    -   packages.php/services.php still reference the old provider, causing
+    -   'Class not found' errors at container startup.
+    -   The AUTORUN*LARAVEL*\*\_CACHE env vars already handle cache regeneration
+    -   on each container start, making the bind mount unnecessary.
+-   refactor: migrate to modern bootstrap/app.php architecture ([8e41f6fdf](https://github.com/pixelfed/pixelfed/commit/8e41f6fdf8538f805a1c54c29783cbf0bc3b7adb))
+    -   Consolidate the legacy Laravel 5-era kernel/handler architecture into
+    -   the modern Application::configure() pattern introduced in Laravel 11:
+    -   HTTP middleware stack → bootstrap/app.php withMiddleware()
+    -   Console schedule → bootstrap/app.php withSchedule()
+    -   Exception handling → bootstrap/app.php withExceptions()
+    -   Route registration → bootstrap/app.php withRouting()
+    -   Service providers → bootstrap/providers.php
+    -   Deleted files:
+    -   app/Http/Kernel.php
+    -   app/Console/Kernel.php
+    -   app/Exceptions/Handler.php
+    -   app/Providers/RouteServiceProvider.php
+    -   app/Providers/BroadcastServiceProvider.php
+    -   Removed framework providers from config/app.php (auto-registered by
+    -   Application::configure). Package providers use auto-discovery.
+    -   All 107 tests pass. Schedule, routes, and middleware verified working.
+-   Update AccountService.php ([443f29acc](https://github.com/pixelfed/pixelfed/commit/443f29acc9277b65e732af6b30278fff456b2005))
+-   refactor: remove redundant aliases from config/app.php ([5693b1581](https://github.com/pixelfed/pixelfed/commit/5693b1581f253f2afdc2ea0d33c5e64faac5b8bb))
+    -   Remove auto-discovered package aliases (Purify, FFMpeg, Captcha) and
+    -   the unused Eloquent alias. These are registered automatically via
+    -   package auto-discovery.
+    -   Framework facade aliases must remain until all 344+ short-import
+    -   usages (e.g. 'use Cache;') are migrated to fully-qualified imports.
+-   refactor: remove thin middleware wrappers, use framework classes directly ([ee7d7124d](https://github.com/pixelfed/pixelfed/commit/ee7d7124d049bd2b9b86a26e6e61e29645aa564b))
+    -   Delete 4 middleware wrapper classes that added no custom logic:
+    -   EncryptCookies (empty $except)
+    -   TrimStrings ($except matches framework default)
+    -   VerifyCsrfToken (exceptions moved to validateCsrfTokens() in bootstrap)
+    -   TrustProxies (headers matched framework default)
+    -   CSRF exceptions (/api/v1/\*, oauth/token) are now configured via
+    -   $middleware->validateCsrfTokens(except: \[...\]) in bootstrap/app.php.
+    -   All 107 tests pass.
+-   Add view_oidc_callback_ensure_valid_username unit test ([22ff6810b](https://github.com/pixelfed/pixelfed/commit/22ff6810b9d33507c53451f28b95135b9a50eb0e))
+-   refactor: replace short facade aliases with fully-qualified imports ([c807a8524](https://github.com/pixelfed/pixelfed/commit/c807a8524c22f53731d0c45ebcfde88041663c4e))
+    -   Convert all 273 short facade alias imports (e.g. 'use Cache;') to their
+    -   fully-qualified class names (e.g. 'use Illuminate\\Support\\Facades\\Cache;')
+    -   across 193 files.
+    -   This resolves 643 PHPStan 'class.notFound' errors caused by the static
+    -   analyzer being unable to resolve global aliases, and aligns with modern
+    -   Laravel conventions. It also unblocks removing the aliases array from
+    -   config/app.php in a future change.
+    -   All 107 tests pass.
+-   Update Extractor.php ([899e360b4](https://github.com/pixelfed/pixelfed/commit/899e360b480ddeecd0fe7ef7ef65709cb382637f))
+-   Delete tests/database.sqlite ([e8a13300e](https://github.com/pixelfed/pixelfed/commit/e8a13300e43fb90a7a56f8323a2959efb5a838a6))
+-   Delete tests/database.sqlite ([e3279b428](https://github.com/pixelfed/pixelfed/commit/e3279b4286d1afa88a429a697161f3c499ebb8f6))
+-   Update CHANGELOG.md ([3170c82a7](https://github.com/pixelfed/pixelfed/commit/3170c82a76fbe9bf39e9383528f9c9a1e7dc2658))
+-   Update docker-tag.yml ([de656d12d](https://github.com/pixelfed/pixelfed/commit/de656d12dcd27941f5a31c62f1f5ffccee05c37a))
+-   Update docker-push.yml ([28a56d047](https://github.com/pixelfed/pixelfed/commit/28a56d047e34bea0a54971e71222d680c8300329))
+-   Delete phpstan-baseline.neon ([412ac5fd9](https://github.com/pixelfed/pixelfed/commit/412ac5fd9782613a505bebc286ceb5c3c22a8496))
+-   Update phpstan.neon ([afbbd9ea0](https://github.com/pixelfed/pixelfed/commit/afbbd9ea01ede7acaa5425736286a528f17d6b00))
+-   refactor: update phpstan.neon with Larastan 3.x best practices ([890dc5534](https://github.com/pixelfed/pixelfed/commit/890dc55342785206d077aaeaaf7bdc4c87c8dd90))
+    -   Add databaseMigrationsPath for model property type inference
+    -   Add configDirectories for config key validation
+    -   Add parseModelCastsMethod to read casts() methods
+    -   Add enableMigrationCache for faster repeated analysis
+    -   Ignore intentional 'new static()' pattern (Autolink has subclass)
+    -   Remove stale baseline reference and outdated comments
+-   fix: add missing FeedUnfollowPipeline import ([58efefb87](https://github.com/pixelfed/pixelfed/commit/58efefb8783d2699fc613008130610c5629f924f))
+    -   Add missing use statement for FeedUnfollowPipeline in PrivacySettings
+    -   and FollowerObserver. These caused PHPStan internal errors blocking
+    -   full analysis.
+-   Update phpstan.neon ([d8a122a9c](https://github.com/pixelfed/pixelfed/commit/d8a122a9cd5680cb844db241179c52a1c6f54e1a))
+-   Update CHANGELOG.md ([eeda06cee](https://github.com/pixelfed/pixelfed/commit/eeda06cee84f8b6fd4d0e1564a700473700108b3))
+    -   Updated changelog with recent refactor details and fixes.
+-   fix: add missing property declarations (phpstan property.notFound) ([43040a227](https://github.com/pixelfed/pixelfed/commit/43040a227547d5d548deda864cbcd04ec8f16baf))
+    -   Add $fractal property and initialization to NewPublicPost event
+    -   Add $mastodon and $pleroma property declarations to AudienceScopeTest
+-   fix: resolve undefined variable bugs (phpstan variable.undefined) ([ccd75dd90](https://github.com/pixelfed/pixelfed/commit/ccd75dd9031a0208b46926c8e61d4185a4b8bc9a))
+    -   AdminReportController: fix closure param name and remove reference to
+    -   undefined $meta variable
+    -   GroupsPostController: replace $status with $gp (the actual GroupPost
+    -   variable in scope)
+    -   PortfolioController: replace undefined $metadata with null
+    -   DeleteWorker: remove Cache::set() call with undefined $key
+-   fix: use query methods instead of collection methods (phpstan noUnnecessaryCollectionCall) ([49b85e9f2](https://github.com/pixelfed/pixelfed/commit/49b85e9f2250c25caeeaab6591097631a79da275))
+    -   PollService: pluck()->first() → value()
+    -   StoryService: groupBy()->pluck()->count() → distinct()->count()
+    -   Inbox: find($objects)->count() → whereIn('id', $objects)->count()
+-   fix: remove call to non-existent PollService::storyPoll() ([7bde84b23](https://github.com/pixelfed/pixelfed/commit/7bde84b23c841bd6386eae49d9211002fc37d5d8))
+    -   The storyPoll() method was never implemented on PollService.
+    -   Replace with null to fix phpstan staticMethod.notFound.
+    -   Note: Passport::personalAccessClientId() is also flagged but deferred
+    -   to a separate PAT refactoring effort.
+-   fix: add missing use imports to resolve phpstan class.notFound errors ([e7ba43e2e](https://github.com/pixelfed/pixelfed/commit/e7ba43e2e1ea56243ecf2d4dfffce2d64f2b2317))
+    -   Add missing imports for Log, Cache, DB, FollowerService, StatusService,
+    -   LikeService, ReblogService, UserFilterService, AdminProfile, OauthClient,
+    -   and fix StatusTimelineTransformer reference (class didn't exist, replaced
+    -   with StatusTransformer).
+-   Update StoryService.php ([942e15c65](https://github.com/pixelfed/pixelfed/commit/942e15c652b8b5c6f71e98b4514374566d19ca28))
+-   Update TimelineController.php ([58a34056c](https://github.com/pixelfed/pixelfed/commit/58a34056ca60d765df0cda1fc482338540664ab9))
+-   Update StoryService.php ([4bb9edcb2](https://github.com/pixelfed/pixelfed/commit/4bb9edcb2283df18088f9a3031f1bb14a2b603d3))
+-   fix: replace backslash-prefixed facade calls with imported references ([7c964f3b4](https://github.com/pixelfed/pixelfed/commit/7c964f3b4f4a0c18266041848a0d75adf161f771))
+    -   Replace \\Cache::, \\Log::, \\DB:: calls with their imported facade
+    -   equivalents. The backslash-prefix relies on global aliases which
+    -   PHPStan cannot resolve, causing class.notFound errors.
+-   fix: resolve undefined $status variable in GroupsPostController::deletePost ([e7ef58969](https://github.com/pixelfed/pixelfed/commit/e7ef58969cd138346843b390d1010d7843086089))
+    -   Replace all references to non-existent $status with $gp (the GroupPost
+    -   instance already in scope). This was a bug where the closure variable
+    -   name was changed but references inside the method body were not updated.
+-   fix: add return type declarations to Eloquent relation methods ([f2159197e](https://github.com/pixelfed/pixelfed/commit/f2159197e8313d4575f4a82607d170c64677eeb2))
+    -   Larastan 3.x requires explicit return types on relation methods to
+    -   verify relation existence when using with(), has(), etc. This adds
+    -   the appropriate return type declarations to all relation methods
+    -   flagged by the larastan.relationExistence rule.
+    -   Models fixed:
+    -   Profile (avatar, statuses)
+    -   User (profile)
+    -   Status (profile, media, hashtags)
+    -   DirectMessage (status, author, recipient)
+    -   Report (reporter, status, reportedUser)
+    -   Like (actor, status)
+    -   Media (status)
+    -   Notification (item)
+    -   HashtagFollow (hashtag)
+    -   OauthClient (user)
+    -   Story (profile)
+    -   StatusHashtag (status, hashtag, profile, media)
+    -   AccountInterstitial (user)
+    -   Hashtag (posts)
+    -   CustomFilter (keywords)
+    -   CustomFilterKeyword (customFilter)
+    -   AdminShadowFilter (profile)
+    -   ImportPost (status)
+-   fix: replace Auth facade with $request->user() in request-scoped classes ([0939f495b](https://github.com/pixelfed/pixelfed/commit/0939f495bb0dee5122c16205b49a277da22cdd2a))
+    -   Replace Auth::user() with $request->user() and Auth::check() with
+    -   $request->user() !== null (or ! $request->user()) across all
+    -   controllers and middleware that have access to the request object.
+    -   This resolves 99 larastan.noAuthFacadeInRequestScope errors and
+    -   improves Octane compatibility.
+    -   For protected helper methods without $request in scope, uses the
+    -   request() helper instead.
+    -   Methods that previously lacked a Request parameter but used Auth
+    -   facade now accept Request $request via Laravel's auto-injection.
+-   Revert "Merge pull request #6851 from pixelfed/fix/phpstan-auth-request-scope-2" ([161773490](https://github.com/pixelfed/pixelfed/commit/1617734907c38dd5db60f8526bc3d8a341ee4e62))
+    -   This reverts commit ce4baf69958cc36d6b6ee3f710849b6e06223661, reversing
+    -   changes made to 9235cb979affb6e9fd7ddbb74ace945da1ea2589.
+-   fix: replace Auth facade with $request->user() in request-scoped classes ([458150e06](https://github.com/pixelfed/pixelfed/commit/458150e06b024a78ca322fd21e43c0e5cca45a90))
+    -   Replace Auth::user() with $request->user() and Auth::check() with
+    -   $request->user() !== null (or ! $request->user()) across all
+    -   controllers and middleware that have access to the request object.
+    -   This resolves 99 larastan.noAuthFacadeInRequestScope errors and
+    -   improves Octane compatibility.
+    -   For protected helper methods without $request in scope, uses the
+    -   request() helper instead.
+    -   Methods that previously lacked a Request parameter but used Auth
+    -   facade now accept Request $request via Laravel's auto-injection.
+-   fix: use request() helper for methods without Request parameter ([88e0d92ac](https://github.com/pixelfed/pixelfed/commit/88e0d92ac2b8fef2290775133d169cf52301b61f))
+    -   Methods that are registered as route actions without a Request type-hint
+    -   (settings views, export actions) cannot accept Request $request without
+    -   breaking Laravel's route signature reflection. Use the request() helper
+    -   instead to avoid ReflectionFunction TypeError.
+-   fix: convert OAuth routes from legacy array syntax to modern fluent syntax ([76d187edd](https://github.com/pixelfed/pixelfed/commit/76d187edd886469d2b176241d00c3777e654fbc2))
+    -   The old 'uses' => \[Controller::class, 'method'\] array format causes a
+    -   ReflectionFunction TypeError in Laravel 12 when Livewire's
+    -   SupportPageComponents tries to resolve route bindings. The framework's
+    -   RouteSignatureParameters::fromAction() expects a Closure or string,
+    -   not an array.
+    -   Convert all OAuth/Passport routes to the modern fluent syntax:
+    -   Route::post('/path', \[Controller::class, 'method'\])->name('name')
+-   feat: add critical path test suite and fix auth/config issues ([8a2649b3f](https://github.com/pixelfed/pixelfed/commit/8a2649b3ff89c8ee44053425727c82140c60c069))
+    -   Test Infrastructure:
+    -   Modernize phpunit.xml (bootstrap, source block, Laravel 12 env vars)
+    -   Configure tests/Pest.php with pest()->extend(TestCase::class)->in('Feature')
+    -   Add docker-compose.test.yml (Redis for test suite)
+    -   Add composer test/test:quick scripts
+    -   Rename CACHE_DRIVER to CACHE_STORE across config (backwards compatible)
+    -   Update .env.testing for in-memory SQLite + Docker Redis
+    -   Test Coverage (190 tests):
+    -   CriticalRoutes: public routes, auth routes, API endpoints, middleware, schedule
+    -   Auth/LoginTest: login, logout, rate limiting, redirect behavior
+    -   Auth/RegisterTest: registration flow, validation, disabled registration
+    -   Auth/PasswordResetTest: reset request, token validation, password update
+    -   Auth/TwoFactorTest: 2FA checkpoint, setup behind password confirmation
+    -   Auth/PasswordConfirmationTest: sudo mode flow via Laravel password.confirm
+    -   Api/ScopeTest: scope enforcement, public endpoints, admin access
+    -   Bugs Fixed:
+    -   Fix unauthenticated API returning 500 instead of 401 (AuthenticationException
+    -   not handled in custom exception renderer in bootstrap/app.php)
+    -   Replace custom DangerZone middleware with Laravel password.confirm
+    -   Add HasFactory trait to Profile model for test factories
+    -   Bugs Documented (known-bugs group):
+    -   Registration crashes with str_ends_with TypeError (RegisterController:82)
+    -   OAuth routes use legacy array syntax causing ReflectionFunction TypeError
+-   fix: resolve str_ends_with TypeError in RegisterController ([97929f087](https://github.com/pixelfed/pixelfed/commit/97929f0876706b3e2a1130427878735dae4a58d2))
+    -   PHP's str_ends_with() only accepts a string needle, not an array.
+    -   The username validation was passing an array of extensions which
+    -   caused a TypeError on every registration attempt.
+    -   Replace with a loop over a configurable array of disallowed extensions,
+    -   making it easy to add new entries.
+    -   Also updates RegisterTest to properly test the registration flow
+    -   including the RT anti-bot token and age verification fields.
+-   test: expect oauth endpoints to return 200 (will pass after route syntax fix merge) ([ec8a39302](https://github.com/pixelfed/pixelfed/commit/ec8a39302029ea6e7af4dc3d98847be4d18af0a6))
+-   feat: add framework integration tests for Laravel 12→13 upgrade readiness ([4ce28d914](https://github.com/pixelfed/pixelfed/commit/4ce28d91449bdad24f25b12bd4511ab8d037d465))
+    -   Framework tests verify core Laravel integration points:
+    -   ServiceProviderTest: app boot, guard resolution, route loading, config_cache
+    -   RoutingTest: named routes, duplicates, api/oauth prefixes, middleware groups
+    -   EloquentTest: User/Profile/Status factories, relationships, casts, soft deletes
+    -   QueueTest: job dispatch, serialization, middleware, unique IDs
+    -   ConfigTest: config loading, env overrides, auth/cache/queue settings
+    -   MiddlewarePipelineTest: CSRF, auth, throttle, password confirm, 2FA, admin
+    -   Also:
+    -   Add HasFactory trait to Status model
+    -   Fix StatusFactory: remove non-existent 'place' column, add 'rendered' field
+    -   Add Api/AccountTest for account endpoint coverage (254 total tests)
+-   chore: add TODO to replace custom FrameGuard with Laravel built-in security headers ([18c288f88](https://github.com/pixelfed/pixelfed/commit/18c288f88f57be858d8c5adb001bdf0b1c2e5caa))
+-   ci: refactor GitHub Actions with Redis service and best practices ([c7473cd1a](https://github.com/pixelfed/pixelfed/commit/c7473cd1a838a98b545f549d105dc6316dd92886))
+    -   Tests workflow: add Redis service, cache composer deps, test PHP 8.4+8.5,
+    -   generate Passport keys, use vendor/bin/pest directly
+    -   Larastan workflow: cache deps, consistent checkout@v4, memory limit
+    -   Pint workflow: use project's installed Pint (not global), cache deps
+    -   Standardize Redis port to 6379 across CI and local docker-compose
+    -   Remove 'unstable' branch from triggers (unused)
+    -   Remove 'main' branch from static analysis (doesn't exist)
+-   ci: fix action versions (checkout@v7, cache@v6) and add unstable branch ([0ed3e6192](https://github.com/pixelfed/pixelfed/commit/0ed3e6192a735c525f5a32bd00f4b369fb1f07a6))
+-   Update php-larastan.yml ([b2af98788](https://github.com/pixelfed/pixelfed/commit/b2af98788857306ef18b5aba189de08fecdc913e))
+-   Update php-laravel-tests.yml ([2adbb6507](https://github.com/pixelfed/pixelfed/commit/2adbb65079189f3970f3d22bb0172eca5b3eec99))
+-   Rename workflow to PHP - Pint ([0f6ed0d91](https://github.com/pixelfed/pixelfed/commit/0f6ed0d91864a00764c7b9995c481ac802c247ae))
+-   Update CHANGELOG.md ([f6a3df88d](https://github.com/pixelfed/pixelfed/commit/f6a3df88d18cdd6ed6e40c5ccbb0fd1c90c546f5))
+    -   Updated changelog to reflect recent refactors and testing improvements.
+-   Revise CHANGELOG.md for recent updates ([df9943368](https://github.com/pixelfed/pixelfed/commit/df99433689a521f4bb77b7dcd5fb48f92e1f4dd0))
+    -   Updated changelog to reflect recent changes and fixes.
+-   test: add settings, mute/block, and follow tests (278 total) ([891e28280](https://github.com/pixelfed/pixelfed/commit/891e282808975beb3215504b2c773849d7707b26))
+    -   Settings/ProfileUpdateTest: profile name, bio, website validation,
+    -   password change flow with Mail::fake assertion
+    -   Account/MuteBlockTest: mute/unmute, block/unblock, self-protection,
+    -   admin block protection, validation
+    -   Account/FollowTest: follow/unfollow via API, self-follow rejection,
+    -   followers/following list endpoints
+-   test: add status, timeline, federation, and privacy tests (309 total) ([e1f883a41](https://github.com/pixelfed/pixelfed/commit/e1f883a41b9eafbae081c15350a0b8fea761e2c2))
+    -   Api/StatusTest: get/delete statuses, favourite/unfavourite, bookmark,
+    -   status creation validation, ownership checks
+    -   Api/TimelineTest: public/home/hashtag timelines, private exclusion,
+    -   pagination support
+    -   Federation/NodeInfoTest: nodeinfo, webfinger, host-meta endpoints
+    -   Account/PrivacyTest: private profile visibility, blocked user access,
+    -   privacy settings toggle
+-   test: add notification, search, compose, report, and collection tests (332 total) ([0f3820e7b](https://github.com/pixelfed/pixelfed/commit/0f3820e7bfa988091a28874bcb2cb598402d1966))
+    -   Api/NotificationTest: notification isolation, correct user filtering
+    -   Api/SearchTest: v2 search auth, structure, account lookup
+    -   Api/CollectionTest: self/user collections, auth requirement
+    -   Compose/ComposeTest: page access, settings, media validation, autocomplete
+    -   Account/ReportTest: report creation, type validation, auth requirement
+-   test: add admin access and API scope security tests (360 total) ([579a581de](https://github.com/pixelfed/pixelfed/commit/579a581de878c91631b566d9483d623985ab00b5))
+    -   Security/AdminAccessTest: verifies non-admin users are blocked from
+    -   all admin web routes (dashboard, users, reports, settings, instances,
+    -   curated onboarding) and admin API endpoints.
+    -   Security/ApiScopeSecurityTest: verifies read-only tokens cannot write
+    -   (follow, favourite, delete, mute, block), write tokens can read+write,
+    -   cross-user access is denied, and private statuses are protected.
+    -   BUG FOUND: CheckForAnyScope middleware (referenced in v1/admin routes)
+    -   was removed in Passport 13. All /api/v1/admin/\* routes throw
+    -   BindingResolutionException. 6 tests skipped pending fix.
+-   fix: replace removed Passport scope middleware with current classes ([7a96cd2e9](https://github.com/pixelfed/pixelfed/commit/7a96cd2e915290226de9bdbaee874c85bec32c71))
+    -   Laravel Passport 13 renamed:
+    -   CheckScopes → CheckToken (verifies ALL listed scopes)
+    -   CheckForAnyScope → CheckTokenForAnyScope (verifies ANY listed scope)
+    -   The old class names no longer exist, causing BindingResolutionException
+    -   on all /api/v1/admin/\* routes that use the 'scope' or 'scopes' middleware
+    -   aliases.
+-   fix: replace removed Passport scope middleware with current classes ([0eae871e4](https://github.com/pixelfed/pixelfed/commit/0eae871e40a0d1a15fad83c2850752a2cbe174a8))
+    -   Laravel Passport 13 renamed:
+    -   CheckScopes → CheckToken (verifies ALL listed scopes)
+    -   CheckForAnyScope → CheckTokenForAnyScope (verifies ANY listed scope)
+    -   The old class names no longer exist, causing BindingResolutionException
+    -   on all /api/v1/admin/\* routes that use the 'scope' or 'scopes' middleware
+    -   aliases.
+-   test: un-skip Passport scope tests now that middleware is fixed ([9f81a5b42](https://github.com/pixelfed/pixelfed/commit/9f81a5b4259497b49ad54d64beea890229f49d9c))
+    -   All v1 admin route security tests now pass with proper assertions
+    -   after the CheckForAnyScope → CheckTokenForAnyScope fix.
+-   test: add auth scope migration verification tests (390 total, all green) ([918e49136](https://github.com/pixelfed/pixelfed/commit/918e49136a6ec472b6243afe1c5cfe97e2e0368b))
+    -   AuthScope/RequestUserTest: exercises every controller and middleware
+    -   that was refactored from Auth::user()/Auth::check() to $request->user().
+    -   Covers web routes (follow requests, compose, collections, discover,
+    -   profile, status, timeline, newsroom), API routes (verify_credentials,
+    -   timelines, notifications, blocks, mutes, favourites, bookmarks), and
+    -   middleware (admin, password.confirm, account interstitial).
+    -   All 390 tests pass with the auth-scope-3 and passport middleware fixes
+    -   applied together.
+-   test: add auth scope migration tests and update CI action versions ([a486f509a](https://github.com/pixelfed/pixelfed/commit/a486f509a52c43abdbfbe90e321ab43c382e1185))
+    -   AuthScope/RequestUserTest: 22 tests verifying all controllers and
+    -   middleware that were migrated from Auth::user() to $request->user().
+    -   CI: update to checkout@v7, cache@v6
+-   revert: restore original GitHub Actions workflow names ([47d98bfb5](https://github.com/pixelfed/pixelfed/commit/47d98bfb55d25b11d417b921759b3c706eeb792d))
+-   fix: replace Auth facade with $request->user() in request-scoped classes ([ffcef3eb2](https://github.com/pixelfed/pixelfed/commit/ffcef3eb2ddf1f4629efeec7bdf0fa25e5b7d554))
+    -   Replace Auth::user() with $request->user() and Auth::check() with
+    -   $request->user() !== null (or ! $request->user()) across all
+    -   controllers and middleware that have access to the request object.
+    -   This resolves 99 larastan.noAuthFacadeInRequestScope errors and
+    -   improves Octane compatibility.
+    -   For protected helper methods without $request in scope, uses the
+    -   request() helper instead.
+    -   Methods that previously lacked a Request parameter but used Auth
+    -   facade now accept Request $request via Laravel's auto-injection.
+-   Update AccountController.php ([3c6280111](https://github.com/pixelfed/pixelfed/commit/3c6280111e4c76c1017a390169759d2612c60f4a))
+-   fix: remove deprecated Passport::personalAccessClientId() and enableImplicitGrant() ([5a364be58](https://github.com/pixelfed/pixelfed/commit/5a364be58b9a72cd1da694b076ac511f495b25e4))
+    -   Remove Passport::personalAccessClientId() (removed in Passport v13, auto-discovers now)
+    -   Remove Passport::enableImplicitGrant() (legacy grant, no clients use it)
+    -   Flatten config instance.oauth.pat to pat_enabled (remove dead pat.id key)
+    -   Add OAUTH_PAT_ENABLED=false to .env.example and .env.docker.example
+    -   Show swal alert when PATs disabled instead of hidden API error
+    -   Improve store() error handling to surface 403 messages in the UI
+    -   Remove OAUTH_PAT_ID row from admin diagnostics blade
+-   fix: remove dead RemoteFollowPipeline (references uninstalled HttpSignatures package) ([7042ea536](https://github.com/pixelfed/pixelfed/commit/7042ea536731ad35e81138a7fac4199fc3a792ea))
+    -   Delete app/Jobs/RemoteFollowPipeline/RemoteFollowPipeline.php
+    -   Delete app/Jobs/RemoteFollowPipeline/RemoteFollowImportRecent.php
+    -   Neither job is dispatched anywhere in the codebase
+    -   Remote follow is handled by ActivityPub Inbox and FollowPipeline
+-   fix: remove dead publicApi/homeApi methods from TimelineController ([8cf532156](https://github.com/pixelfed/pixelfed/commit/8cf5321566cabc40e7ead05f354c6a02ce926f06))
+    -   publicApi referenced non-existent StatusTimelineTransformer class
+    -   Neither method is routed anywhere
+    -   Removes unused imports (Fractal, Cache, Status, Profile, UserFilter)
+-   Revert "fix: remove dead publicApi/homeApi methods from TimelineController" ([ea2d054a4](https://github.com/pixelfed/pixelfed/commit/ea2d054a405d6d6f09c383394e940a5c48c85973))
+    -   This reverts commit 8cf5321566cabc40e7ead05f354c6a02ce926f06.
+-   comment dead code ([f54e6280b](https://github.com/pixelfed/pixelfed/commit/f54e6280bcae0a20c921148fb96ca4553be18d23))
+-   Update DOCKER_COMPOSE_SETUP.md ([e2c6162b3](https://github.com/pixelfed/pixelfed/commit/e2c6162b35064d091c85fe79cbb9939bd3047c44))
+-   Fix duplicate command in Docker Compose setup ([4086f0778](https://github.com/pixelfed/pixelfed/commit/4086f0778311c2e3c8e0a4561dff78aca415890f))
+-   polish ([c891f34df](https://github.com/pixelfed/pixelfed/commit/c891f34df64ae1ecbb33854cf1c00126085d8b8a))
+-   refactor: replace $fillable with $guarded = \[\] across all models ([570a30d03](https://github.com/pixelfed/pixelfed/commit/570a30d037a74346ec672e2b0bcf07de5dac58fa))
+    -   Aligns all models with the project convention (see .ai/rules/models.md).
+    -   Model::shouldBeStrict() in non-production will catch any issues early.
+-   fix: replace deprecated starts_with() with str_starts_with() ([26b8a0a6b](https://github.com/pixelfed/pixelfed/commit/26b8a0a6b0d0f230e406424b29e161db1ebe50ae))
+    -   The starts_with() helper was removed in Laravel 6. Use PHP 8's native
+    -   str_starts_with() instead.
+-   feat: add throttle:api middleware to the api route group ([ed90e619f](https://github.com/pixelfed/pixelfed/commit/ed90e619fbe68d93977612273d0ecb8f0b5099b4))
+    -   Adds a global rate limiter (240 req/min per user or IP) to all API
+    -   routes. Previously rate limiting was only applied ad-hoc on individual
+    -   routes, leaving some endpoints unprotected.
+-   Update AppServiceProvider.php ([0837968fa](https://github.com/pixelfed/pixelfed/commit/0837968fad405d70aeab69c71d2f2eccdc72b1b5))
+-   fix: unpin symfony/http-foundation to allow patch updates ([0c849ca4e](https://github.com/pixelfed/pixelfed/commit/0c849ca4e7e88528a2b13f70841b914a71e3ff61))
+    -   Changes constraint from exact '7.4.13' to '^7.4.13'. The pin was
+    -   introduced for CVE-2026-48736 but is overly restrictive — any 7.4.x
+    -   release >= 7.4.13 includes the fix. This allows future security
+    -   patches to install via composer update.
+    -   Note: Symfony 8.x is blocked by laravel/framework ^12 which requires
+    -   symfony/http-foundation ^7.2.0. Symfony 8 support arrives with Laravel 13.
+-   chore: remove unused direct dependencies ([1696dfaca](https://github.com/pixelfed/pixelfed/commit/1696dfacaa86c4b98b5ff629b75c9936db6ec621))
+    -   Remove endroid/qr-code: never imported in app code; only
+    -   bacon/bacon-qr-code is used directly (for 2FA QR generation).
+    -   Remove nesbot/carbon: already pulled in transitively by
+    -   laravel/framework, laravel/horizon, and laravel/pulse.
+-   fix: enable MySQL strict mode and remove defaultStringLength(191) ([1b64c59be](https://github.com/pixelfed/pixelfed/commit/1b64c59bebc440af8b78546f7ce3173404aaedf5))
+    -   Enable strict mode for MySQL connection to prevent silent data
+    -   truncation, zero-date insertion, and division-by-zero errors.
+    -   Remove Schema::defaultStringLength(191) which was a MySQL 5.7
+    -   workaround no longer needed on MySQL 8.0+ / MariaDB 10.3+.
+-   fix: replace deprecated $request->get() with $request->input() ([4320231c1](https://github.com/pixelfed/pixelfed/commit/4320231c1f621ba2d40e270afa0719d4d7599515))
+    -   Symfony 8.0 removes Request::get(). Laravel 13 will support Symfony 8,
+    -   so these 11 usages would break on upgrade. Using $request->input()
+    -   which checks both query string and request body (same behavior as the
+    -   old get() method).
+-   refactor: rename VerifyCsrfToken to PreventRequestForgery ([9958b095d](https://github.com/pixelfed/pixelfed/commit/9958b095dd9c8d3ddbdee3f1262f81a70892ed55))
+    -   Prepares for Laravel 13 where VerifyCsrfToken is deprecated in favor
+    -   of PreventRequestForgery. The old class remains as an alias in v13 but
+    -   will be removed in a future version.
+-   feat: add serializable_classes to cache config for Laravel 13 prep ([ba90d1bd2](https://github.com/pixelfed/pixelfed/commit/ba90d1bd20bd714e021405cdc8d80f0209967957))
+    -   Laravel 13 defaults serializable_classes to false, blocking arbitrary
+    -   PHP object unserialization from cache. This project caches CustomFilter
+    -   model instances (in getCachedFiltersForAccount), so it must be
+    -   explicitly allowlisted.
+    -   All other cache usage in this project stores scalars, arrays, or
+    -   Fractal-transformed array output — no other classes need allowlisting.
+-   Update database.php ([2f466b02d](https://github.com/pixelfed/pixelfed/commit/2f466b02d76ca0a05199d4fcc7ed38973eaf7286))
+-   Update database.php ([323cfc9cf](https://github.com/pixelfed/pixelfed/commit/323cfc9cf75381d143fccf998984c19471a58248))
+-   Change DB_STRICT environment variable to true ([35cb9a9dc](https://github.com/pixelfed/pixelfed/commit/35cb9a9dcb1495cc3c5d38225549fc7bad290cf9))
+-   Set strict mode to true in database configuration ([542434785](https://github.com/pixelfed/pixelfed/commit/542434785c72a6746018306dac75bea085203454))
+-   Update model loading behavior in AppServiceProvider ([c04fec21f](https://github.com/pixelfed/pixelfed/commit/c04fec21fcfa94e7b4e160561d5c1b46fd4376d6))
+-   Update AppServiceProvider.php ([1ae0feb12](https://github.com/pixelfed/pixelfed/commit/1ae0feb1291f48b8a89299b448f07dc251c6bcdb))
+-   Update AppServiceProvider.php ([de8de9251](https://github.com/pixelfed/pixelfed/commit/de8de9251b9fa8115c870b116363641c7de313b6))
+-   Pint app/ ([33dce75f2](https://github.com/pixelfed/pixelfed/commit/33dce75f2c91413edb8018f7a7d4922977abc427))
+-   Pint config/ ([42f361540](https://github.com/pixelfed/pixelfed/commit/42f361540c9b6afbe5bc93cb1ab1c3573e760b34))
+-   Update AppServiceProvider.php ([f13a891ff](https://github.com/pixelfed/pixelfed/commit/f13a891ff4c20d31edab0b82f096de53128bfde7))
+-   Pint database/ ([db636ee08](https://github.com/pixelfed/pixelfed/commit/db636ee08ae0fa04ee70439e52b4b3d7541bd632))
+-   Improve test assertions and imports ([412c29bb4](https://github.com/pixelfed/pixelfed/commit/412c29bb47a92e6485b4f066a05e18770466583f))
+-   Update app.php ([2c704d9a7](https://github.com/pixelfed/pixelfed/commit/2c704d9a76e07862fc811bc493d8ba7dcc354c6e))
+-   Move ValidateCsrfToken middleware to a new position ([46393bd9f](https://github.com/pixelfed/pixelfed/commit/46393bd9fc2b8cdba87647ea7206f205cb6e9316))
+-   refactor: add return type declarations to controller methods ([54cfdf3c2](https://github.com/pixelfed/pixelfed/commit/54cfdf3c2b5f37013c40bc8567a96da1f42627d1))
+    -   Adds explicit return type declarations to 498 controller methods
+    -   across 88 files. Types inferred from return statements:
+    -   JsonResponse for response()->json() returns
+    -   RedirectResponse for redirect()/back() returns
+    -   View (contract) for view() returns
+    -   Response for response() returns
+    -   void for methods with no return value
+    -   array for array returns
+    -   string/int/bool for scalar returns
+    -   Also fixes 3 methods with incorrect bare returns:
+    -   AvatarController::deleteAvatar - bare return → json response
+    -   ImportPostController::checkPermissions - bare return → true
+    -   RemoteAuthController::accountToId - bare return → empty array
+-   fix: resolve 6 Larastan errors in controller return types ([17a5b5c3d](https://github.com/pixelfed/pixelfed/commit/17a5b5c3de929c223d93c2394fe5b774871580f7))
+    -   DeckController: add missing View contract import
+    -   CuratedRegisterController::proceed(): add default switch case
+    -   GroupController::reportAction(): add default switch case
+    -   InstallController::checkDatabase/precheckDatabase: add missing return
+-   refactor: replace Guzzle pool with Laravel HTTP client in StatusDelete ([00dd5b3d9](https://github.com/pixelfed/pixelfed/commit/00dd5b3d922fbd016a777a457950971165278ca7))
+    -   Replace direct GuzzleHttp\\Client and Pool usage in fanoutDelete()
+    -   with Laravel's Http::pool() facade. This provides:
+    -   Testability via Http::fake() in tests
+    -   Consistent timeout/retry configuration
+    -   No direct Guzzle dependency in application code
+    -   Proper integration with Laravel's HTTP client features
+-   fix: improve NewStatusPipeline retry configuration ([a0f721781](https://github.com/pixelfed/pixelfed/commit/a0f721781a292f938ad2a36ddcbf8f95a5b6aa03))
+    -   Previous config (timeout=5, tries=1) was too aggressive — a single
+    -   transient failure would permanently lose the status publication.
+    -   New config:
+    -   timeout: 5 → 30 (sufficient for DB check + job dispatch)
+    -   tries: 1 → 3 (recover from transient Redis/DB issues)
+    -   maxExceptions: 1 (don't retry actual bugs)
+    -   backoff: \[5, 10\] (exponential delay between retries)
+-   polish ([2b1c9c818](https://github.com/pixelfed/pixelfed/commit/2b1c9c818b6ca35b3d24f8c9ac351d9015427063))
+-   polish ([a142db87b](https://github.com/pixelfed/pixelfed/commit/a142db87b4e63d7d760d5f1d337e9636c388e169))
+-   refactor: move 52 legacy models from App\\ to App\\Models\\ ([c0cde2f68](https://github.com/pixelfed/pixelfed/commit/c0cde2f682f2e3f3f64bd2ec42d5f1c993ba221d))
+    -   Move all Eloquent models from the app/ root directory to app/Models/
+    -   for consistency with modern Laravel conventions. The project already had
+    -   54 models in App\\Models; this migrates the remaining 52 legacy models.
+    -   Changes:
+    -   Move 52 model files from app/ to app/Models/
+    -   Update namespace declarations in each model
+    -   Update all ~1000 import references across the codebase
+    -   Add Relation::morphMap() in AppServiceProvider for backward
+    -   compatibility with existing polymorphic database records
+    -   Add missing HasSnowflakePrimary imports for models that relied
+    -   on same-namespace resolution
+-   test: verify morph map resolves legacy model namespaces ([4231ce993](https://github.com/pixelfed/pixelfed/commit/4231ce993863a3cdd615b70f9912988453796d4e))
+    -   Ensures that existing database records using the old App\\Status,
+    -   App\\Profile, etc. morph types correctly resolve to the new
+    -   App\\Models\\ classes via Relation::morphMap().
+-   fix: resolve 3 remaining Larastan errors from model migration ([aae7700bf](https://github.com/pixelfed/pixelfed/commit/aae7700bf3d42bb6531bbd8e5552c20f04c5562a))
+    -   AccountInterstitial middleware: fix FQCN reference
+    -   Like/UndoLike transformers: fix aliased import namespace
+-   refactor: split ActivityPub Inbox into focused traits with shared helpers ([f4b6d03ae](https://github.com/pixelfed/pixelfed/commit/f4b6d03ae603494e3acf22e27cd2ebb9d54be9f3))
+    -   Extract InboxHelpers trait with common utilities (domain/user blocking, actor validation, notification deletion, cache clearing)
+    -   Create domain-specific handler traits: HandlesFollows, HandlesLikes, HandlesCreates, HandlesAnnouncements, HandlesDeletes, HandlesUndos, HandlesStories, HandlesFlags, HandlesUpdates, HandlesMoves
+    -   Merge duplicate story reaction/reply handlers into single handleStoryInteraction method
+    -   Break handleDirectMessage into focused sub-methods
+    -   Reduce Inbox.php to thin verb router (~167 lines)
+    -   No behavioral changes; public API preserved
+-   refactor: extract shared ActivityPub pool delivery into ActivityPubDeliveryService ([9c9e2a5a2](https://github.com/pixelfed/pixelfed/commit/9c9e2a5a22a9589aab893d4614b868888384f42b))
+    -   Add ActivityPubDeliveryService::pool() using Laravel's Http::pool() to
+    -   consolidate the duplicated delivery pattern found across 10 jobs.
+    -   Updated jobs:
+    -   StatusActivityPubDeliver
+    -   StatusDelete
+    -   StatusLocalUpdateActivityPubDeliverPipeline
+    -   FanoutDeletePipeline
+    -   SharePipeline
+    -   UndoSharePipeline
+    -   StoryFanout
+    -   StoryExpire
+    -   StoryDelete
+    -   ProfileMigrationDeliverMoveActivityPipeline
+    -   The shared method accepts a Profile (sender), audience (inbox URLs),
+    -   and activity (payload array), handling signing, user-agent, timeout,
+    -   and concurrency in one place. No direct Guzzle usage remains in
+    -   app/Jobs/.
+-   refactor: extract duplicate patterns into shared methods ([e7b70c608](https://github.com/pixelfed/pixelfed/commit/e7b70c6084bc171404af1320283c2aff037a2865))
+    -   1. Add FractalService with static item() and collection() helpers
+    -   replacing 22 call sites that repeated the 4-line Fractal Manager
+    -   ArraySerializer boilerplate.
+    -   2. Add AccountInterstitial::createFromStatus() factory method
+    -   consolidating 4 identical 15-line blocks that create interstitials
+    -   with status metadata.
+    -   3. Add NotificationService::createNotification() to handle the
+    -   repeated pattern of creating, caching, and registering a
+    -   notification in the recipient's feed.
+    -   4. Add NotificationService::firstOrCreateNotification() for
+    -   idempotent notifications (share/boost, mention) that should
+    -   only notify once per actor+action+item combination.
+-   fix: resolve larastan class.notFound errors ([941c30510](https://github.com/pixelfed/pixelfed/commit/941c305104c3dc50b48a0e6f361e1cbcb15729bf))
+    -   Add missing FractalService import to Groups/GroupCommentService and
+    -   Groups/GroupPostService (wrong namespace resolution)
+    -   Update Inbox handler traits to use App\\Models\\\* namespace instead of
+    -   old App\\\* references (Status, Profile, DirectMessage, Media, Follower,
+    -   Like, Instance, Story, User, FollowRequest, Notification, UserFilter,
+    -   StoryView)
+    -   Update HttpClientMigrationTest to use App\\Models\\\* namespace
+-   refactor: migrate LikePipeline to use NotificationService::firstOrCreateNotification ([8b53f23e7](https://github.com/pixelfed/pixelfed/commit/8b53f23e77f8abc5e9aca03039df9fda8e134f7c))
+-   Fix endsWith. Closes #6904 ([e3a264070](https://github.com/pixelfed/pixelfed/commit/e3a2640704421280dd2edfc7dd4a31bfc773d20d))
+-   Update composer ([1810caac2](https://github.com/pixelfed/pixelfed/commit/1810caac2d82e0be0b3148486cb20a70d3c7b70c))
+-   Fix cache error ([44275154e](https://github.com/pixelfed/pixelfed/commit/44275154ea862c2b2cefc9edc6a41835f37f45b7))
+-   refactor: consolidate username validation into PixelfedUsername rule ([7c5d93e96](https://github.com/pixelfed/pixelfed/commit/7c5d93e96ba35414fd64b5f31949e79d11801b7d))
+    -   Replace 7 duplicated inline username validation closures across 6
+    -   controllers (ApiV1Dot1, RemoteAuth, CuratedRegister, AdminInvite x2,
+    -   AppRegister, Auth/Register) with the existing PixelfedUsername rule.
+    -   Add the 'must contain at least one alphabetical character' check to
+    -   the rule so all call sites share consistent, stricter validation.
+    -   Add PixelfedUsernameTest covering all validation branches.
+-   Create DeduplicationChanges.md ([d1ea7a5be](https://github.com/pixelfed/pixelfed/commit/d1ea7a5be75f22c02469046de477dfda589b7e28))
+-   refactor: rename PixelfedUsername rule to ValidUsername ([302edf09d](https://github.com/pixelfed/pixelfed/commit/302edf09d5c5cc92f19ecd63e2de1bfd086cee50))
+    -   Pure rename of the App\\Rules\\PixelfedUsername validation rule to
+    -   App\\Rules\\ValidUsername for a clearer, more idiomatic name. Updates
+    -   the class, filename, test, and all 8 controller call sites. No
+    -   behavior change.
+-   Rename DeduplicationChanges.md to notes/DeduplicationChanges.md ([0b6f8e4ab](https://github.com/pixelfed/pixelfed/commit/0b6f8e4ab66777b7a40a34b6bd6c7cd7cd92fdd6))
+-   Update DeduplicationChanges.md ([101b529ac](https://github.com/pixelfed/pixelfed/commit/101b529acf35f482f32ebfff49789f3d61895aed))
+-   Remove duplicate boilerplate code in documentation ([27c778f4b](https://github.com/pixelfed/pixelfed/commit/27c778f4bf76a4031e084e00ebb35f41da5e275e))
+    -   Removed duplicate lines from username validation, notification, and fractal boilerplate sections.
+-   Update DeduplicationChanges.md ([4982839c5](https://github.com/pixelfed/pixelfed/commit/4982839c5a3d807c76b59a6a2415f821e2ef7113))
+-   Refactor boilerplate examples for deduplication ([6cce21032](https://github.com/pixelfed/pixelfed/commit/6cce2103215450498428194097d812ebb384026a))
+    -   Updated boilerplate examples for ActivityPub Delivery, Username validation, and Notification services to replace repeated code snippets with concise method calls.
+-   Update DeduplicationChanges.md with service reference ([78a48f0ef](https://github.com/pixelfed/pixelfed/commit/78a48f0ef06d2ca0928252c56ec9b32e9f18a95d))
+-   chore: remove unused import and fix spacing in cache config ([3be6dbf54](https://github.com/pixelfed/pixelfed/commit/3be6dbf5477673d7613d5403cc1b000f62c9da53))
+-   Fix ProfileMigrationStorageRequest, use signed requests for gts and other compat ([81245ec46](https://github.com/pixelfed/pixelfed/commit/81245ec4675b95f30606089949b9fcbdcca00ca0))
+-   Fix AdminReports ([5b63f5f22](https://github.com/pixelfed/pixelfed/commit/5b63f5f225cd29d434306a8e1cbaa833a9467bf4))
+-   Update compiled assets ([db37202e6](https://github.com/pixelfed/pixelfed/commit/db37202e6fd94013b19e03755931288c99e6746a))
+-   fix: stop caching raw Eloquent models to prevent incomplete-object 500s ([f0e951dcc](https://github.com/pixelfed/pixelfed/commit/f0e951dcce7edeea392ff6cc4b83a752f59c2790))
+    -   Caching an Eloquent model in a Cache::remember closure could deserialize
+    -   into a \_\_PHP_Incomplete_Class on read, throwing 'attempt to access a
+    -   property on an incomplete object' and returning a 500. This surfaced on
+    -   guest profile pages (ProfileController::buildProfile reading
+    -   $user->user->settings) and affected several other latent call sites.
+    -   Changes:
+    -   ProfileController: cache a plain settings array instead of the
+    -   UserSetting model; fall back to defaults when the settings row is missing
+    -   StoryService::getById: fetch a live model instead of caching it
+    -   InstanceService::getByDomain, CustomEmoji::scan: cache arrays
+    -   Site/MobileController: cache Page data as an array via a shared
+    -   ManagesCachedPages trait; update blade views to array access
+    -   Add public-route smoke/regression tests covering the cache-read path
+-   Add user:status artisan command for account login/reset diagnostics ([e39b0f1b5](https://github.com/pixelfed/pixelfed/commit/e39b0f1b508f79048d72728f85673eca2733398a))
+-   Update AdminReportController ([0679216fa](https://github.com/pixelfed/pixelfed/commit/0679216fa2adae822bca875e2cd4bd8ee207ad7e))
+-   Add user:setpassword artisan command for CLI password reset ([7148c5828](https://github.com/pixelfed/pixelfed/commit/7148c582835c8222d95c515e225b4314275c9881))
+-   Update UserAccountDelete command ([51beaa30d](https://github.com/pixelfed/pixelfed/commit/51beaa30d18fb33fb9bed951aedf19fa53e5ccfb))
+-   Add user:checkpassword read-only command to diagnose rejected logins ([2c7227a9c](https://github.com/pixelfed/pixelfed/commit/2c7227a9c11d164425b14ae71ebe9dd05c853ab6))
+-   Fix CSRF token not found error on guest pages (login/register) ([54f99334b](https://github.com/pixelfed/pixelfed/commit/54f99334bb7c424d6ecd43bcdeae8a9a29f9db19))
+    -   The app layout renders separate head blocks for auth vs guest users.
+    -   The guest block was missing the <meta name="csrf-token"> tag that
+    -   app.js reads to set the axios X-CSRF-TOKEN header, causing a console
+    -   error on the login and register pages. Add the meta tag to the guest
+    -   head to match the authenticated head block.
+-   Fix CSRF token not found error on guest pages (login/register) ([32e391d26](https://github.com/pixelfed/pixelfed/commit/32e391d2678fcbd56f3764211efa430d3eb2aa44))
+    -   The app layout renders separate head blocks for auth vs guest users.
+    -   The guest block was missing the <meta name="csrf-token"> tag that
+    -   app.js reads to set the axios X-CSRF-TOKEN header, causing a console
+    -   error on the login and register pages. Add the meta tag to the guest
+    -   head to match the authenticated head block.
+-   Add csrf-token meta to anon and app-guest layouts ([ea1a629b1](https://github.com/pixelfed/pixelfed/commit/ea1a629b1a275e28ddfadbaa66e2550b9ebe4383))
+    -   These guest layouts also load app.js, which reads the csrf-token meta
+    -   tag to set the axios X-CSRF-TOKEN header. Without it, they logged the
+    -   same 'CSRF token not found' console error and had no CSRF header for
+    -   AJAX requests. Adds the meta tag to match the other layouts.
+-   Expand user:status profile section with full column dump and derived metadata ([93f813848](https://github.com/pixelfed/pixelfed/commit/93f81384826f7d90ab7537407b2fdfdd0c598ecc))
+    -   Dump every profiles column dynamically (keys redacted, long text trimmed),
+    -   add derived metadata (local/remote type, urls, live vs cached follower/
+    -   following/status counts, avatar, federation fields), and profile health
+    -   checks (soft-delete, id mismatches, missing crypto keys, count desync).
+-   Add profile:status command for local and remote profile diagnostics ([92d09ffaa](https://github.com/pixelfed/pixelfed/commit/92d09ffaaf4d4c44c81e557f3b80d4a75878ab1d))
+    -   Unlike user:status (local users only, keyed on the users table),
+    -   profile:status keys on the profiles table so it works for remote/
+    -   federated actors too. Resolves id, username, user@domain, @user@domain,
+    -   webfinger, or remote_url. Shows full column dump, derived/federation
+    -   metadata, linked local user (local) or Instance row (remote), and
+    -   health checks for orphans, missing keys, and count desync.
+-   Fix unauthenticated SSRF in remote media/avatar fetch (variant of CVE-2026-71246) ([3d82a8e8b](https://github.com/pixelfed/pixelfed/commit/3d82a8e8b206e5e7a0ca69626827b1263e45c9a5))
+    -   The remote media path validated URLs only as strings (Helpers::validateUrl
+    -   normalizes the host + checks a ban list) and then downloaded them with
+    -   Http::head + file_get_contents($url), which resolve DNS themselves and
+    -   follow redirects with no private-IP checks and no address pinning. A remote
+    -   actor whose icon.url redirected to an internal address (e.g. 172.18.0.1 or
+    -   169.254.169.254) made the queue worker fetch internal content and, for
+    -   image responses, republish it at a public avatar URL. No account required.
+    -   Fixes:
+    -   Add SecureMediaFetchService: validates URL, resolves + rejects non-global
+    -   IPs (fail-closed), pins the connection to the validated IP via
+    -   CURLOPT_RESOLVE, disables auto-redirects with per-hop re-validation, and
+    -   enforces https-only + a byte cap. Mirrors the ActivityPubFetchService
+    -   hardening from CVE-2026-71246.
+    -   Route MediaStorageService head()/fetchAvatar()/remoteToCloud() through it,
+    -   removing the bare Http::head and file_get_contents($url) sinks.
+    -   validateUrl(): when DNS verification is enabled, reject hosts that resolve
+    -   into reserved ranges, closing the metadata.google.internal bypass.
+    -   Harden adjacent same-class sinks: CustomEmojiService (emoji doc + image +
+    -   head), FetchCacheService/webfinger, and DiscoverActor.
+    -   Add regression tests (tests/Unit/ActivityPub/SsrfUrlValidationTest.php).
+-   Allow gif and webp mime types for custom emoji import ([7482befd8](https://github.com/pixelfed/pixelfed/commit/7482befd8f08845c7b79631e39cd50a8c491a980))
+    -   Add image/gif and image/webp to the accepted custom emoji image types via
+    -   a shared CustomEmojiService::ALLOWED_MIME_TYPES constant used by both the
+    -   ActivityPub mediaType check and the response-content headCheck, so the
+    -   allowlist stays in sync. File extension derives from the mime type.
+-   Update SecureMediaFetchService.php ([8123dcf93](https://github.com/pixelfed/pixelfed/commit/8123dcf9342c1c296bbeea5ca8066dca89b72db1))
+-   Add fix:followercount command to resync drifted follower/following counts ([9fe1fe55a](https://github.com/pixelfed/pixelfed/commit/9fe1fe55af19c48cbdce4be842a2930bd8e2b7f9))
+    -   profiles.followers_count/following_count are cached columns reconciled
+    -   lazily by FollowServiceWarmCache (throttled up to 7 days), so they can
+    -   drift from the followers table. This command recomputes them from the
+    -   source-of-truth table for a single profile or --all drifted local
+    -   profiles, with --dry-run to report and --dispatch to queue the warm-cache
+    -   job (which also rebuilds the Redis sets). Mirrors the existing
+    -   fix:statuscount convention.
+-   Add fix:profilecounts (total profile cache resync); remove redundant count commands ([037f1ac0b](https://github.com/pixelfed/pixelfed/commit/037f1ac0b987b2b31cd954d8685f6304afcc3c72))
+    -   Consolidate cached-count reconciliation into a single fix:profilecounts
+    -   command that resyncs followers_count, following_count and status_count
+    -   from the source-of-truth tables for one profile or --all. Only reports
+    -   profiles with actual drift (silent when in sync); supports --dry-run and
+    -   --dispatch (queues FollowServiceWarmCache and rebuilds Redis sets).
+    -   Removes the superseded manual commands fix:followercount, fix:statuscount
+    -   and fix:rpc. Keeps app:account-post-count-stat-update, which is scheduled
+    -   (runs every 6 hours) and queue-driven.
+-   Apply Pint formatting to SecureMediaFetchService ([aadde946d](https://github.com/pixelfed/pixelfed/commit/aadde946d267594c8468f74c2eb176f310718a0e))
+-   Refactor profile count reconciliation into shared AccountStatService methods ([a187ab663](https://github.com/pixelfed/pixelfed/commit/a187ab6639be43ca6381be710bed34f396bf3c53))
+    -   Extract canonical source-of-truth count logic into AccountStatService:
+    -   recalculateStatusCount/FollowerCount/FollowingCount and a
+    -   reconcileProfileCounts() that fixes only drifted columns and busts caches.
+    -   Both the scheduled app:account-post-count-stat-update (status-only, its
+    -   correct scope) and fix:profilecounts now use these instead of duplicating
+    -   the SQL. Also corrects the status_count definition to match the actual
+    -   increment logic in StatusEntityLexer/StatusDelete (media post types only:
+    -   photo/video albums), rather than the previous inconsistent all-statuses /
+    -   scoped counts that could themselves cause drift.
+    -   The scheduled updater keeps its incremental, dirty-set design and remains
+    -   status-only; follower/following stay owned by FollowServiceWarmCache.
+-   Schedule weekly profile-count reconcile and add reconciliation tests ([698ba224e](https://github.com/pixelfed/pixelfed/commit/698ba224e38d76fbc8105de92d1888c18ebac595))
+    -   Add --force flag to fix:profilecounts for unattended runs and schedule
+    -   'fix:profilecounts --all --force' weekly (Sun 03:37) as a safety-net
+    -   reconcile. Kept as a low-frequency full scan rather than a new event-driven
+    -   dirty-set; it only writes profiles that actually drifted.
+    -   Add Feature tests for AccountStatService recompute helpers and
+    -   reconcileProfileCounts (media-type status_count semantics, follower/
+    -   following counts, drift/no-drift/no-write, metric restriction, missing
+    -   profile) plus fix:profilecounts command behavior (silent-when-synced,
+    -   dry-run makes no changes).
+-   Rename to admin:fixProfileCounts, make --active its own mode, add --type ([96f26405f](https://github.com/pixelfed/pixelfed/commit/96f26405f1eef5b0e403d00da3311a91cbb2f650))
+    -   Rename command signature fix:profilecounts -> admin:fixProfileCounts.
+    -   --active is now its own bulk mode (recently-active local accounts),
+    -   mutually exclusive with --all and a single id.
+    -   Add --type=followers|following|statuses to restrict reconciliation to a
+    -   single metric (validated).
+    -   Update/extend tests for the new name, --type restriction and invalid-type
+    -   rejection.
+-   Update stale command-name reference in comment to admin:fixProfileCounts ([55e9201b1](https://github.com/pixelfed/pixelfed/commit/55e9201b1a0330c236cbcd3f1ccf2a232e36da6b))
+-   Fix VueIntersect single-element warning in notifications section ([b3be61c47](https://github.com/pixelfed/pixelfed/commit/b3be61c47c0e267ba151258ee800acd61bbfcac7))
+    -   The <intersect> in sections/Notifications.vue wrapped four <placeholder>
+    -   elements directly. vue-intersect requires exactly one child (it checks
+    -   $slots.default.length and observes $slots.default\[0\]), so it logged
+    -   '\[VueIntersect\] You may only wrap one element in a <intersect> component.'
+    -   and only observed the first placeholder. Wrap the placeholders in a single
+    -   <div> so the slot has one root element.
+-   Require --scope (local/remote/both) for admin:fixProfileCounts --all ([bcd5a5bd7](https://github.com/pixelfed/pixelfed/commit/bcd5a5bd7b6d8aae5ac6015aa654349937765a41))
+    -   Bulk --all reconciliation previously scanned both local and remote profiles
+    -   implicitly. Now --all requires an explicit --scope of local, remote, or
+    -   both. --active stays local-only and rejects a non-local --scope. Adds the
+    -   BelongsTo return type to Profile::user() so the whereHas('user') scope
+    -   filter passes Larastan, and adds tests for scope requirement/validation and
+    -   local/remote filtering.
+-   Add post:status command for post/media diagnostics ([4aa7b5728](https://github.com/pixelfed/pixelfed/commit/4aa7b572807cc00c41252f97223d1e59671fa1cd))
+    -   Dumps a Status and its media for debugging. Accepts a post id or URL
+    -   (/p/username/ID). Shows status columns, author, every media row's storage
+    -   fields (media_path, thumbnail_path, cdn_url, thumbnail_url, optimized_url,
+    -   remote_url, etc.), computed url()/thumbnailUrl()/expected-from-path, a URL
+    -   health check comparing stored URL hosts against the configured cloud disk
+    -   host (flags stale hosts), and the cached MediaService media_attachments
+    -   actually served to clients.
+-   Add admin:MigrateLocalMediaURL; replace media:cloud-url-rewrite ([04536a6e3](https://github.com/pixelfed/pixelfed/commit/04536a6e322a2c007d2f37d08b937364c76b83fe))
+    -   Rebuilds stale local media URLs (cdn_url, thumbnail_url, optimized_url) and
+    -   avatar cdn_urls from their storage paths via the configured cloud disk.
+    -   Default target host comes from the configured cloud disk (AWS_URL);
+    -   requires confirmation (or --force) and can be overridden with --newDomain.
+    -   Optional --oldDomain filters to a single old backend host; by default all
+    -   stale hosts are rewritten.
+    -   Refuses to run when PF_ENABLE_CLOUD is false (local storage) and, when
+    -   auto-detecting, refuses a target equal to the app domain — so local-storage
+    -   instances are never rewritten.
+    -   Single status id / post URL, --all, --avatars; --dry-run; busts
+    -   MediaService/StatusService caches for affected statuses.
+    -   Removes the superseded media:cloud-url-rewrite command.
+    -   Adds feature tests covering rewrite/skip/dry-run/oldDomain/newDomain/
+    -   remote-skip/local-storage-refusal.
+-   Rename to admin:MigrateLocalS3MediaURL and drop --avatars ([da9e73dd2](https://github.com/pixelfed/pixelfed/commit/da9e73dd2207b7eea7ee1e0b0a78db91415f6f50))
+    -   Rename the command (and test) to admin:MigrateLocalS3MediaURL to reflect its
+    -   scope: rewriting stale S3/cloud media URLs only. Remove avatar handling and
+    -   the --avatars option; the command now focuses solely on status media
+    -   (cdn_url, thumbnail_url, optimized_url).
+-   Fix MigrateLocalS3MediaUrl tests failing in CI ([34d6fb31f](https://github.com/pixelfed/pixelfed/commit/34d6fb31f945eb733455110ab1c4397988d5065c))
+    -   config_cache() falls through to config() when instance.enable_cc is off
+    -   (ENABLE_CONFIG_CACHE=false, as in CI/.env.testing), so ConfigCacheService::put()
+    -   alone did not toggle pixelfed.cloud_storage and the command's cloud-enabled
+    -   guard aborted with exit 1. Set the underlying config value too (both in
+    -   beforeEach and the local-storage refusal test).
+-   Update CHANGELOG.md ([45918bbb1](https://github.com/pixelfed/pixelfed/commit/45918bbb1a23b6982f873dceb923c4edf75e825d))
+-   Add media storage migration commands (local<->cloud) with integrated GC ([6ff9ffbbb](https://github.com/pixelfed/pixelfed/commit/6ff9ffbbb8f406fae09b06669da9acf36b136703))
+    -   Add admin:MediaMoveStorageLocalToCloud and admin:MediaMoveStorageCloudToLocal:
+    -   Copy media (+thumbnail) between local and cloud disks, verify by size (and
+    -   sha256 against original_sha256 when present) before deleting the source.
+    -   Integrated GC: delete the verified source copy (local on upload, cloud on
+    -   download), set version=4 / reset to 3, and bust MediaService/StatusService
+    -   caches. --keep-local / --keep-cloud opt out.
+    -   Manage PF_ENABLE_CLOUD in .env AND the live runtime + config cache so new
+    -   uploads route to the correct backend mid-migration on a hot server. Uses the
+    -   installer's atomic .env writer (shared ManagesMediaStorageEnv trait).
+    -   --limit / --dry-run / --force.
+    -   Replaces media:migrate2cloud (CloudMediaMigrate) and media:s3gc
+    -   (MediaS3GarbageCollector); scheduler now runs MediaMoveStorageLocalToCloud
+    -   hourly for straggler upload + GC. Keeps media:fix-nonlocal-driver.
+    -   Adds feature tests (download+GC, --keep-cloud, dry-run, env-flag flip both
+    -   directions, unknown-disk guard).
+-   Add admin:MediaMoveStorageCloudToCloud for cold S3->S3 migration ([70b4a05b5](https://github.com/pixelfed/pixelfed/commit/70b4a05b5c56525d88e894db63cef7480c72db2f))
+    -   Cold-migrate existing media from an old S3 bucket to the current cloud
+    -   bucket, one media row at a time (like MigrateLocalS3MediaURL):
+    -   Source = --sourceDisk (default s3-old, reads AWS*OLD*\*); destination = the
+    -   current cloud disk (config filesystems.cloud). No .env editing: operators
+    -   point AWS\_\* at the new bucket first (restarting workers as usual) so new
+    -   uploads/downloads land on the new bucket, then run this to backfill old data.
+    -   Copies media (+thumbnail) source->destination, verifies by size and by
+    -   sha256 of the freshly-written destination object (against original_sha256),
+    -   rewrites cdn_url/optimized_url/thumbnail_url to the destination host, and
+    -   GCs the source objects (unless --keep-source). Busts caches.
+    -   Only touches rows whose cdn_url still points at the source host; idempotent.
+    -   --sourceDisk / --limit / --dry-run / --force.
+    -   Adds the s3-old disk (AWS*OLD*\*) to config/filesystems.php and feature tests.
+-   polish ([68366c7dd](https://github.com/pixelfed/pixelfed/commit/68366c7dde2768709be812bf75f7deb9a86aa87f))
+-   Fix duplicate-key violation when importing remote media attachments ([0d01d5a96](https://github.com/pixelfed/pixelfed/commit/0d01d5a96338b72c5265e80672dc579a4553545b))
+    -   Helpers::importNoteAttachment unconditionally inserted a new Media row per
+    -   attachment, so re-importing a remote status (an Announce racing another
+    -   inbox job, a re-fetch, or a duplicate url within one activity) hit the
+    -   media_status_id_media_path_unique constraint and crashed the queue job with
+    -   a 1062 UniqueConstraintViolationException, dropping the boost/import.
+    -   Make createMediaAttachment idempotent on (status_id, media_path): skip when
+    -   a row already exists, and catch the unique-constraint violation as a
+    -   lost-race no-op, returning null so the caller skips re-dispatching storage.
+    -   Adds regression tests (re-import no-op, distinct urls still stored,
+    -   concurrent-insert returns null).
+-   refactor: rename status debug commands to status: prefix ([16c7c5d2e](https://github.com/pixelfed/pixelfed/commit/16c7c5d2e36752425418ac698402f4a51a01e44c))
+    -   Rename user:status, profile:status, and post:status console commands
+    -   to status:user, status:profile, and status:post. Rename the command
+    -   files and classes to match (StatusUser, StatusProfile, StatusPost) and
+    -   update the cross-reference tip in StatusProfile.
+-   refactor: organize Artisan commands into subfolders ([1eae4bbd4](https://github.com/pixelfed/pixelfed/commit/1eae4bbd4304d3a59f1bfeadaff4daa2b8754e77))
+    -   Group console commands into Admin, Dev, FixBugs, Install, Internal, and
+    -   User subfolders (matching the earlier reorganization), and add a new
+    -   Status subfolder for the status:user, status:profile, and status:post
+    -   debug commands. Namespaces updated to match; command signatures and the
+    -   total command count are unchanged.
+-   docs: add README for Artisan commands with listing and audit ([c99b8068a](https://github.com/pixelfed/pixelfed/commit/c99b8068a24726fcee101927870ea5f8ac32f905))
+-   Update README.md ([cafec250f](https://github.com/pixelfed/pixelfed/commit/cafec250fe5911844ca44869b35537fc833618ca))
+-   refactor: move resolved one-off migrations to Deprecated/ ([cd353a830](https://github.com/pixelfed/pixelfed/commit/cd353a8305514377d8e55b3b3f7a026e1dc1988e))
+    -   status:dedup and fix:avatars address historical data states that can no
+    -   longer occur (unique statuses.uri index since 2019; SVG identicon avatars
+    -   no longer generated). Move both to a Deprecated/ folder and update the
+    -   README audit accordingly. media:fix stays in FixBugs/ since image filters
+    -   are still an active feature.
+-   Update Profile component ([32ff6d48c](https://github.com/pixelfed/pixelfed/commit/32ff6d48cdde8d6f2b2a0e216c035aaf3e73167d))
+-   Update compiled assets ([ba8b92105](https://github.com/pixelfed/pixelfed/commit/ba8b92105d50e9e0494a232d0e4b05083f76282d))
+-   feat: add admin:fixPostCounts to resync post like/boost/comment counts ([744e45360](https://github.com/pixelfed/pixelfed/commit/744e4536069d13886aaa4a673a7f44f2a45dd743))
+    -   Add a FixPostCounts command mirroring admin:fixProfileCounts (single-id,
+    -   --all --scope, --active, --type, --dry-run, --force). It reconciles the
+    -   statuses likes_count, reblogs_count, and reply_count columns against
+    -   source-of-truth tables.
+    -   Add canonical recompute helpers and reconcileStatusCounts() to
+    -   StatusService (mirroring AccountStatService), busting the status cache
+    -   only when a column actually drifted.
+-   refactor: move admin:fix\*Counts commands to Admin/ ([73b8353da](https://github.com/pixelfed/pixelfed/commit/73b8353dab311843875069aef86649c871f30f68))
+    -   FixProfileCounts and FixPostCounts use the admin: signature prefix and
+    -   are operator-run maintenance tools, so move them from FixBugs/ to Admin/
+    -   (namespace updated) and refresh the README tables to match.
+-   fix: display comments count as 0 instead of blank in admin:fixPostCounts ([d50024a57](https://github.com/pixelfed/pixelfed/commit/d50024a578d4a457108546c2169223299f585c27))
+    -   reply_count is a nullable column, so NULL rendered as an empty string in
+    -   the resync summary. Cast the summary output to int so a null/absent
+    -   comment count prints as 0. No behavior change to the reconcile logic.
+-   fix: make admin:fixPostCounts summary report only changed metrics ([de850836c](https://github.com/pixelfed/pixelfed/commit/de850836cac44a6bb8b7f6c35ca9f358fa4d6240))
+    -   The resynced summary printed all three counts unconditionally, which
+    -   made an untouched metric (e.g. an already-correct comments count) look
+    -   like it had been resynced. Drive the summary from the drifted set and
+    -   show before->after values, so it matches the drift detection exactly.
+-   test: add feature tests for admin:fixPostCounts ([ec5be5241](https://github.com/pixelfed/pixelfed/commit/ec5be52418678fae8a417047f056a5e2df4a0e2e))
+    -   Cover source-of-truth resync of likes/boosts/comments, dry-run, no-op on
+    -   correct data, --type restriction, argument validation, and bulk --all
+    -   mode. Includes regression tests for the two reporting bugs: the summary
+    -   now lists only drifted metrics, and a null reply_count renders as 0.
+-   style: import DB facade in FixPostCounts test (pint) ([078380723](https://github.com/pixelfed/pixelfed/commit/078380723f8df98da5a04629146403d796295064))
+-   chore: add Psalm static analysis (plugin-laravel, baseline, CI) ([1a234c392](https://github.com/pixelfed/pixelfed/commit/1a234c39207eaf79cdc0d148cc38197fa8c535a0))
+    -   Port PR #6646 onto staging: add psalm/plugin-laravel with psalm.xml,
+    -   a staging-generated baseline, and a CI workflow that emits GitHub
+    -   annotations and uploads SARIF to Code Scanning. Fix the psalm.xml schema
+    -   for Psalm 6.5 (drop unsupported ClassMustBeFinal handler) and ignore
+    -   generated report artifacts in git/docker.
+-   ci(psalm): report findings but never fail the job ([2617211c1](https://github.com/pixelfed/pixelfed/commit/2617211c1f95fe281e7980eb54ff8549dfdcb1f6))
+-   ci(psalm): align workflow with php-\* conventions, test on PHP 8.5 ([6945277e2](https://github.com/pixelfed/pixelfed/commit/6945277e2ccb1e7c32ce4269e70d17f61f9a9706))
+    -   Rename psalm.yml to php-psalm.yml to match sibling workflows, bump PHP
+    -   8.4 -> 8.5, use the shared checkout/setup-php/cache/composer steps and
+    -   staging/dev/unstable triggers. Keeps report-only behavior and SARIF
+    -   Code Scanning upload.
+-   ci(psalm): guarantee SARIF file exists and upgrade upload-sarif to v4 ([5cecde670](https://github.com/pixelfed/pixelfed/commit/5cecde67089f2f6d431f26b3a2019e7bb78daa7c))
+    -   Add a fallback step that writes a minimal valid SARIF report when Psalm
+    -   exits before producing one, so the Code Scanning upload never hard-fails
+    -   the job. Bump github/codeql-action/upload-sarif v3 -> v4.
+-   ci(psalm): skip SARIF upload when report is missing ([aed7936e4](https://github.com/pixelfed/pixelfed/commit/aed7936e4efc78823becc596d3d1b3607cc1f8f4))
+    -   Replace the blank-SARIF fallback with an existence check; uploading an
+    -   empty SARIF would clear existing Code Scanning alerts. Now the upload is
+    -   skipped (with a warning) when Psalm produced no report.
+-   ci(psalm): run analyzer on PHP 8.4 to avoid 8.5 crash ([25494c491](https://github.com/pixelfed/pixelfed/commit/25494c49110e6623b396c9894c5a2150ce65e5cd))
+    -   Psalm 6.5.0 fatally crashes on PHP 8.5 (deprecated SplObjectStorage::attach
+    -   escalated by its error handler) before analyzing anything. Pin the Psalm
+    -   job to 8.4 so it runs and produces SARIF; revert to 8.5 once Psalm supports
+    -   it.
+-   Update php-psalm.yml ([3058d3f81](https://github.com/pixelfed/pixelfed/commit/3058d3f8169ac0a4f8a180259904234d3332ddfe))
+    -   Comment out the SARIF report check and upload steps in the workflow.
+-   Update php-psalm.yml ([27f7127cc](https://github.com/pixelfed/pixelfed/commit/27f7127ccdac125e97e4c35850846bb1160f7131))
+-   Add vimeo/psalm and composer scripts ([4e0c567ec](https://github.com/pixelfed/pixelfed/commit/4e0c567ecd510925262cdd2df7fba49c0d73d96c))
+-   Update VideoThumbnail.php ([186fa7c86](https://github.com/pixelfed/pixelfed/commit/186fa7c860a212344a953686515a1abd35c6922d))
+-   Fix larastan errors in RemoteOidcTest: import Test attribute and RefreshDatabase, replace removed str_random helper ([b7c15dc7c](https://github.com/pixelfed/pixelfed/commit/b7c15dc7ca66e25d1e1302e7a7dd5759e3c5d8ac))
+-   polish ([d86fd28e3](https://github.com/pixelfed/pixelfed/commit/d86fd28e3432112978b910468b14b122a601f6ae))
+-   Accept compacted Note attachments ([#6588](https://github.com/pixelfed/pixelfed/pull/6588))
+    -   Normalize JSON-LD compacted single attachments (a bare object instead of a
+    -   one-item array) in getAttachments(), and route verifyAttachments() through it
+    -   so validation and import share one normalization path.
+    -   Includes PR #6589's tests plus additional edge-case coverage: list-form
+    -   preservation, bare-input normalization, and guards for missing/empty/scalar
+    -   attachments.
+-   Update 2025_07_31_164635_change_hashtags_collation.php ([e53e82faf](https://github.com/pixelfed/pixelfed/commit/e53e82faf3cb7c53da8618f3c6c672a7e7b3584a))
+-   Create HashtagCollationTest.php ([27768cd69](https://github.com/pixelfed/pixelfed/commit/27768cd69cfe2a28de89abf88e3c122305ff25e6))
+-   Update php-larastan.yml ([9dfb5c062](https://github.com/pixelfed/pixelfed/commit/9dfb5c062e46d28d29871486d65d94d56946c32c))
+-   Update php-laravel-tests.yml ([338d4da42](https://github.com/pixelfed/pixelfed/commit/338d4da427ad5c918faaeba04b715ba24a037f66))
+-   Update php-pint.yml ([765e10ea6](https://github.com/pixelfed/pixelfed/commit/765e10ea6651f5f5117599d78d0d1944a8dc24fe))
+-   Revert hashtags collation migration from #6098 ([405674766](https://github.com/pixelfed/pixelfed/commit/40567476662d432522b684fc7f2d8c3980c94465))
+    -   Migration failed with a duplicate entry error: recollating to
+    -   utf8mb4_unicode_520_ci causes previously-distinct hashtag names/slugs
+    -   to collide on the unique indexes. Reverting until the data is
+    -   de-duplicated first.
+-   chore: add composer psalm:report script for a full local txt report ([6eea565ba](https://github.com/pixelfed/pixelfed/commit/6eea565babaeea565d73848dbde9be05e21d9bd3))
+    -   Adds a psalm:report script that ignores the baseline and writes a full
+    -   human-readable report to psalm-report.txt, including informational issues,
+    -   so all outstanding items to fix are surfaced in one file.
+-   chore: target PHP 8.4 in psalm config ([fb69275cd](https://github.com/pixelfed/pixelfed/commit/fb69275cd7443d0221f30016e8c191a536ff256b))
+    -   Set phpVersion="8.4" so Psalm targets 8.4 explicitly instead of
+    -   inferring 8.3 from composer.json's ^8.3|^8.4 constraint.
+-   chore: resolve psalm issues in admin commands and auth ([878775cab](https://github.com/pixelfed/pixelfed/commit/878775cab95be5a29649f6e35139ffd72c4c08c6))
+    -   Add return type hints (void) and final class markers
+    -   Guard null returns from newestBackup() and putFileAs() in BackupToCloud
+    -   Type ask() default values as strings
+    -   Fix uses_left fallback condition for null/zero max_uses
+    -   Annotate AdminInvite::whereInviteCode and cast Str::uuid() to string
+    -   Ignore local redis-data and mysql-9-data dev directories
+-   implement search by country ([129778ef2](https://github.com/pixelfed/pixelfed/commit/129778ef2e2bf90c43519f19c758931b47d8a24a))
+-   fix: prevent remcache temp file leaks and add GC command ([3232761a7](https://github.com/pixelfed/pixelfed/commit/3232761a74999284df11345f1870db6a1dfb6fcf))
+    -   The remote avatar/media fetchers wrote temp files to storage/app/remcache/
+    -   and only unlinked them on the happy path. Any exception between the write
+    -   and the unlink (e.g. a cloud upload failure) leaked the file, and nothing
+    -   swept the directory.
+    -   Wrap post-write logic in fetchAvatar() and remoteToCloud() in try/finally
+    -   so the temp file is always removed, even on failure
+    -   Add gc:remcache command to delete stale remcache files (default >24h old,
+    -   preserves .gitignore, supports --hours and --dry-run)
+    -   Schedule gc:remcache daily to clean up any stragglers
+    -   StoryFetch already handled cleanup via try/catch and was left unchanged.
+-   refactor: rename RemcacheGarbageCollector to GCRemcache ([57b3bf140](https://github.com/pixelfed/pixelfed/commit/57b3bf140b64824f33f27420d1c475b63156b1e6))
+-   refactor: use GarbageCollector prefix for GC console command classes ([9704fd5a3](https://github.com/pixelfed/pixelfed/commit/9704fd5a362fd54bbfe24cbba4b56c0f308b8e1c))
+    -   Rename the internal garbage collector commands to a consistent
+    -   GarbageCollector\* naming scheme (file + class). Command signatures are
+    -   unchanged, so the scheduler and cron entries are unaffected.
+    -   MediaGarbageCollector -> GarbageCollectorMedia
+    -   DatabaseSessionGarbageCollector -> GarbageCollectorDatabaseSession
+    -   FailedJobGC -> GarbageCollectorFailedJob
+    -   PasswordResetGC -> GarbageCollectorPasswordReset
+    -   GCRemcache -> GarbageCollectorRemcache
+    -   StoryGC -> GarbageCollectorStory
+    -   ImportUploadGarbageCollection -> GarbageCollectorImportUpload
+-   feat: migrate local story media to cloud storage ([9f110bb74](https://github.com/pixelfed/pixelfed/commit/9f110bb74c4ebcff72b3eba7fc9a645a713e4cf7))
+    -   Ensure story media lands on and stays on cloud storage for S3 instances.
+    -   StoryExpire: archive expiring story media on the same explicit disk the
+    -   media lives on (S3 move is a server-side copy+delete), with error handling
+    -   Add admin:StoryMoveStorageLocalToCloud to migrate local story media
+    -   (active + story_archives) to cloud: copy, verify by size, then delete local
+    -   --orphans option relocates untracked story_archives/ files to cloud using
+    -   the same copy/verify/delete flow (media is moved, never discarded)
+    -   Schedule it hourly alongside the media migration when cloud storage is on
+-   feat: store custom emoji on cloud storage when enabled ([fa76e1014](https://github.com/pixelfed/pixelfed/commit/fa76e1014a0cc5e75f1aa7d84b800e7827779384))
+    -   Custom emoji were always written locally and served via hardcoded /storage
+    -   URLs, so they never used S3 even on cloud instances.
+    -   CustomEmoji: centralize URL + storage on the active disk (cloud when
+    -   pixelfed.cloud_storage is enabled, else local public/ disk) via
+    -   urlForPath/url/storageTarget/storeMedia/storeMediaFromFile/deleteMedia
+    -   Route emoji writes/deletes and URL generation (scan, CustomEmojiService::all)
+    -   through those helpers in ImportEmojis, CustomEmojiService::import and
+    -   AdminController
+    -   Add admin:EmojiMoveStorageLocalToCloud to migrate existing local emoji to
+    -   cloud: copy, verify by size, delete local, bust caches
+    -   Schedule it daily when cloud storage is enabled
+-   feat: migrate all local emoji to cloud in one pass by default ([979df6e39](https://github.com/pixelfed/pixelfed/commit/979df6e39e4ead7349a24600113d4209468f7b04))
+    -   Change --limit default to 0 (no limit) so the emoji migration processes
+    -   every local emoji in a single run instead of capping at 1000, and drop the
+    -   limit from the scheduled invocation. Avoids a multi-run window where
+    -   not-yet-migrated emoji resolve to missing cloud URLs.
+-   feat: add migration to move local emoji to cloud on deploy ([a945efbf7](https://github.com/pixelfed/pixelfed/commit/a945efbf74a26b8587c492acf2b7564ad6d6976c))
+    -   Runs admin:EmojiMoveStorageLocalToCloud during migrate so existing local
+    -   emoji are relocated to cloud as part of the upgrade, shrinking the window
+    -   where emoji URLs resolve to cloud before the files are there. No-op unless
+    -   cloud storage is enabled.
+-   fix: schedule StoryMoveStorageLocalToCloud command ([842681b99](https://github.com/pixelfed/pixelfed/commit/842681b99b8c658471b6dffc1f82d2fc7f96b96f))
+    -   The story cloud-migration command was merged (#6958) but its scheduler
+    -   entry was dropped when the emoji branch (based off staging before that
+    -   merge) later merged and overwrote the scheduler block. Restore the hourly
+    -   schedule so local story media is migrated to cloud automatically.
+-   fix: emoji admin URLs and cloud-migration guard ([aa9bb868d](https://github.com/pixelfed/pixelfed/commit/aa9bb868dd6ce159a775113b55be85beebfe7beb))
+    -   Two issues prevented emoji from serving/migrating correctly on cloud:
+    -   Admin custom-emoji views hardcoded url('storage/'.media_path), so they
+    -   always showed local URLs and bypassed cloud resolution. Use $emoji->url().
+    -   The migration/command guard relied solely on config_cache('pixelfed.cloud_storage'),
+    -   which is DB/12h-cached and can read stale-false right after cloud is
+    -   enabled, causing the migration to silently no-op. Treat cloud as enabled
+    -   when either live config() or config_cache() is true.
+-   revert: story cloud-migration work ([9f55f7204](https://github.com/pixelfed/pixelfed/commit/9f55f7204cfa3f1d6eb930492d9e0d63f97c1620))
+    -   Back out the story local->cloud migration so we can land and verify the
+    -   emoji cloud work first, one change at a time.
+    -   Reverts:
+    -   9f110bb74 feat: migrate local story media to cloud storage
+    -   842681b99 fix: schedule StoryMoveStorageLocalToCloud command
+    -   Removes StoryMoveStorageLocalToCloud command, its scheduler entry, and the
+    -   StoryExpire explicit-disk changes. Remcache and emoji work are untouched.
+    -   Will revisit story once emoji is confirmed.
+-   fix: make emoji cloud migration disk-driven + add --debug ([79eef56be](https://github.com/pixelfed/pixelfed/commit/79eef56be07cb276c296badef4b0ce42043e6d80))
+    -   The migration was DB-driven (whereNull('uri')), which excluded federated
+    -   emoji whose media is stored locally but have a uri set -> the disk was never
+    -   scanned, resulting in moved=0.
+    -   Drive the migration by enumerating local files under public/emoji/ instead
+    -   of a DB query; the local file is the source of truth for what needs moving
+    -   Add --debug to print config, custom_emoji table breakdown, local emoji dir
+    -   contents, and per-file decisions
+-   fix: skip missing.png in emoji cloud migration ([9e5fcb9a9](https://github.com/pixelfed/pixelfed/commit/9e5fcb9a903524516f6bed942fa2933353c03a42))
+    -   The frontend renders a hardcoded /storage/emoji/missing.png local onerror
+    -   fallback for emoji, so that placeholder must stay on local disk. Skip it in
+    -   the migration so it is never moved to cloud or deleted locally.
+-   perf: parallelise emoji cloud migration with worker processes ([00564ac22](https://github.com/pixelfed/pixelfed/commit/00564ac221c9c722891c7ce4ca084cf91fae183e))
+    -   The migration was ~1-2s/file due to sequential S3 round-trips (HEAD + PUT +
+    -   verify HEAD). Speed it up:
+    -   --workers=N spawns N child processes, each handling a strided slice of the
+    -   files (index % N == shard) for real concurrency on the I/O-bound uploads
+    -   --skip-cloud-check skips the upfront HEAD (always upload, idempotent)
+    -   --skip-verify skips the post-upload size re-check
+    -   --offset for manual chunking
+    -   Storage/Flysystem has no batch or async upload API, so process-level
+    -   concurrency is the pragmatic lever here.
+-   feat: add uploads/sec throughput counter to emoji migration ([f17a88e16](https://github.com/pixelfed/pixelfed/commit/f17a88e16c25588e17c36f96008180bb6c5de03c))
+    -   Live 'up/s' rate shown on the progress bar during single-worker runs
+    -   Final summary reports elapsed time and uploads/sec
+    -   Parallel runs tally moved across workers and report aggregate uploads/sec
+    -   Makes it easy to compare --workers counts and decide whether async S3
+    -   (option 2) is worth pursuing.
+-   perf: async S3 SDK upload path for emoji migration ([a0a262f07](https://github.com/pixelfed/pixelfed/commit/a0a262f07fcd370994efbb0e99e30cd7f4c7d1ec))
+    -   Process-level workers plateaued at ~7.5 uploads/sec against Fastly Object
+    -   Storage because each PUT is high-latency and only a handful ran concurrently.
+    -   Add --concurrency=N which uses the AWS SDK CommandPool to keep N PutObject
+    -   requests in flight from a single process. A successful PutObject response is
+    -   the confirmation (no separate HEAD verify), and the local file is deleted on
+    -   success. Commands are yielded lazily so memory stays flat over large runs.
+    -   --no-acl escape hatch for S3-compatible stores that reject the ACL header.
+-   Update EmojiMoveStorageLocalToCloud.php ([948da00f0](https://github.com/pixelfed/pixelfed/commit/948da00f0cb1efc57b6bd13f18f79358c8c34a8e))
+-   revert: remove emoji local-to-cloud storage changes ([40b323bca](https://github.com/pixelfed/pixelfed/commit/40b323bca4f76625c46a5147fcf703dc6c045408))
+    -   Back out all emoji cloud-storage work from staging so it can be reworked and
+    -   re-landed separately (the URL resolution flips to cloud on a global config
+    -   flag, which created a broken-URL window, and the migration approach needs
+    -   revisiting).
+    -   Reverts to pre-emoji state:
+    -   CustomEmoji model URL/storage helpers (urlForPath, storageTarget, storeMedia,
+    -   storeMediaFromFile, deleteMedia, url) and callers in ImportEmojis,
+    -   CustomEmojiService, AdminController
+    -   admin custom-emoji blade views back to local /storage URLs
+    -   Remove admin:EmojiMoveStorageLocalToCloud command
+    -   Remove the deploy migration and its scheduler entry
+    -   Media (and the already-reverted story) scheduler entries are untouched.
+-   chore: modernize service providers for Laravel 13 readiness ([3c6ba88e6](https://github.com/pixelfed/pixelfed/commit/3c6ba88e6e5cdc418e49d4f9f9b19144280e6eb6))
+    -   Remove deprecated Foundation\\Support\\Providers\\AuthServiceProvider and
+    -   EventServiceProvider base classes. Move policy and event listener
+    -   registrations into AppServiceProvider using Gate::policy() and
+    -   Event::listen(). Behavior is unchanged (verified via event:list and
+    -   auth test suite).
+-   perf: fix N+1 queries; fix ComposeController lint and test namespace ([b52c3d765](https://github.com/pixelfed/pixelfed/commit/b52c3d7659dbcf97dd77f5fe9bed4a6b4582577c))
+    -   Performance:
+    -   TrendingHashtagService: batch-load hashtags with whereIn/keyBy instead
+    -   of Hashtag::find() per trending row.
+    -   DirectMessageController: eager-load status.media and read the in-memory
+    -   collection instead of firstMedia() issuing a query per DM message.
+    -   GroupsSearchController: batch Profile/Follower/GroupInvitation lookups
+    -   with whereIn instead of per-invitee queries.
+    -   Lint/tests:
+    -   ComposeController: whitespace formatting (Pint).
+    -   ComposeControllerTest: correct App\\User to App\\Models\\User, fixing the
+    -   larastan class.notFound error and import ordering.
+    -   Full suite: 547 passed. Pint and PHPStan clean.
+-   chore: uplift framework skeleton toward Laravel 12 defaults ([4e83eb086](https://github.com/pixelfed/pixelfed/commit/4e83eb0867c11f80432749b69d7d0b83e1963513))
+    -   Modernize artisan and public/index.php to the streamlined bootstrap form,
+    -   migrate factories/seeders autoload to PSR-4 (database/seeds -> seeders), and
+    -   backfill missing env-driven config keys across app, session, database, queue,
+    -   mail, logging, and cache. All changes are additive and preserve existing
+    -   Pixelfed behavior and defaults.
+-   Update composer.json ([54a0b3ee9](https://github.com/pixelfed/pixelfed/commit/54a0b3ee96475cf61207b6596c0a4ddff9a53ec4))
+-   Revert "Merge pull request #6981 from pixelfed/chore/laravel12-skeleton-uplift" ([7aa1f8936](https://github.com/pixelfed/pixelfed/commit/7aa1f8936dcee49c5aca250083d98267197bb850))
+    -   This reverts commit 39384e2f9339505a776964bffdac5cf15ba4f2f8, reversing
+    -   changes made to f76bcfa3f9478cadb2c5bc8bfeb04dacf89788fb.
+-   chore: uplift framework skeleton toward Laravel 12 defaults ([80214c5e7](https://github.com/pixelfed/pixelfed/commit/80214c5e71ce9f91d795f83df6abedbdefe19463))
+    -   Modernize artisan and public/index.php to the streamlined bootstrap form,
+    -   migrate factories/seeders autoload to PSR-4 (database/seeds -> seeders), and
+    -   backfill missing env-driven config keys across app, session, database, queue,
+    -   mail, logging, and cache. All changes are additive and preserve existing
+    -   Pixelfed behavior and defaults.
+-   Update composer.json ([b86e4f731](https://github.com/pixelfed/pixelfed/commit/b86e4f7318cd6eb318f14ae379b87dd3b9fe65f2))
+-   refactor: rename MigrateLocalS3MediaURL class and move media move-storage commands to unstable ([41c9b8830](https://github.com/pixelfed/pixelfed/commit/41c9b8830f2570198b1e2502d7a201131fdc415a))
+    -   Rename App\\Console\\Commands\\Admin\\MigrateLocalS3MediaURL to MediaUpdateS3CDNUrl
+    -   (class + filename only; the admin:MigrateLocalS3MediaURL signature is unchanged)
+    -   Move the three MediaMoveStorage{LocalToCloud,CloudToLocal,CloudToCloud} commands
+    -   into App\\Console\\Commands\\Admin\\Unstable and change their signatures from
+    -   admin: to unstable:
+    -   Update the scheduler in bootstrap/app.php, the command README, the
+    -   config/filesystems.php reference comment, and the affected feature tests
+-   Update filesystems.php ([d18e87133](https://github.com/pixelfed/pixelfed/commit/d18e871338c7701c927d78730737643c21456598))
+-   refactor: keep MediaMoveStorageLocalToCloud as a stable admin command ([a81270770](https://github.com/pixelfed/pixelfed/commit/a81270770cf4886b4c923acd3605241b4bbacd87))
+    -   MediaMoveStorageLocalToCloud is stable, so move it back out of the Unstable
+    -   namespace: restore App\\Console\\Commands\\Admin\\MediaMoveStorageLocalToCloud and
+    -   its admin:MediaMoveStorageLocalToCloud signature, and update the scheduler,
+    -   README, and feature test. CloudToLocal and CloudToCloud remain under unstable:.
+-   feat: storage:maintenance command + in-flow cleanup of emptied dirs ([400f00c5e](https://github.com/pixelfed/pixelfed/commit/400f00c5e13c0e8b7fdbf22d2a506cb5adbc717a))
+    -   Replace the remcache GC (GarbageCollectorRemcache / gc:remcache) with a
+    -   broader storage:maintenance command that sweeps stale remcache temp files and
+    -   recursively removes the random empty directories accumulated under the media,
+    -   story, avatar and import trees (--hours/--only/--except/--dry-run), scheduled
+    -   daily.
+    -   Fix the root causes so flows clean up after themselves rather than relying on
+    -   the sweep:
+    -   MediaDeletePipeline removes its own emptied m/\_v2 leaf dir
+    -   AvatarOptimize logs the previously-swallowed exception, still cleans up the
+    -   old avatar on failure, and removes the old file's now-empty splayed dir
+    -   AvatarController::deleteAvatar removes the emptied splayed dir
+    -   StoryExpire/StoryDelete remove the story's own emptied leaf dir
+    -   TransformImports removes imports/{userId} once its files are moved out
+    -   StoryFetch cleans up its remcache temp file in a finally block
+-   polish ([8ca3ac4dc](https://github.com/pixelfed/pixelfed/commit/8ca3ac4dccfd6760548011cd527abaa67d2aa3b6))
+-   refactor: simplify storage:maintenance flags and make it quiet by default ([fce75030e](https://github.com/pixelfed/pixelfed/commit/fce75030e0c4298759f64800fa8a6f843ef26626))
+    -   Drop --except (--only already covers task selection)
+    -   Quiet by default; per-root/per-item and summary lines now require -v/--verbose
+    -   Errors are always shown regardless of verbosity
+    -   Document the command in the console README
+-   fix: delete superseded image/thumbnail files instead of orphaning them ([b6d645a4d](https://github.com/pixelfed/pixelfed/commit/b6d645a4d48cb36dd930b53742d24d5adc9508dd))
+    -   Image::handleImageTransform derives the output filename from the current
+    -   media_path and applies the encoder's output extension. When that differs from
+    -   what is already stored (heic/avif -> jpg, or a thumbnail regenerated to a new
+    -   extension), the new file landed at a different path and the previous file was
+    -   left orphaned in the media directory — the source of the leftover \_thumb files
+    -   under public/m/\_v2.
+    -   Capture the path each transform supersedes and delete it after a successful
+    -   write (only when the new output path differs, so we never delete what we just
+    -   wrote). Remove the stale MediaDeleteLeafCleanupTest whose source change is not
+    -   in the tree.
+-   Add domain-mismatch metadata to Announce status fetch and stop noisy ERROR logs ([0df4c7117](https://github.com/pixelfed/pixelfed/commit/0df4c7117d089c14b01533e2391170683edd728b))
+    -   storeStatus() now throws with JSON metadata (checked id/url hosts, expected
+    -   rule, and the full activity payload) when status domains mismatch. The Announce
+    -   inbox handler catches this, logs the context at debug level, and returns
+    -   gracefully instead of surfacing a full production ERROR stack trace.
+-   Add structured metadata to MediaDeletePipeline skip/failure logs ([d456b7b64](https://github.com/pixelfed/pixelfed/commit/d456b7b64a4fd3589a96da11f66de58d5c7809b2))
+    -   Replace interpolated log strings with structured context (media/status/profile/
+    -   user ids, mime, size, order, paths, hls_path, remote flag, timestamps) so
+    -   operators can trace why orphan-purge deletions are skipped or fail.
+-   Add admin:resyncemoji command to re-download remote emoji locally ([9214e9680](https://github.com/pixelfed/pixelfed/commit/9214e9680ab8cdf4507574cb3d4f085ed4a5203a))
+    -   Adds CustomEmojiService::resync() which re-fetches a remote custom emoji's
+    -   media from its origin (image_remote_url) via the SSRF-hardened
+    -   SecureMediaFetchService and stores it locally under public/{media_path},
+    -   reusing the existing headCheck validation and cache busting.
+    -   The admin:resyncemoji command takes a comma-separated list of emoji
+    -   filenames, looks each up by media_path, and resyncs remote ones. Supports
+    -   --missingonly, --dry-run and --force.
+-   Fix remote status deletion leaking attached media, add status:media command ([69869536a](https://github.com/pixelfed/pixelfed/commit/69869536a1972d0505429d2e5d0fedd4ef6c2025))
+    -   MediaDeletePipeline skips deletion when media->status_id is set. status_id has
+    -   no FK/cascade, so deleting a status never clears it, and the delete jobs
+    -   dispatched by the status-delete paths were always skipped, leaking media files.
+    -   Detach media (status_id = null) before dispatching the delete in StatusDelete,
+    -   RemoteStatusDelete and DeleteRemoteStatusPipeline, so the row is genuinely
+    -   orphaned by the time the guard checks it and the deletion proceeds.
+    -   Also adds a status:media diagnostic command that dumps all metadata for a
+    -   media id (DB columns, computed URLs, attachment state, parent status including
+    -   the dangling status_id case, owner, metadata, and an optional live URL check).
+-   Add media:maintenance command with orphanedMedia scope ([87dad44d0](https://github.com/pixelfed/pixelfed/commit/87dad44d092ab937eea1c385c1724ec732d103a2))
+    -   media:maintenance --scope orphanedMedia cleans up media whose status_id
+    -   references a status that no longer exists (hard-deleted) or is soft-deleted.
+    -   These dangling references predate the delete-path fix and MediaDeletePipeline's
+    -   attached guard would otherwise refuse to delete them, leaking files.
+    -   Detaches (status_id = null) before dispatching deletion via MediaStorageService,
+    -   so the guard sees a genuinely orphaned row. Supports --limit (batched),
+    -   --dry-run, and --force. The --scope map is extensible for future routines.
+-   Add verbose output to media:maintenance ([48a1fe5e5](https://github.com/pixelfed/pixelfed/commit/48a1fe5e5e8f7088e9f1b2d515f2355c8cfb8631))
+    -   With -v, print per-row detail (media_id, original status_id, remote_media,
+    -   profile_id, mime, size, path) as each orphaned row is processed instead of the
+    -   progress bar, and expand the dry-run table with extra columns. Uses Laravel's
+    -   built-in verbosity flag.
+-   Add TODO.md; enhance media:maintenance with --server filter and state annotations ([838a6b999](https://github.com/pixelfed/pixelfed/commit/838a6b999cc710d3c91f55d84003f6fdc1b38cb6))
+    -   TODO.md: capture follow-ups (centralized status media teardown, DM leak fix,
+    -   no-DB-cascade rationale, remote-edit orphaning, media:gc re-check).
+    -   media:maintenance: add --server remote|local|both (default both) to filter
+    -   orphaned media by origin.
+    -   Annotate each row with status state (live/soft-deleted/hard-deleted) next to
+    -   status_id and profile state (live/soft-deleted/hard-deleted) next to
+    -   profile_id, in both dry-run table and verbose run output. States are resolved
+    -   in batched, trashed-aware queries.
+-   Remove TODO.md ([6355caa90](https://github.com/pixelfed/pixelfed/commit/6355caa903fa881f894724093eb43908ae51beb7))
+    -   Drop the TODO.md added in 838a6b9; keep the media:maintenance changes.
+-   Add --status and --profile state filters to media:maintenance ([4ad6e91ef](https://github.com/pixelfed/pixelfed/commit/4ad6e91ef92232d2f9ed5c84c53db04afd7c0e9b))
+    -   --status live|soft|hard and --profile live|soft|hard narrow orphaned media by
+    -   the lifecycle state of the referenced status/profile row. Filters are applied
+    -   at the SQL level (whereExists/whereNotExists on deleted_at) so they compose
+    -   correctly with --limit. --status=live short-circuits since orphaned media never
+    -   has a live status. Options are validated up front.
+-   Drop live from --status on media:maintenance ([4dfb34de7](https://github.com/pixelfed/pixelfed/commit/4dfb34de75cfb02efae08dc3b72fd5ac948ec8ca))
+    -   Orphaned media never references a live status, so --status only accepts soft
+    -   and hard. --profile still accepts live/soft/hard. Removes the now-redundant
+    -   live short-circuit and makes valid values per-option.
+-   Rename media:maintenance to media:filtercleanup ([d62c58988](https://github.com/pixelfed/pixelfed/commit/d62c58988193a081980ea5afbd1a2eb585947294))
+    -   Rename the command signature (media:maintenance -> media:filtercleanup), class
+    -   (MediaMaintenance -> MediaFilterCleanup), and file to match. Behavior
+    -   unchanged.
+-   Rename status:post to status:statuses ([237ed61b5](https://github.com/pixelfed/pixelfed/commit/237ed61b5d2b5e1f9d32c07c25a1a1e2b3bf1e7a))
+    -   Rename command signature (status:post -> status:statuses), class
+    -   (StatusPost -> StatusStatuses), and file to match.
+-   Add status:instance, status:avatar, status:emoji inspector commands ([9888923a8](https://github.com/pixelfed/pixelfed/commit/9888923a848046d088257e5c05bb460399d91db9))
+    -   Diagnostic commands mirroring status:statuses/status:media:
+    -   status:instance {id|domain|url|@user@domain}: instance row, moderation
+    -   state (banned/unlisted/auto_cw), sync timestamps, local profile count.
+    -   status:avatar {avatar_id|profile_id} \[--check\]: avatar row, storage state
+    -   (local/cloud existence), owning profile, optional live HEAD on remote_url.
+    -   status:emoji {id|:shortcode:|filename} \[--check\]: emoji row, origin
+    -   (local/remote), local file existence, optional live HEAD on image_remote_url.
+    -   Also includes the status:post -> status:statuses rename.
+-   Update AdminReportController.php ([10ae3fa8c](https://github.com/pixelfed/pixelfed/commit/10ae3fa8cbfbc1f4d582983d52bef36ab16c3b13))
+-   Add success message for profile update action ([45e4de392](https://github.com/pixelfed/pixelfed/commit/45e4de3928c115b571fa117eda40f2f830abf6ab))
+-   Update ApiV1Controller.php ([7c3644c3e](https://github.com/pixelfed/pixelfed/commit/7c3644c3e19082c09bc913a35df15e6b248fbc0d))
+-   Remove 'true' argument from usernameToId call ([c623a7afb](https://github.com/pixelfed/pixelfed/commit/c623a7afbf80e1826936c04b6f8621ff054014e0))
+-   Add Sanctum support ([584ce27f7](https://github.com/pixelfed/pixelfed/commit/584ce27f7142f472677d1c8e03168d3713075c67))
+-   Create 2019_12_14_000001_create_personal_access_tokens_table.php ([8e7b368ea](https://github.com/pixelfed/pixelfed/commit/8e7b368ea25859b58eebbd827ad1f7ca852c0318))
+-   Lint ([c19fd269b](https://github.com/pixelfed/pixelfed/commit/c19fd269b1bd780c55ea5fc6cfe8f7c9a558a2b0))
+-   Update composer.json ([8a0368ab0](https://github.com/pixelfed/pixelfed/commit/8a0368ab00a2f557a3a8ae867fb92edf91580919))
+-   Update Report endpoint, add support for optional message ([ccac8b31b](https://github.com/pixelfed/pixelfed/commit/ccac8b31bd11af192adeea234997f63c4bb46c26))
+-   Update ASF ([5468eaeb5](https://github.com/pixelfed/pixelfed/commit/5468eaeb56b1452e7f17b36b6352d2e13cf6b052))
+-   Fix reblog handling ([a6117a240](https://github.com/pixelfed/pixelfed/commit/a6117a2407e8b021db916df627acba57e7af27df))
+-   composer ([595620e5b](https://github.com/pixelfed/pixelfed/commit/595620e5b855fc6b51564895b28856d2fb44c716))
+-   Update dependabot.yml ([07b5c1fd3](https://github.com/pixelfed/pixelfed/commit/07b5c1fd34d340908622d6864e2e6542667eabfe))
+-   Drop the no-op pf_type assignment in the group topic feed ([71cade540](https://github.com/pixelfed/pixelfed/commit/71cade540ac3b1e0b7f442b6185ee44bf2824d66))
+-   Update ApiV1Controller, fix napi in timelines ([4c4a457fe](https://github.com/pixelfed/pixelfed/commit/4c4a457fe4d7ce96a0c391036aec55ac557f5c37))
+-   chore(deps): bump postcss-selector-parser ([e5bda87a1](https://github.com/pixelfed/pixelfed/commit/e5bda87a10744d31eee38a84bd7a353114adc6b8))
+    -   Bumps and \[postcss-selector-parser\](https://github.com/postcss/postcss-selector-parser). These dependencies needed to be updated together.
+    -   Updates `postcss-selector-parser` from 7.1.1 to 7.1.5
+    -   \[Release notes\](https://github.com/postcss/postcss-selector-parser/releases)
+    -   \[Changelog\](https://github.com/postcss/postcss-selector-parser/blob/main/CHANGELOG.md)
+    -   \[Commits\](https://github.com/postcss/postcss-selector-parser/compare/v7.1.1...7.1.5)
+    -   Updates `postcss-selector-parser` from 6.1.2 to 6.1.4
+    -   \[Release notes\](https://github.com/postcss/postcss-selector-parser/releases)
+    -   \[Changelog\](https://github.com/postcss/postcss-selector-parser/blob/main/CHANGELOG.md)
+    -   \[Commits\](https://github.com/postcss/postcss-selector-parser/compare/v7.1.1...7.1.5)
+    ***
+    -   updated-dependencies:
+    -   dependency-name: postcss-selector-parser
+    -   dependency-version: 7.1.5
+    -   dependency-type: indirect
+    -   dependency-name: postcss-selector-parser
+    -   dependency-version: 6.1.4
+    -   dependency-type: indirect
+    -   ...
+-   chore(deps): bump ip-address from 10.2.0 to 10.7.0 ([66f8b61ef](https://github.com/pixelfed/pixelfed/commit/66f8b61ef76a9c1acc067c8f7738df6862a14170))
+    -   Bumps \[ip-address\](https://github.com/beaugunderson/ip-address) from 10.2.0 to 10.7.0.
+    -   \[Release notes\](https://github.com/beaugunderson/ip-address/releases)
+    -   \[Commits\](https://github.com/beaugunderson/ip-address/compare/v10.2.0...v10.7.0)
+    ***
+    -   updated-dependencies:
+    -   dependency-name: ip-address
+    -   dependency-version: 10.7.0
+    -   dependency-type: indirect
+    -   ...
+-   chore(deps): bump browserslist from 4.28.2 to 4.28.8 ([ec8fa5f61](https://github.com/pixelfed/pixelfed/commit/ec8fa5f619da85f082dd1996dd29f32472549631))
+    -   Bumps \[browserslist\](https://github.com/browserslist/browserslist) from 4.28.2 to 4.28.8.
+    -   \[Release notes\](https://github.com/browserslist/browserslist/releases)
+    -   \[Changelog\](https://github.com/browserslist/browserslist/blob/main/CHANGELOG.md)
+    -   \[Commits\](https://github.com/browserslist/browserslist/compare/4.28.2...4.28.8)
+    ***
+    -   updated-dependencies:
+    -   dependency-name: browserslist
+    -   dependency-version: 4.28.8
+    -   dependency-type: indirect
+    -   ...
+-   chore(deps)(deps-dev): bump laravel/telescope from 5.22.1 to 5.23.0 ([447b76fed](https://github.com/pixelfed/pixelfed/commit/447b76fedead7660477c52782ff68f40a749dc3c))
+    -   Bumps \[laravel/telescope\](https://github.com/laravel/telescope) from 5.22.1 to 5.23.0.
+    -   \[Release notes\](https://github.com/laravel/telescope/releases)
+    -   \[Changelog\](https://github.com/laravel/telescope/blob/5.x/CHANGELOG.md)
+    -   \[Commits\](https://github.com/laravel/telescope/compare/v5.22.1...v5.23.0)
+    ***
+    -   updated-dependencies:
+    -   dependency-name: laravel/telescope
+    -   dependency-version: 5.23.0
+    -   dependency-type: direct:development
+    -   update-type: version-update:semver-minor
+    -   ...
+-   chore(deps)(deps): bump laravel/tinker from 2.11.1 to 3.0.2 ([7eded54f1](https://github.com/pixelfed/pixelfed/commit/7eded54f1c34570f3185f9850e6c44fcdd70f0ad))
+    -   Bumps \[laravel/tinker\](https://github.com/laravel/tinker) from 2.11.1 to 3.0.2.
+    -   \[Release notes\](https://github.com/laravel/tinker/releases)
+    -   \[Changelog\](https://github.com/laravel/tinker/blob/3.x/CHANGELOG.md)
+    -   \[Commits\](https://github.com/laravel/tinker/compare/v2.11.1...v3.0.2)
+    ***
+    -   updated-dependencies:
+    -   dependency-name: laravel/tinker
+    -   dependency-version: 3.0.2
+    -   dependency-type: direct:production
+    -   update-type: version-update:semver-major
+    -   ...
+-   chore(deps): bump fast-uri from 3.1.2 to 3.1.6 ([0eedf0dee](https://github.com/pixelfed/pixelfed/commit/0eedf0deefebecc1a817e92c5ed0e0400eb31a5b))
+    -   Bumps \[fast-uri\](https://github.com/fastify/fast-uri) from 3.1.2 to 3.1.6.
+    -   \[Release notes\](https://github.com/fastify/fast-uri/releases)
+    -   \[Commits\](https://github.com/fastify/fast-uri/compare/v3.1.2...v3.1.6)
+    ***
+    -   updated-dependencies:
+    -   dependency-name: fast-uri
+    -   dependency-version: 3.1.6
+    -   dependency-type: indirect
+    -   ...
+-   Update dependabot.yml ([93e8c7d86](https://github.com/pixelfed/pixelfed/commit/93e8c7d8680399c61fd5375751ea2db1d84b1a23))
+-   Add only_reposts ([9e33bed63](https://github.com/pixelfed/pixelfed/commit/9e33bed630d0cd8b4da3121975e5fefc8b43f253))
+-   chore(deps)(deps): bump blurhash from 1.1.5 to 2.0.5 ([f428ff6fb](https://github.com/pixelfed/pixelfed/commit/f428ff6fb5cbb8f68ff6c4cc662f336e880f940f))
+    -   Bumps \[blurhash\](https://github.com/woltapp/blurhash) from 1.1.5 to 2.0.5.
+    -   \[Commits\](https://github.com/woltapp/blurhash/commits)
+    ***
+    -   updated-dependencies:
+    -   dependency-name: blurhash
+    -   dependency-version: 2.0.5
+    -   dependency-type: direct:production
+    -   update-type: version-update:semver-major
+    -   ...
+-   Fix silent failure in avatar upload endpoints ([29280cd95](https://github.com/pixelfed/pixelfed/commit/29280cd950cc3ddecc4262cadab2a7262b6fd2cc))
+    -   AvatarController@store and BaseApiController@avatarUpdate wrapped the
+    -   upload flow in an empty catch(\\Exception) block and returned a success
+    -   response even when the upload or save failed.
+    -   Log the exception and return a real error response (500 JSON for the
+    -   API endpoint, a redirect with validation errors for the web endpoint).
+    -   Adds regression tests covering the failure path, the success path, and
+    -   non-image rejection.
+-   Mark direct messages read with a single bulk update ([fbfd26d77](https://github.com/pixelfed/pixelfed/commit/fbfd26d7759a67caa48b10e485ba3b2a6d95570d))
+    -   DirectMessageController@read fetched every matching DirectMessage and
+    -   saved each one individually in a loop, issuing one UPDATE per row. On an
+    -   active thread this is N queries.
+    -   Pluck the matching ids and perform a single bulk update, preserving the
+    -   existing response (the list of affected message ids) and updated_at
+    -   behaviour.
+    -   Adds regression tests covering the marked-read ids, the status_id lower
+    -   bound, and sender isolation.
+-   Add timeout, retry and error handling to remote auth HTTP calls ([2ad6e2831](https://github.com/pixelfed/pixelfed/commit/2ad6e28318731c5d34c4fff48495d8f7b06209f0))
+    -   RemoteAuthService::getVerifyCredentials, getFollowing and getToken made
+    -   outbound HTTP requests to a user-controlled remote instance during the
+    -   Mastodon login flow with no timeout, no retry and no exception handling.
+    -   A slow or hostile instance could hang the request or surface an uncaught
+    -   exception.
+    -   Wrap all three in timeout(20)->retry(3, 750) with try/catch that returns
+    -   false on failure, matching the existing pattern in isDomainCompatible().
+    -   Callers already treat a falsy return as a failure; add the missing guard
+    -   at the one verify_credentials call site that accessed the result array
+    -   without checking it first.
+    -   Adds RemoteAuthServiceTest covering connection failure, server error and
+    -   success paths.
+-   Compute Year-in-Review averages in SQL instead of in PHP ([cd873c897](https://github.com/pixelfed/pixelfed/commit/cd873c89764583168c871cb88eb710961afbc580))
+    -   SeasonalController::getData computed the average posts/likes per profile
+    -   by grouping in SQL, then pulling every grouped row into a collection and
+    -   calling ->pluck('count')->avg() in PHP. This loaded one row per profile
+    -   into memory just to average.
+    -   Wrap the grouped per-profile counts in a subquery and let the database
+    -   compute AVG(count), returning a single value. Also drops the invalid
+    -   SELECT _ with GROUP BY (ONLY_FULL_GROUP_BY) by selecting count(_) only.
+    -   Adds a test verifying the average-of-per-profile-counts and its
+    -   exclusions (remote, wrong type, out-of-range date), plus the empty case.
+-   Extract duplicated blocked-id and duplicate-shortcode query patterns ([e4e12fad7](https://github.com/pixelfed/pixelfed/commit/e4e12fad7cffee99ef017c30d03037fafb9bfae3))
+    -   Two query patterns were copy-pasted across several call sites:
+    -   The 'users who blocked me, plus myself' list used to filter profile
+    -   search (UserFilter::whereFilterableId($pid)->pluck('user_id')->push($pid))
+    -   appeared in ComposeController (x2) and DirectMessageController. Extracted
+    -   to UserFilterService::searchExcludedProfileIds(). Note this is the
+    -   inverse of blocks() (who I blocked), so it is a distinct method.
+    -   CustomEmoji duplicate detection (groupBy('shortcode')->havingRaw(
+    -   'count(\*) > 1')) appeared three times in AdminController. Extracted to a
+    -   CustomEmoji::duplicateShortcodes() query scope.
+    -   Adds tests for both. No behaviour change.
+-   Remove dead debug methods that echoed the raw request ([661b84142](https://github.com/pixelfed/pixelfed/commit/661b841428f76aa5a1a5ab375622bf4737c40fe1))
+    -   CollectionController::index and StoryComposeController::createPoll had no
+    -   route mapping and simply returned $request->all(). Both are unreachable
+    -   debug leftovers; remove them. The live poll route maps to
+    -   ComposeController::createPoll, which is unaffected.
+-   Stream deletions with cursor and batch notification lookups in delete jobs ([c4e5b96d2](https://github.com/pixelfed/pixelfed/commit/c4e5b96d25bc1694c1469a79b7c71907f60dd426))
+    -   The status- and account-deletion jobs loaded whole collections with
+    -   ->get() and then looped, running a per-row Notification lookup inside
+    -   each iteration.
+    -   StatusDelete / RemoteStatusDelete: resolve associated DirectMessage and
+    -   MediaTag ids, fetch their notifications in a single whereIn query,
+    -   clear each via cursor (NotificationService::del must run per row for
+    -   cache/redis cleanup), then bulk delete the DMs and media tags.
+    -   DeleteAccountPipeline / DeleteRemoteProfilePipeline: stream Story and
+    -   Collection deletions with cursor() instead of loading every row into
+    -   memory. Per-row file unlink and item deletes are preserved.
+    -   Adds StatusDeleteCleanupTest covering DM + notification cleanup, media
+    -   tag + notification cleanup, and the no-associations case.
+-   Extract following-ids lookup into FollowerService::getFollowingIds ([667f6e2fc](https://github.com/pixelfed/pixelfed/commit/667f6e2fc9a5dbfbcc24b65771f25c2e83153eff))
+    -   The Cache::remember('profile:following:'.$pid, ...) block that plucks
+    -   following_id and appends the caller's own id was copy-pasted across four
+    -   call sites, with inconsistent TTLs (1440 minutes vs 1209600 seconds).
+    -   Add FollowerService::getFollowingIds($pid), which owns the cache key that
+    -   add()/remove() already invalidate, and use it from InternalApiController,
+    -   PublicApiController, ApiV1Controller and HashtagUnfollowPipeline. Removes
+    -   the now-unused Follower/Cache imports left behind.
+    -   Adds a test covering the followed-ids-plus-self result and the
+    -   follows-nobody case.
+-   Refactor NotificationService ([c9b0ee3bd](https://github.com/pixelfed/pixelfed/commit/c9b0ee3bddb95492d618bab3c4ac47c7376b4387))
+-   chore(deps): bump svgo from 2.8.2 to 2.8.4 ([55b932d77](https://github.com/pixelfed/pixelfed/commit/55b932d777fd3fcac03cbfdc075f7d048daf21cb))
+    -   Bumps \[svgo\](https://github.com/svg/svgo) from 2.8.2 to 2.8.4.
+    -   \[Release notes\](https://github.com/svg/svgo/releases)
+    -   \[Commits\](https://github.com/svg/svgo/compare/v2.8.2...v2.8.4)
+    ***
+    -   updated-dependencies:
+    -   dependency-name: svgo
+    -   dependency-version: 2.8.4
+    -   dependency-type: indirect
+    -   ...
+-   chore(deps): bump body-parser from 1.20.5 to 1.20.6 ([50ea4a9b4](https://github.com/pixelfed/pixelfed/commit/50ea4a9b4699a4d973a99569d17c747e15de86b1))
+    -   Bumps \[body-parser\](https://github.com/expressjs/body-parser) from 1.20.5 to 1.20.6.
+    -   \[Release notes\](https://github.com/expressjs/body-parser/releases)
+    -   \[Changelog\](https://github.com/expressjs/body-parser/blob/master/HISTORY.md)
+    -   \[Commits\](https://github.com/expressjs/body-parser/compare/1.20.5...1.20.6)
+    ***
+    -   updated-dependencies:
+    -   dependency-name: body-parser
+    -   dependency-version: 1.20.6
+    -   dependency-type: indirect
+    -   ...
+-   Fix Larastan error: correct Status import in NotificationService ([ef7e485e7](https://github.com/pixelfed/pixelfed/commit/ef7e485e7d9109bdc0b5d4966b09da38c57faf38))
+    -   Use App\\Models\\Status instead of the non-existent App\\Status class.
+-   Fix media storage migration crash when no .env file exists ([6b14b229d](https://github.com/pixelfed/pixelfed/commit/6b14b229d1e6275245c16c4ba20c1be5a965033b))
+    -   The media storage migration commands read/parsed the .env file directly to
+    -   check and flip PF_ENABLE_CLOUD. In containerized deploys there is no .env on
+    -   disk (config is injected via env vars), so updateEnvFile() threw
+    -   'file_get_contents(.env): Failed to open stream' and the scheduled command
+    -   exited 1.
+    -   Check the live setting via config_cache('pixelfed.cloud_storage') like the
+    -   rest of the app, instead of parsing .env.
+    -   Make the .env write best-effort in ManagesMediaStorageEnv: skip gracefully
+    -   when the file is missing or read-only, and still apply the runtime + DB
+    -   config-cache updates (the load-bearing changes on a hot server).
+    -   Apply the same fix to the sibling unstable:MediaMoveStorageCloudToLocal.
+    -   Add a regression test covering the no-.env container scenario.
+-   Add per-file transfer output and --debug detail to MediaMoveStorageLocalToCloud ([b8ca4da3a](https://github.com/pixelfed/pixelfed/commit/b8ca4da3a6bdece89c7d89bf68cbe15c0565fa0d))
+-   chore: move resources/lang to top-level lang/ per Laravel 9+ convention ([9db2218ca](https://github.com/pixelfed/pixelfed/commit/9db2218ca62a547976d57b13c286958b8789566b))
+    -   Relocate translation files from resources/lang to lang/ via git mv
+    -   Update PHP references to use the lang_path() helper
+    -   Update crowdin.yml source/translation paths
+    -   Update phpstan.neon translationDirectories
+-   polish ([24fd8c5cb](https://github.com/pixelfed/pixelfed/commit/24fd8c5cbb1e151bb33f39ed35198f39de3d41b1))
+-   Update app.php ([5cc0a68ff](https://github.com/pixelfed/pixelfed/commit/5cc0a68ffed4b7827ce316a6fb13e8f397774efb))
+-   Update Localization.php ([7cf6e7714](https://github.com/pixelfed/pixelfed/commit/7cf6e771482edb5de945645bde085c4b1a02fa80))
+-   Convert string class references to ::class ([6d8ad3885](https://github.com/pixelfed/pixelfed/commit/6d8ad3885a8d90541d2363334abab8ed030f9309))
+    -   Applies the ::class conversion from pixelfed-staging PR #9 (patch 1/21),
+    -   formatted with Pint (short imported ::class form). Excludes the
+    -   ModelNamespaceMigrationTest namespace assertions, which intentionally
+    -   compare against literal namespace strings.
+-   Convert optional() to nullsafe operator ([042ab0a6e](https://github.com/pixelfed/pixelfed/commit/042ab0a6e42255eb87bfc3e74ff94c00405b6ea2))
+    -   Applies patch 2/21 from pixelfed-staging PR #9: replaces optional($x)->y
+    -   with $x?->y across 16 files. Pint-clean.
+-   Remove unnecessary $model property from factories ([8140ef7b0](https://github.com/pixelfed/pixelfed/commit/8140ef7b028ee1194101f6992723b11a7bb76017))
+    -   Applies patch 3/21 from pixelfed-staging PR #9: removes the redundant
+    -   protected $model property from 5 factories (Laravel resolves the model
+    -   from the factory name). Unused imports dropped via Pint. Verified
+    -   factories still resolve their models and affected tests pass.
+-   Convert route options to fluent methods ([c0f3469ee](https://github.com/pixelfed/pixelfed/commit/c0f3469ee2b1a45aaa9fbdcf40c28318680b3b3c))
+    -   Laravel 8 adopts the tuple syntax for controller actions. Since the old options array is incompatible with this syntax, Shift converted them to use modern, fluent methods.
+-   Update dependabot.yml ([5d542d209](https://github.com/pixelfed/pixelfed/commit/5d542d209cf6dde562e52d30308273307efaac18))
+-   Default core files ([e973ddcfa](https://github.com/pixelfed/pixelfed/commit/e973ddcfa439fc5bb448aacd41430324ceff214d))
+-   Rename Bootstrap 3 pagination templates ([938f0cf20](https://github.com/pixelfed/pixelfed/commit/938f0cf205c632c294dca362a573506dee15d58a))
+-   Shift `ENV` variables ([e4120ce10](https://github.com/pixelfed/pixelfed/commit/e4120ce106ca1b2d80ae3d27bb96cd2f889e4e55))
+-   Default config files ([c81c4be68](https://github.com/pixelfed/pixelfed/commit/c81c4be6833efd6bfc22f84c877eb93a04e88fb7))
+    -   In an effort to make upgrading the constantly changing config files easier, Shift defaulted them and merged your true customizations - where ENV variables may not be used.
+-   Update session.php ([1b034aa42](https://github.com/pixelfed/pixelfed/commit/1b034aa429ebd3eb18b0ac2d60ac58d52935a9ba))
+-   chore(deps-dev): bump larastan/larastan from 3.10.0 to 3.11.0 ([8f8b95e17](https://github.com/pixelfed/pixelfed/commit/8f8b95e170e08de4e69b5606a4ead51d8384e83a))
+    -   Bumps \[larastan/larastan\](https://github.com/larastan/larastan) from 3.10.0 to 3.11.0.
+    -   \[Release notes\](https://github.com/larastan/larastan/releases)
+    -   \[Changelog\](https://github.com/larastan/larastan/blob/3.x/RELEASE.md)
+    -   \[Commits\](https://github.com/larastan/larastan/compare/v3.10.0...v3.11.0)
+    ***
+    -   updated-dependencies:
+    -   dependency-name: larastan/larastan
+    -   dependency-version: 3.11.0
+    -   dependency-type: direct:development
+    -   update-type: version-update:semver-minor
+    -   ...
+-   Update DeleteAccountPipeline.php ([f51f1ef0d](https://github.com/pixelfed/pixelfed/commit/f51f1ef0db31459e4a905062865180baced5a119))
+-   Update cache.php ([15d30f803](https://github.com/pixelfed/pixelfed/commit/15d30f803d4d7f0a699e617962384ef0cd134850))
+-   Update broadcasting.php ([fff81fe59](https://github.com/pixelfed/pixelfed/commit/fff81fe596070a2b6d5a0ae39840ecd67f03f2b3))
+-   Change default log stack from 'single' to 'daily' ([0200c9e0c](https://github.com/pixelfed/pixelfed/commit/0200c9e0cd82cb699f579476eb499834943f7d79))
+-   Update session.php ([ab2447b0f](https://github.com/pixelfed/pixelfed/commit/ab2447b0f46d9d0fe3bf8d5b3a51be3f60970ea9))
+-   Update cache.php ([5383c2ecc](https://github.com/pixelfed/pixelfed/commit/5383c2ecc9018389d61f0a274e8b71ff2b5f73c5))
+-   Update database.php ([690d71069](https://github.com/pixelfed/pixelfed/commit/690d710693a1d9f05313c1d9fe1ad845fc3ccaac))
+-   Update default mailer configuration to use MAIL_DRIVER ([1d712e147](https://github.com/pixelfed/pixelfed/commit/1d712e14782eb08efa3be0c343d3544a46e7b37c))
+-   Update queue.php ([19c8bea00](https://github.com/pixelfed/pixelfed/commit/19c8bea00b3a506cf14375fffa25b4002ecbdca1))
+-   Require ext-redis to support phpredis client ([dcc4f87ba](https://github.com/pixelfed/pixelfed/commit/dcc4f87ba0c4a4ded65d7320f4407990afe16d46))
+    -   Add ext-redis as a required PHP extension so phpredis can be used as
+    -   the Redis client without manual setup. predis remains available, so
+    -   users can switch between REDIS_CLIENT=phpredis and predis freely.
+-   Apply staged formatting and session config changes ([95e316e86](https://github.com/pixelfed/pixelfed/commit/95e316e86f24873b045b4cdec1fcb692653155af))
+-   Update DeleteAccountPipeline.php ([8d375aed8](https://github.com/pixelfed/pixelfed/commit/8d375aed8a4bb034ff32c10368136120ee193b4b))
+-   Fix PostEditModal. Closes #7084 ([d7cfd0720](https://github.com/pixelfed/pixelfed/commit/d7cfd072049811dd63f2d1d4f09593e3adca000f))
+-   Update compiled assets ([a1c5bf062](https://github.com/pixelfed/pixelfed/commit/a1c5bf0626cdb9194a54038e740c14495ec8da50))
+-   Update redirect route for 2FA setup ([0a39ccef9](https://github.com/pixelfed/pixelfed/commit/0a39ccef984e647992e364aea99775a18603aaf0))
+-   Update MediaStorageService.php ([ce4df0092](https://github.com/pixelfed/pixelfed/commit/ce4df00921c33f873908018da5ffdf87edf3f74d))
+-   Update password validation rule to include string and min length ([c2a568a5c](https://github.com/pixelfed/pixelfed/commit/c2a568a5cc0dc3e928f4f672bf0d25dad75d50d6))
+-   Change 2FA code validation to require 6 digits ([76d4e1ab2](https://github.com/pixelfed/pixelfed/commit/76d4e1ab23c49f29032d2c3b7b1fc4e39555918d))
+-   Update UpdatePersonValidator.php ([b62eafd05](https://github.com/pixelfed/pixelfed/commit/b62eafd054e09ec2f4ec152ed47bdc49793e316d))
+-   Lint ([6f688a31d](https://github.com/pixelfed/pixelfed/commit/6f688a31d7fa1a2e55b74747da95f1504329d063))
+-   Create PruneOldNotifications.php ([85fec3ac8](https://github.com/pixelfed/pixelfed/commit/85fec3ac82da8941866b15aaf9d4ba576c652e9e))
+-   Create 2026_09_07_071046_add_deleted_at_profile_idindex_to_notifications_table.php ([d3746bc8c](https://github.com/pixelfed/pixelfed/commit/d3746bc8ceb1e3954a85a5d4cf07981e54ed8d59))
+-   Fix media gc ([764a98437](https://github.com/pixelfed/pixelfed/commit/764a98437d8a67af4646c4b4004bc29e186454c2))
+-   Update SiteController.php ([99a013acc](https://github.com/pixelfed/pixelfed/commit/99a013accc6157b3c353c1b92b5f1dc64efb394b))
+-   Update SiteController.php ([3673cf30e](https://github.com/pixelfed/pixelfed/commit/3673cf30e4407e217d6895570d457a4e242631e1))
+-   Update MediaMoveStorageLocalToCloud.php ([896342a57](https://github.com/pixelfed/pixelfed/commit/896342a57f4d4f09dd42ccf9c16d3f19f08b86b2))
+-   Lint ([c07706a41](https://github.com/pixelfed/pixelfed/commit/c07706a415fa434f197fce12a543457fba3c6c18))
+-   fix: correct SiteController view return types, drop ViewContract alias ([8b4a7d4e3](https://github.com/pixelfed/pixelfed/commit/8b4a7d4e3c8beb66aea8c7c4dc94a9c22465f9c0))
+    -   An automated return-type pass aliased the view contract as ViewContract
+    -   to avoid clashing with the imported View facade, but left four methods
+    -   (curatedOnboarding, language, redirectUrl, followIntent) typed against
+    -   the facade instead of the contract. That threw a TypeError on
+    -   /auth/sign_up.
+    -   Convert the four View::make() calls to the view() helper, drop the
+    -   facade import, and use a single Illuminate\\Contracts\\View\\View import
+    -   for all return types.
+-   polish ([5bf04957d](https://github.com/pixelfed/pixelfed/commit/5bf04957d5711db1366366eadb164dde1dfd156c))
+-   Add notification gc ([f37c5fc95](https://github.com/pixelfed/pixelfed/commit/f37c5fc95c51e6e6bfd2947bd8a07971cf5da79a))
+-   Fix typo ([ac3421312](https://github.com/pixelfed/pixelfed/commit/ac34213121a1de6da6af6545b9cdead970265886))
+-   Replace custom register token with spatie/laravel-honeypot ([ce4343e3e](https://github.com/pixelfed/pixelfed/commit/ce4343e3e26073abd0d9107e7ca02bd8799eba03))
+    -   Swap the custom 'rt' register token anti-spam mechanism for
+    -   spatie/laravel-honeypot on the registration and parental-controls
+    -   invite flows.
+    -   Add spatie/laravel-honeypot and publish config/honeypot.php
+    -   Remove getRegisterToken() and the rt validation rule from RegisterController
+    -   Replace the rt hidden field with the @honeypot directive in both forms
+    -   Attach ProtectAgainstSpam middleware to POST /register and the
+    -   parental-controls invite register route
+    -   Update RegisterTest to disable honeypot for the valid registration case
+-   Fix DeleteAccountPipeline ([40fedfca4](https://github.com/pixelfed/pixelfed/commit/40fedfca4f35337eec55ceae36d738d0ed1ad787))
+-   Replace Auth::routes() with explicit auth route definitions ([889d9efe9](https://github.com/pixelfed/pixelfed/commit/889d9efe99bb12058b1514f4aca0a0cea041fe64))
+    -   Expand the laravel/ui Auth::routes() helper into explicit route
+    -   definitions for login, logout, registration and password reset. This
+    -   removes the routing magic, makes every auth route visible in web.php,
+    -   and lets the honeypot ProtectAgainstSpam middleware live directly on the
+    -   single POST /register definition instead of a duplicate route.
+    -   laravel/ui is retained since the Auth controllers still rely on its
+    -   Illuminate\\Foundation\\Auth traits.
+-   Update Helpers.php ([e57f7ccd3](https://github.com/pixelfed/pixelfed/commit/e57f7ccd3af0721133885552ab983bf125ed343f))
+-   Update AP Helpers ([c558724e4](https://github.com/pixelfed/pixelfed/commit/c558724e470d84e82517731206240e7bf75b4ce1))
+-   Update account statuses endpoint ([085eabccf](https://github.com/pixelfed/pixelfed/commit/085eabccf983a3a2064d117a434b9968c499254f))
+-   Update ApiV1Controller.php ([7376a007a](https://github.com/pixelfed/pixelfed/commit/7376a007a5a4197db69288a2dac34dfd7e38ae98))
+-   Fix tests ([1281fa375](https://github.com/pixelfed/pixelfed/commit/1281fa37515ceb54ab1be19680cac762f93584e2))
+-   Fix test ([48750f707](https://github.com/pixelfed/pixelfed/commit/48750f707972d3ad7b995a661dbe53f5f3e7dbbe))
+-   Remove blindKeyRotation method from InboxWorker ([767c6ec20](https://github.com/pixelfed/pixelfed/commit/767c6ec2019b19f34121f0767ff662f9a0422899))
+    -   Removed the blindKeyRotation method and its associated logic.
+-   Update InboxValidator.php ([56251cb05](https://github.com/pixelfed/pixelfed/commit/56251cb05f02ccf44c75e477d8a592cab69eb706))
+-   Update DeleteWorker.php ([4acc0dd52](https://github.com/pixelfed/pixelfed/commit/4acc0dd528671942f385c9069e83a7673012756c))
+-   Update AccountTransformer ([94b8fea32](https://github.com/pixelfed/pixelfed/commit/94b8fea32af013b2664a7efc338c6fa60605d761))
+-   Fix accounts statuses max_id pagination returning duplicate boundary status ([3b951d41d](https://github.com/pixelfed/pixelfed/commit/3b951d41d8384a4a91258cc2c8d67b51e75fd859))
+-   Fix StatusDelete crashing on soft-deleted owning profile ([6e7419bb9](https://github.com/pixelfed/pixelfed/commit/6e7419bb96374bf1f3c3662c5a1d9d90ad95516b))
+-   Fix admin instance stats endpoint 404 on Postgres via strict is_admin check ([df1e771f9](https://github.com/pixelfed/pixelfed/commit/df1e771f930f9520099a9fb681294d98cffe3d5b))
+-   Validate publicKey.id host on inbox actor ingest to prevent key_id poisoning ([1905da723](https://github.com/pixelfed/pixelfed/commit/1905da723d0507ebe0364337c0178f6fdb3c0053))
+-   Guard hashtag follow against null profile for soft-deleted accounts ([8258a5a5f](https://github.com/pixelfed/pixelfed/commit/8258a5a5f88807ca29d8c063136331f95b0836fa))
+-   Harden remote status update media fetch against SSRF ([856f2f8f2](https://github.com/pixelfed/pixelfed/commit/856f2f8f2d2225ab7df64aa0e2d9d08a8ca8ce7a))
+-   Fix favourites pagination skipping one favourite per page boundary ([e79135a77](https://github.com/pixelfed/pixelfed/commit/e79135a771fd529e4d3dad54558a6f1eba7b531b))
+-   Scope reclaim-username profile deletion and fail on surviving orphan ([a1724a4b1](https://github.com/pixelfed/pixelfed/commit/a1724a4b1cbb8b5ca4116082439f1c58732d618d))
+-   Enforce poll scope authorization on vote endpoint ([a8a7a430d](https://github.com/pixelfed/pixelfed/commit/a8a7a430d77af79a6886cf66cc951c81b1e5bf5a))
+-   Require visibility on collection store to match NOT NULL schema ([a28650962](https://github.com/pixelfed/pixelfed/commit/a286509622370d56d354c6e7abe73c73c409639e))
+-   Update ApiV1Controller.php ([602e498f0](https://github.com/pixelfed/pixelfed/commit/602e498f0ac5785e7c14eaf9e8d691e425a357eb))
+-   Fix directory listing reporting oauth and activitypub flags always true ([fe70cd115](https://github.com/pixelfed/pixelfed/commit/fe70cd115518b2c489a0b8743546fcd46bc13183))
+-   Fix login activity groupBy returning stale rows and 500 on strict DBs ([3cb5b6e1f](https://github.com/pixelfed/pixelfed/commit/3cb5b6e1fff7fffdec443d0b2797388137238624))
+-   Enforce pat_enabled kill-switch on personal access token renew ([d2b11a71b](https://github.com/pixelfed/pixelfed/commit/d2b11a71b37df32da638f09eb75dfdd370fb713b))
+-   Fix isDomainCompatible throwing on non-json beagle response ([d51cf4ccc](https://github.com/pixelfed/pixelfed/commit/d51cf4ccc91ff5bdd4b213f02939d420c092f439))
+-   Route StoryFetch outbound requests through SSRF-hardened fetch service ([9e84ad261](https://github.com/pixelfed/pixelfed/commit/9e84ad261d375cf8761615f2518dc79d25e6d511))
+-   Fix registration form redirecting when max_users is falsy ([afcb68c18](https://github.com/pixelfed/pixelfed/commit/afcb68c183cb393a25b9ab869e2874415a1d4cac))
+-   Fix custom filter rate-limit counter never expiring ([63e3c95fa](https://github.com/pixelfed/pixelfed/commit/63e3c95faead959b08ef89b005d597732738239a))
+-   Invalidate latest-story cache on remote story expiry and null-guard latest() ([9850aac67](https://github.com/pixelfed/pixelfed/commit/9850aac676bf60d770c95d4aa1d1160a6092b4b3))
+-   Detect OOB oauth client when redirect_uri omitted on authorize ([462b4bc0d](https://github.com/pixelfed/pixelfed/commit/462b4bc0da6770d2433d88dbb249d265375014d0))
+-   Ignore own row when validating email update uniqueness ([53ad34b32](https://github.com/pixelfed/pixelfed/commit/53ad34b321f480c70c909c5735b6c3e9047539e5))
+-   Send Pixelfed User-Agent on federated account deletion deliveries ([327348be0](https://github.com/pixelfed/pixelfed/commit/327348be02fe27499bcd7575cfd89f8bbd4cb72b))
+-   Drop Instagram import job when profile is missing instead of crashing ([922d7f766](https://github.com/pixelfed/pixelfed/commit/922d7f766e851c0710e039dc908e76d60ff911dc))
+-   Only dispatch SharePipeline for newly-created reblogs ([d190ba7b6](https://github.com/pixelfed/pixelfed/commit/d190ba7b66452b8546c65e24e281ef248805550e))
+-   Use ILIKE for case-insensitive search on PostgreSQL ([613cf413d](https://github.com/pixelfed/pixelfed/commit/613cf413de1b76abc8f0d7594e10f4454271e5fd))
+-   Escape user-provided content in curated register admin emails ([4df40cb77](https://github.com/pixelfed/pixelfed/commit/4df40cb77264ac4f2d5dd99b4736b06728ea3daa))
+-   Check media blocklist before storing uploads to prevent orphaned files ([ec6827bae](https://github.com/pixelfed/pixelfed/commit/ec6827bae2f49f1ddaefaf7a4abb84480e3577f9))
+-   Rate limit and audit-log 2FA checkpoint verification ([8cebb24c0](https://github.com/pixelfed/pixelfed/commit/8cebb24c04806501a7fbc65957aabc9fc803f42c))
+-   Apply Pint lint fixes to session test files ([eb9bd1130](https://github.com/pixelfed/pixelfed/commit/eb9bd113034c0ccf0a5924b0881c436e6d0a3cc7))
+-   Federate unlike before deleting Like so retries can deliver ([1ffda3eba](https://github.com/pixelfed/pixelfed/commit/1ffda3eba9768c3e323b6c7e4e16d7d6bad818c4))
+-   Use intended-redirect session for authorize_interaction guest login ([0234a305a](https://github.com/pixelfed/pixelfed/commit/0234a305ae98704cf5e212744a8dee03a82a2f04))
+-   Deterministically keep earliest status per uri in dedupe command ([e360fab61](https://github.com/pixelfed/pixelfed/commit/e360fab61982e74086cbe7ed6b7f12eb3d3d577a))
+-   Update StoryApiV1Controller.php ([fc80bce46](https://github.com/pixelfed/pixelfed/commit/fc80bce46009e25edc063082301ca5ad62ff268c))
+-   Trigger StatusHashtag observer on deletion to keep cached_count accurate ([444c796ba](https://github.com/pixelfed/pixelfed/commit/444c796bac5e618f9fcfe523f65f7fee87d805aa))
+-   Fall back to stored profile when remote refresh fails ([73fb5ed69](https://github.com/pixelfed/pixelfed/commit/73fb5ed6963bd22dae1d732d33c43b525d35429b))
+-   Filter null-account statuses from non-cached network timeline ([917a13d4a](https://github.com/pixelfed/pixelfed/commit/917a13d4a7cffe41dfebede849a26d4d7d64ca30))
+-   Scope DangerZone OIDC sudo bypass to OIDC-registered users ([7483a4b05](https://github.com/pixelfed/pixelfed/commit/7483a4b05b45f93c5f87950c27f8090b4fd53c3d))
+-   Clear 2FA session state on forced logout after failed attempts ([97f1a097f](https://github.com/pixelfed/pixelfed/commit/97f1a097ff122377e725abb9322033575bf15b0f))
+-   Exclude private profiles from public directory and clear suggestable on going private ([158186309](https://github.com/pixelfed/pixelfed/commit/1581863093fa5d18142b893f54d2d3a867736659))
+-   lint ([68becbe2c](https://github.com/pixelfed/pixelfed/commit/68becbe2cc0f4a10dd31f6d9a4962fe7204aba9b))
+-   Require dangerzone sudo mode on curated register, shadow filter and page admin controllers ([742c1a6bc](https://github.com/pixelfed/pixelfed/commit/742c1a6bc82e0fcd8a44e01ea160cbd08bff4fc4))
+-   Deliver posts regardless of profile no_autolink flag ([9e1415122](https://github.com/pixelfed/pixelfed/commit/9e141512283340399a75859e9f71850b4f8aa025))
+-   Use indexed query for media blocklist lookups and allow removing inactive hashes ([e8f2b06af](https://github.com/pixelfed/pixelfed/commit/e8f2b06afe0cea77899a81ac8eda10dd44dc5e36))
+-   Invalidate session on DangerZone forced logout to clear 2FA state ([58e8a4922](https://github.com/pixelfed/pixelfed/commit/58e8a4922dc684766cb7b46449797ca9b7ccb7df))
+-   Refactor comments in DangerZone middleware ([519b1b94d](https://github.com/pixelfed/pixelfed/commit/519b1b94dc57668ce206056fd01ffd048bcbbd3b))
+    -   Removed redundant comments to clarify code functionality.
+-   Delete larastan ([171a027c5](https://github.com/pixelfed/pixelfed/commit/171a027c565bceba82c62cba06b1bc5f1d599550))
+-   Update ApiV1Controller.php ([13aa36efb](https://github.com/pixelfed/pixelfed/commit/13aa36efb4533f9a77dc79f0928f0cbb226a7aa7))
+-   Fix StoryIndexService ([57e7eef08](https://github.com/pixelfed/pixelfed/commit/57e7eef08296acf97d9c7a7b25d8a6d268ab52c3))
+-   Refactor Auth, remove expensive middleware ([1d96c9405](https://github.com/pixelfed/pixelfed/commit/1d96c9405434784c17ed327a7967843fdf176f20))
+-   Update ResetPasswordController ([194c881cb](https://github.com/pixelfed/pixelfed/commit/194c881cb2310f25bf9e43d35ed8117cc2d886dc))
+-   Update AccountTransformer.php ([edcf97875](https://github.com/pixelfed/pixelfed/commit/edcf978755dd6a7275c7e3f54bca71fd69b6c271))
+-   Fix account storage limit not freeing on media deletion ([#7169](https://github.com/pixelfed/pixelfed/pull/7169))
+    -   users.storage_used only ever grew: uploads incremented it but no deletion
+    -   path decremented it, so users hit the account size limit even when their
+    -   real media usage was well below it.
+    -   Decrement storage_used in MediaDeletePipeline when media is removed
+    -   Add UserStorageService::increaseStorageUsed / decrementStorageUsed as the
+    -   fast, symmetric hot-path counter updates (floor-based, clamped at zero)
+    -   Refactor the 6 upload call sites to use increaseStorageUsed instead of
+    -   duplicated inline writes (also fixes ceil/floor drift vs the reconciler)
+    -   Add (user_id, size) covering index so per-user SUM(size) is not a full
+    -   table scan (INPLACE/LOCK=NONE, skipped on sqlite)
+    -   Add user:storage:recalculate command to repair affected accounts, with a
+    -   daily --stale=168 scheduled reconciler to correct any drift
+    -   Add regression tests for the pipeline and UserStorageService
+-   Self-heal stale storage_used on upload/delete hot path ([26d3e8bb8](https://github.com/pixelfed/pixelfed/commit/26d3e8bb8efa69788406bd1b1e990361e0e2e76e))
+    -   Make increaseStorageUsed/decrementStorageUsed recalculate from source when
+    -   the cached counter is older than STALE_AFTER_HOURS (168h) or never
+    -   calculated, so an affected user is corrected the next time they upload or
+    -   delete without waiting for the nightly reconciler. Callers save/delete the
+    -   media row before calling these, so the from-source recalc already reflects
+    -   the change and the incremental delta is skipped on the recalc path.
+    -   Add UserStorageService::STALE_AFTER_HOURS and isStale() helper (no extra
+    -   query: reads the already-loaded model), with defensive Carbon parsing
+    -   Cast users.storage_used_updated_at to datetime so freshness comparisons
+    -   work on a Carbon instance
+    -   Add tests for stale/fresh/never-calculated increase and decrement paths
+-   Remove unused CACHE_KEY constant from UserStorageService ([f467dc04d](https://github.com/pixelfed/pixelfed/commit/f467dc04d55ad060883388115d746bd4d52eb9b6))
+    -   The constant was never referenced; the service reads and writes the
+    -   storage_used column directly on the User model rather than via cache.
+-   Fix larastan noAuthFacadeInRequestScope in LoginController ([10559c23e](https://github.com/pixelfed/pixelfed/commit/10559c23e3f2f1f980fb501d7a54043c6209c2a0))
+    -   Replace Auth::check() with $request->user() !== null in confirmEmail(),
+    -   which already has the request in scope, and drop the now-unused Auth
+    -   facade import. Resolves the 2 remaining project-wide larastan errors.
+-   Self-heal stale storage_used on read to unblock stuck accounts ([61a1c3075](https://github.com/pixelfed/pixelfed/commit/61a1c30756f89dd8e0b3bcc78129525aa32c0a17))
+    -   UserStorageService::get() now recalculates from source when the cached
+    -   counter is missing or older than STALE_AFTER_HOURS, instead of returning a
+    -   possibly-inflated cached value. This is what unblocks a user stuck at the
+    -   account size limit: the limit check on their next upload attempt reads the
+    -   freshly recalculated real usage rather than the drifted value (#7169).
+    -   The upload flow reads get() and enforces the limit BEFORE the write-path
+    -   heal runs, so a blocked user could never self-heal via upload/delete alone.
+    -   Healing on read closes that gap and makes the scheduled reconciler a
+    -   belt-and-suspenders safety net rather than a requirement.
+    -   A fresh counter is still trusted as-is (no per-read SUM). Adds tests for the
+    -   stale-get recompute and fresh-get trust paths.
+-   Run storage recalculate reconciler weekly instead of daily ([28573e863](https://github.com/pixelfed/pixelfed/commit/28573e863f36ec10466a7708e977679bc46951d3))
+    -   Now that the upload/delete hot path and get() self-heal stale counters, the
+    -   scheduled reconciler is a background drift safety net rather than the primary
+    -   unblock mechanism, so weekly is sufficient.
+-   Backfill storage_used on upgrade via queued job + data migration ([5a9c23592](https://github.com/pixelfed/pixelfed/commit/5a9c235922e1dfb094c14e56e34fb78295c42dfe))
+    -   Repair accounts whose storage counter drifted before the self-heal logic
+    -   existed (#7169). A data migration dispatches RecalculateAllUserStoragePipeline
+    -   to the low queue so the deploy is not blocked while every user is recomputed
+    -   from source. The job is unique and idempotent, so re-runs are harmless.
+    -   RecalculateAllUserStoragePipeline: chunked recalc of all active users
+    -   Migration dispatches the job (no inline heavy work during deploy)
+    -   Test covers bulk recalculation from actual media
+-   Expand test coverage for storage_used improvements ([007f97f98](https://github.com/pixelfed/pixelfed/commit/007f97f98731ed9cda1896627d203d0f472329c4))
+    -   Suspended/missing user guards for get, increase, decrement, recalculate
+    -   Staleness window boundary (fresh at N-1h, stale at N+1h)
+    -   Sub-1000-byte rounding on increase/decrement (floor to KB)
+    -   Command --stale filter (only recomputes stale/never-calculated users) and
+    -   missing --user id failure
+    -   Migration dispatches the backfill job to the low queue (Bus::fake)
+-   Gate storage reconciler schedule behind a disabled-by-default flag ([4f284e089](https://github.com/pixelfed/pixelfed/commit/4f284e089388b9299da8d30e5da3f62b59fd5cf2))
+    -   The upload/delete/read paths now self-heal stale storage_used counters and
+    -   the upgrade backfill migration repairs existing accounts, so the weekly
+    -   reconciler is no longer required. Gate it behind pixelfed.account*storage*
+    -   reconcile (ACCOUNT_STORAGE_RECONCILE), defaulting off, so operators can opt
+    -   in to the background hygiene job without editing source.
+-   Extract scheduled tasks into routes/scheduledtasks.php ([61c087e56](https://github.com/pixelfed/pixelfed/commit/61c087e56009e2b19489552f3992114282a3adf5))
+    -   Move the schedule definitions out of the withSchedule() closure in
+    -   bootstrap/app.php into a dedicated routes/scheduledtasks.php, required with
+    -   the Schedule instance in scope. Behavior-preserving; verified with
+    -   schedule:list.
+-   Move account_storage_reconcile flag to config/scheduledtasks.php ([219ce0ca2](https://github.com/pixelfed/pixelfed/commit/219ce0ca2b006f24845bc8507769ae47f1034ccf))
+    -   Introduce a dedicated config/scheduledtasks.php for scheduled-task toggles
+    -   and relocate the reconciler flag there (ACCOUNT_STORAGE_RECONCILE), reading
+    -   it via config() in routes/scheduledtasks.php. Removed the setting from
+    -   config/pixelfed.php. Verified both states with schedule:list.
+-   Move scheduled tasks file from routes/ to bootstrap/ ([cc183ec8a](https://github.com/pixelfed/pixelfed/commit/cc183ec8abb7fb5b885dadb10471f7923ed535dc))
+    -   The schedule definitions are bootstrap wiring, not route definitions, so
+    -   bootstrap/scheduledtasks.php is a better home. Updated the require path in
+    -   bootstrap/app.php. Verified with schedule:list.
+-   polish ([9b6eea066](https://github.com/pixelfed/pixelfed/commit/9b6eea066401dee863479fb0c5cd2de2152ad206))
+-   polish ([1a5274954](https://github.com/pixelfed/pixelfed/commit/1a5274954d3dc6544cbef10bcc78c913b35a8e3d))
+-   Rewrite 2FA tests for the pending-login refactor ([08a442e66](https://github.com/pixelfed/pixelfed/commit/08a442e6617e05b26c890d9b47400f2e2767e984))
+    -   The 2FA flow moved from a middleware-gated i/auth/checkpoint model to a
+    -   pending-login model (auth.pending session, POST /login/2fa, /login?step=2fa
+    -   challenge). The old tests referenced the removed route and dead session keys
+    -   (2fa.session.active, 2fa.attempts) and failed with 404s.
+    -   Rewritten against the new code as source of truth:
+    -   Checkpoint test: throttle assertion retargeted to the login/2fa route;
+    -   failed-verification audit log now driven through a pending 2FA session.
+    -   Logout-session test: asserts auth.pending is cleared and the user stays a
+    -   guest after MAX_2FA_ATTEMPTS failures (replacing the old flag cleanup).
+    -   TwoFactorTest: challenge-redirect and challenge-page cases rewritten around
+    -   the login flow; setup/recovery password-confirmation cases unchanged.
+    -   MiddlewarePipelineTest: 2FA is enforced at login, not per-request, so an
+    -   authenticated 2FA user browses normally.
+    -   Full suite: 715 passed.
+-   Fix index migrations to support PostgreSQL and MariaDB ([cd4d9e5f3](https://github.com/pixelfed/pixelfed/commit/cd4d9e5f3615d64ccf93110ebf83965e0b51c381))
+    -   The three recent index migrations used raw MySQL-only DDL (backtick
+    -   identifiers, ADD INDEX inside ALTER TABLE, ALGORITHM=INPLACE/LOCK=NONE)
+    -   guarded only against sqlite, so PostgreSQL instances failed with
+    -   SQLSTATE\[42601\] on migrate (#7177).
+    -   Each migration now branches on the driver:
+    -   mysql/mariadb keep the online-DDL fast path (non-blocking on large
+    -   instances)
+    -   other drivers use the portable Schema::table builder
+    -   Table names, index names, and columns are unchanged so already-migrated
+    -   MySQL instances are unaffected.
+-   Update ApiV1Controller, fix account suggestions ([6a3371687](https://github.com/pixelfed/pixelfed/commit/6a33716870269f1d80d2acf11b73dd3fb0a13498))
+-   Update .dockerignore ([d1ba86475](https://github.com/pixelfed/pixelfed/commit/d1ba86475d9390f442a627b3a4ffb03aade8f5f0))
+-   Update ApiV1Controller.php ([9aafa3736](https://github.com/pixelfed/pixelfed/commit/9aafa373649bdd59434d2de3fdb689320b924333))
+-   Update account suggestions ([915879ff5](https://github.com/pixelfed/pixelfed/commit/915879ff579aa2765508033db0dede8eb6eb5594))
+-   Fix StoryCarousel cache invalidation ([7975ba9c7](https://github.com/pixelfed/pixelfed/commit/7975ba9c758fb87f1aaab22330a571c8f7976b46))
+-   Update StoryService and add has_story to AccountTransformer ([bbd7618c4](https://github.com/pixelfed/pixelfed/commit/bbd7618c46da7f274dd9442da57a8f598e52a129))
+-   Fix StoryExpireRemoteCacheTest ([7a5192481](https://github.com/pixelfed/pixelfed/commit/7a5192481c271182edaaa773af273121e51f3c68))
+-   Update docker-push.yml ([9357c1117](https://github.com/pixelfed/pixelfed/commit/9357c1117f2f55fa398af75c787027fdf3564e5e))
+-   Update docker-tag.yml ([503c86e14](https://github.com/pixelfed/pixelfed/commit/503c86e147e85cd6a948f5e4d716e3c0b12a567f))
+-   Update Ubuntu version in Docker workflow ([fdcdc6229](https://github.com/pixelfed/pixelfed/commit/fdcdc62291cf1e5ec6640bbfd7b77ec0ef306870))
+-   Update docker-push.yml ([6fcc51872](https://github.com/pixelfed/pixelfed/commit/6fcc518720001690efcbcac60e38953bb2dc07db))
+-   Update StoryExpireRemoteCacheTest.php ([84df3de56](https://github.com/pixelfed/pixelfed/commit/84df3de5622000c332f94a7f6c89e4cab56c1a03))
+-   Bump version ([fb3e218d6](https://github.com/pixelfed/pixelfed/commit/fb3e218d64a3e48d916d6cf6fffbaa5de64d85a6))
 
 ## [v0.12.9 (2026-08-25)](https://github.com/pixelfed/pixelfed/compare/v0.12.9...dev)
 
