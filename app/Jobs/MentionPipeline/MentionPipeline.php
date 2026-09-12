@@ -3,6 +3,7 @@
 namespace App\Jobs\MentionPipeline;
 
 use App\Jobs\PushNotificationPipeline\MentionPushNotifyPipeline;
+use App\Jobs\PushNotificationPipeline\WebPushNotifyPipeline;
 use App\Models\Mention;
 use App\Models\Notification;
 use App\Models\Status;
@@ -108,5 +109,10 @@ class MentionPipeline implements ShouldQueue
                 }
             }
         }
+
+        // Independent of the Expo gateway above — Web Push subscriptions work
+        // whether or not this instance has NotificationAppGatewayService
+        // configured at all.
+        WebPushNotifyPipeline::maybeDispatch($target, 'mention', $actor->username, $actor->id, $status->id);
     }
 }

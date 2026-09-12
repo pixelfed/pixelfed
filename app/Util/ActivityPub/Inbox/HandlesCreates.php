@@ -3,6 +3,7 @@
 namespace App\Util\ActivityPub\Inbox;
 
 use App\Jobs\PushNotificationPipeline\MentionPushNotifyPipeline;
+use App\Jobs\PushNotificationPipeline\WebPushNotifyPipeline;
 use App\Models\Conversation;
 use App\Models\DirectMessage;
 use App\Models\Media;
@@ -420,5 +421,11 @@ trait HandlesCreates
                 }
             }
         }
+
+        // Independent of the Expo gateway above — Web Push subscriptions work
+        // whether or not this instance has NotificationAppGatewayService
+        // configured at all. A DM has no public status object, so this
+        // deep-links to the sender's profile.
+        WebPushNotifyPipeline::maybeDispatch($profile->id, 'mention', $actor->username, $actor->id);
     }
 }

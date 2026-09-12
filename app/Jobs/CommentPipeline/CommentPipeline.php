@@ -2,6 +2,7 @@
 
 namespace App\Jobs\CommentPipeline;
 
+use App\Jobs\PushNotificationPipeline\WebPushNotifyPipeline;
 use App\Models\Profile;
 use App\Models\Status;
 use App\Models\UserFilter;
@@ -120,6 +121,16 @@ class CommentPipeline implements ShouldQueue
                 NotificationService::createNotification($target->id, $actor->id, 'comment', $comment->id, Status::class);
                 StatusService::del($comment->id);
             });
+
+            // There is no Expo counterpart here the way like/follow/mention
+            // have one — there is no CommentPushNotifyPipeline, so the
+            // official app has never pushed replies either. This is the Web
+            // Push path only.
+            //
+            // The comment's id is what travels as status_id, matching the
+            // notification row's item_id, so tapping the banner opens the
+            // reply itself rather than the post it was left on.
+            WebPushNotifyPipeline::maybeDispatch($target->id, 'comment', $actor->username, $actor->id, $comment->id);
         }
 
         if ($exists = Cache::get('status:replies:all:'.$status->id)) {
