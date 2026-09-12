@@ -2,7 +2,6 @@
 
 namespace App\Services;
 
-use App\Jobs\InternalPipeline\NotificationEpochUpdatePipeline;
 use App\Models\Notification;
 use App\Models\Status;
 use App\Transformer\Api\NotificationTransformer;
@@ -15,8 +14,6 @@ class NotificationService
     const CACHE_KEY = 'pf:services:notifications:ids:';
 
     const WARM_KEY = 'pf:services:notifications:warmed:';
-
-    const EPOCH_CACHE_KEY = 'pf:services:notifications:epoch-id:by-months:';
 
     const ITEM_KEY = 'service:notification:';
 
@@ -59,37 +56,34 @@ class NotificationService
      * Fetch notifications by rank (offset/limit), newest first.
      *
      * Previously passed $start/$stop to ZRANGEBYSCORE as scores, which never
-     * matched snowflake ids and forced a DB hit on every call.
+     * matched the ids stored as scores and forced a DB hit on every call.
      */
     public static function get($id, $start = 0, $stop = 400)
     {
-        $res = collect([]);
         $stop = min((int) $stop, self::MAX_ITEMS);
         $start = max((int) $start, 0);
 
         self::warmCache($id);
 
         $ids = Redis::zrevrange(self::CACHE_KEY.$id, $start, $start + $stop - 1);
+        $ids = array_map('intval', $ids ?: []);
 
         if (empty($ids)) {
-            $ids = self::coldGet($id, $start, $stop);
+            $ids = self::coldGet($id, $start, $stop)->all();
         }
 
-        foreach ($ids as $nid) {
-            $n = self::getNotification($nid, $id);
-            if ($n != null) {
-                $res->push($n);
-            }
-        }
-
-        return $res;
+        return collect(array_values(self::getNotifications($ids, $id)));
     }
 
+    /**
+     * DB fallback for get(). Bounded by the (profile_id, deleted_at, id)
+     * index and LIMIT, so no time-window lower bound is needed.
+     */
     public static function coldGet($id, $start = 0, $stop = 400)
     {
         $stop = min((int) $stop, self::MAX_ITEMS);
-        $ids = Notification::where('id', '>', self::getEpochId())
-            ->where('profile_id', $id)
+
+        $ids = Notification::where('profile_id', $id)
             ->orderByDesc('id')
             ->skip($start)
             ->take($stop)
@@ -100,22 +94,6 @@ class NotificationService
         }
 
         return $ids;
-    }
-
-    public static function getEpochId($months = 6)
-    {
-        $epoch = Cache::get(self::EPOCH_CACHE_KEY.$months);
-        if (! $epoch) {
-            NotificationEpochUpdatePipeline::dispatch();
-
-            $rec = Notification::whereDate('created_at', '>=', now()->subMonths($months)->format('Y-m-d'))
-                ->orderBy('id')
-                ->first();
-
-            return $rec ? $rec->id : 1;
-        }
-
-        return $epoch;
     }
 
     public static function getMax($id = false, $start = 0, $limit = 10)
@@ -280,11 +258,14 @@ class NotificationService
                 break;
             }
 
+            // One batched hydration per round instead of one per id.
+            $hydrated = self::getNotifications($ids, $id);
+
             foreach ($ids as $nid) {
                 $firstScanned = $firstScanned ?? $nid;
                 $lastScanned = $nid;
 
-                $n = self::getNotification($nid, $id);
+                $n = $hydrated[$nid] ?? null;
                 if (! $n) {
                     continue;
                 }
@@ -313,12 +294,12 @@ class NotificationService
 
     /**
      * DB fallback for ids the zset does not hold (partial set after eviction,
-     * or the user scrolled past the MAX_ITEMS window).
+     * or the user scrolled past the MAX_ITEMS window). Every variant is a
+     * bounded range on the (profile_id, deleted_at, id) index.
      */
     protected static function dbIds($id, string $direction, int $cursor, ?int $bound, int $limit): array
     {
         $q = Notification::where('profile_id', $id)
-            ->where('id', '>', self::getEpochId())
             ->orderByDesc('id')
             ->limit($limit);
 
@@ -427,8 +408,7 @@ class NotificationService
             self::warmCache($id, self::MAX_ITEMS, true);
         }
 
-        self::addRaw($key, $val);
-        self::trim($key);
+        self::write($key, [$val]);
 
         return 1;
     }
@@ -456,32 +436,29 @@ class NotificationService
         return (int) Redis::zcard(self::CACHE_KEY.$id);
     }
 
-    protected static function addRaw(string $key, $val): void
+    protected static function addMany($id, array $ids): void
     {
-        Redis::zadd($key, $val, $val);
+        self::write(self::CACHE_KEY.$id, $ids);
     }
 
-    protected static function addMany($id, array $ids): void
+    /**
+     * Add ids to a profile's zset, trim to the newest MAX_ITEMS, and refresh
+     * the TTL, all in one pipeline. The TTL means inactive profiles stop
+     * holding a 400-entry zset in Redis forever.
+     */
+    protected static function write(string $key, array $ids): void
     {
         if (empty($ids)) {
             return;
         }
 
-        $key = self::CACHE_KEY.$id;
-
         Redis::pipeline(function ($pipe) use ($key, $ids) {
             foreach ($ids as $nid) {
                 $pipe->zadd($key, $nid, $nid);
             }
+            $pipe->zremrangebyrank($key, 0, -(self::MAX_ITEMS + 1));
+            $pipe->expire($key, self::WARM_TTL);
         });
-
-        self::trim($key);
-    }
-
-    /** Keep only the newest MAX_ITEMS members. */
-    protected static function trim(string $key): void
-    {
-        Redis::zremrangebyrank($key, 0, -(self::MAX_ITEMS + 1));
     }
 
     public static function isWarm($id): bool
@@ -492,20 +469,21 @@ class NotificationService
     /**
      * Rebuild the id zset from the DB.
      *
-     * Runs when the set is empty, when it has never been marked warm (or the
-     * marker expired), or when forced. The marker lives in Redis so it shares
-     * the fate of the zset on a flush.
+     * Runs when the profile has never been marked warm (or the marker
+     * expired), or when forced. A warm marker with an empty zset is a valid
+     * state (profile has no notifications), so we no longer re-query the DB
+     * on every request for those profiles. If the zset itself was evicted
+     * while the marker survived, coldGet/dbIds rebuild it on the next read.
      */
     public static function warmCache($id, $stop = 400, $force = false)
     {
-        if (! $force && self::count($id) > 0 && self::isWarm($id)) {
+        if (! $force && self::isWarm($id)) {
             return 0;
         }
 
         $stop = min((int) $stop, self::MAX_ITEMS);
 
         $ids = Notification::where('profile_id', $id)
-            ->where('id', '>', self::getEpochId())
             ->orderByDesc('id')
             ->limit($stop)
             ->pluck('id')
@@ -519,74 +497,164 @@ class NotificationService
     }
 
     /**
-     * Fetch a single transformed notification.
-     *
-     * Returns null for anything that cannot be rendered (missing row, deleted
-     * actor, deleted status, transformer failure). Misses are negatively
-     * cached briefly, and when $profileId is supplied the dead id is pruned
-     * from that profile's zset so future pages stop tripping over it.
+     * Fetch a single transformed notification. Thin wrapper over the batch
+     * path so callers outside this service keep working.
      */
     public static function getNotification($id, $profileId = null)
     {
-        if (Cache::has(self::MISS_KEY.$id)) {
-            return null;
-        }
-
-        $notification = Cache::get(self::ITEM_KEY.$id);
-
-        if (! $notification) {
-            $notification = self::buildNotification($id);
-
-            if (! $notification) {
-                self::markMiss($id, $profileId);
-
-                return null;
-            }
-
-            Cache::put(self::ITEM_KEY.$id, $notification, self::ITEM_CACHE_TTL);
-        }
-
-        if (isset($notification['account']['id'])) {
-            $account = AccountService::get($notification['account']['id'], true);
-
-            if (! $account) {
-                self::markMiss($id, $profileId);
-
-                return null;
-            }
-
-            $notification['account'] = $account;
-        }
-
-        return $notification;
+        return self::getNotifications([$id], $profileId)[(int) $id] ?? null;
     }
 
-    protected static function buildNotification($id)
+    /**
+     * Fetch many transformed notifications in as few round trips as possible.
+     *
+     * One MGET covers miss markers and cached items for every id, one DB
+     * query builds whatever is cold, and accounts are resolved once per
+     * distinct account rather than once per notification.
+     *
+     * Returns [id => notification] in input order. Anything that cannot be
+     * rendered (missing row, deleted actor, deleted status, transformer
+     * failure) is omitted, negatively cached briefly, and when $profileId is
+     * supplied pruned from that profile's zset so future pages stop tripping
+     * over it.
+     */
+    public static function getNotifications(array $ids, $profileId = null): array
     {
+        $ids = array_values(array_unique(array_map('intval', $ids)));
+
+        if (empty($ids)) {
+            return [];
+        }
+
+        $missKeys = [];
+        $itemKeys = [];
+        foreach ($ids as $nid) {
+            $missKeys[$nid] = self::MISS_KEY.$nid;
+            $itemKeys[$nid] = self::ITEM_KEY.$nid;
+        }
+
+        $cached = Cache::many(array_merge(array_values($missKeys), array_values($itemKeys)));
+
+        $items = [];
+        $cold = [];
+
+        foreach ($ids as $nid) {
+            if (! empty($cached[$missKeys[$nid]])) {
+                continue;
+            }
+
+            $item = $cached[$itemKeys[$nid]] ?? null;
+
+            if ($item) {
+                $items[$nid] = $item;
+            } else {
+                $cold[] = $nid;
+            }
+        }
+
+        if (! empty($cold)) {
+            $built = self::buildNotifications($cold);
+            $putMany = [];
+
+            foreach ($cold as $nid) {
+                if (isset($built[$nid])) {
+                    $items[$nid] = $built[$nid];
+                    $putMany[self::ITEM_KEY.$nid] = $built[$nid];
+                } else {
+                    self::markMiss($nid, $profileId);
+                }
+            }
+
+            if (! empty($putMany)) {
+                Cache::putMany($putMany, self::ITEM_CACHE_TTL);
+            }
+        }
+
+        // Resolve each distinct account once. A page of notifications is
+        // usually dominated by a handful of actors.
+        $accounts = [];
+        foreach ($items as $n) {
+            $aid = $n['account']['id'] ?? null;
+            if ($aid && ! array_key_exists($aid, $accounts)) {
+                $accounts[$aid] = AccountService::get($aid, true);
+            }
+        }
+
+        $out = [];
+
+        foreach ($ids as $nid) {
+            if (! isset($items[$nid])) {
+                continue;
+            }
+
+            $n = $items[$nid];
+
+            if (isset($n['account']['id'])) {
+                $account = $accounts[$n['account']['id']] ?? null;
+
+                if (! $account) {
+                    self::markMiss($nid, $profileId);
+
+                    continue;
+                }
+
+                $n['account'] = $account;
+            }
+
+            $out[$nid] = $n;
+        }
+
+        return $out;
+    }
+
+    /**
+     * Build transformed notifications from the DB in one query.
+     * Returns [id => notification] for everything that rendered.
+     */
+    protected static function buildNotifications(array $ids): array
+    {
+        $built = [];
+
+        if (empty($ids)) {
+            return $built;
+        }
+
         try {
-            $n = Notification::with('item')->find($id);
-
-            if (! $n) {
-                return null;
-            }
-
-            if ($n->item_id && in_array($n->item_type, ['App\Status', Status::class]) && ! $n->item) {
-                return null;
-            }
-
-            if (! AccountService::get($n->actor_id, true)) {
-                return null;
-            }
-
-            return FractalService::item($n, new NotificationTransformer);
+            $rows = Notification::with('item')->whereIn('id', $ids)->get();
         } catch (\Throwable $e) {
-            Log::warning('NotificationService: failed to build notification', [
-                'id' => $id,
+            Log::warning('NotificationService: failed to load notifications', [
+                'ids' => $ids,
                 'error' => $e->getMessage(),
             ]);
 
-            return null;
+            return $built;
         }
+
+        $actors = [];
+        foreach ($rows->pluck('actor_id')->unique() as $aid) {
+            $actors[$aid] = (bool) AccountService::get($aid, true);
+        }
+
+        foreach ($rows as $n) {
+            if ($n->item_id && in_array($n->item_type, ['App\Status', Status::class]) && ! $n->item) {
+                continue;
+            }
+
+            if (empty($actors[$n->actor_id])) {
+                continue;
+            }
+
+            try {
+                $built[(int) $n->id] = FractalService::item($n, new NotificationTransformer);
+            } catch (\Throwable $e) {
+                Log::warning('NotificationService: failed to build notification', [
+                    'id' => $n->id,
+                    'error' => $e->getMessage(),
+                ]);
+            }
+        }
+
+        return $built;
     }
 
     protected static function markMiss($id, $profileId = null): void
