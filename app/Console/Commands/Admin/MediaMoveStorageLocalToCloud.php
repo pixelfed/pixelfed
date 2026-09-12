@@ -29,7 +29,7 @@ class MediaMoveStorageLocalToCloud extends Command
         {--dry-run : Report what would happen without copying or writing}
         {--keep-local : Do not delete local files after verifying the cloud copy}
         {--verify-sha256 : Also verify the local file against the stored original_sha256. Disabled by default: original_sha256 is the pre-optimization upload hash, so optimized media never matches and would always fail verify.}
-        {--debug=true : Print exactly what moves, from which local path to which cloud destination. Enabled by default; pass --debug=false to silence.}
+        {--debug : Print exactly what moves, from which local path to which cloud destination}
         {--force : Skip confirmation prompts}';
 
     /**
@@ -84,7 +84,7 @@ class MediaMoveStorageLocalToCloud extends Command
             return self::FAILURE;
         }
 
-        if ($this->debugEnabled()) {
+        if ($this->option('debug')) {
             $this->printStorageDebugInfo();
         }
 
@@ -216,9 +216,8 @@ class MediaMoveStorageLocalToCloud extends Command
                 $nextCommand .= ' --verify-sha256';
             }
 
-            // Debug is on by default; only carry the explicit off-switch forward.
-            if (! $this->debugEnabled()) {
-                $nextCommand .= ' --debug=false';
+            if ($this->option('debug')) {
+                $nextCommand .= ' --debug';
             }
 
             if ($this->option('force')) {
@@ -388,7 +387,7 @@ class MediaMoveStorageLocalToCloud extends Command
                 $this->cloudDestination($mediaPath, $cloudDisk)
         );
 
-        if ($this->debugEnabled()) {
+        if ($this->option('debug')) {
             $this->debugLine(
                 '  status_id     : '.($media->status_id ?? 'null')
             );
@@ -597,29 +596,11 @@ class MediaMoveStorageLocalToCloud extends Command
      */
     protected function debugLine(string $message): void
     {
-        if (! $this->debugEnabled()) {
+        if (! $this->option('debug')) {
             return;
         }
 
         $this->basicLine('<comment>[debug]</comment> '.$message);
-    }
-
-    /**
-     * Whether verbose debug output is enabled.
-     *
-     * Debug defaults to ON while the cloud migration issue is being
-     * investigated. Because the option now takes a value, its raw form is a
-     * string ("true"/"false"/"0"/"1"); interpret it as a boolean so that
-     * --debug=false actually silences output. Set the signature default back
-     * to a bare flag once this is resolved.
-     */
-    protected function debugEnabled(): bool
-    {
-        return filter_var(
-            $this->option('debug'),
-            FILTER_VALIDATE_BOOLEAN,
-            FILTER_NULL_ON_FAILURE
-        ) ?? true;
     }
 
     /**
