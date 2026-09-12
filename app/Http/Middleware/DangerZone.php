@@ -2,7 +2,6 @@
 
 namespace App\Http\Middleware;
 
-use Carbon\Carbon;
 use Closure;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -38,7 +37,7 @@ class DangerZone
 
                 return redirect('/i/auth/sudo');
             }
-            if ($request->session()->get('sudoMode') < Carbon::now()->subMinutes(30)->timestamp) {
+            if ($request->session()->get('sudoMode') < now()->subMinutes(30)->timestamp) {
                 $request->session()->put('redirectNext', $request->url());
 
                 return redirect('/i/auth/sudo');

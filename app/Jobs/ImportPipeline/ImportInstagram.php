@@ -85,7 +85,7 @@ class ImportInstagram implements ShouldQueue
                 $min = Carbon::create(2010, 10, 6, 0, 0, 0);
                 $taken_at = Carbon::parse($import['taken_at']);
                 if (! $min->lt($taken_at)) {
-                    $taken_at = Carbon::now();
+                    $taken_at = now();
                 }
             } catch (\Exception $e) {
 
@@ -139,7 +139,7 @@ class ImportInstagram implements ShouldQueue
             });
         }
 
-        $job->completed_at = Carbon::now();
+        $job->completed_at = now();
         $job->save();
     }
 }

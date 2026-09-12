@@ -69,6 +69,24 @@ return [
 
     /*
     |--------------------------------------------------------------------------
+    | Notification Routing
+    |--------------------------------------------------------------------------
+    |
+    | Horizon can notify you when a queue's LongWaitDetected threshold (see
+    | the `waits` option below) is exceeded. These are read by
+    | HorizonServiceProvider::boot() and are all optional; leave them unset
+    | to disable notification delivery entirely.
+    |
+    */
+
+    'notification_routing' => [
+        'mail_to' => env('HORIZON_NOTIFICATIONS_MAIL'),
+        'slack_webhook_url' => env('HORIZON_NOTIFICATIONS_SLACK_WEBHOOK'),
+        'slack_channel' => env('HORIZON_NOTIFICATIONS_SLACK_CHANNEL'),
+    ],
+
+    /*
+    |--------------------------------------------------------------------------
     | Queue Wait Time Thresholds
     |--------------------------------------------------------------------------
     |
@@ -171,35 +189,96 @@ return [
     | in all environments. These supervisors and settings handle all your
     | queued jobs and will be provisioned by Horizon during deployment.
     |
+    | Queues are split across supervisors by workload rather than lumped into
+    | one auto-balanced pool, because Horizon's `balance: auto` does not
+    | honor queue array order for priority - a burst on one queue can starve
+    | another sharing the same supervisor regardless of their names:
+    |
+    | - supervisor-priority: user-facing federation delivery (follows,
+    |   deletes, DMs), inbox processing, and push notifications. These
+    |   should never wait behind a burst of media processing or feed fanout.
+    | - supervisor-fanout: timeline/story/group fanout writes triggered by
+    |   posts, likes, and follows. Bursty (one post can fan out to many
+    |   followers) but not CPU-heavy.
+    | - supervisor-media: image/video optimization, resizing, and thumbnail
+    |   generation (the `mmo` queue). CPU/IO heavy, so it runs a fixed
+    |   worker pool (`balance: false`) instead of auto-scaling, which would
+    |   otherwise let it claim workers away from the other pools under load.
+    | - supervisor-background: imports, instance crawling, account
+    |   deletion/migration, and other maintenance work that isn't
+    |   user-facing time-sensitive.
+    |
     */
+
+    'defaults' => [
+        'supervisor-priority' => [
+            'connection' => 'redis',
+            'queue' => ['high', 'inbox', 'pushnotify', 'follow', 'default', 'shared'],
+            'balance' => env('HORIZON_BALANCE_STRATEGY', 'auto'),
+            'autoScalingStrategy' => 'time',
+            'balanceMaxShift' => 1,
+            'balanceCooldown' => 3,
+            'minProcesses' => env('HORIZON_MIN_PROCESSES', 1),
+            'maxProcesses' => env('HORIZON_MAX_PROCESSES', 10),
+            'memory' => env('HORIZON_SUPERVISOR_MEMORY', 64),
+            'tries' => env('HORIZON_SUPERVISOR_TRIES', 3),
+            'nice' => env('HORIZON_SUPERVISOR_NICE', 0),
+            'timeout' => env('HORIZON_SUPERVISOR_TIMEOUT', 300),
+        ],
+
+        'supervisor-fanout' => [
+            'connection' => 'redis',
+            'queue' => ['feed', 'story', 'groups'],
+            'balance' => env('HORIZON_BALANCE_STRATEGY', 'auto'),
+            'autoScalingStrategy' => 'time',
+            'balanceMaxShift' => 1,
+            'balanceCooldown' => 3,
+            'minProcesses' => env('HORIZON_MIN_PROCESSES', 1),
+            'maxProcesses' => env('HORIZON_FANOUT_MAX_PROCESSES', 6),
+            'memory' => env('HORIZON_SUPERVISOR_MEMORY', 64),
+            'tries' => env('HORIZON_SUPERVISOR_TRIES', 3),
+            'nice' => env('HORIZON_SUPERVISOR_NICE', 0),
+            'timeout' => env('HORIZON_SUPERVISOR_TIMEOUT', 300),
+        ],
+
+        'supervisor-media' => [
+            'connection' => 'redis',
+            'queue' => ['mmo'],
+            'balance' => false,
+            'minProcesses' => env('HORIZON_MIN_PROCESSES', 1),
+            'maxProcesses' => env('HORIZON_MEDIA_MAX_PROCESSES', 4),
+            'memory' => env('HORIZON_SUPERVISOR_MEMORY', 64),
+            'tries' => env('HORIZON_SUPERVISOR_TRIES', 3),
+            'nice' => env('HORIZON_SUPERVISOR_NICE', 0),
+            'timeout' => env('HORIZON_SUPERVISOR_TIMEOUT', 300),
+        ],
+
+        'supervisor-background' => [
+            'connection' => 'redis',
+            'queue' => ['low', 'delete', 'adelete', 'move', 'intbg'],
+            'balance' => env('HORIZON_BALANCE_STRATEGY', 'auto'),
+            'autoScalingStrategy' => 'time',
+            'balanceMaxShift' => 1,
+            'balanceCooldown' => 3,
+            'minProcesses' => env('HORIZON_MIN_PROCESSES', 1),
+            'maxProcesses' => env('HORIZON_BACKGROUND_MAX_PROCESSES', 4),
+            'memory' => env('HORIZON_SUPERVISOR_MEMORY', 64),
+            'tries' => env('HORIZON_SUPERVISOR_TRIES', 3),
+            'nice' => env('HORIZON_SUPERVISOR_NICE', 0),
+            'timeout' => env('HORIZON_SUPERVISOR_TIMEOUT', 300),
+        ],
+    ],
 
     'environments' => [
         'production' => [
-            'supervisor-1' => [
-                'connection' => 'redis',
-                'queue' => ['high', 'default', 'follow', 'shared', 'inbox', 'feed', 'low', 'story', 'delete', 'mmo', 'intbg', 'groups', 'adelete', 'move', 'pushnotify'],
-                'balance' => env('HORIZON_BALANCE_STRATEGY', 'auto'),
-                'minProcesses' => env('HORIZON_MIN_PROCESSES', 1),
-                'maxProcesses' => env('HORIZON_MAX_PROCESSES', 20),
-                'memory' => env('HORIZON_SUPERVISOR_MEMORY', 64),
-                'tries' => env('HORIZON_SUPERVISOR_TRIES', 3),
-                'nice' => env('HORIZON_SUPERVISOR_NICE', 0),
-                'timeout' => env('HORIZON_SUPERVISOR_TIMEOUT', 300),
-            ],
+            // All values come from `defaults` above (env-configurable)
         ],
 
         'local' => [
-            'supervisor-1' => [
-                'connection' => 'redis',
-                'queue' => ['high', 'default', 'follow', 'shared', 'inbox', 'feed', 'low', 'story', 'delete', 'mmo', 'intbg', 'groups', 'adelete', 'move', 'pushnotify'],
-                'balance' => 'auto',
-                'minProcesses' => 1,
-                'maxProcesses' => 20,
-                'memory' => 128,
-                'tries' => 3,
-                'nice' => 0,
-                'timeout' => 300,
-            ],
+            'supervisor-priority' => ['maxProcesses' => 4],
+            'supervisor-fanout' => ['maxProcesses' => 2],
+            'supervisor-media' => ['maxProcesses' => 2],
+            'supervisor-background' => ['maxProcesses' => 2],
         ],
     ],
 

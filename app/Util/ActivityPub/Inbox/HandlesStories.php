@@ -66,7 +66,7 @@ trait HandlesStories
         }
 
         $profile = Helpers::profileFetch($actor);
-        $storyId = Str::of($obj['object'])->explode('/')->last();
+        $storyId = Str::afterLast($obj['object'], '/');
 
         $story = Story::whereActive(true)
             ->whereLocal(true)
@@ -146,7 +146,7 @@ trait HandlesStories
             return;
         }
 
-        $storyId = Str::of($storyUrl)->explode('/')->last();
+        $storyId = Str::afterLast($storyUrl, '/');
         $targetProfile = Helpers::profileFetch($to);
 
         $story = Story::whereProfileId($targetProfile->id)->find($storyId);

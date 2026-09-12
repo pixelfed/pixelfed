@@ -14,16 +14,16 @@ updates:
       prefix: "chore"
       include: "scope"
 
-  - package-ecosystem: "npm"
-    directory: "/"
-    target-branch: "staging"
-    schedule:
-      interval: "weekly"
-      day: "monday"
-    open-pull-requests-limit: 50
-    versioning-strategy: "increase-if-necessary"
-    labels:
-      - "npm"
-    commit-message:
-      prefix: "chore"
-      include: "scope"
+  # - package-ecosystem: "npm"
+  #   directory: "/"
+  #   target-branch: "staging"
+  #   schedule:
+  #     interval: "weekly"
+  #     day: "monday"
+  #   open-pull-requests-limit: 50
+  #   versioning-strategy: "increase-if-necessary"
+  #   labels:
+  #     - "npm"
+  #   commit-message:
+  #     prefix: "chore"
+  #     include: "scope"

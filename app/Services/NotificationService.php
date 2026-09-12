@@ -108,7 +108,11 @@ class NotificationService
         if (! $epoch) {
             NotificationEpochUpdatePipeline::dispatch();
 
-            return 1;
+            $rec = Notification::whereDate('created_at', '>=', now()->subMonths($months)->format('Y-m-d'))
+                ->orderBy('id')
+                ->first();
+
+            return $rec ? $rec->id : 1;
         }
 
         return $epoch;
@@ -142,12 +146,51 @@ class NotificationService
      */
     public static function getMaxPage($id = false, $maxId = null, $limit = 10)
     {
-        return self::fetchPage($id, $maxId, 'max', $limit);
+        return self::fetchPage($id, $maxId, 'max', $limit, self::renderableFilter());
     }
 
     public static function getMinPage($id = false, $minId = null, $limit = 10)
     {
-        return self::fetchPage($id, $minId, 'min', $limit);
+        return self::fetchPage($id, $minId, 'min', $limit, self::renderableFilter());
+    }
+
+    protected static function renderableFilter(): callable
+    {
+        // Notification types that are meaningless without an attached status.
+        $statusTypes = ['comment', 'mention', 'share', 'reblog', 'favourite'];
+
+        // Notification types that don't have an attached status.
+        $otherTypes = array_merge($statusTypes, [
+            'follow',
+            'follow_request',
+            'direct',
+            'tagged',
+            'modlog',
+            'group',
+            'story:react',
+            'story:comment',
+        ]);
+
+        return function ($n) use ($statusTypes, $otherTypes) {
+            if (! isset($n['account']['id'])) {
+                return null;
+            }
+
+            $type = $n['type'] ?? null;
+
+            if ($type !== null && ! in_array($type, $otherTypes)) {
+                Log::warning('NotificationService: unexpected notification type in renderableFilter', [
+                    'type' => $type,
+                    'notification_id' => $n['id'] ?? null,
+                ]);
+            }
+
+            if (in_array($type, $statusTypes) && ! isset($n['status']['id'])) {
+                return null;
+            }
+
+            return $n;
+        };
     }
 
     /**
@@ -527,7 +570,7 @@ class NotificationService
                 return null;
             }
 
-            if ($n->item_id && $n->item_type === Status::class && ! $n->item) {
+            if ($n->item_id && in_array($n->item_type, ['App\Status', Status::class]) && ! $n->item) {
                 return null;
             }
 

@@ -16,7 +16,6 @@ use App\Services\NotificationService;
 use App\Services\RelationshipService;
 use App\Services\UserFilterService;
 use App\Transformer\Api\Mastodon\v1\AccountTransformer;
-use Carbon\Carbon;
 use Illuminate\Contracts\View\View;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\RedirectResponse;
@@ -56,7 +55,7 @@ class AccountController extends Controller
 
         $action = $request->input('a');
         $allowed = ['like', 'follow'];
-        $timeago = Carbon::now()->subMonths(3);
+        $timeago = now()->subMonths(3);
 
         $profile = $request->user()->profile;
         $following = $profile->following->pluck('id');

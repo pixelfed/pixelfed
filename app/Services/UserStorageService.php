@@ -107,7 +107,7 @@ class UserStorageService
             return self::recalculateUpdateStorageUsed($id);
         }
 
-        $sizeInKbs = (int) floor(((int) $sizeInBytes) / 1000);
+        $sizeInKbs = (int) ceil(((int) $sizeInBytes) / 1000);
         $updatedVal = max(0, (int) $user->storage_used + $sizeInKbs);
 
         $user->storage_used = $updatedVal;
@@ -147,7 +147,7 @@ class UserStorageService
             return self::recalculateUpdateStorageUsed($id);
         }
 
-        $sizeInKbs = (int) floor(((int) $sizeInBytes) / 1000);
+        $sizeInKbs = (int) ceil(((int) $sizeInBytes) / 1000);
         $updatedVal = max(0, (int) $user->storage_used - $sizeInKbs);
 
         $user->storage_used = $updatedVal;

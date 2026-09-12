@@ -287,11 +287,11 @@ it('returns null when increasing a suspended user', function () {
 });
 
 /*
-| Sub-KB rounding: sizes are stored in KB via floor(bytes/1000), so a file
-| under 1000 bytes adds 0 KB. Documents the (intentional) rounding behavior
-| that keeps increase/decrement/recalculate consistent.
+| Sub-KB rounding: the incremental add/subtract paths round up via
+| ceil(bytes/1000), so any non-zero file under 1000 bytes counts as 1 KB.
+| Documents the (intentional) rounding behavior of the hot path.
 */
-it('adds zero KB when the increased size is under 1000 bytes', function () {
+it('adds one KB when the increased size is under 1000 bytes', function () {
     $user = User::factory()->create();
     $user->refresh();
 
@@ -299,10 +299,10 @@ it('adds zero KB when the increased size is under 1000 bytes', function () {
     $user->storage_used_updated_at = now();
     $user->save();
 
-    // 999 bytes -> floor(999/1000) = 0 KB.
+    // 999 bytes -> ceil(999/1000) = 1 KB.
     $result = UserStorageService::increaseStorageUsed($user->id, 999);
 
-    expect($result)->toBe(500);
+    expect($result)->toBe(501);
 });
 
 it('increase then decrement of the same size is a no-op on the counter', function () {
@@ -423,7 +423,7 @@ it('returns null when decrementing a suspended user', function () {
     expect(UserStorageService::decrementStorageUsed($user->id, 500000))->toBeNull();
 });
 
-it('subtracts zero KB when the decreased size is under 1000 bytes', function () {
+it('subtracts one KB when the decreased size is under 1000 bytes', function () {
     $user = User::factory()->create();
     $user->refresh();
 
@@ -431,10 +431,10 @@ it('subtracts zero KB when the decreased size is under 1000 bytes', function () 
     $user->storage_used_updated_at = now();
     $user->save();
 
-    // 999 bytes -> floor(999/1000) = 0 KB.
+    // 999 bytes -> ceil(999/1000) = 1 KB.
     $result = UserStorageService::decrementStorageUsed($user->id, 999);
 
-    expect($result)->toBe(500);
+    expect($result)->toBe(499);
 });
 
 /*

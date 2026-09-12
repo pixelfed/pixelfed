@@ -133,8 +133,8 @@ class AdminSettingsService
             'captcha_enabled' => (bool) config_cache('captcha.enabled'),
             'captcha_on_login' => (bool) config_cache('captcha.active.login'),
             'captcha_on_register' => (bool) config_cache('captcha.active.register'),
-            'captcha_secret' => Str::of(config_cache('captcha.secret'))->mask('*', 4, -4),
-            'captcha_sitekey' => Str::of(config_cache('captcha.sitekey'))->mask('*', 4, -4),
+            'captcha_secret' => Str::mask(config_cache('captcha.secret'), '*', 4, -4),
+            'captcha_sitekey' => Str::mask(config_cache('captcha.sitekey'), '*', 4, -4),
             'custom_emoji_enabled' => (bool) config_cache('federation.custom_emoji.enabled'),
         ];
     }
@@ -148,8 +148,8 @@ class AdminSettingsService
         $pkey = 'filesystems.disks.'.$cloud_disk.'.';
         $disk = [
             'driver' => $cloud_disk,
-            'key' => Str::of(config_cache($pkey.'key'))->mask('*', 0, -2),
-            'secret' => Str::of(config_cache($pkey.'secret'))->mask('*', 0, -2),
+            'key' => Str::mask(config_cache($pkey.'key'), '*', 0, -2),
+            'secret' => Str::mask(config_cache($pkey.'secret'), '*', 0, -2),
             'region' => config_cache($pkey.'region'),
             'bucket' => config_cache($pkey.'bucket'),
             'visibility' => config_cache($pkey.'visibility'),
