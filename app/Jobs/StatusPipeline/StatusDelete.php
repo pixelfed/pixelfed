@@ -177,7 +177,10 @@ class StatusDelete implements ShouldQueue
             ->where('item_id', $status->id)
             ->delete();
 
+        $statusId = $status->id;
         $status->delete();
+
+        StatusService::del($statusId, true);
 
         return 1;
     }
