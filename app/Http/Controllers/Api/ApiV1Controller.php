@@ -2258,7 +2258,20 @@ class ApiV1Controller extends Controller
         $resource = new Fractal\Resource\Item($media, new MediaTransformer);
         $res = $this->fractal->createData($resource)->toArray();
 
-        return $this->json($res);
+        $processing = (bool) config_cache('pixelfed.cloud_storage')
+            && ! config('pixelfed.media_fast_process')
+            && in_array($media->mime, [
+                'image/jpg',
+                'image/jpeg',
+                'image/png',
+                'image/webp',
+                'image/heic',
+                'image/avif',
+                'video/mp4',
+            ])
+            && ! $media->cdn_url;
+
+        return $this->json($res, $processing ? 206 : 200);
     }
 
     /**

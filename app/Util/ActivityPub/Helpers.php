@@ -247,6 +247,10 @@ class Helpers
      */
     public static function isValidUri(Uri $uri): bool
     {
+        if (! $uri) {
+            return false;
+        }
+
         if (strtolower($uri->getScheme()) !== 'https') {
             return false;
         }

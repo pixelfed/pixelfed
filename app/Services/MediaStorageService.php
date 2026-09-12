@@ -31,7 +31,6 @@ class MediaStorageService
         if ((bool) config_cache('pixelfed.cloud_storage') == true && config('filesystems.default') === 'local') {
             return (new self)->cloudMove($media);
         }
-
     }
 
     public static function avatar($avatar, $local = false, $skipRecentCheck = false)
@@ -57,16 +56,40 @@ class MediaStorageService
             (new self)->localToCloud($media);
         }
 
-        if ($media->status_id && config_cache('pixelfed.cloud_storage') && ! config('pixelfed.media_fast_process')) {
-            $still_processing = Media::whereStatusId($media->status_id)
+        /*
+         * Read status_id fresh from the database.
+         *
+         * $media was unserialized when MediaStoragePipeline started. A status
+         * can be attached to it (POST /api/v1/statuses) while the upload above
+         * is in flight, in which case $media->status_id is a stale null and
+         * the NewStatusPipeline dispatched by the controller has already
+         * returned early because cdn_url was not set yet. Trusting the stale
+         * value here means that post is never lexed or federated.
+         */
+        $statusId = Media::whereKey($media->id)->value('status_id');
+
+        if (! $statusId) {
+            return;
+        }
+
+        if ($statusId != $media->status_id) {
+            // Attached mid-upload: localToCloud() skipped these with the stale null.
+            Cache::forget('pf:status:ap:v1:sid:'.$statusId);
+            Cache::forget('status:transformer:media:attachments:'.$statusId);
+            MediaService::del($statusId);
+            StatusService::del($statusId, false);
+        }
+
+        if (config_cache('pixelfed.cloud_storage') && ! config('pixelfed.media_fast_process')) {
+            $still_processing = Media::whereStatusId($statusId)
                 ->whereNull('cdn_url')
                 ->exists();
             if (! $still_processing) {
                 // In this configuration, publishing the status is delayed until the media uploads
                 // Since all media have been processed, we can kick the NewStatusPipeline job
                 // N.B. there's a timing condition with multiple MediaStorageService workers matching this if statement
-                // However, it's acceptable to publish the same status multiple times to ActivityPub
-                $status = Status::where('id', $media->status_id)->first(); // This could be null if the status was deleted
+                // NewStatusPipeline holds a short lock so the status is only lexed and federated once
+                $status = Status::where('id', $statusId)->first(); // This could be null if the status was deleted
                 if ($status) {
                     NewStatusPipeline::dispatch($status);
                 }
