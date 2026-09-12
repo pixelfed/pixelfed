@@ -170,12 +170,12 @@ describe('admin:MediaMoveStorageLocalToCloud', function () {
         expect(config('pixelfed.cloud_storage'))->toBeTrue();
     });
 
-    it('migrates media whose local file no longer matches original_sha256 by default', function () {
+    it('migrates media whose local file no longer matches original_sha256', function () {
         // The optimize pipeline (ImageResize/ImageUpdate) rewrites the local
         // file in place after upload but never updates original_sha256, so the
-        // stored hash describes the pre-optimization bytes. The sha check must
-        // therefore be OFF by default, otherwise every optimized image fails
-        // verify (pixelfed#7203 follow-up: moved=0, failed=N).
+        // stored hash describes the pre-optimization bytes. Verify must not
+        // compare against it, otherwise every optimized image fails verify
+        // (pixelfed#7203 follow-up: moved=0, failed=N).
         Config::set('pixelfed.cloud_storage', true);
         $media = makeLocalMediaWithStaleSha();
 
@@ -189,23 +189,6 @@ describe('admin:MediaMoveStorageLocalToCloud', function () {
         expect((string) $media->version)->toBe('4');
         expect($media->cdn_url)->not->toBeNull();
         expect($media->replicated_at)->not->toBeNull();
-    });
-
-    it('fails verify for a stale original_sha256 only when --verify-sha256 is passed', function () {
-        Config::set('pixelfed.cloud_storage', true);
-        $media = makeLocalMediaWithStaleSha();
-
-        $this->artisan('admin:MediaMoveStorageLocalToCloud', [
-            '--force' => true,
-            '--verify-sha256' => true,
-        ])->assertExitCode(1);
-
-        // Local copy left intact; row not marked migrated.
-        expect(Storage::disk('local')->exists($media->media_path))->toBeTrue();
-
-        $media->refresh();
-        expect((string) $media->version)->not->toBe('4');
-        expect($media->replicated_at)->toBeNull();
     });
 });
 

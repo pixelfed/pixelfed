@@ -28,7 +28,6 @@ class MediaMoveStorageLocalToCloud extends Command
         {--before-id= : Only process media with an ID lower than this value}
         {--dry-run : Report what would happen without copying or writing}
         {--keep-local : Do not delete local files after verifying the cloud copy}
-        {--verify-sha256 : Also verify the local file against the stored original_sha256. Disabled by default: original_sha256 is the pre-optimization upload hash, so optimized media never matches and would always fail verify.}
         {--debug : Print exactly what moves, from which local path to which cloud destination}
         {--force : Skip confirmation prompts}';
 
@@ -210,10 +209,6 @@ class MediaMoveStorageLocalToCloud extends Command
 
             if ($this->option('dry-run')) {
                 $nextCommand .= ' --dry-run';
-            }
-
-            if ($this->option('verify-sha256')) {
-                $nextCommand .= ' --verify-sha256';
             }
 
             if ($this->option('debug')) {
@@ -443,8 +438,7 @@ class MediaMoveStorageLocalToCloud extends Command
             $verifyFailure = $this->verify(
                 $mediaPath,
                 $localDisk,
-                $cloudDisk,
-                $this->option('verify-sha256') ? $media->original_sha256 : null
+                $cloudDisk
             );
 
             if ($verifyFailure !== null) {
@@ -641,11 +635,14 @@ class MediaMoveStorageLocalToCloud extends Command
     }
 
     /**
-     * Verify the cloud copy matches the local source by size and, when an
-     * original checksum is available, verify the local source against it.
+     * Verify the cloud copy matches the local source by existence and size.
      *
-     * Cloud content hashing would require downloading the object, so size
-     * parity plus a known-good local SHA-256 is used here.
+     * Content hashing is intentionally not used here: original_sha256 is the
+     * hash of the file as originally uploaded, but the optimize pipeline
+     * rewrites the local file in place afterwards, so it would never match the
+     * migrated file. Cloud content hashing would require downloading the
+     * object. Existence + size parity is the signal that describes the copy we
+     * just uploaded.
      *
      * Returns null on success, or a context array describing exactly which
      * check failed (so the caller can log an actionable reason instead of a
@@ -654,8 +651,7 @@ class MediaMoveStorageLocalToCloud extends Command
     protected function verify(
         string $path,
         $localDisk,
-        $cloudDisk,
-        ?string $expectedSha = null
+        $cloudDisk
     ): ?array {
         if (! $cloudDisk->exists($path)) {
             return [
@@ -680,26 +676,6 @@ class MediaMoveStorageLocalToCloud extends Command
                 'local_size' => $localSize,
                 'cloud_size' => $cloudSize,
             ];
-        }
-
-        if ($expectedSha) {
-            $localSha = @hash_file(
-                'sha256',
-                $localDisk->path($path)
-            );
-
-            if (
-                $localSha &&
-                ! hash_equals($expectedSha, $localSha)
-            ) {
-                return [
-                    'reason' => 'sha256_mismatch',
-                    'detail' => 'Local file checksum does not match the stored original_sha256.',
-                    'path' => $path,
-                    'expected_sha256' => $expectedSha,
-                    'local_sha256' => $localSha,
-                ];
-            }
         }
 
         return null;
