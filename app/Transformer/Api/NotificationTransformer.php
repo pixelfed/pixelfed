@@ -30,7 +30,7 @@ class NotificationTransformer extends Fractal\TransformerAbstract
             }
         }
 
-        if ($n->item_id && $n->item_type == Status::class) {
+        if ($n->item_id && in_array($n->item_type, ['App\Status', Status::class])) {
             $res['status'] = StatusService::get($n->item_id, false);
         }
 
