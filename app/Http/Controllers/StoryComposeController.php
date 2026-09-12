@@ -91,16 +91,19 @@ class StoryComposeController extends Controller
         if ($story->type === 'video') {
 
             if ($localFs) {
-                $videoPath = storage_path('app/'.$path);
+                $media = FFMpeg::fromDisk('local')->open($path);
             } else {
-                $tempPath = sys_get_temp_dir().'/'.Str::random(40).'.mp4';
+                $tempName = Str::random(40).'.mp4';
+                $tempPath = sys_get_temp_dir().'/'.$tempName;
                 file_put_contents($tempPath, $disk->get($path));
-                $videoPath = $tempPath;
+                $media = FFMpeg::fromDisk(Storage::build([
+                    'driver' => 'local',
+                    'root' => sys_get_temp_dir(),
+                ]))->open($tempName);
             }
 
             try {
-                $video = FFMpeg::open($videoPath);
-                $duration = $video->getDurationInSeconds();
+                $duration = $media->getDurationInSeconds();
                 $res['media_duration'] = $duration;
 
                 if ($duration > 500) {
