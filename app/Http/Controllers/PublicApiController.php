@@ -51,22 +51,54 @@ class PublicApiController extends Controller
 
     public function getStatus(Request $request, $id)
     {
-        abort_if(! $request->user(), 403);
-        $status = StatusService::get($id, false);
+        $user = $request->user();
+
+        abort_if(! $user, 403);
+
+        $viewerId = (int) $user->profile_id;
+
+        $status = Status::query()
+            ->select([
+                'id',
+                'profile_id',
+                'visibility',
+            ])
+            ->find($id);
+
         abort_if(! $status, 404);
-        if (in_array($status['visibility'], ['public', 'unlisted'])) {
-            return $status;
+
+        $authorId = (int) $status->profile_id;
+
+        if ($viewerId === $authorId) {
+            $result = StatusService::get($status->id, false);
+
+            abort_if(! $result, 404);
+
+            return $result;
         }
-        $pid = $request->user()->profile_id;
-        if ($status['account']['id'] == $pid) {
-            return $status;
+
+        switch ($status->visibility) {
+            case 'public':
+            case 'unlisted':
+                break;
+
+            case 'private':
+                abort_unless(
+                    FollowerService::follows($viewerId, $authorId),
+                    404
+                );
+                break;
+
+            case 'direct':
+            default:
+                abort(404);
         }
-        if ($status['visibility'] == 'private') {
-            if (FollowerService::follows($pid, $status['account']['id'])) {
-                return $status;
-            }
-        }
-        abort(404);
+
+        $result = StatusService::get($status->id, false);
+
+        abort_if(! $result, 404);
+
+        return $result;
     }
 
     public function status(Request $request, $username, int $postid): JsonResponse
@@ -860,8 +892,8 @@ class PublicApiController extends Controller
 
                 if ($onlyMedia) {
                     return isset($status['media_attachments']) &&
-                           is_array($status['media_attachments']) &&
-                           ! empty($status['media_attachments']);
+                        is_array($status['media_attachments']) &&
+                        ! empty($status['media_attachments']);
                 }
 
                 return true;
