@@ -436,21 +436,37 @@ class MediaMoveStorageLocalToCloud extends Command
                 );
             }
 
-            if (
-                ! $this->verify(
-                    $mediaPath,
-                    $localDisk,
-                    $cloudDisk,
-                    $media->original_sha256
-                )
-            ) {
+            $verifyFailure = $this->verify(
+                $mediaPath,
+                $localDisk,
+                $cloudDisk,
+                $media->original_sha256
+            );
+
+            if ($verifyFailure !== null) {
                 $this->warn(
                     PHP_EOL.
                         'Verify failed for media '.
                         $media->id.
                         ' ('.
                         $mediaPath.
-                        '); left local copy intact.'
+                        '): '.
+                        $verifyFailure['reason'].
+                        '; left local copy intact.'
+                );
+
+                Log::error(
+                    'MediaMoveStorageLocalToCloud: verify failed after upload; left local copy intact.',
+                    array_merge(
+                        [
+                            'media_id' => $media->id,
+                            'status_id' => $media->status_id,
+                            'media_path' => $mediaPath,
+                            'size' => (int) $media->size,
+                            'cloud_destination' => $this->cloudDestination($mediaPath, $cloudDisk),
+                        ],
+                        $verifyFailure
+                    )
                 );
 
                 return 'failed';
@@ -644,15 +660,23 @@ class MediaMoveStorageLocalToCloud extends Command
      *
      * Cloud content hashing would require downloading the object, so size
      * parity plus a known-good local SHA-256 is used here.
+     *
+     * Returns null on success, or a context array describing exactly which
+     * check failed (so the caller can log an actionable reason instead of a
+     * bare "verify failed").
      */
     protected function verify(
         string $path,
         $localDisk,
         $cloudDisk,
         ?string $expectedSha = null
-    ): bool {
+    ): ?array {
         if (! $cloudDisk->exists($path)) {
-            return false;
+            return [
+                'reason' => 'cloud_object_missing',
+                'detail' => 'Cloud object does not exist after upload.',
+                'path' => $path,
+            ];
         }
 
         $localSize = $localDisk->size($path);
@@ -663,7 +687,13 @@ class MediaMoveStorageLocalToCloud extends Command
             $cloudSize === false ||
             $localSize !== $cloudSize
         ) {
-            return false;
+            return [
+                'reason' => 'size_mismatch',
+                'detail' => 'Local and cloud sizes differ (or a size could not be read).',
+                'path' => $path,
+                'local_size' => $localSize,
+                'cloud_size' => $cloudSize,
+            ];
         }
 
         if ($expectedSha) {
@@ -676,10 +706,16 @@ class MediaMoveStorageLocalToCloud extends Command
                 $localSha &&
                 ! hash_equals($expectedSha, $localSha)
             ) {
-                return false;
+                return [
+                    'reason' => 'sha256_mismatch',
+                    'detail' => 'Local file checksum does not match the stored original_sha256.',
+                    'path' => $path,
+                    'expected_sha256' => $expectedSha,
+                    'local_sha256' => $localSha,
+                ];
             }
         }
 
-        return true;
+        return null;
     }
 }
