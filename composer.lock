@@ -3520,16 +3520,16 @@
         },
         {
             "name": "league/iso3166",
-            "version": "4.4.0",
+            "version": "4.5.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/alcohol/iso3166.git",
-                "reference": "928ac7ecc569db9123a83ef5b1c6efc279e7cb49"
+                "reference": "d2a202eae724b3e81699996c62985004d5205113"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/alcohol/iso3166/zipball/928ac7ecc569db9123a83ef5b1c6efc279e7cb49",
-                "reference": "928ac7ecc569db9123a83ef5b1c6efc279e7cb49",
+                "url": "https://api.github.com/repos/alcohol/iso3166/zipball/d2a202eae724b3e81699996c62985004d5205113",
+                "reference": "d2a202eae724b3e81699996c62985004d5205113",
                 "shasum": ""
             },
             "require": {
@@ -3583,7 +3583,7 @@
                     "type": "github"
                 }
             ],
-            "time": "2026-01-02T09:49:36+00:00"
+            "time": "2026-08-27T14:33:05+00:00"
         },
         {
             "name": "league/mime-type-detection",
