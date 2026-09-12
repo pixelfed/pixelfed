@@ -28,7 +28,7 @@ class MediaMoveStorageLocalToCloud extends Command
         {--before-id= : Only process media with an ID lower than this value}
         {--dry-run : Report what would happen without copying or writing}
         {--keep-local : Do not delete local files after verifying the cloud copy}
-        {--debug : Print exactly what moves, from which local path to which cloud destination}
+        {--debug=true : Print exactly what moves, from which local path to which cloud destination. Enabled by default; pass --debug=false to silence.}
         {--force : Skip confirmation prompts}';
 
     /**
@@ -48,27 +48,42 @@ class MediaMoveStorageLocalToCloud extends Command
             $localDisk = Storage::disk('local');
             $cloudDisk = Storage::disk(config('filesystems.cloud'));
         } catch (\Throwable $e) {
-            $this->error(
-                'Cloud disk ('.config('filesystems.cloud').') could not be resolved: '.$e->getMessage()
-            );
+            $message = 'Cloud disk ('.config('filesystems.cloud').') could not be resolved: '.$e->getMessage();
+            $this->error($message);
+            Log::error('MediaMoveStorageLocalToCloud: '.$message, [
+                'cloud_disk' => config('filesystems.cloud'),
+                'exception' => $e->getMessage(),
+                'file' => $e->getFile(),
+                'line' => $e->getLine(),
+            ]);
 
             return self::FAILURE;
         }
 
         if (! $this->cloudHost()) {
-            $this->error(
-                'Cloud disk ('.config('filesystems.cloud').') is not configured (no resolvable URL).'
-            );
+            $message = 'Cloud disk ('.config('filesystems.cloud').') is not configured (no resolvable URL).';
+            $this->error($message);
             $this->line('Set AWS_URL / AWS_* in your environment before migrating to cloud.');
+            Log::error('MediaMoveStorageLocalToCloud: '.$message, [
+                'cloud_disk' => config('filesystems.cloud'),
+                'cloud_driver' => config('filesystems.disks.'.config('filesystems.cloud').'.driver'),
+                'aws_url_set' => ! empty(config('filesystems.disks.'.config('filesystems.cloud').'.url')),
+            ]);
 
             return self::FAILURE;
         }
 
         if (! $this->ensureCloudStorageEnabled()) {
+            Log::error('MediaMoveStorageLocalToCloud: aborted because cloud storage is disabled and was not enabled.', [
+                'cloud_storage' => (bool) config_cache('pixelfed.cloud_storage'),
+                'dry_run' => (bool) $this->option('dry-run'),
+                'force' => (bool) $this->option('force'),
+            ]);
+
             return self::FAILURE;
         }
 
-        if ($this->option('debug')) {
+        if ($this->debugEnabled()) {
             $this->printStorageDebugInfo();
         }
 
@@ -88,6 +103,10 @@ class MediaMoveStorageLocalToCloud extends Command
         $beforeId = $this->resolveBeforeId();
 
         if ($beforeId === false) {
+            Log::error('MediaMoveStorageLocalToCloud: invalid --before-id option.', [
+                'before_id' => $this->option('before-id'),
+            ]);
+
             return self::FAILURE;
         }
 
@@ -100,7 +119,20 @@ class MediaMoveStorageLocalToCloud extends Command
          * count the entire matching dataset before we immediately execute the
          * SELECT again. We only need the count of this bounded result set.
          */
-        $medias = $query->get();
+        try {
+            $medias = $query->get();
+        } catch (\Throwable $e) {
+            $this->error('Failed to fetch media candidates: '.$e->getMessage());
+            Log::error('MediaMoveStorageLocalToCloud: failed to fetch media candidates.', [
+                'limit' => $limit,
+                'before_id' => $beforeId,
+                'exception' => $e->getMessage(),
+                'file' => $e->getFile(),
+                'line' => $e->getLine(),
+            ]);
+
+            return self::FAILURE;
+        }
 
         if ($medias->isEmpty()) {
             $this->info('No media candidates found.');
@@ -136,6 +168,18 @@ class MediaMoveStorageLocalToCloud extends Command
             $prefix.'Done. moved='.$moved.' skipped='.$skipped.' failed='.$failed.'.'
         );
 
+        if ($failed > 0) {
+            Log::error('MediaMoveStorageLocalToCloud: completed with failures.', [
+                'moved' => $moved,
+                'skipped' => $skipped,
+                'failed' => $failed,
+                'limit' => $limit,
+                'before_id' => $beforeId,
+                'dry_run' => (bool) $this->option('dry-run'),
+                'keep_local' => (bool) $this->option('keep-local'),
+            ]);
+        }
+
         if ($this->movedBytes) {
             $this->info(
                 'Transferred '.PrettyNumber::size($this->movedBytes).' to cloud storage.'
@@ -167,8 +211,9 @@ class MediaMoveStorageLocalToCloud extends Command
                 $nextCommand .= ' --dry-run';
             }
 
-            if ($this->option('debug')) {
-                $nextCommand .= ' --debug';
+            // Debug is on by default; only carry the explicit off-switch forward.
+            if (! $this->debugEnabled()) {
+                $nextCommand .= ' --debug=false';
             }
 
             if ($this->option('force')) {
@@ -338,7 +383,7 @@ class MediaMoveStorageLocalToCloud extends Command
                 $this->cloudDestination($mediaPath, $cloudDisk)
         );
 
-        if ($this->option('debug')) {
+        if ($this->debugEnabled()) {
             $this->debugLine(
                 '  status_id     : '.($media->status_id ?? 'null')
             );
@@ -444,7 +489,16 @@ class MediaMoveStorageLocalToCloud extends Command
                 'MediaMoveStorageLocalToCloud: failed to migrate media',
                 [
                     'media_id' => $media->id,
+                    'status_id' => $media->status_id,
+                    'media_path' => $mediaPath,
+                    'thumbnail_path' => $media->thumbnail_path,
+                    'size' => (int) $media->size,
+                    'cloud_destination' => $this->cloudDestination($mediaPath, $cloudDisk),
+                    'exception' => get_class($e),
                     'error' => $e->getMessage(),
+                    'file' => $e->getFile(),
+                    'line' => $e->getLine(),
+                    'trace' => $e->getTraceAsString(),
                 ]
             );
 
@@ -522,11 +576,29 @@ class MediaMoveStorageLocalToCloud extends Command
      */
     protected function debugLine(string $message): void
     {
-        if (! $this->option('debug')) {
+        if (! $this->debugEnabled()) {
             return;
         }
 
         $this->basicLine('<comment>[debug]</comment> '.$message);
+    }
+
+    /**
+     * Whether verbose debug output is enabled.
+     *
+     * Debug defaults to ON while the cloud migration issue is being
+     * investigated. Because the option now takes a value, its raw form is a
+     * string ("true"/"false"/"0"/"1"); interpret it as a boolean so that
+     * --debug=false actually silences output. Set the signature default back
+     * to a bare flag once this is resolved.
+     */
+    protected function debugEnabled(): bool
+    {
+        return filter_var(
+            $this->option('debug'),
+            FILTER_VALIDATE_BOOLEAN,
+            FILTER_NULL_ON_FAILURE
+        ) ?? true;
     }
 
     /**
