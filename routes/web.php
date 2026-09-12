@@ -493,6 +493,10 @@ Route::domain(config('pixelfed.domain.app'))->middleware(['localization'])->grou
     Route::get('auth/invite/a/{code}', [AdminInviteController::class, 'index']);
     Route::post('api/v1.1/auth/invite/admin/re', [AdminInviteController::class, 'apiRegister'])->middleware('throttle:5,1440');
 
+    // Laravel 13's Horizon no longer redirects the base path to its dashboard,
+    // so /horizon 404s by default. Redirect admins from /horizon to /horizon/dashboard.
+    Route::redirect('horizon', 'horizon/dashboard')->middleware('admin');
+
     Route::redirect('groups/', '/groups/home');
     Route::redirect('groups/home', '/groups/feed');
 
