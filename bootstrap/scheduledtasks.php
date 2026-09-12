@@ -43,7 +43,6 @@ if (config('import.instagram.enabled')) {
     }
 }
 
-$schedule->command('app:notification-epoch-update')->weeklyOn(1, '2:21')->onOneServer();
 $schedule->command('app:hashtag-cached-count-update')->hourlyAt(25)->onOneServer();
 $schedule->command('app:account-post-count-stat-update')->everySixHours(25)->onOneServer();
 
