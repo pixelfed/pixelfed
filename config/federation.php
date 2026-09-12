@@ -25,6 +25,8 @@ return [
                 'enabled' => env('AP_LOGGER_ENABLED', false),
                 'driver' => 'log',
             ],
+            'failure_threshold' => env('AP_DELIVERY_FAILURE_THRESHOLD', 5),
+            'max_backoff' => env('AP_DELIVERY_MAX_BACKOFF', 604800),
         ],
 
         'ingest' => [

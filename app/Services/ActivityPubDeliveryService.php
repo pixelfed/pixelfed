@@ -2,9 +2,11 @@
 
 namespace App\Services;
 
+use App\Exceptions\InvalidDeliveryDestinationException;
 use App\Models\Profile;
 use App\Util\ActivityPub\Helpers;
 use App\Util\ActivityPub\HttpSignature;
+use Illuminate\Http\Client\ConnectionException;
 use Illuminate\Http\Client\Pool as HttpPool;
 use Illuminate\Http\Client\Response;
 use Illuminate\Support\Facades\Http;
@@ -57,6 +59,8 @@ class ActivityPubDeliveryService
 
     /**
      * Deliver a single ActivityPub activity.
+     *
+     * @throws InvalidDeliveryDestinationException when the inbox URL fails validation
      */
     protected function queueDelivery(): void
     {
@@ -74,16 +78,31 @@ class ActivityPubDeliveryService
 
         self::validateSender($this->sender);
 
+        $domain = DeliveryHostService::domain($this->to);
+
         $url = self::validateDestination($this->to);
 
         if (! $url) {
-            throw new InvalidArgumentException(
+            if ($domain) {
+                DeliveryHostService::recordFailure($domain);
+            }
+
+            throw new InvalidDeliveryDestinationException(
                 'Invalid ActivityPub destination URL.'
             );
         }
 
         if (! app()->environment('production')) {
             Log::info('Skipped ActivityPub delivery outside production', [
+                'profile_id' => $this->sender->id,
+                'url' => $url,
+            ]);
+
+            return;
+        }
+
+        if ($domain && DeliveryHostService::isUnavailable($domain)) {
+            Log::info('Skipped ActivityPub delivery to unavailable host', [
                 'profile_id' => $this->sender->id,
                 'url' => $url,
             ]);
@@ -106,6 +125,14 @@ class ActivityPubDeliveryService
                 $headers
             );
 
+            if ($domain) {
+                if ($response->serverError()) {
+                    DeliveryHostService::recordFailure($domain);
+                } else {
+                    DeliveryHostService::recordSuccess($domain);
+                }
+            }
+
             if ($response->failed()) {
                 self::logFailedResponse(
                     $url,
@@ -114,6 +141,10 @@ class ActivityPubDeliveryService
                 );
             }
         } catch (Throwable $e) {
+            if ($domain && $e instanceof ConnectionException) {
+                DeliveryHostService::recordFailure($domain);
+            }
+
             Log::warning('ActivityPub delivery failed', [
                 'profile_id' => $this->sender->id,
                 'url' => $url,
@@ -132,10 +163,16 @@ class ActivityPubDeliveryService
      * is both signed and transmitted, ensuring the Digest header matches the
      * bytes received by the remote ActivityPub server.
      *
+     * Hosts currently marked unavailable by DeliveryHostService are skipped
+     * silently (counted in the result, no $onError call). Connection
+     * failures, 5xx responses and inbox URLs that fail validation count
+     * against the host; any other response clears its failure count.
+     *
      * @param  Profile  $profile  Local sender used for HTTP signatures
      * @param  array<int, string>  $audience  Inbox URLs
      * @param  array<string, mixed>  $activity  ActivityPub activity
      * @param  \Closure|null  $onError  fn(Throwable|Response $reason, int $index): void
+     * @return array{total: int, skipped: int, duplicate: int, invalid: int, sent: int, delivered: int, rejected: int, failed: int}
      *
      * @throws JsonException
      */
@@ -144,9 +181,20 @@ class ActivityPubDeliveryService
         array $audience,
         array $activity,
         ?\Closure $onError = null
-    ): void {
+    ): array {
+        $result = [
+            'total' => count($audience),
+            'skipped' => 0,     // host currently marked unavailable
+            'duplicate' => 0,   // same inbox URL earlier in this audience
+            'invalid' => 0,     // failed validation (dead DNS, banned, malformed)
+            'sent' => 0,        // requests actually made
+            'delivered' => 0,   // 2xx / 3xx
+            'rejected' => 0,    // 4xx / 5xx
+            'failed' => 0,      // connection failure or signing error
+        ];
+
         if (empty($audience)) {
-            return;
+            return $result;
         }
 
         self::validateSender($profile);
@@ -157,7 +205,7 @@ class ActivityPubDeliveryService
                 'destinations' => count($audience),
             ]);
 
-            return;
+            return $result;
         }
 
         /*
@@ -178,18 +226,36 @@ class ActivityPubDeliveryService
 
         $seen = [];
 
+        /*
+         * Host health, collected during the batch and applied once at the
+         * end so no database writes happen inside the HTTP phase.
+         */
+        $hostFailures = [];
+
+        $hostSuccesses = [];
+
         foreach ($audience as $index => $destination) {
+            $domain = null;
+
             try {
-                if (! is_string($destination) || $destination === '') {
-                    throw new InvalidArgumentException(
+                if (! is_string($destination) || trim($destination) === '') {
+                    throw new InvalidDeliveryDestinationException(
                         'ActivityPub inbox URL must be a non-empty string.'
                     );
+                }
+
+                $domain = DeliveryHostService::domain($destination);
+
+                if ($domain && DeliveryHostService::isUnavailable($domain)) {
+                    $result['skipped']++;
+
+                    continue;
                 }
 
                 $url = self::validateDestination($destination);
 
                 if (! $url) {
-                    throw new InvalidArgumentException(
+                    throw new InvalidDeliveryDestinationException(
                         'Invalid ActivityPub destination URL.'
                     );
                 }
@@ -200,6 +266,8 @@ class ActivityPubDeliveryService
                  * in duplicate URLs.
                  */
                 if (isset($seen[$url])) {
+                    $result['duplicate']++;
+
                     continue;
                 }
 
@@ -214,9 +282,40 @@ class ActivityPubDeliveryService
                 $deliveries[] = [
                     'index' => $index,
                     'url' => $url,
+                    'domain' => DeliveryHostService::domain($url) ?? $domain,
                     'headers' => $headers,
                 ];
+            } catch (InvalidDeliveryDestinationException $e) {
+                /*
+                 * Expected churn: dead hosts, banned instances, stale rows.
+                 * Counted against the host and reported to the caller, but
+                 * not worth a warning per inbox per activity.
+                 */
+                $result['invalid']++;
+
+                if ($domain) {
+                    $hostFailures[$domain] = true;
+                }
+
+                Log::debug('Skipped ActivityPub delivery to invalid inbox', [
+                    'profile_id' => $profile->id,
+                    'index' => $index,
+                    'url' => is_string($destination)
+                        ? $destination
+                        : null,
+                    'error' => $e->getMessage(),
+                ]);
+
+                if ($onError) {
+                    $onError($e, $index);
+                }
             } catch (Throwable $e) {
+                /*
+                 * Anything else here is a signing or serialization problem
+                 * on our side and deserves attention.
+                 */
+                $result['failed']++;
+
                 Log::warning('Unable to prepare ActivityPub delivery', [
                     'profile_id' => $profile->id,
                     'index' => $index,
@@ -233,100 +332,147 @@ class ActivityPubDeliveryService
             }
         }
 
-        if (empty($deliveries)) {
-            return;
-        }
+        $result['sent'] = count($deliveries);
 
-        $timeout = self::deliveryTimeout();
-        $connectTimeout = self::connectTimeout($timeout);
+        if (! empty($deliveries)) {
+            $timeout = self::deliveryTimeout();
+            $connectTimeout = self::connectTimeout($timeout);
+
+            /*
+             * Each request is named using the original audience index.
+             *
+             * Laravel's Pool::as() ensures the response can be mapped directly
+             * back to that destination even when some audience entries were
+             * rejected during validation/signing.
+             */
+            $responses = Http::pool(
+                function (HttpPool $pool) use (
+                    $deliveries,
+                    $payload,
+                    $timeout,
+                    $connectTimeout
+                ) {
+                    foreach ($deliveries as $delivery) {
+                        $pool
+                            ->as((string) $delivery['index'])
+                            ->replaceHeaders($delivery['headers'])
+                            ->timeout($timeout)
+                            ->connectTimeout($connectTimeout)
+                            ->withoutRedirecting()
+                            ->send('POST', $delivery['url'], [
+                                'body' => $payload,
+                            ]);
+                    }
+                }
+            );
+
+            $deliveriesByIndex = [];
+
+            foreach ($deliveries as $delivery) {
+                $deliveriesByIndex[(string) $delivery['index']] = $delivery;
+            }
+
+            foreach ($responses as $index => $response) {
+                $delivery = $deliveriesByIndex[(string) $index] ?? null;
+
+                $url = $delivery['url'] ?? null;
+
+                $domain = $delivery['domain'] ?? null;
+
+                if ($response instanceof Throwable) {
+                    $result['failed']++;
+
+                    if ($domain) {
+                        $hostFailures[$domain] = true;
+                    }
+
+                    Log::info('ActivityPub pooled delivery connection failure', [
+                        'profile_id' => $profile->id,
+                        'index' => $index,
+                        'url' => $url,
+                        'exception' => $response::class,
+                        'error' => $response->getMessage(),
+                    ]);
+
+                    if ($onError) {
+                        $onError($response, (int) $index);
+                    }
+
+                    continue;
+                }
+
+                if (! $response instanceof Response) {
+                    $result['failed']++;
+
+                    $exception = new RuntimeException(
+                        'Unexpected ActivityPub HTTP pool response type.'
+                    );
+
+                    Log::warning('Unexpected ActivityPub pooled delivery response', [
+                        'profile_id' => $profile->id,
+                        'index' => $index,
+                        'url' => $url,
+                        'response_type' => get_debug_type($response),
+                    ]);
+
+                    if ($onError) {
+                        $onError($exception, (int) $index);
+                    }
+
+                    continue;
+                }
+
+                if ($response->failed()) {
+                    $result['rejected']++;
+
+                    if ($domain) {
+                        /*
+                         * 5xx means the host is broken or dead behind a
+                         * proxy. 4xx means it answered, so it is reachable
+                         * even if it disliked the request.
+                         */
+                        if ($response->serverError()) {
+                            $hostFailures[$domain] = true;
+                        } else {
+                            $hostSuccesses[$domain] = true;
+                        }
+                    }
+
+                    self::logFailedResponse(
+                        $url,
+                        $profile,
+                        $response,
+                        (int) $index
+                    );
+
+                    if ($onError) {
+                        $onError($response, (int) $index);
+                    }
+
+                    continue;
+                }
+
+                $result['delivered']++;
+
+                if ($domain) {
+                    $hostSuccesses[$domain] = true;
+                }
+            }
+        }
 
         /*
-         * Each request is named using the original audience index.
-         *
-         * Laravel's Pool::as() ensures the response can be mapped directly
-         * back to that destination even when some audience entries were
-         * rejected during validation/signing.
+         * A host that answered at all during this batch is reachable, even
+         * if another inbox on it failed.
          */
-        $responses = Http::pool(
-            function (HttpPool $pool) use (
-                $deliveries,
-                $payload,
-                $timeout,
-                $connectTimeout
-            ) {
-                foreach ($deliveries as $delivery) {
-                    $pool
-                        ->as((string) $delivery['index'])
-                        ->replaceHeaders($delivery['headers'])
-                        ->timeout($timeout)
-                        ->connectTimeout($connectTimeout)
-                        ->withoutRedirecting()
-                        ->send('POST', $delivery['url'], [
-                            'body' => $payload,
-                        ]);
-                }
-            }
-        );
-
-        $deliveriesByIndex = [];
-
-        foreach ($deliveries as $delivery) {
-            $deliveriesByIndex[(string) $delivery['index']] = $delivery;
+        foreach (array_keys($hostSuccesses) as $domain) {
+            unset($hostFailures[$domain]);
         }
 
-        foreach ($responses as $index => $response) {
-            $delivery = $deliveriesByIndex[(string) $index] ?? null;
+        DeliveryHostService::recordFailures(array_keys($hostFailures));
 
-            $url = $delivery['url'] ?? null;
+        DeliveryHostService::recordSuccesses(array_keys($hostSuccesses));
 
-            if ($response instanceof Throwable) {
-                Log::warning('ActivityPub pooled delivery connection failure', [
-                    'profile_id' => $profile->id,
-                    'index' => $index,
-                    'url' => $url,
-                    'exception' => $response::class,
-                    'error' => $response->getMessage(),
-                ]);
-
-                if ($onError) {
-                    $onError($response, (int) $index);
-                }
-
-                continue;
-            }
-
-            if (! $response instanceof Response) {
-                $exception = new RuntimeException(
-                    'Unexpected ActivityPub HTTP pool response type.'
-                );
-
-                Log::warning('Unexpected ActivityPub pooled delivery response', [
-                    'profile_id' => $profile->id,
-                    'index' => $index,
-                    'url' => $url,
-                    'response_type' => get_debug_type($response),
-                ]);
-
-                if ($onError) {
-                    $onError($exception, (int) $index);
-                }
-
-                continue;
-            }
-
-            if ($response->failed()) {
-                self::logFailedResponse(
-                    $url,
-                    $profile,
-                    $response,
-                    (int) $index
-                );
-
-                if ($onError) {
-                    $onError($response, (int) $index);
-                }
-            }
-        }
+        return $result;
     }
 
     /**
@@ -605,7 +751,13 @@ class ActivityPubDeliveryService
             $context['index'] = $index;
         }
 
-        Log::warning(
+        /*
+         * 4xx usually means a signature or compatibility problem worth
+         * seeing. 5xx is almost always a broken or dead host and is handled
+         * by DeliveryHostService, so keep it out of the warning stream.
+         */
+        Log::log(
+            $response->serverError() ? 'info' : 'warning',
             'ActivityPub delivery rejected by remote server',
             $context
         );
