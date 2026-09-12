@@ -114,10 +114,12 @@ class StatusDelete implements ShouldQueue
         });
 
         if ($status->in_reply_to_id) {
-            $parent = Status::findOrFail($status->in_reply_to_id);
-            $parent->reply_count--;
-            $parent->save();
-            StatusService::del($parent->id);
+            $parent = Status::find($status->in_reply_to_id);
+            if ($parent) {
+                $parent->reply_count = max(0, $parent->reply_count - 1);
+                $parent->save();
+                StatusService::del($parent->id);
+            }
         }
 
         Bookmark::whereStatusId($status->id)->delete();
@@ -188,19 +190,29 @@ class StatusDelete implements ShouldQueue
             return;
         }
 
-        // Bind the trashed-aware profile onto the status so downstream
-        // dereferences (getAudienceInbox here, and DeleteNote::transform /
-        // Status::permalink later) resolve even when the owning profile has
-        // been soft-deleted (e.g. during account deletion).
         $status->setRelation('profile', $profile);
 
-        $audience = $profile->getAudienceInbox();
-
+        $audience = array_values($profile->getAudienceInbox());
         $activity = FractalService::item($status, new DeleteNote);
 
-        $this->unlinkRemoveMedia($status);
+        Log::info('StatusDelete: fanout', [
+            'status_id' => $status->id,
+            'actor' => $activity['actor'] ?? null,
+            'object' => $activity['object']['id'] ?? $activity['object'] ?? null,
+            'inboxes' => count($audience),
+        ]);
 
-        ActivityPubDeliveryService::pool($profile, $audience, $activity);
+        ActivityPubDeliveryService::pool($profile, $audience, $activity, function ($res, $i) use ($audience, $status) {
+            Log::warning('StatusDelete: delivery failed', [
+                'status_id' => $status->id,
+                'inbox' => $audience[$i] ?? null,
+                'result' => $res instanceof \Throwable
+                    ? get_class($res).': '.$res->getMessage()
+                    : $res->status().' '.substr($res->body(), 0, 300),
+            ]);
+        });
+
+        $this->unlinkRemoveMedia($status);
 
         return 1;
     }

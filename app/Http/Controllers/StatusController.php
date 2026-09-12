@@ -23,34 +23,27 @@ use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
 use Illuminate\Support\Facades\Cache;
-use Illuminate\Support\Facades\DB;
 use League\Fractal;
 
 class StatusController extends Controller
 {
-    public function show(Request $request, $username, $id)
+    public function show(Request $request, string $username, string $id): View|JsonResponse|RedirectResponse
     {
-        // redirect authed users to Metro 2.0
-        if ($request->user()) {
-            // unless they force static view
-            if (! $request->has('fs') || $request->input('fs') != '1') {
-                return redirect('/i/web/post/'.$id);
-            }
+        if ($request->user() && $request->input('fs') !== '1') {
+            return redirect('/i/web/post/'.$id);
         }
 
         $statusData = StatusService::get($id, false);
 
         abort_if(
             ! $statusData ||
-                ! isset($statusData['account'], $statusData['account']['username']) ||
+                ! isset($statusData['account']['username']) ||
                 $statusData['account']['username'] !== $username ||
                 isset($statusData['reblog']),
             404
         );
 
-        $user = Profile::whereNull('domain')
-            ->whereUsername($username)
-            ->firstOrFail();
+        $user = Profile::whereNull('domain')->whereUsername($username)->firstOrFail();
 
         if ($user->status !== null) {
             return ProfileController::accountCheck($user);
@@ -61,57 +54,18 @@ class StatusController extends Controller
             ->whereIn('scope', ['public', 'unlisted', 'private'])
             ->findOrFail($id);
 
-        if ($status->visibility === 'private' || $user->is_private) {
-            $viewer = $request->user();
+        $this->guardStatusVisibility($request, $user, $status);
 
-            if (! $viewer) {
-                abort(404);
-            }
-
-            $viewerProfile = $viewer->profile;
-
-            $isOwner = $viewerProfile->id === $user->id;
-            $isAdmin = (bool) $viewer->is_admin;
-            $isFollower = $user->followedBy($viewerProfile);
-
-            if (! $isOwner && ! $isAdmin && ! $isFollower) {
-                abort(404);
-            }
+        if ($request->wantsJson() && (bool) config_cache('federation.activitypub.enabled')) {
+            return $this->showActivityPub($request, $status);
         }
 
-        if ($status->type === 'archived') {
-            $viewer = $request->user();
-
-            if (! $viewer || $viewer->profile_id !== $status->profile_id) {
-                abort(404);
-            }
-        }
-
-        if (
-            $request->wantsJson() &&
-            (bool) config_cache('federation.activitypub.enabled')
-        ) {
-            return $this->showActivityPub($request, $statusData);
-        }
-
-        if ($status->uri || $status->url) {
-            $url = $status->uri ?? $status->url;
-
-            if (str_ends_with($url, '/activity')) {
-                $url = str_replace('/activity', '', $url);
-            }
-
-            return redirect($url);
-        }
-
-        $template = $status->in_reply_to_id
-            ? 'status.reply'
-            : 'status.show';
+        $template = $status->in_reply_to_id ? 'status.reply' : 'status.show';
 
         return view($template, compact('user', 'status'));
     }
 
-    public function shortcodeRedirect(Request $request, $id): RedirectResponse
+    public function shortcodeRedirect(Request $request, string $id): RedirectResponse
     {
         $hid = HashidService::decode($id);
         abort_if(! $hid, 404);
@@ -119,119 +73,73 @@ class StatusController extends Controller
         return redirect('/i/web/post/'.$hid);
     }
 
-    public function showId(int $id): RedirectResponse
-    {
-        abort(404);
-        $status = Status::whereNull('reblog_of_id')
-            ->whereIn('scope', ['public', 'unlisted'])
-            ->findOrFail($id);
-
-        return redirect($status->url());
-    }
-
-    public function showEmbed(Request $request, $username, int $id): Response
+    public function showEmbed(Request $request, string $username, string $id): Response
     {
         if (! (bool) config_cache('instance.embed.post')) {
-            $res = view('status.embed-removed');
-
-            return response($res)->withHeaders(['X-Frame-Options' => 'ALLOWALL']);
+            return $this->embedRemoved();
         }
 
         $status = StatusService::get($id);
 
         if (
             ! $status ||
-            ! isset($status['account'], $status['account']['id'], $status['local']) ||
+            ! isset($status['account']['id'], $status['account']['username'], $status['local']) ||
             ! $status['local'] ||
             strtolower($status['account']['username']) !== strtolower($username) ||
-            isset($status['account']['moved'], $status['account']['moved']['id'])
+            isset($status['account']['moved']['id'])
         ) {
-            $content = view('status.embed-removed');
-
-            return response($content, 404)->header('X-Frame-Options', 'ALLOWALL');
+            return $this->embedRemoved(404);
         }
 
         $profile = AccountService::get($status['account']['id'], true);
 
-        if (! $profile || $profile['locked'] || ! $profile['local']) {
-            $content = view('status.embed-removed');
-
-            return response($content)->header('X-Frame-Options', 'ALLOWALL');
+        if (
+            ! $profile ||
+            $profile['locked'] ||
+            ! $profile['local'] ||
+            ! AccountService::canEmbed($profile['id'])
+        ) {
+            return $this->embedRemoved();
         }
 
-        $embedCheck = AccountService::canEmbed($profile['id']);
-
-        if (! $embedCheck) {
-            $content = view('status.embed-removed');
-
-            return response($content)->header('X-Frame-Options', 'ALLOWALL');
+        if ($this->profileFlaggedAsSpam($profile['id'])) {
+            return $this->embedRemoved();
         }
-
-        $aiCheck = Cache::remember('profile:ai-check:spam-login:'.$profile['id'], 3600, function () use ($profile) {
-            $user = Profile::find($profile['id']);
-            if (! $user) {
-                return true;
-            }
-            $exists = AccountInterstitial::whereUserId($user->user_id)->where('is_spam', 1)->count();
-            if ($exists) {
-                return true;
-            }
-
-            return false;
-        });
-
-        if ($aiCheck) {
-            $res = view('status.embed-removed');
-
-            return response($res)->withHeaders(['X-Frame-Options' => 'ALLOWALL']);
-        }
-
-        $status = StatusService::get($id);
 
         if (
-            ! $status ||
-            ! isset($status['account'], $status['account']['id']) ||
             intval($status['account']['id']) !== intval($profile['id']) ||
             $status['sensitive'] ||
             $status['visibility'] !== 'public' ||
             ! in_array($status['pf_type'], ['photo', 'photo:album'])
         ) {
-            $content = view('status.embed-removed');
-
-            return response($content)->header('X-Frame-Options', 'ALLOWALL');
+            return $this->embedRemoved();
         }
 
-        $showLikes = $request->filled('likes') && $request->likes == true;
-        $showCaption = $request->filled('caption') && $request->caption !== false;
-        $layout = $request->filled('layout') && $request->layout == 'compact' ? 'compact' : 'full';
-        $content = view('status.embed', compact('status', 'showLikes', 'showCaption', 'layout'));
+        $showLikes = $request->boolean('likes');
+        $showCaption = $request->boolean('caption');
+        $layout = $request->input('layout') === 'compact' ? 'compact' : 'full';
 
-        return response($content)->withHeaders(['X-Frame-Options' => 'ALLOWALL']);
+        return response(view('status.embed', compact('status', 'showLikes', 'showCaption', 'layout')))
+            ->header('X-Frame-Options', 'ALLOWALL');
     }
 
-    public function showObject(Request $request, $username, int $id)
+    public function showObject(Request $request, string $username, string $id): View|JsonResponse
     {
+        abort_unless((bool) config_cache('federation.activitypub.enabled'), 404);
+
         $user = Profile::whereNull('domain')->whereUsername($username)->firstOrFail();
 
-        if ($user->status != null) {
+        if ($user->status !== null) {
             return ProfileController::accountCheck($user);
         }
 
         $status = Status::whereProfileId($user->id)
-            ->whereNotIn('visibility', ['draft', 'direct'])
+            ->whereIn('scope', ['public', 'unlisted', 'private'])
             ->findOrFail($id);
 
         abort_if($status->uri, 404);
 
-        if ($status->visibility == 'private' || $user->is_private) {
-            if (! $request->user()) {
-                abort(403);
-            }
-            $pid = $request->user()->profile;
-            if ($user->followedBy($pid) == false && $user->id !== $pid->id) {
-                abort(403);
-            }
-        }
+        $this->guardStatusVisibility($request, $user, $status);
 
         return $this->showActivityPub($request, $status);
     }
@@ -243,8 +151,6 @@ class StatusController extends Controller
         return view('status.compose');
     }
 
-    public function store(Request $request): void {}
-
     public function delete(Request $request): JsonResponse|RedirectResponse
     {
         $this->authCheck();
@@ -253,45 +159,40 @@ class StatusController extends Controller
             'item' => 'required|integer|min:1',
         ]);
 
-        $status = Status::findOrFail($request->input('item'));
-
         $user = $request->user();
+        $pid = $user->profile_id;
 
-        if (
-            $status->profile_id != $user->profile->id &&
-            $user->is_admin == true &&
-            $status->uri == null
-        ) {
-            AccountInterstitial::createFromStatus($status, 'post.removed', 'account.moderation.post.removed');
-        }
+        $status = Status::whereNull('reblog_of_id')->findOrFail($request->input('item'));
+
+        $isOwner = $status->profile_id == $pid;
+        $isParentOwner = false;
 
         if ($status->in_reply_to_id) {
             $parent = Status::find($status->in_reply_to_id);
-            if ($parent && ($parent->profile_id == $user->profile_id) || ($status->profile_id == $user->profile_id) || $user->is_admin) {
-                Cache::forget('_api:statuses:recent_9:'.$status->profile_id);
-                Cache::forget('profile:status_count:'.$status->profile_id);
-                Cache::forget('profile:embed:'.$status->profile_id);
-                StatusService::del($status->id, true);
-                Cache::forget('profile:status_count:'.$status->profile_id);
-                $status->uri ? RemoteStatusDelete::dispatch($status) : StatusDelete::dispatch($status);
-            }
-        } elseif ($status->profile_id == $user->profile_id || $user->is_admin == true) {
-            Cache::forget('_api:statuses:recent_9:'.$status->profile_id);
-            Cache::forget('profile:status_count:'.$status->profile_id);
-            Cache::forget('profile:embed:'.$status->profile_id);
-            StatusService::del($status->id, true);
-            Cache::forget('profile:status_count:'.$status->profile_id);
-            $status->uri ? RemoteStatusDelete::dispatch($status) : StatusDelete::dispatch($status);
+            $isParentOwner = $parent && $parent->profile_id == $pid;
         }
+
+        abort_unless($isOwner || $isParentOwner || $user->is_admin, 403);
+
+        if ($user->is_admin && ! $isOwner && $status->uri === null) {
+            AccountInterstitial::createFromStatus($status, 'post.removed', 'account.moderation.post.removed');
+        }
+
+        Cache::forget('_api:statuses:recent_9:'.$status->profile_id);
+        Cache::forget('profile:status_count:'.$status->profile_id);
+        Cache::forget('profile:embed:'.$status->profile_id);
+        StatusService::del($status->id, true);
+
+        $status->uri ? RemoteStatusDelete::dispatch($status) : StatusDelete::dispatch($status);
 
         if ($request->wantsJson()) {
             return response()->json(['Status successfully deleted.']);
-        } else {
-            return redirect($user->url());
         }
+
+        return redirect($user->url());
     }
 
-    public function storeShare(Request $request)
+    public function storeShare(Request $request): JsonResponse|RedirectResponse
     {
         $this->authCheck();
 
@@ -301,26 +202,27 @@ class StatusController extends Controller
 
         $user = $request->user();
         $profile = $user->profile;
-        $status = Status::whereScope('public')
-            ->findOrFail($request->input('item'));
+
+        $status = Status::whereScope('public')->findOrFail($request->input('item'));
+
         $statusAccount = AccountService::get($status->profile_id);
-        abort_if(! $statusAccount || isset($statusAccount['moved'], $statusAccount['moved']['id']), 422, 'Account moved');
+        abort_if(! $statusAccount || isset($statusAccount['moved']['id']), 422, 'Account moved');
 
         $count = $status->reblogs_count;
-        $defaultCaption = config_cache('database.default') === 'mysql' ? null : '';
-        $exists = Status::whereProfileId($request->user()->profile->id)
+
+        $shares = Status::whereProfileId($profile->id)
             ->whereReblogOfId($status->id)
-            ->exists();
-        if ($exists == true) {
-            $shares = Status::whereProfileId($request->user()->profile->id)
-                ->whereReblogOfId($status->id)
-                ->get();
+            ->get();
+
+        if ($shares->isNotEmpty()) {
             foreach ($shares as $share) {
                 UndoSharePipeline::dispatch($share);
-                ReblogService::del($profile->id, $status->id);
                 $count--;
             }
+            ReblogService::del($profile->id, $status->id);
         } else {
+            $defaultCaption = config_cache('database.default') === 'mysql' ? null : '';
+
             $share = new Status;
             $share->caption = $defaultCaption;
             $share->rendered = $defaultCaption;
@@ -330,6 +232,7 @@ class StatusController extends Controller
             $share->type = 'share';
             $share->save();
             $count++;
+
             SharePipeline::dispatch($share);
             ReblogService::add($profile->id, $status->id);
         }
@@ -338,167 +241,225 @@ class StatusController extends Controller
         StatusService::del($status->id);
 
         if ($request->ajax()) {
-            $response = ['code' => 200, 'msg' => 'Share saved', 'count' => $count];
-        } else {
-            $response = redirect($status->url());
+            return response()->json(['code' => 200, 'msg' => 'Share saved', 'count' => $count]);
         }
 
-        return $response;
+        return redirect($status->url());
     }
 
-    public function showActivityPub(Request $request, $status)
+    public function showActivityPub(Request $request, Status|array $status): JsonResponse
     {
-        $key = 'pf:status:ap:v1:sid:'.$status['id'];
+        $id = $status instanceof Status ? $status->id : $status['id'];
 
-        return Cache::remember($key, 3600, function () use ($status) {
-            $status = Status::findOrFail($status['id']);
-            $object = $status->type == 'poll' ? new Question : new Note;
-            $fractal = new Fractal\Manager;
-            $resource = new Fractal\Resource\Item($status, $object);
-            $res = $fractal->createData($resource)->toArray();
-
-            return response()->json($res['data'], 200, ['Content-Type' => 'application/activity+json'], JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES);
-        });
+        return response()->json(
+            $this->activityPubObject($id),
+            200,
+            ['Content-Type' => 'application/activity+json'],
+            JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES
+        );
     }
 
-    public function edit(Request $request, $username, $id): View
+    public function edit(Request $request, string $username, string $id): View
     {
         $this->authCheck();
+
         $user = $request->user()->profile;
         $status = Status::whereProfileId($user->id)
-            ->with(['media'])
+            ->with('media')
             ->findOrFail($id);
         $licenses = License::get();
 
         return view('status.edit', compact('user', 'status', 'licenses'));
     }
 
-    public function editStore(Request $request, $username, $id): RedirectResponse
+    public function editStore(Request $request, string $username, string $id): RedirectResponse
     {
         $this->authCheck();
-        $user = $request->user()->profile;
-        $status = Status::whereProfileId($user->id)
-            ->with(['media'])
-            ->findOrFail($id);
 
         $this->validate($request, [
             'license' => 'nullable|integer|min:1|max:16',
         ]);
+
+        $status = Status::whereProfileId($request->user()->profile_id)
+            ->with('media')
+            ->findOrFail($id);
 
         $licenseId = $request->input('license');
 
         $status->media->each(function ($media) use ($licenseId) {
             $media->license = $licenseId;
             $media->save();
-            Cache::forget('status:transformer:media:attachments:'.$media->status_id);
         });
 
+        Cache::forget('status:transformer:media:attachments:'.$status->id);
+        StatusService::del($status->id);
+
         return redirect($status->url());
-    }
-
-    protected function authCheck(): void
-    {
-        if (! request()->user()) {
-            abort(403);
-        }
-    }
-
-    protected function validateVisibility($visibility)
-    {
-        $allowed = ['public', 'unlisted', 'private'];
-
-        return in_array($visibility, $allowed) ? $visibility : 'public';
-    }
-
-    public static function mimeTypeCheck($mimes): string
-    {
-        $allowed = explode(',', config_cache('pixelfed.media_types'));
-        if (! isset($allowed['image/jpg'])) {
-            $allowed[] = 'image/jpg';
-        }
-        $count = count($mimes);
-        $photos = 0;
-        $videos = 0;
-        foreach ($mimes as $mime) {
-            if (in_array($mime, $allowed) == false && $mime !== 'video/mp4') {
-                continue;
-            }
-            if (str_contains($mime, 'image/')) {
-                $photos++;
-            }
-            if (str_contains($mime, 'video/')) {
-                $videos++;
-            }
-        }
-        if ($photos == 1 && $videos == 0) {
-            return 'photo';
-        }
-        if ($videos == 1 && $photos == 0) {
-            return 'video';
-        }
-        if ($photos > 1 && $videos == 0) {
-            return 'photo:album';
-        }
-        if ($videos > 1 && $photos == 0) {
-            return 'video:album';
-        }
-        if ($photos >= 1 && $videos >= 1) {
-            return 'photo:video:album';
-        }
-
-        return 'text';
     }
 
     public function toggleVisibility(Request $request): JsonResponse
     {
         $this->authCheck();
+
         $this->validate($request, [
             'item' => 'required|string|min:1|max:20',
             'disableComments' => 'required|boolean',
         ]);
 
         $user = $request->user();
-        $id = $request->input('item');
-        $state = $request->input('disableComments');
+        $status = Status::findOrFail($request->input('item'));
 
-        $status = Status::findOrFail($id);
+        abort_if($status->profile_id != $user->profile_id && ! $user->is_admin, 403);
 
-        if ($status->profile_id != $user->profile->id && $user->is_admin == false) {
-            abort(403);
-        }
-
-        $status->comments_disabled = $status->comments_disabled == true ? false : true;
+        $status->comments_disabled = ! $status->comments_disabled;
         $status->save();
+
+        StatusService::del($status->id);
 
         return response()->json([200]);
     }
 
     public function storeView(Request $request): JsonResponse
     {
-        abort_if(! $request->user(), 403);
+        $this->authCheck();
 
         $views = $request->input('_v');
-        $uid = $request->user()->profile_id;
 
         if (empty($views) || ! is_array($views)) {
             return response()->json(0);
         }
 
+        $pid = $request->user()->profile_id;
+
         Cache::forget('profile:home-timeline-cursor:'.$request->user()->id);
 
-        foreach ($views as $view) {
-            if (! isset($view['sid']) || ! isset($view['pid'])) {
-                continue;
-            }
-            DB::transaction(function () use ($view, $uid) {
-                StatusView::firstOrCreate([
-                    'status_id' => $view['sid'],
-                    'status_profile_id' => $view['pid'],
-                    'profile_id' => $uid,
-                ]);
-            });
+        $rows = collect($views)
+            ->filter(fn ($view) => is_array($view)
+                && isset($view['sid'], $view['pid'])
+                && is_numeric($view['sid'])
+                && is_numeric($view['pid']))
+            ->map(fn ($view) => [
+                'status_id' => (int) $view['sid'],
+                'status_profile_id' => (int) $view['pid'],
+                'profile_id' => $pid,
+            ])
+            ->unique('status_id')
+            ->take(100)
+            ->values();
+
+        if ($rows->isEmpty()) {
+            return response()->json(0);
         }
 
+        $seen = StatusView::whereProfileId($pid)
+            ->whereIn('status_id', $rows->pluck('status_id'))
+            ->pluck('status_id')
+            ->map(fn ($id) => (int) $id)
+            ->all();
+
+        $rows->reject(fn ($row) => in_array($row['status_id'], $seen, true))
+            ->each(fn ($row) => StatusView::create($row));
+
         return response()->json(1);
+    }
+
+    public static function mimeTypeCheck($mimes): string
+    {
+        $allowed = explode(',', (string) config_cache('pixelfed.media_types'));
+
+        if (! in_array('image/jpg', $allowed)) {
+            $allowed[] = 'image/jpg';
+        }
+
+        $photos = 0;
+        $videos = 0;
+
+        foreach ($mimes as $mime) {
+            if (! in_array($mime, $allowed) && $mime !== 'video/mp4') {
+                continue;
+            }
+            if (str_starts_with($mime, 'image/')) {
+                $photos++;
+            }
+            if (str_starts_with($mime, 'video/')) {
+                $videos++;
+            }
+        }
+
+        return match (true) {
+            $photos === 1 && $videos === 0 => 'photo',
+            $videos === 1 && $photos === 0 => 'video',
+            $photos > 1 && $videos === 0 => 'photo:album',
+            $videos > 1 && $photos === 0 => 'video:album',
+            $photos >= 1 && $videos >= 1 => 'photo:video:album',
+            default => 'text',
+        };
+    }
+
+    protected function guardStatusVisibility(Request $request, Profile $owner, Status $status): void
+    {
+        $viewer = $request->user();
+
+        if ($status->scope === 'private' || $owner->is_private) {
+            abort_if(! $viewer, 404);
+
+            $viewerProfile = $viewer->profile;
+
+            $isOwner = $viewerProfile->id === $owner->id;
+            $isAdmin = (bool) $viewer->is_admin;
+            $isFollower = $owner->followedBy($viewerProfile);
+
+            abort_if(! $isOwner && ! $isAdmin && ! $isFollower, 404);
+        }
+
+        if ($status->type === 'archived') {
+            abort_if(! $viewer || $viewer->profile_id !== $status->profile_id, 404);
+        }
+    }
+
+    protected function activityPubObject(int|string $id): array
+    {
+        $key = 'pf:status:ap:v1:sid:'.$id;
+        $cached = Cache::get($key);
+
+        if (is_array($cached)) {
+            return $cached;
+        }
+
+        $status = Status::findOrFail($id);
+        $object = $status->type === 'poll' ? new Question : new Note;
+        $fractal = new Fractal\Manager;
+        $resource = new Fractal\Resource\Item($status, $object);
+        $data = $fractal->createData($resource)->toArray()['data'];
+
+        Cache::put($key, $data, 3600);
+
+        return $data;
+    }
+
+    protected function profileFlaggedAsSpam(int|string $profileId): bool
+    {
+        return (bool) Cache::remember('profile:ai-check:spam-login:'.$profileId, 3600, function () use ($profileId) {
+            $profile = Profile::find($profileId);
+
+            if (! $profile) {
+                return true;
+            }
+
+            return AccountInterstitial::whereUserId($profile->user_id)
+                ->where('is_spam', 1)
+                ->exists();
+        });
+    }
+
+    protected function embedRemoved(int $code = 200): Response
+    {
+        return response(view('status.embed-removed'), $code)
+            ->header('X-Frame-Options', 'ALLOWALL');
+    }
+
+    protected function authCheck(): void
+    {
+        abort_if(! request()->user(), 403);
     }
 }
