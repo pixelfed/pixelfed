@@ -28,6 +28,7 @@ class MediaMoveStorageLocalToCloud extends Command
         {--before-id= : Only process media with an ID lower than this value}
         {--dry-run : Report what would happen without copying or writing}
         {--keep-local : Do not delete local files after verifying the cloud copy}
+        {--verify-sha256 : Also verify the local file against the stored original_sha256. Disabled by default: original_sha256 is the pre-optimization upload hash, so optimized media never matches and would always fail verify.}
         {--debug=true : Print exactly what moves, from which local path to which cloud destination. Enabled by default; pass --debug=false to silence.}
         {--force : Skip confirmation prompts}';
 
@@ -209,6 +210,10 @@ class MediaMoveStorageLocalToCloud extends Command
 
             if ($this->option('dry-run')) {
                 $nextCommand .= ' --dry-run';
+            }
+
+            if ($this->option('verify-sha256')) {
+                $nextCommand .= ' --verify-sha256';
             }
 
             // Debug is on by default; only carry the explicit off-switch forward.
@@ -440,7 +445,7 @@ class MediaMoveStorageLocalToCloud extends Command
                 $mediaPath,
                 $localDisk,
                 $cloudDisk,
-                $media->original_sha256
+                $this->option('verify-sha256') ? $media->original_sha256 : null
             );
 
             if ($verifyFailure !== null) {

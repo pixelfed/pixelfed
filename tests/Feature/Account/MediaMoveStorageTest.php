@@ -169,4 +169,78 @@ describe('admin:MediaMoveStorageLocalToCloud', function () {
         // The runtime config was still flipped even without a writable .env.
         expect(config('pixelfed.cloud_storage'))->toBeTrue();
     });
+
+    it('migrates media whose local file no longer matches original_sha256 by default', function () {
+        // The optimize pipeline (ImageResize/ImageUpdate) rewrites the local
+        // file in place after upload but never updates original_sha256, so the
+        // stored hash describes the pre-optimization bytes. The sha check must
+        // therefore be OFF by default, otherwise every optimized image fails
+        // verify (pixelfed#7203 follow-up: moved=0, failed=N).
+        Config::set('pixelfed.cloud_storage', true);
+        $media = makeLocalMediaWithStaleSha();
+
+        $this->artisan('admin:MediaMoveStorageLocalToCloud', ['--force' => true])
+            ->assertExitCode(0);
+
+        // Uploaded to cloud and marked replicated despite the stale hash.
+        expect(Storage::disk('s3')->exists($media->media_path))->toBeTrue();
+
+        $media->refresh();
+        expect((string) $media->version)->toBe('4');
+        expect($media->cdn_url)->not->toBeNull();
+        expect($media->replicated_at)->not->toBeNull();
+    });
+
+    it('fails verify for a stale original_sha256 only when --verify-sha256 is passed', function () {
+        Config::set('pixelfed.cloud_storage', true);
+        $media = makeLocalMediaWithStaleSha();
+
+        $this->artisan('admin:MediaMoveStorageLocalToCloud', [
+            '--force' => true,
+            '--verify-sha256' => true,
+        ])->assertExitCode(1);
+
+        // Local copy left intact; row not marked migrated.
+        expect(Storage::disk('local')->exists($media->media_path))->toBeTrue();
+
+        $media->refresh();
+        expect((string) $media->version)->not->toBe('4');
+        expect($media->replicated_at)->toBeNull();
+    });
 });
+
+/**
+ * A local (not-yet-migrated) media row whose on-disk bytes intentionally do
+ * NOT match its stored original_sha256, mirroring the post-optimization state
+ * where the file was rewritten in place but original_sha256 kept the original
+ * upload's hash.
+ */
+function makeLocalMediaWithStaleSha(): Media
+{
+    $user = User::factory()->create();
+    $user->refresh();
+    $pid = $user->profile->id;
+    $status = Status::factory()->create(['profile_id' => $pid, 'type' => 'photo']);
+
+    $path = 'public/m/_v2/'.$pid.'/cc/dd/optimized.jpg';
+    $currentBytes = 'OPTIMIZED-BYTES-AFTER-RESIZE';
+
+    // File on local disk holds the optimized bytes.
+    Storage::disk('local')->put($path, $currentBytes);
+
+    return Media::create([
+        'status_id' => $status->id,
+        'profile_id' => $pid,
+        'user_id' => $user->id,
+        'media_path' => $path,
+        'cdn_url' => null,
+        'mime' => 'image/jpeg',
+        'size' => strlen($currentBytes),
+        // Hash of some other (original upload) content, guaranteed to differ.
+        'original_sha256' => hash('sha256', 'ORIGINAL-UPLOAD-BYTES-BEFORE-RESIZE'),
+        'remote_media' => false,
+        'version' => 3,
+        'replicated_at' => null,
+        'order' => 0,
+    ]);
+}
