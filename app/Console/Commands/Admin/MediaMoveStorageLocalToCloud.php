@@ -48,23 +48,38 @@ class MediaMoveStorageLocalToCloud extends Command
             $localDisk = Storage::disk('local');
             $cloudDisk = Storage::disk(config('filesystems.cloud'));
         } catch (\Throwable $e) {
-            $this->error(
-                'Cloud disk ('.config('filesystems.cloud').') could not be resolved: '.$e->getMessage()
-            );
+            $message = 'Cloud disk ('.config('filesystems.cloud').') could not be resolved: '.$e->getMessage();
+            $this->error($message);
+            Log::error('MediaMoveStorageLocalToCloud: '.$message, [
+                'cloud_disk' => config('filesystems.cloud'),
+                'exception' => $e->getMessage(),
+                'file' => $e->getFile(),
+                'line' => $e->getLine(),
+            ]);
 
             return self::FAILURE;
         }
 
         if (! $this->cloudHost()) {
-            $this->error(
-                'Cloud disk ('.config('filesystems.cloud').') is not configured (no resolvable URL).'
-            );
+            $message = 'Cloud disk ('.config('filesystems.cloud').') is not configured (no resolvable URL).';
+            $this->error($message);
             $this->line('Set AWS_URL / AWS_* in your environment before migrating to cloud.');
+            Log::error('MediaMoveStorageLocalToCloud: '.$message, [
+                'cloud_disk' => config('filesystems.cloud'),
+                'cloud_driver' => config('filesystems.disks.'.config('filesystems.cloud').'.driver'),
+                'aws_url_set' => ! empty(config('filesystems.disks.'.config('filesystems.cloud').'.url')),
+            ]);
 
             return self::FAILURE;
         }
 
         if (! $this->ensureCloudStorageEnabled()) {
+            Log::error('MediaMoveStorageLocalToCloud: aborted because cloud storage is disabled and was not enabled.', [
+                'cloud_storage' => (bool) config_cache('pixelfed.cloud_storage'),
+                'dry_run' => (bool) $this->option('dry-run'),
+                'force' => (bool) $this->option('force'),
+            ]);
+
             return self::FAILURE;
         }
 
@@ -88,6 +103,10 @@ class MediaMoveStorageLocalToCloud extends Command
         $beforeId = $this->resolveBeforeId();
 
         if ($beforeId === false) {
+            Log::error('MediaMoveStorageLocalToCloud: invalid --before-id option.', [
+                'before_id' => $this->option('before-id'),
+            ]);
+
             return self::FAILURE;
         }
 
@@ -100,7 +119,20 @@ class MediaMoveStorageLocalToCloud extends Command
          * count the entire matching dataset before we immediately execute the
          * SELECT again. We only need the count of this bounded result set.
          */
-        $medias = $query->get();
+        try {
+            $medias = $query->get();
+        } catch (\Throwable $e) {
+            $this->error('Failed to fetch media candidates: '.$e->getMessage());
+            Log::error('MediaMoveStorageLocalToCloud: failed to fetch media candidates.', [
+                'limit' => $limit,
+                'before_id' => $beforeId,
+                'exception' => $e->getMessage(),
+                'file' => $e->getFile(),
+                'line' => $e->getLine(),
+            ]);
+
+            return self::FAILURE;
+        }
 
         if ($medias->isEmpty()) {
             $this->info('No media candidates found.');
@@ -135,6 +167,18 @@ class MediaMoveStorageLocalToCloud extends Command
         $this->info(
             $prefix.'Done. moved='.$moved.' skipped='.$skipped.' failed='.$failed.'.'
         );
+
+        if ($failed > 0) {
+            Log::error('MediaMoveStorageLocalToCloud: completed with failures.', [
+                'moved' => $moved,
+                'skipped' => $skipped,
+                'failed' => $failed,
+                'limit' => $limit,
+                'before_id' => $beforeId,
+                'dry_run' => (bool) $this->option('dry-run'),
+                'keep_local' => (bool) $this->option('keep-local'),
+            ]);
+        }
 
         if ($this->movedBytes) {
             $this->info(
@@ -391,21 +435,36 @@ class MediaMoveStorageLocalToCloud extends Command
                 );
             }
 
-            if (
-                ! $this->verify(
-                    $mediaPath,
-                    $localDisk,
-                    $cloudDisk,
-                    $media->original_sha256
-                )
-            ) {
+            $verifyFailure = $this->verify(
+                $mediaPath,
+                $localDisk,
+                $cloudDisk
+            );
+
+            if ($verifyFailure !== null) {
                 $this->warn(
                     PHP_EOL.
                         'Verify failed for media '.
                         $media->id.
                         ' ('.
                         $mediaPath.
-                        '); left local copy intact.'
+                        '): '.
+                        $verifyFailure['reason'].
+                        '; left local copy intact.'
+                );
+
+                Log::error(
+                    'MediaMoveStorageLocalToCloud: verify failed after upload; left local copy intact.',
+                    array_merge(
+                        [
+                            'media_id' => $media->id,
+                            'status_id' => $media->status_id,
+                            'media_path' => $mediaPath,
+                            'size' => (int) $media->size,
+                            'cloud_destination' => $this->cloudDestination($mediaPath, $cloudDisk),
+                        ],
+                        $verifyFailure
+                    )
                 );
 
                 return 'failed';
@@ -444,7 +503,16 @@ class MediaMoveStorageLocalToCloud extends Command
                 'MediaMoveStorageLocalToCloud: failed to migrate media',
                 [
                     'media_id' => $media->id,
+                    'status_id' => $media->status_id,
+                    'media_path' => $mediaPath,
+                    'thumbnail_path' => $media->thumbnail_path,
+                    'size' => (int) $media->size,
+                    'cloud_destination' => $this->cloudDestination($mediaPath, $cloudDisk),
+                    'exception' => get_class($e),
                     'error' => $e->getMessage(),
+                    'file' => $e->getFile(),
+                    'line' => $e->getLine(),
+                    'trace' => $e->getTraceAsString(),
                 ]
             );
 
@@ -567,20 +635,30 @@ class MediaMoveStorageLocalToCloud extends Command
     }
 
     /**
-     * Verify the cloud copy matches the local source by size and, when an
-     * original checksum is available, verify the local source against it.
+     * Verify the cloud copy matches the local source by existence and size.
      *
-     * Cloud content hashing would require downloading the object, so size
-     * parity plus a known-good local SHA-256 is used here.
+     * Content hashing is intentionally not used here: original_sha256 is the
+     * hash of the file as originally uploaded, but the optimize pipeline
+     * rewrites the local file in place afterwards, so it would never match the
+     * migrated file. Cloud content hashing would require downloading the
+     * object. Existence + size parity is the signal that describes the copy we
+     * just uploaded.
+     *
+     * Returns null on success, or a context array describing exactly which
+     * check failed (so the caller can log an actionable reason instead of a
+     * bare "verify failed").
      */
     protected function verify(
         string $path,
         $localDisk,
-        $cloudDisk,
-        ?string $expectedSha = null
-    ): bool {
+        $cloudDisk
+    ): ?array {
         if (! $cloudDisk->exists($path)) {
-            return false;
+            return [
+                'reason' => 'cloud_object_missing',
+                'detail' => 'Cloud object does not exist after upload.',
+                'path' => $path,
+            ];
         }
 
         $localSize = $localDisk->size($path);
@@ -591,23 +669,15 @@ class MediaMoveStorageLocalToCloud extends Command
             $cloudSize === false ||
             $localSize !== $cloudSize
         ) {
-            return false;
+            return [
+                'reason' => 'size_mismatch',
+                'detail' => 'Local and cloud sizes differ (or a size could not be read).',
+                'path' => $path,
+                'local_size' => $localSize,
+                'cloud_size' => $cloudSize,
+            ];
         }
 
-        if ($expectedSha) {
-            $localSha = @hash_file(
-                'sha256',
-                $localDisk->path($path)
-            );
-
-            if (
-                $localSha &&
-                ! hash_equals($expectedSha, $localSha)
-            ) {
-                return false;
-            }
-        }
-
-        return true;
+        return null;
     }
 }
