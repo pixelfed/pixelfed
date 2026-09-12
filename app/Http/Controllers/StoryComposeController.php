@@ -221,7 +221,7 @@ class StoryComposeController extends Controller
 
                 $img = $this->imageManager->decodePath($path);
                 $img = $img->crop($width, $height, $x, $y);
-                $img = $img->coverDown(1080, 1920);
+                $img = $img->cover(1080, 1920);
 
                 if (in_array(strtolower($extension), ['jpg', 'jpeg'])) {
                     $encoder = new JpegEncoder($quality);
@@ -239,7 +239,7 @@ class StoryComposeController extends Controller
 
                 $img = $this->imageManager->decodeBinary($fileContent);
                 $img = $img->crop($width, $height, $x, $y);
-                $img = $img->coverDown(1080, 1920);
+                $img = $img->cover(1080, 1920);
 
                 if (in_array(strtolower($extension), ['jpg', 'jpeg'])) {
                     $encoder = new JpegEncoder($quality);
