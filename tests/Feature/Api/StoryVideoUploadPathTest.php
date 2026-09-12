@@ -5,6 +5,7 @@ use App\Models\User;
 use Illuminate\Foundation\Testing\LazilyRefreshDatabase;
 use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\Storage;
+use ProtoneMedia\LaravelFFMpeg\Support\FFMpeg;
 
 uses(LazilyRefreshDatabase::class);
 
@@ -36,7 +37,7 @@ it('opens the uploaded story video via the local disk with a disk-relative path'
         return $spy;
     });
     $spy->shouldReceive('getDurationInSeconds')->andReturn(10);
-    \ProtoneMedia\LaravelFFMpeg\Support\FFMpeg::swap($spy);
+    FFMpeg::swap($spy);
 
     $response = $this->postJson('/api/web/stories/v1/add', [
         'file' => UploadedFile::fake()->create('story.mp4', 500, 'video/mp4'),
@@ -73,7 +74,7 @@ it('rejects a story video longer than the allowed duration', function () {
     $spy->shouldReceive('fromDisk')->andReturnSelf();
     $spy->shouldReceive('open')->andReturnSelf();
     $spy->shouldReceive('getDurationInSeconds')->andReturn(501);
-    \ProtoneMedia\LaravelFFMpeg\Support\FFMpeg::swap($spy);
+    FFMpeg::swap($spy);
 
     $response = $this->postJson('/api/web/stories/v1/add', [
         'file' => UploadedFile::fake()->create('story.mp4', 500, 'video/mp4'),
