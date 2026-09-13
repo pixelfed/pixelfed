@@ -172,9 +172,17 @@ class RemoteStatusDelete implements ShouldBeUniqueUntilProcessing, ShouldQueue
             MediaTag::whereIn('id', $mediaTagIds)->delete();
         }
         Mention::whereStatusId($status->id)->forceDelete();
-        Notification::whereItemType(Status::class)
-            ->whereItemId($status->id)
-            ->forceDelete();
+        // Per-row (not bulk) so NotificationObserver::forceDeleted fires and
+        // NotificationService::del invalidates the 24h cached ITEM_KEY snapshot;
+        // a bulk forceDelete() would leave the web feed serving the deleted
+        // status as a ghost. Match the legacy 'App\Status' morph alias too.
+        Notification::whereIn('item_type', ['App\Status', Status::class])
+            ->where('item_id', $status->id)
+            ->cursor()
+            ->each(function ($not) {
+                NotificationService::del($not->profile_id, $not->id);
+                $not->forceDeleteQuietly();
+            });
         Report::whereObjectType(Status::class)
             ->whereObjectId($status->id)
             ->delete();
