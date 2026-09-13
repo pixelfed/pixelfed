@@ -225,6 +225,7 @@ class ApiV2Controller extends Controller
         ]);
 
         $user = $request->user();
+        abort_if($user->has_roles && ! UserRoleService::can('can-post', $user->id), 403, 'Invalid permissions for this action');
 
         if ($user->last_active_at == null) {
             return [];
