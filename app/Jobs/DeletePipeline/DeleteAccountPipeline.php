@@ -33,6 +33,7 @@ use App\Models\RemoteReport;
 use App\Models\Report;
 use App\Models\Status;
 use App\Models\StatusArchived;
+use App\Models\StatusEdit;
 use App\Models\StatusHashtag;
 use App\Models\StatusView;
 use App\Models\Story;
@@ -129,6 +130,10 @@ class DeleteAccountPipeline implements ShouldQueue
         CustomFilter::whereProfileId($id)->delete();
 
         StatusView::whereProfileId($id)->delete();
+
+        // Purge edit history (prior caption/CW versions). status_edits has no
+        // FK/cascade and StatusEdit has no SoftDeletes, so this is a hard delete.
+        StatusEdit::whereProfileId($id)->delete();
 
         ProfileAlias::whereProfileId($id)->delete();
 

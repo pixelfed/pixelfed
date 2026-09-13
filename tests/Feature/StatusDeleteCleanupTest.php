@@ -5,6 +5,7 @@ use App\Models\DirectMessage;
 use App\Models\MediaTag;
 use App\Models\Notification;
 use App\Models\Status;
+use App\Models\StatusEdit;
 use App\Models\User;
 use Illuminate\Foundation\Testing\LazilyRefreshDatabase;
 
@@ -81,6 +82,36 @@ it('removes associated media tags and their notifications when a status is delet
 
     expect(MediaTag::find($tag->id))->toBeNull();
     expect(Notification::find($notification->id))->toBeNull();
+});
+
+it('removes edit history (status_edits) when a status is deleted', function () {
+    $user = User::factory()->create();
+    $user->refresh();
+
+    $status = Status::factory()->create([
+        'profile_id' => $user->profile_id,
+        'type' => 'photo',
+    ]);
+
+    // Prior + current caption versions, the way UpdateStatusService records them.
+    StatusEdit::create([
+        'status_id' => $status->id,
+        'profile_id' => $user->profile_id,
+        'caption' => 'original sensitive text',
+    ]);
+    StatusEdit::create([
+        'status_id' => $status->id,
+        'profile_id' => $user->profile_id,
+        'caption' => 'edited to redact',
+    ]);
+
+    expect(StatusEdit::whereStatusId($status->id)->count())->toBe(2);
+
+    (new StatusDelete($status))->handle();
+
+    // Edit history is hard-deleted alongside the status (no orphaned prior text).
+    expect(StatusEdit::whereStatusId($status->id)->count())->toBe(0);
+    expect(Status::find($status->id))->toBeNull();
 });
 
 it('still deletes a status without dms or tags', function () {
