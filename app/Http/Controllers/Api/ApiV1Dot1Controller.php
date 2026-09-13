@@ -109,7 +109,7 @@ class ApiV1Dot1Controller extends Controller
 
         $validator = Validator::make($request->all(), [
             'report_type' => ['required', 'string', Rule::in(self::REPORT_TYPES)],
-            'object_id' => ['required'],
+            'object_id' => ['required', 'integer', 'min:1'],
             'object_type' => ['required', 'string', Rule::in(['post', 'user', 'story'])],
             'message' => ['nullable', 'string'],
         ]);
