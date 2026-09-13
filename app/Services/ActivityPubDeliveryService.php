@@ -152,6 +152,17 @@ class ActivityPubDeliveryService
                 'error' => $e->getMessage(),
             ]);
 
+            // Transport failures (remote momentarily unreachable: connection
+            // refused / timeout / DNS) are best-effort — this single-delivery
+            // path runs synchronously from follow/unfollow, which already
+            // committed local state. Log + record host health, but don't
+            // propagate to the caller (matches the old non-throwing curl path).
+            // Other exception types (invalid sender/destination, signing,
+            // serialization) still throw, as they did before the rewrite.
+            if ($e instanceof ConnectionException) {
+                return;
+            }
+
             throw $e;
         }
     }

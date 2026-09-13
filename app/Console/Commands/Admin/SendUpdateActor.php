@@ -8,7 +8,6 @@ use App\Models\User;
 use App\Util\ActivityPub\Helpers;
 use Illuminate\Console\Command;
 use Illuminate\Support\Facades\Storage;
-use Symfony\Component\HttpKernel\Exception\HttpException;
 
 class SendUpdateActor extends Command
 {
@@ -97,7 +96,10 @@ class SendUpdateActor extends Command
                     $body = $this->updateObject($profile);
                     try {
                         Helpers::sendSignedObject($profile, $url, $body);
-                    } catch (HttpException $e) {
+                    } catch (\Throwable $e) {
+                        // Best-effort per user: a single bad host (transport
+                        // failure, invalid destination, etc.) must not abort the
+                        // fleet-wide actor update.
                         continue;
                     }
                     $bar->advance();
