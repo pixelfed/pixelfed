@@ -372,7 +372,7 @@ class ApiV1Controller extends Controller
         }
 
         if ($request->has('display_name')) {
-            $displayName = $request->input('display_name');
+            $displayName = strip_tags(Purify::clean($request->input('display_name')));
             if ($displayName !== $user->name) {
                 $user->name = $displayName;
                 $profile->name = $displayName;
@@ -4490,7 +4490,17 @@ class ApiV1Controller extends Controller
             BookmarkService::del($pid, $status->id);
             $bookmark->delete();
         }
-        $res = StatusService::getMastodon($status->id, false);
+
+        if ($status->scope == 'private') {
+            abort_if(
+                $pid !== $status->profile_id && ! FollowerService::follows($pid, $status->profile_id),
+                404,
+                'Error: You cannot view private posts from accounts you do not follow.'
+            );
+        }
+
+        $res = StatusService::getMastodon($status->id, false, $pid);
+        abort_if(! $res, 404, 'Record does not exist.');
         $res['bookmarked'] = false;
 
         return $this->json($res);

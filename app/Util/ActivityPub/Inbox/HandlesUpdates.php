@@ -23,7 +23,10 @@ trait HandlesUpdates
         }
 
         if ($activity['type'] === 'Note') {
-            if (Status::whereObjectUrl($activity['id'])->exists()) {
+            $status = Status::whereObjectUrl($activity['id'])->first();
+            $actor = Helpers::profileFetch(Helpers::pluckval($this->payload['actor']));
+
+            if ($status && $actor && (int) $status->profile_id === (int) $actor->id) {
                 StatusRemoteUpdatePipeline::dispatch($activity);
             }
         } elseif ($activity['type'] === 'Person') {

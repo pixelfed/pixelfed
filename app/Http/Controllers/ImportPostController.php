@@ -149,9 +149,9 @@ class ImportPostController extends Controller
                     ];
                 })->toArray();
 
-                $ip->caption = $c->count() > 1 ?
+                $ip->caption = strip_tags($c->count() > 1 ?
                     $this->formatHashtags($file['title'] ?? '') :
-                    $this->formatHashtags($ip->media[0]['title'] ?? '');
+                    $this->formatHashtags($ip->media[0]['title'] ?? ''));
 
                 $originalFilename = last(explode('/', $ip->media[0]['uri'] ?? ''));
                 $ip->filename = $this->sanitizeFilename($originalFilename);
@@ -164,8 +164,7 @@ class ImportPostController extends Controller
                 })->toArray();
 
                 $creationTimestamp = $c->count() > 1 ?
-                    ($file['creation_timestamp'] ?? null) :
-                    ($media[0]['creation_timestamp'] ?? null);
+                    ($file['creation_timestamp'] ?? null) : ($media[0]['creation_timestamp'] ?? null);
 
                 if ($creationTimestamp) {
                     $ip->creation_date = now()->parse($creationTimestamp);

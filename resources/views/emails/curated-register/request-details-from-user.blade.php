@@ -8,7 +8,7 @@ To help us process your registration application, we require more information.
 Our onboarding team have requested the following details:
 
 @component('mail::panel')
-<p style="white-space: pre-wrap;">{!! $activity->message !!}</p>
+<p style="white-space: pre-wrap;">{!! nl2br(e($activity->message)) !!}</p>
 @endcomponent
 <x-mail::button :url="$activity->emailReplyUrl()" color="success">
 <strong>Reply with your response</strong>

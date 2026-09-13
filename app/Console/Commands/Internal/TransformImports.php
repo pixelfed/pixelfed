@@ -125,7 +125,7 @@ class TransformImports extends Command
                 continue;
             }
 
-            $caption = $ip->caption ?? '';
+            $caption = strip_tags($ip->caption ?? '');
 
             $mediaRecords = [];
             foreach ($ip->media as $ipm) {
@@ -192,9 +192,11 @@ class TransformImports extends Command
                     $ip->status_id = $status->id;
                     $ip->creation_id = $uniqueIdData['incr'];
 
-                    if ($uniqueIdData['year'] !== $ip->creation_year ||
+                    if (
+                        $uniqueIdData['year'] !== $ip->creation_year ||
                         $uniqueIdData['month'] !== $ip->creation_month ||
-                        $uniqueIdData['day'] !== $ip->creation_day) {
+                        $uniqueIdData['day'] !== $ip->creation_day
+                    ) {
 
                         $ip->creation_year = $uniqueIdData['year'];
                         $ip->creation_month = $uniqueIdData['month'];
@@ -212,7 +214,6 @@ class TransformImports extends Command
                 AccountService::del($profile->id);
                 ImportService::clearAttempts($profile->id);
                 ImportService::getPostCount($profile->id, true);
-
             } catch (QueryException $e) {
                 $this->error("Database error for ImportPost ID {$ip->id}: ".$e->getMessage());
                 $ip->skip_missing_media = true;

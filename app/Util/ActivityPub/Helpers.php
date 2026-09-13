@@ -48,6 +48,15 @@ class Helpers
 
     private const DNS_TTL_NEGATIVE = 300;
 
+    /**
+     * Maximum number of ancestors a single status fetch may walk up an
+     * inReplyTo chain. Without a bound, a remote server that always answers
+     * with another inReplyTo can hold a worker indefinitely, one outbound
+     * fetch and one statuses row per hop. Anything deeper than this is not
+     * rendered in the UI anyway.
+     */
+    private const MAX_REPLY_DEPTH = 5;
+
     private const LOCALHOST_DOMAINS = [
         'localhost',
         '127.0.0.1',
@@ -573,8 +582,13 @@ class Helpers
 
     /**
      * Fetch or create a status from URL
+     *
+     * $depth counts how many inReplyTo hops we are from the status that
+     * started this resolution. Every recursive call passes $depth + 1 so the
+     * walk terminates at MAX_REPLY_DEPTH regardless of what the remote
+     * server keeps answering.
      */
-    public static function statusFirstOrFetch(string $url, bool $replyTo = false): ?Status
+    public static function statusFirstOrFetch(string $url, bool $replyTo = false, int $depth = 0): ?Status
     {
         if (! $validUrl = self::validateUrl($url)) {
             return null;
@@ -584,7 +598,14 @@ class Helpers
             return $status;
         }
 
-        return self::createStatusFromUrl($url, $replyTo);
+        // Bound how far up an inReplyTo chain a single fetch may walk.
+        // Checked after the DB lookup so a reply to an already-known
+        // status still links even at the limit, but we never fetch past it.
+        if ($depth > self::MAX_REPLY_DEPTH) {
+            return null;
+        }
+
+        return self::createStatusFromUrl($url, $replyTo, $depth);
     }
 
     /**
@@ -612,7 +633,7 @@ class Helpers
     /**
      * Create a new status from ActivityPub data
      */
-    public static function createStatusFromUrl(string $url, bool $replyTo): ?Status
+    public static function createStatusFromUrl(string $url, bool $replyTo, int $depth = 0): ?Status
     {
         $res = self::fetchFromUrl($url);
 
@@ -638,7 +659,7 @@ class Helpers
             return null;
         }
 
-        $reply_to = self::getReplyToId($activity, $profile, $replyTo);
+        $reply_to = self::getReplyToId($activity, $profile, $replyTo, $depth);
         $scope = self::getScope($activity, $url);
         $cw = self::getSensitive($activity, $url);
 
@@ -655,7 +676,7 @@ class Helpers
             );
         }
 
-        return self::storeStatus($url, $profile, $res);
+        return self::storeStatus($url, $profile, $res, $depth);
     }
 
     /**
@@ -805,16 +826,19 @@ class Helpers
 
     /**
      * Get reply-to status ID
+     *
+     * Resolves (and fetches if needed) the parent referenced by
+     * object.inReplyTo, one hop deeper than the caller.
      */
-    public static function getReplyToId(array $activity, Profile $profile, bool $replyTo): ?int
+    public static function getReplyToId(array $activity, Profile $profile, bool $replyTo, int $depth = 0): ?int
     {
-        $inReplyTo = $activity['object']['inReplyTo'] ?? null;
+        $inReplyTo = self::pluckval($activity['object']['inReplyTo'] ?? null);
 
-        if (! $inReplyTo && ! $replyTo) {
+        if (! is_string($inReplyTo) || $inReplyTo === '') {
             return null;
         }
 
-        $reply = self::statusFirstOrFetch(self::pluckval($inReplyTo), false);
+        $reply = self::statusFirstOrFetch($inReplyTo, false, $depth + 1);
 
         if (! $reply) {
             return null;
@@ -828,7 +852,7 @@ class Helpers
     /**
      * Store a new regular status
      */
-    public static function storeStatus(string $url, Profile $profile, array $activity): Status
+    public static function storeStatus(string $url, Profile $profile, array $activity, int $depth = 0): Status
     {
         $id = self::getStatusId($activity, $url);
         $url = self::getStatusUrl($activity, $id);
@@ -852,7 +876,7 @@ class Helpers
             ]));
         }
 
-        $reply_to = self::getReplyTo($activity);
+        $reply_to = self::getReplyTo($activity, $depth);
         $ts = self::pluckval($activity['published']);
         $scope = self::getScope($activity, $url);
         $commentsDisabled = isset($activity['commentsEnabled']) ? (bool) $activity['commentsEnabled'] == false : false;
@@ -1026,23 +1050,22 @@ class Helpers
         return $cw;
     }
 
-    public static function getReplyTo($activity)
+    /**
+     * Resolve the parent status id for an object's inReplyTo, one hop deeper
+     * than the caller. Shares the same depth bound as getReplyToId so the
+     * storeStatus path cannot restart the walk from zero.
+     */
+    public static function getReplyTo($activity, int $depth = 0)
     {
-        $reply_to = null;
-        $inReplyTo = isset($activity['inReplyTo']) && ! empty($activity['inReplyTo']) ?
+        $inReplyTo = ! empty($activity['inReplyTo']) ?
             self::pluckval($activity['inReplyTo']) :
-            false;
+            null;
 
-        if ($inReplyTo) {
-            $reply_to = self::statusFirstOrFetch($inReplyTo);
-            if ($reply_to) {
-                $reply_to = $reply_to?->id;
-            }
-        } else {
-            $reply_to = null;
+        if (! is_string($inReplyTo) || $inReplyTo === '') {
+            return null;
         }
 
-        return $reply_to;
+        return self::statusFirstOrFetch($inReplyTo, false, $depth + 1)?->id;
     }
 
     public static function getScope($activity, $url)
