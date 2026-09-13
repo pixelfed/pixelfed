@@ -6,6 +6,7 @@ use App\Models\AdminInvite;
 use App\Models\User;
 use App\Rules\ValidUsername;
 use App\Services\EmailService;
+use App\Services\EmailVerificationService;
 use Illuminate\Auth\Events\Registered;
 use Illuminate\Contracts\View\View;
 use Illuminate\Http\JsonResponse;
@@ -170,6 +171,8 @@ class AdminInviteController extends Controller
         if ($invite->skip_email_verification) {
             $user->email_verified_at = now();
             $user->save();
+        } else {
+            EmailVerificationService::send($user);
         }
 
         if (Auth::attempt([
