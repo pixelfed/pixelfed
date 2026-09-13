@@ -175,11 +175,25 @@ class StoryIndexService
         $type = $story->type;
         $path = $story->path;
 
+        // The author key must live as long as the LONGEST-lived active story,
+        // not whichever story is indexed last. rebuildIndex() reindexes an
+        // author's stories newest-first, so the oldest (shortest-lived) story
+        // is indexed last; a plain expire() would shorten the key's TTL and
+        // drop the author from the index while newer stories are still live.
+        // Read the current TTL up front (outside the pipeline) and only ever
+        // extend, mirroring markSeen().
+        $authorKeyTtl = (int) ($ttl + 3600);
+        $currentAuthorTtl = $this->redisInt(fn () => Redis::ttl($this->authorKey($author)));
+        if ($currentAuthorTtl > $authorKeyTtl) {
+            $authorKeyTtl = $currentAuthorTtl;
+        }
+
         Redis::pipeline(function ($pipe) use (
             $author,
             $sid,
             $score,
             $ttl,
+            $authorKeyTtl,
             $duration,
             $overlays,
             $viewCount,
@@ -206,7 +220,7 @@ class StoryIndexService
                 $pipe->zadd($keyAuth, $score, $sid);
             }
             $pipe->sadd('story:active_authors', $author);
-            $pipe->expire($keyAuth, (int) ($ttl + 3600));
+            $pipe->expire($keyAuth, $authorKeyTtl);
         });
     }
 
