@@ -121,6 +121,7 @@ return [
     ],
 
     'in_app_registration' => (bool) env('APP_REGISTER', true),
+    'in_app_registration_redirect_schemes' => env('IN_APP_REGISTRATION_REDIRECT_SCHEMES', 'pixelfed'),
 
     /*
     |--------------------------------------------------------------------------
