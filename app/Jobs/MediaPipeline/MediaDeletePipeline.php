@@ -93,8 +93,6 @@ class MediaDeletePipeline implements ShouldBeUniqueUntilProcessing, ShouldQueue
             return 1;
         }
 
-        $ownerUserId = $media->user_id;
-        $ownerMediaSize = (int) $media->size;
         $path = $media->media_path;
         $thumb = $media->thumbnail_path;
 
@@ -148,11 +146,12 @@ class MediaDeletePipeline implements ShouldBeUniqueUntilProcessing, ShouldQueue
                 }
             }
 
-            $media->delete();
+            // Refund the owner's storage_used by whatever this media currently
+            // reflects (raw or optimized, per quota_status). Read before delete
+            // so quota_status is intact; guarded so it refunds at most once.
+            UserStorageService::subtractMedia($media);
 
-            if ($ownerUserId) {
-                UserStorageService::decrementStorageUsed($ownerUserId, $ownerMediaSize);
-            }
+            $media->delete();
         } catch (\Exception $e) {
             Log::warning('MediaDeletePipeline: Failed to delete media', [
                 'media_id' => $media->id,

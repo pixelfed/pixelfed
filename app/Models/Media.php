@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Enums\MediaQuotaStatus;
 use App\Util\Media\License;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
@@ -21,6 +22,7 @@ class Media extends Model
             'srcset' => 'array',
             'deleted_at' => 'datetime',
             'skip_optimize' => 'boolean',
+            'quota_status' => MediaQuotaStatus::class,
         ];
     }
 

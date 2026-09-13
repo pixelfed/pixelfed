@@ -139,6 +139,9 @@ class VideoThumbnail implements ShouldBeUniqueUntilProcessing, ShouldQueue
             StatusService::del($media->status_id);
         }
 
+        // Video is not size-optimized, so the raw size charged at upload already
+        // reflects the on-disk footprint; no quota correction is needed here.
+
         MediaStoragePipeline::dispatch($media);
     }
 }

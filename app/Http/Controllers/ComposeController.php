@@ -124,12 +124,15 @@ class ComposeController extends Controller
         $media->media_path = $path;
         $media->original_sha256 = $hash;
         $media->size = $photo->getSize();
+        $media->original_size = $photo->getSize();
         $media->caption = '';
         $media->mime = $mime;
         $media->filter_class = $filterClass;
         $media->filter_name = $filterName;
         $media->version = '3';
         $media->save();
+
+        UserStorageService::chargeOriginal($media);
 
         $preview_url = $media->url().'?v='.time();
         $url = $media->url().'?v='.time();
@@ -152,8 +155,6 @@ class ComposeController extends Controller
             default:
                 break;
         }
-
-        UserStorageService::increaseStorageUsed($user->id, $fileSize);
 
         Cache::forget($limitKey);
         $resource = new Fractal\Resource\Item($media, new MediaTransformer);

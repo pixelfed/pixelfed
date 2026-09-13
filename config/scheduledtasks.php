@@ -14,11 +14,12 @@ return [
     /*
     | Account storage reconciler
     |
-    | Optional weekly scheduled task that recalculates users.storage_used from
-    | actual media, correcting drift on accounts that never upload or delete.
-    | The upload/delete/read paths already self-heal stale counters, so this is
-    | a background hygiene job and is disabled by default.
+    | Weekly scheduled task that recalculates users.storage_used from actual
+    | media, correcting drift. The incremental charge/refund on the
+    | upload/delete paths is best-effort (a finalize-job retry can over-count),
+    | so this reconciler is the authoritative backstop and is enabled by
+    | default. The upload/delete/read paths also self-heal stale counters inline.
     */
-    'account_storage_reconcile' => env('ACCOUNT_STORAGE_RECONCILE', false),
+    'account_storage_reconcile' => env('ACCOUNT_STORAGE_RECONCILE', true),
 
 ];

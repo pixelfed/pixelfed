@@ -59,6 +59,8 @@ class ImageOptimize implements ShouldQueue
 
         $localFs = config('filesystems.default') === 'local';
 
+        // A skip_optimize image never reaches ImageUpdate, so its quota stays at
+        // the raw size charged on upload (which is its on-disk footprint).
         if ($localFs) {
             $path = storage_path('app/'.$media->media_path);
             if (! is_file($path) || $media->skip_optimize) {

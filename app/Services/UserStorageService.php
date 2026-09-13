@@ -2,6 +2,7 @@
 
 namespace App\Services;
 
+use App\Enums\MediaQuotaStatus;
 use App\Models\Media;
 use App\Models\User;
 use Carbon\Carbon;
@@ -115,6 +116,106 @@ class UserStorageService
         $user->save();
 
         return $updatedVal;
+    }
+
+    /**
+     * Charge the raw upload size of a freshly uploaded media to its owner's
+     * storage_used, moving it Pending -> OriginalSize.
+     *
+     * Called synchronously at upload (after the media row is saved) so the
+     * quota reflects the file immediately and never under-counts while
+     * optimization is still queued. Guarded by quota_status so it applies once.
+     *
+     * @return bool True when the charge was applied, false when skipped.
+     */
+    public static function chargeOriginal(Media $media): bool
+    {
+        // A freshly saved row may not have the DB default hydrated on the model
+        // instance yet, so treat a null status as Pending.
+        $status = $media->quota_status ?? MediaQuotaStatus::Pending;
+        if (! $media->user_id || $status !== MediaQuotaStatus::Pending) {
+            return false;
+        }
+
+        $bytes = (int) ($media->original_size ?? $media->size);
+        if ($bytes <= 0) {
+            return false;
+        }
+
+        if (self::increaseStorageUsed($media->user_id, $bytes) === null) {
+            return false;
+        }
+
+        $media->quota_status = MediaQuotaStatus::OriginalSize;
+        $media->saveQuietly();
+
+        return true;
+    }
+
+    /**
+     * Correct a charged media down to its optimized on-disk size, moving it
+     * OriginalSize -> OptimizedSize by subtracting (original_size - size).
+     *
+     * Called from the async finalize job once media.size holds the optimized
+     * value. The delta is signed: if optimization somehow grew the file the
+     * quota is adjusted up instead. Guarded by quota_status so it applies once.
+     *
+     * @return bool True when the correction was applied, false when skipped.
+     */
+    public static function chargeOptimized(Media $media): bool
+    {
+        if (! $media->user_id || $media->quota_status !== MediaQuotaStatus::OriginalSize) {
+            return false;
+        }
+
+        $original = (int) ($media->original_size ?? $media->size);
+        $optimized = (int) $media->size;
+        $delta = $original - $optimized; // bytes freed by optimization (usually > 0)
+
+        if ($delta > 0) {
+            self::decrementStorageUsed($media->user_id, $delta);
+        } elseif ($delta < 0) {
+            self::increaseStorageUsed($media->user_id, -$delta);
+        }
+
+        $media->quota_status = MediaQuotaStatus::OptimizedSize;
+        $media->saveQuietly();
+
+        return true;
+    }
+
+    /**
+     * Refund a deleted media's currently-reflected size to its owner's
+     * storage_used, moving it to Subtracted.
+     *
+     * Refunds the raw size when still OriginalSize, the optimized size when
+     * OptimizedSize, and nothing when Pending (never charged) or already
+     * Subtracted. Guarded by quota_status so it refunds once.
+     *
+     * @return bool True when a refund was applied, false when skipped.
+     */
+    public static function subtractMedia(Media $media): bool
+    {
+        if (! $media->user_id || ! $media->quota_status->isCharged()) {
+            return false;
+        }
+
+        $bytes = $media->quota_status === MediaQuotaStatus::OriginalSize
+            ? (int) ($media->original_size ?? $media->size)
+            : (int) $media->size;
+
+        if ($bytes > 0) {
+            self::decrementStorageUsed($media->user_id, $bytes);
+        }
+
+        // The media row is deleted right after this in the delete pipeline, so
+        // only stamp the status when the row still exists (e.g. tests).
+        if ($media->exists) {
+            $media->quota_status = MediaQuotaStatus::Subtracted;
+            $media->saveQuietly();
+        }
+
+        return true;
     }
 
     /**

@@ -309,6 +309,7 @@ class ApiV2Controller extends Controller
         $media->media_path = $path;
         $media->original_sha256 = $hash;
         $media->size = $photo->getSize();
+        $media->original_size = $photo->getSize();
         $media->mime = $mime;
         $media->caption = $request->input('description');
         $media->filter_class = $filterClass;
@@ -317,6 +318,8 @@ class ApiV2Controller extends Controller
             $media->license = $license;
         }
         $media->save();
+
+        UserStorageService::chargeOriginal($media);
 
         switch ($media->mime) {
             case 'image/jpg':
@@ -334,8 +337,6 @@ class ApiV2Controller extends Controller
                 $url = '/storage/no-preview.png';
                 break;
         }
-
-        UserStorageService::increaseStorageUsed($user->id, $fileSize);
 
         Cache::forget($limitKey);
         $fractal = new Fractal\Manager;

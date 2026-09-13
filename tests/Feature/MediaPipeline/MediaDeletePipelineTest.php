@@ -1,9 +1,11 @@
 <?php
 
+use App\Enums\MediaQuotaStatus;
 use App\Jobs\MediaPipeline\MediaDeletePipeline;
 use App\Models\Media;
 use App\Models\Status;
 use App\Models\User;
+use App\Services\UserStorageService;
 use Illuminate\Foundation\Testing\LazilyRefreshDatabase;
 use Illuminate\Support\Facades\Log;
 
@@ -77,7 +79,8 @@ it('decrements the owner storage_used by the deleted media size', function () {
     $user->storage_used_updated_at = now();
     $user->save();
 
-    // A single orphaned media row of 500,000 bytes (~500 KB).
+    // A single orphaned media row of 500,000 bytes (~500 KB) that was charged
+    // (quota_status reflects the optimized size on the counter).
     $media = Media::create([
         'status_id' => null,
         'profile_id' => $user->profile->id,
@@ -85,6 +88,7 @@ it('decrements the owner storage_used by the deleted media size', function () {
         'media_path' => 'public/m/_v2/1/orphan.jpeg',
         'mime' => 'image/jpeg',
         'size' => 500000,
+        'quota_status' => MediaQuotaStatus::OptimizedSize,
         'order' => 1,
     ]);
 
@@ -118,6 +122,7 @@ it('clamps storage_used at zero when the deleted media is larger than the counte
         'media_path' => 'public/m/_v2/1/big.jpeg',
         'mime' => 'image/jpeg',
         'size' => 500000,
+        'quota_status' => MediaQuotaStatus::OptimizedSize,
         'order' => 1,
     ]);
 
@@ -159,4 +164,81 @@ it('does not change storage_used when deletion is skipped for attached media', f
     expect(Media::whereId($media->id)->exists())->toBeTrue();
     $user->refresh();
     expect((int) $user->storage_used)->toBe(4242);
+});
+
+/*
+|--------------------------------------------------------------------------
+| MediaDeletePipeline refund by quota lifecycle
+|--------------------------------------------------------------------------
+|
+| Delete refunds whatever the media currently reflects in storage_used, per its
+| quota_status: the optimized size when OptimizedSize, the raw size when
+| OriginalSize, and nothing when it was never charged (Pending). This keeps the
+| charge and refund symmetric across the lifecycle.
+|
+*/
+
+it('charge then delete cancels to baseline via the quota lifecycle', function () {
+    $user = User::factory()->create();
+    $user->refresh();
+
+    $user->storage_used = 0;
+    $user->storage_used_updated_at = now();
+    $user->save();
+
+    // Uploaded (raw 900 KB) then optimized to 250 KB.
+    $media = Media::create([
+        'status_id' => null,
+        'profile_id' => $user->profile->id,
+        'user_id' => $user->id,
+        'media_path' => 'public/m/_v2/1/charged.jpeg',
+        'mime' => 'image/jpeg',
+        'size' => 900000,
+        'original_size' => 900000,
+        'quota_status' => MediaQuotaStatus::Pending,
+        'order' => 1,
+    ]);
+
+    UserStorageService::chargeOriginal($media);
+    $media->size = 250000;
+    $media->save();
+    UserStorageService::chargeOptimized($media->fresh());
+    $user->refresh();
+    expect((int) $user->storage_used)->toBe(250);
+
+    (new MediaDeletePipeline($media->fresh()))->handle();
+
+    // Back to zero: refund of the optimized size cancels the net charge.
+    $user->refresh();
+    expect((int) $user->storage_used)->toBe(0);
+});
+
+it('does not refund storage_used for a never-charged (Pending) media', function () {
+    $user = User::factory()->create();
+    $user->refresh();
+
+    $user->storage_used = 800;
+    $user->storage_used_updated_at = now();
+    $user->save();
+
+    // Uploaded but deleted before it was charged (e.g. the DM/remote race).
+    $media = Media::create([
+        'status_id' => null,
+        'profile_id' => $user->profile->id,
+        'user_id' => $user->id,
+        'media_path' => 'public/m/_v2/1/pending.jpeg',
+        'mime' => 'image/jpeg',
+        'size' => 500000,
+        'original_size' => 500000,
+        'quota_status' => MediaQuotaStatus::Pending,
+        'order' => 1,
+    ]);
+
+    (new MediaDeletePipeline($media))->handle();
+
+    expect(Media::whereId($media->id)->exists())->toBeFalse();
+
+    // Untouched: a Pending row never contributed to the counter.
+    $user->refresh();
+    expect((int) $user->storage_used)->toBe(800);
 });

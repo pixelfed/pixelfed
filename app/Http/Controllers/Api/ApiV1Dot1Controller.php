@@ -1301,6 +1301,7 @@ class ApiV1Dot1Controller extends Controller
         $media->media_path = $path;
         $media->original_sha256 = $hash;
         $media->size = $photo->getSize();
+        $media->original_size = $photo->getSize();
         $media->mime = $mime;
         $media->order = 1;
         $media->caption = $request->input('description');
@@ -1308,6 +1309,8 @@ class ApiV1Dot1Controller extends Controller
             $media->license = $license;
         }
         $media->save();
+
+        UserStorageService::chargeOriginal($media);
 
         switch ($media->mime) {
             case 'image/jpg':
@@ -1325,8 +1328,6 @@ class ApiV1Dot1Controller extends Controller
                 $url = '/storage/no-preview.png';
                 break;
         }
-
-        UserStorageService::increaseStorageUsed($user->id, $fileSize);
 
         NewStatusPipeline::dispatch($status);
 

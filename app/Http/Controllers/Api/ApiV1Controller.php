@@ -2144,6 +2144,7 @@ class ApiV1Controller extends Controller
         $media->media_path = $path;
         $media->original_sha256 = $hash;
         $media->size = $photo->getSize();
+        $media->original_size = $photo->getSize();
         $media->mime = $mime;
         $media->caption = $request->input('description') ?? '';
         $media->filter_class = $filterClass;
@@ -2152,6 +2153,8 @@ class ApiV1Controller extends Controller
             $media->license = $license;
         }
         $media->save();
+
+        UserStorageService::chargeOriginal($media);
 
         switch ($media->mime) {
             case 'image/jpg':
@@ -2169,8 +2172,6 @@ class ApiV1Controller extends Controller
                 $url = '/storage/no-preview.png';
                 break;
         }
-
-        UserStorageService::increaseStorageUsed($user->id, $fileSize);
 
         Cache::forget($limitKey);
         $resource = new Fractal\Resource\Item($media, new MediaTransformer);
@@ -2388,6 +2389,7 @@ class ApiV1Controller extends Controller
         $media->media_path = $path;
         $media->original_sha256 = $hash;
         $media->size = $photo->getSize();
+        $media->original_size = $photo->getSize();
         $media->mime = $mime;
         $media->caption = $request->input('description') ?? '';
         $media->filter_class = $filterClass;
@@ -2396,6 +2398,8 @@ class ApiV1Controller extends Controller
             $media->license = $license;
         }
         $media->save();
+
+        UserStorageService::chargeOriginal($media);
 
         switch ($media->mime) {
             case 'image/jpg':
@@ -2413,8 +2417,6 @@ class ApiV1Controller extends Controller
                 $url = '/storage/no-preview.png';
                 break;
         }
-
-        UserStorageService::increaseStorageUsed($user->id, $fileSize);
 
         Cache::forget($limitKey);
         $resource = new Fractal\Resource\Item($media, new MediaTransformer);

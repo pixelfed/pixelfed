@@ -4,6 +4,7 @@ namespace App\Jobs\ImageOptimizePipeline;
 
 use App\Jobs\MediaPipeline\MediaStoragePipeline;
 use App\Models\Media;
+use App\Services\UserStorageService;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
@@ -104,6 +105,8 @@ class ImageUpdate implements ShouldQueue
             $total = ($photo_size + $thumb_size);
             $media->size = $total;
             $media->save();
+
+            UserStorageService::chargeOptimized($media);
         } catch (\Exception $e) {
             if (config('app.dev_log')) {
                 Log::error('Failed to calculate media sizes: '.$e->getMessage());

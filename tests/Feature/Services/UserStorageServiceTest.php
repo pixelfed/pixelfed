@@ -1,5 +1,6 @@
 <?php
 
+use App\Enums\MediaQuotaStatus;
 use App\Models\Media;
 use App\Models\User;
 use App\Services\UserStorageService;
@@ -532,4 +533,198 @@ it('recalculate command with --stale recomputes never-calculated users', functio
 
     $user->refresh();
     expect((int) $user->storage_used)->toBe(250);
+});
+
+/*
+|--------------------------------------------------------------------------
+| Media quota lifecycle (chargeOriginal / chargeOptimized / subtractMedia)
+|--------------------------------------------------------------------------
+|
+| The amount a media reflects in storage_used changes over its life:
+|   Pending       -> nothing charged
+|   OriginalSize  -> raw size charged at upload
+|   OptimizedSize -> corrected down to the optimized size by the finalize job
+|   Subtracted    -> refunded on delete
+| Each transition is guarded by quota_status so it applies at most once.
+|
+*/
+
+/**
+ * Build a pending-quota media row with distinct raw and (eventual) optimized
+ * sizes.
+ */
+function makeQuotaMedia(User $user, int $originalBytes, ?int $optimizedBytes = null): Media
+{
+    return Media::create([
+        'status_id' => null,
+        'profile_id' => $user->profile->id,
+        'user_id' => $user->id,
+        'media_path' => 'public/m/_v2/1/q'.uniqid().'.jpeg',
+        'mime' => 'image/jpeg',
+        'size' => $optimizedBytes ?? $originalBytes,
+        'original_size' => $originalBytes,
+        'quota_status' => MediaQuotaStatus::Pending,
+        'order' => 1,
+    ]);
+}
+
+it('chargeOriginal adds the raw size and moves Pending to OriginalSize', function () {
+    $user = User::factory()->create();
+    $user->refresh();
+
+    $user->storage_used = 300;
+    $user->storage_used_updated_at = now();
+    $user->save();
+
+    // Raw 500 KB, will later optimize to 200 KB.
+    $media = makeQuotaMedia($user, 500000, 200000);
+
+    expect(UserStorageService::chargeOriginal($media))->toBeTrue();
+
+    $user->refresh();
+    expect((int) $user->storage_used)->toBe(800) // 300 + 500 raw
+        ->and($media->fresh()->quota_status)->toBe(MediaQuotaStatus::OriginalSize);
+});
+
+it('chargeOriginal is a no-op when not Pending', function () {
+    $user = User::factory()->create();
+    $user->refresh();
+
+    $user->storage_used = 500;
+    $user->storage_used_updated_at = now();
+    $user->save();
+
+    $media = makeQuotaMedia($user, 400000);
+    $media->quota_status = MediaQuotaStatus::OriginalSize;
+    $media->save();
+
+    expect(UserStorageService::chargeOriginal($media))->toBeFalse();
+    $user->refresh();
+    expect((int) $user->storage_used)->toBe(500);
+});
+
+it('chargeOptimized corrects OriginalSize down to the optimized size', function () {
+    $user = User::factory()->create();
+    $user->refresh();
+
+    $user->storage_used = 0;
+    $user->storage_used_updated_at = now();
+    $user->save();
+
+    // Raw 900 KB charged, optimizes to 250 KB.
+    $media = makeQuotaMedia($user, 900000, 250000);
+
+    UserStorageService::chargeOriginal($media);
+    $user->refresh();
+    expect((int) $user->storage_used)->toBe(900);
+
+    // Correct down by (900 - 250) = 650 KB -> 250 KB remains.
+    expect(UserStorageService::chargeOptimized($media->fresh()))->toBeTrue();
+    $user->refresh();
+    expect((int) $user->storage_used)->toBe(250)
+        ->and($media->fresh()->quota_status)->toBe(MediaQuotaStatus::OptimizedSize);
+});
+
+it('chargeOptimized is a no-op unless the media is at OriginalSize', function () {
+    $user = User::factory()->create();
+    $user->refresh();
+
+    $user->storage_used = 100;
+    $user->storage_used_updated_at = now();
+    $user->save();
+
+    // Still Pending -> chargeOptimized must not run.
+    $media = makeQuotaMedia($user, 500000, 200000);
+
+    expect(UserStorageService::chargeOptimized($media))->toBeFalse();
+    $user->refresh();
+    expect((int) $user->storage_used)->toBe(100);
+});
+
+it('chargeOptimized adjusts up when optimization grew the file', function () {
+    $user = User::factory()->create();
+    $user->refresh();
+
+    $user->storage_used = 0;
+    $user->storage_used_updated_at = now();
+    $user->save();
+
+    // Raw 100 KB, "optimized" ends up 150 KB (rare, e.g. format change).
+    $media = makeQuotaMedia($user, 100000, 150000);
+
+    UserStorageService::chargeOriginal($media);
+    UserStorageService::chargeOptimized($media->fresh());
+
+    $user->refresh();
+    expect((int) $user->storage_used)->toBe(150);
+});
+
+it('subtractMedia refunds the raw size for an OriginalSize media', function () {
+    $user = User::factory()->create();
+    $user->refresh();
+
+    $user->storage_used = 0;
+    $user->storage_used_updated_at = now();
+    $user->save();
+
+    // Video-like: charged raw, never optimized (stays OriginalSize).
+    $media = makeQuotaMedia($user, 400000);
+    UserStorageService::chargeOriginal($media);
+    $user->refresh();
+    expect((int) $user->storage_used)->toBe(400);
+
+    expect(UserStorageService::subtractMedia($media->fresh()))->toBeTrue();
+    $user->refresh();
+    expect((int) $user->storage_used)->toBe(0)
+        ->and($media->fresh()->quota_status)->toBe(MediaQuotaStatus::Subtracted);
+});
+
+it('subtractMedia refunds the optimized size for an OptimizedSize media', function () {
+    $user = User::factory()->create();
+    $user->refresh();
+
+    $user->storage_used = 0;
+    $user->storage_used_updated_at = now();
+    $user->save();
+
+    $media = makeQuotaMedia($user, 900000, 250000);
+    UserStorageService::chargeOriginal($media);
+    UserStorageService::chargeOptimized($media->fresh());
+    $user->refresh();
+    expect((int) $user->storage_used)->toBe(250);
+
+    UserStorageService::subtractMedia($media->fresh());
+    $user->refresh();
+    expect((int) $user->storage_used)->toBe(0);
+});
+
+it('subtractMedia is a no-op for a never-charged (Pending) media', function () {
+    $user = User::factory()->create();
+    $user->refresh();
+
+    $user->storage_used = 800;
+    $user->storage_used_updated_at = now();
+    $user->save();
+
+    $media = makeQuotaMedia($user, 500000);
+
+    expect(UserStorageService::subtractMedia($media))->toBeFalse();
+    $user->refresh();
+    expect((int) $user->storage_used)->toBe(800);
+});
+
+it('a full upload -> optimize -> delete lifecycle nets to zero', function () {
+    $user = User::factory()->create();
+    $user->refresh();
+
+    $baseline = (int) $user->storage_used;
+
+    $media = makeQuotaMedia($user, 900000, 250000);
+
+    UserStorageService::chargeOriginal($media);       // +900
+    UserStorageService::chargeOptimized($media->fresh()); // -650 -> 250
+    UserStorageService::subtractMedia($media->fresh());   // -250 -> baseline
+
+    $user->refresh();
+    expect((int) $user->storage_used)->toBe($baseline);
 });

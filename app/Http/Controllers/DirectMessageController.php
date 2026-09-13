@@ -499,6 +499,10 @@ class DirectMessageController extends Controller
         $media->media_path = $path;
         $media->original_sha256 = $hash;
         $media->size = $photo->getSize();
+        // DM media is not run through the optimize/finalize pipeline, so its
+        // on-disk size equals the raw upload size. original_size mirrors it for
+        // consistency with the other upload paths.
+        $media->original_size = $photo->getSize();
         $media->mime = $photo->getMimeType();
         $media->caption = null;
         $media->filter_class = null;
@@ -526,7 +530,9 @@ class DirectMessageController extends Controller
             ]
         );
 
-        UserStorageService::increaseStorageUsed($user->id, $fileSize);
+        // DM media has no finalize job; charge the raw stored size. It stays at
+        // OriginalSize (no optimize correction) which is the on-disk footprint.
+        UserStorageService::chargeOriginal($media);
 
         if ($recipient->domain) {
             $this->remoteDeliver($dm);
