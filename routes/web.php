@@ -496,7 +496,7 @@ Route::domain(config('pixelfed.domain.app'))->middleware(['localization'])->grou
 
     // Laravel 13's Horizon no longer redirects the base path to its dashboard,
     // so /horizon 404s by default. Redirect admins from /horizon to /horizon/dashboard.
-    Route::redirect('horizon', 'horizon/dashboard')->middleware('admin');
+    Route::redirect('horizon', '/horizon/dashboard')->middleware('admin');
 
     Route::redirect('groups/', '/groups/home');
     Route::redirect('groups/home', '/groups/feed');
