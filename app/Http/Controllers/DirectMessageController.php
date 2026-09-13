@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Jobs\DirectPipeline\DirectDeletePipeline;
 use App\Jobs\DirectPipeline\DirectDeliverPipeline;
+use App\Jobs\MediaPipeline\MediaDeletePipeline;
 use App\Jobs\StatusPipeline\StatusDelete;
 use App\Models\Conversation;
 use App\Models\DirectMessage;
@@ -371,6 +372,21 @@ class DirectMessageController extends Controller
             $this->remoteDelete($dmc);
         } else {
             StatusDelete::dispatch($status)->onQueue('high');
+        }
+
+        // Clean up the DM's media regardless of recipient locality. The remote
+        // branch only federates a Delete activity, and the local branch's async
+        // StatusDelete races the forceDeleteQuietly() below, so neither reliably
+        // reaches MediaDeletePipeline. Detach first (status_id has no FK/cascade)
+        // so the delete job's orphan guard passes, then dispatch the purge which
+        // removes the file and refunds the owner's storage quota.
+        $dmMedia = Media::whereStatusId($status->id)->get();
+        if ($dmMedia->isNotEmpty()) {
+            Media::whereStatusId($status->id)->update(['status_id' => null]);
+            $dmMedia->each(function ($m) {
+                $m->status_id = null;
+                MediaDeletePipeline::dispatch($m)->onQueue('mmo');
+            });
         }
 
         if (Conversation::whereStatusId($sid)->count()) {
