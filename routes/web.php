@@ -309,7 +309,7 @@ Route::domain(config('pixelfed.domain.app'))->middleware(['localization'])->grou
         Route::post('privacy/blocked-instances', [SettingsController::class, 'blockedInstanceStore']);
         Route::post('privacy/blocked-instances/unblock', [SettingsController::class, 'blockedInstanceUnblock'])->name('settings.privacy.blocked-instances.unblock');
         Route::get('privacy/blocked-keywords', [SettingsController::class, 'blockedKeywords'])->name('settings.privacy.blocked-keywords');
-        Route::post('privacy/account', [SettingsController::class, 'privateAccountOptions'])->name('settings.privacy.account');
+        Route::post('privacy/account', [SettingsController::class, 'privateAccountOptions'])->name('settings.privacy.account')->middleware('dangerzone');
         Route::prefix('remove')->middleware('dangerzone')->group(function () {
             Route::get('request/temporary', [SettingsController::class, 'removeAccountTemporary'])->name('settings.remove.temporary');
             Route::post('request/temporary', [SettingsController::class, 'removeAccountTemporarySubmit']);
