@@ -2,8 +2,10 @@
 
 use App\Jobs\StatusPipeline\StatusDelete;
 use App\Models\DirectMessage;
+use App\Models\Follower;
 use App\Models\MediaTag;
 use App\Models\Notification;
+use App\Models\Profile;
 use App\Models\Status;
 use App\Models\StatusEdit;
 use App\Models\User;
@@ -147,4 +149,80 @@ it('cleans up even when the owning profile is soft deleted', function () {
     (new StatusDelete($status))->handle();
 
     expect(Status::find($status->id))->toBeNull();
+});
+
+/*
+|--------------------------------------------------------------------------
+| StatusDelete cleanup is isolated from federation delivery failures
+|--------------------------------------------------------------------------
+|
+| Account deletion marks the profile inactive (status = 'delete') then dispatches
+| StatusDelete jobs. With federation enabled and a warm, non-empty follower
+| audience, fanoutDelete() calls ActivityPubDeliveryService::pool(), whose
+| validateSender() throws for an inactive sender. That exception must not abort
+| the job before unlinkRemoveMedia() runs, or the status leaks permanently.
+|
+*/
+
+it('deletes the status even when fanout delivery throws for an inactive sender', function () {
+    config(['federation.activitypub.enabled' => true]);
+
+    $owner = User::factory()->create();
+    $owner->refresh();
+    $profile = $owner->profile;
+
+    // Remote follower -> non-empty audience so fanoutDelete calls pool().
+    $remote = Profile::factory()->remote()->create([
+        'inbox_url' => 'https://remote.example/inbox',
+        'sharedInbox' => null,
+    ]);
+    Follower::create([
+        'profile_id' => $remote->id,
+        'following_id' => $profile->id,
+        'local_profile' => false,
+    ]);
+
+    expect($profile->fresh()->getAudienceInbox())->not->toBeEmpty();
+
+    // Account-deletion state: inactive sender -> validateSender() throws in pool().
+    $profile->status = 'delete';
+    $profile->save();
+
+    $status = Status::factory()->create(['profile_id' => $profile->id, 'type' => 'photo']);
+
+    // Must not throw, and must complete local cleanup.
+    (new StatusDelete($status))->handle();
+
+    expect(Status::find($status->id))->toBeNull();
+});
+
+it('decrements status_count once when fanout delivery throws for an inactive sender', function () {
+    config(['federation.activitypub.enabled' => true]);
+
+    $owner = User::factory()->create();
+    $owner->refresh();
+    $profile = $owner->profile;
+
+    $remote = Profile::factory()->remote()->create([
+        'inbox_url' => 'https://remote.example/inbox',
+        'sharedInbox' => null,
+    ]);
+    Follower::create([
+        'profile_id' => $remote->id,
+        'following_id' => $profile->id,
+        'local_profile' => false,
+    ]);
+
+    $profile->status = 'delete';
+    $profile->save();
+    $profile->status_count = 5;
+    $profile->saveQuietly();
+
+    $status = Status::factory()->create(['profile_id' => $profile->id, 'type' => 'photo']);
+
+    // The job completes (no throw), so the queue does not retry and re-decrement.
+    (new StatusDelete($status))->handle();
+
+    expect(Status::find($status->id))->toBeNull();
+    expect((int) $profile->fresh()->status_count)->toBe(4);
 });
