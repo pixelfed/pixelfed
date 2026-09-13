@@ -7,6 +7,7 @@ use App\Models\ModLog;
 use App\Models\Profile;
 use App\Models\Status;
 use App\Models\StatusEdit;
+use App\Services\MediaService;
 use App\Services\SanitizeService;
 use App\Services\SecureMediaFetchService;
 use App\Services\StatusService;
@@ -111,13 +112,11 @@ class StatusRemoteUpdatePipeline implements ShouldQueue
             return;
         }
 
-        Media::whereProfileId($status->profile_id)
-            ->whereStatusId($status->id)
-            ->update([
-                'status_id' => null,
-            ]);
-
-        $nm->each(function ($n, $key) use ($status) {
+        // Pass 1: validate every replacement attachment (URL + hardened HEAD +
+        // served-MIME) and collect the survivors. Do NOT touch the existing
+        // media yet, so a transient fetch/validation failure can't destroy it.
+        $validated = [];
+        $nm->each(function ($n, $key) use (&$validated) {
             // Validate the attacker-controlled attachment URL before issuing any
             // server-side request. This rejects http://, IP-literal, and
             // (with DNS checks) private-resolving hosts, closing the SSRF sink.
@@ -138,6 +137,31 @@ class StatusRemoteUpdatePipeline implements ShouldQueue
                 return;
             }
 
+            $validated[] = ['n' => $n, 'key' => $key, 'url' => $url, 'res' => $res];
+        });
+
+        // If the sender supplied attachments but none survived validation while
+        // the status previously had media, abort instead of orphaning what we
+        // cannot replace (silent media loss). A genuine removal sends an empty
+        // attachment array, which the pre-filter turns into an empty $nm; that
+        // still reaches the orphan below so the media is cleared as intended.
+        if (empty($validated) && $ogm->count() && ! empty($activity['attachment'])) {
+            return;
+        }
+
+        // Pass 2: safe to detach existing media now — either we have validated
+        // replacements to write, or the sender genuinely removed all media.
+        Media::whereProfileId($status->profile_id)
+            ->whereStatusId($status->id)
+            ->update([
+                'status_id' => null,
+            ]);
+
+        foreach ($validated as $v) {
+            $n = $v['n'];
+            $url = $v['url'];
+            $res = $v['res'];
+
             $m = new Media;
             $m->status_id = $status->id;
             $m->profile_id = $status->profile_id;
@@ -151,9 +175,11 @@ class StatusRemoteUpdatePipeline implements ShouldQueue
             $m->width = isset($n['width']) && ! empty($n['width']) ? $n['width'] : null;
             $m->height = isset($n['height']) && ! empty($n['height']) ? $n['height'] : null;
             $m->skip_optimize = true;
-            $m->order = $key + 1;
+            $m->order = $v['key'] + 1;
             $m->save();
-        });
+        }
+
+        MediaService::del($status->id);
     }
 
     protected function updateImmediateAttributes($status, $activity)
