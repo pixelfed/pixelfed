@@ -26,6 +26,41 @@ uses(LazilyRefreshDatabase::class);
 |
 */
 
+/**
+ * ActivityPub delivery only performs HTTP requests in the production
+ * environment; outside production the service logs and returns. Run the job
+ * in a forged production environment so delivery is actually attempted, and
+ * restore the environment afterwards.
+ */
+function runJobInProduction(callable $fn): void
+{
+    $app = app();
+    $previous = $app['env'];
+    $app['env'] = 'production';
+
+    try {
+        $fn();
+    } finally {
+        $app['env'] = $previous;
+    }
+}
+
+/**
+ * In production, delivery validates each destination host (public-IP DNS
+ * resolution + banned-domain check). Seed both caches so validation passes
+ * without a real DNS lookup or DB query. Seed after any factory creation, since
+ * the lazy DB refresh can flush the cache store.
+ *
+ * @param  array<int, string>  $hosts
+ */
+function seedMigrationDeliveryHosts(array $hosts): void
+{
+    foreach ($hosts as $host) {
+        Cache::put('helpers:url:public-ips:'.hash('xxh128', $host), ['203.0.113.40'], 3600);
+    }
+    Cache::put('instances:banned:domains', [], 1209600);
+}
+
 describe('MediaStorageService::head()', function () {
     it('returns length and mime on successful HEAD response', function () {
         Http::fake([
@@ -106,8 +141,10 @@ describe('FanoutDeletePipeline delivery', function () {
 
         Cache::forget('pf:ap:known_instances');
 
+        seedMigrationDeliveryHosts(['remote1.example', 'remote2.example']);
+
         $job = new FanoutDeletePipeline($profile);
-        $job->handle();
+        runJobInProduction(fn () => $job->handle());
 
         Http::assertSentCount(2);
         Http::assertSent(
@@ -172,8 +209,10 @@ describe('StatusActivityPubDeliver delivery', function () {
         $status->saveQuietly();
         $status->refresh();
 
+        seedMigrationDeliveryHosts(['remote.example']);
+
         $job = new StatusActivityPubDeliver($status);
-        $job->handle();
+        runJobInProduction(fn () => $job->handle());
 
         Http::assertSent(
             fn ($request) => $request->url() === 'https://remote.example/inbox'
