@@ -217,15 +217,29 @@ class StatusDelete implements ShouldQueue
             'inboxes' => count($audience),
         ]);
 
-        ActivityPubDeliveryService::pool($profile, $audience, $activity, function ($res, $i) use ($audience, $status) {
-            Log::warning('StatusDelete: delivery failed', [
+        // Isolate federation delivery from local cleanup. pool() can throw
+        // synchronously (e.g. validateSender() rejects an inactive sender during
+        // account deletion, where profiles.status = 'delete'). If that exception
+        // escaped, unlinkRemoveMedia() — the whole point of this job — would be
+        // skipped and the status + its data would leak. Delivery is best-effort;
+        // local deletion is not.
+        try {
+            ActivityPubDeliveryService::pool($profile, $audience, $activity, function ($res, $i) use ($audience, $status) {
+                Log::warning('StatusDelete: delivery failed', [
+                    'status_id' => $status->id,
+                    'inbox' => $audience[$i] ?? null,
+                    'result' => $res instanceof \Throwable
+                        ? get_class($res).': '.$res->getMessage()
+                        : $res->status().' '.substr($res->body(), 0, 300),
+                ]);
+            });
+        } catch (\Throwable $e) {
+            Log::warning('StatusDelete: delivery aborted, proceeding to local cleanup', [
                 'status_id' => $status->id,
-                'inbox' => $audience[$i] ?? null,
-                'result' => $res instanceof \Throwable
-                    ? get_class($res).': '.$res->getMessage()
-                    : $res->status().' '.substr($res->body(), 0, 300),
+                'exception' => $e::class,
+                'error' => $e->getMessage(),
             ]);
-        });
+        }
 
         $this->unlinkRemoveMedia($status);
 
