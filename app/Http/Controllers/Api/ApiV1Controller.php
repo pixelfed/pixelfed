@@ -372,7 +372,7 @@ class ApiV1Controller extends Controller
         }
 
         if ($request->has('display_name')) {
-            $displayName = $request->input('display_name');
+            $displayName = strip_tags(Purify::clean($request->input('display_name')));
             if ($displayName !== $user->name) {
                 $user->name = $displayName;
                 $profile->name = $displayName;
