@@ -187,7 +187,7 @@ class LoginController extends Controller
         }
 
         return redirect()->route('login', $params)->withErrors([
-            'code' => __('Invalid code.') . ' ' . trans_choice(
+            'code' => __('Invalid code.').' '.trans_choice(
                 '{1} :count attempt left|[2,*] :count attempts left',
                 $remaining,
                 ['count' => $remaining]
@@ -259,7 +259,7 @@ class LoginController extends Controller
             ])
             ->with(
                 'status',
-                __('Verification email sent to') . ' ' . $user->email
+                __('Verification email sent to').' '.$user->email
             );
     }
 
@@ -309,7 +309,7 @@ class LoginController extends Controller
             ])
             ->with(
                 'status',
-                __('Verification email sent to') . ' ' . $user->email
+                __('Verification email sent to').' '.$user->email
             );
     }
 
@@ -533,14 +533,14 @@ class LoginController extends Controller
             ?: PendingLoginService::email($request);
 
         return Str::transliterate(
-            Str::lower((string) $email) . '|' . $request->ip()
+            Str::lower((string) $email).'|'.$request->ip()
         );
     }
 
     /**
      * Validate the user login request.
      *
-     * @param Request $request
+     * @param  Request  $request
      */
     public function validateLogin($request): void
     {
@@ -576,8 +576,8 @@ class LoginController extends Controller
     /**
      * The user has been authenticated.
      *
-     * @param Request $request
-     * @param mixed $user
+     * @param  Request  $request
+     * @param  mixed  $user
      */
     protected function authenticated($request, $user): void
     {
