@@ -226,8 +226,10 @@ trait PrivacySettings
                     break;
 
                 case 'remove-all':
+                    // No restrictive ->select() here: chunkById needs the primary
+                    // key ('id') to paginate. profile_id/following_id still come
+                    // back on the full model for the dispatched job.
                     Follower::whereFollowingId($profile->id)
-                        ->select(['profile_id', 'following_id'])
                         ->chunkById(100, function ($followers) {
                             foreach ($followers as $follower) {
                                 FeedUnfollowPipeline::dispatch($follower->profile_id, $follower->following_id)->onQueue('feed');
