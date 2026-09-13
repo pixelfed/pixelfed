@@ -94,6 +94,7 @@ use Illuminate\Support\Str;
 use Laravel\Passport\Client;
 use League\Fractal;
 use League\Fractal\Serializer\ArraySerializer;
+use Purify;
 
 class ApiV1Controller extends Controller
 {
