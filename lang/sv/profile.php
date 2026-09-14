@@ -13,4 +13,9 @@ return [
     'status.disabled.header' => 'Profilen är otillgänglig',
     'status.disabled.body' => 'Förlåt, men den här profilen är otillgänglig just nu. Försök igen om en stund.',
 
+    'block.domain.max' => 'Max limit of domain blocks reached! You can only block :max domains at a time. Ask your admin to adjust this limit.',
+
+    'mutedAccounts' => 'Muted Accounts',
+    'blockedAccounts' => 'Blocked Accounts',
+    'blockedDomains' => 'Blocked Domains',
 ];
