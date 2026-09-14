@@ -90,14 +90,4 @@ return [
     ],
 
     /*
-    |--------------------------------------------------------------------------
-    | Login-attempt triggers
-    |--------------------------------------------------------------------------
-    */
-    'triggers' => [
-        'login' => [
-            'enabled' => env('CAPTCHA_TRIGGERS_LOGIN_ENABLED', false),
-            'attempts' => env('CAPTCHA_TRIGGERS_LOGIN_ATTEMPTS', 2),
-        ],
-    ],
 ];

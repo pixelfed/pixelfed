@@ -75,33 +75,6 @@ class CaptchaManager extends Manager
     }
 
     /**
-     * Whether the login form should show/enforce a captcha right now.
-     *
-     * True when the login surface is active, or when the failed-login trigger
-     * has reached its configured attempt threshold for the current session.
-     */
-    public function activeOnLogin(): bool
-    {
-        if ($this->activeOn('login')) {
-            return true;
-        }
-
-        if (! (bool) config_cache('captcha.triggers.login.enabled')) {
-            return false;
-        }
-
-        $request = request();
-        if (! $request->hasSession()) {
-            return false;
-        }
-
-        $session = $request->session();
-
-        return $session->has('login_attempts')
-            && $session->get('login_attempts') >= config('captcha.triggers.login.attempts');
-    }
-
-    /**
      * List of supported driver machine names.
      *
      * @return array<int, string>

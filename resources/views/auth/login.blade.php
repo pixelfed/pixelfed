@@ -219,7 +219,7 @@
                             </div>
                         </div>
 
-                        <x-captcha :show="\App\Facades\Captcha::activeOnLogin()" wrapperClass="d-flex justify-content-center mb-3" />
+                        <x-captcha surface="login" wrapperClass="d-flex justify-content-center mb-3" />
 
                         <button type="submit" class="btn btn-primary btn-block btn-lg font-weight-bold rounded-pill">
                             {{ __('auth.login') }}

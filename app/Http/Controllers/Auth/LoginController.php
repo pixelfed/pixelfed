@@ -553,7 +553,7 @@ class LoginController extends Controller
 
         $messages = [];
 
-        if (app('captcha.manager')->activeOnLogin()) {
+        if (app('captcha.manager')->activeOn('login')) {
             $field = app('captcha.manager')->active()->responseField();
             $rules[$field] = 'required|filled|captcha_verify';
             $messages[$field.'.required'] = 'The captcha must be filled';
@@ -586,22 +586,6 @@ class LoginController extends Controller
     protected function sendFailedLoginResponse(
         Request $request
     ): void {
-        if (config('captcha.triggers.login.enabled')) {
-            if ($request->session()->has('login_attempts')) {
-                $ct = $request->session()->get('login_attempts');
-
-                $request->session()->put(
-                    'login_attempts',
-                    $ct + 1
-                );
-            } else {
-                $request->session()->put(
-                    'login_attempts',
-                    1
-                );
-            }
-        }
-
         throw ValidationException::withMessages([
             $this->username() => [trans('auth.failed')],
         ]);

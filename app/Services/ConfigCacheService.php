@@ -121,8 +121,6 @@ class ConfigCacheService
                     'captcha.active.forgotpassword',
                     'captcha.active.password_reset',
                     'captcha.active.curated_register',
-                    'captcha.triggers.login.enabled',
-                    'captcha.triggers.login.attempts',
                     'federation.custom_emoji.enabled',
 
                     'pixelfed.optimize_image',
