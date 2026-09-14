@@ -1,7 +1,6 @@
 <?php
 
 return [
-
     'search' => 'Chwilio',
     'home' => 'Hafan',
     'local' => 'Lleol',
@@ -13,8 +12,8 @@ return [
     'publicTimeline' => 'Llinell Amser Gyhoeddus',
     'remoteFollow' => 'Dilyn o Bell',
     'settings' => 'Gosodiadau',
-    'admin' => 'Admin',
+    'admin' => '',
     'logout' => 'Allgofnodi',
     'directMessages' => 'Negeseuon Uniongyrchol',
-
+    'composePost' => '',
 ];
