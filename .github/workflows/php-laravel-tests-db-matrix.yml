@@ -8,11 +8,13 @@ name: PHP - Laravel Tests (DB Matrix - experimental)
 # status score. It exists purely for manual investigation of DB-specific
 # behavior (strict mode, ONLY_FULL_GROUP_BY, unsigned underflow, etc.).
 
+# Manual-only: this experimental workflow never runs automatically. An empty
+# `branches: []` under push/pull_request does NOT disable a trigger (GitHub
+# treats it as "no branch filter" and runs on every ref), so the only reliable
+# way to keep it off automatic runs is to expose just workflow_dispatch and
+# trigger it by hand from the Actions tab.
 on:
-  push:
-    branches: []
-  pull_request:
-    branches: []
+  workflow_dispatch:
 
 # Never let this experimental workflow block anything.
 permissions:
