@@ -8,9 +8,9 @@
             <ul class="navbar-nav mr-auto">
             </ul>
             <div class="my-2 my-lg-0">
-                <a class="btn btn-outline-light btn-sm rounded-pill font-weight-bold px-4" href="/login">Login</a>
+                <a class="btn btn-outline-light btn-sm rounded-pill font-weight-bold px-4" href="/login">{{ $t('landing.login') }}</a>
 
-                <a v-if="config.open_registration || config.curated_onboarding" class="ml-2 btn btn-primary btn-primary-alt btn-sm rounded-pill font-weight-bold px-4" :href="regLink">Sign up</a>
+                <a v-if="config.open_registration || config.curated_onboarding" class="ml-2 btn btn-primary btn-primary-alt btn-sm rounded-pill font-weight-bold px-4" :href="regLink">{{ $t('landing.signup') }}</a>
             </div>
         </div>
     </nav>
