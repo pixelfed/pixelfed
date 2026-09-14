@@ -269,10 +269,12 @@ class CaptchaManagerTest extends TestCase
     public function turnstile_scripts_reference_cloudflare(): void
     {
         config(['captcha.driver' => 'turnstile']);
-        $this->assertStringContainsString(
-            'challenges.cloudflare.com/turnstile/v0/api.js',
-            $this->manager()->active()->scripts()
-        );
+        $scripts = $this->manager()->active()->scripts();
+
+        $this->assertStringContainsString('challenges.cloudflare.com/turnstile/v0/api.js', $scripts);
+        // Warms the connection to Cloudflare's challenge origin before the
+        // widget script fetches from it (crossorigin, since it's cross-origin).
+        $this->assertStringContainsString('<link rel="preconnect" href="https://challenges.cloudflare.com" crossorigin>', $scripts);
     }
 
     #[Test]

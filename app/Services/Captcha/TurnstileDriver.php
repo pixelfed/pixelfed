@@ -75,6 +75,7 @@ class TurnstileDriver implements CaptchaDriver
 
     public function scripts(): string
     {
-        return '<script src="'.self::SCRIPT_URL.'" async defer></script>';
+        return '<link rel="preconnect" href="https://challenges.cloudflare.com" crossorigin>'
+            .'<script src="'.self::SCRIPT_URL.'" async defer></script>';
     }
 }
