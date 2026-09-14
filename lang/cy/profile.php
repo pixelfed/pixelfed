@@ -1,7 +1,6 @@
 <?php
 
 return [
-
     'emptyTimeline' => 'Nid oes gan y defnyddiwr hwn swyddi eto!',
     'emptyFollowers' => 'Nid oes gan y defnyddiwr hwn ddilynwyr eto!',
     'emptyFollowing' => 'Nid yw\'r defnyddiwr hwn yn dilyn unrhyw un eto!',
@@ -14,4 +13,9 @@ return [
     'status.disabled.header' => 'Proffil Ddim ar Gael',
     'status.disabled.body' => 'Mae\'n ddrwg gennym, nid yw\'r proffil hwn ar gael ar hyn o bryd. Rhowch gynnig arall arni cyn bo hir.',
 
+    'block.domain.max' => 'Max limit of domain blocks reached! You can only block :max domains at a time. Ask your admin to adjust this limit.',
+
+    'mutedAccounts' => 'Muted Accounts',
+    'blockedAccounts' => 'Blocked Accounts',
+    'blockedDomains' => 'Blocked Domains',
 ];
