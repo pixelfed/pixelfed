@@ -2,26 +2,27 @@
 
 return [
 
-    'helpcenter' => 'Helpejo',
-    'whatsnew' => 'Kio Novas',
+    'helpcenter' => '',
+    'whatsnew' => '',
 
-    'gettingStarted' => 'Komenci',
-    'sharingMedia' => 'Kunhavigi Mediojn',
-    'profile' => 'Profilo',
-    'stories' => 'Historioj',
-    'hashtags' => 'Kradvortoj',
-    'discover' => 'Trovi',
-    'directMessages' => 'Rektaj Mesaĝoj',
-    'timelines' => 'Kronologioj',
-    'embed' => 'Enkorpigi',
+    'gettingStarted' => '',
+    'sharingMedia' => '',
+    'profile' => '',
+    'stories' => '',
+    'hashtags' => '',
+    'discover' => '',
+    'directMessages' => '',
+    'timelines' => '',
+    'embed' => '',
 
-    'communityGuidelines' => 'Konumumaj Gvidiloj',
-    'whatIsTheFediverse' => 'Kio Estas la Fediverso?',
-    'controllingVisibility' => 'Kontroli Videbleco',
-    'blockingAccounts' => 'Bloki Kontoj',
-    'safetyTips' => 'Sekurecaj Konsiletoj',
-    'reportSomething' => 'Informi',
-    'dataPolicy' => 'Datuma Politiko',
+    'communityGuidelines' => '',
+    'whatIsTheFediverse' => '',
+    'controllingVisibility' => '',
+    'blockingAccounts' => '',
+    'safetyTips' => '',
+    'reportSomething' => '',
+    'dataPolicy' => '',
 
-    'taggingPeople' => 'Etikedi Personoj',
+    'taggingPeople' => '',
+
 ];
