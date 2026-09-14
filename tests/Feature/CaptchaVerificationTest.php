@@ -3,6 +3,7 @@
 namespace Tests\Feature;
 
 use App\Services\Captcha\CapDriver;
+use App\Services\Captcha\HCaptchaDriver;
 use App\Services\Captcha\TurnstileDriver;
 use Illuminate\Http\Client\ConnectionException;
 use Illuminate\Support\Facades\Http;
@@ -373,5 +374,113 @@ class CaptchaVerificationTest extends TestCase
         });
 
         $this->assertFalse((new CapDriver)->verify(['cap-token' => 'tok']));
+    }
+
+    // ---------------------------------------------------------------------
+    // hCaptcha driver verify() — inlined HTTP behavior (no buzz package)
+    // ---------------------------------------------------------------------
+
+    #[Test]
+    public function hcaptcha_verify_returns_false_for_empty_token_without_calling_out(): void
+    {
+        config(['captcha.hcaptcha.secret' => 'sekret']);
+        Http::fake();
+
+        $this->assertFalse((new HCaptchaDriver)->verify([]));
+        $this->assertFalse((new HCaptchaDriver)->verify(['h-captcha-response' => '']));
+
+        Http::assertNothingSent();
+    }
+
+    #[Test]
+    public function hcaptcha_verify_true_on_success_response(): void
+    {
+        config(['captcha.hcaptcha.secret' => 'sekret']);
+        Http::fake([
+            'api.hcaptcha.com/*' => Http::response(['success' => true], 200),
+        ]);
+
+        $this->assertTrue((new HCaptchaDriver)->verify(['h-captcha-response' => 'tok']));
+    }
+
+    #[Test]
+    public function hcaptcha_verify_false_on_unsuccessful_response(): void
+    {
+        config(['captcha.hcaptcha.secret' => 'sekret']);
+        Http::fake([
+            'api.hcaptcha.com/*' => Http::response(['success' => false], 200),
+        ]);
+
+        $this->assertFalse((new HCaptchaDriver)->verify(['h-captcha-response' => 'tok']));
+    }
+
+    #[Test]
+    public function hcaptcha_verify_defaults_to_false_when_success_key_is_absent(): void
+    {
+        config(['captcha.hcaptcha.secret' => 'sekret']);
+        Http::fake([
+            'api.hcaptcha.com/*' => Http::response(['foo' => 'bar'], 200),
+        ]);
+
+        $this->assertFalse((new HCaptchaDriver)->verify(['h-captcha-response' => 'tok']));
+    }
+
+    #[Test]
+    public function hcaptcha_sends_form_secret_and_response(): void
+    {
+        config(['captcha.hcaptcha.secret' => 'my-hcaptcha-secret']);
+        Http::fake([
+            'api.hcaptcha.com/*' => Http::response(['success' => true], 200),
+        ]);
+
+        (new HCaptchaDriver)->verify(['h-captcha-response' => 'my-token']);
+
+        Http::assertSent(function ($request) {
+            return $request->url() === 'https://api.hcaptcha.com/siteverify'
+                && $request['secret'] === 'my-hcaptcha-secret'
+                && $request['response'] === 'my-token';
+        });
+    }
+
+    #[Test]
+    public function hcaptcha_fail_open_lets_requests_through_on_http_error(): void
+    {
+        config([
+            'captcha.hcaptcha.secret' => 'sekret',
+            'captcha.hcaptcha.fail_open' => true,
+        ]);
+        Http::fake([
+            'api.hcaptcha.com/*' => Http::response('server error', 500),
+        ]);
+
+        $this->assertTrue((new HCaptchaDriver)->verify(['h-captcha-response' => 'tok']));
+    }
+
+    #[Test]
+    public function hcaptcha_fail_closed_blocks_requests_on_http_error(): void
+    {
+        config([
+            'captcha.hcaptcha.secret' => 'sekret',
+            'captcha.hcaptcha.fail_open' => false,
+        ]);
+        Http::fake([
+            'api.hcaptcha.com/*' => Http::response('server error', 500),
+        ]);
+
+        $this->assertFalse((new HCaptchaDriver)->verify(['h-captcha-response' => 'tok']));
+    }
+
+    #[Test]
+    public function hcaptcha_fail_open_lets_requests_through_on_network_exception(): void
+    {
+        config([
+            'captcha.hcaptcha.secret' => 'sekret',
+            'captcha.hcaptcha.fail_open' => true,
+        ]);
+        Http::fake(function () {
+            throw new ConnectionException('connection refused');
+        });
+
+        $this->assertTrue((new HCaptchaDriver)->verify(['h-captcha-response' => 'tok']));
     }
 }

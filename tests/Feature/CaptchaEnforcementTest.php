@@ -4,6 +4,7 @@ namespace Tests\Feature;
 
 use App\Models\User;
 use Illuminate\Foundation\Testing\LazilyRefreshDatabase;
+use Illuminate\Routing\Middleware\ThrottleRequests;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Mail;
 use PHPUnit\Framework\Attributes\Test;
@@ -245,6 +246,9 @@ class CaptchaEnforcementTest extends TestCase
             'captcha.active.forgot_email' => true,
             'security.forgot-email.enabled' => true,
         ]);
+        // The route is rate-limited (throttle:10,900); bypass it so repeated
+        // test runs don't hit a 429 instead of the captcha validation error.
+        $this->withoutMiddleware(ThrottleRequests::class);
         $user = User::factory()->create();
 
         $response = $this->postJson('/auth/forgot/email', [
@@ -264,6 +268,7 @@ class CaptchaEnforcementTest extends TestCase
         ]);
         $this->fakeCaptchaSuccess();
         Mail::fake();
+        $this->withoutMiddleware(ThrottleRequests::class);
         $user = User::factory()->create();
 
         // Success path redirects (not JSON); assert the captcha cleared, i.e. the

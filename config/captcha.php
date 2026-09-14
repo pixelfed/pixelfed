@@ -1,7 +1,5 @@
 <?php
 
-use Buzz\LaravelHCaptcha\HttpClient;
-
 return [
     /*
     |--------------------------------------------------------------------------
@@ -24,24 +22,14 @@ return [
     |--------------------------------------------------------------------------
     | hCaptcha
     |--------------------------------------------------------------------------
-    | Canonical, provider-namespaced hCaptcha config used throughout the app.
-    |
-    | The buzz/laravel-h-captcha package reads these values at the top level of
-    | the "captcha" config (captcha.secret, captcha.sitekey, captcha.http_client,
-    | captcha.options, captcha.attributes). CaptchaServiceProvider hydrates those
-    | top-level keys from this block at boot, so everything lives here.
     */
     'hcaptcha' => [
         'secret' => env('CAPTCHA_H_SECRET', 'default_secret'),
         'sitekey' => env('CAPTCHA_H_SITEKEY', 'default_sitekey'),
-        'http_client' => HttpClient::class,
-        'options' => [
-            'multiple' => false,
-            'lang' => app()->getLocale(),
-        ],
-        'attributes' => [
-            'theme' => 'light',
-        ],
+        'timeout' => (int) env('CAPTCHA_H_TIMEOUT', 5),
+        'fail_open' => (bool) env('CAPTCHA_H_FAIL_OPEN', false),
+        // Optional widget locale (e.g. "fr"). Null uses hCaptcha auto-detection.
+        'lang' => env('CAPTCHA_H_LANG'),
     ],
 
     /*
@@ -58,7 +46,7 @@ return [
 
     /*
     |--------------------------------------------------------------------------
-    | Cap (self-hosted proof-of-work CAPTCHA)
+    | Cap
     |--------------------------------------------------------------------------
     | The endpoint is the instance base URL WITHOUT the site key, e.g.
     | https://cap.example.com. The site key/secret are separate values;

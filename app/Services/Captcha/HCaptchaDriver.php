@@ -3,14 +3,23 @@
 namespace App\Services\Captcha;
 
 use App\Contracts\CaptchaDriver;
-use Illuminate\Support\Facades\Validator;
+use Illuminate\Support\Facades\Http;
+use Illuminate\Support\Facades\Log;
 
 /**
- * hCaptcha driver. Wraps the existing buzz/laravel-h-captcha package so behavior
- * is identical to the previous hardcoded integration.
+ * hCaptcha driver.
+ *
+ * Verifies tokens against api.hcaptcha.com/siteverify and renders the widget
+ * script from js.hcaptcha.com.
+ *
+ * @see https://docs.hcaptcha.com/
  */
 class HCaptchaDriver implements CaptchaDriver
 {
+    private const VERIFY_URL = 'https://api.hcaptcha.com/siteverify';
+
+    private const SCRIPT_URL = 'https://js.hcaptcha.com/1/api.js';
+
     public function name(): string
     {
         return 'hcaptcha';
@@ -40,24 +49,48 @@ class HCaptchaDriver implements CaptchaDriver
             return false;
         }
 
-        // Reuse the package's registered "captcha" validation rule so we get the
-        // exact same server-side verification as before.
-        return Validator::make(
-            [$this->responseField() => $token],
-            [$this->responseField() => 'required|captcha']
-        )->passes();
+        try {
+            $response = Http::asForm()
+                ->timeout((int) config('captcha.hcaptcha.timeout', 5))
+                ->post(self::VERIFY_URL, [
+                    'secret' => config_cache('captcha.hcaptcha.secret'),
+                    'response' => $token,
+                ]);
+        } catch (\Throwable $e) {
+            Log::warning('[captcha:hcaptcha] verify request failed: '.$e->getMessage());
+
+            return (bool) config('captcha.hcaptcha.fail_open', false);
+        }
+
+        if ($response->failed()) {
+            return (bool) config('captcha.hcaptcha.fail_open', false);
+        }
+
+        return (bool) $response->json('success', false);
     }
 
     public function render(array $attributes = []): string
     {
-        // Resolve the buzz/laravel-h-captcha service (bound as "captcha").
-        // display() already emits the widget script tag inline.
-        return app('captcha')->display($attributes);
+        $sitekey = e((string) config_cache('captcha.hcaptcha.sitekey'));
+
+        $attrs = '';
+        foreach ($attributes as $key => $value) {
+            $attrs .= ' '.e($key).'="'.e($value).'"';
+        }
+
+        return '<div class="h-captcha" data-sitekey="'.$sitekey.'"'.$attrs.'></div>';
     }
 
     public function scripts(): string
     {
-        // The hCaptcha widget script is injected by display() output/config.
-        return '';
+        $src = self::SCRIPT_URL;
+
+        // Localize the widget when a locale is configured.
+        $lang = config('captcha.hcaptcha.lang');
+        if (! empty($lang)) {
+            $src .= '?hl='.urlencode((string) $lang);
+        }
+
+        return '<script src="'.e($src).'" async defer></script>';
     }
 }

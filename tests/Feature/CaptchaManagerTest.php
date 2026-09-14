@@ -199,6 +199,40 @@ class CaptchaManagerTest extends TestCase
         $this->assertFalse($this->manager()->active()->isConfigured());
     }
 
+    #[Test]
+    public function hcaptcha_renders_widget_with_sitekey(): void
+    {
+        config([
+            'captcha.driver' => 'hcaptcha',
+            'captcha.hcaptcha.sitekey' => 'my-h-sitekey',
+        ]);
+
+        $markup = $this->manager()->active()->render(['data-theme' => 'dark']);
+
+        $this->assertStringContainsString('class="h-captcha"', $markup);
+        $this->assertStringContainsString('data-sitekey="my-h-sitekey"', $markup);
+        $this->assertStringContainsString('data-theme="dark"', $markup);
+    }
+
+    #[Test]
+    public function hcaptcha_scripts_reference_hcaptcha_cdn(): void
+    {
+        config(['captcha.driver' => 'hcaptcha', 'captcha.hcaptcha.lang' => null]);
+
+        $scripts = $this->manager()->active()->scripts();
+
+        $this->assertStringContainsString('js.hcaptcha.com/1/api.js', $scripts);
+        $this->assertStringNotContainsString('hl=', $scripts);
+    }
+
+    #[Test]
+    public function hcaptcha_scripts_include_locale_when_set(): void
+    {
+        config(['captcha.driver' => 'hcaptcha', 'captcha.hcaptcha.lang' => 'fr']);
+
+        $this->assertStringContainsString('hl=fr', $this->manager()->active()->scripts());
+    }
+
     // ---------------------------------------------------------------------
     // Turnstile driver
     // ---------------------------------------------------------------------
