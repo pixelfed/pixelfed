@@ -12,4 +12,10 @@ return [
 
     'status.disabled.header' => 'פרופיל לא זמין',
     'status.disabled.body' => 'מצטערים, פרופיל זה אינו זמין כרגע. אנא נסו שוב בקרוב.',
+
+    'block.domain.max' => '',
+
+    'mutedAccounts' => '',
+    'blockedAccounts' => '',
+    'blockedDomains' => '',
 ];
