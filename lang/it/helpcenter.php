@@ -8,8 +8,8 @@ return [
     'gettingStarted' => 'Per iniziare',
     'sharingMedia' => 'Condivisione dei Media',
     'profile' => 'Profili',
-    'stories' => 'Stories',
-    'hashtags' => 'Hashtags',
+    'stories' => '',
+    'hashtags' => '',
     'discover' => 'Esplora',
     'directMessages' => 'Messaggi Diretti',
     'timelines' => 'Timeline',
@@ -22,5 +22,7 @@ return [
     'safetyTips' => 'Suggerimenti per la Sicurezza',
     'reportSomething' => 'Segnala Qualcosa',
     'dataPolicy' => 'Politica sui Dati',
+
+    'taggingPeople' => '',
 
 ];
