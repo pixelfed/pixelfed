@@ -1,5 +1,9 @@
 name: Crowdin Action
 
+permissions:
+  contents: write
+  pull-requests: write
+
 on:
   push:
     branches: [staging]
