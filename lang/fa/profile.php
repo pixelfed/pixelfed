@@ -12,4 +12,10 @@ return [
 
     'status.disabled.header' => 'نمایه غیرقابل دسترس',
     'status.disabled.body' => 'عذر می‌خوایم! نمایه الان در دسترس نیست. لطفا چند دقیقه دیگر مجدد بررسی فرمایید.',
+
+    'block.domain.max' => 'Max limit of domain blocks reached! You can only block :max domains at a time. Ask your admin to adjust this limit.',
+
+    'mutedAccounts' => 'Muted Accounts',
+    'blockedAccounts' => 'Blocked Accounts',
+    'blockedDomains' => 'Blocked Domains',
 ];
