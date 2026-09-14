@@ -1,19 +1,19 @@
 <?php
 
 return [
-
     'search' => 'Поиск',
     'home' => 'Главная',
     'local' => 'Локальная',
     'network' => 'Глобальная',
-    'discover' => 'Discover',
+    'discover' => '',
     'viewMyProfile' => 'Мой профиль',
+    'myProfile' => '',
     'myTimeline' => 'Моя лента',
     'publicTimeline' => 'Глобальная лента',
-    'remoteFollow' => 'Remote Follow',
+    'remoteFollow' => '',
     'settings' => 'Настройки',
     'admin' => 'Администрация',
     'logout' => 'Выйти',
     'directMessages' => 'Личные сообщения',
-
+    'composePost' => '',
 ];
