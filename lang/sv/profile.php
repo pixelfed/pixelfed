@@ -13,4 +13,9 @@ return [
     'status.disabled.header' => 'Profilen är otillgänglig',
     'status.disabled.body' => 'Förlåt, men den här profilen är otillgänglig just nu. Försök igen om en stund.',
 
+    'block.domain.max' => '',
+
+    'mutedAccounts' => '',
+    'blockedAccounts' => '',
+    'blockedDomains' => '',
 ];
