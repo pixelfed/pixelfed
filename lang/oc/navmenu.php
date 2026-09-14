@@ -1,7 +1,6 @@
 <?php
 
 return [
-
     'search' => 'Cercar',
     'home' => 'Acuèlh',
     'local' => 'Local',
@@ -16,5 +15,5 @@ return [
     'admin' => 'Admin',
     'logout' => 'Desconnexion',
     'directMessages' => 'Messatges dirèctes',
-
+    'composePost' => 'Compose Post',
 ];
