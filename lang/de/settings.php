@@ -6,6 +6,7 @@ return [
     'email' => 'E-Mail',
     'invites' => 'Einladungen',
     'media' => 'Medien',
+    'filters' => 'Filters',
     'notifications' => 'Benachrichtigungen',
     'password' => 'Passwort',
     'privacy' => 'Privatsphäre',
@@ -132,6 +133,7 @@ return [
     'relationships.unfollow' => 'Entfolgen',
     'relationships.mute' => 'Stummschalten',
     'relationships.block' => 'Blockieren',
+    'relationships.removeFollow' => 'Remove  Follow',
     'relationships.mute_successful' => 'Stummschalten erfolgreich',
     'relationships.you_have_successfully_muted_that_user' => 'Du hast den Benutzer erfolgreich stummgeschaltet',
     'relationships.block_successful' => 'Blockieren erfolgreich',
@@ -172,8 +174,12 @@ return [
     'security.photo_reblogs_only' => 'Ausschließlich Foto-Reblogs',
     'security.only_see_reblogs_of_photos_or_photo_albums_home_etc' => 'Nur Reblogs von Fotos oder Foto-Alben anzeigen. (nur auf der Startseite)',
 
+    // incomplete
+    // the oauth panel is loaded from elsewhere
     'developers.oauth_has_not_been_enabled_on_this_instance' => 'OAuth ist auf dieser Instanz nicht aktiv.',
 
+    // incomplete
+    // import/ig.blade.php seems not in use anymore
     'import.import_from_instagram' => 'Importieren von Instagram',
 
     'export.data_export' => 'Daten-Export',
@@ -181,6 +187,8 @@ return [
     'export.statuses' => 'Beiträge',
     'export.mute_block_lists' => 'Stumm/Block-Listen',
 
+    // incomplete
+    // some language outside the blades (in app/Http/Controllers/Settings/LabsSettings.php)
     'labs' => 'Labs',
     'labs.experimental_features' => 'Experimentelle Funktionen',
     'labs.use_dark_mode_theme' => 'Das Dark Mode-Theme verwenden.',
