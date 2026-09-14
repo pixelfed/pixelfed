@@ -6,14 +6,81 @@ preserve_hierarchy: true
 commit_message: '[ci skip]'
 
 files:
-  - source: /lang/en/*.php
-    translation: /lang/%two_letters_code%/%original_file_name%
-    # Map Crowdin's region-specific locales onto Pixelfed's existing folder names.
-    # The default %two_letters_code% (e.g. "zh") collapses all Chinese variants
-    # into one folder, so region variants must be mapped explicitly.
+  - source: /lang/en/auth.php
+    translation: /lang/%two_letters_code%/auth.php
     languages_mapping:
       two_letters_code:
-        # Simplified Chinese -> lang/zh-cn
         zh-CN: zh-cn
-        # Traditional Chinese -> lang/zh-tw
+        zh-TW: zh-tw
+  - source: /lang/en/exception.php
+    translation: /lang/%two_letters_code%/exception.php
+    languages_mapping:
+      two_letters_code:
+        zh-CN: zh-cn
+        zh-TW: zh-tw
+  - source: /lang/en/helpcenter.php
+    translation: /lang/%two_letters_code%/helpcenter.php
+    languages_mapping:
+      two_letters_code:
+        zh-CN: zh-cn
+        zh-TW: zh-tw
+  - source: /lang/en/navmenu.php
+    translation: /lang/%two_letters_code%/navmenu.php
+    languages_mapping:
+      two_letters_code:
+        zh-CN: zh-cn
+        zh-TW: zh-tw
+  - source: /lang/en/notification.php
+    translation: /lang/%two_letters_code%/notification.php
+    languages_mapping:
+      two_letters_code:
+        zh-CN: zh-cn
+        zh-TW: zh-tw
+  # - source: /lang/en/pagination.php
+  #   translation: /lang/%two_letters_code%/pagination.php
+  #   languages_mapping:
+  #     two_letters_code:
+  #       zh-CN: zh-cn
+  #       zh-TW: zh-tw
+  - source: /lang/en/passwords.php
+    translation: /lang/%two_letters_code%/passwords.php
+    languages_mapping:
+      two_letters_code:
+        zh-CN: zh-cn
+        zh-TW: zh-tw
+  - source: /lang/en/profile.php
+    translation: /lang/%two_letters_code%/profile.php
+    languages_mapping:
+      two_letters_code:
+        zh-CN: zh-cn
+        zh-TW: zh-tw
+  - source: /lang/en/settings.php
+    translation: /lang/%two_letters_code%/settings.php
+    languages_mapping:
+      two_letters_code:
+        zh-CN: zh-cn
+        zh-TW: zh-tw
+  - source: /lang/en/site.php
+    translation: /lang/%two_letters_code%/site.php
+    languages_mapping:
+      two_letters_code:
+        zh-CN: zh-cn
+        zh-TW: zh-tw
+  - source: /lang/en/timeline.php
+    translation: /lang/%two_letters_code%/timeline.php
+    languages_mapping:
+      two_letters_code:
+        zh-CN: zh-cn
+        zh-TW: zh-tw
+  # - source: /lang/en/validation.php
+  #   translation: /lang/%two_letters_code%/validation.php
+  #   languages_mapping:
+  #     two_letters_code:
+  #       zh-CN: zh-cn
+  #       zh-TW: zh-tw
+  - source: /lang/en/web.php
+    translation: /lang/%two_letters_code%/web.php
+    languages_mapping:
+      two_letters_code:
+        zh-CN: zh-cn
         zh-TW: zh-tw
