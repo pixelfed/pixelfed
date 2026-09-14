@@ -1,6 +1,7 @@
 <?php
 
 return [
+
     /*
     |--------------------------------------------------------------------------
     | Password Reset Language Lines
@@ -11,9 +12,11 @@ return [
     | has failed, such as for an invalid token or invalid new password.
     |
     */
+
     'password' => 'Password minimal enam karakter dan diisi dua kali harus sama.',
     'reset' => 'Password kamu sudah di-reset!',
     'sent' => 'Kami sudah mengirim link reset password lewat email!',
     'token' => 'Token reset password ini tidak valid.',
     'user' => 'Kami tidak menemukan user beralamat email tersebut.',
+
 ];
