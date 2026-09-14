@@ -58,7 +58,7 @@ return [
     'some_of_the_better_known_fediverse_projects_include' => 'Certains des projets du fediverse les plus connus sont :',
     'a_federated_microblogging_alternative' => 'Une alternative pour du microblogging fédéré.',
 
-    // site/open-source
+    // site/opensource
     'the_software_that_powers_this_website_is_called' => 'Le logiciel qui motorise ce site web s’appelle',
     'and_anyone_can' => 'et tout le monde peut',
     'download' => 'télécharger',
