@@ -28,10 +28,10 @@ return [
         'next' => '次へ',
         'close' => '閉じる',
         'clickHere' => 'ここをクリック',
-
         'sensitive' => 'センシティブ',
         'sensitiveContent' => 'センシティブなコンテンツ',
         'sensitiveContentWarning' => 'この投稿にはセンシティブなコンテンツが含まれている可能性があります',
+        'javascript' => 'Please enable javascript to view this content.',
         'loading' => 'ロード中...',
         'continue' => '続行',
     ],
@@ -73,9 +73,11 @@ return [
         'privacy' => 'プライバシー',
         'terms' => '利用規約',
         'legalNotice' => '免責事項',
+        'mobileApps' => 'Mobile Apps',
 
         // Temporary links
         'backToPreviousDesign' => '以前のデザインに戻す',
+
     ],
 
     'directMessages' => [
@@ -369,4 +371,41 @@ return [
 
     ],
 
+    'powered_by_pixelfed' => 'Powered by Pixelfed',
+
+    'landing' => [
+        'login' => 'Login',
+        'signup' => 'Sign up',
+        'about' => 'About',
+        'directory' => 'Directory',
+        'explore' => 'Explore',
+        'decentralized_by_pixelfed' => 'Decentralized photo sharing social media powered by <a href="https://pixelfed.org" target="_blank">Pixelfed</a>',
+        'posts' => 'Posts',
+        'active_users' => 'Active Users',
+        'total_users' => 'Total Users',
+        'managed_by' => 'Managed By',
+        'server_rules' => 'Server Rules',
+        'supported_features' => 'Supported Features',
+        'features' => [
+            'photo_posts' => 'Photo Posts',
+            'photo_albums' => 'Photo Albums',
+            'photo_filters' => 'Photo Filters',
+            'collections' => 'Collections',
+            'comments' => 'Comments',
+            'hashtags' => 'Hashtags',
+            'likes' => 'Likes',
+            'notifications' => 'Notifications',
+            'shares' => 'Shares',
+            'share_up_to_n_photos' => 'You can share up to <span class="font-weight-bold">{num_photos}</span> photos* at a time with a max caption length of <span class="font-weight-bold">{caption_length}</span> characters.',
+            'share_up_to_n_photos_videos' => 'You can share up to <span class="font-weight-bold">{num_photos}</span> photos* or <span class="font-weight-bold">{num_video}</span> video* at a time with a max caption length of <span class="font-weight-bold">{caption_length}</span> characters.',
+            'file_size' => '* - Maximum file size is {max_size}',
+            'federation' => 'Federation',
+            'mobile_app' => 'Mobile App Support',
+            'stories' => 'Stories',
+            'videos' => 'Videos',
+        ],
+        'discover_accounts' => 'Discover accounts and people',
+        'nothing_to_show' => 'Nothing to show yet! Check back later.',
+        'explore_trending' => 'Explore trending posts',
+    ],
 ];
