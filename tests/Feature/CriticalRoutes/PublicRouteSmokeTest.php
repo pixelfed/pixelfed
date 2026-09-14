@@ -44,6 +44,10 @@ describe('routes that require database', function () {
     uses(LazilyRefreshDatabase::class);
 
     test('register page loads', function () {
+        // The register form 404s when open registration is disabled (the
+        // default), so enable it for this smoke test.
+        config(['pixelfed.open_registration' => true]);
+
         $this->get('/register')
             ->assertStatus(200);
     });

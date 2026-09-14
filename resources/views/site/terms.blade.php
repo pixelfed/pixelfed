@@ -4,8 +4,8 @@
 <div class="container mt-5">
 	<div class="col-12">
 		<p class="font-weight-bold text-lighter text-uppercase">
-			@if($page && $page->title)
-				{!! $page->title !!}
+			@if($page && $page['title'])
+				{!! $page['title'] !!}
 			@else
 				Terms of Use
 			@endif
@@ -57,5 +57,5 @@
 @endsection
 
 @push('meta')
-<meta property="og:description" content="@if($page && $page->title) {!! $page->title !!} @else Terms of Use @endif">
+<meta property="og:description" content="@if($page && $page['title']) {!! $page['title'] !!} @else Terms of Use @endif">
 @endpush
