@@ -11,10 +11,12 @@ use App\Services\AccountService;
 use App\Services\WebfingerService;
 use App\Util\ActivityPub\Helpers;
 use Illuminate\Contracts\View\View;
+use Illuminate\Database\QueryException;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Bus;
 use Illuminate\Support\Facades\Cache;
+use Illuminate\Support\Facades\DB;
 
 class ProfileMigrationController extends Controller
 {
@@ -53,12 +55,38 @@ class ProfileMigrationController extends Controller
             'acct' => $request->safe()->acct,
             'uri' => $acct,
         ]);
-        $migration = ProfileMigration::create([
-            'profile_id' => $request->user()->profile_id,
-            'acct' => $request->safe()->acct,
-            'followers_count' => $request->user()->profile->followers_count,
-            'target_profile_id' => $newAccount['id'],
-        ]);
+        // Serialize the cooldown re-check + create under a lock so concurrent
+        // requests cannot both pass the 30-day check and create migrations.
+        // The unique(profile_id) constraint is the hard backstop.
+        try {
+            $migration = DB::transaction(function () use ($request, $newAccount) {
+                $recent = ProfileMigration::whereProfileId($request->user()->profile_id)
+                    ->where('created_at', '>', now()->subDays(30))
+                    ->lockForUpdate()
+                    ->exists();
+
+                if ($recent) {
+                    return null;
+                }
+
+                return ProfileMigration::create([
+                    'profile_id' => $request->user()->profile_id,
+                    'acct' => $request->safe()->acct,
+                    'followers_count' => $request->user()->profile->followers_count,
+                    'target_profile_id' => $newAccount['id'],
+                ]);
+            });
+        } catch (QueryException $e) {
+            // Unique constraint tripped by a concurrent request.
+            $migration = null;
+        }
+
+        if (! $migration) {
+            return redirect()->back()->withErrors([
+                'acct' => 'You have migrated your account in the past 30 days, you can only perform a migration once per 30 days.',
+            ]);
+        }
+
         $user->profile->update([
             'moved_to_profile_id' => $newAccount->id,
             'indexable' => false,
