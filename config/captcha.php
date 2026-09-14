@@ -88,6 +88,4 @@ return [
         'password_reset' => env('CAPTCHA_ENABLED_ON_PASSWORD_RESET', false),
         'curated_register' => env('CAPTCHA_ENABLED_ON_CURATED_REGISTER', false),
     ],
-
-    /*
 ];

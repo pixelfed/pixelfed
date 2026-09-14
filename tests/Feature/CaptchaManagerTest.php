@@ -112,36 +112,6 @@ class CaptchaManagerTest extends TestCase
     }
 
     #[Test]
-    public function active_on_login_honors_surface_and_attempt_trigger(): void
-    {
-        // Surface directly active
-        config([
-            'captcha.enabled' => true,
-            'captcha.active.login' => true,
-            'captcha.triggers.login.enabled' => false,
-        ]);
-        $this->assertTrue($this->manager()->activeOnLogin());
-
-        // Surface off, trigger disabled -> false
-        config(['captcha.active.login' => false]);
-        $this->assertFalse($this->manager()->activeOnLogin());
-
-        // Trigger enabled but below threshold -> false
-        config([
-            'captcha.triggers.login.enabled' => true,
-            'captcha.triggers.login.attempts' => 2,
-        ]);
-        $session = $this->app['session']->driver();
-        request()->setLaravelSession($session);
-        $session->put('login_attempts', 1);
-        $this->assertFalse($this->manager()->activeOnLogin());
-
-        // Trigger enabled and at threshold -> true
-        $session->put('login_attempts', 2);
-        $this->assertTrue($this->manager()->activeOnLogin());
-    }
-
-    #[Test]
     public function cap_widget_defaults_to_latest_when_no_version_set(): void
     {
         config([

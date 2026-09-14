@@ -12,7 +12,6 @@ use Illuminate\Support\Facades\Facade;
  * @method static CaptchaDriver active()
  * @method static bool enabled()
  * @method static bool activeOn(string $surface)
- * @method static bool activeOnLogin()
  * @method static array available()
  * @method static array rules()
  * @method static CaptchaDriver driver(string|null $driver = null)
