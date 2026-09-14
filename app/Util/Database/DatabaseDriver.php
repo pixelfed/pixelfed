@@ -48,6 +48,28 @@ class DatabaseDriver
     }
 
     /**
+     * True when the driver is MySQL specifically (not MariaDB).
+     *
+     * Only use when the behaviour must differ between MySQL and MariaDB;
+     * otherwise prefer isMysqlMaria().
+     */
+    public static function isMysql(?string $connection = null): bool
+    {
+        return self::name($connection) === 'mysql';
+    }
+
+    /**
+     * True when the driver is MariaDB specifically (not MySQL).
+     *
+     * Only use when the behaviour must differ between MySQL and MariaDB;
+     * otherwise prefer isMysqlMaria().
+     */
+    public static function isMariadb(?string $connection = null): bool
+    {
+        return self::name($connection) === 'mariadb';
+    }
+
+    /**
      * True when the driver is PostgreSQL.
      */
     public static function isPgsql(?string $connection = null): bool

@@ -23,6 +23,32 @@ if (! function_exists('db_is_mysql_maria')) {
     }
 }
 
+if (! function_exists('db_is_mysql')) {
+    /**
+     * True when the connection uses MySQL specifically (not MariaDB).
+     *
+     * Only use when behaviour must differ between MySQL and MariaDB;
+     * otherwise prefer db_is_mysql_maria().
+     */
+    function db_is_mysql(?string $connection = null): bool
+    {
+        return DatabaseDriver::isMysql($connection);
+    }
+}
+
+if (! function_exists('db_is_mariadb')) {
+    /**
+     * True when the connection uses MariaDB specifically (not MySQL).
+     *
+     * Only use when behaviour must differ between MySQL and MariaDB;
+     * otherwise prefer db_is_mysql_maria().
+     */
+    function db_is_mariadb(?string $connection = null): bool
+    {
+        return DatabaseDriver::isMariadb($connection);
+    }
+}
+
 if (! function_exists('db_is_pgsql')) {
     /**
      * True when the active (or given) connection uses PostgreSQL.
