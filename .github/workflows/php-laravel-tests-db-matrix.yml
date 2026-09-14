@@ -10,9 +10,9 @@ name: PHP - Laravel Tests (DB Matrix - experimental)
 
 on:
   push:
-    branches: [staging, unstable]
+    branches: []
   pull_request:
-    branches: [staging]
+    branches: []
 
 # Never let this experimental workflow block anything.
 permissions:
