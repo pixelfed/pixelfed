@@ -84,9 +84,6 @@ jobs:
         with:
           context: .
           platforms: ${{ matrix.platform }}
-          # Disable provenance/SBOM attestations. buildx attaches these as extra
-          # manifests with an "unknown/unknown" platform, which show up as noisy
-          # "unknown" entries in the GHCR package UI alongside amd64/arm64.
           provenance: false
           sbom: false
           outputs: type=image,name=${{ env.IMAGE_NAME }},push-by-digest=true,name-canonical=true,push=true
