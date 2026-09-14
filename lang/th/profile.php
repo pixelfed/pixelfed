@@ -12,4 +12,10 @@ return [
 
     'status.disabled.header' => 'บัญชีไม่สามารถใช้งานได้',
     'status.disabled.body' => 'เสียใจด้วยนะ บัญชีนี้ไม่สามารถใช้งานได้ โปรดลองใหม่อีกครั้ง',
+
+    'block.domain.max' => '',
+
+    'mutedAccounts' => '',
+    'blockedAccounts' => '',
+    'blockedDomains' => '',
 ];
