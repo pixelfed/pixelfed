@@ -12,4 +12,10 @@ return [
 
     'status.disabled.header' => 'บัญชีไม่สามารถใช้งานได้',
     'status.disabled.body' => 'เสียใจด้วยนะ บัญชีนี้ไม่สามารถใช้งานได้ โปรดลองใหม่อีกครั้ง',
+
+    'block.domain.max' => 'Max limit of domain blocks reached! You can only block :max domains at a time. Ask your admin to adjust this limit.',
+
+    'mutedAccounts' => 'Muted Accounts',
+    'blockedAccounts' => 'Blocked Accounts',
+    'blockedDomains' => 'Blocked Domains',
 ];
