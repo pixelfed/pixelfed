@@ -3,7 +3,7 @@
 return [
     'search' => 'Cerca',
     'home' => 'Inici',
-    'local' => 'Local',
+    'local' => '',
     'network' => 'Xarxa',
     'discover' => 'Descobrir',
     'viewMyProfile' => 'Veure el meu perfil',
@@ -12,7 +12,7 @@ return [
     'publicTimeline' => 'Línia temporal Pública',
     'remoteFollow' => 'Seguiment Remot',
     'settings' => 'Ajustatges',
-    'admin' => 'Admin',
+    'admin' => '',
     'logout' => 'Tanca la sessió',
     'directMessages' => 'Missatges Directes',
     'composePost' => 'Compon una publicació',
