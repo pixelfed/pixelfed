@@ -8,9 +8,9 @@
   <hr>
   @if($page)
   <div>
-    {!!$page->content!!}
+    {!!$page['content']!!}
     <hr>
-    <p class="">This document was last updated {{$page->created_at->format('M d, Y')}}.</p>
+    <p class="">This document was last updated {{$page['created_at']}}.</p>
   </div>
   @else
   <div>
