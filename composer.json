@@ -34,7 +34,6 @@
         "league/oauth2-client": "^2.8",
         "league/uri": "^7.4",
         "matomo/device-detector": "^6.5",
-        "oliweb/laravel-cap": "^1.10",
         "pbmedia/laravel-ffmpeg": "^8.0",
         "phpseclib/phpseclib": "~3.0",
         "pixelfed/fractal": "^0.18.0",

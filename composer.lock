@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "e627796e7ccac95139ad365d270f2f36",
+    "content-hash": "e48226ae87d8f4cf377599b93cb9206a",
     "packages": [
         {
             "name": "aws/aws-crt-php",
@@ -4844,69 +4844,6 @@
                 }
             ],
             "time": "2026-02-16T23:10:27+00:00"
-        },
-        {
-            "name": "oliweb/laravel-cap",
-            "version": "v1.10.0",
-            "source": {
-                "type": "git",
-                "url": "https://github.com/oliweb-ch/laravel-cap.git",
-                "reference": "6ef553ba99d9e6c27b7195ec5549cc12f006a876"
-            },
-            "dist": {
-                "type": "zip",
-                "url": "https://api.github.com/repos/oliweb-ch/laravel-cap/zipball/6ef553ba99d9e6c27b7195ec5549cc12f006a876",
-                "reference": "6ef553ba99d9e6c27b7195ec5549cc12f006a876",
-                "shasum": ""
-            },
-            "require": {
-                "illuminate/http": "^12.0|^13.0",
-                "illuminate/support": "^12.0|^13.0",
-                "php": "^8.2"
-            },
-            "require-dev": {
-                "orchestra/testbench": "^10.0|^11.0",
-                "phpunit/phpunit": "^11.0|^12.0"
-            },
-            "type": "library",
-            "extra": {
-                "laravel": {
-                    "aliases": {
-                        "Cap": "LaravelCap\\Facades\\Cap"
-                    },
-                    "providers": [
-                        "LaravelCap\\CapServiceProvider"
-                    ]
-                }
-            },
-            "autoload": {
-                "psr-4": {
-                    "LaravelCap\\": "src/"
-                }
-            },
-            "notification-url": "https://packagist.org/downloads/",
-            "license": [
-                "MIT"
-            ],
-            "authors": [
-                {
-                    "name": "oliweb",
-                    "homepage": "https://github.com/oli217"
-                }
-            ],
-            "description": "Laravel wrapper for Cap (tiagozip/cap) — self-hosted CAPTCHA alternative",
-            "keywords": [
-                "cap",
-                "captcha",
-                "laravel",
-                "proof-of-work",
-                "spam-protection"
-            ],
-            "support": {
-                "issues": "https://github.com/oliweb-ch/laravel-cap/issues",
-                "source": "https://github.com/oliweb-ch/laravel-cap/tree/v1.10.0"
-            },
-            "time": "2026-08-09T14:23:54+00:00"
         },
         {
             "name": "paragonie/constant_time_encoding",

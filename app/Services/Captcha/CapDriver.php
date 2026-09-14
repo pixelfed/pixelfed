@@ -3,22 +3,21 @@
 namespace App\Services\Captcha;
 
 use App\Contracts\CaptchaDriver;
-use Illuminate\Http\Client\Factory as HttpFactory;
-use LaravelCap\Cap;
+use Illuminate\Support\Facades\Http;
+use Illuminate\Support\Facades\Log;
 
 /**
  * Cap driver (self-hosted proof-of-work CAPTCHA).
  *
- * Wraps the oliweb/laravel-cap package for verification, and renders the
- *
- * @cap.js/widget from the jsDelivr CDN.
+ * Verifies tokens against the Cap instance's /siteverify endpoint and renders
+ * the @cap.js/widget from the jsDelivr CDN.
  *
  * The full API endpoint the widget and verifier talk to is composed from a base
  * URL (captcha.cap.endpoint) plus the site key (captcha.cap.sitekey):
  *
  *     https://cap.example.com  +  3c87a0e810  =>  https://cap.example.com/3c87a0e810/
  *
- * @see https://github.com/oliweb-ch/laravel-cap
+ * @see https://capjs.js.org/
  */
 class CapDriver implements CaptchaDriver
 {
@@ -76,14 +75,24 @@ class CapDriver implements CaptchaDriver
             return false;
         }
 
-        $cap = new Cap(app(HttpFactory::class), [
-            'endpoint' => $endpoint,
-            'secret' => config_cache('captcha.cap.secret'),
-            'timeout' => (int) config('captcha.cap.timeout', 5),
-            'fail_open' => (bool) config('captcha.cap.fail_open', false),
-        ]);
+        try {
+            $response = Http::asJson()
+                ->timeout((int) config('captcha.cap.timeout', 5))
+                ->post($endpoint.'siteverify', [
+                    'secret' => config_cache('captcha.cap.secret'),
+                    'response' => $token,
+                ]);
+        } catch (\Throwable $e) {
+            Log::warning('[captcha:cap] verify request failed: '.$e->getMessage());
 
-        return $cap->verify((string) $token);
+            return (bool) config('captcha.cap.fail_open', false);
+        }
+
+        if ($response->failed()) {
+            return (bool) config('captcha.cap.fail_open', false);
+        }
+
+        return (bool) $response->json('success', false);
     }
 
     public function render(array $attributes = []): string
