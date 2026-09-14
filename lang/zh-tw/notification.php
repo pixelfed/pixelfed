@@ -3,6 +3,7 @@
 return [
 
     'likedPhoto' => '喜歡您的照片。',
+    'likedComment' => 'liked your comment.',
     'startedFollowingYou' => '開始追蹤您。',
     'commented' => '在您的貼文上留言。',
     'mentionedYou' => '提到您。',
