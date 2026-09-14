@@ -28,14 +28,12 @@ jobs:
       fail-fast: false
       matrix:
         include:
-          # MySQL and MariaDB both use the pdo mysql driver; only the service
-          # image differs. Postgres uses the pgsql driver on its own port.
           - db: mysql
             connection: mysql
             host: 127.0.0.1
             port: 3306
           - db: mariadb
-            connection: mysql
+            connection: mariadb
             host: 127.0.0.1
             port: 3307
           - db: pgsql
@@ -154,6 +152,10 @@ jobs:
           DB_PASSWORD: pixelfed
           REDIS_HOST: 127.0.0.1
           REDIS_PORT: 6379
+          # Unique Redis key prefix per matrix entry so cache/queue keys never
+          # collide across databases (the config default derives the prefix
+          # from APP_NAME, which is identical for every entry).
+          REDIS_PREFIX: pixelfed-test-${{ matrix.db }}-
         # `|| true` guarantees a 0 exit code even when the suite fails, so this
         # experimental job always reports success and never affects the score.
         run: vendor/bin/pest --compact || true
