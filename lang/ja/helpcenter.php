@@ -3,7 +3,7 @@
 return [
 
     'helpcenter' => 'ヘルプセンター',
-    'whatsnew' => 'What\'s New',
+    'whatsnew' => '',
 
     'gettingStarted' => 'はじめに',
     'sharingMedia' => 'メディアを共有する',
@@ -13,8 +13,8 @@ return [
     'discover' => '探索',
     'directMessages' => 'ダイレクトメッセージ',
     'timelines' => 'タイムライン',
-
     'embed' => '埋め込む',
+
     'communityGuidelines' => 'コミュニティガイドライン',
     'whatIsTheFediverse' => 'fediverseとは',
     'controllingVisibility' => '公開範囲のコントロール',
