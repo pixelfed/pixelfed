@@ -6,10 +6,10 @@ return [
     'whatsnew' => 'Vad är nytt',
 
     'gettingStarted' => 'Komma igång',
-    'sharingMedia' => 'Sharing Media',
+    'sharingMedia' => '',
     'profile' => 'Profil',
-    'stories' => 'Stories',
-    'hashtags' => 'Hashtags',
+    'stories' => '',
+    'hashtags' => '',
     'discover' => 'Upptäck',
     'directMessages' => 'Direktmeddelanden',
     'timelines' => 'Tidslinjer',
@@ -22,5 +22,7 @@ return [
     'safetyTips' => 'Säkerhetstips',
     'reportSomething' => 'Rapportera någonting',
     'dataPolicy' => 'Datapolicy',
+
+    'taggingPeople' => '',
 
 ];
