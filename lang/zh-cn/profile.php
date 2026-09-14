@@ -12,4 +12,10 @@ return [
 
     'status.disabled.header' => '主页不可用',
     'status.disabled.body' => '抱歉，此个人主页暂时未开放。请稍后再试。',
+
+    'block.domain.max' => 'Max limit of domain blocks reached! You can only block :max domains at a time. Ask your admin to adjust this limit.',
+
+    'mutedAccounts' => 'Muted Accounts',
+    'blockedAccounts' => 'Blocked Accounts',
+    'blockedDomains' => 'Blocked Domains',
 ];
