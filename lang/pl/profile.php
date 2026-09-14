@@ -12,4 +12,10 @@ return [
 
     'status.disabled.header' => 'Profil jest niedostępny',
     'status.disabled.body' => 'Przepraszamy, ten profil nie jest obecnie dostępny. Spróbuj ponownie za jakiś czas.',
+
+    'block.domain.max' => '',
+
+    'mutedAccounts' => '',
+    'blockedAccounts' => '',
+    'blockedDomains' => '',
 ];

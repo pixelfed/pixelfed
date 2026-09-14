@@ -4,12 +4,12 @@ return [
 
     /*
     |--------------------------------------------------------------------------
-    | Переклади рядків скидання паролю
+    | Password Reset Language Lines
     |--------------------------------------------------------------------------
     |
-    | Ці переклади — усталені рядки, що відповідають причинам, якими
-    | брокер паролів пояснює, чому спроба оновлення пароля не вдалася,
-    | наприклад через хибний токен чи хибний новий пароль.
+    | The following language lines are the default lines which match reasons
+    | that are given by the password broker for a password update attempt
+    | has failed, such as for an invalid token or invalid new password.
     |
     */
 

@@ -2,16 +2,7 @@
 
 return [
 
-    /*
-    |--------------------------------------------------------------------------
-    | Authentication Language Lines
-    |--------------------------------------------------------------------------
-    |
-    | The following language lines are used during authentication for various
-    | messages that we need to display to the user. You are free to modify
-    | these language lines according to your application's requirements.
-    |
-    */
+    'verifyYourEmailAddress' => ' - Verifique seu endereço de e-mail',
     'loginTitle' => 'Acessar conta',
     'failed' => 'As credenciais introduzidas não correspondem aos nossos registos.',
     'throttle' => 'Varias tentativas de login. Tente novamente em :seconds segundos.',
@@ -19,18 +10,20 @@ return [
     'remember' => 'Lembrar-Me',
     'forgot' => 'Esqueceu a senha? ',
     'login' => 'Entrar',
-    'reset' => 'Recuperar Senha',
+
     'register' => 'Cadastrar',
+    'reset' => 'Recuperar Senha',
 
     'name' => 'Nome',
     'username' => 'Usuário',
     'confirm-password' => 'Confrime a senha',
 
     'age' => 'Eu tenho pelo menos 16 anos',
-
     'terms' => 'Ao Cadastrar, você concorda com nossos termos <a href="'.route('site.terms').'" class="font-weight-bold text-dark">Termos de Uso</a> e <a href="'.route('site.privacy').'" class="font-weight-bold text-dark">Politica de Privacidade</a>.',
 
     'emailAddress' => 'Endereço de Email',
+    'email' => '',
+    'forgotEmail' => '',
 
     'registerTitle' => 'Cadastrar uma nova conta',
 
@@ -38,6 +31,5 @@ return [
     'backLogin' => 'Back to Login',
 
     'signInMastodon' => 'Entrar com Mastodon',
-    'verifyYourEmailAddress' => ' - Verifique seu endereço de e-mail',
 
 ];

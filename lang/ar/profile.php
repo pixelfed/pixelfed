@@ -12,4 +12,10 @@ return [
 
     'status.disabled.header' => 'إنَّ المَلَفَّ الشَّخصِيّ غَيرُ مُتَاح',
     'status.disabled.body' => 'عُذرًا، إنَّ هَذَا المَلَفَّ الشَّخصِيّ غَيرُ مُتَاحٍ فِي الوَقتِ الحالِيِّ. يُرجَى المُحَاوَلَةُ مَرَّةً أُخرَى بَعدَ قَلِيل.',
+
+    'block.domain.max' => '',
+
+    'mutedAccounts' => '',
+    'blockedAccounts' => '',
+    'blockedDomains' => '',
 ];

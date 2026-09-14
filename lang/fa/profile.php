@@ -12,4 +12,10 @@ return [
 
     'status.disabled.header' => 'نمایه غیرقابل دسترس',
     'status.disabled.body' => 'عذر می‌خوایم! نمایه الان در دسترس نیست. لطفا چند دقیقه دیگر مجدد بررسی فرمایید.',
+
+    'block.domain.max' => '',
+
+    'mutedAccounts' => '',
+    'blockedAccounts' => '',
+    'blockedDomains' => '',
 ];

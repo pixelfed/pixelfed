@@ -23,4 +23,6 @@ return [
     'reportSomething' => 'Report Something',
     'dataPolicy' => 'Data Policy',
 
+    'taggingPeople' => '',
+
 ];

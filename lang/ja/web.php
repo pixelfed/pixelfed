@@ -28,10 +28,10 @@ return [
         'next' => '次へ',
         'close' => '閉じる',
         'clickHere' => 'ここをクリック',
-
         'sensitive' => 'センシティブ',
         'sensitiveContent' => 'センシティブなコンテンツ',
         'sensitiveContentWarning' => 'この投稿にはセンシティブなコンテンツが含まれている可能性があります',
+        'javascript' => '',
         'loading' => 'ロード中...',
         'continue' => '続行',
     ],
@@ -73,9 +73,11 @@ return [
         'privacy' => 'プライバシー',
         'terms' => '利用規約',
         'legalNotice' => '免責事項',
+        'mobileApps' => '',
 
         // Temporary links
         'backToPreviousDesign' => '以前のデザインに戻す',
+
     ],
 
     'directMessages' => [
@@ -369,4 +371,41 @@ return [
 
     ],
 
+    'powered_by_pixelfed' => '',
+
+    'landing' => [
+        'login' => '',
+        'signup' => '',
+        'about' => '',
+        'directory' => '',
+        'explore' => '',
+        'decentralized_by_pixelfed' => '',
+        'posts' => '',
+        'active_users' => '',
+        'total_users' => '',
+        'managed_by' => '',
+        'server_rules' => '',
+        'supported_features' => '',
+        'features' => [
+            'photo_posts' => '',
+            'photo_albums' => '',
+            'photo_filters' => '',
+            'collections' => '',
+            'comments' => '',
+            'hashtags' => '',
+            'likes' => '',
+            'notifications' => '',
+            'shares' => '',
+            'share_up_to_n_photos' => '',
+            'share_up_to_n_photos_videos' => '',
+            'file_size' => '',
+            'federation' => '',
+            'mobile_app' => '',
+            'stories' => '',
+            'videos' => '',
+        ],
+        'discover_accounts' => '',
+        'nothing_to_show' => '',
+        'explore_trending' => '',
+    ],
 ];
