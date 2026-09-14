@@ -28,14 +28,12 @@ jobs:
       fail-fast: false
       matrix:
         include:
-          # MySQL and MariaDB both use the pdo mysql driver; only the service
-          # image differs. Postgres uses the pgsql driver on its own port.
           - db: mysql
             connection: mysql
             host: 127.0.0.1
             port: 3306
           - db: mariadb
-            connection: mysql
+            connection: mariadb
             host: 127.0.0.1
             port: 3307
           - db: pgsql
@@ -59,7 +57,7 @@ jobs:
           --health-retries 5
 
       mysql:
-        image: mysql:8.4
+        image: mysql:8.5
         env:
           MYSQL_ROOT_PASSWORD: pixelfed
           MYSQL_DATABASE: pixelfed_test
@@ -111,7 +109,7 @@ jobs:
       - name: Setup PHP
         uses: shivammathur/setup-php@v2
         with:
-          php-version: '8.4'
+          php-version: '8.5'
           extensions: dom, curl, libxml, mbstring, zip, pcntl, pdo, sqlite, pdo_sqlite, mysql, pdo_mysql, pgsql, pdo_pgsql, bcmath, intl, gd, exif, iconv, redis
           coverage: none
           ini-values: memory_limit=512M
@@ -120,8 +118,8 @@ jobs:
         uses: actions/cache@v6
         with:
           path: vendor
-          key: composer-8.4-${{ hashFiles('composer.lock') }}
-          restore-keys: composer-8.4-
+          key: composer-8.5-${{ hashFiles('composer.lock') }}
+          restore-keys: composer-8.5-
 
       - name: Install Composer dependencies
         continue-on-error: true
@@ -154,6 +152,10 @@ jobs:
           DB_PASSWORD: pixelfed
           REDIS_HOST: 127.0.0.1
           REDIS_PORT: 6379
+          # Unique Redis key prefix per matrix entry so cache/queue keys never
+          # collide across databases (the config default derives the prefix
+          # from APP_NAME, which is identical for every entry).
+          REDIS_PREFIX: pixelfed-test-${{ matrix.db }}-
         # `|| true` guarantees a 0 exit code even when the suite fails, so this
         # experimental job always reports success and never affects the score.
         run: vendor/bin/pest --compact || true
