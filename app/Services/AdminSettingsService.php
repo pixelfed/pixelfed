@@ -142,6 +142,7 @@ class AdminSettingsService
             'captcha_turnstile_secret' => self::maskSecret(config_cache('captcha.turnstile.secret')),
             'captcha_turnstile_sitekey' => config_cache('captcha.turnstile.sitekey'),
             'captcha_cap_endpoint' => config_cache('captcha.cap.endpoint'),
+            'captcha_cap_sitekey' => config_cache('captcha.cap.sitekey'),
             'captcha_cap_secret' => self::maskSecret(config_cache('captcha.cap.secret')),
             'custom_emoji_enabled' => (bool) config_cache('federation.custom_emoji.enabled'),
         ];

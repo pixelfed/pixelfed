@@ -115,6 +115,7 @@ class ConfigCacheService
                     'captcha.turnstile.secret',
                     'captcha.turnstile.sitekey',
                     'captcha.cap.endpoint',
+                    'captcha.cap.sitekey',
                     'captcha.cap.secret',
                     'captcha.active.login',
                     'captcha.active.register',

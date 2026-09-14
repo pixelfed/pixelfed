@@ -10,7 +10,12 @@ use LaravelCap\Cap;
  * Cap driver (self-hosted proof-of-work CAPTCHA).
  *
  * Wraps the oliweb/laravel-cap package for verification, and renders the
- * locally-published widget (public/vendor/cap/) so no external CDN is used.
+ * @cap.js/widget from the jsDelivr CDN.
+ *
+ * The full API endpoint the widget and verifier talk to is composed from a base
+ * URL (captcha.cap.endpoint) plus the site key (captcha.cap.sitekey):
+ *
+ *     https://cap.example.com  +  3c87a0e810  =>  https://cap.example.com/3c87a0e810/
  *
  * @see https://github.com/oliweb-ch/laravel-cap
  */
@@ -30,12 +35,31 @@ class CapDriver implements CaptchaDriver
     public function isConfigured(): bool
     {
         return ! empty(config_cache('captcha.cap.endpoint'))
+            && ! empty(config_cache('captcha.cap.sitekey'))
             && ! empty(config_cache('captcha.cap.secret'));
     }
 
     public function responseField(): string
     {
         return (string) config('captcha.cap.token_field', 'cap-token');
+    }
+
+    /**
+     * Compose the full Cap API endpoint: "{base}/{sitekey}/".
+     *
+     * The base URL is the instance origin without the site key. The site key is
+     * appended as a path segment with a trailing slash (required by Cap).
+     */
+    public function apiEndpoint(): string
+    {
+        $base = rtrim(trim((string) config_cache('captcha.cap.endpoint')), '/');
+        $sitekey = trim((string) config_cache('captcha.cap.sitekey'), '/ ');
+
+        if ($base === '' || $sitekey === '') {
+            return '';
+        }
+
+        return $base.'/'.$sitekey.'/';
     }
 
     public function verify(array $input): bool
@@ -46,8 +70,13 @@ class CapDriver implements CaptchaDriver
             return false;
         }
 
+        $endpoint = $this->apiEndpoint();
+        if ($endpoint === '') {
+            return false;
+        }
+
         $cap = new Cap(app(HttpFactory::class), [
-            'endpoint' => config_cache('captcha.cap.endpoint'),
+            'endpoint' => $endpoint,
             'secret' => config_cache('captcha.cap.secret'),
             'timeout' => (int) config('captcha.cap.timeout', 5),
             'fail_open' => (bool) config('captcha.cap.fail_open', false),
@@ -58,7 +87,7 @@ class CapDriver implements CaptchaDriver
 
     public function render(array $attributes = []): string
     {
-        $endpoint = e((string) config_cache('captcha.cap.endpoint'));
+        $endpoint = e($this->apiEndpoint());
         $field = e($this->responseField());
 
         $attrs = '';

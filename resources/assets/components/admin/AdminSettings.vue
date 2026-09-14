@@ -460,15 +460,26 @@
 
                                                 <!-- Cap credentials -->
                                                 <div class="row" v-else-if="platform.captcha_driver === 'cap'">
-                                                    <div class="col-12 col-md-6">
+                                                    <div class="col-12">
                                                         <div class="form-group my-1">
                                                             <label class="text-muted small">Cap Endpoint</label>
                                                             <input
                                                                 type="text"
                                                                 class="form-control"
                                                                 name="captcha_cap_endpoint"
-                                                                placeholder="https://cap.example.com/your-site-key/"
+                                                                placeholder="https://cap.example.com"
                                                                 v-model="platform.captcha_cap_endpoint">
+                                                            <small class="form-text text-muted">Base URL of your Cap instance, without the site key.</small>
+                                                        </div>
+                                                    </div>
+                                                    <div class="col-12 col-md-6">
+                                                        <div class="form-group my-1">
+                                                            <label class="text-muted small">Cap Sitekey</label>
+                                                            <input
+                                                                type="text"
+                                                                class="form-control"
+                                                                name="captcha_cap_sitekey"
+                                                                v-model="platform.captcha_cap_sitekey">
                                                         </div>
                                                     </div>
                                                     <div class="col-12 col-md-6">
@@ -1496,6 +1507,7 @@
                     captcha_turnstile_secret: this.platform.captcha_turnstile_secret,
                     captcha_turnstile_sitekey: this.platform.captcha_turnstile_sitekey,
                     captcha_cap_endpoint: this.platform.captcha_cap_endpoint,
+                    captcha_cap_sitekey: this.platform.captcha_cap_sitekey,
                     captcha_cap_secret: this.platform.captcha_cap_secret,
                     captcha_on_login: this.platform.captcha_on_login,
                     captcha_on_register: this.platform.captcha_on_register,

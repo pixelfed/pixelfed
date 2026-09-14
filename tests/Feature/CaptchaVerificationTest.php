@@ -2,6 +2,7 @@
 
 namespace Tests\Feature;
 
+use App\Services\Captcha\CapDriver;
 use App\Services\Captcha\TurnstileDriver;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Validator;
@@ -10,6 +11,10 @@ use Tests\TestCase;
 
 class CaptchaVerificationTest extends TestCase
 {
+    // ---------------------------------------------------------------------
+    // captcha_verify validation rule (driver-agnostic)
+    // ---------------------------------------------------------------------
+
     #[Test]
     public function captcha_verify_rule_fails_when_token_is_missing(): void
     {
@@ -71,20 +76,80 @@ class CaptchaVerificationTest extends TestCase
     }
 
     #[Test]
+    public function captcha_verify_rule_uses_the_active_driver_field(): void
+    {
+        // With the cap driver active, the rule should validate against the
+        // cap-token field pulled from the request, not the attribute name.
+        config([
+            'captcha.driver' => 'cap',
+            'captcha.cap.endpoint' => 'https://cap.example.com',
+            'captcha.cap.sitekey' => 'abc',
+            'captcha.cap.secret' => 'sk',
+        ]);
+        $this->app->forgetInstance('captcha.manager');
+
+        Http::fake([
+            'cap.example.com/*' => Http::response(['success' => true], 200),
+        ]);
+
+        $validator = Validator::make(
+            ['cap-token' => 'tok'],
+            ['cap-token' => 'required|captcha_verify']
+        );
+
+        $this->assertTrue($validator->passes());
+    }
+
+    // ---------------------------------------------------------------------
+    // Turnstile driver verify()
+    // ---------------------------------------------------------------------
+
+    #[Test]
+    public function turnstile_verify_returns_false_for_empty_token_without_calling_out(): void
+    {
+        config(['captcha.turnstile.secret' => 'sekret']);
+        Http::fake();
+
+        $this->assertFalse((new TurnstileDriver)->verify([]));
+        $this->assertFalse((new TurnstileDriver)->verify(['cf-turnstile-response' => '']));
+
+        Http::assertNothingSent();
+    }
+
+    #[Test]
+    public function turnstile_verify_true_on_success_response(): void
+    {
+        config(['captcha.turnstile.secret' => 'sekret']);
+        Http::fake([
+            'challenges.cloudflare.com/*' => Http::response(['success' => true], 200),
+        ]);
+
+        $this->assertTrue((new TurnstileDriver)->verify(['cf-turnstile-response' => 'tok']));
+    }
+
+    #[Test]
+    public function turnstile_verify_false_on_unsuccessful_response(): void
+    {
+        config(['captcha.turnstile.secret' => 'sekret']);
+        Http::fake([
+            'challenges.cloudflare.com/*' => Http::response(['success' => false, 'error-codes' => ['bad']], 200),
+        ]);
+
+        $this->assertFalse((new TurnstileDriver)->verify(['cf-turnstile-response' => 'tok']));
+    }
+
+    #[Test]
     public function turnstile_fail_open_lets_requests_through_on_network_error(): void
     {
         config([
             'captcha.turnstile.secret' => 'sekret',
             'captcha.turnstile.fail_open' => true,
         ]);
-
         Http::fake([
             'challenges.cloudflare.com/*' => Http::response('boom', 500),
         ]);
 
-        $driver = new TurnstileDriver;
-
-        $this->assertTrue($driver->verify(['cf-turnstile-response' => 'anything']));
+        $this->assertTrue((new TurnstileDriver)->verify(['cf-turnstile-response' => 'anything']));
     }
 
     #[Test]
@@ -94,21 +159,17 @@ class CaptchaVerificationTest extends TestCase
             'captcha.turnstile.secret' => 'sekret',
             'captcha.turnstile.fail_open' => false,
         ]);
-
         Http::fake([
             'challenges.cloudflare.com/*' => Http::response('boom', 500),
         ]);
 
-        $driver = new TurnstileDriver;
-
-        $this->assertFalse($driver->verify(['cf-turnstile-response' => 'anything']));
+        $this->assertFalse((new TurnstileDriver)->verify(['cf-turnstile-response' => 'anything']));
     }
 
     #[Test]
     public function turnstile_sends_secret_and_response(): void
     {
         config(['captcha.turnstile.secret' => 'my-secret']);
-
         Http::fake([
             'challenges.cloudflare.com/*' => Http::response(['success' => true], 200),
         ]);
@@ -120,5 +181,91 @@ class CaptchaVerificationTest extends TestCase
                 && $request['secret'] === 'my-secret'
                 && $request['response'] === 'my-token';
         });
+    }
+
+    // ---------------------------------------------------------------------
+    // Cap driver verify() — hits {endpoint}/{sitekey}/siteverify
+    // ---------------------------------------------------------------------
+
+    #[Test]
+    public function cap_verify_returns_false_for_empty_token(): void
+    {
+        config([
+            'captcha.cap.endpoint' => 'https://cap.example.com',
+            'captcha.cap.sitekey' => 'abc',
+            'captcha.cap.secret' => 'sk',
+        ]);
+        Http::fake();
+
+        $this->assertFalse((new CapDriver)->verify([]));
+        Http::assertNothingSent();
+    }
+
+    #[Test]
+    public function cap_verify_returns_false_when_not_configured(): void
+    {
+        config([
+            'captcha.cap.endpoint' => 'https://cap.example.com',
+            'captcha.cap.sitekey' => null, // missing -> apiEndpoint() empty
+            'captcha.cap.secret' => 'sk',
+        ]);
+        Http::fake();
+
+        $this->assertFalse((new CapDriver)->verify(['cap-token' => 'tok']));
+        Http::assertNothingSent();
+    }
+
+    #[Test]
+    public function cap_verify_posts_to_composed_siteverify_url(): void
+    {
+        config([
+            'captcha.cap.endpoint' => 'https://cap.example.com',
+            'captcha.cap.sitekey' => '3c87a0e810',
+            'captcha.cap.secret' => 'sk-secret',
+        ]);
+        Http::fake([
+            'cap.example.com/*' => Http::response(['success' => true], 200),
+        ]);
+
+        $this->assertTrue((new CapDriver)->verify(['cap-token' => 'the-token']));
+
+        Http::assertSent(function ($request) {
+            return $request->url() === 'https://cap.example.com/3c87a0e810/siteverify';
+        });
+    }
+
+    #[Test]
+    public function cap_verify_false_when_server_rejects(): void
+    {
+        config([
+            'captcha.cap.endpoint' => 'https://cap.example.com',
+            'captcha.cap.sitekey' => 'abc',
+            'captcha.cap.secret' => 'sk',
+        ]);
+        Http::fake([
+            'cap.example.com/*' => Http::response(['success' => false], 200),
+        ]);
+
+        $this->assertFalse((new CapDriver)->verify(['cap-token' => 'tok']));
+    }
+
+    #[Test]
+    public function cap_verify_uses_custom_token_field(): void
+    {
+        config([
+            'captcha.cap.endpoint' => 'https://cap.example.com',
+            'captcha.cap.sitekey' => 'abc',
+            'captcha.cap.secret' => 'sk',
+            'captcha.cap.token_field' => 'my-token',
+        ]);
+        Http::fake([
+            'cap.example.com/*' => Http::response(['success' => true], 200),
+        ]);
+
+        $driver = new CapDriver;
+
+        // The custom field carries the token; the default name is ignored.
+        $this->assertTrue($driver->verify(['my-token' => 'tok']));
+        $this->assertFalse($driver->verify(['cap-token' => 'tok']));
     }
 }

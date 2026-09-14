@@ -63,11 +63,13 @@ return [
     |--------------------------------------------------------------------------
     | Cap (self-hosted proof-of-work CAPTCHA)
     |--------------------------------------------------------------------------
-    | The endpoint must include the site key and a trailing slash, e.g.
-    | https://cap.example.com/your-site-key/
+    | The endpoint is the instance base URL WITHOUT the site key, e.g.
+    | https://cap.example.com. The site key is a separate value; the full API
+    | endpoint (https://cap.example.com/your-site-key/) is composed by CapDriver.
     */
     'cap' => [
         'endpoint' => env('CAP_ENDPOINT'),
+        'sitekey' => env('CAP_SITEKEY'),
         'secret' => env('CAP_SECRET'),
         'token_field' => env('CAP_TOKEN_FIELD', 'cap-token'),
         'timeout' => (int) env('CAP_TIMEOUT', 5),

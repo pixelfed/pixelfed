@@ -733,10 +733,13 @@ trait AdminSettingsController
                 ConfigCacheService::put('captcha.turnstile.sitekey', $request->input('captcha_turnstile_sitekey'));
             }
 
-            // Cap credentials (endpoint is public, store as-is when present)
+            // Cap credentials (endpoint + sitekey are public, store as-is)
             $putIfChanged('captcha.cap.secret', $request->input('captcha_cap_secret'));
             if ($request->filled('captcha_cap_endpoint')) {
                 ConfigCacheService::put('captcha.cap.endpoint', $request->input('captcha_cap_endpoint'));
+            }
+            if ($request->filled('captcha_cap_sitekey')) {
+                ConfigCacheService::put('captcha.cap.sitekey', $request->input('captcha_cap_sitekey'));
             }
 
             ConfigCacheService::put('captcha.active.login', $request->boolean('captcha_on_login'));
@@ -768,6 +771,7 @@ trait AdminSettingsController
             'captcha_turnstile_secret' => $request->input('captcha_turnstile_secret'),
             'captcha_turnstile_sitekey' => $request->input('captcha_turnstile_sitekey'),
             'captcha_cap_endpoint' => $request->input('captcha_cap_endpoint'),
+            'captcha_cap_sitekey' => $request->input('captcha_cap_sitekey'),
             'captcha_cap_secret' => $request->input('captcha_cap_secret'),
             'custom_emoji_enabled' => $request->boolean('custom_emoji_enabled'),
         ];
