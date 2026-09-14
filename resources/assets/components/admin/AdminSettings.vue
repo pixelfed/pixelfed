@@ -438,22 +438,22 @@
                                                 <div class="row" v-else-if="platform.captcha_driver === 'turnstile'">
                                                     <div class="col-12 col-md-6">
                                                         <div class="form-group my-1">
-                                                            <label class="text-muted small">Turnstile Secret</label>
-                                                            <input
-                                                                type="text"
-                                                                class="form-control"
-                                                                name="captcha_turnstile_secret"
-                                                                v-model="platform.captcha_turnstile_secret">
-                                                        </div>
-                                                    </div>
-                                                    <div class="col-12 col-md-6">
-                                                        <div class="form-group my-1">
                                                             <label class="text-muted small">Turnstile Sitekey</label>
                                                             <input
                                                                 type="text"
                                                                 class="form-control"
                                                                 name="captcha_turnstile_sitekey"
                                                                 v-model="platform.captcha_turnstile_sitekey">
+                                                        </div>
+                                                    </div>
+                                                    <div class="col-12 col-md-6">
+                                                        <div class="form-group my-1">
+                                                            <label class="text-muted small">Turnstile Secret</label>
+                                                            <input
+                                                                type="text"
+                                                                class="form-control"
+                                                                name="captcha_turnstile_secret"
+                                                                v-model="platform.captcha_turnstile_secret">
                                                         </div>
                                                     </div>
                                                 </div>
