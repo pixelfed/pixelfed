@@ -61,8 +61,7 @@ return [
     | Cap (self-hosted proof-of-work CAPTCHA)
     |--------------------------------------------------------------------------
     | The endpoint is the instance base URL WITHOUT the site key, e.g.
-    | https://cap.example.com. The site key is a separate value; the full API
-    | endpoint (https://cap.example.com/your-site-key/) is composed by CapDriver.
+    | https://cap.example.com. The site key/secret are separate values;
     */
     'cap' => [
         'endpoint' => env('CAPTCHA_CAP_ENDPOINT'),
