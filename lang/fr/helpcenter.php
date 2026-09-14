@@ -1,6 +1,7 @@
 <?php
 
 return [
+
     'helpcenter' => 'Centre d\'aide',
     'whatsnew' => 'Ce qui est nouveau',
 
@@ -23,4 +24,5 @@ return [
     'dataPolicy' => 'Politique en matière de données',
 
     'taggingPeople' => 'Mentionner des personnes',
+
 ];
