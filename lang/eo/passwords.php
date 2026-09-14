@@ -13,10 +13,10 @@ return [
     |
     */
 
-    'password' => 'Pasvortoj devas havi minimume ses signojn kaj kongrui kun la konfirmo.',
-    'reset' => 'Via pasvorto restarigis!',
-    'sent' => 'Se via retadreso ekzistas en nia datumbazo, tiam vi ricevos pasvort-reakiran ligilon en via retadreso post nelonge. Bonvolu, kontrolu vian spamujon se vi ne ricevis.',
-    'token' => 'Ĉi tiu pasvort-reakiran ligilon ne validas.',
-    'user' => 'Se via retadreso ekzistas en nia datumbazo, tiam vi ricevos pasvort-reakiran ligilon en via retadreso post nelonge. Bonvolu, kontrolu vian spamujon se vi ne ricevis.',
+    'password' => '',
+    'reset' => '',
+    'sent' => '',
+    'token' => '',
+    'user' => '',
 
 ];
