@@ -17,8 +17,40 @@ class CaptchaServiceProvider extends ServiceProvider
 
     public function boot(): void
     {
+        $this->hydrateHcaptchaConfig();
         $this->registerValidationRule();
         $this->registerBladeDirectives();
+    }
+
+    /**
+     * The buzz/laravel-h-captcha package reads its config at the TOP LEVEL of
+     * the "captcha" config (captcha.secret, captcha.sitekey, captcha.http_client,
+     * captcha.options, captcha.attributes) via the plain config repository — it
+     * does not consult the DB-backed config cache.
+     *
+     * We keep all hCaptcha config under captcha.hcaptcha.*, so hydrate the
+     * top-level keys the package expects here. Secret/sitekey use config_cache()
+     * so admin-panel values (not just .env) are honored; the static widget
+     * options come straight from the config file.
+     */
+    private function hydrateHcaptchaConfig(): void
+    {
+        $secret = config_cache('captcha.hcaptcha.secret');
+        $sitekey = config_cache('captcha.hcaptcha.sitekey');
+
+        if (! empty($secret)) {
+            config(['captcha.secret' => $secret]);
+        }
+
+        if (! empty($sitekey)) {
+            config(['captcha.sitekey' => $sitekey]);
+        }
+
+        config([
+            'captcha.http_client' => config('captcha.hcaptcha.http_client'),
+            'captcha.options' => config('captcha.hcaptcha.options'),
+            'captcha.attributes' => config('captcha.hcaptcha.attributes'),
+        ]);
     }
 
     /**

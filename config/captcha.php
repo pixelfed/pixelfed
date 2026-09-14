@@ -24,27 +24,24 @@ return [
     |--------------------------------------------------------------------------
     | hCaptcha
     |--------------------------------------------------------------------------
-    | Canonical, provider-namespaced credentials used throughout the app.
+    | Canonical, provider-namespaced hCaptcha config used throughout the app.
+    |
+    | The buzz/laravel-h-captcha package reads these values at the top level of
+    | the "captcha" config (captcha.secret, captcha.sitekey, captcha.http_client,
+    | captcha.options, captcha.attributes). CaptchaServiceProvider hydrates those
+    | top-level keys from this block at boot, so everything lives here.
     */
     'hcaptcha' => [
-        'secret' => env('CAPTCHA_SECRET', 'default_secret'),
-        'sitekey' => env('CAPTCHA_SITEKEY', 'default_sitekey'),
-    ],
-
-    /*
-    | The top-level secret/sitekey keys below are what the buzz/laravel-h-captcha
-    | package reads internally (config('captcha.secret') / config('captcha.sitekey')).
-    | They mirror captcha.hcaptcha.* and are kept in sync when settings are saved.
-    */
-    'secret' => env('CAPTCHA_SECRET', 'default_secret'),
-    'sitekey' => env('CAPTCHA_SITEKEY', 'default_sitekey'),
-    'http_client' => HttpClient::class,
-    'options' => [
-        'multiple' => false,
-        'lang' => app()->getLocale(),
-    ],
-    'attributes' => [
-        'theme' => 'light',
+        'secret' => env('CAPTCHA_H_SECRET', 'default_secret'),
+        'sitekey' => env('CAPTCHA_H_SITEKEY', 'default_sitekey'),
+        'http_client' => HttpClient::class,
+        'options' => [
+            'multiple' => false,
+            'lang' => app()->getLocale(),
+        ],
+        'attributes' => [
+            'theme' => 'light',
+        ],
     ],
 
     /*

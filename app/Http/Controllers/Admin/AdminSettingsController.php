@@ -718,14 +718,10 @@ trait AdminSettingsController
             };
 
             // hCaptcha credentials. Persist to the canonical captcha.hcaptcha.*
-            // keys and mirror to the top-level keys the buzz/laravel-h-captcha
-            // package reads internally.
-            $hcaptchaSecret = $request->input('captcha_hcaptcha_secret');
-            $hcaptchaSitekey = $request->input('captcha_hcaptcha_sitekey');
-            $putIfChanged('captcha.hcaptcha.secret', $hcaptchaSecret);
-            $putIfChanged('captcha.hcaptcha.sitekey', $hcaptchaSitekey);
-            $putIfChanged('captcha.secret', $hcaptchaSecret);
-            $putIfChanged('captcha.sitekey', $hcaptchaSitekey);
+            // keys. CaptchaServiceProvider hydrates the top-level captcha.secret
+            // / captcha.sitekey that the buzz/laravel-h-captcha package reads.
+            $putIfChanged('captcha.hcaptcha.secret', $request->input('captcha_hcaptcha_secret'));
+            $putIfChanged('captcha.hcaptcha.sitekey', $request->input('captcha_hcaptcha_sitekey'));
 
             // Turnstile credentials (sitekey is public, store as-is when present)
             $putIfChanged('captcha.turnstile.secret', $request->input('captcha_turnstile_secret'));

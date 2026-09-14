@@ -10,6 +10,7 @@ use LaravelCap\Cap;
  * Cap driver (self-hosted proof-of-work CAPTCHA).
  *
  * Wraps the oliweb/laravel-cap package for verification, and renders the
+ *
  * @cap.js/widget from the jsDelivr CDN.
  *
  * The full API endpoint the widget and verifier talk to is composed from a base
