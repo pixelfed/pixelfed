@@ -2,34 +2,34 @@
 
 return [
 
-    'verifyYourEmailAddress' => ' - Verify Your Email Address',
-    'loginTitle' => 'Account Login',
-    'failed' => 'These credentials do not match our records.',
-    'throttle' => 'Too many login attempts. Please try again in :seconds seconds.',
-    'password' => 'Password',
-    'remember' => 'Remember Me',
-    'forgot' => 'Forgot Password',
-    'login' => 'Login',
+    'verifyYourEmailAddress' => ' - Verifique seu endereço de e-mail',
+    'loginTitle' => 'Acessar conta',
+    'failed' => 'As credenciais introduzidas não correspondem aos nossos registos.',
+    'throttle' => 'Varias tentativas de login. Tente novamente em :seconds segundos.',
+    'password' => 'Senha',
+    'remember' => 'Lembrar-Me',
+    'forgot' => 'Esqueceu a senha? ',
+    'login' => 'Entrar',
 
-    'register' => 'Register',
-    'reset' => 'Password Reset',
+    'register' => 'Cadastrar',
+    'reset' => 'Recuperar Senha',
 
-    'name' => 'Name',
-    'username' => 'Username',
-    'confirm-password' => 'Confirm Password',
+    'name' => 'Nome',
+    'username' => 'Usuário',
+    'confirm-password' => 'Confrime a senha',
 
-    'age' => 'I am at least 16 years old',
-    'terms' => 'By signing up, you agree to our <a href="'.route('site.terms').'" class="font-weight-bold text-dark">Terms of Use</a> and <a href="'.route('site.privacy').'" class="font-weight-bold text-dark">Privacy Policy</a>.',
+    'age' => 'Eu tenho pelo menos 16 anos',
+    'terms' => 'Ao Cadastrar, você concorda com nossos termos <a href="'.route('site.terms').'" class="font-weight-bold text-dark">Termos de Uso</a> e <a href="'.route('site.privacy').'" class="font-weight-bold text-dark">Politica de Privacidade</a>.',
 
-    'emailAddress' => 'E-Mail Address',
+    'emailAddress' => 'Endereço de Email',
     'email' => 'E-Mail',
     'forgotEmail' => 'Forgot E-Mail',
 
-    'registerTitle' => 'Register a new account',
+    'registerTitle' => 'Cadastrar uma nova conta',
 
-    'sendReset' => 'Send Password Reset Link',
+    'sendReset' => 'Enviar Link de Recuperação de Senha',
     'backLogin' => 'Back to Login',
 
-    'signInMastodon' => 'Sign-in with Mastodon',
+    'signInMastodon' => 'Entrar com Mastodon',
 
 ];
