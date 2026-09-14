@@ -1,14 +1,15 @@
 <?php
 
 return [
+
     'helpcenter' => 'Centre d\'aide',
     'whatsnew' => 'Ce qui est nouveau',
 
     'gettingStarted' => 'Débuter',
     'sharingMedia' => 'Partager du contenu',
     'profile' => 'Profil',
-    'stories' => 'Stories',
-    'hashtags' => 'Hashtags',
+    'stories' => '',
+    'hashtags' => '',
     'discover' => 'Découvrir',
     'directMessages' => 'Messages Directs',
     'timelines' => 'Chronologies',
@@ -23,4 +24,5 @@ return [
     'dataPolicy' => 'Politique en matière de données',
 
     'taggingPeople' => 'Mentionner des personnes',
+
 ];
