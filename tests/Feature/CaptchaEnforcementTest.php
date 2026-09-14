@@ -5,7 +5,9 @@ namespace Tests\Feature;
 use App\Models\User;
 use Illuminate\Foundation\Testing\LazilyRefreshDatabase;
 use Illuminate\Support\Facades\Http;
+use Illuminate\Support\Facades\Mail;
 use PHPUnit\Framework\Attributes\Test;
+use Spatie\Honeypot\ProtectAgainstSpam;
 use Tests\TestCase;
 
 /**
@@ -144,7 +146,7 @@ class CaptchaEnforcementTest extends TestCase
             'captcha.active.register' => true,
             'pixelfed.open_registration' => true,
         ]);
-        $this->withoutMiddleware(\Spatie\Honeypot\ProtectAgainstSpam::class);
+        $this->withoutMiddleware(ProtectAgainstSpam::class);
 
         $response = $this->postJson('/register', [
             'agecheck' => '1',
@@ -166,7 +168,7 @@ class CaptchaEnforcementTest extends TestCase
             'pixelfed.open_registration' => true,
         ]);
         $this->fakeCaptchaSuccess();
-        $this->withoutMiddleware(\Spatie\Honeypot\ProtectAgainstSpam::class);
+        $this->withoutMiddleware(ProtectAgainstSpam::class);
 
         $response = $this->postJson('/register', [
             'agecheck' => '1',
@@ -182,13 +184,13 @@ class CaptchaEnforcementTest extends TestCase
     }
 
     // ---------------------------------------------------------------------
-    // Forgot password (send reset link) — surface: forgotpassword
+    // Forgot password (send reset link) — surface: forgot_password
     // ---------------------------------------------------------------------
 
     #[Test]
     public function forgot_password_is_blocked_when_captcha_token_is_missing(): void
     {
-        config(['captcha.active.forgotpassword' => true]);
+        config(['captcha.active.forgot_password' => true]);
 
         $response = $this->postJson('/password/email', [
             'email' => 'someone@example.com',
@@ -201,7 +203,7 @@ class CaptchaEnforcementTest extends TestCase
     #[Test]
     public function forgot_password_passes_captcha_with_a_valid_token(): void
     {
-        config(['captcha.active.forgotpassword' => true]);
+        config(['captcha.active.forgot_password' => true]);
         $this->fakeCaptchaSuccess();
 
         $response = $this->postJson('/password/email', [
@@ -261,7 +263,7 @@ class CaptchaEnforcementTest extends TestCase
             'security.forgot-email.enabled' => true,
         ]);
         $this->fakeCaptchaSuccess();
-        \Illuminate\Support\Facades\Mail::fake();
+        Mail::fake();
         $user = User::factory()->create();
 
         // Success path redirects (not JSON); assert the captcha cleared, i.e. the

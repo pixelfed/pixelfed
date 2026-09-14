@@ -32,7 +32,7 @@ class CaptchaAdminSettingsTest extends TestCase
         $this->assertSame('turnstile', $platform['captcha_driver']);
         $this->assertTrue($platform['captcha_on_login']);
         $this->assertFalse($platform['captcha_on_register']);
-        $this->assertTrue($platform['captcha_on_forgotpassword']);
+        $this->assertTrue($platform['captcha_on_forgot_password']);
         $this->assertFalse($platform['captcha_on_password_reset']);
         $this->assertTrue($platform['captcha_on_forgot_email']);
         $this->assertTrue($platform['captcha_on_curated_register']);
