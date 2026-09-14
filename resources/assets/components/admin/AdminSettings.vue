@@ -495,7 +495,7 @@
                                                 </div>
                                                 <hr class="mt-2 mb-4">
                                                 <div class="row">
-                                                    <div class="col-12 col-lg-6">
+                                                    <div class="col-12 col-lg-6 mb-3">
                                                         <div class="custom-control custom-checkbox">
                                                             <input
                                                                 type="checkbox"
@@ -506,7 +506,7 @@
                                                             <label class="custom-control-label font-weight-bold" for="captcha_on_login">Login Captcha</label>
                                                         </div>
                                                     </div>
-                                                    <div class="col-12 col-lg-6">
+                                                    <div class="col-12 col-lg-6 mb-3">
                                                         <div class="custom-control custom-checkbox">
                                                             <input
                                                                 type="checkbox"
@@ -517,7 +517,7 @@
                                                             <label class="custom-control-label font-weight-bold" for="captcha_on_register">Register Captcha</label>
                                                         </div>
                                                     </div>
-                                                    <div class="col-12 col-lg-6">
+                                                    <div class="col-12 col-lg-6 mb-3">
                                                         <div class="custom-control custom-checkbox">
                                                             <input
                                                                 type="checkbox"
@@ -528,7 +528,7 @@
                                                             <label class="custom-control-label font-weight-bold" for="captcha_on_forgot_password">Forgot Password Captcha</label>
                                                         </div>
                                                     </div>
-                                                    <div class="col-12 col-lg-6">
+                                                    <div class="col-12 col-lg-6 mb-3">
                                                         <div class="custom-control custom-checkbox">
                                                             <input
                                                                 type="checkbox"
@@ -539,7 +539,7 @@
                                                             <label class="custom-control-label font-weight-bold" for="captcha_on_password_reset">Password Reset Captcha</label>
                                                         </div>
                                                     </div>
-                                                    <div class="col-12 col-lg-6">
+                                                    <div class="col-12 col-lg-6 mb-3">
                                                         <div class="custom-control custom-checkbox">
                                                             <input
                                                                 type="checkbox"
@@ -550,7 +550,7 @@
                                                             <label class="custom-control-label font-weight-bold" for="captcha_on_curated_register">Curated Register Captcha</label>
                                                         </div>
                                                     </div>
-                                                    <div class="col-12 col-lg-6">
+                                                    <div class="col-12 col-lg-6 mb-3">
                                                         <div class="custom-control custom-checkbox">
                                                             <input
                                                                 type="checkbox"
