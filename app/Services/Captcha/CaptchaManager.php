@@ -64,8 +64,8 @@ class CaptchaManager extends Manager
      * Whether captcha should be enforced on a given surface.
      *
      * Requires the global toggle plus the per-surface "active" flag. Supported
-     * surfaces: login, register, forgotpassword, password_reset,
-     * curated_register.
+     * surfaces: login, register, forgot_password, password_reset,
+     * forgot_email, curated_register.
      */
     public function activeOn(string $surface): bool
     {

@@ -134,7 +134,7 @@ class AdminSettingsService
             'captcha_driver' => config_cache('captcha.driver') ?: config('captcha.driver', 'hcaptcha'),
             'captcha_on_login' => (bool) config_cache('captcha.active.login'),
             'captcha_on_register' => (bool) config_cache('captcha.active.register'),
-            'captcha_on_forgotpassword' => (bool) config_cache('captcha.active.forgot_password'),
+            'captcha_on_forgot_password' => (bool) config_cache('captcha.active.forgot_password'),
             'captcha_on_password_reset' => (bool) config_cache('captcha.active.password_reset'),
             'captcha_on_forgot_email' => (bool) config_cache('captcha.active.forgot_email'),
             'captcha_on_curated_register' => (bool) config_cache('captcha.active.curated_register'),

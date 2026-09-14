@@ -521,11 +521,11 @@
                                                         <div class="custom-control custom-checkbox">
                                                             <input
                                                                 type="checkbox"
-                                                                name="captcha_on_forgotpassword"
+                                                                name="captcha_on_forgot_password"
                                                                 class="custom-control-input"
-                                                                id="captcha_on_forgotpassword"
-                                                                v-model="platform.captcha_on_forgotpassword">
-                                                            <label class="custom-control-label font-weight-bold" for="captcha_on_forgotpassword">Forgot Password Captcha</label>
+                                                                id="captcha_on_forgot_password"
+                                                                v-model="platform.captcha_on_forgot_password">
+                                                            <label class="custom-control-label font-weight-bold" for="captcha_on_forgot_password">Forgot Password Captcha</label>
                                                         </div>
                                                     </div>
                                                     <div class="col-12 col-lg-6">
@@ -1522,7 +1522,7 @@
                     captcha_cap_secret: this.platform.captcha_cap_secret,
                     captcha_on_login: this.platform.captcha_on_login,
                     captcha_on_register: this.platform.captcha_on_register,
-                    captcha_on_forgotpassword: this.platform.captcha_on_forgotpassword,
+                    captcha_on_forgot_password: this.platform.captcha_on_forgot_password,
                     captcha_on_password_reset: this.platform.captcha_on_password_reset,
                     captcha_on_forgot_email: this.platform.captcha_on_forgot_email,
                     captcha_on_curated_register: this.platform.captcha_on_curated_register,

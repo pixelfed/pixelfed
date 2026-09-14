@@ -65,7 +65,7 @@ class ForgotPasswordController extends Controller
         ];
         $messages = [];
 
-        if (app('captcha.manager')->activeOn('forgotpassword')) {
+        if (app('captcha.manager')->activeOn('forgot_password')) {
             $captchaField = app('captcha.manager')->active()->responseField();
             $rules[$captchaField] = 'required|captcha_verify';
             $messages[$captchaField] = 'Failed to validate the captcha.';

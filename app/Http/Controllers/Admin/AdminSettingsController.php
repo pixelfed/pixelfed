@@ -740,7 +740,7 @@ trait AdminSettingsController
 
             ConfigCacheService::put('captcha.active.login', $request->boolean('captcha_on_login'));
             ConfigCacheService::put('captcha.active.register', $request->boolean('captcha_on_register'));
-            ConfigCacheService::put('captcha.active.forgot_password', $request->boolean('captcha_on_forgotpassword'));
+            ConfigCacheService::put('captcha.active.forgot_password', $request->boolean('captcha_on_forgot_password'));
             ConfigCacheService::put('captcha.active.password_reset', $request->boolean('captcha_on_password_reset'));
             ConfigCacheService::put('captcha.active.forgot_email', $request->boolean('captcha_on_forgot_email'));
             ConfigCacheService::put('captcha.active.curated_register', $request->boolean('captcha_on_curated_register'));
@@ -760,7 +760,7 @@ trait AdminSettingsController
             'captcha_driver' => $request->input('captcha_driver', 'hcaptcha'),
             'captcha_on_login' => $request->boolean('captcha_on_login'),
             'captcha_on_register' => $request->boolean('captcha_on_register'),
-            'captcha_on_forgotpassword' => $request->boolean('captcha_on_forgotpassword'),
+            'captcha_on_forgot_password' => $request->boolean('captcha_on_forgot_password'),
             'captcha_on_password_reset' => $request->boolean('captcha_on_password_reset'),
             'captcha_on_forgot_email' => $request->boolean('captcha_on_forgot_email'),
             'captcha_on_curated_register' => $request->boolean('captcha_on_curated_register'),

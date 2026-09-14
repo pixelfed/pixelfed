@@ -1,6 +1,6 @@
 @props([
-    /* Surface name to gate on (login, register, forgotpassword, password_reset,
-       curated_register). Ignored when :show is passed explicitly. */
+    /* Surface name to gate on (login, register, forgot_password, password_reset,
+       forgot_email, curated_register). Ignored when :show is passed explicitly. */
     'surface' => null,
     /* Explicit visibility override for compound conditions (login triggers,
        curated registration). When null, visibility is derived from $surface. */

@@ -54,7 +54,7 @@
 	                            </div>
 	                        </div>
 
-							<x-captcha surface="forgotpassword" theme="dark" :label="true" :show-error="true" wrapperClass="d-flex flex-grow-1" />
+							<x-captcha surface="forgot_password" theme="dark" :label="true" :show-error="true" wrapperClass="d-flex flex-grow-1" />
 
 	                        <div class="form-group row pt-4 mb-0">
 	                            <div class="col-md-12">
