@@ -1821,16 +1821,16 @@
         },
         {
             "name": "intervention/image-driver-vips",
-            "version": "4.1.4",
+            "version": "4.1.5",
             "source": {
                 "type": "git",
                 "url": "https://github.com/Intervention/image-driver-vips.git",
-                "reference": "a097cc1fa54f2e3f651dffd70a1414c6ba1f21e6"
+                "reference": "e4c8e16714d46919b26163d3be067fb75d348671"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/Intervention/image-driver-vips/zipball/a097cc1fa54f2e3f651dffd70a1414c6ba1f21e6",
-                "reference": "a097cc1fa54f2e3f651dffd70a1414c6ba1f21e6",
+                "url": "https://api.github.com/repos/Intervention/image-driver-vips/zipball/e4c8e16714d46919b26163d3be067fb75d348671",
+                "reference": "e4c8e16714d46919b26163d3be067fb75d348671",
                 "shasum": ""
             },
             "require": {
@@ -1875,7 +1875,7 @@
             ],
             "support": {
                 "issues": "https://github.com/Intervention/image-driver-vips/issues",
-                "source": "https://github.com/Intervention/image-driver-vips/tree/4.1.4"
+                "source": "https://github.com/Intervention/image-driver-vips/tree/4.1.5"
             },
             "funding": [
                 {
@@ -1891,7 +1891,7 @@
                     "type": "ko_fi"
                 }
             ],
-            "time": "2026-08-28T14:13:06+00:00"
+            "time": "2026-09-09T15:00:13+00:00"
         },
         {
             "name": "intervention/image-laravel",
