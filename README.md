@@ -42,7 +42,7 @@ Notice: We need to improve the ecosystem to test/validate the codebase to be dat
 
 Documentation for Pixelfed can be found on the [Pixelfed documentation website](https://docs.pixelfed.org/).
 
-## Host on your instance
+## Host your own instance with
 
 [![Install on YunoHost](https://user-images.githubusercontent.com/42862428/139559471-9495f1e9-e7a4-49f1-9a4b-675ddcc510a2.png "Install on YunoHost")](https://install-app.yunohost.org/?app=pixelfed)
 

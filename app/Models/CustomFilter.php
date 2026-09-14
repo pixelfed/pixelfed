@@ -72,7 +72,7 @@ class CustomFilter extends Model
         return $this->hasMany(CustomFilterKeyword::class);
     }
 
-    public function statuses()
+    public function statuses(): HasMany
     {
         return $this->hasMany(CustomFilterStatus::class);
     }
