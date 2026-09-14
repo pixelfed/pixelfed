@@ -31,10 +31,10 @@ Photo sharing the way it should be. Pixelfed lets your casual shots and creative
 </picture>
 </p>
 
-## Database Support
+## Database Support (Please report any regressions)
 * MySQL 9+ is officially supported (Strict mode is not default).
 * MariaDB 11+ is officially supported (Strict mode is default).
-* PostgreSQL 14+ is best effort _as of writing_. (Please report any regressions).
+* PostgreSQL 14+ is best effort _as of writing_.
 
 Notice: We need to improve the ecosystem to test/validate the codebase to be database agnostic, but this will require considerable engineering effort. Thank you for your understanding.
 
