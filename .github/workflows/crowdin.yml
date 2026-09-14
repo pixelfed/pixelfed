@@ -8,68 +8,26 @@ on:
     - cron: '0 3 * * *'
   workflow_dispatch:
 
-# Needed so the built-in GITHUB_TOKEN can push the l10n branch and open a PR.
-permissions:
-  contents: write
-  pull-requests: write
-
 jobs:
   synchronize-with-crowdin:
     runs-on: ubuntu-latest
-
-    env:
-      # Read by crowdin.yml (project_id_env / api_token_env).
-      CROWDIN_PROJECT_ID: ${{ secrets.CROWDIN_PROJECT_ID }}
-      CROWDIN_PERSONAL_TOKEN: ${{ secrets.CROWDIN_PERSONAL_TOKEN }}
-      L10N_BRANCH: l10n_crowdin_translations
-      BASE_BRANCH: staging
 
     steps:
       - name: Checkout
         uses: actions/checkout@v7
 
-      # The Crowdin CLI (official @crowdin/cli npm package) replaces the
-      # crowdin/github-action, which is blocked by the org's allowed-actions
-      # policy. Node is preinstalled on ubuntu-latest runners.
-      - name: Install Crowdin CLI
-        run: npm install -g @crowdin/cli
-
-      - name: Upload sources to Crowdin
-        run: crowdin upload sources --no-progress
-
-      - name: Download translations from Crowdin
-        run: crowdin download --no-progress
-
-      # Replicates the action's create_pull_request flow using the GitHub CLI
-      # (gh is preinstalled and GitHub-native, so it satisfies the policy).
-      # Only commits/opens a PR when translations actually changed.
-      - name: Create or update translations pull request
+      - name: Crowdin action
+        uses: crowdin/github-action@v3
+        with:
+          upload_sources: true
+          upload_translations: false
+          download_translations: true
+          localization_branch_name: l10n_crowdin_translations
+          create_pull_request: true
+          pull_request_title: 'New Crowdin Translations'
+          pull_request_body: 'New Crowdin translations by [Crowdin GH Action](https://github.com/crowdin/github-action)'
+          pull_request_base_branch_name: 'staging'
         env:
-          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        run: |
-          set -euo pipefail
-
-          if [ -z "$(git status --porcelain)" ]; then
-            echo "No translation changes to commit."
-            exit 0
-          fi
-
-          git config user.name "github-actions[bot]"
-          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-
-          git checkout -B "$L10N_BRANCH"
-          git add -A
-          git commit -m "New Crowdin Translations [ci skip]"
-          # Force-push the regenerated translations branch so reruns update in place.
-          git push --force origin "$L10N_BRANCH"
-
-          # Open a PR only if one is not already open for this branch.
-          if [ -z "$(gh pr list --head "$L10N_BRANCH" --base "$BASE_BRANCH" --state open --json number --jq '.[].number')" ]; then
-            gh pr create \
-              --base "$BASE_BRANCH" \
-              --head "$L10N_BRANCH" \
-              --title "New Crowdin Translations" \
-              --body "New Crowdin translations synced via the Crowdin CLI."
-          else
-            echo "An open translations PR already exists; branch updated."
-          fi
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          CROWDIN_PROJECT_ID: ${{ secrets.CROWDIN_PROJECT_ID }}
+          CROWDIN_PERSONAL_TOKEN: ${{ secrets.CROWDIN_PERSONAL_TOKEN }}
