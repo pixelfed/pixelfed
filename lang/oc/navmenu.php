@@ -1,10 +1,9 @@
 <?php
 
 return [
-
     'search' => 'Cercar',
     'home' => 'Acuèlh',
-    'local' => 'Local',
+    'local' => '',
     'network' => 'Malhum',
     'discover' => 'Descobrir',
     'viewMyProfile' => 'Veire mon perfil',
@@ -13,8 +12,8 @@ return [
     'publicTimeline' => 'Cronologia publica',
     'remoteFollow' => 'Seguir a distància',
     'settings' => 'Paramètres',
-    'admin' => 'Admin',
+    'admin' => '',
     'logout' => 'Desconnexion',
     'directMessages' => 'Messatges dirèctes',
-
+    'composePost' => '',
 ];
