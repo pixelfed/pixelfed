@@ -28,10 +28,10 @@ return [
         'next' => 'Siguiente',
         'close' => 'Cerrar',
         'clickHere' => 'haz clic aquí',
-
         'sensitive' => 'Sensible',
         'sensitiveContent' => 'Contenido Sensible',
         'sensitiveContentWarning' => 'Esta publicación podría contener contenido sensible',
+        'javascript' => '',
         'loading' => 'Cargando...',
         'continue' => 'Continuar',
     ],
@@ -61,6 +61,7 @@ return [
         'profile' => 'Perfil',
         'drive' => 'Multimedia',
         'settings' => 'Ajustes',
+        'appearance' => '',
         'compose' => 'Crear Nuevo',
         'logout' => 'Cerrar sesión',
         'createStory' => 'Crear Historia',
@@ -72,9 +73,11 @@ return [
         'privacy' => 'Privacidad',
         'terms' => 'Términos',
         'legalNotice' => 'Aviso Legal',
+        'mobileApps' => '',
 
         // Temporary links
         'backToPreviousDesign' => 'Volver al diseño anterior',
+
     ],
 
     'directMessages' => [
@@ -148,6 +151,7 @@ return [
 
         'emptyCollections' => 'Parece que no podemos encontrar ninguna colección',
         'emptyPosts' => 'Parece que no podemos encontrar ninguna publicación',
+
         'blocking' => 'Estás bloqueando esta cuenta',
         'sponsor' => 'Dona',
         'followYou' => 'Te Sigue',
@@ -274,6 +278,23 @@ return [
         'thanksMsg' => 'Gracias por el reporte, ¡personas como tú ayudan a mantener nuestra comunidad segura!',
         'contactAdminMsg' => 'Si quieres contactar un administrador sobre esta publicación o reporte',
     ],
+
+    'appearance' => [
+        'theme' => '',
+        'profileLayout' => '',
+        'compactPreviews' => '',
+        'loadComments' => '',
+        'hideStats' => '',
+
+        'auto' => '',
+        'lightMode' => '',
+        'darkMode' => '',
+
+        'grid' => '',
+        'masonry' => '',
+        'feed' => '',
+    ],
+
     'settings' => [
         'filters' => [
             'title' => 'Filtros',
@@ -290,7 +311,6 @@ return [
             'create_new_filter' => 'Crear nuevo Filtro',
             'filter_title' => 'Título del Filtro',
             'edit_filter' => 'Editar Filtro',
-            'create_filter' => 'Crear Filtro',
             'advance_mode' => 'Modo Avanzado',
             'simple_mode' => 'Modo Simple',
             'keywords' => 'Palabras clave',
@@ -320,6 +340,7 @@ return [
             'cutom' => 'Personalizado...',
             'enter_duration_in_seconds' => 'Introduce la duración en segundos',
             'save_changes' => 'Guardar Cambios',
+            'create_filter' => 'Crear Filtro',
             'name_your_filter' => 'Titula tu Filtro',
             'give_your_filter_a_name' => 'Da un nombre a tu filtro que te ayude a recordar el tipo de contenido.',
             'my_filter_name' => 'Título de mi Filtro',
@@ -347,5 +368,44 @@ return [
             'add_keyword' => 'Agregar palabra clave...',
             'enter_filter_title' => 'Introduce el título del filtro',
         ],
+
+    ],
+
+    'powered_by_pixelfed' => '',
+
+    'landing' => [
+        'login' => '',
+        'signup' => '',
+        'about' => '',
+        'directory' => '',
+        'explore' => '',
+        'decentralized_by_pixelfed' => '',
+        'posts' => '',
+        'active_users' => '',
+        'total_users' => '',
+        'managed_by' => '',
+        'server_rules' => '',
+        'supported_features' => '',
+        'features' => [
+            'photo_posts' => '',
+            'photo_albums' => '',
+            'photo_filters' => '',
+            'collections' => '',
+            'comments' => '',
+            'hashtags' => '',
+            'likes' => '',
+            'notifications' => '',
+            'shares' => '',
+            'share_up_to_n_photos' => '',
+            'share_up_to_n_photos_videos' => '',
+            'file_size' => '',
+            'federation' => '',
+            'mobile_app' => '',
+            'stories' => '',
+            'videos' => '',
+        ],
+        'discover_accounts' => '',
+        'nothing_to_show' => '',
+        'explore_trending' => '',
     ],
 ];
