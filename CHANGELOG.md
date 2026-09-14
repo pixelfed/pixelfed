@@ -2,7 +2,7 @@
 
 ## [Unreleased](https://github.com/pixelfed/pixelfed/compare/v0.12.11...dev)
 
-- coming soon
+- coming soon!
 
 ## [v0.12.10 (2026-09-11)](https://github.com/pixelfed/pixelfed/compare/v0.12.10...dev)
 
