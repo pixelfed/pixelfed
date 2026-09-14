@@ -78,15 +78,17 @@ jobs:
           platform=${{ matrix.platform }}
           echo "pair=${platform//\//-}" >> "$GITHUB_OUTPUT"
 
-      # Push each arch to the registry by digest only — no human-readable tag
-      # yet. Digests get stitched into one multi-arch manifest by the merge
-      # job below, which is what carries the real tags (v1.2.3, stable, etc).
       - name: Build and push (${{ matrix.platform }})
         id: build
         uses: docker/build-push-action@v6
         with:
           context: .
           platforms: ${{ matrix.platform }}
+          # Disable provenance/SBOM attestations. buildx attaches these as extra
+          # manifests with an "unknown/unknown" platform, which show up as noisy
+          # "unknown" entries in the GHCR package UI alongside amd64/arm64.
+          provenance: false
+          sbom: false
           outputs: type=image,name=${{ env.IMAGE_NAME }},push-by-digest=true,name-canonical=true,push=true
           cache-from: type=gha,scope=release-${{ steps.platform.outputs.pair }}
           cache-to: type=gha,mode=max,scope=release-${{ steps.platform.outputs.pair }}
