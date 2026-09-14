@@ -12,4 +12,10 @@ return [
 
     'status.disabled.header' => '個人檔案不可用',
     'status.disabled.body' => '抱歉，此個人檔案暫時不可用。請稍後再試。',
+
+    'block.domain.max' => 'Max limit of domain blocks reached! You can only block :max domains at a time. Ask your admin to adjust this limit.',
+
+    'mutedAccounts' => 'Muted Accounts',
+    'blockedAccounts' => 'Blocked Accounts',
+    'blockedDomains' => 'Blocked Domains',
 ];
