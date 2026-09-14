@@ -2,7 +2,7 @@
 
 return [
     'search' => 'Cerca',
-    'home' => 'Home',
+    'home' => '',
     'local' => 'Locale',
     'network' => 'Rete',
     'discover' => 'Esplora',
@@ -15,5 +15,5 @@ return [
     'admin' => 'Amministra',
     'logout' => 'Esci',
     'directMessages' => 'Messaggi Diretti',
-    'composePost' => 'Compose Post',
+    'composePost' => '',
 ];
