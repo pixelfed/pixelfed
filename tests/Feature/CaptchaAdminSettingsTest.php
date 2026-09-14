@@ -71,7 +71,8 @@ class CaptchaAdminSettingsTest extends TestCase
         $this->assertStringContainsString('*', $platform['captcha_turnstile_secret']);
         $this->assertStringContainsString('*', $platform['captcha_cap_secret']);
 
-        // Public keys returned as-is (turnstile sitekey is not masked).
+        // Sitekeys are public and returned as-is (never masked) for every provider.
+        $this->assertSame('publicsitekey123', $platform['captcha_hcaptcha_sitekey']);
         $this->assertSame('0xPUBLICKEY', $platform['captcha_turnstile_sitekey']);
     }
 

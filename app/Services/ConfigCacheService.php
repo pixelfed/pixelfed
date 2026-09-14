@@ -17,9 +17,6 @@ class ConfigCacheService
         'filesystems.disks.spaces.key',
         'filesystems.disks.spaces.secret',
         'captcha.hcaptcha.secret',
-        'captcha.hcaptcha.sitekey',
-        'captcha.secret',
-        'captcha.sitekey',
         'captcha.turnstile.secret',
         'captcha.cap.secret',
     ];
@@ -110,8 +107,6 @@ class ConfigCacheService
                     'captcha.driver',
                     'captcha.hcaptcha.secret',
                     'captcha.hcaptcha.sitekey',
-                    'captcha.secret',
-                    'captcha.sitekey',
                     'captcha.turnstile.secret',
                     'captcha.turnstile.sitekey',
                     'captcha.cap.endpoint',

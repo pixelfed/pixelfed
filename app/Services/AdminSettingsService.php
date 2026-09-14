@@ -138,7 +138,7 @@ class AdminSettingsService
             'captcha_on_password_reset' => (bool) config_cache('captcha.active.password_reset'),
             'captcha_on_curated_register' => (bool) config_cache('captcha.active.curated_register'),
             'captcha_hcaptcha_secret' => self::maskSecret(config_cache('captcha.hcaptcha.secret')),
-            'captcha_hcaptcha_sitekey' => self::maskSecret(config_cache('captcha.hcaptcha.sitekey')),
+            'captcha_hcaptcha_sitekey' => config_cache('captcha.hcaptcha.sitekey'),
             'captcha_turnstile_secret' => self::maskSecret(config_cache('captcha.turnstile.secret')),
             'captcha_turnstile_sitekey' => config_cache('captcha.turnstile.sitekey'),
             'captcha_cap_endpoint' => config_cache('captcha.cap.endpoint'),

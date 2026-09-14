@@ -24,7 +24,9 @@ class CaptchaManager extends Manager
      */
     public function getDefaultDriver(): string
     {
-        return (string) (config_cache('captcha.driver') ?: config('captcha.driver', 'hcaptcha'));
+        $driver = config_cache('captcha.driver') ?: config('captcha.driver');
+
+        return $driver ?: 'hcaptcha';
     }
 
     public function createHcaptchaDriver(): CaptchaDriver
