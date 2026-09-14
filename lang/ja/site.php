@@ -5,7 +5,7 @@ return [
     'about' => 'このサーバーについて',
     'help' => 'ヘルプ',
     'language' => '言語',
-    'fediverse' => 'Fediverse',
+    'fediverse' => '',
     'opensource' => 'オープンソース',
     'terms' => '利用規約',
     'privacy' => 'プライバシーポリシー',
