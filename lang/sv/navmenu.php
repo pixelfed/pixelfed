@@ -1,7 +1,6 @@
 <?php
 
 return [
-
     'search' => 'Sök',
     'home' => 'Hem',
     'local' => 'Lokal',
@@ -13,8 +12,8 @@ return [
     'publicTimeline' => 'Publik Tidslinje',
     'remoteFollow' => 'Remote-följ',
     'settings' => 'Inställningar',
-    'admin' => 'Admin',
+    'admin' => '',
     'logout' => 'Logga ut',
     'directMessages' => 'Meddelanden',
-
+    'composePost' => '',
 ];
