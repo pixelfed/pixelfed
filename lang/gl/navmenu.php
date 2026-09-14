@@ -3,7 +3,7 @@
 return [
     'search' => 'Buscar',
     'home' => 'Inicio',
-    'local' => 'Local',
+    'local' => '',
     'network' => 'Rede',
     'discover' => 'Descubrir',
     'viewMyProfile' => 'Ver perfil',
@@ -12,7 +12,7 @@ return [
     'publicTimeline' => 'Cronoloxía pública',
     'remoteFollow' => 'Seguimento remoto',
     'settings' => 'Axustes',
-    'admin' => 'Admin',
+    'admin' => '',
     'logout' => 'Desconectar',
     'directMessages' => 'Mensaxes directas',
     'composePost' => 'Publicar',
