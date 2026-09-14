@@ -2,42 +2,34 @@
 
 return [
 
-    /*
-    |--------------------------------------------------------------------------
-    | Authentication Language Lines
-    |--------------------------------------------------------------------------
-    |
-    | The following language lines are used during authentication for various
-    | messages that we need to display to the user. You are free to modify
-    | these language lines according to your application's requirements.
-    |
-    */
-    'loginTitle' => 'Acessar conta',
-    'failed' => 'As credenciais introduzidas não correspondem aos nossos registos.',
-    'throttle' => 'Varias tentativas de login. Tente novamente em :seconds segundos.',
-    'password' => 'Senha',
-    'remember' => 'Lembrar-Me',
-    'forgot' => 'Esqueceu a senha? ',
-    'login' => 'Entrar',
-    'reset' => 'Recuperar Senha',
-    'register' => 'Cadastrar',
+    'verifyYourEmailAddress' => '',
+    'loginTitle' => '',
+    'failed' => '',
+    'throttle' => '',
+    'password' => '',
+    'remember' => '',
+    'forgot' => '',
+    'login' => '',
 
-    'name' => 'Nome',
-    'username' => 'Usuário',
-    'confirm-password' => 'Confrime a senha',
+    'register' => '',
+    'reset' => '',
 
-    'age' => 'Eu tenho pelo menos 16 anos',
+    'name' => '',
+    'username' => '',
+    'confirm-password' => '',
 
-    'terms' => 'Ao Cadastrar, você concorda com nossos termos <a href="'.route('site.terms').'" class="font-weight-bold text-dark">Termos de Uso</a> e <a href="'.route('site.privacy').'" class="font-weight-bold text-dark">Politica de Privacidade</a>.',
+    'age' => '',
+    'terms' => ''.route('site.terms').''.route('site.privacy').'',
 
-    'emailAddress' => 'Endereço de Email',
+    'emailAddress' => '',
+    'email' => '',
+    'forgotEmail' => '',
 
-    'registerTitle' => 'Cadastrar uma nova conta',
+    'registerTitle' => '',
 
-    'sendReset' => 'Enviar Link de Recuperação de Senha',
-    'backLogin' => 'Back to Login',
+    'sendReset' => '',
+    'backLogin' => '',
 
-    'signInMastodon' => 'Entrar com Mastodon',
-    'verifyYourEmailAddress' => ' - Verifique seu endereço de e-mail',
+    'signInMastodon' => '',
 
 ];
