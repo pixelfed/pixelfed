@@ -3,6 +3,7 @@
 namespace App\Jobs\FollowPipeline;
 
 use App\Jobs\PushNotificationPipeline\FollowPushNotifyPipeline;
+use App\Jobs\PushNotificationPipeline\WebPushNotifyPipeline;
 use App\Models\Follower;
 use App\Models\Profile;
 use App\Models\User;
@@ -91,6 +92,12 @@ class FollowPipeline implements ShouldQueue
                     }
                 }
             }
+
+            // Independent of the Expo gateway above — Web Push subscriptions
+            // work whether or not this instance has
+            // NotificationAppGatewayService configured at all. No status id: a
+            // follow deep-links to the follower's profile.
+            WebPushNotifyPipeline::maybeDispatch($target->id, 'follow', $actor->username, $actor->id);
         }
     }
 }
