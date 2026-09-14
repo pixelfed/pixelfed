@@ -2,17 +2,6 @@
 
 return [
 
-    /*
-    |--------------------------------------------------------------------------
-    | Authentication Language Lines
-    |--------------------------------------------------------------------------
-    |
-    | The following language lines are used during authentication for various
-    | messages that we need to display to the user. You are free to modify
-    | these language lines according to your application's requirements.
-    |
-    */
-
     'verifyYourEmailAddress' => ' - メールアドレス認証',
     'loginTitle' => 'アカウントのログイン',
     'failed' => 'これらの認証情報は正しくありません。',
@@ -33,6 +22,8 @@ return [
     'terms' => 'アカウントを作成することで、<a href="'.route('site.terms').'" class="font-weight-bold text-dark">利用規約</a>と<a href="'.route('site.privacy').'" class="font-weight-bold text-dark">プライバシーポリシー</a>に同意したものと見なします。',
 
     'emailAddress' => 'メールアドレス',
+    'email' => '',
+    'forgotEmail' => '',
 
     'registerTitle' => '新規アカウントの作成',
 
