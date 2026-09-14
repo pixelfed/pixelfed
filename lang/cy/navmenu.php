@@ -1,7 +1,6 @@
 <?php
 
 return [
-
     'search' => 'Chwilio',
     'home' => 'Hafan',
     'local' => 'Lleol',
@@ -16,5 +15,5 @@ return [
     'admin' => 'Admin',
     'logout' => 'Allgofnodi',
     'directMessages' => 'Negeseuon Uniongyrchol',
-
+    'composePost' => 'Compose Post',
 ];
