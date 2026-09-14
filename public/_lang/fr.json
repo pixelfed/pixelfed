@@ -26,7 +26,8 @@
         "clickHere": "cliquez ici",
         "sensitive": "Sensible",
         "sensitiveContent": "Contenu sensible",
-        "sensitiveContentWarning": "Le contenu de cette publication peut \u00eatre sensible"
+        "sensitiveContentWarning": "Le contenu de cette publication peut \u00eatre sensible",
+        "javascript": "Activez JavaScript SVP pour consulter ce contenu."
     },
     "site": {
         "terms": "Conditions d'utilisation",
@@ -54,6 +55,7 @@
         "language": "Langue",
         "privacy": "Confidentialit\u00e9",
         "terms": "Conditions",
+        "mobileApps": "Applis mobiles",
         "backToPreviousDesign": "Revenir au design pr\u00e9c\u00e9dent"
     },
     "directMessages": {
@@ -180,5 +182,41 @@
         "grid": "Grille",
         "masonry": "Dallage",
         "feed": "Fil"
+    },
+    "powered_by_pixelfed": "Propuls\u00e9 par Pixelfed",
+    "landing": {
+        "login": "Se connecter",
+        "signup": "Cr\u00e9er un compte",
+        "about": "\u00c0 propos",
+        "directory": "Annuaire",
+        "explore": "Explorer",
+        "decentralized_by_pixelfed": "M\u00e9dia social d\u00e9centralis\u00e9 de partage de photo, propuls\u00e9 par <a href=\"https://pixelfed.org\" target=\"_blank\">Pixelfed</a>",
+        "posts": "Publications",
+        "active_users": "Utilisateurs actifs",
+        "total_users": "Utilisateurs au total",
+        "managed_by": "G\u00e9r\u00e9 par",
+        "server_rules": "R\u00e8gles du serveur",
+        "supported_features": "Fonctionnalit\u00e9s prises en charge",
+        "features": {
+            "photo_posts": "Publication de photos",
+            "photo_albums": "Albums photos",
+            "photo_filters": "Filtres",
+            "collections": "Collections",
+            "comments": "Commentaires",
+            "hashtags": "Hashtags",
+            "likes": "J'aime",
+            "notifications": "Notifications",
+            "shares": "Partages",
+            "share_up_to_n_photos": "Vous pouvez partager jusqu'\u00e0 <span class=\"font-weight-bold\">{num_photos}</span> photos* \u00e0 la fois avec des l\u00e9gendes d'une longueur maximale de <span class=\"font-weight-bold\">{caption_length}</span> caract\u00e8res.",
+            "share_up_to_n_photos_videos": "Vous pouvez partager jusqu'\u00e0 <span class=\"font-weight-bold\">{num_photos}</span> photos* ou <span class=\"font-weight-bold\">{num_video}</span> vid\u00e9o* \u00e0 la fois avec des l\u00e9gendes d'une longueur maximale de <span class=\"font-weight-bold\">{caption_length}</span> caract\u00e8res.",
+            "file_size": "* la taille maximale des fichiers est {max_size}",
+            "federation": "F\u00e9d\u00e9ration",
+            "mobile_app": "Application mobile",
+            "stories": "Stories",
+            "videos": "Vid\u00e9os"
+        },
+        "discover_accounts": "D\u00e9couvrir des comptes et personnes",
+        "nothing_to_show": "Rien \u00e0 montrer pour le moment\u2026 Revenez plus tard.",
+        "explore_trending": "Parcourir les tendances"
     }
 }

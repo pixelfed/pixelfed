@@ -1,6 +1,6 @@
 {
     "common": {
-        "comment": "Comment",
+        "comment": "Komment\u00e9r",
         "commented": "Kommenterede",
         "comments": "Kommentarer",
         "like": "Synes om",
@@ -10,7 +10,7 @@
         "shared": "Delt",
         "shares": "Delinger",
         "unshare": "Fjern deling",
-        "bookmark": "Bookmark",
+        "bookmark": "Bogm\u00e6rk",
         "cancel": "Annuller",
         "copyLink": "Kopier link",
         "delete": "Slet",
@@ -34,7 +34,7 @@
     },
     "navmenu": {
         "search": "S\u00f8g",
-        "admin": "Admin Dashboard",
+        "admin": "Admin-kontrolpanel",
         "homeFeed": "Home Feed",
         "localFeed": "Lokalt feed",
         "globalFeed": "Globalt feed",
@@ -98,18 +98,18 @@
         "editProfile": "Redig\u00e9r profil",
         "followRequested": "F\u00f8lg anmodet",
         "joined": "Blev medlem",
-        "emptyCollections": "We can't seem to find any collections",
-        "emptyPosts": "We can't seem to find any posts"
+        "emptyCollections": "Vi kan ikke finde nogen samlinger",
+        "emptyPosts": "Vi kan ikke finde nogen indl\u00e6g"
     },
     "menu": {
         "viewPost": "Se opslag",
         "viewProfile": "Se profil",
         "moderationTools": "Moderatorv\u00e6rkt\u00f8jer",
-        "report": "Report",
-        "archive": "Archive",
-        "unarchive": "Unarchive",
-        "embed": "Embed",
-        "selectOneOption": "Select one of the following options",
+        "report": "Anmeld",
+        "archive": "Arkiv\u00e9r",
+        "unarchive": "Anuller arkivering",
+        "embed": "Indlejr",
+        "selectOneOption": "V\u00e6lg en af f\u00f8lgende muligheder",
         "unlistFromTimelines": "Skjul fra tidslinje",
         "addCW": "Tilf\u00f8j indholdsadvarsel",
         "removeCW": "Fjern indholdsadvarsel",
