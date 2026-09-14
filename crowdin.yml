@@ -8,30 +8,35 @@ commit_message: '[ci skip]'
 files:
   - source: /lang/en/auth.php
     translation: /lang/%two_letters_code%/auth.php
+    skip_untranslated_strings: true
     languages_mapping:
       two_letters_code:
         zh-CN: zh-cn
         zh-TW: zh-tw
   - source: /lang/en/exception.php
     translation: /lang/%two_letters_code%/exception.php
+    skip_untranslated_strings: true
     languages_mapping:
       two_letters_code:
         zh-CN: zh-cn
         zh-TW: zh-tw
   - source: /lang/en/helpcenter.php
     translation: /lang/%two_letters_code%/helpcenter.php
+    skip_untranslated_strings: true
     languages_mapping:
       two_letters_code:
         zh-CN: zh-cn
         zh-TW: zh-tw
   - source: /lang/en/navmenu.php
     translation: /lang/%two_letters_code%/navmenu.php
+    skip_untranslated_strings: true
     languages_mapping:
       two_letters_code:
         zh-CN: zh-cn
         zh-TW: zh-tw
   - source: /lang/en/notification.php
     translation: /lang/%two_letters_code%/notification.php
+    skip_untranslated_strings: true
     languages_mapping:
       two_letters_code:
         zh-CN: zh-cn
@@ -44,42 +49,49 @@ files:
   #       zh-TW: zh-tw
   - source: /lang/en/passwords.php
     translation: /lang/%two_letters_code%/passwords.php
+    skip_untranslated_strings: true
     languages_mapping:
       two_letters_code:
         zh-CN: zh-cn
         zh-TW: zh-tw
   - source: /lang/en/profile.php
     translation: /lang/%two_letters_code%/profile.php
+    skip_untranslated_strings: true
     languages_mapping:
       two_letters_code:
         zh-CN: zh-cn
         zh-TW: zh-tw
   - source: /lang/en/settings.php
     translation: /lang/%two_letters_code%/settings.php
+    skip_untranslated_strings: true
     languages_mapping:
       two_letters_code:
         zh-CN: zh-cn
         zh-TW: zh-tw
   - source: /lang/en/site.php
     translation: /lang/%two_letters_code%/site.php
+    skip_untranslated_strings: true
     languages_mapping:
       two_letters_code:
         zh-CN: zh-cn
         zh-TW: zh-tw
   - source: /lang/en/timeline.php
     translation: /lang/%two_letters_code%/timeline.php
+    skip_untranslated_strings: true
     languages_mapping:
       two_letters_code:
         zh-CN: zh-cn
         zh-TW: zh-tw
   # - source: /lang/en/validation.php
   #   translation: /lang/%two_letters_code%/validation.php
+  #   skip_untranslated_strings: true
   #   languages_mapping:
   #     two_letters_code:
   #       zh-CN: zh-cn
   #       zh-TW: zh-tw
   - source: /lang/en/web.php
     translation: /lang/%two_letters_code%/web.php
+    skip_untranslated_strings: true
     languages_mapping:
       two_letters_code:
         zh-CN: zh-cn
