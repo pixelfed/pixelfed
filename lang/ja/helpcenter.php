@@ -13,8 +13,8 @@ return [
     'discover' => '探索',
     'directMessages' => 'ダイレクトメッセージ',
     'timelines' => 'タイムライン',
-
     'embed' => '埋め込む',
+
     'communityGuidelines' => 'コミュニティガイドライン',
     'whatIsTheFediverse' => 'fediverseとは',
     'controllingVisibility' => '公開範囲のコントロール',
