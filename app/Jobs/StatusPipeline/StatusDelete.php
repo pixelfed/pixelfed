@@ -15,6 +15,7 @@ use App\Models\Notification;
 use App\Models\Report;
 use App\Models\Status;
 use App\Models\StatusArchived;
+use App\Models\StatusEdit;
 use App\Models\StatusHashtag;
 use App\Models\StatusView;
 use App\Services\ActivityPubDeliveryService;
@@ -175,6 +176,9 @@ class StatusDelete implements ShouldQueue
             ->delete();
 
         StatusArchived::whereStatusId($status->id)->delete();
+        // Purge edit history so single-status deletion doesn't leave prior
+        // caption/CW versions behind (status_edits has no FK/cascade).
+        StatusEdit::whereStatusId($status->id)->delete();
         // Model-based delete so StatusHashtagObserver::deleted() runs and
         // decrements hashtags.cached_count (a query-builder delete bypasses it).
         StatusHashtag::whereStatusId($status->id)->get()->each->delete();
@@ -213,15 +217,29 @@ class StatusDelete implements ShouldQueue
             'inboxes' => count($audience),
         ]);
 
-        ActivityPubDeliveryService::pool($profile, $audience, $activity, function ($res, $i) use ($audience, $status) {
-            Log::warning('StatusDelete: delivery failed', [
+        // Isolate federation delivery from local cleanup. pool() can throw
+        // synchronously (e.g. validateSender() rejects an inactive sender during
+        // account deletion, where profiles.status = 'delete'). If that exception
+        // escaped, unlinkRemoveMedia() — the whole point of this job — would be
+        // skipped and the status + its data would leak. Delivery is best-effort;
+        // local deletion is not.
+        try {
+            ActivityPubDeliveryService::pool($profile, $audience, $activity, function ($res, $i) use ($audience, $status) {
+                Log::warning('StatusDelete: delivery failed', [
+                    'status_id' => $status->id,
+                    'inbox' => $audience[$i] ?? null,
+                    'result' => $res instanceof \Throwable
+                        ? get_class($res).': '.$res->getMessage()
+                        : $res->status().' '.substr($res->body(), 0, 300),
+                ]);
+            });
+        } catch (\Throwable $e) {
+            Log::warning('StatusDelete: delivery aborted, proceeding to local cleanup', [
                 'status_id' => $status->id,
-                'inbox' => $audience[$i] ?? null,
-                'result' => $res instanceof \Throwable
-                    ? get_class($res).': '.$res->getMessage()
-                    : $res->status().' '.substr($res->body(), 0, 300),
+                'exception' => $e::class,
+                'error' => $e->getMessage(),
             ]);
-        });
+        }
 
         $this->unlinkRemoveMedia($status);
 

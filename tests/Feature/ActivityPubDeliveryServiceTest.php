@@ -3,9 +3,45 @@
 use App\Models\User;
 use App\Services\ActivityPubDeliveryService;
 use Illuminate\Foundation\Testing\LazilyRefreshDatabase;
+use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Http;
 
 uses(LazilyRefreshDatabase::class);
+
+/**
+ * ActivityPubDeliveryService::pool()/queueDelivery() only perform HTTP delivery
+ * in the production environment; outside production they log and return. Run
+ * the delivery in a forged production environment so these tests exercise the
+ * real send path, and restore the environment afterwards.
+ */
+function deliverInProduction(callable $fn): mixed
+{
+    $app = app();
+    $previous = $app['env'];
+    $app['env'] = 'production';
+
+    try {
+        return $fn();
+    } finally {
+        $app['env'] = $previous;
+    }
+}
+
+/**
+ * In production, validateDestination() resolves each host to a public IP and
+ * checks the banned-domains list. Seed both caches so validation passes without
+ * a real DNS lookup or DB query. Seed after any User/Profile factory creation,
+ * since the lazy DB refresh can flush the cache store.
+ *
+ * @param  array<int, string>  $hosts
+ */
+function seedDeliveryHosts(array $hosts): void
+{
+    foreach ($hosts as $host) {
+        Cache::put('helpers:url:public-ips:'.hash('xxh128', $host), ['203.0.113.40'], 3600);
+    }
+    Cache::put('instances:banned:domains', [], 1209600);
+}
 
 describe('ActivityPubDeliveryService::pool()', function () {
     it('delivers activity to all audience inboxes via POST', function () {
@@ -14,6 +50,8 @@ describe('ActivityPubDeliveryService::pool()', function () {
         $user = User::factory()->create();
         $user->refresh();
         $profile = $user->profile;
+
+        seedDeliveryHosts(['remote1.example', 'remote2.example', 'remote3.example']);
 
         $audience = [
             'https://remote1.example/inbox',
@@ -32,7 +70,7 @@ describe('ActivityPubDeliveryService::pool()', function () {
             ],
         ];
 
-        ActivityPubDeliveryService::pool($profile, $audience, $activity);
+        deliverInProduction(fn () => ActivityPubDeliveryService::pool($profile, $audience, $activity));
 
         Http::assertSentCount(3);
 
@@ -54,6 +92,8 @@ describe('ActivityPubDeliveryService::pool()', function () {
         $user->refresh();
         $profile = $user->profile;
 
+        seedDeliveryHosts(['remote.example']);
+
         $audience = ['https://remote.example/inbox'];
 
         $activity = [
@@ -63,7 +103,7 @@ describe('ActivityPubDeliveryService::pool()', function () {
             'actor' => $profile->permalink(),
         ];
 
-        ActivityPubDeliveryService::pool($profile, $audience, $activity);
+        deliverInProduction(fn () => ActivityPubDeliveryService::pool($profile, $audience, $activity));
 
         Http::assertSent(function ($request) {
             $contentType = $request->header('Content-Type')[0] ?? '';
@@ -81,6 +121,8 @@ describe('ActivityPubDeliveryService::pool()', function () {
         $user->refresh();
         $profile = $user->profile;
 
+        seedDeliveryHosts(['remote.example']);
+
         $audience = ['https://remote.example/inbox'];
 
         $activity = [
@@ -90,7 +132,7 @@ describe('ActivityPubDeliveryService::pool()', function () {
             'actor' => $profile->permalink(),
         ];
 
-        ActivityPubDeliveryService::pool($profile, $audience, $activity);
+        deliverInProduction(fn () => ActivityPubDeliveryService::pool($profile, $audience, $activity));
 
         Http::assertSent(function ($request) use ($activity) {
             $body = json_decode($request->body(), true);
@@ -126,6 +168,8 @@ describe('ActivityPubDeliveryService::pool()', function () {
         $user->refresh();
         $profile = $user->profile;
 
+        seedDeliveryHosts(['good.example', 'bad.example']);
+
         $audience = [
             'https://good.example/inbox',
             'https://bad.example/inbox',
@@ -138,8 +182,10 @@ describe('ActivityPubDeliveryService::pool()', function () {
         ];
 
         $errors = [];
-        ActivityPubDeliveryService::pool($profile, $audience, $activity, function ($reason, $index) use (&$errors) {
-            $errors[] = $index;
+        deliverInProduction(function () use ($profile, $audience, $activity, &$errors) {
+            ActivityPubDeliveryService::pool($profile, $audience, $activity, function ($reason, $index) use (&$errors) {
+                $errors[] = $index;
+            });
         });
 
         expect($errors)->toHaveCount(1);
@@ -155,6 +201,8 @@ describe('ActivityPubDeliveryService::pool()', function () {
         $user->refresh();
         $profile = $user->profile;
 
+        seedDeliveryHosts(['remote1.example', 'remote2.example']);
+
         $audience = [
             'https://remote1.example/inbox',
             'https://remote2.example/inbox',
@@ -167,8 +215,10 @@ describe('ActivityPubDeliveryService::pool()', function () {
         ];
 
         $errors = [];
-        ActivityPubDeliveryService::pool($profile, $audience, $activity, function ($reason, $index) use (&$errors) {
-            $errors[] = $index;
+        deliverInProduction(function () use ($profile, $audience, $activity, &$errors) {
+            ActivityPubDeliveryService::pool($profile, $audience, $activity, function ($reason, $index) use (&$errors) {
+                $errors[] = $index;
+            });
         });
 
         expect($errors)->toBeEmpty();
