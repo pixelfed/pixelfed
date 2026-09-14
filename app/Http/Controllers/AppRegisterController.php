@@ -80,8 +80,8 @@ class AppRegisterController extends Controller
             'email' => 'required|email:rfc,dns,spoof,strict|unique:users,email|unique:app_registers,email',
         ];
 
-        if ((bool) config_cache('captcha.enabled') && (bool) config_cache('captcha.active.register')) {
-            $rules['h-captcha-response'] = 'required|captcha';
+        if (app('captcha.manager')->activeOn('register')) {
+            $rules[app('captcha.manager')->active()->responseField()] = 'required|captcha_verify';
         }
 
         $this->validate($request, $rules);
@@ -188,8 +188,8 @@ class AppRegisterController extends Controller
             'email' => 'required|email:rfc,dns,spoof,strict|unique:users,email|exists:app_registers,email',
         ];
 
-        if ((bool) config_cache('captcha.enabled') && (bool) config_cache('captcha.active.register')) {
-            $rules['h-captcha-response'] = 'required|captcha';
+        if (app('captcha.manager')->activeOn('register')) {
+            $rules[app('captcha.manager')->active()->responseField()] = 'required|captcha_verify';
         }
 
         $this->validate($request, $rules);

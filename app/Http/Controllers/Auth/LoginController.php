@@ -553,21 +553,10 @@ class LoginController extends Controller
 
         $messages = [];
 
-        if (
-            (bool) config_cache('captcha.enabled') &&
-            (bool) config_cache('captcha.active.login') ||
-            (
-                (bool) config_cache('captcha.triggers.login.enabled') &&
-                request()->session()->has('login_attempts') &&
-                request()->session()->get('login_attempts') >=
-                config('captcha.triggers.login.attempts')
-            )
-        ) {
-            $rules['h-captcha-response'] =
-                'required|filled|captcha|min:5';
-
-            $messages['h-captcha-response.required'] =
-                'The captcha must be filled';
+        if (app('captcha.manager')->activeOnLogin()) {
+            $field = app('captcha.manager')->active()->responseField();
+            $rules[$field] = 'required|filled|captcha_verify';
+            $messages[$field.'.required'] = 'The captcha must be filled';
         }
 
         $request->validate($rules, $messages);

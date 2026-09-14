@@ -151,8 +151,6 @@ return [
 
         'resend_confirmation_limit' => env('INSTANCE_CUR_REG_RESEND_LIMIT', 5),
 
-        'captcha_enabled' => env('INSTANCE_CUR_REG_CAPTCHA', env('CAPTCHA_ENABLED', false)),
-
         'state' => [
             'fallback_on_closed_reg' => true,
             'only_enabled_on_closed_reg' => env('INSTANCE_CUR_REG_STATE_ONLY_ON_CLOSED', true),

@@ -389,20 +389,37 @@
                                                         class="custom-control-input"
                                                         id="hcp"
                                                         v-model="platform.captcha_enabled">
-                                                    <label class="custom-control-label font-weight-bold" for="hcp">Enable hCaptcha</label>
+                                                    <label class="custom-control-label font-weight-bold" for="hcp">Enable Captcha</label>
                                                 </div>
                                             </div>
                                             <template v-if="platform.captcha_enabled">
                                                 <hr class="my-2">
                                                 <div class="row">
+                                                    <div class="col-12">
+                                                        <div class="form-group my-1">
+                                                            <label class="text-muted small font-weight-bold">Captcha Provider</label>
+                                                            <select
+                                                                class="form-control"
+                                                                name="captcha_driver"
+                                                                v-model="platform.captcha_driver">
+                                                                <option value="hcaptcha">hCaptcha</option>
+                                                                <option value="turnstile">Cloudflare Turnstile</option>
+                                                                <option value="cap">Cap</option>
+                                                            </select>
+                                                        </div>
+                                                    </div>
+                                                </div>
+
+                                                <!-- hCaptcha credentials -->
+                                                <div class="row" v-if="platform.captcha_driver === 'hcaptcha'">
                                                     <div class="col-12 col-md-6">
                                                         <div class="form-group my-1">
                                                             <label class="text-muted small">hCaptcha Secret</label>
                                                             <input
                                                                 type="text"
                                                                 class="form-control"
-                                                                name="captcha_secret"
-                                                                v-model="platform.captcha_secret">
+                                                                name="captcha_hcaptcha_secret"
+                                                                v-model="platform.captcha_hcaptcha_secret">
                                                         </div>
                                                     </div>
                                                     <div class="col-12 col-md-6">
@@ -411,8 +428,57 @@
                                                             <input
                                                                 type="text"
                                                                 class="form-control"
-                                                                name="captcha_sitekey"
-                                                                v-model="platform.captcha_sitekey">
+                                                                name="captcha_hcaptcha_sitekey"
+                                                                v-model="platform.captcha_hcaptcha_sitekey">
+                                                        </div>
+                                                    </div>
+                                                </div>
+
+                                                <!-- Turnstile credentials -->
+                                                <div class="row" v-else-if="platform.captcha_driver === 'turnstile'">
+                                                    <div class="col-12 col-md-6">
+                                                        <div class="form-group my-1">
+                                                            <label class="text-muted small">Turnstile Secret</label>
+                                                            <input
+                                                                type="text"
+                                                                class="form-control"
+                                                                name="captcha_turnstile_secret"
+                                                                v-model="platform.captcha_turnstile_secret">
+                                                        </div>
+                                                    </div>
+                                                    <div class="col-12 col-md-6">
+                                                        <div class="form-group my-1">
+                                                            <label class="text-muted small">Turnstile Sitekey</label>
+                                                            <input
+                                                                type="text"
+                                                                class="form-control"
+                                                                name="captcha_turnstile_sitekey"
+                                                                v-model="platform.captcha_turnstile_sitekey">
+                                                        </div>
+                                                    </div>
+                                                </div>
+
+                                                <!-- Cap credentials -->
+                                                <div class="row" v-else-if="platform.captcha_driver === 'cap'">
+                                                    <div class="col-12 col-md-6">
+                                                        <div class="form-group my-1">
+                                                            <label class="text-muted small">Cap Endpoint</label>
+                                                            <input
+                                                                type="text"
+                                                                class="form-control"
+                                                                name="captcha_cap_endpoint"
+                                                                placeholder="https://cap.example.com/your-site-key/"
+                                                                v-model="platform.captcha_cap_endpoint">
+                                                        </div>
+                                                    </div>
+                                                    <div class="col-12 col-md-6">
+                                                        <div class="form-group my-1">
+                                                            <label class="text-muted small">Cap Secret</label>
+                                                            <input
+                                                                type="text"
+                                                                class="form-control"
+                                                                name="captcha_cap_secret"
+                                                                v-model="platform.captcha_cap_secret">
                                                         </div>
                                                     </div>
                                                 </div>
@@ -440,11 +506,44 @@
                                                             <label class="custom-control-label font-weight-bold" for="captcha_on_register">Register Captcha</label>
                                                         </div>
                                                     </div>
+                                                    <div class="col-12 col-lg-6">
+                                                        <div class="custom-control custom-checkbox">
+                                                            <input
+                                                                type="checkbox"
+                                                                name="captcha_on_forgotpassword"
+                                                                class="custom-control-input"
+                                                                id="captcha_on_forgotpassword"
+                                                                v-model="platform.captcha_on_forgotpassword">
+                                                            <label class="custom-control-label font-weight-bold" for="captcha_on_forgotpassword">Forgot Password Captcha</label>
+                                                        </div>
+                                                    </div>
+                                                    <div class="col-12 col-lg-6">
+                                                        <div class="custom-control custom-checkbox">
+                                                            <input
+                                                                type="checkbox"
+                                                                name="captcha_on_password_reset"
+                                                                class="custom-control-input"
+                                                                id="captcha_on_password_reset"
+                                                                v-model="platform.captcha_on_password_reset">
+                                                            <label class="custom-control-label font-weight-bold" for="captcha_on_password_reset">Password Reset Captcha</label>
+                                                        </div>
+                                                    </div>
+                                                    <div class="col-12 col-lg-6">
+                                                        <div class="custom-control custom-checkbox">
+                                                            <input
+                                                                type="checkbox"
+                                                                name="captcha_on_curated_register"
+                                                                class="custom-control-input"
+                                                                id="captcha_on_curated_register"
+                                                                v-model="platform.captcha_on_curated_register">
+                                                            <label class="custom-control-label font-weight-bold" for="captcha_on_curated_register">Curated Register Captcha</label>
+                                                        </div>
+                                                    </div>
                                                 </div>
                                                 <hr class="mt-4 mb-2">
                                             </template>
                                             <p class="help-text small text-muted mb-0">
-                                                Enable hCaptcha on login and register pages
+                                                Enable a captcha provider on login and register pages
                                             </p>
                                         </div>
 
@@ -1391,10 +1490,18 @@
                     allow_post_embeds: this.platform.allow_post_embeds,
                     allow_profile_embeds: this.platform.allow_profile_embeds,
                     captcha_enabled: this.platform.captcha_enabled,
-                    captcha_secret: this.platform.captcha_secret,
-                    captcha_sitekey: this.platform.captcha_sitekey,
+                    captcha_driver: this.platform.captcha_driver,
+                    captcha_hcaptcha_secret: this.platform.captcha_hcaptcha_secret,
+                    captcha_hcaptcha_sitekey: this.platform.captcha_hcaptcha_sitekey,
+                    captcha_turnstile_secret: this.platform.captcha_turnstile_secret,
+                    captcha_turnstile_sitekey: this.platform.captcha_turnstile_sitekey,
+                    captcha_cap_endpoint: this.platform.captcha_cap_endpoint,
+                    captcha_cap_secret: this.platform.captcha_cap_secret,
                     captcha_on_login: this.platform.captcha_on_login,
                     captcha_on_register: this.platform.captcha_on_register,
+                    captcha_on_forgotpassword: this.platform.captcha_on_forgotpassword,
+                    captcha_on_password_reset: this.platform.captcha_on_password_reset,
+                    captcha_on_curated_register: this.platform.captcha_on_curated_register,
                     custom_emoji_enabled: this.platform.custom_emoji_enabled,
                 }).then(res => {
                     this.platform = res.data;

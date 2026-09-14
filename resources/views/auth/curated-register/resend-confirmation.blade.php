@@ -33,11 +33,7 @@
                         placeholder="Your email address"
                         required />
                 </div>
-                @if(config('instance.curated_registration.captcha_enabled'))
-                <div class="d-flex justify-content-center my-3">
-                    {!! Captcha::display() !!}
-                </div>
-                @endif
+                <x-captcha surface="curated_register" />
                 <div class="d-flex justify-content-center">
                     <button class="btn btn-primary font-weight-bold rounded-pill px-5">Verify</button>
                 </div>

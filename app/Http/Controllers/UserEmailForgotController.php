@@ -37,8 +37,9 @@ class UserEmailForgotController extends Controller
         ];
 
         if ((bool) config_cache('captcha.enabled')) {
-            $rules['h-captcha-response'] = 'required|captcha';
-            $messages['h-captcha-response.required'] = 'You need to complete the captcha!';
+            $captchaField = app('captcha.manager')->active()->responseField();
+            $rules[$captchaField] = 'required|captcha_verify';
+            $messages[$captchaField.'.required'] = 'You need to complete the captcha!';
         }
 
         $randomDelay = random_int(500000, 2000000);
