@@ -28,8 +28,7 @@ return [
         'sitekey' => env('CAPTCHA_H_SITEKEY', 'default_sitekey'),
         'timeout' => (int) env('CAPTCHA_H_TIMEOUT', 5),
         'fail_open' => (bool) env('CAPTCHA_H_FAIL_OPEN', false),
-        // Optional widget locale (e.g. "fr"). Null uses hCaptcha auto-detection.
-        'lang' => env('CAPTCHA_H_LANG'),
+        'lang' => env('CAPTCHA_H_LANG'),  // Optional widget locale (e.g. "fr"). Null uses hCaptcha auto-detection.
     ],
 
     /*
