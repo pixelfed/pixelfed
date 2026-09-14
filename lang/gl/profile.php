@@ -12,4 +12,10 @@ return [
 
     'status.disabled.header' => 'Perfil non dispoñible',
     'status.disabled.body' => 'O perfil non está dipoñible neste intre, inténtao dentro dun anaco.',
+
+    'block.domain.max' => 'Max limit of domain blocks reached! You can only block :max domains at a time. Ask your admin to adjust this limit.',
+
+    'mutedAccounts' => 'Muted Accounts',
+    'blockedAccounts' => 'Blocked Accounts',
+    'blockedDomains' => 'Blocked Domains',
 ];
