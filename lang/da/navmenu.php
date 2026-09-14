@@ -10,9 +10,10 @@ return [
     'myProfile' => 'Min Profil',
     'myTimeline' => 'Min Tidslinje',
     'publicTimeline' => 'Offentlig Tidslinje',
-    'remoteFollow' => 'Remote Follow',
+    'remoteFollow' => '',
     'settings' => 'Indstillinger',
-    'admin' => 'Admin',
+    'admin' => '',
     'logout' => 'Log ud',
     'directMessages' => 'Direkte Beskeder',
+    'composePost' => '',
 ];
