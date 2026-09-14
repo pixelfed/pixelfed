@@ -219,19 +219,7 @@
                             </div>
                         </div>
 
-                        @if(
-                        (bool) config_cache('captcha.enabled') &&
-                        (bool) config_cache('captcha.active.login') ||
-                        (
-                        (bool) config_cache('captcha.triggers.login.enabled') &&
-                        request()->session()->has('login_attempts') &&
-                        request()->session()->get('login_attempts') >= config('captcha.triggers.login.attempts')
-                        )
-                        )
-                        <div class="d-flex justify-content-center mb-3">
-                            {!! Captcha::display() !!}
-                        </div>
-                        @endif
+                        <x-captcha surface="login" wrapperClass="d-flex justify-content-center mb-3" />
 
                         <button type="submit" class="btn btn-primary btn-block btn-lg font-weight-bold rounded-pill">
                             {{ __('auth.login') }}

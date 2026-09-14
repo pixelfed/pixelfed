@@ -679,10 +679,13 @@ trait AdminSettingsController
             'allow_post_embeds' => 'required',
             'allow_profile_embeds' => 'required',
             'captcha_enabled' => 'required',
+            'captcha_driver' => 'nullable|in:hcaptcha,turnstile,cap',
             'captcha_on_login' => 'required_if_accepted:captcha_enabled',
             'captcha_on_register' => 'required_if_accepted:captcha_enabled',
-            'captcha_secret' => 'required_if_accepted:captcha_enabled',
-            'captcha_sitekey' => 'required_if_accepted:captcha_enabled',
+            // Provider credentials are optional here (masked values are sent on
+            // re-save); the save logic below only writes fresh, non-masked values.
+            'captcha_hcaptcha_secret' => 'nullable|string',
+            'captcha_hcaptcha_sitekey' => 'nullable|string',
             'custom_emoji_enabled' => 'required',
         ]);
 
@@ -696,17 +699,51 @@ trait AdminSettingsController
         ConfigCacheService::put('federation.custom_emoji.enabled', $request->boolean('custom_emoji_enabled'));
         $captcha = $request->boolean('captcha_enabled');
         if ($captcha) {
-            $secret = $request->input('captcha_secret');
-            $sitekey = $request->input('captcha_sitekey');
-            if (config_cache('captcha.secret') != $secret && strpos($secret, '*') === false) {
-                ConfigCacheService::put('captcha.secret', $secret);
+            // Persist the selected provider (defaults to hcaptcha).
+            $driver = $request->input('captcha_driver', 'hcaptcha');
+            if (! in_array($driver, ['hcaptcha', 'turnstile', 'cap'], true)) {
+                $driver = 'hcaptcha';
             }
-            if (config_cache('captcha.sitekey') != $sitekey && strpos($sitekey, '*') === false) {
-                ConfigCacheService::put('captcha.sitekey', $sitekey);
+            ConfigCacheService::put('captcha.driver', $driver);
+
+            // Only overwrite a secret/credential when a fresh (non-masked,
+            // non-empty) value is submitted. Masked values contain '*'.
+            $putIfChanged = function (string $key, ?string $value): void {
+                if ($value === null || $value === '' || str_contains($value, '*')) {
+                    return;
+                }
+                if (config_cache($key) != $value) {
+                    ConfigCacheService::put($key, $value);
+                }
+            };
+
+            // hCaptcha credentials. Persist to the canonical captcha.hcaptcha.*
+            // keys. CaptchaServiceProvider hydrates the top-level captcha.secret
+            // / captcha.sitekey that the buzz/laravel-h-captcha package reads.
+            $putIfChanged('captcha.hcaptcha.secret', $request->input('captcha_hcaptcha_secret'));
+            $putIfChanged('captcha.hcaptcha.sitekey', $request->input('captcha_hcaptcha_sitekey'));
+
+            // Turnstile credentials (sitekey is public, store as-is when present)
+            $putIfChanged('captcha.turnstile.secret', $request->input('captcha_turnstile_secret'));
+            if ($request->filled('captcha_turnstile_sitekey')) {
+                ConfigCacheService::put('captcha.turnstile.sitekey', $request->input('captcha_turnstile_sitekey'));
             }
+
+            // Cap credentials (endpoint + sitekey are public, store as-is)
+            $putIfChanged('captcha.cap.secret', $request->input('captcha_cap_secret'));
+            if ($request->filled('captcha_cap_endpoint')) {
+                ConfigCacheService::put('captcha.cap.endpoint', $request->input('captcha_cap_endpoint'));
+            }
+            if ($request->filled('captcha_cap_sitekey')) {
+                ConfigCacheService::put('captcha.cap.sitekey', $request->input('captcha_cap_sitekey'));
+            }
+
             ConfigCacheService::put('captcha.active.login', $request->boolean('captcha_on_login'));
             ConfigCacheService::put('captcha.active.register', $request->boolean('captcha_on_register'));
-            ConfigCacheService::put('captcha.triggers.login.enabled', $request->boolean('captcha_on_login'));
+            ConfigCacheService::put('captcha.active.forgot_password', $request->boolean('captcha_on_forgot_password'));
+            ConfigCacheService::put('captcha.active.password_reset', $request->boolean('captcha_on_password_reset'));
+            ConfigCacheService::put('captcha.active.forgot_email', $request->boolean('captcha_on_forgot_email'));
+            ConfigCacheService::put('captcha.active.curated_register', $request->boolean('captcha_on_curated_register'));
             ConfigCacheService::put('captcha.enabled', true);
         } else {
             ConfigCacheService::put('captcha.enabled', false);
@@ -720,10 +757,20 @@ trait AdminSettingsController
             'allow_post_embeds' => $request->boolean('allow_post_embeds'),
             'allow_profile_embeds' => $request->boolean('allow_profile_embeds'),
             'captcha_enabled' => $request->boolean('captcha_enabled'),
+            'captcha_driver' => $request->input('captcha_driver', 'hcaptcha'),
             'captcha_on_login' => $request->boolean('captcha_on_login'),
             'captcha_on_register' => $request->boolean('captcha_on_register'),
-            'captcha_secret' => $request->input('captcha_secret'),
-            'captcha_sitekey' => $request->input('captcha_sitekey'),
+            'captcha_on_forgot_password' => $request->boolean('captcha_on_forgot_password'),
+            'captcha_on_password_reset' => $request->boolean('captcha_on_password_reset'),
+            'captcha_on_forgot_email' => $request->boolean('captcha_on_forgot_email'),
+            'captcha_on_curated_register' => $request->boolean('captcha_on_curated_register'),
+            'captcha_hcaptcha_secret' => $request->input('captcha_hcaptcha_secret'),
+            'captcha_hcaptcha_sitekey' => $request->input('captcha_hcaptcha_sitekey'),
+            'captcha_turnstile_secret' => $request->input('captcha_turnstile_secret'),
+            'captcha_turnstile_sitekey' => $request->input('captcha_turnstile_sitekey'),
+            'captcha_cap_endpoint' => $request->input('captcha_cap_endpoint'),
+            'captcha_cap_sitekey' => $request->input('captcha_cap_sitekey'),
+            'captcha_cap_secret' => $request->input('captcha_cap_secret'),
             'custom_emoji_enabled' => $request->boolean('custom_emoji_enabled'),
         ];
         Cache::forget('api:v1:instance-data:rules');
