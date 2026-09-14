@@ -561,7 +561,7 @@ class ApiV1Dot1Controller extends Controller
         $username = $request->input('username');
         $password = $request->input('password');
 
-        if (config('database.default') == 'pgsql') {
+        if (db_is_pgsql()) {
             $username = strtolower($username);
             $email = strtolower($email);
         }

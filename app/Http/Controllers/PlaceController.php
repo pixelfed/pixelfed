@@ -46,7 +46,7 @@ class PlaceController extends Controller
     public function directoryCities(Request $request, $country): View
     {
         $country = urldecode($country);
-        $operator = config('database.default') === 'pgsql' ? 'ilike' : '=';
+        $operator = db_is_pgsql() ? 'ilike' : '=';
 
         $places = Place::where('country', $operator, $country)
             ->orderBy('name', 'asc')

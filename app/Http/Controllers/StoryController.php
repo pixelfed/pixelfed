@@ -34,7 +34,7 @@ class StoryController extends StoryComposeController
         }
         $pid = $user->profile_id;
 
-        if (config('database.default') == 'pgsql') {
+        if (db_is_pgsql()) {
             $s = Cache::remember('pf:stories:recent-by-id:'.$pid, 900, function () use ($pid) {
                 return Story::select('stories.*', 'followers.following_id')
                     ->leftJoin('followers', 'followers.following_id', 'stories.profile_id')

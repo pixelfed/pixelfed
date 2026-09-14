@@ -66,7 +66,7 @@ class DiscoverController extends Controller
         $end = $page > 1 ? $page * 9 : (($page * 9) + 9);
         $tag = $request->input('hashtag');
 
-        if (config('database.default') === 'pgsql') {
+        if (db_is_pgsql()) {
             $hashtag = Hashtag::where('name', 'ilike', $tag)->firstOrFail();
         } else {
             $hashtag = Hashtag::whereName($tag)->firstOrFail();
