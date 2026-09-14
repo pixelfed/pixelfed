@@ -52,21 +52,7 @@ services:
     environment:
       # SSL Configuration (handled by reverse proxy)
       SSL_MODE: "off"
-
-      # Caddy/FrankenPHP web server configuration
-      #
-      # Only log requests at ERROR level or above. Caddy's access log records
-      # successful requests (2xx/3xx/4xx) at INFO and server errors (5xx) at
-      # ERROR, so this suppresses the noisy "handled request ... status 200"
-      # lines while still surfacing 5xx failures.
       LOG_OUTPUT_LEVEL: "error"
-
-      # Override the web server's default caching for the service worker.
-      # The base image's (performance) snippet applies a one-year immutable
-      # Cache-Control to all *.js files, which catches /sw.js and prevents
-      # browsers from picking up new service worker versions (issue #7069).
-      # Extra directives are imported after that rule, so this header wins.
-      # See: https://github.com/pixelfed/pixelfed/issues/7069
       CADDY_SERVER_EXTRA_DIRECTIVES: |
         @service_worker path /sw.js
         header @service_worker Cache-Control "no-cache"
