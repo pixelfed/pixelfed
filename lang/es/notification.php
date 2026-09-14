@@ -8,4 +8,5 @@ return [
     'commented' => 'comentó tu foto.',
     'mentionedYou' => 'te mencionó.',
     'shared' => 'compartió tu foto.',
+
 ];
