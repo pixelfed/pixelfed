@@ -2,6 +2,8 @@
 
 ## [Unreleased](https://github.com/pixelfed/pixelfed/compare/v0.12.11...dev)
 
+- coming soon!
+
 ## [v0.12.10 (2026-09-11)](https://github.com/pixelfed/pixelfed/compare/v0.12.10...dev)
 
 -   Change the collation for the hashtags table ([53e5692cf](https://github.com/pixelfed/pixelfed/commit/53e5692cfb5de282d9c541f03868f458e7ce2a6b))
