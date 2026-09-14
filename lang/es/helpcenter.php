@@ -9,10 +9,10 @@ return [
     'sharingMedia' => 'Compartiendo Medios',
     'profile' => 'Perfil',
     'stories' => 'Historias',
-    'hashtags' => 'Hashtags',
+    'hashtags' => '',
     'discover' => 'Descubre',
     'directMessages' => 'Mensajes Directos',
-    'timelines' => 'Timelines',
+    'timelines' => '',
     'embed' => 'Incrustar',
 
     'communityGuidelines' => 'Normas de la comunidad',
