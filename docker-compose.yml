@@ -53,6 +53,7 @@ services:
       # SSL Configuration (handled by reverse proxy)
       SSL_MODE: "off"
       LOG_OUTPUT_LEVEL: "error"
+      # TODO: Once the new webui is completed, we will try to handle the service worker cache on that side.
       CADDY_SERVER_EXTRA_DIRECTIVES: |
         @service_worker path /sw.js
         header @service_worker Cache-Control "no-cache"
