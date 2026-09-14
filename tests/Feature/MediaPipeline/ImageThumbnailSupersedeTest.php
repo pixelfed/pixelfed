@@ -21,6 +21,15 @@ uses(LazilyRefreshDatabase::class);
 */
 
 beforeEach(function () {
+    // The transform uses the configured image driver (default: vips). Skip
+    // when its runtime isn't available locally so contributors without
+    // libvips/ext-ffi aren't blocked; CI installs libvips so it still runs.
+    try {
+        \App\Util\Media\ImageDriverManager::createImageManager();
+    } catch (\Throwable $e) {
+        test()->markTestSkipped('Image driver "'.config('image.driver').'" is not available: '.$e->getMessage());
+    }
+
     // Use a faked cloud disk so Image's transform goes through the Storage
     // facade end-to-end (the local branch reads/writes via raw storage_path(),
     // which Storage::fake does not intercept).
