@@ -9,9 +9,10 @@ name: PHP - Laravel Tests (DB Matrix - experimental)
 # behavior (strict mode, ONLY_FULL_GROUP_BY, unsigned underflow, etc.).
 
 on:
-  workflow_dispatch:
   push:
-    branches: [db-matrix-testing]
+    branches: [staging, unstable]
+  pull_request:
+    branches: [staging]
 
 # Never let this experimental workflow block anything.
 permissions:
