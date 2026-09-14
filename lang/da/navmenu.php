@@ -15,4 +15,5 @@ return [
     'admin' => 'Admin',
     'logout' => 'Log ud',
     'directMessages' => 'Direkte Beskeder',
+    'composePost' => 'Compose Post',
 ];
