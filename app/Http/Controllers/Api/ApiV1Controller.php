@@ -3327,7 +3327,7 @@ class ApiV1Controller extends Controller
 
         $pid = $user->profile_id;
 
-        $isPgsql = config('database.default') == 'pgsql';
+        $isPgsql = db_is_pgsql();
 
         if ($isPgsql) {
             $dms = DirectMessage::when($scope === 'inbox', function ($q) use ($pid) {
@@ -4126,10 +4126,9 @@ class ApiV1Controller extends Controller
             }
         }
 
-        $defaultCaption = config_cache('database.default') === 'mysql' ? null : '';
         $share = Status::firstOrCreate([
-            'caption' => $defaultCaption,
-            'rendered' => $defaultCaption,
+            'caption' => '',
+            'rendered' => '',
             'profile_id' => $user->profile_id,
             'reblog_of_id' => $status->id,
             'type' => 'share',
@@ -4230,7 +4229,7 @@ class ApiV1Controller extends Controller
             'Invalid permissions for this action'
         );
 
-        if (config('database.default') === 'pgsql') {
+        if (db_is_pgsql()) {
             $tag = Hashtag::where('name', 'ilike', $hashtag)
                 ->orWhere('slug', 'ilike', $hashtag)
                 ->first();

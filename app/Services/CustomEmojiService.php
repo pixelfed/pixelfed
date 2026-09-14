@@ -250,7 +250,7 @@ class CustomEmojiService
     public static function all()
     {
         return Cache::rememberForever('pf:custom_emoji', function () {
-            $pgsql = config('database.default') === 'pgsql';
+            $pgsql = db_is_pgsql();
 
             return CustomEmoji::when(! $pgsql, function ($q, $pgsql) {
                 return $q->groupBy('shortcode');

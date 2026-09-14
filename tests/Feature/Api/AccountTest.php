@@ -167,7 +167,11 @@ describe('scope enforcement on writes', function () {
 
 describe('first-party session auth', function () {
     it('allows writes without a token', function () {
-        config(['sanctum.stateful' => ['pixelfed.test']]);
+        // Derive the stateful domain from app.url so the Origin header and the
+        // sanctum.stateful entry always match, regardless of the environment's
+        // configured APP_URL (e.g. pixelfed.test in CI vs a local dev domain).
+        $host = parse_url(config('app.url'), PHP_URL_HOST);
+        config(['sanctum.stateful' => [$host]]);
         $user = User::factory()->create();
         $user->refresh();
         $status = Status::factory()->create([

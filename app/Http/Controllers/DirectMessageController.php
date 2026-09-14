@@ -59,7 +59,7 @@ class DirectMessageController extends Controller
             'is_hidden', 'meta', 'created_at', 'read_at'
         )->with(['author', 'status', 'recipient']);
 
-        if (config('database.default') == 'pgsql') {
+        if (db_is_pgsql()) {
             $query = match ($action) {
                 'inbox' => $baseQuery->whereToId($profile)
                     ->whereIsHidden(false)

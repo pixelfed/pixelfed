@@ -10,7 +10,7 @@ class DiscoverService
     public static function getDailyIdPool()
     {
         $min_id = SnowflakeService::byDate(now()->subMonths(3));
-        $sqld = config('database.default') == 'mysql';
+        $sqld = db_is_mysql_maria();
 
         return DB::table('statuses')
             ->whereNull('uri')

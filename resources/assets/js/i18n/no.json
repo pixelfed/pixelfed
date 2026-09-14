@@ -10,7 +10,7 @@
         "shared": "Delt",
         "shares": "Delinger",
         "unshare": "Fjern deling",
-        "bookmark": "Bookmerk",
+        "bookmark": "Bokmerk",
         "cancel": "Avbryt",
         "copyLink": "Kopier lenke",
         "delete": "Slett",
@@ -141,7 +141,7 @@
         "compactMode": "Kompaktmodus",
         "embedConfirmText": "Ved \u00e5 bruke denne innbakingen, godtar du v\u00e5r",
         "deletePostConfirm": "Er du sikker p\u00e5 at du vil slette dette innlegget?",
-        "archivePostConfirm": "Er du sikker p\u00e5 at du vil arkiveren dette innlegget?",
+        "archivePostConfirm": "Er du sikker p\u00e5 at du vil arkivere dette innlegget?",
         "unarchivePostConfirm": "Er du sikker p\u00e5 at vil hente dette innlegget tilbake fra arkivet?"
     },
     "story": {

@@ -22,7 +22,10 @@ class CustomEmoji extends Model
      */
     public function scopeDuplicateShortcodes($query)
     {
-        return $query->groupBy('shortcode')->havingRaw('count(*) > 1');
+        // Select only the grouped column so the aggregate is valid on
+        // Postgres (a bare `select *` with GROUP BY is rejected because
+        // non-grouped columns must appear in GROUP BY or an aggregate).
+        return $query->select('shortcode')->groupBy('shortcode')->havingRaw('count(*) > 1');
     }
 
     public static function scan($text, $activitypub = false)

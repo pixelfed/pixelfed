@@ -42,7 +42,7 @@ class StoryApiV1Controller extends Controller
         abort_if(! (bool) config_cache('instance.stories.enabled') || ! $request->user(), 404);
         $pid = $request->user()->profile_id;
 
-        if (config('database.default') == 'pgsql') {
+        if (db_is_pgsql()) {
             $s = Cache::remember(self::RECENT_KEY.$pid, self::RECENT_TTL, function () use ($pid) {
                 return Story::select('stories.*', 'followers.following_id')
                     ->leftJoin('followers', 'followers.following_id', 'stories.profile_id')
@@ -164,7 +164,7 @@ class StoryApiV1Controller extends Controller
         abort_if(! (bool) config_cache('instance.stories.enabled') || ! $request->user(), 404);
         $pid = $request->user()->profile_id;
 
-        if (config('database.default') == 'pgsql') {
+        if (db_is_pgsql()) {
             $s = Cache::remember(self::RECENT_KEY.$pid, self::RECENT_TTL, function () use ($pid) {
                 return Story::select('stories.*', 'followers.following_id')
                     ->leftJoin('followers', 'followers.following_id', 'stories.profile_id')

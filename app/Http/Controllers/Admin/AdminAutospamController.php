@@ -36,8 +36,9 @@ trait AdminAutospamController
         });
 
         $thisWeek = Cache::remember('admin-dash:reports:spam-count-stats-this-week ', 86400, function () {
-            $sr = config('database.default') == 'pgsql' ? "to_char(created_at, 'MM-YYYY')" : "DATE_FORMAT(created_at, '%m-%Y')";
-            $gb = config('database.default') == 'pgsql' ? [DB::raw($sr)] : DB::raw($sr);
+            $isPgsql = db_is_pgsql();
+            $sr = $isPgsql ? "to_char(created_at, 'MM-YYYY')" : "DATE_FORMAT(created_at, '%m-%Y')";
+            $gb = $isPgsql ? [DB::raw($sr)] : DB::raw($sr);
             $s = AccountInterstitial::select(
                 DB::raw('count(id) as count'),
                 DB::raw($sr.' as month_year')

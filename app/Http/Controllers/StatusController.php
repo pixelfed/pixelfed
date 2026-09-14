@@ -221,11 +221,12 @@ class StatusController extends Controller
             }
             ReblogService::del($profile->id, $status->id);
         } else {
-            $defaultCaption = config_cache('database.default') === 'mysql' ? null : '';
-
+            // A share carries no caption. Empty string is valid whether the
+            // column is nullable or NOT NULL (it is NOT NULL on MySQL/MariaDB),
+            // so use it regardless of driver rather than inserting null.
             $share = new Status;
-            $share->caption = $defaultCaption;
-            $share->rendered = $defaultCaption;
+            $share->caption = '';
+            $share->rendered = '';
             $share->profile_id = $profile->id;
             $share->reblog_of_id = $status->id;
             $share->in_reply_to_profile_id = $status->profile_id;

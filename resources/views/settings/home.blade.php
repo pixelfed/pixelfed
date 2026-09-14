@@ -70,7 +70,7 @@
 			<div class="col-sm-9">
 				<select class="form-control" name="language">
 				@foreach(App\Util\Localization\Localization::languages() as $lang)
-					<option value="{{$lang}}" {{(Auth::user()->language ?? 'en') == $lang ? 'selected':''}}>{{locale_get_display_language($lang, 'en')}} - {{locale_get_display_language($lang, $lang)}}</option>
+					<option value="{{$lang}}" {{(Auth::user()->language ?? 'en') == $lang ? 'selected':''}}>{{locale_get_display_name($lang, 'en')}} - {{locale_get_display_name($lang, $lang)}}</option>
 				@endforeach
 				</select>
 			</div>

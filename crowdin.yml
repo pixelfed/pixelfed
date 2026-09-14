@@ -1,4 +1,19 @@
+project_id_env: CROWDIN_PROJECT_ID
+api_token_env: CROWDIN_PERSONAL_TOKEN
+base_path: '.'
+preserve_hierarchy: true
+
 commit_message: '[ci skip]'
+
 files:
-  - source: /lang/en/web.php
-    translation: /lang/%two_letters_code%/web.php
+  - source: /lang/en/*.php
+    translation: /lang/%two_letters_code%/%original_file_name%
+    # Map Crowdin's region-specific locales onto Pixelfed's existing folder names.
+    # The default %two_letters_code% (e.g. "zh") collapses all Chinese variants
+    # into one folder, so region variants must be mapped explicitly.
+    languages_mapping:
+      two_letters_code:
+        # Simplified Chinese -> lang/zh-cn
+        zh-CN: zh-cn
+        # Traditional Chinese -> lang/zh-tw
+        zh-TW: zh-tw

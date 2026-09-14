@@ -25,7 +25,7 @@ class SeasonalController extends Controller
     public function yearInReview(): View
     {
         abort_if(now()->gt('2021-03-01 00:00:00'), 404);
-        abort_if(config('database.default') != 'mysql', 404);
+        abort_if(! db_is_mysql_maria(), 404);
 
         $profile = Auth::user()->profile;
 
@@ -35,7 +35,7 @@ class SeasonalController extends Controller
     public function getData(Request $request): JsonResponse
     {
         abort_if(now()->gt('2021-03-01 00:00:00'), 404);
-        abort_if(config('database.default') != 'mysql', 404);
+        abort_if(! db_is_mysql_maria(), 404);
 
         $uid = $request->user()->id;
         $pid = $request->user()->profile_id;
@@ -227,7 +227,7 @@ class SeasonalController extends Controller
     public function store(Request $request): JsonResponse
     {
         abort_if(now()->gt('2021-03-01 00:00:00'), 404);
-        abort_if(config('database.default') != 'mysql', 404);
+        abort_if(! db_is_mysql_maria(), 404);
 
         $user = $request->user();
 

@@ -553,7 +553,7 @@ class AdminController extends Controller
             return redirect(route('admin.custom-emoji'));
         }
 
-        $pg = config('database.default') == 'pgsql';
+        $pg = db_is_pgsql();
 
         $emojis = CustomEmoji::when($sort, function ($query, $sort) use ($request, $pg) {
             if ($sort == 'all') {
