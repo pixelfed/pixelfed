@@ -12,4 +12,10 @@ return [
 
     'status.disabled.header' => 'פרופיל לא זמין',
     'status.disabled.body' => 'מצטערים, פרופיל זה אינו זמין כרגע. אנא נסו שוב בקרוב.',
+
+    'block.domain.max' => 'Max limit of domain blocks reached! You can only block :max domains at a time. Ask your admin to adjust this limit.',
+
+    'mutedAccounts' => 'Muted Accounts',
+    'blockedAccounts' => 'Blocked Accounts',
+    'blockedDomains' => 'Blocked Domains',
 ];
