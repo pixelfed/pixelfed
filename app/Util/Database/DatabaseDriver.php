@@ -76,4 +76,12 @@ class DatabaseDriver
     {
         return self::name($connection) === 'pgsql';
     }
+
+    /**
+     * True when the driver is SQLite (typically the test connection).
+     */
+    public static function isSqlite(?string $connection = null): bool
+    {
+        return self::name($connection) === 'sqlite';
+    }
 }

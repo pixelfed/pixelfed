@@ -58,3 +58,13 @@ if (! function_exists('db_is_pgsql')) {
         return DatabaseDriver::isPgsql($connection);
     }
 }
+
+if (! function_exists('db_is_sqlite')) {
+    /**
+     * True when the active (or given) connection uses SQLite (usually tests).
+     */
+    function db_is_sqlite(?string $connection = null): bool
+    {
+        return DatabaseDriver::isSqlite($connection);
+    }
+}
