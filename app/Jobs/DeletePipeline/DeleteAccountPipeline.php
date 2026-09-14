@@ -43,6 +43,7 @@ use App\Models\UserDevice;
 use App\Models\UserFilter;
 use App\Models\UserPronoun;
 use App\Models\UserSetting;
+use App\Services\AccountRevocationService;
 use App\Services\AccountService;
 use App\Services\FollowerService;
 use App\Services\PublicTimelineService;
@@ -94,6 +95,7 @@ class DeleteAccountPipeline implements ShouldQueue
 
         $profile = $user->profile;
         $id = $user->profile_id;
+        AccountRevocationService::revokeAll($user);
         $cloudStorageEnabled = (bool) config_cache('pixelfed.cloud_storage');
         $cloudDisk = config('filesystems.cloud');
 
