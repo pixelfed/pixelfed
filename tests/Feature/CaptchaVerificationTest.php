@@ -4,6 +4,7 @@ namespace Tests\Feature;
 
 use App\Services\Captcha\CapDriver;
 use App\Services\Captcha\TurnstileDriver;
+use Illuminate\Http\Client\ConnectionException;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Validator;
 use PHPUnit\Framework\Attributes\Test;
@@ -352,7 +353,7 @@ class CaptchaVerificationTest extends TestCase
             'captcha.cap.fail_open' => true,
         ]);
         Http::fake(function () {
-            throw new \Illuminate\Http\Client\ConnectionException('connection refused');
+            throw new ConnectionException('connection refused');
         });
 
         $this->assertTrue((new CapDriver)->verify(['cap-token' => 'tok']));
@@ -368,7 +369,7 @@ class CaptchaVerificationTest extends TestCase
             'captcha.cap.fail_open' => false,
         ]);
         Http::fake(function () {
-            throw new \Illuminate\Http\Client\ConnectionException('connection refused');
+            throw new ConnectionException('connection refused');
         });
 
         $this->assertFalse((new CapDriver)->verify(['cap-token' => 'tok']));
