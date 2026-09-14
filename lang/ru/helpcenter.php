@@ -10,7 +10,7 @@ return [
     'profile' => 'Профиль',
     'stories' => 'Истории',
     'hashtags' => 'Хэштэги',
-    'discover' => 'Discover',
+    'discover' => '',
     'directMessages' => 'Личные сообщения',
     'timelines' => 'Ленты',
     'embed' => 'Вставить',
