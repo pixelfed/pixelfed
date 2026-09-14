@@ -3,6 +3,7 @@
 use App\Models\Media;
 use App\Models\User;
 use App\Util\Media\Image;
+use App\Util\Media\ImageDriverManager;
 use Illuminate\Foundation\Testing\LazilyRefreshDatabase;
 use Illuminate\Support\Facades\Config;
 use Illuminate\Support\Facades\Storage;
@@ -25,8 +26,8 @@ beforeEach(function () {
     // when its runtime isn't available locally so contributors without
     // libvips/ext-ffi aren't blocked; CI installs libvips so it still runs.
     try {
-        \App\Util\Media\ImageDriverManager::createImageManager();
-    } catch (\Throwable $e) {
+        ImageDriverManager::createImageManager();
+    } catch (Throwable $e) {
         test()->markTestSkipped('Image driver "'.config('image.driver').'" is not available: '.$e->getMessage());
     }
 
