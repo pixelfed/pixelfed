@@ -157,7 +157,7 @@ return [
     'security.ip_address' => 'IPアドレス:',
     'security.user_agent' => 'ユーザーエージェント:',
     'security.devices' => 'デバイス',
-    'security.ip' => 'IP:',
+    'security.ip' => '',
     'security.device' => 'デバイス:',
     'security.browser' => 'ブラウザ:',
     'security.last_login' => '最終ログイン:',
