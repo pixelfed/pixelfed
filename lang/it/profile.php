@@ -12,4 +12,10 @@ return [
 
     'status.disabled.header' => 'Profilo Non Disponibile',
     'status.disabled.body' => 'Scusa, questo profilo non è disponibile al momento. Per favore riprova più tardi.',
+
+    'block.domain.max' => 'Max limit of domain blocks reached! You can only block :max domains at a time. Ask your admin to adjust this limit.',
+
+    'mutedAccounts' => 'Muted Accounts',
+    'blockedAccounts' => 'Blocked Accounts',
+    'blockedDomains' => 'Blocked Domains',
 ];
