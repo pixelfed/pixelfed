@@ -8,11 +8,11 @@ return [
     'gettingStarted' => 'Loslegen',
     'sharingMedia' => 'Medien teilen',
     'profile' => 'Profil',
-    'stories' => 'Stories',
-    'hashtags' => 'Hashtags',
+    'stories' => '',
+    'hashtags' => '',
     'discover' => 'Entdecken',
     'directMessages' => 'Privatnachrichten',
-    'timelines' => 'Timelines',
+    'timelines' => '',
     'embed' => 'Einbetten',
 
     'communityGuidelines' => 'Gemeinschaftsrichtlinien',
@@ -22,5 +22,7 @@ return [
     'safetyTips' => 'Sicherheitstipps',
     'reportSomething' => 'Etwas melden',
     'dataPolicy' => 'Datenpolitik',
+
+    'taggingPeople' => '',
 
 ];
