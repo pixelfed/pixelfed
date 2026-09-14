@@ -299,11 +299,13 @@ trait AdminSettingsController
                 break;
 
             case 'mysql':
+            case 'mariadb':
                 $exp = DB::raw('select version()');
                 $expQuery = $exp->getValue(DB::connection()->getQueryGrammar());
+                $version = DB::select($expQuery)[0]->{'version()'};
                 $sys['database'] = [
-                    'name' => 'MySQL',
-                    'version' => DB::select($expQuery)[0]->{'version()'},
+                    'name' => stripos($version, 'mariadb') !== false ? 'MariaDB' : 'MySQL',
+                    'version' => $version,
                 ];
                 break;
 

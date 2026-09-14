@@ -59,9 +59,13 @@ class RegisterController extends Controller
      */
     public function validator(array $data)
     {
-        if (config('database.default') == 'pgsql') {
-            $data['username'] = strtolower($data['username']);
-            $data['email'] = strtolower($data['email']);
+        if (db_is_pgsql()) {
+            if (isset($data['username'])) {
+                $data['username'] = strtolower($data['username']);
+            }
+            if (isset($data['email'])) {
+                $data['email'] = strtolower($data['email']);
+            }
         }
 
         $usernameRules = [
@@ -109,9 +113,13 @@ class RegisterController extends Controller
      */
     public function create(array $data)
     {
-        if (config('database.default') == 'pgsql') {
-            $data['username'] = strtolower($data['username']);
-            $data['email'] = strtolower($data['email']);
+        if (db_is_pgsql()) {
+            if (isset($data['username'])) {
+                $data['username'] = strtolower($data['username']);
+            }
+            if (isset($data['email'])) {
+                $data['email'] = strtolower($data['email']);
+            }
         }
 
         return User::create([

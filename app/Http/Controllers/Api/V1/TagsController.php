@@ -52,7 +52,7 @@ class TagsController extends Controller
         $pid = $request->user()->profile_id;
         $account = AccountService::get($pid);
 
-        $operator = config('database.default') == 'pgsql' ? 'ilike' : 'like';
+        $operator = db_is_pgsql() ? 'ilike' : 'like';
         $tag = Hashtag::where('name', $operator, $id)
             ->orWhere('slug', $operator, $id)
             ->first();
@@ -94,7 +94,7 @@ class TagsController extends Controller
         $pid = $request->user()->profile_id;
         $account = AccountService::get($pid);
 
-        $operator = config('database.default') == 'pgsql' ? 'ilike' : 'like';
+        $operator = db_is_pgsql() ? 'ilike' : 'like';
         $tag = Hashtag::where('name', $operator, $id)
             ->orWhere('slug', $operator, $id)
             ->first();
@@ -139,7 +139,7 @@ class TagsController extends Controller
 
         $pid = $request->user()->profile_id;
         $account = AccountService::get($pid);
-        $operator = config('database.default') == 'pgsql' ? 'ilike' : 'like';
+        $operator = db_is_pgsql() ? 'ilike' : 'like';
         $tag = Hashtag::where('name', $operator, $id)
             ->orWhere('slug', $operator, $id)
             ->first();
