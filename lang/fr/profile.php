@@ -1,21 +1,21 @@
 <?php
 
 return [
-    'emptyTimeline' => 'Cet·te utilisateur·rice n\'a pas encore de publications !',
-    'emptyFollowers' => 'Cet·te utilisateur·rice n`\'a pas encore d\'abonné·e·s !',
-    'emptyFollowing' => 'Cet·te utilisateur·rice ne suit personne pour le moment !',
-    'emptySaved' => 'Vous n\'avez sauvegardé aucune publication pour le moment !',
-    'savedWarning' => 'Vous seul pouvez voir ce que vous avez enregistré',
-    'privateProfileWarning' => 'Ce compte est privé',
-    'alreadyFollow' => 'N\'êtes vous pas déjà abonné·e à :username ?',
-    'loginToSeeProfile' => 'pour pouvoir consulter leurs photos et vidéos.',
+    'emptyTimeline' => 'This user has no posts yet!',
+    'emptyFollowers' => 'This user has no followers yet!',
+    'emptyFollowing' => 'This user is not following anyone yet!',
+    'emptySaved' => 'You haven’t saved any post yet!',
+    'savedWarning' => 'Only you can see what you’ve saved',
+    'privateProfileWarning' => 'This Account is Private',
+    'alreadyFollow' => 'Already follow :username?',
+    'loginToSeeProfile' => 'to see their photos and videos.',
 
-    'status.disabled.header' => 'Profil indisponible',
-    'status.disabled.body' => 'Désolé, ce profil n’est pas disponible pour le moment. Veuillez réessayer plus tard.',
+    'status.disabled.header' => 'Profile Unavailable',
+    'status.disabled.body' => 'Sorry, this profile is not available at the moment. Please try again shortly.',
 
-    'block.domain.max' => 'Vous avez atteint la limite du nombre de domaines bloqués, qui est de :max domaines. Contactez votre administrateur pour ajuster ce paramètre.',
+    'block.domain.max' => 'Max limit of domain blocks reached! You can only block :max domains at a time. Ask your admin to adjust this limit.',
 
-    'mutedAccounts' => 'Comptes masqués',
-    'blockedAccounts' => 'Comptes bloqués',
-    'blockedDomains' => 'Domaines bloqués',
+    'mutedAccounts' => 'Muted Accounts',
+    'blockedAccounts' => 'Blocked Accounts',
+    'blockedDomains' => 'Blocked Domains',
 ];

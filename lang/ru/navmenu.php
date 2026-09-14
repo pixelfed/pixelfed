@@ -1,19 +1,19 @@
 <?php
 
 return [
-
-    'search' => 'Поиск',
-    'home' => 'Главная',
-    'local' => 'Локальная',
-    'network' => 'Глобальная',
+    'search' => 'Search',
+    'home' => 'Home',
+    'local' => 'Local',
+    'network' => 'Network',
     'discover' => 'Discover',
-    'viewMyProfile' => 'Мой профиль',
-    'myTimeline' => 'Моя лента',
-    'publicTimeline' => 'Глобальная лента',
+    'viewMyProfile' => 'View my profile',
+    'myProfile' => 'My Profile',
+    'myTimeline' => 'My Timeline',
+    'publicTimeline' => 'Public Timeline',
     'remoteFollow' => 'Remote Follow',
-    'settings' => 'Настройки',
-    'admin' => 'Администрация',
-    'logout' => 'Выйти',
-    'directMessages' => 'Личные сообщения',
-
+    'settings' => 'Settings',
+    'admin' => 'Admin',
+    'logout' => 'Logout',
+    'directMessages' => 'Direct Messages',
+    'composePost' => 'Compose Post',
 ];

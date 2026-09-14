@@ -13,10 +13,10 @@ return [
     |
     */
 
-    'password' => 'סיסמאות צריכות לכלול לפחות שש אותיות ולהתאים לאישור סיסמה.',
-    'reset' => 'סיסמאתך אופסה!',
-    'sent' => 'קישור איפוס הסיסמה נשלח לך לאימייל!',
-    'token' => 'אסימון איפוס סיסמה זה אינו תקין.',
-    'user' => 'איננו יכולים למצוא משתמש בעל אימייל זה.',
+    'password' => 'Passwords must be at least six characters and match the confirmation.',
+    'reset' => 'Your password has been reset!',
+    'sent' => 'If your email address exists in our database, you will receive a password recovery link at your email address in a few minutes. Please check your spam folder if you didn’t receive this email.',
+    'token' => 'This password reset token is invalid.',
+    'user' => 'If your email address exists in our database, you will receive a password recovery link at your email address in a few minutes. Please check your spam folder if you didn’t receive this email.',
 
 ];

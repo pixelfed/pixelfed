@@ -1,15 +1,21 @@
 <?php
 
 return [
-    'emptyTimeline' => 'У этого пользователя пока нет ни одного поста!',
-    'emptyFollowers' => 'У этого пользователя пока нет подписчиков!',
-    'emptyFollowing' => 'Этот пользователь пока ни на кого не подписан!',
-    'emptySaved' => 'Вы еще не сохранили ни одного поста!',
-    'savedWarning' => 'Только вы можете видеть сохранённые посты',
-    'privateProfileWarning' => 'Эта учётная запись скрыта',
-    'alreadyFollow' => 'Уже подписаны на :username?',
-    'loginToSeeProfile' => 'чтобы посмотреть их фото и видео.',
+    'emptyTimeline' => 'This user has no posts yet!',
+    'emptyFollowers' => 'This user has no followers yet!',
+    'emptyFollowing' => 'This user is not following anyone yet!',
+    'emptySaved' => 'You haven’t saved any post yet!',
+    'savedWarning' => 'Only you can see what you’ve saved',
+    'privateProfileWarning' => 'This Account is Private',
+    'alreadyFollow' => 'Already follow :username?',
+    'loginToSeeProfile' => 'to see their photos and videos.',
 
-    'status.disabled.header' => 'Учётная запись недоступна',
-    'status.disabled.body' => 'К сожалению, эта учётная запись недоступна на данный момент. Пожалуйста, попробуйте ещё раз позднее.',
+    'status.disabled.header' => 'Profile Unavailable',
+    'status.disabled.body' => 'Sorry, this profile is not available at the moment. Please try again shortly.',
+
+    'block.domain.max' => 'Max limit of domain blocks reached! You can only block :max domains at a time. Ask your admin to adjust this limit.',
+
+    'mutedAccounts' => 'Muted Accounts',
+    'blockedAccounts' => 'Blocked Accounts',
+    'blockedDomains' => 'Blocked Domains',
 ];

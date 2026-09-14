@@ -2,6 +2,6 @@
 
 return [
 
-    'emptyPersonalTimeline' => 'Aikajanasi on tyhjä.',
+    'emptyPersonalTimeline' => 'Your timeline is empty.',
 
 ];

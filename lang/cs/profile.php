@@ -1,15 +1,21 @@
 <?php
 
 return [
-    'emptyTimeline' => 'Tento uživatel ještě nemá žádné příspěvky!',
-    'emptyFollowers' => 'Tento uživatel ještě nemá žádné sledující!',
-    'emptyFollowing' => 'Tento uživatel ještě nikoho nesleduje!',
-    'emptySaved' => 'Ještě jste neuložil/a žádné příspěvky!',
-    'savedWarning' => 'Pouze vy můžete vidět, co máte uložené',
-    'privateProfileWarning' => 'Tento účet je soukromý',
-    'alreadyFollow' => 'Již uživatele :username sledujete?',
-    'loginToSeeProfile' => 'pro zobrazení jeho/jejích fotek a videí.',
+    'emptyTimeline' => 'This user has no posts yet!',
+    'emptyFollowers' => 'This user has no followers yet!',
+    'emptyFollowing' => 'This user is not following anyone yet!',
+    'emptySaved' => 'You haven’t saved any post yet!',
+    'savedWarning' => 'Only you can see what you’ve saved',
+    'privateProfileWarning' => 'This Account is Private',
+    'alreadyFollow' => 'Already follow :username?',
+    'loginToSeeProfile' => 'to see their photos and videos.',
 
-    'status.disabled.header' => 'Profil nedostupný',
-    'status.disabled.body' => 'Omlouváme se, tento profil není v tuto chvíli dostupný. Prosím zkuste to znovu zakrátko.',
+    'status.disabled.header' => 'Profile Unavailable',
+    'status.disabled.body' => 'Sorry, this profile is not available at the moment. Please try again shortly.',
+
+    'block.domain.max' => 'Max limit of domain blocks reached! You can only block :max domains at a time. Ask your admin to adjust this limit.',
+
+    'mutedAccounts' => 'Muted Accounts',
+    'blockedAccounts' => 'Blocked Accounts',
+    'blockedDomains' => 'Blocked Domains',
 ];

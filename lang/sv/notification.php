@@ -2,11 +2,11 @@
 
 return [
 
-    'likedPhoto' => 'gillade ditt inlägg.',
-    'likedComment' => 'gillade din kommentar.',
-    'startedFollowingYou' => 'började följa dig.',
-    'commented' => 'kommenterade ditt inlägg.',
-    'mentionedYou' => 'nämnde dig.',
-    'shared' => 'delade ditt inlägg.',
+    'likedPhoto' => 'liked your post.',
+    'likedComment' => 'liked your comment.',
+    'startedFollowingYou' => 'started following you.',
+    'commented' => 'commented on your post.',
+    'mentionedYou' => 'mentioned you.',
+    'shared' => 'shared your post.',
 
 ];

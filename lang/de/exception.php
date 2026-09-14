@@ -4,7 +4,7 @@ return [
 
     'compose' => [
         'invalid' => [
-            'album' => 'Mindestens 1 Foto oder Video muss enthalten sein.',
+            'album' => 'Must contain a single photo or video or multiple photos.',
         ],
     ],
 

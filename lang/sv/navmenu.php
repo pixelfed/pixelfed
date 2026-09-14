@@ -1,20 +1,19 @@
 <?php
 
 return [
-
-    'search' => 'Sök',
-    'home' => 'Hem',
-    'local' => 'Lokal',
-    'network' => 'Nätverk',
-    'discover' => 'Upptäck',
-    'viewMyProfile' => 'Se min profil',
-    'myProfile' => 'Min Profil',
-    'myTimeline' => 'Min Tidslinje',
-    'publicTimeline' => 'Publik Tidslinje',
-    'remoteFollow' => 'Remote-följ',
-    'settings' => 'Inställningar',
+    'search' => 'Search',
+    'home' => 'Home',
+    'local' => 'Local',
+    'network' => 'Network',
+    'discover' => 'Discover',
+    'viewMyProfile' => 'View my profile',
+    'myProfile' => 'My Profile',
+    'myTimeline' => 'My Timeline',
+    'publicTimeline' => 'Public Timeline',
+    'remoteFollow' => 'Remote Follow',
+    'settings' => 'Settings',
     'admin' => 'Admin',
-    'logout' => 'Logga ut',
-    'directMessages' => 'Meddelanden',
-
+    'logout' => 'Logout',
+    'directMessages' => 'Direct Messages',
+    'composePost' => 'Compose Post',
 ];

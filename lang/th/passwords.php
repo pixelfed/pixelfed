@@ -13,10 +13,10 @@ return [
     |
     */
 
-    'password' => 'รหัสผ่านจำเป็นต้องมีอย่างน้อยหกตัวอักษร',
-    'reset' => 'คุณได้เปลี่ยนรหัสผ่านเรียบร้อยแล้ว!',
-    'sent' => 'หากอีเมลของคุณอยู่ในฐานข้อมูลของเราแล้ว ในอีกไม่กี่นาทีคุณจะได้รับอีเมลเพื่อแก้ใขรหัสผ่าน หากไม่พบอีเมล โปรดไปตรวจดูที่ถังขยะ',
-    'token' => 'ใช้รหัสผ่านนี้ไม่ได้',
-    'user' => 'หากอีเมลของคุณอยู่ในฐานข้อมูลของเราแล้ว ในอีกไม่กี่นาทีคุณจะได้รับอีเมลเพื่อแก้ใขรหัสผ่าน หากไม่พบอีเมล โปรดไปตรวจดูที่ถังขยะ',
+    'password' => 'Passwords must be at least six characters and match the confirmation.',
+    'reset' => 'Your password has been reset!',
+    'sent' => 'If your email address exists in our database, you will receive a password recovery link at your email address in a few minutes. Please check your spam folder if you didn’t receive this email.',
+    'token' => 'This password reset token is invalid.',
+    'user' => 'If your email address exists in our database, you will receive a password recovery link at your email address in a few minutes. Please check your spam folder if you didn’t receive this email.',
 
 ];

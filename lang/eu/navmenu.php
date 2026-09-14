@@ -1,18 +1,19 @@
 <?php
 
 return [
-
-    'search' => 'Bilatu',
-    'home' => 'Sarrera',
-    'local' => 'Lokala',
-    'discover' => 'Esploratu',
-    'viewMyProfile' => 'Ikusi nire profila',
-    'myTimeline' => 'Nire denboralerroa',
-    'publicTimeline' => 'Denboralerro publikoa',
-    'remoteFollow' => 'Urruneko Jarraipena',
-    'settings' => 'Ezarpenak',
+    'search' => 'Search',
+    'home' => 'Home',
+    'local' => 'Local',
+    'network' => 'Network',
+    'discover' => 'Discover',
+    'viewMyProfile' => 'View my profile',
+    'myProfile' => 'My Profile',
+    'myTimeline' => 'My Timeline',
+    'publicTimeline' => 'Public Timeline',
+    'remoteFollow' => 'Remote Follow',
+    'settings' => 'Settings',
     'admin' => 'Admin',
-    'logout' => 'Irten',
-    'directMessages' => 'Mezu zuzenak',
-
+    'logout' => 'Logout',
+    'directMessages' => 'Direct Messages',
+    'composePost' => 'Compose Post',
 ];

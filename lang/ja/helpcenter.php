@@ -2,27 +2,27 @@
 
 return [
 
-    'helpcenter' => 'ヘルプセンター',
+    'helpcenter' => 'Help Center',
     'whatsnew' => 'What\'s New',
 
-    'gettingStarted' => 'はじめに',
-    'sharingMedia' => 'メディアを共有する',
-    'profile' => 'プロフィール',
-    'stories' => 'ストーリー',
-    'hashtags' => 'ハッシュダグ',
-    'discover' => '探索',
-    'directMessages' => 'ダイレクトメッセージ',
-    'timelines' => 'タイムライン',
+    'gettingStarted' => 'Getting Started',
+    'sharingMedia' => 'Sharing Media',
+    'profile' => 'Profile',
+    'stories' => 'Stories',
+    'hashtags' => 'Hashtags',
+    'discover' => 'Discover',
+    'directMessages' => 'Direct Messages',
+    'timelines' => 'Timelines',
+    'embed' => 'Embed',
 
-    'embed' => '埋め込む',
-    'communityGuidelines' => 'コミュニティガイドライン',
-    'whatIsTheFediverse' => 'fediverseとは',
-    'controllingVisibility' => '公開範囲のコントロール',
-    'blockingAccounts' => 'ブロックしたアカウント',
-    'safetyTips' => '安全のためのヒント',
-    'reportSomething' => '報告する',
-    'dataPolicy' => 'データポリシー',
+    'communityGuidelines' => 'Community Guidelines',
+    'whatIsTheFediverse' => 'What is the fediverse?',
+    'controllingVisibility' => 'Controlling Visibility',
+    'blockingAccounts' => 'Blocking Accounts',
+    'safetyTips' => 'Safety Tips',
+    'reportSomething' => 'Report Something',
+    'dataPolicy' => 'Data Policy',
 
-    'taggingPeople' => 'タグ付けされた人物',
+    'taggingPeople' => 'Tagging People',
 
 ];

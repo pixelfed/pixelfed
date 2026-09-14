@@ -2,11 +2,11 @@
 
 return [
 
-    'likedPhoto' => 'ставить уподобання під ваш допис.',
-    'likedComment' => 'ставить уподобання під ваш коментар.',
-    'startedFollowingYou' => 'починає за вами стежити.',
-    'commented' => 'коментує ваш допис.',
-    'mentionedYou' => 'згадує вам.',
-    'shared' => 'поширює ваш допис.',
+    'likedPhoto' => 'liked your post.',
+    'likedComment' => 'liked your comment.',
+    'startedFollowingYou' => 'started following you.',
+    'commented' => 'commented on your post.',
+    'mentionedYou' => 'mentioned you.',
+    'shared' => 'shared your post.',
 
 ];

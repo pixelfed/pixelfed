@@ -1,20 +1,19 @@
 <?php
 
 return [
-
-    'search' => 'Cercar',
-    'home' => 'Acuèlh',
+    'search' => 'Search',
+    'home' => 'Home',
     'local' => 'Local',
-    'network' => 'Malhum',
-    'discover' => 'Descobrir',
-    'viewMyProfile' => 'Veire mon perfil',
-    'myProfile' => 'Mon perfil',
-    'myTimeline' => 'Ma cronologia',
-    'publicTimeline' => 'Cronologia publica',
-    'remoteFollow' => 'Seguir a distància',
-    'settings' => 'Paramètres',
+    'network' => 'Network',
+    'discover' => 'Discover',
+    'viewMyProfile' => 'View my profile',
+    'myProfile' => 'My Profile',
+    'myTimeline' => 'My Timeline',
+    'publicTimeline' => 'Public Timeline',
+    'remoteFollow' => 'Remote Follow',
+    'settings' => 'Settings',
     'admin' => 'Admin',
-    'logout' => 'Desconnexion',
-    'directMessages' => 'Messatges dirèctes',
-
+    'logout' => 'Logout',
+    'directMessages' => 'Direct Messages',
+    'composePost' => 'Compose Post',
 ];

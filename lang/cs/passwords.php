@@ -13,10 +13,10 @@ return [
     |
     */
 
-    'password' => 'Hesla musí být alespoň šest znaků dlouhá a shodovat se s potvrzením.',
-    'reset' => 'Vaše heslo bylo obnoveno!',
-    'sent' => 'Pokud vaše e-mailová adresa existuje v naší databázi, obdržíte za pár minut na vaší e-mailové adrese odkaz pro obnovu hesla. Pokud tento e-mail neobdržíte, prosím zkontrolujte svou složku „spam“.',
-    'token' => 'Tento token pro obnovu hesla je neplatný.',
-    'user' => 'Pokud vaše e-mailová adresa existuje v naší databázi, obdržíte za pár minut na vaší e-mailové adrese odkaz pro obnovu hesla. Pokud tento e-mail neobdržíte, prosím zkontrolujte svou složku „spam“.',
+    'password' => 'Passwords must be at least six characters and match the confirmation.',
+    'reset' => 'Your password has been reset!',
+    'sent' => 'If your email address exists in our database, you will receive a password recovery link at your email address in a few minutes. Please check your spam folder if you didn’t receive this email.',
+    'token' => 'This password reset token is invalid.',
+    'user' => 'If your email address exists in our database, you will receive a password recovery link at your email address in a few minutes. Please check your spam folder if you didn’t receive this email.',
 
 ];

@@ -2,11 +2,11 @@
 
 return [
 
-    'likedPhoto' => 'syntes om dit billede.',
-    'likedComment' => 'Syntes om din kommentar.',
-    'startedFollowingYou' => 'f&oslash;lger dig nu.',
-    'commented' => 'har kommenteret på dit opslag.',
-    'mentionedYou' => 'har n&aelig;vnt dig.',
-    'shared' => 'har delt dit opslag.',
+    'likedPhoto' => 'liked your post.',
+    'likedComment' => 'liked your comment.',
+    'startedFollowingYou' => 'started following you.',
+    'commented' => 'commented on your post.',
+    'mentionedYou' => 'mentioned you.',
+    'shared' => 'shared your post.',
 
 ];

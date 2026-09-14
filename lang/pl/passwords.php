@@ -13,10 +13,10 @@ return [
     |
     */
 
-    'password' => 'Hasło musi składać się z przynajmniej 6 znaków i być równe powtórzonemu.',
-    'reset' => 'Twoje hasło zostało zresetowane!',
-    'sent' => 'Jeżeli ten adres e-mail jest obecny w naszej bazie danych, otrzymasz wiadomość z odnośnikiem resetowania hasła w ciągu kilku minut. Jeżeli nie dostałeś(-aś) tego maila, sprawdź zawartość folderu Spam.',
+    'password' => 'Passwords must be at least six characters and match the confirmation.',
+    'reset' => 'Your password has been reset!',
+    'sent' => 'If your email address exists in our database, you will receive a password recovery link at your email address in a few minutes. Please check your spam folder if you didn’t receive this email.',
     'token' => 'This password reset token is invalid.',
-    'user' => 'Jeżeli ten adres e-mail jest obecny w naszej bazie danych, otrzymasz wiadomość z odnośnikiem resetowania hasła w ciągu kilku minut. Jeżeli nie dostałeś(-aś) tego maila, sprawdź zawartość folderu Spam.',
+    'user' => 'If your email address exists in our database, you will receive a password recovery link at your email address in a few minutes. Please check your spam folder if you didn’t receive this email.',
 
 ];

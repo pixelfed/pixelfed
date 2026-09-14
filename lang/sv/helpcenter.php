@@ -2,25 +2,27 @@
 
 return [
 
-    'helpcenter' => 'Hjälpcenter',
-    'whatsnew' => 'Vad är nytt',
+    'helpcenter' => 'Help Center',
+    'whatsnew' => 'What\'s New',
 
-    'gettingStarted' => 'Komma igång',
+    'gettingStarted' => 'Getting Started',
     'sharingMedia' => 'Sharing Media',
-    'profile' => 'Profil',
+    'profile' => 'Profile',
     'stories' => 'Stories',
     'hashtags' => 'Hashtags',
-    'discover' => 'Upptäck',
-    'directMessages' => 'Direktmeddelanden',
-    'timelines' => 'Tidslinjer',
-    'embed' => 'Bädda in',
+    'discover' => 'Discover',
+    'directMessages' => 'Direct Messages',
+    'timelines' => 'Timelines',
+    'embed' => 'Embed',
 
-    'communityGuidelines' => 'Riktlinjer för communityt',
-    'whatIsTheFediverse' => 'Vad är fediversumet?',
-    'controllingVisibility' => 'Kontrollera synlighet',
-    'blockingAccounts' => 'Blocka konton',
-    'safetyTips' => 'Säkerhetstips',
-    'reportSomething' => 'Rapportera någonting',
-    'dataPolicy' => 'Datapolicy',
+    'communityGuidelines' => 'Community Guidelines',
+    'whatIsTheFediverse' => 'What is the fediverse?',
+    'controllingVisibility' => 'Controlling Visibility',
+    'blockingAccounts' => 'Blocking Accounts',
+    'safetyTips' => 'Safety Tips',
+    'reportSomething' => 'Report Something',
+    'dataPolicy' => 'Data Policy',
+
+    'taggingPeople' => 'Tagging People',
 
 ];

@@ -2,43 +2,34 @@
 
 return [
 
-    /*
-    |--------------------------------------------------------------------------
-    | Authentication Language Lines
-    |--------------------------------------------------------------------------
-    |
-    | The following language lines are used during authentication for various
-    | messages that we need to display to the user. You are free to modify
-    | these language lines according to your application's requirements.
-    |
-    */
+    'verifyYourEmailAddress' => ' - Verify Your Email Address',
+    'loginTitle' => 'Account Login',
+    'failed' => 'These credentials do not match our records.',
+    'throttle' => 'Too many login attempts. Please try again in :seconds seconds.',
+    'password' => 'Password',
+    'remember' => 'Remember Me',
+    'forgot' => 'Forgot Password',
+    'login' => 'Login',
 
-    'verifyYourEmailAddress' => ' - メールアドレス認証',
-    'loginTitle' => 'アカウントのログイン',
-    'failed' => 'これらの認証情報は正しくありません。',
-    'throttle' => 'ログイン試行回数が多すぎます。 :seconds 秒後にもう一度お試しください。',
-    'password' => 'パスワード',
-    'remember' => 'ログイン状態を保存する',
-    'forgot' => 'パスワードを忘れた場合',
-    'login' => 'ログイン',
+    'register' => 'Register',
+    'reset' => 'Password Reset',
 
-    'register' => '登録',
-    'reset' => 'パスワードをリセット',
+    'name' => 'Name',
+    'username' => 'Username',
+    'confirm-password' => 'Confirm Password',
 
-    'name' => 'ユーザー名',
-    'username' => 'アカウント',
-    'confirm-password' => 'パスワード（確認用）',
+    'age' => 'I am at least 16 years old',
+    'terms' => 'By signing up, you agree to our <a href="'.route('site.terms').'" class="font-weight-bold text-dark">Terms of Use</a> and <a href="'.route('site.privacy').'" class="font-weight-bold text-dark">Privacy Policy</a>.',
 
-    'age' => '私は16歳以上です。',
-    'terms' => 'アカウントを作成することで、<a href="'.route('site.terms').'" class="font-weight-bold text-dark">利用規約</a>と<a href="'.route('site.privacy').'" class="font-weight-bold text-dark">プライバシーポリシー</a>に同意したものと見なします。',
+    'emailAddress' => 'E-Mail Address',
+    'email' => 'E-Mail',
+    'forgotEmail' => 'Forgot E-Mail',
 
-    'emailAddress' => 'メールアドレス',
+    'registerTitle' => 'Register a new account',
 
-    'registerTitle' => '新規アカウントの作成',
+    'sendReset' => 'Send Password Reset Link',
+    'backLogin' => 'Back to Login',
 
-    'sendReset' => 'パスワードリセット用のリンクを送信する',
-    'backLogin' => 'ログイン画面に戻る',
-
-    'signInMastodon' => 'Mastodonでログインする',
+    'signInMastodon' => 'Sign-in with Mastodon',
 
 ];

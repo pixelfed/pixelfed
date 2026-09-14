@@ -2,6 +2,6 @@
 
 return [
 
-    'emptyPersonalTimeline' => 'Vaše časová osa je prázdná.',
+    'emptyPersonalTimeline' => 'Your timeline is empty.',
 
 ];

@@ -2,27 +2,27 @@
 
 return [
 
-    'helpcenter' => 'Centro de Axuda',
-    'whatsnew' => 'Novidades',
+    'helpcenter' => 'Help Center',
+    'whatsnew' => 'What\'s New',
 
-    'gettingStarted' => 'Comezar',
-    'sharingMedia' => 'Compartir Multimedia',
-    'profile' => 'Perfil',
-    'stories' => 'Historias',
-    'hashtags' => 'Cancelos',
-    'discover' => 'Descubrir',
-    'directMessages' => 'Mensaxes Directas',
-    'timelines' => 'Cronoloxías',
-    'embed' => 'Incrustar',
+    'gettingStarted' => 'Getting Started',
+    'sharingMedia' => 'Sharing Media',
+    'profile' => 'Profile',
+    'stories' => 'Stories',
+    'hashtags' => 'Hashtags',
+    'discover' => 'Discover',
+    'directMessages' => 'Direct Messages',
+    'timelines' => 'Timelines',
+    'embed' => 'Embed',
 
-    'communityGuidelines' => 'Guías da comunidade',
-    'whatIsTheFediverse' => 'Que é o fediverso?',
-    'controllingVisibility' => 'Control da visibilidade',
-    'blockingAccounts' => 'Bloqueo de contas',
-    'safetyTips' => 'Seguridade',
-    'reportSomething' => 'Denunicas',
-    'dataPolicy' => 'Política de datos',
+    'communityGuidelines' => 'Community Guidelines',
+    'whatIsTheFediverse' => 'What is the fediverse?',
+    'controllingVisibility' => 'Controlling Visibility',
+    'blockingAccounts' => 'Blocking Accounts',
+    'safetyTips' => 'Safety Tips',
+    'reportSomething' => 'Report Something',
+    'dataPolicy' => 'Data Policy',
 
-    'taggingPeople' => 'Etiquetar persoas',
+    'taggingPeople' => 'Tagging People',
 
 ];

@@ -1,10 +1,12 @@
 <?php
 
 return [
-    'likedPhoto' => 'li ha agradat la vostra publicació.',
-    'likedComment' => 'li ha agradat el vostre comentari.',
-    'startedFollowingYou' => 'ha començat a seguir-vos.',
-    'commented' => 'ha comentat la vostra publicació.',
-    'mentionedYou' => 'us ha esmentat.',
-    'shared' => 'ha compartit la vostra publicació.',
+
+    'likedPhoto' => 'liked your post.',
+    'likedComment' => 'liked your comment.',
+    'startedFollowingYou' => 'started following you.',
+    'commented' => 'commented on your post.',
+    'mentionedYou' => 'mentioned you.',
+    'shared' => 'shared your post.',
+
 ];

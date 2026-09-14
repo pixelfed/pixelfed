@@ -2,25 +2,27 @@
 
 return [
 
-    'helpcenter' => 'Seccion d\'ajuda',
-    'whatsnew' => 'Qué de nòu',
+    'helpcenter' => 'Help Center',
+    'whatsnew' => 'What\'s New',
 
-    'gettingStarted' => 'Començar',
-    'sharingMedia' => 'Partatge de mèdias',
-    'profile' => 'Perfil',
+    'gettingStarted' => 'Getting Started',
+    'sharingMedia' => 'Sharing Media',
+    'profile' => 'Profile',
     'stories' => 'Stories',
-    'hashtags' => 'Etiquetas',
-    'discover' => 'Descobrir',
-    'directMessages' => 'Messatges dirèctes',
-    'timelines' => 'Cronologias',
-    'embed' => 'Integrar',
+    'hashtags' => 'Hashtags',
+    'discover' => 'Discover',
+    'directMessages' => 'Direct Messages',
+    'timelines' => 'Timelines',
+    'embed' => 'Embed',
 
-    'communityGuidelines' => 'Linhas directrises de la comunitat',
-    'whatIsTheFediverse' => 'Qu\'es aquò lo Fedivers ?',
-    'controllingVisibility' => 'Contraròtle de la visibilitat',
-    'blockingAccounts' => 'Blocatge de compte',
-    'safetyTips' => 'Astúcias de seguretat',
-    'reportSomething' => 'Senhalar quicòm',
-    'dataPolicy' => 'Politica de donadas',
+    'communityGuidelines' => 'Community Guidelines',
+    'whatIsTheFediverse' => 'What is the fediverse?',
+    'controllingVisibility' => 'Controlling Visibility',
+    'blockingAccounts' => 'Blocking Accounts',
+    'safetyTips' => 'Safety Tips',
+    'reportSomething' => 'Report Something',
+    'dataPolicy' => 'Data Policy',
+
+    'taggingPeople' => 'Tagging People',
 
 ];

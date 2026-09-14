@@ -1,14 +1,21 @@
 <?php
 
 return [
-    'emptyTimeline' => 'Aquest compte encara no ha publicat res!',
-    'emptyFollowers' => 'A aquest compte encara no el segueix ningú!',
-    'emptyFollowing' => 'Aquest compte encara no segueix ningú!',
-    'emptySaved' => 'Encara no heu desat cap publicació!',
-    'savedWarning' => 'Ningú més pot veure el que heu desat',
-    'privateProfileWarning' => 'Aquest compte és privat',
-    'alreadyFollow' => 'Ja seguiu a :username?',
-    'loginToSeeProfile' => 'per veure les seves fotos i vídeos.',
-    'status.disabled.header' => 'Perfil no disponible',
-    'status.disabled.body' => 'Perdoneu, aquest perfil no està disponible en aquest moment. Proveu d\'accedir-hi d\'aquí a una estona.',
+    'emptyTimeline' => 'This user has no posts yet!',
+    'emptyFollowers' => 'This user has no followers yet!',
+    'emptyFollowing' => 'This user is not following anyone yet!',
+    'emptySaved' => 'You haven’t saved any post yet!',
+    'savedWarning' => 'Only you can see what you’ve saved',
+    'privateProfileWarning' => 'This Account is Private',
+    'alreadyFollow' => 'Already follow :username?',
+    'loginToSeeProfile' => 'to see their photos and videos.',
+
+    'status.disabled.header' => 'Profile Unavailable',
+    'status.disabled.body' => 'Sorry, this profile is not available at the moment. Please try again shortly.',
+
+    'block.domain.max' => 'Max limit of domain blocks reached! You can only block :max domains at a time. Ask your admin to adjust this limit.',
+
+    'mutedAccounts' => 'Muted Accounts',
+    'blockedAccounts' => 'Blocked Accounts',
+    'blockedDomains' => 'Blocked Domains',
 ];

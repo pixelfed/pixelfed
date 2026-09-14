@@ -2,6 +2,6 @@
 
 return [
 
-    'emptyPersonalTimeline' => 'Ваша лента пуста.',
+    'emptyPersonalTimeline' => 'Your timeline is empty.',
 
 ];

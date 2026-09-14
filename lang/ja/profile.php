@@ -1,21 +1,21 @@
 <?php
 
 return [
-    'emptyTimeline' => 'このユーザーはまだ何も投稿していません！',
-    'emptyFollowers' => 'このユーザーにはまだフォロワーがいません！',
-    'emptyFollowing' => 'このユーザーはまだ誰もフォローしていません！',
-    'savedWarning' => 'あなたが保存したものはあなただけが見ることができます。',
-    'emptySaved' => 'あなたはまだ何も保存していません。',
-    'privateProfileWarning' => 'このアカウントはプライベートです。',
-    'alreadyFollow' => 'もう既に :username さんをフォローしています。',
-    'loginToSeeProfile' => '写真とビデオを見る。',
+    'emptyTimeline' => 'This user has no posts yet!',
+    'emptyFollowers' => 'This user has no followers yet!',
+    'emptyFollowing' => 'This user is not following anyone yet!',
+    'emptySaved' => 'You haven’t saved any post yet!',
+    'savedWarning' => 'Only you can see what you’ve saved',
+    'privateProfileWarning' => 'This Account is Private',
+    'alreadyFollow' => 'Already follow :username?',
+    'loginToSeeProfile' => 'to see their photos and videos.',
 
-    'status.disabled.header' => 'プロフィールが無効です',
-    'status.disabled.body' => 'このプロフィールは現在利用できません。しばらくしてからもう一度お試しください。',
+    'status.disabled.header' => 'Profile Unavailable',
+    'status.disabled.body' => 'Sorry, this profile is not available at the moment. Please try again shortly.',
 
-    'block.domain.max' => 'ドメインブロック数の上限に達しました。ドメインブロックは :max 件までしか行えません。サーバー管理者に上限の調整について相談してみることをお勧めします。',
+    'block.domain.max' => 'Max limit of domain blocks reached! You can only block :max domains at a time. Ask your admin to adjust this limit.',
 
-    'mutedAccounts' => 'ミュートしたアカウント',
-    'blockedAccounts' => 'ブロックしたアカウント',
-    'blockedDomains' => 'ブロックしたドメイン',
+    'mutedAccounts' => 'Muted Accounts',
+    'blockedAccounts' => 'Blocked Accounts',
+    'blockedDomains' => 'Blocked Domains',
 ];

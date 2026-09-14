@@ -13,10 +13,10 @@ return [
     |
     */
 
-    'password' => 'Le password devono essere almeno lunghe 6 caratteri e corrispondere.',
-    'reset' => 'La tua password è stata reimpostata!',
-    'sent' => 'Ti abbiamo inviato via e-mail il link per reimpostare la tua password!',
-    'token' => 'Questo codice di reimpostazione della password non è valido.',
-    'user' => 'Non riusciamo a trovare un utente con questo indirizzo e-mail.',
+    'password' => 'Passwords must be at least six characters and match the confirmation.',
+    'reset' => 'Your password has been reset!',
+    'sent' => 'If your email address exists in our database, you will receive a password recovery link at your email address in a few minutes. Please check your spam folder if you didn’t receive this email.',
+    'token' => 'This password reset token is invalid.',
+    'user' => 'If your email address exists in our database, you will receive a password recovery link at your email address in a few minutes. Please check your spam folder if you didn’t receive this email.',
 
 ];

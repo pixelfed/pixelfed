@@ -13,10 +13,10 @@ return [
     |
     */
 
-    'password' => 'Пароль должен содержать не менее 6 символов и должен совпадать с подтверждением пароля.',
-    'reset' => 'Ваш пароль был сброшен!',
-    'sent' => 'Если ваш e-mail существует в нашей базе данных, в течение нескольких минут вы получите письмо со ссылкой для восстановления пароля. Если не получили письмо, пожалуйста, проверьте папку "Спам".',
-    'token' => 'Этот токен для сброса пароля некорректен.',
-    'user' => 'Если ваш e-mail существует в нашей базе данных, в течение нескольких минут вы получите письмо со ссылкой для восстановления пароля. Если не получили письмо, пожалуйста, проверьте папку "Спам".',
+    'password' => 'Passwords must be at least six characters and match the confirmation.',
+    'reset' => 'Your password has been reset!',
+    'sent' => 'If your email address exists in our database, you will receive a password recovery link at your email address in a few minutes. Please check your spam folder if you didn’t receive this email.',
+    'token' => 'This password reset token is invalid.',
+    'user' => 'If your email address exists in our database, you will receive a password recovery link at your email address in a few minutes. Please check your spam folder if you didn’t receive this email.',
 
 ];

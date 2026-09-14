@@ -2,27 +2,27 @@
 
 return [
 
-    'helpcenter' => 'Centrum pomocy',
-    'whatsnew' => 'Co nowego',
+    'helpcenter' => 'Help Center',
+    'whatsnew' => 'What\'s New',
 
-    'gettingStarted' => 'Rozpocznij',
-    'sharingMedia' => 'Wstawianie multimediów',
-    'profile' => 'Profil',
-    'stories' => 'Relacje',
-    'hashtags' => 'Hashtagi',
-    'discover' => 'Odkrywanie',
-    'directMessages' => 'Wiadomości bezpośrednie',
-    'timelines' => 'Osie czasu',
+    'gettingStarted' => 'Getting Started',
+    'sharingMedia' => 'Sharing Media',
+    'profile' => 'Profile',
+    'stories' => 'Stories',
+    'hashtags' => 'Hashtags',
+    'discover' => 'Discover',
+    'directMessages' => 'Direct Messages',
+    'timelines' => 'Timelines',
     'embed' => 'Embed',
 
-    'communityGuidelines' => 'Wytyczne dla społeczności',
-    'whatIsTheFediverse' => 'Czym jest Fediwersum?',
-    'controllingVisibility' => 'Kontrolowanie widoczności',
-    'blockingAccounts' => 'Blokowanie kont',
-    'safetyTips' => 'Wskazówki dot. bezpieczeństwa',
-    'reportSomething' => 'Zgłaszanie treści',
-    'dataPolicy' => 'Polityka przechowywania danych',
+    'communityGuidelines' => 'Community Guidelines',
+    'whatIsTheFediverse' => 'What is the fediverse?',
+    'controllingVisibility' => 'Controlling Visibility',
+    'blockingAccounts' => 'Blocking Accounts',
+    'safetyTips' => 'Safety Tips',
+    'reportSomething' => 'Report Something',
+    'dataPolicy' => 'Data Policy',
 
-    'taggingPeople' => 'Tagowanie ludzi',
+    'taggingPeople' => 'Tagging People',
 
 ];

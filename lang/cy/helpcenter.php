@@ -2,25 +2,27 @@
 
 return [
 
-    'helpcenter' => 'Canolfan Cymorth',
-    'whatsnew' => 'Beth Sy\'n Newydd',
+    'helpcenter' => 'Help Center',
+    'whatsnew' => 'What\'s New',
 
-    'gettingStarted' => 'Cychwyn Arni',
-    'sharingMedia' => 'Rhannu Cyfryngau',
-    'profile' => 'Proffil',
-    'stories' => 'Straeon',
-    'hashtags' => 'Hashnodau',
-    'discover' => 'Darganfod',
-    'directMessages' => 'Negeseuon Uniongyrchol',
-    'timelines' => 'Llinellau Amser',
-    'embed' => 'Gwreiddio',
+    'gettingStarted' => 'Getting Started',
+    'sharingMedia' => 'Sharing Media',
+    'profile' => 'Profile',
+    'stories' => 'Stories',
+    'hashtags' => 'Hashtags',
+    'discover' => 'Discover',
+    'directMessages' => 'Direct Messages',
+    'timelines' => 'Timelines',
+    'embed' => 'Embed',
 
-    'communityGuidelines' => 'Canllawiau Cymunedol',
-    'whatIsTheFediverse' => 'Beth yw\'r Fediverse?',
-    'controllingVisibility' => 'Rheoli Gwelededd',
-    'blockingAccounts' => 'Cyfrifon Blocio',
-    'safetyTips' => 'Awgrymiadau Diogelwch',
-    'reportSomething' => 'Riportio Rhywbeth',
-    'dataPolicy' => 'Polisi Data',
+    'communityGuidelines' => 'Community Guidelines',
+    'whatIsTheFediverse' => 'What is the fediverse?',
+    'controllingVisibility' => 'Controlling Visibility',
+    'blockingAccounts' => 'Blocking Accounts',
+    'safetyTips' => 'Safety Tips',
+    'reportSomething' => 'Report Something',
+    'dataPolicy' => 'Data Policy',
+
+    'taggingPeople' => 'Tagging People',
 
 ];

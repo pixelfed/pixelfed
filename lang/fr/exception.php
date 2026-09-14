@@ -1,9 +1,10 @@
 <?php
 
 return [
+
     'compose' => [
         'invalid' => [
-            'album' => 'Doit contenir une seule photo ou vidéo ou plusieurs photos.',
+            'album' => 'Must contain a single photo or video or multiple photos.',
         ],
     ],
 

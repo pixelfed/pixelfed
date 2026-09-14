@@ -2,42 +2,34 @@
 
 return [
 
-    /*
-    |--------------------------------------------------------------------------
-    | Authentication Language Lines
-    |--------------------------------------------------------------------------
-    |
-    | The following language lines are used during authentication for various
-    | messages that we need to display to the user. You are free to modify
-    | these language lines according to your application's requirements.
-    |
-    */
-    'loginTitle' => 'Iniciar Sesión',
-    'password' => 'Contraseña',
-    'remember' => 'Recordarme',
-    'forgot' => 'Olvidé mi contraseña',
-    'login' => 'Iniciar Sesión',
+    'verifyYourEmailAddress' => ' - Verify Your Email Address',
+    'loginTitle' => 'Account Login',
+    'failed' => 'These credentials do not match our records.',
+    'throttle' => 'Too many login attempts. Please try again in :seconds seconds.',
+    'password' => 'Password',
+    'remember' => 'Remember Me',
+    'forgot' => 'Forgot Password',
+    'login' => 'Login',
 
-    'register' => 'Registrarse',
-    'reset' => 'Reestablecer contraseña',
+    'register' => 'Register',
+    'reset' => 'Password Reset',
 
-    'name' => 'Nombre',
-    'username' => 'Nombre de usuario',
-    'confirm-password' => 'Confirmar Contraseña',
+    'name' => 'Name',
+    'username' => 'Username',
+    'confirm-password' => 'Confirm Password',
 
-    'age' => 'Tengo al menos 16 años',
-    'terms' => 'Al registrarte estás de acuerdo con nuestros <a href="'.route('site.terms').'" class="font-weight-bold text-dark">Términos de Uso</a> y <a href="'.route('site.privacy').'" class="font-weight-bold text-dark">Política de Privacidad</a>.',
+    'age' => 'I am at least 16 years old',
+    'terms' => 'By signing up, you agree to our <a href="'.route('site.terms').'" class="font-weight-bold text-dark">Terms of Use</a> and <a href="'.route('site.privacy').'" class="font-weight-bold text-dark">Privacy Policy</a>.',
 
-    'emailAddress' => 'Dirección de correo electrónico',
+    'emailAddress' => 'E-Mail Address',
+    'email' => 'E-Mail',
+    'forgotEmail' => 'Forgot E-Mail',
 
-    'registerTitle' => 'Registrar una nueva cuenta',
+    'registerTitle' => 'Register a new account',
 
-    'sendReset' => 'Enviar enlace para reestablecer la contraseña',
-    'backLogin' => 'Volver a inicio de sesión',
+    'sendReset' => 'Send Password Reset Link',
+    'backLogin' => 'Back to Login',
 
-    'signInMastodon' => 'Registrarse con Mastodon',
+    'signInMastodon' => 'Sign-in with Mastodon',
 
-    'failed' => 'Los datos introducidos no son válidos.',
-    'throttle' => 'Demasiados intentos de iniciar sesión. Por favor, inténtalo de nuevo en :seconds segundos.',
-    'verifyYourEmailAddress' => ' - Verifica tu dirección de correo',
 ];

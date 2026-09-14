@@ -2,27 +2,27 @@
 
 return [
 
-    'helpcenter' => 'Довідка',
-    'whatsnew' => 'Що нового',
+    'helpcenter' => 'Help Center',
+    'whatsnew' => 'What\'s New',
 
-    'gettingStarted' => 'Як розпочати',
-    'sharingMedia' => 'Поширення медіа',
-    'profile' => 'Профіль',
-    'stories' => 'Сторі',
-    'hashtags' => 'Хештеги',
-    'discover' => 'Цікаве',
-    'directMessages' => 'Прямі листи',
-    'timelines' => 'Стрічки',
-    'embed' => 'Експорт',
+    'gettingStarted' => 'Getting Started',
+    'sharingMedia' => 'Sharing Media',
+    'profile' => 'Profile',
+    'stories' => 'Stories',
+    'hashtags' => 'Hashtags',
+    'discover' => 'Discover',
+    'directMessages' => 'Direct Messages',
+    'timelines' => 'Timelines',
+    'embed' => 'Embed',
 
-    'communityGuidelines' => 'Правила спільноти',
-    'whatIsTheFediverse' => 'Що таке федіверс?',
-    'controllingVisibility' => 'Керування видимістю',
-    'blockingAccounts' => 'Блокування облікових записів',
-    'safetyTips' => 'Поради безпеки',
-    'reportSomething' => 'Скарга на щось',
-    'dataPolicy' => 'Політика даних',
+    'communityGuidelines' => 'Community Guidelines',
+    'whatIsTheFediverse' => 'What is the fediverse?',
+    'controllingVisibility' => 'Controlling Visibility',
+    'blockingAccounts' => 'Blocking Accounts',
+    'safetyTips' => 'Safety Tips',
+    'reportSomething' => 'Report Something',
+    'dataPolicy' => 'Data Policy',
 
-    'taggingPeople' => 'Позначення людей',
+    'taggingPeople' => 'Tagging People',
 
 ];

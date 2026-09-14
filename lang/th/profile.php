@@ -1,15 +1,21 @@
 <?php
 
 return [
-    'emptyTimeline' => 'ผู้ใช้นี้ยังไม่มีโพสต์อะไร!',
-    'emptyFollowers' => 'ผู้ใช้นี้ยังไม่มีผู้ติดตาม!',
-    'emptyFollowing' => 'ผู้ใช้นี้ยังไม่ได้ติดตามใครเลย!',
-    'emptySaved' => 'คุณยังไม่ได้บันทึกโพสต์ใด ๆ!',
-    'savedWarning' => 'คุณเท่านั้นที่สามารถดูโพสต์นี้ได้',
-    'privateProfileWarning' => 'บัญชีนี้เป็นบัญชีส่วนบุคคล',
-    'alreadyFollow' => ':username ได้ติดตาม',
-    'loginToSeeProfile' => 'ดูรูปและวีดิโอ',
+    'emptyTimeline' => 'This user has no posts yet!',
+    'emptyFollowers' => 'This user has no followers yet!',
+    'emptyFollowing' => 'This user is not following anyone yet!',
+    'emptySaved' => 'You haven’t saved any post yet!',
+    'savedWarning' => 'Only you can see what you’ve saved',
+    'privateProfileWarning' => 'This Account is Private',
+    'alreadyFollow' => 'Already follow :username?',
+    'loginToSeeProfile' => 'to see their photos and videos.',
 
-    'status.disabled.header' => 'บัญชีไม่สามารถใช้งานได้',
-    'status.disabled.body' => 'เสียใจด้วยนะ บัญชีนี้ไม่สามารถใช้งานได้ โปรดลองใหม่อีกครั้ง',
+    'status.disabled.header' => 'Profile Unavailable',
+    'status.disabled.body' => 'Sorry, this profile is not available at the moment. Please try again shortly.',
+
+    'block.domain.max' => 'Max limit of domain blocks reached! You can only block :max domains at a time. Ask your admin to adjust this limit.',
+
+    'mutedAccounts' => 'Muted Accounts',
+    'blockedAccounts' => 'Blocked Accounts',
+    'blockedDomains' => 'Blocked Domains',
 ];

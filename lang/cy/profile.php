@@ -1,17 +1,21 @@
 <?php
 
 return [
+    'emptyTimeline' => 'This user has no posts yet!',
+    'emptyFollowers' => 'This user has no followers yet!',
+    'emptyFollowing' => 'This user is not following anyone yet!',
+    'emptySaved' => 'You haven’t saved any post yet!',
+    'savedWarning' => 'Only you can see what you’ve saved',
+    'privateProfileWarning' => 'This Account is Private',
+    'alreadyFollow' => 'Already follow :username?',
+    'loginToSeeProfile' => 'to see their photos and videos.',
 
-    'emptyTimeline' => 'Nid oes gan y defnyddiwr hwn swyddi eto!',
-    'emptyFollowers' => 'Nid oes gan y defnyddiwr hwn ddilynwyr eto!',
-    'emptyFollowing' => 'Nid yw\'r defnyddiwr hwn yn dilyn unrhyw un eto!',
-    'emptySaved' => 'Nid ydych wedi arbed unrhyw bostiadau eto!',
-    'savedWarning' => 'Dim ond chi sy\'n gallu gweld beth rydych chi wedi\'i arbed',
-    'privateProfileWarning' => 'Mae\'r Cyfrif hwn yn Breifat',
-    'alreadyFollow' => 'Eisoes yn dilyn :username?',
-    'loginToSeeProfile' => 'i weld eu lluniau a\'u fideos.',
+    'status.disabled.header' => 'Profile Unavailable',
+    'status.disabled.body' => 'Sorry, this profile is not available at the moment. Please try again shortly.',
 
-    'status.disabled.header' => 'Proffil Ddim ar Gael',
-    'status.disabled.body' => 'Mae\'n ddrwg gennym, nid yw\'r proffil hwn ar gael ar hyn o bryd. Rhowch gynnig arall arni cyn bo hir.',
+    'block.domain.max' => 'Max limit of domain blocks reached! You can only block :max domains at a time. Ask your admin to adjust this limit.',
 
+    'mutedAccounts' => 'Muted Accounts',
+    'blockedAccounts' => 'Blocked Accounts',
+    'blockedDomains' => 'Blocked Domains',
 ];

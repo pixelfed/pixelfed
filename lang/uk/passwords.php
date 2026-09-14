@@ -4,19 +4,19 @@ return [
 
     /*
     |--------------------------------------------------------------------------
-    | Переклади рядків скидання паролю
+    | Password Reset Language Lines
     |--------------------------------------------------------------------------
     |
-    | Ці переклади — усталені рядки, що відповідають причинам, якими
-    | брокер паролів пояснює, чому спроба оновлення пароля не вдалася,
-    | наприклад через хибний токен чи хибний новий пароль.
+    | The following language lines are the default lines which match reasons
+    | that are given by the password broker for a password update attempt
+    | has failed, such as for an invalid token or invalid new password.
     |
     */
 
-    'password' => 'Паролі мусять містити принаймні шість символів і збігатися.',
-    'reset' => 'Пароль скинуто!',
-    'sent' => 'Якщо ваша адреса е-пошти — в нашій базі, посилання для відновлення пароля е-пошти буде надіслано за кілька хвилин. Перевірте теку спаму, якщо лист не надходить.',
-    'token' => 'Токен відновлення пароля хибний.',
-    'user' => 'Якщо ваша адреса е-пошти — в нашій базі, посилання для відновлення пароля е-пошти буде надіслано за кілька хвилин. Перевірте теку спаму, якщо лист не надходить.',
+    'password' => 'Passwords must be at least six characters and match the confirmation.',
+    'reset' => 'Your password has been reset!',
+    'sent' => 'If your email address exists in our database, you will receive a password recovery link at your email address in a few minutes. Please check your spam folder if you didn’t receive this email.',
+    'token' => 'This password reset token is invalid.',
+    'user' => 'If your email address exists in our database, you will receive a password recovery link at your email address in a few minutes. Please check your spam folder if you didn’t receive this email.',
 
 ];

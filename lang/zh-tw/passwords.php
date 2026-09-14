@@ -13,10 +13,10 @@ return [
     |
     */
 
-    'password' => '密碼必須至少六個字元且與確認密碼符合。',
-    'reset' => '您的密碼已重設！',
-    'sent' => '如果您的電子郵件地址已在我們的資料庫裡，您將會在數分鐘內於您的電子郵件地址收到密碼復原連結。如果您沒有收到這封電子郵件的話，請檢查您的垃圾郵件匣。',
-    'token' => '這個密碼重設憑證無效。',
-    'user' => '如果您的電子郵件地址已在我們的資料庫裡，您將會在數分鐘內於您的電子郵件地址收到密碼復原連結。如果您沒有收到這封電子郵件的話，請檢查您的垃圾郵件匣。',
+    'password' => 'Passwords must be at least six characters and match the confirmation.',
+    'reset' => 'Your password has been reset!',
+    'sent' => 'If your email address exists in our database, you will receive a password recovery link at your email address in a few minutes. Please check your spam folder if you didn’t receive this email.',
+    'token' => 'This password reset token is invalid.',
+    'user' => 'If your email address exists in our database, you will receive a password recovery link at your email address in a few minutes. Please check your spam folder if you didn’t receive this email.',
 
 ];

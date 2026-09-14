@@ -1,10 +1,12 @@
 <?php
 
 return [
-    'likedPhoto' => 'оценил(-а) Ваш пост.',
-    'likedComment' => 'оценил(-а) Ваш комментарий.',
-    'startedFollowingYou' => 'теперь подписан(-а) на Вас.',
-    'commented' => 'оставил(-а) комментарий под Вашим постом.',
-    'mentionedYou' => 'упомянул(-а) Вас.',
-    'shared' => 'поделился(-ась) Вашим постом.',
+
+    'likedPhoto' => 'liked your post.',
+    'likedComment' => 'liked your comment.',
+    'startedFollowingYou' => 'started following you.',
+    'commented' => 'commented on your post.',
+    'mentionedYou' => 'mentioned you.',
+    'shared' => 'shared your post.',
+
 ];

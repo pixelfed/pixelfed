@@ -1,26 +1,28 @@
 <?php
 
 return [
-    'helpcenter' => 'Centre d\'aide',
-    'whatsnew' => 'Ce qui est nouveau',
 
-    'gettingStarted' => 'Débuter',
-    'sharingMedia' => 'Partager du contenu',
-    'profile' => 'Profil',
+    'helpcenter' => 'Help Center',
+    'whatsnew' => 'What\'s New',
+
+    'gettingStarted' => 'Getting Started',
+    'sharingMedia' => 'Sharing Media',
+    'profile' => 'Profile',
     'stories' => 'Stories',
     'hashtags' => 'Hashtags',
-    'discover' => 'Découvrir',
-    'directMessages' => 'Messages Directs',
-    'timelines' => 'Chronologies',
-    'embed' => 'Intégrer',
+    'discover' => 'Discover',
+    'directMessages' => 'Direct Messages',
+    'timelines' => 'Timelines',
+    'embed' => 'Embed',
 
-    'communityGuidelines' => 'Règlement de la communauté',
-    'whatIsTheFediverse' => 'Qu\'est-ce que le fediverse ?',
-    'controllingVisibility' => 'Contrôler la visibilité',
-    'blockingAccounts' => 'Blocage des comptes',
-    'safetyTips' => 'Conseils de sécurité',
-    'reportSomething' => 'Signaler quelque chose',
-    'dataPolicy' => 'Politique en matière de données',
+    'communityGuidelines' => 'Community Guidelines',
+    'whatIsTheFediverse' => 'What is the fediverse?',
+    'controllingVisibility' => 'Controlling Visibility',
+    'blockingAccounts' => 'Blocking Accounts',
+    'safetyTips' => 'Safety Tips',
+    'reportSomething' => 'Report Something',
+    'dataPolicy' => 'Data Policy',
 
-    'taggingPeople' => 'Mentionner des personnes',
+    'taggingPeople' => 'Tagging People',
+
 ];

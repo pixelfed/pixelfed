@@ -13,10 +13,10 @@ return [
     |
     */
 
-    'password' => 'Pasahitzak gutxienez 6 karaktere izan behar ditu, eta konfirmazio pasahitzarekin bat etorri behar da.',
-    'reset' => 'Pasahitza aldatu da!',
-    'sent' => 'E-postara pasahitza aldatzeko esteka bidali dizugu.',
-    'token' => 'Pasahitza aldatzeko "token"-ak ez du balio.',
-    'user' => 'Ez dugu aurkitu pasahitz hori duen erabiltzailerik.',
+    'password' => 'Passwords must be at least six characters and match the confirmation.',
+    'reset' => 'Your password has been reset!',
+    'sent' => 'If your email address exists in our database, you will receive a password recovery link at your email address in a few minutes. Please check your spam folder if you didn’t receive this email.',
+    'token' => 'This password reset token is invalid.',
+    'user' => 'If your email address exists in our database, you will receive a password recovery link at your email address in a few minutes. Please check your spam folder if you didn’t receive this email.',
 
 ];

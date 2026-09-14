@@ -13,10 +13,10 @@ return [
     |
     */
 
-    'password' => 'Adgangskode skal v&aelig;re mindst 6 tegn og skal matche bekr&aelig;ftelsen.',
-    'reset' => 'Din adgangskode er blevet nulstillet!',
-    'sent' => 'Vi har sendt dig en email med et link, hvor du kan nulstille din adgangskode!',
-    'token' => 'Dette nulstillingslink er ikke l&aelig;ngere gyldigt.',
-    'user' => 'Vi kan ikke finde en bruger med den emailadresse.',
+    'password' => 'Passwords must be at least six characters and match the confirmation.',
+    'reset' => 'Your password has been reset!',
+    'sent' => 'If your email address exists in our database, you will receive a password recovery link at your email address in a few minutes. Please check your spam folder if you didn’t receive this email.',
+    'token' => 'This password reset token is invalid.',
+    'user' => 'If your email address exists in our database, you will receive a password recovery link at your email address in a few minutes. Please check your spam folder if you didn’t receive this email.',
 
 ];

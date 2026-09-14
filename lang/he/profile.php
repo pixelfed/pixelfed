@@ -1,15 +1,21 @@
 <?php
 
 return [
-    'emptyTimeline' => 'למשתמש זה עדיין אין פוסטים!',
-    'emptyFollowers' => 'למשתמש זה עדיין אין עוקבים!',
-    'emptyFollowing' => 'משתמש זה עדיין אינו עוקב אחרי אף אחד!',
-    'emptySaved' => 'עדיין לא שמרת שום פוסט!',
-    'savedWarning' => 'רק אתם יכולים לראות את מה ששמרתם',
-    'privateProfileWarning' => 'חשבון זה פרטי',
-    'alreadyFollow' => 'כבר עוקב :username?',
-    'loginToSeeProfile' => 'על מנת לראות את התמונות והסרטונים שלהם.',
+    'emptyTimeline' => 'This user has no posts yet!',
+    'emptyFollowers' => 'This user has no followers yet!',
+    'emptyFollowing' => 'This user is not following anyone yet!',
+    'emptySaved' => 'You haven’t saved any post yet!',
+    'savedWarning' => 'Only you can see what you’ve saved',
+    'privateProfileWarning' => 'This Account is Private',
+    'alreadyFollow' => 'Already follow :username?',
+    'loginToSeeProfile' => 'to see their photos and videos.',
 
-    'status.disabled.header' => 'פרופיל לא זמין',
-    'status.disabled.body' => 'מצטערים, פרופיל זה אינו זמין כרגע. אנא נסו שוב בקרוב.',
+    'status.disabled.header' => 'Profile Unavailable',
+    'status.disabled.body' => 'Sorry, this profile is not available at the moment. Please try again shortly.',
+
+    'block.domain.max' => 'Max limit of domain blocks reached! You can only block :max domains at a time. Ask your admin to adjust this limit.',
+
+    'mutedAccounts' => 'Muted Accounts',
+    'blockedAccounts' => 'Blocked Accounts',
+    'blockedDomains' => 'Blocked Domains',
 ];

@@ -13,10 +13,10 @@ return [
     |
     */
 
-    'password' => 'Rhaid i\'r cyfrineiriau fod o leiaf chwe nod ac yn cyfateb i\'r cadarnhad.',
-    'reset' => 'Mae eich cyfrinair wedi\'i ailosod!',
-    'sent' => 'Os yw\'ch cyfeiriad e-bost yn bodoli yn ein cronfa ddata, byddwch yn derbyn dolen adfer cyfrinair yn eich cyfeiriad e-bost mewn ychydig funudau. Gwiriwch eich ffolder sbam os na dderbynioch yr e-bost hwn.',
-    'token' => 'Mae\'r tocyn ailosod cyfrinair hwn yn annilys.',
-    'user' => 'Os yw\'ch cyfeiriad e-bost yn bodoli yn ein cronfa ddata, byddwch yn derbyn dolen adfer cyfrinair yn eich cyfeiriad e-bost mewn ychydig funudau. Gwiriwch eich ffolder sbam os na dderbynioch yr e-bost hwn.',
+    'password' => 'Passwords must be at least six characters and match the confirmation.',
+    'reset' => 'Your password has been reset!',
+    'sent' => 'If your email address exists in our database, you will receive a password recovery link at your email address in a few minutes. Please check your spam folder if you didn’t receive this email.',
+    'token' => 'This password reset token is invalid.',
+    'user' => 'If your email address exists in our database, you will receive a password recovery link at your email address in a few minutes. Please check your spam folder if you didn’t receive this email.',
 
 ];

@@ -1,15 +1,21 @@
 <?php
 
 return [
-    'emptyTimeline' => 'Дописів іще нема.',
-    'emptyFollowers' => 'Ніхто ще не стежить.',
-    'emptyFollowing' => 'Ще ні за ким не стежить.',
-    'emptySaved' => 'Ви ще не зберігали дописів.',
-    'savedWarning' => 'Лише ви можете переглянути, що зберегли',
-    'privateProfileWarning' => 'Обліковий запис приватний',
-    'alreadyFollow' => 'Уже стежите за :username?',
-    'loginToSeeProfile' => 'для перегляду їхніх фото й відео.',
+    'emptyTimeline' => 'This user has no posts yet!',
+    'emptyFollowers' => 'This user has no followers yet!',
+    'emptyFollowing' => 'This user is not following anyone yet!',
+    'emptySaved' => 'You haven’t saved any post yet!',
+    'savedWarning' => 'Only you can see what you’ve saved',
+    'privateProfileWarning' => 'This Account is Private',
+    'alreadyFollow' => 'Already follow :username?',
+    'loginToSeeProfile' => 'to see their photos and videos.',
 
-    'status.disabled.header' => 'Профіль недоступний',
-    'status.disabled.body' => 'На жаль, профіль зараз недоступний. Будь ласка, повторіть спробу згодом.',
+    'status.disabled.header' => 'Profile Unavailable',
+    'status.disabled.body' => 'Sorry, this profile is not available at the moment. Please try again shortly.',
+
+    'block.domain.max' => 'Max limit of domain blocks reached! You can only block :max domains at a time. Ask your admin to adjust this limit.',
+
+    'mutedAccounts' => 'Muted Accounts',
+    'blockedAccounts' => 'Blocked Accounts',
+    'blockedDomains' => 'Blocked Domains',
 ];

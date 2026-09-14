@@ -1,20 +1,19 @@
 <?php
 
 return [
-
-    'search' => 'Chwilio',
-    'home' => 'Hafan',
-    'local' => 'Lleol',
-    'network' => 'Rhwydwaith',
-    'discover' => 'Darganfod',
-    'viewMyProfile' => 'Gweld fy mhroffil',
-    'myProfile' => 'Fy Mhroffil',
-    'myTimeline' => 'Fy Llinell Amser',
-    'publicTimeline' => 'Llinell Amser Gyhoeddus',
-    'remoteFollow' => 'Dilyn o Bell',
-    'settings' => 'Gosodiadau',
+    'search' => 'Search',
+    'home' => 'Home',
+    'local' => 'Local',
+    'network' => 'Network',
+    'discover' => 'Discover',
+    'viewMyProfile' => 'View my profile',
+    'myProfile' => 'My Profile',
+    'myTimeline' => 'My Timeline',
+    'publicTimeline' => 'Public Timeline',
+    'remoteFollow' => 'Remote Follow',
+    'settings' => 'Settings',
     'admin' => 'Admin',
-    'logout' => 'Allgofnodi',
-    'directMessages' => 'Negeseuon Uniongyrchol',
-
+    'logout' => 'Logout',
+    'directMessages' => 'Direct Messages',
+    'composePost' => 'Compose Post',
 ];

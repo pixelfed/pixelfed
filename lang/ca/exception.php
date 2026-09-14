@@ -1,9 +1,11 @@
 <?php
 
 return [
+
     'compose' => [
         'invalid' => [
-            'album' => 'Cal que afegiu una foto, un vídeo o diverses fotos.',
+            'album' => 'Must contain a single photo or video or multiple photos.',
         ],
     ],
+
 ];

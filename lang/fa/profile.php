@@ -1,15 +1,21 @@
 <?php
 
 return [
-    'emptyTimeline' => 'این کاربر هنوز چیزی منتشر نکرده است!',
-    'emptyFollowers' => 'این کاربر هنوز دنبال‌کننده‌ای ندارد!',
-    'emptyFollowing' => 'این کاربر هنوز کسی را دنبال نمی‌کند!',
-    'emptySaved' => 'شما هنوز هیچ فرسته‌ای را ذخیره نکرده‌اید!',
-    'savedWarning' => 'فقط شما می‌توانید آنچه که ذخیره کرده‌اید را ببینید.',
-    'privateProfileWarning' => 'این حساب خصوصی است.',
-    'alreadyFollow' => 'الان :username را دنبال می‌کنید؟',
-    'loginToSeeProfile' => 'برای دیدن عکس‌ها و فیلم‌ها',
+    'emptyTimeline' => 'This user has no posts yet!',
+    'emptyFollowers' => 'This user has no followers yet!',
+    'emptyFollowing' => 'This user is not following anyone yet!',
+    'emptySaved' => 'You haven’t saved any post yet!',
+    'savedWarning' => 'Only you can see what you’ve saved',
+    'privateProfileWarning' => 'This Account is Private',
+    'alreadyFollow' => 'Already follow :username?',
+    'loginToSeeProfile' => 'to see their photos and videos.',
 
-    'status.disabled.header' => 'نمایه غیرقابل دسترس',
-    'status.disabled.body' => 'عذر می‌خوایم! نمایه الان در دسترس نیست. لطفا چند دقیقه دیگر مجدد بررسی فرمایید.',
+    'status.disabled.header' => 'Profile Unavailable',
+    'status.disabled.body' => 'Sorry, this profile is not available at the moment. Please try again shortly.',
+
+    'block.domain.max' => 'Max limit of domain blocks reached! You can only block :max domains at a time. Ask your admin to adjust this limit.',
+
+    'mutedAccounts' => 'Muted Accounts',
+    'blockedAccounts' => 'Blocked Accounts',
+    'blockedDomains' => 'Blocked Domains',
 ];

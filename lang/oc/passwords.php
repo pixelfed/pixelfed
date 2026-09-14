@@ -13,10 +13,10 @@ return [
     |
     */
 
-    'password' => 'Los senhals devon almens fa sièis caractèrs e correspondre a la confirmacion.',
-    'reset' => 'Vòstre senhal es estat reïnicializat !',
-    'sent' => 'Se vòstra adreça existís dins nòstra basa de donadas, recebretz un ligam de recuperacion de senhal a vòstra adreça electronica dins un momenton. Verificatz tanben los corrièls pas desirables.',
-    'token' => 'Aqueste geton de reïnicializacion es invalid.',
-    'user' => 'Trobam pas cap d’utilizaire amb aquesta adreça de corrièl.',
+    'password' => 'Passwords must be at least six characters and match the confirmation.',
+    'reset' => 'Your password has been reset!',
+    'sent' => 'If your email address exists in our database, you will receive a password recovery link at your email address in a few minutes. Please check your spam folder if you didn’t receive this email.',
+    'token' => 'This password reset token is invalid.',
+    'user' => 'If your email address exists in our database, you will receive a password recovery link at your email address in a few minutes. Please check your spam folder if you didn’t receive this email.',
 
 ];

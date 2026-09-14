@@ -2,27 +2,27 @@
 
 return [
 
-    'helpcenter' => 'Centrum nápovědy',
-    'whatsnew' => 'Co je nového',
+    'helpcenter' => 'Help Center',
+    'whatsnew' => 'What\'s New',
 
-    'gettingStarted' => 'Začínáme',
-    'sharingMedia' => 'Sdílení médií',
-    'profile' => 'Profil',
-    'stories' => 'Příběhy',
-    'hashtags' => 'Hashtagy',
-    'discover' => 'Objevování',
-    'directMessages' => 'Přímé zprávy',
-    'timelines' => 'Časové osy',
-    'embed' => 'Vkládání',
+    'gettingStarted' => 'Getting Started',
+    'sharingMedia' => 'Sharing Media',
+    'profile' => 'Profile',
+    'stories' => 'Stories',
+    'hashtags' => 'Hashtags',
+    'discover' => 'Discover',
+    'directMessages' => 'Direct Messages',
+    'timelines' => 'Timelines',
+    'embed' => 'Embed',
 
-    'communityGuidelines' => 'Komunitní pokyny',
-    'whatIsTheFediverse' => 'Co je fedivesmír?',
-    'controllingVisibility' => 'Ovládání viditelnosti',
-    'blockingAccounts' => 'Blokování účtů',
-    'safetyTips' => 'Tipy pro bezpečnost',
-    'reportSomething' => 'Nahlašování',
-    'dataPolicy' => 'Politika dat',
+    'communityGuidelines' => 'Community Guidelines',
+    'whatIsTheFediverse' => 'What is the fediverse?',
+    'controllingVisibility' => 'Controlling Visibility',
+    'blockingAccounts' => 'Blocking Accounts',
+    'safetyTips' => 'Safety Tips',
+    'reportSomething' => 'Report Something',
+    'dataPolicy' => 'Data Policy',
 
-    'taggingPeople' => 'Označování lidí',
+    'taggingPeople' => 'Tagging People',
 
 ];

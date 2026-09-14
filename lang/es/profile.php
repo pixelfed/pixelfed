@@ -1,21 +1,21 @@
 <?php
 
 return [
-    'emptyTimeline' => '¡Este usuario todavía no ha publicado nada!',
-    'emptyFollowers' => '¡Este usuario todavía no tiene seguidores!',
-    'emptyFollowing' => '¡Este usuario todavía no está siguiendo a nadie!',
-    'emptySaved' => '¡No has guardado ninguna foto aún!',
-    'savedWarning' => 'Solamente tú puedes ver lo que has guardado',
-    'privateProfileWarning' => 'Esta cuenta es Privada',
-    'alreadyFollow' => '¿Ya sigues a :username?',
-    'loginToSeeProfile' => 'para ver sus fotos y videos.',
+    'emptyTimeline' => 'This user has no posts yet!',
+    'emptyFollowers' => 'This user has no followers yet!',
+    'emptyFollowing' => 'This user is not following anyone yet!',
+    'emptySaved' => 'You haven’t saved any post yet!',
+    'savedWarning' => 'Only you can see what you’ve saved',
+    'privateProfileWarning' => 'This Account is Private',
+    'alreadyFollow' => 'Already follow :username?',
+    'loginToSeeProfile' => 'to see their photos and videos.',
 
-    'status.disabled.header' => 'Perfil no disponible',
-    'status.disabled.body' => 'Disculpa, este perfil no está disponible en este momento. Por favor intenta nuevamente luego.',
+    'status.disabled.header' => 'Profile Unavailable',
+    'status.disabled.body' => 'Sorry, this profile is not available at the moment. Please try again shortly.',
 
-    'block.domain.max' => '¡Alcanzaste el limite máximo de dominios bloqueados! Tú solo puedes bloquear :max dominios por el momento. Pregúntale a tu administrador para ajustar este limite.',
+    'block.domain.max' => 'Max limit of domain blocks reached! You can only block :max domains at a time. Ask your admin to adjust this limit.',
 
-    'mutedAccounts' => 'Cuentas Silenciadas',
-    'blockedAccounts' => 'Cuentas Bloqueadas',
-    'blockedDomains' => 'Dominios Bloqueados',
+    'mutedAccounts' => 'Muted Accounts',
+    'blockedAccounts' => 'Blocked Accounts',
+    'blockedDomains' => 'Blocked Domains',
 ];

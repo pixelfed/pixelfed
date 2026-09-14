@@ -1,15 +1,21 @@
 <?php
 
 return [
-    'emptyTimeline' => '這個使用者還沒有貼文！',
-    'emptyFollowers' => '這個使用者還沒有追蹤者！',
-    'emptyFollowing' => '這個使用者還沒有追蹤任何人！',
-    'emptySaved' => '您還沒有儲存任何貼文！',
-    'savedWarning' => '您可以看到的只有您已儲存的貼文',
-    'privateProfileWarning' => '這個帳號是私密帳號',
-    'alreadyFollow' => '已經追蹤 :username?',
-    'loginToSeeProfile' => '來檢視他們的照片與影片。',
+    'emptyTimeline' => 'This user has no posts yet!',
+    'emptyFollowers' => 'This user has no followers yet!',
+    'emptyFollowing' => 'This user is not following anyone yet!',
+    'emptySaved' => 'You haven’t saved any post yet!',
+    'savedWarning' => 'Only you can see what you’ve saved',
+    'privateProfileWarning' => 'This Account is Private',
+    'alreadyFollow' => 'Already follow :username?',
+    'loginToSeeProfile' => 'to see their photos and videos.',
 
-    'status.disabled.header' => '個人檔案不可用',
-    'status.disabled.body' => '抱歉，此個人檔案暫時不可用。請稍後再試。',
+    'status.disabled.header' => 'Profile Unavailable',
+    'status.disabled.body' => 'Sorry, this profile is not available at the moment. Please try again shortly.',
+
+    'block.domain.max' => 'Max limit of domain blocks reached! You can only block :max domains at a time. Ask your admin to adjust this limit.',
+
+    'mutedAccounts' => 'Muted Accounts',
+    'blockedAccounts' => 'Blocked Accounts',
+    'blockedDomains' => 'Blocked Domains',
 ];

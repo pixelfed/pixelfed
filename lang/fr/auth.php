@@ -1,44 +1,35 @@
 <?php
 
 return [
-    /*
-    |--------------------------------------------------------------------------
-    | Authentication Language Lines
-    |--------------------------------------------------------------------------
-    |
-    | The following language lines are used during authentication for various
-    | messages that we need to display to the user. You are free to modify
-    | these language lines according to your application's requirements.
-    |
-     */
 
-    'failed' => 'Ces informations d’identification ne correspondent à aucune se trouvant dans notre base de données.',
-    'throttle' => 'Trop de tentatives de connexion ont été effectuées. Veuillez réessayer dans :seconds secondes.',
-    'verifyYourEmailAddress' => ' - Vérifiez votre adresse de courrier électronique',
-    'loginTitle' => 'Connexion à mon compte',
-    'password' => 'Mot de passe',
-    'remember' => 'Se souvenir de moi',
-    'forgot' => 'Mot de passe oublié',
-    'login' => 'Se connecter',
+    'verifyYourEmailAddress' => ' - Verify Your Email Address',
+    'loginTitle' => 'Account Login',
+    'failed' => 'These credentials do not match our records.',
+    'throttle' => 'Too many login attempts. Please try again in :seconds seconds.',
+    'password' => 'Password',
+    'remember' => 'Remember Me',
+    'forgot' => 'Forgot Password',
+    'login' => 'Login',
 
-    'register' => 'S’inscrire',
-    'reset' => 'Réinitialiser le mot de passe',
+    'register' => 'Register',
+    'reset' => 'Password Reset',
 
-    'name' => 'Nom public',
-    'username' => 'Identifiant',
-    'confirm-password' => 'Confirmer le mot de passe',
+    'name' => 'Name',
+    'username' => 'Username',
+    'confirm-password' => 'Confirm Password',
 
-    'age' => 'J’ai 16 ans ou plus',
-    'terms' => 'En vous inscrivant, vous acceptez nos <a href="'.route('site.terms').'" class="font-weight-bold text-dark">conditions d’utilisation</a> et <a href="'.route('site.privacy').'" class="font-weight-bold text-dark">politique de confidentialité</a>.',
+    'age' => 'I am at least 16 years old',
+    'terms' => 'By signing up, you agree to our <a href="'.route('site.terms').'" class="font-weight-bold text-dark">Terms of Use</a> and <a href="'.route('site.privacy').'" class="font-weight-bold text-dark">Privacy Policy</a>.',
 
-    'emailAddress' => 'Adresse de courriel',
-    'email' => 'Courriel',
-    'forgotEmail' => 'Courriel oublié',
+    'emailAddress' => 'E-Mail Address',
+    'email' => 'E-Mail',
+    'forgotEmail' => 'Forgot E-Mail',
 
-    'registerTitle' => 'Créer un nouveau profil',
+    'registerTitle' => 'Register a new account',
 
-    'sendReset' => 'Envoyer le lien de réinitialisation de mot de passe',
-    'backLogin' => 'Retour à l’identification',
+    'sendReset' => 'Send Password Reset Link',
+    'backLogin' => 'Back to Login',
 
-    'signInMastodon' => 'S’inscrire avec Mastodon',
+    'signInMastodon' => 'Sign-in with Mastodon',
+
 ];

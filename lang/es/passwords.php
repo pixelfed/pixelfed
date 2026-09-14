@@ -13,10 +13,10 @@ return [
     |
     */
 
-    'password' => 'La contraseña debe tener al menos seis caracteres y coincidir con la de confirmación.',
-    'reset' => '¡Tu contraseña se ha cambiado!',
-    'sent' => 'Te hemos enviado a tu correo un enlace para cambiar tu contraseña.',
-    'token' => 'El "token" para canbiar la contraseña no es válido.',
-    'user' => 'No hemos podido encontrar a ningún usuario con esa contraseña.',
+    'password' => 'Passwords must be at least six characters and match the confirmation.',
+    'reset' => 'Your password has been reset!',
+    'sent' => 'If your email address exists in our database, you will receive a password recovery link at your email address in a few minutes. Please check your spam folder if you didn’t receive this email.',
+    'token' => 'This password reset token is invalid.',
+    'user' => 'If your email address exists in our database, you will receive a password recovery link at your email address in a few minutes. Please check your spam folder if you didn’t receive this email.',
 
 ];

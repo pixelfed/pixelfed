@@ -13,10 +13,10 @@ return [
     |
     */
 
-    'password' => 'رمز عبور شما باید حداقل شامل ۶ حرف بوده و همچنین با تکرار آن مطابق باشد.',
-    'reset' => 'رمز عبور شما بازنشانی شد!',
-    'sent' => 'اگر ایمیل‌تان در پایگاه‌داده ما موجود باشد، در چند دقیقه آینده ایمیلی حاوی یک پیوند بازنشانی رمز عبور دریافت خواهید کرد. در صورتی که ایمیلی دریافت نکردید، لطفا صندوق هرزنامه خود را نیز بررسی کنید.',
-    'token' => 'این پیوند نامعتبر است.',
-    'user' => 'اگر ایمیل‌تان در پایگاه‌داده ما موجود باشد، در چند دقیقه آینده ایمیلی حاوی یک پیوند بازنشانی رمز عبور دریافت خواهید کرد. در صورتی که ایمیلی دریافت نکردید، لطفا صندوق هرزنامه خود را نیز بررسی کنید.',
+    'password' => 'Passwords must be at least six characters and match the confirmation.',
+    'reset' => 'Your password has been reset!',
+    'sent' => 'If your email address exists in our database, you will receive a password recovery link at your email address in a few minutes. Please check your spam folder if you didn’t receive this email.',
+    'token' => 'This password reset token is invalid.',
+    'user' => 'If your email address exists in our database, you will receive a password recovery link at your email address in a few minutes. Please check your spam folder if you didn’t receive this email.',
 
 ];

@@ -2,9 +2,11 @@
 
 return [
 
-    'likedPhoto' => 'אהבו את התמונה שלך.',
-    'startedFollowingYou' => 'התחיל לעקוב אחריך.',
-    'commented' => 'הגיב על הפוסט שלך.',
-    'mentionedYou' => 'הזכיר אותך.',
+    'likedPhoto' => 'liked your post.',
+    'likedComment' => 'liked your comment.',
+    'startedFollowingYou' => 'started following you.',
+    'commented' => 'commented on your post.',
+    'mentionedYou' => 'mentioned you.',
+    'shared' => 'shared your post.',
 
 ];

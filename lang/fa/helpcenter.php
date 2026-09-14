@@ -2,27 +2,27 @@
 
 return [
 
-    'helpcenter' => 'مرکز راهنما',
-    'whatsnew' => 'چه خبر',
+    'helpcenter' => 'Help Center',
+    'whatsnew' => 'What\'s New',
 
-    'gettingStarted' => 'شروع به کار',
-    'sharingMedia' => 'انتشار محتوا',
-    'profile' => 'نمایه',
-    'stories' => 'داستان‌ها',
-    'hashtags' => 'هشتگ‌ها',
-    'discover' => 'کشف‌کردن',
-    'directMessages' => 'پیام‌های شخصی',
-    'timelines' => 'خط زمانی',
-    'embed' => 'توکار',
+    'gettingStarted' => 'Getting Started',
+    'sharingMedia' => 'Sharing Media',
+    'profile' => 'Profile',
+    'stories' => 'Stories',
+    'hashtags' => 'Hashtags',
+    'discover' => 'Discover',
+    'directMessages' => 'Direct Messages',
+    'timelines' => 'Timelines',
+    'embed' => 'Embed',
 
-    'communityGuidelines' => 'دستورالعمل‌های اجتماع',
-    'whatIsTheFediverse' => 'فدیورس چیست؟',
-    'controllingVisibility' => 'کنترل نمایش',
-    'blockingAccounts' => 'حساب‌های مسدودشده',
-    'safetyTips' => 'نکات امنیتی',
-    'reportSomething' => 'گزارش چیزی',
-    'dataPolicy' => 'خط مشی داده',
+    'communityGuidelines' => 'Community Guidelines',
+    'whatIsTheFediverse' => 'What is the fediverse?',
+    'controllingVisibility' => 'Controlling Visibility',
+    'blockingAccounts' => 'Blocking Accounts',
+    'safetyTips' => 'Safety Tips',
+    'reportSomething' => 'Report Something',
+    'dataPolicy' => 'Data Policy',
 
-    'taggingPeople' => 'برچسب زدن افراد',
+    'taggingPeople' => 'Tagging People',
 
 ];

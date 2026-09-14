@@ -1,12 +1,19 @@
 <?php
 
 return [
-    'viewMyProfile' => 'Lihat profil saya',
-    'myTimeline' => 'Linimasa Saya',
-    'publicTimeline' => 'Linimasa Publik',
-    'remoteFollow' => 'Ikuti Jarak Jauh',
-    'settings' => 'Pengaturan',
+    'search' => 'Search',
+    'home' => 'Home',
+    'local' => 'Local',
+    'network' => 'Network',
+    'discover' => 'Discover',
+    'viewMyProfile' => 'View my profile',
+    'myProfile' => 'My Profile',
+    'myTimeline' => 'My Timeline',
+    'publicTimeline' => 'Public Timeline',
+    'remoteFollow' => 'Remote Follow',
+    'settings' => 'Settings',
     'admin' => 'Admin',
-    'logout' => 'Keluar',
-    'directMessages' => 'Pesan Langsung',
+    'logout' => 'Logout',
+    'directMessages' => 'Direct Messages',
+    'composePost' => 'Compose Post',
 ];

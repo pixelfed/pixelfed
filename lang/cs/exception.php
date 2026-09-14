@@ -4,7 +4,7 @@ return [
 
     'compose' => [
         'invalid' => [
-            'album' => 'Musí obsahovat samostatnou fotografii, video nebo více fotografií.',
+            'album' => 'Must contain a single photo or video or multiple photos.',
         ],
     ],
 

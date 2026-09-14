@@ -2,11 +2,11 @@
 
 return [
 
-    'likedPhoto' => 'wedi hoffi eich post.',
-    'likedComment' => 'wedi hoffi eich sylw.',
-    'startedFollowingYou' => 'wedi dechrau eich dilyn .',
-    'commented' => 'gwnaeth sylwadau ar eich swydd.',
-    'mentionedYou' => 'soniodd amdanoch chi.',
-    'shared' => 'wedi rhannu eich post.',
+    'likedPhoto' => 'liked your post.',
+    'likedComment' => 'liked your comment.',
+    'startedFollowingYou' => 'started following you.',
+    'commented' => 'commented on your post.',
+    'mentionedYou' => 'mentioned you.',
+    'shared' => 'shared your post.',
 
 ];

@@ -1,15 +1,21 @@
 <?php
 
 return [
-    'emptyTimeline' => '这个用户还没发表任何帖子',
-    'emptyFollowers' => '这个用户还没有任何关注者',
-    'emptyFollowing' => '此用户尚未关注任何人！',
-    'emptySaved' => '您还没有保存任何帖子！',
-    'savedWarning' => '仅有自己可见',
-    'privateProfileWarning' => '此帐户是私有的',
-    'alreadyFollow' => '已经关注 :username?',
-    'loginToSeeProfile' => '查看他们的照片和视频。',
+    'emptyTimeline' => 'This user has no posts yet!',
+    'emptyFollowers' => 'This user has no followers yet!',
+    'emptyFollowing' => 'This user is not following anyone yet!',
+    'emptySaved' => 'You haven’t saved any post yet!',
+    'savedWarning' => 'Only you can see what you’ve saved',
+    'privateProfileWarning' => 'This Account is Private',
+    'alreadyFollow' => 'Already follow :username?',
+    'loginToSeeProfile' => 'to see their photos and videos.',
 
-    'status.disabled.header' => '主页不可用',
-    'status.disabled.body' => '抱歉，此个人主页暂时未开放。请稍后再试。',
+    'status.disabled.header' => 'Profile Unavailable',
+    'status.disabled.body' => 'Sorry, this profile is not available at the moment. Please try again shortly.',
+
+    'block.domain.max' => 'Max limit of domain blocks reached! You can only block :max domains at a time. Ask your admin to adjust this limit.',
+
+    'mutedAccounts' => 'Muted Accounts',
+    'blockedAccounts' => 'Blocked Accounts',
+    'blockedDomains' => 'Blocked Domains',
 ];

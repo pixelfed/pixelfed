@@ -1,5 +1,7 @@
 <?php
 
 return [
-    'emptyPersonalTimeline' => 'Tu línea temporal está vacía.',
+
+    'emptyPersonalTimeline' => 'Your timeline is empty.',
+
 ];

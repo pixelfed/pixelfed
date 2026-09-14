@@ -13,10 +13,10 @@ return [
     |
     */
 
-    'password' => 'Os contrasinais deben ter seis caracteres como mínimo e concordar na confirmación.',
-    'reset' => 'Restableceuse o teu contrasinal!',
-    'sent' => 'Se o email está na base de datos, recibirás unha ligazón para restablecer o contrasinal dentro duns minutos. Comproba o cartafol de spam se non recibes o email.',
-    'token' => 'O testemuño de restablecemento do contrasinal non é válido.',
-    'user' => 'Se o email está na base de datos, recibirás unha ligazón para restablecer o contrasinal dentro duns minutos. Comproba o cartafol de spam se non recibes o email.',
+    'password' => 'Passwords must be at least six characters and match the confirmation.',
+    'reset' => 'Your password has been reset!',
+    'sent' => 'If your email address exists in our database, you will receive a password recovery link at your email address in a few minutes. Please check your spam folder if you didn’t receive this email.',
+    'token' => 'This password reset token is invalid.',
+    'user' => 'If your email address exists in our database, you will receive a password recovery link at your email address in a few minutes. Please check your spam folder if you didn’t receive this email.',
 
 ];

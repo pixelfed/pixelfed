@@ -1,15 +1,21 @@
 <?php
 
 return [
-    'emptyTimeline' => 'Questo utente non ha ancora nessun post!',
-    'emptyFollowers' => 'Questo utente non ha ancora seguaci!',
-    'emptyFollowing' => 'Questo utente non segue ancora nessuno!',
-    'emptySaved' => 'Non hai ancora salvato nessun post!',
-    'savedWarning' => 'Solo tu puoi vedere cosa hai salvato',
-    'privateProfileWarning' => 'Questo Account è Privato',
-    'alreadyFollow' => 'Segui già :username?',
-    'loginToSeeProfile' => 'per vedere le sue foto e video.',
+    'emptyTimeline' => 'This user has no posts yet!',
+    'emptyFollowers' => 'This user has no followers yet!',
+    'emptyFollowing' => 'This user is not following anyone yet!',
+    'emptySaved' => 'You haven’t saved any post yet!',
+    'savedWarning' => 'Only you can see what you’ve saved',
+    'privateProfileWarning' => 'This Account is Private',
+    'alreadyFollow' => 'Already follow :username?',
+    'loginToSeeProfile' => 'to see their photos and videos.',
 
-    'status.disabled.header' => 'Profilo Non Disponibile',
-    'status.disabled.body' => 'Scusa, questo profilo non è disponibile al momento. Per favore riprova più tardi.',
+    'status.disabled.header' => 'Profile Unavailable',
+    'status.disabled.body' => 'Sorry, this profile is not available at the moment. Please try again shortly.',
+
+    'block.domain.max' => 'Max limit of domain blocks reached! You can only block :max domains at a time. Ask your admin to adjust this limit.',
+
+    'mutedAccounts' => 'Muted Accounts',
+    'blockedAccounts' => 'Blocked Accounts',
+    'blockedDomains' => 'Blocked Domains',
 ];

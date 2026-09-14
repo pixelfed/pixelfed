@@ -1,14 +1,19 @@
 <?php
 
 return [
-
-    'viewMyProfile' => 'צפה בפרופיל שלי',
-    'myTimeline' => 'ציר הזמן שלי',
-    'publicTimeline' => 'ציר הזמן הציבורי',
-    'remoteFollow' => 'עקיבה מרחוק',
-    'settings' => 'הגדרות',
-    'admin' => 'מנהל',
-    'logout' => 'התנתק',
-    'directMessages' => 'הודעות ישירות',
-
+    'search' => 'Search',
+    'home' => 'Home',
+    'local' => 'Local',
+    'network' => 'Network',
+    'discover' => 'Discover',
+    'viewMyProfile' => 'View my profile',
+    'myProfile' => 'My Profile',
+    'myTimeline' => 'My Timeline',
+    'publicTimeline' => 'Public Timeline',
+    'remoteFollow' => 'Remote Follow',
+    'settings' => 'Settings',
+    'admin' => 'Admin',
+    'logout' => 'Logout',
+    'directMessages' => 'Direct Messages',
+    'composePost' => 'Compose Post',
 ];

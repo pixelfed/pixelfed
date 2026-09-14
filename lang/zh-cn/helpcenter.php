@@ -2,27 +2,27 @@
 
 return [
 
-    'helpcenter' => '帮助中心',
-    'whatsnew' => '有什么新发现',
+    'helpcenter' => 'Help Center',
+    'whatsnew' => 'What\'s New',
 
-    'gettingStarted' => '开始',
-    'sharingMedia' => '共享媒体',
-    'profile' => '主页',
-    'stories' => '故事集',
-    'hashtags' => '标签',
-    'discover' => '发现',
-    'directMessages' => '直接信息',
-    'timelines' => '时间轴',
-    'embed' => '嵌入',
+    'gettingStarted' => 'Getting Started',
+    'sharingMedia' => 'Sharing Media',
+    'profile' => 'Profile',
+    'stories' => 'Stories',
+    'hashtags' => 'Hashtags',
+    'discover' => 'Discover',
+    'directMessages' => 'Direct Messages',
+    'timelines' => 'Timelines',
+    'embed' => 'Embed',
 
-    'communityGuidelines' => '社区指南',
-    'whatIsTheFediverse' => 'fediverse 是什么?',
-    'controllingVisibility' => '控制可见性',
-    'blockingAccounts' => '封锁账户',
-    'safetyTips' => '安全提示',
-    'reportSomething' => '报告某事',
-    'dataPolicy' => '数据政策',
+    'communityGuidelines' => 'Community Guidelines',
+    'whatIsTheFediverse' => 'What is the fediverse?',
+    'controllingVisibility' => 'Controlling Visibility',
+    'blockingAccounts' => 'Blocking Accounts',
+    'safetyTips' => 'Safety Tips',
+    'reportSomething' => 'Report Something',
+    'dataPolicy' => 'Data Policy',
 
-    'taggingPeople' => '标签人物',
+    'taggingPeople' => 'Tagging People',
 
 ];
