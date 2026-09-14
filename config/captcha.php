@@ -65,13 +65,13 @@ return [
     | endpoint (https://cap.example.com/your-site-key/) is composed by CapDriver.
     */
     'cap' => [
-        'endpoint' => env('CAP_ENDPOINT'),
-        'sitekey' => env('CAP_SITEKEY'),
-        'secret' => env('CAP_SECRET'),
-        'token_field' => env('CAP_TOKEN_FIELD', 'cap-token'),
-        'timeout' => (int) env('CAP_TIMEOUT', 5),
-        'fail_open' => (bool) env('CAP_FAIL_OPEN', false),
-        'widget_version' => env('CAP_WIDGET_VERSION') ?: 'latest',
+        'endpoint' => env('CAPTCHA_CAP_ENDPOINT'),
+        'sitekey' => env('CAPTCHA_CAP_SITEKEY'),
+        'secret' => env('CAPTCHA_CAP_SECRET'),
+        'token_field' => env('CAPTCHA_CAP_TOKEN_FIELD', 'cap-token'),
+        'timeout' => (int) env('CAPTCHA_CAP_TIMEOUT', 5),
+        'fail_open' => (bool) env('CAPTCHA_CAP_FAIL_OPEN', false),
+        'widget_version' => env('CAPTCHA_CAP_WIDGET_VERSION') ?: 'latest',
     ],
 
     /*
