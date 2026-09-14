@@ -20,7 +20,7 @@ class CaptchaAdminSettingsTest extends TestCase
             'captcha.driver' => 'turnstile',
             'captcha.active.login' => true,
             'captcha.active.register' => false,
-            'captcha.active.forgotpassword' => true,
+            'captcha.active.forgot_password' => true,
             'captcha.active.password_reset' => false,
             'captcha.active.forgot_email' => true,
             'captcha.active.curated_register' => true,

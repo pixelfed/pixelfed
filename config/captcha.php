@@ -83,9 +83,9 @@ return [
     'active' => [
         'login' => env('CAPTCHA_ENABLED_ON_LOGIN', true),
         'register' => env('CAPTCHA_ENABLED_ON_REGISTER', true),
-        'forgotpassword' => env('CAPTCHA_ENABLED_ON_FORGOT_PASSWORD', true),
-        'password_reset' => env('CAPTCHA_ENABLED_ON_PASSWORD_RESET', true),
-        'forgot_email' => env('CAPTCHA_ENABLED_ON_FORGOT_EMAIL', true),
         'curated_register' => env('CAPTCHA_ENABLED_ON_CURATED_REGISTER', true),
+        'forgot_email' => env('CAPTCHA_ENABLED_ON_FORGOT_EMAIL', true),
+        'forgot_password' => env('CAPTCHA_ENABLED_ON_FORGOT_PASSWORD', true),
+        'password_reset' => env('CAPTCHA_ENABLED_ON_PASSWORD_RESET', true),
     ],
 ];

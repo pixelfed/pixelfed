@@ -114,7 +114,7 @@ class ConfigCacheService
                     'captcha.cap.secret',
                     'captcha.active.login',
                     'captcha.active.register',
-                    'captcha.active.forgotpassword',
+                    'captcha.active.forgot_password',
                     'captcha.active.password_reset',
                     'captcha.active.forgot_email',
                     'captcha.active.curated_register',
