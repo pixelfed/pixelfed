@@ -2,42 +2,34 @@
 
 return [
 
-    /*
-    |--------------------------------------------------------------------------
-    | Authentication Language Lines
-    |--------------------------------------------------------------------------
-    |
-    | The following language lines are used during authentication for various
-    | messages that we need to display to the user. You are free to modify
-    | these language lines according to your application's requirements.
-    |
-    */
-    'loginTitle' => 'Acessar conta',
-    'failed' => 'As credenciais introduzidas não correspondem aos nossos registos.',
-    'throttle' => 'Varias tentativas de login. Tente novamente em :seconds segundos.',
-    'password' => 'Senha',
-    'remember' => 'Lembrar-Me',
-    'forgot' => 'Esqueceu a senha? ',
-    'login' => 'Entrar',
-    'reset' => 'Recuperar Senha',
-    'register' => 'Cadastrar',
+    'verifyYourEmailAddress' => ' - Verify Your Email Address',
+    'loginTitle' => 'Account Login',
+    'failed' => 'These credentials do not match our records.',
+    'throttle' => 'Too many login attempts. Please try again in :seconds seconds.',
+    'password' => 'Password',
+    'remember' => 'Remember Me',
+    'forgot' => 'Forgot Password',
+    'login' => 'Login',
 
-    'name' => 'Nome',
-    'username' => 'Usuário',
-    'confirm-password' => 'Confrime a senha',
+    'register' => 'Register',
+    'reset' => 'Password Reset',
 
-    'age' => 'Eu tenho pelo menos 16 anos',
+    'name' => 'Name',
+    'username' => 'Username',
+    'confirm-password' => 'Confirm Password',
 
-    'terms' => 'Ao Cadastrar, você concorda com nossos termos <a href="'.route('site.terms').'" class="font-weight-bold text-dark">Termos de Uso</a> e <a href="'.route('site.privacy').'" class="font-weight-bold text-dark">Politica de Privacidade</a>.',
+    'age' => 'I am at least 16 years old',
+    'terms' => 'By signing up, you agree to our <a href="'.route('site.terms').'" class="font-weight-bold text-dark">Terms of Use</a> and <a href="'.route('site.privacy').'" class="font-weight-bold text-dark">Privacy Policy</a>.',
 
-    'emailAddress' => 'Endereço de Email',
+    'emailAddress' => 'E-Mail Address',
+    'email' => 'E-Mail',
+    'forgotEmail' => 'Forgot E-Mail',
 
-    'registerTitle' => 'Cadastrar uma nova conta',
+    'registerTitle' => 'Register a new account',
 
-    'sendReset' => 'Enviar Link de Recuperação de Senha',
+    'sendReset' => 'Send Password Reset Link',
     'backLogin' => 'Back to Login',
 
-    'signInMastodon' => 'Entrar com Mastodon',
-    'verifyYourEmailAddress' => ' - Verifique seu endereço de e-mail',
+    'signInMastodon' => 'Sign-in with Mastodon',
 
 ];
