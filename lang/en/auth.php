@@ -2,34 +2,34 @@
 
 return [
 
-    'verifyYourEmailAddress' => ' - Verify Your Email Address',
-    'loginTitle' => 'Account Login',
-    'failed' => 'These credentials do not match our records.',
-    'throttle' => 'Too many login attempts. Please try again in :seconds seconds.',
-    'password' => 'Password',
-    'remember' => 'Remember Me',
-    'forgot' => 'Forgot Password',
-    'login' => 'Login',
+    'verifyYourEmailAddress' => '',
+    'loginTitle' => '',
+    'failed' => '',
+    'throttle' => '',
+    'password' => '',
+    'remember' => '',
+    'forgot' => '',
+    'login' => '',
 
-    'register' => 'Register',
-    'reset' => 'Password Reset',
+    'register' => '',
+    'reset' => '',
 
-    'name' => 'Name',
-    'username' => 'Username',
-    'confirm-password' => 'Confirm Password',
+    'name' => '',
+    'username' => '',
+    'confirm-password' => '',
 
-    'age' => 'I am at least 16 years old',
-    'terms' => 'By signing up, you agree to our <a href="'.route('site.terms').'" class="font-weight-bold text-dark">Terms of Use</a> and <a href="'.route('site.privacy').'" class="font-weight-bold text-dark">Privacy Policy</a>.',
+    'age' => '',
+    'terms' => ''.route('site.terms').''.route('site.privacy').'',
 
-    'emailAddress' => 'E-Mail Address',
-    'email' => 'E-Mail',
-    'forgotEmail' => 'Forgot E-Mail',
+    'emailAddress' => '',
+    'email' => '',
+    'forgotEmail' => '',
 
-    'registerTitle' => 'Register a new account',
+    'registerTitle' => '',
 
-    'sendReset' => 'Send Password Reset Link',
-    'backLogin' => 'Back to Login',
+    'sendReset' => '',
+    'backLogin' => '',
 
-    'signInMastodon' => 'Sign-in with Mastodon',
+    'signInMastodon' => '',
 
 ];
