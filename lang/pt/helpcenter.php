@@ -2,27 +2,27 @@
 
 return [
 
-    'helpcenter' => 'Centro de Ajuda',
-    'whatsnew' => 'O que há de novo',
+    'helpcenter' => 'Help Center',
+    'whatsnew' => 'What\'s New',
 
-    'gettingStarted' => 'Como Começar',
-    'sharingMedia' => 'Partilhar Mídia',
-    'profile' => 'Perfil',
+    'gettingStarted' => 'Getting Started',
+    'sharingMedia' => 'Sharing Media',
+    'profile' => 'Profile',
     'stories' => 'Stories',
     'hashtags' => 'Hashtags',
-    'discover' => 'Descobrir',
-    'directMessages' => 'Mensagens Diretas',
-    'timelines' => 'Linha do Tempo',
+    'discover' => 'Discover',
+    'directMessages' => 'Direct Messages',
+    'timelines' => 'Timelines',
     'embed' => 'Embed',
 
-    'communityGuidelines' => 'Directrizes da Comunidade',
-    'whatIsTheFediverse' => 'O que é o fediverse?',
-    'controllingVisibility' => 'Controlar a Visibilidade',
-    'blockingAccounts' => 'Bloqueio de contas',
-    'safetyTips' => 'Dicas de Segurança',
-    'reportSomething' => 'Reportar Algo',
-    'dataPolicy' => 'Política de Dados',
+    'communityGuidelines' => 'Community Guidelines',
+    'whatIsTheFediverse' => 'What is the fediverse?',
+    'controllingVisibility' => 'Controlling Visibility',
+    'blockingAccounts' => 'Blocking Accounts',
+    'safetyTips' => 'Safety Tips',
+    'reportSomething' => 'Report Something',
+    'dataPolicy' => 'Data Policy',
 
-    'taggingPeople' => 'Marcação de Pessoas',
+    'taggingPeople' => 'Tagging People',
 
 ];
