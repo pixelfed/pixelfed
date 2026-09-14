@@ -6,6 +6,7 @@ return [
     'email' => 'E-Mail',
     'invites' => 'Einladungen',
     'media' => 'Medien',
+    'filters' => '',
     'notifications' => 'Benachrichtigungen',
     'password' => 'Passwort',
     'privacy' => 'Privatsphäre',
@@ -13,8 +14,8 @@ return [
     'timelines' => 'Zeitleisten',
     'applications' => 'Anwendungen',
     'developers' => 'Entwicklung',
-    'import' => 'Import',
-    'export' => 'Export',
+    'import' => '',
+    'export' => '',
     'parental_controls' => 'Elterliche Kontrolle',
 
     'submit' => 'Absenden',
@@ -29,10 +30,10 @@ return [
     'home.must_be_a_jpeg_or_png_max_avatar_size' => 'Muss jpeg oder png sein. Maximale Größe:',
     'home.upload' => 'Hochladen',
     'home.delete_profile_photo' => 'Profilfoto löschen',
-    'home.name' => 'Name',
+    'home.name' => '',
     'home.your_name' => 'Dein Name',
-    'home.website' => 'Website',
-    'home.bio' => 'Bio',
+    'home.website' => '',
+    'home.bio' => '',
     'home.add_a_bio_here' => 'Deine Biografie',
     'home.language' => 'Sprache',
     'home.pronouns' => 'Pronomen',
@@ -125,13 +126,14 @@ return [
     'relationships' => 'Beziehungen',
     'relationships.followers' => 'Follower',
     'relationships.following' => 'Folge ich',
-    'relationships.hashtags' => 'Hashtags',
-    'relationships.hashtag' => 'Hashtag',
+    'relationships.hashtags' => '',
+    'relationships.hashtag' => '',
     'relationships.username' => 'Benutzername',
     'relationships.action' => 'Aktion',
     'relationships.unfollow' => 'Entfolgen',
     'relationships.mute' => 'Stummschalten',
     'relationships.block' => 'Blockieren',
+    'relationships.removeFollow' => '',
     'relationships.mute_successful' => 'Stummschalten erfolgreich',
     'relationships.you_have_successfully_muted_that_user' => 'Du hast den Benutzer erfolgreich stummgeschaltet',
     'relationships.block_successful' => 'Blockieren erfolgreich',
@@ -155,9 +157,9 @@ return [
     'security.ip_address' => 'IP-Adresse:',
     'security.user_agent' => 'User-Agent:',
     'security.devices' => 'Geräte',
-    'security.ip' => 'IP:',
+    'security.ip' => '',
     'security.device' => 'Gerät:',
-    'security.browser' => 'Browser:',
+    'security.browser' => '',
     'security.last_login' => 'Letzer Login:',
     'security.country' => 'Land:',
     'security.trust' => 'Vertrauen',
@@ -172,8 +174,12 @@ return [
     'security.photo_reblogs_only' => 'Ausschließlich Foto-Reblogs',
     'security.only_see_reblogs_of_photos_or_photo_albums_home_etc' => 'Nur Reblogs von Fotos oder Foto-Alben anzeigen. (nur auf der Startseite)',
 
+    // incomplete
+    // the oauth panel is loaded from elsewhere
     'developers.oauth_has_not_been_enabled_on_this_instance' => 'OAuth ist auf dieser Instanz nicht aktiv.',
 
+    // incomplete
+    // import/ig.blade.php seems not in use anymore
     'import.import_from_instagram' => 'Importieren von Instagram',
 
     'export.data_export' => 'Daten-Export',
@@ -181,7 +187,9 @@ return [
     'export.statuses' => 'Beiträge',
     'export.mute_block_lists' => 'Stumm/Block-Listen',
 
-    'labs' => 'Labs',
+    // incomplete
+    // some language outside the blades (in app/Http/Controllers/Settings/LabsSettings.php)
+    'labs' => '',
     'labs.experimental_features' => 'Experimentelle Funktionen',
     'labs.use_dark_mode_theme' => 'Das Dark Mode-Theme verwenden.',
 ];
