@@ -268,4 +268,109 @@ class CaptchaVerificationTest extends TestCase
         $this->assertTrue($driver->verify(['my-token' => 'tok']));
         $this->assertFalse($driver->verify(['cap-token' => 'tok']));
     }
+
+    // ---------------------------------------------------------------------
+    // Cap driver verify() — inlined HTTP behavior (no oliweb/laravel-cap pkg)
+    // ---------------------------------------------------------------------
+
+    #[Test]
+    public function cap_verify_sends_json_secret_and_response(): void
+    {
+        config([
+            'captcha.cap.endpoint' => 'https://cap.example.com',
+            'captcha.cap.sitekey' => 'abc',
+            'captcha.cap.secret' => 'my-cap-secret',
+        ]);
+        Http::fake([
+            'cap.example.com/*' => Http::response(['success' => true], 200),
+        ]);
+
+        (new CapDriver)->verify(['cap-token' => 'my-token']);
+
+        Http::assertSent(function ($request) {
+            return $request->url() === 'https://cap.example.com/abc/siteverify'
+                && $request->hasHeader('Content-Type', 'application/json')
+                && $request['secret'] === 'my-cap-secret'
+                && $request['response'] === 'my-token';
+        });
+    }
+
+    #[Test]
+    public function cap_verify_defaults_to_false_when_success_key_is_absent(): void
+    {
+        config([
+            'captcha.cap.endpoint' => 'https://cap.example.com',
+            'captcha.cap.sitekey' => 'abc',
+            'captcha.cap.secret' => 'sk',
+        ]);
+        Http::fake([
+            'cap.example.com/*' => Http::response(['foo' => 'bar'], 200),
+        ]);
+
+        $this->assertFalse((new CapDriver)->verify(['cap-token' => 'tok']));
+    }
+
+    #[Test]
+    public function cap_fail_open_lets_requests_through_on_http_error(): void
+    {
+        config([
+            'captcha.cap.endpoint' => 'https://cap.example.com',
+            'captcha.cap.sitekey' => 'abc',
+            'captcha.cap.secret' => 'sk',
+            'captcha.cap.fail_open' => true,
+        ]);
+        Http::fake([
+            'cap.example.com/*' => Http::response('server error', 500),
+        ]);
+
+        $this->assertTrue((new CapDriver)->verify(['cap-token' => 'tok']));
+    }
+
+    #[Test]
+    public function cap_fail_closed_blocks_requests_on_http_error(): void
+    {
+        config([
+            'captcha.cap.endpoint' => 'https://cap.example.com',
+            'captcha.cap.sitekey' => 'abc',
+            'captcha.cap.secret' => 'sk',
+            'captcha.cap.fail_open' => false,
+        ]);
+        Http::fake([
+            'cap.example.com/*' => Http::response('server error', 500),
+        ]);
+
+        $this->assertFalse((new CapDriver)->verify(['cap-token' => 'tok']));
+    }
+
+    #[Test]
+    public function cap_fail_open_lets_requests_through_on_network_exception(): void
+    {
+        config([
+            'captcha.cap.endpoint' => 'https://cap.example.com',
+            'captcha.cap.sitekey' => 'abc',
+            'captcha.cap.secret' => 'sk',
+            'captcha.cap.fail_open' => true,
+        ]);
+        Http::fake(function () {
+            throw new \Illuminate\Http\Client\ConnectionException('connection refused');
+        });
+
+        $this->assertTrue((new CapDriver)->verify(['cap-token' => 'tok']));
+    }
+
+    #[Test]
+    public function cap_fail_closed_blocks_requests_on_network_exception(): void
+    {
+        config([
+            'captcha.cap.endpoint' => 'https://cap.example.com',
+            'captcha.cap.sitekey' => 'abc',
+            'captcha.cap.secret' => 'sk',
+            'captcha.cap.fail_open' => false,
+        ]);
+        Http::fake(function () {
+            throw new \Illuminate\Http\Client\ConnectionException('connection refused');
+        });
+
+        $this->assertFalse((new CapDriver)->verify(['cap-token' => 'tok']));
+    }
 }
