@@ -17,9 +17,21 @@ return [
     'places' => 'Locais',
     'profiles' => 'Perfis',
 
+    // site/contact
+    'you_can_contact_the_admins' => '',
+    'by_using_the_form_below' => '',
+    'or' => '',
+    'by_sending_an_email_to' => '',
+    'the_admins_have_not_set_a_contact_email_address' => '',
+    'Message' => '',
+    'request_response_from_admins' => '',
+    'Submit' => '',
+    'log_in_to_send_a_message' => '',
+    'Please' => '',
+
     // site/about
     'photo_sharing_for_everyone' => 'Compartilhamento de Fotos. Para Todos',
-    'pixelfed_is_an_image_sharing_platform_etc' => 'Pixelfed é uma plataforma de compartilhamento de imagens, uma alternativa ética às plataformas centralizadas.',
+    'pixelfed_is_an_image_sharing_platform_etc' => 'Pixelfed é uma plataforma de compartilhamento de imagens, uma alternativa ética às plataformas centralizadas.', // this is actually never used because it's a fallback for config_cache('app.description') and config_cache('app.short_description') which seem to be impossible to set to empty when saved via /admin/settings?t=branding
     'feature_packed' => 'Repleto de Recursos.',
     'the_best_for_the_brightest' => 'O melhor para os mais brilhantes 📸',
     'albums' => 'Álbuns',
@@ -54,5 +66,4 @@ return [
     'view' => 'ver',
     'the_source_code_and_run_their_own_instance' => 'o código-fonte e executar sua própria instância!',
     'open_source_in_pixelfed' => 'Código aberto no Pixelfed',
-
 ];

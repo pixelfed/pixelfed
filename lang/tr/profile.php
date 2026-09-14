@@ -12,4 +12,10 @@ return [
 
     'status.disabled.header' => 'Profil kullanım dışı',
     'status.disabled.body' => 'Üzgünüz, bu profile şu anda ulaşılamıyor. Kısa süre içinde tekrar deneyiniz.',
+
+    'block.domain.max' => '',
+
+    'mutedAccounts' => '',
+    'blockedAccounts' => '',
+    'blockedDomains' => '',
 ];

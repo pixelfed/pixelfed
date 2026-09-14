@@ -12,4 +12,10 @@ return [
 
     'status.disabled.header' => 'Perfil non dispoñible',
     'status.disabled.body' => 'O perfil non está dipoñible neste intre, inténtao dentro dun anaco.',
+
+    'block.domain.max' => '',
+
+    'mutedAccounts' => '',
+    'blockedAccounts' => '',
+    'blockedDomains' => '',
 ];

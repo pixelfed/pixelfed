@@ -1,8 +1,10 @@
 <?php
 
 return [
+
     'helpcenter' => 'Centre de suport',
     'whatsnew' => 'El més nou',
+
     'gettingStarted' => 'Començant',
     'sharingMedia' => 'Compartint mèdies',
     'profile' => 'Perfil',
@@ -12,6 +14,7 @@ return [
     'directMessages' => 'Missatges Directes',
     'timelines' => 'Línia Temporal',
     'embed' => 'Incrustat',
+
     'communityGuidelines' => 'Guies de la Comunitat',
     'whatIsTheFediverse' => 'Què és el Fediverse?',
     'controllingVisibility' => 'Controlant la Visibilitat',
@@ -19,4 +22,7 @@ return [
     'safetyTips' => 'Apunts de Seguretat',
     'reportSomething' => 'Reportar alguna cosa',
     'dataPolicy' => 'Política de dades',
+
+    'taggingPeople' => '',
+
 ];

@@ -27,6 +27,7 @@
         "sensitive": "\u30bb\u30f3\u30b7\u30c6\u30a3\u30d6",
         "sensitiveContent": "\u30bb\u30f3\u30b7\u30c6\u30a3\u30d6\u306a\u30b3\u30f3\u30c6\u30f3\u30c4",
         "sensitiveContentWarning": "\u3053\u306e\u6295\u7a3f\u306b\u306f\u30bb\u30f3\u30b7\u30c6\u30a3\u30d6\u306a\u30b3\u30f3\u30c6\u30f3\u30c4\u304c\u542b\u307e\u308c\u3066\u3044\u308b\u53ef\u80fd\u6027\u304c\u3042\u308a\u307e\u3059",
+        "javascript": "",
         "loading": "\u30ed\u30fc\u30c9\u4e2d...",
         "continue": "\u7d9a\u884c"
     },
@@ -58,6 +59,7 @@
         "privacy": "\u30d7\u30e9\u30a4\u30d0\u30b7\u30fc",
         "terms": "\u5229\u7528\u898f\u7d04",
         "legalNotice": "\u514d\u8cac\u4e8b\u9805",
+        "mobileApps": "",
         "backToPreviousDesign": "\u4ee5\u524d\u306e\u30c7\u30b6\u30a4\u30f3\u306b\u623b\u3059"
     },
     "directMessages": {
@@ -324,5 +326,41 @@
             "add_keyword": "\u30ad\u30fc\u30ef\u30fc\u30c9\u3092\u8ffd\u52a0\u3067\u304d\u307e\u3059",
             "enter_filter_title": "\u65b0\u3057\u3044\u30d5\u30a3\u30eb\u30bf\u30fc"
         }
+    },
+    "powered_by_pixelfed": "",
+    "landing": {
+        "login": "",
+        "signup": "",
+        "about": "",
+        "directory": "",
+        "explore": "",
+        "decentralized_by_pixelfed": "",
+        "posts": "",
+        "active_users": "",
+        "total_users": "",
+        "managed_by": "",
+        "server_rules": "",
+        "supported_features": "",
+        "features": {
+            "photo_posts": "",
+            "photo_albums": "",
+            "photo_filters": "",
+            "collections": "",
+            "comments": "",
+            "hashtags": "",
+            "likes": "",
+            "notifications": "",
+            "shares": "",
+            "share_up_to_n_photos": "",
+            "share_up_to_n_photos_videos": "",
+            "file_size": "",
+            "federation": "",
+            "mobile_app": "",
+            "stories": "",
+            "videos": ""
+        },
+        "discover_accounts": "",
+        "nothing_to_show": "",
+        "explore_trending": ""
     }
 }

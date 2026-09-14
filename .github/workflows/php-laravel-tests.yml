@@ -30,13 +30,20 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v7
 
+      # libvips is the shared library used by the Intervention vips driver via
+      # its FFI binding (jcupitt/vips -> ext-ffi + libvips). The default
+      # IMAGE_DRIVER is vips, so the runner needs libvips present at runtime.
+      - name: Install libvips
+        run: sudo apt-get update && sudo apt-get install -y --no-install-recommends libvips42
+
       - name: Setup PHP
         uses: shivammathur/setup-php@v2
         with:
           php-version: ${{ matrix.php }}
-          extensions: dom, curl, libxml, mbstring, zip, pcntl, pdo, sqlite, pdo_sqlite, bcmath, intl, gd, exif, iconv, redis
+          # ffi is required by jcupitt/vips (the vips driver's FFI binding).
+          extensions: dom, curl, libxml, mbstring, zip, pcntl, pdo, sqlite, pdo_sqlite, bcmath, intl, gd, exif, iconv, redis, ffi
           coverage: none
-          ini-values: memory_limit=512M
+          ini-values: memory_limit=512M, ffi.enable=true
 
       - name: Cache Composer dependencies
         uses: actions/cache@v6

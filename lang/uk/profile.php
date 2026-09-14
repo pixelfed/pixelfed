@@ -12,4 +12,10 @@ return [
 
     'status.disabled.header' => 'Профіль недоступний',
     'status.disabled.body' => 'На жаль, профіль зараз недоступний. Будь ласка, повторіть спробу згодом.',
+
+    'block.domain.max' => '',
+
+    'mutedAccounts' => '',
+    'blockedAccounts' => '',
+    'blockedDomains' => '',
 ];

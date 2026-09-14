@@ -108,13 +108,17 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v7
 
+      - name: Install libvips
+        run: sudo apt-get update && sudo apt-get install -y --no-install-recommends libvips42
+
       - name: Setup PHP
         uses: shivammathur/setup-php@v2
         with:
           php-version: '8.5'
-          extensions: dom, curl, libxml, mbstring, zip, pcntl, pdo, sqlite, pdo_sqlite, mysql, pdo_mysql, pgsql, pdo_pgsql, bcmath, intl, gd, exif, iconv, redis
+          # ffi is required by jcupitt/vips (the vips driver's FFI binding).
+          extensions: dom, curl, libxml, mbstring, zip, pcntl, pdo, sqlite, pdo_sqlite, mysql, pdo_mysql, pgsql, pdo_pgsql, bcmath, intl, gd, exif, iconv, redis, ffi
           coverage: none
-          ini-values: memory_limit=512M
+          ini-values: memory_limit=512M, ffi.enable=true
 
       - name: Cache Composer dependencies
         uses: actions/cache@v6

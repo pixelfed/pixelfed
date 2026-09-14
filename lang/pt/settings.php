@@ -174,7 +174,12 @@ return [
     'security.photo_reblogs_only' => 'Apenas reblogs de fotos',
     'security.only_see_reblogs_of_photos_or_photo_albums_home_etc' => 'Ver apenas reblogs de fotos ou álbuns de fotos. (Apenas linha do tempo inicial)',
 
+    // incomplete
+    // the oauth panel is loaded from elsewhere
     'developers.oauth_has_not_been_enabled_on_this_instance' => 'OAuth não foi habilitado nesta instância.',
+
+    // incomplete
+    // import/ig.blade.php seems not in use anymore
     'import.import_from_instagram' => 'Importar do Instagram',
 
     'export.data_export' => 'Exportação de dados',
@@ -182,8 +187,9 @@ return [
     'export.statuses' => 'Publicações',
     'export.mute_block_lists' => 'Lista de silenciados/bloqueados',
 
+    // incomplete
+    // some language outside the blades (in app/Http/Controllers/Settings/LabsSettings.php)
     'labs' => 'Laboratórios',
     'labs.experimental_features' => 'Recursos experimentais',
     'labs.use_dark_mode_theme' => 'Usar tema de modo escuro.',
-
 ];

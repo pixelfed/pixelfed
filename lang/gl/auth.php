@@ -2,18 +2,34 @@
 
 return [
 
-    /*
-    |--------------------------------------------------------------------------
-    | Authentication Language Lines
-    |--------------------------------------------------------------------------
-    |
-    | The following language lines are used during authentication for various
-    | messages that we need to display to the user. You are free to modify
-    | these language lines according to your application's requirements.
-    |
-    */
-
+    'verifyYourEmailAddress' => '',
+    'loginTitle' => '',
     'failed' => 'As credenciais non constan nos nosos rexistros.',
     'throttle' => 'Demasiados intentos de conexión. Por favor, inténtao de novo en :seconds segundos.',
+    'password' => '',
+    'remember' => '',
+    'forgot' => '',
+    'login' => '',
+
+    'register' => '',
+    'reset' => '',
+
+    'name' => '',
+    'username' => '',
+    'confirm-password' => '',
+
+    'age' => '',
+    'terms' => ''.route('site.terms').''.route('site.privacy').'',
+
+    'emailAddress' => '',
+    'email' => '',
+    'forgotEmail' => '',
+
+    'registerTitle' => '',
+
+    'sendReset' => '',
+    'backLogin' => '',
+
+    'signInMastodon' => '',
 
 ];

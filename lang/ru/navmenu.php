@@ -1,13 +1,13 @@
 <?php
 
 return [
-
     'search' => 'Поиск',
     'home' => 'Главная',
     'local' => 'Локальная',
     'network' => 'Глобальная',
     'discover' => 'Discover',
     'viewMyProfile' => 'Мой профиль',
+    'myProfile' => '',
     'myTimeline' => 'Моя лента',
     'publicTimeline' => 'Глобальная лента',
     'remoteFollow' => 'Remote Follow',
@@ -15,5 +15,5 @@ return [
     'admin' => 'Администрация',
     'logout' => 'Выйти',
     'directMessages' => 'Личные сообщения',
-
+    'composePost' => '',
 ];

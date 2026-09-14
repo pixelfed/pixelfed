@@ -27,6 +27,7 @@
         "sensitive": "Sensible",
         "sensitiveContent": "Contenido Sensible",
         "sensitiveContentWarning": "Esta publicaci\u00f3n podr\u00eda contener contenido sensible",
+        "javascript": "",
         "loading": "Cargando...",
         "continue": "Continuar"
     },
@@ -48,6 +49,7 @@
         "profile": "Perfil",
         "drive": "Multimedia",
         "settings": "Ajustes",
+        "appearance": "",
         "compose": "Crear Nuevo",
         "logout": "Cerrar sesi\u00f3n",
         "createStory": "Crear Historia",
@@ -57,6 +59,7 @@
         "privacy": "Privacidad",
         "terms": "T\u00e9rminos",
         "legalNotice": "Aviso Legal",
+        "mobileApps": "",
         "backToPreviousDesign": "Volver al dise\u00f1o anterior"
     },
     "directMessages": {
@@ -237,6 +240,19 @@
         "thanksMsg": "Gracias por el reporte, \u00a1personas como t\u00fa ayudan a mantener nuestra comunidad segura!",
         "contactAdminMsg": "Si quieres contactar un administrador sobre esta publicaci\u00f3n o reporte"
     },
+    "appearance": {
+        "theme": "",
+        "profileLayout": "",
+        "compactPreviews": "",
+        "loadComments": "",
+        "hideStats": "",
+        "auto": "",
+        "lightMode": "",
+        "darkMode": "",
+        "grid": "",
+        "masonry": "",
+        "feed": ""
+    },
     "settings": {
         "filters": {
             "title": "Filtros",
@@ -253,7 +269,6 @@
             "create_new_filter": "Crear nuevo Filtro",
             "filter_title": "T\u00edtulo del Filtro",
             "edit_filter": "Editar Filtro",
-            "create_filter": "Crear Filtro",
             "advance_mode": "Modo Avanzado",
             "simple_mode": "Modo Simple",
             "keywords": "Palabras clave",
@@ -283,6 +298,7 @@
             "cutom": "Personalizado...",
             "enter_duration_in_seconds": "Introduce la duraci\u00f3n en segundos",
             "save_changes": "Guardar Cambios",
+            "create_filter": "Crear Filtro",
             "name_your_filter": "Titula tu Filtro",
             "give_your_filter_a_name": "Da un nombre a tu filtro que te ayude a recordar el tipo de contenido.",
             "my_filter_name": "T\u00edtulo de mi Filtro",
@@ -310,5 +326,41 @@
             "add_keyword": "Agregar palabra clave...",
             "enter_filter_title": "Introduce el t\u00edtulo del filtro"
         }
+    },
+    "powered_by_pixelfed": "",
+    "landing": {
+        "login": "",
+        "signup": "",
+        "about": "",
+        "directory": "",
+        "explore": "",
+        "decentralized_by_pixelfed": "",
+        "posts": "",
+        "active_users": "",
+        "total_users": "",
+        "managed_by": "",
+        "server_rules": "",
+        "supported_features": "",
+        "features": {
+            "photo_posts": "",
+            "photo_albums": "",
+            "photo_filters": "",
+            "collections": "",
+            "comments": "",
+            "hashtags": "",
+            "likes": "",
+            "notifications": "",
+            "shares": "",
+            "share_up_to_n_photos": "",
+            "share_up_to_n_photos_videos": "",
+            "file_size": "",
+            "federation": "",
+            "mobile_app": "",
+            "stories": "",
+            "videos": ""
+        },
+        "discover_accounts": "",
+        "nothing_to_show": "",
+        "explore_trending": ""
     }
 }

@@ -12,4 +12,10 @@ return [
 
     'status.disabled.header' => 'Учётная запись недоступна',
     'status.disabled.body' => 'К сожалению, эта учётная запись недоступна на данный момент. Пожалуйста, попробуйте ещё раз позднее.',
+
+    'block.domain.max' => '',
+
+    'mutedAccounts' => '',
+    'blockedAccounts' => '',
+    'blockedDomains' => '',
 ];
