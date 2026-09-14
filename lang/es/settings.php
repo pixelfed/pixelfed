@@ -5,7 +5,8 @@ return [
     'accessibility' => 'Accessibilidad',
     'email' => 'Correo',
     'invites' => 'Invitaciones',
-    'media' => 'Media',
+    'media' => '',
+    'filters' => '',
     'notifications' => 'Notificaciones',
     'password' => 'Contraseña',
     'privacy' => 'Privacidad',
@@ -18,7 +19,7 @@ return [
     'parental_controls' => 'Control Parental',
 
     'submit' => 'Enviar',
-    'error' => 'Error',
+    'error' => '',
     'cancel' => 'Cancelar',
     'save' => 'Guardar',
     'download' => 'Descargar',
@@ -32,7 +33,7 @@ return [
     'home.name' => 'Nombre',
     'home.your_name' => 'Tu Nombre',
     'home.website' => 'Portal Web',
-    'home.bio' => 'Bio',
+    'home.bio' => '',
     'home.add_a_bio_here' => 'Añade una bio aquí',
     'home.language' => 'Idioma',
     'home.pronouns' => 'Pronombres',
@@ -132,6 +133,7 @@ return [
     'relationships.unfollow' => 'Dejar de seguir',
     'relationships.mute' => 'Silenciar',
     'relationships.block' => 'Bloquear',
+    'relationships.removeFollow' => '',
     'relationships.mute_successful' => 'Silenciamiento con éxito',
     'relationships.you_have_successfully_muted_that_user' => 'Has silenciado con éxito esa cuenta',
     'relationships.block_successful' => 'Bloqueo con éxito',
@@ -153,9 +155,9 @@ return [
     'security.account_log' => 'Registro (log) de cuenta',
     'security.no_activity_logs_found' => '¡No se han encontrado registros de actividad!',
     'security.ip_address' => 'Dirección IP:',
-    'security.user_agent' => 'User Agent:',
+    'security.user_agent' => '',
     'security.devices' => 'Dispositivos',
-    'security.ip' => 'IP:',
+    'security.ip' => '',
     'security.device' => 'Dispositivo:',
     'security.browser' => 'Navegador:',
     'security.last_login' => 'Último Inicio de Sesión:',
@@ -187,7 +189,7 @@ return [
 
     // incomplete
     // some language outside the blades (in app/Http/Controllers/Settings/LabsSettings.php)
-    'labs' => 'Labs',
+    'labs' => '',
     'labs.experimental_features' => 'Características experimentales',
     'labs.use_dark_mode_theme' => 'Usar tema en modo oscuro.',
 ];
