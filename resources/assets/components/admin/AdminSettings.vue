@@ -550,6 +550,17 @@
                                                             <label class="custom-control-label font-weight-bold" for="captcha_on_curated_register">Curated Register Captcha</label>
                                                         </div>
                                                     </div>
+                                                    <div class="col-12 col-lg-6">
+                                                        <div class="custom-control custom-checkbox">
+                                                            <input
+                                                                type="checkbox"
+                                                                name="captcha_on_forgot_email"
+                                                                class="custom-control-input"
+                                                                id="captcha_on_forgot_email"
+                                                                v-model="platform.captcha_on_forgot_email">
+                                                            <label class="custom-control-label font-weight-bold" for="captcha_on_forgot_email">Forgot Email Captcha</label>
+                                                        </div>
+                                                    </div>
                                                 </div>
                                                 <hr class="mt-4 mb-2">
                                             </template>
@@ -1513,6 +1524,7 @@
                     captcha_on_register: this.platform.captcha_on_register,
                     captcha_on_forgotpassword: this.platform.captcha_on_forgotpassword,
                     captcha_on_password_reset: this.platform.captcha_on_password_reset,
+                    captcha_on_forgot_email: this.platform.captcha_on_forgot_email,
                     captcha_on_curated_register: this.platform.captcha_on_curated_register,
                     custom_emoji_enabled: this.platform.custom_emoji_enabled,
                 }).then(res => {

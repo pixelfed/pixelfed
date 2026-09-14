@@ -81,10 +81,11 @@ return [
     | Per-surface toggles. Each requires the global "enabled" flag to also be on.
     */
     'active' => [
-        'login' => env('CAPTCHA_ENABLED_ON_LOGIN', false),
-        'register' => env('CAPTCHA_ENABLED_ON_REGISTER', false),
-        'forgotpassword' => env('CAPTCHA_ENABLED_ON_FORGOT_PASSWORD', false),
-        'password_reset' => env('CAPTCHA_ENABLED_ON_PASSWORD_RESET', false),
-        'curated_register' => env('CAPTCHA_ENABLED_ON_CURATED_REGISTER', false),
+        'login' => env('CAPTCHA_ENABLED_ON_LOGIN', true),
+        'register' => env('CAPTCHA_ENABLED_ON_REGISTER', true),
+        'forgotpassword' => env('CAPTCHA_ENABLED_ON_FORGOT_PASSWORD', true),
+        'password_reset' => env('CAPTCHA_ENABLED_ON_PASSWORD_RESET', true),
+        'forgot_email' => env('CAPTCHA_ENABLED_ON_FORGOT_EMAIL', true),
+        'curated_register' => env('CAPTCHA_ENABLED_ON_CURATED_REGISTER', true),
     ],
 ];

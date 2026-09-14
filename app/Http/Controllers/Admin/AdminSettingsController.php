@@ -742,6 +742,7 @@ trait AdminSettingsController
             ConfigCacheService::put('captcha.active.register', $request->boolean('captcha_on_register'));
             ConfigCacheService::put('captcha.active.forgotpassword', $request->boolean('captcha_on_forgotpassword'));
             ConfigCacheService::put('captcha.active.password_reset', $request->boolean('captcha_on_password_reset'));
+            ConfigCacheService::put('captcha.active.forgot_email', $request->boolean('captcha_on_forgot_email'));
             ConfigCacheService::put('captcha.active.curated_register', $request->boolean('captcha_on_curated_register'));
             ConfigCacheService::put('captcha.enabled', true);
         } else {
@@ -761,6 +762,7 @@ trait AdminSettingsController
             'captcha_on_register' => $request->boolean('captcha_on_register'),
             'captcha_on_forgotpassword' => $request->boolean('captcha_on_forgotpassword'),
             'captcha_on_password_reset' => $request->boolean('captcha_on_password_reset'),
+            'captcha_on_forgot_email' => $request->boolean('captcha_on_forgot_email'),
             'captcha_on_curated_register' => $request->boolean('captcha_on_curated_register'),
             'captcha_hcaptcha_secret' => $request->input('captcha_hcaptcha_secret'),
             'captcha_hcaptcha_sitekey' => $request->input('captcha_hcaptcha_sitekey'),

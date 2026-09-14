@@ -138,6 +138,7 @@ class CaptchaManagerTest extends TestCase
             'captcha.active.register' => false,
             'captcha.active.forgotpassword' => true,
             'captcha.active.password_reset' => false,
+            'captcha.active.forgot_email' => true,
             'captcha.active.curated_register' => true,
         ]);
 
@@ -147,6 +148,7 @@ class CaptchaManagerTest extends TestCase
         $this->assertFalse($manager->activeOn('register'));
         $this->assertTrue($manager->activeOn('forgotpassword'));
         $this->assertFalse($manager->activeOn('password_reset'));
+        $this->assertTrue($manager->activeOn('forgot_email'));
         $this->assertTrue($manager->activeOn('curated_register'));
     }
 

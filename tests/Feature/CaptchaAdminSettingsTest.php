@@ -22,6 +22,7 @@ class CaptchaAdminSettingsTest extends TestCase
             'captcha.active.register' => false,
             'captcha.active.forgotpassword' => true,
             'captcha.active.password_reset' => false,
+            'captcha.active.forgot_email' => true,
             'captcha.active.curated_register' => true,
         ]);
 
@@ -33,6 +34,7 @@ class CaptchaAdminSettingsTest extends TestCase
         $this->assertFalse($platform['captcha_on_register']);
         $this->assertTrue($platform['captcha_on_forgotpassword']);
         $this->assertFalse($platform['captcha_on_password_reset']);
+        $this->assertTrue($platform['captcha_on_forgot_email']);
         $this->assertTrue($platform['captcha_on_curated_register']);
     }
 

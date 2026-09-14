@@ -116,6 +116,7 @@ class ConfigCacheService
                     'captcha.active.register',
                     'captcha.active.forgotpassword',
                     'captcha.active.password_reset',
+                    'captcha.active.forgot_email',
                     'captcha.active.curated_register',
                     'federation.custom_emoji.enabled',
 

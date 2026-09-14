@@ -136,6 +136,7 @@ class AdminSettingsService
             'captcha_on_register' => (bool) config_cache('captcha.active.register'),
             'captcha_on_forgotpassword' => (bool) config_cache('captcha.active.forgotpassword'),
             'captcha_on_password_reset' => (bool) config_cache('captcha.active.password_reset'),
+            'captcha_on_forgot_email' => (bool) config_cache('captcha.active.forgot_email'),
             'captcha_on_curated_register' => (bool) config_cache('captcha.active.curated_register'),
             'captcha_hcaptcha_secret' => self::maskSecret(config_cache('captcha.hcaptcha.secret')),
             'captcha_hcaptcha_sitekey' => config_cache('captcha.hcaptcha.sitekey'),
