@@ -13,7 +13,7 @@ return [
     'discover' => 'Odkrywanie',
     'directMessages' => 'Wiadomości bezpośrednie',
     'timelines' => 'Osie czasu',
-    'embed' => 'Embed',
+    'embed' => '',
 
     'communityGuidelines' => 'Wytyczne dla społeczności',
     'whatIsTheFediverse' => 'Czym jest Fediwersum?',
