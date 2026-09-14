@@ -28,10 +28,10 @@ return [
         'next' => 'Siguiente',
         'close' => 'Cerrar',
         'clickHere' => 'haz clic aquí',
-
         'sensitive' => 'Sensible',
         'sensitiveContent' => 'Contenido Sensible',
         'sensitiveContentWarning' => 'Esta publicación podría contener contenido sensible',
+        'javascript' => 'Please enable javascript to view this content.',
         'loading' => 'Cargando...',
         'continue' => 'Continuar',
     ],
@@ -61,6 +61,7 @@ return [
         'profile' => 'Perfil',
         'drive' => 'Multimedia',
         'settings' => 'Ajustes',
+        'appearance' => 'Appearance',
         'compose' => 'Crear Nuevo',
         'logout' => 'Cerrar sesión',
         'createStory' => 'Crear Historia',
@@ -72,9 +73,11 @@ return [
         'privacy' => 'Privacidad',
         'terms' => 'Términos',
         'legalNotice' => 'Aviso Legal',
+        'mobileApps' => 'Mobile Apps',
 
         // Temporary links
         'backToPreviousDesign' => 'Volver al diseño anterior',
+
     ],
 
     'directMessages' => [
@@ -96,7 +99,7 @@ return [
 
         'followed' => 'te siguió',
         'mentioned' => 'te mencionó',
-        'you' => '',
+        'you' => 'you',
 
         'yourApplication' => 'Tu solicitud para unirse',
         'applicationApproved' => 'ha sido aprobada',
@@ -148,6 +151,7 @@ return [
 
         'emptyCollections' => 'Parece que no podemos encontrar ninguna colección',
         'emptyPosts' => 'Parece que no podemos encontrar ninguna publicación',
+
         'blocking' => 'Estás bloqueando esta cuenta',
         'sponsor' => 'Dona',
         'followYou' => 'Te Sigue',
@@ -274,6 +278,23 @@ return [
         'thanksMsg' => 'Gracias por el reporte, ¡personas como tú ayudan a mantener nuestra comunidad segura!',
         'contactAdminMsg' => 'Si quieres contactar un administrador sobre esta publicación o reporte',
     ],
+
+    'appearance' => [
+        'theme' => 'Theme',
+        'profileLayout' => 'Profile Layout',
+        'compactPreviews' => 'Compact Media Previews',
+        'loadComments' => 'Load Comments',
+        'hideStats' => 'Hide Counts & Stats',
+
+        'auto' => 'Auto',
+        'lightMode' => 'Light mode',
+        'darkMode' => 'Dark mode',
+
+        'grid' => 'Grid',
+        'masonry' => 'Masonry',
+        'feed' => 'Feed',
+    ],
+
     'settings' => [
         'filters' => [
             'title' => 'Filtros',
@@ -290,7 +311,6 @@ return [
             'create_new_filter' => 'Crear nuevo Filtro',
             'filter_title' => 'Título del Filtro',
             'edit_filter' => 'Editar Filtro',
-            'create_filter' => 'Crear Filtro',
             'advance_mode' => 'Modo Avanzado',
             'simple_mode' => 'Modo Simple',
             'keywords' => 'Palabras clave',
@@ -320,6 +340,7 @@ return [
             'cutom' => 'Personalizado...',
             'enter_duration_in_seconds' => 'Introduce la duración en segundos',
             'save_changes' => 'Guardar Cambios',
+            'create_filter' => 'Crear Filtro',
             'name_your_filter' => 'Titula tu Filtro',
             'give_your_filter_a_name' => 'Da un nombre a tu filtro que te ayude a recordar el tipo de contenido.',
             'my_filter_name' => 'Título de mi Filtro',
@@ -347,5 +368,44 @@ return [
             'add_keyword' => 'Agregar palabra clave...',
             'enter_filter_title' => 'Introduce el título del filtro',
         ],
+
+    ],
+
+    'powered_by_pixelfed' => 'Powered by Pixelfed',
+
+    'landing' => [
+        'login' => 'Login',
+        'signup' => 'Sign up',
+        'about' => 'About',
+        'directory' => 'Directory',
+        'explore' => 'Explore',
+        'decentralized_by_pixelfed' => 'Decentralized photo sharing social media powered by <a href="https://pixelfed.org" target="_blank">Pixelfed</a>',
+        'posts' => 'Posts',
+        'active_users' => 'Active Users',
+        'total_users' => 'Total Users',
+        'managed_by' => 'Managed By',
+        'server_rules' => 'Server Rules',
+        'supported_features' => 'Supported Features',
+        'features' => [
+            'photo_posts' => 'Photo Posts',
+            'photo_albums' => 'Photo Albums',
+            'photo_filters' => 'Photo Filters',
+            'collections' => 'Collections',
+            'comments' => 'Comments',
+            'hashtags' => 'Hashtags',
+            'likes' => 'Likes',
+            'notifications' => 'Notifications',
+            'shares' => 'Shares',
+            'share_up_to_n_photos' => 'You can share up to <span class="font-weight-bold">{num_photos}</span> photos* at a time with a max caption length of <span class="font-weight-bold">{caption_length}</span> characters.',
+            'share_up_to_n_photos_videos' => 'You can share up to <span class="font-weight-bold">{num_photos}</span> photos* or <span class="font-weight-bold">{num_video}</span> video* at a time with a max caption length of <span class="font-weight-bold">{caption_length}</span> characters.',
+            'file_size' => '* - Maximum file size is {max_size}',
+            'federation' => 'Federation',
+            'mobile_app' => 'Mobile App Support',
+            'stories' => 'Stories',
+            'videos' => 'Videos',
+        ],
+        'discover_accounts' => 'Discover accounts and people',
+        'nothing_to_show' => 'Nothing to show yet! Check back later.',
+        'explore_trending' => 'Explore trending posts',
     ],
 ];
