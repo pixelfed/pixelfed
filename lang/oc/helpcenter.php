@@ -8,7 +8,7 @@ return [
     'gettingStarted' => 'Començar',
     'sharingMedia' => 'Partatge de mèdias',
     'profile' => 'Perfil',
-    'stories' => 'Stories',
+    'stories' => '',
     'hashtags' => 'Etiquetas',
     'discover' => 'Descobrir',
     'directMessages' => 'Messatges dirèctes',
@@ -22,5 +22,7 @@ return [
     'safetyTips' => 'Astúcias de seguretat',
     'reportSomething' => 'Senhalar quicòm',
     'dataPolicy' => 'Politica de donadas',
+
+    'taggingPeople' => '',
 
 ];
