@@ -85,11 +85,6 @@
         "nativeName": "Nederlands (Nederland)"
     },
     {
-        "code": "en-Pirate",
-        "name": "English (Pirate)",
-        "nativeName": "English (Pirate)"
-    },
-    {
         "code": "en-US",
         "name": "English (United States)",
         "nativeName": "English (United States)"
@@ -253,6 +248,11 @@
         "code": "fa-IR",
         "name": "Persian (Iran)",
         "nativeName": "فارسی (ایران)"
+    },
+    {
+        "code": "en-Pirate",
+        "name": "Pirate (English)",
+        "nativeName": "Pirate (English)"
     },
     {
         "code": "pl-PL",
