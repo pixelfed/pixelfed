@@ -3,10 +3,10 @@
 return [
 
     'likedPhoto' => 'tykkäsi kuvastasi.',
-    'likedComment' => '',
+    'likedComment' => 'tykkäsi kommentistasi.',
     'startedFollowingYou' => 'alkoi seuraamaan sinua.',
-    'commented' => '',
-    'mentionedYou' => '',
-    'shared' => '',
+    'commented' => 'kommentoi julkaisuasi.',
+    'mentionedYou' => 'mainitsi sinut.',
+    'shared' => 'jakoi viestisi.',
 
 ];
