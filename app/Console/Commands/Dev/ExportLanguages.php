@@ -61,6 +61,10 @@ class ExportLanguages extends Command
         $exportDir = resource_path('assets/js/i18n/');
         $exportDirAlt = public_path('_lang/');
 
+        // Remove stale locale files.
+        $this->purgeJsonFiles($exportDir);
+        $this->purgeJsonFiles($exportDirAlt);
+
         foreach ($langs as $lang) {
             $strings = \Lang::get('web', [], $lang);
             $strings = $this->stripEmptyStrings($strings);
@@ -72,6 +76,20 @@ class ExportLanguages extends Command
         }
 
         return Command::SUCCESS;
+    }
+
+    /**
+     * Delete all .json files in the given export directory.
+     */
+    protected function purgeJsonFiles(string $dir): void
+    {
+        if (! is_dir($dir)) {
+            return;
+        }
+
+        foreach (glob(rtrim($dir, '/').'/*.json') as $file) {
+            @unlink($file);
+        }
     }
 
     /**
