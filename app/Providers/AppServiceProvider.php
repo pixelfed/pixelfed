@@ -230,5 +230,15 @@ class AppServiceProvider extends ServiceProvider
         $this->app->bind(UserOidcService::class, function () {
             return UserOidcService::build();
         });
+
+        // Swap the translation loader so empty (untranslated) strings are
+        // dropped at load time. This lets Laravel fall back to the fallback
+        // locale for partially-translated locales instead of rendering blanks.
+        $this->app->extend('translation.loader', function ($loader, $app) {
+            return new \App\Util\Localization\EmptyStrippingFileLoader(
+                $app['files'],
+                $app['path.lang']
+            );
+        });
     }
 }
