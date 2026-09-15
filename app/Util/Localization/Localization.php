@@ -9,18 +9,7 @@ class Localization
     /**
      * Legacy two-letter (and legacy region) language codes mapped to the
      * current locale-coded folder names under lang/.
-     *
-     * Pixelfed historically shipped translations under short codes (e.g. "es",
-     * "zh-cn"). Those folders were renamed to full locale codes (e.g. "es-ES",
-     * "zh-CN"). An instance upgrading with an old APP_LOCALE would otherwise
-     * resolve to a missing folder and silently fall back to English. This map
-     * lets an old APP_LOCALE keep working without any .env change on upgrade.
-     *
-     * The two codes that were ambiguous after the rename are pinned:
-     *   - "en" => "en-US"  (not the "en-x-pirate" novelty locale)
-     *   - "sr" => "sr-CS"  (Serbian; the prior single Serbian translation)
-     *
-     * DELETE NEXT MAJOR RELEASE
+     * Added September 2026 - DELETE AFTER COMMUNICATION WITH ADMINS
      *
      * @var array<string, string>
      */
