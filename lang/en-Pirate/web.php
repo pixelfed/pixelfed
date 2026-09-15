@@ -3,7 +3,7 @@
 return [
 
     'common' => [
-        'comment' => '',
+        'comment' => 'Yammer',
         'commented' => '',
         'comments' => '',
         'like' => '',
@@ -13,32 +13,32 @@ return [
         'shared' => '',
         'shares' => '',
         'unshare' => '',
-        'bookmark' => '',
+        'bookmark' => 'Treasure',
 
-        'cancel' => '',
+        'cancel' => 'Abandon Ship',
         'copyLink' => '',
         'delete' => '',
         'error' => '',
-        'errorMsg' => '',
-        'oops' => '',
+        'errorMsg' => 'Somethin\' went wrong. Please try again later.',
+        'oops' => 'Shiver me timbers!',
         'other' => '',
         'readMore' => '',
         'success' => '',
         'proceed' => '',
-        'next' => '',
+        'next' => 'Onward',
         'close' => '',
-        'clickHere' => '',
+        'clickHere' => 'click thar',
         'sensitive' => '',
         'sensitiveContent' => '',
-        'sensitiveContentWarning' => '',
-        'javascript' => '',
+        'sensitiveContentWarning' => 'Dis post may contain sensitive content',
+        'javascript' => 'Please enable javascript to view this booty.',
         'loading' => '',
-        'continue' => '',
+        'continue' => 'Carry On',
     ],
 
     'site' => [
         'terms' => '',
-        'privacy' => '',
+        'privacy' => 'Privacy Creed',
     ],
 
     'navmenu' => [
