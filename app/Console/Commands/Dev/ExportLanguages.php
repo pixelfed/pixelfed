@@ -91,9 +91,32 @@ class ExportLanguages extends Command
      *
      * @param  array<int, string>  $langs  Valid locale codes (lang/ folders).
      */
+    /**
+     * Display-name overrides for locale codes that ICU cannot resolve
+     * correctly. Crowdin uses some non-standard codes (e.g. custom
+     * languages) that would otherwise render as the wrong language or as
+     * the raw code via locale_get_display_name().
+     *
+     * @var array<string, array{name: string, nativeName: string}>
+     */
+    protected const LOCALE_OVERRIDES = [
+        // Crowdin custom "Pirate English". BCP-47 would read en-Pirate as
+        // English, and the old en-PT code collided with English (Portugal).
+        'en-Pirate' => ['name' => 'English (Pirate)', 'nativeName' => 'English (Pirate)'],
+
+        // Klingon. 'tlh' is valid BCP-47 (ICU renders "Klingon"), but ICU has
+        // no native-name form, so pin both for a consistent label. Mapped from
+        // Crowdin's tlh-AA (AA is a fake region) via crowdin.yml.
+        'tlh' => ['name' => 'Klingon', 'nativeName' => 'tlhIngan Hol'],
+    ];
+
     protected function writeLocalesManifest(array $langs): void
     {
         $locales = array_map(function ($code) {
+            if (isset(self::LOCALE_OVERRIDES[$code])) {
+                return array_merge(['code' => $code], self::LOCALE_OVERRIDES[$code]);
+            }
+
             return [
                 'code' => $code,
                 'name' => locale_get_display_name($code, 'en'),
