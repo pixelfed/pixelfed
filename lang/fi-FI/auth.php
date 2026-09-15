@@ -2,34 +2,34 @@
 
 return [
 
-    'verifyYourEmailAddress' => '',
-    'loginTitle' => '',
+    'verifyYourEmailAddress' => ' - Vahvista Sähköpostiosoitteesi',
+    'loginTitle' => 'Kirjautuminen',
     'failed' => 'Nämä kirjautumistiedot eivät vastaa tallennettuja',
     'throttle' => 'Liian monta kirjautumisyritystä. Yrityä uudelleen :seconds sekuntin kuluttua.',
-    'password' => '',
-    'remember' => '',
-    'forgot' => '',
-    'login' => '',
+    'password' => 'Salasana',
+    'remember' => 'Muista minut',
+    'forgot' => 'Unohtunut salasana',
+    'login' => 'Kirjaudu',
 
-    'register' => '',
-    'reset' => '',
+    'register' => 'Luo tili',
+    'reset' => 'Salasanan nollaus',
 
-    'name' => '',
-    'username' => '',
-    'confirm-password' => '',
+    'name' => 'Nimi',
+    'username' => 'Käyttäjätunnus',
+    'confirm-password' => 'Vahvista salasana',
 
-    'age' => '',
-    'terms' => ''.route('site.terms').''.route('site.privacy').'',
+    'age' => 'Olen vähintään 16-vuotias',
+    'terms' => 'Rekisteröitymällä hyväksyt meidän <a href="'.route('site.terms').'" class="font-weight-bold text-dark">Käyttöehdot</a> ja <a href="'.route('site.privacy').'" class="font-weight-bold text-dark">Tietosuojakäytännön</a>.',
 
-    'emailAddress' => '',
-    'email' => '',
-    'forgotEmail' => '',
+    'emailAddress' => 'Sähköpostiosoite',
+    'email' => 'Sähköposti',
+    'forgotEmail' => 'Unohtunut sähköposti',
 
-    'registerTitle' => '',
+    'registerTitle' => 'Rekisteröi uusi tili',
 
-    'sendReset' => '',
-    'backLogin' => '',
+    'sendReset' => 'Lähetä salasanan palautuslinkki',
+    'backLogin' => 'Takaisin kirjautumiseen',
 
-    'signInMastodon' => '',
+    'signInMastodon' => 'Kirjaudu sisään Mastodonilla',
 
 ];
