@@ -319,6 +319,73 @@ describe('locale-aware caching of rendered site pages', function () {
     })->skip(fn () => firstNonDefaultLocale() === 'en-US', 'needs a second locale');
 });
 
+describe('legacy APP_LOCALE normalization (config/app.php)', function () {
+    /*
+    | The normalization lives in config/app.php: it maps a legacy short code
+    | (e.g. "es") from APP_LOCALE to the current locale folder (e.g. "es-ES")
+    | so instances upgrading with an old APP_LOCALE do not silently fall back
+    | to English. The config value is resolved once at boot, so these tests
+    | re-run the config file with a given APP_LOCALE and assert the result.
+    */
+    $resolveLocale = function (?string $appLocale): string {
+        // Set APP_LOCALE the way the config file reads it (via env()).
+        if ($appLocale === null) {
+            putenv('APP_LOCALE');
+            unset($_ENV['APP_LOCALE'], $_SERVER['APP_LOCALE']);
+        } else {
+            putenv('APP_LOCALE='.$appLocale);
+            $_ENV['APP_LOCALE'] = $appLocale;
+            $_SERVER['APP_LOCALE'] = $appLocale;
+        }
+
+        try {
+            $config = require base_path('config/app.php');
+
+            return $config['locale'];
+        } finally {
+            putenv('APP_LOCALE');
+            unset($_ENV['APP_LOCALE'], $_SERVER['APP_LOCALE']);
+        }
+    };
+
+    it('maps a legacy two-letter APP_LOCALE to its current locale code', function () use ($resolveLocale) {
+        expect($resolveLocale('es'))->toBe('es-ES')
+            ->and($resolveLocale('de'))->toBe('de-DE')
+            ->and($resolveLocale('fr'))->toBe('fr-FR');
+    });
+
+    it('maps a legacy region APP_LOCALE to its current locale code', function () use ($resolveLocale) {
+        expect($resolveLocale('zh-cn'))->toBe('zh-CN')
+            ->and($resolveLocale('zh-tw'))->toBe('zh-TW');
+    });
+
+    it('pins the ambiguous legacy codes deliberately', function () use ($resolveLocale) {
+        // "en" must resolve to en-US, not the en-x-pirate novelty locale.
+        expect($resolveLocale('en'))->toBe('en-US')
+            // "sr" must resolve to the prior single Serbian translation.
+            ->and($resolveLocale('sr'))->toBe('sr-CS');
+    });
+
+    it('is case-insensitive on legacy short codes', function () use ($resolveLocale) {
+        expect($resolveLocale('ES'))->toBe('es-ES')
+            ->and($resolveLocale('Zh-Cn'))->toBe('zh-CN');
+    });
+
+    it('leaves an already-current locale code unchanged', function () use ($resolveLocale) {
+        expect($resolveLocale('es-ES'))->toBe('es-ES')
+            ->and($resolveLocale('en-US'))->toBe('en-US');
+    });
+
+    it('leaves unknown or custom locale codes unchanged', function () use ($resolveLocale) {
+        expect($resolveLocale('xx-YY'))->toBe('xx-YY')
+            ->and($resolveLocale('en-x-pirate'))->toBe('en-x-pirate');
+    });
+
+    it('falls back to en-US when APP_LOCALE is unset', function () use ($resolveLocale) {
+        expect($resolveLocale(null))->toBe('en-US');
+    });
+});
+
 describe('empty string translation fallback', function () {
     it('falls back to the fallback locale for empty (untranslated) strings', function () {
         Config::set('app.fallback_locale', 'en-US');
