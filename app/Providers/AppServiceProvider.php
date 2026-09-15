@@ -37,6 +37,7 @@ use App\Observers\UserObserver;
 use App\Policies\CustomFilterPolicy;
 use App\Services\AccountService;
 use App\Services\UserOidcService;
+use App\Util\Localization\EmptyStrippingFileLoader;
 use Illuminate\Auth\Events\Failed;
 use Illuminate\Auth\Events\Login;
 use Illuminate\Cache\RateLimiting\Limit;
@@ -235,7 +236,7 @@ class AppServiceProvider extends ServiceProvider
         // dropped at load time. This lets Laravel fall back to the fallback
         // locale for partially-translated locales instead of rendering blanks.
         $this->app->extend('translation.loader', function ($loader, $app) {
-            return new \App\Util\Localization\EmptyStrippingFileLoader(
+            return new EmptyStrippingFileLoader(
                 $app['files'],
                 $app['path.lang']
             );
