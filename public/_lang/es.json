@@ -27,7 +27,6 @@
         "sensitive": "Sensible",
         "sensitiveContent": "Contenido Sensible",
         "sensitiveContentWarning": "Esta publicaci\u00f3n podr\u00eda contener contenido sensible",
-        "javascript": "",
         "loading": "Cargando...",
         "continue": "Continuar"
     },
@@ -49,7 +48,6 @@
         "profile": "Perfil",
         "drive": "Multimedia",
         "settings": "Ajustes",
-        "appearance": "",
         "compose": "Crear Nuevo",
         "logout": "Cerrar sesi\u00f3n",
         "createStory": "Crear Historia",
@@ -59,7 +57,6 @@
         "privacy": "Privacidad",
         "terms": "T\u00e9rminos",
         "legalNotice": "Aviso Legal",
-        "mobileApps": "",
         "backToPreviousDesign": "Volver al dise\u00f1o anterior"
     },
     "directMessages": {
@@ -78,7 +75,6 @@
         "sentA": "envi\u00f3 un",
         "followed": "te sigui\u00f3",
         "mentioned": "te mencion\u00f3",
-        "you": "",
         "yourApplication": "Tu solicitud para unirse",
         "applicationApproved": "ha sido aprobada",
         "applicationRejected": "ha sido rechazada. Puedes volver a solicitar unirte en 6 meses.",
@@ -240,19 +236,6 @@
         "thanksMsg": "Gracias por el reporte, \u00a1personas como t\u00fa ayudan a mantener nuestra comunidad segura!",
         "contactAdminMsg": "Si quieres contactar un administrador sobre esta publicaci\u00f3n o reporte"
     },
-    "appearance": {
-        "theme": "",
-        "profileLayout": "",
-        "compactPreviews": "",
-        "loadComments": "",
-        "hideStats": "",
-        "auto": "",
-        "lightMode": "",
-        "darkMode": "",
-        "grid": "",
-        "masonry": "",
-        "feed": ""
-    },
     "settings": {
         "filters": {
             "title": "Filtros",
@@ -326,41 +309,5 @@
             "add_keyword": "Agregar palabra clave...",
             "enter_filter_title": "Introduce el t\u00edtulo del filtro"
         }
-    },
-    "powered_by_pixelfed": "",
-    "landing": {
-        "login": "",
-        "signup": "",
-        "about": "",
-        "directory": "",
-        "explore": "",
-        "decentralized_by_pixelfed": "",
-        "posts": "",
-        "active_users": "",
-        "total_users": "",
-        "managed_by": "",
-        "server_rules": "",
-        "supported_features": "",
-        "features": {
-            "photo_posts": "",
-            "photo_albums": "",
-            "photo_filters": "",
-            "collections": "",
-            "comments": "",
-            "hashtags": "",
-            "likes": "",
-            "notifications": "",
-            "shares": "",
-            "share_up_to_n_photos": "",
-            "share_up_to_n_photos_videos": "",
-            "file_size": "",
-            "federation": "",
-            "mobile_app": "",
-            "stories": "",
-            "videos": ""
-        },
-        "discover_accounts": "",
-        "nothing_to_show": "",
-        "explore_trending": ""
     }
 }

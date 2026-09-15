@@ -63,6 +63,7 @@ class ExportLanguages extends Command
 
         foreach ($langs as $lang) {
             $strings = \Lang::get('web', [], $lang);
+            $strings = $this->stripEmptyStrings($strings);
             $json = json_encode($strings, JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES);
             $path = "{$exportDir}{$lang}.json";
             file_put_contents($path, $json);
@@ -71,5 +72,31 @@ class ExportLanguages extends Command
         }
 
         return Command::SUCCESS;
+    }
+
+    /**
+     * Recursively remove empty string values so untranslated Crowdin
+     * placeholders don't override the UI's fallback (English) strings.
+     */
+    protected function stripEmptyStrings(array $strings): array
+    {
+        $result = [];
+
+        foreach ($strings as $key => $value) {
+            if (is_array($value)) {
+                $filtered = $this->stripEmptyStrings($value);
+                if (! empty($filtered)) {
+                    $result[$key] = $filtered;
+                }
+            } elseif (is_string($value)) {
+                if (trim($value) !== '') {
+                    $result[$key] = $value;
+                }
+            } else {
+                $result[$key] = $value;
+            }
+        }
+
+        return $result;
     }
 }
