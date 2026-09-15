@@ -32,8 +32,8 @@ return [
         'sensitiveContent' => 'Contenu sensible',
         'sensitiveContentWarning' => 'Le contenu de cette publication peut être sensible',
         'javascript' => 'Activez JavaScript SVP pour consulter ce contenu.',
-        'loading' => '',
-        'continue' => '',
+        'loading' => 'Chargement en cours…',
+        'continue' => 'Continuer',
     ],
 
     'site' => [
@@ -64,7 +64,7 @@ return [
         'appearance' => 'Apparence',
         'compose' => 'Publier',
         'logout' => 'Déconnexion',
-        'createStory' => '',
+        'createStory' => 'Créer une story',
 
         // Nav footer
         'about' => 'À propos',
@@ -72,7 +72,7 @@ return [
         'language' => 'Langue',
         'privacy' => 'Confidentialité',
         'terms' => 'Conditions',
-        'legalNotice' => '',
+        'legalNotice' => 'Mentions légales',
         'mobileApps' => 'Applis mobiles',
 
         // Temporary links
@@ -87,7 +87,7 @@ return [
     ],
 
     'notifications' => [
-        'title' => '',
+        'title' => 'Notifications',
         'liked' => 'a aimé votre',
         'commented' => 'a commenté votre',
         'reacted' => 'a réagi à votre',
