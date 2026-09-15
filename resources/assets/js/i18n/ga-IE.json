@@ -1,0 +1,24 @@
+{
+    "common": {
+        "comment": "Tr\u00e1cht",
+        "comments": "Tr\u00e1chta",
+        "bookmark": "Leabharmharc",
+        "copyLink": "C\u00f3ipe\u00e1il Nasc",
+        "delete": "Scrios",
+        "readMore": "L\u00e9igh n\u00edos m\u00f3",
+        "clickHere": "clice\u00e1il anseo",
+        "loading": "Ag l\u00f3d\u00e1il..."
+    },
+    "site": {
+        "terms": "T\u00e9arma\u00ed \u00das\u00e1ide",
+        "privacy": "Polasa\u00ed Pr\u00edobh\u00e1ideachais"
+    },
+    "navmenu": {
+        "search": "Cuardaigh",
+        "stories": "Sc\u00e9alta",
+        "profile": "Pr\u00f3if\u00edl",
+        "appearance": "Cuma",
+        "compose": "Cruthaigh Nua",
+        "logout": "Log\u00e1il Amach"
+    }
+}
