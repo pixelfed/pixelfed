@@ -26,13 +26,20 @@ class SnowflakeService
 
     public static function next()
     {
-        $seq = Cache::get('snowflake:seq');
+        /*
+         * Atomically obtain the next sequence value. Cache::increment()
+         * returns the post-increment value, so each call gets a distinct seq.
+         * A previous version read the value with Cache::get() and only
+         * incremented the store, leaving the local $seq stale — the first two
+         * calls both used seq=1, so two IDs generated in the same millisecond
+         * with the same datacenter/worker collided (UNIQUE violation).
+         */
+        $seq = Cache::increment('snowflake:seq');
 
-        if (! $seq) {
+        if (! is_int($seq)) {
+            // Cache miss or non-numeric store value: (re)seed the counter.
             Cache::put('snowflake:seq', 1);
             $seq = 1;
-        } else {
-            Cache::increment('snowflake:seq');
         }
 
         if ($seq >= 4095) {
