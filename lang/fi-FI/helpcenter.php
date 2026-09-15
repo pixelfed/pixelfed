@@ -18,11 +18,11 @@ return [
     'communityGuidelines' => 'Yhteisön säännöt',
     'whatIsTheFediverse' => 'Mikä on fediversumi?',
     'controllingVisibility' => 'Hallitse näkyvyyttä',
-    'blockingAccounts' => '',
-    'safetyTips' => '',
-    'reportSomething' => '',
-    'dataPolicy' => '',
+    'blockingAccounts' => 'Tilien estäminen',
+    'safetyTips' => 'Turvallisuusvinkkejä',
+    'reportSomething' => 'Ilmoittaminen',
+    'dataPolicy' => 'Tietokäytäntö',
 
-    'taggingPeople' => '',
+    'taggingPeople' => 'Henkilöiden merkitseminen',
 
 ];
