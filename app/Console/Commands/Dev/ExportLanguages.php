@@ -62,7 +62,7 @@ class ExportLanguages extends Command
         $exportDirAlt = public_path('_lang/');
 
         // Remove orphaned exports whose locale no longer maps to a lang/
-        // folder (e.g. left over after a language folder is renamed).
+        // folder (e.g. left over after a language folder is deleted/renamed).
         $this->purgeOrphanedJsonFiles($exportDir, $langs);
         $this->purgeOrphanedJsonFiles($exportDirAlt, $langs);
 
