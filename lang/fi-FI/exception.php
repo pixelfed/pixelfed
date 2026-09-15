@@ -4,7 +4,7 @@ return [
 
     'compose' => [
         'invalid' => [
-            'album' => '',
+            'album' => 'On oltava yksi kuva, video tai useita valokuvia.',
         ],
     ],
 

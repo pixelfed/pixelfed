@@ -3,9 +3,9 @@
 return [
 
     'common' => [
-        'comment' => '',
+        'comment' => 'Trácht',
         'commented' => '',
-        'comments' => '',
+        'comments' => 'Tráchta',
         'like' => '',
         'liked' => '',
         'likes' => '',
@@ -13,36 +13,36 @@ return [
         'shared' => '',
         'shares' => '',
         'unshare' => '',
-        'bookmark' => '',
+        'bookmark' => 'Leabharmharc',
 
         'cancel' => '',
-        'copyLink' => '',
-        'delete' => '',
+        'copyLink' => 'Cóipeáil Nasc',
+        'delete' => 'Scrios',
         'error' => '',
         'errorMsg' => '',
         'oops' => '',
         'other' => '',
-        'readMore' => '',
+        'readMore' => 'Léigh níos mó',
         'success' => '',
         'proceed' => '',
         'next' => '',
         'close' => '',
-        'clickHere' => '',
+        'clickHere' => 'cliceáil anseo',
         'sensitive' => '',
         'sensitiveContent' => '',
         'sensitiveContentWarning' => '',
         'javascript' => '',
-        'loading' => '',
+        'loading' => 'Ag lódáil...',
         'continue' => '',
     ],
 
     'site' => [
-        'terms' => '',
-        'privacy' => '',
+        'terms' => 'Téarmaí Úsáide',
+        'privacy' => 'Polasaí Príobháideachais',
     ],
 
     'navmenu' => [
-        'search' => '',
+        'search' => 'Cuardaigh',
         'admin' => '',
 
         // Timelines
@@ -55,15 +55,15 @@ return [
         'directMessages' => '',
         'notifications' => '',
         'groups' => '',
-        'stories' => '',
+        'stories' => 'Scéalta',
 
         // Self links
-        'profile' => '',
+        'profile' => 'Próifíl',
         'drive' => '',
         'settings' => '',
-        'appearance' => '',
-        'compose' => '',
-        'logout' => '',
+        'appearance' => 'Cuma',
+        'compose' => 'Cruthaigh Nua',
+        'logout' => 'Logáil Amach',
         'createStory' => '',
 
         // Nav footer

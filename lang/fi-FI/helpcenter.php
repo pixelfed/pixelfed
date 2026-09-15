@@ -2,27 +2,27 @@
 
 return [
 
-    'helpcenter' => '',
-    'whatsnew' => '',
+    'helpcenter' => 'Ohjekeskus',
+    'whatsnew' => 'Mitä uutta',
 
-    'gettingStarted' => '',
-    'sharingMedia' => '',
-    'profile' => '',
-    'stories' => '',
-    'hashtags' => '',
-    'discover' => '',
-    'directMessages' => '',
-    'timelines' => '',
-    'embed' => '',
+    'gettingStarted' => 'Kuinka päästä alkuun',
+    'sharingMedia' => 'Median jako',
+    'profile' => 'Profiili',
+    'stories' => 'Tarinat',
+    'hashtags' => 'Tunnisteet',
+    'discover' => 'Tutustu',
+    'directMessages' => 'Yksityisviestit',
+    'timelines' => 'Aikajanat',
+    'embed' => 'Upota',
 
-    'communityGuidelines' => '',
-    'whatIsTheFediverse' => '',
-    'controllingVisibility' => '',
-    'blockingAccounts' => '',
-    'safetyTips' => '',
-    'reportSomething' => '',
-    'dataPolicy' => '',
+    'communityGuidelines' => 'Yhteisön säännöt',
+    'whatIsTheFediverse' => 'Mikä on fediversumi?',
+    'controllingVisibility' => 'Hallitse näkyvyyttä',
+    'blockingAccounts' => 'Tilien estäminen',
+    'safetyTips' => 'Turvallisuusvinkkejä',
+    'reportSomething' => 'Ilmoittaminen',
+    'dataPolicy' => 'Tietokäytäntö',
 
-    'taggingPeople' => '',
+    'taggingPeople' => 'Henkilöiden merkitseminen',
 
 ];
