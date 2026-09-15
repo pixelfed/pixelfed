@@ -101,7 +101,8 @@ trait AdminDirectoryController
             'media_types' => [
                 'required',
                 function ($attribute, $value, $fail) {
-                    if (! in_array('image/jpeg', $value->toArray()) || ! in_array('image/png', $value->toArray())) {
+                    $types = is_array($value) ? $value : collect($value)->toArray();
+                    if (! in_array('image/jpeg', $types) || ! in_array('image/png', $types)) {
                         $fail('You must enable image/jpeg and image/png support.');
                     }
                 },
@@ -269,7 +270,8 @@ trait AdminDirectoryController
             'media_types' => [
                 'required',
                 function ($attribute, $value, $fail) {
-                    if (! in_array('image/jpeg', $value->toArray()) || ! in_array('image/png', $value->toArray())) {
+                    $types = is_array($value) ? $value : collect($value)->toArray();
+                    if (! in_array('image/jpeg', $types) || ! in_array('image/png', $types)) {
                         $fail('You must enable image/jpeg and image/png support.');
                     }
                 },
