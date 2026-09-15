@@ -4,6 +4,7 @@ use App\Models\User;
 use App\Util\Localization\Localization;
 use Illuminate\Auth\Events\Login;
 use Illuminate\Foundation\Testing\LazilyRefreshDatabase;
+use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Config;
 use Illuminate\Support\Facades\File;
 
@@ -276,6 +277,46 @@ describe('language settings via /settings/home', function () {
                 'language' => 'aa-bbbbbbbbbb', // 13 chars > max:12
             ])->assertSessionHasErrors('language');
     });
+});
+
+describe('locale-aware caching of rendered site pages', function () {
+    beforeEach(function () {
+        Cache::flush();
+    });
+
+    it('caches /site/about under a locale-scoped key', function () {
+        $this->withSession(['locale' => 'en-US'])
+            ->get('/site/about')
+            ->assertOk();
+
+        expect(Cache::has('site.about_v2:en-US'))->toBeTrue()
+            // The old, locale-unaware key must not be used.
+            ->and(Cache::has('site.about_v2'))->toBeFalse();
+    });
+
+    it('does not let a non-default locale poison the cached render of another', function () {
+        $other = firstNonDefaultLocale();
+
+        // A visitor on a non-default locale warms the cache first (cold cache).
+        $this->withSession(['locale' => $other])
+            ->get('/site/about')
+            ->assertOk();
+
+        // Then an en-US visitor: must get its own cache entry, not the
+        // other locale's render.
+        $this->withSession(['locale' => 'en-US'])
+            ->get('/site/about')
+            ->assertOk();
+
+        // Each locale gets its own cache entry, so the first (non-default)
+        // render cannot overwrite / be served as the en-US render. We assert
+        // key isolation rather than content difference, since a partially
+        // translated locale may legitimately render identically to English.
+        expect(Cache::has('site.about_v2:'.$other))->toBeTrue()
+            ->and(Cache::has('site.about_v2:en-US'))->toBeTrue()
+            // The old shared key must never be written.
+            ->and(Cache::has('site.about_v2'))->toBeFalse();
+    })->skip(fn () => firstNonDefaultLocale() === 'en-US', 'needs a second locale');
 });
 
 describe('empty string translation fallback', function () {
