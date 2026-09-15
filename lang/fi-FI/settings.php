@@ -172,24 +172,24 @@ return [
     'security.show_reblogs' => 'Näytä uudelleenjulkaisut',
     'security.see_reblogs_from_accounts_you_follow_in_your_home_etc' => 'Näytä seuraamiesi tilien uudelleenjulkaisut kotiaikajanallasi. (Vain kotiaikajanalla)',
     'security.photo_reblogs_only' => 'Vain kuvien uudelleenjulkaisut',
-    'security.only_see_reblogs_of_photos_or_photo_albums_home_etc' => '',
+    'security.only_see_reblogs_of_photos_or_photo_albums_home_etc' => 'Näytä vain kuvien ja kuva-albumien uudelleenjulkaisut. (Vain kotiaikajanalla)',
 
     // incomplete
     // the oauth panel is loaded from elsewhere
-    'developers.oauth_has_not_been_enabled_on_this_instance' => '',
+    'developers.oauth_has_not_been_enabled_on_this_instance' => 'OAuth ei ole käytössä tällä instanssilla.',
 
     // incomplete
     // import/ig.blade.php seems not in use anymore
-    'import.import_from_instagram' => '',
+    'import.import_from_instagram' => 'Tuo Instagramista',
 
-    'export.data_export' => '',
-    'export.we_generate_data_exports_once_per_hour_and_they_may_etc' => '',
-    'export.statuses' => '',
-    'export.mute_block_lists' => '',
+    'export.data_export' => 'Tietojen vienti',
+    'export.we_generate_data_exports_once_per_hour_and_they_may_etc' => 'Luomme tietojen vientipaketit kerran tunnissa, joten ne eivät välttämättä sisällä uusimpia tietoja, jos olet pyytänyt niitä äskettäin.',
+    'export.statuses' => 'Tilat',
+    'export.mute_block_lists' => 'Mykistys/Esto lista',
 
     // incomplete
     // some language outside the blades (in app/Http/Controllers/Settings/LabsSettings.php)
-    'labs' => '',
-    'labs.experimental_features' => '',
-    'labs.use_dark_mode_theme' => '',
+    'labs' => 'Kokeelliset ominaisuudet',
+    'labs.experimental_features' => 'Kokeelliset ominaisuudet',
+    'labs.use_dark_mode_theme' => 'Käytä tummaa teemaa.',
 ];
