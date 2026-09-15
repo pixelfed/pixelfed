@@ -2,34 +2,34 @@
 
 return [
 
-    'verifyYourEmailAddress' => '',
-    'loginTitle' => '',
+    'verifyYourEmailAddress' => ' - Verifica il tuo indirizzo email',
+    'loginTitle' => 'Accesso all\'account',
     'failed' => 'Credenziali non corrette.',
     'throttle' => 'Troppi tentativi di accesso. Per favore riprova ancora tra :seconds secondi.',
-    'password' => '',
-    'remember' => '',
-    'forgot' => '',
-    'login' => '',
+    'password' => 'Password',
+    'remember' => 'Ricordami',
+    'forgot' => 'Password dimenticata',
+    'login' => 'Accedi',
 
-    'register' => '',
-    'reset' => '',
+    'register' => 'Registrati',
+    'reset' => 'Reimposta la password',
 
-    'name' => '',
-    'username' => '',
-    'confirm-password' => '',
+    'name' => 'Nome',
+    'username' => 'Nome utente',
+    'confirm-password' => 'Conferma la password',
 
-    'age' => '',
-    'terms' => ''.route('site.terms').''.route('site.privacy').'',
+    'age' => 'Ho almeno 16 anni',
+    'terms' => 'Iscrivendoti, accetti i nostri <a href="'.route('site.terms').'" class="font-weight-bold text-dark">Termini di utilizzo</a> e l\'<a href="'.route('site.privacy').'" class="font-weight-bold text-dark">Informativa sulla privacy</a>.',
 
-    'emailAddress' => '',
-    'email' => '',
-    'forgotEmail' => '',
+    'emailAddress' => 'Indirizzo e-mail',
+    'email' => 'E-mail',
+    'forgotEmail' => 'E-mail dimenticata',
 
-    'registerTitle' => '',
+    'registerTitle' => 'Registra un nuovo account',
 
-    'sendReset' => '',
-    'backLogin' => '',
+    'sendReset' => 'Invia il link per reimpostare la password',
+    'backLogin' => 'Torna all\'accesso',
 
-    'signInMastodon' => '',
+    'signInMastodon' => 'Accedi con Mastodon',
 
 ];

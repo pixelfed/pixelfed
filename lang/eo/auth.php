@@ -2,18 +2,34 @@
 
 return [
 
-    /*
-    |--------------------------------------------------------------------------
-    | Authentication Language Lines
-    |--------------------------------------------------------------------------
-    |
-    | The following language lines are used during authentication for various
-    | messages that we need to display to the user. You are free to modify
-    | these language lines according to your application's requirements.
-    |
-    */
+    'verifyYourEmailAddress' => ' - Konfirmu Vian Retpoŝtadreson',
+    'loginTitle' => 'Ensaluto al Konto',
+    'failed' => '',
+    'throttle' => '',
+    'password' => '',
+    'remember' => '',
+    'forgot' => '',
+    'login' => '',
 
-    'failed' => 'Tiuj ĉi akreditaĵojn ne kongruas kun niajn registraĵojn.',
-    'throttle' => 'Tro saluton provojn. Bonvolu provu refoje post :seconds sekundoj.',
+    'register' => '',
+    'reset' => '',
+
+    'name' => '',
+    'username' => '',
+    'confirm-password' => '',
+
+    'age' => '',
+    'terms' => ''.route('site.terms').''.route('site.privacy').'',
+
+    'emailAddress' => '',
+    'email' => '',
+    'forgotEmail' => '',
+
+    'registerTitle' => '',
+
+    'sendReset' => '',
+    'backLogin' => '',
+
+    'signInMastodon' => '',
 
 ];
