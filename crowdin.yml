@@ -7,38 +7,51 @@ files:
   - source: /lang/en-US/auth.php
     translation: /lang/%locale%/auth.php
     skip_untranslated_strings: true
+
   - source: /lang/en-US/exception.php
     translation: /lang/%locale%/exception.php
     skip_untranslated_strings: true
+
   - source: /lang/en-US/helpcenter.php
     translation: /lang/%locale%/helpcenter.php
     skip_untranslated_strings: true
+
   - source: /lang/en-US/navmenu.php
     translation: /lang/%locale%/navmenu.php
     skip_untranslated_strings: true
+
   - source: /lang/en-US/notification.php
     translation: /lang/%locale%/notification.php
     skip_untranslated_strings: true
+
   # - source: /lang/en-US/pagination.php
   #   translation: /lang/%locale%/pagination.php
+  #   skip_untranslated_strings: true
+
   - source: /lang/en-US/passwords.php
     translation: /lang/%locale%/passwords.php
     skip_untranslated_strings: true
+
   - source: /lang/en-US/profile.php
     translation: /lang/%locale%/profile.php
     skip_untranslated_strings: true
+
   - source: /lang/en-US/settings.php
     translation: /lang/%locale%/settings.php
     skip_untranslated_strings: true
+
   - source: /lang/en-US/site.php
     translation: /lang/%locale%/site.php
     skip_untranslated_strings: true
+
   - source: /lang/en-US/timeline.php
     translation: /lang/%locale%/timeline.php
     skip_untranslated_strings: true
+
   # - source: /lang/en-US/validation.php
   #   translation: /lang/%locale%/validation.php
   #   skip_untranslated_strings: true
+
   - source: /lang/en-US/web.php
     translation: /lang/%locale%/web.php
     skip_untranslated_strings: true

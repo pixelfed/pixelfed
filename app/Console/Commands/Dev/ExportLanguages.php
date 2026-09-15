@@ -61,9 +61,10 @@ class ExportLanguages extends Command
         $exportDir = resource_path('assets/js/i18n/');
         $exportDirAlt = public_path('_lang/');
 
-        // Remove stale locale files.
-        $this->purgeJsonFiles($exportDir);
-        $this->purgeJsonFiles($exportDirAlt);
+        // Remove orphaned exports whose locale no longer maps to a lang/
+        // folder (e.g. left over after a language folder is renamed).
+        $this->purgeOrphanedJsonFiles($exportDir, $langs);
+        $this->purgeOrphanedJsonFiles($exportDirAlt, $langs);
 
         foreach ($langs as $lang) {
             $strings = \Lang::get('web', [], $lang);
@@ -79,16 +80,24 @@ class ExportLanguages extends Command
     }
 
     /**
-     * Delete all .json files in the given export directory.
+     * Delete .json exports in the given directory that don't correspond to
+     * a current language folder, leaving valid locale files untouched.
+     *
+     * @param  array<int, string>  $langs  Valid locale names (lang/ folders).
      */
-    protected function purgeJsonFiles(string $dir): void
+    protected function purgeOrphanedJsonFiles(string $dir, array $langs): void
     {
         if (! is_dir($dir)) {
             return;
         }
 
+        $valid = array_flip($langs);
+
         foreach (glob(rtrim($dir, '/').'/*.json') as $file) {
-            @unlink($file);
+            $locale = basename($file, '.json');
+            if (! isset($valid[$locale])) {
+                @unlink($file);
+            }
         }
     }
 
