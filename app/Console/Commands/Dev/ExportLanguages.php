@@ -76,7 +76,44 @@ class ExportLanguages extends Command
             file_put_contents($pathAlt, $json);
         }
 
+        $this->writeLocalesManifest($langs);
+
         return Command::SUCCESS;
+    }
+
+    /**
+     * Write a static locales manifest (lang/locales.json) that is the single
+     * source of truth for the available UI languages. Generated here so it is
+     * always regenerated alongside the exported strings, avoiding a runtime
+     * cache that can go stale (see Localization::languages()).
+     *
+     * Sorted by English display name so consumers render an alphabetical list.
+     *
+     * @param  array<int, string>  $langs  Valid locale codes (lang/ folders).
+     */
+    protected function writeLocalesManifest(array $langs): void
+    {
+        $locales = array_map(function ($code) {
+            return [
+                'code' => $code,
+                'name' => locale_get_display_name($code, 'en'),
+                'nativeName' => locale_get_display_name($code, $code),
+            ];
+        }, $langs);
+
+        usort($locales, function ($a, $b) {
+            return strcasecmp($a['name'], $b['name']);
+        });
+
+        $json = json_encode($locales, JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE);
+
+        // Server-side source of truth (used by Localization::languages()).
+        file_put_contents(lang_path('locales.json'), $json);
+
+        // Public copy so the SPA can fetch the same ordered list.
+        $publicManifest = public_path('_lang/locales.json');
+        file_put_contents($publicManifest, $json);
+        @chmod($publicManifest, 0644);
     }
 
     /**
@@ -92,10 +129,12 @@ class ExportLanguages extends Command
         }
 
         $valid = array_flip($langs);
+        // Not a locale export, but written by writeLocalesManifest().
+        $keep = ['locales' => true];
 
         foreach (glob(rtrim($dir, '/').'/*.json') as $file) {
             $locale = basename($file, '.json');
-            if (! isset($valid[$locale])) {
+            if (! isset($valid[$locale]) && ! isset($keep[$locale])) {
                 @unlink($file);
             }
         }
