@@ -1,6 +1,7 @@
 <?php
 
 use App\Util\Lexer\PrettyNumber;
+use App\Util\Localization\Localization;
 use Illuminate\Support\Facades\Facade;
 
 return [
@@ -74,7 +75,7 @@ return [
     |
     */
 
-    'locale' => pixelfed_normalize_locale($pixelfedLegacyLocaleMap, env('APP_LOCALE', 'en-US')),
+    'locale' => Localization::normalizeLocale(env('APP_LOCALE', 'en-US')),
 
     /*
     |--------------------------------------------------------------------------
@@ -87,7 +88,7 @@ return [
     |
     */
 
-    'fallback_locale' => pixelfed_normalize_locale($pixelfedLegacyLocaleMap, env('APP_FALLBACK_LOCALE', 'en-US')),
+    'fallback_locale' => Localization::normalizeLocale(env('APP_FALLBACK_LOCALE', 'en-US')),
 
     /*
     |--------------------------------------------------------------------------
