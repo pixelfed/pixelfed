@@ -111,7 +111,12 @@
         "test:filter": "./vendor/bin/pest --compact --filter",
         "test:quick": "./vendor/bin/pest --compact",
         "lint": "./vendor/bin/pint",
-        "lint:test": "./vendor/bin/pint --test"
+        "lint:test": "./vendor/bin/pint --test",
+        "build": [
+            "@php artisan i18n:export",
+            "npm ci",
+            "npm run production"
+        ]
 
     },
     "config": {
