@@ -100,9 +100,9 @@ class ExportLanguages extends Command
      * @var array<string, array{name: string, nativeName: string}>
      */
     protected const LOCALE_OVERRIDES = [
-        // Crowdin custom "Pirate English". BCP-47 would read en-Pirate as
-        // English, and the old en-PT code collided with English (Portugal).
-        'en-Pirate' => ['name' => 'Pirate (English)', 'nativeName' => 'Pirate (English)'],
+        // Crowdin custom "Pirate English". Uses the BCP-47 private-use form
+        // en-x-pirate (the old en-PT code collided with English (Portugal)).
+        'en-x-pirate' => ['name' => 'Pirate (English)', 'nativeName' => 'Pirate (English)'],
 
         // Klingon. 'tlh' is valid BCP-47 (ICU renders "Klingon"), but ICU has
         // no native-name form, so pin both for a consistent label. Mapped from
