@@ -55,11 +55,11 @@ return [
         'directMessages' => 'Mensagens Diretas',
         'notifications' => 'Notificações',
         'groups' => 'Grupos',
-        'stories' => '',
+        'stories' => 'Stories',
 
         // Self links
         'profile' => 'Perfil',
-        'drive' => '',
+        'drive' => 'Drive',
         'settings' => 'Configurações',
         'appearance' => '',
         'compose' => 'Criar novo',
