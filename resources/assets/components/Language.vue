@@ -47,30 +47,10 @@
         	return {
         		isLoaded: false,
         		profile: undefined,
-        		locale: 'en',
-        		// langs: ["af","ar","ca","cs","cy","da","de","el","en","eo","es","eu","fa","fi","fr","gl","he","hu","id","it","ja","ko","ms","nl","no","oc","pl","pt","ro","ru","sr","sv","th","tr","uk","vi","zh","zh-cn","zh-tw"]
-        		langs: [
-        			"en",
-        			"ar",
-        			"ca",
-        			"de",
-        			"el",
-        			"es",
-        			"eu",
-        			"fr",
-        			"he",
-        			"gd",
-        			"gl",
-        			"id",
-        			"it",
-        			"ja",
-        			"nl",
-        			"pl",
-        			"pt",
-        			"ru",
-        			"uk",
-        			"vi"
-        		]
+        		locale: 'en-US',
+        		// Populated from loaded i18n locales in mounted() so the list
+        		// always matches the lang/ folders (locale codes, e.g. de-DE).
+        		langs: []
         	}
         },
 
@@ -78,6 +58,13 @@
 			this.profile = window._sharedData.user;
 			this.isLoaded = true;
 			this.locale = this.$i18n.locale;
+			this.langs = this.$i18n.availableLocales.slice().sort();
+			// [i18n-debug] remove after diagnosis.
+			console.group('[i18n-debug] Language.vue');
+			console.log('$i18n.locale =', this.$i18n.locale);
+			console.log('availableLocales =', this.$i18n.availableLocales);
+			console.log('dropdown langs =', this.langs);
+			console.groupEnd();
         },
 
         watch: {
@@ -98,12 +85,18 @@
         	},
 
         	loadLang(lang) {
+        		// [i18n-debug] remove after diagnosis.
+        		console.log('[i18n-debug] loadLang submitting l =', JSON.stringify(lang));
         		axios.post('/api/pixelfed/web/change-language.json', {
         			v: 0.1,
         			l: lang
         		})
         		.then(res => {
+        			console.log('[i18n-debug] change-language OK, response =', res.data, '→ setting $i18n.locale =', lang, '| has messages?', Object.prototype.hasOwnProperty.call(this.$i18n.messages, lang));
         			this.$i18n.locale = lang;
+        		})
+        		.catch(err => {
+        			console.error('[i18n-debug] change-language FAILED', err.response ? err.response.status : err, err.response ? err.response.data : '');
         		})
         	}
         }

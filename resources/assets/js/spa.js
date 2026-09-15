@@ -576,6 +576,15 @@ const i18n = new VueI18n({
   messages: i18nMessages
 });
 
+// [i18n-debug] Trace locale resolution — remove after diagnosis.
+console.group('[i18n-debug] spa.js');
+console.log('html[lang] =', JSON.stringify(locale));
+console.log('loaded locales =', Object.keys(i18nMessages).sort());
+console.log('active locale =', i18n.locale, '| fallback =', i18n.fallbackLocale);
+console.log('exact match for active locale?', Object.prototype.hasOwnProperty.call(i18nMessages, locale));
+console.log('sample web.timeline =', i18n.t('timeline.title'));
+console.groupEnd();
+
 sync(store, router);
 
 const App = new Vue({
