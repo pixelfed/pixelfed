@@ -190,7 +190,20 @@
                         <div class="form-group row mb-0">
                             <div class="col-md-12">
                                 <label for="password" class="small font-weight-bold text-muted mb-0">{{ __('auth.password') }}</label>
-                                <input id="password" type="password" class="form-control{{ $errors->has('password') ? ' is-invalid' : '' }}" name="password" placeholder="{{ __('auth.password') }}" required>
+                                <div class="input-group">
+                                    <input id="password" type="password" class="form-control{{ $errors->has('password') ? ' is-invalid' : '' }}" name="password" placeholder="{{ __('auth.password') }}" autocomplete="current-password" required>
+                                    <div class="input-group-append">
+                                        <button
+                                            type="button"
+                                            id="togglePassword"
+                                            class="btn btn-outline-secondary"
+                                            aria-label="{{ __('Show password') }}"
+                                            aria-pressed="false"
+                                            aria-controls="password">
+                                            <i class="far fa-eye" aria-hidden="true"></i>
+                                        </button>
+                                    </div>
+                                </div>
 
                                 @if ($errors->has('password'))
                                 <span class="invalid-feedback">
@@ -321,6 +334,26 @@
         });
 
         document.addEventListener('DOMContentLoaded', function() {
+            const toggle = document.getElementById('togglePassword');
+            const password = document.getElementById('password');
+            if (toggle && password) {
+                toggle.addEventListener('click', function() {
+                    const show = password.type === 'password';
+                    password.type = show ? 'text' : 'password';
+                    toggle.setAttribute('aria-pressed', show ? 'true' : 'false');
+                    toggle.setAttribute(
+                        'aria-label',
+                        show ? '{{ __('Hide password') }}' : '{{ __('Show password') }}'
+                    );
+                    const icon = toggle.querySelector('i');
+                    if (icon) {
+                        icon.classList.toggle('fa-eye', !show);
+                        icon.classList.toggle('fa-eye-slash', show);
+                    }
+                    password.focus();
+                });
+            }
+
             const emailInput = document.getElementById('email');
             if (!emailInput) {
                 return;
