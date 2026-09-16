@@ -498,19 +498,63 @@ class ApiV1Dot1Controller extends Controller
             abort_if(BouncerService::checkIp($request->ip()), 404);
         }
 
-        $res = $user->tokens->sortByDesc('created_at')->take(10)->values()->map(function ($token, $key) use ($request) {
-            return [
-                'id' => $token->id,
-                'current_session' => $request->user()->token()->id == $token->id,
-                'name' => $token->client->name,
-                'scopes' => $token->scopes,
-                'revoked' => $token->revoked,
-                'created_at' => str_replace('@', 'at', now()->parse($token->created_at)->format('M j, Y @ g:i:s A')),
-                'expires_at' => str_replace('@', 'at', now()->parse($token->expires_at)->format('M j, Y @ g:i:s A')),
-            ];
-        });
+        $this->validate($request, [
+            'filter' => 'sometimes|in:active,revoked,all',
+            'limit' => 'sometimes|integer|min:1|max:40',
+            'cursor' => 'sometimes|string',
+        ]);
 
-        return $this->json($res);
+        $filter = $request->input('filter', 'all');
+        $limit = (int) $request->input('limit', 10);
+        $legacy = ! $request->has('filter');
+        $currentId = $request->user()->token()->id;
+
+        $query = $user->tokens()
+            ->with('client')
+            ->orderByDesc('created_at')
+            ->orderByDesc('id');
+
+        if ($filter === 'active') {
+            $query->where('revoked', false)
+                ->where(function ($q) {
+                    $q->whereNull('expires_at')->orWhere('expires_at', '>', now());
+                });
+        } elseif ($filter === 'revoked') {
+            $query->where(function ($q) {
+                $q->where('revoked', true)->orWhere('expires_at', '<=', now());
+            });
+        }
+
+        $tokens = $query->cursorPaginate($limit)->withQueryString();
+
+        $res = collect($tokens->items())
+            ->map(fn ($token) => $this->appToken($token, $currentId, $legacy))
+            ->values();
+
+        $headers = [];
+        if ($tokens->hasMorePages()) {
+            $headers['Link'] = '<'.$tokens->nextPageUrl().'>; rel="next"';
+        }
+
+        return response()->json($res, 200, $headers, JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE);
+    }
+
+    protected function appToken($token, $currentId, $legacy = false)
+    {
+        $expired = $token->expires_at && $token->expires_at->isPast();
+        $status = $token->revoked ? 'revoked' : ($expired ? 'expired' : 'active');
+        $fmt = fn ($date) => $date ? str_replace('@', 'at', $date->format('M j, Y @ g:i:s A')) : null;
+
+        return [
+            'id' => $token->id,
+            'current_session' => $token->id === $currentId,
+            'name' => $token->client?->name ?? 'Unknown app',
+            'scopes' => $token->scopes ?? [],
+            'revoked' => (bool) $token->revoked,
+            'status' => $status,
+            'created_at' => $legacy ? $fmt($token->created_at) : $token->created_at?->toIso8601String(),
+            'expires_at' => $legacy ? $fmt($token->expires_at) : $token->expires_at?->toIso8601String(),
+        ];
     }
 
     /**
@@ -530,13 +574,10 @@ class ApiV1Dot1Controller extends Controller
             abort_if(BouncerService::checkIp($request->ip()), 404);
         }
 
-        $token = $user->tokens()->whereKey($id)->first();
+        $currentId = $request->user()->token()->id;
+        $token = $user->tokens()->with('client')->whereKey($id)->first();
         abort_if(! $token, 404);
-        abort_if(
-            $token->id === $request->user()->token()->id,
-            422,
-            'You cannot revoke the current session. Sign out instead.'
-        );
+        abort_if($token->id === $currentId, 422, 'You cannot revoke the current session. Sign out instead.');
 
         if (! $token->revoked) {
             $token->revoke();
@@ -547,14 +588,14 @@ class ApiV1Dot1Controller extends Controller
             $log->item_id = $user->id;
             $log->item_type = User::class;
             $log->action = 'account.apps.revoke';
-            $log->message = 'Revoked app access: '.$token->client->name;
+            $log->message = 'Revoked app access: '.$token->client?->name;
             $log->link = null;
             $log->ip_address = $request->ip();
             $log->user_agent = $request->userAgent();
             $log->save();
         }
 
-        return $this->accountApps($request);
+        return $this->json($this->appToken($token, $currentId));
     }
 
     public function inAppRegistrationPreFlightCheck(Request $request): array
