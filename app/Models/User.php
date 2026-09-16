@@ -20,6 +20,7 @@ class User extends Authenticatable implements OAuthenticatable
     protected function casts(): array
     {
         return [
+            'is_admin' => 'boolean',
             'deleted_at' => 'datetime',
             'email_verified_at' => 'datetime',
             '2fa_setup_at' => 'datetime',
@@ -41,9 +42,16 @@ class User extends Authenticatable implements OAuthenticatable
      * @var array
      */
     protected $hidden = [
-        'email', 'password', 'is_admin', 'remember_token',
-        'email_verified_at', '2fa_enabled', '2fa_secret',
-        '2fa_backup_codes', '2fa_setup_at', 'deleted_at',
+        'email',
+        'password',
+        'is_admin',
+        'remember_token',
+        'email_verified_at',
+        '2fa_enabled',
+        '2fa_secret',
+        '2fa_backup_codes',
+        '2fa_setup_at',
+        'deleted_at',
         'updated_at',
     ];
 
