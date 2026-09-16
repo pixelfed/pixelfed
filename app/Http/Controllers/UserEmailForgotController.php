@@ -36,9 +36,10 @@ class UserEmailForgotController extends Controller
             'username.exists' => 'This username is no longer active or does not exist!',
         ];
 
-        if ((bool) config_cache('captcha.enabled')) {
-            $rules['h-captcha-response'] = 'required|captcha';
-            $messages['h-captcha-response.required'] = 'You need to complete the captcha!';
+        if (app('captcha.manager')->activeOn('forgot_email')) {
+            $captchaField = app('captcha.manager')->active()->responseField();
+            $rules[$captchaField] = 'required|captcha_verify';
+            $messages[$captchaField.'.required'] = 'You need to complete the captcha!';
         }
 
         $randomDelay = random_int(500000, 2000000);

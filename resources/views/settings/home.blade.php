@@ -69,8 +69,8 @@
 			<label for="language" class="col-sm-3 col-form-label font-weight-bold">{{__('settings.home.language')}}</label>
 			<div class="col-sm-9">
 				<select class="form-control" name="language">
-				@foreach(App\Util\Localization\Localization::languages() as $lang)
-					<option value="{{$lang}}" {{(Auth::user()->language ?? 'en') == $lang ? 'selected':''}}>{{locale_get_display_name($lang, 'en')}} - {{locale_get_display_name($lang, $lang)}}</option>
+				@foreach(App\Util\Localization\Localization::locales() as $locale)
+					<option value="{{$locale['code']}}" {{(Auth::user()->language ?? 'en-US') == $locale['code'] ? 'selected':''}}>{{$locale['name']}} - {{$locale['nativeName']}}</option>
 				@endforeach
 				</select>
 			</div>

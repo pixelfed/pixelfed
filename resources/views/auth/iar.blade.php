@@ -32,11 +32,7 @@
                             @enderror
                         </div>
 
-                        @if((bool) config_cache('captcha.enabled') && (bool) config_cache('captcha.active.register'))
-                        <div class="form-group text-center">
-                            {!! Captcha::display() !!}
-                        </div>
-                        @endif
+                        <x-captcha surface="register" wrapperClass="form-group text-center" />
 
                         <button type="submit" class="btn btn-primary btn-block">
                             Send Verification Code

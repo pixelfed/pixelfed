@@ -1,6 +1,7 @@
 <?php
 
 use App\Util\Lexer\PrettyNumber;
+use App\Util\Localization\Localization;
 use Illuminate\Support\Facades\Facade;
 
 return [
@@ -74,7 +75,7 @@ return [
     |
     */
 
-    'locale' => env('APP_LOCALE', 'en'),
+    'locale' => Localization::normalizeLocale(env('APP_LOCALE', 'en-US')),
 
     /*
     |--------------------------------------------------------------------------
@@ -87,7 +88,7 @@ return [
     |
     */
 
-    'fallback_locale' => env('APP_FALLBACK_LOCALE', 'en'),
+    'fallback_locale' => Localization::normalizeLocale(env('APP_FALLBACK_LOCALE', 'en-US')),
 
     /*
     |--------------------------------------------------------------------------
@@ -162,3 +163,73 @@ return [
     ])->toArray(),
 
 ];
+
+/*
+| Legacy two-letter language codes mapped to the current
+| locale-coded folder names under lang/. Replace 'de' with 'de-DE'.
+|
+| Added Sep 2026 - DELETE AFTER COMMUNICATION WITH ADMINS
+*/
+$pixelfedLegacyLocaleMap = [
+    'af' => 'af-ZA',
+    'ar' => 'ar-SA',
+    'bn' => 'bn-BD',
+    'bs' => 'bs-BA',
+    'ca' => 'ca-ES',
+    'cs' => 'cs-CZ',
+    'cy' => 'cy-GB',
+    'da' => 'da-DK',
+    'de' => 'de-DE',
+    'el' => 'el-GR',
+    'en' => 'en-US',
+    'eo' => 'eo-UY',
+    'es' => 'es-ES',
+    'eu' => 'eu-ES',
+    'fa' => 'fa-IR',
+    'fi' => 'fi-FI',
+    'fr' => 'fr-FR',
+    'gd' => 'gd-GB',
+    'gl' => 'gl-ES',
+    'he' => 'he-IL',
+    'hi' => 'hi-IN',
+    'hr' => 'hr-HR',
+    'hu' => 'hu-HU',
+    'id' => 'id-ID',
+    'it' => 'it-IT',
+    'ja' => 'ja-JP',
+    'ko' => 'ko-KR',
+    'me' => 'me-ME',
+    'mk' => 'mk-MK',
+    'ms' => 'ms-MY',
+    'nl' => 'nl-NL',
+    'no' => 'no-NO',
+    'oc' => 'oc-FR',
+    'pl' => 'pl-PL',
+    'pt' => 'pt-PT',
+    'ro' => 'ro-RO',
+    'ru' => 'ru-RU',
+    'sk' => 'sk-SK',
+    'sr' => 'sr-CS',
+    'sv' => 'sv-SE',
+    'th' => 'th-TH',
+    'tr' => 'tr-TR',
+    'uk' => 'uk-UA',
+    'vi' => 'vi-VN',
+    'zh-cn' => 'zh-CN',
+    'zh-tw' => 'zh-TW',
+];
+
+if (! function_exists('pixelfed_normalize_locale')) {
+    function pixelfed_normalize_locale(array $map, ?string $locale): string
+    {
+        $locale = is_string($locale) ? trim($locale) : '';
+
+        if ($locale === '') {
+            return 'en-US';
+        }
+
+        $lower = strtolower($locale);
+
+        return $map[$lower] ?? $locale;
+    }
+}

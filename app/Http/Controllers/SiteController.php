@@ -61,7 +61,12 @@ class SiteController extends Controller
 
     public function about()
     {
-        return Cache::remember('site.about_v2', now()->addMinutes(15), function () {
+        // Scope the cache key by locale: the rendered view contains many
+        // translated site.* strings, so a single shared key would let one
+        // locale's render be served to visitors of other locales.
+        $cacheKey = 'site.about_v2:'.app()->getLocale();
+
+        return Cache::remember($cacheKey, now()->addMinutes(15), function () {
             $user_count = number_format(User::count());
             $post_count = number_format(StatusService::totalLocalStatuses());
             $rules = config_cache('app.rules') ? json_decode(config_cache('app.rules'), true) : null;
@@ -77,7 +82,11 @@ class SiteController extends Controller
 
     public function communityGuidelines(Request $request)
     {
-        return Cache::remember('site:help:community-guidelines', now()->addDays(120), function () {
+        // Scope by locale: the rendered layout contains translated strings,
+        // so a shared key would leak one locale's render to other locales.
+        $cacheKey = 'site:help:community-guidelines:'.app()->getLocale();
+
+        return Cache::remember($cacheKey, now()->addMinutes(15), function () {
             $slug = '/site/kb/community-guidelines';
             $page = Page::whereSlug($slug)->whereActive(true)->first();
 

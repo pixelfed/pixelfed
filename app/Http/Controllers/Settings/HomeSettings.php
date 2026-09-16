@@ -42,7 +42,7 @@ trait HomeSettings
             'name' => 'nullable|string|max:'.config('pixelfed.max_name_length'),
             'bio' => 'nullable|string|max:'.config('pixelfed.max_bio_length'),
             'website' => 'nullable|url',
-            'language' => 'nullable|string|min:2|max:5',
+            'language' => 'nullable|string|min:2|max:12',
             'pronouns' => 'nullable|array|max:4',
         ]);
 

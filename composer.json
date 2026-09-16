@@ -16,7 +16,6 @@
         "ext-redis": "*",
         "bacon/bacon-qr-code": "^3.0",
         "brick/math": "^0.14",
-        "buzz/laravel-h-captcha": "^1.0.4",
         "guzzlehttp/guzzle": "^7.10",
         "intervention/image-driver-vips": "^4.1",
         "intervention/image-laravel": "^4.1",
@@ -111,7 +110,14 @@
         "test:filter": "./vendor/bin/pest --compact --filter",
         "test:quick": "./vendor/bin/pest --compact",
         "lint": "./vendor/bin/pint",
-        "lint:test": "./vendor/bin/pint --test"
+        "lint:test": "./vendor/bin/pint --test",
+        "translate": [
+            "@php artisan i18n:export"
+        ],
+        "build": [
+            "npm ci",
+            "npm run production"
+        ]
 
     },
     "config": {

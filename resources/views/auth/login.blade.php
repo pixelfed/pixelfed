@@ -190,7 +190,19 @@
                         <div class="form-group row mb-0">
                             <div class="col-md-12">
                                 <label for="password" class="small font-weight-bold text-muted mb-0">{{ __('auth.password') }}</label>
-                                <input id="password" type="password" class="form-control{{ $errors->has('password') ? ' is-invalid' : '' }}" name="password" placeholder="{{ __('auth.password') }}" required>
+                                <div class="input-group">
+                                    <input id="password" type="password" class="form-control{{ $errors->has('password') ? ' is-invalid' : '' }}" name="password" placeholder="{{ __('auth.password') }}" autocomplete="current-password" required>
+                                    <div class="input-group-append">
+                                        <button
+                                            type="button"
+                                            id="togglePassword"
+                                            class="btn btn-outline-secondary"
+                                            aria-label="{{ __('Press and hold to show password') }}"
+                                            aria-controls="password">
+                                            <i class="far fa-eye" aria-hidden="true"></i>
+                                        </button>
+                                    </div>
+                                </div>
 
                                 @if ($errors->has('password'))
                                 <span class="invalid-feedback">
@@ -219,19 +231,7 @@
                             </div>
                         </div>
 
-                        @if(
-                        (bool) config_cache('captcha.enabled') &&
-                        (bool) config_cache('captcha.active.login') ||
-                        (
-                        (bool) config_cache('captcha.triggers.login.enabled') &&
-                        request()->session()->has('login_attempts') &&
-                        request()->session()->get('login_attempts') >= config('captcha.triggers.login.attempts')
-                        )
-                        )
-                        <div class="d-flex justify-content-center mb-3">
-                            {!! Captcha::display() !!}
-                        </div>
-                        @endif
+                        <x-captcha surface="login" wrapperClass="d-flex justify-content-center mb-3" />
 
                         <button type="submit" class="btn btn-primary btn-block btn-lg font-weight-bold rounded-pill">
                             {{ __('auth.login') }}
@@ -333,6 +333,65 @@
         });
 
         document.addEventListener('DOMContentLoaded', function() {
+            const toggle = document.getElementById('togglePassword');
+            const password = document.getElementById('password');
+            if (toggle && password) {
+                const icon = toggle.querySelector('i');
+
+                const reveal = function() {
+                    password.type = 'text';
+                    if (icon) {
+                        icon.classList.remove('fa-eye');
+                        icon.classList.add('fa-eye-slash');
+                    }
+                };
+
+                const conceal = function() {
+                    password.type = 'password';
+                    if (icon) {
+                        icon.classList.remove('fa-eye-slash');
+                        icon.classList.add('fa-eye');
+                    }
+                };
+
+                // Press and hold to reveal; release (or leave/blur) to hide.
+                toggle.addEventListener('mousedown', function(e) {
+                    e.preventDefault();
+                    reveal();
+                });
+                toggle.addEventListener('mouseup', conceal);
+                toggle.addEventListener('mouseleave', conceal);
+
+                // Touch devices.
+                toggle.addEventListener('touchstart', function(e) {
+                    e.preventDefault();
+                    reveal();
+                }, { passive: false });
+                toggle.addEventListener('touchend', conceal);
+                toggle.addEventListener('touchcancel', conceal);
+
+                // Keyboard: reveal while Space/Enter is held, hide on release/blur.
+                toggle.addEventListener('keydown', function(e) {
+                    if (e.key === ' ' || e.key === 'Enter' || e.key === 'Spacebar') {
+                        e.preventDefault();
+                        reveal();
+                    }
+                });
+                toggle.addEventListener('keyup', function(e) {
+                    if (e.key === ' ' || e.key === 'Enter' || e.key === 'Spacebar') {
+                        conceal();
+                    }
+                });
+                toggle.addEventListener('blur', conceal);
+
+                // Safety net: never leave the password visible on tab-away.
+                document.addEventListener('visibilitychange', function() {
+                    if (document.hidden) {
+                        conceal();
+                    }
+                });
+            }
+
             const emailInput = document.getElementById('email');
             if (!emailInput) {
                 return;

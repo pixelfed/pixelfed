@@ -98,8 +98,8 @@ class RegisterController extends Controller
             'password' => 'required|string|min:'.config('pixelfed.min_password_length').'|confirmed',
         ];
 
-        if ((bool) config_cache('captcha.enabled') && (bool) config_cache('captcha.active.register')) {
-            $rules['h-captcha-response'] = 'required|captcha';
+        if (app('captcha.manager')->activeOn('register')) {
+            $rules[app('captcha.manager')->active()->responseField()] = 'required|captcha_verify';
         }
 
         return Validator::make($data, $rules);

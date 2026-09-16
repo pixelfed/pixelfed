@@ -47,11 +47,7 @@
                         <span id="charCount" class="text-white">0</span>/<span>1000</span>
                     </div>
                 </div>
-                @if($showCaptcha)
-                <div class="d-flex justify-content-center my-3">
-                    {!! Captcha::display() !!}
-                </div>
-                @endif
+                <x-captcha :show="$showCaptcha" />
                 <div class="text-center">
                     <button class="btn btn-primary font-weight-bold rounded-pill px-5">Submit my response</button>
                 </div>
