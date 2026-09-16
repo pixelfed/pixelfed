@@ -414,22 +414,22 @@
                                                 <div class="row" v-if="platform.captcha_driver === 'hcaptcha'">
                                                     <div class="col-12 col-md-6">
                                                         <div class="form-group my-1">
-                                                            <label class="text-muted small">hCaptcha Secret</label>
-                                                            <input
-                                                                type="text"
-                                                                class="form-control"
-                                                                name="captcha_hcaptcha_secret"
-                                                                v-model="platform.captcha_hcaptcha_secret">
-                                                        </div>
-                                                    </div>
-                                                    <div class="col-12 col-md-6">
-                                                        <div class="form-group my-1">
                                                             <label class="text-muted small">hCaptcha Sitekey</label>
                                                             <input
                                                                 type="text"
                                                                 class="form-control"
                                                                 name="captcha_hcaptcha_sitekey"
                                                                 v-model="platform.captcha_hcaptcha_sitekey">
+                                                        </div>
+                                                    </div>
+                                                    <div class="col-12 col-md-6">
+                                                        <div class="form-group my-1">
+                                                            <label class="text-muted small">hCaptcha Secret</label>
+                                                            <input
+                                                                type="text"
+                                                                class="form-control"
+                                                                name="captcha_hcaptcha_secret"
+                                                                v-model="platform.captcha_hcaptcha_secret">
                                                         </div>
                                                     </div>
                                                 </div>
