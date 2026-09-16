@@ -3,6 +3,7 @@
 namespace App\Providers;
 
 use App\Passport\CachedPersonalAccessClientRepository;
+use App\Passport\ScopeRepository;
 use Laravel\Passport\Bridge;
 use Laravel\Passport\ClientRepository;
 use Laravel\Passport\Passport;
@@ -26,7 +27,7 @@ class PassportServiceProvider extends \Laravel\Passport\PassportServiceProvider
         return tap(new AuthorizationServer(
             $this->app->make(Bridge\ClientRepository::class),
             $this->app->make(Bridge\AccessTokenRepository::class),
-            $this->app->make(Bridge\ScopeRepository::class),
+            $this->app->make(ScopeRepository::class),
             $this->makeCryptKey('private'),
             Passport::tokenEncryptionKey($this->app->make('encrypter')),
             $responseType ?? Passport::$authorizationServerResponseType
