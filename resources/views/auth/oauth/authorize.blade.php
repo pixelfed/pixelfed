@@ -52,6 +52,17 @@
             font-weight: 700;
         }
 
+        .passport-authorize .handoff-app-official {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 16px;
+            background-color: #fff;
+            color: #fff;
+            font-size: 1.5rem;
+            font-weight: 700;
+        }
+
         .passport-authorize .handoff-avatar {
             border-radius: 50%;
             object-fit: cover;
@@ -61,7 +72,7 @@
 
         .passport-authorize .handoff-link {
             position: relative;
-            width: 64px;
+            width: 94px;
             display: flex;
             align-items: center;
             justify-content: center;
@@ -255,7 +266,11 @@
         <div class="card authorize-card shadow-sm border-0">
             <div class="card-body">
                 <div class="handoff" aria-hidden="true">
+                    @if(in_array($client->name, ['Pixelfed for iOS', 'Pixelfed for Android']))
+                    <img class="handoff-tile handoff-app-official" src=" /img/pixelfed-icon-color.svg" width="48" height="48" alt="{{ config_cache('app.name') }}">
+                    @else
                     <div class="handoff-tile handoff-app">{{ mb_strtoupper(mb_substr($client->name, 0, 1)) }}</div>
+                    @endif
                     <div class="handoff-link"><i class="fas fa-link"></i></div>
                     <img class="handoff-tile handoff-avatar" src="{{ $user->profile->avatarUrl() }}" alt="">
                 </div>
