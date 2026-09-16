@@ -22,8 +22,8 @@ return [
     'terms' => 'Al registrarte estás de acuerdo con nuestros <a href="'.route('site.terms').'" class="font-weight-bold text-dark">Términos de Uso</a> y <a href="'.route('site.privacy').'" class="font-weight-bold text-dark">Política de Privacidad</a>.',
 
     'emailAddress' => 'Dirección de correo electrónico',
-    'email' => '',
-    'forgotEmail' => '',
+    'email' => 'Correo Electrónico',
+    'forgotEmail' => 'Correo Electrónico olvidado',
 
     'registerTitle' => 'Registrar una nueva cuenta',
 

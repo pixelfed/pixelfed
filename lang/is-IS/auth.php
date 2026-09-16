@@ -6,17 +6,17 @@ return [
     'loginTitle' => '',
     'failed' => '',
     'throttle' => '',
-    'password' => '',
+    'password' => 'Lykilorð',
     'remember' => '',
-    'forgot' => '',
-    'login' => '',
+    'forgot' => 'Gleymt lykilorð',
+    'login' => 'Innskráning',
 
-    'register' => '',
-    'reset' => '',
+    'register' => 'Nýskráning',
+    'reset' => 'Endurstilling lykilorðs',
 
     'name' => '',
     'username' => '',
-    'confirm-password' => '',
+    'confirm-password' => 'Staðfestu lykilorð',
 
     'age' => '',
     'terms' => ''.route('site.terms').''.route('site.privacy').'',
