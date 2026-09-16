@@ -802,7 +802,7 @@ class ApiV1Controller extends Controller
             'max_id' => 'nullable|integer|min:0|max:'.PHP_INT_MAX,
             'since_id' => 'nullable|integer|min:0|max:'.PHP_INT_MAX,
             'min_id' => 'nullable|integer|min:0|max:'.PHP_INT_MAX,
-            'limit' => 'nullable|integer|min:1|max:40',
+            'limit' => 'nullable|integer|min:1|max:100',
             'only_reposts' => 'nullable',
         ]);
 
@@ -827,7 +827,7 @@ class ApiV1Controller extends Controller
             }
         }
 
-        $limit = min((int) $request->input('limit', 20), 40);
+        $limit = min((int) $request->input('limit', 20), 100);
 
         $profileId = (int) $profile['id'];
         $viewerId = (int) $user->profile_id;
