@@ -2,27 +2,27 @@
 
 return [
 
-    'helpcenter' => '',
-    'whatsnew' => '',
+    'helpcenter' => 'Hjálparmiðstöð',
+    'whatsnew' => 'Nýtt á döfinni',
 
-    'gettingStarted' => '',
-    'sharingMedia' => '',
-    'profile' => '',
-    'stories' => '',
-    'hashtags' => '',
-    'discover' => '',
-    'directMessages' => '',
-    'timelines' => '',
-    'embed' => '',
+    'gettingStarted' => 'Til að komast í gang',
+    'sharingMedia' => 'Deiling myndefnis',
+    'profile' => 'Notkunarsnið',
+    'stories' => 'Sögur',
+    'hashtags' => 'Myllumerki',
+    'discover' => 'Uppgötva',
+    'directMessages' => 'Bein skilaboð',
+    'timelines' => 'Tímalínur',
+    'embed' => 'Ívefja',
 
-    'communityGuidelines' => '',
-    'whatIsTheFediverse' => '',
-    'controllingVisibility' => '',
-    'blockingAccounts' => '',
-    'safetyTips' => '',
-    'reportSomething' => '',
-    'dataPolicy' => '',
+    'communityGuidelines' => 'Leiðbeiningar varðandi samfélagið',
+    'whatIsTheFediverse' => 'Hvað er þetta skýjasamband (fediverse)?',
+    'controllingVisibility' => 'Að stýra sýnileika',
+    'blockingAccounts' => 'Útilokun aðganga',
+    'safetyTips' => 'Öryggisráðleggingar',
+    'reportSomething' => 'Tilkynna eitthvað',
+    'dataPolicy' => 'Stefna varðandi gögn',
 
-    'taggingPeople' => '',
+    'taggingPeople' => 'Merkingar á fólki',
 
 ];
