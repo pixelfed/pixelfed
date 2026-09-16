@@ -4,7 +4,7 @@ return [
 
     'compose' => [
         'invalid' => [
-            'album' => '',
+            'album' => 'Verður að innihalda staka mynd eða myndskeið eða margar myndir.',
         ],
     ],
 
