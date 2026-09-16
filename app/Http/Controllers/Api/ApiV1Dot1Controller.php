@@ -293,7 +293,7 @@ class ApiV1Dot1Controller extends Controller
     public function accountChangePassword(Request $request)
     {
         abort_if(! $request->user() || ! $request->user()->token(), 403);
-        abort_unless($request->user()->tokenCan('write'), 403);
+        abort_unless($request->user()->tokenCan('security:write'), 403);
 
         $user = $request->user();
         abort_if($user->status != null, 403);
@@ -305,19 +305,38 @@ class ApiV1Dot1Controller extends Controller
             'current_password' => 'bail|required|current_password',
             'new_password' => 'required|min:'.config('pixelfed.min_password_length', 8),
             'confirm_password' => 'required|same:new_password',
+            'revoke_other_sessions' => 'sometimes|boolean',
         ], [
-            'current_password' => 'The password you entered is incorrect',
+            'current_password.current_password' => 'The password you entered is incorrect',
         ]);
+
+        $revokeOthers = $request->boolean('revoke_other_sessions');
+        $currentId = $request->user()->token()->id;
 
         $user->password = bcrypt($request->input('new_password'));
         $user->save();
+
+        $revoked = 0;
+        if ($revokeOthers) {
+            $ids = $user->tokens()
+                ->whereKeyNot($currentId)
+                ->where('revoked', false)
+                ->pluck('id');
+
+            if ($ids->isNotEmpty()) {
+                $revoked = $user->tokens()->whereIn('id', $ids)->update(['revoked' => true]);
+                RefreshToken::whereIn('access_token_id', $ids)->update(['revoked' => true]);
+            }
+        }
 
         $log = new AccountLog;
         $log->user_id = $user->id;
         $log->item_id = $user->id;
         $log->item_type = User::class;
         $log->action = 'account.edit.password';
-        $log->message = 'Password changed';
+        $log->message = $revokeOthers
+            ? "Password changed, {$revoked} other session(s) signed out"
+            : 'Password changed';
         $log->link = null;
         $log->ip_address = $request->ip();
         $log->user_agent = $request->userAgent();
@@ -387,7 +406,7 @@ class ApiV1Dot1Controller extends Controller
     public function accountTwoFactor(Request $request)
     {
         abort_if(! $request->user() || ! $request->user()->token(), 403);
-        abort_unless($request->user()->tokenCan('read'), 403);
+        abort_unless($request->user()->tokenCan('security:read'), 403);
 
         $user = $request->user();
         abort_if($user->status != null, 403);
@@ -412,7 +431,7 @@ class ApiV1Dot1Controller extends Controller
     public function accountEmailsFromPixelfed(Request $request)
     {
         abort_if(! $request->user() || ! $request->user()->token(), 403);
-        abort_unless($request->user()->tokenCan('read'), 403);
+        abort_unless($request->user()->tokenCan('security:read'), 403);
 
         $user = $request->user();
         abort_if($user->status != null, 403);
@@ -489,7 +508,7 @@ class ApiV1Dot1Controller extends Controller
     public function accountApps(Request $request)
     {
         abort_if(! $request->user() || ! $request->user()->token(), 403);
-        abort_unless($request->user()->tokenCan('read'), 403);
+        abort_unless($request->user()->tokenCan('security:read'), 403);
 
         $user = $request->user();
         abort_if($user->status != null, 403);
@@ -565,7 +584,7 @@ class ApiV1Dot1Controller extends Controller
     public function accountAppRevoke(Request $request, $id)
     {
         abort_if(! $request->user() || ! $request->user()->token(), 403);
-        abort_unless($request->user()->tokenCan('write'), 403);
+        abort_unless($request->user()->tokenCan('security:write'), 403);
 
         $user = $request->user();
         abort_if($user->status != null, 403);

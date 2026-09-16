@@ -203,12 +203,15 @@ class AppServiceProvider extends ServiceProvider
             'admin:write' => 'Modify all data on the server',
             'admin:write:domain_blocks' => 'Perform moderation actions on domain blocks',
             'push' => 'Receive your push notifications',
+            'security:read' => 'See which apps and devices have access to your account',
+            'security:write' => 'Change your password and revoke access for other apps and devices',
         ]);
 
-        Passport::setDefaultScope([
+        Passport::defaultScopes([
             'read',
             'write',
             'follow',
+            'push',
         ]);
 
         URL::forceRootUrl(config('app.url'));
