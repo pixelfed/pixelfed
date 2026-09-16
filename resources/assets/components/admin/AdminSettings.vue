@@ -497,6 +497,7 @@
                                                     </div>
                                                 </div>
                                                 <hr class="mt-2 mb-4">
+                                                <label class="text-muted small font-weight-bold d-block mb-2">Select pages to render captcha</label>
                                                 <div class="row">
                                                     <div class="col-12 col-lg-6 mb-3">
                                                         <div class="custom-control custom-checkbox">
@@ -506,7 +507,7 @@
                                                                 class="custom-control-input"
                                                                 id="captcha_on_login"
                                                                 v-model="platform.captcha_on_login">
-                                                            <label class="custom-control-label font-weight-bold" for="captcha_on_login">Login Captcha</label>
+                                                            <label class="custom-control-label font-weight-bold" for="captcha_on_login">Login</label>
                                                         </div>
                                                     </div>
                                                     <div class="col-12 col-lg-6 mb-3">
@@ -517,7 +518,7 @@
                                                                 class="custom-control-input"
                                                                 id="captcha_on_register"
                                                                 v-model="platform.captcha_on_register">
-                                                            <label class="custom-control-label font-weight-bold" for="captcha_on_register">Register Captcha</label>
+                                                            <label class="custom-control-label font-weight-bold" for="captcha_on_register">Register</label>
                                                         </div>
                                                     </div>
                                                     <div class="col-12 col-lg-6 mb-3">
@@ -528,7 +529,7 @@
                                                                 class="custom-control-input"
                                                                 id="captcha_on_forgot_password"
                                                                 v-model="platform.captcha_on_forgot_password">
-                                                            <label class="custom-control-label font-weight-bold" for="captcha_on_forgot_password">Forgot Password Captcha</label>
+                                                            <label class="custom-control-label font-weight-bold" for="captcha_on_forgot_password">Forgot Password</label>
                                                         </div>
                                                     </div>
                                                     <div class="col-12 col-lg-6 mb-3">
@@ -539,7 +540,7 @@
                                                                 class="custom-control-input"
                                                                 id="captcha_on_password_reset"
                                                                 v-model="platform.captcha_on_password_reset">
-                                                            <label class="custom-control-label font-weight-bold" for="captcha_on_password_reset">Password Reset Captcha</label>
+                                                            <label class="custom-control-label font-weight-bold" for="captcha_on_password_reset">Password Reset</label>
                                                         </div>
                                                     </div>
                                                     <div class="col-12 col-lg-6 mb-3">
@@ -550,7 +551,7 @@
                                                                 class="custom-control-input"
                                                                 id="captcha_on_curated_register"
                                                                 v-model="platform.captcha_on_curated_register">
-                                                            <label class="custom-control-label font-weight-bold" for="captcha_on_curated_register">Curated Register Captcha</label>
+                                                            <label class="custom-control-label font-weight-bold" for="captcha_on_curated_register">Curated Register</label>
                                                         </div>
                                                     </div>
                                                     <div class="col-12 col-lg-6 mb-3">
@@ -561,11 +562,10 @@
                                                                 class="custom-control-input"
                                                                 id="captcha_on_forgot_email"
                                                                 v-model="platform.captcha_on_forgot_email">
-                                                            <label class="custom-control-label font-weight-bold" for="captcha_on_forgot_email">Forgot Email Captcha</label>
+                                                            <label class="custom-control-label font-weight-bold" for="captcha_on_forgot_email">Forgot Email</label>
                                                         </div>
                                                     </div>
                                                 </div>
-                                                <hr class="mt-4 mb-2">
                                             </template>
                                         </div>
 
