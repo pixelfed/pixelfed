@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "f850111c7826d7c8383045e89f52f480",
+    "content-hash": "d6359826d0784c33bb38684d5f85a05b",
     "packages": [
         {
             "name": "aws/aws-crt-php",
@@ -271,66 +271,6 @@
                 }
             ],
             "time": "2026-02-10T14:33:43+00:00"
-        },
-        {
-            "name": "buzz/laravel-h-captcha",
-            "version": "v1.0.7",
-            "source": {
-                "type": "git",
-                "url": "https://github.com/thinhbuzz/laravel-h-captcha.git",
-                "reference": "94f1e092411ef25e326f524a2f63512ee94a8dc5"
-            },
-            "dist": {
-                "type": "zip",
-                "url": "https://api.github.com/repos/thinhbuzz/laravel-h-captcha/zipball/94f1e092411ef25e326f524a2f63512ee94a8dc5",
-                "reference": "94f1e092411ef25e326f524a2f63512ee94a8dc5",
-                "shasum": ""
-            },
-            "require": {
-                "guzzlehttp/guzzle": "6.*|7.*",
-                "illuminate/support": "5.*|6.*|7.*|8.*|9.*|10.*|11.*|12.*|^13.0",
-                "php": ">=5.4.0"
-            },
-            "type": "library",
-            "extra": {
-                "laravel": {
-                    "aliases": {
-                        "Captcha": "Buzz\\LaravelHCaptcha\\CaptchaFacade"
-                    },
-                    "providers": [
-                        "Buzz\\LaravelHCaptcha\\CaptchaServiceProvider"
-                    ]
-                }
-            },
-            "autoload": {
-                "psr-4": {
-                    "Buzz\\LaravelHCaptcha\\": "src"
-                }
-            },
-            "notification-url": "https://packagist.org/downloads/",
-            "license": [
-                "MIT"
-            ],
-            "authors": [
-                {
-                    "name": "ThinhBuzz",
-                    "email": "mr.thinhbuzz@gmail.com",
-                    "homepage": "https://www.facebook.com/thinh.buzz"
-                }
-            ],
-            "description": "hCaptcha for Laravel",
-            "homepage": "https://github.com/thinhbuzz/laravel-h-captcha",
-            "keywords": [
-                "captcha",
-                "h-captcha",
-                "hcaptcha",
-                "laravel"
-            ],
-            "support": {
-                "issues": "https://github.com/thinhbuzz/laravel-h-captcha/issues",
-                "source": "https://github.com/thinhbuzz/laravel-h-captcha/tree/v1.0.7"
-            },
-            "time": "2026-08-06T14:58:56+00:00"
         },
         {
             "name": "carbonphp/carbon-doctrine-types",

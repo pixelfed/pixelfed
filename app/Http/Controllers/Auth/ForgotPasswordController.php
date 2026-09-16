@@ -60,20 +60,18 @@ class ForgotPasswordController extends Controller
 
         usleep(random_int(100000, 3000000));
 
-        if ((bool) config_cache('captcha.enabled')) {
-            $rules = [
-                'email' => 'required|email',
-                'h-captcha-response' => 'required|captcha',
-            ];
-        } else {
-            $rules = [
-                'email' => 'required|email',
-            ];
+        $rules = [
+            'email' => 'required|email',
+        ];
+        $messages = [];
+
+        if (app('captcha.manager')->activeOn('forgot_password')) {
+            $captchaField = app('captcha.manager')->active()->responseField();
+            $rules[$captchaField] = 'required|captcha_verify';
+            $messages[$captchaField] = 'Failed to validate the captcha.';
         }
 
-        $request->validate($rules, [
-            'h-captcha-response' => 'Failed to validate the captcha.',
-        ]);
+        $request->validate($rules, $messages);
     }
 
     /**

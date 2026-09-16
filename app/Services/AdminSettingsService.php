@@ -131,12 +131,38 @@ class AdminSettingsService
             'allow_post_embeds' => (bool) config_cache('instance.embed.post'),
             'allow_profile_embeds' => (bool) config_cache('instance.embed.profile'),
             'captcha_enabled' => (bool) config_cache('captcha.enabled'),
+            'captcha_driver' => config_cache('captcha.driver') ?: config('captcha.driver', 'hcaptcha'),
             'captcha_on_login' => (bool) config_cache('captcha.active.login'),
             'captcha_on_register' => (bool) config_cache('captcha.active.register'),
-            'captcha_secret' => Str::mask(config_cache('captcha.secret'), '*', 4, -4),
-            'captcha_sitekey' => Str::mask(config_cache('captcha.sitekey'), '*', 4, -4),
+            'captcha_on_forgot_password' => (bool) config_cache('captcha.active.forgot_password'),
+            'captcha_on_password_reset' => (bool) config_cache('captcha.active.password_reset'),
+            'captcha_on_forgot_email' => (bool) config_cache('captcha.active.forgot_email'),
+            'captcha_on_curated_register' => (bool) config_cache('captcha.active.curated_register'),
+            'captcha_hcaptcha_secret' => self::maskSecret(config_cache('captcha.hcaptcha.secret')),
+            'captcha_hcaptcha_sitekey' => config_cache('captcha.hcaptcha.sitekey'),
+            'captcha_turnstile_secret' => self::maskSecret(config_cache('captcha.turnstile.secret')),
+            'captcha_turnstile_sitekey' => config_cache('captcha.turnstile.sitekey'),
+            'captcha_cap_endpoint' => config_cache('captcha.cap.endpoint'),
+            'captcha_cap_sitekey' => config_cache('captcha.cap.sitekey'),
+            'captcha_cap_secret' => self::maskSecret(config_cache('captcha.cap.secret')),
             'custom_emoji_enabled' => (bool) config_cache('federation.custom_emoji.enabled'),
         ];
+    }
+
+    /**
+     * Mask a secret value for display, tolerating null/empty values.
+     */
+    protected static function maskSecret($value): ?string
+    {
+        if (empty($value)) {
+            return $value === null ? null : (string) $value;
+        }
+
+        if (strlen((string) $value) < 8) {
+            return str_repeat('*', strlen((string) $value));
+        }
+
+        return Str::mask((string) $value, '*', 4, -4);
     }
 
     public static function getStorage()
@@ -179,7 +205,6 @@ class AdminSettingsService
         $res = [
             'enabled' => (bool) config_cache('instance.curated_registration.enabled'),
             'resend_confirmation_limit' => config_cache('instance.curated_registration.resend_confirmation_limit'),
-            'captcha_enabled' => config_cache('instance.curated_registration.captcha_enabled'),
             'state' => config_cache('instance.curated_registration.state'),
             'notify' => config_cache('instance.curated_registration.notify'),
         ];
