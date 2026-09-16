@@ -391,6 +391,9 @@
                                                         v-model="platform.captcha_enabled">
                                                     <label class="custom-control-label font-weight-bold" for="hcp">Enable Captcha</label>
                                                 </div>
+                                                <p class="help-text small text-muted mb-0">
+                                                    Select a captcha provider on high risk pages.
+                                                </p>
                                             </div>
                                             <template v-if="platform.captcha_enabled">
                                                 <hr class="my-2">
@@ -564,9 +567,6 @@
                                                 </div>
                                                 <hr class="mt-4 mb-2">
                                             </template>
-                                            <p class="help-text small text-muted mb-0">
-                                                Enable a captcha provider on login and register pages
-                                            </p>
                                         </div>
 
                                         <template v-if="features.registration_status === 'open' && features.allow_app_registration">
