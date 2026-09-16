@@ -55,6 +55,7 @@ use Illuminate\Support\Facades\RateLimiter;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Str;
 use Illuminate\Validation\Rule;
+use Laravel\Passport\RefreshToken;
 use League\Fractal;
 use League\Fractal\Serializer\ArraySerializer;
 
@@ -510,6 +511,50 @@ class ApiV1Dot1Controller extends Controller
         });
 
         return $this->json($res);
+    }
+
+    /**
+     * POST /api/v1.1/accounts/apps-and-applications/{id}/revoke
+     *
+     * @return array
+     */
+    public function accountAppRevoke(Request $request, $id)
+    {
+        abort_if(! $request->user() || ! $request->user()->token(), 403);
+        abort_unless($request->user()->tokenCan('write'), 403);
+
+        $user = $request->user();
+        abort_if($user->status != null, 403);
+
+        if (config('pixelfed.bouncer.cloud_ips.ban_signups')) {
+            abort_if(BouncerService::checkIp($request->ip()), 404);
+        }
+
+        $token = $user->tokens()->whereKey($id)->first();
+        abort_if(! $token, 404);
+        abort_if(
+            $token->id === $request->user()->token()->id,
+            422,
+            'You cannot revoke the current session. Sign out instead.'
+        );
+
+        if (! $token->revoked) {
+            $token->revoke();
+            RefreshToken::whereAccessTokenId($token->id)->update(['revoked' => true]);
+
+            $log = new AccountLog;
+            $log->user_id = $user->id;
+            $log->item_id = $user->id;
+            $log->item_type = User::class;
+            $log->action = 'account.apps.revoke';
+            $log->message = 'Revoked app access: '.$token->client->name;
+            $log->link = null;
+            $log->ip_address = $request->ip();
+            $log->user_agent = $request->userAgent();
+            $log->save();
+        }
+
+        return $this->accountApps($request);
     }
 
     public function inAppRegistrationPreFlightCheck(Request $request): array

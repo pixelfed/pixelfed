@@ -247,6 +247,7 @@ Route::prefix('api')->group(function () use ($middleware) {
             Route::get('two-factor', [ApiV1Dot1Controller::class, 'accountTwoFactor'])->middleware($middleware);
             Route::get('emails-from-pixelfed', [ApiV1Dot1Controller::class, 'accountEmailsFromPixelfed'])->middleware($middleware);
             Route::get('apps-and-applications', [ApiV1Dot1Controller::class, 'accountApps'])->middleware($middleware);
+            Route::post('apps-and-applications/{id}/revoke', [ApiV1Dot1Controller::class, 'accountAppRevoke'])->middleware($middleware);
             Route::get('mutuals/{id}', [ApiV1Dot1Controller::class, 'getMutualAccounts'])->middleware($middleware);
             Route::get('username/{username}', [ApiV1Dot1Controller::class, 'accountUsernameToId'])->middleware($middleware);
         });
