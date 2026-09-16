@@ -13,10 +13,10 @@ return [
     |
     */
 
-    'password' => '',
-    'reset' => '',
-    'sent' => '',
-    'token' => '',
-    'user' => '',
+    'password' => 'Lykilorð verður að vera að lágmarki sex stafir og stemma við staðfestingu.',
+    'reset' => 'Lykilorðið þitt hefur verið endurstillt!',
+    'sent' => 'Ef tölvupóstfangið þitt fyrirfinnst í gagnagrunninum okkar, munt þú innan nokkurra mínútna fá tölvupóst með tengli til að endurheimta lykilorðið þitt. Skoðaðu í ruslpóstmöppuna þína ef þú færð ekki þennan tölvupóst.',
+    'token' => 'Teiknið fyrir endurstillingu lykilorðs er ógilt.',
+    'user' => 'Ef tölvupóstfangið þitt fyrirfinnst í gagnagrunninum okkar, munt þú innan nokkurra mínútna fá tölvupóst með tengli til að endurheimta lykilorðið þitt. Skoðaðu í ruslpóstmöppuna þína ef þú færð ekki þennan tölvupóst.',
 
 ];
