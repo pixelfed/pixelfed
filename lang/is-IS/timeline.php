@@ -2,6 +2,6 @@
 
 return [
 
-    'emptyPersonalTimeline' => '',
+    'emptyPersonalTimeline' => 'Tímalínan þín er tóm.',
 
 ];
