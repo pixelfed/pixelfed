@@ -197,8 +197,7 @@
                                             type="button"
                                             id="togglePassword"
                                             class="btn btn-outline-secondary"
-                                            aria-label="{{ __('Show password') }}"
-                                            aria-pressed="false"
+                                            aria-label="{{ __('Press and hold to show password') }}"
                                             aria-controls="password">
                                             <i class="far fa-eye" aria-hidden="true"></i>
                                         </button>
@@ -337,20 +336,59 @@
             const toggle = document.getElementById('togglePassword');
             const password = document.getElementById('password');
             if (toggle && password) {
-                toggle.addEventListener('click', function() {
-                    const show = password.type === 'password';
-                    password.type = show ? 'text' : 'password';
-                    toggle.setAttribute('aria-pressed', show ? 'true' : 'false');
-                    toggle.setAttribute(
-                        'aria-label',
-                        show ? '{{ __('Hide password') }}' : '{{ __('Show password') }}'
-                    );
-                    const icon = toggle.querySelector('i');
+                const icon = toggle.querySelector('i');
+
+                const reveal = function() {
+                    password.type = 'text';
                     if (icon) {
-                        icon.classList.toggle('fa-eye', !show);
-                        icon.classList.toggle('fa-eye-slash', show);
+                        icon.classList.remove('fa-eye');
+                        icon.classList.add('fa-eye-slash');
                     }
-                    password.focus();
+                };
+
+                const conceal = function() {
+                    password.type = 'password';
+                    if (icon) {
+                        icon.classList.remove('fa-eye-slash');
+                        icon.classList.add('fa-eye');
+                    }
+                };
+
+                // Press and hold to reveal; release (or leave/blur) to hide.
+                toggle.addEventListener('mousedown', function(e) {
+                    e.preventDefault();
+                    reveal();
+                });
+                toggle.addEventListener('mouseup', conceal);
+                toggle.addEventListener('mouseleave', conceal);
+
+                // Touch devices.
+                toggle.addEventListener('touchstart', function(e) {
+                    e.preventDefault();
+                    reveal();
+                }, { passive: false });
+                toggle.addEventListener('touchend', conceal);
+                toggle.addEventListener('touchcancel', conceal);
+
+                // Keyboard: reveal while Space/Enter is held, hide on release/blur.
+                toggle.addEventListener('keydown', function(e) {
+                    if (e.key === ' ' || e.key === 'Enter' || e.key === 'Spacebar') {
+                        e.preventDefault();
+                        reveal();
+                    }
+                });
+                toggle.addEventListener('keyup', function(e) {
+                    if (e.key === ' ' || e.key === 'Enter' || e.key === 'Spacebar') {
+                        conceal();
+                    }
+                });
+                toggle.addEventListener('blur', conceal);
+
+                // Safety net: never leave the password visible on tab-away.
+                document.addEventListener('visibilitychange', function() {
+                    if (document.hidden) {
+                        conceal();
+                    }
                 });
             }
 
