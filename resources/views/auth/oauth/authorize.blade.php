@@ -259,10 +259,6 @@
     @endphp
 
     <div class="authorize-wrap">
-        <div class="text-center mb-4">
-            <img src="/img/pixelfed-icon-grey.svg" width="48" height="48" alt="{{ config_cache('app.name') }}">
-        </div>
-
         <div class="card authorize-card shadow-sm border-0">
             <div class="card-body">
                 <div class="handoff" aria-hidden="true">
