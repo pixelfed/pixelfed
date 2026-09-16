@@ -498,7 +498,7 @@ class ApiV1Dot1Controller extends Controller
             abort_if(BouncerService::checkIp($request->ip()), 404);
         }
 
-        $res = $user->tokens->sortByDesc('created_at')->take(10)->map(function ($token, $key) use ($request) {
+        $res = $user->tokens->sortByDesc('created_at')->take(10)->values()->map(function ($token, $key) use ($request) {
             return [
                 'id' => $token->id,
                 'current_session' => $request->user()->token()->id == $token->id,
