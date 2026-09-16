@@ -16,6 +16,6 @@ return [
     'block.domain.max' => '',
 
     'mutedAccounts' => '',
-    'blockedAccounts' => '',
-    'blockedDomains' => '',
+    'blockedAccounts' => 'Útilokaðir aðgangar',
+    'blockedDomains' => 'Útilokuð lén',
 ];
