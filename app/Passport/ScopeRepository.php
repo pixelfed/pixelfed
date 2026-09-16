@@ -2,7 +2,7 @@
 
 namespace App\Passport;
 
-use App\User;
+use App\Models\User;
 use Illuminate\Support\Str;
 use Laravel\Passport\Bridge\ScopeRepository as BaseScopeRepository;
 use League\OAuth2\Server\Entities\ClientEntityInterface;
