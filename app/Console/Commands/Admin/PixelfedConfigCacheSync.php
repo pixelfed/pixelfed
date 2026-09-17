@@ -26,9 +26,7 @@ class PixelfedConfigCacheSync extends Command
 
     public static function syncEnabled(): bool
     {
-        $v = Env::get('PIXELFED_CONFIG_CACHE_SYNC', true);
-
-        return filter_var($v, FILTER_VALIDATE_BOOLEAN, FILTER_NULL_ON_FAILURE) ?? true;
+        return (bool) Env::get('PIXELFED_CONFIG_CACHE_SYNC', true);
     }
 
     public function handle(): int
