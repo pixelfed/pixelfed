@@ -1,14 +1,13 @@
-# FFmpeg build stage - compile the latest FFmpeg from source (shared/dynamic).
-# Built on the SAME base image as the final stage so the compiled shared
-# libraries and the codec libraries they link against are ABI-compatible when
-# copied/installed into the final image.
-# ffmpeg version to compile, change with [--build-arg FFMPEG_VERSION="9.0.1"]
 FROM serversideup/php:8.5-frankenphp AS ffmpeg
+
+# ffmpeg version to compile, change with [--build-arg FFMPEG_VERSION="9.0.1"]
 ARG FFMPEG_VERSION=9.0.1
 ARG FFMPEG_URL=https://ffmpeg.org/releases
+
 # x264 has no numbered releases; it is built from its rolling `stable` branch.
 ARG X264_URL=https://code.videolan.org/videolan/x264.git
 ARG X264_BRANCH=stable
+
 # x265 version to compile, change with [--build-arg X265_VERSION="4.2"]
 ARG X265_VERSION=4.2
 ARG X265_URL=https://bitbucket.org/multicoreware/x265_git/get
@@ -16,7 +15,6 @@ ARG X265_URL=https://bitbucket.org/multicoreware/x265_git/get
 USER root
 SHELL ["/bin/bash", "-o", "pipefail", "-o", "errexit", "-c"]
 
-# Install build tools and codec development libraries.
 RUN apt-get update && apt-get install -y --no-install-recommends \
     autoconf \
     automake \
@@ -32,12 +30,6 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     wget \
     xz-utils \
     yasm \
-    # codec dev libraries.
-    # x264 (H.264) and x265 (HEVC) are compiled from upstream source below
-    # (not from Debian's older packages). AV1 uses Debian's libraries
-    # (libaom encode/decode, libdav1d for fast decode).
-    # Subtitle rendering libs (libass/fontconfig/freetype) are omitted as they
-    # are not needed for transcoding.
     libaom-dev \
     libdav1d-dev \
     libmp3lame-dev \
@@ -51,9 +43,6 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     libbz2-dev \
     && rm -rf /var/lib/apt/lists/*
 
-# Build x264 (H.264 encoder) from its upstream `stable` branch as shared libs.
-# Installs into /usr/local so FFmpeg's configure finds it via pkg-config ahead
-# of any Debian-packaged version.
 WORKDIR /usr/local/x264/src
 RUN git clone --depth 1 --branch ${X264_BRANCH} ${X264_URL} . \
     && ./configure \
@@ -65,7 +54,6 @@ RUN git clone --depth 1 --branch ${X264_BRANCH} ${X264_URL} . \
     && make install \
     && ldconfig
 
-# Build x265 (HEVC encoder) from upstream source as shared libs (uses CMake).
 WORKDIR /usr/local/x265/src
 ADD ${X265_URL}/${X265_VERSION}.tar.gz /usr/local/x265/src/x265.tar.gz
 RUN tar xf x265.tar.gz --strip-components=1
@@ -80,21 +68,12 @@ RUN cmake -G "Unix Makefiles" \
     && ldconfig
 
 WORKDIR /usr/local/ffmpeg/src
-# Download and extract FFmpeg source
 ADD ${FFMPEG_URL}/ffmpeg-${FFMPEG_VERSION}.tar.xz /usr/local/ffmpeg/src/
 RUN tar xf ffmpeg-${FFMPEG_VERSION}.tar.xz
 
 WORKDIR /usr/local/ffmpeg/src/ffmpeg-${FFMPEG_VERSION}
 
-# Configure, compile and install FFmpeg into /usr/local/ffmpeg.
-# Built with --enable-shared: the ffmpeg/ffprobe binaries link dynamically
-# against the codec libraries. The FFmpeg shared libs are copied into the final
-# image and the codec runtime packages are installed there via apt.
-# PKG_CONFIG_PATH / extra flags ensure the source-built x264 & x265 in
-# /usr/local are discovered ahead of any Debian-packaged versions.
-#   --toolchain=hardened : compiler hardening (stack protector, FORTIFY, RELRO)
-#                          for a tool that parses untrusted user-uploaded media.
-#   --enable-lto         : link-time optimization for a small runtime speedup.
+# --toolchain=hardened : compiler hardening (stack protector, FORTIFY, RELRO) for a tool that parses untrusted user-uploaded media.
 ENV PKG_CONFIG_PATH="/usr/local/lib/pkgconfig"
 RUN ./configure \
     --prefix=/usr/local/ffmpeg \
@@ -134,12 +113,6 @@ WORKDIR /var/www/html
 
 USER root
 
-# Install system dependencies.
-# NOTE: ffmpeg itself is NOT installed from apt; it is compiled from source in
-# the `ffmpeg` build stage above and copied in below. The codec runtime shared
-# libraries that the source-built FFmpeg links against ARE installed here via
-# apt. x264 and x265 are NOT installed here; their source-built shared
-# libraries are copied in from the build stage below.
 RUN apt-get update && apt-get install -y \
     unzip \
     zip \
@@ -150,7 +123,6 @@ RUN apt-get update && apt-get install -y \
     libvips42 \
     git \
     curl \
-    # runtime codec libraries required by the source-built FFmpeg.
     libaom-dev \
     libdav1d-dev \
     libmp3lame0 \
@@ -178,17 +150,12 @@ RUN install-php-extensions \
     vips \
     ffi
 
-# Copy the source-built FFmpeg binaries and shared libraries into the final image.
-# Binaries go to /usr/bin to match the ffmpeg/ffprobe defaults (/usr/bin/ffmpeg,
-# /usr/bin/ffprobe).
 COPY --from=ffmpeg /usr/local/ffmpeg/bin/ffmpeg /usr/bin/ffmpeg
 COPY --from=ffmpeg /usr/local/ffmpeg/bin/ffprobe /usr/bin/ffprobe
 COPY --from=ffmpeg /usr/local/ffmpeg/lib /usr/local/lib
-# Copy the source-built x264 and x265 shared libraries that FFmpeg links against.
 COPY --from=ffmpeg /usr/local/lib/libx264.so* /usr/local/lib/
 COPY --from=ffmpeg /usr/local/lib/libx265.so* /usr/local/lib/
 
-# Refresh the dynamic linker cache and smoke-test the media processors
 RUN ldconfig \
     && /usr/bin/ffmpeg -version \
     && /usr/bin/ffprobe -version
