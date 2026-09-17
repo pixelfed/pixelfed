@@ -374,7 +374,8 @@ class ActivityPubDeliveryService
                                 'body' => $payload,
                             ]);
                     }
-                }
+                },
+                self::concurrency()
             );
 
             $deliveriesByIndex = [];
@@ -484,6 +485,14 @@ class ActivityPubDeliveryService
         DeliveryHostService::recordSuccesses(array_keys($hostSuccesses));
 
         return $result;
+    }
+
+    private static function concurrency(): int
+    {
+        return max(
+            1,
+            (int) config('federation.activitypub.delivery.concurrency', 10)
+        );
     }
 
     /**
