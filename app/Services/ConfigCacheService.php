@@ -165,32 +165,9 @@ class ConfigCacheService
         return array_keys(self::KEYS);
     }
 
-    // A key is locked from admin edits while its env var is present and valid.
+    // True while the key's env var is present and valid: env wins the read and
+    // the key is locked from admin edits.
     public static function isLocked(string $key): bool
-    {
-        return self::envIsPresentAndValidForKey($key);
-    }
-
-    // An empty string counts as unset.
-    public static function envIsSet(string $envVar): bool
-    {
-        $v = Env::get($envVar);
-
-        return $v !== null && $v !== '';
-    }
-
-    public static function envIsPresentAndValid(?string $envVar): bool
-    {
-        if ($envVar === null || ! self::envIsSet($envVar)) {
-            return false;
-        }
-
-        $key = self::keyForEnvVar($envVar);
-
-        return $key === null ? true : EnvConfigValidator::isValidEnvValue($key);
-    }
-
-    public static function envIsPresentAndValidForKey(string $key): bool
     {
         $envVar = self::envVarFor($key);
 
@@ -201,27 +178,24 @@ class ConfigCacheService
         return EnvConfigValidator::isValidEnvValue($key);
     }
 
-    protected static function keyForEnvVar(string $envVar): ?string
+    // An empty string counts as unset.
+    public static function envIsSet(string $envVar): bool
     {
-        foreach (self::KEYS as $key => $meta) {
-            if (($meta['env'] ?? null) === $envVar) {
-                return $key;
-            }
-        }
+        $v = Env::get($envVar);
 
-        return null;
+        return $v !== null && $v !== '';
     }
 
     public static function get($key)
     {
-        if (! self::isCached($key) || self::envIsPresentAndValidForKey($key)) {
+        if (! self::isCached($key) || self::isLocked($key)) {
             return config($key);
         }
 
-        return self::dbValueOrConfigFallback($key);
+        return self::readFromDb($key);
     }
 
-    protected static function dbValueOrConfigFallback($key)
+    protected static function readFromDb($key)
     {
         try {
             return Cache::remember(self::CACHE_KEY.$key, now()->addHours(12), function () use ($key) {
@@ -250,15 +224,14 @@ class ConfigCacheService
     }
 
     // Low-level write guard. Env-locked keys are not writable (env wins), so the
-    // write is skipped and the current value returned. This is a safety net; the
-    // admin API rejects locked keys with a 422 before reaching here.
+    // write is skipped and the current value returned. This is a safety net;
     public static function put($key, $val)
     {
         if (! self::isCached($key)) {
             return config($key);
         }
 
-        if (self::envIsPresentAndValidForKey($key)) {
+        if (self::isLocked($key)) {
             return self::get($key);
         }
 

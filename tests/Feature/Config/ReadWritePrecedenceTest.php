@@ -238,7 +238,7 @@ test('get() ENVCONFIG env-invalid with no DB row falls back to config (4.4)', fu
     Config::set(RW_ENVCONFIG_KEY, 'banana');
     rwForget(RW_ENVCONFIG_KEY);
 
-    // No row: dbValueOrConfigFallback seeds from config($key) and returns it.
+    // No row: readFromDb seeds from config($key) and returns it.
     expect(ConfigCacheService::get(RW_ENVCONFIG_KEY))->toBe('banana');
 });
 

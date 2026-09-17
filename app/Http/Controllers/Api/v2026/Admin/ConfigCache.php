@@ -220,7 +220,7 @@ class ConfigCache extends Controller
     // 'env' (env wins), 'db' (row exists), or 'default' (config file value).
     protected function sourceFor(string $key): string
     {
-        if (ConfigCacheService::envIsPresentAndValidForKey($key)) {
+        if (ConfigCacheService::isLocked($key)) {
             return 'env';
         }
 

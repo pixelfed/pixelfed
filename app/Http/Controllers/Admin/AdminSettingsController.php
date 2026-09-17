@@ -349,13 +349,23 @@ trait AdminSettingsController
         return response()->json($res);
     }
 
+    // Rules live in app.rules, which PF_RULES can lock. Returns the rejection
+    // response when it is env-managed, otherwise null.
+    protected function rulesLockedResponse()
+    {
+        if (! ConfigCacheService::isLocked('app.rules')) {
+            return null;
+        }
+
+        return response()->json([
+            'message' => 'Instance rules are managed by the PF_RULES environment variable and cannot be edited here.',
+        ], 422);
+    }
+
     public function settingsApiRulesAdd(Request $request)
     {
-        // app.rules is env-managed (PF_RULES) when locked; reject the edit.
-        if (ConfigCacheService::isLocked('app.rules')) {
-            return response()->json([
-                'message' => 'Instance rules are managed by the PF_RULES environment variable and cannot be edited here.',
-            ], 422);
+        if ($locked = $this->rulesLockedResponse()) {
+            return $locked;
         }
 
         $this->validate($request, [
@@ -385,11 +395,8 @@ trait AdminSettingsController
 
     public function settingsApiRulesDelete(Request $request)
     {
-        // app.rules is env-managed (PF_RULES) when locked; reject the edit.
-        if (ConfigCacheService::isLocked('app.rules')) {
-            return response()->json([
-                'message' => 'Instance rules are managed by the PF_RULES environment variable and cannot be edited here.',
-            ], 422);
+        if ($locked = $this->rulesLockedResponse()) {
+            return $locked;
         }
 
         $this->validate($request, [
@@ -421,11 +428,8 @@ trait AdminSettingsController
 
     public function settingsApiRulesDeleteAll(Request $request)
     {
-        // app.rules is env-managed (PF_RULES) when locked; reject the edit.
-        if (ConfigCacheService::isLocked('app.rules')) {
-            return response()->json([
-                'message' => 'Instance rules are managed by the PF_RULES environment variable and cannot be edited here.',
-            ], 422);
+        if ($locked = $this->rulesLockedResponse()) {
+            return $locked;
         }
 
         $rules = ConfigCacheService::get('app.rules');

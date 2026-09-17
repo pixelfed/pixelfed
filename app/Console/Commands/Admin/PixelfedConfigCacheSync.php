@@ -29,60 +29,56 @@ class PixelfedConfigCacheSync extends Command
         return (bool) Env::get('PIXELFED_CONFIG_CACHE_SYNC', true);
     }
 
+    // Always exits 0: the sync is best-effort and must never fail a deploy.
     public function handle(): int
     {
         if (! self::syncEnabled() || $this->option('no-sync')) {
             return 0;
         }
 
-        $force = (bool) $this->option('force');
-
         try {
-            $hash = $this->refreshHash();
-
-            if (! $force && Cache::get(self::MARKER_KEY) === $hash) {
-                Log::info('admin:pixelfed-config-cache-sync skipped: change-hash has not changed: '.$hash);
-
-                return 0;
-            }
-
-            $lock = Cache::lock(self::LOCK_KEY, self::LOCK_TTL);
-
-            if (! $lock->get()) {
-                return 0;
-            }
-
-            try {
-                // Re-check in case another process finished while we waited.
-                if (! $force && Cache::get(self::MARKER_KEY) === $hash) {
-                    return 0;
-                }
-
-                $this->reconcile();
-
-                ConfigCacheService::flushAll();
-
-                Cache::forever(self::MARKER_KEY, $hash);
-            } finally {
-                $lock->release();
-            }
+            $this->sync((bool) $this->option('force'));
         } catch (QueryException $e) {
-            Log::info('admin:pixelfed-config-cache-sync skipped: '.$e->getMessage());
-
-            return 0;
+            // Database isn't ready yet, e.g. running before migrations.
+            Log::info('config-cache sync skipped: '.$e->getMessage());
         }
 
         return 0;
     }
 
-    protected function reconcile(): void
+    protected function sync(bool $force): void
+    {
+        $hash = $this->configHash();
+
+        if (! $force && Cache::get(self::MARKER_KEY) === $hash) {
+            Log::info('config-cache sync skipped: hash unchanged '.$hash);
+
+            return;
+        }
+
+        $lock = Cache::lock(self::LOCK_KEY, self::LOCK_TTL);
+
+        if (! $lock->get()) {
+            return;
+        }
+
+        try {
+            $this->refreshEnv();
+            ConfigCacheService::flushAll();
+            Cache::forever(self::MARKER_KEY, $hash);
+        } finally {
+            $lock->release();
+        }
+    }
+
+    protected function refreshEnv(): void
     {
         foreach (ConfigCacheService::keysInList('ENVCONFIG') as $key) {
             $row = ConfigCache::where('k', $key)->first();
             $value = config($key);
             $empty = $value === null || $value === '';
 
-            if (! ConfigCacheService::envIsPresentAndValidForKey($key)) {
+            if (! ConfigCacheService::isLocked($key)) {
                 if ($row === null && ! $empty) {
                     ConfigCacheService::putRaw($key, $value);
                 }
@@ -94,13 +90,15 @@ class PixelfedConfigCacheSync extends Command
                 if ($row !== null) {
                     ConfigCacheService::forget($key);
                 }
+                // != on purpose: `v` is a text column, so a stored
+                // "5" must count as equal to an int 5 due to loose typing.
             } elseif ($row === null || $row->v != $value) {
                 ConfigCacheService::putRaw($key, $value);
             }
         }
     }
 
-    protected function refreshHash(): string
+    protected function configHash(): string
     {
         $keys = ConfigCacheService::keysInList('ENVCONFIG');
         sort($keys);

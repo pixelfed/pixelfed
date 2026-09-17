@@ -6,24 +6,19 @@ use Illuminate\Support\Facades\Config;
 
 /*
 |--------------------------------------------------------------------------
-| ConfigCacheService env presence + validity helpers (Task 5)
+| ConfigCacheService env presence + validity helpers
 |--------------------------------------------------------------------------
 |
-| Covers the two Laravel-native helpers that drive lock / precedence
-| decisions:
+|   - envIsSet($envVar): present iff set + non-empty (empty counts as absent)
+|   - isLocked($key):    env present AND passes the key's declared rule
 |
-|   - envIsSet($envVar):            present iff set + non-empty (empty = absent)
-|   - envIsPresentAndValid($env):   present AND passes the key's declared rule
-|   - envIsPresentAndValidForKey($key): key-oriented companion used by isLocked
+| Exercised against a real KEYS key with an `in:` rule — captcha.driver
+| (env CAPTCHA_DRIVER, rule in:hcaptcha,turnstile,cap) — across four states:
+| set+valid, unset, empty string, and set+invalid.
 |
-| We exercise a real KEYS key with an `in:` rule — captcha.driver
-| (env CAPTCHA_DRIVER, rule in:hcaptcha,turnstile,cap) — across the four
-| states: set+valid, unset, empty string, and set+invalid.
-|
-| Presence is read from Laravel's Env repository (Illuminate\Support\Env),
-| which is immutable per instance, so each state resets the cached repository
-| via reflection after mutating the process env, mirroring how a fresh boot
-| would resolve the value.
+| Presence is read from Laravel's Env repository, which is immutable per
+| instance, so each state resets the cached repository via reflection after
+| mutating the process env, mirroring how a fresh boot resolves the value.
 |
 | Validates: Requirements 2.1, 2.3, 2.4
 |
@@ -32,10 +27,9 @@ use Illuminate\Support\Facades\Config;
 const ENV_TEST_VAR = 'CAPTCHA_DRIVER';
 const ENV_TEST_KEY = 'captcha.driver';
 
-/**
- * Reset Illuminate\Support\Env's cached (immutable) repository so the next
- * Env::get() re-reads the process environment.
- */
+// An ADMINONLY key: no env binding, so it can never be env-locked.
+const ENV_TEST_NO_ENV_KEY = 'uikit.custom.css';
+
 function resetEnvRepository(): void
 {
     $ref = new ReflectionClass(Env::class);
@@ -44,10 +38,6 @@ function resetEnvRepository(): void
     $prop->setValue(null, null);
 }
 
-/**
- * Set (or clear when $value === null) an env var across every source the Env
- * repository reads, then reset the cached repository.
- */
 function setProcessEnv(string $name, ?string $value): void
 {
     if ($value === null) {
@@ -91,49 +81,44 @@ test('envIsSet treats an empty string as absent (Requirement 2.3)', function () 
     expect(ConfigCacheService::envIsSet(ENV_TEST_VAR))->toBeFalse();
 });
 
-test('envIsPresentAndValid is true when set and valid', function () {
+test('isLocked is true when the env var is set and valid', function () {
     setProcessEnv(ENV_TEST_VAR, 'turnstile');
     Config::set(ENV_TEST_KEY, 'turnstile');
 
-    expect(ConfigCacheService::envIsPresentAndValid(ENV_TEST_VAR))->toBeTrue();
-    expect(ConfigCacheService::envIsPresentAndValidForKey(ENV_TEST_KEY))->toBeTrue();
+    expect(ConfigCacheService::isLocked(ENV_TEST_KEY))->toBeTrue();
 });
 
-test('envIsPresentAndValid is false when unset', function () {
+test('isLocked is false when the env var is unset', function () {
     setProcessEnv(ENV_TEST_VAR, null);
     Config::set(ENV_TEST_KEY, 'hcaptcha'); // config default; env absent
 
-    expect(ConfigCacheService::envIsPresentAndValid(ENV_TEST_VAR))->toBeFalse();
-    expect(ConfigCacheService::envIsPresentAndValidForKey(ENV_TEST_KEY))->toBeFalse();
+    expect(ConfigCacheService::isLocked(ENV_TEST_KEY))->toBeFalse();
 });
 
-test('envIsPresentAndValid treats empty string as absent (Requirement 2.3)', function () {
+test('isLocked treats an empty env string as absent (Requirement 2.3)', function () {
     setProcessEnv(ENV_TEST_VAR, '');
     Config::set(ENV_TEST_KEY, 'hcaptcha');
 
-    expect(ConfigCacheService::envIsPresentAndValid(ENV_TEST_VAR))->toBeFalse();
-    expect(ConfigCacheService::envIsPresentAndValidForKey(ENV_TEST_KEY))->toBeFalse();
+    expect(ConfigCacheService::isLocked(ENV_TEST_KEY))->toBeFalse();
 });
 
-test('envIsPresentAndValid is false when set but invalid (Requirement 2.4)', function () {
+test('isLocked is false when the env var is set but invalid (Requirement 2.4)', function () {
     setProcessEnv(ENV_TEST_VAR, 'banana');
     Config::set(ENV_TEST_KEY, 'banana'); // env resolved into config, fails in: rule
 
-    expect(ConfigCacheService::envIsPresentAndValid(ENV_TEST_VAR))->toBeFalse();
-    expect(ConfigCacheService::envIsPresentAndValidForKey(ENV_TEST_KEY))->toBeFalse();
+    expect(ConfigCacheService::isLocked(ENV_TEST_KEY))->toBeFalse();
 });
 
-test('envIsPresentAndValid returns false for a null env var name', function () {
-    expect(ConfigCacheService::envIsPresentAndValid(null))->toBeFalse();
+test('isLocked is false for a key with no env binding (ADMINONLY)', function () {
+    expect(ConfigCacheService::envVarFor(ENV_TEST_NO_ENV_KEY))->toBeNull();
+    expect(ConfigCacheService::isLocked(ENV_TEST_NO_ENV_KEY))->toBeFalse();
 });
 
-test('envIsPresentAndValidForKey drives isLocked for ENVCONFIG keys', function () {
-    // Present + valid → locked.
+test('isLocked flips with env presence for an ENVCONFIG key', function () {
     setProcessEnv(ENV_TEST_VAR, 'cap');
     Config::set(ENV_TEST_KEY, 'cap');
     expect(ConfigCacheService::isLocked(ENV_TEST_KEY))->toBeTrue();
 
-    // Absent → unlocked (editable).
     setProcessEnv(ENV_TEST_VAR, null);
     expect(ConfigCacheService::isLocked(ENV_TEST_KEY))->toBeFalse();
 });

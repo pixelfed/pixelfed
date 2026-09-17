@@ -11,11 +11,6 @@ use Illuminate\Support\ServiceProvider;
 
 class ConfigCacheServiceProvider extends ServiceProvider
 {
-    public function register(): void
-    {
-        //
-    }
-
     public function boot(): void
     {
         EnvConfigValidator::validateBootEnv();
@@ -34,8 +29,8 @@ class ConfigCacheServiceProvider extends ServiceProvider
             $exitCode = Artisan::call('admin:pixelfed-config-cache-sync');
 
             $event->output->writeln($exitCode === 0
-                ? '<info>[config:cache] config-cache sync succeeded.</info>'
-                : "<error>[config:cache] config-cache sync failed (exit {$exitCode}).</error>");
+                ? "<info>[{$event->command}] Pixelfed config-cache sync succeeded.</info>"
+                : "<error>[{$event->command}] Pixelfed config-cache sync failed (exit {$exitCode}).</error>");
         });
     }
 }

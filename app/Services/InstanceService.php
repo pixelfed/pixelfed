@@ -19,8 +19,6 @@ class InstanceService
 
     const CACHE_KEY_STATS = 'pf:services:instances:stats';
 
-    const CACHE_KEY_TOTAL_POSTS = 'pf:services:instances:self:total-posts';
-
     const CACHE_KEY_BANNER_BLURHASH = 'pf:services:instance:header-blurhash:v1';
 
     const CACHE_KEY_API_PEERS_LIST = 'pf:services:instance:api:peers:list:v0';

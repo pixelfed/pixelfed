@@ -283,7 +283,7 @@ test('marker written on success equals the current change hash (8.7)', function 
 
     // Recompute the change hash the same way the command does and compare.
     $expected = (function () {
-        $method = new ReflectionMethod(PixelfedConfigCacheSync::class, 'refreshHash');
+        $method = new ReflectionMethod(PixelfedConfigCacheSync::class, 'configHash');
         $method->setAccessible(true);
 
         return $method->invoke(new PixelfedConfigCacheSync);
