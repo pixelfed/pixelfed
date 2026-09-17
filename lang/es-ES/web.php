@@ -319,7 +319,7 @@ return [
             'partial_word' => 'Palabra parcial',
             'duplicate_not_allowed' => 'No están permitidas las palabras clave duplicadas',
             'filter_action' => 'Acción del Filtro',
-            'hide_media_blur' => 'Ocultar medios detrás de un efecto difuminado',
+            'hide_media_blur' => '',
             'show_warning' => 'Mostrar advertencia antes de mosrtar el contenido',
             'hide_content_completely' => 'Ocultar el contenido completamente',
             'apply_filters_to' => 'Aplicar filtros a',
