@@ -260,7 +260,7 @@ class Helpers
             return false;
         }
 
-        if (strtolower($uri->getScheme()) !== 'https') {
+        if (strtolower((string) $uri->getScheme()) !== 'https') {
             return false;
         }
 
