@@ -24,7 +24,7 @@
                 </a>
                 <div class="small text-muted">
                     @if($collection->actor)
-                    by <a href="{{ $collection->actor->url() }}" class="text-muted" target="_blank" rel="noopener">&commat;{{ $collection->actor->username }}</a>
+                    by <a href="{{ $collection->actor->url() }}" class="text-muted" target="_blank" rel="noopener">{{ $collection->actor->username }}</a>
                     &middot;
                     @endif
                     added {{ $collection->created_at->diffForHumans() }}
