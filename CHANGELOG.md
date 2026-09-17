@@ -1,8 +1,11 @@
 # Release Notes
 
-## [Unreleased](https://github.com/pixelfed/pixelfed/compare/v0.12.13...dev)
+## [Unreleased](https://github.com/pixelfed/pixelfed/compare/v0.13.1...dev)
 
 -   in progress
+
+## [v0.13.0 (2026-09-17)](https://github.com/pixelfed/pixelfed/compare/v0.13.0...dev)
+This release includes the initial support for FeaturedCollections, and a few bug fixes.
 
 ## [v0.12.12 (2026-09-16)](https://github.com/pixelfed/pixelfed/compare/v0.12.12...dev)
 This fixes the language regression from 0.12.11. plus refactors Captchas, and fixes a few bugs.
