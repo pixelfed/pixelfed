@@ -6,7 +6,7 @@ use App\Http\Controllers\AdminCuratedRegisterController;
 use App\Http\Controllers\AdminShadowFilterController;
 use App\Http\Controllers\PageController;
 
-Route::domain(config('pixelfed.domain.admin'))->prefix('i/admin')->group(function () {
+Route::domain(config('pixelfed.domain.admin'))->prefix('i/admin')->middleware(['localization'])->group(function () {
     Route::redirect('/', '/dashboard');
     Route::redirect('timeline', config('app.url').'/timeline');
     Route::get('settings/custom-css', [AdminController::class, 'customCss'])->name('admin.custom-css');

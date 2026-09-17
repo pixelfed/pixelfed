@@ -26,7 +26,9 @@
         "clickHere": "Clicatz aic\u00ed",
         "sensitive": "Sensible",
         "sensitiveContent": "Contengut sensible",
-        "sensitiveContentWarning": "Lo contengut d'aquela publicacion poiri\u00e1 \u00e8sser sensibla"
+        "sensitiveContentWarning": "Lo contengut d'aquela publicacion poiri\u00e1 \u00e8sser sensibla",
+        "loading": "Cargament...",
+        "continue": "Contunhar"
     },
     "site": {
         "terms": "Condicions d'utilizacion",
@@ -46,6 +48,7 @@
         "profile": "Perfil",
         "drive": "N\u00edvol",
         "settings": "Param\u00e8tres",
+        "appearance": "Apar\u00e9ncia",
         "compose": "Apondre",
         "logout": "Desconnexion",
         "about": "A prepaus",
@@ -61,6 +64,7 @@
         "requests": "Requ\u00e8stas"
     },
     "notifications": {
+        "title": "Notificacions",
         "liked": "a aimat v\u00f2stra",
         "commented": "a comentat v\u00f2stra",
         "reacted": "a reagit a v\u00f2stra",
