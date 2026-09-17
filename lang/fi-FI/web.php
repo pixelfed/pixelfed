@@ -319,7 +319,7 @@ return [
             'partial_word' => 'Osittainen sana',
             'duplicate_not_allowed' => 'Samaa avainsanaa ei voi lisätä useita kertoja',
             'filter_action' => 'Suodattimen toiminto',
-            'hide_media_blur' => 'Piilota media sumennuksen taakse',
+            'hide_media_blur' => '',
             'show_warning' => 'Näytä varoitus ennen sisällön näyttämistä',
             'hide_content_completely' => 'Piilota sisältö kokonaan',
             'apply_filters_to' => 'Käytä suodattimia kohteissa',
