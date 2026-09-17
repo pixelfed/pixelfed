@@ -131,6 +131,10 @@ class TransformImports extends Command
             foreach ($ip->media as $ipm) {
                 $fileName = last(explode('/', $ipm['uri']));
                 $ext = last(explode('.', $fileName));
+                $ext = strtolower(last(explode('.', $fileName)));
+                if (! in_array($ext, ['jpg', 'jpeg', 'png', 'webp', 'mp4'], true)) {
+                    continue;
+                }
                 $basePath = MediaPathService::get($profile);
                 $og = 'imports/'.$id.'/'.$fileName;
                 if (! $disk->exists($og)) {

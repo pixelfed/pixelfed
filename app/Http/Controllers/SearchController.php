@@ -37,7 +37,7 @@ class SearchController extends Controller
      */
     protected function likeOperator(): string
     {
-        return config('database.default') === 'pgsql' ? 'ilike' : 'like';
+        return db_is_pgsql() ? 'ilike' : 'like';
     }
 
     public function searchAPI(Request $request): JsonResponse

@@ -37,6 +37,7 @@ use App\Observers\UserObserver;
 use App\Policies\CustomFilterPolicy;
 use App\Services\AccountService;
 use App\Services\UserOidcService;
+use App\Util\Localization\EmptyStrippingFileLoader;
 use Illuminate\Auth\Events\Failed;
 use Illuminate\Auth\Events\Login;
 use Illuminate\Cache\RateLimiting\Limit;
@@ -202,12 +203,15 @@ class AppServiceProvider extends ServiceProvider
             'admin:write' => 'Modify all data on the server',
             'admin:write:domain_blocks' => 'Perform moderation actions on domain blocks',
             'push' => 'Receive your push notifications',
+            'security:read' => 'See which apps and devices have access to your account',
+            'security:write' => 'Change your password and revoke access for other apps and devices',
         ]);
 
-        Passport::setDefaultScope([
+        Passport::defaultScopes([
             'read',
             'write',
             'follow',
+            'push',
         ]);
 
         URL::forceRootUrl(config('app.url'));
@@ -229,6 +233,16 @@ class AppServiceProvider extends ServiceProvider
 
         $this->app->bind(UserOidcService::class, function () {
             return UserOidcService::build();
+        });
+
+        // Swap the translation loader so empty (untranslated) strings are
+        // dropped at load time. This lets Laravel fall back to the fallback
+        // locale for partially-translated locales instead of rendering blanks.
+        $this->app->extend('translation.loader', function ($loader, $app) {
+            return new EmptyStrippingFileLoader(
+                $app['files'],
+                $app['path.lang']
+            );
         });
     }
 }

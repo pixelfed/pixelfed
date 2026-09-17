@@ -41,11 +41,6 @@ class StatusDedupe extends Command
     public function handle()
     {
 
-        if (config('database.default') == 'pgsql') {
-            $this->info('This command is not compatible with Postgres, we are working on a fix.');
-
-            return;
-        }
         // Deterministically keep the earliest-fetched status per uri via
         // MIN(id). Selecting a non-aggregated id under GROUP BY is
         // nondeterministic and cannot be influenced by ORDER BY, so the
@@ -55,7 +50,7 @@ class StatusDedupe extends Command
             ->whereNull('deleted_at')
             ->whereNotNull('uri')
             ->groupBy('uri')
-            ->having('occurences', '>', 1)
+            ->havingRaw('count(uri) > 1')
             ->orderBy('uri')
             ->chunk(50, function ($statuses) {
                 foreach ($statuses as $status) {

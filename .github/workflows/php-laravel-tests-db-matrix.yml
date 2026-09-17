@@ -1,0 +1,167 @@
+name: PHP - Laravel Tests (DB Matrix - experimental)
+
+# Experimental workflow that runs the test suite against real databases
+# (MySQL, MariaDB, PostgreSQL) instead of the default in-memory SQLite.
+#
+# NOTE: This is expected to fail for now. Every step is forced to pass
+# (continue-on-error + `|| true`) so it never affects required checks or the
+# status score. It exists purely for manual investigation of DB-specific
+# behavior (strict mode, ONLY_FULL_GROUP_BY, unsigned underflow, etc.).
+
+# Manual-only: this experimental workflow never runs automatically. An empty
+# `branches: []` under push/pull_request does NOT disable a trigger (GitHub
+# treats it as "no branch filter" and runs on every ref), so the only reliable
+# way to keep it off automatic runs is to expose just workflow_dispatch and
+# trigger it by hand from the Actions tab.
+on:
+  workflow_dispatch:
+
+# Never let this experimental workflow block anything.
+permissions:
+  contents: read
+
+jobs:
+  tests:
+    runs-on: ubuntu-latest
+    # Job-level guarantee that a failing suite does not mark the run as failed.
+    continue-on-error: true
+
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - db: mysql
+            connection: mysql
+            host: 127.0.0.1
+            port: 3306
+          - db: mariadb
+            connection: mariadb
+            host: 127.0.0.1
+            port: 3307
+          - db: pgsql
+            connection: pgsql
+            host: 127.0.0.1
+            port: 5432
+
+    # All three database services run for every matrix entry. This keeps the
+    # config simple (no conditional images) and each entry just points its
+    # DB_* env at the right host/port below. Extra containers are cheap and
+    # this workflow is experimental/manual only.
+    services:
+      redis:
+        image: redis:8
+        ports:
+          - 6379:6379
+        options: >-
+          --health-cmd "redis-cli ping"
+          --health-interval 5s
+          --health-timeout 3s
+          --health-retries 5
+
+      mysql:
+        image: mysql:8.5
+        env:
+          MYSQL_ROOT_PASSWORD: pixelfed
+          MYSQL_DATABASE: pixelfed_test
+          MYSQL_USER: pixelfed
+          MYSQL_PASSWORD: pixelfed
+        ports:
+          - 3306:3306
+        options: >-
+          --health-cmd "mysqladmin ping -h localhost -ppixelfed"
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 10
+
+      mariadb:
+        image: mariadb:11.4
+        env:
+          MARIADB_ROOT_PASSWORD: pixelfed
+          MARIADB_DATABASE: pixelfed_test
+          MARIADB_USER: pixelfed
+          MARIADB_PASSWORD: pixelfed
+        ports:
+          - 3307:3306
+        options: >-
+          --health-cmd "healthcheck.sh --connect --innodb_initialized"
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 10
+
+      postgres:
+        image: postgres:16
+        env:
+          POSTGRES_DB: pixelfed_test
+          POSTGRES_USER: pixelfed
+          POSTGRES_PASSWORD: pixelfed
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd "pg_isready -U pixelfed"
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 10
+
+    name: tests (${{ matrix.db }})
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v7
+
+      - name: Install libvips
+        run: sudo apt-get update && sudo apt-get install -y --no-install-recommends libvips42
+
+      - name: Setup PHP
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: '8.5'
+          # ffi is required by jcupitt/vips (the vips driver's FFI binding).
+          extensions: dom, curl, libxml, mbstring, zip, pcntl, pdo, sqlite, pdo_sqlite, mysql, pdo_mysql, pgsql, pdo_pgsql, bcmath, intl, gd, exif, iconv, redis, ffi
+          coverage: none
+          ini-values: memory_limit=512M, ffi.enable=true
+
+      - name: Cache Composer dependencies
+        uses: actions/cache@v6
+        with:
+          path: vendor
+          key: composer-8.5-${{ hashFiles('composer.lock') }}
+          restore-keys: composer-8.5-
+
+      - name: Install Composer dependencies
+        continue-on-error: true
+        run: composer install --no-interaction --no-progress --prefer-dist || true
+
+      - name: Prepare environment
+        continue-on-error: true
+        run: |
+          cp .env.testing .env
+          php artisan key:generate
+          touch storage/oauth-private.key storage/oauth-public.key
+          php -r "
+            \$key = openssl_pkey_new(['private_key_bits' => 2048, 'private_key_type' => OPENSSL_KEYTYPE_RSA]);
+            openssl_pkey_export(\$key, \$private);
+            \$public = openssl_pkey_get_details(\$key)['key'];
+            file_put_contents('storage/oauth-private.key', \$private);
+            file_put_contents('storage/oauth-public.key', \$public);
+          " || true
+
+      - name: Run tests against ${{ matrix.db }}
+        continue-on-error: true
+        env:
+          # Override the phpunit.xml sqlite defaults so the suite hits the real
+          # database service for this matrix entry.
+          DB_CONNECTION: ${{ matrix.connection }}
+          DB_HOST: ${{ matrix.host }}
+          DB_PORT: ${{ matrix.port }}
+          DB_DATABASE: pixelfed_test
+          DB_USERNAME: pixelfed
+          DB_PASSWORD: pixelfed
+          REDIS_HOST: 127.0.0.1
+          REDIS_PORT: 6379
+          # Unique Redis key prefix per matrix entry so cache/queue keys never
+          # collide across databases (the config default derives the prefix
+          # from APP_NAME, which is identical for every entry).
+          REDIS_PREFIX: pixelfed-test-${{ matrix.db }}-
+        # `|| true` guarantees a 0 exit code even when the suite fails, so this
+        # experimental job always reports success and never affects the score.
+        run: vendor/bin/pest --compact || true

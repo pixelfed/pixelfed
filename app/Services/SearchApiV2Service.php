@@ -99,7 +99,7 @@ class SearchApiV2Service
                 )
             );
         }
-        $operator = config('database.default') === 'pgsql' ? 'ilike' : 'like';
+        $operator = db_is_pgsql() ? 'ilike' : 'like';
         $results = Profile::select('username', 'id', 'followers_count', 'domain')
             ->where('username', $operator, $query)
             ->orWhere('webfinger', $operator, $webfingerQuery)
@@ -132,7 +132,7 @@ class SearchApiV2Service
         $query = Str::startsWith($q, '#') ? substr($q, 1) : $q;
         $query = $query.'%';
 
-        if (config('database.default') === 'pgsql') {
+        if (db_is_pgsql()) {
             $baseQuery = Hashtag::query()
                 ->where('name', 'ilike', $query)
                 ->where('is_banned', false)

@@ -9,10 +9,19 @@ use App\Models\User;
 use App\Services\ImportService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
+use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\Log;
 
 class ImportPostController extends Controller
 {
+    public const ALLOWED_EXTENSIONS = [
+        'image/jpeg' => ['jpg', 'jpeg'],
+        'image/jpg' => ['jpg', 'jpeg'],
+        'image/png' => ['png'],
+        'image/webp' => ['webp'],
+        'video/mp4' => ['mp4'],
+    ];
+
     public function __construct()
     {
         $this->middleware('auth');
@@ -223,6 +232,20 @@ class ImportPostController extends Controller
                 'file',
                 $mimes,
                 'max:'.config_cache('pixelfed.max_photo_size'),
+                function ($attribute, $value, $fail) {
+                    if (! $value instanceof UploadedFile) {
+                        $fail('The '.$attribute.' must be a file.');
+
+                        return;
+                    }
+
+                    $mime = $value->getMimeType();
+                    $ext = strtolower($value->getClientOriginalExtension());
+
+                    if (! in_array($ext, self::ALLOWED_EXTENSIONS[$mime] ?? [], true)) {
+                        $fail('The '.$attribute.' extension does not match its content.');
+                    }
+                },
             ],
         ]);
 

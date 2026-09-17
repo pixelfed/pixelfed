@@ -16,8 +16,9 @@ class ConfigCacheService
         'filesystems.disks.s3.secret',
         'filesystems.disks.spaces.key',
         'filesystems.disks.spaces.secret',
-        'captcha.secret',
-        'captcha.sitekey',
+        'captcha.hcaptcha.secret',
+        'captcha.turnstile.secret',
+        'captcha.cap.secret',
     ];
 
     public static function get($key)
@@ -103,12 +104,20 @@ class ConfigCacheService
                     'instance.embed.post',
 
                     'captcha.enabled',
-                    'captcha.secret',
-                    'captcha.sitekey',
+                    'captcha.driver',
+                    'captcha.hcaptcha.secret',
+                    'captcha.hcaptcha.sitekey',
+                    'captcha.turnstile.secret',
+                    'captcha.turnstile.sitekey',
+                    'captcha.cap.endpoint',
+                    'captcha.cap.sitekey',
+                    'captcha.cap.secret',
                     'captcha.active.login',
                     'captcha.active.register',
-                    'captcha.triggers.login.enabled',
-                    'captcha.triggers.login.attempts',
+                    'captcha.active.forgot_password',
+                    'captcha.active.password_reset',
+                    'captcha.active.forgot_email',
+                    'captcha.active.curated_register',
                     'federation.custom_emoji.enabled',
 
                     'pixelfed.optimize_image',

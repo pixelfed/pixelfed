@@ -93,7 +93,7 @@ class StatusTagsPipeline implements ShouldQueue
                     }
                 }
 
-                if (config('database.default') === 'pgsql') {
+                if (db_is_pgsql()) {
                     $hashtag = DB::transaction(function () use ($name) {
                         $slug = Str::slug($name, '-', false);
 

@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "3f633d0360fdebf0d6600d0739acca54",
+    "content-hash": "d6359826d0784c33bb38684d5f85a05b",
     "packages": [
         {
             "name": "aws/aws-crt-php",
@@ -271,66 +271,6 @@
                 }
             ],
             "time": "2026-02-10T14:33:43+00:00"
-        },
-        {
-            "name": "buzz/laravel-h-captcha",
-            "version": "v1.0.7",
-            "source": {
-                "type": "git",
-                "url": "https://github.com/thinhbuzz/laravel-h-captcha.git",
-                "reference": "94f1e092411ef25e326f524a2f63512ee94a8dc5"
-            },
-            "dist": {
-                "type": "zip",
-                "url": "https://api.github.com/repos/thinhbuzz/laravel-h-captcha/zipball/94f1e092411ef25e326f524a2f63512ee94a8dc5",
-                "reference": "94f1e092411ef25e326f524a2f63512ee94a8dc5",
-                "shasum": ""
-            },
-            "require": {
-                "guzzlehttp/guzzle": "6.*|7.*",
-                "illuminate/support": "5.*|6.*|7.*|8.*|9.*|10.*|11.*|12.*|^13.0",
-                "php": ">=5.4.0"
-            },
-            "type": "library",
-            "extra": {
-                "laravel": {
-                    "aliases": {
-                        "Captcha": "Buzz\\LaravelHCaptcha\\CaptchaFacade"
-                    },
-                    "providers": [
-                        "Buzz\\LaravelHCaptcha\\CaptchaServiceProvider"
-                    ]
-                }
-            },
-            "autoload": {
-                "psr-4": {
-                    "Buzz\\LaravelHCaptcha\\": "src"
-                }
-            },
-            "notification-url": "https://packagist.org/downloads/",
-            "license": [
-                "MIT"
-            ],
-            "authors": [
-                {
-                    "name": "ThinhBuzz",
-                    "email": "mr.thinhbuzz@gmail.com",
-                    "homepage": "https://www.facebook.com/thinh.buzz"
-                }
-            ],
-            "description": "hCaptcha for Laravel",
-            "homepage": "https://github.com/thinhbuzz/laravel-h-captcha",
-            "keywords": [
-                "captcha",
-                "h-captcha",
-                "hcaptcha",
-                "laravel"
-            ],
-            "support": {
-                "issues": "https://github.com/thinhbuzz/laravel-h-captcha/issues",
-                "source": "https://github.com/thinhbuzz/laravel-h-captcha/tree/v1.0.7"
-            },
-            "time": "2026-08-06T14:58:56+00:00"
         },
         {
             "name": "carbonphp/carbon-doctrine-types",
@@ -1821,16 +1761,16 @@
         },
         {
             "name": "intervention/image-driver-vips",
-            "version": "4.1.4",
+            "version": "4.1.5",
             "source": {
                 "type": "git",
                 "url": "https://github.com/Intervention/image-driver-vips.git",
-                "reference": "a097cc1fa54f2e3f651dffd70a1414c6ba1f21e6"
+                "reference": "e4c8e16714d46919b26163d3be067fb75d348671"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/Intervention/image-driver-vips/zipball/a097cc1fa54f2e3f651dffd70a1414c6ba1f21e6",
-                "reference": "a097cc1fa54f2e3f651dffd70a1414c6ba1f21e6",
+                "url": "https://api.github.com/repos/Intervention/image-driver-vips/zipball/e4c8e16714d46919b26163d3be067fb75d348671",
+                "reference": "e4c8e16714d46919b26163d3be067fb75d348671",
                 "shasum": ""
             },
             "require": {
@@ -1875,7 +1815,7 @@
             ],
             "support": {
                 "issues": "https://github.com/Intervention/image-driver-vips/issues",
-                "source": "https://github.com/Intervention/image-driver-vips/tree/4.1.4"
+                "source": "https://github.com/Intervention/image-driver-vips/tree/4.1.5"
             },
             "funding": [
                 {
@@ -1891,7 +1831,7 @@
                     "type": "ko_fi"
                 }
             ],
-            "time": "2026-08-28T14:13:06+00:00"
+            "time": "2026-09-09T15:00:13+00:00"
         },
         {
             "name": "intervention/image-laravel",
@@ -4440,16 +4380,16 @@
         },
         {
             "name": "nesbot/carbon",
-            "version": "3.13.2",
+            "version": "3.14.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/CarbonPHP/carbon.git",
-                "reference": "a1c54919f5fff9800cd03c32bd01defd5a4061cb"
+                "reference": "0023eaa2c9110e47446dd512a263c69c40cd41f2"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/CarbonPHP/carbon/zipball/a1c54919f5fff9800cd03c32bd01defd5a4061cb",
-                "reference": "a1c54919f5fff9800cd03c32bd01defd5a4061cb",
+                "url": "https://api.github.com/repos/CarbonPHP/carbon/zipball/0023eaa2c9110e47446dd512a263c69c40cd41f2",
+                "reference": "0023eaa2c9110e47446dd512a263c69c40cd41f2",
                 "shasum": ""
             },
             "require": {
@@ -4541,7 +4481,7 @@
                     "type": "tidelift"
                 }
             ],
-            "time": "2026-08-08T11:40:35+00:00"
+            "time": "2026-09-12T20:45:19+00:00"
         },
         {
             "name": "nette/schema",
@@ -6673,26 +6613,28 @@
         },
         {
             "name": "resend/resend-php",
-            "version": "v0.13.0",
+            "version": "v1.14.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/resend/resend-php.git",
-                "reference": "c74926e34472fe3e3e21f150f3e3ce56fcbf8298"
+                "reference": "9751fa31d099cf6a4eb172535e826636b87c932c"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/resend/resend-php/zipball/c74926e34472fe3e3e21f150f3e3ce56fcbf8298",
-                "reference": "c74926e34472fe3e3e21f150f3e3ce56fcbf8298",
+                "url": "https://api.github.com/repos/resend/resend-php/zipball/9751fa31d099cf6a4eb172535e826636b87c932c",
+                "reference": "9751fa31d099cf6a4eb172535e826636b87c932c",
                 "shasum": ""
             },
             "require": {
-                "guzzlehttp/guzzle": "^7.5",
-                "php": "^8.1.0"
+                "guzzlehttp/guzzle": "^7.8.2 || ^8.0",
+                "guzzlehttp/psr7": "^2.6.3 || ^3.0",
+                "php": "^8.1.0",
+                "psr/http-client": "^1.0"
             },
             "require-dev": {
                 "friendsofphp/php-cs-fixer": "^3.13",
                 "mockery/mockery": "^1.6",
-                "pestphp/pest": "^2.0"
+                "pestphp/pest": "^1.0|^2.0|^3.0|^4.0|^5.0"
             },
             "type": "library",
             "autoload": {
@@ -6724,9 +6666,9 @@
             ],
             "support": {
                 "issues": "https://github.com/resend/resend-php/issues",
-                "source": "https://github.com/resend/resend-php/tree/v0.13.0"
+                "source": "https://github.com/resend/resend-php/tree/v1.14.0"
             },
-            "time": "2024-08-15T03:27:29+00:00"
+            "time": "2026-09-09T19:48:04+00:00"
         },
         {
             "name": "spatie/db-dumper",
@@ -11737,16 +11679,16 @@
         },
         {
             "name": "larastan/larastan",
-            "version": "v3.11.0",
+            "version": "v3.12.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/larastan/larastan.git",
-                "reference": "9baa74074f17cc70feaef31616a06ea0faeebba5"
+                "reference": "ab26fdf90d84877061388109e1e251f67ca3ff7a"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/larastan/larastan/zipball/9baa74074f17cc70feaef31616a06ea0faeebba5",
-                "reference": "9baa74074f17cc70feaef31616a06ea0faeebba5",
+                "url": "https://api.github.com/repos/larastan/larastan/zipball/ab26fdf90d84877061388109e1e251f67ca3ff7a",
+                "reference": "ab26fdf90d84877061388109e1e251f67ca3ff7a",
                 "shasum": ""
             },
             "require": {
@@ -11814,7 +11756,7 @@
             ],
             "support": {
                 "issues": "https://github.com/larastan/larastan/issues",
-                "source": "https://github.com/larastan/larastan/tree/v3.11.0"
+                "source": "https://github.com/larastan/larastan/tree/v3.12.0"
             },
             "funding": [
                 {
@@ -11822,20 +11764,20 @@
                     "type": "github"
                 }
             ],
-            "time": "2026-09-01T16:35:48+00:00"
+            "time": "2026-09-10T09:06:54+00:00"
         },
         {
             "name": "laravel/pint",
-            "version": "v1.31.1",
+            "version": "v1.32.1",
             "source": {
                 "type": "git",
                 "url": "https://github.com/laravel/pint.git",
-                "reference": "b136cebaf0b3f7d288bdafad5088858d082580aa"
+                "reference": "006bd7825eb01daf92959d060b89cd9514fe4253"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/laravel/pint/zipball/b136cebaf0b3f7d288bdafad5088858d082580aa",
-                "reference": "b136cebaf0b3f7d288bdafad5088858d082580aa",
+                "url": "https://api.github.com/repos/laravel/pint/zipball/006bd7825eb01daf92959d060b89cd9514fe4253",
+                "reference": "006bd7825eb01daf92959d060b89cd9514fe4253",
                 "shasum": ""
             },
             "require": {
@@ -11892,7 +11834,7 @@
                 "issues": "https://github.com/laravel/pint/issues",
                 "source": "https://github.com/laravel/pint"
             },
-            "time": "2026-09-08T17:10:00+00:00"
+            "time": "2026-09-10T10:47:55+00:00"
         },
         {
             "name": "laravel/telescope",
@@ -12932,11 +12874,11 @@
         },
         {
             "name": "phpstan/phpstan",
-            "version": "2.2.13",
+            "version": "2.2.14",
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/phpstan/phpstan/zipball/9ba9ac76ee9c5cf5b56d58eb5deec6315b7a0260",
-                "reference": "9ba9ac76ee9c5cf5b56d58eb5deec6315b7a0260",
+                "url": "https://api.github.com/repos/phpstan/phpstan/zipball/9c672e7a8e791dfc3d30e55f683e73fc0b63a3ac",
+                "reference": "9c672e7a8e791dfc3d30e55f683e73fc0b63a3ac",
                 "shasum": ""
             },
             "require": {
@@ -12992,7 +12934,7 @@
                     "type": "github"
                 }
             ],
-            "time": "2026-09-03T20:38:19+00:00"
+            "time": "2026-09-12T21:39:33+00:00"
         },
         {
             "name": "phpunit/php-code-coverage",

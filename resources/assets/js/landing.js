@@ -252,34 +252,20 @@ const store = new Vuex.Store({
 	},
 });
 
-let i18nMessages = {
-	en: require('./i18n/en.json'),
-	ar: require('./i18n/ar.json'),
-	ca: require('./i18n/ca.json'),
-	de: require('./i18n/de.json'),
-	el: require('./i18n/el.json'),
-	es: require('./i18n/es.json'),
-	eu: require('./i18n/eu.json'),
-	fr: require('./i18n/fr.json'),
-	he: require('./i18n/he.json'),
-	gd: require('./i18n/gd.json'),
-	gl: require('./i18n/gl.json'),
-	id: require('./i18n/id.json'),
-	it: require('./i18n/it.json'),
-	ja: require('./i18n/ja.json'),
-	nl: require('./i18n/nl.json'),
-	pl: require('./i18n/pl.json'),
-	pt: require('./i18n/pt.json'),
-	ru: require('./i18n/ru.json'),
-	uk: require('./i18n/uk.json'),
-	vi: require('./i18n/vi.json'),
-};
+// Load every locale JSON in ./i18n/ automatically, keyed by locale code
+// (the filename, e.g. en-US, ca-ES). New languages are picked up on rebuild.
+let i18nMessages = {};
+const i18nContext = require.context('./i18n', false, /\.json$/);
+i18nContext.keys().forEach((key) => {
+	const locale = key.replace(/^\.\//, '').replace(/\.json$/, '');
+	i18nMessages[locale] = i18nContext(key);
+});
 
 let locale = document.querySelector('html').getAttribute('lang');
 
 const i18n = new VueI18n({
   locale: locale, // set locale
-  fallbackLocale: 'en',
+  fallbackLocale: 'en-US',
   messages: i18nMessages
 });
 

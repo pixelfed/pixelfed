@@ -5,6 +5,7 @@ namespace App\Console\Commands\User;
 use App\Models\Instance;
 use App\Models\Profile;
 use App\Models\User;
+use App\Services\AccountRevocationService;
 use App\Util\ActivityPub\HttpSignature;
 use Illuminate\Console\Command;
 use Illuminate\Http\Client\PendingRequest;
@@ -47,6 +48,8 @@ class UserAccountDelete extends Command
         }
 
         $this->showUserSummary($user);
+
+        AccountRevocationService::revokeAll($user);
 
         $confirmed = confirm(
             label: 'Do you want to federate this account deletion?',

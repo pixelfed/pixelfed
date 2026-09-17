@@ -90,11 +90,7 @@
                             </div>
                         </div>
 
-                        @if((bool) config_cache('captcha.enabled'))
-                        <div class="d-flex justify-content-center my-3">
-                            {!! Captcha::display() !!}
-                        </div>
-                        @endif
+                        <x-captcha surface="register" />
 
                         <p class="small">By signing up, you agree to our <a href="{{route('site.terms')}}" class="font-weight-bold text-dark">Terms of Use</a> and <a href="{{route('site.privacy')}}" class="font-weight-bold text-dark">Privacy Policy</a>, in addition, you understand that your account is managed by <span class="font-weight-bold">{{ $pc->parent->username }}</span> and they can limit your account without your permission. For more details, view the <a href="/site/kb/parental-controls" class="text-dark font-weight-bold">Parental Controls</a> help center page.</p>
 

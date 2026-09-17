@@ -75,7 +75,7 @@ class AdminStatsService
 
     protected static function recentData()
     {
-        $day = config('database.default') == 'pgsql' ? 'DATE_PART(\'day\',' : 'day(';
+        $day = db_is_pgsql() ? 'DATE_PART(\'day\',' : 'day(';
         $ttl = now()->addMinutes(15);
 
         return Cache::remember('admin:dashboard:home:data:v0:15min', $ttl, function () {
@@ -126,7 +126,7 @@ class AdminStatsService
         $ttl = now()->addHours(12);
 
         return Cache::remember('admin:dashboard:home:data-postsGraph:v0.1:24hr', $ttl, function () {
-            $gb = config('database.default') == 'pgsql' ? ['statuses.id', 'created_at'] : DB::raw('Date(created_at)');
+            $gb = db_is_pgsql() ? ['statuses.id', 'created_at'] : DB::raw('Date(created_at)');
             $s = Status::selectRaw('Date(created_at) as date, count(statuses.id) as count')
                 ->where('created_at', '>=', now()->subWeek())
                 ->groupBy($gb)

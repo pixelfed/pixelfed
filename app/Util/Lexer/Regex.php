@@ -162,9 +162,18 @@ abstract class Regex
         //      look-ahead capture here and don't append $after when we return.
         $tmp['valid_mention_preceding_chars'] = '([^a-zA-Z0-9_!#\$%&*@＠\/]|^|(?:^|[^a-z0-9_+~.-])RT:?)';
 
-        $re['valid_mentions_or_lists'] = '/'.$tmp['valid_mention_preceding_chars'].'(['.$tmp['at_signs'].'])([\p{L}0-9_\-.]{1,20})((\/[a-z][a-z0-9_\-]{0,24})?(?=(.*|$))(?:@[a-z0-9\.\-]+[a-z0-9]+)?)/iu';
+        // Local part (the username before any @domain) capped at 64. Local
+        // Pixelfed usernames max at 30 (RegisterController: max:30), but a
+        // REMOTE handle's username comes from other software and can be longer;
+        // the profiles.username column stores the full "@user@domain" as a
+        // VARCHAR(255). A cap that is too small does not fail cleanly, it
+        // matches the first N chars and drops the "@domain" suffix, turning a
+        // remote mention into a broken local one (#7204). 64 comfortably covers
+        // remote usernames while still bounding the pattern. The trailing
+        // "@domain" group below is matched separately and is not length-capped.
+        $re['valid_mentions_or_lists'] = '/'.$tmp['valid_mention_preceding_chars'].'(['.$tmp['at_signs'].'])([\p{L}0-9_\-.]{1,64})((\/[a-z][a-z0-9_\-]{0,24})?(?=(.*|$))(?:@[a-z0-9\.\-]+[a-z0-9]+)?)/iu';
 
-        $re['valid_reply'] = '/^(?:['.$tmp['spaces'].'])*['.$tmp['at_signs'].']([a-z0-9_\-.]{1,20})(?=(.*|$))/iu';
+        $re['valid_reply'] = '/^(?:['.$tmp['spaces'].'])*['.$tmp['at_signs'].']([a-z0-9_\-.]{1,64})(?=(.*|$))/iu';
         $re['end_mention_match'] = '/\A(?:['.$tmp['at_signs'].']|['.$tmp['latin_accents'].']|:\/\/)/iu';
 
         // URL related hash regex collection
