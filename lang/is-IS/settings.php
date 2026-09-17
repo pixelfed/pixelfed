@@ -83,9 +83,9 @@ return [
 
     'privacy.privacy_settings' => 'Stillingar á friðhelgi',
     'privacy.private_account' => 'Einkaaðgangur',
-    'privacy.when_your_account_is_private_only_people_you_etc' => '',
+    'privacy.when_your_account_is_private_only_people_you_etc' => 'Þegar aðgangurinn þinn er einkaaðgangur, þá mun einungis fólk sem þú hefur samþykkt geta séð ljósmyndirnar þínar og myndskeið í Pixelfed. Þetta hefur ekki áhrif á þá sem þegar fylgjast með þér.',
     'privacy.disable_search_engine_indexing' => 'Gera atriðaskráningu í leitarvélum óvirka',
-    'privacy.when_your_account_is_visible_to_search_engines_etc' => '',
+    'privacy.when_your_account_is_visible_to_search_engines_etc' => 'Þegar aðgangurinn þinn er sýnilegur fyrir leitarvélar, þá geta leitarvélar skrapað og geymt upplýsingarnar þínar.',
     'privacy.not_available_when_your_account_is_private' => 'Ekki tiltækt þegar aðgangurinn þinn er einka',
     'privacy.include_public_posts_in_search_results' => 'Hafa opinberar færslur með í leitarniðurstöðum',
     'privacy.your_public_posts_may_appear_in_search_results_etc' => 'Opinberar færslur þínar gætu birst í leitarniðurstöðum á Pixelfed og Mastodon. Fólk sem hefur haft afskipti af færslunum mun eftir sem áður geta leitað í þeim.',
@@ -147,7 +147,7 @@ return [
     'security.enabled' => 'Virkt',
     'security.danger_zone' => 'Hættusvæði',
     'security.temporarily_disable_account' => 'Tímabundið gera aðgang óvirkan',
-    'security.disable_your_account_to_hide_your_posts_until_next_log_in' => '',
+    'security.disable_your_account_to_hide_your_posts_until_next_log_in' => 'Gerðu aðganginn þinn óvirkan til að fela færslurnar þínar þar til þú skráir þig næst inn.',
     'security.disable' => 'Gera óvirkan',
     'security.delete_this_account' => 'Eyða þessum aðgangi',
     'security.once_you_delete_your_account_there_is_no_going_back_etc' => 'Þegar þú hefur eytt aðgangnum þínum er engin leið til baka. Vertu alveg viss.',
@@ -183,7 +183,7 @@ return [
     'import.import_from_instagram' => 'Flytja inn frá Instagram',
 
     'export.data_export' => 'Útflutningur gagna',
-    'export.we_generate_data_exports_once_per_hour_and_they_may_etc' => '',
+    'export.we_generate_data_exports_once_per_hour_and_they_may_etc' => 'Við flytjum út gögn á klukkustundar fresti, þau geta því ekki innihaldið allra nýjustu upplýsingarnar ef þú hefur beðið um þau nýlega.',
     'export.statuses' => 'Stöður',
     'export.mute_block_lists' => 'Listi yfir þaggað/bannað',
 
