@@ -2,34 +2,34 @@
 
 return [
 
-    'verifyYourEmailAddress' => '',
-    'loginTitle' => '',
+    'verifyYourEmailAddress' => ' - Verifikasikan Alamat Email Anda',
+    'loginTitle' => 'Masuk ke Akun',
     'failed' => 'Kredensial ini tidak cocok dengan data kami.',
     'throttle' => 'Terlalu banyak percobaan login. Coba lagi setelah :seconds detik.',
-    'password' => '',
-    'remember' => '',
-    'forgot' => '',
-    'login' => '',
+    'password' => 'Kata Sandi',
+    'remember' => 'Ingat Saya',
+    'forgot' => 'Lupa Kata Sandi',
+    'login' => 'Masuk',
 
-    'register' => '',
-    'reset' => '',
+    'register' => 'Daftar',
+    'reset' => 'Atur Ulang Kata Sandi',
 
-    'name' => '',
-    'username' => '',
-    'confirm-password' => '',
+    'name' => 'Nama',
+    'username' => 'Nama Pengguna',
+    'confirm-password' => 'Konfirmasi Kata Sandi',
 
-    'age' => '',
-    'terms' => ''.route('site.terms').''.route('site.privacy').'',
+    'age' => 'Saya berumur 16 tahun keatas',
+    'terms' => 'Dengan mendaftar, anda menyetujui <a href="'.route('site.terms').'" class="font-weight-bold text-dark">Ketentuan Pengguna</a> dan <a href="'.route('site.privacy').'" class="font-weight-bold text-dark">Kebijakan Privasi</a>.',
 
-    'emailAddress' => '',
-    'email' => '',
-    'forgotEmail' => '',
+    'emailAddress' => 'Alamat E-mail',
+    'email' => 'E-mail',
+    'forgotEmail' => 'Lupa E-mail',
 
-    'registerTitle' => '',
+    'registerTitle' => 'Mendaftar akun baru',
 
-    'sendReset' => '',
-    'backLogin' => '',
+    'sendReset' => 'Kirim Tautan Reset Password',
+    'backLogin' => 'Kembali ke Login',
 
-    'signInMastodon' => '',
+    'signInMastodon' => 'Lanjutkan dengan Mastodon',
 
 ];

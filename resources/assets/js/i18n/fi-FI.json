@@ -277,7 +277,6 @@
             "partial_word": "Osittainen sana",
             "duplicate_not_allowed": "Samaa avainsanaa ei voi lis\u00e4t\u00e4 useita kertoja",
             "filter_action": "Suodattimen toiminto",
-            "hide_media_blur": "Piilota media sumennuksen taakse",
             "show_warning": "N\u00e4yt\u00e4 varoitus ennen sis\u00e4ll\u00f6n n\u00e4ytt\u00e4mist\u00e4",
             "hide_content_completely": "Piilota sis\u00e4lt\u00f6 kokonaan",
             "apply_filters_to": "K\u00e4yt\u00e4 suodattimia kohteissa",
