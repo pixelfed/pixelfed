@@ -204,6 +204,7 @@ class Profile extends Model
                 if (substr($avatar->cdn_url, 0, 8) === 'https://') {
                     return $avatar->cdn_url;
                 }
+
                 return url('/storage/avatars/default.jpg');
             }
 

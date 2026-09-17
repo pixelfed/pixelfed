@@ -70,6 +70,7 @@ class CustomEmoji extends Model
                             ],
                         ];
                     }
+
                     return [
                         'shortcode' => $match,
                         'url' => $url,
@@ -82,6 +83,7 @@ class CustomEmoji extends Model
                 if ($activitypub == true) {
                     return $tag && isset($tag['icon']);
                 }
+
                 return $tag && isset($tag['static_url']);
             })
             ->values()

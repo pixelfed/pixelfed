@@ -183,6 +183,7 @@ class AdminInviteController extends Controller
 
             return redirect()->intended('/');
         }
+
         return response()->json([], 400);
     }
 }

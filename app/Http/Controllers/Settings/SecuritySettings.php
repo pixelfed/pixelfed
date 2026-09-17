@@ -91,6 +91,7 @@ trait SecuritySettings
 
             return response()->json(['msg' => 'success']);
         }
+
         return response()->json(['msg' => 'fail'], 403);
     }
 

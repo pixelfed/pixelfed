@@ -137,7 +137,7 @@ trait HandlesUndos
 
         $status = Helpers::statusFirstOrFetch($objectUri);
 
-        if (!$status instanceof \App\Models\Status) {
+        if (! $status instanceof Status) {
             return;
         }
 

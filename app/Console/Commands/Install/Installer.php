@@ -158,6 +158,7 @@ class Installer extends Command
                 return 1;
             }
         }
+
         return null;
 
     }
@@ -180,6 +181,7 @@ class Installer extends Command
         } else {
             $this->info('- Found FFmpeg!');
         }
+
         return null;
     }
 

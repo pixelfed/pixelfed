@@ -27,7 +27,7 @@ class StatusInstance extends Command
     {
         $instance = $this->resolve($this->argument('id'));
 
-        if (!$instance instanceof \App\Models\Instance) {
+        if (! $instance instanceof Instance) {
             $this->error('No instance found for "'.$this->argument('id').'".');
 
             return self::FAILURE;

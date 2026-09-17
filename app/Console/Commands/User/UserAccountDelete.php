@@ -34,7 +34,7 @@ class UserAccountDelete extends Command
     public function handle(): int
     {
         $user = $this->promptForDeletedUser();
-        if (!$user instanceof \App\Models\User) {
+        if (! $user instanceof User) {
             $this->error('No deleted user selected.');
 
             return self::FAILURE;

@@ -154,7 +154,7 @@ class CustomEmojiService
 
             return;
         }
-        return;
+
     }
 
     public static function headCheck($url)
@@ -171,6 +171,7 @@ class CustomEmojiService
         if (! in_array($head['mime'], self::ALLOWED_MIME_TYPES, true)) {
             return false;
         }
+
         return $maxSize <= 0 || $head['length'] <= $maxSize;
     }
 

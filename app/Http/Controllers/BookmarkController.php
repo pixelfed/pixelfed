@@ -41,6 +41,7 @@ class BookmarkController extends Controller
                     if ($request->ajax()) {
                         return ['code' => 200, 'msg' => 'Bookmark removed!'];
                     }
+
                     return redirect()->back();
                 }
                 abort(404, 'Error: You cannot bookmark private posts from accounts you do not follow.');

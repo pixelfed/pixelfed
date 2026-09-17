@@ -98,6 +98,7 @@ class CommentController extends Controller
             $fractal->setSerializer(new ArraySerializer);
             $entity = new Fractal\Resource\Item($reply, new StatusTransformer);
             $entity = $fractal->createData($entity)->toArray();
+
             return [
                 'code' => 200,
                 'msg' => 'Comment saved',

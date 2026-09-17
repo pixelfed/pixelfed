@@ -100,6 +100,7 @@ class CustomFilter extends Model
             case 2:
                 return 'blur';
         }
+
         return null;
     }
 

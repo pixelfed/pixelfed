@@ -272,6 +272,7 @@ class GroupsCommentController extends Controller
         if ($request->wantsJson()) {
             return response()->json(['Status successfully deleted.']);
         }
+
         return redirect('/groups/feed');
     }
 

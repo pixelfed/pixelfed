@@ -91,7 +91,7 @@ class AppRegisterTokenFactory
 
     protected function server(): AuthorizationServer
     {
-        if ($this->server instanceof \League\OAuth2\Server\AuthorizationServer) {
+        if ($this->server instanceof AuthorizationServer) {
             return $this->server;
         }
 

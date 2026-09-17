@@ -35,9 +35,10 @@ class NotificationTransformer extends Fractal\TransformerAbstract
             if ($status) {
                 return $this->item($status, new StatusTransformer);
             }
+
             return;
         }
-        return;
+
     }
 
     public function replaceTypeVerb($verb)

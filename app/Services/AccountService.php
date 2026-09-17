@@ -323,6 +323,7 @@ class AccountService
         if ($num >= 1000) {
             return $formatter->format($num / 1000).'K';
         }
+
         return $formatter->format($num);
     }
 

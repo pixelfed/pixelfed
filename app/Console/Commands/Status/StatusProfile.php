@@ -39,7 +39,7 @@ class StatusProfile extends Command
 
         $profile = $this->resolveProfile($id);
 
-        if (!$profile instanceof \App\Models\Profile) {
+        if (! $profile instanceof Profile) {
             $this->error('No profile found for "'.$id.'".');
             $this->suggestSimilar($id);
 

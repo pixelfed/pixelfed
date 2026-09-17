@@ -66,6 +66,7 @@ class InboxWorker implements ShouldQueue
 
             return null;
         }
+
         return null;
     }
 

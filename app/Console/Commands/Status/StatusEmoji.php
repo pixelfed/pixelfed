@@ -29,7 +29,7 @@ class StatusEmoji extends Command
     {
         $emoji = $this->resolve($this->argument('id'));
 
-        if (!$emoji instanceof \App\Models\CustomEmoji) {
+        if (! $emoji instanceof CustomEmoji) {
             $this->error('No custom emoji found for "'.$this->argument('id').'" (tried id, shortcode, then media filename).');
 
             return self::FAILURE;

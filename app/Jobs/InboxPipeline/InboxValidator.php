@@ -85,6 +85,7 @@ class InboxValidator implements ShouldQueue
 
             return null;
         }
+
         return null;
     }
 
@@ -170,6 +171,7 @@ class InboxValidator implements ShouldQueue
         }
         $inboxPath = "/users/{$profile->username}/inbox";
         [$verified, $headers] = HttpSignature::verify($pkey, $signatureData, $headers, $inboxPath, $body);
+
         return $verified == 1;
     }
 

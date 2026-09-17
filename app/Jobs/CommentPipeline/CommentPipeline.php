@@ -130,6 +130,7 @@ class CommentPipeline implements ShouldQueue
         } else {
             Cache::forget('status:replies:all:'.$status->id);
         }
+
         return null;
     }
 }

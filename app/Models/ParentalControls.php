@@ -53,8 +53,10 @@ class ParentalControls extends Model
             if ($u->profile_id) {
                 return AccountService::get($u->profile_id, true);
             }
+
             return [];
         }
+
         return [];
     }
 

@@ -193,6 +193,7 @@ class PortfolioController extends Controller
         if ($portfolio->metadata && isset($portfolio->metadata['feed_order']) && $portfolio->metadata['feed_order'] === 'recent') {
             return $feed->reverse()->values();
         }
+
         return $feed->values();
     }
 

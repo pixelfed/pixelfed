@@ -143,6 +143,7 @@ class ReportController extends Controller
             if ($request->wantsJson()) {
                 return abort(400, 'Invalid report type');
             }
+
             return redirect('/timeline')->with('error', 'Invalid report type');
         }
 
@@ -185,6 +186,7 @@ class ReportController extends Controller
                 if ($request->wantsJson()) {
                     return abort(400, 'Invalid report type');
                 }
+
                 return redirect('/timeline')->with('error', 'Invalid report type');
         }
 
@@ -192,6 +194,7 @@ class ReportController extends Controller
             if ($request->wantsJson()) {
                 return response()->json(200);
             }
+
             return redirect('/timeline')->with('error', 'You have already reported this!');
         }
 
@@ -199,6 +202,7 @@ class ReportController extends Controller
             if ($request->wantsJson()) {
                 return response()->json(200);
             }
+
             return redirect('/timeline')->with('error', 'You cannot report your own content!');
         }
 
@@ -219,6 +223,7 @@ class ReportController extends Controller
         if ($request->wantsJson()) {
             return response()->json(200);
         }
+
         return redirect('/timeline')->with('status', 'Report successfully sent!');
     }
 }

@@ -97,6 +97,7 @@ class StatusDelete implements ShouldQueue
         if ((bool) config_cache('federation.activitypub.enabled') === true) {
             return $this->fanoutDelete($status);
         }
+
         return $this->unlinkRemoveMedia($status);
     }
 

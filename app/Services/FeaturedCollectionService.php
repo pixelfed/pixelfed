@@ -213,7 +213,7 @@ class FeaturedCollectionService
     ): FeatureAuthorization {
         $auth = self::find($target, $collectionUrl);
 
-        if ($auth instanceof \App\Models\FeatureAuthorization) {
+        if ($auth instanceof FeatureAuthorization) {
             if ($collectionName !== null && $auth->collection_name !== $collectionName) {
                 $auth->collection_name = $collectionName;
                 $auth->save();

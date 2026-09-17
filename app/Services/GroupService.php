@@ -265,6 +265,7 @@ class GroupService
         if ($limits) {
             return (bool) $limits['limits']['can_post'];
         }
+
         return true;
     }
 
@@ -274,6 +275,7 @@ class GroupService
         if ($limits) {
             return (bool) $limits['limits']['can_comment'];
         }
+
         return true;
     }
 
@@ -283,6 +285,7 @@ class GroupService
         if ($limits) {
             return (bool) $limits['limits']['can_like'];
         }
+
         return true;
     }
 

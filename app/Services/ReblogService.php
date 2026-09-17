@@ -33,6 +33,7 @@ class ReblogService
             }
             self::warmCache($profileId);
             sleep(1);
+
             return self::getFromRedis($profileId, $statusId);
         }
 
@@ -63,6 +64,7 @@ class ReblogService
             }
             self::warmCache($profileId);
             sleep(1);
+
             return self::getFromDatabase($profileId, $statusId);
         }
 

@@ -77,6 +77,7 @@ class VideoHlsPipeline implements ShouldBeUniqueUntilProcessing, ShouldQueue
 
                 return (version_compare($version, config('laravel-ffmpeg.min_hls_version')) >= 0) ? 'ok' : false;
             }
+
             return false;
         });
 

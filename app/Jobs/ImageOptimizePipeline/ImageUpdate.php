@@ -125,6 +125,7 @@ class ImageUpdate implements ShouldQueue
         if ($localFs) {
             return filesize(storage_path('app/'.$path)) ?? 0;
         }
+
         return $disk->size($path) ?? 0;
     }
 

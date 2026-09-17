@@ -101,6 +101,7 @@ class ModLogService
         if ($res == true) {
             return $ml;
         }
+
         return null;
     }
 

@@ -147,6 +147,7 @@ class FollowerService
         }
         self::cacheSyncCheck($target, 'followers');
         self::cacheSyncCheck($actor, 'following');
+
         return Follower::whereProfileId($actor)->whereFollowingId($target)->exists();
     }
 
@@ -280,6 +281,7 @@ class FollowerService
             return $ids;
         }
         Redis::expire($key, 3600);
+
         return [];
     }
 

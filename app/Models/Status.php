@@ -165,6 +165,7 @@ class Status extends Model
             return '/404';
         }
         $path = url(config('app.url')."/p/{$account['username']}/{$id}");
+
         return $path;
     }
 
@@ -274,6 +275,7 @@ class Status extends Model
         if (! empty($parent)) {
             return $this->findOrFail($parent);
         }
+
         return false;
     }
 

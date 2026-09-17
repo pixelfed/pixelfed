@@ -2,6 +2,7 @@
 
 namespace App\Jobs\MovePipeline;
 
+use App\Models\Profile;
 use App\Services\ActivityPubFetchService;
 use App\Util\ActivityPub\Helpers;
 use DateTime;
@@ -102,7 +103,7 @@ class ProcessMovePipeline implements ShouldQueue
         }
 
         $targetRes = Helpers::profileFetch($this->target);
-        if (!$targetRes instanceof \App\Models\Profile) {
+        if (! $targetRes instanceof Profile) {
             return false;
         }
 
@@ -133,7 +134,7 @@ class ProcessMovePipeline implements ShouldQueue
         }
 
         $actorRes = Helpers::profileFetch($this->activity);
-        if (!$actorRes instanceof \App\Models\Profile) {
+        if (! $actorRes instanceof Profile) {
             return false;
         }
 

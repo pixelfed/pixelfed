@@ -138,6 +138,7 @@ class SharePipeline implements ShouldQueue
         $activity = FractalService::item($status, new Announce);
 
         ActivityPubDeliveryService::pool($profile, $audience, $activity);
+
         return null;
     }
 }

@@ -218,6 +218,7 @@ trait HomeSettings
 
             return redirect('/settings/email')->with('status', 'Email successfully updated!');
         }
+
         return redirect('/settings/email');
 
     }

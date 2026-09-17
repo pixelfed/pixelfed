@@ -171,6 +171,7 @@ class ConfigCacheService
                     if ($protect) {
                         return decrypt($c->v) ?? config($key);
                     }
+
                     return $c->v ?? config($key);
                 }
 
