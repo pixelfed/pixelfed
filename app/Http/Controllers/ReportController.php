@@ -142,9 +142,8 @@ class ReportController extends Controller
         if (! in_array($reportType, $types)) {
             if ($request->wantsJson()) {
                 return abort(400, 'Invalid report type');
-            } else {
-                return redirect('/timeline')->with('error', 'Invalid report type');
             }
+            return redirect('/timeline')->with('error', 'Invalid report type');
         }
 
         $rpid = null;
@@ -185,25 +184,22 @@ class ReportController extends Controller
             default:
                 if ($request->wantsJson()) {
                     return abort(400, 'Invalid report type');
-                } else {
-                    return redirect('/timeline')->with('error', 'Invalid report type');
                 }
+                return redirect('/timeline')->with('error', 'Invalid report type');
         }
 
         if ($exists !== 0) {
             if ($request->wantsJson()) {
                 return response()->json(200);
-            } else {
-                return redirect('/timeline')->with('error', 'You have already reported this!');
             }
+            return redirect('/timeline')->with('error', 'You have already reported this!');
         }
 
         if ($object->profile_id == $profile->id) {
             if ($request->wantsJson()) {
                 return response()->json(200);
-            } else {
-                return redirect('/timeline')->with('error', 'You cannot report your own content!');
             }
+            return redirect('/timeline')->with('error', 'You cannot report your own content!');
         }
 
         $report = new Report;
@@ -222,8 +218,7 @@ class ReportController extends Controller
 
         if ($request->wantsJson()) {
             return response()->json(200);
-        } else {
-            return redirect('/timeline')->with('status', 'Report successfully sent!');
         }
+        return redirect('/timeline')->with('status', 'Report successfully sent!');
     }
 }

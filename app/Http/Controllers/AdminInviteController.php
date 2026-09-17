@@ -151,7 +151,7 @@ class AdminInviteController extends Controller
         abort_if($invite->expires_at && $invite->expires_at->lt(now()), 400, 'Invite expired');
         abort_if($invite->max_uses && $invite->uses >= $invite->max_uses, 400, 'Maximum invites reached.');
 
-        $invite->uses += 1;
+        $invite->uses = $invite->uses + 1;
 
         event(new Registered($user = User::create([
             'name' => Purify::clean($request->input('name')) ?? $request->input('username'),
