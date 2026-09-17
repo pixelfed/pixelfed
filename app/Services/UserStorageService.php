@@ -67,7 +67,7 @@ class UserStorageService
     {
         $user = User::find($id);
         if (! $user || $user->status) {
-            return;
+            return null;
         }
         $updatedVal = (int) floor(Media::whereUserId($id)->sum('size') / 1000);
         $user->storage_used = $updatedVal;

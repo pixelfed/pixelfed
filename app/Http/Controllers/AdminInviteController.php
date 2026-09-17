@@ -30,7 +30,7 @@ class AdminInviteController extends Controller
             return redirect('/');
         }
 
-        return view('invite.admin_invite', compact('code'));
+        return view('invite.admin_invite', ['code' => $code]);
     }
 
     public function apiVerifyCheck(Request $request): JsonResponse
@@ -151,7 +151,7 @@ class AdminInviteController extends Controller
         abort_if($invite->expires_at && $invite->expires_at->lt(now()), 400, 'Invite expired');
         abort_if($invite->max_uses && $invite->uses >= $invite->max_uses, 400, 'Maximum invites reached.');
 
-        $invite->uses = $invite->uses + 1;
+        $invite->uses += 1;
 
         event(new Registered($user = User::create([
             'name' => Purify::clean($request->input('name')) ?? $request->input('username'),
@@ -182,8 +182,7 @@ class AdminInviteController extends Controller
             $request->session()->regenerate();
 
             return redirect()->intended('/');
-        } else {
-            return response()->json([], 400);
         }
+        return response()->json([], 400);
     }
 }

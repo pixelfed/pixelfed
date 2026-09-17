@@ -79,7 +79,7 @@ class Media extends Model
     public function mimeType()
     {
         if (! $this->mime) {
-            return;
+            return null;
         }
 
         return explode('/', $this->mime)[0];

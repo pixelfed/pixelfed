@@ -271,9 +271,8 @@ class GroupsCommentController extends Controller
 
         if ($request->wantsJson()) {
             return response()->json(['Status successfully deleted.']);
-        } else {
-            return redirect('/groups/feed');
         }
+        return redirect('/groups/feed');
     }
 
     public function likePost(Request $request)

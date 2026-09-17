@@ -17,7 +17,7 @@ trait LabsSettings
     {
         $profile = $request->user()->profile;
 
-        return view('settings.labs', compact('profile'));
+        return view('settings.labs', ['profile' => $profile]);
     }
 
     public function labsStore(Request $request)
@@ -67,7 +67,7 @@ trait LabsSettings
             $changes = true;
         }
 
-        if ($changes == true) {
+        if ($changes === true) {
             $profile->save();
         }
 

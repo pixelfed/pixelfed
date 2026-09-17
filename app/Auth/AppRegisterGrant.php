@@ -66,7 +66,7 @@ class AppRegisterGrant extends AbstractGrant
 
         $refreshToken = $this->issueRefreshToken($accessToken);
 
-        if ($refreshToken !== null) {
+        if ($refreshToken instanceof \League\OAuth2\Server\Entities\RefreshTokenEntityInterface) {
             $this->getEmitter()->emit(
                 new RequestRefreshTokenEvent(RequestEvent::REFRESH_TOKEN_ISSUED, $request, $refreshToken)
             );

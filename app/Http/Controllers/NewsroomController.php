@@ -22,7 +22,7 @@ class NewsroomController extends Controller
                 ->paginate(3);
         }
 
-        return view('site.news.home', compact('posts'));
+        return view('site.news.home', ['posts' => $posts]);
     }
 
     public function show(Request $request, $year, $month, $slug): View
@@ -34,7 +34,7 @@ class NewsroomController extends Controller
             ->firstOrFail();
         abort_if($post->auth_only && ! $request->user(), 404);
 
-        return view('site.news.post.show', compact('post'));
+        return view('site.news.post.show', ['post' => $post]);
     }
 
     public function search(Request $request): void

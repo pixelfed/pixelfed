@@ -85,7 +85,7 @@ class UserDelete extends Command implements PromptsForMissingInput
 
         return;
 
-        if (ctype_digit($id) == true) {
+        if (ctype_digit($id) === true) {
             $user = User::find($id);
         } else {
             $user = User::whereUsername($id)->first();

@@ -41,7 +41,7 @@ class FetchCacheService
         $host = parse_url($url, PHP_URL_HOST);
         $port = parse_url($url, PHP_URL_PORT) ?: 443;
         $ips = $host ? Helpers::resolvePublicIps($host) : [];
-        if (empty($ips)) {
+        if ($ips === []) {
             Cache::put($key, 1, $ttl);
 
             return false;

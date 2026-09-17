@@ -14,7 +14,7 @@ trait Instagram
 {
     public function instagram()
     {
-        if ((bool) config_cache('pixelfed.import.instagram.enabled') != true) {
+        if ((bool) config_cache('pixelfed.import.instagram.enabled') !== true) {
             abort(404, 'Feature not enabled');
         }
 
@@ -23,7 +23,7 @@ trait Instagram
 
     public function instagramStart(Request $request)
     {
-        if ((bool) config_cache('pixelfed.import.instagram.enabled') != true) {
+        if ((bool) config_cache('pixelfed.import.instagram.enabled') !== true) {
             abort(404, 'Feature not enabled');
         }
         $completed = ImportJob::whereProfileId($request->user()->profile->id)
@@ -40,7 +40,7 @@ trait Instagram
 
     protected function instagramRedirectOrNew()
     {
-        if ((bool) config_cache('pixelfed.import.instagram.enabled') != true) {
+        if ((bool) config_cache('pixelfed.import.instagram.enabled') !== true) {
             abort(404, 'Feature not enabled');
         }
         $profile = request()->user()->profile;
@@ -67,7 +67,7 @@ trait Instagram
 
     public function instagramStepOne(Request $request, $uuid)
     {
-        if ((bool) config_cache('pixelfed.import.instagram.enabled') != true) {
+        if ((bool) config_cache('pixelfed.import.instagram.enabled') !== true) {
             abort(404, 'Feature not enabled');
         }
         $profile = $request->user()->profile;
@@ -77,12 +77,12 @@ trait Instagram
             ->whereStage(1)
             ->firstOrFail();
 
-        return view('settings.import.instagram.step-one', compact('profile', 'job'));
+        return view('settings.import.instagram.step-one', ['profile' => $profile, 'job' => $job]);
     }
 
     public function instagramStepOneStore(Request $request, $uuid)
     {
-        if ((bool) config_cache('pixelfed.import.instagram.enabled') != true) {
+        if ((bool) config_cache('pixelfed.import.instagram.enabled') !== true) {
             abort(404, 'Feature not enabled');
         }
         $max = 'max:'.config('pixelfed.import.instagram.limits.size');
@@ -128,7 +128,7 @@ trait Instagram
 
     public function instagramStepTwo(Request $request, $uuid)
     {
-        if ((bool) config_cache('pixelfed.import.instagram.enabled') != true) {
+        if ((bool) config_cache('pixelfed.import.instagram.enabled') !== true) {
             abort(404, 'Feature not enabled');
         }
         $profile = $request->user()->profile;
@@ -138,12 +138,12 @@ trait Instagram
             ->whereStage(2)
             ->firstOrFail();
 
-        return view('settings.import.instagram.step-two', compact('profile', 'job'));
+        return view('settings.import.instagram.step-two', ['profile' => $profile, 'job' => $job]);
     }
 
     public function instagramStepTwoStore(Request $request, $uuid)
     {
-        if ((bool) config_cache('pixelfed.import.instagram.enabled') != true) {
+        if ((bool) config_cache('pixelfed.import.instagram.enabled') !== true) {
             abort(404, 'Feature not enabled');
         }
         $this->validate($request, [
@@ -172,7 +172,7 @@ trait Instagram
 
     public function instagramStepThree(Request $request, $uuid)
     {
-        if ((bool) config_cache('pixelfed.import.instagram.enabled') != true) {
+        if ((bool) config_cache('pixelfed.import.instagram.enabled') !== true) {
             abort(404, 'Feature not enabled');
         }
         $profile = $request->user()->profile;
@@ -183,12 +183,12 @@ trait Instagram
             ->whereStage(3)
             ->firstOrFail();
 
-        return view('settings.import.instagram.step-three', compact('profile', 'job'));
+        return view('settings.import.instagram.step-three', ['profile' => $profile, 'job' => $job]);
     }
 
     public function instagramStepThreeStore(Request $request, $uuid)
     {
-        if ((bool) config_cache('pixelfed.import.instagram.enabled') != true) {
+        if ((bool) config_cache('pixelfed.import.instagram.enabled') !== true) {
             abort(404, 'Feature not enabled');
         }
         $profile = $request->user()->profile;

@@ -59,7 +59,7 @@ final class BackupToCloud extends Command
 
         $newest = $backupDestination->newestBackup();
 
-        if ($newest === null) {
+        if (!$newest instanceof \Spatie\Backup\BackupDestination\Backup) {
             $this->error('No backup found to upload.');
 
             return Command::FAILURE;

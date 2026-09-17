@@ -67,7 +67,7 @@ class ActivityPubFetchService
 
             $ips = Helpers::resolvePublicIps($host);
 
-            if (empty($ips)) {
+            if ($ips === []) {
                 return;
             }
 

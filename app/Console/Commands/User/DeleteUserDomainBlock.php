@@ -46,7 +46,7 @@ class DeleteUserDomainBlock extends Command
     protected function validateDomain($domain)
     {
         if (! strpos($domain, '.')) {
-            return;
+            return null;
         }
 
         if (str_starts_with($domain, 'https://')) {
@@ -61,16 +61,16 @@ class DeleteUserDomainBlock extends Command
 
         $valid = filter_var($domain, FILTER_VALIDATE_DOMAIN, FILTER_FLAG_HOSTNAME | FILTER_NULL_ON_FAILURE);
         if (! $valid) {
-            return;
+            return null;
         }
 
         if ($domain === config('pixelfed.domain.app')) {
-            return;
+            return null;
         }
 
         $confirmed = confirm('Are you sure you want to unblock '.$domain.'?');
         if (! $confirmed) {
-            return;
+            return null;
         }
 
         return $domain;

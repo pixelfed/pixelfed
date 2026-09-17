@@ -60,12 +60,12 @@ class CommentPipeline implements ShouldQueue
         if (! $status) {
             Log::info('CommentPipeline: Status no longer exists, skipping job');
 
-            return;
+            return null;
         }
         if (! $comment) {
             Log::info('CommentPipeline: Comment no longer exists, skipping job');
 
-            return;
+            return null;
         }
 
         $target = $status->profile;
@@ -75,12 +75,12 @@ class CommentPipeline implements ShouldQueue
         if (! $target) {
             Log::info("CommentPipeline: Target profile no longer exists for status {$status->id}, skipping job");
 
-            return;
+            return null;
         }
         if (! $actor) {
             Log::info("CommentPipeline: Actor profile no longer exists for comment {$comment->id}, skipping job");
 
-            return;
+            return null;
         }
 
         if (db_is_mysql_maria()) {
@@ -112,7 +112,7 @@ class CommentPipeline implements ShouldQueue
             ->exists();
 
         if ($filtered == true) {
-            return;
+            return null;
         }
 
         if ($target->user_id && $target->domain === null) {
@@ -130,5 +130,6 @@ class CommentPipeline implements ShouldQueue
         } else {
             Cache::forget('status:replies:all:'.$status->id);
         }
+        return null;
     }
 }

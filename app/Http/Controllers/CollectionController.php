@@ -26,7 +26,7 @@ class CollectionController extends Controller
         $collection->visibility = 'draft';
         $collection->save();
 
-        return view('collection.create', compact('collection'));
+        return view('collection.create', ['collection' => $collection]);
     }
 
     public function show(Request $request, $id): View
@@ -44,7 +44,7 @@ class CollectionController extends Controller
             }
         }
 
-        return view('collection.show', compact('collection'));
+        return view('collection.show', ['collection' => $collection]);
     }
 
     public function store(Request $request, $id)

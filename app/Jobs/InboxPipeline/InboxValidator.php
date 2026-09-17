@@ -52,7 +52,7 @@ class InboxValidator implements ShouldQueue
         $headers = $this->headers;
 
         if (empty($headers) || empty($this->payload) || ! isset($headers['signature']) || ! isset($headers['date'])) {
-            return;
+            return null;
         }
 
         $payload = json_decode($this->payload, true, 8);
@@ -60,11 +60,11 @@ class InboxValidator implements ShouldQueue
         $profile = Profile::whereNull('domain')->whereUsername($username)->first();
 
         if (empty($profile) || empty($headers) || empty($payload)) {
-            return;
+            return null;
         }
 
         if ($profile->status != null) {
-            return;
+            return null;
         }
 
         if ($this->verifySignature($headers, $profile, $payload) == true) {
@@ -83,10 +83,9 @@ class InboxValidator implements ShouldQueue
                 ActivityHandler::dispatch($headers, $profile, $payload)->onQueue($onQueue);
             }
 
-            return;
-        } else {
-            return;
+            return null;
         }
+        return null;
     }
 
     protected function verifySignature($headers, $profile, $payload)
@@ -171,11 +170,7 @@ class InboxValidator implements ShouldQueue
         }
         $inboxPath = "/users/{$profile->username}/inbox";
         [$verified, $headers] = HttpSignature::verify($pkey, $signatureData, $headers, $inboxPath, $body);
-        if ($verified == 1) {
-            return true;
-        } else {
-            return false;
-        }
+        return $verified == 1;
     }
 
     public static function actorOptionalFor(array $payload): bool

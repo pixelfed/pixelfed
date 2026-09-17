@@ -213,7 +213,7 @@ class FeaturedCollectionService
     ): FeatureAuthorization {
         $auth = self::find($target, $collectionUrl);
 
-        if ($auth) {
+        if ($auth instanceof \App\Models\FeatureAuthorization) {
             if ($collectionName !== null && $auth->collection_name !== $collectionName) {
                 $auth->collection_name = $collectionName;
                 $auth->save();
@@ -427,7 +427,7 @@ class FeaturedCollectionService
 
             $path = rtrim($parts['path'] ?? '/', '/');
 
-            return strtolower($parts['scheme'] ?? 'https').'://'.strtolower($parts['host']).($path === '' ? '' : $path);
+            return strtolower($parts['scheme'] ?? 'https').'://'.strtolower($parts['host']).($path);
         };
 
         $na = $norm($a);

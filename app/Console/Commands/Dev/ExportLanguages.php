@@ -174,7 +174,7 @@ class ExportLanguages extends Command
         foreach ($strings as $key => $value) {
             if (is_array($value)) {
                 $filtered = $this->stripEmptyStrings($value);
-                if (! empty($filtered)) {
+                if ($filtered !== []) {
                     $result[$key] = $filtered;
                 }
             } elseif (is_string($value)) {

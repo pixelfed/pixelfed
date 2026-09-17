@@ -178,7 +178,7 @@ class StatusUser extends Command
             $problems[] = 'profile_id is EMPTY (user has no linked profile — avatarUrl/profile routes will misbehave)';
         }
 
-        if ($problems) {
+        if ($problems !== []) {
             $this->error('POTENTIAL LOGIN / RESET BLOCKERS:');
             foreach ($problems as $p) {
                 $this->line('  ✗ '.$p);
@@ -187,7 +187,7 @@ class StatusUser extends Command
             $this->info('No obvious auth blockers detected on the user row.');
         }
 
-        if ($ok) {
+        if ($ok !== []) {
             $this->newLine();
             $this->comment('OK checks:');
             foreach ($ok as $o) {
@@ -288,7 +288,7 @@ class StatusUser extends Command
             $problems[] = 'followers_count ('.$cachedFollowers.') is out of sync with live count ('.$liveFollowers.').';
         }
 
-        if ($problems) {
+        if ($problems !== []) {
             $this->newLine();
             $this->error('PROFILE ISSUES:');
             foreach ($problems as $p) {

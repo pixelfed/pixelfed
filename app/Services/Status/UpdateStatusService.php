@@ -68,7 +68,7 @@ class UpdateStatusService
         }
         if (isset($attributes['sensitive'])) {
             if ($status->is_nsfw != (bool) $attributes['sensitive'] &&
-              (bool) $attributes['sensitive'] == false) {
+              (bool) $attributes['sensitive'] === false) {
                 $exists = ModLog::whereObjectType('App\Status::class')
                     ->whereObjectId($status->id)
                     ->whereAction('admin.status.moderate')

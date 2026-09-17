@@ -56,13 +56,13 @@ class DeleteRemoteProfilePipeline implements ShouldQueue
         if (! $profile) {
             Log::info('DeleteRemoteProfilePipeline: Profile no longer exists, skipping job');
 
-            return;
+            return null;
         }
 
         $pid = $profile->id;
 
         if ($profile->domain == null || $profile->private_key) {
-            return;
+            return null;
         }
 
         $profile->status = 'delete';

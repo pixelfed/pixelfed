@@ -34,12 +34,10 @@ class NotificationTransformer extends Fractal\TransformerAbstract
             $status = Status::with('media')->find($item->item_id);
             if ($status) {
                 return $this->item($status, new StatusTransformer);
-            } else {
-                return;
             }
-        } else {
             return;
         }
+        return;
     }
 
     public function replaceTypeVerb($verb)

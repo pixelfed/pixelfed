@@ -76,7 +76,7 @@ class ProcessMovePipeline implements ShouldQueue
      */
     public function handle(): void
     {
-        if (config('app.env') !== 'production' || (bool) config_cache('federation.activitypub.enabled') == false) {
+        if (config('app.env') !== 'production' || (bool) config_cache('federation.activitypub.enabled') === false) {
             throw new Exception('Activitypub not enabled');
         }
 
@@ -102,7 +102,7 @@ class ProcessMovePipeline implements ShouldQueue
         }
 
         $targetRes = Helpers::profileFetch($this->target);
-        if (! $targetRes) {
+        if (!$targetRes instanceof \App\Models\Profile) {
             return false;
         }
 
@@ -133,7 +133,7 @@ class ProcessMovePipeline implements ShouldQueue
         }
 
         $actorRes = Helpers::profileFetch($this->activity);
-        if (! $actorRes) {
+        if (!$actorRes instanceof \App\Models\Profile) {
             return false;
         }
 
