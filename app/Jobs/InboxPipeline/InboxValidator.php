@@ -120,7 +120,14 @@ class InboxValidator implements ShouldQueue
         $id = Helpers::validateUrl($bodyDecoded['id']);
         $keyDomain = parse_url($keyId, PHP_URL_HOST);
         $idDomain = parse_url($id, PHP_URL_HOST);
-        $actorDomain = parse_url($payload['actor'] ?? '', PHP_URL_HOST);
+        $claimedActor = Helpers::pluckval($bodyDecoded['actor'] ?? null);
+        if (is_array($claimedActor)) {
+            $claimedActor = $claimedActor['id'] ?? null;
+        }
+        if (! $claimedActor && self::actorOptionalFor($bodyDecoded)) {
+            $claimedActor = $keyId ? strtok($keyId, '#') : null;
+        }
+        $actorDomain = parse_url((string) $claimedActor, PHP_URL_HOST);
         if (
             isset($bodyDecoded['object'])
             && is_array($bodyDecoded['object'])
@@ -146,8 +153,7 @@ class InboxValidator implements ShouldQueue
         }
         $actor = Profile::whereKeyId($keyId)->first();
         if (! $actor) {
-            $actorUrl = Helpers::pluckval($bodyDecoded['actor']);
-            $actor = Helpers::profileFirstOrNew($actorUrl);
+            $actor = Helpers::profileFirstOrNew($claimedActor);
         }
         if (! $actor) {
             return false;
@@ -170,5 +176,10 @@ class InboxValidator implements ShouldQueue
         } else {
             return false;
         }
+    }
+
+    public static function actorOptionalFor(array $payload): bool
+    {
+        return isset($payload['type']) && $payload['type'] === 'FeatureRequest';
     }
 }
