@@ -2,6 +2,7 @@
 
 use App\Models\User;
 use Illuminate\Foundation\Testing\LazilyRefreshDatabase;
+use Illuminate\Support\Facades\Config;
 
 uses(LazilyRefreshDatabase::class);
 
@@ -32,8 +33,11 @@ describe('nodeinfo', function () {
     });
 
     it('reports correct open registration status', function () {
-        config(['pixelfed.open_registration' => true]);
-        config(['instance.enable_cc' => false]);
+        // pixelfed.open_registration is ENVCONFIG. Under the test env its var
+        // (OPEN_REGISTRATION) is present + valid, so it is env-authoritative and
+        // config_cache() returns config() — setting config() is what makes the
+        // value deterministic now that the master switch is gone.
+        Config::set('pixelfed.open_registration', true);
 
         $response = $this->getJson('/api/nodeinfo/2.0.json');
         $data = $response->json();

@@ -351,6 +351,13 @@ trait AdminSettingsController
 
     public function settingsApiRulesAdd(Request $request)
     {
+        // app.rules is env-managed (PF_RULES) when locked; reject the edit.
+        if (ConfigCacheService::isLocked('app.rules')) {
+            return response()->json([
+                'message' => 'Instance rules are managed by the PF_RULES environment variable and cannot be edited here.',
+            ], 422);
+        }
+
         $this->validate($request, [
             'rule' => 'required|string|min:5|max:1000',
         ]);
@@ -378,6 +385,13 @@ trait AdminSettingsController
 
     public function settingsApiRulesDelete(Request $request)
     {
+        // app.rules is env-managed (PF_RULES) when locked; reject the edit.
+        if (ConfigCacheService::isLocked('app.rules')) {
+            return response()->json([
+                'message' => 'Instance rules are managed by the PF_RULES environment variable and cannot be edited here.',
+            ], 422);
+        }
+
         $this->validate($request, [
             'rule' => 'required|string',
         ]);
@@ -407,6 +421,13 @@ trait AdminSettingsController
 
     public function settingsApiRulesDeleteAll(Request $request)
     {
+        // app.rules is env-managed (PF_RULES) when locked; reject the edit.
+        if (ConfigCacheService::isLocked('app.rules')) {
+            return response()->json([
+                'message' => 'Instance rules are managed by the PF_RULES environment variable and cannot be edited here.',
+            ], 422);
+        }
+
         $rules = ConfigCacheService::get('app.rules');
 
         if (! $rules) {
