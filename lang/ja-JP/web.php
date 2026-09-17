@@ -319,7 +319,7 @@ return [
             'partial_word' => '部分一致',
             'duplicate_not_allowed' => '同じキーワードは複数回設定できません',
             'filter_action' => 'フィルターアクション',
-            'hide_media_blur' => '写真や動画の表示をぼかします',
+            'hide_media_blur' => '',
             'show_warning' => '写真や動画を表示する前に警告を行います',
             'hide_content_completely' => '投稿を完全に非表示にします',
             'apply_filters_to' => 'フィルター適用先',
