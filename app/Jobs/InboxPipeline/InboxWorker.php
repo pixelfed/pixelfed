@@ -97,12 +97,16 @@ class InboxWorker implements ShouldQueue
             return false;
         }
 
-        $claimedActor = self::actorUrl($bodyDecoded['actor']);
+        $keyId = Helpers::validateUrl($signatureData['keyId']);
+
+        $claimedActor = self::actorUrl($bodyDecoded['actor'] ?? null);
+        if (! $claimedActor && $keyId && InboxValidator::actorOptionalFor($bodyDecoded)) {
+            $claimedActor = strtok($keyId, '#');
+        }
         if (! $claimedActor) {
             return false;
         }
 
-        $keyId = Helpers::validateUrl($signatureData['keyId']);
         $id = Helpers::validateUrl($bodyDecoded['id']);
         $claimedActor = Helpers::validateUrl($claimedActor);
         if (! $keyId || ! $id || ! $claimedActor) {

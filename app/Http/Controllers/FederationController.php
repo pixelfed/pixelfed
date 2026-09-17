@@ -5,9 +5,11 @@ namespace App\Http\Controllers;
 use App\Jobs\InboxPipeline\DeleteWorker;
 use App\Jobs\InboxPipeline\InboxValidator;
 use App\Jobs\InboxPipeline\InboxWorker;
+use App\Models\FeatureAuthorization;
 use App\Models\Profile;
 use App\Models\Status;
 use App\Services\AccountService;
+use App\Services\FeaturedCollectionService;
 use App\Services\InstanceService;
 use App\Util\Lexer\Nickname;
 use App\Util\Site\Nodeinfo;
@@ -37,7 +39,8 @@ class FederationController extends Controller
 
     public function webfinger(Request $request): JsonResponse|Response
     {
-        if (! config('federation.webfinger.enabled') ||
+        if (
+            ! config('federation.webfinger.enabled') ||
             ! $request->has('resource') ||
             ! $request->filled('resource')
         ) {
@@ -211,7 +214,6 @@ class FederationController extends Controller
         } else {
             dispatch(new InboxValidator($username, $headers, $payload))->onQueue('high');
         }
-
     }
 
     public function sharedInbox(Request $request): void
@@ -267,7 +269,6 @@ class FederationController extends Controller
         } else {
             dispatch(new InboxWorker($headers, $payload))->onQueue('shared');
         }
-
     }
 
     public function userFollowing(Request $request, $username): JsonResponse
@@ -303,5 +304,25 @@ class FederationController extends Controller
         ];
 
         return response()->json($obj)->header('Content-Type', 'application/activity+json');
+    }
+
+    public function userFeatureAuthorization(Request $request, $username, $id): JsonResponse
+    {
+        abort_if(! (bool) config_cache('federation.activitypub.enabled'), 404);
+        abort_if(! ctype_digit((string) $id), 404);
+
+        $pid = AccountService::usernameToId($username);
+        abort_if(! $pid, 404);
+
+        $auth = FeatureAuthorization::with('profile')
+            ->whereProfileId($pid)
+            ->find((int) $id);
+
+        abort_if(! $auth || ! $auth->profile || $auth->profile->domain !== null, 404);
+        abort_if($auth->isRevoked(), 410);
+
+        return response()
+            ->json(FeaturedCollectionService::stampObject($auth), 200, [], JSON_UNESCAPED_SLASHES)
+            ->header('Content-Type', 'application/activity+json');
     }
 }

@@ -3,10 +3,12 @@
 namespace App\Http\Controllers\Settings;
 
 use App\Jobs\HomeFeedPipeline\FeedUnfollowPipeline;
+use App\Models\FeatureAuthorization;
 use App\Models\Follower;
 use App\Models\Profile;
 use App\Models\UserFilter;
 use App\Services\AccountService;
+use App\Services\FeaturedCollectionService;
 use App\Services\RelationshipService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Cache;
@@ -86,7 +88,6 @@ trait PrivacySettings
                     $settings->{$field} = false;
                 }
             } elseif ($field == 'indexable') {
-
             } else {
                 if ($form == 'on') {
                     $settings->{$field} = true;
@@ -97,6 +98,15 @@ trait PrivacySettings
             $settings->save();
         }
         $pid = $profile->id;
+
+        $canFeature = $request->input('can_feature');
+        if (in_array($canFeature, FeaturedCollectionService::POLICIES, true) && $canFeature !== $settings->can_feature) {
+            $settings->can_feature = $canFeature;
+            $settings->save();
+            FeatureAuthorization::whereProfileId($pid)->revoked()->delete();
+            FeaturedCollectionService::forgetPolicy($pid);
+        }
+
         Cache::forget('profile:settings:'.$pid);
         Cache::forget('user:account:id:'.$profile->user_id);
         Cache::forget('profile:follower_count:'.$pid);
@@ -141,6 +151,33 @@ trait PrivacySettings
         RelationshipService::refresh($pid, $fid);
 
         return redirect()->back();
+    }
+
+    public function featuredCollections(Request $request)
+    {
+        $pid = $request->user()->profile->id;
+        $collections = FeatureAuthorization::whereProfileId($pid)
+            ->approved()
+            ->with('actor')
+            ->orderByDesc('created_at')
+            ->simplePaginate(15);
+
+        return view('settings.privacy.featured-collections', compact('collections'));
+    }
+
+    public function featuredCollectionsRemove(Request $request)
+    {
+        $this->validate($request, [
+            'id' => 'required|integer|min:1',
+        ]);
+        $pid = $request->user()->profile->id;
+        $auth = FeatureAuthorization::whereProfileId($pid)
+            ->approved()
+            ->findOrFail($request->input('id'));
+
+        FeaturedCollectionService::revoke($auth);
+
+        return redirect()->back()->with('status', 'You have been removed from the collection.');
     }
 
     public function blockedUsers(Request $request)
