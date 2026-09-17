@@ -9,22 +9,17 @@ use function Laravel\Prompts\info;
 use function Laravel\Prompts\warning;
 
 /**
- * Enables captcha and turns on the per-surface toggles.
- *
- * Because captcha settings are stored in the config-cache DB table (which
- * overrides env/config-file values), enabling captcha via .env alone has no
- * effect on an instance that already has rows. This command writes the correct
- * rows so the change takes effect immediately.
+ * Enables captcha and turns on the per-page toggles.
  */
 final class CaptchaEnableCommand extends Command
 {
     protected $signature = 'captcha:enable
-        {--surfaces=* : Limit to specific surfaces (login, register, forgot_password, password_reset, forgot_email, curated_register). Defaults to all.}
-        {--all-surfaces : Enable every surface (default when no --surfaces given)}';
+        {--pages=* : Limit to specific pages (login, register, forgot_password, password_reset, forgot_email, curated_register). Defaults to all.}
+        {--all-pages : Enable every page (default when no --pages given)}';
 
-    protected $description = 'Enable captcha and its per-surface toggles in the config cache';
+    protected $description = 'Enable captcha and its per-page toggles in the config cache';
 
-    private const SURFACES = [
+    private const PAGES = [
         'login',
         'register',
         'forgot_password',
@@ -45,17 +40,17 @@ final class CaptchaEnableCommand extends Command
         ConfigCacheService::put('captcha.enabled', true);
         info('captcha.enabled => true');
 
-        $requested = (array) $this->option('surfaces');
-        $surfaces = empty($requested) ? self::SURFACES : $requested;
+        $requested = (array) $this->option('pages');
+        $pages = empty($requested) ? self::PAGES : $requested;
 
-        foreach ($surfaces as $surface) {
-            if (! in_array($surface, self::SURFACES, true)) {
-                warning("Skipping unknown surface: {$surface}");
+        foreach ($pages as $page) {
+            if (! in_array($page, self::PAGES, true)) {
+                warning("Skipping unknown page: {$page}");
 
                 continue;
             }
-            ConfigCacheService::put('captcha.active.'.$surface, true);
-            info("captcha.active.{$surface} => true");
+            ConfigCacheService::put('captcha.active.'.$page, true);
+            info("captcha.active.{$page} => true");
         }
 
         info('Done. Active driver: '.$driver);
