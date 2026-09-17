@@ -32,8 +32,8 @@ return [
         'sensitiveContent' => 'Contengut sensible',
         'sensitiveContentWarning' => 'Lo contengut d\'aquela publicacion poiriá èsser sensibla',
         'javascript' => '',
-        'loading' => '',
-        'continue' => '',
+        'loading' => 'Cargament...',
+        'continue' => 'Contunhar',
     ],
 
     'site' => [
@@ -61,7 +61,7 @@ return [
         'profile' => 'Perfil',
         'drive' => 'Nívol',
         'settings' => 'Paramètres',
-        'appearance' => '',
+        'appearance' => 'Aparéncia',
         'compose' => 'Apondre',
         'logout' => 'Desconnexion',
         'createStory' => '',
@@ -87,7 +87,7 @@ return [
     ],
 
     'notifications' => [
-        'title' => '',
+        'title' => 'Notificacions',
         'liked' => 'a aimat vòstra',
         'commented' => 'a comentat vòstra',
         'reacted' => 'a reagit a vòstra',

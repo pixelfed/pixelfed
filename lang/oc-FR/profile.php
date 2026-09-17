@@ -15,7 +15,7 @@ return [
 
     'block.domain.max' => '',
 
-    'mutedAccounts' => '',
-    'blockedAccounts' => '',
-    'blockedDomains' => '',
+    'mutedAccounts' => 'Comptes resconduts',
+    'blockedAccounts' => 'Comptes blocats',
+    'blockedDomains' => 'Domenis blocats',
 ];
