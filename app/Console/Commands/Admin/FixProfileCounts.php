@@ -178,7 +178,7 @@ class FixProfileCounts extends Command
     {
         $values = (array) $this->option('active');
 
-        if (empty($values)) {
+        if ($values === []) {
             return null;
         }
 
@@ -230,7 +230,7 @@ class FixProfileCounts extends Command
 
         $drifted = array_filter($drift, fn ($m) => $m['cached'] !== $m['live']);
 
-        if (empty($drifted)) {
+        if ($drifted === []) {
             // No drift on the selected metrics: stay silent.
             return false;
         }

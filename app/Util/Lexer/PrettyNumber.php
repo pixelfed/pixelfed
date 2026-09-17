@@ -27,7 +27,7 @@ class PrettyNumber
     public static function size($expression, $kb = false, $short = true)
     {
         if ($kb) {
-            $expression = $expression * 1024;
+            $expression *= 1024;
         }
         $size = intval($expression);
         $precision = 0;

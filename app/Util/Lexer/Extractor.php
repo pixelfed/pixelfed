@@ -87,10 +87,10 @@ class Extractor extends Regex
             'hashtags' => $this->extractHashtags($tweet),
             'urls' => $this->extractURLs($tweet),
             'mentions' => $this->extractMentionedUsernames($tweet),
-            'replyto' => $this->extractRepliedUsernames($tweet),
+            'replyto' => $this->extractRepliedUsernames(),
             'hashtags_with_indices' => $this->extractHashtagsWithIndices($tweet),
             'urls_with_indices' => $this->extractURLsWithIndices($tweet),
-            'mentions_with_indices' => $this->extractMentionedUsernamesWithIndices($tweet),
+            'mentions_with_indices' => $this->extractMentionedUsernamesWithIndices(),
         ];
     }
 
@@ -184,7 +184,7 @@ class Extractor extends Regex
             }
 
             $screen_name = mb_strtolower($mentionWithIndex['screen_name']);
-            if (empty($screen_name) or in_array($screen_name, $usernamesOnly)) {
+            if (empty($screen_name) || in_array($screen_name, $usernamesOnly)) {
                 continue;
             }
             $usernamesOnly[] = $screen_name;
@@ -464,7 +464,7 @@ class Extractor extends Regex
             [$all, $before, $at, $username, $list_slug, $outer] = array_pad($match, 6, ['', 0]);
             $start_position = $at[1] > 0 ? StringUtils::strlen(substr($tweet, 0, $at[1])) : $at[1];
             $end_position = $start_position + StringUtils::strlen($at[0]) + StringUtils::strlen($username[0]);
-            $screenname = trim($all[0]) == '@'.$username[0] ? $username[0] : trim($all[0]);
+            $screenname = trim($all[0]) === '@'.$username[0] ? $username[0] : trim($all[0]);
 
             if ($this->activeUsersOnly == true) {
                 if (! AutolinkService::mentionedUsernameExists($screenname)) {

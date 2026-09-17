@@ -30,7 +30,7 @@ class StatusAvatar extends Command
     {
         $avatar = $this->resolve($this->argument('id'));
 
-        if (! $avatar) {
+        if (! $avatar instanceof Avatar) {
             $this->error('No avatar found for "'.$this->argument('id').'" (tried avatar id then profile_id).');
 
             return self::FAILURE;

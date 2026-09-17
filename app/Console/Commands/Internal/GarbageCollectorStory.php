@@ -60,7 +60,7 @@ class GarbageCollectorStory extends Command
     {
         $queue = StoryService::rotateQueue();
 
-        if (! $queue || count($queue) == 0) {
+        if (! $queue || count($queue) === 0) {
             return;
         }
 

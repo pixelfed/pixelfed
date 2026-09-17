@@ -208,7 +208,7 @@ class LooseAutolink extends Autolink
         if ($this->nofollow) {
             $rel[] = 'nofollow';
         }
-        if (! empty($rel)) {
+        if ($rel !== []) {
             $link .= ' rel="'.implode(' ', $rel).'"';
         }
         if ($this->target) {
@@ -245,7 +245,7 @@ class LooseAutolink extends Autolink
         if ($this->nofollow) {
             $rel[] = 'nofollow';
         }
-        if (! empty($rel)) {
+        if ($rel !== []) {
             $link .= ' rel="'.implode(' ', $rel).'"';
         }
         if ($this->target) {

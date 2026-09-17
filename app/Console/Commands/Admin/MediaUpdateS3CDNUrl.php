@@ -272,7 +272,7 @@ class MediaUpdateS3CDNUrl extends Command
             $changes[$field] = ['from' => $current, 'to' => $rebuilt];
         }
 
-        if (empty($changes)) {
+        if ($changes === []) {
             return false;
         }
 
@@ -337,7 +337,7 @@ class MediaUpdateS3CDNUrl extends Command
         $diskHost = parse_url($url, PHP_URL_HOST);
         if ($diskHost && strcasecmp($diskHost, $this->newHost) !== 0) {
             // Override host was requested; swap it into the disk-built URL.
-            $url = preg_replace('#^(https?://)'.preg_quote($diskHost, '#').'#i', '$1'.$this->newHost, $url);
+            return preg_replace('#^(https?://)'.preg_quote($diskHost, '#').'#i', '$1'.$this->newHost, $url);
         }
 
         return $url;

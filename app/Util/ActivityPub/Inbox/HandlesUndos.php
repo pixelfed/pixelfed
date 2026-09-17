@@ -73,7 +73,7 @@ trait HandlesUndos
             ->forceDelete();
 
         if ($status->reblogs_count) {
-            $status->reblogs_count = $status->reblogs_count - 1;
+            $status->reblogs_count -= 1;
             $status->saveQuietly();
         }
 
@@ -137,7 +137,7 @@ trait HandlesUndos
 
         $status = Helpers::statusFirstOrFetch($objectUri);
 
-        if (! $status) {
+        if (! $status instanceof Status) {
             return;
         }
 
@@ -150,7 +150,7 @@ trait HandlesUndos
             ->forceDelete();
 
         if ($deleted > 0 && $status->likes_count > 0) {
-            $status->likes_count = $status->likes_count - 1;
+            $status->likes_count -= 1;
             $status->saveQuietly();
             StatusService::del($status->id);
         }

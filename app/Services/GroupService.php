@@ -264,9 +264,9 @@ class GroupService
         $limits = self::getInteractionLimits($gid, $pid);
         if ($limits) {
             return (bool) $limits['limits']['can_post'];
-        } else {
-            return true;
         }
+
+        return true;
     }
 
     public static function canComment($gid, $pid)
@@ -274,9 +274,9 @@ class GroupService
         $limits = self::getInteractionLimits($gid, $pid);
         if ($limits) {
             return (bool) $limits['limits']['can_comment'];
-        } else {
-            return true;
         }
+
+        return true;
     }
 
     public static function canLike($gid, $pid)
@@ -284,9 +284,9 @@ class GroupService
         $limits = self::getInteractionLimits($gid, $pid);
         if ($limits) {
             return (bool) $limits['limits']['can_like'];
-        } else {
-            return true;
         }
+
+        return true;
     }
 
     public static function categories($onlyActive = true)

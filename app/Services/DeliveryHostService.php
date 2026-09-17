@@ -128,7 +128,7 @@ class DeliveryHostService
     {
         $domains = self::normalize($domains);
 
-        if (empty($domains)) {
+        if ($domains === []) {
             return;
         }
 
@@ -159,7 +159,7 @@ class DeliveryHostService
             fn (string $domain) => array_key_exists($domain, $flagged)
         );
 
-        if (empty($domains)) {
+        if ($domains === []) {
             return;
         }
 
@@ -173,7 +173,7 @@ class DeliveryHostService
     {
         $domains = self::normalize([$domain]);
 
-        if (empty($domains)) {
+        if ($domains === []) {
             return;
         }
 

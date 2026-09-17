@@ -26,7 +26,7 @@ class HashidService
     public static function decode($short = false)
     {
         if (! $short) {
-            return;
+            return null;
         }
         $id = 0;
         foreach (str_split($short) as $needle) {

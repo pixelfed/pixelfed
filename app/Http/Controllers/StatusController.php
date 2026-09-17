@@ -62,7 +62,7 @@ class StatusController extends Controller
 
         $template = $status->in_reply_to_id ? 'status.reply' : 'status.show';
 
-        return view($template, compact('user', 'status'));
+        return view($template, ['user' => $user, 'status' => $status]);
     }
 
     public function shortcodeRedirect(Request $request, string $id): RedirectResponse
@@ -119,7 +119,7 @@ class StatusController extends Controller
         $showCaption = $request->boolean('caption');
         $layout = $request->input('layout') === 'compact' ? 'compact' : 'full';
 
-        return response(view('status.embed', compact('status', 'showLikes', 'showCaption', 'layout')))
+        return response(view('status.embed', ['status' => $status, 'showLikes' => $showLikes, 'showCaption' => $showCaption, 'layout' => $layout]))
             ->header('X-Frame-Options', 'ALLOWALL');
     }
 
@@ -270,7 +270,7 @@ class StatusController extends Controller
             ->findOrFail($id);
         $licenses = License::get();
 
-        return view('status.edit', compact('user', 'status', 'licenses'));
+        return view('status.edit', ['user' => $user, 'status' => $status, 'licenses' => $licenses]);
     }
 
     public function editStore(Request $request, string $username, string $id): RedirectResponse

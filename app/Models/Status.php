@@ -158,16 +158,15 @@ class Status extends Model
     {
         if ($this->uri) {
             return $forceLocal ? "/i/web/post/_/{$this->profile_id}/{$this->id}" : $this->uri;
-        } else {
-            $id = $this->id;
-            $account = AccountService::get($this->profile_id, true);
-            if (! $account || ! isset($account['username'])) {
-                return '/404';
-            }
-            $path = url(config('app.url')."/p/{$account['username']}/{$id}");
-
-            return $path;
         }
+        $id = $this->id;
+        $account = AccountService::get($this->profile_id, true);
+        if (! $account || ! isset($account['username'])) {
+            return '/404';
+        }
+        $path = url(config('app.url')."/p/{$account['username']}/{$id}");
+
+        return $path;
     }
 
     public function permalink($suffix = '/activity')
@@ -275,9 +274,9 @@ class Status extends Model
         $parent = $this->in_reply_to_id ?? $this->reblog_of_id;
         if (! empty($parent)) {
             return $this->findOrFail($parent);
-        } else {
-            return false;
         }
+
+        return false;
     }
 
     public function conversation()
@@ -343,7 +342,7 @@ class Status extends Model
     public function scopeToAudience($audience)
     {
         if (! in_array($audience, ['to', 'cc']) || $this->local == false) {
-            return;
+            return null;
         }
         $res = [];
         $res['to'] = [];

@@ -33,7 +33,7 @@ class AccountInterstitialController extends Controller
         $meta = json_decode($interstitial->meta);
         $view = $interstitial->view;
 
-        return view($view, compact('interstitial', 'meta'));
+        return view($view, ['interstitial' => $interstitial, 'meta' => $meta]);
     }
 
     public function read(Request $request): RedirectResponse

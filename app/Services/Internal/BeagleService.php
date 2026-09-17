@@ -52,11 +52,11 @@ class BeagleService
 
     public static function getDiscover()
     {
-        if ((bool) config_cache('federation.activitypub.enabled') == false) {
+        if ((bool) config_cache('federation.activitypub.enabled') === false) {
             return [];
         }
 
-        if ((bool) config('instance.discover.beagle_api') == false) {
+        if ((bool) config('instance.discover.beagle_api') === false) {
             return [];
         }
 
@@ -93,11 +93,11 @@ class BeagleService
 
     public static function getDiscoverPosts()
     {
-        if ((bool) config_cache('federation.activitypub.enabled') == false) {
+        if ((bool) config_cache('federation.activitypub.enabled') === false) {
             return [];
         }
 
-        if ((bool) config('instance.discover.beagle_api') == false) {
+        if ((bool) config('instance.discover.beagle_api') === false) {
             return [];
         }
 

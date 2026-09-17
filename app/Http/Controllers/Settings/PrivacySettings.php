@@ -30,7 +30,7 @@ trait PrivacySettings
             $settings['disable_embeds'] = false;
         }
 
-        return view('settings.privacy', compact('settings', 'profile'));
+        return view('settings.privacy', ['settings' => $settings, 'profile' => $profile]);
     }
 
     public function privacyStore(Request $request)
@@ -64,7 +64,7 @@ trait PrivacySettings
 
         foreach ($fields as $field) {
             $form = $request->input($field);
-            if ($field == 'is_private') {
+            if ($field === 'is_private') {
                 if ($form == 'on') {
                     $profile->{$field} = true;
                     $settings->show_guests = false;
@@ -75,19 +75,19 @@ trait PrivacySettings
                     $profile->save();
                 }
                 Cache::forget('profiles:private');
-            } elseif ($field == 'crawlable') {
+            } elseif ($field === 'crawlable') {
                 if ($form == 'on') {
                     $settings->{$field} = false;
                 } else {
                     $settings->{$field} = true;
                 }
-            } elseif ($field == 'public_dm') {
+            } elseif ($field === 'public_dm') {
                 if ($form == 'on') {
                     $settings->{$field} = true;
                 } else {
                     $settings->{$field} = false;
                 }
-            } elseif ($field == 'indexable') {
+            } elseif ($field === 'indexable') {
             } else {
                 if ($form == 'on') {
                     $settings->{$field} = true;
@@ -130,7 +130,7 @@ trait PrivacySettings
         $ids = (new UserFilter)->mutedUserIds($pid);
         $users = Profile::whereIn('id', $ids)->simplePaginate(15);
 
-        return view('settings.privacy.muted', compact('users'));
+        return view('settings.privacy.muted', ['users' => $users]);
     }
 
     public function mutedUsersUpdate(Request $request)
@@ -162,7 +162,7 @@ trait PrivacySettings
             ->orderByDesc('created_at')
             ->simplePaginate(15);
 
-        return view('settings.privacy.featured-collections', compact('collections'));
+        return view('settings.privacy.featured-collections', ['collections' => $collections]);
     }
 
     public function featuredCollectionsRemove(Request $request)
@@ -186,7 +186,7 @@ trait PrivacySettings
         $ids = (new UserFilter)->blockedUserIds($pid);
         $users = Profile::whereIn('id', $ids)->simplePaginate(15);
 
-        return view('settings.privacy.blocked', compact('users'));
+        return view('settings.privacy.blocked', ['users' => $users]);
     }
 
     public function blockedUsersUpdate(Request $request)

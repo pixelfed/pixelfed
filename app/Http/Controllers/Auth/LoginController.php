@@ -76,7 +76,7 @@ class LoginController extends Controller
 
         $user = PendingLoginService::user($request);
 
-        if (! $user) {
+        if (! $user instanceof User) {
             return redirect()->route('login');
         }
 
@@ -151,7 +151,7 @@ class LoginController extends Controller
 
         $user = $this->pendingUser($request, PendingLoginService::STEP_2FA);
 
-        if (! $user) {
+        if (! $user instanceof User) {
             return $this->redirectToPendingStep($request);
         }
 
@@ -206,7 +206,7 @@ class LoginController extends Controller
     {
         $user = $this->pendingUser($request, PendingLoginService::STEP_VERIFY);
 
-        if (! $user) {
+        if (! $user instanceof User) {
             return $this->redirectToPendingStep($request);
         }
 
@@ -231,7 +231,7 @@ class LoginController extends Controller
     {
         $user = $this->pendingUser($request, PendingLoginService::STEP_VERIFY);
 
-        if (! $user) {
+        if (! $user instanceof User) {
             return $this->redirectToPendingStep($request);
         }
 
@@ -267,7 +267,7 @@ class LoginController extends Controller
     {
         $user = $this->pendingUser($request, PendingLoginService::STEP_VERIFY);
 
-        if (! $user) {
+        if (! $user instanceof User) {
             return $this->redirectToPendingStep($request);
         }
 
@@ -327,7 +327,7 @@ class LoginController extends Controller
             $randomToken
         );
 
-        if (! $user) {
+        if (! $user instanceof User) {
             if ($request->user() !== null) {
                 return redirect($this->redirectPath());
             }

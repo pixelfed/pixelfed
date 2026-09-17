@@ -117,7 +117,7 @@ class Classifier
         } else {
             $ignored = explode(',', $ignored);
         }
-        if ($type == 'spam' && in_array($word, $ignored)) {
+        if ($type === 'spam' && in_array($word, $ignored)) {
             return;
         }
         if (! isset($this->words[$type][$word])) {

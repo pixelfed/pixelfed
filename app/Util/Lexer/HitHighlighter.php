@@ -135,8 +135,9 @@ class HitHighlighter extends Regex
             foreach ($hits as $hit) {
                 $hits_flat = array_merge($hits_flat, $hit);
             }
+            $counter = count($hits_flat);
             // Loop over the hit indices:
-            for ($index = 0; $index < count($hits_flat); $index++) {
+            for ($index = 0; $index < $counter; $index++) {
                 $hit = $hits_flat[$index];
                 $tag = $tags[$index % 2];
                 $placed = false;
@@ -171,7 +172,8 @@ class HitHighlighter extends Regex
                 if ($chunk_cursor < StringUtils::strlen($chunk)) {
                     $highlightTweet .= StringUtils::substr($chunk, $chunk_cursor);
                 }
-                for ($index = $chunk_index + 1; $index < count($chunks); $index++) {
+                $counter = count($chunks);
+                for ($index = $chunk_index + 1; $index < $counter; $index++) {
                     $highlightTweet .= ($index % 2 === 0 ? $chunks[$index] : '<'.$chunks[$index].'>');
                 }
             }

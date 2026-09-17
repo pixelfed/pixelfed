@@ -50,7 +50,8 @@ class VideoOptimize implements ShouldQueue
 
     protected function transcode($media)
     {
-        return;
+        // TODO INVESTIGATE
+        return null;
         $base = $media->media_path;
         $path = explode('/', $base);
         $name = last($path);

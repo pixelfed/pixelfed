@@ -109,34 +109,36 @@ class SharePipeline implements ShouldQueue
 
     public function remoteAnnounceDeliver()
     {
-        if (config('app.env') !== 'production' || (bool) config_cache('federation.activitypub.enabled') == false) {
+        if (config('app.env') !== 'production' || (bool) config_cache('federation.activitypub.enabled') === false) {
             return true;
         }
 
         $status = $this->status;
 
         if ($status->uri !== null) {
-            return;
+            return null;
         }
 
         $profile = $status->profile;
 
         if (! $profile || $profile->domain !== null) {
-            return;
+            return null;
         }
 
         if ($status->scope !== 'public') {
-            return;
+            return null;
         }
 
         $audience = $profile->getAudienceInbox();
 
         if (empty($audience)) {
-            return;
+            return null;
         }
 
         $activity = FractalService::item($status, new Announce);
 
         ActivityPubDeliveryService::pool($profile, $audience, $activity);
+
+        return null;
     }
 }

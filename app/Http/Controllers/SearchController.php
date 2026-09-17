@@ -94,7 +94,7 @@ class SearchController extends Controller
         $hash = hash('sha256', $tag);
         if (Helpers::validateUrl($tag) != false &&
             Helpers::validateLocalUrl($tag) != true &&
-            (bool) config_cache('federation.activitypub.enabled') == true &&
+            (bool) config_cache('federation.activitypub.enabled') === true &&
             config('federation.activitypub.remoteFollow') == true
         ) {
             $remote = Helpers::fetchFromUrl($tag);
@@ -215,7 +215,7 @@ class SearchController extends Controller
         $ttl = now()->addHours(2);
         if (Helpers::validateUrl($tag) != false &&
             Helpers::validateLocalUrl($tag) != true &&
-            (bool) config_cache('federation.activitypub.enabled') == true &&
+            (bool) config_cache('federation.activitypub.enabled') === true &&
             config('federation.activitypub.remoteFollow') == true
         ) {
             $remote = Helpers::fetchFromUrl($tag);

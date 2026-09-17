@@ -29,6 +29,6 @@ trait RelationshipSettings
                 break;
         }
 
-        return view('settings.relationships.home', compact('profile', 'mode', 'data'));
+        return view('settings.relationships.home', ['profile' => $profile, 'mode' => $mode, 'data' => $data]);
     }
 }

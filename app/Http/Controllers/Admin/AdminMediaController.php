@@ -32,24 +32,24 @@ trait AdminMediaController
                 ->orWhere('mime', $request->input('search'))
                 ->paginate(12);
 
-            return view('admin.media.home', compact('media'));
+            return view('admin.media.home', ['media' => $media]);
         }
 
         if ($request->input('layout') == 'banned') {
             $media = MediaBlocklist::latest()->paginate(12);
 
-            return view('admin.media.home', compact('media'));
+            return view('admin.media.home', ['media' => $media]);
         }
 
         $media = Media::whereNull('remote_url')->orderby('id', 'desc')->simplePaginate(12);
 
-        return view('admin.media.home', compact('media'));
+        return view('admin.media.home', ['media' => $media]);
     }
 
     public function mediaShow(Request $request, $id)
     {
         $media = Media::findOrFail($id);
 
-        return view('admin.media.show', compact('media'));
+        return view('admin.media.show', ['media' => $media]);
     }
 }

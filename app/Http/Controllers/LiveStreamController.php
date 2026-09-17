@@ -135,7 +135,7 @@ class LiveStreamController extends Controller
 
         abort_if(! $request->user() && $stream && $stream->visibility !== 'public', 404);
 
-        return view('live.player', compact('id'));
+        return view('live.player', ['id' => $id]);
     }
 
     public function deleteStream(Request $request): array
@@ -369,20 +369,18 @@ class LiveStreamController extends Controller
             $stream = LiveStream::whereStreamKey($key)->firstOrFail();
 
             return redirect($stream->getStreamRtmpUrl(), 301);
-        } else {
-            $stream = LiveStream::whereStreamId($key)->firstOrFail();
         }
+        $stream = LiveStream::whereStreamId($key)->firstOrFail();
 
         StreamStart::dispatch($stream->profile_id);
 
-        if ($request->filled('name') && $token == false) {
+        if ($request->filled('name') && $token === false) {
             $stream->live_at = now();
             $stream->save();
 
             return [];
-        } else {
-            abort(400);
         }
+        abort(400);
 
         abort(400);
     }

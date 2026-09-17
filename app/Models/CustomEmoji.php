@@ -30,7 +30,7 @@ class CustomEmoji extends Model
 
     public static function scan($text, $activitypub = false)
     {
-        if ((bool) config_cache('federation.custom_emoji.enabled') == false) {
+        if ((bool) config_cache('federation.custom_emoji.enabled') === false) {
             return [];
         }
 
@@ -69,22 +69,22 @@ class CustomEmoji extends Model
                                 'url' => $url,
                             ],
                         ];
-                    } else {
-                        return [
-                            'shortcode' => $match,
-                            'url' => $url,
-                            'static_url' => $url,
-                            'visible_in_picker' => $tag['disabled'] == false,
-                        ];
                     }
+
+                    return [
+                        'shortcode' => $match,
+                        'url' => $url,
+                        'static_url' => $url,
+                        'visible_in_picker' => $tag['disabled'] == false,
+                    ];
                 }
             })
             ->filter(function ($tag) use ($activitypub) {
                 if ($activitypub == true) {
                     return $tag && isset($tag['icon']);
-                } else {
-                    return $tag && isset($tag['static_url']);
                 }
+
+                return $tag && isset($tag['static_url']);
             })
             ->values()
             ->toArray();

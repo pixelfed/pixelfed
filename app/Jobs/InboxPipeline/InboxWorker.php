@@ -48,7 +48,7 @@ class InboxWorker implements ShouldQueue
         $headers = $this->headers;
 
         if (empty($headers) || empty($this->payload) || ! isset($headers['signature']) || ! isset($headers['date'])) {
-            return;
+            return null;
         }
 
         $payload = json_decode($this->payload, true, 8);
@@ -64,10 +64,10 @@ class InboxWorker implements ShouldQueue
 
             ActivityHandler::dispatch($headers, $profile, $payload)->onQueue('shared');
 
-            return;
-        } else {
-            return;
+            return null;
         }
+
+        return null;
     }
 
     protected function verifySignature($headers, $payload)

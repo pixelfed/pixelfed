@@ -95,7 +95,7 @@ class ImportInstagram implements ShouldQueue
                 ->whereOriginalName($filename)
                 ->first();
 
-            if (empty($importData) || is_file(storage_path("app/$importData->path")) == false) {
+            if (empty($importData) || is_file(storage_path("app/$importData->path")) === false) {
                 continue;
             }
 

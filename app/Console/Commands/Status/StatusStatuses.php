@@ -216,7 +216,7 @@ class StatusStatuses extends Command
             }
         }
 
-        if ($stale) {
+        if ($stale !== []) {
             $this->error('STALE MEDIA URLS DETECTED:');
             foreach ($stale as $s) {
                 $this->line('  ✗ '.$s);

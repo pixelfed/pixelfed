@@ -5,6 +5,7 @@ namespace App\Console\Commands\Admin;
 use Illuminate\Console\Command;
 use Illuminate\Http\File;
 use Illuminate\Support\Facades\Storage;
+use Spatie\Backup\BackupDestination\Backup;
 use Spatie\Backup\BackupDestination\BackupDestination;
 
 final class BackupToCloud extends Command
@@ -59,7 +60,7 @@ final class BackupToCloud extends Command
 
         $newest = $backupDestination->newestBackup();
 
-        if ($newest === null) {
+        if (! $newest instanceof Backup) {
             $this->error('No backup found to upload.');
 
             return Command::FAILURE;

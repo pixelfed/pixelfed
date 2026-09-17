@@ -142,7 +142,7 @@ class Installer extends Command
 
         $missing = [];
         foreach ($extensions as $ext) {
-            if (extension_loaded($ext) == false) {
+            if (extension_loaded($ext) === false) {
                 $this->error("- \"{$ext}\" not found");
                 $missing[] = $ext;
             } else {
@@ -150,7 +150,7 @@ class Installer extends Command
             }
         }
 
-        if (! empty($missing)) {
+        if ($missing !== []) {
             $continue = $this->choice('Some extensions are missing. Do you wish to continue?', ['yes', 'no'], 1);
             if ($continue === 'no') {
                 $this->info('Exiting Installer.');
@@ -158,6 +158,8 @@ class Installer extends Command
                 return 1;
             }
         }
+
+        return null;
 
     }
 
@@ -179,6 +181,8 @@ class Installer extends Command
         } else {
             $this->info('- Found FFmpeg!');
         }
+
+        return null;
     }
 
     protected function checkOptimiseDependencies()
@@ -215,14 +219,13 @@ class Installer extends Command
         ];
 
         foreach ($paths as $path) {
-            if (is_writable($path) == false) {
+            if (is_writable($path) === false) {
                 $this->error('- Invalid permission found! Aborting installation.');
                 $this->error('  Please make the following path writeable by the web server:');
                 $this->error("  $path");
                 exit;
-            } else {
-                $this->info("- Found valid permissions for {$path}");
             }
+            $this->info("- Found valid permissions for {$path}");
         }
     }
 

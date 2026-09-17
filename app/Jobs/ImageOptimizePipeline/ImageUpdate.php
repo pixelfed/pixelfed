@@ -75,7 +75,7 @@ class ImageUpdate implements ShouldQueue
         }
 
         if ((bool) config_cache('pixelfed.optimize_image') && $localFs) {
-            if (in_array($media->mime, $this->protectedMimes) == true) {
+            if (in_array($media->mime, $this->protectedMimes) === true) {
                 try {
                     $thumbPath = storage_path('app/'.$media->thumbnail_path);
                     if (file_exists($thumbPath)) {
@@ -93,7 +93,7 @@ class ImageUpdate implements ShouldQueue
                 }
             }
         } elseif ((bool) config_cache('pixelfed.optimize_image') && ! $localFs) {
-            if (in_array($media->mime, $this->protectedMimes) == true) {
+            if (in_array($media->mime, $this->protectedMimes) === true) {
                 $this->optimizeRemoteImages($media, $disk);
             }
         }
@@ -124,9 +124,9 @@ class ImageUpdate implements ShouldQueue
 
         if ($localFs) {
             return filesize(storage_path('app/'.$path)) ?? 0;
-        } else {
-            return $disk->size($path) ?? 0;
         }
+
+        return $disk->size($path) ?? 0;
     }
 
     /**

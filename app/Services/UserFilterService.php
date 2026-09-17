@@ -103,7 +103,7 @@ class UserFilterService
 
     public static function mute(int $profile_id, int $muted_id)
     {
-        if ($profile_id == $muted_id) {
+        if ($profile_id === $muted_id) {
             return false;
         }
         $key = self::USER_MUTES_KEY.$profile_id;
@@ -131,7 +131,7 @@ class UserFilterService
 
     public static function block(int $profile_id, int $blocked_id)
     {
-        if ($profile_id == $blocked_id) {
+        if ($profile_id === $blocked_id) {
             return false;
         }
         $key = self::USER_BLOCKS_KEY.$profile_id;

@@ -5,6 +5,7 @@ namespace App\Auth;
 use DateInterval;
 use Laravel\Passport\Passport;
 use League\OAuth2\Server\Entities\ClientEntityInterface;
+use League\OAuth2\Server\Entities\RefreshTokenEntityInterface;
 use League\OAuth2\Server\Exception\OAuthServerException;
 use League\OAuth2\Server\Grant\AbstractGrant;
 use League\OAuth2\Server\Repositories\RefreshTokenRepositoryInterface;
@@ -66,7 +67,7 @@ class AppRegisterGrant extends AbstractGrant
 
         $refreshToken = $this->issueRefreshToken($accessToken);
 
-        if ($refreshToken !== null) {
+        if ($refreshToken instanceof RefreshTokenEntityInterface) {
             $this->getEmitter()->emit(
                 new RequestRefreshTokenEvent(RequestEvent::REFRESH_TOKEN_ISSUED, $request, $refreshToken)
             );

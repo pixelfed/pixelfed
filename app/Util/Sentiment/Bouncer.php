@@ -50,7 +50,7 @@ class Bouncer
                 ->whereIn('id', $ids)
                 ->count();
 
-            return $count >= 1 ? true : false;
+            return $count >= 1;
         });
 
         if ($exemption == true) {

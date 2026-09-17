@@ -20,7 +20,7 @@ class CachedPersonalAccessClientRepository extends ClientRepository
         if ($cachedClientId) {
             $client = $this->findValidClientById($cachedClientId, $provider);
 
-            if ($client) {
+            if ($client instanceof Client) {
                 return $client;
             }
 

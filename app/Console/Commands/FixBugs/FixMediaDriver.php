@@ -38,7 +38,7 @@ class FixMediaDriver extends Command
             return Command::SUCCESS;
         }
 
-        if ((bool) config_cache('pixelfed.cloud_storage') == false) {
+        if ((bool) config_cache('pixelfed.cloud_storage') === false) {
             $this->error('Cloud storage not enabled, exiting...');
 
             return Command::SUCCESS;

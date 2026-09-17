@@ -804,7 +804,7 @@ class Autolink extends Regex
         if ($this->noopener) {
             $rel[] = 'noopener';
         }
-        if (! empty($rel)) {
+        if ($rel !== []) {
             $attributes['rel'] = implode(' ', $rel);
         }
         if ($this->target) {

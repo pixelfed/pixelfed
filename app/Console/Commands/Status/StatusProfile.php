@@ -39,7 +39,7 @@ class StatusProfile extends Command
 
         $profile = $this->resolveProfile($id);
 
-        if (! $profile) {
+        if (! $profile instanceof Profile) {
             $this->error('No profile found for "'.$id.'".');
             $this->suggestSimilar($id);
 
@@ -272,7 +272,7 @@ class StatusProfile extends Command
             $problems[] = 'followers_count ('.$cached.') out of sync with live count ('.$live.').';
         }
 
-        if ($problems) {
+        if ($problems !== []) {
             $this->error('ISSUES:');
             foreach ($problems as $p) {
                 $this->line('  ✗ '.$p);

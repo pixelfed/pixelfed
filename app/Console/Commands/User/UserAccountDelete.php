@@ -34,7 +34,7 @@ class UserAccountDelete extends Command
     public function handle(): int
     {
         $user = $this->promptForDeletedUser();
-        if (! $user) {
+        if (! $user instanceof User) {
             $this->error('No deleted user selected.');
 
             return self::FAILURE;
@@ -115,7 +115,7 @@ class UserAccountDelete extends Command
                 config('app.url').'/inbox',
                 $digest,
             );
-            if (empty($testHeaders) || ! isset($testHeaders['Signature'])) {
+            if ($testHeaders === [] || ! isset($testHeaders['Signature'])) {
                 $this->error('Instance actor signing failed — run php artisan instance:actor');
 
                 return self::FAILURE;
@@ -242,14 +242,14 @@ class UserAccountDelete extends Command
     {
         $id = search(
             label: 'Search for the account to delete by username',
-            placeholder: 'john.appleseed',
-            options: fn (string $value) => strlen($value) > 0
+            options: fn (string $value) => $value !== ''
                 ? User::withTrashed()
                     ->whereIn('status', ['deleted', 'delete'])
                     ->where('username', 'like', "%{$value}%")
                     ->pluck('username', 'id')
                     ->all()
                 : [],
+            placeholder: 'john.appleseed',
         );
 
         return User::withTrashed()->find($id);

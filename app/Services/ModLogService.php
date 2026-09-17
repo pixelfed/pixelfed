@@ -100,9 +100,9 @@ class ModLogService
 
         if ($res == true) {
             return $ml;
-        } else {
-            return;
         }
+
+        return null;
     }
 
     public function load($modLog)

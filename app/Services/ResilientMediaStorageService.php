@@ -64,7 +64,7 @@ class ResilientMediaStorageService
         if (config('filesystems.disks.alt-secondary.enabled')) {
             $drivers[] = 'alt-secondary';
         }
-        if (empty($drivers)) {
+        if ($drivers === []) {
             return false;
         }
         $key = array_rand($drivers, 1);

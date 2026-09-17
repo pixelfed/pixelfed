@@ -17,7 +17,7 @@ class MediaStorageService
 {
     public static function store(Media $media)
     {
-        if ((bool) config_cache('pixelfed.cloud_storage') == true && config('filesystems.default') === 'local') {
+        if ((bool) config_cache('pixelfed.cloud_storage') === true && config('filesystems.default') === 'local') {
             (new self)->cloudStore($media);
         }
     }
@@ -28,7 +28,7 @@ class MediaStorageService
             return;
         }
 
-        if ((bool) config_cache('pixelfed.cloud_storage') == true && config('filesystems.default') === 'local') {
+        if ((bool) config_cache('pixelfed.cloud_storage') === true && config('filesystems.default') === 'local') {
             return (new self)->cloudMove($media);
         }
     }

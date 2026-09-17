@@ -132,7 +132,7 @@ class FollowerService
 
     public static function follows(string $actor, string $target, $quickCheck = false)
     {
-        if ($actor == $target) {
+        if ($actor === $target) {
             return false;
         }
 
@@ -144,12 +144,11 @@ class FollowerService
             self::cacheSyncCheck($target, 'followers');
 
             return (bool) Redis::zScore(self::FOLLOWERS_KEY.$target, $actor);
-        } else {
-            self::cacheSyncCheck($target, 'followers');
-            self::cacheSyncCheck($actor, 'following');
-
-            return Follower::whereProfileId($actor)->whereFollowingId($target)->exists();
         }
+        self::cacheSyncCheck($target, 'followers');
+        self::cacheSyncCheck($actor, 'following');
+
+        return Follower::whereProfileId($actor)->whereFollowingId($target)->exists();
     }
 
     public static function cacheSyncCheck($id, $scope = 'followers')
@@ -280,11 +279,10 @@ class FollowerService
             Redis::expire($key, 3600);
 
             return $ids;
-        } else {
-            Redis::expire($key, 3600);
-
-            return [];
         }
+        Redis::expire($key, 3600);
+
+        return [];
     }
 
     /**

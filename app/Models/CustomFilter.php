@@ -100,6 +100,8 @@ class CustomFilter extends Model
             case 2:
                 return 'blur';
         }
+
+        return null;
     }
 
     public function getTitleAttribute()
@@ -293,7 +295,7 @@ class CustomFilter extends Model
                     $pattern = preg_quote($keyword->keyword, '/');
 
                     if ($keyword->whole_word) {
-                        $pattern = '\b'.$pattern.'\b';
+                        return '\b'.$pattern.'\b';
                     }
 
                     return $pattern;
@@ -395,7 +397,7 @@ class CustomFilter extends Model
             //     }
             // }
 
-            if (! empty($keywordMatches) || ! empty($statusMatches)) {
+            if ($keywordMatches !== [] || ! empty($statusMatches)) {
                 $results[] = [
                     'filter' => $filter->toFilterArray(),
                     'keyword_matches' => $keywordMatches ?: null,

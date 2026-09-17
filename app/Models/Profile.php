@@ -203,9 +203,9 @@ class Profile extends Model
             if ($avatar->cdn_url) {
                 if (substr($avatar->cdn_url, 0, 8) === 'https://') {
                     return $avatar->cdn_url;
-                } else {
-                    return url('/storage/avatars/default.jpg');
                 }
+
+                return url('/storage/avatars/default.jpg');
             }
 
             $path = $avatar->media_path;
@@ -216,7 +216,7 @@ class Profile extends Model
 
             if ($avatar->is_remote &&
                 $avatar->remote_url &&
-                boolval(config_cache('federation.avatars.store_local')) == true
+                boolval(config_cache('federation.avatars.store_local')) === true
             ) {
                 return $avatar->remote_url;
             }

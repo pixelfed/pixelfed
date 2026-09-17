@@ -122,7 +122,7 @@ class Localization
     {
         $locales = static::locales();
 
-        if (empty($locales)) {
+        if ($locales === []) {
             return null;
         }
 
