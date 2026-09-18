@@ -17,6 +17,6 @@ return [
     'reset' => '¡Tu contraseña ha sido restablecida!',
     'sent' => 'Si tu dirección de correo electrónico está registrada en nuestra base de datos, recibirás un enlace para recuperar tu contraseña en unos minutos. Si no lo recibes, revisa tu carpeta de correo no deseado.',
     'token' => 'Este token de restablecimiento de contraseña no es válido.',
-    'user' => '',
+    'user' => 'Si tu dirección de correo electrónico está registrada en nuestra base de datos recibirás un enlace para recuperar tu contraseña en unos minutos. Si no lo recibes por favor revisa tu carpeta de correo no deseado.',
 
 ];
