@@ -7,6 +7,12 @@ parameters:
 			path: app/Console/Commands/Deprecated/AvatarDefaultMigration.php
 
 		-
+			message: '#^Property App\\Models\\Media\:\:\$size \(int\<0, max\>\|null\) does not accept string\.$#'
+			identifier: assign.propertyType
+			count: 1
+			path: app/Console/Commands/FixBugs/FetchMissingMediaMimeType.php
+
+		-
 			message: '#^Call to an undefined method Illuminate\\Database\\Query\\Builder\:\:whereHashtagId\(\)\.$#'
 			identifier: method.notFound
 			count: 1
@@ -17,6 +23,12 @@ parameters:
 			identifier: staticMethod.notFound
 			count: 1
 			path: app/Console/Commands/Media/MediaFilterCleanup.php
+
+		-
+			message: '#^Property App\\Models\\User\:\:\$remember_token \(string\) does not accept null\.$#'
+			identifier: assign.propertyType
+			count: 1
+			path: app/Console/Commands/User/UserSetPassword.php
 
 		-
 			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$status\.$#'
@@ -148,6 +160,30 @@ parameters:
 			message: '#^Call to an undefined method Illuminate\\Database\\Query\\Builder\:\:whereUserId\(\)\.$#'
 			identifier: method.notFound
 			count: 2
+			path: app/Http/Controllers/AdminController.php
+
+		-
+			message: '#^Property App\\Models\\Newsroom\:\:\$body \(string\|null\) does not accept bool\.$#'
+			identifier: assign.propertyType
+			count: 1
+			path: app/Http/Controllers/AdminController.php
+
+		-
+			message: '#^Property App\\Models\\Newsroom\:\:\$category \(string\) does not accept bool\.$#'
+			identifier: assign.propertyType
+			count: 1
+			path: app/Http/Controllers/AdminController.php
+
+		-
+			message: '#^Property App\\Models\\Newsroom\:\:\$summary \(string\|null\) does not accept bool\.$#'
+			identifier: assign.propertyType
+			count: 1
+			path: app/Http/Controllers/AdminController.php
+
+		-
+			message: '#^Property App\\Models\\Newsroom\:\:\$title \(string\|null\) does not accept bool\.$#'
+			identifier: assign.propertyType
+			count: 1
 			path: app/Http/Controllers/AdminController.php
 
 		-
@@ -505,6 +541,12 @@ parameters:
 			path: app/Http/Controllers/ComposeController.php
 
 		-
+			message: '#^Property App\\Models\\Media\:\:\$version \(int\) does not accept string\.$#'
+			identifier: assign.propertyType
+			count: 1
+			path: app/Http/Controllers/ComposeController.php
+
+		-
 			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$id\.$#'
 			identifier: property.notFound
 			count: 6
@@ -580,6 +622,12 @@ parameters:
 			message: '#^Call to an undefined method Illuminate\\Database\\Eloquent\\Model\:\:url\(\)\.$#'
 			identifier: method.notFound
 			count: 2
+			path: app/Http/Controllers/DirectMessageController.php
+
+		-
+			message: '#^Property App\\Models\\DirectMessage\:\:\$meta \(string\|null\) does not accept array\<string, bool\|string\|null\>\.$#'
+			identifier: assign.propertyType
+			count: 1
 			path: app/Http/Controllers/DirectMessageController.php
 
 		-
@@ -665,6 +713,24 @@ parameters:
 			identifier: property.notFound
 			count: 11
 			path: app/Http/Controllers/ImportController.php
+
+		-
+			message: '#^Property App\\Models\\ImportPost\:\:\$creation_day \(int\<0, max\>\|null\) does not accept ''01''\|''02''\|''03''\|''04''\|''05''\|''06''\|''07''\|''08''\|''09''\|''10''\|''11''\|''12''\|''13''\|''14''\|''15''\|''16''\|''17''\|''18''\|''19''\|''20''\|''21''\|''22''\|''23''\|''24''\|''25''\|''26''\|''27''\|''28''\|''29''\|''30''\|''31''\.$#'
+			identifier: assign.propertyType
+			count: 2
+			path: app/Http/Controllers/ImportPostController.php
+
+		-
+			message: '#^Property App\\Models\\ImportPost\:\:\$creation_month \(int\<0, max\>\|null\) does not accept ''01''\|''02''\|''03''\|''04''\|''05''\|''06''\|''07''\|''08''\|''09''\|''10''\|''11''\|''12''\.$#'
+			identifier: assign.propertyType
+			count: 2
+			path: app/Http/Controllers/ImportPostController.php
+
+		-
+			message: '#^Property App\\Models\\ImportPost\:\:\$creation_year \(int\<0, max\>\|null\) does not accept numeric\-string\.$#'
+			identifier: assign.propertyType
+			count: 2
+			path: app/Http/Controllers/ImportPostController.php
 
 		-
 			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$id\.$#'
@@ -913,6 +979,12 @@ parameters:
 			path: app/Http/Controllers/StatusEditController.php
 
 		-
+			message: '#^Property App\\Models\\Story\:\:\$story \(array\|null\) does not accept string\|false\.$#'
+			identifier: assign.propertyType
+			count: 1
+			path: app/Http/Controllers/StoryComposeController.php
+
+		-
 			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$id\.$#'
 			identifier: property.notFound
 			count: 5
@@ -1063,6 +1135,12 @@ parameters:
 			path: app/Jobs/ImportPipeline/ImportInstagram.php
 
 		-
+			message: '#^Property App\\Models\\Status\:\:\$created_at \(Illuminate\\Support\\Carbon\|null\) does not accept Carbon\\Carbon\.$#'
+			identifier: assign.propertyType
+			count: 1
+			path: app/Jobs/ImportPipeline/ImportInstagram.php
+
+		-
 			message: '#^Call to an undefined method Illuminate\\Database\\Eloquent\\Model\:\:isExpired\(\)\.$#'
 			identifier: method.notFound
 			count: 1
@@ -1073,6 +1151,12 @@ parameters:
 			identifier: property.notFound
 			count: 1
 			path: app/Models/DirectMessage.php
+
+		-
+			message: '#^Property App\\Models\\FailedJob\:\:\$timestamps \(bool\) does not accept default value of type string\.$#'
+			identifier: property.defaultValue
+			count: 1
+			path: app/Models/FailedJob.php
 
 		-
 			message: '#^Call to an undefined method Illuminate\\Database\\Eloquent\\Model\:\:permalink\(\)\.$#'
@@ -1103,6 +1187,24 @@ parameters:
 			identifier: property.notFound
 			count: 1
 			path: app/Models/Story.php
+
+		-
+			message: '#^PHPDoc type array of property App\\Models\\User\:\:\$guarded is not covariant with PHPDoc type array\<string\> of overridden property Illuminate\\Database\\Eloquent\\Model\:\:\$guarded\.$#'
+			identifier: property.phpDocType
+			count: 1
+			path: app/Models/User.php
+
+		-
+			message: '#^PHPDoc type array of property App\\Models\\User\:\:\$hidden is not covariant with PHPDoc type list\<string\> of overridden property Illuminate\\Database\\Eloquent\\Model\:\:\$hidden\.$#'
+			identifier: property.phpDocType
+			count: 1
+			path: app/Models/User.php
+
+		-
+			message: '#^Property App\\Models\\UserDevice\:\:\$timestamps \(bool\) does not accept default value of type array\<int, string\>\.$#'
+			identifier: property.defaultValue
+			count: 1
+			path: app/Models/UserDevice.php
 
 		-
 			message: '#^Access to an undefined property App\\Models\\User\:\:\$settings\.$#'
@@ -1157,6 +1259,24 @@ parameters:
 			identifier: method.notFound
 			count: 1
 			path: app/Services/GroupService.php
+
+		-
+			message: '#^Property App\\Models\\GroupInteraction\:\:\$group_id \(int\<0, max\>\) does not accept string\.$#'
+			identifier: assign.propertyType
+			count: 1
+			path: app/Services/GroupService.php
+
+		-
+			message: '#^Property App\\Models\\GroupInteraction\:\:\$profile_id \(int\<0, max\>\) does not accept string\.$#'
+			identifier: assign.propertyType
+			count: 1
+			path: app/Services/GroupService.php
+
+		-
+			message: '#^Property App\\Models\\Group\:\:\$profile_id \(int\) does not accept null\.$#'
+			identifier: assign.propertyType
+			count: 1
+			path: app/Services/Groups/GroupActivityPubService.php
 
 		-
 			message: '#^Access to an undefined property App\\Models\\MediaTag\:\:\$status\.$#'
@@ -1591,8 +1711,20 @@ parameters:
 			path: app/Transformer/Api/StoryItemTransformer.php
 
 		-
+			message: '#^Property App\\Models\\Status\:\:\$created_at \(Illuminate\\Support\\Carbon\|null\) does not accept Carbon\\Carbon\.$#'
+			identifier: assign.propertyType
+			count: 1
+			path: app/Util/ActivityPub/Helpers.php
+
+		-
 			message: '#^Access to an undefined property App\\Models\\User\:\:\$settings\.$#'
 			identifier: property.notFound
+			count: 1
+			path: app/Util/ActivityPub/Inbox.php
+
+		-
+			message: '#^Property App\\Models\\DirectMessage\:\:\$meta \(string\|null\) does not accept array\<string, bool\|string\|null\>\.$#'
+			identifier: assign.propertyType
 			count: 1
 			path: app/Util/ActivityPub/Inbox.php
 
