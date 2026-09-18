@@ -81,7 +81,7 @@ function fsyncFollow(Profile $actor, Profile $target, int $ageInMinutes = 120): 
 function fsyncSeedHosts(array $hosts): void
 {
     foreach ($hosts as $host) {
-        Cache::put('helpers:url:public-ips:' . hash('xxh128', $host), ['203.0.113.40'], 3600);
+        Cache::put('helpers:url:public-ips:'.hash('xxh128', $host), ['203.0.113.40'], 3600);
     }
 
     Cache::put('instances:banned:domains', [], 1209600);
@@ -136,7 +136,7 @@ function fsyncSignedGetHeaders(string $privateKey, string $keyId, string $path, 
 
 function fsyncInboundHeaders(Profile $sender, array $params, bool $signed = true): array
 {
-    $list = '(request-target) host date digest' . ($signed ? ' collection-synchronization' : '');
+    $list = '(request-target) host date digest'.($signed ? ' collection-synchronization' : '');
 
     return [
         'signature' => [
@@ -179,7 +179,7 @@ describe('sender', function () {
 
         fsyncSeedHosts(['remote1.example', 'remote2.example', 'remote3.example']);
 
-        fsyncInProduction(fn() => ActivityPubDeliveryService::pool(
+        fsyncInProduction(fn () => ActivityPubDeliveryService::pool(
             $profile,
             [
                 'https://remote1.example/inbox',
@@ -222,13 +222,13 @@ describe('sender', function () {
         fsyncFollow(fsyncRemoteProfile('remote1.example', 'alice'), $profile);
         fsyncSeedHosts(['remote1.example']);
 
-        fsyncInProduction(fn() => ActivityPubDeliveryService::pool(
+        fsyncInProduction(fn () => ActivityPubDeliveryService::pool(
             $profile,
             ['https://remote1.example/inbox'],
             ['id' => $profile->permalink('#create'), 'type' => 'Create', 'actor' => $profile->permalink()]
         ));
 
-        Http::assertSent(fn($request) => empty($request->header('Collection-Synchronization')));
+        Http::assertSent(fn ($request) => empty($request->header('Collection-Synchronization')));
     });
 
     it('drops the cached digests when a relationship changes', function () {
@@ -328,7 +328,7 @@ describe('inbound header', function () {
 
         FollowersSyncService::handleInboundHeaders(fsyncInboundHeaders($sender, [
             'collectionId' => $sender->followers_url,
-            'url' => $sender->remote_url . '/followers_synchronization',
+            'url' => $sender->remote_url.'/followers_synchronization',
             'digest' => FollowersSyncService::EMPTY_DIGEST,
         ]));
 
@@ -343,7 +343,7 @@ describe('inbound header', function () {
 
         FollowersSyncService::handleInboundHeaders(fsyncInboundHeaders($sender, [
             'collectionId' => $sender->followers_url,
-            'url' => $sender->remote_url . '/followers_synchronization',
+            'url' => $sender->remote_url.'/followers_synchronization',
             'digest' => FollowersSyncService::digest([$local->permalink()]),
         ]));
 
@@ -357,7 +357,7 @@ describe('inbound header', function () {
 
         FollowersSyncService::handleInboundHeaders(fsyncInboundHeaders($sender, [
             'collectionId' => $sender->followers_url,
-            'url' => $sender->remote_url . '/followers_synchronization',
+            'url' => $sender->remote_url.'/followers_synchronization',
             'digest' => FollowersSyncService::EMPTY_DIGEST,
         ], false));
 
@@ -371,7 +371,7 @@ describe('inbound header', function () {
 
         FollowersSyncService::handleInboundHeaders(fsyncInboundHeaders($sender, [
             'collectionId' => 'https://remote1.example/users/mallory/followers',
-            'url' => $sender->remote_url . '/followers_synchronization',
+            'url' => $sender->remote_url.'/followers_synchronization',
             'digest' => FollowersSyncService::EMPTY_DIGEST,
         ]));
 
@@ -391,7 +391,7 @@ describe('inbound header', function () {
 
         $headers = fsyncInboundHeaders($sender, [
             'collectionId' => $sender->followers_url,
-            'url' => $sender->remote_url . '/followers_synchronization',
+            'url' => $sender->remote_url.'/followers_synchronization',
             'digest' => FollowersSyncService::EMPTY_DIGEST,
         ]);
 
@@ -410,7 +410,7 @@ describe('synchronization', function () {
         fsyncFollow($kept, $sender);
         fsyncFollow($stale, $sender);
 
-        $url = $sender->remote_url . '/followers_synchronization';
+        $url = $sender->remote_url.'/followers_synchronization';
         fsyncSeedHosts(['remote1.example']);
         fsyncFakeCollection($url, [$kept->permalink()]);
 
@@ -435,7 +435,7 @@ describe('synchronization', function () {
         fsyncFollow($kept, $sender);
         fsyncFollow($stale, $sender);
 
-        $url = $sender->remote_url . '/followers_synchronization';
+        $url = $sender->remote_url.'/followers_synchronization';
         fsyncSeedHosts(['remote1.example']);
         fsyncFakeCollection($url, [$kept->permalink()]);
 
@@ -463,7 +463,7 @@ describe('synchronization', function () {
         $result = FollowersSyncService::synchronize(
             $sender,
             $sender->followers_url,
-            $sender->remote_url . '/followers_synchronization',
+            $sender->remote_url.'/followers_synchronization',
             FollowersSyncService::EMPTY_DIGEST
         );
 
@@ -476,7 +476,7 @@ describe('synchronization', function () {
         $sender = fsyncRemoteProfile('remote1.example', 'alice');
         fsyncFollow($local, $sender, 1);
 
-        $url = $sender->remote_url . '/followers_synchronization';
+        $url = $sender->remote_url.'/followers_synchronization';
         fsyncSeedHosts(['remote1.example']);
         fsyncFakeCollection($url, []);
 
@@ -491,8 +491,8 @@ describe('synchronization', function () {
         $sender = fsyncRemoteProfile('remote1.example', 'alice');
         fsyncFollow($local, $sender);
 
-        $listedAs = url('users/' . $local->id);
-        $url = $sender->remote_url . '/followers_synchronization';
+        $listedAs = url('users/'.$local->id);
+        $url = $sender->remote_url.'/followers_synchronization';
         fsyncSeedHosts(['remote1.example']);
         fsyncFakeCollection($url, [$listedAs]);
 
@@ -508,8 +508,8 @@ describe('synchronization', function () {
         $sender = fsyncRemoteProfile('remote1.example', 'alice');
         fsyncFollow($local, $sender);
 
-        $listedAs = url('@' . $local->username);
-        $url = $sender->remote_url . '/followers_synchronization';
+        $listedAs = url('@'.$local->username);
+        $url = $sender->remote_url.'/followers_synchronization';
         fsyncSeedHosts(['remote1.example']);
         fsyncFakeCollection($url, [$listedAs]);
 
@@ -528,7 +528,7 @@ describe('synchronization', function () {
             'following_id' => $sender->id,
         ]);
 
-        $url = $sender->remote_url . '/followers_synchronization';
+        $url = $sender->remote_url.'/followers_synchronization';
         fsyncSeedHosts(['remote1.example']);
         fsyncFakeCollection($url, [$local->permalink()]);
 
@@ -543,7 +543,7 @@ describe('synchronization', function () {
         $local = fsyncLocalProfile();
         $sender = fsyncRemoteProfile('remote1.example', 'alice');
 
-        $url = $sender->remote_url . '/followers_synchronization';
+        $url = $sender->remote_url.'/followers_synchronization';
         fsyncSeedHosts(['remote1.example']);
         fsyncFakeCollection($url, [$local->permalink()]);
 
@@ -564,7 +564,7 @@ describe('synchronization', function () {
         $result = FollowersSyncService::synchronize(
             $sender,
             'https://remote1.example/users/mallory/followers',
-            $sender->remote_url . '/followers_synchronization',
+            $sender->remote_url.'/followers_synchronization',
             FollowersSyncService::EMPTY_DIGEST
         );
 
