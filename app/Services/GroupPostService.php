@@ -13,7 +13,7 @@ class GroupPostService
 
     const COMMENT_COUNT_KEY = 'pf:services:groups:post:comment_count:';
 
-    public static function key($gid, $pid)
+    public static function key($gid, $pid): string
     {
         return self::CACHE_KEY.$gid.':'.$pid;
     }

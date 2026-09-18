@@ -41,7 +41,7 @@ class NotificationTransformer extends Fractal\TransformerAbstract
 
     }
 
-    public function replaceTypeVerb($verb)
+    public function replaceTypeVerb($verb): string
     {
         $verbs = [
             'dm' => 'direct',

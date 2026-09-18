@@ -429,7 +429,7 @@ class Autolink extends Regex
      *
      * @since 1.1.0
      */
-    public function autoLinkEntities($tweet = null, $entities = null)
+    public function autoLinkEntities($tweet = null, $entities = null): string
     {
         if (is_null($tweet)) {
             $tweet = $this->tweet;
@@ -792,7 +792,7 @@ class Autolink extends Regex
      *
      * @since 1.1.0
      */
-    public function linkToText(array $entity, $text, $attributes = [])
+    public function linkToText(array $entity, $text, $attributes = []): string
     {
         $rel = [];
         if ($this->external) {
@@ -825,7 +825,7 @@ class Autolink extends Regex
      * @param  string  $text
      * @return string
      */
-    protected function escapeHTML($text)
+    protected function escapeHTML($text): string
     {
         return htmlspecialchars($text, ENT_QUOTES, 'UTF-8', false);
     }

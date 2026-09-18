@@ -315,7 +315,7 @@ class Profile extends Model
         return $this->sharedInbox ?? $this->inboxUrl();
     }
 
-    public function getDefaultScope()
+    public function getDefaultScope(): string
     {
         return $this->is_private == true ? 'private' : 'public';
     }

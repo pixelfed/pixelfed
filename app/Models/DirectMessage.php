@@ -13,7 +13,7 @@ class DirectMessage extends Model
         return $this->belongsTo(Status::class, 'status_id', 'id');
     }
 
-    public function url()
+    public function url(): string
     {
         return config('app.url').'/account/direct/m/'.$this->status_id;
     }

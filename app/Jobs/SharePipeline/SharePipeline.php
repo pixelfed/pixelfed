@@ -102,7 +102,7 @@ class SharePipeline implements ShouldQueue
         return $this->remoteAnnounceDeliver();
     }
 
-    protected function counterGuardKey($statusId)
+    protected function counterGuardKey($statusId): string
     {
         return 'pf:share-pipeline:counted:'.$statusId;
     }

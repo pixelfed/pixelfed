@@ -194,7 +194,7 @@ class LooseAutolink extends Autolink
      *
      * @deprecated since version 1.1.0
      */
-    protected function wrap($url, $class, $element)
+    protected function wrap($url, $class, $element): string
     {
         $link = '<a';
         if ($class) {
@@ -229,7 +229,7 @@ class LooseAutolink extends Autolink
      * @param  string  $element  The tweet element to wrap.
      * @return string The tweet element with a link applied.
      */
-    protected function wrapHash($url, $class, $element)
+    protected function wrapHash($url, $class, $element): string
     {
         $title = preg_replace('/＃/u', '#', $element);
         $link = '<a';

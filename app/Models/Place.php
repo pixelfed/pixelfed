@@ -41,7 +41,7 @@ class Place extends Model
         return $this->url();
     }
 
-    public function getName()
+    public function getName(): string
     {
         return $this->name.', '.$this->country;
     }

@@ -1068,7 +1068,7 @@ class Helpers
         return self::statusFirstOrFetch($inReplyTo, false, $depth + 1)?->id;
     }
 
-    public static function getScope($activity, $url)
+    public static function getScope($activity, $url): string
     {
         $id = isset($activity['id']) ? self::pluckval($activity['id']) : self::pluckval($url);
         $url = isset($activity['url']) ? self::pluckval($activity['url']) : self::pluckval($id);

@@ -178,7 +178,7 @@ class Status extends Model
         return url($path);
     }
 
-    public function editUrl()
+    public function editUrl(): string
     {
         return $this->url().'/edit';
     }
@@ -308,7 +308,7 @@ class Status extends Model
         );
     }
 
-    public function reportUrl()
+    public function reportUrl(): string
     {
         return route('report.form')."?type=post&id={$this->id}";
     }

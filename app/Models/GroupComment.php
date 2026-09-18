@@ -16,7 +16,7 @@ class GroupComment extends Model
         return $this->belongsTo(Profile::class);
     }
 
-    public function url()
+    public function url(): string
     {
         return '/group/'.$this->group_id.'/c/'.$this->id;
     }

@@ -332,7 +332,7 @@ class AccountService
         return Profile::whereKey($profileId)->value('user_id');
     }
 
-    public static function getMetaDescription($id)
+    public static function getMetaDescription($id): string
     {
         $account = self::get($id, true);
 

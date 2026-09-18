@@ -92,7 +92,7 @@ class RelationshipService
         ];
     }
 
-    protected static function key($suffix)
+    protected static function key($suffix): string
     {
         return self::CACHE_KEY.$suffix;
     }

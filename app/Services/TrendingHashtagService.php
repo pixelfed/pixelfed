@@ -11,7 +11,7 @@ class TrendingHashtagService
 {
     const CACHE_KEY = 'api:discover:v1.1:trending:hashtags';
 
-    public static function key($k = null)
+    public static function key($k = null): string
     {
         return self::CACHE_KEY.$k;
     }

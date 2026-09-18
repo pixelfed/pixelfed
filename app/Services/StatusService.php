@@ -15,7 +15,7 @@ class StatusService
 
     const MAX_PINNED = 3;
 
-    public static function key($id, $publicOnly = true)
+    public static function key($id, $publicOnly = true): string
     {
         $p = $publicOnly ? 'pub:' : 'all:';
 
@@ -199,7 +199,7 @@ class StatusService
     public static function clampReplyVisibility(
         $replyVisibility,
         $parentVisibility
-    ) {
+    ): string {
         if ($parentVisibility === 'group') {
             return 'group';
         }

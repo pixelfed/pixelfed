@@ -11,7 +11,7 @@ class SoftwareUpdateService
 {
     const CACHE_KEY = 'pf:services:software-update:';
 
-    public static function cacheKey()
+    public static function cacheKey(): string
     {
         return self::CACHE_KEY.'latest:v1.0.0';
     }
@@ -66,7 +66,7 @@ class SoftwareUpdateService
         );
     }
 
-    public static function normalizeVersion($version)
+    public static function normalizeVersion($version): string
     {
         return ltrim(trim((string) $version), 'vV');
     }

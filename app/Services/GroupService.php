@@ -18,7 +18,7 @@ class GroupService
 {
     const CACHE_KEY = 'pf:services:groups:';
 
-    protected static function key($name)
+    protected static function key($name): string
     {
         return self::CACHE_KEY.$name;
     }

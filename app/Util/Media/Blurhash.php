@@ -9,7 +9,7 @@ class Blurhash
 {
     const DEFAULT_HASH = 'U4Rfzst8?bt7ogayj[j[~pfQ9Goe%Mj[WBay';
 
-    public static function generate(Media $media, $path = false)
+    public static function generate(Media $media, $path = false): string
     {
         if (! in_array($media->mime, ['image/png', 'image/jpeg', 'image/jpg', 'video/mp4'])) {
             return self::DEFAULT_HASH;

@@ -150,7 +150,7 @@ class ProcessMovePipeline implements ShouldQueue
         return false;
     }
 
-    protected function lowerTrim($str)
+    protected function lowerTrim($str): string
     {
         return trim(strtolower($str));
     }

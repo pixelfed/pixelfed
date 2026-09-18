@@ -24,7 +24,7 @@ class PrettyNumber
         return $number;
     }
 
-    public static function size($expression, $kb = false, $short = true)
+    public static function size($expression, $kb = false, $short = true): string
     {
         if ($kb) {
             $expression *= 1024;
