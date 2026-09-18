@@ -39,7 +39,7 @@ trait AdminInstanceController
     {
         $instance = Instance::findOrFail($id);
 
-        return view('admin.instances.show', compact('instance'));
+        return view('admin.instances.show', ['instance' => $instance]);
     }
 
     public function instanceEdit(Request $request, $id)

@@ -39,21 +39,7 @@ trait AdminSettingsController
         $regState = $openReg ? 'open' : ($curOnboarding ? 'filtered' : 'closed');
         $accountMigration = (bool) config_cache('federation.migration');
 
-        return view('admin.settings.home', compact(
-            'jpeg',
-            'png',
-            'gif',
-            'mp4',
-            'webp',
-            'rules',
-            'cloud_storage',
-            'cloud_disk',
-            'cloud_ready',
-            'availableAdmins',
-            'currentAdmin',
-            'regState',
-            'accountMigration'
-        ));
+        return view('admin.settings.home', ['jpeg' => $jpeg, 'png' => $png, 'gif' => $gif, 'mp4' => $mp4, 'webp' => $webp, 'rules' => $rules, 'cloud_storage' => $cloud_storage, 'cloud_disk' => $cloud_disk, 'cloud_ready' => $cloud_ready, 'availableAdmins' => $availableAdmins, 'currentAdmin' => $currentAdmin, 'regState' => $regState, 'accountMigration' => $accountMigration]);
     }
 
     public function settingsHomeStore(Request $request)
@@ -249,7 +235,7 @@ trait AdminSettingsController
         $path = storage_path('app/'.config('app.name'));
         $files = is_dir($path) ? new \DirectoryIterator($path) : [];
 
-        return view('admin.settings.backups', compact('files'));
+        return view('admin.settings.backups', ['files' => $files]);
     }
 
     public function settingsMaintenance(Request $request)
@@ -261,7 +247,7 @@ trait AdminSettingsController
     {
         $storage = [];
 
-        return view('admin.settings.storage', compact('storage'));
+        return view('admin.settings.storage', ['storage' => $storage]);
     }
 
     public function settingsFeatures(Request $request)
@@ -273,7 +259,7 @@ trait AdminSettingsController
     {
         $pages = Page::orderByDesc('updated_at')->paginate(10);
 
-        return view('admin.pages.home', compact('pages'));
+        return view('admin.pages.home', ['pages' => $pages]);
     }
 
     public function settingsPageEdit(Request $request)
@@ -317,7 +303,7 @@ trait AdminSettingsController
                 break;
         }
 
-        return view('admin.settings.system', compact('sys'));
+        return view('admin.settings.system', ['sys' => $sys]);
     }
 
     public function settingsApiFetch(Request $request)

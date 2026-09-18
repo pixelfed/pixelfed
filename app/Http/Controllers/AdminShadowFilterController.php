@@ -43,7 +43,7 @@ class AdminShadowFilterController extends Controller
             ->paginate(10)
             ->withQueryString();
 
-        return view('admin.asf.home', compact('filters'));
+        return view('admin.asf.home', ['filters' => $filters]);
     }
 
     public function create(Request $request)
@@ -56,7 +56,7 @@ class AdminShadowFilterController extends Controller
         $filter = AdminShadowFilter::findOrFail($id);
         $profile = AccountService::get($filter->item_id);
 
-        return view('admin.asf.edit', compact('filter', 'profile'));
+        return view('admin.asf.edit', ['filter' => $filter, 'profile' => $profile]);
     }
 
     public function store(Request $request)

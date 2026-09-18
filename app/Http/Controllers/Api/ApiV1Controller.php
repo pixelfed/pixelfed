@@ -4537,7 +4537,7 @@ class ApiV1Controller extends Controller
             ->take(12)
             ->values();
 
-        return $this->json(compact('posts'));
+        return $this->json(['posts' => $posts]);
     }
 
     /**

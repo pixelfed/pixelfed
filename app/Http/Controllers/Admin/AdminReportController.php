@@ -76,7 +76,7 @@ trait AdminReportController
                 ->paginate(6);
         }
 
-        return view('admin.reports.home', compact('reports', 'ai', 'spam', 'mailVerifications'));
+        return view('admin.reports.home', ['reports' => $reports, 'ai' => $ai, 'spam' => $spam, 'mailVerifications' => $mailVerifications]);
     }
 
     public function showReport(Request $request, $id)
@@ -86,7 +86,7 @@ trait AdminReportController
             return redirect('/i/admin/reports?tab=report&id='.$report->id);
         }
 
-        return view('admin.reports.show', compact('report'));
+        return view('admin.reports.show', ['report' => $report]);
     }
 
     public function appeals(Request $request)
@@ -96,7 +96,7 @@ trait AdminReportController
             ->latest()
             ->paginate(6);
 
-        return view('admin.reports.appeals', compact('appeals'));
+        return view('admin.reports.appeals', ['appeals' => $appeals]);
     }
 
     public function showAppeal(Request $request, $id)
@@ -106,7 +106,7 @@ trait AdminReportController
             ->findOrFail($id);
         $meta = json_decode($appeal->meta);
 
-        return view('admin.reports.show_appeal', compact('appeal', 'meta'));
+        return view('admin.reports.show_appeal', ['appeal' => $appeal, 'meta' => $meta]);
     }
 
     public function spam(Request $request)
@@ -204,7 +204,7 @@ trait AdminReportController
             };
         }
 
-        return view('admin.reports.spam', compact('tab', 'appeals', 'openCount', 'monthlyCount', 'totalCount', 'avgCount', 'avgOpen', 'uncategorized'));
+        return view('admin.reports.spam', ['tab' => $tab, 'appeals' => $appeals, 'openCount' => $openCount, 'monthlyCount' => $monthlyCount, 'totalCount' => $totalCount, 'avgCount' => $avgCount, 'avgOpen' => $avgOpen, 'uncategorized' => $uncategorized]);
     }
 
     public function showSpam(Request $request, $id)
@@ -216,7 +216,7 @@ trait AdminReportController
         }
         $meta = json_decode($appeal->meta);
 
-        return view('admin.reports.show_spam', compact('appeal', 'meta'));
+        return view('admin.reports.show_spam', ['appeal' => $appeal, 'meta' => $meta]);
     }
 
     public function fixUncategorizedSpam(Request $request)
@@ -603,7 +603,7 @@ trait AdminReportController
                 ->values();
         }
 
-        return view('admin.reports.mail_verification', compact('reports', 'ignored'));
+        return view('admin.reports.mail_verification', ['reports' => $reports, 'ignored' => $ignored]);
     }
 
     public function reportMailVerifyIgnore(Request $request)

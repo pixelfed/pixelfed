@@ -68,7 +68,7 @@ class AccountController extends Controller
             ->orderBy('notifications.created_at', 'desc')
             ->simplePaginate(30);
 
-        return view('account.following', compact('profile', 'notifications'));
+        return view('account.following', ['profile' => $profile, 'notifications' => $notifications]);
     }
 
     public function direct(): View
@@ -81,7 +81,7 @@ class AccountController extends Controller
         $profile = Profile::where('id', '!=', $request->user()->profile_id)
             ->findOrFail($id);
 
-        return view('account.directmessage', compact('id'));
+        return view('account.directmessage', ['id' => $id]);
     }
 
     public function mute(Request $request): JsonResponse|RedirectResponse
@@ -332,7 +332,7 @@ class AccountController extends Controller
         $pid = $request->user()->profile->id;
         $followers = FollowRequest::whereFollowingId($pid)->orderBy('id', 'desc')->whereIsRejected(0)->simplePaginate(10);
 
-        return view('account.follow-requests', compact('followers'));
+        return view('account.follow-requests', ['followers' => $followers]);
     }
 
     public function followRequestsJson(Request $request): JsonResponse

@@ -65,14 +65,14 @@ class AdminCuratedRegisterController extends Controller
             ->paginate(10)
             ->withQueryString();
 
-        return view('admin.curated-register.index', compact('records', 'filter'));
+        return view('admin.curated-register.index', ['records' => $records, 'filter' => $filter]);
     }
 
     public function show(Request $request, $id): View
     {
         $record = CuratedRegister::findOrFail($id);
 
-        return view('admin.curated-register.show', compact('record'));
+        return view('admin.curated-register.show', ['record' => $record]);
     }
 
     public function apiActivityLog(Request $request, $id)
@@ -268,7 +268,7 @@ class AdminCuratedRegisterController extends Controller
     {
         $templates = CuratedRegisterTemplate::paginate(10);
 
-        return view('admin.curated-register.templates', compact('templates'));
+        return view('admin.curated-register.templates', ['templates' => $templates]);
     }
 
     public function templateCreate(Request $request): View
@@ -280,7 +280,7 @@ class AdminCuratedRegisterController extends Controller
     {
         $template = CuratedRegisterTemplate::findOrFail($id);
 
-        return view('admin.curated-register.template-edit', compact('template'));
+        return view('admin.curated-register.template-edit', ['template' => $template]);
     }
 
     public function templateEditStore(Request $request, $id): RedirectResponse

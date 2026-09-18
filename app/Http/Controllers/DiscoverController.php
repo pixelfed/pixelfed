@@ -49,7 +49,7 @@ class DiscoverController extends Controller
             ->firstOrFail();
         $tagCount = $tag->cached_count ?? 0;
 
-        return view('discover.tags.show', compact('tag', 'tagCount'));
+        return view('discover.tags.show', ['tag' => $tag, 'tagCount' => $tagCount]);
     }
 
     public function getHashtags(Request $request)
