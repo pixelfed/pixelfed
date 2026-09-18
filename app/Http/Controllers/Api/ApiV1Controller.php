@@ -238,9 +238,6 @@ class ApiV1Controller extends Controller
 
     /**
      * GET /api/v1/accounts/lookup
-     *
-     * @param  string  $acct
-     * @return \App\Transformer\Api\AccountTransformer
      */
     public function accountLookupById(Request $request)
     {
@@ -1191,8 +1188,6 @@ class ApiV1Controller extends Controller
     /**
      * GET /api/v1/accounts/relationships
      *
-     * @param  array|int  $id
-     * @return RelationshipService
      */
     public function accountRelationshipsById(Request $request)
     {
@@ -1478,8 +1473,6 @@ class ApiV1Controller extends Controller
      * GET /api/v1/custom_emojis
      *
      * Return custom emoji
-     *
-     * @return array
      */
     public function customEmojis(): Response
     {
@@ -1490,8 +1483,6 @@ class ApiV1Controller extends Controller
      * GET /api/v1/domain_blocks
      *
      * Return empty array
-     *
-     * @return array
      */
     public function accountDomainBlocks(Request $request): JsonResponse
     {
@@ -1505,8 +1496,6 @@ class ApiV1Controller extends Controller
      * GET /api/v1/endorsements
      *
      * Return empty array
-     *
-     * @return array
      */
     public function accountEndorsements(Request $request): JsonResponse
     {
@@ -1759,8 +1748,6 @@ class ApiV1Controller extends Controller
      * GET /api/v1/filters
      *
      *  Return empty response since we filter server side
-     *
-     * @return array
      */
     public function accountFilters(Request $request): JsonResponse
     {
@@ -1907,8 +1894,6 @@ class ApiV1Controller extends Controller
      * GET /api/v1/suggestions
      *
      *   Return empty array as we don't support suggestions
-     *
-     * @return null
      */
     public function accountSuggestions(Request $request): JsonResponse
     {
@@ -2012,8 +1997,6 @@ class ApiV1Controller extends Controller
      * GET /api/v1/lists
      *
      *   Return empty array as we don't support lists
-     *
-     * @return null
      */
     public function accountLists(Request $request): JsonResponse
     {
@@ -2027,7 +2010,6 @@ class ApiV1Controller extends Controller
      * GET /api/v1/accounts/{id}/lists
      *
      * @param  int  $id
-     * @return null
      */
     public function accountListsById(Request $request, $id): JsonResponse
     {
@@ -3608,7 +3590,6 @@ class ApiV1Controller extends Controller
      * GET /api/v1/statuses/{id}/card
      *
      * @param  int  $id
-     * @return StatusTransformer
      */
     public function statusCard(Request $request, $id): JsonResponse
     {

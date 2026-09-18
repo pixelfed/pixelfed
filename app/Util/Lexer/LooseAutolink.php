@@ -34,7 +34,7 @@ class LooseAutolink extends Autolink
     /**
      * Auto-link hashtags, URLs, usernames and lists.
      *
-     * @param  string The tweet to be converted
+     * @param  string  $tweet  The tweet to be converted
      * @return string that auto-link HTML added
      *
      * @deprecated since version 1.9.0

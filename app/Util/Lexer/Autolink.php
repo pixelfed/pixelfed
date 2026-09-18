@@ -142,7 +142,7 @@ class Autolink extends Regex
     protected $extractor = null;
 
     /**
-     * @var autolinkActiveUsersOnly
+     * @var bool
      */
     protected $autolinkActiveUsersOnly = false;
 
@@ -466,8 +466,8 @@ class Autolink extends Regex
     /**
      * Auto-link hashtags, URLs, usernames and lists, with JSON entities.
      *
-     * @param  string The tweet to be converted
-     * @param  mixed  The entities info
+     * @param  string  $tweet  The tweet to be converted
+     * @param  mixed  $json  The entities info
      * @return string that auto-link HTML added
      *
      * @since 1.1.0
@@ -517,7 +517,7 @@ class Autolink extends Regex
     /**
      * Auto-link hashtags, URLs, usernames and lists.
      *
-     * @param  string The tweet to be converted
+     * @param  string  $tweet  The tweet to be converted
      * @return string that auto-link HTML added
      *
      * @since 1.1.0

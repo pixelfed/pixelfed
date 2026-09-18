@@ -99,8 +99,6 @@ class HitHighlighter extends Regex
      * @param  string  $tweet  The tweet to be hit highlighted.
      * @param  array  $hits  An array containing the start and end index pairs
      *                       for the highlighting.
-     * @param  bool  $escape  Whether to escape the tweet (default: true).
-     * @param  bool  $full_encode  Whether to encode all special characters.
      * @return string The hit highlighted tweet.
      */
     public function highlight($tweet = null, ?array $hits = null)

@@ -87,8 +87,6 @@ class ResetPasswordController extends Controller
      * Display the password reset view for the given token.
      *
      * If no token is present, display the link request form.
-     *
-     * @return Factory|View
      */
     public function showResetForm(Request $request): View
     {
@@ -150,7 +148,6 @@ class ResetPasswordController extends Controller
      * Get the response for a failed password reset.
      *
      * @param  string  $response
-     * @return RedirectResponse|JsonResponse
      */
     protected function sendResetFailedResponse(Request $request, $response): RedirectResponse
     {

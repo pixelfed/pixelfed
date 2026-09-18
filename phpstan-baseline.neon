@@ -1,0 +1,1603 @@
+parameters:
+	ignoreErrors:
+		-
+			message: '#^Access to an undefined property App\\Models\\Avatar\:\:\$thumb_path\.$#'
+			identifier: property.notFound
+			count: 5
+			path: app/Console/Commands/Deprecated/AvatarDefaultMigration.php
+
+		-
+			message: '#^Call to an undefined method Illuminate\\Database\\Query\\Builder\:\:whereHashtagId\(\)\.$#'
+			identifier: method.notFound
+			count: 1
+			path: app/Console/Commands/Internal/HashtagCachedCountUpdate.php
+
+		-
+			message: '#^Call to an undefined static method Illuminate\\Database\\Eloquent\\Model\:\:withTrashed\(\)\.$#'
+			identifier: staticMethod.notFound
+			count: 1
+			path: app/Console/Commands/Media/MediaFilterCleanup.php
+
+		-
+			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$status\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Console/Commands/User/UserUnsuspend.php
+
+		-
+			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$followers_count\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Http/Controllers/AccountController.php
+
+		-
+			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$following\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Http/Controllers/AccountController.php
+
+		-
+			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$following_count\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Http/Controllers/AccountController.php
+
+		-
+			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$id\.$#'
+			identifier: property.notFound
+			count: 4
+			path: app/Http/Controllers/AccountController.php
+
+		-
+			message: '#^Access to an undefined property App\\Models\\AccountInterstitial\:\:\$count\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Http/Controllers/AdminController.php
+
+		-
+			message: '#^Access to an undefined property App\\Models\\AccountInterstitial\:\:\$month_year\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Http/Controllers/AdminController.php
+
+		-
+			message: '#^Access to an undefined property App\\Models\\AccountInterstitial\|Illuminate\\Database\\Eloquent\\Collection\<\(int\|string\), App\\Models\\AccountInterstitial\>\:\:\$status\.$#'
+			identifier: property.notFound
+			count: 3
+			path: app/Http/Controllers/AdminController.php
+
+		-
+			message: '#^Access to an undefined property App\\Models\\Contact\|Illuminate\\Database\\Eloquent\\Collection\<\(int\|string\), App\\Models\\Contact\>\:\:\$user\.$#'
+			identifier: property.notFound
+			count: 3
+			path: app/Http/Controllers/AdminController.php
+
+		-
+			message: '#^Access to an undefined property App\\Models\\Newsroom\:\:\$published\.$#'
+			identifier: property.notFound
+			count: 4
+			path: app/Http/Controllers/AdminController.php
+
+		-
+			message: '#^Access to an undefined property App\\Models\\Newsroom\|Illuminate\\Database\\Eloquent\\Collection\<\(int\|string\), App\\Models\\Newsroom\>\:\:\$published\.$#'
+			identifier: property.notFound
+			count: 4
+			path: app/Http/Controllers/AdminController.php
+
+		-
+			message: '#^Access to an undefined property App\\Models\\User\|Illuminate\\Database\\Eloquent\\Collection\<\(int\|string\), App\\Models\\User\>\:\:\$bio\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Http/Controllers/AdminController.php
+
+		-
+			message: '#^Access to an undefined property App\\Models\\User\|Illuminate\\Database\\Eloquent\\Collection\<\(int\|string\), App\\Models\\User\>\:\:\$website\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Http/Controllers/AdminController.php
+
+		-
+			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$bio\.$#'
+			identifier: property.notFound
+			count: 2
+			path: app/Http/Controllers/AdminController.php
+
+		-
+			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$delete_after\.$#'
+			identifier: property.notFound
+			count: 3
+			path: app/Http/Controllers/AdminController.php
+
+		-
+			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$name\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Http/Controllers/AdminController.php
+
+		-
+			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$profile_id\.$#'
+			identifier: property.notFound
+			count: 14
+			path: app/Http/Controllers/AdminController.php
+
+		-
+			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$status\.$#'
+			identifier: property.notFound
+			count: 3
+			path: app/Http/Controllers/AdminController.php
+
+		-
+			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$username\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Http/Controllers/AdminController.php
+
+		-
+			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$website\.$#'
+			identifier: property.notFound
+			count: 2
+			path: app/Http/Controllers/AdminController.php
+
+		-
+			message: '#^Call to an undefined method Illuminate\\Contracts\\Pagination\\CursorPaginator\:\:map\(\)\.$#'
+			identifier: method.notFound
+			count: 1
+			path: app/Http/Controllers/AdminController.php
+
+		-
+			message: '#^Call to an undefined method Illuminate\\Database\\Query\\Builder\:\:whereUserId\(\)\.$#'
+			identifier: method.notFound
+			count: 2
+			path: app/Http/Controllers/AdminController.php
+
+		-
+			message: '#^Access to an undefined property App\\Models\\CuratedRegister\|Illuminate\\Database\\Eloquent\\Collection\<\(int\|string\), App\\Models\\CuratedRegister\>\:\:\$message\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Http/Controllers/AdminCuratedRegisterController.php
+
+		-
+			message: '#^Access to an undefined property App\\Models\\AccountInterstitial\|Illuminate\\Database\\Eloquent\\Collection\<\(int\|string\), App\\Models\\AccountInterstitial\>\:\:\$status\.$#'
+			identifier: property.notFound
+			count: 3
+			path: app/Http/Controllers/Api/AdminApiController.php
+
+		-
+			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$cw\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Http/Controllers/Api/AdminApiController.php
+
+		-
+			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$id\.$#'
+			identifier: property.notFound
+			count: 4
+			path: app/Http/Controllers/Api/AdminApiController.php
+
+		-
+			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$is_admin\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Http/Controllers/Api/AdminApiController.php
+
+		-
+			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$no_autolink\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Http/Controllers/Api/AdminApiController.php
+
+		-
+			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$profile\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Http/Controllers/Api/AdminApiController.php
+
+		-
+			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$profile_id\.$#'
+			identifier: property.notFound
+			count: 10
+			path: app/Http/Controllers/Api/AdminApiController.php
+
+		-
+			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$unlisted\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Http/Controllers/Api/AdminApiController.php
+
+		-
+			message: '#^Call to an undefined method Illuminate\\Database\\Query\\Builder\:\:whereFollowingId\(\)\.$#'
+			identifier: method.notFound
+			count: 1
+			path: app/Http/Controllers/Api/AdminApiController.php
+
+		-
+			message: '#^Call to an undefined method Illuminate\\Database\\Query\\Builder\:\:whereProfileId\(\)\.$#'
+			identifier: method.notFound
+			count: 1
+			path: app/Http/Controllers/Api/AdminApiController.php
+
+		-
+			message: '#^Call to an undefined method Illuminate\\Database\\Query\\Builder\:\:whereUserId\(\)\.$#'
+			identifier: method.notFound
+			count: 2
+			path: app/Http/Controllers/Api/AdminApiController.php
+
+		-
+			message: '#^Access to an undefined property App\\Models\\User\:\:\$settings\.$#'
+			identifier: property.notFound
+			count: 2
+			path: app/Http/Controllers/Api/ApiV1Controller.php
+
+		-
+			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$bio\.$#'
+			identifier: property.notFound
+			count: 2
+			path: app/Http/Controllers/Api/ApiV1Controller.php
+
+		-
+			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$cw\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Http/Controllers/Api/ApiV1Controller.php
+
+		-
+			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$followers_count\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Http/Controllers/Api/ApiV1Controller.php
+
+		-
+			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$following_count\.$#'
+			identifier: property.notFound
+			count: 2
+			path: app/Http/Controllers/Api/ApiV1Controller.php
+
+		-
+			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$id\.$#'
+			identifier: property.notFound
+			count: 24
+			path: app/Http/Controllers/Api/ApiV1Controller.php
+
+		-
+			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$is_private\.$#'
+			identifier: property.notFound
+			count: 4
+			path: app/Http/Controllers/Api/ApiV1Controller.php
+
+		-
+			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$is_suggestable\.$#'
+			identifier: property.notFound
+			count: 2
+			path: app/Http/Controllers/Api/ApiV1Controller.php
+
+		-
+			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$name\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Http/Controllers/Api/ApiV1Controller.php
+
+		-
+			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$unlisted\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Http/Controllers/Api/ApiV1Controller.php
+
+		-
+			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$user_id\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Http/Controllers/Api/ApiV1Controller.php
+
+		-
+			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$username\.$#'
+			identifier: property.notFound
+			count: 3
+			path: app/Http/Controllers/Api/ApiV1Controller.php
+
+		-
+			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$website\.$#'
+			identifier: property.notFound
+			count: 2
+			path: app/Http/Controllers/Api/ApiV1Controller.php
+
+		-
+			message: '#^Access to an undefined property Laravel\\Passport\\Contracts\\ScopeAuthorizable\:\:\$client\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Http/Controllers/Api/ApiV1Controller.php
+
+		-
+			message: '#^Call to an undefined method Illuminate\\Contracts\\Pagination\\CursorPaginator\:\:filter\(\)\.$#'
+			identifier: method.notFound
+			count: 1
+			path: app/Http/Controllers/Api/ApiV1Controller.php
+
+		-
+			message: '#^Call to an undefined method Illuminate\\Database\\Query\\Builder\:\:whereFollowingId\(\)\.$#'
+			identifier: method.notFound
+			count: 2
+			path: app/Http/Controllers/Api/ApiV1Controller.php
+
+		-
+			message: '#^Call to an undefined method Illuminate\\Database\\Query\\Builder\:\:whereProfileId\(\)\.$#'
+			identifier: method.notFound
+			count: 2
+			path: app/Http/Controllers/Api/ApiV1Controller.php
+
+		-
+			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$avatar\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Http/Controllers/Api/ApiV1Dot1Controller.php
+
+		-
+			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$cw\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Http/Controllers/Api/ApiV1Dot1Controller.php
+
+		-
+			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$id\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Http/Controllers/Api/ApiV1Dot1Controller.php
+
+		-
+			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$is_private\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Http/Controllers/Api/ApiV1Dot1Controller.php
+
+		-
+			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$unlisted\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Http/Controllers/Api/ApiV1Dot1Controller.php
+
+		-
+			message: '#^Access to an undefined property Laravel\\Passport\\Contracts\\ScopeAuthorizable\:\:\$id\.$#'
+			identifier: property.notFound
+			count: 3
+			path: app/Http/Controllers/Api/ApiV1Dot1Controller.php
+
+		-
+			message: '#^Call to an undefined method Illuminate\\Database\\Query\\Builder\:\:whereEmail\(\)\.$#'
+			identifier: method.notFound
+			count: 1
+			path: app/Http/Controllers/Api/ApiV1Dot1Controller.php
+
+		-
+			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$id\.$#'
+			identifier: property.notFound
+			count: 2
+			path: app/Http/Controllers/Api/ApiV2Controller.php
+
+		-
+			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$avatar\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Http/Controllers/Api/BaseApiController.php
+
+		-
+			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$id\.$#'
+			identifier: property.notFound
+			count: 2
+			path: app/Http/Controllers/Api/BaseApiController.php
+
+		-
+			message: '#^Call to an undefined method Illuminate\\Database\\Query\\Builder\:\:whereProfileId\(\)\.$#'
+			identifier: method.notFound
+			count: 1
+			path: app/Http/Controllers/Api/BaseApiController.php
+
+		-
+			message: '#^Access to protected property Laravel\\Passport\\PersonalAccessTokenResult\:\:\$token\.$#'
+			identifier: property.protected
+			count: 1
+			path: app/Http/Controllers/AppRegisterController.php
+
+		-
+			message: '#^Call to an undefined method Illuminate\\Contracts\\Auth\\StatefulGuard\:\:getLastAttempted\(\)\.$#'
+			identifier: method.notFound
+			count: 1
+			path: app/Http/Controllers/Auth/LoginController.php
+
+		-
+			message: '#^Call to an undefined method Illuminate\\Contracts\\Auth\\StatefulGuard\:\:getProvider\(\)\.$#'
+			identifier: method.notFound
+			count: 1
+			path: app/Http/Controllers/Auth/LoginController.php
+
+		-
+			message: '#^Access to an undefined property App\\Models\\Avatar\:\:\$recentlyCreated\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Http/Controllers/AvatarController.php
+
+		-
+			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$avatar\.$#'
+			identifier: property.notFound
+			count: 2
+			path: app/Http/Controllers/AvatarController.php
+
+		-
+			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$id\.$#'
+			identifier: property.notFound
+			count: 2
+			path: app/Http/Controllers/AvatarController.php
+
+		-
+			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$id\.$#'
+			identifier: property.notFound
+			count: 2
+			path: app/Http/Controllers/CircleController.php
+
+		-
+			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$id\.$#'
+			identifier: property.notFound
+			count: 2
+			path: app/Http/Controllers/CollectionController.php
+
+		-
+			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$id\.$#'
+			identifier: property.notFound
+			count: 4
+			path: app/Http/Controllers/CommentController.php
+
+		-
+			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$is_private\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Http/Controllers/CommentController.php
+
+		-
+			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$username\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Http/Controllers/CommentController.php
+
+		-
+			message: '#^Call to an undefined method Illuminate\\Database\\Eloquent\\Model\:\:url\(\)\.$#'
+			identifier: method.notFound
+			count: 1
+			path: app/Http/Controllers/CommentController.php
+
+		-
+			message: '#^Access to an undefined property App\\Models\\Profile\:\:\$is_followed\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Http/Controllers/ComposeController.php
+
+		-
+			message: '#^Access to an undefined property App\\Models\\Status\:\:\$pc\.$#'
+			identifier: property.notFound
+			count: 2
+			path: app/Http/Controllers/ComposeController.php
+
+		-
+			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$cw\.$#'
+			identifier: property.notFound
+			count: 3
+			path: app/Http/Controllers/ComposeController.php
+
+		-
+			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$id\.$#'
+			identifier: property.notFound
+			count: 9
+			path: app/Http/Controllers/ComposeController.php
+
+		-
+			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$is_private\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Http/Controllers/ComposeController.php
+
+		-
+			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$unlisted\.$#'
+			identifier: property.notFound
+			count: 2
+			path: app/Http/Controllers/ComposeController.php
+
+		-
+			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$user_id\.$#'
+			identifier: property.notFound
+			count: 2
+			path: app/Http/Controllers/ComposeController.php
+
+		-
+			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$id\.$#'
+			identifier: property.notFound
+			count: 6
+			path: app/Http/Controllers/CustomFilterController.php
+
+		-
+			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$keyword\.$#'
+			identifier: property.notFound
+			count: 4
+			path: app/Http/Controllers/CustomFilterController.php
+
+		-
+			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$status_id\.$#'
+			identifier: property.notFound
+			count: 2
+			path: app/Http/Controllers/CustomFilterController.php
+
+		-
+			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$whole_word\.$#'
+			identifier: property.notFound
+			count: 4
+			path: app/Http/Controllers/CustomFilterController.php
+
+		-
+			message: '#^Access to an undefined property App\\Models\\User\:\:\$settings\.$#'
+			identifier: property.notFound
+			count: 2
+			path: app/Http/Controllers/DirectMessageController.php
+
+		-
+			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$caption\.$#'
+			identifier: property.notFound
+			count: 4
+			path: app/Http/Controllers/DirectMessageController.php
+
+		-
+			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$domain\.$#'
+			identifier: property.notFound
+			count: 4
+			path: app/Http/Controllers/DirectMessageController.php
+
+		-
+			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$id\.$#'
+			identifier: property.notFound
+			count: 14
+			path: app/Http/Controllers/DirectMessageController.php
+
+		-
+			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$media\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Http/Controllers/DirectMessageController.php
+
+		-
+			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$name\.$#'
+			identifier: property.notFound
+			count: 2
+			path: app/Http/Controllers/DirectMessageController.php
+
+		-
+			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$username\.$#'
+			identifier: property.notFound
+			count: 2
+			path: app/Http/Controllers/DirectMessageController.php
+
+		-
+			message: '#^Call to an undefined method Illuminate\\Database\\Eloquent\\Model\:\:avatarUrl\(\)\.$#'
+			identifier: method.notFound
+			count: 2
+			path: app/Http/Controllers/DirectMessageController.php
+
+		-
+			message: '#^Call to an undefined method Illuminate\\Database\\Eloquent\\Model\:\:url\(\)\.$#'
+			identifier: method.notFound
+			count: 2
+			path: app/Http/Controllers/DirectMessageController.php
+
+		-
+			message: '#^Call to an undefined method Illuminate\\Database\\Query\\Builder\:\:whereScope\(\)\.$#'
+			identifier: method.notFound
+			count: 1
+			path: app/Http/Controllers/DiscoverController.php
+
+		-
+			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$domain\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Http/Controllers/FederationController.php
+
+		-
+			message: '#^Access to an undefined property App\\Models\\GroupPost\|Illuminate\\Database\\Eloquent\\Collection\<\(int\|string\), App\\Models\\GroupPost\>\:\:\$status_id\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Http/Controllers/GroupController.php
+
+		-
+			message: '#^Call to an undefined method Illuminate\\Database\\Eloquent\\Builder\<App\\Models\\GroupPost\>\:\:whereStatusId\(\)\.$#'
+			identifier: method.notFound
+			count: 1
+			path: app/Http/Controllers/GroupController.php
+
+		-
+			message: '#^Access to an undefined property App\\Models\\GroupPost\|Illuminate\\Database\\Eloquent\\Collection\<\(int\|string\), App\\Models\\GroupPost\>\:\:\$status_id\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Http/Controllers/GroupFederationController.php
+
+		-
+			message: '#^Access to an undefined property App\\Models\\GroupReport\:\:\$total\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Http/Controllers/Groups/GroupsAdminController.php
+
+		-
+			message: '#^Access to an undefined property App\\Models\\GroupMember\:\:\$group\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Http/Controllers/Groups/GroupsApiController.php
+
+		-
+			message: '#^Access to an undefined property App\\Models\\GroupPost\|Illuminate\\Database\\Eloquent\\Collection\<\(int\|string\), App\\Models\\GroupPost\>\:\:\$in_reply_to_id\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Http/Controllers/Groups/GroupsPostController.php
+
+		-
+			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$id\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Http/Controllers/Groups/GroupsPostController.php
+
+		-
+			message: '#^Access to an undefined property App\\Models\\Profile\:\:\$profile_id\.$#'
+			identifier: property.notFound
+			count: 4
+			path: app/Http/Controllers/Groups/GroupsSearchController.php
+
+		-
+			message: '#^Access to an undefined property App\\Models\\GroupHashtag\|Illuminate\\Database\\Eloquent\\Collection\<\(int\|string\), App\\Models\\GroupHashtag\>\:\:\$slug\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Http/Controllers/Groups/GroupsTopicController.php
+
+		-
+			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$id\.$#'
+			identifier: property.notFound
+			count: 3
+			path: app/Http/Controllers/HashtagFollowController.php
+
+		-
+			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$name\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Http/Controllers/HashtagFollowController.php
+
+		-
+			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$id\.$#'
+			identifier: property.notFound
+			count: 11
+			path: app/Http/Controllers/ImportController.php
+
+		-
+			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$id\.$#'
+			identifier: property.notFound
+			count: 3
+			path: app/Http/Controllers/InternalApiController.php
+
+		-
+			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$id\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Http/Controllers/MicroController.php
+
+		-
+			message: '#^Access to protected property Laravel\\Passport\\PersonalAccessTokenResult\:\:\$token\.$#'
+			identifier: property.protected
+			count: 2
+			path: app/Http/Controllers/PersonalAccessTokenController.php
+
+		-
+			message: '#^Call to an undefined method Illuminate\\Database\\Query\\Builder\:\:whereProfileId\(\)\.$#'
+			identifier: method.notFound
+			count: 1
+			path: app/Http/Controllers/PortfolioController.php
+
+		-
+			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$aliases\.$#'
+			identifier: property.notFound
+			count: 2
+			path: app/Http/Controllers/ProfileAliasController.php
+
+		-
+			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$id\.$#'
+			identifier: property.notFound
+			count: 3
+			path: app/Http/Controllers/ProfileController.php
+
+		-
+			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$followers_count\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Http/Controllers/ProfileMigrationController.php
+
+		-
+			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$username\.$#'
+			identifier: property.notFound
+			count: 2
+			path: app/Http/Controllers/ProfileMigrationController.php
+
+		-
+			message: '#^Access to an undefined property Illuminate\\Support\\ValidatedInput\:\:\$acct\.$#'
+			identifier: property.notFound
+			count: 3
+			path: app/Http/Controllers/ProfileMigrationController.php
+
+		-
+			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$id\.$#'
+			identifier: property.notFound
+			count: 2
+			path: app/Http/Controllers/PublicApiController.php
+
+		-
+			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$avatar\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Http/Controllers/RemoteAuthController.php
+
+		-
+			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$bio\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Http/Controllers/RemoteAuthController.php
+
+		-
+			message: '#^Access to an undefined property App\\Models\\UserOidcMapping\:\:\$user\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Http/Controllers/RemoteOidcController.php
+
+		-
+			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$id\.$#'
+			identifier: property.notFound
+			count: 2
+			path: app/Http/Controllers/ReportController.php
+
+		-
+			message: '#^Access to an undefined property App\\Models\\Status\:\:\$count\.$#'
+			identifier: property.notFound
+			count: 2
+			path: app/Http/Controllers/SeasonalController.php
+
+		-
+			message: '#^Access to an undefined property App\\Models\\StatusHashtag\:\:\$count\.$#'
+			identifier: property.notFound
+			count: 2
+			path: app/Http/Controllers/SeasonalController.php
+
+		-
+			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$name\.$#'
+			identifier: property.notFound
+			count: 2
+			path: app/Http/Controllers/SeasonalController.php
+
+		-
+			message: '#^Cannot call method getName\(\) on string\.$#'
+			identifier: method.nonObject
+			count: 2
+			path: app/Http/Controllers/SeasonalController.php
+
+		-
+			message: '#^Cannot call method url\(\) on string\.$#'
+			identifier: method.nonObject
+			count: 2
+			path: app/Http/Controllers/SeasonalController.php
+
+		-
+			message: '#^Access to an undefined property App\\Models\\User\:\:\$settings\.$#'
+			identifier: property.notFound
+			count: 5
+			path: app/Http/Controllers/SettingsController.php
+
+		-
+			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$bio\.$#'
+			identifier: property.notFound
+			count: 2
+			path: app/Http/Controllers/SettingsController.php
+
+		-
+			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$delete_after\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Http/Controllers/SettingsController.php
+
+		-
+			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$header_bg\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Http/Controllers/SettingsController.php
+
+		-
+			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$id\.$#'
+			identifier: property.notFound
+			count: 26
+			path: app/Http/Controllers/SettingsController.php
+
+		-
+			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$indexable\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Http/Controllers/SettingsController.php
+
+		-
+			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$is_private\.$#'
+			identifier: property.notFound
+			count: 4
+			path: app/Http/Controllers/SettingsController.php
+
+		-
+			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$is_suggestable\.$#'
+			identifier: property.notFound
+			count: 4
+			path: app/Http/Controllers/SettingsController.php
+
+		-
+			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$name\.$#'
+			identifier: property.notFound
+			count: 2
+			path: app/Http/Controllers/SettingsController.php
+
+		-
+			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$profile_layout\.$#'
+			identifier: property.notFound
+			count: 2
+			path: app/Http/Controllers/SettingsController.php
+
+		-
+			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$status\.$#'
+			identifier: property.notFound
+			count: 2
+			path: app/Http/Controllers/SettingsController.php
+
+		-
+			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$statuses\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Http/Controllers/SettingsController.php
+
+		-
+			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$user_id\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Http/Controllers/SettingsController.php
+
+		-
+			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$username\.$#'
+			identifier: property.notFound
+			count: 2
+			path: app/Http/Controllers/SettingsController.php
+
+		-
+			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$website\.$#'
+			identifier: property.notFound
+			count: 2
+			path: app/Http/Controllers/SettingsController.php
+
+		-
+			message: '#^Call to an undefined method Illuminate\\Database\\Eloquent\\Model\:\:blockedProfileUrls\(\)\.$#'
+			identifier: method.notFound
+			count: 1
+			path: app/Http/Controllers/SettingsController.php
+
+		-
+			message: '#^Call to an undefined method Illuminate\\Database\\Eloquent\\Model\:\:followers\(\)\.$#'
+			identifier: method.notFound
+			count: 2
+			path: app/Http/Controllers/SettingsController.php
+
+		-
+			message: '#^Call to an undefined method Illuminate\\Database\\Eloquent\\Model\:\:following\(\)\.$#'
+			identifier: method.notFound
+			count: 3
+			path: app/Http/Controllers/SettingsController.php
+
+		-
+			message: '#^Call to an undefined method Illuminate\\Database\\Eloquent\\Model\:\:hashtagFollowing\(\)\.$#'
+			identifier: method.notFound
+			count: 1
+			path: app/Http/Controllers/SettingsController.php
+
+		-
+			message: '#^Call to an undefined method Illuminate\\Database\\Eloquent\\Model\:\:mutedProfileUrls\(\)\.$#'
+			identifier: method.notFound
+			count: 1
+			path: app/Http/Controllers/SettingsController.php
+
+		-
+			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$id\.$#'
+			identifier: property.notFound
+			count: 6
+			path: app/Http/Controllers/StatusController.php
+
+		-
+			message: '#^Access to an undefined property App\\Models\\Status\|Illuminate\\Database\\Eloquent\\Collection\<\(int\|string\), App\\Models\\Status\>\:\:\$edits\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Http/Controllers/StatusEditController.php
+
+		-
+			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$id\.$#'
+			identifier: property.notFound
+			count: 5
+			path: app/Http/Controllers/StoryController.php
+
+		-
+			message: '#^Call to an undefined method Symfony\\Component\\HttpFoundation\\Response\:\:withHeaders\(\)\.$#'
+			identifier: method.notFound
+			count: 1
+			path: app/Http/Middleware/DeprecatedEndpoint.php
+
+		-
+			message: '#^Call to an undefined method Illuminate\\Database\\Eloquent\\Model\:\:permalink\(\)\.$#'
+			identifier: method.notFound
+			count: 1
+			path: app/Http/Requests/ProfileMigrationStoreRequest.php
+
+		-
+			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$cw\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Http/Requests/Status/StoreStatusEditRequest.php
+
+		-
+			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$status\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Http/Requests/Status/StoreStatusEditRequest.php
+
+		-
+			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$unlisted\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Http/Requests/Status/StoreStatusEditRequest.php
+
+		-
+			message: '#^Access to an undefined property App\\Http\\Resources\\StatusStateless\:\:\$caption\.$#'
+			identifier: property.notFound
+			count: 3
+			path: app/Http/Resources/StatusStateless.php
+
+		-
+			message: '#^Access to an undefined property App\\Http\\Resources\\StatusStateless\:\:\$comments_disabled\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Http/Resources/StatusStateless.php
+
+		-
+			message: '#^Access to an undefined property App\\Http\\Resources\\StatusStateless\:\:\$created_at\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Http/Resources/StatusStateless.php
+
+		-
+			message: '#^Access to an undefined property App\\Http\\Resources\\StatusStateless\:\:\$id\.$#'
+			identifier: property.notFound
+			count: 7
+			path: app/Http/Resources/StatusStateless.php
+
+		-
+			message: '#^Access to an undefined property App\\Http\\Resources\\StatusStateless\:\:\$in_reply_to_id\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Http/Resources/StatusStateless.php
+
+		-
+			message: '#^Access to an undefined property App\\Http\\Resources\\StatusStateless\:\:\$in_reply_to_profile_id\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Http/Resources/StatusStateless.php
+
+		-
+			message: '#^Access to an undefined property App\\Http\\Resources\\StatusStateless\:\:\$is_nsfw\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Http/Resources/StatusStateless.php
+
+		-
+			message: '#^Access to an undefined property App\\Http\\Resources\\StatusStateless\:\:\$local\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Http/Resources/StatusStateless.php
+
+		-
+			message: '#^Access to an undefined property App\\Http\\Resources\\StatusStateless\:\:\$place\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Http/Resources/StatusStateless.php
+
+		-
+			message: '#^Access to an undefined property App\\Http\\Resources\\StatusStateless\:\:\$profile_id\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Http/Resources/StatusStateless.php
+
+		-
+			message: '#^Access to an undefined property App\\Http\\Resources\\StatusStateless\:\:\$reply_count\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Http/Resources/StatusStateless.php
+
+		-
+			message: '#^Access to an undefined property App\\Http\\Resources\\StatusStateless\:\:\$type\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Http/Resources/StatusStateless.php
+
+		-
+			message: '#^Access to an undefined property App\\Http\\Resources\\StatusStateless\:\:\$visibility\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Http/Resources/StatusStateless.php
+
+		-
+			message: '#^Call to an undefined method App\\Http\\Resources\\StatusStateless\:\:setType\(\)\.$#'
+			identifier: method.notFound
+			count: 1
+			path: app/Http/Resources/StatusStateless.php
+
+		-
+			message: '#^Call to an undefined method App\\Http\\Resources\\StatusStateless\:\:url\(\)\.$#'
+			identifier: method.notFound
+			count: 2
+			path: app/Http/Resources/StatusStateless.php
+
+		-
+			message: '#^Call to an undefined method Illuminate\\Database\\Query\\Builder\:\:whereUserId\(\)\.$#'
+			identifier: method.notFound
+			count: 3
+			path: app/Jobs/DeletePipeline/DeleteAccountPipeline.php
+
+		-
+			message: '#^Call to an undefined method Illuminate\\Database\\Query\\Builder\:\:whereFollowingId\(\)\.$#'
+			identifier: method.notFound
+			count: 1
+			path: app/Jobs/FollowPipeline/FollowServiceWarmCache.php
+
+		-
+			message: '#^Call to an undefined method Illuminate\\Database\\Query\\Builder\:\:whereProfileId\(\)\.$#'
+			identifier: method.notFound
+			count: 1
+			path: app/Jobs/FollowPipeline/FollowServiceWarmCache.php
+
+		-
+			message: '#^Access to an undefined property App\\Models\\ImportJob\|Illuminate\\Database\\Eloquent\\Collection\<\(int\|string\), App\\Models\\ImportJob\>\:\:\$files\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Jobs/ImportPipeline/ImportInstagram.php
+
+		-
+			message: '#^Call to an undefined method Illuminate\\Database\\Eloquent\\Model\:\:isExpired\(\)\.$#'
+			identifier: method.notFound
+			count: 1
+			path: app/Models/CustomFilter.php
+
+		-
+			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$id\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Models/DirectMessage.php
+
+		-
+			message: '#^Call to an undefined method Illuminate\\Database\\Eloquent\\Model\:\:permalink\(\)\.$#'
+			identifier: method.notFound
+			count: 1
+			path: app/Models/FeatureAuthorization.php
+
+		-
+			message: '#^Access to an undefined property App\\Models\\User\:\:\$settings\.$#'
+			identifier: property.notFound
+			count: 2
+			path: app/Models/Profile.php
+
+		-
+			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$id\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Models/Status.php
+
+		-
+			message: '#^Call to an undefined method App\\Models\\Mention\:\:permalink\(\)\.$#'
+			identifier: method.notFound
+			count: 1
+			path: app/Models/Status.php
+
+		-
+			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$id\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Models/Story.php
+
+		-
+			message: '#^Access to an undefined property App\\Models\\User\:\:\$settings\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Services/AccountService.php
+
+		-
+			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$indexable\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Services/AccountService.php
+
+		-
+			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$is_suggestable\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Services/AccountService.php
+
+		-
+			message: '#^Call to an undefined method Illuminate\\Database\\Query\\Builder\:\:whereUsername\(\)\.$#'
+			identifier: method.notFound
+			count: 1
+			path: app/Services/AccountService.php
+
+		-
+			message: '#^Call to an undefined method Illuminate\\Database\\Query\\Builder\:\:whereType\(\)\.$#'
+			identifier: method.notFound
+			count: 1
+			path: app/Services/DiscoverService.php
+
+		-
+			message: '#^Access to an undefined property App\\Models\\User\:\:\$settings\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Services/FeaturedCollectionService.php
+
+		-
+			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$domain\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Services/FeaturedCollectionService.php
+
+		-
+			message: '#^Call to an undefined method Illuminate\\Database\\Eloquent\\Model\:\:permalink\(\)\.$#'
+			identifier: method.notFound
+			count: 6
+			path: app/Services/FeaturedCollectionService.php
+
+		-
+			message: '#^Call to an undefined method Illuminate\\Database\\Eloquent\\Builder\<App\\Models\\GroupPost\>\:\:whereStatusId\(\)\.$#'
+			identifier: method.notFound
+			count: 1
+			path: app/Services/GroupService.php
+
+		-
+			message: '#^Access to an undefined property App\\Models\\MediaTag\:\:\$status\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Services/MediaTagService.php
+
+		-
+			message: '#^Call to an undefined method Illuminate\\Database\\Query\\Builder\:\:whereProfileId\(\)\.$#'
+			identifier: method.notFound
+			count: 1
+			path: app/Services/ProfileStatusService.php
+
+		-
+			message: '#^Access to an undefined property App\\Models\\StatusHashtag\:\:\$total\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Services/TrendingHashtagService.php
+
+		-
+			message: '#^Call to an undefined method Illuminate\\Database\\Eloquent\\Relations\\HasMany\:\:whereScope\(\)\.$#'
+			identifier: method.notFound
+			count: 1
+			path: app/Transformer/ActivityPub/ProfileOutbox.php
+
+		-
+			message: '#^Access to an undefined property App\\Models\\Profile\:\:\$aliases\.$#'
+			identifier: property.notFound
+			count: 2
+			path: app/Transformer/ActivityPub/ProfileTransformer.php
+
+		-
+			message: '#^Cannot access property \$country on string\.$#'
+			identifier: property.nonObject
+			count: 1
+			path: app/Transformer/ActivityPub/StatusTransformer.php
+
+		-
+			message: '#^Cannot access property \$lat on string\.$#'
+			identifier: property.nonObject
+			count: 1
+			path: app/Transformer/ActivityPub/StatusTransformer.php
+
+		-
+			message: '#^Cannot access property \$long on string\.$#'
+			identifier: property.nonObject
+			count: 1
+			path: app/Transformer/ActivityPub/StatusTransformer.php
+
+		-
+			message: '#^Cannot access property \$name on string\.$#'
+			identifier: property.nonObject
+			count: 1
+			path: app/Transformer/ActivityPub/StatusTransformer.php
+
+		-
+			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$name\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Transformer/ActivityPub/Verb/CreateNote.php
+
+		-
+			message: '#^Call to an undefined method App\\Models\\Mention\:\:emailUrl\(\)\.$#'
+			identifier: method.notFound
+			count: 1
+			path: app/Transformer/ActivityPub/Verb/CreateNote.php
+
+		-
+			message: '#^Call to an undefined method App\\Models\\Mention\:\:permalink\(\)\.$#'
+			identifier: method.notFound
+			count: 1
+			path: app/Transformer/ActivityPub/Verb/CreateNote.php
+
+		-
+			message: '#^Call to an undefined method Illuminate\\Database\\Eloquent\\Model\:\:url\(\)\.$#'
+			identifier: method.notFound
+			count: 1
+			path: app/Transformer/ActivityPub/Verb/CreateNote.php
+
+		-
+			message: '#^Cannot access property \$country on string\.$#'
+			identifier: property.nonObject
+			count: 1
+			path: app/Transformer/ActivityPub/Verb/CreateNote.php
+
+		-
+			message: '#^Cannot access property \$lat on string\.$#'
+			identifier: property.nonObject
+			count: 1
+			path: app/Transformer/ActivityPub/Verb/CreateNote.php
+
+		-
+			message: '#^Cannot access property \$long on string\.$#'
+			identifier: property.nonObject
+			count: 1
+			path: app/Transformer/ActivityPub/Verb/CreateNote.php
+
+		-
+			message: '#^Cannot access property \$name on string\.$#'
+			identifier: property.nonObject
+			count: 1
+			path: app/Transformer/ActivityPub/Verb/CreateNote.php
+
+		-
+			message: '#^Call to an undefined method Illuminate\\Database\\Eloquent\\Model\:\:permalink\(\)\.$#'
+			identifier: method.notFound
+			count: 2
+			path: app/Transformer/ActivityPub/Verb/Like.php
+
+		-
+			message: '#^Call to an undefined method Illuminate\\Database\\Eloquent\\Model\:\:url\(\)\.$#'
+			identifier: method.notFound
+			count: 1
+			path: app/Transformer/ActivityPub/Verb/Like.php
+
+		-
+			message: '#^Access to an undefined property App\\Models\\ProfileMigration\:\:\$profile\.$#'
+			identifier: property.notFound
+			count: 3
+			path: app/Transformer/ActivityPub/Verb/Move.php
+
+		-
+			message: '#^Access to an undefined property App\\Models\\ProfileMigration\:\:\$target\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Transformer/ActivityPub/Verb/Move.php
+
+		-
+			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$name\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Transformer/ActivityPub/Verb/Note.php
+
+		-
+			message: '#^Call to an undefined method App\\Models\\Mention\:\:emailUrl\(\)\.$#'
+			identifier: method.notFound
+			count: 1
+			path: app/Transformer/ActivityPub/Verb/Note.php
+
+		-
+			message: '#^Call to an undefined method App\\Models\\Mention\:\:permalink\(\)\.$#'
+			identifier: method.notFound
+			count: 1
+			path: app/Transformer/ActivityPub/Verb/Note.php
+
+		-
+			message: '#^Call to an undefined method Illuminate\\Database\\Eloquent\\Model\:\:url\(\)\.$#'
+			identifier: method.notFound
+			count: 1
+			path: app/Transformer/ActivityPub/Verb/Note.php
+
+		-
+			message: '#^Cannot access property \$country on string\.$#'
+			identifier: property.nonObject
+			count: 1
+			path: app/Transformer/ActivityPub/Verb/Note.php
+
+		-
+			message: '#^Cannot access property \$lat on string\.$#'
+			identifier: property.nonObject
+			count: 1
+			path: app/Transformer/ActivityPub/Verb/Note.php
+
+		-
+			message: '#^Cannot access property \$long on string\.$#'
+			identifier: property.nonObject
+			count: 1
+			path: app/Transformer/ActivityPub/Verb/Note.php
+
+		-
+			message: '#^Cannot access property \$name on string\.$#'
+			identifier: property.nonObject
+			count: 1
+			path: app/Transformer/ActivityPub/Verb/Note.php
+
+		-
+			message: '#^Access to an undefined property App\\Models\\Status\:\:\$poll\.$#'
+			identifier: property.notFound
+			count: 3
+			path: app/Transformer/ActivityPub/Verb/Question.php
+
+		-
+			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$name\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Transformer/ActivityPub/Verb/Question.php
+
+		-
+			message: '#^Call to an undefined method App\\Models\\Mention\:\:emailUrl\(\)\.$#'
+			identifier: method.notFound
+			count: 1
+			path: app/Transformer/ActivityPub/Verb/Question.php
+
+		-
+			message: '#^Call to an undefined method App\\Models\\Mention\:\:permalink\(\)\.$#'
+			identifier: method.notFound
+			count: 1
+			path: app/Transformer/ActivityPub/Verb/Question.php
+
+		-
+			message: '#^Call to an undefined method Illuminate\\Database\\Eloquent\\Model\:\:url\(\)\.$#'
+			identifier: method.notFound
+			count: 1
+			path: app/Transformer/ActivityPub/Verb/Question.php
+
+		-
+			message: '#^Cannot access property \$country on string\.$#'
+			identifier: property.nonObject
+			count: 1
+			path: app/Transformer/ActivityPub/Verb/Question.php
+
+		-
+			message: '#^Cannot access property \$lat on string\.$#'
+			identifier: property.nonObject
+			count: 1
+			path: app/Transformer/ActivityPub/Verb/Question.php
+
+		-
+			message: '#^Cannot access property \$long on string\.$#'
+			identifier: property.nonObject
+			count: 1
+			path: app/Transformer/ActivityPub/Verb/Question.php
+
+		-
+			message: '#^Cannot access property \$name on string\.$#'
+			identifier: property.nonObject
+			count: 1
+			path: app/Transformer/ActivityPub/Verb/Question.php
+
+		-
+			message: '#^Call to an undefined method Illuminate\\Database\\Eloquent\\Model\:\:permalink\(\)\.$#'
+			identifier: method.notFound
+			count: 4
+			path: app/Transformer/ActivityPub/Verb/UndoLike.php
+
+		-
+			message: '#^Call to an undefined method Illuminate\\Database\\Eloquent\\Model\:\:url\(\)\.$#'
+			identifier: method.notFound
+			count: 1
+			path: app/Transformer/ActivityPub/Verb/UndoLike.php
+
+		-
+			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$name\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Transformer/ActivityPub/Verb/UpdateNote.php
+
+		-
+			message: '#^Call to an undefined method App\\Models\\Mention\:\:emailUrl\(\)\.$#'
+			identifier: method.notFound
+			count: 1
+			path: app/Transformer/ActivityPub/Verb/UpdateNote.php
+
+		-
+			message: '#^Call to an undefined method App\\Models\\Mention\:\:permalink\(\)\.$#'
+			identifier: method.notFound
+			count: 1
+			path: app/Transformer/ActivityPub/Verb/UpdateNote.php
+
+		-
+			message: '#^Call to an undefined method Illuminate\\Database\\Eloquent\\Model\:\:url\(\)\.$#'
+			identifier: method.notFound
+			count: 1
+			path: app/Transformer/ActivityPub/Verb/UpdateNote.php
+
+		-
+			message: '#^Cannot access property \$country on string\.$#'
+			identifier: property.nonObject
+			count: 1
+			path: app/Transformer/ActivityPub/Verb/UpdateNote.php
+
+		-
+			message: '#^Cannot access property \$lat on string\.$#'
+			identifier: property.nonObject
+			count: 1
+			path: app/Transformer/ActivityPub/Verb/UpdateNote.php
+
+		-
+			message: '#^Cannot access property \$long on string\.$#'
+			identifier: property.nonObject
+			count: 1
+			path: app/Transformer/ActivityPub/Verb/UpdateNote.php
+
+		-
+			message: '#^Cannot access property \$name on string\.$#'
+			identifier: property.nonObject
+			count: 1
+			path: app/Transformer/ActivityPub/Verb/UpdateNote.php
+
+		-
+			message: '#^Call to an undefined method Illuminate\\Database\\Eloquent\\Relations\\HasMany\:\:whereIsNsfw\(\)\.$#'
+			identifier: method.notFound
+			count: 1
+			path: app/Transformer/Api/AccountWithStatusesTransformer.php
+
+		-
+			message: '#^Access to an undefined property App\\Models\\Notification\:\:\$actor\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Transformer/Api/Mastodon/v1/NotificationTransformer.php
+
+		-
+			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$object_uid\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Transformer/Api/NotificationTransformer.php
+
+		-
+			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$profile_id\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Transformer/Api/NotificationTransformer.php
+
+		-
+			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$status_id\.$#'
+			identifier: property.notFound
+			count: 2
+			path: app/Transformer/Api/NotificationTransformer.php
+
+		-
+			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$tagged_username\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Transformer/Api/NotificationTransformer.php
+
+		-
+			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$id\.$#'
+			identifier: property.notFound
+			count: 2
+			path: app/Transformer/Api/RelationshipTransformer.php
+
+		-
+			message: '#^Call to an undefined method Illuminate\\Database\\Eloquent\\Model\:\:blockedIds\(\)\.$#'
+			identifier: method.notFound
+			count: 1
+			path: app/Transformer/Api/RelationshipTransformer.php
+
+		-
+			message: '#^Call to an undefined method Illuminate\\Database\\Eloquent\\Model\:\:followedBy\(\)\.$#'
+			identifier: method.notFound
+			count: 1
+			path: app/Transformer/Api/RelationshipTransformer.php
+
+		-
+			message: '#^Call to an undefined method Illuminate\\Database\\Eloquent\\Model\:\:follows\(\)\.$#'
+			identifier: method.notFound
+			count: 1
+			path: app/Transformer/Api/RelationshipTransformer.php
+
+		-
+			message: '#^Call to an undefined method Illuminate\\Database\\Eloquent\\Model\:\:mutedIds\(\)\.$#'
+			identifier: method.notFound
+			count: 1
+			path: app/Transformer/Api/RelationshipTransformer.php
+
+		-
+			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$id\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Transformer/Api/StatusHashtagTransformer.php
+
+		-
+			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$is_nsfw\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Transformer/Api/StatusHashtagTransformer.php
+
+		-
+			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$likes_count\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Transformer/Api/StatusHashtagTransformer.php
+
+		-
+			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$name\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Transformer/Api/StatusHashtagTransformer.php
+
+		-
+			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$reblogs_count\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Transformer/Api/StatusHashtagTransformer.php
+
+		-
+			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$scope\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Transformer/Api/StatusHashtagTransformer.php
+
+		-
+			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$type\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Transformer/Api/StatusHashtagTransformer.php
+
+		-
+			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$username\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Transformer/Api/StatusHashtagTransformer.php
+
+		-
+			message: '#^Call to an undefined method Illuminate\\Database\\Eloquent\\Model\:\:firstMedia\(\)\.$#'
+			identifier: method.notFound
+			count: 2
+			path: app/Transformer/Api/StatusHashtagTransformer.php
+
+		-
+			message: '#^Call to an undefined method Illuminate\\Database\\Eloquent\\Model\:\:thumb\(\)\.$#'
+			identifier: method.notFound
+			count: 1
+			path: app/Transformer/Api/StatusHashtagTransformer.php
+
+		-
+			message: '#^Call to an undefined method Illuminate\\Database\\Eloquent\\Model\:\:url\(\)\.$#'
+			identifier: method.notFound
+			count: 3
+			path: app/Transformer/Api/StatusHashtagTransformer.php
+
+		-
+			message: '#^Access to an undefined property App\\Models\\StoryItem\:\:\$story\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Transformer/Api/StoryItemTransformer.php
+
+		-
+			message: '#^Access to an undefined property App\\Models\\StoryItem\:\:\$type\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Transformer/Api/StoryItemTransformer.php
+
+		-
+			message: '#^Access to an undefined property App\\Models\\User\:\:\$settings\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Util/ActivityPub/Inbox.php
+
+		-
+			message: '#^Call to an undefined method Illuminate\\Database\\Eloquent\\Relations\\HasMany\:\:whereScope\(\)\.$#'
+			identifier: method.notFound
+			count: 1
+			path: app/Util/Sentiment/Bouncer.php

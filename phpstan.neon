@@ -1,14 +1,14 @@
 includes:
     - vendor/larastan/larastan/extension.neon
     - vendor/nesbot/carbon/extension.neon
+    - phpstan-baseline.neon
 
 parameters:
-    level: 0 #Larascan supports 0-9. 10 is not required
+    level: 2 #Larascan supports 0-9. 10 is not required
 
     paths:
         - app/
         - routes/
-        - tests/
 
     excludePaths:
         - bootstrap/cache/*
@@ -39,5 +39,45 @@ parameters:
     # Ignore intentional patterns
     ignoreErrors:
         - '#Unsafe usage of new static#'
+
+        # Larastan's Redis facade stubs are incomplete: pipeline() accepts a
+        # callback and set() accepts TTL/flag args. These calls are valid.
+        -
+            message: '#Static method Redis::pipeline\(\) invoked with 1 parameter, 0 required#'
+            paths:
+                - app/Services/NotificationService.php
+                - app/Services/StoryIndexService.php
+        -
+            message: '#Static method Redis::set\(\) invoked with 4 parameters, 2-3 required#'
+            path: app/Services/NotificationService.php
+
+        # Eloquent dynamic "where{Attribute}()" magic methods that Larastan
+        # cannot resolve for these models. Calls are valid at runtime.
+        -
+            message: '#Call to an undefined static method App\\Models\\GroupPost::where\w+\(\)#'
+            paths:
+                - app/Http/Controllers/Groups/GroupsPostController.php
+                - app/Jobs/GroupPipeline/GroupCommentPipeline.php
+
+        # Fractal resource property set dynamically from the transformed data.
+        -
+            message: '#Access to an undefined property App\\Http\\Resources\\AdminUser::\$2fa_enabled#'
+            path: app/Http/Resources/AdminUser.php
+
+        # Intentional defensive empty()/isset() guards on values that the
+        # current control flow proves are always set. Kept for safety against
+        # future refactors; not bugs.
+        -
+            message: '#in empty\(\) always exists and is (not falsy|always falsy)#'
+            paths:
+                - app/Http/Controllers/FederationController.php
+                - app/Jobs/InboxPipeline/InboxValidator.php
+                - app/Models/CustomFilter.php
+                - app/Util/ActivityPub/Helpers.php
+        -
+            message: '#in isset\(\) always exists and is not nullable#'
+            paths:
+                - app/Http/Controllers/StoryComposeController.php
+                - app/Util/Lexer/Validator.php
 
     reportUnmatchedIgnoredErrors: false

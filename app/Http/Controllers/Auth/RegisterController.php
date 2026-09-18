@@ -133,8 +133,6 @@ class RegisterController extends Controller
 
     /**
      * Show the application registration form.
-     *
-     * @return Response
      */
     public function showRegistrationForm(): RedirectResponse|View
     {
