@@ -323,27 +323,30 @@ class UserAccountDelete extends Command
 
         $urlList = $urls->values()->all();
 
-        $responses = Http::pool(function (Pool $pool) use ($urlList, $privateKey, $keyId, $digest, $payload, $payloadLen) {
-            foreach ($urlList as $url) {
-                // Pass User-Agent/Accept per request so they are actually sent
-                // (and signed); Http::pool does not inherit the makeHttpClient
-                // instance headers, so without this Guzzle sends its default UA.
-                $headers = HttpSignature::signRawWithDigest($privateKey, $keyId, $url, $digest, [
-                    'User-Agent' => 'Pixelfed ('.config('app.url').')',
-                    'Accept' => 'application/activity+json, application/ld+json; profile="https://www.w3.org/ns/activitystreams"',
-                ]);
-                $headers['Content-Type'] = 'application/ld+json; profile="https://www.w3.org/ns/activitystreams"';
-                $headers['Content-Length'] = (string) $payloadLen;
+        $responses = Http::pool(
+            function (Pool $pool) use ($urlList, $privateKey, $keyId, $digest, $payload, $payloadLen) {
+                foreach ($urlList as $url) {
+                    // Pass User-Agent/Accept per request so they are actually sent
+                    // (and signed); Http::pool does not inherit the makeHttpClient
+                    // instance headers, so without this Guzzle sends its default UA.
+                    $headers = HttpSignature::signRawWithDigest($privateKey, $keyId, $url, $digest, [
+                        'User-Agent' => 'Pixelfed ('.config('app.url').')',
+                        'Accept' => 'application/activity+json, application/ld+json; profile="https://www.w3.org/ns/activitystreams"',
+                    ]);
+                    $headers['Content-Type'] = 'application/ld+json; profile="https://www.w3.org/ns/activitystreams"';
+                    $headers['Content-Length'] = (string) $payloadLen;
 
-                $pool->as($url)
-                    ->timeout(10)
-                    ->connectTimeout(5)
-                    ->withOptions(['allow_redirects' => false])
-                    ->withHeaders($headers)
-                    ->withBody($payload, 'application/ld+json; profile="https://www.w3.org/ns/activitystreams"')
-                    ->post($url);
-            }
-        });
+                    $pool->as($url)
+                        ->timeout(10)
+                        ->connectTimeout(5)
+                        ->withOptions(['allow_redirects' => false])
+                        ->withHeaders($headers)
+                        ->withBody($payload, 'application/ld+json; profile="https://www.w3.org/ns/activitystreams"')
+                        ->post($url);
+                }
+            },
+            self::concurrency()
+        );
 
         foreach ($urlList as $url) {
             $response = $responses[$url] ?? null;
@@ -397,6 +400,14 @@ class UserAccountDelete extends Command
             'http_failed' => $httpFailed,
             'retryable' => collect($retryable),
         ];
+    }
+
+    private static function concurrency(): int
+    {
+        return max(
+            1,
+            (int) config('federation.activitypub.delivery.concurrency', 10)
+        );
     }
 
     protected function sendDebug(string $url, string $payload, string $digest, string $privateKey, string $keyId): int
