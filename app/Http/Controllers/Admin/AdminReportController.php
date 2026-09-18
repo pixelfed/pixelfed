@@ -633,7 +633,7 @@ trait AdminReportController
         return [200];
     }
 
-    public function reportsStats(Request $request)
+    public function reportsStats(Request $request): array
     {
         $stats = [
             'total' => Report::count(),

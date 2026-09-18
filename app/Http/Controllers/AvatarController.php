@@ -58,7 +58,7 @@ class AvatarController extends Controller
         return redirect()->back()->with('status', 'Avatar updated successfully. It may take a few minutes to update across the site.');
     }
 
-    public function getPath($user, $file)
+    public function getPath($user, $file): array
     {
         $basePath = storage_path('app/public/avatars');
         $this->checkDir($basePath);

@@ -17,7 +17,7 @@ class InstallController extends Controller
         return view('installer.index');
     }
 
-    public function getRequirements()
+    public function getRequirements(): array
     {
         abort_if(file_exists(base_path('.env')), 404);
         $reqs = [];

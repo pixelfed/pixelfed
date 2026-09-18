@@ -192,7 +192,10 @@ class AdminSettingsService
         ];
     }
 
-    public static function getCuratedOnboarding()
+    /**
+     * @return mixed[]
+     */
+    public static function getCuratedOnboarding(): array
     {
         $openReg = (bool) config_cache('pixelfed.open_registration');
         $curOnboarding = (bool) config_cache('instance.curated_registration.enabled');

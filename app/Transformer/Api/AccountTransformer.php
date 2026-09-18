@@ -16,7 +16,10 @@ class AccountTransformer extends Fractal\TransformerAbstract
         // 'relationship',
     ];
 
-    public function transform(Profile $profile)
+    /**
+     * @return mixed[]
+     */
+    public function transform(Profile $profile): array
     {
         if (! $profile) {
             return [];

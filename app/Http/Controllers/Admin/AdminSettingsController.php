@@ -647,7 +647,7 @@ trait AdminSettingsController
         return $request->all();
     }
 
-    public function settingsApiUpdatePostsType($request)
+    public function settingsApiUpdatePostsType($request): array
     {
         $this->validate($request, [
             'max_caption_length' => 'required|integer|min:5|max:10000',
@@ -668,7 +668,7 @@ trait AdminSettingsController
         return $res;
     }
 
-    public function settingsApiUpdatePlatformType($request)
+    public function settingsApiUpdatePlatformType($request): array
     {
         $this->validate($request, [
             'allow_app_registration' => 'required',

@@ -268,7 +268,10 @@ class PortfolioController extends Controller
         })->first();
     }
 
-    public function getAccountSettings(Request $request)
+    /**
+     * @return mixed[]
+     */
+    public function getAccountSettings(Request $request): array
     {
         $this->validate($request, [
             'id' => 'required|integer',

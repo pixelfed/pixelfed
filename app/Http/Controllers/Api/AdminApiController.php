@@ -98,7 +98,10 @@ class AdminApiController extends Controller
         return $appeals;
     }
 
-    public function autospamHandle(Request $request)
+    /**
+     * @return 'success'[]
+     */
+    public function autospamHandle(Request $request): array
     {
         abort_if(! $request->user() || ! $request->user()->token(), 404);
 

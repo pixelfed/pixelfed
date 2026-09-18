@@ -276,7 +276,7 @@ class GroupsCommentController extends Controller
         return redirect('/groups/feed');
     }
 
-    public function likePost(Request $request)
+    public function likePost(Request $request): array
     {
         $this->validate($request, [
             'gid' => 'required',
@@ -326,7 +326,7 @@ class GroupsCommentController extends Controller
         return $response;
     }
 
-    public function unlikePost(Request $request)
+    public function unlikePost(Request $request): array
     {
         $this->validate($request, [
             'gid' => 'required',

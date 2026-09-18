@@ -320,7 +320,10 @@ class Profile extends Model
         return $this->is_private == true ? 'private' : 'public';
     }
 
-    public function getAudience($scope = false)
+    /**
+     * @return mixed[][]
+     */
+    public function getAudience($scope = false): array
     {
         if ($this->remote_url) {
             return [];

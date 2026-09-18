@@ -313,7 +313,7 @@ class Status extends Model
         return route('report.form')."?type=post&id={$this->id}";
     }
 
-    public function toActivityStream()
+    public function toActivityStream(): array
     {
         $media = $this->media;
         $mediaCollection = [];

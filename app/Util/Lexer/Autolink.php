@@ -504,7 +504,7 @@ class Autolink extends Regex
      * @param  mixed  $obj
      * @return array
      */
-    protected function object2array($obj)
+    protected function object2array($obj): array
     {
         $array = (array) $obj;
         foreach ($array as $key => $var) {

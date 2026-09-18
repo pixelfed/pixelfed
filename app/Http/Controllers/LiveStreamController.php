@@ -194,7 +194,7 @@ class LiveStreamController extends Controller
         return $res;
     }
 
-    public function addChatComment(Request $request)
+    public function addChatComment(Request $request): array
     {
         abort_if(! config('livestreaming.enabled'), 400);
         abort_if(! $request->user(), 403);

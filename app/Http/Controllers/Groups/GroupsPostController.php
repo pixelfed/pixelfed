@@ -258,7 +258,7 @@ class GroupsPostController extends Controller
         }
     }
 
-    public function likePost(Request $request)
+    public function likePost(Request $request): array
     {
         $this->validate($request, [
             'gid' => 'required',
@@ -332,7 +332,7 @@ class GroupsPostController extends Controller
         return $response;
     }
 
-    public function unlikePost(Request $request)
+    public function unlikePost(Request $request): array
     {
         $this->validate($request, [
             'gid' => 'required',

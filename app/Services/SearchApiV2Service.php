@@ -372,7 +372,10 @@ class SearchApiV2Service
         }
     }
 
-    protected function resolveLocalStatus()
+    /**
+     * @return mixed[][]
+     */
+    protected function resolveLocalStatus(): array
     {
         $query = urldecode($this->query->input('q'));
         $query = last(explode('/', parse_url($query, PHP_URL_PATH)));

@@ -164,7 +164,7 @@ class ComposeController extends Controller
         return response()->json($res);
     }
 
-    public function mediaUpdate(Request $request)
+    public function mediaUpdate(Request $request): array
     {
         $this->validate($request, [
             'id' => 'required',

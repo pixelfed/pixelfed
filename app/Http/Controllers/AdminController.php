@@ -93,7 +93,7 @@ class AdminController extends Controller
         return AdminStatsService::summary();
     }
 
-    public function getAccounts()
+    public function getAccounts(): array
     {
         $users = User::orderByDesc('id')->cursorPaginate(10);
 
@@ -122,7 +122,7 @@ class AdminController extends Controller
         return $res;
     }
 
-    public function getPosts()
+    public function getPosts(): array
     {
         $posts = DB::table('statuses')
             ->orderByDesc('id')

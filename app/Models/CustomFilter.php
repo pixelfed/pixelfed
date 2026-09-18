@@ -358,7 +358,7 @@ class CustomFilter extends Model
      * @param  mixed  $status  The status to check
      * @return array The filter matches
      */
-    public static function applyCachedFilters($cachedFilters, $status)
+    public static function applyCachedFilters($cachedFilters, $status): array
     {
         $results = [];
 

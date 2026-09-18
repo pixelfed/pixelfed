@@ -24,7 +24,10 @@ trait AdminDirectoryController
         return view('admin.directory.home');
     }
 
-    public function directoryInitialData(Request $request)
+    /**
+     * @return mixed[]
+     */
+    public function directoryInitialData(Request $request): array
     {
         $res = [];
 
@@ -388,7 +391,7 @@ trait AdminDirectoryController
         return $existing;
     }
 
-    public function directorySaveTestimonial(Request $request)
+    public function directorySaveTestimonial(Request $request): array
     {
         $this->validate($request, [
             'username' => 'required',

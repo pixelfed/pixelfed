@@ -138,7 +138,7 @@ class Extractor extends Regex
      * @param  string  $tweet  The tweet to extract.
      * @return array The cashtag elements in the tweet.
      */
-    public function extractCashtags($tweet = null)
+    public function extractCashtags($tweet = null): array
     {
         $cashtagsOnly = [];
 
@@ -171,7 +171,7 @@ class Extractor extends Regex
      * @param  string  $tweet  The tweet to extract.
      * @return array The usernames elements in the tweet.
      */
-    public function extractMentionedScreennames($tweet = null)
+    public function extractMentionedScreennames($tweet = null): array
     {
         $usernamesOnly = [];
         $mentionsWithIndices = $this->extractMentionsOrListsWithIndices($tweet);
@@ -252,7 +252,7 @@ class Extractor extends Regex
      * @param  bool  $checkUrlOverlap  if true, check if extracted hashtags overlap URLs and remove overlapping ones
      * @return array The hashtag elements in the tweet.
      */
-    public function extractHashtagsWithIndices($tweet = null, $checkUrlOverlap = true)
+    public function extractHashtagsWithIndices($tweet = null, $checkUrlOverlap = true): array
     {
         if (is_null($tweet)) {
             $tweet = $this->tweet;
@@ -325,7 +325,7 @@ class Extractor extends Regex
      * @param  string  $tweet  The tweet to extract.
      * @return array The URLs elements in the tweet.
      */
-    public function extractURLsWithIndices($tweet = null)
+    public function extractURLsWithIndices($tweet = null): array
     {
         if (is_null($tweet)) {
             $tweet = $this->tweet;
@@ -447,7 +447,7 @@ class Extractor extends Regex
      * @param  string  $tweet  The tweet to extract.
      * @return array The username elements in the tweet.
      */
-    public function extractMentionsOrListsWithIndices($tweet = null)
+    public function extractMentionsOrListsWithIndices($tweet = null): array
     {
         if (is_null($tweet)) {
             $tweet = $this->tweet;
@@ -527,7 +527,7 @@ class Extractor extends Regex
      * @param  array  $entities
      * @return array
      */
-    public function removeOverlappingEntities($entities)
+    public function removeOverlappingEntities($entities): array
     {
         $result = [];
         usort($entities, [$this, 'sortEntites']);

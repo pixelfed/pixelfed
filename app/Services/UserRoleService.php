@@ -152,7 +152,7 @@ class UserRoleService
         ];
     }
 
-    public static function mapInvite($id, $data = [])
+    public static function mapInvite($id, $data = []): array
     {
         $roles = self::get($id);
 
@@ -193,7 +193,10 @@ class UserRoleService
         return $map;
     }
 
-    public static function mapActions($id, $data = [])
+    /**
+     * @return mixed[]
+     */
+    public static function mapActions($id, $data = []): array
     {
         $res = [];
         $map = [
