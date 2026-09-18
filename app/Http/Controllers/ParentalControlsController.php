@@ -215,7 +215,7 @@ class ParentalControlsController extends Controller
         return redirect('/settings/parental-controls');
     }
 
-    protected function requestFormFields($request)
+    protected function requestFormFields($request): array
     {
         $state = [];
         $fields = [

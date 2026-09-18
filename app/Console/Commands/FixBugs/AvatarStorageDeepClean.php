@@ -95,7 +95,7 @@ class AvatarStorageDeepClean extends Command
         }
     }
 
-    protected function activeCheck()
+    protected function activeCheck(): bool
     {
         return ! Storage::exists('avatar-deep-clean.json') && ! Cache::has('cmd:asdp');
     }

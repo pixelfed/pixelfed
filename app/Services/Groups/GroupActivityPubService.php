@@ -155,7 +155,7 @@ class GroupActivityPubService
         return $validator->validated();
     }
 
-    public static function getGroupFromPostActivity($groupPost)
+    public static function getGroupFromPostActivity(array $groupPost)
     {
         if (isset($groupPost['audience']) && is_string($groupPost['audience'])) {
             return $groupPost['audience'];
@@ -174,7 +174,7 @@ class GroupActivityPubService
         return false;
     }
 
-    public static function getActorFromPostActivity($groupPost)
+    public static function getActorFromPostActivity(array $groupPost)
     {
         if (! isset($groupPost['attributedTo'])) {
             return false;
@@ -202,7 +202,7 @@ class GroupActivityPubService
         return false;
     }
 
-    public static function getCaptionFromPostActivity($groupPost)
+    public static function getCaptionFromPostActivity(array $groupPost)
     {
         if (! isset($groupPost['name']) && isset($groupPost['content'])) {
             return Purify::clean(strip_tags($groupPost['content']));
@@ -213,7 +213,7 @@ class GroupActivityPubService
         }
     }
 
-    public static function getSensitiveFromPostActivity($groupPost)
+    public static function getSensitiveFromPostActivity(array $groupPost)
     {
         if (! isset($groupPost['sensitive'])) {
             return true;
@@ -226,7 +226,7 @@ class GroupActivityPubService
         return boolval($groupPost['sensitive']);
     }
 
-    public static function storeGroup($activity)
+    public static function storeGroup(array $activity)
     {
         $group = new Group;
         $group->profile_id = null;
@@ -245,7 +245,7 @@ class GroupActivityPubService
         return $group;
     }
 
-    public static function storeGroupPost($groupPost)
+    public static function storeGroupPost(array $groupPost)
     {
         $groupUrl = self::getGroupFromPostActivity($groupPost);
         if (! $groupUrl) {
@@ -275,7 +275,7 @@ class GroupActivityPubService
         return $model;
     }
 
-    public static function storeGroupComment($groupPost)
+    public static function storeGroupComment(array $groupPost)
     {
         $groupUrl = self::getGroupFromPostActivity($groupPost);
         if (! $groupUrl) {

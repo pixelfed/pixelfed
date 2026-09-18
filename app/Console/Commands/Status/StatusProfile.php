@@ -311,7 +311,7 @@ class StatusProfile extends Command
             $avatar = $profile->avatar;
 
             return $avatar ? 'present (media_path='.($avatar->media_path ?? 'null').')' : 'MISSING';
-        } catch (\Throwable $e) {
+        } catch (\Throwable) {
             return 'error';
         }
     }
@@ -325,7 +325,7 @@ class StatusProfile extends Command
     {
         try {
             return (string) ($fn() ?? 'null');
-        } catch (\Throwable $e) {
+        } catch (\Throwable) {
             return 'error';
         }
     }
@@ -334,7 +334,7 @@ class StatusProfile extends Command
     {
         try {
             return (string) $fn();
-        } catch (\Throwable $e) {
+        } catch (\Throwable) {
             return 'error';
         }
     }

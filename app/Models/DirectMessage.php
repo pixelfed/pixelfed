@@ -13,7 +13,7 @@ class DirectMessage extends Model
         return $this->belongsTo(Status::class, 'status_id', 'id');
     }
 
-    public function url()
+    public function url(): string
     {
         return config('app.url').'/account/direct/m/'.$this->status_id;
     }
@@ -28,7 +28,7 @@ class DirectMessage extends Model
         return $this->belongsTo(Profile::class, 'to_id', 'id');
     }
 
-    public function me()
+    public function me(): bool
     {
         return Auth::user()->profile->id === $this->from_id;
     }

@@ -15,7 +15,7 @@ class StatusService
 
     const MAX_PINNED = 3;
 
-    public static function key($id, $publicOnly = true)
+    public static function key($id, $publicOnly = true): string
     {
         $p = $publicOnly ? 'pub:' : 'all:';
 
@@ -199,7 +199,7 @@ class StatusService
     public static function clampReplyVisibility(
         $replyVisibility,
         $parentVisibility
-    ) {
+    ): string {
         if ($parentVisibility === 'group') {
             return 'group';
         }
@@ -224,7 +224,7 @@ class StatusService
         return $replyVisibility;
     }
 
-    public static function getState($id, $pid)
+    public static function getState($id, $pid): array
     {
         $status = self::get($id, false);
 
@@ -321,7 +321,7 @@ class StatusService
         return Status::whereProfileId($pid)->whereNotNull('pinned_order')->count();
     }
 
-    public static function markPin($id)
+    public static function markPin($id): array
     {
         $status = Status::find($id);
 

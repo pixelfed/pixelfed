@@ -216,7 +216,7 @@ class CollectionController extends Controller
             ->map(function ($id) {
                 return StatusService::get($id, false);
             })
-            ->filter(function ($item) {
+            ->filter(function (array $item) {
                 return $item && ($item['visibility'] == 'public' || $item['visibility'] == 'unlisted') && isset($item['account'], $item['media_attachments']);
             })
             ->values();

@@ -34,19 +34,19 @@ use Purify;
 
 class Helpers
 {
-    private const PUBLIC_TIMELINE = 'https://www.w3.org/ns/activitystreams#Public';
+    private const string PUBLIC_TIMELINE = 'https://www.w3.org/ns/activitystreams#Public';
 
-    private const CACHE_TTL = 14440;
+    private const int CACHE_TTL = 14440;
 
-    private const URL_CACHE_PREFIX = 'helpers:url:';
+    private const string URL_CACHE_PREFIX = 'helpers:url:';
 
-    private const FETCH_CACHE_TTL = 15;
+    private const int FETCH_CACHE_TTL = 15;
 
-    private const MAX_URL_LENGTH = 4096;
+    private const int MAX_URL_LENGTH = 4096;
 
-    private const DNS_TTL_POSITIVE = 86400;
+    private const int DNS_TTL_POSITIVE = 86400;
 
-    private const DNS_TTL_NEGATIVE = 300;
+    private const int DNS_TTL_NEGATIVE = 300;
 
     /**
      * Maximum number of ancestors a single status fetch may walk up an
@@ -55,9 +55,9 @@ class Helpers
      * fetch and one statuses row per hop. Anything deeper than this is not
      * rendered in the UI anyway.
      */
-    private const MAX_REPLY_DEPTH = 5;
+    private const int MAX_REPLY_DEPTH = 5;
 
-    private const LOCALHOST_DOMAINS = [
+    private const array LOCALHOST_DOMAINS = [
         'localhost',
         '127.0.0.1',
         '::1',
@@ -204,7 +204,7 @@ class Helpers
 
         try {
             $uri = $uri->withHost($host);
-        } catch (\Throwable $e) {
+        } catch (\Throwable) {
             return false;
         }
 
@@ -480,7 +480,7 @@ class Helpers
         $host = strtolower(rtrim($host, '.'));
 
         $bannedInstances = array_map(
-            fn ($domain) => strtolower(rtrim($domain, '.')),
+            fn ($domain): string => strtolower(rtrim($domain, '.')),
             InstanceService::getBannedDomains()
         );
 
@@ -538,11 +538,10 @@ class Helpers
                 return false;
             }
             $res = json_decode($res, true, 8);
-            if (json_last_error() == JSON_ERROR_NONE) {
+            if (json_last_error() === JSON_ERROR_NONE) {
                 return $res;
-            } else {
-                return false;
             }
+            return false;
         });
     }
 
@@ -575,7 +574,7 @@ class Helpers
             $isMoreThanOneDayFuture = $date->gt($tomorrow);
 
             return ! ($isMoreThanTenYearsOld || $isMoreThanOneDayFuture);
-        } catch (\Exception $e) {
+        } catch (\Exception) {
             return false;
         }
     }
@@ -743,7 +742,7 @@ class Helpers
 
         if (is_array($attributedTo)) {
             return collect($attributedTo)
-                ->filter(fn ($o) => $o && isset($o['type']) && $o['type'] == 'Person')
+                ->filter(fn ($o): bool => $o && isset($o['type']) && $o['type'] == 'Person')
                 ->pluck('id')
                 ->first();
         }
@@ -879,7 +878,7 @@ class Helpers
         $reply_to = self::getReplyTo($activity, $depth);
         $ts = self::pluckval($activity['published']);
         $scope = self::getScope($activity, $url);
-        $commentsDisabled = isset($activity['commentsEnabled']) ? (bool) $activity['commentsEnabled'] == false : false;
+        $commentsDisabled = isset($activity['commentsEnabled']) ? (bool) $activity['commentsEnabled'] === false : false;
         $cw = self::getSensitive($activity, $url);
 
         if ($profile->unlisted) {
@@ -1034,7 +1033,7 @@ class Helpers
             ->toArray();
     }
 
-    public static function getSensitive($activity, $url)
+    public static function getSensitive(array $activity, $url)
     {
         if (! $url || ! strlen($url)) {
             return true;
@@ -1055,7 +1054,7 @@ class Helpers
      * than the caller. Shares the same depth bound as getReplyToId so the
      * storeStatus path cannot restart the walk from zero.
      */
-    public static function getReplyTo($activity, int $depth = 0)
+    public static function getReplyTo(array $activity, int $depth = 0)
     {
         $inReplyTo = ! empty($activity['inReplyTo']) ?
             self::pluckval($activity['inReplyTo']) :
@@ -1068,14 +1067,14 @@ class Helpers
         return self::statusFirstOrFetch($inReplyTo, false, $depth + 1)?->id;
     }
 
-    public static function getScope($activity, $url)
+    public static function getScope(array $activity, $url): string
     {
         $id = isset($activity['id']) ? self::pluckval($activity['id']) : self::pluckval($url);
         $url = isset($activity['url']) ? self::pluckval($activity['url']) : self::pluckval($id);
         $urlDomain = parse_url(self::pluckval($url), PHP_URL_HOST);
         $scope = 'private';
 
-        if (isset($activity['to']) == true) {
+        if (isset($activity['to']) === true) {
             if (is_array($activity['to']) && in_array('https://www.w3.org/ns/activitystreams#Public', $activity['to'])) {
                 $scope = 'public';
             }
@@ -1084,7 +1083,7 @@ class Helpers
             }
         }
 
-        if (isset($activity['cc']) == true) {
+        if (isset($activity['cc']) === true) {
             if (is_array($activity['cc']) && in_array('https://www.w3.org/ns/activitystreams#Public', $activity['cc'])) {
                 $scope = 'unlisted';
             }
@@ -1093,24 +1092,24 @@ class Helpers
             }
         }
 
-        if ($scope == 'public' && in_array($urlDomain, InstanceService::getUnlistedDomains())) {
+        if ($scope === 'public' && in_array($urlDomain, InstanceService::getUnlistedDomains())) {
             $scope = 'unlisted';
         }
 
         return $scope;
     }
 
-    public static function storePoll($profile, $res, $url, $ts, $reply_to, $cw, $scope, $id)
+    public static function storePoll($profile, array $res, $url, $ts, $reply_to, $cw, $scope, $id)
     {
         if (! isset($res['endTime']) || ! isset($res['oneOf']) || ! is_array($res['oneOf']) || count($res['oneOf']) > 4) {
-            return;
+            return null;
         }
 
-        $options = collect($res['oneOf'])->map(function ($option) {
+        $options = collect($res['oneOf'])->map(function (array $option) {
             return $option['name'];
         })->toArray();
 
-        $cachedTallies = collect($res['oneOf'])->map(function ($option) {
+        $cachedTallies = collect($res['oneOf'])->map(function (array $option) {
             return $option['replies']['totalItems'] ?? 0;
         })->toArray();
 
@@ -1251,7 +1250,7 @@ class Helpers
 
         try {
             $mediaModel->save();
-        } catch (UniqueConstraintViolationException $e) {
+        } catch (UniqueConstraintViolationException) {
             // Lost a race with a concurrent inbox job that inserted the same
             // (status_id, media_path). Treat as already-imported.
             return null;

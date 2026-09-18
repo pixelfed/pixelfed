@@ -228,7 +228,7 @@ class FixProfileCounts extends Command
             ];
         }
 
-        $drifted = array_filter($drift, fn ($m) => $m['cached'] !== $m['live']);
+        $drifted = array_filter($drift, fn ($m): bool => $m['cached'] !== $m['live']);
 
         if ($drifted === []) {
             // No drift on the selected metrics: stay silent.

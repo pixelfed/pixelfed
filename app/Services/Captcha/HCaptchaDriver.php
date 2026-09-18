@@ -16,9 +16,9 @@ use Illuminate\Support\Facades\Log;
  */
 class HCaptchaDriver implements CaptchaDriver
 {
-    private const VERIFY_URL = 'https://api.hcaptcha.com/siteverify';
+    private const string VERIFY_URL = 'https://api.hcaptcha.com/siteverify';
 
-    private const SCRIPT_URL = 'https://js.hcaptcha.com/1/api.js';
+    private const string SCRIPT_URL = 'https://js.hcaptcha.com/1/api.js';
 
     public function name(): string
     {

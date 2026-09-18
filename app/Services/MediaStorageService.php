@@ -151,7 +151,7 @@ class MediaStorageService
         }
 
         // Hardened HEAD (IP-validated, pinned, no internal redirects).
-        $head = $this->head($url);
+        $head = static::head($url);
 
         if (! $head) {
             return;
@@ -242,7 +242,7 @@ class MediaStorageService
             return;
         }
 
-        $head = $this->head($url);
+        $head = static::head($url);
 
         if ($head == false) {
             return;

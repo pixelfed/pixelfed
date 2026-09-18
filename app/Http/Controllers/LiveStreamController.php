@@ -194,7 +194,7 @@ class LiveStreamController extends Controller
         return $res;
     }
 
-    public function addChatComment(Request $request)
+    public function addChatComment(Request $request): array
     {
         abort_if(! config('livestreaming.enabled'), 400);
         abort_if(! $request->user(), 403);
@@ -363,7 +363,7 @@ class LiveStreamController extends Controller
             $key = $request->filled('name') ? $request->input('name') : $url['name'];
         }
 
-        $token = substr($name, 0, 10) === 'streamkey-';
+        $token = str_starts_with($name, 'streamkey-');
 
         if ($token) {
             $stream = LiveStream::whereStreamKey($key)->firstOrFail();

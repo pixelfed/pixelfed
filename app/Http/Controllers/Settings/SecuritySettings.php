@@ -61,7 +61,10 @@ trait SecuritySettings
         return view('settings.security.2fa.setup', ['user' => $user, 'qrcode' => $qrcode, 'backups' => $backups]);
     }
 
-    protected function generateBackupCodes()
+    /**
+     * @return mixed[]
+     */
+    protected function generateBackupCodes(): array
     {
         $keys = [];
         for ($i = 0; $i < 11; $i++) {

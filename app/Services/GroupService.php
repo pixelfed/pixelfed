@@ -18,7 +18,7 @@ class GroupService
 {
     const CACHE_KEY = 'pf:services:groups:';
 
-    protected static function key($name)
+    protected static function key($name): string
     {
         return self::CACHE_KEY.$name;
     }
@@ -124,7 +124,7 @@ class GroupService
         });
     }
 
-    public static function config()
+    public static function config(): array
     {
         return [
             'enabled' => config('exp.gps') ?? false,
@@ -332,7 +332,7 @@ class GroupService
         });
     }
 
-    public static function mutualGroups($cid = false, $pid = false, $exclude = [])
+    public static function mutualGroups($cid = false, $pid = false, $exclude = []): array
     {
         if (! $cid || ! $pid) {
             return [

@@ -28,11 +28,7 @@ class BeagleService
                     ->connectTimeout(5)
                     ->retry(2, 500)
                     ->get('https://beagle.pixelfed.net/api/v1/common/suggestions/rules');
-            } catch (RequestException $e) {
-                return;
-            } catch (ConnectionException $e) {
-                return;
-            } catch (\Exception $e) {
+            } catch (RequestException|ConnectionException|\Exception) {
                 return;
             }
 
@@ -69,11 +65,7 @@ class BeagleService
                     ->connectTimeout(5)
                     ->retry(2, 500)
                     ->get('https://beagle.pixelfed.net/api/v1/discover');
-            } catch (RequestException $e) {
-                return;
-            } catch (ConnectionException $e) {
-                return;
-            } catch (\Exception $e) {
+            } catch (RequestException|ConnectionException|\Exception) {
                 return;
             }
 
@@ -103,13 +95,13 @@ class BeagleService
 
         return Cache::remember(self::DISCOVER_POSTS_CACHE_KEY, now()->addHours(1), function () {
             $posts = collect(self::getDiscover())
-                ->filter(function ($post) {
+                ->filter(function (array $post) {
                     $bannedInstances = InstanceService::getBannedDomains();
                     $domain = parse_url($post['id'], PHP_URL_HOST);
 
                     return ! in_array($domain, $bannedInstances);
                 })
-                ->map(function ($post) {
+                ->map(function (array $post) {
                     $domain = parse_url($post['id'], PHP_URL_HOST);
                     if ($domain === config_cache('pixelfed.domain.app')) {
                         $parts = explode('/', $post['id']);

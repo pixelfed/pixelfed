@@ -187,7 +187,7 @@ class StoryService
         return Redis::srem('pf:stories:rotate-queue', $id);
     }
 
-    public static function reactIncrement($storyId, $profileId)
+    public static function reactIncrement($storyId, $profileId): int
     {
         $key = 'pf:stories:react-counter:storyid-'.$storyId.':profileid-'.$profileId;
 
@@ -199,7 +199,7 @@ class StoryService
         return $count;
     }
 
-    public static function reactCounter($storyId, $profileId)
+    public static function reactCounter($storyId, $profileId): int
     {
         $key = 'pf:stories:react-counter:storyid-'.$storyId.':profileid-'.$profileId;
 

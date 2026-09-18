@@ -77,7 +77,7 @@ class CustomFilter extends Model
         return $this->hasMany(CustomFilterStatus::class);
     }
 
-    public function toFilterArray()
+    public function toFilterArray(): array
     {
         return [
             'id' => $this->id,
@@ -124,7 +124,7 @@ class CustomFilter extends Model
         $this->attributes['action'] = $value ? self::ACTION_HIDE : self::ACTION_WARN;
     }
 
-    public function getIrreversibleAttribute()
+    public function getIrreversibleAttribute(): bool
     {
         return $this->action === self::ACTION_HIDE;
     }
@@ -153,7 +153,7 @@ class CustomFilter extends Model
         });
     }
 
-    public function isExpired()
+    public function isExpired(): bool
     {
         return $this->expires_at !== null && $this->expires_at->isPast();
     }
@@ -336,7 +336,7 @@ class CustomFilter extends Model
             //     $filtersHash[$filterId]['status_ids'] = $statuses->take($maxStatusIds)->pluck('status_id')->toArray();
             // });
 
-            return array_map(function ($item) {
+            return array_map(function (array $item) {
                 $filter = $item['filter'];
                 unset($item['filter']);
 
@@ -358,7 +358,7 @@ class CustomFilter extends Model
      * @param  mixed  $status  The status to check
      * @return array The filter matches
      */
-    public static function applyCachedFilters($cachedFilters, $status)
+    public static function applyCachedFilters($cachedFilters, array $status): array
     {
         $results = [];
 

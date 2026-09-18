@@ -92,7 +92,7 @@ trait AdminHashtagsController
         return new AdminHashtag($hashtag);
     }
 
-    public function hashtagsClearTrendingCache(Request $request)
+    public function hashtagsClearTrendingCache(Request $request): array
     {
         TrendingHashtagService::refresh();
 

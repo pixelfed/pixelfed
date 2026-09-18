@@ -27,7 +27,7 @@ class UserCheckPassword extends Command
      *
      * @return int
      */
-    public function handle()
+    public function handle(): int
     {
         $id = $this->argument('id');
 

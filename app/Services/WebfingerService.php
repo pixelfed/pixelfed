@@ -68,7 +68,7 @@ class WebfingerService
         }
 
         return collect($webfinger['links'])
-            ->filter(function ($link) {
+            ->filter(function (array $link) {
                 return $link &&
                     isset($link['rel'], $link['type'], $link['href']) &&
                     $link['rel'] === 'self' &&

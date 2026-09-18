@@ -134,7 +134,7 @@ class ImportPostController extends Controller
                     continue;
                 }
 
-                $exts = $c->map(function ($m) {
+                $exts = $c->map(function (array $m) {
                     $fn = last(explode('/', $m['uri']));
 
                     return last(explode('.', $fn));
@@ -150,7 +150,7 @@ class ImportPostController extends Controller
                 $ip->post_type = $postType;
                 $ip->media_count = $c->count();
 
-                $ip->media = $c->map(function ($m) {
+                $ip->media = $c->map(function (array $m) {
                     return [
                         'uri' => $m['uri'],
                         'title' => $this->formatHashtags($m['title'] ?? ''),
@@ -165,7 +165,7 @@ class ImportPostController extends Controller
                 $originalFilename = last(explode('/', $ip->media[0]['uri'] ?? ''));
                 $ip->filename = $this->sanitizeFilename($originalFilename);
 
-                $ip->metadata = $c->map(function ($m) {
+                $ip->metadata = $c->map(function (array $m) {
                     return [
                         'uri' => $m['uri'],
                         'media_metadata' => isset($m['media_metadata']) ? $m['media_metadata'] : null,
@@ -275,27 +275,22 @@ class ImportPostController extends Controller
             if ($exts->contains('mp4')) {
                 if ($exts->contains('jpg', 'png', 'webp')) {
                     return 'photo:video:album';
-                } else {
-                    return 'video:album';
                 }
-            } else {
-                return 'photo:album';
+                return 'video:album';
             }
-        } else {
-            if ($exts->isEmpty()) {
-                return 'photo';
-            }
-
-            $ext = $exts[0];
-
-            if (in_array($ext, ['jpg', 'jpeg', 'png', 'webp'])) {
-                return 'photo';
-            } elseif (in_array($ext, ['mp4'])) {
-                return 'video';
-            } else {
-                return 'photo';
-            }
+            return 'photo:album';
         }
+        if ($exts->isEmpty()) {
+            return 'photo';
+        }
+        $ext = $exts[0];
+        if (in_array($ext, ['jpg', 'jpeg', 'png', 'webp'])) {
+            return 'photo';
+        }
+        if (in_array($ext, ['mp4'])) {
+            return 'video';
+        }
+        return 'photo';
     }
 
     private function sanitizeFilename($filename): string
@@ -320,9 +315,8 @@ class ImportPostController extends Controller
         if ($user->is_admin) {
             if (! $abortOnFail) {
                 return true;
-            } else {
-                return true;
             }
+            return true;
         }
 
         $admin = User::whereIsAdmin(true)->first();

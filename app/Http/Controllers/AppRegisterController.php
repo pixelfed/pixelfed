@@ -24,21 +24,21 @@ use Purify;
 
 class AppRegisterController extends Controller
 {
-    private const VERIFY_CODE_MAX_ATTEMPTS = 10;
+    private const int VERIFY_CODE_MAX_ATTEMPTS = 10;
 
-    private const VERIFY_CODE_TTL_SECONDS = 3600;
+    private const int VERIFY_CODE_TTL_SECONDS = 3600;
 
-    private const RESEND_MAX_USES = 5;
+    private const int RESEND_MAX_USES = 5;
 
     /**
      * Where the web steps send the browser when no redirect_uri is given.
      * Keeps the original app working unchanged.
      */
-    private const LEGACY_REDIRECT_URI = 'pixelfed://verifyEmail';
+    private const string LEGACY_REDIRECT_URI = 'pixelfed://verifyEmail';
 
-    private const DEFAULT_SCOPES = ['read', 'write', 'follow', 'push'];
+    private const array DEFAULT_SCOPES = ['read', 'write', 'follow', 'push'];
 
-    private const BLOCKED_REDIRECT_SCHEMES = [
+    private const array BLOCKED_REDIRECT_SCHEMES = [
         'http',
         'https',
         'javascript',
@@ -111,7 +111,7 @@ class AppRegisterController extends Controller
 
         try {
             Mail::to($email)->send(new InAppRegisterEmailVerify($code));
-        } catch (\Exception $e) {
+        } catch (\Exception) {
             DB::rollBack();
 
             return $this->appRedirect($redirectUri, [
@@ -221,7 +221,7 @@ class AppRegisterController extends Controller
 
         try {
             Mail::to($email)->send(new InAppRegisterEmailVerify($code));
-        } catch (\Exception $e) {
+        } catch (\Exception) {
             DB::rollBack();
 
             return $this->appRedirect($redirectUri, [
@@ -327,7 +327,7 @@ class AppRegisterController extends Controller
 
         try {
             $tokens = $tokenFactory->issue($user, (string) $clientId, (string) $clientSecret, $scopes);
-        } catch (OAuthServerException $e) {
+        } catch (OAuthServerException) {
             return response()->json([
                 'status' => 'error',
                 'code' => 'account_created_token_failed',
@@ -416,7 +416,7 @@ class AppRegisterController extends Controller
     protected function resolveScopes(?string $scope): ?array
     {
         $scopes = collect(explode(' ', str_replace('+', ' ', trim((string) $scope))))
-            ->map(fn ($s) => trim($s))
+            ->map(fn ($s): string => trim($s))
             ->filter()
             ->unique()
             ->values()
@@ -476,7 +476,7 @@ class AppRegisterController extends Controller
     protected function allowedRedirectSchemes(): array
     {
         return collect(explode(',', (string) config('auth.in_app_registration_redirect_schemes', 'pixelfed')))
-            ->map(fn ($s) => strtolower(trim($s)))
+            ->map(fn ($s): string => strtolower(trim($s)))
             ->filter()
             ->values()
             ->all();

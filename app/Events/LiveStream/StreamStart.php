@@ -39,7 +39,7 @@ class StreamStart implements ShouldBroadcast
         return 'stream.start';
     }
 
-    public function broadcastWith()
+    public function broadcastWith(): array
     {
         return ['ts' => time()];
     }

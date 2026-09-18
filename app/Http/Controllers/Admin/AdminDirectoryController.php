@@ -24,7 +24,10 @@ trait AdminDirectoryController
         return view('admin.directory.home');
     }
 
-    public function directoryInitialData(Request $request)
+    /**
+     * @return mixed[]
+     */
+    public function directoryInitialData(Request $request): array
     {
         $res = [];
 
@@ -58,7 +61,7 @@ trait AdminDirectoryController
             $res['favourite_posts'] = collect($res['favourite_posts'])->map(function ($id) {
                 return StatusService::get($id);
             })
-                ->filter(function ($post) {
+                ->filter(function (array $post) {
                     return $post && isset($post['account']);
                 })
                 ->values();
@@ -88,7 +91,7 @@ trait AdminDirectoryController
 
         if (config_cache('pixelfed.directory.testimonials')) {
             $testimonials = collect(json_decode(config_cache('pixelfed.directory.testimonials'), true))
-                ->map(function ($t) {
+                ->map(function (array $t) {
                     return [
                         'profile' => AccountService::get($t['profile_id']),
                         'body' => $t['body'],
@@ -161,7 +164,7 @@ trait AdminDirectoryController
         return $res;
     }
 
-    protected function validVal($res, $val, $count = false, $minLen = false)
+    protected function validVal(array $res, $val, $count = false, $minLen = false)
     {
         if (! isset($res[$val])) {
             return false;
@@ -303,7 +306,7 @@ trait AdminDirectoryController
         $bannerImage = ConfigCache::whereK('app.banner_image')->first();
         $directory = ConfigCache::whereK('pixelfed.directory')->first();
         if (! $bannerImage && ! $directory || empty($directory->v)) {
-            return;
+            return null;
         }
         $directoryArr = json_decode($directory->v, true);
         $path = isset($directoryArr['banner_image']) ? $directoryArr['banner_image'] : false;
@@ -313,7 +316,7 @@ trait AdminDirectoryController
             'public/headers/missing.png',
         ];
         if (! $path || in_array($path, $protected)) {
-            return;
+            return null;
         }
         if (Storage::exists($directoryArr['banner_image'])) {
             Storage::delete($directoryArr['banner_image']);
@@ -345,7 +348,7 @@ trait AdminDirectoryController
         $res = $ids->map(function ($id) {
             return StatusService::get($id);
         })
-            ->filter(function ($post) {
+            ->filter(function (array $post) {
                 return $post && isset($post['account']);
             })
             ->values();
@@ -379,7 +382,7 @@ trait AdminDirectoryController
         $profile_id = $request->input('profile_id');
         $testimonials = ConfigCache::whereK('pixelfed.directory.testimonials')->firstOrFail();
         $existing = collect(json_decode($testimonials->v, true))
-            ->filter(function ($t) use ($profile_id) {
+            ->filter(function (array $t) use ($profile_id) {
                 return $t['profile_id'] !== $profile_id;
             })
             ->values();
@@ -388,7 +391,7 @@ trait AdminDirectoryController
         return $existing;
     }
 
-    public function directorySaveTestimonial(Request $request)
+    public function directorySaveTestimonial(Request $request): array
     {
         $this->validate($request, [
             'username' => 'required',
@@ -404,7 +407,7 @@ trait AdminDirectoryController
         $testimonials = $configCache->v ? collect(json_decode($configCache->v, true)) : collect([]);
 
         abort_if($testimonials->contains('profile_id', $user->profile_id), 422, 'Testimonial already exists');
-        abort_if($testimonials->count() == 10, 422, 'You can only have 10 active testimonials');
+        abort_if($testimonials->count() === 10, 422, 'You can only have 10 active testimonials');
 
         $testimonials->push([
             'profile_id' => (string) $user->profile_id,
@@ -440,7 +443,7 @@ trait AdminDirectoryController
 
         $testimonials = $configCache->v ? collect(json_decode($configCache->v, true)) : collect([]);
 
-        $updated = $testimonials->map(function ($t) use ($profile_id, $body) {
+        $updated = $testimonials->map(function (array $t) use ($profile_id, $body) {
             if ($t['profile_id'] == $profile_id) {
                 $t['body'] = $body;
             }

@@ -20,7 +20,7 @@ class WebfingerUrl
         return 'https://'.$n['domain'].'/.well-known/webfinger?resource=acct:'.$n['username'].'@'.$n['domain'];
     }
 
-    public static function generateWebfingerUrl($url)
+    public static function generateWebfingerUrl($url): string
     {
         $url = Nickname::normalizeProfileUrl($url);
         $domain = $url['domain'];

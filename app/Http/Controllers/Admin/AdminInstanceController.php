@@ -39,7 +39,7 @@ trait AdminInstanceController
     {
         $instance = Instance::findOrFail($id);
 
-        return view('admin.instances.show', compact('instance'));
+        return view('admin.instances.show', ['instance' => $instance]);
     }
 
     public function instanceEdit(Request $request, $id)
@@ -278,7 +278,7 @@ trait AdminInstanceController
         }, 'pixelfed-instances-mod.json');
     }
 
-    public function importBackup(Request $request)
+    public function importBackup(Request $request): array
     {
         $this->validate($request, [
             'banned' => 'sometimes|array',

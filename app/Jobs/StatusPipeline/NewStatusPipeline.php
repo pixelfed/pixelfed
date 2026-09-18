@@ -30,7 +30,7 @@ class NewStatusPipeline implements ShouldQueue
      * Seconds to hold the publish lock. Long enough to cover the waiting
      * job and the media pipeline both dispatching for the same status.
      */
-    private const LOCK_TTL = 900;
+    private const int LOCK_TTL = 900;
 
     protected $status;
 

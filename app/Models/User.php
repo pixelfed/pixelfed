@@ -83,7 +83,7 @@ class User extends Authenticatable implements OAuthenticatable
         return $this->hasMany(UserFilter::class, 'user_id', 'profile_id');
     }
 
-    public function receivesBroadcastNotificationsOn()
+    public function receivesBroadcastNotificationsOn(): string
     {
         return 'App.User.'.$this->id;
     }
@@ -93,7 +93,7 @@ class User extends Authenticatable implements OAuthenticatable
         return $this->hasMany(UserDevice::class);
     }
 
-    public function storageUsedKey()
+    public function storageUsedKey(): string
     {
         return 'profile:storage:used:'.$this->id;
     }

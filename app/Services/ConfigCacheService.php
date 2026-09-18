@@ -190,7 +190,7 @@ class ConfigCacheService
 
                 return $v;
             });
-        } catch (Exception|QueryException $e) {
+        } catch (Exception|QueryException) {
             return config($key);
         }
     }

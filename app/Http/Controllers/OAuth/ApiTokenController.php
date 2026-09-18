@@ -43,7 +43,7 @@ class ApiTokenController extends AccessTokenController
             $payload = json_decode(base64_decode(strtr($parts[1], '-_', '+/')), true);
 
             return $payload['jti'] ?? null;
-        } catch (\Exception $e) {
+        } catch (\Exception) {
             return null;
         }
     }

@@ -8,7 +8,7 @@ use Illuminate\Support\Str;
 
 class AdminSettingsService
 {
-    public static function getAll()
+    public static function getAll(): array
     {
         return [
             'features' => self::getFeatures(),
@@ -25,7 +25,7 @@ class AdminSettingsService
         ];
     }
 
-    public static function getFeatures()
+    public static function getFeatures(): array
     {
         $cloud_storage = (bool) config_cache('pixelfed.cloud_storage');
         $cloud_disk = config('filesystems.cloud');
@@ -47,7 +47,7 @@ class AdminSettingsService
         ];
     }
 
-    public static function getLanding()
+    public static function getLanding(): array
     {
         $availableAdmins = User::whereIsAdmin(true)->get();
         $currentAdmin = config_cache('instance.admin.pid');
@@ -60,7 +60,7 @@ class AdminSettingsService
         ];
     }
 
-    public static function getBranding()
+    public static function getBranding(): array
     {
         return [
             'name' => config_cache('app.name'),
@@ -69,7 +69,7 @@ class AdminSettingsService
         ];
     }
 
-    public static function getMedia()
+    public static function getMedia(): array
     {
         return [
             'max_photo_size' => config_cache('pixelfed.max_photo_size'),
@@ -91,7 +91,7 @@ class AdminSettingsService
         return BeagleService::getDefaultRules();
     }
 
-    public static function getUsers()
+    public static function getUsers(): array
     {
         $autoFollow = config_cache('account.autofollow_usernames');
         if (strlen($autoFollow) >= 2) {
@@ -112,7 +112,7 @@ class AdminSettingsService
         ];
     }
 
-    public static function getPosts()
+    public static function getPosts(): array
     {
         return [
             'max_caption_length' => config_cache('pixelfed.max_caption_length'),
@@ -120,7 +120,7 @@ class AdminSettingsService
         ];
     }
 
-    public static function getPlatform()
+    public static function getPlatform(): array
     {
         return [
             'allow_app_registration' => (bool) config_cache('pixelfed.allow_app_registration'),
@@ -165,7 +165,7 @@ class AdminSettingsService
         return Str::mask((string) $value, '*', 4, -4);
     }
 
-    public static function getStorage()
+    public static function getStorage(): array
     {
         $cloud_storage = (bool) config_cache('pixelfed.cloud_storage');
         $cloud_disk = config('filesystems.cloud');
@@ -192,7 +192,10 @@ class AdminSettingsService
         ];
     }
 
-    public static function getCuratedOnboarding()
+    /**
+     * @return mixed[]
+     */
+    public static function getCuratedOnboarding(): array
     {
         $openReg = (bool) config_cache('pixelfed.open_registration');
         $curOnboarding = (bool) config_cache('instance.curated_registration.enabled');

@@ -90,7 +90,7 @@ class RemoteOidcController extends Controller
         return redirect('/');
     }
 
-    protected function createUser($data)
+    protected function createUser(array $data)
     {
         $this->validate(new Request($data), [
             'email' => [
@@ -131,7 +131,7 @@ class RemoteOidcController extends Controller
         return Auth::guard();
     }
 
-    private function ensure_valid_username($starting_username)
+    private function ensure_valid_username($starting_username): string
     {
         $starting_username = explode('@', $starting_username)[0];
         $temp_username = preg_replace('/[^a-z0-9_]+/i', '', $starting_username);

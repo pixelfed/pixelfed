@@ -10,7 +10,7 @@ class ProfileOutbox extends Fractal\TransformerAbstract
 {
     protected $defaultIncludes = ['orderedItems'];
 
-    public function transform(Profile $profile)
+    public function transform(Profile $profile): array
     {
         $count = $profile->statuses()->whereHas('media')->count();
 

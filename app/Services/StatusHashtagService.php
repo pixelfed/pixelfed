@@ -29,7 +29,7 @@ class StatusHashtagService
             ->map(function ($i, $k) use ($id) {
                 return self::getStatus($i, $id);
             })
-            ->filter(function ($i) use ($filtered) {
+            ->filter(function (array $i) use ($filtered) {
                 return isset($i['status']) &&
                 ! empty($i['status']) && ! in_array($i['status']['account']['id'], $filtered) &&
                 isset($i['status']['media_attachments']) &&
@@ -75,7 +75,7 @@ class StatusHashtagService
         return $cc->cached_count ?? 0;
     }
 
-    public static function getStatus($statusId, $hashtagId)
+    public static function getStatus($statusId, $hashtagId): array
     {
         return ['status' => StatusService::get($statusId)];
     }

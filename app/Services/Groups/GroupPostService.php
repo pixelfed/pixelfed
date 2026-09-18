@@ -13,7 +13,7 @@ class GroupPostService
 {
     const CACHE_KEY = 'pf:services:groups:post:';
 
-    public static function key($gid, $pid)
+    public static function key($gid, $pid): string
     {
         return self::CACHE_KEY.$gid.':'.$pid;
     }

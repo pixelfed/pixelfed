@@ -35,7 +35,7 @@ class ExportLanguages extends Command
      *
      * @return int
      */
-    public function handle()
+    public function handle(): int
     {
         if (config('app.env') !== 'local') {
             $this->error('This command is meant for development purposes and should only be run in a local environment');
@@ -124,7 +124,7 @@ class ExportLanguages extends Command
             ];
         }, $langs);
 
-        usort($locales, function ($a, $b) {
+        usort($locales, function (array $a, array $b) {
             return strcasecmp($a['name'], $b['name']);
         });
 

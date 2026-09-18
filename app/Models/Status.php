@@ -143,8 +143,8 @@ class Status extends Model
         }
 
         return collect($entity['media_attachments'])
-            ->filter(fn ($media) => $media['type'] == 'image' && in_array($media['mime'], ['image/jpeg', 'image/png', 'image/jpg']))
-            ->map(function ($media) {
+            ->filter(fn ($media): bool => $media['type'] == 'image' && in_array($media['mime'], ['image/jpeg', 'image/png', 'image/jpg']))
+            ->map(function (array $media) {
                 if (! Str::endsWith($media['preview_url'], ['no-preview.png', 'no-preview.jpg'])) {
                     return $media['preview_url'];
                 }
@@ -178,7 +178,7 @@ class Status extends Model
         return url($path);
     }
 
-    public function editUrl()
+    public function editUrl(): string
     {
         return $this->url().'/edit';
     }
@@ -308,12 +308,12 @@ class Status extends Model
         );
     }
 
-    public function reportUrl()
+    public function reportUrl(): string
     {
         return route('report.form')."?type=post&id={$this->id}";
     }
 
-    public function toActivityStream()
+    public function toActivityStream(): array
     {
         $media = $this->media;
         $mediaCollection = [];

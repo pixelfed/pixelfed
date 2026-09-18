@@ -29,7 +29,7 @@ class SeasonalController extends Controller
 
         $profile = Auth::user()->profile;
 
-        return view('account.yir', compact('profile'));
+        return view('account.yir', ['profile' => $profile]);
     }
 
     public function getData(Request $request): JsonResponse

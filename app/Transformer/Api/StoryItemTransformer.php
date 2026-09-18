@@ -7,7 +7,7 @@ use League\Fractal;
 
 class StoryItemTransformer extends Fractal\TransformerAbstract
 {
-    public function transform(StoryItem $item)
+    public function transform(StoryItem $item): array
     {
         return [
             'id' => (string) $item->id,

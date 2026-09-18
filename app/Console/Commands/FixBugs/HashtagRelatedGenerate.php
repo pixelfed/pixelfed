@@ -79,8 +79,8 @@ class HashtagRelatedGenerate extends Command implements PromptsForMissingInput
             required: true,
         );
 
-        $filtered = $related->filter(fn ($i) => in_array($i['name'], $selected))->all();
-        $agg_score = $related->filter(fn ($i) => in_array($i['name'], $selected))->sum('related_count');
+        $filtered = $related->filter(fn ($i): bool => in_array($i['name'], $selected))->all();
+        $agg_score = $related->filter(fn ($i): bool => in_array($i['name'], $selected))->sum('related_count');
 
         HashtagRelated::updateOrCreate([
             'hashtag_id' => $hashtag->id,

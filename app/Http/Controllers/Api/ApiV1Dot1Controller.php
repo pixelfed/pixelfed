@@ -277,7 +277,7 @@ class ApiV1Dot1Controller extends Controller
             ->map(function ($id) {
                 return StatusService::get($id);
             })
-            ->filter(function ($post) {
+            ->filter(function (array $post) {
                 return $post && isset($post['account']);
             })
             ->toArray();
@@ -558,11 +558,11 @@ class ApiV1Dot1Controller extends Controller
         return response()->json($res, 200, $headers, JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE);
     }
 
-    protected function appToken($token, $currentId, $legacy = false)
+    protected function appToken($token, $currentId, $legacy = false): array
     {
         $expired = $token->expires_at && $token->expires_at->isPast();
         $status = $token->revoked ? 'revoked' : ($expired ? 'expired' : 'active');
-        $fmt = fn ($date) => $date ? str_replace('@', 'at', $date->format('M j, Y @ g:i:s A')) : null;
+        $fmt = fn ($date): string|array|null => $date ? str_replace('@', 'at', $date->format('M j, Y @ g:i:s A')) : null;
 
         return [
             'id' => $token->id,

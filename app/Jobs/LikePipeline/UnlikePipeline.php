@@ -38,7 +38,7 @@ class UnlikePipeline implements ShouldQueue
         $this->like = $like;
     }
 
-    public function middleware()
+    public function middleware(): array
     {
         return [
             (new WithoutOverlapping("unlike:{$this->like->status_id}:{$this->like->profile_id}"))

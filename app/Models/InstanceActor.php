@@ -24,7 +24,7 @@ class InstanceActor extends Model
         return url(self::PROFILE_BASE.$suffix);
     }
 
-    public function getActor()
+    public function getActor(): array
     {
         return [
             '@context' => [

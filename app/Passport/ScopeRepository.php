@@ -40,7 +40,7 @@ class ScopeRepository extends BaseScopeRepository
 
         // No user (client_credentials) or a non-admin user: never issue admin scopes.
         return collect($scopes)
-            ->reject(fn ($scope) => self::isAdminScope($scope->getIdentifier()))
+            ->reject(fn ($scope): bool => self::isAdminScope($scope->getIdentifier()))
             ->values()
             ->all();
     }

@@ -49,7 +49,7 @@ class DiscoverController extends Controller
             ->firstOrFail();
         $tagCount = $tag->cached_count ?? 0;
 
-        return view('discover.tags.show', compact('tag', 'tagCount'));
+        return view('discover.tags.show', ['tag' => $tag, 'tagCount' => $tagCount]);
     }
 
     public function getHashtags(Request $request)
@@ -97,14 +97,14 @@ class DiscoverController extends Controller
         if ($user) {
             $tags = StatusHashtagService::get($hashtag->id, $page, $end);
             $res['tags'] = collect($tags)
-                ->map(function ($tag) use ($user) {
+                ->map(function (array $tag) use ($user) {
                     $tag['status']['favourited'] = (bool) LikeService::liked($user->profile_id, $tag['status']['id']);
                     $tag['status']['reblogged'] = (bool) ReblogService::get($user->profile_id, $tag['status']['id']);
                     $tag['status']['bookmarked'] = (bool) BookmarkService::get($user->profile_id, $tag['status']['id']);
 
                     return $tag;
                 })
-                ->filter(function ($tag) {
+                ->filter(function (array $tag) {
                     if (! StatusService::get($tag['status']['id'])) {
                         return false;
                     }
@@ -116,7 +116,7 @@ class DiscoverController extends Controller
             $key = 'discover:tags:public_feed:'.$hashtag->id.':page:'.$page.':end'.$end;
             $tags = StatusHashtagService::get($hashtag->id, $page, $end);
             $res['tags'] = collect($tags)
-                ->filter(function ($tag) {
+                ->filter(function (array $tag) {
                     if (! StatusService::get($tag['status']['id'])) {
                         return false;
                     }
@@ -186,7 +186,7 @@ class DiscoverController extends Controller
 
         $res = $ids->map(function ($s) {
             return StatusService::get($s);
-        })->filter(function ($s) use ($filtered) {
+        })->filter(function (array $s) use ($filtered) {
             return
                 $s &&
                 isset($s['account'], $s['account']['id']) &&
@@ -229,7 +229,7 @@ class DiscoverController extends Controller
                     ->map(function ($id) {
                         return StatusService::get($id, false);
                     })
-                    ->filter(function ($post) {
+                    ->filter(function (array $post) {
                         return $post && isset($post['account']);
                     })
                     ->values();
@@ -249,7 +249,7 @@ class DiscoverController extends Controller
 
                         return $status;
                     })
-                    ->filter(function ($post) {
+                    ->filter(function (array $post) {
                         return $post && isset($post['account']);
                     })
                     ->values();
@@ -273,7 +273,7 @@ class DiscoverController extends Controller
                 ->map(function ($id) {
                     return StatusService::get($id, false);
                 })
-                ->filter(function ($post) {
+                ->filter(function (array $post) {
                     return $post && isset($post['account']);
                 })
                 ->values();
@@ -329,7 +329,7 @@ class DiscoverController extends Controller
             ->map(function ($id) {
                 return StatusService::get($id);
             })
-            ->filter(function ($post) {
+            ->filter(function (array $post) {
                 return $post && isset($post['account']);
             })
             ->values();
@@ -363,7 +363,7 @@ class DiscoverController extends Controller
                 $len = strlen($v);
                 $pos = strpos($v, '.');
                 $domain = trim($v);
-                if ($pos == false || $pos == ($len + 1)) {
+                if ($pos == false || $pos === $len + 1) {
                     return false;
                 }
                 if (! Instance::whereDomain($domain)->exists()) {
@@ -400,19 +400,19 @@ class DiscoverController extends Controller
         $ids = $ids->map(function ($profile) {
             return AccountService::get($profile->id, true);
         })
-            ->filter(function ($profile) {
+            ->filter(function (array $profile) {
                 return $profile && isset($profile['id'], $profile['locked']) && ! $profile['locked'];
             })
-            ->filter(function ($profile) use ($pid) {
+            ->filter(function (array $profile) use ($pid) {
                 return $profile['id'] != $pid;
             })
-            ->filter(function ($profile) use ($pid) {
+            ->filter(function (array $profile) use ($pid) {
                 return ! FollowerService::follows($pid, $profile['id'], true);
             })
-            ->filter(function ($profile) use ($asf) {
+            ->filter(function (array $profile) use ($asf) {
                 return ! in_array($profile['id'], $asf);
             })
-            ->filter(function ($profile) use ($filters) {
+            ->filter(function (array $profile) use ($filters) {
                 return ! in_array($profile['id'], $filters);
             })
             ->take(16)

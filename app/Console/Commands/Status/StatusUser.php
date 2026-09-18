@@ -306,7 +306,7 @@ class StatusUser extends Command
             }
 
             return 'present (media_path='.($avatar->media_path ?? 'null').')';
-        } catch (\Throwable $e) {
+        } catch (\Throwable) {
             return 'error';
         }
     }
@@ -320,7 +320,7 @@ class StatusUser extends Command
     {
         try {
             return (string) ($fn() ?? 'null');
-        } catch (\Throwable $e) {
+        } catch (\Throwable) {
             return 'error';
         }
     }
@@ -425,7 +425,7 @@ class StatusUser extends Command
             }
 
             return (int) DB::table('oauth_access_tokens')->where('user_id', $user->id)->count();
-        } catch (\Throwable $e) {
+        } catch (\Throwable) {
             return 0;
         }
     }
@@ -434,7 +434,7 @@ class StatusUser extends Command
     {
         try {
             return (string) $fn();
-        } catch (\Throwable $e) {
+        } catch (\Throwable) {
             return 'error';
         }
     }

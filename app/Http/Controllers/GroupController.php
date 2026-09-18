@@ -114,7 +114,7 @@ class GroupController extends GroupFederationController
 
                 return $account;
             })
-            ->filter(function ($l) {
+            ->filter(function (array $l) {
                 return $l && isset($l['id']);
             })
             ->values();

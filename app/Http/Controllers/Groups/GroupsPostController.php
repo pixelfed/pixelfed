@@ -50,7 +50,7 @@ class GroupsPostController extends Controller
         abort_if(! GroupService::canPost($group->id, $pid), 422, 'You cannot create new posts at this time');
 
         if ($type == 'text') {
-            abort_if(strlen(e($caption)) == 0, 403);
+            abort_if(e($caption) === '', 403);
         }
 
         $gp = new GroupPost;
@@ -253,12 +253,11 @@ class GroupsPostController extends Controller
 
         if ($request->wantsJson()) {
             return response()->json(['Status successfully deleted.']);
-        } else {
-            return redirect($user->url());
         }
+        return redirect($user->url());
     }
 
-    public function likePost(Request $request)
+    public function likePost(Request $request): array
     {
         $this->validate($request, [
             'gid' => 'required',
@@ -332,7 +331,7 @@ class GroupsPostController extends Controller
         return $response;
     }
 
-    public function unlikePost(Request $request)
+    public function unlikePost(Request $request): array
     {
         $this->validate($request, [
             'gid' => 'required',
@@ -394,7 +393,7 @@ class GroupsPostController extends Controller
             ->whereType($type)
             ->latest()
             ->simplePaginate(20)
-            ->map(function ($gp) use ($pid) {
+            ->map(function (array $gp) use ($pid) {
                 $status = GroupPostService::get($gp['group_id'], $gp['id']);
                 if (! $status) {
                     return false;

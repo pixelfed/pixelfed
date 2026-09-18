@@ -29,7 +29,7 @@ final class AdminInviteCommand extends Command
      *
      * @return int
      */
-    public function handle()
+    public function handle(): int
     {
         $this->info('       ____  _           ______         __  ');
         $this->info('      / __ \(_)  _____  / / __/__  ____/ /  ');

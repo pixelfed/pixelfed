@@ -39,7 +39,7 @@ final class BackupToCloud extends Command
      *
      * @return int
      */
-    public function handle()
+    public function handle(): int
     {
         $localDisk = Storage::disk('local');
         $cloudDisk = Storage::disk('backup');

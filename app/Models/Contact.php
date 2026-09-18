@@ -29,7 +29,7 @@ class Contact extends Model
         return url('/i/contact-admin-response/'.$this->id);
     }
 
-    public function getMessageId()
+    public function getMessageId(): string
     {
         return $this->id.'-'.(string) Str::uuid().'@'.strtolower(config('pixelfed.domain.app', 'example.org'));
     }
