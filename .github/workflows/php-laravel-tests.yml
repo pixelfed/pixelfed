@@ -1,5 +1,8 @@
 name: PHP - Laravel Tests
 
+permissions:
+  contents: read
+
 on:
   push:
     branches: [staging, dev, unstable]
