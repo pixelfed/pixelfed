@@ -82,7 +82,7 @@ class AdminShadowFilterController extends Controller
 
         AdminShadowFilter::updateOrCreate([
             'item_id' => $profile->id,
-            'item_type' => get_class($profile),
+            'item_type' => $profile::class,
         ], [
             'is_local' => $profile->domain === null,
             'note' => $request->input('note'),

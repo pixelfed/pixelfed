@@ -115,7 +115,7 @@ class AccountController extends Controller
                 if ($profile->id == $pid) {
                     return abort(403);
                 }
-                $class = get_class($profile);
+                $class = $profile::class;
                 $filterable['id'] = $profile->id;
                 $filterable['type'] = $class;
                 break;
@@ -160,7 +160,7 @@ class AccountController extends Controller
                 if ($profile->id == $pid) {
                     return abort(403);
                 }
-                $class = get_class($profile);
+                $class = $profile::class;
                 $filterable['id'] = $profile->id;
                 $filterable['type'] = $class;
                 break;
@@ -219,7 +219,7 @@ class AccountController extends Controller
                 if ($profile->id == $pid || ($profile->user && $profile->user->is_admin == true)) {
                     return abort(403);
                 }
-                $class = get_class($profile);
+                $class = $profile::class;
                 $filterable['id'] = $profile->id;
                 $filterable['type'] = $class;
 
@@ -297,7 +297,7 @@ class AccountController extends Controller
                 if ($profile->id == $pid) {
                     return abort(403);
                 }
-                $class = get_class($profile);
+                $class = $profile::class;
                 $filterable['id'] = $profile->id;
                 $filterable['type'] = $class;
                 break;

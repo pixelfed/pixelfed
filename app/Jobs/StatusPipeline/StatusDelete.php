@@ -229,7 +229,7 @@ class StatusDelete implements ShouldQueue
                     'status_id' => $status->id,
                     'inbox' => $audience[$i] ?? null,
                     'result' => $res instanceof \Throwable
-                        ? get_class($res).': '.$res->getMessage()
+                        ? $res::class.': '.$res->getMessage()
                         : $res->status().' '.substr($res->body(), 0, 300),
                 ]);
             });

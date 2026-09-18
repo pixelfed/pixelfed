@@ -508,7 +508,7 @@ class MediaMoveStorageLocalToCloud extends Command
                     'thumbnail_path' => $media->thumbnail_path,
                     'size' => (int) $media->size,
                     'cloud_destination' => $this->cloudDestination($mediaPath, $cloudDisk),
-                    'exception' => get_class($e),
+                    'exception' => $e::class,
                     'error' => $e->getMessage(),
                     'file' => $e->getFile(),
                     'line' => $e->getLine(),
