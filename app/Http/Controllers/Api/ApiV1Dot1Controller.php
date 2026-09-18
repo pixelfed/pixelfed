@@ -44,6 +44,7 @@ use App\Services\UserAgentService;
 use App\Services\UserRoleService;
 use App\Services\UserStorageService;
 use App\Transformer\Api\AccountTransformer;
+use App\Transformer\Api\StatusTransformer;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
@@ -247,7 +248,7 @@ class ApiV1Dot1Controller extends Controller
     /**
      * GET /api/v1.1/accounts/{id}/posts
      *
-     * @return \App\Transformer\Api\StatusTransformer
+     * @return StatusTransformer
      */
     public function accountPosts(Request $request, $id)
     {

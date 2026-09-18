@@ -1187,7 +1187,6 @@ class ApiV1Controller extends Controller
 
     /**
      * GET /api/v1/accounts/relationships
-     *
      */
     public function accountRelationshipsById(Request $request)
     {
