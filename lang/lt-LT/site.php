@@ -2,13 +2,13 @@
 
 return [
 
-    'about' => '',
-    'help' => '',
-    'language' => '',
-    'fediverse' => '',
-    'opensource' => '',
-    'terms' => '',
-    'privacy' => '',
+    'about' => 'Apie',
+    'help' => 'Pagalba',
+    'language' => 'Kalba',
+    'fediverse' => 'Fediversas',
+    'opensource' => 'Atviro kodo',
+    'terms' => 'Sąlygos',
+    'privacy' => 'Privatumas',
     'l10nWip' => '',
     'currentLocale' => '',
     'selectLocale' => '',

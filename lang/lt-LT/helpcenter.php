@@ -2,8 +2,8 @@
 
 return [
 
-    'helpcenter' => '',
-    'whatsnew' => '',
+    'helpcenter' => 'Pagalbos centras',
+    'whatsnew' => 'Kas naujo',
 
     'gettingStarted' => '',
     'sharingMedia' => '',
@@ -11,17 +11,17 @@ return [
     'stories' => '',
     'hashtags' => '',
     'discover' => '',
-    'directMessages' => '',
-    'timelines' => '',
+    'directMessages' => 'Asmeninės žinutės',
+    'timelines' => 'Laiko juostos',
     'embed' => '',
 
-    'communityGuidelines' => '',
+    'communityGuidelines' => 'Bendruomenės gairės',
     'whatIsTheFediverse' => '',
     'controllingVisibility' => '',
     'blockingAccounts' => '',
-    'safetyTips' => '',
+    'safetyTips' => 'Saugumo patarimai',
     'reportSomething' => '',
-    'dataPolicy' => '',
+    'dataPolicy' => 'Duomenų politika',
 
     'taggingPeople' => '',
 
