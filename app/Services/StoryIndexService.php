@@ -13,7 +13,7 @@ class StoryIndexService
 {
     public const STORY_TTL = 86400;
 
-    private const REBUILD_LOCK_TTL = 300;
+    private const int REBUILD_LOCK_TTL = 300;
 
     private function authorKey($authorId)
     {

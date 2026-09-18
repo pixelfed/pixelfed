@@ -19,7 +19,7 @@ final class CaptchaEnableCommand extends Command
 
     protected $description = 'Enable captcha and its per-page toggles in the config cache';
 
-    private const PAGES = [
+    private const array PAGES = [
         'login',
         'register',
         'forgot_password',

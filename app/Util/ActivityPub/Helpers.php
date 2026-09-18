@@ -34,19 +34,19 @@ use Purify;
 
 class Helpers
 {
-    private const PUBLIC_TIMELINE = 'https://www.w3.org/ns/activitystreams#Public';
+    private const string PUBLIC_TIMELINE = 'https://www.w3.org/ns/activitystreams#Public';
 
-    private const CACHE_TTL = 14440;
+    private const int CACHE_TTL = 14440;
 
-    private const URL_CACHE_PREFIX = 'helpers:url:';
+    private const string URL_CACHE_PREFIX = 'helpers:url:';
 
-    private const FETCH_CACHE_TTL = 15;
+    private const int FETCH_CACHE_TTL = 15;
 
-    private const MAX_URL_LENGTH = 4096;
+    private const int MAX_URL_LENGTH = 4096;
 
-    private const DNS_TTL_POSITIVE = 86400;
+    private const int DNS_TTL_POSITIVE = 86400;
 
-    private const DNS_TTL_NEGATIVE = 300;
+    private const int DNS_TTL_NEGATIVE = 300;
 
     /**
      * Maximum number of ancestors a single status fetch may walk up an
@@ -55,9 +55,9 @@ class Helpers
      * fetch and one statuses row per hop. Anything deeper than this is not
      * rendered in the UI anyway.
      */
-    private const MAX_REPLY_DEPTH = 5;
+    private const int MAX_REPLY_DEPTH = 5;
 
-    private const LOCALHOST_DOMAINS = [
+    private const array LOCALHOST_DOMAINS = [
         'localhost',
         '127.0.0.1',
         '::1',

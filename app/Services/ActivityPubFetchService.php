@@ -15,7 +15,7 @@ class ActivityPubFetchService
 {
     const CACHE_KEY = 'pf:services:apfetchs:';
 
-    private const MAX_REDIRECTS = 2;
+    private const int MAX_REDIRECTS = 2;
 
     private const MAX_RESPONSE_SIZE = 2 * 1024 * 1024;
 

@@ -24,21 +24,21 @@ use Purify;
 
 class AppRegisterController extends Controller
 {
-    private const VERIFY_CODE_MAX_ATTEMPTS = 10;
+    private const int VERIFY_CODE_MAX_ATTEMPTS = 10;
 
-    private const VERIFY_CODE_TTL_SECONDS = 3600;
+    private const int VERIFY_CODE_TTL_SECONDS = 3600;
 
-    private const RESEND_MAX_USES = 5;
+    private const int RESEND_MAX_USES = 5;
 
     /**
      * Where the web steps send the browser when no redirect_uri is given.
      * Keeps the original app working unchanged.
      */
-    private const LEGACY_REDIRECT_URI = 'pixelfed://verifyEmail';
+    private const string LEGACY_REDIRECT_URI = 'pixelfed://verifyEmail';
 
-    private const DEFAULT_SCOPES = ['read', 'write', 'follow', 'push'];
+    private const array DEFAULT_SCOPES = ['read', 'write', 'follow', 'push'];
 
-    private const BLOCKED_REDIRECT_SCHEMES = [
+    private const array BLOCKED_REDIRECT_SCHEMES = [
         'http',
         'https',
         'javascript',

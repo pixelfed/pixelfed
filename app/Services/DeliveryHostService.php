@@ -25,20 +25,20 @@ use Throwable;
  */
 class DeliveryHostService
 {
-    private const CACHE_KEY = 'pf:services:delivery:hosts';
+    private const string CACHE_KEY = 'pf:services:delivery:hosts';
 
-    private const CACHE_TTL = 300;
+    private const int CACHE_TTL = 300;
 
     /*
      * Queue workers are long-lived, so the cached map is also memoized in
      * process for a short window. This keeps a 1,500-inbox fanout from
      * hitting Redis once per inbox.
      */
-    private const MEMO_TTL = 30;
+    private const int MEMO_TTL = 30;
 
-    private const BASE_BACKOFF = 3600;
+    private const int BASE_BACKOFF = 3600;
 
-    private const MAX_BACKOFF_EXPONENT = 16;
+    private const int MAX_BACKOFF_EXPONENT = 16;
 
     /** @var array<string, int|null>|null */
     private static ?array $memo = null;

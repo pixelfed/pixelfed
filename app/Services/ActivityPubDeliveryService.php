@@ -18,7 +18,7 @@ use Throwable;
 
 class ActivityPubDeliveryService
 {
-    private const CONTENT_TYPE = 'application/ld+json; profile="https://www.w3.org/ns/activitystreams"';
+    private const string CONTENT_TYPE = 'application/ld+json; profile="https://www.w3.org/ns/activitystreams"';
 
     public ?Profile $sender = null;
 

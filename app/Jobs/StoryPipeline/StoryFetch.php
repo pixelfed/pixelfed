@@ -30,7 +30,7 @@ class StoryFetch implements ShouldQueue
 
     protected $activity;
 
-    private const MAX_DURATION = 300;
+    private const int MAX_DURATION = 300;
 
     // Rate limiting
     public $tries = 3;

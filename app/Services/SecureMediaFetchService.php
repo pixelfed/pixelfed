@@ -26,11 +26,11 @@ use Psr\Http\Message\ResponseInterface;
  */
 class SecureMediaFetchService
 {
-    private const MAX_REDIRECTS = 2;
+    private const int MAX_REDIRECTS = 2;
 
-    private const CONNECT_TIMEOUT = 5;
+    private const int CONNECT_TIMEOUT = 5;
 
-    private const TIMEOUT = 15;
+    private const int TIMEOUT = 15;
 
     /**
      * Perform a HEAD request through the pinned, validated path.
