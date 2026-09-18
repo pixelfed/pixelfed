@@ -381,8 +381,6 @@ class LiveStreamController extends Controller
             return [];
         }
         abort(400);
-
-        abort(400);
     }
 
     public function clientBroadcastFinish(Request $request): array

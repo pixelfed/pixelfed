@@ -1519,7 +1519,6 @@ trait AdminReportController
 
             default:
                 abort(404);
-                break;
         }
 
         if ($ogPublicStatuses && count($ogPublicStatuses)) {

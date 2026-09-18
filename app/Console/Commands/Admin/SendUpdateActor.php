@@ -112,8 +112,6 @@ class SendUpdateActor extends Command
         $this->info('Finished!');
 
         return Command::SUCCESS;
-
-        return Command::SUCCESS;
     }
 
     protected function updateObject($profile): array

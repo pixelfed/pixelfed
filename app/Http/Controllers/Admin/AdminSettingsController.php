@@ -503,7 +503,6 @@ trait AdminSettingsController
 
             default:
                 abort(404);
-                break;
         }
     }
 

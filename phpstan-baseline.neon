@@ -1,6 +1,24 @@
 parameters:
 	ignoreErrors:
 		-
+			message: '#^Strict comparison using \=\=\= between non\-empty\-string and '''' will always evaluate to false\.$#'
+			identifier: identical.alwaysFalse
+			count: 1
+			path: app/Auth/AppRegisterGrant.php
+
+		-
+			message: '#^Strict comparison using \=\=\= between int and ''4'' will always evaluate to false\.$#'
+			identifier: identical.alwaysFalse
+			count: 1
+			path: app/Console/Commands/Admin/Unstable/MediaMoveStorageCloudToLocal.php
+
+		-
+			message: '#^Right side of && is always true\.$#'
+			identifier: booleanAnd.rightAlwaysTrue
+			count: 1
+			path: app/Console/Commands/Concerns/ManagesMediaStorageEnv.php
+
+		-
 			message: '#^Access to an undefined property App\\Models\\Avatar\:\:\$thumb_path\.$#'
 			identifier: property.notFound
 			count: 5
@@ -13,16 +31,118 @@ parameters:
 			path: app/Console/Commands/FixBugs/FetchMissingMediaMimeType.php
 
 		-
+			message: '#^Negated boolean expression is always false\.$#'
+			identifier: booleanNot.alwaysFalse
+			count: 1
+			path: app/Console/Commands/FixBugs/FixDuplicateProfiles.php
+
+		-
+			message: '#^Unreachable statement \- code above always terminates\.$#'
+			identifier: deadCode.unreachable
+			count: 1
+			path: app/Console/Commands/FixBugs/FixHashtags.php
+
+		-
+			message: '#^If condition is always true\.$#'
+			identifier: if.alwaysTrue
+			count: 1
+			path: app/Console/Commands/FixBugs/FixMissingUserProfile.php
+
+		-
+			message: '#^Negated boolean expression is always false\.$#'
+			identifier: booleanNot.alwaysFalse
+			count: 2
+			path: app/Console/Commands/FixBugs/FixMissingUserProfile.php
+
+		-
+			message: '#^Comparison operation "\>" between int\<1, max\> and 0 is always true\.$#'
+			identifier: greater.alwaysTrue
+			count: 1
+			path: app/Console/Commands/FixBugs/FixUsernames.php
+
+		-
+			message: '#^Right side of && is always true\.$#'
+			identifier: booleanAnd.rightAlwaysTrue
+			count: 1
+			path: app/Console/Commands/Install/Installer.php
+
+		-
 			message: '#^Call to an undefined method Illuminate\\Database\\Query\\Builder\:\:whereHashtagId\(\)\.$#'
 			identifier: method.notFound
 			count: 1
 			path: app/Console/Commands/Internal/HashtagCachedCountUpdate.php
 
 		-
+			message: '#^Negated boolean expression is always false\.$#'
+			identifier: booleanNot.alwaysFalse
+			count: 1
+			path: app/Console/Commands/Internal/ImportRemoveDeletedAccounts.php
+
+		-
 			message: '#^Call to an undefined static method Illuminate\\Database\\Eloquent\\Model\:\:withTrashed\(\)\.$#'
 			identifier: staticMethod.notFound
 			count: 1
 			path: app/Console/Commands/Media/MediaFilterCleanup.php
+
+		-
+			message: '#^Dead catch \- Throwable is never thrown in the try block\.$#'
+			identifier: catch.neverThrown
+			count: 1
+			path: app/Console/Commands/Status/StatusProfile.php
+
+		-
+			message: '#^Ternary operator condition is always true\.$#'
+			identifier: ternary.alwaysTrue
+			count: 1
+			path: app/Console/Commands/Status/StatusProfile.php
+
+		-
+			message: '#^Right side of && is always true\.$#'
+			identifier: booleanAnd.rightAlwaysTrue
+			count: 1
+			path: app/Console/Commands/Status/StatusStatuses.php
+
+		-
+			message: '#^Dead catch \- Throwable is never thrown in the try block\.$#'
+			identifier: catch.neverThrown
+			count: 1
+			path: app/Console/Commands/Status/StatusUser.php
+
+		-
+			message: '#^Negated boolean expression is always false\.$#'
+			identifier: booleanNot.alwaysFalse
+			count: 1
+			path: app/Console/Commands/Status/StatusUser.php
+
+		-
+			message: '#^Strict comparison using \!\=\= between list\{0\: non\-falsy\-string, 1\?\: non\-falsy\-string, 2\?\: non\-falsy\-string, 3\?\: non\-falsy\-string, 4\?\: ''2FA disabled''\|''2FA enabled \(login…''\} and array\{\} will always evaluate to true\.$#'
+			identifier: notIdentical.alwaysTrue
+			count: 1
+			path: app/Console/Commands/Status/StatusUser.php
+
+		-
+			message: '#^Instanceof between Throwable and Throwable will always evaluate to true\.$#'
+			identifier: instanceof.alwaysTrue
+			count: 1
+			path: app/Console/Commands/User/UserAccountDelete.php
+
+		-
+			message: '#^Offset ''algoName'' on array\{algo\: string\|null, algoName\: string, options\: array\<string, mixed\>\} on left side of \?\? always exists and is not nullable\.$#'
+			identifier: nullCoalesce.offset
+			count: 1
+			path: app/Console/Commands/User/UserCheckPassword.php
+
+		-
+			message: '#^Negated boolean expression is always false\.$#'
+			identifier: booleanNot.alwaysFalse
+			count: 1
+			path: app/Console/Commands/User/UserDelete.php
+
+		-
+			message: '#^Unreachable statement \- code above always terminates\.$#'
+			identifier: deadCode.unreachable
+			count: 1
+			path: app/Console/Commands/User/UserDelete.php
 
 		-
 			message: '#^Property App\\Models\\User\:\:\$remember_token \(string\) does not accept null\.$#'
@@ -59,6 +179,78 @@ parameters:
 			identifier: property.notFound
 			count: 4
 			path: app/Http/Controllers/AccountController.php
+
+		-
+			message: '#^Expression on left side of \?\? is not nullable\.$#'
+			identifier: nullCoalesce.expr
+			count: 1
+			path: app/Http/Controllers/Admin/AdminAutospamController.php
+
+		-
+			message: '#^Negated boolean expression is always false\.$#'
+			identifier: booleanNot.alwaysFalse
+			count: 1
+			path: app/Http/Controllers/Admin/AdminAutospamController.php
+
+		-
+			message: '#^If condition is always true\.$#'
+			identifier: if.alwaysTrue
+			count: 1
+			path: app/Http/Controllers/Admin/AdminDirectoryController.php
+
+		-
+			message: '#^Ternary operator condition is always true\.$#'
+			identifier: ternary.alwaysTrue
+			count: 1
+			path: app/Http/Controllers/Admin/AdminDirectoryController.php
+
+		-
+			message: '#^Trait App\\Http\\Controllers\\Admin\\AdminGroupsController is used zero times and is not analysed\.$#'
+			identifier: trait.unused
+			count: 1
+			path: app/Http/Controllers/Admin/AdminGroupsController.php
+
+		-
+			message: '#^Loose comparison using \=\= between ''open'' and ''open'' will always evaluate to true\.$#'
+			identifier: equal.alwaysTrue
+			count: 1
+			path: app/Http/Controllers/Admin/AdminReportController.php
+
+		-
+			message: '#^Negated boolean expression is always false\.$#'
+			identifier: booleanNot.alwaysFalse
+			count: 2
+			path: app/Http/Controllers/Admin/AdminReportController.php
+
+		-
+			message: '#^Negated boolean expression is always true\.$#'
+			identifier: booleanNot.alwaysTrue
+			count: 1
+			path: app/Http/Controllers/Admin/AdminReportController.php
+
+		-
+			message: '#^Right side of && is always true\.$#'
+			identifier: booleanAnd.rightAlwaysTrue
+			count: 3
+			path: app/Http/Controllers/Admin/AdminReportController.php
+
+		-
+			message: '#^Call to function abort_unless\(\) with bool and 400 will always evaluate to true\.$#'
+			identifier: function.alreadyNarrowedType
+			count: 1
+			path: app/Http/Controllers/Admin/AdminSettingsController.php
+
+		-
+			message: '#^Right side of && is always true\.$#'
+			identifier: booleanAnd.rightAlwaysTrue
+			count: 2
+			path: app/Http/Controllers/Admin/AdminSettingsController.php
+
+		-
+			message: '#^Trait App\\Http\\Controllers\\Admin\\AdminSupportController is used zero times and is not analysed\.$#'
+			identifier: trait.unused
+			count: 1
+			path: app/Http/Controllers/Admin/AdminSupportController.php
 
 		-
 			message: '#^Access to an undefined property App\\Models\\AccountInterstitial\:\:\$count\.$#'
@@ -193,6 +385,24 @@ parameters:
 			path: app/Http/Controllers/AdminCuratedRegisterController.php
 
 		-
+			message: '#^Offset ''aid'' on array\{id\: int, action\: string, title\: string, message\: null, link\: null, timestamp\: Carbon\\Carbon\|null\} in isset\(\) does not exist\.$#'
+			identifier: isset.offset
+			count: 1
+			path: app/Http/Controllers/AdminCuratedRegisterController.php
+
+		-
+			message: '#^Unreachable statement \- code above always terminates\.$#'
+			identifier: deadCode.unreachable
+			count: 1
+			path: app/Http/Controllers/AdminCuratedRegisterController.php
+
+		-
+			message: '#^Expression on left side of \?\? is not nullable\.$#'
+			identifier: nullCoalesce.expr
+			count: 1
+			path: app/Http/Controllers/AdminInviteController.php
+
+		-
 			message: '#^Access to an undefined property App\\Models\\AccountInterstitial\|Illuminate\\Database\\Eloquent\\Collection\<\(int\|string\), App\\Models\\AccountInterstitial\>\:\:\$status\.$#'
 			identifier: property.notFound
 			count: 3
@@ -255,6 +465,12 @@ parameters:
 		-
 			message: '#^Call to an undefined method Illuminate\\Database\\Query\\Builder\:\:whereUserId\(\)\.$#'
 			identifier: method.notFound
+			count: 2
+			path: app/Http/Controllers/Api/AdminApiController.php
+
+		-
+			message: '#^Using nullsafe property access "\?\-\>is_admin" on left side of \?\? is unnecessary\. Use \-\> instead\.$#'
+			identifier: nullsafe.neverNull
 			count: 2
 			path: app/Http/Controllers/Api/AdminApiController.php
 
@@ -361,6 +577,48 @@ parameters:
 			path: app/Http/Controllers/Api/ApiV1Controller.php
 
 		-
+			message: '#^If condition is always true\.$#'
+			identifier: if.alwaysTrue
+			count: 1
+			path: app/Http/Controllers/Api/ApiV1Controller.php
+
+		-
+			message: '#^Left side of && is always true\.$#'
+			identifier: booleanAnd.leftAlwaysTrue
+			count: 16
+			path: app/Http/Controllers/Api/ApiV1Controller.php
+
+		-
+			message: '#^Loose comparison using \!\= between int\<0, max\>\|false and \-1 will always evaluate to true\.$#'
+			identifier: notEqual.alwaysTrue
+			count: 10
+			path: app/Http/Controllers/Api/ApiV1Controller.php
+
+		-
+			message: '#^Negated boolean expression is always false\.$#'
+			identifier: booleanNot.alwaysFalse
+			count: 2
+			path: app/Http/Controllers/Api/ApiV1Controller.php
+
+		-
+			message: '#^Negated boolean expression is always true\.$#'
+			identifier: booleanNot.alwaysTrue
+			count: 1
+			path: app/Http/Controllers/Api/ApiV1Controller.php
+
+		-
+			message: '#^Offset ''accounts'' on array\{id\: mixed, unread\: false, accounts\: array\{mixed\}, last_status\: mixed\} in isset\(\) always exists and is not nullable\.$#'
+			identifier: isset.offset
+			count: 1
+			path: app/Http/Controllers/Api/ApiV1Controller.php
+
+		-
+			message: '#^Right side of && is always true\.$#'
+			identifier: booleanAnd.rightAlwaysTrue
+			count: 1
+			path: app/Http/Controllers/Api/ApiV1Controller.php
+
+		-
 			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$avatar\.$#'
 			identifier: property.notFound
 			count: 1
@@ -403,9 +661,39 @@ parameters:
 			path: app/Http/Controllers/Api/ApiV1Dot1Controller.php
 
 		-
+			message: '#^Negated boolean expression is always false\.$#'
+			identifier: booleanNot.alwaysFalse
+			count: 1
+			path: app/Http/Controllers/Api/ApiV1Dot1Controller.php
+
+		-
+			message: '#^Using nullsafe property access "\?\-\>name" on left side of \?\? is unnecessary\. Use \-\> instead\.$#'
+			identifier: nullsafe.neverNull
+			count: 1
+			path: app/Http/Controllers/Api/ApiV1Dot1Controller.php
+
+		-
 			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$id\.$#'
 			identifier: property.notFound
 			count: 2
+			path: app/Http/Controllers/Api/ApiV2Controller.php
+
+		-
+			message: '#^Left side of && is always true\.$#'
+			identifier: booleanAnd.leftAlwaysTrue
+			count: 1
+			path: app/Http/Controllers/Api/ApiV2Controller.php
+
+		-
+			message: '#^Loose comparison using \!\= between int\<0, max\>\|false and \-1 will always evaluate to true\.$#'
+			identifier: notEqual.alwaysTrue
+			count: 1
+			path: app/Http/Controllers/Api/ApiV2Controller.php
+
+		-
+			message: '#^Method App\\Http\\Controllers\\Api\\ApiV2Controller\:\:getDescendantsCursorPaginated\(\) is unused\.$#'
+			identifier: method.unused
+			count: 1
 			path: app/Http/Controllers/Api/ApiV2Controller.php
 
 		-
@@ -425,6 +713,24 @@ parameters:
 			identifier: method.notFound
 			count: 1
 			path: app/Http/Controllers/Api/BaseApiController.php
+
+		-
+			message: '#^Using nullsafe property access on non\-nullable type App\\Models\\User\. Use \-\> instead\.$#'
+			identifier: nullsafe.neverNull
+			count: 1
+			path: app/Http/Controllers/Api/BaseApiController.php
+
+		-
+			message: '#^If condition is always true\.$#'
+			identifier: if.alwaysTrue
+			count: 1
+			path: app/Http/Controllers/Api/V1/TagsController.php
+
+		-
+			message: '#^Negated boolean expression is always true\.$#'
+			identifier: booleanNot.alwaysTrue
+			count: 2
+			path: app/Http/Controllers/Api/V1/TagsController.php
 
 		-
 			message: '#^Access to protected property Laravel\\Passport\\PersonalAccessTokenResult\:\:\$token\.$#'
@@ -541,8 +847,20 @@ parameters:
 			path: app/Http/Controllers/ComposeController.php
 
 		-
+			message: '#^Expression on left side of \?\? is not nullable\.$#'
+			identifier: nullCoalesce.expr
+			count: 1
+			path: app/Http/Controllers/ComposeController.php
+
+		-
 			message: '#^Property App\\Models\\Media\:\:\$version \(int\) does not accept string\.$#'
 			identifier: assign.propertyType
+			count: 1
+			path: app/Http/Controllers/ComposeController.php
+
+		-
+			message: '#^Unreachable statement \- code above always terminates\.$#'
+			identifier: deadCode.unreachable
 			count: 1
 			path: app/Http/Controllers/ComposeController.php
 
@@ -568,6 +886,12 @@ parameters:
 			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$whole_word\.$#'
 			identifier: property.notFound
 			count: 4
+			path: app/Http/Controllers/CustomFilterController.php
+
+		-
+			message: '#^Expression on left side of \?\? is not nullable\.$#'
+			identifier: nullCoalesce.expr
+			count: 1
 			path: app/Http/Controllers/CustomFilterController.php
 
 		-
@@ -625,6 +949,12 @@ parameters:
 			path: app/Http/Controllers/DirectMessageController.php
 
 		-
+			message: '#^Left side of && is always true\.$#'
+			identifier: booleanAnd.leftAlwaysTrue
+			count: 1
+			path: app/Http/Controllers/DirectMessageController.php
+
+		-
 			message: '#^Property App\\Models\\DirectMessage\:\:\$meta \(string\|null\) does not accept array\<string, bool\|string\|null\>\.$#'
 			identifier: assign.propertyType
 			count: 1
@@ -633,6 +963,12 @@ parameters:
 		-
 			message: '#^Call to an undefined method Illuminate\\Database\\Query\\Builder\:\:whereScope\(\)\.$#'
 			identifier: method.notFound
+			count: 1
+			path: app/Http/Controllers/DiscoverController.php
+
+		-
+			message: '#^Negated boolean expression is always true\.$#'
+			identifier: booleanNot.alwaysTrue
 			count: 1
 			path: app/Http/Controllers/DiscoverController.php
 
@@ -655,6 +991,24 @@ parameters:
 			path: app/Http/Controllers/GroupController.php
 
 		-
+			message: '#^Negated boolean expression is always false\.$#'
+			identifier: booleanNot.alwaysFalse
+			count: 1
+			path: app/Http/Controllers/GroupController.php
+
+		-
+			message: '#^Unreachable statement \- code above always terminates\.$#'
+			identifier: deadCode.unreachable
+			count: 1
+			path: app/Http/Controllers/GroupController.php
+
+		-
+			message: '#^Using nullsafe property access "\?\-\>profile_id" on left side of \?\? is unnecessary\. Use \-\> instead\.$#'
+			identifier: nullsafe.neverNull
+			count: 2
+			path: app/Http/Controllers/GroupController.php
+
+		-
 			message: '#^Access to an undefined property App\\Models\\GroupPost\|Illuminate\\Database\\Eloquent\\Collection\<\(int\|string\), App\\Models\\GroupPost\>\:\:\$status_id\.$#'
 			identifier: property.notFound
 			count: 1
@@ -671,6 +1025,12 @@ parameters:
 			identifier: property.notFound
 			count: 1
 			path: app/Http/Controllers/Groups/GroupsApiController.php
+
+		-
+			message: '#^Using nullsafe property access "\?\-\>profile_id" on left side of \?\? is unnecessary\. Use \-\> instead\.$#'
+			identifier: nullsafe.neverNull
+			count: 1
+			path: app/Http/Controllers/Groups/GroupsFeedController.php
 
 		-
 			message: '#^Access to an undefined property App\\Models\\GroupPost\|Illuminate\\Database\\Eloquent\\Collection\<\(int\|string\), App\\Models\\GroupPost\>\:\:\$in_reply_to_id\.$#'
@@ -715,6 +1075,12 @@ parameters:
 			path: app/Http/Controllers/ImportController.php
 
 		-
+			message: '#^Negated boolean expression is always true\.$#'
+			identifier: booleanNot.alwaysTrue
+			count: 1
+			path: app/Http/Controllers/ImportPostController.php
+
+		-
 			message: '#^Property App\\Models\\ImportPost\:\:\$creation_day \(int\<0, max\>\|null\) does not accept ''01''\|''02''\|''03''\|''04''\|''05''\|''06''\|''07''\|''08''\|''09''\|''10''\|''11''\|''12''\|''13''\|''14''\|''15''\|''16''\|''17''\|''18''\|''19''\|''20''\|''21''\|''22''\|''23''\|''24''\|''25''\|''26''\|''27''\|''28''\|''29''\|''30''\|''31''\.$#'
 			identifier: assign.propertyType
 			count: 2
@@ -739,10 +1105,34 @@ parameters:
 			path: app/Http/Controllers/InternalApiController.php
 
 		-
+			message: '#^Unreachable statement \- code above always terminates\.$#'
+			identifier: deadCode.unreachable
+			count: 1
+			path: app/Http/Controllers/LikeController.php
+
+		-
+			message: '#^Strict comparison using \=\=\= between false and false will always evaluate to true\.$#'
+			identifier: identical.alwaysTrue
+			count: 1
+			path: app/Http/Controllers/LiveStreamController.php
+
+		-
+			message: '#^Ternary operator condition is always true\.$#'
+			identifier: ternary.alwaysTrue
+			count: 1
+			path: app/Http/Controllers/LiveStreamController.php
+
+		-
 			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$id\.$#'
 			identifier: property.notFound
 			count: 1
 			path: app/Http/Controllers/MicroController.php
+
+		-
+			message: '#^Unreachable statement \- code above always terminates\.$#'
+			identifier: deadCode.unreachable
+			count: 2
+			path: app/Http/Controllers/NewsroomController.php
 
 		-
 			message: '#^Access to protected property Laravel\\Passport\\PersonalAccessTokenResult\:\:\$token\.$#'
@@ -751,9 +1141,27 @@ parameters:
 			path: app/Http/Controllers/PersonalAccessTokenController.php
 
 		-
+			message: '#^Call to function method_exists\(\) with Laravel\\Passport\\Client and ''hasGrantType'' will always evaluate to true\.$#'
+			identifier: function.alreadyNarrowedType
+			count: 1
+			path: app/Http/Controllers/PersonalAccessTokenController.php
+
+		-
+			message: '#^Ternary operator condition is always true\.$#'
+			identifier: ternary.alwaysTrue
+			count: 1
+			path: app/Http/Controllers/PixelfedDirectoryController.php
+
+		-
 			message: '#^Call to an undefined method Illuminate\\Database\\Query\\Builder\:\:whereProfileId\(\)\.$#'
 			identifier: method.notFound
 			count: 1
+			path: app/Http/Controllers/PortfolioController.php
+
+		-
+			message: '#^Negated boolean expression is always false\.$#'
+			identifier: booleanNot.alwaysFalse
+			count: 4
 			path: app/Http/Controllers/PortfolioController.php
 
 		-
@@ -766,6 +1174,48 @@ parameters:
 			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$id\.$#'
 			identifier: property.notFound
 			count: 3
+			path: app/Http/Controllers/ProfileController.php
+
+		-
+			message: '#^Call to function abort_if\(\) with false and 404 will always evaluate to false\.$#'
+			identifier: function.impossibleType
+			count: 1
+			path: app/Http/Controllers/ProfileController.php
+
+		-
+			message: '#^Left side of && is always true\.$#'
+			identifier: booleanAnd.leftAlwaysTrue
+			count: 2
+			path: app/Http/Controllers/ProfileController.php
+
+		-
+			message: '#^Negated boolean expression is always false\.$#'
+			identifier: booleanNot.alwaysFalse
+			count: 1
+			path: app/Http/Controllers/ProfileController.php
+
+		-
+			message: '#^Offset ''items'' on array\{items\: Illuminate\\Support\\Collection\<int, mixed\>, permalink\: non\-falsy\-string, headers\: array\{Content\-Type\: ''application/atom\+xml'', Last\-Modified\?\: string\}\} in isset\(\) always exists and is not nullable\.$#'
+			identifier: isset.offset
+			count: 1
+			path: app/Http/Controllers/ProfileController.php
+
+		-
+			message: '#^Offset ''permalink'' on array\{items\: Illuminate\\Support\\Collection\<int, mixed\>, permalink\: non\-falsy\-string, headers\: array\{Content\-Type\: ''application/atom\+xml'', Last\-Modified\?\: string\}\} in isset\(\) always exists and is not nullable\.$#'
+			identifier: isset.offset
+			count: 1
+			path: app/Http/Controllers/ProfileController.php
+
+		-
+			message: '#^Result of \|\| is always false\.$#'
+			identifier: booleanOr.alwaysFalse
+			count: 2
+			path: app/Http/Controllers/ProfileController.php
+
+		-
+			message: '#^Strict comparison using \!\=\= between App\\Models\\User and null will always evaluate to true\.$#'
+			identifier: notIdentical.alwaysTrue
+			count: 2
 			path: app/Http/Controllers/ProfileController.php
 
 		-
@@ -793,6 +1243,30 @@ parameters:
 			path: app/Http/Controllers/PublicApiController.php
 
 		-
+			message: '#^Left side of && is always true\.$#'
+			identifier: booleanAnd.leftAlwaysTrue
+			count: 1
+			path: app/Http/Controllers/PublicApiController.php
+
+		-
+			message: '#^Negated boolean expression is always true\.$#'
+			identifier: booleanNot.alwaysTrue
+			count: 2
+			path: app/Http/Controllers/PublicApiController.php
+
+		-
+			message: '#^Right side of && is always true\.$#'
+			identifier: booleanAnd.rightAlwaysTrue
+			count: 4
+			path: app/Http/Controllers/PublicApiController.php
+
+		-
+			message: '#^Ternary operator condition is always true\.$#'
+			identifier: ternary.alwaysTrue
+			count: 3
+			path: app/Http/Controllers/PublicApiController.php
+
+		-
 			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$avatar\.$#'
 			identifier: property.notFound
 			count: 1
@@ -801,6 +1275,12 @@ parameters:
 		-
 			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$bio\.$#'
 			identifier: property.notFound
+			count: 1
+			path: app/Http/Controllers/RemoteAuthController.php
+
+		-
+			message: '#^Negated boolean expression is always false\.$#'
+			identifier: booleanNot.alwaysFalse
 			count: 1
 			path: app/Http/Controllers/RemoteAuthController.php
 
@@ -967,6 +1447,24 @@ parameters:
 			path: app/Http/Controllers/SettingsController.php
 
 		-
+			message: '#^Call to function is_string\(\) with array\|null will always evaluate to false\.$#'
+			identifier: function.impossibleType
+			count: 1
+			path: app/Http/Controllers/SettingsController.php
+
+		-
+			message: '#^Negated boolean expression is always false\.$#'
+			identifier: booleanNot.alwaysFalse
+			count: 2
+			path: app/Http/Controllers/SettingsController.php
+
+		-
+			message: '#^Ternary operator condition is always false\.$#'
+			identifier: ternary.alwaysFalse
+			count: 1
+			path: app/Http/Controllers/SettingsController.php
+
+		-
 			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$id\.$#'
 			identifier: property.notFound
 			count: 6
@@ -979,6 +1477,12 @@ parameters:
 			path: app/Http/Controllers/StatusEditController.php
 
 		-
+			message: '#^Left side of && is always true\.$#'
+			identifier: booleanAnd.leftAlwaysTrue
+			count: 1
+			path: app/Http/Controllers/Stories/StoryApiV1Controller.php
+
+		-
 			message: '#^Property App\\Models\\Story\:\:\$story \(array\|null\) does not accept string\|false\.$#'
 			identifier: assign.propertyType
 			count: 1
@@ -988,6 +1492,18 @@ parameters:
 			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$id\.$#'
 			identifier: property.notFound
 			count: 5
+			path: app/Http/Controllers/StoryController.php
+
+		-
+			message: '#^Call to function abort_if\(\) with false and 404 will always evaluate to false\.$#'
+			identifier: function.impossibleType
+			count: 1
+			path: app/Http/Controllers/StoryController.php
+
+		-
+			message: '#^Negated boolean expression is always false\.$#'
+			identifier: booleanNot.alwaysFalse
+			count: 1
 			path: app/Http/Controllers/StoryController.php
 
 		-
@@ -1019,6 +1535,12 @@ parameters:
 			identifier: property.notFound
 			count: 1
 			path: app/Http/Requests/Status/StoreStatusEditRequest.php
+
+		-
+			message: '#^Right side of && is always true\.$#'
+			identifier: booleanAnd.rightAlwaysTrue
+			count: 1
+			path: app/Http/Resources/AdminRemoteReport.php
 
 		-
 			message: '#^Access to an undefined property App\\Http\\Resources\\StatusStateless\:\:\$caption\.$#'
@@ -1111,9 +1633,21 @@ parameters:
 			path: app/Http/Resources/StatusStateless.php
 
 		-
+			message: '#^Left side of && is always true\.$#'
+			identifier: booleanAnd.leftAlwaysTrue
+			count: 1
+			path: app/Jobs/CommentPipeline/CommentPipeline.php
+
+		-
 			message: '#^Call to an undefined method Illuminate\\Database\\Query\\Builder\:\:whereUserId\(\)\.$#'
 			identifier: method.notFound
 			count: 3
+			path: app/Jobs/DeletePipeline/DeleteAccountPipeline.php
+
+		-
+			message: '#^Left side of && is always true\.$#'
+			identifier: booleanAnd.leftAlwaysTrue
+			count: 2
 			path: app/Jobs/DeletePipeline/DeleteAccountPipeline.php
 
 		-
@@ -1129,6 +1663,42 @@ parameters:
 			path: app/Jobs/FollowPipeline/FollowServiceWarmCache.php
 
 		-
+			message: '#^Negated boolean expression is always false\.$#'
+			identifier: booleanNot.alwaysFalse
+			count: 1
+			path: app/Jobs/GroupsPipeline/ImageS3DeletePipeline.php
+
+		-
+			message: '#^Left side of && is always true\.$#'
+			identifier: booleanAnd.leftAlwaysTrue
+			count: 1
+			path: app/Jobs/GroupsPipeline/ImageS3UploadPipeline.php
+
+		-
+			message: '#^Right side of && is always true\.$#'
+			identifier: booleanAnd.rightAlwaysTrue
+			count: 1
+			path: app/Jobs/HomeFeedPipeline/FeedInsertPipeline.php
+
+		-
+			message: '#^Right side of && is always true\.$#'
+			identifier: booleanAnd.rightAlwaysTrue
+			count: 1
+			path: app/Jobs/HomeFeedPipeline/FeedInsertRemotePipeline.php
+
+		-
+			message: '#^Right side of && is always true\.$#'
+			identifier: booleanAnd.rightAlwaysTrue
+			count: 1
+			path: app/Jobs/HomeFeedPipeline/HashtagInsertFanoutPipeline.php
+
+		-
+			message: '#^Expression on left side of \?\? is not nullable\.$#'
+			identifier: nullCoalesce.expr
+			count: 2
+			path: app/Jobs/ImageOptimizePipeline/ImageUpdate.php
+
+		-
 			message: '#^Access to an undefined property App\\Models\\ImportJob\|Illuminate\\Database\\Eloquent\\Collection\<\(int\|string\), App\\Models\\ImportJob\>\:\:\$files\.$#'
 			identifier: property.notFound
 			count: 1
@@ -1141,8 +1711,110 @@ parameters:
 			path: app/Jobs/ImportPipeline/ImportInstagram.php
 
 		-
+			message: '#^Negated boolean expression is always false\.$#'
+			identifier: booleanNot.alwaysFalse
+			count: 1
+			path: app/Jobs/ImportPipeline/ImportMediaToCloudPipeline.php
+
+		-
+			message: '#^Negated boolean expression is always false\.$#'
+			identifier: booleanNot.alwaysFalse
+			count: 1
+			path: app/Jobs/InboxPipeline/DeleteWorker.php
+
+		-
+			message: '#^Left side of && is always true\.$#'
+			identifier: booleanAnd.leftAlwaysTrue
+			count: 2
+			path: app/Jobs/MediaPipeline/MediaDeletePipeline.php
+
+		-
+			message: '#^Negated boolean expression is always false\.$#'
+			identifier: booleanNot.alwaysFalse
+			count: 1
+			path: app/Jobs/ProfilePipeline/HandleUpdateActivity.php
+
+		-
+			message: '#^Negated boolean expression is always false\.$#'
+			identifier: booleanNot.alwaysFalse
+			count: 1
+			path: app/Jobs/ProfilePipeline/ProfilePurgeFollowersByDomain.php
+
+		-
+			message: '#^Negated boolean expression is always false\.$#'
+			identifier: booleanNot.alwaysFalse
+			count: 1
+			path: app/Jobs/ProfilePipeline/ProfilePurgeNotificationsByDomain.php
+
+		-
+			message: '#^Negated boolean expression is always false\.$#'
+			identifier: booleanNot.alwaysFalse
+			count: 1
+			path: app/Jobs/SharePipeline/SharePipeline.php
+
+		-
+			message: '#^If condition is always true\.$#'
+			identifier: if.alwaysTrue
+			count: 1
+			path: app/Jobs/StatusPipeline/StatusDelete.php
+
+		-
+			message: '#^Offset ''length'' on array\{length\: int, mime\: string\} on left side of \?\? always exists and is not nullable\.$#'
+			identifier: nullCoalesce.offset
+			count: 1
+			path: app/Jobs/StatusPipeline/StatusRemoteUpdatePipeline.php
+
+		-
+			message: '#^Left side of && is always true\.$#'
+			identifier: booleanAnd.leftAlwaysTrue
+			count: 1
+			path: app/Jobs/StatusPipeline/StatusReplyPipeline.php
+
+		-
+			message: '#^Negated boolean expression is always false\.$#'
+			identifier: booleanNot.alwaysFalse
+			count: 1
+			path: app/Jobs/StatusPipeline/StatusReplyPipeline.php
+
+		-
+			message: '#^Negated boolean expression is always false\.$#'
+			identifier: booleanNot.alwaysFalse
+			count: 1
+			path: app/Jobs/StatusPipeline/StatusTagsPipeline.php
+
+		-
+			message: '#^Strict comparison using \!\=\= between ''ok'' and ''ok'' will always evaluate to false\.$#'
+			identifier: notIdentical.alwaysFalse
+			count: 1
+			path: app/Jobs/VideoPipeline/VideoHlsPipeline.php
+
+		-
+			message: '#^Unreachable statement \- code above always terminates\.$#'
+			identifier: deadCode.unreachable
+			count: 1
+			path: app/Jobs/VideoPipeline/VideoOptimize.php
+
+		-
+			message: '#^Negated boolean expression is always false\.$#'
+			identifier: booleanNot.alwaysFalse
+			count: 1
+			path: app/Jobs/VideoPipeline/VideoThumbnailToCloudPipeline.php
+
+		-
+			message: '#^Left side of && is always true\.$#'
+			identifier: booleanAnd.leftAlwaysTrue
+			count: 2
+			path: app/Models/CustomEmoji.php
+
+		-
 			message: '#^Call to an undefined method Illuminate\\Database\\Eloquent\\Model\:\:isExpired\(\)\.$#'
 			identifier: method.notFound
+			count: 1
+			path: app/Models/CustomFilter.php
+
+		-
+			message: '#^Ternary operator condition is always true\.$#'
+			identifier: ternary.alwaysTrue
 			count: 1
 			path: app/Models/CustomFilter.php
 
@@ -1165,9 +1837,27 @@ parameters:
 			path: app/Models/FeatureAuthorization.php
 
 		-
+			message: '#^If condition is always true\.$#'
+			identifier: if.alwaysTrue
+			count: 1
+			path: app/Models/ParentalControls.php
+
+		-
+			message: '#^Unreachable statement \- code above always terminates\.$#'
+			identifier: deadCode.unreachable
+			count: 1
+			path: app/Models/ParentalControls.php
+
+		-
 			message: '#^Access to an undefined property App\\Models\\User\:\:\$settings\.$#'
 			identifier: property.notFound
 			count: 2
+			path: app/Models/Profile.php
+
+		-
+			message: '#^Negated boolean expression is always false\.$#'
+			identifier: booleanNot.alwaysFalse
+			count: 1
 			path: app/Models/Profile.php
 
 		-
@@ -1207,6 +1897,36 @@ parameters:
 			path: app/Models/UserDevice.php
 
 		-
+			message: '#^Call to App\\Services\\StatusHashtagService\:\:del\(\) on a separate line has no effect\.$#'
+			identifier: staticMethod.resultUnused
+			count: 2
+			path: app/Observers/StatusHashtagObserver.php
+
+		-
+			message: '#^Call to App\\Services\\StatusHashtagService\:\:set\(\) on a separate line has no effect\.$#'
+			identifier: staticMethod.resultUnused
+			count: 3
+			path: app/Observers/StatusHashtagObserver.php
+
+		-
+			message: '#^If condition is always true\.$#'
+			identifier: if.alwaysTrue
+			count: 1
+			path: app/Observers/UserObserver.php
+
+		-
+			message: '#^Negated boolean expression is always false\.$#'
+			identifier: booleanNot.alwaysFalse
+			count: 2
+			path: app/Observers/UserObserver.php
+
+		-
+			message: '#^Strict comparison using \=\=\= between bool and 1 will always evaluate to false\.$#'
+			identifier: identical.alwaysFalse
+			count: 1
+			path: app/Providers/AppServiceProvider.php
+
+		-
 			message: '#^Access to an undefined property App\\Models\\User\:\:\$settings\.$#'
 			identifier: property.notFound
 			count: 1
@@ -1231,10 +1951,52 @@ parameters:
 			path: app/Services/AccountService.php
 
 		-
+			message: '#^Call to function is_string\(\) with string will always evaluate to true\.$#'
+			identifier: function.alreadyNarrowedType
+			count: 4
+			path: app/Services/ActivityPubDeliveryService.php
+
+		-
+			message: '#^Instanceof between Illuminate\\Http\\Client\\Response and Illuminate\\Http\\Client\\Response will always evaluate to true\.$#'
+			identifier: instanceof.alwaysTrue
+			count: 1
+			path: app/Services/ActivityPubDeliveryService.php
+
+		-
+			message: '#^Dead catch \- Illuminate\\Http\\Client\\ConnectionException is never thrown in the try block\.$#'
+			identifier: catch.neverThrown
+			count: 1
+			path: app/Services/ActivityPubFetchService.php
+
+		-
+			message: '#^Dead catch \- Illuminate\\Http\\Client\\RequestException is never thrown in the try block\.$#'
+			identifier: catch.neverThrown
+			count: 1
+			path: app/Services/ActivityPubFetchService.php
+
+		-
+			message: '#^Strict comparison using \=\=\= between non\-falsy\-string and '''' will always evaluate to false\.$#'
+			identifier: identical.alwaysFalse
+			count: 1
+			path: app/Services/AutospamService.php
+
+		-
+			message: '#^Negated boolean expression is always false\.$#'
+			identifier: booleanNot.alwaysFalse
+			count: 1
+			path: app/Services/AvatarService.php
+
+		-
 			message: '#^Call to an undefined method Illuminate\\Database\\Query\\Builder\:\:whereType\(\)\.$#'
 			identifier: method.notFound
 			count: 1
 			path: app/Services/DiscoverService.php
+
+		-
+			message: '#^Loose comparison using \=\= between int\<0, max\>\|false and \-1 will always evaluate to false\.$#'
+			identifier: equal.alwaysFalse
+			count: 1
+			path: app/Services/DomainService.php
 
 		-
 			message: '#^Access to an undefined property App\\Models\\User\:\:\$settings\.$#'
@@ -1253,6 +2015,12 @@ parameters:
 			identifier: method.notFound
 			count: 6
 			path: app/Services/FeaturedCollectionService.php
+
+		-
+			message: '#^Negated boolean expression is always true\.$#'
+			identifier: booleanNot.alwaysTrue
+			count: 1
+			path: app/Services/Federation/ActiveSharedInboxService.php
 
 		-
 			message: '#^Call to an undefined method Illuminate\\Database\\Eloquent\\Builder\<App\\Models\\GroupPost\>\:\:whereStatusId\(\)\.$#'
@@ -1279,10 +2047,64 @@ parameters:
 			path: app/Services/Groups/GroupActivityPubService.php
 
 		-
+			message: '#^Negated boolean expression is always false\.$#'
+			identifier: booleanNot.alwaysFalse
+			count: 1
+			path: app/Services/Groups/GroupMediaService.php
+
+		-
+			message: '#^Using nullsafe property access "\?\-\>profile_id" on left side of \?\? is unnecessary\. Use \-\> instead\.$#'
+			identifier: nullsafe.neverNull
+			count: 1
+			path: app/Services/Groups/GroupPostService.php
+
+		-
+			message: '#^Expression on left side of \?\? is not nullable\.$#'
+			identifier: nullCoalesce.expr
+			count: 1
+			path: app/Services/HashtagFollowService.php
+
+		-
+			message: '#^If condition is always true\.$#'
+			identifier: if.alwaysTrue
+			count: 1
+			path: app/Services/HashtagFollowService.php
+
+		-
+			message: '#^Right side of && is always true\.$#'
+			identifier: booleanAnd.rightAlwaysTrue
+			count: 1
+			path: app/Services/HomeTimelineService.php
+
+		-
+			message: '#^Offset ''url'' on array\{id\: string, username\: mixed, url\: non\-falsy\-string, others\: bool\} in isset\(\) always exists and is not nullable\.$#'
+			identifier: isset.offset
+			count: 1
+			path: app/Services/LikeService.php
+
+		-
+			message: '#^Negated boolean expression is always false\.$#'
+			identifier: booleanNot.alwaysFalse
+			count: 1
+			path: app/Services/MediaService.php
+
+		-
 			message: '#^Access to an undefined property App\\Models\\MediaTag\:\:\$status\.$#'
 			identifier: property.notFound
 			count: 1
 			path: app/Services/MediaTagService.php
+
+		-
+			message: '#^Negated boolean expression is always false\.$#'
+			identifier: booleanNot.alwaysFalse
+			count: 1
+			path: app/Services/NodeinfoService.php
+
+		-
+			message: '#^Expression on left side of \?\? is not nullable\.$#'
+			identifier: nullCoalesce.expr
+			count: 1
+			path: app/Services/PollService.php
 
 		-
 			message: '#^Call to an undefined method Illuminate\\Database\\Query\\Builder\:\:whereProfileId\(\)\.$#'
@@ -1291,10 +2113,58 @@ parameters:
 			path: app/Services/ProfileStatusService.php
 
 		-
+			message: '#^Dead catch \- Illuminate\\Http\\Client\\ConnectionException is never thrown in the try block\.$#'
+			identifier: catch.neverThrown
+			count: 1
+			path: app/Services/SecureMediaFetchService.php
+
+		-
+			message: '#^Dead catch \- Illuminate\\Http\\Client\\RequestException is never thrown in the try block\.$#'
+			identifier: catch.neverThrown
+			count: 1
+			path: app/Services/SecureMediaFetchService.php
+
+		-
+			message: '#^Call to App\\Services\\StatusHashtagService\:\:set\(\) on a separate line has no effect\.$#'
+			identifier: staticMethod.resultUnused
+			count: 1
+			path: app/Services/StatusHashtagService.php
+
+		-
+			message: '#^Call to function is_array\(\) with \(bool\|Redis\) will always evaluate to false\.$#'
+			identifier: function.impossibleType
+			count: 1
+			path: app/Services/StoryIndexService.php
+
+		-
+			message: '#^Offset ''_latest_ts'' on array\{id\: non\-falsy\-string, username\: mixed, username_acct\: mixed, profile_id\: string, avatar\: mixed, is_author\: bool, stories\: array\<int, array\{id\: string, type\: mixed, url\: string, overlays\: mixed, duration\: int, viewed\: bool, created_at\: mixed, view_count\?\: int\}\>, url\: string, \.\.\.\} on left side of \?\? always exists and is not nullable\.$#'
+			identifier: nullCoalesce.offset
+			count: 4
+			path: app/Services/StoryIndexService.php
+
+		-
+			message: '#^Offset \(int\|string\) on \*NEVER\* on left side of \?\? always exists and is not nullable\.$#'
+			identifier: nullCoalesce.offset
+			count: 1
+			path: app/Services/StoryIndexService.php
+
+		-
+			message: '#^Strict comparison using \=\=\= between \*NEVER\* and int\<1, max\> will always evaluate to false\.$#'
+			identifier: identical.alwaysFalse
+			count: 1
+			path: app/Services/StoryIndexService.php
+
+		-
 			message: '#^Access to an undefined property App\\Models\\StatusHashtag\:\:\$total\.$#'
 			identifier: property.notFound
 			count: 1
 			path: app/Services/TrendingHashtagService.php
+
+		-
+			message: '#^Instanceof between Carbon\\Carbon and Carbon\\Carbon will always evaluate to true\.$#'
+			identifier: instanceof.alwaysTrue
+			count: 1
+			path: app/Services/UserStorageService.php
 
 		-
 			message: '#^Call to an undefined method Illuminate\\Database\\Eloquent\\Relations\\HasMany\:\:whereScope\(\)\.$#'
@@ -1567,10 +2437,22 @@ parameters:
 			path: app/Transformer/ActivityPub/Verb/UpdateNote.php
 
 		-
+			message: '#^Negated boolean expression is always false\.$#'
+			identifier: booleanNot.alwaysFalse
+			count: 1
+			path: app/Transformer/Api/AccountTransformer.php
+
+		-
 			message: '#^Call to an undefined method Illuminate\\Database\\Eloquent\\Relations\\HasMany\:\:whereIsNsfw\(\)\.$#'
 			identifier: method.notFound
 			count: 1
 			path: app/Transformer/Api/AccountWithStatusesTransformer.php
+
+		-
+			message: '#^Expression on left side of \?\? is not nullable\.$#'
+			identifier: nullCoalesce.expr
+			count: 1
+			path: app/Transformer/Api/GroupPostTransformer.php
 
 		-
 			message: '#^Access to an undefined property App\\Models\\Notification\:\:\$actor\.$#'
@@ -1630,6 +2512,12 @@ parameters:
 			message: '#^Call to an undefined method Illuminate\\Database\\Eloquent\\Model\:\:mutedIds\(\)\.$#'
 			identifier: method.notFound
 			count: 1
+			path: app/Transformer/Api/RelationshipTransformer.php
+
+		-
+			message: '#^Ternary operator condition is always true\.$#'
+			identifier: ternary.alwaysTrue
+			count: 5
 			path: app/Transformer/Api/RelationshipTransformer.php
 
 		-
@@ -1711,10 +2599,58 @@ parameters:
 			path: app/Transformer/Api/StoryItemTransformer.php
 
 		-
+			message: '#^Call to function is_array\(\) with array will always evaluate to true\.$#'
+			identifier: function.alreadyNarrowedType
+			count: 1
+			path: app/Util/ActivityPub/Helpers.php
+
+		-
+			message: '#^Constant App\\Util\\ActivityPub\\Helpers\:\:FETCH_CACHE_TTL is unused\.$#'
+			identifier: classConstant.unused
+			count: 1
+			path: app/Util/ActivityPub/Helpers.php
+
+		-
+			message: '#^Constant App\\Util\\ActivityPub\\Helpers\:\:MAX_URL_LENGTH is unused\.$#'
+			identifier: classConstant.unused
+			count: 1
+			path: app/Util/ActivityPub/Helpers.php
+
+		-
+			message: '#^Negated boolean expression is always false\.$#'
+			identifier: booleanNot.alwaysFalse
+			count: 1
+			path: app/Util/ActivityPub/Helpers.php
+
+		-
 			message: '#^Property App\\Models\\Status\:\:\$created_at \(Illuminate\\Support\\Carbon\|null\) does not accept Carbon\\Carbon\.$#'
 			identifier: assign.propertyType
 			count: 1
 			path: app/Util/ActivityPub/Helpers.php
+
+		-
+			message: '#^Strict comparison using \=\=\= between non\-falsy\-string and '''' will always evaluate to false\.$#'
+			identifier: identical.alwaysFalse
+			count: 1
+			path: app/Util/ActivityPub/Helpers.php
+
+		-
+			message: '#^Unreachable statement \- code above always terminates\.$#'
+			identifier: deadCode.unreachable
+			count: 1
+			path: app/Util/ActivityPub/Helpers.php
+
+		-
+			message: '#^Call to function is_string\(\) with string will always evaluate to true\.$#'
+			identifier: function.alreadyNarrowedType
+			count: 2
+			path: app/Util/ActivityPub/HttpSignature.php
+
+		-
+			message: '#^Negated boolean expression is always false\.$#'
+			identifier: booleanNot.alwaysFalse
+			count: 1
+			path: app/Util/ActivityPub/HttpSignature.php
 
 		-
 			message: '#^Access to an undefined property App\\Models\\User\:\:\$settings\.$#'
@@ -1727,6 +2663,48 @@ parameters:
 			identifier: assign.propertyType
 			count: 1
 			path: app/Util/ActivityPub/Inbox.php
+
+		-
+			message: '#^Call to function is_array\(\) with array will always evaluate to true\.$#'
+			identifier: function.alreadyNarrowedType
+			count: 2
+			path: app/Util/ActivityPub/Inbox/HandlesCreates.php
+
+		-
+			message: '#^Negated boolean expression is always false\.$#'
+			identifier: booleanNot.alwaysFalse
+			count: 1
+			path: app/Util/ActivityPub/Inbox/HandlesCreates.php
+
+		-
+			message: '#^Call to function is_array\(\) with array will always evaluate to true\.$#'
+			identifier: function.alreadyNarrowedType
+			count: 1
+			path: app/Util/ActivityPub/Inbox/HandlesUndos.php
+
+		-
+			message: '#^Ternary operator condition is always true\.$#'
+			identifier: ternary.alwaysTrue
+			count: 1
+			path: app/Util/Blurhash/Blurhash.php
+
+		-
+			message: '#^Strict comparison using \!\=\= between array\{list\<string\>, list\<non\-falsy\-string\>\} and array\{\} will always evaluate to true\.$#'
+			identifier: notIdentical.alwaysTrue
+			count: 1
+			path: app/Util/Lexer/Hashtag.php
+
+		-
+			message: '#^Offset 4 on non\-empty\-array\<string\> in empty\(\) always exists and is not falsy\.$#'
+			identifier: empty.offset
+			count: 1
+			path: app/Util/Lexer/Validator.php
+
+		-
+			message: '#^Offset ''code'' on array\{code\: string, name\: string, nativeName\: string\} on left side of \?\? always exists and is not nullable\.$#'
+			identifier: nullCoalesce.offset
+			count: 1
+			path: app/Util/Localization/Localization.php
 
 		-
 			message: '#^Call to an undefined method Illuminate\\Database\\Eloquent\\Relations\\HasMany\:\:whereScope\(\)\.$#'

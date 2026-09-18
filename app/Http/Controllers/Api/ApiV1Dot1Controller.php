@@ -133,6 +133,7 @@ class ApiV1Dot1Controller extends Controller
             'post' => [$post = Status::find($objectId), Status::class, $post?->profile_id],
             'user' => [$profile = Profile::find($objectId), Profile::class, $profile?->id],
             'story' => [$story = Story::whereActive(true)->find($objectId), Story::class, $story?->profile_id],
+            default => [null, null, null],
         };
 
         if (! $object) {

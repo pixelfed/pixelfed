@@ -167,7 +167,6 @@ class AccountController extends Controller
 
             default:
                 abort(400);
-                break;
         }
 
         $filter = UserFilter::whereUserId($pid)
@@ -304,7 +303,6 @@ class AccountController extends Controller
 
             default:
                 abort(400);
-                break;
         }
 
         $filter = UserFilter::whereUserId($pid)

@@ -57,8 +57,6 @@ class PushGatewayRefresh extends Command
             $this->line(' ');
 
             return;
-
-            return;
         }
         exit;
 

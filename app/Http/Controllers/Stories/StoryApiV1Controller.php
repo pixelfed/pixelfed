@@ -772,8 +772,6 @@ class StoryApiV1Controller extends Controller
             'video/mp4',
         ]) === false) {
             abort(400, 'Invalid media type');
-
-            return;
         }
 
         $storagePath = MediaPathService::story($user->profile);

@@ -95,6 +95,7 @@ final class AdminInviteCommand extends Command
             'Custom - let me pick an expiry date' => now()->addDays(
                 (int) $this->ask('Custom expiry date in days', '14')
             ),
+            default => null,
         };
 
         $skipEmailVerification = $this->confirm('Skip email verification for invitees?');

@@ -233,15 +233,12 @@ class PublicApiController extends Controller
 
             case 'direct':
                 abort(404);
-                break;
 
             case 'draft':
                 abort(404);
-                break;
 
             default:
                 abort(404);
-                break;
         }
     }
 
