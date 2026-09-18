@@ -113,7 +113,7 @@ class FeedInsertRemotePipeline implements ShouldBeUniqueUntilProcessing, ShouldQ
             return;
         }
 
-        if (self::isTooOld($status)) {
+        if (self::isTooOld($status['created_at'] ?? null)) {
             return;
         }
 
