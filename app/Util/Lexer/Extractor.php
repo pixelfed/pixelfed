@@ -332,7 +332,7 @@ class Extractor extends Regex
         }
 
         $needle = $this->extractURLWithoutProtocol() ? '.' : ':';
-        if (strpos($tweet, $needle) === false) {
+        if (!str_contains($tweet, $needle)) {
             return [];
         }
 

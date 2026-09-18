@@ -3518,7 +3518,7 @@ class ApiV1Controller extends Controller
 
         if (
             isset($status['account']['acct']) &&
-            strpos($status['account']['acct'], '@') !== false
+            str_contains($status['account']['acct'], '@')
         ) {
             $domain = parse_url(
                 $status['account']['url'],

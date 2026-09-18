@@ -236,14 +236,14 @@ class SearchApiV2Service
                 return $this->resolveLocalProfile();
             }
         } else {
-            if (! Helpers::validateUrl($query) && strpos($query, '@') === false) {
+            if (! Helpers::validateUrl($query) && !str_contains($query, '@')) {
                 return $default;
             }
 
             if (
                 ! Str::startsWith($query, 'http') &&
                 Str::substrCount($query, '@') == 1 &&
-                strpos($query, '@') !== false &&
+                str_contains($query, '@') &&
                 strpos($query, '@') !== 0
             ) {
                 try {

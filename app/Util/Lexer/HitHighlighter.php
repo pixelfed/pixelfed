@@ -114,7 +114,7 @@ class HitHighlighter extends Regex
         $highlightTweet = '';
         $tags = ['<'.$this->tag.'>', '</'.$this->tag.'>'];
         // Check whether we can simply replace or whether we need to chunk...
-        if (strpos($tweet, '<') === false) {
+        if (!str_contains($tweet, '<')) {
             $ti = 0; // tag increment (for added tags)
             $highlightTweet = $tweet;
             foreach ($hits as $hit) {

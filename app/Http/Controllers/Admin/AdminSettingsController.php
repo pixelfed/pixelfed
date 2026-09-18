@@ -882,12 +882,12 @@ trait AdminSettingsController
             $visibility = $request->input('disk_config.visibility');
             $url = $request->input('disk_config.url');
             $endpoint = $request->input('disk_config.endpoint');
-            if (strpos($key, '*') === false && $key != config_cache($dkey.'key')) {
+            if (!str_contains($key, '*') && $key != config_cache($dkey.'key')) {
                 array_push($changes, 'key');
             } else {
                 $ckey = config_cache($dkey.'key');
             }
-            if (strpos($secret, '*') === false && $secret != config_cache($dkey.'secret')) {
+            if (!str_contains($secret, '*') && $secret != config_cache($dkey.'secret')) {
                 array_push($changes, 'secret');
             } else {
                 $csecret = config_cache($dkey.'secret');

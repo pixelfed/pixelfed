@@ -192,7 +192,7 @@ class InstallController extends Controller
     protected function updateConfig($key, $value): void
     {
         $f = file_get_contents(base_path('.env'));
-        if (strpos($f, $key) !== false) {
+        if (str_contains($f, $key)) {
             $u = str_replace($key, $value, $f);
         } else {
             $u = $f;

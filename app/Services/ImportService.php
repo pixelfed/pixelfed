@@ -74,7 +74,7 @@ class ImportService
                 }
                 throw $e;
             } catch (\Exception $e) {
-                if (strpos($e->getMessage(), 'Could not find valid next date') !== false) {
+                if (str_contains($e->getMessage(), 'Could not find valid next date')) {
                     return null;
                 }
                 throw $e;
@@ -169,7 +169,7 @@ class ImportService
 
                 throw $e;
             } catch (\Exception $e) {
-                if (strpos($e->getMessage(), 'Could not find valid next date') !== false) {
+                if (str_contains($e->getMessage(), 'Could not find valid next date')) {
                     return null;
                 }
                 throw $e;

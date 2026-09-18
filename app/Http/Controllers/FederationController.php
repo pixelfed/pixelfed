@@ -113,7 +113,7 @@ class FederationController extends Controller
         if ($cached = Cache::get($key)) {
             return response()->json($cached, 200, [], JSON_UNESCAPED_SLASHES);
         }
-        if (strpos($resource, $domain) == false) {
+        if (!str_contains($resource, $domain)) {
             return response('', 400);
         }
         $parsed = Nickname::normalizeProfileUrl($resource);
