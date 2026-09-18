@@ -28,11 +28,7 @@ class BeagleService
                     ->connectTimeout(5)
                     ->retry(2, 500)
                     ->get('https://beagle.pixelfed.net/api/v1/common/suggestions/rules');
-            } catch (RequestException) {
-                return;
-            } catch (ConnectionException) {
-                return;
-            } catch (\Exception) {
+            } catch (RequestException|ConnectionException|\Exception) {
                 return;
             }
 
@@ -69,11 +65,7 @@ class BeagleService
                     ->connectTimeout(5)
                     ->retry(2, 500)
                     ->get('https://beagle.pixelfed.net/api/v1/discover');
-            } catch (RequestException) {
-                return;
-            } catch (ConnectionException) {
-                return;
-            } catch (\Exception) {
+            } catch (RequestException|ConnectionException|\Exception) {
                 return;
             }
 

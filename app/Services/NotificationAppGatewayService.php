@@ -44,9 +44,7 @@ class NotificationAppGatewayService
                 ->get($endpoint);
 
             $data = $res->json();
-        } catch (RequestException) {
-            return false;
-        } catch (Exception) {
+        } catch (RequestException|Exception) {
             return false;
         }
 
@@ -120,9 +118,7 @@ class NotificationAppGatewayService
                 ]);
 
             $response->throw();
-        } catch (RequestException) {
-            return;
-        } catch (Exception) {
+        } catch (RequestException|Exception) {
             return;
         }
     }

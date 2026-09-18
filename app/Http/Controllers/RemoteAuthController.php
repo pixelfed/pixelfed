@@ -566,9 +566,7 @@ class RemoteAuthController extends Controller
                 } else {
                     return [];
                 }
-            } catch (RequestException) {
-                return [];
-            } catch (\Exception) {
+            } catch (RequestException|\Exception) {
                 return [];
             }
         }

@@ -134,11 +134,7 @@ class SecureMediaFetchService
                     ->timeout(self::TIMEOUT)
                     ->connectTimeout(self::CONNECT_TIMEOUT)
                     ->{$method}($currentUrl);
-            } catch (RequestException) {
-                return false;
-            } catch (ConnectionException) {
-                return false;
-            } catch (\Throwable) {
+            } catch (RequestException|ConnectionException|\Throwable) {
                 return false;
             }
 

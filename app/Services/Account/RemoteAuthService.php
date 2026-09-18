@@ -38,11 +38,7 @@ class RemoteAuthService
             if (! $res->ok()) {
                 return false;
             }
-        } catch (RequestException) {
-            return false;
-        } catch (ConnectionException) {
-            return false;
-        } catch (\Exception) {
+        } catch (RequestException|ConnectionException|\Exception) {
             return false;
         }
 
@@ -81,11 +77,7 @@ class RemoteAuthService
                 'redirect_uri' => $raw->redirect_uri,
                 'scope' => 'read',
             ]);
-        } catch (RequestException) {
-            return false;
-        } catch (ConnectionException) {
-            return false;
-        } catch (\Exception) {
+        } catch (RequestException|ConnectionException|\Exception) {
             return false;
         }
 
@@ -106,11 +98,7 @@ class RemoteAuthService
             if (! $res->ok()) {
                 return false;
             }
-        } catch (RequestException) {
-            return false;
-        } catch (ConnectionException) {
-            return false;
-        } catch (\Exception) {
+        } catch (RequestException|ConnectionException|\Exception) {
             return false;
         }
 
@@ -133,11 +121,7 @@ class RemoteAuthService
                 if (! $res->ok()) {
                     return false;
                 }
-            } catch (RequestException) {
-                return false;
-            } catch (ConnectionException) {
-                return false;
-            } catch (\Exception) {
+            } catch (RequestException|ConnectionException|\Exception) {
                 return false;
             }
 
@@ -168,11 +152,7 @@ class RemoteAuthService
                 }
 
                 return $json['compatible'];
-            } catch (RequestException) {
-                return false;
-            } catch (ConnectionException) {
-                return false;
-            } catch (\Exception) {
+            } catch (RequestException|ConnectionException|\Exception) {
                 return false;
             }
         });
@@ -185,11 +165,7 @@ class RemoteAuthService
             if (! $res->ok()) {
                 return false;
             }
-        } catch (RequestException) {
-            return false;
-        } catch (ConnectionException) {
-            return false;
-        } catch (\Exception) {
+        } catch (RequestException|ConnectionException|\Exception) {
             return false;
         }
         $json = $res->json();
@@ -214,11 +190,7 @@ class RemoteAuthService
             if (! $res->ok()) {
                 return;
             }
-        } catch (RequestException) {
-            return;
-        } catch (ConnectionException) {
-            return;
-        } catch (\Exception) {
+        } catch (RequestException|ConnectionException|\Exception) {
             return;
         }
 

@@ -109,11 +109,7 @@ class ActivityPubFetchService
                     ->connectTimeout(5)
                     ->retry(2, 250)
                     ->get($currentUrl);
-            } catch (RequestException $e) {
-                return;
-            } catch (ConnectionException $e) {
-                return;
-            } catch (\Throwable $e) {
+            } catch (RequestException|ConnectionException|\Throwable $e) {
                 return;
             }
 

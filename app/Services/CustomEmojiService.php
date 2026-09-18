@@ -77,9 +77,7 @@ class CustomEmojiService
                 ->timeout(15)
                 ->connectTimeout(5)
                 ->get($url);
-        } catch (RequestException) {
-            return;
-        } catch (\Exception) {
+        } catch (RequestException|\Exception) {
             return;
         }
 
