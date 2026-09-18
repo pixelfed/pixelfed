@@ -56,7 +56,7 @@ class FixHashtags extends Command
         $this->info('Found '.Hashtag::count().' total hashtags!');
         $count = 0;
         foreach (Hashtag::lazyById(100, 'id') as $tag) {
-            $slug = Str::slug($tag->name, '-', false);
+            $slug = Str::slug($tag->name, '-', null);
             if ($slug === $tag->slug) {
                 continue;
             }
@@ -64,7 +64,7 @@ class FixHashtags extends Command
             if (! $count) {
                 continue;
             }
-            $this->info($count.':'.$tag->slug.' : '.Str::slug($tag->name, '-', false));
+            $this->info($count.':'.$tag->slug.' : '.Str::slug($tag->name, '-', null));
 
         }
 

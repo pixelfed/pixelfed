@@ -7,6 +7,18 @@ parameters:
 			path: app/Auth/AppRegisterGrant.php
 
 		-
+			message: '#^Parameter \#2 \$rows of function Laravel\\Prompts\\table expects array\<int, array\<int, string\>\>\|Illuminate\\Support\\Collection\<int, array\<int, string\>\>\|null, array\{array\{''ID'', int\}, array\{''Username'', string\|null\}, array\{''Email'', string\|null\}, array\{''Status'', ''Approved''\|''Awaiting Admin…''\|''Awaiting more info''\|''Closed''\|''Rejected''\|''Unknown''\}, array\{''Created At'', non\-falsy\-string\}, array\{''Updated At'', non\-falsy\-string\}\} given\.$#'
+			identifier: argument.type
+			count: 1
+			path: app/Console/Commands/Admin/CuratedOnboardingCommand.php
+
+		-
+			message: '#^Parameter \#2 \$rows of function Laravel\\Prompts\\table expects array\<int, array\<int, string\>\>\|Illuminate\\Support\\Collection\<int, array\<int, string\>\>\|null, array\{array\{int\<0, max\>, int\<0, max\>, int\<0, max\>, int\<0, max\>, int\<0, max\>\}\} given\.$#'
+			identifier: argument.type
+			count: 1
+			path: app/Console/Commands/Admin/CuratedOnboardingCommand.php
+
+		-
 			message: '#^Strict comparison using \=\=\= between int and ''4'' will always evaluate to false\.$#'
 			identifier: identical.alwaysFalse
 			count: 1
@@ -145,6 +157,18 @@ parameters:
 			path: app/Console/Commands/User/UserDelete.php
 
 		-
+			message: '#^Parameter \#2 \$options of function Laravel\\Prompts\\select expects array\<int\|string, string\>\|Illuminate\\Support\\Collection\<int\|string, string\>, Illuminate\\Support\\Collection\<int, mixed\> given\.$#'
+			identifier: argument.type
+			count: 1
+			path: app/Console/Commands/User/UserDelete.php
+
+		-
+			message: '#^Parameter \#2 \$rows of function Laravel\\Prompts\\table expects array\<int, array\<int, string\>\>\|Illuminate\\Support\\Collection\<int, array\<int, string\>\>\|null, array\{array\{Username\: mixed, Statuses\: mixed, Followers\: mixed, Following\: mixed, Joined\: non\-falsy\-string\}\} given\.$#'
+			identifier: argument.type
+			count: 1
+			path: app/Console/Commands/User/UserDelete.php
+
+		-
 			message: '#^Property App\\Models\\User\:\:\$remember_token \(string\) does not accept null\.$#'
 			identifier: assign.propertyType
 			count: 1
@@ -178,6 +202,18 @@ parameters:
 			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$id\.$#'
 			identifier: property.notFound
 			count: 4
+			path: app/Http/Controllers/AccountController.php
+
+		-
+			message: '#^Parameter \#2 \$blocked_id of static method App\\Services\\UserFilterService\:\:unblock\(\) expects string, int given\.$#'
+			identifier: argument.type
+			count: 1
+			path: app/Http/Controllers/AccountController.php
+
+		-
+			message: '#^Parameter \#2 \$muted_id of static method App\\Services\\UserFilterService\:\:unmute\(\) expects string, int given\.$#'
+			identifier: argument.type
+			count: 1
 			path: app/Http/Controllers/AccountController.php
 
 		-
@@ -355,6 +391,24 @@ parameters:
 			path: app/Http/Controllers/AdminController.php
 
 		-
+			message: '#^Parameter \#1 \$array \(non\-empty\-list\<string\|null\>\) of array_values is already a list, call has no effect\.$#'
+			identifier: arrayValues.list
+			count: 1
+			path: app/Http/Controllers/AdminController.php
+
+		-
+			message: '#^Parameter \#1 \$callback of method Illuminate\\Database\\Eloquent\\Collection\<int,App\\Models\\AccountInterstitial\>\:\:map\(\) contains unresolvable type\.$#'
+			identifier: argument.unresolvableType
+			count: 1
+			path: app/Http/Controllers/AdminController.php
+
+		-
+			message: '#^Parameter \#1 \$view of function view expects view\-string\|null, string given\.$#'
+			identifier: argument.type
+			count: 2
+			path: app/Http/Controllers/AdminController.php
+
+		-
 			message: '#^Property App\\Models\\Newsroom\:\:\$body \(string\|null\) does not accept bool\.$#'
 			identifier: assign.propertyType
 			count: 1
@@ -387,6 +441,12 @@ parameters:
 		-
 			message: '#^Offset ''aid'' on array\{id\: int, action\: string, title\: string, message\: null, link\: null, timestamp\: Carbon\\Carbon\|null\} in isset\(\) does not exist\.$#'
 			identifier: isset.offset
+			count: 1
+			path: app/Http/Controllers/AdminCuratedRegisterController.php
+
+		-
+			message: '#^Parameter \#1 \.\.\.\$values of method Illuminate\\Support\\Collection\<int,array\<string, Carbon\\Carbon\|int\|string\|null\>\>\:\:push\(\) expects array\{id\: int, action\: string, title\: string, message\: null, link\: null, timestamp\: Carbon\\Carbon\|null\}, array\{id\: int\<5, max\>, aid\: int, action\: string\|null, title\: ''Admin requested info''\|''User responded'', message\: string\|null, link\: mixed, timestamp\: Carbon\\Carbon\|null\} given\.$#'
+			identifier: argument.type
 			count: 1
 			path: app/Http/Controllers/AdminCuratedRegisterController.php
 
@@ -466,6 +526,12 @@ parameters:
 			message: '#^Call to an undefined method Illuminate\\Database\\Query\\Builder\:\:whereUserId\(\)\.$#'
 			identifier: method.notFound
 			count: 2
+			path: app/Http/Controllers/Api/AdminApiController.php
+
+		-
+			message: '#^Parameter \#1 \$user of job class App\\Jobs\\DeletePipeline\\DeleteAccountPipeline constructor expects App\\Models\\User in App\\Jobs\\DeletePipeline\\DeleteAccountPipeline\:\:dispatch\(\), Illuminate\\Database\\Eloquent\\Model\|null given\.$#'
+			identifier: argument.type
+			count: 1
 			path: app/Http/Controllers/Api/AdminApiController.php
 
 		-
@@ -613,6 +679,60 @@ parameters:
 			path: app/Http/Controllers/Api/ApiV1Controller.php
 
 		-
+			message: '#^Parameter \#1 \$actor of static method App\\Services\\FollowerService\:\:follows\(\) expects string, int\<0, max\> given\.$#'
+			identifier: argument.type
+			count: 1
+			path: app/Http/Controllers/Api/ApiV1Controller.php
+
+		-
+			message: '#^Parameter \#1 \$actor of static method App\\Services\\FollowerService\:\:follows\(\) expects string, int\<0, max\>\|null given\.$#'
+			identifier: argument.type
+			count: 14
+			path: app/Http/Controllers/Api/ApiV1Controller.php
+
+		-
+			message: '#^Parameter \#1 \$boolean of function abort_if expects bool, int\<0, max\>\|null given\.$#'
+			identifier: argument.type
+			count: 4
+			path: app/Http/Controllers/Api/ApiV1Controller.php
+
+		-
+			message: '#^Parameter \#1 \$boolean of function abort_unless expects bool, App\\Models\\Follower\|null given\.$#'
+			identifier: argument.type
+			count: 1
+			path: app/Http/Controllers/Api/ApiV1Controller.php
+
+		-
+			message: '#^Parameter \#1 \$profile of job class App\\Jobs\\AvatarPipeline\\AvatarOptimize constructor expects App\\Models\\Profile in App\\Jobs\\AvatarPipeline\\AvatarOptimize\:\:dispatch\(\), Illuminate\\Database\\Eloquent\\Model\|null given\.$#'
+			identifier: argument.type
+			count: 1
+			path: app/Http/Controllers/Api/ApiV1Controller.php
+
+		-
+			message: '#^Parameter \#2 \$blocked_id of static method App\\Services\\UserFilterService\:\:unblock\(\) expects string, int given\.$#'
+			identifier: argument.type
+			count: 1
+			path: app/Http/Controllers/Api/ApiV1Controller.php
+
+		-
+			message: '#^Parameter \#2 \$muted_id of static method App\\Services\\UserFilterService\:\:unmute\(\) expects string, int given\.$#'
+			identifier: argument.type
+			count: 1
+			path: app/Http/Controllers/Api/ApiV1Controller.php
+
+		-
+			message: '#^Parameter \#2 \$target of static method App\\Services\\FollowerService\:\:follows\(\) expects string, int given\.$#'
+			identifier: argument.type
+			count: 8
+			path: app/Http/Controllers/Api/ApiV1Controller.php
+
+		-
+			message: '#^Parameter \#2 \$target of static method App\\Services\\FollowerService\:\:follows\(\) expects string, int\<0, max\> given\.$#'
+			identifier: argument.type
+			count: 1
+			path: app/Http/Controllers/Api/ApiV1Controller.php
+
+		-
 			message: '#^Right side of && is always true\.$#'
 			identifier: booleanAnd.rightAlwaysTrue
 			count: 1
@@ -667,6 +787,18 @@ parameters:
 			path: app/Http/Controllers/Api/ApiV1Dot1Controller.php
 
 		-
+			message: '#^Parameter \#1 \$boolean of function abort_if expects bool, App\\Models\\User\|null given\.$#'
+			identifier: argument.type
+			count: 2
+			path: app/Http/Controllers/Api/ApiV1Dot1Controller.php
+
+		-
+			message: '#^Parameter \#1 \$boolean of function abort_if expects bool, string\|null given\.$#'
+			identifier: argument.type
+			count: 4
+			path: app/Http/Controllers/Api/ApiV1Dot1Controller.php
+
+		-
 			message: '#^Using nullsafe property access "\?\-\>name" on left side of \?\? is unnecessary\. Use \-\> instead\.$#'
 			identifier: nullsafe.neverNull
 			count: 1
@@ -697,6 +829,12 @@ parameters:
 			path: app/Http/Controllers/Api/ApiV2Controller.php
 
 		-
+			message: '#^Parameter \#1 \$actor of static method App\\Services\\FollowerService\:\:follows\(\) expects string, int\<0, max\>\|null given\.$#'
+			identifier: argument.type
+			count: 1
+			path: app/Http/Controllers/Api/ApiV2Controller.php
+
+		-
 			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$avatar\.$#'
 			identifier: property.notFound
 			count: 1
@@ -711,6 +849,12 @@ parameters:
 		-
 			message: '#^Call to an undefined method Illuminate\\Database\\Query\\Builder\:\:whereProfileId\(\)\.$#'
 			identifier: method.notFound
+			count: 1
+			path: app/Http/Controllers/Api/BaseApiController.php
+
+		-
+			message: '#^Parameter \#1 \$profile of job class App\\Jobs\\AvatarPipeline\\AvatarOptimize constructor expects App\\Models\\Profile in App\\Jobs\\AvatarPipeline\\AvatarOptimize\:\:dispatch\(\), Illuminate\\Database\\Eloquent\\Model\|null given\.$#'
+			identifier: argument.type
 			count: 1
 			path: app/Http/Controllers/Api/BaseApiController.php
 
@@ -769,14 +913,62 @@ parameters:
 			path: app/Http/Controllers/AvatarController.php
 
 		-
+			message: '#^Parameter \#1 \$profile of job class App\\Jobs\\AvatarPipeline\\AvatarOptimize constructor expects App\\Models\\Profile in App\\Jobs\\AvatarPipeline\\AvatarOptimize\:\:dispatch\(\), Illuminate\\Database\\Eloquent\\Model\|null given\.$#'
+			identifier: argument.type
+			count: 1
+			path: app/Http/Controllers/AvatarController.php
+
+		-
+			message: '#^Parameter \#3 \$pad_string of function str_pad expects string, int given\.$#'
+			identifier: argument.type
+			count: 1
+			path: app/Http/Controllers/AvatarController.php
+
+		-
+			message: '#^Parameter \#1 \$actor of static method App\\Services\\FollowerService\:\:follows\(\) expects string, int\<0, max\>\|null given\.$#'
+			identifier: argument.type
+			count: 1
+			path: app/Http/Controllers/BookmarkController.php
+
+		-
+			message: '#^Parameter \#2 \$target of static method App\\Services\\FollowerService\:\:follows\(\) expects string, int given\.$#'
+			identifier: argument.type
+			count: 1
+			path: app/Http/Controllers/BookmarkController.php
+
+		-
 			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$id\.$#'
 			identifier: property.notFound
 			count: 2
 			path: app/Http/Controllers/CircleController.php
 
 		-
+			message: '#^Parameter \#1 \$view of function view expects view\-string\|null, string given\.$#'
+			identifier: argument.type
+			count: 1
+			path: app/Http/Controllers/CircleController.php
+
+		-
 			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$id\.$#'
 			identifier: property.notFound
+			count: 2
+			path: app/Http/Controllers/CollectionController.php
+
+		-
+			message: '#^Parameter \#1 \$actor of static method App\\Services\\FollowerService\:\:follows\(\) expects string, int\<0, max\>\|null given\.$#'
+			identifier: argument.type
+			count: 3
+			path: app/Http/Controllers/CollectionController.php
+
+		-
+			message: '#^Parameter \#1 \$actor of static method App\\Services\\FollowerService\:\:follows\(\) expects string, int\<1, max\> given\.$#'
+			identifier: argument.type
+			count: 1
+			path: app/Http/Controllers/CollectionController.php
+
+		-
+			message: '#^Parameter \#1 \$boolean of function abort_unless expects bool, App\\Models\\User\|null given\.$#'
+			identifier: argument.type
 			count: 2
 			path: app/Http/Controllers/CollectionController.php
 
@@ -801,6 +993,12 @@ parameters:
 		-
 			message: '#^Call to an undefined method Illuminate\\Database\\Eloquent\\Model\:\:url\(\)\.$#'
 			identifier: method.notFound
+			count: 1
+			path: app/Http/Controllers/CommentController.php
+
+		-
+			message: '#^Parameter \#2 \$target of static method App\\Services\\FollowerService\:\:follows\(\) expects string, int given\.$#'
+			identifier: argument.type
 			count: 1
 			path: app/Http/Controllers/CommentController.php
 
@@ -853,6 +1051,18 @@ parameters:
 			path: app/Http/Controllers/ComposeController.php
 
 		-
+			message: '#^Parameter \#1 \$callback of method Illuminate\\Database\\Eloquent\\Collection\<int,App\\Models\\Status\>\:\:map\(\) contains unresolvable type\.$#'
+			identifier: argument.unresolvableType
+			count: 2
+			path: app/Http/Controllers/ComposeController.php
+
+		-
+			message: '#^Parameter \#1 \$callback of method Illuminate\\Support\\Collection\<int,App\\Models\\Status\>\:\:filter\(\) expects \(callable\(App\\Models\\Status, int\)\: bool\)\|null, Closure\(mixed\)\: App\\Models\\Status given\.$#'
+			identifier: argument.type
+			count: 2
+			path: app/Http/Controllers/ComposeController.php
+
+		-
 			message: '#^Property App\\Models\\Media\:\:\$version \(int\) does not accept string\.$#'
 			identifier: assign.propertyType
 			count: 1
@@ -863,6 +1073,12 @@ parameters:
 			identifier: deadCode.unreachable
 			count: 1
 			path: app/Http/Controllers/ComposeController.php
+
+		-
+			message: '#^Parameter \#1 \$boolean of function abort_if expects bool, App\\Models\\User\|null given\.$#'
+			identifier: argument.type
+			count: 5
+			path: app/Http/Controllers/CuratedRegisterController.php
 
 		-
 			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$id\.$#'
@@ -893,6 +1109,24 @@ parameters:
 			identifier: nullCoalesce.expr
 			count: 1
 			path: app/Http/Controllers/CustomFilterController.php
+
+		-
+			message: '#^Parameter \#1 \$callback of method Illuminate\\Database\\Eloquent\\Collection\<int,App\\Models\\CustomFilter\>\:\:map\(\) contains unresolvable type\.$#'
+			identifier: argument.unresolvableType
+			count: 1
+			path: app/Http/Controllers/CustomFilterController.php
+
+		-
+			message: '#^Parameter \#1 \$callback of method Illuminate\\Database\\Eloquent\\Collection\<int,Illuminate\\Database\\Eloquent\\Model\>\:\:map\(\) contains unresolvable type\.$#'
+			identifier: argument.unresolvableType
+			count: 6
+			path: app/Http/Controllers/CustomFilterController.php
+
+		-
+			message: '#^Parameter \#1 \$view of function view expects view\-string\|null, string given\.$#'
+			identifier: argument.type
+			count: 2
+			path: app/Http/Controllers/DeckController.php
 
 		-
 			message: '#^Access to an undefined property App\\Models\\User\:\:\$settings\.$#'
@@ -955,6 +1189,18 @@ parameters:
 			path: app/Http/Controllers/DirectMessageController.php
 
 		-
+			message: '#^Parameter \#1 \$callback of method Illuminate\\Database\\Eloquent\\Collection\<int,App\\Models\\DirectMessage\>\:\:map\(\) contains unresolvable type\.$#'
+			identifier: argument.unresolvableType
+			count: 2
+			path: app/Http/Controllers/DirectMessageController.php
+
+		-
+			message: '#^Parameter \#2 \$syntax of method Carbon\\Carbon\:\:diffForHumans\(\) expects array\|int\|null, true given\.$#'
+			identifier: argument.type
+			count: 3
+			path: app/Http/Controllers/DirectMessageController.php
+
+		-
 			message: '#^Property App\\Models\\DirectMessage\:\:\$meta \(string\|null\) does not accept array\<string, bool\|string\|null\>\.$#'
 			identifier: assign.propertyType
 			count: 1
@@ -969,6 +1215,12 @@ parameters:
 		-
 			message: '#^Negated boolean expression is always true\.$#'
 			identifier: booleanNot.alwaysTrue
+			count: 1
+			path: app/Http/Controllers/DiscoverController.php
+
+		-
+			message: '#^Parameter \#1 \$actor of static method App\\Services\\FollowerService\:\:follows\(\) expects string, int\<0, max\>\|null given\.$#'
+			identifier: argument.type
 			count: 1
 			path: app/Http/Controllers/DiscoverController.php
 
@@ -997,6 +1249,24 @@ parameters:
 			path: app/Http/Controllers/GroupController.php
 
 		-
+			message: '#^Parameter \#1 \$groupId of static method App\\Services\\GroupService\:\:log\(\) expects string, int given\.$#'
+			identifier: argument.type
+			count: 6
+			path: app/Http/Controllers/GroupController.php
+
+		-
+			message: '#^Parameter \#2 \$profileId of static method App\\Services\\GroupService\:\:log\(\) expects string, int\<0, max\>\|null given\.$#'
+			identifier: argument.type
+			count: 6
+			path: app/Http/Controllers/GroupController.php
+
+		-
+			message: '#^Parameter \#6 \$itemId of static method App\\Services\\GroupService\:\:log\(\) expects string\|null, int given\.$#'
+			identifier: argument.type
+			count: 5
+			path: app/Http/Controllers/GroupController.php
+
+		-
 			message: '#^Unreachable statement \- code above always terminates\.$#'
 			identifier: deadCode.unreachable
 			count: 1
@@ -1015,9 +1285,51 @@ parameters:
 			path: app/Http/Controllers/GroupFederationController.php
 
 		-
+			message: '#^Parameter \#1 \$groupId of static method App\\Services\\GroupService\:\:log\(\) expects string, int given\.$#'
+			identifier: argument.type
+			count: 2
+			path: app/Http/Controllers/Groups/CreateGroupsController.php
+
+		-
+			message: '#^Parameter \#2 \$profileId of static method App\\Services\\GroupService\:\:log\(\) expects string, int\<0, max\>\|null given\.$#'
+			identifier: argument.type
+			count: 2
+			path: app/Http/Controllers/Groups/CreateGroupsController.php
+
+		-
+			message: '#^Parameter \#6 \$itemId of static method App\\Services\\GroupService\:\:log\(\) expects string\|null, int given\.$#'
+			identifier: argument.type
+			count: 1
+			path: app/Http/Controllers/Groups/CreateGroupsController.php
+
+		-
 			message: '#^Access to an undefined property App\\Models\\GroupReport\:\:\$total\.$#'
 			identifier: property.notFound
 			count: 1
+			path: app/Http/Controllers/Groups/GroupsAdminController.php
+
+		-
+			message: '#^Parameter \#1 \$callback of method Illuminate\\Support\\Collection\<int,App\\Models\\GroupReport\>\:\:map\(\) contains unresolvable type\.$#'
+			identifier: argument.unresolvableType
+			count: 1
+			path: app/Http/Controllers/Groups/GroupsAdminController.php
+
+		-
+			message: '#^Parameter \#1 \$groupId of static method App\\Services\\GroupService\:\:log\(\) expects string, int given\.$#'
+			identifier: argument.type
+			count: 6
+			path: app/Http/Controllers/Groups/GroupsAdminController.php
+
+		-
+			message: '#^Parameter \#2 \$profileId of static method App\\Services\\GroupService\:\:log\(\) expects string, int\<0, max\>\|null given\.$#'
+			identifier: argument.type
+			count: 6
+			path: app/Http/Controllers/Groups/GroupsAdminController.php
+
+		-
+			message: '#^Parameter \#6 \$itemId of static method App\\Services\\GroupService\:\:log\(\) expects string\|null, int given\.$#'
+			identifier: argument.type
+			count: 6
 			path: app/Http/Controllers/Groups/GroupsAdminController.php
 
 		-
@@ -1027,10 +1339,34 @@ parameters:
 			path: app/Http/Controllers/Groups/GroupsApiController.php
 
 		-
+			message: '#^Parameter \#1 \$groupId of static method App\\Services\\GroupService\:\:log\(\) expects string, int given\.$#'
+			identifier: argument.type
+			count: 2
+			path: app/Http/Controllers/Groups/GroupsCommentController.php
+
+		-
+			message: '#^Parameter \#2 \$profileId of static method App\\Services\\GroupService\:\:log\(\) expects string, int\<0, max\>\|null given\.$#'
+			identifier: argument.type
+			count: 3
+			path: app/Http/Controllers/Groups/GroupsCommentController.php
+
+		-
+			message: '#^Parameter \#6 \$itemId of static method App\\Services\\GroupService\:\:log\(\) expects string\|null, int given\.$#'
+			identifier: argument.type
+			count: 3
+			path: app/Http/Controllers/Groups/GroupsCommentController.php
+
+		-
 			message: '#^Using nullsafe property access "\?\-\>profile_id" on left side of \?\? is unnecessary\. Use \-\> instead\.$#'
 			identifier: nullsafe.neverNull
 			count: 1
 			path: app/Http/Controllers/Groups/GroupsFeedController.php
+
+		-
+			message: '#^Parameter \#1 \$actor of static method App\\Services\\FollowerService\:\:follows\(\) expects string, int\<0, max\>\|null given\.$#'
+			identifier: argument.type
+			count: 2
+			path: app/Http/Controllers/Groups/GroupsMemberController.php
 
 		-
 			message: '#^Access to an undefined property App\\Models\\GroupPost\|Illuminate\\Database\\Eloquent\\Collection\<\(int\|string\), App\\Models\\GroupPost\>\:\:\$in_reply_to_id\.$#'
@@ -1042,6 +1378,42 @@ parameters:
 			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$id\.$#'
 			identifier: property.notFound
 			count: 1
+			path: app/Http/Controllers/Groups/GroupsPostController.php
+
+		-
+			message: '#^Parameter \#1 \$groupId of static method App\\Services\\GroupService\:\:log\(\) expects string, int given\.$#'
+			identifier: argument.type
+			count: 1
+			path: app/Http/Controllers/Groups/GroupsPostController.php
+
+		-
+			message: '#^Parameter \#1 \$groupId of static method App\\Services\\GroupService\:\:log\(\) expects string, int\<0, max\> given\.$#'
+			identifier: argument.type
+			count: 1
+			path: app/Http/Controllers/Groups/GroupsPostController.php
+
+		-
+			message: '#^Parameter \#1 \$status of job class App\\Jobs\\StatusPipeline\\StatusDelete constructor expects App\\Models\\Status in App\\Jobs\\StatusPipeline\\StatusDelete\:\:dispatch\(\), App\\Models\\GroupPost\|Illuminate\\Database\\Eloquent\\Collection\<\(int\|string\), App\\Models\\GroupPost\> given\.$#'
+			identifier: argument.type
+			count: 1
+			path: app/Http/Controllers/Groups/GroupsPostController.php
+
+		-
+			message: '#^Parameter \#2 \$profileId of static method App\\Services\\GroupService\:\:log\(\) expects string, int\<0, max\>\|null given\.$#'
+			identifier: argument.type
+			count: 3
+			path: app/Http/Controllers/Groups/GroupsPostController.php
+
+		-
+			message: '#^Parameter \#6 \$itemId of static method App\\Services\\GroupService\:\:log\(\) expects string\|null, int given\.$#'
+			identifier: argument.type
+			count: 1
+			path: app/Http/Controllers/Groups/GroupsPostController.php
+
+		-
+			message: '#^Parameter \#6 \$itemId of static method App\\Services\\GroupService\:\:log\(\) expects string\|null, int\<0, max\> given\.$#'
+			identifier: argument.type
+			count: 2
 			path: app/Http/Controllers/Groups/GroupsPostController.php
 
 		-
@@ -1105,10 +1477,34 @@ parameters:
 			path: app/Http/Controllers/InternalApiController.php
 
 		-
+			message: '#^Parameter \#1 \$actor of static method App\\Services\\FollowerService\:\:follows\(\) expects string, int\<0, max\>\|null given\.$#'
+			identifier: argument.type
+			count: 1
+			path: app/Http/Controllers/InternalApiController.php
+
+		-
+			message: '#^Parameter \#2 \$target of static method App\\Services\\FollowerService\:\:follows\(\) expects string, int given\.$#'
+			identifier: argument.type
+			count: 1
+			path: app/Http/Controllers/InternalApiController.php
+
+		-
 			message: '#^Unreachable statement \- code above always terminates\.$#'
 			identifier: deadCode.unreachable
 			count: 1
 			path: app/Http/Controllers/LikeController.php
+
+		-
+			message: '#^Parameter \#1 \$actor of static method App\\Services\\FollowerService\:\:follows\(\) expects string, int\<0, max\>\|null given\.$#'
+			identifier: argument.type
+			count: 3
+			path: app/Http/Controllers/LiveStreamController.php
+
+		-
+			message: '#^Parameter \#2 \$target of static method App\\Services\\FollowerService\:\:follows\(\) expects string, int\<0, max\> given\.$#'
+			identifier: argument.type
+			count: 3
+			path: app/Http/Controllers/LiveStreamController.php
 
 		-
 			message: '#^Strict comparison using \=\=\= between false and false will always evaluate to true\.$#'
@@ -1135,6 +1531,12 @@ parameters:
 			path: app/Http/Controllers/NewsroomController.php
 
 		-
+			message: '#^Parameter \#1 \$authRequest of method App\\Http\\Controllers\\OAuth\\OobAuthorizationController\:\:isOutOfBandRequest\(\) expects League\\OAuth2\\Server\\RequestTypes\\AuthorizationRequest, League\\OAuth2\\Server\\RequestTypes\\AuthorizationRequestInterface given\.$#'
+			identifier: argument.type
+			count: 1
+			path: app/Http/Controllers/OAuth/OobAuthorizationController.php
+
+		-
 			message: '#^Access to protected property Laravel\\Passport\\PersonalAccessTokenResult\:\:\$token\.$#'
 			identifier: property.protected
 			count: 2
@@ -1153,6 +1555,24 @@ parameters:
 			path: app/Http/Controllers/PixelfedDirectoryController.php
 
 		-
+			message: '#^Parameter \#1 \$actor of static method App\\Services\\FollowerService\:\:follows\(\) expects string, int\<0, max\>\|null given\.$#'
+			identifier: argument.type
+			count: 2
+			path: app/Http/Controllers/PollController.php
+
+		-
+			message: '#^Parameter \#1 \$boolean of function abort_unless expects bool, App\\Models\\User\|null given\.$#'
+			identifier: argument.type
+			count: 1
+			path: app/Http/Controllers/PollController.php
+
+		-
+			message: '#^Parameter \#2 \$target of static method App\\Services\\FollowerService\:\:follows\(\) expects string, int given\.$#'
+			identifier: argument.type
+			count: 2
+			path: app/Http/Controllers/PollController.php
+
+		-
 			message: '#^Call to an undefined method Illuminate\\Database\\Query\\Builder\:\:whereProfileId\(\)\.$#'
 			identifier: method.notFound
 			count: 1
@@ -1162,6 +1582,12 @@ parameters:
 			message: '#^Negated boolean expression is always false\.$#'
 			identifier: booleanNot.alwaysFalse
 			count: 4
+			path: app/Http/Controllers/PortfolioController.php
+
+		-
+			message: '#^Parameter \#1 \$boolean of function abort_unless expects bool, App\\Models\\User\|null given\.$#'
+			identifier: argument.type
+			count: 1
 			path: app/Http/Controllers/PortfolioController.php
 
 		-
@@ -1203,6 +1629,18 @@ parameters:
 		-
 			message: '#^Offset ''permalink'' on array\{items\: Illuminate\\Support\\Collection\<int, mixed\>, permalink\: non\-falsy\-string, headers\: array\{Content\-Type\: ''application/atom\+xml'', Last\-Modified\?\: string\}\} in isset\(\) always exists and is not nullable\.$#'
 			identifier: isset.offset
+			count: 1
+			path: app/Http/Controllers/ProfileController.php
+
+		-
+			message: '#^Parameter \#1 \$actor of static method App\\Services\\FollowerService\:\:follows\(\) expects string, int\<0, max\>\|null given\.$#'
+			identifier: argument.type
+			count: 1
+			path: app/Http/Controllers/ProfileController.php
+
+		-
+			message: '#^Parameter \#2 \$target of static method App\\Services\\FollowerService\:\:follows\(\) expects string, int given\.$#'
+			identifier: argument.type
 			count: 1
 			path: app/Http/Controllers/ProfileController.php
 
@@ -1255,6 +1693,24 @@ parameters:
 			path: app/Http/Controllers/PublicApiController.php
 
 		-
+			message: '#^Parameter \#1 \$actor of static method App\\Services\\FollowerService\:\:follows\(\) expects string, int\<0, max\> given\.$#'
+			identifier: argument.type
+			count: 1
+			path: app/Http/Controllers/PublicApiController.php
+
+		-
+			message: '#^Parameter \#1 \$actor of static method App\\Services\\FollowerService\:\:follows\(\) expects string, int\<0, max\>\|null given\.$#'
+			identifier: argument.type
+			count: 1
+			path: app/Http/Controllers/PublicApiController.php
+
+		-
+			message: '#^Parameter \#2 \$target of static method App\\Services\\FollowerService\:\:follows\(\) expects string, int given\.$#'
+			identifier: argument.type
+			count: 3
+			path: app/Http/Controllers/PublicApiController.php
+
+		-
 			message: '#^Right side of && is always true\.$#'
 			identifier: booleanAnd.rightAlwaysTrue
 			count: 4
@@ -1285,8 +1741,26 @@ parameters:
 			path: app/Http/Controllers/RemoteAuthController.php
 
 		-
+			message: '#^Parameter \#1 \$boolean of function abort_if expects bool, App\\Models\\User\|null given\.$#'
+			identifier: argument.type
+			count: 6
+			path: app/Http/Controllers/RemoteAuthController.php
+
+		-
+			message: '#^Parameter \#1 \$boolean of function abort_unless expects bool, App\\Models\\User\|null given\.$#'
+			identifier: argument.type
+			count: 3
+			path: app/Http/Controllers/RemoteAuthController.php
+
+		-
 			message: '#^Access to an undefined property App\\Models\\UserOidcMapping\:\:\$user\.$#'
 			identifier: property.notFound
+			count: 1
+			path: app/Http/Controllers/RemoteOidcController.php
+
+		-
+			message: '#^Parameter \#1 \$token of method League\\OAuth2\\Client\\Provider\\AbstractProvider\:\:getResourceOwner\(\) expects League\\OAuth2\\Client\\Token\\AccessToken, League\\OAuth2\\Client\\Token\\AccessTokenInterface given\.$#'
+			identifier: argument.type
 			count: 1
 			path: app/Http/Controllers/RemoteOidcController.php
 
@@ -1295,6 +1769,12 @@ parameters:
 			identifier: property.notFound
 			count: 2
 			path: app/Http/Controllers/ReportController.php
+
+		-
+			message: '#^Parameter \#2 \$syntax of method Carbon\\Carbon\:\:diffForHumans\(\) expects array\|int\|null, true given\.$#'
+			identifier: argument.type
+			count: 1
+			path: app/Http/Controllers/SearchController.php
 
 		-
 			message: '#^Access to an undefined property App\\Models\\Status\:\:\$count\.$#'
@@ -1323,6 +1803,24 @@ parameters:
 		-
 			message: '#^Cannot call method url\(\) on string\.$#'
 			identifier: method.nonObject
+			count: 2
+			path: app/Http/Controllers/SeasonalController.php
+
+		-
+			message: '#^Parameter \#1 \$attributes of static method Illuminate\\Database\\Eloquent\\Builder\<App\\Models\\AccountLog\>\:\:firstOrCreate\(\) expects array\<model property of App\\Models\\AccountLog, mixed\>, array\<int, array\<string, int\|string\|null\>\> given\.$#'
+			identifier: argument.type
+			count: 1
+			path: app/Http/Controllers/SeasonalController.php
+
+		-
+			message: '#^Parameter \#1 \$callback of method Illuminate\\Database\\Eloquent\\Collection\<int,App\\Models\\Status\>\:\:map\(\) contains unresolvable type\.$#'
+			identifier: argument.unresolvableType
+			count: 2
+			path: app/Http/Controllers/SeasonalController.php
+
+		-
+			message: '#^Parameter \#1 \$callback of method Illuminate\\Database\\Eloquent\\Collection\<int,App\\Models\\StatusHashtag\>\:\:map\(\) contains unresolvable type\.$#'
+			identifier: argument.unresolvableType
 			count: 2
 			path: app/Http/Controllers/SeasonalController.php
 
@@ -1459,15 +1957,51 @@ parameters:
 			path: app/Http/Controllers/SettingsController.php
 
 		-
+			message: '#^Parameter \#1 \$view of function view expects view\-string\|null, string given\.$#'
+			identifier: argument.type
+			count: 1
+			path: app/Http/Controllers/SettingsController.php
+
+		-
+			message: '#^Parameter \#2 \$member of static method Redis\:\:zRem\(\) expects string, int\<0, max\>\|null given\.$#'
+			identifier: argument.type
+			count: 2
+			path: app/Http/Controllers/SettingsController.php
+
+		-
 			message: '#^Ternary operator condition is always false\.$#'
 			identifier: ternary.alwaysFalse
 			count: 1
 			path: app/Http/Controllers/SettingsController.php
 
 		-
+			message: '#^Parameter \#1 \$actor of static method App\\Services\\FollowerService\:\:follows\(\) expects string, int\<0, max\>\|null given\.$#'
+			identifier: argument.type
+			count: 1
+			path: app/Http/Controllers/SiteController.php
+
+		-
+			message: '#^Parameter \#2 \$target of static method App\\Services\\FollowerService\:\:follows\(\) expects string, int given\.$#'
+			identifier: argument.type
+			count: 1
+			path: app/Http/Controllers/SiteController.php
+
+		-
+			message: '#^Parameter \#1 \$boolean of function abort_unless expects bool, App\\Models\\User\|null given\.$#'
+			identifier: argument.type
+			count: 4
+			path: app/Http/Controllers/SpaController.php
+
+		-
 			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$id\.$#'
 			identifier: property.notFound
 			count: 6
+			path: app/Http/Controllers/StatusController.php
+
+		-
+			message: '#^Parameter \#1 \$boolean of function abort_if expects bool, string\|null given\.$#'
+			identifier: argument.type
+			count: 1
 			path: app/Http/Controllers/StatusController.php
 
 		-
@@ -1481,6 +2015,24 @@ parameters:
 			identifier: booleanAnd.leftAlwaysTrue
 			count: 1
 			path: app/Http/Controllers/Stories/StoryApiV1Controller.php
+
+		-
+			message: '#^Parameter \#2 \$profile of job class App\\Jobs\\StoryPipeline\\StoryViewDeliver constructor expects App\\Models\\Profile in App\\Jobs\\StoryPipeline\\StoryViewDeliver\:\:dispatch\(\), Illuminate\\Database\\Eloquent\\Model\|null given\.$#'
+			identifier: argument.type
+			count: 1
+			path: app/Http/Controllers/Stories/StoryApiV1Controller.php
+
+		-
+			message: '#^Parameter \#1 \$actor of static method App\\Services\\FollowerService\:\:follows\(\) expects string, int\<0, max\>\|null given\.$#'
+			identifier: argument.type
+			count: 4
+			path: app/Http/Controllers/StoryComposeController.php
+
+		-
+			message: '#^Parameter \#2 \$target of static method App\\Services\\FollowerService\:\:follows\(\) expects string, int given\.$#'
+			identifier: argument.type
+			count: 4
+			path: app/Http/Controllers/StoryComposeController.php
 
 		-
 			message: '#^Property App\\Models\\Story\:\:\$story \(array\|null\) does not accept string\|false\.$#'
@@ -1505,6 +2057,42 @@ parameters:
 			identifier: booleanNot.alwaysFalse
 			count: 1
 			path: app/Http/Controllers/StoryController.php
+
+		-
+			message: '#^Parameter \#1 \$actor of static method App\\Services\\FollowerService\:\:follows\(\) expects string, int\<0, max\>\|null given\.$#'
+			identifier: argument.type
+			count: 1
+			path: app/Http/Controllers/StoryController.php
+
+		-
+			message: '#^Parameter \#1 \$json of function json_decode expects string, array\|null given\.$#'
+			identifier: argument.type
+			count: 2
+			path: app/Http/Controllers/StoryController.php
+
+		-
+			message: '#^Parameter \#2 \$profile of job class App\\Jobs\\StoryPipeline\\StoryViewDeliver constructor expects App\\Models\\Profile in App\\Jobs\\StoryPipeline\\StoryViewDeliver\:\:dispatch\(\), Illuminate\\Database\\Eloquent\\Model\|null given\.$#'
+			identifier: argument.type
+			count: 1
+			path: app/Http/Controllers/StoryController.php
+
+		-
+			message: '#^Parameter \#2 \$target of static method App\\Services\\FollowerService\:\:follows\(\) expects string, int given\.$#'
+			identifier: argument.type
+			count: 1
+			path: app/Http/Controllers/StoryController.php
+
+		-
+			message: '#^Parameter \#1 \$boolean of function abort_if expects bool, App\\Models\\User\|null given\.$#'
+			identifier: argument.type
+			count: 1
+			path: app/Http/Controllers/UserEmailForgotController.php
+
+		-
+			message: '#^Parameter \#1 \$view of function view expects view\-string\|null, string given\.$#'
+			identifier: argument.type
+			count: 2
+			path: app/Http/Controllers/UserInviteController.php
 
 		-
 			message: '#^Call to an undefined method Symfony\\Component\\HttpFoundation\\Response\:\:withHeaders\(\)\.$#'
@@ -1633,6 +2221,12 @@ parameters:
 			path: app/Http/Resources/StatusStateless.php
 
 		-
+			message: '#^Constant JSON_UNESCAPED_SLASHES is not allowed for parameter \#3 \$depth of function json_encode\.$#'
+			identifier: argument.invalidConstant
+			count: 1
+			path: app/Jobs/AutospamPipeline/AutospamUpdateCachedDataPipeline.php
+
+		-
 			message: '#^Left side of && is always true\.$#'
 			identifier: booleanAnd.leftAlwaysTrue
 			count: 1
@@ -1661,6 +2255,12 @@ parameters:
 			identifier: method.notFound
 			count: 1
 			path: app/Jobs/FollowPipeline/FollowServiceWarmCache.php
+
+		-
+			message: '#^Parameter \#3 \$language of static method Illuminate\\Support\\Str\:\:slug\(\) expects string\|null, false given\.$#'
+			identifier: argument.type
+			count: 1
+			path: app/Jobs/GroupPipeline/NewStatusPipeline.php
 
 		-
 			message: '#^Negated boolean expression is always false\.$#'
@@ -1759,6 +2359,12 @@ parameters:
 			path: app/Jobs/StatusPipeline/StatusDelete.php
 
 		-
+			message: '#^Parameter \#3 \$language of static method Illuminate\\Support\\Str\:\:slug\(\) expects string\|null, false given\.$#'
+			identifier: argument.type
+			count: 1
+			path: app/Jobs/StatusPipeline/StatusEntityLexer.php
+
+		-
 			message: '#^Offset ''length'' on array\{length\: int, mime\: string\} on left side of \?\? always exists and is not nullable\.$#'
 			identifier: nullCoalesce.offset
 			count: 1
@@ -1780,6 +2386,12 @@ parameters:
 			message: '#^Negated boolean expression is always false\.$#'
 			identifier: booleanNot.alwaysFalse
 			count: 1
+			path: app/Jobs/StatusPipeline/StatusTagsPipeline.php
+
+		-
+			message: '#^Parameter \#3 \$language of static method Illuminate\\Support\\Str\:\:slug\(\) expects string\|null, false given\.$#'
+			identifier: argument.type
+			count: 2
 			path: app/Jobs/StatusPipeline/StatusTagsPipeline.php
 
 		-
@@ -1909,6 +2521,18 @@ parameters:
 			path: app/Observers/StatusHashtagObserver.php
 
 		-
+			message: '#^Parameter \#2 \$blocked_id of static method App\\Services\\UserFilterService\:\:unblock\(\) expects string, int\<0, max\> given\.$#'
+			identifier: argument.type
+			count: 1
+			path: app/Observers/UserFilterObserver.php
+
+		-
+			message: '#^Parameter \#2 \$muted_id of static method App\\Services\\UserFilterService\:\:unmute\(\) expects string, int\<0, max\> given\.$#'
+			identifier: argument.type
+			count: 1
+			path: app/Observers/UserFilterObserver.php
+
+		-
 			message: '#^If condition is always true\.$#'
 			identifier: if.alwaysTrue
 			count: 1
@@ -1975,6 +2599,12 @@ parameters:
 			path: app/Services/ActivityPubFetchService.php
 
 		-
+			message: '#^Parameter \#2 \$direction of method Illuminate\\Database\\Eloquent\\Builder\<App\\Models\\Status\>\:\:orderBy\(\) expects ''asc''\|''desc''\|SortDirection, ''DESC'' given\.$#'
+			identifier: argument.type
+			count: 2
+			path: app/Services/AdminStatsService.php
+
+		-
 			message: '#^Strict comparison using \=\=\= between non\-falsy\-string and '''' will always evaluate to false\.$#'
 			identifier: identical.alwaysFalse
 			count: 1
@@ -2014,6 +2644,42 @@ parameters:
 			message: '#^Call to an undefined method Illuminate\\Database\\Eloquent\\Model\:\:permalink\(\)\.$#'
 			identifier: method.notFound
 			count: 6
+			path: app/Services/FeaturedCollectionService.php
+
+		-
+			message: '#^Parameter \#1 \$actor of static method App\\Services\\FollowerService\:\:follows\(\) expects string, int given\.$#'
+			identifier: argument.type
+			count: 1
+			path: app/Services/FeaturedCollectionService.php
+
+		-
+			message: '#^Parameter \#1 \$from of static method App\\Services\\FeaturedCollectionService\:\:deliver\(\) expects App\\Models\\Profile, Illuminate\\Database\\Eloquent\\Model given\.$#'
+			identifier: argument.type
+			count: 1
+			path: app/Services/FeaturedCollectionService.php
+
+		-
+			message: '#^Parameter \#1 \$from of static method App\\Services\\FeaturedCollectionService\:\:deliver\(\) expects App\\Models\\Profile, Illuminate\\Database\\Eloquent\\Model\|null given\.$#'
+			identifier: argument.type
+			count: 1
+			path: app/Services/FeaturedCollectionService.php
+
+		-
+			message: '#^Parameter \#2 \$target of static method App\\Services\\FollowerService\:\:follows\(\) expects string, int given\.$#'
+			identifier: argument.type
+			count: 1
+			path: app/Services/FeaturedCollectionService.php
+
+		-
+			message: '#^Parameter \#2 \$to of static method App\\Services\\FeaturedCollectionService\:\:deliver\(\) expects App\\Models\\Profile, Illuminate\\Database\\Eloquent\\Model given\.$#'
+			identifier: argument.type
+			count: 1
+			path: app/Services/FeaturedCollectionService.php
+
+		-
+			message: '#^Parameter \#2 \$to of static method App\\Services\\FeaturedCollectionService\:\:deliver\(\) expects App\\Models\\Profile, Illuminate\\Database\\Eloquent\\Model\|null given\.$#'
+			identifier: argument.type
+			count: 1
 			path: app/Services/FeaturedCollectionService.php
 
 		-
@@ -2071,10 +2737,40 @@ parameters:
 			path: app/Services/HashtagFollowService.php
 
 		-
+			message: '#^Parameter \#2 \$start of static method Redis\:\:zCount\(\) expects string, int given\.$#'
+			identifier: argument.type
+			count: 1
+			path: app/Services/HashtagFollowService.php
+
+		-
+			message: '#^Parameter \#3 \$end of static method Redis\:\:zCount\(\) expects string, int given\.$#'
+			identifier: argument.type
+			count: 1
+			path: app/Services/HashtagFollowService.php
+
+		-
+			message: '#^Parameter \#1 \$column of method Illuminate\\Database\\Eloquent\\Builder\<App\\Models\\StatusHashtag\>\:\:where\(\) expects array\<int\|model property of App\\Models\\StatusHashtag, mixed\>\|\(Closure\(Illuminate\\Database\\Query\\Builder\)\: mixed\)\|Illuminate\\Contracts\\Database\\Query\\Expression\|model property of App\\Models\\StatusHashtag, ''h1\.name'' given\.$#'
+			identifier: argument.type
+			count: 1
+			path: app/Services/HashtagRelatedService.php
+
+		-
 			message: '#^Right side of && is always true\.$#'
 			identifier: booleanAnd.rightAlwaysTrue
 			count: 1
 			path: app/Services/HomeTimelineService.php
+
+		-
+			message: '#^Parameter \#1 \$string of function str_pad expects string, \(float\|int\<min, 999\>\) given\.$#'
+			identifier: argument.type
+			count: 3
+			path: app/Services/ImportService.php
+
+		-
+			message: '#^Parameter \#3 \$pad_string of function str_pad expects string, int given\.$#'
+			identifier: argument.type
+			count: 15
+			path: app/Services/ImportService.php
 
 		-
 			message: '#^Offset ''url'' on array\{id\: string, username\: mixed, url\: non\-falsy\-string, others\: bool\} in isset\(\) always exists and is not nullable\.$#'
@@ -2101,6 +2797,12 @@ parameters:
 			path: app/Services/NodeinfoService.php
 
 		-
+			message: '#^Parameter \#3 \$options of static method Redis\:\:set\(\) expects array\|int, string given\.$#'
+			identifier: argument.type
+			count: 1
+			path: app/Services/NotificationService.php
+
+		-
 			message: '#^Expression on left side of \?\? is not nullable\.$#'
 			identifier: nullCoalesce.expr
 			count: 1
@@ -2111,6 +2813,12 @@ parameters:
 			identifier: method.notFound
 			count: 1
 			path: app/Services/ProfileStatusService.php
+
+		-
+			message: '#^Parameter \#2 \$member of static method Redis\:\:zRem\(\) expects string, int\<min, \-1\>\|int\<1, max\> given\.$#'
+			identifier: argument.type
+			count: 1
+			path: app/Services/ReblogService.php
 
 		-
 			message: '#^Dead catch \- Illuminate\\Http\\Client\\ConnectionException is never thrown in the try block\.$#'
@@ -2129,6 +2837,18 @@ parameters:
 			identifier: staticMethod.resultUnused
 			count: 1
 			path: app/Services/StatusHashtagService.php
+
+		-
+			message: '#^Parameter \#1 \$actor of static method App\\Services\\FollowerService\:\:follows\(\) expects string, int given\.$#'
+			identifier: argument.type
+			count: 1
+			path: app/Services/StatusService.php
+
+		-
+			message: '#^Parameter \#2 \$target of static method App\\Services\\FollowerService\:\:follows\(\) expects string, int given\.$#'
+			identifier: argument.type
+			count: 1
+			path: app/Services/StatusService.php
 
 		-
 			message: '#^Call to function is_array\(\) with \(bool\|Redis\) will always evaluate to false\.$#'
@@ -2157,6 +2877,12 @@ parameters:
 		-
 			message: '#^Access to an undefined property App\\Models\\StatusHashtag\:\:\$total\.$#'
 			identifier: property.notFound
+			count: 1
+			path: app/Services/TrendingHashtagService.php
+
+		-
+			message: '#^Parameter \#1 \$callback of method Illuminate\\Database\\Eloquent\\Collection\<int,App\\Models\\StatusHashtag\>\:\:map\(\) contains unresolvable type\.$#'
+			identifier: argument.unresolvableType
 			count: 1
 			path: app/Services/TrendingHashtagService.php
 
@@ -2251,6 +2977,18 @@ parameters:
 			path: app/Transformer/ActivityPub/Verb/CreateNote.php
 
 		-
+			message: '#^Parameter \#1 \$callback of method Illuminate\\Database\\Eloquent\\Collection\<int,App\\Models\\Mention\>\:\:map\(\) contains unresolvable type\.$#'
+			identifier: argument.unresolvableType
+			count: 1
+			path: app/Transformer/ActivityPub/Verb/CreateNote.php
+
+		-
+			message: '#^Parameter \#1 \$callback of method Illuminate\\Database\\Eloquent\\Collection\<int,Illuminate\\Database\\Eloquent\\Model\>\:\:map\(\) contains unresolvable type\.$#'
+			identifier: argument.unresolvableType
+			count: 1
+			path: app/Transformer/ActivityPub/Verb/CreateNote.php
+
+		-
 			message: '#^Call to an undefined method Illuminate\\Database\\Eloquent\\Model\:\:permalink\(\)\.$#'
 			identifier: method.notFound
 			count: 2
@@ -2323,6 +3061,18 @@ parameters:
 			path: app/Transformer/ActivityPub/Verb/Note.php
 
 		-
+			message: '#^Parameter \#1 \$callback of method Illuminate\\Database\\Eloquent\\Collection\<int,App\\Models\\Mention\>\:\:map\(\) contains unresolvable type\.$#'
+			identifier: argument.unresolvableType
+			count: 1
+			path: app/Transformer/ActivityPub/Verb/Note.php
+
+		-
+			message: '#^Parameter \#1 \$callback of method Illuminate\\Database\\Eloquent\\Collection\<int,Illuminate\\Database\\Eloquent\\Model\>\:\:map\(\) contains unresolvable type\.$#'
+			identifier: argument.unresolvableType
+			count: 1
+			path: app/Transformer/ActivityPub/Verb/Note.php
+
+		-
 			message: '#^Access to an undefined property App\\Models\\Status\:\:\$poll\.$#'
 			identifier: property.notFound
 			count: 3
@@ -2373,6 +3123,18 @@ parameters:
 		-
 			message: '#^Cannot access property \$name on string\.$#'
 			identifier: property.nonObject
+			count: 1
+			path: app/Transformer/ActivityPub/Verb/Question.php
+
+		-
+			message: '#^Parameter \#1 \$callback of method Illuminate\\Database\\Eloquent\\Collection\<int,App\\Models\\Mention\>\:\:map\(\) contains unresolvable type\.$#'
+			identifier: argument.unresolvableType
+			count: 1
+			path: app/Transformer/ActivityPub/Verb/Question.php
+
+		-
+			message: '#^Parameter \#1 \$callback of method Illuminate\\Database\\Eloquent\\Collection\<int,Illuminate\\Database\\Eloquent\\Model\>\:\:map\(\) contains unresolvable type\.$#'
+			identifier: argument.unresolvableType
 			count: 1
 			path: app/Transformer/ActivityPub/Verb/Question.php
 
@@ -2433,6 +3195,18 @@ parameters:
 		-
 			message: '#^Cannot access property \$name on string\.$#'
 			identifier: property.nonObject
+			count: 1
+			path: app/Transformer/ActivityPub/Verb/UpdateNote.php
+
+		-
+			message: '#^Parameter \#1 \$callback of method Illuminate\\Database\\Eloquent\\Collection\<int,App\\Models\\Mention\>\:\:map\(\) contains unresolvable type\.$#'
+			identifier: argument.unresolvableType
+			count: 1
+			path: app/Transformer/ActivityPub/Verb/UpdateNote.php
+
+		-
+			message: '#^Parameter \#1 \$callback of method Illuminate\\Database\\Eloquent\\Collection\<int,Illuminate\\Database\\Eloquent\\Model\>\:\:map\(\) contains unresolvable type\.$#'
+			identifier: argument.unresolvableType
 			count: 1
 			path: app/Transformer/ActivityPub/Verb/UpdateNote.php
 
@@ -2656,6 +3430,18 @@ parameters:
 			message: '#^Access to an undefined property App\\Models\\User\:\:\$settings\.$#'
 			identifier: property.notFound
 			count: 1
+			path: app/Util/ActivityPub/Inbox.php
+
+		-
+			message: '#^Parameter \#1 \$actor of static method App\\Services\\FollowerService\:\:follows\(\) expects string, int given\.$#'
+			identifier: argument.type
+			count: 2
+			path: app/Util/ActivityPub/Inbox.php
+
+		-
+			message: '#^Parameter \#2 \$target of static method App\\Services\\FollowerService\:\:follows\(\) expects string, int given\.$#'
+			identifier: argument.type
+			count: 2
 			path: app/Util/ActivityPub/Inbox.php
 
 		-

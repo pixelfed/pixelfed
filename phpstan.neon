@@ -4,7 +4,7 @@ includes:
     - phpstan-baseline.neon
 
 parameters:
-    level: 4 #Larascan supports 0-9. 10 is not required
+    level: 5 #Larascan supports 0-9. 10 is not required
 
     paths:
         - app/
