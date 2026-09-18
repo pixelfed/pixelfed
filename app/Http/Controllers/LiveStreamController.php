@@ -363,7 +363,7 @@ class LiveStreamController extends Controller
             $key = $request->filled('name') ? $request->input('name') : $url['name'];
         }
 
-        $token = substr($name, 0, 10) === 'streamkey-';
+        $token = str_starts_with($name, 'streamkey-');
 
         if ($token) {
             $stream = LiveStream::whereStreamKey($key)->firstOrFail();

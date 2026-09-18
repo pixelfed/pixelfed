@@ -201,7 +201,7 @@ class Profile extends Model
             }
 
             if ($avatar->cdn_url) {
-                if (substr($avatar->cdn_url, 0, 8) === 'https://') {
+                if (str_starts_with($avatar->cdn_url, 'https://')) {
                     return $avatar->cdn_url;
                 }
 
@@ -225,7 +225,7 @@ class Profile extends Model
                 return url('/storage/avatars/default.jpg');
             }
 
-            if (substr($path, 0, 6) !== 'public') {
+            if (!str_starts_with($path, 'public')) {
                 return url('/storage/avatars/default.jpg');
             }
 

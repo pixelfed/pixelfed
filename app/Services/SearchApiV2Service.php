@@ -84,10 +84,10 @@ class SearchApiV2Service
         $rawQuery = $initalQuery ? $initalQuery : $this->query->input('q');
         $query = $rawQuery.'%';
         $webfingerQuery = $query;
-        if (Str::substrCount($rawQuery, '@') == 1 && substr($rawQuery, 0, 1) !== '@') {
+        if (Str::substrCount($rawQuery, '@') == 1 && !str_starts_with($rawQuery, '@')) {
             $query = '@'.$query;
         }
-        if (substr($webfingerQuery, 0, 1) !== '@') {
+        if (!str_starts_with($webfingerQuery, '@')) {
             $webfingerQuery = '@'.$webfingerQuery;
         }
         $banned = InstanceService::getBannedDomains() ?? [];
@@ -222,7 +222,7 @@ class SearchApiV2Service
                 )
             );
         }
-        if (substr($query, 0, 1) === '@' && ! Str::contains($query, '.')) {
+        if (str_starts_with($query, '@') && ! Str::contains($query, '.')) {
             $default['accounts'] = $this->accounts(substr($query, 1));
 
             return $default;
@@ -244,7 +244,7 @@ class SearchApiV2Service
                 ! Str::startsWith($query, 'http') &&
                 Str::substrCount($query, '@') == 1 &&
                 str_contains($query, '@') &&
-                strpos($query, '@') !== 0
+                !str_starts_with($query, '@')
             ) {
                 try {
                     $res = WebfingerService::lookup('@'.$query, $mastodonMode);

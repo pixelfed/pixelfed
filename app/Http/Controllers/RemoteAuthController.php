@@ -545,7 +545,7 @@ class RemoteAuthController extends Controller
         ]);
 
         $account = $request->input('account');
-        abort_unless(substr(strtolower($account), 0, 8) === 'https://', 404);
+        abort_unless(str_starts_with(strtolower($account), 'https://'), 404);
 
         $host = strtolower(config('pixelfed.domain.app'));
         $domain = strtolower(parse_url($account, PHP_URL_HOST));
