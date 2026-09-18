@@ -306,7 +306,7 @@ trait AdminDirectoryController
         $bannerImage = ConfigCache::whereK('app.banner_image')->first();
         $directory = ConfigCache::whereK('pixelfed.directory')->first();
         if (! $bannerImage && ! $directory || empty($directory->v)) {
-            return;
+            return null;
         }
         $directoryArr = json_decode($directory->v, true);
         $path = isset($directoryArr['banner_image']) ? $directoryArr['banner_image'] : false;
@@ -316,7 +316,7 @@ trait AdminDirectoryController
             'public/headers/missing.png',
         ];
         if (! $path || in_array($path, $protected)) {
-            return;
+            return null;
         }
         if (Storage::exists($directoryArr['banner_image'])) {
             Storage::delete($directoryArr['banner_image']);

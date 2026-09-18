@@ -308,7 +308,7 @@ trait AdminReportController
             Cache::forget('profiles:private');
             DeleteAccountPipeline::dispatch($user);
 
-            return;
+            return null;
         }
 
         if ($action == 'dismiss') {
@@ -792,6 +792,7 @@ trait AdminReportController
 
                 return [200];
         }
+        return null;
     }
 
     protected function reportsHandleProfileAction($report, $action)
@@ -819,7 +820,7 @@ trait AdminReportController
                 }
 
                 if (! $profile) {
-                    return;
+                    return null;
                 }
 
                 abort_if($profile->user && $profile->user->is_admin, 400, 'Cannot moderate an admin account.');
@@ -879,7 +880,7 @@ trait AdminReportController
                 }
 
                 if (! $profile) {
-                    return;
+                    return null;
                 }
 
                 abort_if($profile->user && $profile->user->is_admin, 400, 'Cannot moderate an admin account.');
@@ -939,7 +940,7 @@ trait AdminReportController
                 }
 
                 if (! $profile) {
-                    return;
+                    return null;
                 }
 
                 abort_if($profile->user && $profile->user->is_admin, 400, 'Cannot moderate an admin account.');
@@ -1003,7 +1004,7 @@ trait AdminReportController
                 }
 
                 if (! $profile) {
-                    return;
+                    return null;
                 }
 
                 abort_if($profile->user && $profile->user->is_admin, 400, 'Cannot delete an admin account.');
@@ -1069,6 +1070,7 @@ trait AdminReportController
 
                 return [200];
         }
+        return null;
     }
 
     protected function reportsHandleStatusAction($report, $action)
@@ -1220,6 +1222,7 @@ trait AdminReportController
 
                 return [200];
         }
+        return null;
     }
 
     public function reportsApiSpamAll(Request $request)

@@ -57,13 +57,13 @@ class SendUpdateActor extends Command
             return Instance::where('domain', 'like', '%'.$input.'%')->pluck('domain')->toArray();
         });
         if (! $this->confirm('Are you sure you want to send actor updates to '.$domain.'?')) {
-            return;
+            return null;
         }
         if ($cur = Instance::whereDomain($domain)->whereNotNull('actors_last_synced_at')->first()) {
             if (! $this->option('force')) {
                 $this->error('ERROR: Cannot re-sync this instance, it was already synced on '.$cur->actors_last_synced_at);
 
-                return;
+                return null;
             }
         }
         $this->touchStorageCache($domain);
@@ -73,7 +73,7 @@ class SendUpdateActor extends Command
         if (! $sharedInbox) {
             $this->error('ERROR: Cannot find the sharedInbox of '.$domain);
 
-            return;
+            return null;
         }
         $url = $sharedInbox->sharedInbox;
         $this->line(' ');

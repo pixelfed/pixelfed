@@ -1102,7 +1102,7 @@ class Helpers
     public static function storePoll($profile, $res, $url, $ts, $reply_to, $cw, $scope, $id)
     {
         if (! isset($res['endTime']) || ! isset($res['oneOf']) || ! is_array($res['oneOf']) || count($res['oneOf']) > 4) {
-            return;
+            return null;
         }
 
         $options = collect($res['oneOf'])->map(function ($option) {

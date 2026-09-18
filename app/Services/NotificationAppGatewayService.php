@@ -119,7 +119,8 @@ class NotificationAppGatewayService
 
             $response->throw();
         } catch (RequestException|Exception) {
-            return;
+            return null;
         }
+        return null;
     }
 }

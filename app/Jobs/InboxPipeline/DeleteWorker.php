@@ -53,14 +53,14 @@ class DeleteWorker implements ShouldQueue
         if (! $headers) {
             Log::info('DeleteWorker: Headers not provided, skipping job');
 
-            return;
+            return null;
         }
 
         // Verify payload exists
         if (! $payload) {
             Log::info('DeleteWorker: Payload not provided, skipping job');
 
-            return;
+            return null;
         }
 
         $payload = json_decode($payload, true, 8);
@@ -68,13 +68,13 @@ class DeleteWorker implements ShouldQueue
         if (! isset($headers['signature']) || ! isset($headers['date'])) {
             Log::info('DeleteWorker: Missing signature or date in headers, skipping job');
 
-            return;
+            return null;
         }
 
         if (! $headers || ! $payload) {
             Log::info('DeleteWorker: Empty headers or payload, skipping job');
 
-            return;
+            return null;
         }
 
         if ($payload['type'] === 'Delete' &&
