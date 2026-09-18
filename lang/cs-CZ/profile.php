@@ -13,9 +13,9 @@ return [
     'status.disabled.header' => 'Profil nedostupný',
     'status.disabled.body' => 'Omlouváme se, tento profil není v tuto chvíli dostupný. Prosím zkuste to znovu zakrátko.',
 
-    'block.domain.max' => '',
+    'block.domain.max' => 'Dosažen maximální limit doménových bloků! Můžete blokovat pouze :max domén najednou. Požádejte svého správce, aby upravil tento limit.',
 
-    'mutedAccounts' => '',
-    'blockedAccounts' => '',
-    'blockedDomains' => '',
+    'mutedAccounts' => 'Ztlumené účty',
+    'blockedAccounts' => 'Blokované účty',
+    'blockedDomains' => 'Zablokované domény',
 ];
