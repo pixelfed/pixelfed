@@ -71,9 +71,7 @@ use App\Services\StoryIndexService;
 use App\Services\UserFilterService;
 use App\Services\UserRoleService;
 use App\Services\UserStorageService;
-use App\Transformer\Api\Mastodon\v1\AccountTransformer;
 use App\Transformer\Api\Mastodon\v1\MediaTransformer;
-use App\Transformer\Api\Mastodon\v1\NotificationTransformer;
 use App\Transformer\Api\Mastodon\v1\StatusTransformer;
 use App\Transformer\Api\RelationshipTransformer;
 use App\Util\Lexer\Autolink;
@@ -181,8 +179,6 @@ class ApiV1Controller extends Controller
 
     /**
      * GET /api/v1/accounts/verify_credentials
-     *
-     *
      */
     public function verifyCredentials(Request $request)
     {
@@ -279,7 +275,6 @@ class ApiV1Controller extends Controller
 
     /**
      * PATCH /api/v1/accounts/update_credentials
-     *
      */
     public function accountUpdateCredentials(Request $request)
     {
@@ -1221,9 +1216,6 @@ class ApiV1Controller extends Controller
 
     /**
      * GET /api/v1/accounts/search
-     *
-     *
-     *
      */
     public function accountSearch(Request $request)
     {
@@ -1265,9 +1257,6 @@ class ApiV1Controller extends Controller
 
     /**
      * GET /api/v1/blocks
-     *
-     *
-     *
      */
     public function accountBlocks(Request $request)
     {
@@ -1496,7 +1485,6 @@ class ApiV1Controller extends Controller
      * GET /api/v1/favourites
      *
      * Returns collection of liked statuses
-     *
      */
     public function accountFavourites(Request $request)
     {
@@ -1745,7 +1733,6 @@ class ApiV1Controller extends Controller
      * GET /api/v1/follow_requests
      *
      *  Return array of Accounts that have sent follow requests
-     *
      */
     public function accountFollowRequests(Request $request)
     {
@@ -1890,7 +1877,6 @@ class ApiV1Controller extends Controller
      * GET /api/v1/instance
      *
      *   Information about the server.
-     *
      */
     public function instance(Request $request)
     {
@@ -2001,8 +1987,6 @@ class ApiV1Controller extends Controller
 
     /**
      * POST /api/v1/media
-     *
-     *
      */
     public function mediaUpload(Request $request)
     {
@@ -2236,8 +2220,6 @@ class ApiV1Controller extends Controller
 
     /**
      * POST /api/v2/media
-     *
-     *
      */
     public function mediaUploadV2(Request $request)
     {
@@ -2386,8 +2368,6 @@ class ApiV1Controller extends Controller
 
     /**
      * GET /api/v1/mutes
-     *
-     *
      */
     public function accountMutes(Request $request)
     {
@@ -2542,8 +2522,6 @@ class ApiV1Controller extends Controller
 
     /**
      * GET /api/v1/notifications
-     *
-     *
      */
     public function accountNotifications(Request $request)
     {
@@ -2625,8 +2603,6 @@ class ApiV1Controller extends Controller
 
     /**
      * GET /api/v1/timelines/home
-     *
-     *
      */
     public function timelineHome(Request $request)
     {
@@ -2951,8 +2927,6 @@ class ApiV1Controller extends Controller
 
     /**
      * GET /api/v1/timelines/public
-     *
-     *
      */
     public function timelinePublic(Request $request)
     {
@@ -3246,7 +3220,6 @@ class ApiV1Controller extends Controller
      * GET /api/v1/conversations
      *
      *   Not implemented
-     *
      */
     public function conversations(Request $request)
     {
@@ -3769,8 +3742,6 @@ class ApiV1Controller extends Controller
 
     /**
      * POST /api/v1/statuses
-     *
-     *
      */
     public function statusCreate(Request $request)
     {
@@ -4288,9 +4259,6 @@ class ApiV1Controller extends Controller
 
     /**
      * GET /api/v1/bookmarks
-     *
-     *
-     *
      */
     public function bookmarks(Request $request)
     {
@@ -4359,9 +4327,6 @@ class ApiV1Controller extends Controller
 
     /**
      * POST /api/v1/statuses/{id}/bookmark
-     *
-     *
-     *
      */
     public function bookmarkStatus(Request $request, $id)
     {
@@ -4401,9 +4366,6 @@ class ApiV1Controller extends Controller
 
     /**
      * POST /api/v1/statuses/{id}/unbookmark
-     *
-     *
-     *
      */
     public function unbookmarkStatus(Request $request, $id)
     {
@@ -4445,8 +4407,6 @@ class ApiV1Controller extends Controller
 
     /**
      * GET /api/v1/discover/posts
-     *
-     *
      */
     public function discoverPosts(Request $request)
     {
@@ -4478,8 +4438,6 @@ class ApiV1Controller extends Controller
 
     /**
      * GET /api/v2/statuses/{id}/replies
-     *
-     *
      */
     public function statusReplies(Request $request, $id)
     {
@@ -4582,8 +4540,6 @@ class ApiV1Controller extends Controller
 
     /**
      * GET /api/v2/statuses/{id}/state
-     *
-     *
      */
     public function statusState(Request $request, $id)
     {
@@ -4598,8 +4554,6 @@ class ApiV1Controller extends Controller
 
     /**
      * GET /api/v1.1/discover/accounts/popular
-     *
-     *
      */
     public function discoverAccountsPopular(Request $request)
     {
@@ -4731,8 +4685,6 @@ class ApiV1Controller extends Controller
 
     /**
      * GET /api/v1/preferences
-     *
-     *
      */
     public function getPreferences(Request $request)
     {
@@ -4753,8 +4705,6 @@ class ApiV1Controller extends Controller
 
     /**
      * GET /api/v1/trends
-     *
-     *
      */
     public function getTrends(Request $request)
     {
@@ -4766,8 +4716,6 @@ class ApiV1Controller extends Controller
 
     /**
      * GET /api/v1/announcements
-     *
-     *
      */
     public function getAnnouncements(Request $request)
     {
@@ -4779,8 +4727,6 @@ class ApiV1Controller extends Controller
 
     /**
      * GET /api/v1/markers
-     *
-     *
      */
     public function getMarkers(Request $request)
     {
@@ -4801,8 +4747,6 @@ class ApiV1Controller extends Controller
 
     /**
      * POST /api/v1/markers
-     *
-     *
      */
     public function setMarkers(Request $request)
     {
@@ -4826,8 +4770,6 @@ class ApiV1Controller extends Controller
 
     /**
      * GET /api/v1/instance/peers
-     *
-     *
      */
     public function instancePeers(Request $request)
     {
