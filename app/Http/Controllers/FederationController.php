@@ -9,7 +9,9 @@ use App\Models\FeatureAuthorization;
 use App\Models\Profile;
 use App\Models\Status;
 use App\Services\AccountService;
+use App\Services\ActivityPubSignedFetchService;
 use App\Services\FeaturedCollectionService;
+use App\Services\FollowersSyncService;
 use App\Services\InstanceService;
 use App\Util\Lexer\Nickname;
 use App\Util\Site\Nodeinfo;
@@ -306,6 +308,43 @@ class FederationController extends Controller
         ];
 
         return response()->json($obj)->header('Content-Type', 'application/activity+json');
+    }
+
+    /**
+     * FEP-8fcf: partial followers collection of a local actor, limited to the
+     * followers hosted by the instance that signed the request.
+     */
+    public function userFollowersSynchronization(Request $request, $username): JsonResponse
+    {
+        abort_if(! (bool) config_cache('federation.activitypub.enabled'), 404);
+        abort_if(! FollowersSyncService::enabled(), 404);
+
+        $profile = Profile::whereNull('domain')
+            ->whereNull('status')
+            ->whereUsername($username)
+            ->first();
+        abort_if(! $profile, 404);
+
+        $signer = ActivityPubSignedFetchService::verify($request);
+        abort_if(! $signer, 401);
+
+        $authority = FollowersSyncService::authority($signer->remote_url);
+        abort_if(! $authority, 401);
+
+        $items = FollowersSyncService::partialFollowers($profile, $authority);
+
+        $res = [
+            '@context' => 'https://www.w3.org/ns/activitystreams',
+            'id' => $profile->permalink('/followers_synchronization'),
+            'type' => 'OrderedCollection',
+            'totalItems' => count($items),
+            'orderedItems' => $items,
+        ];
+
+        return response()
+            ->json($res, 200, [], JSON_UNESCAPED_SLASHES)
+            ->header('Content-Type', 'application/activity+json')
+            ->header('Cache-Control', 'private, no-store');
     }
 
     public function userFeatureAuthorization(Request $request, $username, $id): JsonResponse

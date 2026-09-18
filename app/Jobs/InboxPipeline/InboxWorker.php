@@ -3,6 +3,7 @@
 namespace App\Jobs\InboxPipeline;
 
 use App\Models\Profile;
+use App\Services\FollowersSyncService;
 use App\Util\ActivityPub\Helpers;
 use App\Util\ActivityPub\HttpSignature;
 use Illuminate\Bus\Queueable;
@@ -61,6 +62,9 @@ class InboxWorker implements ShouldQueue
                     return;
                 }
             }
+
+            // FEP-8fcf: compare the sender's followers digest with our copy
+            FollowersSyncService::handleInboundHeaders($headers);
 
             ActivityHandler::dispatch($headers, $profile, $payload)->onQueue('shared');
 

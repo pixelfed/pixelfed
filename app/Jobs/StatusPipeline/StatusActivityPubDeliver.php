@@ -114,6 +114,17 @@ class StatusActivityPubDeliver implements ShouldQueue
 
         $activity = FractalService::item($status, $activitypubObject);
 
-        ActivityPubDeliveryService::pool($profile, $audience, $activity);
+        /*
+         * FEP-8fcf: followers-only posts rely on the receiving server's copy
+         * of our followers collection for access control, so they carry a
+         * Collection-Synchronization header that lets it detect drift.
+         */
+        ActivityPubDeliveryService::pool(
+            $profile,
+            $audience,
+            $activity,
+            null,
+            $status->scope === 'private'
+        );
     }
 }

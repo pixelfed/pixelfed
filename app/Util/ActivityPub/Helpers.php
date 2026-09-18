@@ -18,6 +18,7 @@ use App\Services\Account\AccountStatService;
 use App\Services\ActivityPubDeliveryService;
 use App\Services\ActivityPubFetchService;
 use App\Services\DomainService;
+use App\Services\FollowersSyncService;
 use App\Services\InstanceService;
 use App\Services\MediaPathService;
 use App\Services\NetworkTimelineService;
@@ -1801,6 +1802,7 @@ class Helpers
             'sharedInbox' => $res['endpoints']['sharedInbox'] ?? null,
             'inbox_url' => $res['inbox'],
             'outbox_url' => $res['outbox'] ?? null,
+            'followers_url' => FollowersSyncService::followersUrlFromActor($res),
             'public_key' => $res['publicKey']['publicKeyPem'],
             'indexable' => isset($res['indexable']) ? (bool) $res['indexable'] : false,
             'moved_to_profile_id' => $movedToPid,
