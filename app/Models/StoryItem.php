@@ -15,7 +15,7 @@ use Pixelfed\Snowflake\HasSnowflakePrimary;
  * @property Carbon|null $created_at
  * @property Carbon|null $updated_at
  * @property string $type
- * @property-read \App\Models\Story|null $story
+ * @property-read Story|null $story
  */
 class StoryItem extends Model
 {

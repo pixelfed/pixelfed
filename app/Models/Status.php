@@ -36,7 +36,7 @@ use Illuminate\Support\Str;
  * @property int $reply_count
  * @property bool $local
  * @property int|null $place_id
- * @property-read \App\Models\Place|null $place
+ * @property-read Place|null $place
  * @property Carbon|null $created_at
  * @property Carbon|null $updated_at
  * @property Carbon|null $deleted_at
@@ -44,7 +44,7 @@ use Illuminate\Support\Str;
  * @property-read Profile $profile
  * @property-read Collection<int, Media> $media
  * @property-read Collection<int, Profile> $mentions
- * @property-read \App\Models\Poll|null $poll
+ * @property-read Poll|null $poll
  * @property-read int $count aggregate/computed alias
  * @property-read int $pc aggregate/computed alias
  */

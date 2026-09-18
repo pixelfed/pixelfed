@@ -6,7 +6,7 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
 /**
- * @property-read \App\Models\User|null $user
+ * @property-read User|null $user
  */
 class UserOidcMapping extends Model
 {

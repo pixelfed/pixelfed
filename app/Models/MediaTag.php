@@ -5,7 +5,7 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Model;
 
 /**
- * @property-read \App\Models\Status|null $status
+ * @property-read Status|null $status
  */
 class MediaTag extends Model
 {

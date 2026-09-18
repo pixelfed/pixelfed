@@ -14,7 +14,7 @@ use Laravel\Passport\HasApiTokens;
 use NotificationChannels\WebPush\HasPushSubscriptions;
 
 /**
- * @property-read \App\Models\UserSetting|null $settings
+ * @property-read UserSetting|null $settings
  */
 class User extends Authenticatable implements OAuthenticatable
 {

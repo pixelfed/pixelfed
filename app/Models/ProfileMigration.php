@@ -6,8 +6,8 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
 /**
- * @property-read \App\Models\Profile|null $profile
- * @property-read \App\Models\Profile|null $target
+ * @property-read Profile|null $profile
+ * @property-read Profile|null $target
  */
 class ProfileMigration extends Model
 {

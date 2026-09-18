@@ -3,6 +3,7 @@
 namespace App\Http\Resources;
 
 use App\Models\CustomEmoji;
+use App\Models\Status;
 use App\Services\AccountService;
 use App\Services\HashidService;
 use App\Services\LikeService;
@@ -17,7 +18,7 @@ use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
 
 /**
- * @mixin \App\Models\Status
+ * @mixin Status
  */
 class StatusStateless extends JsonResource
 {

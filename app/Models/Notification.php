@@ -7,7 +7,7 @@ use Illuminate\Database\Eloquent\Relations\MorphTo;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
 /**
- * @property-read \App\Models\Profile|null $actor
+ * @property-read Profile|null $actor
  */
 class Notification extends Model
 {

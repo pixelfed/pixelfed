@@ -6,7 +6,7 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 /**
- * @property-read \App\Models\Status|null $status
+ * @property-read Status|null $status
  * @property-read int $count aggregate/computed alias
  * @property-read string $month_year aggregate/computed alias
  */
