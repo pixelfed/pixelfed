@@ -1579,9 +1579,8 @@ class ApiV1Controller extends Controller
             }
 
             return $this->json($res, 200, ['Link' => $link]);
-        } else {
-            return $this->json($res);
         }
+        return $this->json($res);
     }
 
     /**
@@ -2738,11 +2737,9 @@ class ApiV1Controller extends Controller
                     FeedWarmCachePipeline::dispatchSync($pid);
 
                     return response()->json([], 206);
-                } else {
-                    Cache::set('pf:services:apiv1:home:cached:coldbootcheck:'.$pid, 1, 86400);
-
-                    return response()->json([], 206);
                 }
+                Cache::set('pf:services:apiv1:home:cached:coldbootcheck:'.$pid, 1, 86400);
+                return response()->json([], 206);
             }
 
             $res = collect($res)

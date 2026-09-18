@@ -133,9 +133,8 @@ class AccountController extends Controller
 
         if ($request->wantsJson()) {
             return response()->json($res);
-        } else {
-            return redirect()->back();
         }
+        return redirect()->back();
     }
 
     public function unmute(Request $request): JsonResponse|RedirectResponse
@@ -185,9 +184,8 @@ class AccountController extends Controller
 
         if ($request->wantsJson()) {
             return response()->json($res);
-        } else {
-            return redirect()->back();
         }
+        return redirect()->back();
     }
 
     public function block(Request $request): JsonResponse|RedirectResponse
@@ -271,9 +269,8 @@ class AccountController extends Controller
 
         if ($request->wantsJson()) {
             return response()->json($res);
-        } else {
-            return redirect()->back();
         }
+        return redirect()->back();
     }
 
     public function unblock(Request $request): JsonResponse|RedirectResponse
@@ -322,9 +319,8 @@ class AccountController extends Controller
 
         if ($request->wantsJson()) {
             return response()->json($res);
-        } else {
-            return redirect()->back();
         }
+        return redirect()->back();
     }
 
     public function followRequests(Request $request): View

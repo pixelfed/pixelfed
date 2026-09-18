@@ -555,20 +555,17 @@ class RemoteAuthController extends Controller
             $user = User::where('username', $username)->first();
             if ($user) {
                 return ['id' => (string) $user->profile_id];
-            } else {
-                return [];
             }
-        } else {
-            try {
-                $profile = Helpers::profileFetch($account);
-                if ($profile) {
-                    return ['id' => (string) $profile->id];
-                } else {
-                    return [];
-                }
-            } catch (RequestException|\Exception) {
-                return [];
+            return [];
+        }
+        try {
+            $profile = Helpers::profileFetch($account);
+            if ($profile) {
+                return ['id' => (string) $profile->id];
             }
+            return [];
+        } catch (RequestException|\Exception) {
+            return [];
         }
     }
 

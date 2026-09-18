@@ -540,9 +540,8 @@ class Helpers
             $res = json_decode($res, true, 8);
             if (json_last_error() === JSON_ERROR_NONE) {
                 return $res;
-            } else {
-                return false;
             }
+            return false;
         });
     }
 

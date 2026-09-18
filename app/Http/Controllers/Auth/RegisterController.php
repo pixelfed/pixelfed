@@ -155,16 +155,13 @@ class RegisterController extends Controller
                 }
 
                 return view('auth.register');
-            } else {
-                return view('auth.register');
             }
-        } else {
-            if ((bool) config_cache('instance.curated_registration.enabled') && config('instance.curated_registration.state.fallback_on_closed_reg')) {
-                return redirect('/auth/sign_up');
-            } else {
-                abort(404);
-            }
+            return view('auth.register');
         }
+        if ((bool) config_cache('instance.curated_registration.enabled') && config('instance.curated_registration.state.fallback_on_closed_reg')) {
+            return redirect('/auth/sign_up');
+        }
+        abort(404);
     }
 
     /**

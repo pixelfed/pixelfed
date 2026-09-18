@@ -40,22 +40,27 @@ class AdminCuratedRegisterController extends Controller
                     })
                     ->whereNotNull('email_verified_at')
                     ->whereIsClosed(false);
-            } elseif ($filter === 'all') {
+            }
+            if ($filter === 'all') {
                 return $q;
-            } elseif ($filter === 'responses') {
+            }
+            if ($filter === 'responses') {
                 return $q->whereIsClosed(false)
                     ->whereNotNull('email_verified_at')
                     ->where('user_has_responded', true)
                     ->where('is_awaiting_more_info', true);
-            } elseif ($filter === 'awaiting') {
+            }
+            if ($filter === 'awaiting') {
                 return $q->whereIsClosed(false)
                     ->where('is_rejected', false)
                     ->where('is_approved', false)
                     ->where('user_has_responded', false)
                     ->where('is_awaiting_more_info', true);
-            } elseif ($filter === 'approved') {
+            }
+            if ($filter === 'approved') {
                 return $q->whereIsClosed(true)->whereIsApproved(true);
-            } elseif ($filter === 'rejected') {
+            }
+            if ($filter === 'rejected') {
                 return $q->whereIsClosed(true)->whereIsRejected(true);
             }
         })

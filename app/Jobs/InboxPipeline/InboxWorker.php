@@ -159,9 +159,8 @@ class InboxWorker implements ShouldQueue
         [$verified, $headers] = HttpSignature::verify($pkey, $signatureData, $headers, $inboxPath, $body);
         if ($verified == 1) {
             return true;
-        } else {
-            return false;
         }
+        return false;
     }
 
     /**

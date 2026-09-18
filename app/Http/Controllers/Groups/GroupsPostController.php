@@ -253,9 +253,8 @@ class GroupsPostController extends Controller
 
         if ($request->wantsJson()) {
             return response()->json(['Status successfully deleted.']);
-        } else {
-            return redirect($user->url());
         }
+        return redirect($user->url());
     }
 
     public function likePost(Request $request): array

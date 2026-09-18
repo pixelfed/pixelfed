@@ -704,12 +704,14 @@ trait AdminReportController
         ]);
 
         $report = Report::whereObjectId($request->input('object_id'))->findOrFail($request->input('id'));
-
         if ($request->input('action_type') === 'profile') {
             return $this->reportsHandleProfileAction($report, $request->input('action'));
-        } elseif ($request->input('action_type') === 'post') {
+        }
+        if ($request->input('action_type') === 'post') {
             return $this->reportsHandleStatusAction($report, $request->input('action'));
-        } elseif ($request->input('action_type') === 'story') {
+        }
+
+        if ($request->input('action_type') === 'story') {
             return $this->reportsHandleStoryAction($report, $request->input('action'));
         }
 

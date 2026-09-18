@@ -23,11 +23,11 @@ class AdminShadowFilterController extends Controller
             ->when($filter, function ($q, $filter) {
                 if ($filter == 'all') {
                     return $q;
-                } elseif ($filter == 'inactive') {
-                    return $q->whereActive(false);
-                } else {
-                    return $q;
                 }
+                if ($filter == 'inactive') {
+                    return $q->whereActive(false);
+                }
+                return $q;
             }, function ($q, $filter) {
                 return $q->whereActive(true);
             })

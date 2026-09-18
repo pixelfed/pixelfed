@@ -559,18 +559,22 @@ class AdminController extends Controller
             if ($sort == 'all') {
                 if ($pg) {
                     return $query->latest();
-                } else {
-                    return $query->groupBy('shortcode')->latest();
                 }
-            } elseif ($sort == 'local') {
+                return $query->groupBy('shortcode')->latest();
+            }
+            if ($sort == 'local') {
                 return $query->latest()->where('domain', '=', config('pixelfed.domain.app'));
-            } elseif ($sort == 'remote') {
+            }
+            if ($sort == 'remote') {
                 return $query->latest()->where('domain', '!=', config('pixelfed.domain.app'));
-            } elseif ($sort == 'duplicates') {
+            }
+            if ($sort == 'duplicates') {
                 return $query->latest()->duplicateShortcodes();
-            } elseif ($sort == 'disabled') {
+            }
+            if ($sort == 'disabled') {
                 return $query->latest()->whereDisabled(true);
-            } elseif ($sort == 'search') {
+            }
+            if ($sort == 'search') {
                 $q = $query
                     ->latest()
                     ->where('shortcode', 'like', '%'.$request->input('q').'%')
@@ -580,7 +584,6 @@ class AdminController extends Controller
                         $q = $q->groupBy('shortcode');
                     }
                 }
-
                 return $q;
             }
         })
@@ -698,15 +701,17 @@ class AdminController extends Controller
             ->when($filter, function ($q, $filter) {
                 if ($filter === 'cw') {
                     return $q->where('cw', true);
-                } elseif ($filter === 'unlisted') {
-                    return $q->where('unlisted', true);
-                } elseif ($filter === 'banned') {
-                    return $q->where('status', 'banned');
-                } elseif ($filter === 'newest') {
-                    return $q->orderByDesc('id');
-                } else {
-                    return $q;
                 }
+                if ($filter === 'unlisted') {
+                    return $q->where('unlisted', true);
+                }
+                if ($filter === 'banned') {
+                    return $q->where('status', 'banned');
+                }
+                if ($filter === 'newest') {
+                    return $q->orderByDesc('id');
+                }
+                return $q;
             })
             ->cursorPaginate(10)
             ->withQueryString();

@@ -50,10 +50,9 @@ class AutospamService
 
             if (! Storage::exists(self::MODEL_FILE_PATH)) {
                 return false;
-            } else {
-                if (Storage::size(self::MODEL_FILE_PATH) < 1000) {
-                    return false;
-                }
+            }
+            if (Storage::size(self::MODEL_FILE_PATH) < 1000) {
+                return false;
             }
 
             return true;

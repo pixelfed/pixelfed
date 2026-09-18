@@ -139,22 +139,18 @@ class ActiveSharedInboxService
             $res = Storage::get(self::CACHE_FILE_NAME);
             if (! $res) {
                 return false;
-            } else {
-                $res = json_decode($res, true);
-                if (! $res || isset($res['version'], $res['data'], $res['created'], $res['updated'])) {
-                    if (now()->parse($res['updated'])->lt(now()->subMonths(6))) {
-                        return false;
-                    } else {
-                        if ($res['version'] === self::CACHE_FILE_VERSION) {
-                            return $res;
-                        } else {
-                            return false;
-                        }
-                    }
-                } else {
+            }
+            $res = json_decode($res, true);
+            if (! $res || isset($res['version'], $res['data'], $res['created'], $res['updated'])) {
+                if (now()->parse($res['updated'])->lt(now()->subMonths(6))) {
                     return false;
                 }
+                if ($res['version'] === self::CACHE_FILE_VERSION) {
+                    return $res;
+                }
+                return false;
             }
+            return false;
         }
 
         return false;

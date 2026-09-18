@@ -100,30 +100,24 @@ class DeleteWorker implements ShouldQueue
                         }
 
                         return 1;
-                    } else {
-                        // Signature verification failed, exit.
-                        return 1;
                     }
-                } else {
-                    // Remote user doesn't exist, exit early.
+                    // Signature verification failed, exit.
                     return 1;
                 }
-
+                // Remote user doesn't exist, exit early.
                 return 1;
-            } else {
+
                 return 1;
             }
-        } else {
-            $profile = null;
-
-            if ($this->verifySignature($headers, $payload) == true) {
-                ActivityHandler::dispatch($headers, $profile, $payload)->onQueue('delete');
-
-                return 1;
-            } else {
-                return 1;
-            }
+            return 1;
         }
+        $profile = null;
+        if ($this->verifySignature($headers, $payload) == true) {
+            ActivityHandler::dispatch($headers, $profile, $payload)->onQueue('delete');
+
+            return 1;
+        }
+        return 1;
 
     }
 
@@ -200,8 +194,7 @@ class DeleteWorker implements ShouldQueue
         [$verified, $headers] = HttpSignature::verify($pkey, $signatureData, $headers, $inboxPath, $body);
         if ($verified == 1) {
             return true;
-        } else {
-            return false;
         }
+        return false;
     }
 }

@@ -275,27 +275,22 @@ class ImportPostController extends Controller
             if ($exts->contains('mp4')) {
                 if ($exts->contains('jpg', 'png', 'webp')) {
                     return 'photo:video:album';
-                } else {
-                    return 'video:album';
                 }
-            } else {
-                return 'photo:album';
+                return 'video:album';
             }
-        } else {
-            if ($exts->isEmpty()) {
-                return 'photo';
-            }
-
-            $ext = $exts[0];
-
-            if (in_array($ext, ['jpg', 'jpeg', 'png', 'webp'])) {
-                return 'photo';
-            } elseif (in_array($ext, ['mp4'])) {
-                return 'video';
-            } else {
-                return 'photo';
-            }
+            return 'photo:album';
         }
+        if ($exts->isEmpty()) {
+            return 'photo';
+        }
+        $ext = $exts[0];
+        if (in_array($ext, ['jpg', 'jpeg', 'png', 'webp'])) {
+            return 'photo';
+        }
+        if (in_array($ext, ['mp4'])) {
+            return 'video';
+        }
+        return 'photo';
     }
 
     private function sanitizeFilename($filename): string
@@ -320,9 +315,8 @@ class ImportPostController extends Controller
         if ($user->is_admin) {
             if (! $abortOnFail) {
                 return true;
-            } else {
-                return true;
             }
+            return true;
         }
 
         $admin = User::whereIsAdmin(true)->first();

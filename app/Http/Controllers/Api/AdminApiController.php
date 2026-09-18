@@ -560,24 +560,18 @@ class AdminApiController extends Controller
         $action = $request->input('action');
 
         abort_if($user->is_admin == true && $action !== 'refresh_stats', 400, 'Cannot moderate admin accounts');
-
         if ($action === 'delete') {
             if (config('pixelfed.account_deletion') == false) {
                 abort(404);
             }
-
             abort_if($user->is_admin, 400, 'Cannot delete an admin account.');
-
             $ts = now()->addMonth();
-
             $user->status = 'delete';
             $user->delete_after = $ts;
             $user->save();
-
             $profile->status = 'delete';
             $profile->delete_after = $ts;
             $profile->save();
-
             ModLogService::boot()
                 ->objectUid($profile->id)
                 ->objectId($profile->id)
@@ -586,10 +580,8 @@ class AdminApiController extends Controller
                 ->action('admin.user.delete')
                 ->accessLevel('admin')
                 ->save();
-
             PublicTimelineService::deleteByProfileId($profile->id);
             NetworkTimelineService::deleteByProfileId($profile->id);
-
             if ($profile->user_id) {
                 DB::table('oauth_access_tokens')->whereUserId($user->id)->delete();
                 DB::table('oauth_auth_codes')->whereUserId($user->id)->delete();
@@ -609,12 +601,13 @@ class AdminApiController extends Controller
                 AccountService::del($profile->id);
                 DeleteRemoteProfilePipeline::dispatch($profile)->onQueue('high');
             }
-
             return [
                 'status' => 200,
                 'msg' => 'deleted',
             ];
-        } elseif ($action === 'refresh_stats') {
+        }
+
+        if ($action === 'refresh_stats') {
             $profile->following_count = DB::table('followers')->whereProfileId($user->profile_id)->count();
             $profile->followers_count = DB::table('followers')->whereFollowingId($user->profile_id)->count();
             $statusCount = Status::whereProfileId($user->profile_id)
@@ -685,7 +678,8 @@ class AdminApiController extends Controller
                 ->save();
             $profile->no_autolink = ! $profile->no_autolink;
             $profile->save();
-        } else {
+        }
+        else {
             $profile->{$action} = filter_var($request->input('value'), FILTER_VALIDATE_BOOLEAN);
             $profile->save();
 
@@ -741,9 +735,8 @@ class AdminApiController extends Controller
             ->when($filter, function ($query, $filter) {
                 if ($filter === 'all') {
                     return $query;
-                } else {
-                    return $query->where($filter, true);
                 }
+                return $query->where($filter, true);
             })
             ->when($sortBy, function ($query, $sortBy) use ($sort) {
                 return $query->orderBy($sortBy, $sort);

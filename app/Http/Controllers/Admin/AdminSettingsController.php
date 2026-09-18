@@ -373,15 +373,14 @@ trait AdminSettingsController
 
         if (! $rules) {
             return [];
-        } else {
-            $json = json_decode($rules, true);
-            $idx = array_search($val, $json);
-            if ($idx !== false) {
-                unset($json[$idx]);
-                $json = array_values($json);
-            }
-            ConfigCacheService::put('app.rules', json_encode(array_values($json)));
         }
+        $json = json_decode($rules, true);
+        $idx = array_search($val, $json);
+        if ($idx !== false) {
+            unset($json[$idx]);
+            $json = array_values($json);
+        }
+        ConfigCacheService::put('app.rules', json_encode(array_values($json)));
 
         Cache::forget('api:v1:instance-data:rules');
         Cache::forget('api:v1:instance-data-response-v1');
@@ -397,9 +396,8 @@ trait AdminSettingsController
 
         if (! $rules) {
             return [];
-        } else {
-            ConfigCacheService::put('app.rules', json_encode([]));
         }
+        ConfigCacheService::put('app.rules', json_encode([]));
 
         Cache::forget('api:v1:instance-data:rules');
         Cache::forget('api:v1:instance-data-response-v1');
@@ -535,9 +533,8 @@ trait AdminSettingsController
                 $cloud_ready = ! empty(config('filesystems.disks.'.$cloud_disk.'.key')) && ! empty(config('filesystems.disks.'.$cloud_disk.'.secret'));
                 if (! $cloud_ready) {
                     return redirect()->back()->withErrors(['cloud_storage' => 'Must configure cloud storage before enabling!']);
-                } else {
-                    ConfigCacheService::put('pixelfed.cloud_storage', true);
                 }
+                ConfigCacheService::put('pixelfed.cloud_storage', true);
             }
         }
         ConfigCacheService::put('federation.activitypub.authorized_fetch', $request->boolean('authorized_fetch'));
