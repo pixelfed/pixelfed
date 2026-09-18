@@ -28,7 +28,7 @@ class ReclaimUsername extends Command
     /**
      * Execute the console command.
      */
-    public function handle()
+    public function handle(): int
     {
         $username = search(
             label: 'What username would you like to reclaim?',

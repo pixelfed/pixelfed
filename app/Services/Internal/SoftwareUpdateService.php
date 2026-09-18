@@ -58,7 +58,7 @@ class SoftwareUpdateService
         ];
     }
 
-    public static function compareVersions($current, $latest)
+    public static function compareVersions($current, $latest): int
     {
         return version_compare(
             self::normalizeVersion($current),

@@ -551,7 +551,7 @@ class Extractor extends Regex
      * @param  array  $b
      * @return int
      */
-    protected function sortEntites($a, $b)
+    protected function sortEntites($a, $b): int
     {
         if ($a['indices'][0] == $b['indices'][0]) {
             return 0;

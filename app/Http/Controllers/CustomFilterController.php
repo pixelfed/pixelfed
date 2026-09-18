@@ -233,7 +233,7 @@ class CustomFilterController extends Controller
      * @param  string  $filterAction
      * @return int
      */
-    private function filterActionToAction($filterAction)
+    private function filterActionToAction($filterAction): int
     {
         switch ($filterAction) {
             case 'warn':

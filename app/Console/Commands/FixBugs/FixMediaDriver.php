@@ -30,7 +30,7 @@ class FixMediaDriver extends Command
      *
      * @return int
      */
-    public function handle()
+    public function handle(): int
     {
         if (config('filesystems.default') !== 'local') {
             $this->error('Invalid default filesystem, set FILESYSTEM_DRIVER=local to proceed');

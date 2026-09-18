@@ -42,7 +42,7 @@ class MediaUpdateS3CDNUrl extends Command
      */
     protected ?string $oldHost = null;
 
-    public function handle()
+    public function handle(): int
     {
         // This command only makes sense for instances serving media from a
         // cloud/object-storage backend. Local-storage instances (PF_ENABLE_CLOUD

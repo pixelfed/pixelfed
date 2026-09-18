@@ -238,7 +238,7 @@ class ImportService
         }, 3);
     }
 
-    public static function getPostCount($profileId, $refresh = false)
+    public static function getPostCount($profileId, $refresh = false): int
     {
         $key = self::CACHE_KEY.'totalPostCountByProfileId:'.$profileId;
         if ($refresh) {
@@ -250,7 +250,7 @@ class ImportService
         }));
     }
 
-    public static function getAttempts($profileId)
+    public static function getAttempts($profileId): int
     {
         $key = self::CACHE_KEY.'attemptsByProfileId:'.$profileId;
 

@@ -38,7 +38,7 @@ class UserStorageService
         return $updatedAt->lt(now()->subHours(self::STALE_AFTER_HOURS));
     }
 
-    public static function get($id)
+    public static function get($id): int
     {
         $user = User::find($id);
         if (! $user || $user->status) {
@@ -58,7 +58,7 @@ class UserStorageService
         return (int) $user->storage_used;
     }
 
-    public static function calculateStorageUsed($id)
+    public static function calculateStorageUsed($id): int
     {
         return (int) floor(Media::whereUserId($id)->sum('size') / 1000);
     }

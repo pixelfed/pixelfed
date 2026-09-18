@@ -43,7 +43,7 @@ class StringUtils
      * @param  string  $encoding
      * @return int
      */
-    public static function strlen($str, $encoding = 'UTF-8')
+    public static function strlen($str, $encoding = 'UTF-8'): int
     {
         return mb_strlen($str, $encoding);
     }

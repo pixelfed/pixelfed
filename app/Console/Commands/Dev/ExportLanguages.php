@@ -35,7 +35,7 @@ class ExportLanguages extends Command
      *
      * @return int
      */
-    public function handle()
+    public function handle(): int
     {
         if (config('app.env') !== 'local') {
             $this->error('This command is meant for development purposes and should only be run in a local environment');
