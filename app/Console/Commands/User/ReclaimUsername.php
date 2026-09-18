@@ -32,7 +32,7 @@ class ReclaimUsername extends Command
     {
         $username = search(
             label: 'What username would you like to reclaim?',
-            options: fn (string $search): array => strlen($search) > 0 ? $this->getUsernameOptions($search) : [],
+            options: fn (string $search): array => $search !== '' ? $this->getUsernameOptions($search) : [],
             required: true
         );
 

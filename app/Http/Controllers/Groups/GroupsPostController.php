@@ -50,7 +50,7 @@ class GroupsPostController extends Controller
         abort_if(! GroupService::canPost($group->id, $pid), 422, 'You cannot create new posts at this time');
 
         if ($type == 'text') {
-            abort_if(strlen(e($caption)) === 0, 403);
+            abort_if(e($caption) === '', 403);
         }
 
         $gp = new GroupPost;

@@ -221,7 +221,7 @@ class RemoteAuthController extends Controller
             $state = $request->session()->pull('state');
 
             throw_unless(
-                strlen($state) > 0 && $state === $request->state,
+                (string) $state !== '' && $state === $request->state,
                 InvalidArgumentException::class,
                 'Invalid state value.'
             );

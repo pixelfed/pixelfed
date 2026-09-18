@@ -20,7 +20,7 @@ class AutospamService
 
     public static function check($text)
     {
-        if (! $text || strlen($text) === 0) {
+        if (! $text || (string) $text === '') {
             return false;
         }
         if (! self::active()) {
