@@ -61,14 +61,14 @@ class DeleteRemoteStatusPipeline implements ShouldQueue
         if (! $status) {
             Log::info('DeleteRemoteStatusPipeline: Status no longer exists, skipping job');
 
-            return null;
+            return;
         }
 
         // Verify status has a profile
         if (! $status->profile_id) {
             Log::info("DeleteRemoteStatusPipeline: Status {$status->id} has no profile_id, skipping job");
 
-            return null;
+            return;
         }
 
         try {
@@ -105,7 +105,5 @@ class DeleteRemoteStatusPipeline implements ShouldQueue
             Log::warning("DeleteRemoteStatusPipeline: Failed to delete status {$status->id}: ".$e->getMessage());
             throw $e;
         }
-
-        return 1;
     }
 }

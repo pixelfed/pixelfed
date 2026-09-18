@@ -95,10 +95,12 @@ class StatusDelete implements ShouldQueue
         Cache::forget('pf:atom:user-feed:by-id:'.$status->profile_id);
 
         if ((bool) config_cache('federation.activitypub.enabled') === true) {
-            return $this->fanoutDelete($status);
+            $this->fanoutDelete($status);
+
+            return;
         }
 
-        return $this->unlinkRemoveMedia($status);
+        $this->unlinkRemoveMedia($status);
     }
 
     public function unlinkRemoveMedia($status)

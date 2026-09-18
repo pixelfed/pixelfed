@@ -270,7 +270,6 @@ class CustomFilter extends Model
      * Get cached filters for an account with simplified, secure approach
      *
      * @param  int  $profileId  The profile ID
-     * @return Collection The collection of filters
      */
     public static function getCachedFiltersForAccount($profileId)
     {

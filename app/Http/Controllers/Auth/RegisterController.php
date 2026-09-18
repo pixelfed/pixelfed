@@ -169,8 +169,6 @@ class RegisterController extends Controller
      * When email verification is enforced the new account gets no session.
      * It is parked on the login verify step, same as an unverified login,
      * and only gets a session once the confirm link is opened.
-     *
-     * @return Response
      */
     public function register(Request $request)
     {

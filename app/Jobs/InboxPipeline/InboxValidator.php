@@ -52,7 +52,7 @@ class InboxValidator implements ShouldQueue
         $headers = $this->headers;
 
         if (empty($headers) || empty($this->payload) || ! isset($headers['signature']) || ! isset($headers['date'])) {
-            return null;
+            return;
         }
 
         $payload = json_decode($this->payload, true, 8);
@@ -60,11 +60,11 @@ class InboxValidator implements ShouldQueue
         $profile = Profile::whereNull('domain')->whereUsername($username)->first();
 
         if (empty($profile) || empty($headers) || empty($payload)) {
-            return null;
+            return;
         }
 
         if ($profile->status != null) {
-            return null;
+            return;
         }
 
         if ($this->verifySignature($headers, $profile, $payload) == true) {
@@ -72,7 +72,7 @@ class InboxValidator implements ShouldQueue
                 $lockKey = 'pf:ap:user-inbox:activity:'.hash('sha256', $payload['id']);
                 if (! Cache::add($lockKey, 1, 3600)) {
                     // Already processed after valid signature check
-                    return 1;
+                    return;
                 }
             }
 
@@ -83,10 +83,8 @@ class InboxValidator implements ShouldQueue
                 ActivityHandler::dispatch($headers, $profile, $payload)->onQueue($onQueue);
             }
 
-            return null;
+            return;
         }
-
-        return null;
     }
 
     protected function verifySignature($headers, $profile, $payload)

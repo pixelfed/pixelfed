@@ -53,14 +53,14 @@ class DeleteWorker implements ShouldQueue
         if (! $headers) {
             Log::info('DeleteWorker: Headers not provided, skipping job');
 
-            return null;
+            return;
         }
 
         // Verify payload exists
         if (! $payload) {
             Log::info('DeleteWorker: Payload not provided, skipping job');
 
-            return null;
+            return;
         }
 
         $payload = json_decode($payload, true, 8);
@@ -68,13 +68,13 @@ class DeleteWorker implements ShouldQueue
         if (! isset($headers['signature']) || ! isset($headers['date'])) {
             Log::info('DeleteWorker: Missing signature or date in headers, skipping job');
 
-            return null;
+            return;
         }
 
         if (! $headers || ! $payload) {
             Log::info('DeleteWorker: Empty headers or payload, skipping job');
 
-            return null;
+            return;
         }
 
         if ($payload['type'] === 'Delete' &&
@@ -99,30 +99,25 @@ class DeleteWorker implements ShouldQueue
                             DeleteRemoteProfilePipeline::dispatch($profile)->onQueue('inbox');
                         }
 
-                        return 1;
+                        return;
                     }
 
                     // Signature verification failed, exit.
-                    return 1;
+                    return;
                 }
 
                 // Remote user doesn't exist, exit early.
-                return 1;
-
-                return 1;
+                return;
             }
 
-            return 1;
+            return;
         }
         $profile = null;
         if ($this->verifySignature($headers, $payload) == true) {
             ActivityHandler::dispatch($headers, $profile, $payload)->onQueue('delete');
 
-            return 1;
+            return;
         }
-
-        return 1;
-
     }
 
     protected function verifySignature($headers, $payload)

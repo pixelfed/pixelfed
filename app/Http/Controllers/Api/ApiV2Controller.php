@@ -145,9 +145,6 @@ class ApiV2Controller extends Controller
 
     /**
      * GET /api/v2/search
-     *
-     *
-     * @return array
      */
     public function search(Request $request)
     {
@@ -182,9 +179,6 @@ class ApiV2Controller extends Controller
 
     /**
      * GET /api/v2/streaming/config
-     *
-     *
-     * @return object
      */
     public function getWebsocketConfig()
     {
@@ -198,9 +192,6 @@ class ApiV2Controller extends Controller
 
     /**
      * POST /api/v2/media
-     *
-     *
-     * @return MediaTransformer
      */
     public function mediaUploadV2(Request $request)
     {

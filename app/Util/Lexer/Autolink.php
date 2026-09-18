@@ -114,7 +114,7 @@ class Autolink extends Regex
      * been undeprecated and thus the 'target' attribute can be used.  If this is
      * set to false then the 'target' attribute will be output.
      *
-     * @var bool
+     * @var bool|null
      */
     protected $external = true;
 
@@ -125,7 +125,7 @@ class Autolink extends Regex
      * since been reinstated in HTML 5.  To output the 'target' attribute you
      * must disable the adding of the string 'external' to the 'rel' attribute.
      *
-     * @var string
+     * @var string|bool|null
      */
     protected $target = '_blank';
 

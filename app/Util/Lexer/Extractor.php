@@ -215,7 +215,6 @@ class Extractor extends Regex
      * A reply is an occurrence of a username at the beginning of a tweet.
      *
      * @param  string  $tweet  The tweet to extract.
-     * @return array The usernames replied to in a tweet.
      */
     public function extractReplyScreenname($tweet = null)
     {
@@ -508,7 +507,6 @@ class Extractor extends Regex
      * setter/getter for extractURLWithoutProtocol.
      *
      * @param  bool  $flag
-     * @return Extractor
      */
     public function extractURLWithoutProtocol($flag = null)
     {

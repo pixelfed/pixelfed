@@ -80,9 +80,6 @@ class TagsController extends Controller
 
     /**
      * POST /api/v1/tags/:id/unfollow
-     *
-     *
-     * @return object
      */
     public function unfollowHashtag(Request $request, $id)
     {
@@ -126,9 +123,6 @@ class TagsController extends Controller
 
     /**
      * GET /api/v1/tags/:id
-     *
-     *
-     * @return object
      */
     public function getHashtag(Request $request, $id)
     {

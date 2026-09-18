@@ -99,7 +99,7 @@ class SharePipeline implements ShouldQueue
             return;
         }
 
-        return $this->remoteAnnounceDeliver();
+        $this->remoteAnnounceDeliver();
     }
 
     protected function counterGuardKey($statusId): string

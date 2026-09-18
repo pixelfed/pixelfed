@@ -183,7 +183,6 @@ class ApiV1Controller extends Controller
      * GET /api/v1/accounts/verify_credentials
      *
      *
-     * @return \App\Transformer\Api\AccountTransformer
      */
     public function verifyCredentials(Request $request)
     {
@@ -216,7 +215,6 @@ class ApiV1Controller extends Controller
      * GET /api/v1/accounts/{id}
      *
      * @param  int  $id
-     * @return \App\Transformer\Api\AccountTransformer
      */
     public function accountById(Request $request, $id)
     {
@@ -282,7 +280,6 @@ class ApiV1Controller extends Controller
     /**
      * PATCH /api/v1/accounts/update_credentials
      *
-     * @return \App\Transformer\Api\AccountTransformer
      */
     public function accountUpdateCredentials(Request $request)
     {
@@ -552,7 +549,6 @@ class ApiV1Controller extends Controller
      * GET /api/v1/accounts/{id}/followers
      *
      * @param  int  $id
-     * @return \App\Transformer\Api\AccountTransformer
      */
     public function accountFollowersById(Request $request, $id)
     {
@@ -666,7 +662,6 @@ class ApiV1Controller extends Controller
      * GET /api/v1/accounts/{id}/following
      *
      * @param  int  $id
-     * @return \App\Transformer\Api\AccountTransformer
      */
     public function accountFollowingById(Request $request, $id)
     {
@@ -782,7 +777,6 @@ class ApiV1Controller extends Controller
      * GET /api/v1/accounts/{id}/statuses
      *
      * @param  int  $id
-     * @return \App\Transformer\Api\StatusTransformer
      */
     public function accountStatusesById(Request $request, $id)
     {
@@ -1013,7 +1007,6 @@ class ApiV1Controller extends Controller
      * POST /api/v1/accounts/{id}/follow
      *
      * @param  int  $id
-     * @return RelationshipTransformer
      */
     public function accountFollowById(Request $request, $id)
     {
@@ -1113,7 +1106,6 @@ class ApiV1Controller extends Controller
      * POST /api/v1/accounts/{id}/unfollow
      *
      * @param  int  $id
-     * @return RelationshipTransformer
      */
     public function accountUnfollowById(Request $request, $id)
     {
@@ -1232,7 +1224,6 @@ class ApiV1Controller extends Controller
      *
      *
      *
-     * @return \App\Transformer\Api\AccountTransformer
      */
     public function accountSearch(Request $request)
     {
@@ -1277,7 +1268,6 @@ class ApiV1Controller extends Controller
      *
      *
      *
-     * @return \App\Transformer\Api\AccountTransformer
      */
     public function accountBlocks(Request $request)
     {
@@ -1336,7 +1326,6 @@ class ApiV1Controller extends Controller
      * POST /api/v1/accounts/{id}/block
      *
      * @param  int  $id
-     * @return RelationshipTransformer
      */
     public function accountBlockById(Request $request, $id)
     {
@@ -1431,7 +1420,6 @@ class ApiV1Controller extends Controller
      * POST /api/v1/accounts/{id}/unblock
      *
      * @param  int  $id
-     * @return RelationshipTransformer
      */
     public function accountUnblockById(Request $request, $id)
     {
@@ -1509,7 +1497,6 @@ class ApiV1Controller extends Controller
      *
      * Returns collection of liked statuses
      *
-     * @return \App\Transformer\Api\StatusTransformer
      */
     public function accountFavourites(Request $request)
     {
@@ -1576,7 +1563,6 @@ class ApiV1Controller extends Controller
      * POST /api/v1/statuses/{id}/favourite
      *
      * @param  int  $id
-     * @return \App\Transformer\Api\StatusTransformer
      */
     public function statusFavouriteById(Request $request, $id)
     {
@@ -1673,7 +1659,6 @@ class ApiV1Controller extends Controller
      * POST /api/v1/statuses/{id}/unfavourite
      *
      * @param  int  $id
-     * @return \App\Transformer\Api\StatusTransformer
      */
     public function statusUnfavouriteById(Request $request, $id)
     {
@@ -1761,7 +1746,6 @@ class ApiV1Controller extends Controller
      *
      *  Return array of Accounts that have sent follow requests
      *
-     * @return \App\Transformer\Api\AccountTransformer
      */
     public function accountFollowRequests(Request $request)
     {
@@ -1792,7 +1776,6 @@ class ApiV1Controller extends Controller
      * POST /api/v1/follow_requests/{id}/authorize
      *
      * @param  int  $id
-     * @return null
      */
     public function accountFollowRequestAccept(Request $request, $id)
     {
@@ -1853,7 +1836,6 @@ class ApiV1Controller extends Controller
      * POST /api/v1/follow_requests/{id}/reject
      *
      * @param  int  $id
-     * @return null
      */
     public function accountFollowRequestReject(Request $request, $id)
     {
@@ -1909,7 +1891,6 @@ class ApiV1Controller extends Controller
      *
      *   Information about the server.
      *
-     * @return Instance
      */
     public function instance(Request $request)
     {
@@ -2022,7 +2003,6 @@ class ApiV1Controller extends Controller
      * POST /api/v1/media
      *
      *
-     * @return MediaTransformer
      */
     public function mediaUpload(Request $request)
     {
@@ -2167,7 +2147,6 @@ class ApiV1Controller extends Controller
      * PUT /api/v1/media/{id}
      *
      * @param  int  $id
-     * @return MediaTransformer
      */
     public function mediaUpdate(Request $request, $id)
     {
@@ -2222,7 +2201,6 @@ class ApiV1Controller extends Controller
      * GET /api/v1/media/{id}
      *
      * @param  int  $id
-     * @return MediaTransformer
      */
     public function mediaGet(Request $request, $id)
     {
@@ -2260,7 +2238,6 @@ class ApiV1Controller extends Controller
      * POST /api/v2/media
      *
      *
-     * @return MediaTransformer
      */
     public function mediaUploadV2(Request $request)
     {
@@ -2411,7 +2388,6 @@ class ApiV1Controller extends Controller
      * GET /api/v1/mutes
      *
      *
-     * @return AccountTransformer
      */
     public function accountMutes(Request $request)
     {
@@ -2468,7 +2444,6 @@ class ApiV1Controller extends Controller
      * POST /api/v1/accounts/{id}/mute
      *
      * @param  int  $id
-     * @return RelationshipTransformer
      */
     public function accountMuteById(Request $request, $id)
     {
@@ -2529,7 +2504,6 @@ class ApiV1Controller extends Controller
      * POST /api/v1/accounts/{id}/unmute
      *
      * @param  int  $id
-     * @return RelationshipTransformer
      */
     public function accountUnmuteById(Request $request, $id)
     {
@@ -2570,7 +2544,6 @@ class ApiV1Controller extends Controller
      * GET /api/v1/notifications
      *
      *
-     * @return NotificationTransformer
      */
     public function accountNotifications(Request $request)
     {
@@ -2654,7 +2627,6 @@ class ApiV1Controller extends Controller
      * GET /api/v1/timelines/home
      *
      *
-     * @return StatusTransformer
      */
     public function timelineHome(Request $request)
     {
@@ -2981,7 +2953,6 @@ class ApiV1Controller extends Controller
      * GET /api/v1/timelines/public
      *
      *
-     * @return StatusTransformer
      */
     public function timelinePublic(Request $request)
     {
@@ -3276,7 +3247,6 @@ class ApiV1Controller extends Controller
      *
      *   Not implemented
      *
-     * @return array
      */
     public function conversations(Request $request)
     {
@@ -3427,7 +3397,6 @@ class ApiV1Controller extends Controller
      * GET /api/v1/statuses/{id}
      *
      * @param  int  $id
-     * @return StatusTransformer
      */
     public function statusById(Request $request, $id)
     {
@@ -3475,7 +3444,6 @@ class ApiV1Controller extends Controller
      * GET /api/v1/statuses/{id}/context
      *
      * @param  int  $id
-     * @return StatusTransformer
      */
     public function statusContext(Request $request, $id)
     {
@@ -3604,7 +3572,6 @@ class ApiV1Controller extends Controller
      * GET /api/v1/statuses/{id}/reblogged_by
      *
      * @param  int  $id
-     * @return AccountTransformer
      */
     public function statusRebloggedBy(Request $request, $id)
     {
@@ -3702,7 +3669,6 @@ class ApiV1Controller extends Controller
      * GET /api/v1/statuses/{id}/favourited_by
      *
      * @param  int  $id
-     * @return AccountTransformer
      */
     public function statusFavouritedBy(Request $request, $id)
     {
@@ -3805,7 +3771,6 @@ class ApiV1Controller extends Controller
      * POST /api/v1/statuses
      *
      *
-     * @return StatusTransformer
      */
     public function statusCreate(Request $request)
     {
@@ -4047,7 +4012,6 @@ class ApiV1Controller extends Controller
      * DELETE /api/v1/statuses
      *
      * @param  int  $id
-     * @return null
      */
     public function statusDelete(Request $request, $id)
     {
@@ -4074,7 +4038,6 @@ class ApiV1Controller extends Controller
      * POST /api/v1/statuses/{id}/reblog
      *
      * @param  int  $id
-     * @return StatusTransformer
      */
     public function statusShare(Request $request, $id)
     {
@@ -4137,7 +4100,6 @@ class ApiV1Controller extends Controller
      * POST /api/v1/statuses/{id}/unreblog
      *
      * @param  int  $id
-     * @return StatusTransformer
      */
     public function statusUnshare(Request $request, $id)
     {
@@ -4185,7 +4147,6 @@ class ApiV1Controller extends Controller
      * GET /api/v1/timelines/tag/{hashtag}
      *
      * @param  string  $hashtag
-     * @return StatusTransformer
      */
     public function timelineHashtag(Request $request, $hashtag)
     {
@@ -4330,7 +4291,6 @@ class ApiV1Controller extends Controller
      *
      *
      *
-     * @return StatusTransformer
      */
     public function bookmarks(Request $request)
     {
@@ -4402,7 +4362,6 @@ class ApiV1Controller extends Controller
      *
      *
      *
-     * @return StatusTransformer
      */
     public function bookmarkStatus(Request $request, $id)
     {
@@ -4445,7 +4404,6 @@ class ApiV1Controller extends Controller
      *
      *
      *
-     * @return StatusTransformer
      */
     public function unbookmarkStatus(Request $request, $id)
     {
@@ -4489,7 +4447,6 @@ class ApiV1Controller extends Controller
      * GET /api/v1/discover/posts
      *
      *
-     * @return array
      */
     public function discoverPosts(Request $request)
     {
@@ -4523,7 +4480,6 @@ class ApiV1Controller extends Controller
      * GET /api/v2/statuses/{id}/replies
      *
      *
-     * @return array
      */
     public function statusReplies(Request $request, $id)
     {
@@ -4628,7 +4584,6 @@ class ApiV1Controller extends Controller
      * GET /api/v2/statuses/{id}/state
      *
      *
-     * @return array
      */
     public function statusState(Request $request, $id)
     {
@@ -4645,7 +4600,6 @@ class ApiV1Controller extends Controller
      * GET /api/v1.1/discover/accounts/popular
      *
      *
-     * @return array
      */
     public function discoverAccountsPopular(Request $request)
     {
@@ -4779,7 +4733,6 @@ class ApiV1Controller extends Controller
      * GET /api/v1/preferences
      *
      *
-     * @return array
      */
     public function getPreferences(Request $request)
     {
@@ -4802,7 +4755,6 @@ class ApiV1Controller extends Controller
      * GET /api/v1/trends
      *
      *
-     * @return array
      */
     public function getTrends(Request $request)
     {
@@ -4816,7 +4768,6 @@ class ApiV1Controller extends Controller
      * GET /api/v1/announcements
      *
      *
-     * @return array
      */
     public function getAnnouncements(Request $request)
     {
@@ -4830,7 +4781,6 @@ class ApiV1Controller extends Controller
      * GET /api/v1/markers
      *
      *
-     * @return array
      */
     public function getMarkers(Request $request)
     {
@@ -4853,7 +4803,6 @@ class ApiV1Controller extends Controller
      * POST /api/v1/markers
      *
      *
-     * @return array
      */
     public function setMarkers(Request $request)
     {
@@ -4879,7 +4828,6 @@ class ApiV1Controller extends Controller
      * GET /api/v1/instance/peers
      *
      *
-     * @return array
      */
     public function instancePeers(Request $request)
     {

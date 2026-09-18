@@ -247,8 +247,6 @@ class ApiV1Dot1Controller extends Controller
 
     /**
      * GET /api/v1.1/accounts/{id}/posts
-     *
-     * @return StatusTransformer
      */
     public function accountPosts(Request $request, $id)
     {
@@ -288,8 +286,6 @@ class ApiV1Dot1Controller extends Controller
 
     /**
      * POST /api/v1.1/accounts/change-password
-     *
-     * @return AccountTransformer
      */
     public function accountChangePassword(Request $request)
     {
@@ -350,8 +346,6 @@ class ApiV1Dot1Controller extends Controller
 
     /**
      * GET /api/v1.1/accounts/login-activity
-     *
-     * @return array
      */
     public function accountLoginActivity(Request $request)
     {
@@ -401,8 +395,6 @@ class ApiV1Dot1Controller extends Controller
 
     /**
      * GET /api/v1.1/accounts/two-factor
-     *
-     * @return array
      */
     public function accountTwoFactor(Request $request)
     {
@@ -426,8 +418,6 @@ class ApiV1Dot1Controller extends Controller
 
     /**
      * GET /api/v1.1/accounts/emails-from-pixelfed
-     *
-     * @return array
      */
     public function accountEmailsFromPixelfed(Request $request)
     {
@@ -503,8 +493,6 @@ class ApiV1Dot1Controller extends Controller
 
     /**
      * GET /api/v1.1/accounts/apps-and-applications
-     *
-     * @return array
      */
     public function accountApps(Request $request)
     {
@@ -579,8 +567,6 @@ class ApiV1Dot1Controller extends Controller
 
     /**
      * POST /api/v1.1/accounts/apps-and-applications/{id}/revoke
-     *
-     * @return array
      */
     public function accountAppRevoke(Request $request, $id)
     {
