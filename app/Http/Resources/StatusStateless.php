@@ -16,6 +16,9 @@ use Illuminate\Contracts\Support\Arrayable;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
 
+/**
+ * @mixin \App\Models\Status
+ */
 class StatusStateless extends JsonResource
 {
     /**

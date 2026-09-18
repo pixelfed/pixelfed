@@ -5,6 +5,9 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
+/**
+ * @property-read bool $recentlyCreated computed/dynamic attribute
+ */
 class Avatar extends Model
 {
     use SoftDeletes;

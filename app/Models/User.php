@@ -13,6 +13,9 @@ use Laravel\Passport\Contracts\OAuthenticatable;
 use Laravel\Passport\HasApiTokens;
 use NotificationChannels\WebPush\HasPushSubscriptions;
 
+/**
+ * @property-read \App\Models\UserSetting|null $settings
+ */
 class User extends Authenticatable implements OAuthenticatable
 {
     use HasApiTokens, HasFactory, HasPushSubscriptions, Notifiable, SoftDeletes, UserRateLimit;

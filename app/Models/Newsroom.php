@@ -4,6 +4,9 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 
+/**
+ * @property bool $published computed/dynamic attribute
+ */
 class Newsroom extends Model
 {
     protected $table = 'newsroom';

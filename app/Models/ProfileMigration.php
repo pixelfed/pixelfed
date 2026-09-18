@@ -5,6 +5,10 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
+/**
+ * @property-read \App\Models\Profile|null $profile
+ * @property-read \App\Models\Profile|null $target
+ */
 class ProfileMigration extends Model
 {
     use HasFactory;

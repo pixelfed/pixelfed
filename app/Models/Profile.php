@@ -34,6 +34,9 @@ use Illuminate\Support\Facades\Storage;
  * @property Carbon|null $deleted_at
  * @property-read User|null $user
  * @property-read Avatar $avatar
+ * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Models\ProfileAlias> $aliases
+ * @property-read bool $is_followed computed/dynamic attribute
+ * @property-read int $profile_id joined-column alias (followers.profile_id)
  */
 class Profile extends Model
 {
