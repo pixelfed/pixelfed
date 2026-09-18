@@ -29,7 +29,7 @@ class StatusHashtagService
             ->map(function ($i, $k) use ($id) {
                 return self::getStatus($i, $id);
             })
-            ->filter(function ($i) use ($filtered) {
+            ->filter(function (array $i) use ($filtered) {
                 return isset($i['status']) &&
                 ! empty($i['status']) && ! in_array($i['status']['account']['id'], $filtered) &&
                 isset($i['status']['media_attachments']) &&

@@ -52,7 +52,7 @@ class GroupsFeedController extends Controller
             ->limit($limit)
             // ->pluck('group_posts.status_id')
             ->simplePaginate($limit)
-            ->map(function ($gp) use ($pid) {
+            ->map(function (array $gp) use ($pid) {
                 $status = GroupPostService::get($gp['group_id'], $gp['id']);
 
                 if (! $status) {
@@ -84,7 +84,7 @@ class GroupsFeedController extends Controller
             ->whereProfileId($pid)
             ->latest()
             ->paginate(3)
-            ->map(function ($gp) use ($pid) {
+            ->map(function (array $gp) use ($pid) {
                 $status = GroupPostService::get($gp['group_id'], $gp['id']);
                 if (! $status) {
                     return false;
@@ -175,7 +175,7 @@ class GroupsFeedController extends Controller
 
                 return $status;
             })
-            ->filter(function ($s) use ($filtered) {
+            ->filter(function (array $s) use ($filtered) {
                 return $s && in_array($s['account']['id'], $filtered) === false;
             })
             ->values()

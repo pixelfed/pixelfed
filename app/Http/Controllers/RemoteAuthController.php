@@ -646,7 +646,7 @@ class RemoteAuthController extends Controller
         return [200];
     }
 
-    protected function createUser($data)
+    protected function createUser(array $data)
     {
         event(new Registered($user = User::create([
             'name' => Purify::clean($data['name']),

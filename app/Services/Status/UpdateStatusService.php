@@ -23,7 +23,7 @@ class UpdateStatusService
         return StatusService::get($status->id);
     }
 
-    public static function updateMediaAttachements(Status $status, $attributes)
+    public static function updateMediaAttachements(Status $status, array $attributes)
     {
         $count = $status->media()->count();
         if ($count === 0 || $count === 1) {
@@ -60,7 +60,7 @@ class UpdateStatusService
         MediaService::del($status->id);
     }
 
-    public static function handleImmediateAttributes(Status $status, $attributes)
+    public static function handleImmediateAttributes(Status $status, array $attributes)
     {
         if (isset($attributes['status'])) {
             $cleaned = Purify::clean($attributes['status']);
@@ -113,7 +113,7 @@ class UpdateStatusService
         }
     }
 
-    public static function createEdit(Status $status, $attributes)
+    public static function createEdit(Status $status, array $attributes)
     {
         $cleaned = isset($attributes['status']) ? Purify::clean($attributes['status']) : $status->caption;
         $spoiler_text = isset($attributes['spoiler_text']) ? Purify::clean($attributes['spoiler_text']) : $status->cw_summary;

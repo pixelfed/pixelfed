@@ -1033,7 +1033,7 @@ class Helpers
             ->toArray();
     }
 
-    public static function getSensitive($activity, $url)
+    public static function getSensitive(array $activity, $url)
     {
         if (! $url || ! strlen($url)) {
             return true;
@@ -1054,7 +1054,7 @@ class Helpers
      * than the caller. Shares the same depth bound as getReplyToId so the
      * storeStatus path cannot restart the walk from zero.
      */
-    public static function getReplyTo($activity, int $depth = 0)
+    public static function getReplyTo(array $activity, int $depth = 0)
     {
         $inReplyTo = ! empty($activity['inReplyTo']) ?
             self::pluckval($activity['inReplyTo']) :
@@ -1067,7 +1067,7 @@ class Helpers
         return self::statusFirstOrFetch($inReplyTo, false, $depth + 1)?->id;
     }
 
-    public static function getScope($activity, $url): string
+    public static function getScope(array $activity, $url): string
     {
         $id = isset($activity['id']) ? self::pluckval($activity['id']) : self::pluckval($url);
         $url = isset($activity['url']) ? self::pluckval($activity['url']) : self::pluckval($id);
@@ -1099,17 +1099,17 @@ class Helpers
         return $scope;
     }
 
-    public static function storePoll($profile, $res, $url, $ts, $reply_to, $cw, $scope, $id)
+    public static function storePoll($profile, array $res, $url, $ts, $reply_to, $cw, $scope, $id)
     {
         if (! isset($res['endTime']) || ! isset($res['oneOf']) || ! is_array($res['oneOf']) || count($res['oneOf']) > 4) {
             return null;
         }
 
-        $options = collect($res['oneOf'])->map(function ($option) {
+        $options = collect($res['oneOf'])->map(function (array $option) {
             return $option['name'];
         })->toArray();
 
-        $cachedTallies = collect($res['oneOf'])->map(function ($option) {
+        $cachedTallies = collect($res['oneOf'])->map(function (array $option) {
             return $option['replies']['totalItems'] ?? 0;
         })->toArray();
 

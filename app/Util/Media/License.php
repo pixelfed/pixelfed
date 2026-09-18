@@ -114,7 +114,7 @@ class License
     public static function names()
     {
         return collect(self::get())
-            ->map(function ($v) {
+            ->map(function (array $v) {
                 return $v['title'];
             })
             ->values()
@@ -124,7 +124,7 @@ class License
     public static function nameToId($name)
     {
         $license = collect(self::get())
-            ->filter(function ($l) use ($name) {
+            ->filter(function (array $l) use ($name) {
                 return $l['title'] == $name;
             })
             ->first();

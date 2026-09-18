@@ -56,7 +56,7 @@ class GroupMediaService
             return [];
         }
         $medias = collect($media)
-            ->map(function ($media) {
+            ->map(function (array $media) {
                 $mime = $media['mime'] ? explode('/', $media['mime']) : false;
                 unset(
                     $media['optimized_url'],
@@ -73,7 +73,7 @@ class GroupMediaService
 
                 return $media;
             })
-            ->filter(function ($m) {
+            ->filter(function (array $m) {
                 return $m && isset($m['url']);
             })
             ->values();
@@ -93,7 +93,7 @@ class GroupMediaService
             return [];
         }
 
-        return collect($status)->map(function ($s) {
+        return collect($status)->map(function (array $s) {
             $license = isset($s['license']) && $s['license']['title'] ? $s['license']['title'] : null;
 
             return [

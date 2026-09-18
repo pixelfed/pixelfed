@@ -134,7 +134,7 @@ class ImportPostController extends Controller
                     continue;
                 }
 
-                $exts = $c->map(function ($m) {
+                $exts = $c->map(function (array $m) {
                     $fn = last(explode('/', $m['uri']));
 
                     return last(explode('.', $fn));
@@ -150,7 +150,7 @@ class ImportPostController extends Controller
                 $ip->post_type = $postType;
                 $ip->media_count = $c->count();
 
-                $ip->media = $c->map(function ($m) {
+                $ip->media = $c->map(function (array $m) {
                     return [
                         'uri' => $m['uri'],
                         'title' => $this->formatHashtags($m['title'] ?? ''),
@@ -165,7 +165,7 @@ class ImportPostController extends Controller
                 $originalFilename = last(explode('/', $ip->media[0]['uri'] ?? ''));
                 $ip->filename = $this->sanitizeFilename($originalFilename);
 
-                $ip->metadata = $c->map(function ($m) {
+                $ip->metadata = $c->map(function (array $m) {
                     return [
                         'uri' => $m['uri'],
                         'media_metadata' => isset($m['media_metadata']) ? $m['media_metadata'] : null,

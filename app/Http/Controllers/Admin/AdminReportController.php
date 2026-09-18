@@ -597,7 +597,7 @@ trait AdminReportController
 
                     return $account;
                 })
-                ->filter(function ($res) {
+                ->filter(function (array $res) {
                     return $res && isset($res['id']);
                 })
                 ->values();

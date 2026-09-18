@@ -152,7 +152,7 @@ class BaseApiController extends Controller
 
                 return $status;
             })
-            ->filter(function ($post) {
+            ->filter(function (array $post) {
                 return $post && isset($post['account']);
             })
             ->values();

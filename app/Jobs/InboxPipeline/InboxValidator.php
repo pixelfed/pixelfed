@@ -89,7 +89,7 @@ class InboxValidator implements ShouldQueue
         return null;
     }
 
-    protected function verifySignature($headers, $profile, $payload)
+    protected function verifySignature(array $headers, $profile, $payload)
     {
         $body = $this->payload;
         $bodyDecoded = $payload;

@@ -286,7 +286,7 @@ class ImportService
                     return StatusService::get($ip->status_id) == null;
                 })
                 ->map(function ($ip) {
-                    return collect($ip->media)->map(function ($m) {
+                    return collect($ip->media)->map(function (array $m) {
                         return $m['uri'];
                     });
                 })->values()->flatten();

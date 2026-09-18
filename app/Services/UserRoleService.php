@@ -67,7 +67,7 @@ class UserRoleService
     {
         $myRoles = self::get($id);
         $roleData = collect(self::roleData())
-            ->map(function ($role, $k) use ($myRoles) {
+            ->map(function (array $role, $k) use ($myRoles) {
                 $role['value'] = $myRoles[$k];
 
                 return $role;
@@ -152,7 +152,7 @@ class UserRoleService
         ];
     }
 
-    public static function mapInvite($id, $data = []): array
+    public static function mapInvite($id, array $data = []): array
     {
         $roles = self::get($id);
 
@@ -196,7 +196,7 @@ class UserRoleService
     /**
      * @return mixed[]
      */
-    public static function mapActions($id, $data = []): array
+    public static function mapActions($id, array $data = []): array
     {
         $res = [];
         $map = [

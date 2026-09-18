@@ -277,7 +277,7 @@ class ApiV1Dot1Controller extends Controller
             ->map(function ($id) {
                 return StatusService::get($id);
             })
-            ->filter(function ($post) {
+            ->filter(function (array $post) {
                 return $post && isset($post['account']);
             })
             ->toArray();

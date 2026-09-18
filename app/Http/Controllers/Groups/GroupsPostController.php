@@ -393,7 +393,7 @@ class GroupsPostController extends Controller
             ->whereType($type)
             ->latest()
             ->simplePaginate(20)
-            ->map(function ($gp) use ($pid) {
+            ->map(function (array $gp) use ($pid) {
                 $status = GroupPostService::get($gp['group_id'], $gp['id']);
                 if (! $status) {
                     return false;
