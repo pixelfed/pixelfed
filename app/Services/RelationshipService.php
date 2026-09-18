@@ -61,6 +61,8 @@ class RelationshipService
     {
         Cache::forget('pf:services:follower:audience:'.$aid);
         Cache::forget('pf:services:follower:audience:'.$tid);
+        FollowersSyncService::forgetOutboundDigests($aid);
+        FollowersSyncService::forgetOutboundDigests($tid);
         self::delete($tid, $aid);
         self::delete($aid, $tid);
         self::get($tid, $aid);
@@ -72,6 +74,8 @@ class RelationshipService
     {
         Cache::forget('pf:services:follower:audience:'.$aid);
         Cache::forget('pf:services:follower:audience:'.$tid);
+        FollowersSyncService::forgetOutboundDigests($aid);
+        FollowersSyncService::forgetOutboundDigests($tid);
         self::delete($tid, $aid);
         self::delete($aid, $tid);
     }

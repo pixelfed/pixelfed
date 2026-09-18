@@ -34,6 +34,24 @@ return [
         ],
 
         'authorized_fetch' => env('AUTHORIZED_FETCH', false),
+
+        /*
+         * FEP-8fcf: Followers collection synchronization across servers
+         *
+         * When enabled, followers-only posts are delivered with a signed
+         * Collection-Synchronization header, the partial followers
+         * collection is served to authenticated remote instances, and
+         * incoming Collection-Synchronization headers are reconciled.
+         */
+        'followers_sync' => [
+            'enabled' => env('AP_FOLLOWERS_SYNC', true),
+
+            // Minimum seconds between two synchronizations of the same remote actor
+            'cooldown' => env('AP_FOLLOWERS_SYNC_COOLDOWN', 900),
+
+            // Maximum collection pages fetched from a remote server per synchronization
+            'max_pages' => env('AP_FOLLOWERS_SYNC_MAX_PAGES', 10),
+        ],
     ],
 
     'atom' => [

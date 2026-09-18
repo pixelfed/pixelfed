@@ -23,6 +23,7 @@ use Illuminate\Support\Facades\Storage;
  * @property string|null $name
  * @property string|null $domain
  * @property string|null $remote_url
+ * @property string|null $followers_url
  * @property bool $is_private
  * @property int $status_count
  * @property int $following_count

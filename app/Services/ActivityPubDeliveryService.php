@@ -183,6 +183,7 @@ class ActivityPubDeliveryService
      * @param  array<int, string>  $audience  Inbox URLs
      * @param  array<string, mixed>  $activity  ActivityPub activity
      * @param  \Closure|null  $onError  fn(Throwable|Response $reason, int $index): void
+     * @param  bool  $synchronizeFollowers  Attach a signed FEP-8fcf Collection-Synchronization header to every request
      * @return array{total: int, skipped: int, duplicate: int, invalid: int, sent: int, delivered: int, rejected: int, failed: int}
      *
      * @throws JsonException
@@ -191,7 +192,8 @@ class ActivityPubDeliveryService
         Profile $profile,
         array $audience,
         array $activity,
-        ?\Closure $onError = null
+        ?\Closure $onError = null,
+        bool $synchronizeFollowers = false
     ): array {
         $result = [
             'total' => count($audience),
@@ -226,6 +228,25 @@ class ActivityPubDeliveryService
          * will be hashed for the Digest header and sent as the request body.
          */
         $payload = self::serializePayload($activity);
+
+        /*
+         * FEP-8fcf: the digest of each partial followers collection is
+         * looked up once, the header itself differs per destination since
+         * it is scoped to the authority of the receiving inbox.
+         */
+        $syncDigests = null;
+
+        if ($synchronizeFollowers && FollowersSyncService::enabled()) {
+            try {
+                $syncDigests = FollowersSyncService::outboundDigests($profile);
+            } catch (Throwable $e) {
+                Log::warning('Unable to compute followers synchronization digests', [
+                    'profile_id' => $profile->id,
+                    'exception' => $e::class,
+                    'error' => $e->getMessage(),
+                ]);
+            }
+        }
 
         /*
          * Prepare and sign every delivery before starting the HTTP pool.
@@ -284,10 +305,21 @@ class ActivityPubDeliveryService
 
                 $seen[$url] = true;
 
+                $extraHeaders = [];
+
+                if ($syncDigests !== null) {
+                    $syncHeader = FollowersSyncService::header($profile, $url, $syncDigests);
+
+                    if ($syncHeader !== null) {
+                        $extraHeaders[FollowersSyncService::HEADER] = $syncHeader;
+                    }
+                }
+
                 $headers = self::signedHeaders(
                     $profile,
                     $url,
-                    $payload
+                    $payload,
+                    $extraHeaders
                 );
 
                 $deliveries[] = [
@@ -581,12 +613,16 @@ class ActivityPubDeliveryService
     /**
      * Generate signed HTTP headers for the exact serialized payload.
      *
+     * Extra headers become part of the signed header set.
+     *
+     * @param  array<string, string>  $extraHeaders
      * @return array<string, string>
      */
     private static function signedHeaders(
         Profile $profile,
         string $url,
-        string $payload
+        string $payload,
+        array $extraHeaders = []
     ): array {
         $headers = HttpSignature::sign(
             $profile,
@@ -595,7 +631,7 @@ class ActivityPubDeliveryService
             [
                 'Content-Type' => self::CONTENT_TYPE,
                 'User-Agent' => self::userAgent(),
-            ]
+            ] + $extraHeaders
         );
 
         if (empty($headers)) {

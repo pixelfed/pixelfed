@@ -44,6 +44,7 @@ $middleware = ['auth:sanctum,api'];
 
 Route::post('/f/inbox', [FederationController::class, 'sharedInbox']);
 Route::post('/users/{username}/inbox', [FederationController::class, 'userInbox']);
+Route::get('/users/{username}/followers_synchronization', [FederationController::class, 'userFollowersSynchronization']);
 Route::get('i/actor', [InstanceActorController::class, 'profile']);
 Route::post('i/actor/inbox', [InstanceActorController::class, 'inbox']);
 Route::get('i/actor/outbox', [InstanceActorController::class, 'outbox']);
