@@ -81,6 +81,7 @@ class ImportInstagram implements ShouldQueue
 
         foreach ($collection as $import) {
             $caption = $import['caption'];
+            $taken_at = now();
             try {
                 $min = Carbon::create(2010, 10, 6, 0, 0, 0);
                 $taken_at = Carbon::parse($import['taken_at']);

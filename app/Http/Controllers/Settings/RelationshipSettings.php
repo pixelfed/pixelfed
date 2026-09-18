@@ -14,6 +14,7 @@ trait RelationshipSettings
 
         $mode = $request->input('mode') ?? 'followers';
         $profile = $request->user()->profile;
+        $data = null;
 
         switch ($mode) {
             case 'following':

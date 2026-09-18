@@ -216,6 +216,7 @@ class DiscoverController extends Controller
         $pid = $request->user()->profile_id;
         abort_if(! $this->config()['memories']['enabled'], 404);
         $type = $request->input('type') ?? 'posts';
+        $res = collect();
 
         switch ($type) {
             case 'posts':

@@ -178,6 +178,8 @@ class MediaStorageService
             return;
         }
 
+        $ext = '';
+
         switch ($mime) {
             case 'image/png':
                 $ext = '.png';

@@ -325,6 +325,7 @@ class GroupController extends GroupFederationController
 
         $type = $request->input('type');
         $item = $request->input('item');
+        $res = null;
 
         switch ($type) {
             case 'instance':
