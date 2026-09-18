@@ -438,7 +438,7 @@ class RemoteAuthController extends Controller
             ]);
         }
 
-        $res = collect($res)->filter(fn ($acct) => Helpers::validateUrl($acct['url']))->values()->toArray();
+        $res = collect($res)->filter(fn ($acct): string|bool => Helpers::validateUrl($acct['url']))->values()->toArray();
 
         return response()->json([
             'code' => 200,

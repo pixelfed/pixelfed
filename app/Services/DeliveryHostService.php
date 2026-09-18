@@ -82,7 +82,7 @@ class DeliveryHostService
         return array_keys(
             array_filter(
                 self::flagged(),
-                fn (?int $next) => $next !== null && $next > $now
+                fn (?int $next): bool => $next !== null && $next > $now
             )
         );
     }
@@ -156,7 +156,7 @@ class DeliveryHostService
 
         $domains = array_filter(
             self::normalize($domains),
-            fn (string $domain) => array_key_exists($domain, $flagged)
+            fn (string $domain): bool => array_key_exists($domain, $flagged)
         );
 
         if ($domains === []) {

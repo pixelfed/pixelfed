@@ -79,7 +79,7 @@ class InboxValidator implements ShouldQueue
             if (isset($payload['type']) && in_array($payload['type'], ['Follow', 'Accept'])) {
                 ActivityHandler::dispatch($headers, $profile, $payload)->onQueue('follow');
             } else {
-                $onQueue = Lottery::odds(1, 12)->winner(fn () => 'high')->loser(fn () => 'inbox')->choose();
+                $onQueue = Lottery::odds(1, 12)->winner(fn (): string => 'high')->loser(fn (): string => 'inbox')->choose();
                 ActivityHandler::dispatch($headers, $profile, $payload)->onQueue($onQueue);
             }
 

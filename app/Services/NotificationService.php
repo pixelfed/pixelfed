@@ -312,7 +312,7 @@ class NotificationService
             }
         }
 
-        return $q->pluck('id')->map(fn ($v) => (int) $v)->all();
+        return $q->pluck('id')->map(fn ($v): int => (int) $v)->all();
     }
 
     /**

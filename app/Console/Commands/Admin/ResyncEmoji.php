@@ -37,7 +37,7 @@ class ResyncEmoji extends Command
 
         // Parse the comma-separated filename list into distinct basenames.
         $names = collect(explode(',', (string) $this->argument('files')))
-            ->map(fn ($n) => basename(trim($n)))
+            ->map(fn ($n): string => basename(trim($n)))
             ->filter()
             ->unique()
             ->values();

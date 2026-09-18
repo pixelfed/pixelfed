@@ -480,7 +480,7 @@ class Helpers
         $host = strtolower(rtrim($host, '.'));
 
         $bannedInstances = array_map(
-            fn ($domain) => strtolower(rtrim($domain, '.')),
+            fn ($domain): string => strtolower(rtrim($domain, '.')),
             InstanceService::getBannedDomains()
         );
 
@@ -743,7 +743,7 @@ class Helpers
 
         if (is_array($attributedTo)) {
             return collect($attributedTo)
-                ->filter(fn ($o) => $o && isset($o['type']) && $o['type'] == 'Person')
+                ->filter(fn ($o): bool => $o && isset($o['type']) && $o['type'] == 'Person')
                 ->pluck('id')
                 ->first();
         }

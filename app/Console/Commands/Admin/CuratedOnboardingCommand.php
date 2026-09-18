@@ -83,7 +83,7 @@ class CuratedOnboardingCommand extends Command
                     $query->whereLike('username', "%{$value}%")
                         ->orWhereLike('email', "%{$value}%");
                 })->get()
-                    ->mapWithKeys(fn ($user) => [
+                    ->mapWithKeys(fn ($user): array => [
                         $user->id => "{$user->username} ({$user->email})",
                     ])
                     ->all()

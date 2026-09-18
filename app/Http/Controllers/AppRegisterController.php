@@ -416,7 +416,7 @@ class AppRegisterController extends Controller
     protected function resolveScopes(?string $scope): ?array
     {
         $scopes = collect(explode(' ', str_replace('+', ' ', trim((string) $scope))))
-            ->map(fn ($s) => trim($s))
+            ->map(fn ($s): string => trim($s))
             ->filter()
             ->unique()
             ->values()
@@ -476,7 +476,7 @@ class AppRegisterController extends Controller
     protected function allowedRedirectSchemes(): array
     {
         return collect(explode(',', (string) config('auth.in_app_registration_redirect_schemes', 'pixelfed')))
-            ->map(fn ($s) => strtolower(trim($s)))
+            ->map(fn ($s): string => strtolower(trim($s)))
             ->filter()
             ->values()
             ->all();

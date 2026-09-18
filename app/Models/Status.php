@@ -143,7 +143,7 @@ class Status extends Model
         }
 
         return collect($entity['media_attachments'])
-            ->filter(fn ($media) => $media['type'] == 'image' && in_array($media['mime'], ['image/jpeg', 'image/png', 'image/jpg']))
+            ->filter(fn ($media): bool => $media['type'] == 'image' && in_array($media['mime'], ['image/jpeg', 'image/png', 'image/jpg']))
             ->map(function ($media) {
                 if (! Str::endsWith($media['preview_url'], ['no-preview.png', 'no-preview.jpg'])) {
                     return $media['preview_url'];

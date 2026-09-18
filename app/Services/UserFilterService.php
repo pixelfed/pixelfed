@@ -39,7 +39,7 @@ class UserFilterService
         if (! empty($ids)) {
             Redis::expire($key, self::FILTER_TTL);
 
-            return array_values(array_filter($ids, fn ($id) => $id !== self::EMPTY_SENTINEL));
+            return array_values(array_filter($ids, fn ($id): bool => $id !== self::EMPTY_SENTINEL));
         }
 
         Cache::forget($key.':cached-v0');

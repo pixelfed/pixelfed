@@ -280,7 +280,7 @@ class FeaturedCollectionService
             ->approved()
             ->with('actor')
             ->get()
-            ->filter(fn (FeatureAuthorization $auth) => $auth->actor && strtolower((string) $auth->actor->domain) === $domain)
+            ->filter(fn (FeatureAuthorization $auth): bool => $auth->actor && strtolower((string) $auth->actor->domain) === $domain)
             ->each(fn (FeatureAuthorization $auth) => self::revoke($auth));
     }
 

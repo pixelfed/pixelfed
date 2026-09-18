@@ -43,7 +43,7 @@ class GroupsSearchController extends Controller
         );
 
         $candidateIds = collect($uid)
-            ->filter(fn ($u) => $u != $pid)
+            ->filter(fn ($u): bool => $u != $pid)
             ->unique()
             ->values();
 
@@ -61,8 +61,8 @@ class GroupsSearchController extends Controller
             ->all();
 
         $profiles
-            ->filter(fn ($u) => in_array($u->id, $followedIds))
-            ->filter(fn ($u) => ! in_array($u->id, $alreadyInvitedIds))
+            ->filter(fn ($u): bool => in_array($u->id, $followedIds))
+            ->filter(fn ($u): bool => ! in_array($u->id, $alreadyInvitedIds))
             ->each(function ($u) use ($gid, $pid) {
                 $gi = new GroupInvitation;
                 $gi->group_id = $gid;

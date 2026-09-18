@@ -562,7 +562,7 @@ class ApiV1Dot1Controller extends Controller
     {
         $expired = $token->expires_at && $token->expires_at->isPast();
         $status = $token->revoked ? 'revoked' : ($expired ? 'expired' : 'active');
-        $fmt = fn ($date) => $date ? str_replace('@', 'at', $date->format('M j, Y @ g:i:s A')) : null;
+        $fmt = fn ($date): string|array|null => $date ? str_replace('@', 'at', $date->format('M j, Y @ g:i:s A')) : null;
 
         return [
             'id' => $token->id,

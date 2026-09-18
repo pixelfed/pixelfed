@@ -95,8 +95,8 @@ trait AdminAutospamController
             'files' => $files,
             'open' => $open,
             'closed' => $closed,
-            'graph' => collect($thisWeek)->map(fn ($s) => $s['y'])->values(),
-            'graphLabels' => collect($thisWeek)->map(fn ($s) => $s['x'])->values(),
+            'graph' => collect($thisWeek)->map(fn ($s): mixed => $s['y'])->values(),
+            'graphLabels' => collect($thisWeek)->map(fn ($s): mixed => $s['x'])->values(),
         ];
     }
 

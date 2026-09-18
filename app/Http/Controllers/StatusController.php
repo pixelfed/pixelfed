@@ -335,11 +335,11 @@ class StatusController extends Controller
         Cache::forget('profile:home-timeline-cursor:'.$request->user()->id);
 
         $rows = collect($views)
-            ->filter(fn ($view) => is_array($view)
+            ->filter(fn ($view): bool => is_array($view)
                 && isset($view['sid'], $view['pid'])
                 && is_numeric($view['sid'])
                 && is_numeric($view['pid']))
-            ->map(fn ($view) => [
+            ->map(fn ($view): array => [
                 'status_id' => (int) $view['sid'],
                 'status_profile_id' => (int) $view['pid'],
                 'profile_id' => $pid,
@@ -355,10 +355,10 @@ class StatusController extends Controller
         $seen = StatusView::whereProfileId($pid)
             ->whereIn('status_id', $rows->pluck('status_id'))
             ->pluck('status_id')
-            ->map(fn ($id) => (int) $id)
+            ->map(fn ($id): int => (int) $id)
             ->all();
 
-        $rows->reject(fn ($row) => in_array($row['status_id'], $seen, true))
+        $rows->reject(fn ($row): bool => in_array($row['status_id'], $seen, true))
             ->each(fn ($row) => StatusView::create($row));
 
         return response()->json(1);

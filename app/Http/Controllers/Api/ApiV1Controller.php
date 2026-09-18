@@ -4706,7 +4706,7 @@ class ApiV1Controller extends Controller
         ));
 
         $res = collect($pool)
-            ->reject(fn ($id) => isset($exclude[$id]))
+            ->reject(fn ($id): bool => isset($exclude[$id]))
             ->take(50)
             ->map(fn ($id) => AccountService::get($id, true))
             ->filter()
@@ -4738,7 +4738,7 @@ class ApiV1Controller extends Controller
                 ->orderByDesc('id')
                 ->limit(200)
                 ->get()
-                ->map(fn ($p) => [
+                ->map(fn ($p): array => [
                     'id' => (int) $p->id,
                     'followers_count' => (int) $p->followers_count,
                 ])
@@ -4767,12 +4767,12 @@ class ApiV1Controller extends Controller
             AdminShadowFilterService::getHideFromPublicFeedsList()
         ));
 
-        $candidates = collect($pool)->reject(fn ($p) => isset($exclude[$p['id']]));
+        $candidates = collect($pool)->reject(fn ($p): bool => isset($exclude[$p['id']]));
 
         if ($cursor) {
             [$afterCount, $afterId] = array_map('intval', $cursor->parameters(['followers_count', 'id']));
             $candidates = $candidates->filter(
-                fn ($p) => $p['followers_count'] < $afterCount
+                fn ($p): bool => $p['followers_count'] < $afterCount
                     || ($p['followers_count'] === $afterCount && $p['id'] < $afterId)
             );
         }
