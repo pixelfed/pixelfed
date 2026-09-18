@@ -16,7 +16,7 @@ class SoftwareUpdateService
         return self::CACHE_KEY.'latest:v1.0.0';
     }
 
-    public static function get($flushCache = false)
+    public static function get($flushCache = false): array
     {
         $curVersion = config('pixelfed.version');
 

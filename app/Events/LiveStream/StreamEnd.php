@@ -39,7 +39,7 @@ class StreamEnd implements ShouldBroadcast
         return 'stream.end';
     }
 
-    public function broadcastWith()
+    public function broadcastWith(): array
     {
         return ['ts' => time()];
     }

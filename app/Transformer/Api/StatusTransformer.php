@@ -19,7 +19,7 @@ use League\Fractal;
 
 class StatusTransformer extends Fractal\TransformerAbstract
 {
-    public function transform(Status $status)
+    public function transform(Status $status): array
     {
         $pid = request()->user()->profile_id;
         $taggedPeople = MediaTagService::get($status->id);

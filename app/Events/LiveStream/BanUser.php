@@ -43,7 +43,7 @@ class BanUser implements ShouldBroadcast
         return 'chat.ban-user';
     }
 
-    public function broadcastWith()
+    public function broadcastWith(): array
     {
         return ['id' => $this->profileId];
     }

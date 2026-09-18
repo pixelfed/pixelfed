@@ -832,7 +832,7 @@ class PublicApiController extends Controller
         return $this->json($status);
     }
 
-    private function determineVisibility(array $profile, $user)
+    private function determineVisibility(array $profile, $user): array
     {
         if (! $profile || ! isset($profile['id'])) {
             return [];

@@ -558,7 +558,7 @@ class ApiV1Dot1Controller extends Controller
         return response()->json($res, 200, $headers, JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE);
     }
 
-    protected function appToken($token, $currentId, $legacy = false)
+    protected function appToken($token, $currentId, $legacy = false): array
     {
         $expired = $token->expires_at && $token->expires_at->isPast();
         $status = $token->revoked ? 'revoked' : ($expired ? 'expired' : 'active');

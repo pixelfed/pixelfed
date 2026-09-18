@@ -124,7 +124,7 @@ class GroupService
         });
     }
 
-    public static function config()
+    public static function config(): array
     {
         return [
             'enabled' => config('exp.gps') ?? false,
@@ -332,7 +332,7 @@ class GroupService
         });
     }
 
-    public static function mutualGroups($cid = false, $pid = false, $exclude = [])
+    public static function mutualGroups($cid = false, $pid = false, $exclude = []): array
     {
         if (! $cid || ! $pid) {
             return [

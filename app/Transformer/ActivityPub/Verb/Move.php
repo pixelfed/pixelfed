@@ -7,7 +7,7 @@ use League\Fractal;
 
 class Move extends Fractal\TransformerAbstract
 {
-    public function transform(ProfileMigration $migration)
+    public function transform(ProfileMigration $migration): array
     {
         $objUrl = $migration->profile->permalink();
         $id = $migration->profile->permalink('#moves/'.$migration->id);

@@ -163,7 +163,7 @@ class AccountService
         return ! $res['disable_embeds'];
     }
 
-    public static function defaultSettings()
+    public static function defaultSettings(): array
     {
         return [
             'crawlable' => true,

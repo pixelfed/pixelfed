@@ -11,7 +11,7 @@ use League\Fractal;
 
 class UpdateNote extends Fractal\TransformerAbstract
 {
-    public function transform(Status $status)
+    public function transform(Status $status): array
     {
         $mentions = $status->mentions->map(function ($mention) {
             $webfinger = $mention->emailUrl();

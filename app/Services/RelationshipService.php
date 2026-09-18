@@ -76,7 +76,7 @@ class RelationshipService
         self::delete($aid, $tid);
     }
 
-    public static function defaultRelation($tid)
+    public static function defaultRelation($tid): array
     {
         return [
             'id' => (string) $tid,

@@ -278,7 +278,7 @@ trait AdminInstanceController
         }, 'pixelfed-instances-mod.json');
     }
 
-    public function importBackup(Request $request)
+    public function importBackup(Request $request): array
     {
         $this->validate($request, [
             'banned' => 'sometimes|array',

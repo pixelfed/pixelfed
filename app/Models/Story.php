@@ -113,7 +113,7 @@ class Story extends Model
         return $res;
     }
 
-    public function toAdminEntity()
+    public function toAdminEntity(): array
     {
         return [
             'id' => $this->id,

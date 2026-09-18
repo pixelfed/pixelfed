@@ -542,7 +542,7 @@ trait AdminReportController
         return $this;
     }
 
-    protected function actionMap()
+    protected function actionMap(): array
     {
         return [
             '1' => 'ignore',
@@ -626,7 +626,7 @@ trait AdminReportController
         return redirect('/i/admin/reports');
     }
 
-    public function reportMailVerifyClearIgnored(Request $request)
+    public function reportMailVerifyClearIgnored(Request $request): array
     {
         Redis::del('email:manual-ignored');
 
@@ -1240,7 +1240,7 @@ trait AdminReportController
         return $appeals;
     }
 
-    public function reportsApiSpamHandle(Request $request)
+    public function reportsApiSpamHandle(Request $request): array
     {
         $this->validate($request, [
             'id' => 'required',
@@ -1385,7 +1385,7 @@ trait AdminReportController
         return new AdminSpamReport($report);
     }
 
-    public function reportsApiRemoteHandle(Request $request)
+    public function reportsApiRemoteHandle(Request $request): array
     {
         $this->validate($request, [
             'id' => 'required|exists:remote_reports,id',
@@ -1607,7 +1607,7 @@ trait AdminReportController
         }, 'data-export.json');
     }
 
-    public function deleteModeratedProfile(Request $request)
+    public function deleteModeratedProfile(Request $request): array
     {
         $this->validate($request, [
             'id' => 'required',
@@ -1641,7 +1641,7 @@ trait AdminReportController
         return ['status' => 200, 'message' => 'Successfully deleted moderated profile!'];
     }
 
-    public function updateModeratedProfile(Request $request)
+    public function updateModeratedProfile(Request $request): array
     {
         $this->validate($request, [
             'id' => 'required|exists:moderated_profiles',

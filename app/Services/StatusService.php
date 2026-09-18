@@ -224,7 +224,7 @@ class StatusService
         return $replyVisibility;
     }
 
-    public static function getState($id, $pid)
+    public static function getState($id, $pid): array
     {
         $status = self::get($id, false);
 
@@ -321,7 +321,7 @@ class StatusService
         return Status::whereProfileId($pid)->whereNotNull('pinned_order')->count();
     }
 
-    public static function markPin($id)
+    public static function markPin($id): array
     {
         $status = Status::find($id);
 

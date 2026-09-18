@@ -13,7 +13,7 @@ class NotificationTransformer extends Fractal\TransformerAbstract
         'status',
     ];
 
-    public function transform(Notification $notification)
+    public function transform(Notification $notification): array
     {
         return [
             'id' => (string) $notification->id,

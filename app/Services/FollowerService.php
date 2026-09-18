@@ -294,7 +294,7 @@ class FollowerService
      * @param  int|null  $cursor
      * @return array
      */
-    public static function getMutualsForDM($profileId, $limit = 20, $cursor = null)
+    public static function getMutualsForDM($profileId, $limit = 20, $cursor = null): array
     {
         $acct = AccountService::get($profileId, true);
         if (! $acct || ! isset($acct['id'])) {

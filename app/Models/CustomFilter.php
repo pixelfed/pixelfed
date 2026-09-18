@@ -77,7 +77,7 @@ class CustomFilter extends Model
         return $this->hasMany(CustomFilterStatus::class);
     }
 
-    public function toFilterArray()
+    public function toFilterArray(): array
     {
         return [
             'id' => $this->id,

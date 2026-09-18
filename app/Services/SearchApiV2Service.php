@@ -188,13 +188,13 @@ class SearchApiV2Service
             ->values();
     }
 
-    protected function statuses()
+    protected function statuses(): array
     {
         // Removed until we provide more relevent sorting/results
         return [];
     }
 
-    protected function statusesById()
+    protected function statusesById(): array
     {
         // Removed until we provide more relevent sorting/results
         return [];
@@ -389,7 +389,7 @@ class SearchApiV2Service
         return $res;
     }
 
-    protected function resolveLocalProfile()
+    protected function resolveLocalProfile(): array
     {
         $query = urldecode($this->query->input('q'));
         $query = last(explode('/', parse_url($query, PHP_URL_PATH)));
@@ -417,7 +417,7 @@ class SearchApiV2Service
         ];
     }
 
-    protected function resolveLocalProfileId()
+    protected function resolveLocalProfileId(): array
     {
         $query = urldecode($this->query->input('q'));
         $query = last(explode('/', parse_url($query, PHP_URL_PATH)));

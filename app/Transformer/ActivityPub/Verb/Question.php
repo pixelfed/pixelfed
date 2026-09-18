@@ -9,7 +9,7 @@ use League\Fractal;
 
 class Question extends Fractal\TransformerAbstract
 {
-    public function transform(Status $status)
+    public function transform(Status $status): array
     {
         $mentions = $status->mentions->map(function ($mention) {
             $webfinger = $mention->emailUrl();

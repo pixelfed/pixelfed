@@ -76,7 +76,7 @@ trait LabsSettings
             ->cookie($cookie);
     }
 
-    protected function momentBackgrounds()
+    protected function momentBackgrounds(): array
     {
         return [
             'default',

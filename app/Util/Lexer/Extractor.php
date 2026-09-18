@@ -77,7 +77,7 @@ class Extractor extends Regex
      * @param  string  $tweet  The tweet to extract.
      * @return array The elements in the tweet.
      */
-    public function extract($tweet = null)
+    public function extract($tweet = null): array
     {
         if (is_null($tweet)) {
             $tweet = $this->tweet;
@@ -314,7 +314,7 @@ class Extractor extends Regex
      * @param  string  $tweet  The tweet to extract.
      * @return array The cashtag elements in the tweet.
      */
-    public function extractCashtagsWithIndices($tweet = null)
+    public function extractCashtagsWithIndices($tweet = null): array
     {
         return [];
     }

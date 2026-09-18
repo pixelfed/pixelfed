@@ -156,7 +156,7 @@ class ActiveSharedInboxService
         return false;
     }
 
-    public static function transformCacheFileData($res)
+    public static function transformCacheFileData($res): array
     {
         return [
             'id' => 'pixelfed/storage/app/'.self::CACHE_FILE_NAME,

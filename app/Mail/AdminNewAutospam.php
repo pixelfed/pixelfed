@@ -72,7 +72,7 @@ class AdminNewAutospam extends Mailable
      *
      * @return array
      */
-    public function attachments()
+    public function attachments(): array
     {
         return [];
     }

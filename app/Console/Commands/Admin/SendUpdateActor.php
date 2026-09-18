@@ -115,7 +115,7 @@ class SendUpdateActor extends Command
         return Command::SUCCESS;
     }
 
-    protected function updateObject($profile)
+    protected function updateObject($profile): array
     {
         return [
             '@context' => [
@@ -153,7 +153,7 @@ class SendUpdateActor extends Command
         Storage::put($path, $value);
     }
 
-    protected function actorObject($profile)
+    protected function actorObject($profile): array
     {
         $permalink = $profile->permalink();
 

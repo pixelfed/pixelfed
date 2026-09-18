@@ -11,7 +11,7 @@ class CreateQuestion extends Fractal\TransformerAbstract
         'object',
     ];
 
-    public function transform(Status $status)
+    public function transform(Status $status): array
     {
         return [
             '@context' => [
