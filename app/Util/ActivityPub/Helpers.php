@@ -608,6 +608,87 @@ class Helpers
         return self::createStatusFromUrl($url, $replyTo, $depth);
     }
 
+    private static function matchPathTemplate(
+        string $path,
+        string $template,
+        array $constraints = []
+    ): ?array {
+        $path = '/'.trim($path, '/');
+        $template = '/'.trim($template, '/');
+
+        $offset = 0;
+        $pattern = '';
+
+        preg_match_all(
+            '/\{([a-zA-Z][a-zA-Z0-9_]*)\}/',
+            $template,
+            $placeholders,
+            PREG_OFFSET_CAPTURE
+        );
+
+        foreach ($placeholders[0] as $index => [$placeholder, $position]) {
+            $name = $placeholders[1][$index][0];
+
+            $literal = substr(
+                $template,
+                $offset,
+                $position - $offset
+            );
+
+            $pattern .= preg_quote($literal, '#');
+
+            $constraint = $constraints[$name] ?? '[^/]+';
+
+            $pattern .= '(?P<'.$name.'>'.$constraint.')';
+
+            $offset = $position + strlen($placeholder);
+        }
+
+        $pattern .= preg_quote(
+            substr($template, $offset),
+            '#'
+        );
+
+        if (! preg_match('#^'.$pattern.'/?$#', $path, $matches)) {
+            return null;
+        }
+
+        return collect($matches)
+            ->filter(fn ($value, $key) => is_string($key))
+            ->all();
+    }
+
+    private static function extractLocalStatusId(string $url): ?int
+    {
+        $path = parse_url($url, PHP_URL_PATH);
+
+        if (! is_string($path) || $path === '') {
+            return null;
+        }
+
+        $templates = [
+            '/p/{username}/{id}',
+            '/p/{username}/{id}/activity',
+        ];
+
+        foreach ($templates as $template) {
+            $match = self::matchPathTemplate(
+                $path,
+                $template,
+                [
+                    'username' => '[A-Za-z0-9._-]+',
+                    'id' => '\d+',
+                ]
+            );
+
+            if ($match !== null) {
+                return (int) $match['id'];
+            }
+        }
+
+        return null;
+    }
+
     /**
      * Find existing status by URL
      */
@@ -616,10 +697,14 @@ class Helpers
         $host = parse_url($url, PHP_URL_HOST);
 
         if (self::isLocalDomain($host)) {
-            $id = (int) last(explode('/', $url));
+            $id = self::extractLocalStatusId($url);
+
+            if ($id === null) {
+                return null;
+            }
 
             return Status::whereNotIn('scope', ['draft', 'archived'])
-                ->findOrFail($id);
+                ->find($id);
         }
 
         return Status::whereNotIn('scope', ['draft', 'archived'])
@@ -633,8 +718,11 @@ class Helpers
     /**
      * Create a new status from ActivityPub data
      */
-    public static function createStatusFromUrl(string $url, bool $replyTo, int $depth = 0): ?Status
-    {
+    public static function createStatusFromUrl(
+        string $url,
+        bool $replyTo,
+        int $depth = 0
+    ): ?Status {
         $res = self::fetchFromUrl($url);
 
         if (! $res || ! self::isValidStatusData($res)) {
@@ -649,7 +737,8 @@ class Helpers
             return null;
         }
 
-        $activity = isset($res['object']) ? $res : ['object' => $res];
+        $object = self::statusObject($res);
+        $activity = ['object' => $object];
 
         if (! $profile = self::getStatusProfile($activity)) {
             return null;
@@ -659,24 +748,35 @@ class Helpers
             return null;
         }
 
-        $reply_to = self::getReplyToId($activity, $profile, $replyTo, $depth);
-        $scope = self::getScope($activity, $url);
-        $cw = self::getSensitive($activity, $url);
+        $scope = self::getScope($object, $url);
+        $cw = self::getSensitive($object, $url);
 
-        if ($res['type'] === 'Question') {
+        if (($object['type'] ?? null) === 'Question') {
+            $replyToId = self::getReplyToId(
+                $activity,
+                $profile,
+                $replyTo,
+                $depth
+            );
+
             return self::storePoll(
                 $profile,
-                $res,
+                $object,
                 $url,
-                $res['published'],
-                $reply_to,
+                $object['published'] ?? $res['published'],
+                $replyToId,
                 $cw,
                 $scope,
-                $activity['id'] ?? $url
+                $object['id'] ?? $url
             );
         }
 
-        return self::storeStatus($url, $profile, $res, $depth);
+        return self::storeStatus(
+            $url,
+            $profile,
+            $object,
+            $depth
+        );
     }
 
     /**
@@ -830,15 +930,25 @@ class Helpers
      * Resolves (and fetches if needed) the parent referenced by
      * object.inReplyTo, one hop deeper than the caller.
      */
-    public static function getReplyToId(array $activity, Profile $profile, bool $replyTo, int $depth = 0): ?int
-    {
-        $inReplyTo = self::pluckval($activity['object']['inReplyTo'] ?? null);
+    public static function getReplyToId(
+        array $activity,
+        Profile $profile,
+        bool $replyTo = false,
+        int $depth = 0
+    ): ?int {
+        $object = self::statusObject($activity);
+
+        $inReplyTo = self::pluckval($object['inReplyTo'] ?? null);
 
         if (! is_string($inReplyTo) || $inReplyTo === '') {
             return null;
         }
 
-        $reply = self::statusFirstOrFetch($inReplyTo, false, $depth + 1);
+        $reply = self::statusFirstOrFetch(
+            $inReplyTo,
+            false,
+            $depth + 1
+        );
 
         if (! $reply) {
             return null;
@@ -846,19 +956,28 @@ class Helpers
 
         $blocks = UserFilterService::blocks($reply->profile_id);
 
-        return in_array($profile->id, $blocks) ? null : $reply->id;
+        return in_array($profile->id, $blocks, true)
+            ? null
+            : $reply->id;
     }
 
     /**
      * Store a new regular status
      */
-    public static function storeStatus(string $url, Profile $profile, array $activity, int $depth = 0): Status
-    {
-        $id = self::getStatusId($activity, $url);
-        $url = self::getStatusUrl($activity, $id);
+    public static function storeStatus(
+        string $url,
+        Profile $profile,
+        array $activity,
+        int $depth = 0
+    ): Status {
+        $object = self::statusObject($activity);
 
-        if ((! isset($activity['type']) ||
-                in_array($activity['type'], ['Create', 'Note'])) &&
+        $id = self::getStatusId($object, $url);
+        $url = self::getStatusUrl($object, $id);
+
+        if (
+            (! isset($object['type']) ||
+                in_array($object['type'], ['Create', 'Note'], true)) &&
             ! self::validateStatusDomains($id, $url)
         ) {
             throw new \Exception(json_encode([
@@ -872,36 +991,77 @@ class Helpers
                     'url_valid_url' => self::validateUrl($url),
                 ],
                 'expected' => 'id host and url host to be valid and match (case-insensitive)',
-                'payload' => $activity,
+                'payload' => $object,
             ]));
         }
 
-        $reply_to = self::getReplyTo($activity, $depth);
-        $ts = self::pluckval($activity['published']);
-        $scope = self::getScope($activity, $url);
-        $commentsDisabled = isset($activity['commentsEnabled']) ? (bool) $activity['commentsEnabled'] === false : false;
-        $cw = self::getSensitive($activity, $url);
+        $replyTo = self::getReplyToId(
+            ['object' => $object],
+            $profile,
+            false,
+            $depth
+        );
+
+        $published = self::pluckval(
+            $object['published']
+                ?? $activity['published']
+                ?? null
+        );
+
+        if (! is_string($published) || $published === '') {
+            throw new \Exception('Missing ActivityPub published timestamp');
+        }
+
+        $scope = self::getScope($object, $url);
+
+        $commentsDisabled =
+            isset($object['commentsEnabled']) &&
+            (bool) $object['commentsEnabled'] === false;
+
+        $cw = self::getSensitive($object, $url);
 
         if ($profile->unlisted) {
             $scope = 'unlisted';
         }
 
-        $status = self::createOrUpdateStatus($url, $profile, $id, $activity, $ts, $reply_to, $cw, $scope, $commentsDisabled);
+        $status = self::createOrUpdateStatus(
+            $url,
+            $profile,
+            $id,
+            $object,
+            $published,
+            $replyTo,
+            $cw,
+            $scope,
+            $commentsDisabled
+        );
 
-        if ($reply_to === null) {
-            self::importNoteAttachment($activity, $status);
+        if ($replyTo === null) {
+            self::importNoteAttachment($object, $status);
         } else {
-            if (isset($activity['attachment']) && ! empty($activity['attachment'])) {
-                self::importNoteAttachment($activity, $status);
+            if (
+                isset($object['attachment']) &&
+                ! empty($object['attachment'])
+            ) {
+                self::importNoteAttachment($object, $status);
             }
+
             StatusReplyPipeline::dispatch($status);
         }
 
-        if (isset($activity['tag']) && is_array($activity['tag']) && ! empty($activity['tag'])) {
-            StatusTagsPipeline::dispatch($activity, $status);
+        if (
+            isset($object['tag']) &&
+            is_array($object['tag']) &&
+            ! empty($object['tag'])
+        ) {
+            StatusTagsPipeline::dispatch($object, $status);
         }
 
-        self::handleStatusPostProcessing($status, $profile->id, $url);
+        self::handleStatusPostProcessing(
+            $status,
+            $profile->id,
+            $url
+        );
 
         return $status;
     }
@@ -939,6 +1099,18 @@ class Helpers
         $urlDomain = parse_url($url, PHP_URL_HOST);
 
         return $idDomain && $urlDomain && strtolower($idDomain) === strtolower($urlDomain);
+    }
+
+    private static function statusObject(array $payload): array
+    {
+        if (
+            isset($payload['object']) &&
+            is_array($payload['object'])
+        ) {
+            return $payload['object'];
+        }
+
+        return $payload;
     }
 
     /**
@@ -1127,7 +1299,7 @@ class Helpers
         $status->caption = $cleanedCaption ? strip_tags($cleanedCaption) : $defaultCaption;
         $status->rendered = Purify::clean($res['content'] ?? $defaultCaption);
         $status->created_at = Carbon::parse($ts)->tz('UTC');
-        $status->in_reply_to_id = null;
+        $status->in_reply_to_id = $reply_to;
         $status->local = false;
         $status->is_nsfw = $cw;
         $status->scope = 'draft';
