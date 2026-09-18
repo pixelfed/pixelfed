@@ -612,7 +612,7 @@ class MediaMoveStorageLocalToCloud extends Command
 
         try {
             return $cloudDisk->url($path);
-        } catch (\Throwable $e) {
+        } catch (\Throwable) {
             return $cloud.':'.$path;
         }
     }

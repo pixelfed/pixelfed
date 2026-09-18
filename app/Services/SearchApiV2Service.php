@@ -248,7 +248,7 @@ class SearchApiV2Service
             ) {
                 try {
                     $res = WebfingerService::lookup('@'.$query, $mastodonMode);
-                } catch (\Exception $e) {
+                } catch (\Exception) {
                     return $default;
                 }
                 if ($res && isset($res['id'], $res['url'])) {
@@ -272,7 +272,7 @@ class SearchApiV2Service
             if (Str::substrCount($query, '@') == 2) {
                 try {
                     $res = WebfingerService::lookup($query, $mastodonMode);
-                } catch (\Exception $e) {
+                } catch (\Exception) {
                     return $default;
                 }
                 if ($res && isset($res['id'])) {
@@ -360,7 +360,7 @@ class SearchApiV2Service
                             ];
                     }
                 }
-            } catch (\Exception $e) {
+            } catch (\Exception) {
                 return [
                     'accounts' => [],
                     'hashtags' => [],

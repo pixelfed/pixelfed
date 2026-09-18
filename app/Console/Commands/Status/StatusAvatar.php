@@ -166,7 +166,7 @@ class StatusAvatar extends Command
 
             return Storage::disk('local')->exists('public/'.$mediaPath)
                 || Storage::disk('local')->exists($mediaPath);
-        } catch (\Throwable $e) {
+        } catch (\Throwable) {
             return false;
         }
     }

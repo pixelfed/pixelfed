@@ -111,7 +111,7 @@ class AppRegisterController extends Controller
 
         try {
             Mail::to($email)->send(new InAppRegisterEmailVerify($code));
-        } catch (\Exception $e) {
+        } catch (\Exception) {
             DB::rollBack();
 
             return $this->appRedirect($redirectUri, [
@@ -221,7 +221,7 @@ class AppRegisterController extends Controller
 
         try {
             Mail::to($email)->send(new InAppRegisterEmailVerify($code));
-        } catch (\Exception $e) {
+        } catch (\Exception) {
             DB::rollBack();
 
             return $this->appRedirect($redirectUri, [
@@ -327,7 +327,7 @@ class AppRegisterController extends Controller
 
         try {
             $tokens = $tokenFactory->issue($user, (string) $clientId, (string) $clientSecret, $scopes);
-        } catch (OAuthServerException $e) {
+        } catch (OAuthServerException) {
             return response()->json([
                 'status' => 'error',
                 'code' => 'account_created_token_failed',

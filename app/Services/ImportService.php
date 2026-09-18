@@ -314,7 +314,7 @@ class ImportService
                 $nextDay->month,
                 $nextDay->day,
             ];
-        } catch (\Exception $e) {
+        } catch (\Exception) {
             return [null, null, null];
         }
     }

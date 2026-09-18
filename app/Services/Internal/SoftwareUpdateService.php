@@ -79,11 +79,11 @@ class SoftwareUpdateService
                 ->connectTimeout(5)
                 ->retry(2, 500)
                 ->get('https://versions.pixelfed.org/versions.json');
-        } catch (RequestException $e) {
+        } catch (RequestException) {
             return;
-        } catch (ConnectionException $e) {
+        } catch (ConnectionException) {
             return;
-        } catch (\Exception $e) {
+        } catch (\Exception) {
             return;
         }
 

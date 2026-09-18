@@ -77,9 +77,9 @@ class CustomEmojiService
                 ->timeout(15)
                 ->connectTimeout(5)
                 ->get($url);
-        } catch (RequestException $e) {
+        } catch (RequestException) {
             return;
-        } catch (\Exception $e) {
+        } catch (\Exception) {
             return;
         }
 
@@ -140,7 +140,7 @@ class CustomEmojiService
 
                 $emoji->media_path = $mediaPath;
                 $emoji->save();
-            } catch (\Exception $e) {
+            } catch (\Exception) {
                 // Download failed
                 return;
             }
@@ -231,7 +231,7 @@ class CustomEmojiService
                 $emoji->media_path = $mediaPath;
                 $emoji->save();
             }
-        } catch (\Throwable $e) {
+        } catch (\Throwable) {
             return 'failed';
         }
 

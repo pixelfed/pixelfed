@@ -134,11 +134,11 @@ class SecureMediaFetchService
                     ->timeout(self::TIMEOUT)
                     ->connectTimeout(self::CONNECT_TIMEOUT)
                     ->{$method}($currentUrl);
-            } catch (RequestException $e) {
+            } catch (RequestException) {
                 return false;
-            } catch (ConnectionException $e) {
+            } catch (ConnectionException) {
                 return false;
-            } catch (\Throwable $e) {
+            } catch (\Throwable) {
                 return false;
             }
 
@@ -227,7 +227,7 @@ class SecureMediaFetchService
             $resolved = (string) BaseUri::from($baseUrl)->resolve($location);
 
             return Helpers::validateUrl($resolved) ? $resolved : null;
-        } catch (\Throwable $e) {
+        } catch (\Throwable) {
             return null;
         }
     }

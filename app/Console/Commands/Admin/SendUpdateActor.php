@@ -96,7 +96,7 @@ class SendUpdateActor extends Command
                     $body = $this->updateObject($profile);
                     try {
                         Helpers::sendSignedObject($profile, $url, $body);
-                    } catch (\Throwable $e) {
+                    } catch (\Throwable) {
                         // Best-effort per user: a single bad host (transport
                         // failure, invalid destination, etc.) must not abort the
                         // fleet-wide actor update.

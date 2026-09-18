@@ -347,7 +347,7 @@ class MediaUpdateS3CDNUrl extends Command
     {
         try {
             return (string) Storage::disk(config('filesystems.cloud'))->url($path);
-        } catch (\Throwable $e) {
+        } catch (\Throwable) {
             return null;
         }
     }
@@ -359,7 +359,7 @@ class MediaUpdateS3CDNUrl extends Command
             $host = parse_url($url, PHP_URL_HOST);
 
             return $host ?: null;
-        } catch (\Throwable $e) {
+        } catch (\Throwable) {
             return null;
         }
     }

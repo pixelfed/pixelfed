@@ -204,7 +204,7 @@ class Helpers
 
         try {
             $uri = $uri->withHost($host);
-        } catch (\Throwable $e) {
+        } catch (\Throwable) {
             return false;
         }
 
@@ -575,7 +575,7 @@ class Helpers
             $isMoreThanOneDayFuture = $date->gt($tomorrow);
 
             return ! ($isMoreThanTenYearsOld || $isMoreThanOneDayFuture);
-        } catch (\Exception $e) {
+        } catch (\Exception) {
             return false;
         }
     }
@@ -1251,7 +1251,7 @@ class Helpers
 
         try {
             $mediaModel->save();
-        } catch (UniqueConstraintViolationException $e) {
+        } catch (UniqueConstraintViolationException) {
             // Lost a race with a concurrent inbox job that inserted the same
             // (status_id, media_path). Treat as already-imported.
             return null;

@@ -959,7 +959,7 @@ class ApiV1Controller extends Controller
                 $status = $napi
                     ? StatusService::get($row->id, false)
                     : StatusService::getMastodon($row->id, false);
-            } catch (\Throwable $e) {
+            } catch (\Throwable) {
                 continue;
             }
 
@@ -982,7 +982,7 @@ class ApiV1Controller extends Controller
                     $reblog = $napi
                         ? StatusService::get($reblogId, false)
                         : StatusService::getMastodon($reblogId, false);
-                } catch (\Throwable $e) {
+                } catch (\Throwable) {
                     continue;
                 }
 
@@ -2850,7 +2850,7 @@ class ApiV1Controller extends Controller
                         if (! $status || ! isset($status['account']) || ! isset($status['account']['id'])) {
                             return false;
                         }
-                    } catch (\Exception $e) {
+                    } catch (\Exception) {
                         return false;
                     }
 
@@ -2921,7 +2921,7 @@ class ApiV1Controller extends Controller
                         if (! $status || ! isset($status['account']) || ! isset($status['account']['id'])) {
                             return false;
                         }
-                    } catch (\Exception $e) {
+                    } catch (\Exception) {
                         return false;
                     }
 
@@ -3191,7 +3191,7 @@ class ApiV1Controller extends Controller
                     if (! $status || ! isset($status['account']) || ! isset($status['account']['id'])) {
                         return false;
                     }
-                } catch (\Exception $e) {
+                } catch (\Exception) {
                     return false;
                 }
 

@@ -72,15 +72,15 @@ class FetchCacheService
                 ->withHeaders($headers)
                 ->timeout(40)
                 ->get($url);
-        } catch (RequestException $e) {
+        } catch (RequestException) {
             Cache::put($key, 1, $ttl);
 
             return false;
-        } catch (ConnectionException $e) {
+        } catch (ConnectionException) {
             Cache::put($key, 1, $ttl);
 
             return false;
-        } catch (\Exception $e) {
+        } catch (\Exception) {
             Cache::put($key, 1, $ttl);
 
             return false;

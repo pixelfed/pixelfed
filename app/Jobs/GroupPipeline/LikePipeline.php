@@ -80,7 +80,7 @@ class LikePipeline implements ShouldQueue
         try {
             NotificationService::createNotification($status->profile_id, $actor->id, 'group:like', $status->id, Status::class);
 
-        } catch (\Exception $e) {
+        } catch (\Exception) {
         }
     }
 

@@ -96,7 +96,7 @@ class AvatarService
         } catch (
             UnableToRetrieveMetadata|
             UnableToCheckDirectoryExistence|
-            Exception $e
+            Exception
         ) {
             return;
         }

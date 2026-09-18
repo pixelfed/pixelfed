@@ -167,7 +167,7 @@ class ActivityPubFetchService
                     64,
                     JSON_THROW_ON_ERROR
                 );
-            } catch (\JsonException $e) {
+            } catch (\JsonException) {
                 return;
             }
         }
@@ -234,7 +234,7 @@ class ActivityPubFetchService
             return Helpers::validateUrl($url)
                 ? $url
                 : null;
-        } catch (\Throwable $e) {
+        } catch (\Throwable) {
             return null;
         }
     }

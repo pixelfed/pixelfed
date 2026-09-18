@@ -77,11 +77,11 @@ class NodeinfoService
                 ->withHeaders($headers)
                 ->timeout(5)
                 ->get($href);
-        } catch (RequestException $e) {
+        } catch (RequestException) {
             return false;
-        } catch (ConnectionException $e) {
+        } catch (ConnectionException) {
             return false;
-        } catch (\Exception $e) {
+        } catch (\Exception) {
             return false;
         }
 

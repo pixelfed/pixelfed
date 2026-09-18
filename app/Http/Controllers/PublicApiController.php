@@ -468,7 +468,7 @@ class PublicApiController extends Controller
                         if (! $status) {
                             return false;
                         }
-                    } catch (\Exception $e) {
+                    } catch (\Exception) {
                         return false;
                     }
                     $status['favourited'] = (bool) LikeService::liked($user->profile_id, $s->id);
@@ -517,7 +517,7 @@ class PublicApiController extends Controller
                         if (! $status) {
                             return false;
                         }
-                    } catch (\Exception $e) {
+                    } catch (\Exception) {
                         return false;
                     }
                     $status['favourited'] = (bool) LikeService::liked($user->profile_id, $s->id);
@@ -881,7 +881,7 @@ class PublicApiController extends Controller
                 }
 
                 return $mastodonStatus;
-            } catch (\Exception $e) {
+            } catch (\Exception) {
                 return null;
             }
         })
