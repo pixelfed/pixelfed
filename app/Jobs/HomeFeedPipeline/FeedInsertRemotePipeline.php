@@ -16,10 +16,22 @@ use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\Middleware\WithoutOverlapping;
 use Illuminate\Queue\SerializesModels;
 use Illuminate\Support\Facades\Log;
+use Throwable;
 
 class FeedInsertRemotePipeline implements ShouldBeUniqueUntilProcessing, ShouldQueue
 {
     use Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
+
+    /**
+     * Remote statuses published more than this many days ago are not
+     * inserted into home feeds.
+     *
+     * The home timeline is scored by status id, and a remote status gets
+     * its id when we first store it, not when it was published. Without
+     * this guard an old post that is fetched for the first time (a boost,
+     * an edit, a reply to it) lands at the top of every follower's feed.
+     */
+    public const MAX_AGE_DAYS = 7;
 
     protected $sid;
 
@@ -101,6 +113,10 @@ class FeedInsertRemotePipeline implements ShouldBeUniqueUntilProcessing, ShouldQ
             return;
         }
 
+        if (self::isTooOld($status)) {
+            return;
+        }
+
         $ids = FollowerService::localFollowerIds($pid);
 
         if (! $ids || ! count($ids)) {
@@ -131,5 +147,20 @@ class FeedInsertRemotePipeline implements ShouldBeUniqueUntilProcessing, ShouldQ
                 HomeTimelineService::add($id, $sid);
             }
         }
+    }
+
+    public static function isTooOld(string|\DateTimeInterface|null $createdAt): bool
+    {
+        if ($createdAt === null || $createdAt === '') {
+            return true;
+        }
+
+        try {
+            $published = now()->parse($createdAt);
+        } catch (Throwable) {
+            return true;
+        }
+
+        return $published->lt(now()->subDays(self::MAX_AGE_DAYS));
     }
 }

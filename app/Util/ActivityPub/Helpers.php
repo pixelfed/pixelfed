@@ -989,7 +989,8 @@ class Helpers
     {
         if (
             config('instance.timeline.network.cached') &&
-            self::isEligibleForNetwork($status)
+            self::isEligibleForNetwork($status) &&
+            ! FeedInsertRemotePipeline::isTooOld($status->created_at)
         ) {
             $urlDomain = parse_url($url, PHP_URL_HOST);
             $filteredDomains = self::getFilteredDomains();
