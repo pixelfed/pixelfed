@@ -60,7 +60,7 @@ class FixHashtags extends Command
             if ($slug === $tag->slug) {
                 continue;
             }
-            $count = Hashtag::whereName($tag->name)->where('slug', '===', $slug)->count();
+            $count = Hashtag::whereName($tag->name)->where('slug', '=', $slug)->count();
             if (! $count) {
                 continue;
             }
@@ -69,8 +69,6 @@ class FixHashtags extends Command
         }
 
         $this->info('Found '.$count.' broken tags');
-
-        return;
 
         $missingCount = StatusHashtag::doesntHave('profile')->doesntHave('status')->count();
         if ($missingCount > 0) {

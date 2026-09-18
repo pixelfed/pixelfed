@@ -37,8 +37,8 @@ parameters:
 			path: app/Console/Commands/FixBugs/FixDuplicateProfiles.php
 
 		-
-			message: '#^Unreachable statement \- code above always terminates\.$#'
-			identifier: deadCode.unreachable
+			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$scope\.$#'
+			identifier: property.notFound
 			count: 1
 			path: app/Console/Commands/FixBugs/FixHashtags.php
 
@@ -133,14 +133,14 @@ parameters:
 			path: app/Console/Commands/User/UserCheckPassword.php
 
 		-
-			message: '#^Negated boolean expression is always false\.$#'
-			identifier: booleanNot.alwaysFalse
+			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$status\.$#'
+			identifier: property.notFound
 			count: 1
 			path: app/Console/Commands/User/UserDelete.php
 
 		-
-			message: '#^Unreachable statement \- code above always terminates\.$#'
-			identifier: deadCode.unreachable
+			message: '#^Negated boolean expression is always false\.$#'
+			identifier: booleanNot.alwaysFalse
 			count: 1
 			path: app/Console/Commands/User/UserDelete.php
 
