@@ -33,7 +33,7 @@ trait HomeSettings
         $storage['usedPretty'] = PrettyNumber::size($storage['used']);
         $pronouns = PronounService::get($id);
 
-        return view('settings.home', compact('storage', 'pronouns'));
+        return view('settings.home', ['storage' => $storage, 'pronouns' => $pronouns]);
     }
 
     public function homeUpdate(Request $request)
@@ -217,9 +217,9 @@ trait HomeSettings
             }
 
             return redirect('/settings/email')->with('status', 'Email successfully updated!');
-        } else {
-            return redirect('/settings/email');
         }
+
+        return redirect('/settings/email');
 
     }
 

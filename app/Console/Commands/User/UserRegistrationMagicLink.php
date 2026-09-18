@@ -38,7 +38,7 @@ class UserRegistrationMagicLink extends Command
             $this->info('php artisan user:app-magic-link --username=dansup');
             $this->info('php artisan user:app-magic-link --email=dansup@pixelfed.com');
 
-            return;
+            return Command::FAILURE;
         }
         $user = User::when($username, function ($q, $username) {
             return $q->whereUsername($username);
@@ -51,19 +51,19 @@ class UserRegistrationMagicLink extends Command
         if (! $user) {
             $this->error('We cannot find any matching accounts');
 
-            return;
+            return Command::FAILURE;
         }
 
         if ($user->email_verified_at) {
             $this->error('User already verified email address');
 
-            return;
+            return Command::FAILURE;
         }
 
         if (! $user->register_source || $user->register_source !== 'app' || ! $user->app_register_token) {
             $this->error('User did not register via app');
 
-            return;
+            return Command::FAILURE;
         }
 
         $verify = EmailVerification::whereUserId($user->id)->first();
@@ -71,7 +71,7 @@ class UserRegistrationMagicLink extends Command
         if (! $verify) {
             $this->error('Cannot find user verification codes');
 
-            return;
+            return Command::FAILURE;
         }
 
         $appUrl = 'pixelfed://confirm-account/'.$user->app_register_token.'?rt='.$verify->random_token;

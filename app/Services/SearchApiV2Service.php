@@ -84,10 +84,10 @@ class SearchApiV2Service
         $rawQuery = $initalQuery ? $initalQuery : $this->query->input('q');
         $query = $rawQuery.'%';
         $webfingerQuery = $query;
-        if (Str::substrCount($rawQuery, '@') == 1 && substr($rawQuery, 0, 1) !== '@') {
+        if (Str::substrCount($rawQuery, '@') == 1 && ! str_starts_with($rawQuery, '@')) {
             $query = '@'.$query;
         }
-        if (substr($webfingerQuery, 0, 1) !== '@') {
+        if (! str_starts_with($webfingerQuery, '@')) {
             $webfingerQuery = '@'.$webfingerQuery;
         }
         $banned = InstanceService::getBannedDomains() ?? [];
@@ -108,7 +108,7 @@ class SearchApiV2Service
             ->limit($limit)
             ->get()
             ->filter(function ($profile) use ($banned) {
-                return in_array($profile->domain, $banned) == false;
+                return in_array($profile->domain, $banned) === false;
             })
             ->map(function ($res) use ($mastodonMode) {
                 return $mastodonMode ?
@@ -188,13 +188,13 @@ class SearchApiV2Service
             ->values();
     }
 
-    protected function statuses()
+    protected function statuses(): array
     {
         // Removed until we provide more relevent sorting/results
         return [];
     }
 
-    protected function statusesById()
+    protected function statusesById(): array
     {
         // Removed until we provide more relevent sorting/results
         return [];
@@ -222,7 +222,7 @@ class SearchApiV2Service
                 )
             );
         }
-        if (substr($query, 0, 1) === '@' && ! Str::contains($query, '.')) {
+        if (str_starts_with($query, '@') && ! Str::contains($query, '.')) {
             $default['accounts'] = $this->accounts(substr($query, 1));
 
             return $default;
@@ -230,149 +230,148 @@ class SearchApiV2Service
         if (Helpers::validateLocalUrl($query)) {
             if (Str::contains($query, '/p/') || Str::contains($query, 'i/web/post/')) {
                 return $this->resolveLocalStatus();
-            } elseif (Str::contains($query, 'i/web/profile/')) {
-                return $this->resolveLocalProfileId();
-            } else {
-                return $this->resolveLocalProfile();
             }
-        } else {
-            if (! Helpers::validateUrl($query) && strpos($query, '@') === false) {
+            if (Str::contains($query, 'i/web/profile/')) {
+                return $this->resolveLocalProfileId();
+            }
+
+            return $this->resolveLocalProfile();
+        }
+        if (! Helpers::validateUrl($query) && ! str_contains($query, '@')) {
+            return $default;
+        }
+        if (
+            ! Str::startsWith($query, 'http') &&
+            Str::substrCount($query, '@') == 1 &&
+            str_contains($query, '@') &&
+            ! str_starts_with($query, '@')
+        ) {
+            try {
+                $res = WebfingerService::lookup('@'.$query, $mastodonMode);
+            } catch (\Exception) {
+                return $default;
+            }
+            if ($res && isset($res['id'], $res['url'])) {
+                $domain = strtolower(parse_url($res['url'], PHP_URL_HOST));
+                if (in_array($domain, $banned)) {
+                    return $default;
+                }
+                $paginated = collect($res)->take($limit)->skip($offset)->toArray();
+                if (! empty($paginated)) {
+                    $default['accounts'][] = $paginated;
+                } else {
+                    $default['accounts'] = [];
+                }
+
                 return $default;
             }
 
-            if (
-                ! Str::startsWith($query, 'http') &&
-                Str::substrCount($query, '@') == 1 &&
-                strpos($query, '@') !== false &&
-                strpos($query, '@') !== 0
-            ) {
-                try {
-                    $res = WebfingerService::lookup('@'.$query, $mastodonMode);
-                } catch (\Exception $e) {
-                    return $default;
-                }
-                if ($res && isset($res['id'], $res['url'])) {
-                    $domain = strtolower(parse_url($res['url'], PHP_URL_HOST));
-                    if (in_array($domain, $banned)) {
-                        return $default;
-                    }
-                    $paginated = collect($res)->take($limit)->skip($offset)->toArray();
-                    if (! empty($paginated)) {
-                        $default['accounts'][] = $paginated;
-                    } else {
-                        $default['accounts'] = [];
-                    }
-
-                    return $default;
-                } else {
-                    return $default;
-                }
-            }
-
-            if (Str::substrCount($query, '@') == 2) {
-                try {
-                    $res = WebfingerService::lookup($query, $mastodonMode);
-                } catch (\Exception $e) {
-                    return $default;
-                }
-                if ($res && isset($res['id'])) {
-                    $domain = strtolower(parse_url($res['url'], PHP_URL_HOST));
-                    if (in_array($domain, $banned)) {
-                        return $default;
-                    }
-                    $paginated = collect($res)->take($limit)->skip($offset)->toArray();
-                    if (! empty($paginated)) {
-                        $default['accounts'][] = $paginated;
-                    } else {
-                        $default['accounts'] = [];
-                    }
-
-                    return $default;
-                } else {
-                    return $default;
-                }
-            }
-
-            if ($sid = Status::whereUri($query)->first()) {
-                $s = StatusService::get($sid->id, false);
-                if (! $s || isset($s['account']['moved'], $s['account']['moved']['id'])) {
-                    return $default;
-                }
-                if (in_array($s['visibility'], ['public', 'unlisted'])) {
-                    $default['statuses'][] = $s;
-
-                    return $default;
-                }
-            }
-
+            return $default;
+        }
+        if (Str::substrCount($query, '@') == 2) {
             try {
-                $res = ActivityPubFetchService::get($query);
+                $res = WebfingerService::lookup($query, $mastodonMode);
+            } catch (\Exception) {
+                return $default;
+            }
+            if ($res && isset($res['id'])) {
+                $domain = strtolower(parse_url($res['url'], PHP_URL_HOST));
+                if (in_array($domain, $banned)) {
+                    return $default;
+                }
+                $paginated = collect($res)->take($limit)->skip($offset)->toArray();
+                if (! empty($paginated)) {
+                    $default['accounts'][] = $paginated;
+                } else {
+                    $default['accounts'] = [];
+                }
 
-                if ($res) {
-                    $json = json_decode($res, true);
+                return $default;
+            }
 
-                    if (! $json || ! isset($json['@context']) || ! isset($json['type']) || ! in_array($json['type'], ['Note', 'Person'])) {
+            return $default;
+        }
+        if ($sid = Status::whereUri($query)->first()) {
+            $s = StatusService::get($sid->id, false);
+            if (! $s || isset($s['account']['moved'], $s['account']['moved']['id'])) {
+                return $default;
+            }
+            if (in_array($s['visibility'], ['public', 'unlisted'])) {
+                $default['statuses'][] = $s;
+
+                return $default;
+            }
+        }
+        try {
+            $res = ActivityPubFetchService::get($query);
+
+            if ($res) {
+                $json = json_decode($res, true);
+
+                if (! $json || ! isset($json['@context']) || ! isset($json['type']) || ! in_array($json['type'], ['Note', 'Person'])) {
+                    return [
+                        'accounts' => [],
+                        'hashtags' => [],
+                        'statuses' => [],
+                    ];
+                }
+
+                switch ($json['type']) {
+                    case 'Note':
+                        $obj = Helpers::statusFetch($query);
+                        if (! $obj || ! isset($obj['id'])) {
+                            return $default;
+                        }
+                        $note = $mastodonMode ?
+                            StatusService::getMastodon($obj['id'], false) :
+                            StatusService::get($obj['id'], false);
+                        if (! $note) {
+                            return $default;
+                        }
+                        if (! isset($note['visibility']) || ! in_array($note['visibility'], ['public', 'unlisted'])) {
+                            return $default;
+                        }
+                        $default['statuses'][] = $note;
+
+                        return $default;
+
+                    case 'Person':
+                        $obj = Helpers::profileFetch($query);
+                        if (! $obj) {
+                            return $default;
+                        }
+                        if (in_array($obj['domain'], $banned)) {
+                            return $default;
+                        }
+                        $default['accounts'][] = $mastodonMode ?
+                            AccountService::getMastodon($obj['id'], true) :
+                            AccountService::get($obj['id'], true);
+
+                        return $default;
+
+                    default:
                         return [
                             'accounts' => [],
                             'hashtags' => [],
                             'statuses' => [],
                         ];
-                    }
-
-                    switch ($json['type']) {
-                        case 'Note':
-                            $obj = Helpers::statusFetch($query);
-                            if (! $obj || ! isset($obj['id'])) {
-                                return $default;
-                            }
-                            $note = $mastodonMode ?
-                                StatusService::getMastodon($obj['id'], false) :
-                                StatusService::get($obj['id'], false);
-                            if (! $note) {
-                                return $default;
-                            }
-                            if (! isset($note['visibility']) || ! in_array($note['visibility'], ['public', 'unlisted'])) {
-                                return $default;
-                            }
-                            $default['statuses'][] = $note;
-
-                            return $default;
-
-                        case 'Person':
-                            $obj = Helpers::profileFetch($query);
-                            if (! $obj) {
-                                return $default;
-                            }
-                            if (in_array($obj['domain'], $banned)) {
-                                return $default;
-                            }
-                            $default['accounts'][] = $mastodonMode ?
-                                AccountService::getMastodon($obj['id'], true) :
-                                AccountService::get($obj['id'], true);
-
-                            return $default;
-
-                        default:
-                            return [
-                                'accounts' => [],
-                                'hashtags' => [],
-                                'statuses' => [],
-                            ];
-                    }
                 }
-            } catch (\Exception $e) {
-                return [
-                    'accounts' => [],
-                    'hashtags' => [],
-                    'statuses' => [],
-                ];
             }
-
-            return $default;
+        } catch (\Exception) {
+            return [
+                'accounts' => [],
+                'hashtags' => [],
+                'statuses' => [],
+            ];
         }
+
+        return $default;
     }
 
-    protected function resolveLocalStatus()
+    /**
+     * @return mixed[][]
+     */
+    protected function resolveLocalStatus(): array
     {
         $query = urldecode($this->query->input('q'));
         $query = last(explode('/', parse_url($query, PHP_URL_PATH)));
@@ -394,7 +393,7 @@ class SearchApiV2Service
         return $res;
     }
 
-    protected function resolveLocalProfile()
+    protected function resolveLocalProfile(): array
     {
         $query = urldecode($this->query->input('q'));
         $query = last(explode('/', parse_url($query, PHP_URL_PATH)));
@@ -422,7 +421,7 @@ class SearchApiV2Service
         ];
     }
 
-    protected function resolveLocalProfileId()
+    protected function resolveLocalProfileId(): array
     {
         $query = urldecode($this->query->input('q'));
         $query = last(explode('/', parse_url($query, PHP_URL_PATH)));

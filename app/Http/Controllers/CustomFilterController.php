@@ -231,9 +231,8 @@ class CustomFilterController extends Controller
      * Convert Mastodon filter_action string to internal action value
      *
      * @param  string  $filterAction
-     * @return int
      */
-    private function filterActionToAction($filterAction)
+    private function filterActionToAction($filterAction): int
     {
         switch ($filterAction) {
             case 'warn':

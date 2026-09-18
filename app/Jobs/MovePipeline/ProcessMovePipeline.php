@@ -2,6 +2,7 @@
 
 namespace App\Jobs\MovePipeline;
 
+use App\Models\Profile;
 use App\Services\ActivityPubFetchService;
 use App\Util\ActivityPub\Helpers;
 use DateTime;
@@ -76,7 +77,7 @@ class ProcessMovePipeline implements ShouldQueue
      */
     public function handle(): void
     {
-        if (config('app.env') !== 'production' || (bool) config_cache('federation.activitypub.enabled') == false) {
+        if (config('app.env') !== 'production' || (bool) config_cache('federation.activitypub.enabled') === false) {
             throw new Exception('Activitypub not enabled');
         }
 
@@ -102,7 +103,7 @@ class ProcessMovePipeline implements ShouldQueue
         }
 
         $targetRes = Helpers::profileFetch($this->target);
-        if (! $targetRes) {
+        if (! $targetRes instanceof Profile) {
             return false;
         }
 
@@ -133,7 +134,7 @@ class ProcessMovePipeline implements ShouldQueue
         }
 
         $actorRes = Helpers::profileFetch($this->activity);
-        if (! $actorRes) {
+        if (! $actorRes instanceof Profile) {
             return false;
         }
 
@@ -149,7 +150,7 @@ class ProcessMovePipeline implements ShouldQueue
         return false;
     }
 
-    protected function lowerTrim($str)
+    protected function lowerTrim($str): string
     {
         return trim(strtolower($str));
     }

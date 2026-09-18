@@ -38,7 +38,7 @@ class WebfingerService
         }
 
         $profile = Helpers::profileFetch($link);
-        if (! $profile) {
+        if (! $profile instanceof Profile) {
             return [];
         }
 

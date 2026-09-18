@@ -162,7 +162,7 @@ class StoryController extends StoryComposeController
 
                 return $res;
             })->toArray();
-        if (count($stories) == 0) {
+        if (count($stories) === 0) {
             return [];
         }
         $cursor = count($stories) - 1;
@@ -290,7 +290,7 @@ class StoryController extends StoryComposeController
         }
         $pid = $profile->id;
 
-        return view('stories.show_remote', compact('pid'));
+        return view('stories.show_remote', ['pid' => $pid]);
     }
 
     public function pollResults(Request $request)

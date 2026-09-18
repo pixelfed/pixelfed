@@ -2,6 +2,6 @@
 
 return [
 
-    'emptyPersonalTimeline' => '',
+    'emptyPersonalTimeline' => 'Jūsų laiko juosta yra tuščia.',
 
 ];

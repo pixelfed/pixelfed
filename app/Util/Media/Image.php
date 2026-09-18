@@ -54,7 +54,7 @@ class Image
         $this->imageManager = ImageDriverManager::createImageManager();
     }
 
-    public function orientations()
+    public function orientations(): array
     {
         return [
             'square' => [
@@ -72,7 +72,7 @@ class Image
         ];
     }
 
-    public function getAspect($width, $height, $isThumbnail)
+    public function getAspect($width, $height, $isThumbnail): array
     {
         if ($isThumbnail) {
             return [
@@ -343,7 +343,7 @@ class Image
         }
     }
 
-    public function setBaseName($basePath, $thumbnail, $extension)
+    public function setBaseName($basePath, $thumbnail, $extension): array
     {
         $pathInfo = pathinfo($basePath);
         $dir = isset($pathInfo['dirname']) && $pathInfo['dirname'] !== '.' ? $pathInfo['dirname'].'/' : '';

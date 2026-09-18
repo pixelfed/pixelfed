@@ -24,7 +24,7 @@ class CustomEmojiService
 
     public static function get($shortcode)
     {
-        if ((bool) config_cache('federation.custom_emoji.enabled') == false) {
+        if ((bool) config_cache('federation.custom_emoji.enabled') === false) {
             return;
         }
 
@@ -33,7 +33,7 @@ class CustomEmojiService
 
     public static function import($url, $id = false)
     {
-        if ((bool) config_cache('federation.custom_emoji.enabled') == false) {
+        if ((bool) config_cache('federation.custom_emoji.enabled') === false) {
             return;
         }
 
@@ -53,7 +53,7 @@ class CustomEmojiService
         $host = parse_url($url, PHP_URL_HOST);
         $port = parse_url($url, PHP_URL_PORT) ?: 443;
         $ips = $host ? Helpers::resolvePublicIps($host) : [];
-        if (empty($ips)) {
+        if ($ips === []) {
             return;
         }
 
@@ -77,9 +77,7 @@ class CustomEmojiService
                 ->timeout(15)
                 ->connectTimeout(5)
                 ->get($url);
-        } catch (RequestException $e) {
-            return;
-        } catch (\Exception $e) {
+        } catch (RequestException|\Exception) {
             return;
         }
 
@@ -140,7 +138,7 @@ class CustomEmojiService
 
                 $emoji->media_path = $mediaPath;
                 $emoji->save();
-            } catch (\Exception $e) {
+            } catch (\Exception) {
                 // Download failed
                 return;
             }
@@ -153,9 +151,8 @@ class CustomEmojiService
             }
 
             return;
-        } else {
-            return;
         }
+
     }
 
     public static function headCheck($url)
@@ -173,11 +170,7 @@ class CustomEmojiService
             return false;
         }
 
-        if ($maxSize > 0 && $head['length'] > $maxSize) {
-            return false;
-        }
-
-        return true;
+        return $maxSize <= 0 || $head['length'] <= $maxSize;
     }
 
     /**
@@ -191,7 +184,7 @@ class CustomEmojiService
      */
     public static function resync(CustomEmoji $emoji): string
     {
-        if ((bool) config_cache('federation.custom_emoji.enabled') == false) {
+        if ((bool) config_cache('federation.custom_emoji.enabled') === false) {
             return 'skipped';
         }
 
@@ -236,7 +229,7 @@ class CustomEmojiService
                 $emoji->media_path = $mediaPath;
                 $emoji->save();
             }
-        } catch (\Throwable $e) {
+        } catch (\Throwable) {
             return 'failed';
         }
 

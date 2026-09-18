@@ -91,7 +91,10 @@ class Story extends Model
         return Bearcap::encode($this->url(), $this->bearcap_token);
     }
 
-    public function scopeToAudience($scope)
+    /**
+     * @return list
+     */
+    public function scopeToAudience($scope): array
     {
         $res = [];
 
@@ -110,7 +113,7 @@ class Story extends Model
         return $res;
     }
 
-    public function toAdminEntity()
+    public function toAdminEntity(): array
     {
         return [
             'id' => $this->id,

@@ -17,7 +17,7 @@ class MediaStorageService
 {
     public static function store(Media $media)
     {
-        if ((bool) config_cache('pixelfed.cloud_storage') == true && config('filesystems.default') === 'local') {
+        if ((bool) config_cache('pixelfed.cloud_storage') === true && config('filesystems.default') === 'local') {
             (new self)->cloudStore($media);
         }
     }
@@ -28,7 +28,7 @@ class MediaStorageService
             return;
         }
 
-        if ((bool) config_cache('pixelfed.cloud_storage') == true && config('filesystems.default') === 'local') {
+        if ((bool) config_cache('pixelfed.cloud_storage') === true && config('filesystems.default') === 'local') {
             return (new self)->cloudMove($media);
         }
     }
@@ -151,7 +151,7 @@ class MediaStorageService
         }
 
         // Hardened HEAD (IP-validated, pinned, no internal redirects).
-        $head = $this->head($url);
+        $head = static::head($url);
 
         if (! $head) {
             return;
@@ -177,6 +177,8 @@ class MediaStorageService
         if ($head['length'] >= $max_size) {
             return;
         }
+
+        $ext = '';
 
         switch ($mime) {
             case 'image/png':
@@ -242,7 +244,7 @@ class MediaStorageService
             return;
         }
 
-        $head = $this->head($url);
+        $head = static::head($url);
 
         if ($head == false) {
             return;

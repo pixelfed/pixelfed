@@ -52,73 +52,69 @@ class SendUpdateActor extends Command
             );
 
             return Command::SUCCESS;
-        } else {
-            $domain = $this->anticipate('Enter the instance domain', function ($input) {
-                return Instance::where('domain', 'like', '%'.$input.'%')->pluck('domain')->toArray();
-            });
-            if (! $this->confirm('Are you sure you want to send actor updates to '.$domain.'?')) {
-                return;
-            }
-            if ($cur = Instance::whereDomain($domain)->whereNotNull('actors_last_synced_at')->first()) {
-                if (! $this->option('force')) {
-                    $this->error('ERROR: Cannot re-sync this instance, it was already synced on '.$cur->actors_last_synced_at);
-
-                    return;
-                }
-            }
-            $this->touchStorageCache($domain);
-            $this->line(' ');
-            $this->error('Keep this window open during this process or it will not complete!');
-            $sharedInbox = Profile::whereDomain($domain)->whereNotNull('sharedInbox')->first();
-            if (! $sharedInbox) {
-                $this->error('ERROR: Cannot find the sharedInbox of '.$domain);
-
-                return;
-            }
-            $url = $sharedInbox->sharedInbox;
-            $this->line(' ');
-            $this->info('Found sharedInbox: '.$url);
-            $bar = $this->output->createProgressBar($totalUserCount);
-            $bar->start();
-
-            $startCache = $this->getStorageCache($domain);
-            User::whereNull('status')->when($startCache, function ($query, $startCache) use ($bar) {
-                $bar->advance($startCache);
-
-                return $query->where('id', '>', $startCache);
-            })->chunk(50, function ($users) use ($bar, $url, $domain) {
-                foreach ($users as $user) {
-                    $this->updateStorageCache($domain, $user->id);
-                    $profile = Profile::find($user->profile_id);
-                    if (! $profile) {
-                        continue;
-                    }
-                    $body = $this->updateObject($profile);
-                    try {
-                        Helpers::sendSignedObject($profile, $url, $body);
-                    } catch (\Throwable $e) {
-                        // Best-effort per user: a single bad host (transport
-                        // failure, invalid destination, etc.) must not abort the
-                        // fleet-wide actor update.
-                        continue;
-                    }
-                    $bar->advance();
-                }
-            });
-            $bar->finish();
-            $this->line(' ');
-            $instance = Instance::whereDomain($domain)->firstOrFail();
-            $instance->actors_last_synced_at = now();
-            $instance->save();
-            $this->info('Finished!');
-
+        }
+        $domain = $this->anticipate('Enter the instance domain', function ($input) {
+            return Instance::where('domain', 'like', '%'.$input.'%')->pluck('domain')->toArray();
+        });
+        if (! $this->confirm('Are you sure you want to send actor updates to '.$domain.'?')) {
             return Command::SUCCESS;
         }
+        if ($cur = Instance::whereDomain($domain)->whereNotNull('actors_last_synced_at')->first()) {
+            if (! $this->option('force')) {
+                $this->error('ERROR: Cannot re-sync this instance, it was already synced on '.$cur->actors_last_synced_at);
+
+                return Command::FAILURE;
+            }
+        }
+        $this->touchStorageCache($domain);
+        $this->line(' ');
+        $this->error('Keep this window open during this process or it will not complete!');
+        $sharedInbox = Profile::whereDomain($domain)->whereNotNull('sharedInbox')->first();
+        if (! $sharedInbox) {
+            $this->error('ERROR: Cannot find the sharedInbox of '.$domain);
+
+            return Command::FAILURE;
+        }
+        $url = $sharedInbox->sharedInbox;
+        $this->line(' ');
+        $this->info('Found sharedInbox: '.$url);
+        $bar = $this->output->createProgressBar($totalUserCount);
+        $bar->start();
+        $startCache = $this->getStorageCache($domain);
+        User::whereNull('status')->when($startCache, function ($query, $startCache) use ($bar) {
+            $bar->advance($startCache);
+
+            return $query->where('id', '>', $startCache);
+        })->chunk(50, function ($users) use ($bar, $url, $domain) {
+            foreach ($users as $user) {
+                $this->updateStorageCache($domain, $user->id);
+                $profile = Profile::find($user->profile_id);
+                if (! $profile) {
+                    continue;
+                }
+                $body = $this->updateObject($profile);
+                try {
+                    Helpers::sendSignedObject($profile, $url, $body);
+                } catch (\Throwable) {
+                    // Best-effort per user: a single bad host (transport
+                    // failure, invalid destination, etc.) must not abort the
+                    // fleet-wide actor update.
+                    continue;
+                }
+                $bar->advance();
+            }
+        });
+        $bar->finish();
+        $this->line(' ');
+        $instance = Instance::whereDomain($domain)->firstOrFail();
+        $instance->actors_last_synced_at = now();
+        $instance->save();
+        $this->info('Finished!');
 
         return Command::SUCCESS;
     }
 
-    protected function updateObject($profile)
+    protected function updateObject($profile): array
     {
         return [
             '@context' => [
@@ -156,7 +152,7 @@ class SendUpdateActor extends Command
         Storage::put($path, $value);
     }
 
-    protected function actorObject($profile)
+    protected function actorObject($profile): array
     {
         $permalink = $profile->permalink();
 

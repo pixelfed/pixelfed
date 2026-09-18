@@ -72,19 +72,17 @@ class InboxValidator implements ShouldQueue
                 $lockKey = 'pf:ap:user-inbox:activity:'.hash('sha256', $payload['id']);
                 if (! Cache::add($lockKey, 1, 3600)) {
                     // Already processed after valid signature check
-                    return 1;
+                    return;
                 }
             }
 
             if (isset($payload['type']) && in_array($payload['type'], ['Follow', 'Accept'])) {
                 ActivityHandler::dispatch($headers, $profile, $payload)->onQueue('follow');
             } else {
-                $onQueue = Lottery::odds(1, 12)->winner(fn () => 'high')->loser(fn () => 'inbox')->choose();
+                $onQueue = Lottery::odds(1, 12)->winner(fn (): string => 'high')->loser(fn (): string => 'inbox')->choose();
                 ActivityHandler::dispatch($headers, $profile, $payload)->onQueue($onQueue);
             }
 
-            return;
-        } else {
             return;
         }
     }
@@ -171,11 +169,8 @@ class InboxValidator implements ShouldQueue
         }
         $inboxPath = "/users/{$profile->username}/inbox";
         [$verified, $headers] = HttpSignature::verify($pkey, $signatureData, $headers, $inboxPath, $body);
-        if ($verified == 1) {
-            return true;
-        } else {
-            return false;
-        }
+
+        return $verified == 1;
     }
 
     public static function actorOptionalFor(array $payload): bool

@@ -5,6 +5,11 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
+/**
+ * @property-read Status|null $status
+ * @property-read int $count aggregate/computed alias
+ * @property-read string $month_year aggregate/computed alias
+ */
 class AccountInterstitial extends Model
 {
     public const JSON_MESSAGE = 'Please use web browser to proceed.';

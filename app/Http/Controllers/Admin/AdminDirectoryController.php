@@ -24,7 +24,10 @@ trait AdminDirectoryController
         return view('admin.directory.home');
     }
 
-    public function directoryInitialData(Request $request)
+    /**
+     * @return mixed[]
+     */
+    public function directoryInitialData(Request $request): array
     {
         $res = [];
 
@@ -303,7 +306,7 @@ trait AdminDirectoryController
         $bannerImage = ConfigCache::whereK('app.banner_image')->first();
         $directory = ConfigCache::whereK('pixelfed.directory')->first();
         if (! $bannerImage && ! $directory || empty($directory->v)) {
-            return;
+            return null;
         }
         $directoryArr = json_decode($directory->v, true);
         $path = isset($directoryArr['banner_image']) ? $directoryArr['banner_image'] : false;
@@ -313,7 +316,7 @@ trait AdminDirectoryController
             'public/headers/missing.png',
         ];
         if (! $path || in_array($path, $protected)) {
-            return;
+            return null;
         }
         if (Storage::exists($directoryArr['banner_image'])) {
             Storage::delete($directoryArr['banner_image']);
@@ -388,7 +391,7 @@ trait AdminDirectoryController
         return $existing;
     }
 
-    public function directorySaveTestimonial(Request $request)
+    public function directorySaveTestimonial(Request $request): array
     {
         $this->validate($request, [
             'username' => 'required',
@@ -404,7 +407,7 @@ trait AdminDirectoryController
         $testimonials = $configCache->v ? collect(json_decode($configCache->v, true)) : collect([]);
 
         abort_if($testimonials->contains('profile_id', $user->profile_id), 422, 'Testimonial already exists');
-        abort_if($testimonials->count() == 10, 422, 'You can only have 10 active testimonials');
+        abort_if($testimonials->count() === 10, 422, 'You can only have 10 active testimonials');
 
         $testimonials->push([
             'profile_id' => (string) $user->profile_id,

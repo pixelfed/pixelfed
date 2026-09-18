@@ -76,7 +76,7 @@ class RelationshipService
         self::delete($aid, $tid);
     }
 
-    public static function defaultRelation($tid)
+    public static function defaultRelation($tid): array
     {
         return [
             'id' => (string) $tid,
@@ -92,7 +92,7 @@ class RelationshipService
         ];
     }
 
-    protected static function key($suffix)
+    protected static function key($suffix): string
     {
         return self::CACHE_KEY.$suffix;
     }

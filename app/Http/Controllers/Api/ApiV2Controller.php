@@ -145,9 +145,6 @@ class ApiV2Controller extends Controller
 
     /**
      * GET /api/v2/search
-     *
-     *
-     * @return array
      */
     public function search(Request $request)
     {
@@ -182,9 +179,6 @@ class ApiV2Controller extends Controller
 
     /**
      * GET /api/v2/streaming/config
-     *
-     *
-     * @return object
      */
     public function getWebsocketConfig()
     {
@@ -198,9 +192,6 @@ class ApiV2Controller extends Controller
 
     /**
      * POST /api/v2/media
-     *
-     *
-     * @return MediaTransformer
      */
     public function mediaUploadV2(Request $request)
     {
@@ -253,7 +244,7 @@ class ApiV2Controller extends Controller
         $sizeInKbs = (int) ceil($fileSize / 1000);
         $updatedAccountSize = (int) $accountSize + (int) $sizeInKbs;
 
-        if ((bool) config_cache('pixelfed.enforce_account_limit') == true) {
+        if ((bool) config_cache('pixelfed.enforce_account_limit') === true) {
             $limit = (int) config_cache('pixelfed.max_account_size');
             if ($updatedAccountSize >= $limit) {
                 abort(403, 'Account size limit reached.');
@@ -264,7 +255,7 @@ class ApiV2Controller extends Controller
         $filterName = in_array($request->input('filter_name'), Filter::names()) ? $request->input('filter_name') : null;
 
         $mimes = explode(',', config_cache('pixelfed.media_types'));
-        if (in_array($photo->getMimeType(), $mimes) == false) {
+        if (in_array($photo->getMimeType(), $mimes) === false) {
             abort(403, 'Invalid or unsupported mime type.');
         }
 

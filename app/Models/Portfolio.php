@@ -41,7 +41,7 @@ class Portfolio extends Model
         return 'https://'.config('portfolio.domain').config('portfolio.path').'/'.$account['username'].$suffix;
     }
 
-    public function permalink($suffix = '')
+    public function permalink($suffix = ''): string
     {
         $account = AccountService::get($this->profile_id);
 

@@ -53,7 +53,7 @@ class PortfolioController extends Controller
             return view('portfolio.404');
         }
 
-        return view('portfolio.show', compact('user', 'portfolio'));
+        return view('portfolio.show', ['user' => $user, 'portfolio' => $portfolio]);
     }
 
     public function showPost(Request $request, $username, $id): View
@@ -76,7 +76,7 @@ class PortfolioController extends Controller
             return view('portfolio.404');
         }
 
-        return view('portfolio.show_post', compact('user', 'post', 'authed'));
+        return view('portfolio.show_post', ['user' => $user, 'post' => $post, 'authed' => $authed]);
     }
 
     public function myRedirect(Request $request): RedirectResponse
@@ -115,7 +115,7 @@ class PortfolioController extends Controller
             $portfolio->save();
         }
 
-        return view('portfolio.settings', compact('portfolio'));
+        return view('portfolio.settings', ['portfolio' => $portfolio]);
     }
 
     public function store(Request $request): RedirectResponse
@@ -192,9 +192,9 @@ class PortfolioController extends Controller
 
         if ($portfolio->metadata && isset($portfolio->metadata['feed_order']) && $portfolio->metadata['feed_order'] === 'recent') {
             return $feed->reverse()->values();
-        } else {
-            return $feed->values();
         }
+
+        return $feed->values();
     }
 
     protected function getRecentFeed($id)
@@ -268,7 +268,10 @@ class PortfolioController extends Controller
         })->first();
     }
 
-    public function getAccountSettings(Request $request)
+    /**
+     * @return mixed[]
+     */
+    public function getAccountSettings(Request $request): array
     {
         $this->validate($request, [
             'id' => 'required|integer',
@@ -523,7 +526,7 @@ class PortfolioController extends Controller
         $now = date('D, d M Y H:i:s ').'GMT';
 
         return response()
-            ->view('portfolio.rss_feed', compact('account', 'now', 'feed', 'portfolioUrl'), 200)
+            ->view('portfolio.rss_feed', ['account' => $account, 'now' => $now, 'feed' => $feed, 'portfolioUrl' => $portfolioUrl], 200)
             ->header('Content-Type', 'text/xml');
         // Dead return response($feed)->withHeaders(['Content-Type' => 'text/xml']);
     }

@@ -39,7 +39,7 @@ class UserFilterService
         if (! empty($ids)) {
             Redis::expire($key, self::FILTER_TTL);
 
-            return array_values(array_filter($ids, fn ($id) => $id !== self::EMPTY_SENTINEL));
+            return array_values(array_filter($ids, fn ($id): bool => $id !== self::EMPTY_SENTINEL));
         }
 
         Cache::forget($key.':cached-v0');
@@ -103,7 +103,7 @@ class UserFilterService
 
     public static function mute(int $profile_id, int $muted_id)
     {
-        if ($profile_id == $muted_id) {
+        if ($profile_id === $muted_id) {
             return false;
         }
         $key = self::USER_MUTES_KEY.$profile_id;
@@ -131,7 +131,7 @@ class UserFilterService
 
     public static function block(int $profile_id, int $blocked_id)
     {
-        if ($profile_id == $blocked_id) {
+        if ($profile_id === $blocked_id) {
             return false;
         }
         $key = self::USER_BLOCKS_KEY.$profile_id;
@@ -157,12 +157,12 @@ class UserFilterService
         return $exists;
     }
 
-    public static function blockCount(int $profile_id)
+    public static function blockCount(int $profile_id): int
     {
         return count(self::blocks($profile_id));
     }
 
-    public static function muteCount(int $profile_id)
+    public static function muteCount(int $profile_id): int
     {
         return count(self::mutes($profile_id));
     }

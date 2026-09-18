@@ -15,7 +15,7 @@ class ModLog extends Model
         return $this->belongsTo(User::class, 'user_id');
     }
 
-    public function actionToText()
+    public function actionToText(): string
     {
         $msg = 'Unknown action';
 

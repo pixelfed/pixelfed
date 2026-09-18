@@ -58,14 +58,12 @@ class InboxWorker implements ShouldQueue
                 $lockKey = 'pf:ap:user-inbox:activity:'.hash('sha256', $payload['id']);
                 if (! Cache::add($lockKey, 1, 3600)) {
                     // Already processed after valid signature check
-                    return 1;
+                    return;
                 }
             }
 
             ActivityHandler::dispatch($headers, $profile, $payload)->onQueue('shared');
 
-            return;
-        } else {
             return;
         }
     }
@@ -159,9 +157,9 @@ class InboxWorker implements ShouldQueue
         [$verified, $headers] = HttpSignature::verify($pkey, $signatureData, $headers, $inboxPath, $body);
         if ($verified == 1) {
             return true;
-        } else {
-            return false;
         }
+
+        return false;
     }
 
     /**
@@ -182,7 +180,7 @@ class InboxWorker implements ShouldQueue
      * path is not, a single trailing slash is ignored. Query and fragment
      * are part of the comparison so they cannot be used to alias an actor.
      */
-    protected static function sameActorUrl($a, $b)
+    protected static function sameActorUrl($a, $b): bool
     {
         $a = self::normalizeUrl($a);
         $b = self::normalizeUrl($b);

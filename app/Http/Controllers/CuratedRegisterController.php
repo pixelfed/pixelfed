@@ -58,7 +58,7 @@ class CuratedRegisterController extends Controller
             $request->has('next') &&
             $request->session()->has('cur-reg-con.cr-id');
 
-        return view('auth.curated-register.concierge', compact('emailConfirmed'));
+        return view('auth.curated-register.concierge', ['emailConfirmed' => $emailConfirmed]);
     }
 
     public function conciergeResponseSent(Request $request): View
@@ -88,7 +88,7 @@ class CuratedRegisterController extends Controller
         }
         $activity = CuratedRegisterActivity::whereRegisterId($crid)->whereFromAdmin(true)->findOrFail($arid);
 
-        return view('auth.curated-register.concierge_form', compact('activity', 'showCaptcha'));
+        return view('auth.curated-register.concierge_form', ['activity' => $activity, 'showCaptcha' => $showCaptcha]);
     }
 
     public function conciergeFormStore(Request $request): RedirectResponse|View
@@ -335,14 +335,14 @@ class CuratedRegisterController extends Controller
                 $step = 2;
                 $request->session()->put('cur-step', 1);
 
-                return view('auth.curated-register.index', compact('step'));
+                return view('auth.curated-register.index', ['step' => $step]);
 
             case 2:
                 $this->stepTwo($request);
                 $step = 3;
                 $request->session()->put('cur-step', 2);
 
-                return view('auth.curated-register.index', compact('step'));
+                return view('auth.curated-register.index', ['step' => $step]);
 
             case 3:
                 $this->stepThree($request);
@@ -351,7 +351,7 @@ class CuratedRegisterController extends Controller
                 $verifiedEmail = true;
                 $request->session()->pull('cur-reg');
 
-                return view('auth.curated-register.index', compact('step', 'verifiedEmail'));
+                return view('auth.curated-register.index', ['step' => $step, 'verifiedEmail' => $verifiedEmail]);
 
             default:
                 return redirect(route('help.email-confirmation-issues'));

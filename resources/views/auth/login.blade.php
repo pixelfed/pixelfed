@@ -168,64 +168,87 @@
                     <form method="POST" action="{{ route('login') }}">
                         @csrf
 
-                        <div class="form-group row mb-0">
+                        <div class="form-group row mb-3">
                             <div class="col-md-12">
-                                <label for="email" class="small font-weight-bold text-muted mb-0">{{ __('auth.emailAddress') }}</label>
-                                <input id="email" type="email" class="form-control{{ $errors->has('email') ? ' is-invalid' : '' }}" name="email" value="{{ old('email') }}" placeholder="{{ __('auth.email') }}" required autofocus>
+                                <label for="email" class="small font-weight-bold text-muted mb-0">
+                                    {{ __('auth.emailAddress') }}
+                                </label>
+                                <input
+                                    id="email"
+                                    type="email"
+                                    name="email"
+                                    value="{{ old('email') }}"
+                                    class="form-control{{ $errors->has('email') ? ' is-invalid' : '' }}"
+                                    placeholder="{{ __('auth.email') }}"
+                                    autocomplete="username"
+                                    @if ($errors->has('email')) aria-invalid="true" aria-describedby="emailError" @endif
+                                required
+                                autofocus>
 
                                 @if ($errors->has('email'))
-                                <span class="invalid-feedback">
+                                <span id="emailError" class="invalid-feedback" role="alert">
                                     <strong>{{ $errors->first('email') }}</strong>
                                 </span>
                                 @endif
-
-                                <div class="help-text small text-right mb-0">
-                                    <a href="{{ route('email.forgot') }}" class="small text-muted font-weight-bold">
-                                        {{ __('auth.forgotEmail') }}
-                                    </a>
-                                </div>
                             </div>
                         </div>
 
-                        <div class="form-group row mb-0">
+                        <div class="form-group row mb-2">
                             <div class="col-md-12">
-                                <label for="password" class="small font-weight-bold text-muted mb-0">{{ __('auth.password') }}</label>
+                                <label for="password" class="small font-weight-bold text-muted mb-0">
+                                    {{ __('auth.password') }}
+                                </label>
                                 <div class="input-group">
-                                    <input id="password" type="password" class="form-control{{ $errors->has('password') ? ' is-invalid' : '' }}" name="password" placeholder="{{ __('auth.password') }}" autocomplete="current-password" required>
+                                    <input
+                                        id="password"
+                                        type="password"
+                                        name="password"
+                                        class="form-control{{ $errors->has('password') ? ' is-invalid' : '' }}"
+                                        placeholder="{{ __('auth.password') }}"
+                                        autocomplete="current-password"
+                                        @if ($errors->has('password')) aria-invalid="true" aria-describedby="passwordError" @endif
+                                    required>
                                     <div class="input-group-append">
                                         <button
                                             type="button"
                                             id="togglePassword"
                                             class="btn btn-outline-secondary"
                                             aria-label="{{ __('Press and hold to show password') }}"
-                                            aria-controls="password">
+                                            aria-controls="password"
+                                            aria-pressed="false">
                                             <i class="far fa-eye" aria-hidden="true"></i>
                                         </button>
                                     </div>
                                 </div>
 
                                 @if ($errors->has('password'))
-                                <span class="invalid-feedback">
+                                <span id="passwordError" class="invalid-feedback d-block" role="alert">
                                     <strong>{{ $errors->first('password') }}</strong>
                                 </span>
                                 @endif
-
-                                <p class="help-text small text-right mb-0">
-                                    <a href="{{ route('password.request') }}" class="small text-muted font-weight-bold">
-                                        {{ __('auth.forgot') }}
-                                    </a>
-                                </p>
                             </div>
+                        </div>
+
+                        <div class="d-flex justify-content-between align-items-center mb-3">
+                            <a href="{{ route('email.forgot') }}" class="small text-muted font-weight-bold">
+                                {{ __('auth.forgotEmail') }}
+                            </a>
+                            <a href="{{ route('password.request') }}" class="small text-muted font-weight-bold">
+                                {{ __('auth.forgot') }}
+                            </a>
                         </div>
 
                         <div class="form-group row">
                             <div class="col-md-12">
-                                <div class="checkbox">
-                                    <label>
-                                        <input type="checkbox" name="remember" {{ old('remember') ? 'checked' : '' }}>
-                                        <span class="font-weight-bold ml-1 text-muted">
-                                            {{ __('auth.remember') }}
-                                        </span>
+                                <div class="custom-control custom-checkbox">
+                                    <input
+                                        id="remember"
+                                        type="checkbox"
+                                        name="remember"
+                                        class="custom-control-input"
+                                        {{ old('remember') ? 'checked' : '' }}>
+                                    <label class="custom-control-label font-weight-bold text-muted" for="remember">
+                                        {{ __('auth.remember') }}
                                     </label>
                                 </div>
                             </div>
@@ -340,6 +363,7 @@
 
                 const reveal = function() {
                     password.type = 'text';
+                    toggle.setAttribute('aria-pressed', 'true');
                     if (icon) {
                         icon.classList.remove('fa-eye');
                         icon.classList.add('fa-eye-slash');
@@ -348,13 +372,13 @@
 
                 const conceal = function() {
                     password.type = 'password';
+                    toggle.setAttribute('aria-pressed', 'false');
                     if (icon) {
                         icon.classList.remove('fa-eye-slash');
                         icon.classList.add('fa-eye');
                     }
                 };
 
-                // Press and hold to reveal; release (or leave/blur) to hide.
                 toggle.addEventListener('mousedown', function(e) {
                     e.preventDefault();
                     reveal();
@@ -366,11 +390,12 @@
                 toggle.addEventListener('touchstart', function(e) {
                     e.preventDefault();
                     reveal();
-                }, { passive: false });
+                }, {
+                    passive: false
+                });
                 toggle.addEventListener('touchend', conceal);
                 toggle.addEventListener('touchcancel', conceal);
 
-                // Keyboard: reveal while Space/Enter is held, hide on release/blur.
                 toggle.addEventListener('keydown', function(e) {
                     if (e.key === ' ' || e.key === 'Enter' || e.key === 'Spacebar') {
                         e.preventDefault();
@@ -384,7 +409,6 @@
                 });
                 toggle.addEventListener('blur', conceal);
 
-                // Safety net: never leave the password visible on tab-away.
                 document.addEventListener('visibilitychange', function() {
                     if (document.hidden) {
                         conceal();

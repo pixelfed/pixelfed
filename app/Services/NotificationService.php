@@ -312,7 +312,7 @@ class NotificationService
             }
         }
 
-        return $q->pluck('id')->map(fn ($v) => (int) $v)->all();
+        return $q->pluck('id')->map(fn ($v): int => (int) $v)->all();
     }
 
     /**
@@ -431,7 +431,7 @@ class NotificationService
         return self::del($id, $val);
     }
 
-    public static function count($id)
+    public static function count($id): int
     {
         return (int) Redis::zcard(self::CACHE_KEY.$id);
     }

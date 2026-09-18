@@ -63,7 +63,9 @@ class LikePipeline implements ShouldQueue
         StatusService::refresh($status->id);
 
         if ($status->url && $actor->domain == null) {
-            return $this->remoteLikeDeliver();
+            $this->remoteLikeDeliver();
+
+            return;
         }
 
         $exists = Notification::whereProfileId($status->profile_id)
@@ -74,13 +76,13 @@ class LikePipeline implements ShouldQueue
             ->count();
 
         if ($actor->id === $status->profile_id || $exists !== 0) {
-            return true;
+            return;
         }
 
         try {
             NotificationService::createNotification($status->profile_id, $actor->id, 'group:like', $status->id, Status::class);
 
-        } catch (\Exception $e) {
+        } catch (\Exception) {
         }
     }
 

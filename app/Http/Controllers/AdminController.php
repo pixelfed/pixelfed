@@ -85,7 +85,7 @@ class AdminController extends Controller
     {
         $data = AdminStatsService::get();
 
-        return view('admin.stats', compact('data'));
+        return view('admin.stats', ['data' => $data]);
     }
 
     public function getStats()
@@ -93,7 +93,7 @@ class AdminController extends Controller
         return AdminStatsService::summary();
     }
 
-    public function getAccounts()
+    public function getAccounts(): array
     {
         $users = User::orderByDesc('id')->cursorPaginate(10);
 
@@ -122,7 +122,7 @@ class AdminController extends Controller
         return $res;
     }
 
-    public function getPosts()
+    public function getPosts(): array
     {
         $posts = DB::table('statuses')
             ->orderByDesc('id')
@@ -159,14 +159,14 @@ class AdminController extends Controller
             })
             ->toArray();
 
-        return view('admin.statuses.home', compact('statuses', 'data'));
+        return view('admin.statuses.home', ['statuses' => $statuses, 'data' => $data]);
     }
 
     public function showStatus(Request $request, $id): View
     {
         $status = Status::findOrFail($id);
 
-        return view('admin.statuses.show', compact('status'));
+        return view('admin.statuses.show', ['status' => $status]);
     }
 
     public function profiles(Request $request): View
@@ -198,7 +198,7 @@ class AdminController extends Controller
             })->orderByDesc('id')
             ->simplePaginate($limit);
 
-        return view('admin.profiles.home', compact('profiles'));
+        return view('admin.profiles.home', ['profiles' => $profiles]);
     }
 
     public function profileShow(Request $request, $id): View
@@ -206,7 +206,7 @@ class AdminController extends Controller
         $profile = Profile::findOrFail($id);
         $user = $profile->user;
 
-        return view('admin.profiles.edit', compact('profile', 'user'));
+        return view('admin.profiles.edit', ['profile' => $profile, 'user' => $user]);
     }
 
     public function appsHome(Request $request): View
@@ -225,7 +225,7 @@ class AdminController extends Controller
                 ->paginate(10);
         }
 
-        return view('admin.apps.home', compact('apps'));
+        return view('admin.apps.home', ['apps' => $apps]);
     }
 
     public function messagesHome(Request $request): View
@@ -247,7 +247,7 @@ class AdminController extends Controller
             ->paginate(10)
             ->withQueryString();
 
-        return view('admin.messages.home', compact('messages', 'sort'));
+        return view('admin.messages.home', ['messages' => $messages, 'sort' => $sort]);
     }
 
     public function messagesShow(Request $request, $id): RedirectResponse|View
@@ -261,7 +261,7 @@ class AdminController extends Controller
             return redirect('/i/admin/messages/home')->with('status', 'Redirected from message sent from a deleted account');
         }
 
-        return view('admin.messages.show', compact('message'));
+        return view('admin.messages.show', ['message' => $message]);
     }
 
     public function messagesReply(Request $request, $id): RedirectResponse
@@ -343,7 +343,7 @@ class AdminController extends Controller
     {
         $newsroom = Newsroom::latest()->paginate(10);
 
-        return view('admin.newsroom.home', compact('newsroom'));
+        return view('admin.newsroom.home', ['newsroom' => $newsroom]);
     }
 
     public function newsroomCreate(Request $request): View
@@ -355,7 +355,7 @@ class AdminController extends Controller
     {
         $news = Newsroom::findOrFail($id);
 
-        return view('admin.newsroom.edit', compact('news'));
+        return view('admin.newsroom.edit', ['news' => $news]);
     }
 
     public function newsroomDelete(Request $request, $id): RedirectResponse
@@ -395,7 +395,7 @@ class AdminController extends Controller
             switch ($type) {
                 case 'string':
                     if ($request->{$field} != $news->{$field}) {
-                        if ($field == 'title') {
+                        if ($field === 'title') {
                             $news->slug = $slug;
                         }
                         $news->{$field} = $request->{$field};
@@ -415,7 +415,7 @@ class AdminController extends Controller
                 case 'published':
                     $state = $request->{$field} == 'on' ? true : false;
                     $published = $news->published_at != null;
-                    if ($state != $published) {
+                    if ($state !== $published) {
                         $news->published_at = $state ? now() : null;
                         $changed = true;
                         array_push($changedFields, $field);
@@ -461,7 +461,7 @@ class AdminController extends Controller
             switch ($type) {
                 case 'string':
                     if ($request->{$field} != $news->{$field}) {
-                        if ($field == 'title') {
+                        if ($field === 'title') {
                             $news->slug = $slug;
                         }
                         $news->{$field} = $request->{$field};
@@ -481,7 +481,7 @@ class AdminController extends Controller
                 case 'published':
                     $state = $request->{$field} == 'on' ? true : false;
                     $published = $news->published_at != null;
-                    if ($state != $published) {
+                    if ($state !== $published) {
                         $news->published_at = $state ? now() : null;
                         $changed = true;
                         array_push($changedFields, $field);
@@ -528,7 +528,7 @@ class AdminController extends Controller
         $stories = Story::with('profile')->latest()->paginate(10);
         $stats = StoryService::adminStats();
 
-        return view('admin.stories.home', compact('stories', 'stats'));
+        return view('admin.stories.home', ['stories' => $stories, 'stats' => $stats]);
     }
 
     public function customEmojiHome(Request $request): RedirectResponse|View
@@ -559,18 +559,23 @@ class AdminController extends Controller
             if ($sort == 'all') {
                 if ($pg) {
                     return $query->latest();
-                } else {
-                    return $query->groupBy('shortcode')->latest();
                 }
-            } elseif ($sort == 'local') {
+
+                return $query->groupBy('shortcode')->latest();
+            }
+            if ($sort == 'local') {
                 return $query->latest()->where('domain', '=', config('pixelfed.domain.app'));
-            } elseif ($sort == 'remote') {
+            }
+            if ($sort == 'remote') {
                 return $query->latest()->where('domain', '!=', config('pixelfed.domain.app'));
-            } elseif ($sort == 'duplicates') {
+            }
+            if ($sort == 'duplicates') {
                 return $query->latest()->duplicateShortcodes();
-            } elseif ($sort == 'disabled') {
+            }
+            if ($sort == 'disabled') {
                 return $query->latest()->whereDisabled(true);
-            } elseif ($sort == 'search') {
+            }
+            if ($sort == 'search') {
                 $q = $query
                     ->latest()
                     ->where('shortcode', 'like', '%'.$request->input('q').'%')
@@ -603,7 +608,7 @@ class AdminController extends Controller
             return $res;
         });
 
-        return view('admin.custom-emoji.home', compact('emojis', 'sort', 'stats'));
+        return view('admin.custom-emoji.home', ['emojis' => $emojis, 'sort' => $sort, 'stats' => $stats]);
     }
 
     public function customEmojiToggleActive(Request $request, $id): RedirectResponse
@@ -674,7 +679,7 @@ class AdminController extends Controller
         $emoji = CustomEmoji::orderBy('id')->whereDisabled(false)->whereShortcode($id)->firstOrFail();
         $emojis = CustomEmoji::whereShortcode($id)->where('id', '!=', $emoji->id)->cursorPaginate(10);
 
-        return view('admin.custom-emoji.duplicates', compact('emoji', 'emojis'));
+        return view('admin.custom-emoji.duplicates', ['emoji' => $emoji, 'emojis' => $emojis]);
     }
 
     public function rolesHome(Request $request): View
@@ -698,15 +703,18 @@ class AdminController extends Controller
             ->when($filter, function ($q, $filter) {
                 if ($filter === 'cw') {
                     return $q->where('cw', true);
-                } elseif ($filter === 'unlisted') {
-                    return $q->where('unlisted', true);
-                } elseif ($filter === 'banned') {
-                    return $q->where('status', 'banned');
-                } elseif ($filter === 'newest') {
-                    return $q->orderByDesc('id');
-                } else {
-                    return $q;
                 }
+                if ($filter === 'unlisted') {
+                    return $q->where('unlisted', true);
+                }
+                if ($filter === 'banned') {
+                    return $q->where('status', 'banned');
+                }
+                if ($filter === 'newest') {
+                    return $q->orderByDesc('id');
+                }
+
+                return $q;
             })
             ->cursorPaginate(10)
             ->withQueryString();

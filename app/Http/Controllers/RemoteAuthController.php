@@ -221,7 +221,7 @@ class RemoteAuthController extends Controller
             $state = $request->session()->pull('state');
 
             throw_unless(
-                strlen($state) > 0 && $state === $request->state,
+                (string) $state !== '' && $state === $request->state,
                 InvalidArgumentException::class,
                 'Invalid state value.'
             );
@@ -438,7 +438,7 @@ class RemoteAuthController extends Controller
             ]);
         }
 
-        $res = collect($res)->filter(fn ($acct) => Helpers::validateUrl($acct['url']))->values()->toArray();
+        $res = collect($res)->filter(fn ($acct): string|bool => Helpers::validateUrl($acct['url']))->values()->toArray();
 
         return response()->json([
             'code' => 200,
@@ -545,32 +545,29 @@ class RemoteAuthController extends Controller
         ]);
 
         $account = $request->input('account');
-        abort_unless(substr(strtolower($account), 0, 8) === 'https://', 404);
+        abort_unless(str_starts_with(strtolower($account), 'https://'), 404);
 
         $host = strtolower(config('pixelfed.domain.app'));
         $domain = strtolower(parse_url($account, PHP_URL_HOST));
 
-        if ($domain == $host) {
+        if ($domain === $host) {
             $username = Str::afterLast($account, '/');
             $user = User::where('username', $username)->first();
             if ($user) {
                 return ['id' => (string) $user->profile_id];
-            } else {
-                return [];
             }
-        } else {
-            try {
-                $profile = Helpers::profileFetch($account);
-                if ($profile) {
-                    return ['id' => (string) $profile->id];
-                } else {
-                    return [];
-                }
-            } catch (RequestException $e) {
-                return [];
-            } catch (\Exception $e) {
-                return [];
+
+            return [];
+        }
+        try {
+            $profile = Helpers::profileFetch($account);
+            if ($profile) {
+                return ['id' => (string) $profile->id];
             }
+
+            return [];
+        } catch (RequestException|\Exception) {
+            return [];
         }
     }
 
@@ -597,7 +594,7 @@ class RemoteAuthController extends Controller
         $avatar->remote_url = $request->input('avatar_url');
         $avatar->save();
 
-        MediaStorageService::avatar($avatar, (bool) config_cache('pixelfed.cloud_storage') == false);
+        MediaStorageService::avatar($avatar, (bool) config_cache('pixelfed.cloud_storage') === false);
 
         return [200];
     }

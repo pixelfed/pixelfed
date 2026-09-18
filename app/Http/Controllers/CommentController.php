@@ -55,7 +55,7 @@ class CommentController extends Controller
             ->exists();
 
         if ($filtered == true) {
-            return;
+            return null;
         }
 
         $reply = DB::transaction(function () use ($comment, $status, $profile, $nsfw) {
@@ -98,7 +98,8 @@ class CommentController extends Controller
             $fractal->setSerializer(new ArraySerializer);
             $entity = new Fractal\Resource\Item($reply, new StatusTransformer);
             $entity = $fractal->createData($entity)->toArray();
-            $response = [
+
+            return [
                 'code' => 200,
                 'msg' => 'Comment saved',
                 'username' => $profile->username,
@@ -107,10 +108,8 @@ class CommentController extends Controller
                 'comment' => $reply->caption,
                 'entity' => $entity,
             ];
-        } else {
-            $response = redirect($status->url());
         }
 
-        return $response;
+        return redirect($status->url());
     }
 }

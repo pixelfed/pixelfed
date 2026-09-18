@@ -176,7 +176,7 @@ trait HandlesCreates
         $vote->save();
 
         $tallies = $poll->cached_tallies;
-        $tallies[$choice] = $tallies[$choice] + 1;
+        $tallies[$choice] += 1;
         $poll->cached_tallies = $tallies;
         $poll->votes_count = array_sum($tallies);
         $poll->save();
@@ -291,8 +291,8 @@ trait HandlesCreates
     {
         return is_array($to) &&
             is_array($cc) &&
-            count($to) == 1 &&
-            count($cc) == 0 &&
+            count($to) === 1 &&
+            count($cc) === 0 &&
             parse_url($to[0], PHP_URL_HOST) == config('pixelfed.domain.app');
     }
 
@@ -318,7 +318,7 @@ trait HandlesCreates
     protected function determineDirectMessageVisibility(Profile $profile, Profile $actor): bool
     {
         if ($profile->user->settings->public_dm == false || $profile->is_private) {
-            return $profile->follows($actor) != true;
+            return $profile->follows($actor) !== true;
         }
 
         return false;
@@ -364,12 +364,12 @@ trait HandlesCreates
             }
         }
 
-        if ($photos && $videos == 0) {
-            $dm->type = $photos == 1 ? 'photo' : 'photos';
+        if ($photos && $videos === 0) {
+            $dm->type = $photos === 1 ? 'photo' : 'photos';
             $dm->save();
         }
-        if ($videos && $photos == 0) {
-            $dm->type = $videos == 1 ? 'video' : 'videos';
+        if ($videos && $photos === 0) {
+            $dm->type = $videos === 1 ? 'video' : 'videos';
             $dm->save();
         }
     }

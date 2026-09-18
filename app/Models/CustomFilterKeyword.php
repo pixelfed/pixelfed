@@ -26,7 +26,7 @@ class CustomFilterKeyword extends Model
         $this->attributes['keyword'] = mb_strtolower(trim($value));
     }
 
-    public function toRegex()
+    public function toRegex(): string
     {
         $pattern = preg_quote($this->keyword, '/');
 

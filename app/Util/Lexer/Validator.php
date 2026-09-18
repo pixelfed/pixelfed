@@ -313,8 +313,7 @@ class Validator extends Regex
         }
         [$scheme, $authority, $path, $query, $fragment] = array_pad($matches, 5, '');
         // Check scheme, path, query, fragment:
-        if (($require_protocol && ! (
-            self::isValidMatch($scheme, self::$patterns['validate_url_scheme']) && preg_match('/^https?$/i', $scheme))
+        if (($require_protocol && (! self::isValidMatch($scheme, self::$patterns['validate_url_scheme']) || ! preg_match('/^https?$/i', $scheme))
         ) || ! self::isValidMatch($path, self::$patterns['validate_url_path']) || ! self::isValidMatch($query, self::$patterns['validate_url_query'], true)
         || ! self::isValidMatch($fragment, self::$patterns['validate_url_fragment'], true)) {
             return false;
@@ -380,13 +379,13 @@ class Validator extends Regex
      * @param  bool  $optional  Whether a match is compulsory or not.
      * @return bool Whether an exact match was found.
      */
-    protected static function isValidMatch($string, $pattern, $optional = false)
+    protected static function isValidMatch($string, $pattern, $optional = false): bool
     {
         $found = preg_match($pattern, $string, $matches);
         if (! $optional) {
             return ($string || $string === '') && $found && $matches[0] === $string;
-        } else {
-            return ! (($string || $string === '') && (! $found || $matches[0] !== $string));
         }
+
+        return ! (($string || $string === '') && (! $found || $matches[0] !== $string));
     }
 }

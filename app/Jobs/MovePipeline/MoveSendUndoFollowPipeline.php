@@ -134,7 +134,7 @@ class MoveSendUndoFollowPipeline implements ShouldQueue
                 ->timeout(config('federation.activitypub.delivery.timeout'))
                 ->withBody($payload, 'application/ld+json; profile="https://www.w3.org/ns/activitystreams"')
                 ->post($targetInbox);
-        } catch (ConnectionException $e) {
+        } catch (ConnectionException) {
 
         }
     }

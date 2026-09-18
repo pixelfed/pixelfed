@@ -34,14 +34,14 @@ class AccountInterstitial
                     $res = ['_refresh' => true, 'error' => 403, 'message' => \App\Models\AccountInterstitial::JSON_MESSAGE];
 
                     return response()->json($res, 403);
-                } else {
-                    return redirect('/i/warning');
                 }
-            } else {
-                return $next($request);
+
+                return redirect('/i/warning');
             }
-        } else {
+
             return $next($request);
         }
+
+        return $next($request);
     }
 }

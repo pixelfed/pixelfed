@@ -94,11 +94,13 @@ class StatusDelete implements ShouldQueue
 
         Cache::forget('pf:atom:user-feed:by-id:'.$status->profile_id);
 
-        if ((bool) config_cache('federation.activitypub.enabled') == true) {
-            return $this->fanoutDelete($status);
-        } else {
-            return $this->unlinkRemoveMedia($status);
+        if ((bool) config_cache('federation.activitypub.enabled') === true) {
+            $this->fanoutDelete($status);
+
+            return;
         }
+
+        $this->unlinkRemoveMedia($status);
     }
 
     public function unlinkRemoveMedia($status)
@@ -202,7 +204,7 @@ class StatusDelete implements ShouldQueue
         $profile = $status->profile()->withTrashed()->first();
 
         if (! $profile) {
-            return;
+            return null;
         }
 
         $status->setRelation('profile', $profile);
@@ -229,7 +231,7 @@ class StatusDelete implements ShouldQueue
                     'status_id' => $status->id,
                     'inbox' => $audience[$i] ?? null,
                     'result' => $res instanceof \Throwable
-                        ? get_class($res).': '.$res->getMessage()
+                        ? $res::class.': '.$res->getMessage()
                         : $res->status().' '.substr($res->body(), 0, 300),
                 ]);
             });

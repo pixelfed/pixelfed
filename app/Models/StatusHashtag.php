@@ -6,6 +6,10 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasManyThrough;
 
+/**
+ * @property-read int $count aggregate/computed alias
+ * @property-read int $total aggregate/computed alias
+ */
 class StatusHashtag extends Model
 {
     public $fillable = [

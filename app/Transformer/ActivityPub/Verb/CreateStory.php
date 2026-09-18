@@ -7,7 +7,7 @@ use League\Fractal;
 
 class CreateStory extends Fractal\TransformerAbstract
 {
-    public function transform(Story $story)
+    public function transform(Story $story): array
     {
         return [
             '@context' => 'https://www.w3.org/ns/activitystreams',

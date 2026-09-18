@@ -78,12 +78,12 @@ class CuratedOnboardingCommand extends Command
     {
         $id = search(
             label: 'Search for a username or email',
-            options: fn (string $value) => strlen($value) > 0
+            options: fn (string $value) => $value !== ''
                 ? CuratedRegister::where(function ($query) use ($value) {
                     $query->whereLike('username', "%{$value}%")
                         ->orWhereLike('email', "%{$value}%");
                 })->get()
-                    ->mapWithKeys(fn ($user) => [
+                    ->mapWithKeys(fn ($user): array => [
                         $user->id => "{$user->username} ({$user->email})",
                     ])
                     ->all()

@@ -114,7 +114,7 @@ class Autolink extends Regex
      * been undeprecated and thus the 'target' attribute can be used.  If this is
      * set to false then the 'target' attribute will be output.
      *
-     * @var bool
+     * @var bool|null
      */
     protected $external = true;
 
@@ -125,7 +125,7 @@ class Autolink extends Regex
      * since been reinstated in HTML 5.  To output the 'target' attribute you
      * must disable the adding of the string 'external' to the 'rel' attribute.
      *
-     * @var string
+     * @var string|bool|null
      */
     protected $target = '_blank';
 
@@ -142,7 +142,7 @@ class Autolink extends Regex
     protected $extractor = null;
 
     /**
-     * @var autolinkActiveUsersOnly
+     * @var bool
      */
     protected $autolinkActiveUsersOnly = false;
 
@@ -425,11 +425,10 @@ class Autolink extends Regex
      *
      * @param  string  $tweet
      * @param  array  $entities
-     * @return string
      *
      * @since 1.1.0
      */
-    public function autoLinkEntities($tweet = null, $entities = null)
+    public function autoLinkEntities($tweet = null, $entities = null): string
     {
         if (is_null($tweet)) {
             $tweet = $this->tweet;
@@ -467,8 +466,8 @@ class Autolink extends Regex
     /**
      * Auto-link hashtags, URLs, usernames and lists, with JSON entities.
      *
-     * @param  string The tweet to be converted
-     * @param  mixed  The entities info
+     * @param  string  $tweet  The tweet to be converted
+     * @param  mixed  $json  The entities info
      * @return string that auto-link HTML added
      *
      * @since 1.1.0
@@ -502,9 +501,8 @@ class Autolink extends Regex
      * convert Object to Array.
      *
      * @param  mixed  $obj
-     * @return array
      */
-    protected function object2array($obj)
+    protected function object2array($obj): array
     {
         $array = (array) $obj;
         foreach ($array as $key => $var) {
@@ -519,7 +517,7 @@ class Autolink extends Regex
     /**
      * Auto-link hashtags, URLs, usernames and lists.
      *
-     * @param  string The tweet to be converted
+     * @param  string  $tweet  The tweet to be converted
      * @return string that auto-link HTML added
      *
      * @since 1.1.0
@@ -693,7 +691,6 @@ class Autolink extends Regex
     }
 
     /**
-     * @param  array  $entity
      * @param  string  $tweet
      * @return string
      *
@@ -726,7 +723,6 @@ class Autolink extends Regex
     }
 
     /**
-     * @param  array  $entity
      * @return string
      *
      * @since 1.1.0
@@ -762,7 +758,6 @@ class Autolink extends Regex
     }
 
     /**
-     * @param  array  $entity
      * @param  string  $tweet
      * @return string
      *
@@ -787,12 +782,10 @@ class Autolink extends Regex
 
     /**
      * @param  string  $text
-     * @param  array  $attributes
-     * @return string
      *
      * @since 1.1.0
      */
-    public function linkToText(array $entity, $text, $attributes = [])
+    public function linkToText(array $entity, $text, $attributes = []): string
     {
         $rel = [];
         if ($this->external) {
@@ -804,7 +797,7 @@ class Autolink extends Regex
         if ($this->noopener) {
             $rel[] = 'noopener';
         }
-        if (! empty($rel)) {
+        if ($rel !== []) {
             $attributes['rel'] = implode(' ', $rel);
         }
         if ($this->target) {
@@ -823,9 +816,8 @@ class Autolink extends Regex
      * html escape.
      *
      * @param  string  $text
-     * @return string
      */
-    protected function escapeHTML($text)
+    protected function escapeHTML($text): string
     {
         return htmlspecialchars($text, ENT_QUOTES, 'UTF-8', false);
     }

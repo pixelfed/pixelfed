@@ -104,16 +104,16 @@ class FederationController extends Controller
 
                 return response()->json($webfinger, 200, [], JSON_UNESCAPED_SLASHES)
                     ->header('Access-Control-Allow-Origin', '*');
-            } else {
-                return response('', 400);
             }
+
+            return response('', 400);
         }
         $hash = hash('sha256', $resource);
         $key = 'federation:webfinger:sha256:'.$hash;
         if ($cached = Cache::get($key)) {
             return response()->json($cached, 200, [], JSON_UNESCAPED_SLASHES);
         }
-        if (strpos($resource, $domain) == false) {
+        if (! str_contains($resource, $domain)) {
             return response('', 400);
         }
         $parsed = Nickname::normalizeProfileUrl($resource);
@@ -182,7 +182,6 @@ class FederationController extends Controller
         if (in_array($domain, InstanceService::getBannedDomains())) {
             return;
         }
-
         if (isset($obj['type']) && $obj['type'] === 'Delete') {
             if (isset($obj['object']) && isset($obj['object']['type']) && isset($obj['object']['id'])) {
                 if ($obj['object']['type'] === 'Person') {
@@ -209,7 +208,9 @@ class FederationController extends Controller
             }
 
             return;
-        } elseif (isset($obj['type']) && in_array($obj['type'], ['Follow', 'Accept'])) {
+        }
+
+        if (isset($obj['type']) && in_array($obj['type'], ['Follow', 'Accept'])) {
             dispatch(new InboxValidator($username, $headers, $payload))->onQueue('follow');
         } else {
             dispatch(new InboxValidator($username, $headers, $payload))->onQueue('high');
@@ -237,7 +238,6 @@ class FederationController extends Controller
         if (in_array($domain, InstanceService::getBannedDomains())) {
             return;
         }
-
         if (isset($obj['type']) && $obj['type'] === 'Delete') {
             if (isset($obj['object']) && isset($obj['object']['type']) && isset($obj['object']['id'])) {
                 if ($obj['object']['type'] === 'Person') {
@@ -264,7 +264,9 @@ class FederationController extends Controller
             }
 
             return;
-        } elseif (isset($obj['type']) && in_array($obj['type'], ['Follow', 'Accept'])) {
+        }
+
+        if (isset($obj['type']) && in_array($obj['type'], ['Follow', 'Accept'])) {
             dispatch(new InboxWorker($headers, $payload))->onQueue('follow');
         } else {
             dispatch(new InboxWorker($headers, $payload))->onQueue('shared');

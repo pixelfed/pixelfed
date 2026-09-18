@@ -96,7 +96,7 @@ class ComposeController extends Controller
         $sizeInKbs = (int) ceil($fileSize / 1000);
         $updatedAccountSize = (int) $accountSize + (int) $sizeInKbs;
 
-        if ((bool) config_cache('pixelfed.enforce_account_limit') == true) {
+        if ((bool) config_cache('pixelfed.enforce_account_limit') === true) {
             $limit = (int) config_cache('pixelfed.max_account_size');
             if ($updatedAccountSize >= $limit) {
                 abort(403, 'Account size limit reached.');
@@ -105,7 +105,7 @@ class ComposeController extends Controller
 
         $mimes = explode(',', config_cache('pixelfed.media_types'));
 
-        abort_if(in_array($photo->getMimeType(), $mimes) == false, 400, 'Invalid media format');
+        abort_if(in_array($photo->getMimeType(), $mimes) === false, 400, 'Invalid media format');
 
         // Check the blocklist against the temp upload BEFORE storing, so a
         // blocked upload never leaves an orphaned file on disk (media:gc only
@@ -164,7 +164,7 @@ class ComposeController extends Controller
         return response()->json($res);
     }
 
-    public function mediaUpdate(Request $request)
+    public function mediaUpdate(Request $request): array
     {
         $this->validate($request, [
             'id' => 'required',
@@ -607,7 +607,7 @@ class ComposeController extends Controller
 
         $mediaType = StatusController::mimeTypeCheck($mimes);
 
-        if (in_array($mediaType, ['photo', 'video', 'photo:album']) == false) {
+        if (in_array($mediaType, ['photo', 'video', 'photo:album']) === false) {
             abort(400, __('exception.compose.invalid.album'));
         }
 

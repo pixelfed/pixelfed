@@ -19,7 +19,7 @@ class GroupPost extends Model
 
     protected $guarded = [];
 
-    public function mediaPath()
+    public function mediaPath(): string
     {
         return 'public/g/_v1/'.$this->group_id.'/'.$this->id;
     }
@@ -39,7 +39,7 @@ class GroupPost extends Model
         return $this->belongsTo(Profile::class);
     }
 
-    public function url()
+    public function url(): string
     {
         return '/groups/'.$this->group_id.'/p/'.$this->id;
     }

@@ -364,7 +364,10 @@ class RestrictedNames
         '504',
     ];
 
-    public static function get()
+    /**
+     * @return mixed[]
+     */
+    public static function get(): array
     {
         $banned = [];
 

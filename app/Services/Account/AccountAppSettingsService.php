@@ -4,7 +4,7 @@ namespace App\Services\Account;
 
 class AccountAppSettingsService
 {
-    public static function default()
+    public static function default(): array
     {
         return [
             'timelines' => [

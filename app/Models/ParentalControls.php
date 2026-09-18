@@ -52,12 +52,12 @@ class ParentalControls extends Model
         if ($u = $this->child) {
             if ($u->profile_id) {
                 return AccountService::get($u->profile_id, true);
-            } else {
-                return [];
             }
-        } else {
+
             return [];
         }
+
+        return [];
     }
 
     public function manageUrl()

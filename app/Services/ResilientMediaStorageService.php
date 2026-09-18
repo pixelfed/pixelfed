@@ -47,7 +47,7 @@ class ResilientMediaStorageService
 
                 return $disk->url($file);
             } catch (S3Exception|ClientException|ConnectException|UnableToWriteFile|Exception $e) {
-                Log::warning("ResilientMediaStorageService: Failed to handle Resilient Store {$file} : ".$e->getMessage());
+                Log::warning('ResilientMediaStorageService: Failed to handle Resilient Store : '.$e->getMessage());
                 throw $e;
             }
         }, function (int $attempt, Exception $exception) {
@@ -64,7 +64,7 @@ class ResilientMediaStorageService
         if (config('filesystems.disks.alt-secondary.enabled')) {
             $drivers[] = 'alt-secondary';
         }
-        if (empty($drivers)) {
+        if ($drivers === []) {
             return false;
         }
         $key = array_rand($drivers, 1);

@@ -13,7 +13,7 @@ class StoryIndexService
 {
     public const STORY_TTL = 86400;
 
-    private const REBUILD_LOCK_TTL = 300;
+    private const int REBUILD_LOCK_TTL = 300;
 
     private function authorKey($authorId)
     {
@@ -471,7 +471,7 @@ class StoryIndexService
                         }
                     }
                 } else {
-                    $authorIds = array_filter($active, fn ($aid) => $this->redisBool(fn () => Redis::sismember("following:{$pid}", $aid)));
+                    $authorIds = array_filter($active, fn ($aid): bool => $this->redisBool(fn () => Redis::sismember("following:{$pid}", $aid)));
                 }
             }
         } else {
@@ -574,7 +574,7 @@ class StoryIndexService
                 'is_author' => $isAuthor,
                 'stories' => collect($storyItems)->sortBy('id')->values()->all(),
                 'url' => $url,
-                'hasViewed' => collect($storyItems)->every(fn ($s) => $s['viewed'] === true),
+                'hasViewed' => collect($storyItems)->every(fn ($s): bool => $s['viewed'] === true),
                 '_latest_ts' => $authorLatestTs[$aid] ?? 0,
             ];
         }
@@ -605,7 +605,7 @@ class StoryIndexService
         $following = DB::table('followers')
             ->where('profile_id', $viewerId)
             ->pluck('following_id')
-            ->map(fn ($id) => (string) $id)
+            ->map(fn ($id): string => (string) $id)
             ->toArray();
 
         $authorIds = array_merge([(string) $viewerId], $following);
@@ -700,7 +700,7 @@ class StoryIndexService
             ->orderBy('id')
             ->chunk(1000, function ($followers) use ($followingKey, &$hasResults) {
                 $hasResults = true;
-                $ids = $followers->map(fn ($f) => (string) $f->following_id)->all();
+                $ids = $followers->map(fn ($f): string => (string) $f->following_id)->all();
                 if (! empty($ids)) {
                     Redis::sadd($followingKey, ...$ids);
                 }

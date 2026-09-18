@@ -80,7 +80,7 @@ class NotificationWarmUserCache implements ShouldBeUnique, ShouldQueue
         } catch (\Exception $e) {
             Log::error('Failed to warm notification cache', [
                 'profile_id' => $this->pid,
-                'exception' => get_class($e),
+                'exception' => $e::class,
                 'message' => $e->getMessage(),
                 'attempt' => $this->attempts(),
             ]);

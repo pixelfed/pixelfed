@@ -11,7 +11,7 @@ use League\Fractal;
 
 class StatusTransformer extends Fractal\TransformerAbstract
 {
-    public function transform(Status $status)
+    public function transform(Status $status): array
     {
         $content = $status->caption ? nl2br(Autolink::create()->autolink($status->caption)) : '';
 

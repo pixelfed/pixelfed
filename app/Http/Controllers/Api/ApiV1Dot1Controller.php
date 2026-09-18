@@ -133,6 +133,7 @@ class ApiV1Dot1Controller extends Controller
             'post' => [$post = Status::find($objectId), Status::class, $post?->profile_id],
             'user' => [$profile = Profile::find($objectId), Profile::class, $profile?->id],
             'story' => [$story = Story::whereActive(true)->find($objectId), Story::class, $story?->profile_id],
+            default => [null, null, null],
         };
 
         if (! $object) {
@@ -246,8 +247,6 @@ class ApiV1Dot1Controller extends Controller
 
     /**
      * GET /api/v1.1/accounts/{id}/posts
-     *
-     * @return \App\Transformer\Api\StatusTransformer
      */
     public function accountPosts(Request $request, $id)
     {
@@ -287,8 +286,6 @@ class ApiV1Dot1Controller extends Controller
 
     /**
      * POST /api/v1.1/accounts/change-password
-     *
-     * @return AccountTransformer
      */
     public function accountChangePassword(Request $request)
     {
@@ -349,8 +346,6 @@ class ApiV1Dot1Controller extends Controller
 
     /**
      * GET /api/v1.1/accounts/login-activity
-     *
-     * @return array
      */
     public function accountLoginActivity(Request $request)
     {
@@ -400,8 +395,6 @@ class ApiV1Dot1Controller extends Controller
 
     /**
      * GET /api/v1.1/accounts/two-factor
-     *
-     * @return array
      */
     public function accountTwoFactor(Request $request)
     {
@@ -425,8 +418,6 @@ class ApiV1Dot1Controller extends Controller
 
     /**
      * GET /api/v1.1/accounts/emails-from-pixelfed
-     *
-     * @return array
      */
     public function accountEmailsFromPixelfed(Request $request)
     {
@@ -502,8 +493,6 @@ class ApiV1Dot1Controller extends Controller
 
     /**
      * GET /api/v1.1/accounts/apps-and-applications
-     *
-     * @return array
      */
     public function accountApps(Request $request)
     {
@@ -558,11 +547,11 @@ class ApiV1Dot1Controller extends Controller
         return response()->json($res, 200, $headers, JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE);
     }
 
-    protected function appToken($token, $currentId, $legacy = false)
+    protected function appToken($token, $currentId, $legacy = false): array
     {
         $expired = $token->expires_at && $token->expires_at->isPast();
         $status = $token->revoked ? 'revoked' : ($expired ? 'expired' : 'active');
-        $fmt = fn ($date) => $date ? str_replace('@', 'at', $date->format('M j, Y @ g:i:s A')) : null;
+        $fmt = fn ($date): string|array|null => $date ? str_replace('@', 'at', $date->format('M j, Y @ g:i:s A')) : null;
 
         return [
             'id' => $token->id,
@@ -578,8 +567,6 @@ class ApiV1Dot1Controller extends Controller
 
     /**
      * POST /api/v1.1/accounts/apps-and-applications/{id}/revoke
-     *
-     * @return array
      */
     public function accountAppRevoke(Request $request, $id)
     {
@@ -1278,9 +1265,6 @@ class ApiV1Dot1Controller extends Controller
 
     /**
      * POST /api/v1.1/status/create
-     *
-     *
-     * @return StatusTransformer
      */
     public function statusCreate(Request $request)
     {
@@ -1339,7 +1323,7 @@ class ApiV1Dot1Controller extends Controller
         abort_if($accountSize === -1, 403, 'Invalid request.');
         $updatedAccountSize = (int) $accountSize + (int) $sizeInKbs;
 
-        if ((bool) config_cache('pixelfed.enforce_account_limit') == true) {
+        if ((bool) config_cache('pixelfed.enforce_account_limit') === true) {
             $limit = (int) config_cache('pixelfed.max_account_size');
             if ($updatedAccountSize >= $limit) {
                 abort(403, 'Account size limit reached.');
@@ -1347,7 +1331,7 @@ class ApiV1Dot1Controller extends Controller
         }
 
         $mimes = explode(',', config_cache('pixelfed.media_types'));
-        if (in_array($photo->getMimeType(), $mimes) == false) {
+        if (in_array($photo->getMimeType(), $mimes) === false) {
             abort(403, 'Invalid or unsupported mime type.');
         }
 

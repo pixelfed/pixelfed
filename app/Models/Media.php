@@ -79,13 +79,13 @@ class Media extends Model
     public function mimeType()
     {
         if (! $this->mime) {
-            return;
+            return null;
         }
 
         return explode('/', $this->mime)[0];
     }
 
-    public function activityVerb()
+    public function activityVerb(): string
     {
         $verb = 'Document';
         switch ($this->mimeType()) {
@@ -109,7 +109,7 @@ class Media extends Model
         return $verb;
     }
 
-    public function mediaType()
+    public function mediaType(): string
     {
         $verb = 'Document';
         switch ($this->mimeType()) {

@@ -24,9 +24,8 @@ class StringUtils
      * @param  int  $start
      * @param  int  $length
      * @param  string  $encoding
-     * @return string
      */
-    public static function substr($str, $start, $length = null, $encoding = 'UTF-8')
+    public static function substr($str, $start, $length = null, $encoding = 'UTF-8'): string
     {
         if (is_null($length)) {
             // for PHP <= 5.4.7
@@ -41,9 +40,8 @@ class StringUtils
      *
      * @param  string  $str
      * @param  string  $encoding
-     * @return int
      */
-    public static function strlen($str, $encoding = 'UTF-8')
+    public static function strlen($str, $encoding = 'UTF-8'): int
     {
         return mb_strlen($str, $encoding);
     }

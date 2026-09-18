@@ -7,7 +7,7 @@ use League\Fractal;
 
 class UndoAnnounce extends Fractal\TransformerAbstract
 {
-    public function transform(Status $status)
+    public function transform(Status $status): array
     {
         return [
             '@context' => 'https://www.w3.org/ns/activitystreams',

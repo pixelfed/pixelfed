@@ -28,9 +28,9 @@ class FeaturedCollectionService
 
     public const COLLECTION_TYPE = 'FeaturedCollection';
 
-    private const POLICY_CACHE_KEY = 'pf:services:featured:policy:';
+    private const string POLICY_CACHE_KEY = 'pf:services:featured:policy:';
 
-    private const POLICY_CACHE_TTL = 86400;
+    private const int POLICY_CACHE_TTL = 86400;
 
     /**
      * Same inline term definitions Mastodon emits, so the stamp and the
@@ -213,7 +213,7 @@ class FeaturedCollectionService
     ): FeatureAuthorization {
         $auth = self::find($target, $collectionUrl);
 
-        if ($auth) {
+        if ($auth instanceof FeatureAuthorization) {
             if ($collectionName !== null && $auth->collection_name !== $collectionName) {
                 $auth->collection_name = $collectionName;
                 $auth->save();
@@ -280,7 +280,7 @@ class FeaturedCollectionService
             ->approved()
             ->with('actor')
             ->get()
-            ->filter(fn (FeatureAuthorization $auth) => $auth->actor && strtolower((string) $auth->actor->domain) === $domain)
+            ->filter(fn (FeatureAuthorization $auth): bool => $auth->actor && strtolower((string) $auth->actor->domain) === $domain)
             ->each(fn (FeatureAuthorization $auth) => self::revoke($auth));
     }
 
@@ -427,7 +427,7 @@ class FeaturedCollectionService
 
             $path = rtrim($parts['path'] ?? '/', '/');
 
-            return strtolower($parts['scheme'] ?? 'https').'://'.strtolower($parts['host']).($path === '' ? '' : $path);
+            return strtolower($parts['scheme'] ?? 'https').'://'.strtolower($parts['host']).($path);
         };
 
         $na = $norm($a);

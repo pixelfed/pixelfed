@@ -30,7 +30,7 @@ class AdminInviteController extends Controller
             return redirect('/');
         }
 
-        return view('invite.admin_invite', compact('code'));
+        return view('invite.admin_invite', ['code' => $code]);
     }
 
     public function apiVerifyCheck(Request $request): JsonResponse
@@ -182,8 +182,8 @@ class AdminInviteController extends Controller
             $request->session()->regenerate();
 
             return redirect()->intended('/');
-        } else {
-            return response()->json([], 400);
         }
+
+        return response()->json([], 400);
     }
 }

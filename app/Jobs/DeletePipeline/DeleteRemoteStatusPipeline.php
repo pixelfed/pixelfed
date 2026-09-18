@@ -105,7 +105,5 @@ class DeleteRemoteStatusPipeline implements ShouldQueue
             Log::warning("DeleteRemoteStatusPipeline: Failed to delete status {$status->id}: ".$e->getMessage());
             throw $e;
         }
-
-        return 1;
     }
 }

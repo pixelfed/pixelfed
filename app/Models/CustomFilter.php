@@ -77,7 +77,7 @@ class CustomFilter extends Model
         return $this->hasMany(CustomFilterStatus::class);
     }
 
-    public function toFilterArray()
+    public function toFilterArray(): array
     {
         return [
             'id' => $this->id,
@@ -100,6 +100,8 @@ class CustomFilter extends Model
             case 2:
                 return 'blur';
         }
+
+        return null;
     }
 
     public function getTitleAttribute()
@@ -122,7 +124,7 @@ class CustomFilter extends Model
         $this->attributes['action'] = $value ? self::ACTION_HIDE : self::ACTION_WARN;
     }
 
-    public function getIrreversibleAttribute()
+    public function getIrreversibleAttribute(): bool
     {
         return $this->action === self::ACTION_HIDE;
     }
@@ -151,7 +153,7 @@ class CustomFilter extends Model
         });
     }
 
-    public function isExpired()
+    public function isExpired(): bool
     {
         return $this->expires_at !== null && $this->expires_at->isPast();
     }
@@ -268,7 +270,6 @@ class CustomFilter extends Model
      * Get cached filters for an account with simplified, secure approach
      *
      * @param  int  $profileId  The profile ID
-     * @return Collection The collection of filters
      */
     public static function getCachedFiltersForAccount($profileId)
     {
@@ -293,7 +294,7 @@ class CustomFilter extends Model
                     $pattern = preg_quote($keyword->keyword, '/');
 
                     if ($keyword->whole_word) {
-                        $pattern = '\b'.$pattern.'\b';
+                        return '\b'.$pattern.'\b';
                     }
 
                     return $pattern;
@@ -356,7 +357,7 @@ class CustomFilter extends Model
      * @param  mixed  $status  The status to check
      * @return array The filter matches
      */
-    public static function applyCachedFilters($cachedFilters, $status)
+    public static function applyCachedFilters($cachedFilters, $status): array
     {
         $results = [];
 
@@ -395,7 +396,7 @@ class CustomFilter extends Model
             //     }
             // }
 
-            if (! empty($keywordMatches) || ! empty($statusMatches)) {
+            if ($keywordMatches !== [] || ! empty($statusMatches)) {
                 $results[] = [
                     'filter' => $filter->toFilterArray(),
                     'keyword_matches' => $keywordMatches ?: null,

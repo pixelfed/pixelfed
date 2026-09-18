@@ -27,10 +27,8 @@ class FixMediaDriver extends Command
 
     /**
      * Execute the console command.
-     *
-     * @return int
      */
-    public function handle()
+    public function handle(): int
     {
         if (config('filesystems.default') !== 'local') {
             $this->error('Invalid default filesystem, set FILESYSTEM_DRIVER=local to proceed');
@@ -38,7 +36,7 @@ class FixMediaDriver extends Command
             return Command::SUCCESS;
         }
 
-        if ((bool) config_cache('pixelfed.cloud_storage') == false) {
+        if ((bool) config_cache('pixelfed.cloud_storage') === false) {
             $this->error('Cloud storage not enabled, exiting...');
 
             return Command::SUCCESS;

@@ -13,7 +13,7 @@ class NotificationTransformer extends Fractal\TransformerAbstract
         'status',
     ];
 
-    public function transform(Notification $notification)
+    public function transform(Notification $notification): array
     {
         return [
             'id' => (string) $notification->id,
@@ -34,15 +34,14 @@ class NotificationTransformer extends Fractal\TransformerAbstract
             $status = Status::with('media')->find($item->item_id);
             if ($status) {
                 return $this->item($status, new StatusTransformer);
-            } else {
-                return;
             }
-        } else {
+
             return;
         }
+
     }
 
-    public function replaceTypeVerb($verb)
+    public function replaceTypeVerb($verb): string
     {
         $verbs = [
             'dm' => 'direct',

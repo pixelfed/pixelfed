@@ -35,14 +35,18 @@ use Illuminate\Support\Str;
  * @property int $reblogs_count
  * @property int $reply_count
  * @property bool $local
- * @property string|null $place
+ * @property int|null $place_id
+ * @property-read Place|null $place
  * @property Carbon|null $created_at
  * @property Carbon|null $updated_at
  * @property Carbon|null $deleted_at
  * @property Carbon|null $edited_at
  * @property-read Profile $profile
  * @property-read Collection<int, Media> $media
- * @property-read Collection<int, Mention> $mentions
+ * @property-read Collection<int, Profile> $mentions
+ * @property-read Poll|null $poll
+ * @property-read int $count aggregate/computed alias
+ * @property-read int $pc aggregate/computed alias
  */
 class Status extends Model
 {
@@ -143,7 +147,7 @@ class Status extends Model
         }
 
         return collect($entity['media_attachments'])
-            ->filter(fn ($media) => $media['type'] == 'image' && in_array($media['mime'], ['image/jpeg', 'image/png', 'image/jpg']))
+            ->filter(fn ($media): bool => $media['type'] == 'image' && in_array($media['mime'], ['image/jpeg', 'image/png', 'image/jpg']))
             ->map(function ($media) {
                 if (! Str::endsWith($media['preview_url'], ['no-preview.png', 'no-preview.jpg'])) {
                     return $media['preview_url'];
@@ -158,16 +162,15 @@ class Status extends Model
     {
         if ($this->uri) {
             return $forceLocal ? "/i/web/post/_/{$this->profile_id}/{$this->id}" : $this->uri;
-        } else {
-            $id = $this->id;
-            $account = AccountService::get($this->profile_id, true);
-            if (! $account || ! isset($account['username'])) {
-                return '/404';
-            }
-            $path = url(config('app.url')."/p/{$account['username']}/{$id}");
-
-            return $path;
         }
+        $id = $this->id;
+        $account = AccountService::get($this->profile_id, true);
+        if (! $account || ! isset($account['username'])) {
+            return '/404';
+        }
+        $path = url(config('app.url')."/p/{$account['username']}/{$id}");
+
+        return $path;
     }
 
     public function permalink($suffix = '/activity')
@@ -179,7 +182,7 @@ class Status extends Model
         return url($path);
     }
 
-    public function editUrl()
+    public function editUrl(): string
     {
         return $this->url().'/edit';
     }
@@ -275,9 +278,9 @@ class Status extends Model
         $parent = $this->in_reply_to_id ?? $this->reblog_of_id;
         if (! empty($parent)) {
             return $this->findOrFail($parent);
-        } else {
-            return false;
         }
+
+        return false;
     }
 
     public function conversation()
@@ -309,12 +312,12 @@ class Status extends Model
         );
     }
 
-    public function reportUrl()
+    public function reportUrl(): string
     {
         return route('report.form')."?type=post&id={$this->id}";
     }
 
-    public function toActivityStream()
+    public function toActivityStream(): array
     {
         $media = $this->media;
         $mediaCollection = [];
@@ -343,7 +346,7 @@ class Status extends Model
     public function scopeToAudience($audience)
     {
         if (! in_array($audience, ['to', 'cc']) || $this->local == false) {
-            return;
+            return null;
         }
         $res = [];
         $res['to'] = [];

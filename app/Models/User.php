@@ -13,6 +13,9 @@ use Laravel\Passport\Contracts\OAuthenticatable;
 use Laravel\Passport\HasApiTokens;
 use NotificationChannels\WebPush\HasPushSubscriptions;
 
+/**
+ * @property-read UserSetting|null $settings
+ */
 class User extends Authenticatable implements OAuthenticatable
 {
     use HasApiTokens, HasFactory, HasPushSubscriptions, Notifiable, SoftDeletes, UserRateLimit;
@@ -83,7 +86,7 @@ class User extends Authenticatable implements OAuthenticatable
         return $this->hasMany(UserFilter::class, 'user_id', 'profile_id');
     }
 
-    public function receivesBroadcastNotificationsOn()
+    public function receivesBroadcastNotificationsOn(): string
     {
         return 'App.User.'.$this->id;
     }
@@ -93,7 +96,7 @@ class User extends Authenticatable implements OAuthenticatable
         return $this->hasMany(UserDevice::class);
     }
 
-    public function storageUsedKey()
+    public function storageUsedKey(): string
     {
         return 'profile:storage:used:'.$this->id;
     }

@@ -16,7 +16,6 @@ use Illuminate\Support\Carbon;
  * @property bool $is_admin
  * @property string $email
  * @property Carbon|null $email_verified_at
- * @property bool $2fa_enabled
  * @property string|null $register_source
  * @property string|null $app_register_ip
  * @property bool $has_interstitial

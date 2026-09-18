@@ -41,7 +41,7 @@ class FetchCacheService
         $host = parse_url($url, PHP_URL_HOST);
         $port = parse_url($url, PHP_URL_PORT) ?: 443;
         $ips = $host ? Helpers::resolvePublicIps($host) : [];
-        if (empty($ips)) {
+        if ($ips === []) {
             Cache::put($key, 1, $ttl);
 
             return false;
@@ -72,15 +72,7 @@ class FetchCacheService
                 ->withHeaders($headers)
                 ->timeout(40)
                 ->get($url);
-        } catch (RequestException $e) {
-            Cache::put($key, 1, $ttl);
-
-            return false;
-        } catch (ConnectionException $e) {
-            Cache::put($key, 1, $ttl);
-
-            return false;
-        } catch (\Exception $e) {
+        } catch (RequestException|ConnectionException|\Exception) {
             Cache::put($key, 1, $ttl);
 
             return false;

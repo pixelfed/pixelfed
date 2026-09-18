@@ -10,7 +10,7 @@ use League\Fractal;
 
 class RelationshipTransformer extends Fractal\TransformerAbstract
 {
-    public function transform(Profile $profile)
+    public function transform(Profile $profile): array
     {
         $auth = Auth::check();
         if (! $auth) {

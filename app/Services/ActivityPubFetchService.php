@@ -15,7 +15,7 @@ class ActivityPubFetchService
 {
     const CACHE_KEY = 'pf:services:apfetchs:';
 
-    private const MAX_REDIRECTS = 2;
+    private const int MAX_REDIRECTS = 2;
 
     private const MAX_RESPONSE_SIZE = 2 * 1024 * 1024;
 
@@ -67,7 +67,7 @@ class ActivityPubFetchService
 
             $ips = Helpers::resolvePublicIps($host);
 
-            if (empty($ips)) {
+            if ($ips === []) {
                 return;
             }
 
@@ -109,11 +109,7 @@ class ActivityPubFetchService
                     ->connectTimeout(5)
                     ->retry(2, 250)
                     ->get($currentUrl);
-            } catch (RequestException $e) {
-                return;
-            } catch (ConnectionException $e) {
-                return;
-            } catch (\Throwable $e) {
+            } catch (RequestException|ConnectionException|\Throwable $e) {
                 return;
             }
 
@@ -167,7 +163,7 @@ class ActivityPubFetchService
                     64,
                     JSON_THROW_ON_ERROR
                 );
-            } catch (\JsonException $e) {
+            } catch (\JsonException) {
                 return;
             }
         }
@@ -234,7 +230,7 @@ class ActivityPubFetchService
             return Helpers::validateUrl($url)
                 ? $url
                 : null;
-        } catch (\Throwable $e) {
+        } catch (\Throwable) {
             return null;
         }
     }

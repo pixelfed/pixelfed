@@ -20,7 +20,7 @@ class AutospamService
 
     public static function check($text)
     {
-        if (! $text || strlen($text) == 0) {
+        if (! $text || (string) $text === '') {
             return false;
         }
         if (! self::active()) {
@@ -50,17 +50,16 @@ class AutospamService
 
             if (! Storage::exists(self::MODEL_FILE_PATH)) {
                 return false;
-            } else {
-                if (Storage::size(self::MODEL_FILE_PATH) < 1000) {
-                    return false;
-                }
+            }
+            if (Storage::size(self::MODEL_FILE_PATH) < 1000) {
+                return false;
             }
 
             return true;
         });
     }
 
-    public static function active()
+    public static function active(): bool
     {
         return config_cache('autospam.nlp.enabled') && self::eligible();
     }

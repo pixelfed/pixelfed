@@ -216,7 +216,7 @@ class StatusStatuses extends Command
             }
         }
 
-        if ($stale) {
+        if ($stale !== []) {
             $this->error('STALE MEDIA URLS DETECTED:');
             foreach ($stale as $s) {
                 $this->line('  ✗ '.$s);
@@ -270,7 +270,7 @@ class StatusStatuses extends Command
 
         try {
             return (string) Storage::disk(config('filesystems.cloud'))->url($mediaPath);
-        } catch (\Throwable $e) {
+        } catch (\Throwable) {
             return '(cloud disk not resolvable in this environment)';
         }
     }
@@ -285,7 +285,7 @@ class StatusStatuses extends Command
             $host = parse_url($url, PHP_URL_HOST);
 
             return $host ?: null;
-        } catch (\Throwable $e) {
+        } catch (\Throwable) {
             return null;
         }
     }

@@ -42,7 +42,7 @@ class MediaUpdateS3CDNUrl extends Command
      */
     protected ?string $oldHost = null;
 
-    public function handle()
+    public function handle(): int
     {
         // This command only makes sense for instances serving media from a
         // cloud/object-storage backend. Local-storage instances (PF_ENABLE_CLOUD
@@ -272,7 +272,7 @@ class MediaUpdateS3CDNUrl extends Command
             $changes[$field] = ['from' => $current, 'to' => $rebuilt];
         }
 
-        if (empty($changes)) {
+        if ($changes === []) {
             return false;
         }
 
@@ -337,7 +337,7 @@ class MediaUpdateS3CDNUrl extends Command
         $diskHost = parse_url($url, PHP_URL_HOST);
         if ($diskHost && strcasecmp($diskHost, $this->newHost) !== 0) {
             // Override host was requested; swap it into the disk-built URL.
-            $url = preg_replace('#^(https?://)'.preg_quote($diskHost, '#').'#i', '$1'.$this->newHost, $url);
+            return preg_replace('#^(https?://)'.preg_quote($diskHost, '#').'#i', '$1'.$this->newHost, $url);
         }
 
         return $url;
@@ -347,7 +347,7 @@ class MediaUpdateS3CDNUrl extends Command
     {
         try {
             return (string) Storage::disk(config('filesystems.cloud'))->url($path);
-        } catch (\Throwable $e) {
+        } catch (\Throwable) {
             return null;
         }
     }
@@ -359,7 +359,7 @@ class MediaUpdateS3CDNUrl extends Command
             $host = parse_url($url, PHP_URL_HOST);
 
             return $host ?: null;
-        } catch (\Throwable $e) {
+        } catch (\Throwable) {
             return null;
         }
     }

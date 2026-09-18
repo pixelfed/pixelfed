@@ -102,7 +102,7 @@ class CommentPipeline implements ShouldQueue
         Cache::forget('status:replies:all:'.$status->id);
 
         if ($actor->id === $target->id || $status->comments_disabled == true) {
-            return true;
+            return;
         }
 
         $filtered = UserFilter::whereUserId($target->id)

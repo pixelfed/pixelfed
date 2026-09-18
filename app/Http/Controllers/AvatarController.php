@@ -15,7 +15,7 @@ class AvatarController extends Controller
 {
     public function __construct()
     {
-        return $this->middleware('auth');
+        $this->middleware('auth');
     }
 
     public function store(Request $request): RedirectResponse
@@ -58,7 +58,7 @@ class AvatarController extends Controller
         return redirect()->back()->with('status', 'Avatar updated successfully. It may take a few minutes to update across the site.');
     }
 
-    public function getPath($user, $file)
+    public function getPath($user, $file): array
     {
         $basePath = storage_path('app/public/avatars');
         $this->checkDir($basePath);
@@ -80,39 +80,40 @@ class AvatarController extends Controller
         }
     }
 
-    public function buildPath($id)
+    public function buildPath($id): string
     {
         $padded = str_pad($id, 19, 0, STR_PAD_LEFT);
         $parts = str_split($padded, 3);
+        $avatarpath = '';
         foreach ($parts as $k => $part) {
-            if ($k == 0) {
+            if ($k === 0) {
                 $prefix = storage_path('app/public/avatars/'.$parts[0]);
                 $this->checkDir($prefix);
             }
-            if ($k == 1) {
+            if ($k === 1) {
                 $prefix = storage_path('app/public/avatars/'.$parts[0].'/'.$parts[1]);
                 $this->checkDir($prefix);
             }
-            if ($k == 2) {
+            if ($k === 2) {
                 $prefix = storage_path('app/public/avatars/'.$parts[0].'/'.$parts[1].'/'.$parts[2]);
                 $this->checkDir($prefix);
             }
-            if ($k == 3) {
+            if ($k === 3) {
                 $avatarpath = 'public/avatars/'.$parts[0].'/'.$parts[1].'/'.$parts[2].'/'.$parts[3];
                 $prefix = storage_path('app/'.$avatarpath);
                 $this->checkDir($prefix);
             }
-            if ($k == 4) {
+            if ($k === 4) {
                 $avatarpath = 'public/avatars/'.$parts[0].'/'.$parts[1].'/'.$parts[2].'/'.$parts[3].'/'.$parts[4];
                 $prefix = storage_path('app/'.$avatarpath);
                 $this->checkDir($prefix);
             }
-            if ($k == 5) {
+            if ($k === 5) {
                 $avatarpath = 'public/avatars/'.$parts[0].'/'.$parts[1].'/'.$parts[2].'/'.$parts[3].'/'.$parts[4].'/'.$parts[5];
                 $prefix = storage_path('app/'.$avatarpath);
                 $this->checkDir($prefix);
             }
-            if ($k == 6) {
+            if ($k === 6) {
                 $avatarpath = 'public/avatars/'.$parts[0].'/'.$parts[1].'/'.$parts[2].'/'.$parts[3].'/'.$parts[4].'/'.$parts[5].'/'.$parts[6];
                 $prefix = storage_path('app/'.$avatarpath);
                 $this->checkDir($prefix);

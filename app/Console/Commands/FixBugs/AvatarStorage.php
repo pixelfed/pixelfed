@@ -212,7 +212,7 @@ class AvatarStorage extends Command
             return;
         }
 
-        if ((bool) config_cache('pixelfed.cloud_storage') == false && config_cache('federation.avatars.store_local') == false) {
+        if ((bool) config_cache('pixelfed.cloud_storage') === false && config_cache('federation.avatars.store_local') == false) {
             $this->error('You have cloud storage disabled and local avatar storage disabled, we cannot refetch avatars.');
 
             return;

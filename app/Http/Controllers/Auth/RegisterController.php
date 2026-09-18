@@ -14,7 +14,6 @@ use Illuminate\Contracts\View\View;
 use Illuminate\Foundation\Auth\RegistersUsers;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
-use Illuminate\Http\Response;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Validator;
 use Purify;
@@ -133,8 +132,6 @@ class RegisterController extends Controller
 
     /**
      * Show the application registration form.
-     *
-     * @return Response
      */
     public function showRegistrationForm(): RedirectResponse|View
     {
@@ -155,16 +152,14 @@ class RegisterController extends Controller
                 }
 
                 return view('auth.register');
-            } else {
-                return view('auth.register');
             }
-        } else {
-            if ((bool) config_cache('instance.curated_registration.enabled') && config('instance.curated_registration.state.fallback_on_closed_reg')) {
-                return redirect('/auth/sign_up');
-            } else {
-                abort(404);
-            }
+
+            return view('auth.register');
         }
+        if ((bool) config_cache('instance.curated_registration.enabled') && config('instance.curated_registration.state.fallback_on_closed_reg')) {
+            return redirect('/auth/sign_up');
+        }
+        abort(404);
     }
 
     /**
@@ -173,8 +168,6 @@ class RegisterController extends Controller
      * When email verification is enforced the new account gets no session.
      * It is parked on the login verify step, same as an unverified login,
      * and only gets a session once the confirm link is opened.
-     *
-     * @return Response
      */
     public function register(Request $request)
     {

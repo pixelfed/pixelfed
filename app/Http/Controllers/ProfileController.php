@@ -94,7 +94,7 @@ class ProfileController extends Controller
             if ($user->is_private == true) {
                 $profile = null;
 
-                return view('profile.private', compact('user'));
+                return view('profile.private', ['user' => $user]);
             }
 
             $owner = false;
@@ -103,54 +103,48 @@ class ProfileController extends Controller
             $profile = $user;
 
             if ($carousel) {
-                return view('profile.show_carousel', compact('profile', 'settings'));
+                return view('profile.show_carousel', ['profile' => $profile, 'settings' => $settings]);
             }
 
-            return view('profile.show', compact('profile', 'settings'));
-        } else {
-            $key = 'profile:settings:'.$user->id;
-            $ttl = now()->addHours(6);
-            $settings = Cache::remember($key, $ttl, function () use ($user) {
-                $s = $user->user?->settings;
-
-                return [
-                    'crawlable' => $s->crawlable ?? true,
-                    'following' => [
-                        'count' => $s->show_profile_following_count ?? true,
-                        'list' => $s->show_profile_following ?? false,
-                    ],
-                    'followers' => [
-                        'count' => $s->show_profile_follower_count ?? true,
-                        'list' => $s->show_profile_followers ?? false,
-                    ],
-                ];
-            });
-
-            if ($user->is_private == true) {
-                $isPrivate = $this->privateProfileCheck($user, $loggedIn);
-            }
-
-            $isBlocked = $this->blockedProfileCheck($user);
-
-            $owner = $loggedIn && Auth::id() === $user->user_id;
-            $is_following = ($owner == false && $request->user() !== null) ? $user->followedBy($request->user()->profile) : false;
-
-            if ($isPrivate == true || $isBlocked == true) {
-                $requested = $request->user() !== null ? FollowRequest::whereFollowerId($request->user()->profile_id)
-                    ->whereFollowingId($user->id)
-                    ->exists() : false;
-
-                return view('profile.private', compact('user', 'is_following', 'requested'));
-            }
-
-            $is_admin = is_null($user->domain) ? $user->user->is_admin : false;
-            $profile = $user;
-            if ($carousel) {
-                return view('profile.show_carousel', compact('profile', 'settings'));
-            }
-
-            return view('profile.show', compact('profile', 'settings'));
+            return view('profile.show', ['profile' => $profile, 'settings' => $settings]);
         }
+        $key = 'profile:settings:'.$user->id;
+        $ttl = now()->addHours(6);
+        $settings = Cache::remember($key, $ttl, function () use ($user) {
+            $s = $user->user?->settings;
+
+            return [
+                'crawlable' => $s->crawlable ?? true,
+                'following' => [
+                    'count' => $s->show_profile_following_count ?? true,
+                    'list' => $s->show_profile_following ?? false,
+                ],
+                'followers' => [
+                    'count' => $s->show_profile_follower_count ?? true,
+                    'list' => $s->show_profile_followers ?? false,
+                ],
+            ];
+        });
+        if ($user->is_private == true) {
+            $isPrivate = $this->privateProfileCheck($user, $loggedIn);
+        }
+        $isBlocked = $this->blockedProfileCheck($user);
+        $owner = $loggedIn && Auth::id() === $user->user_id;
+        $is_following = ($owner === false && $request->user() !== null) ? $user->followedBy($request->user()->profile) : false;
+        if ($isPrivate === true || $isBlocked === true) {
+            $requested = $request->user() !== null ? FollowRequest::whereFollowerId($request->user()->profile_id)
+                ->whereFollowingId($user->id)
+                ->exists() : false;
+
+            return view('profile.private', ['user' => $user, 'is_following' => $is_following, 'requested' => $requested]);
+        }
+        $is_admin = is_null($user->domain) ? $user->user->is_admin : false;
+        $profile = $user;
+        if ($carousel) {
+            return view('profile.show_carousel', ['profile' => $profile, 'settings' => $settings]);
+        }
+
+        return view('profile.show', ['profile' => $profile, 'settings' => $settings]);
     }
 
     protected function getCachedUser($username, $withTrashed = false)
@@ -166,12 +160,12 @@ class ProfileController extends Controller
                 return Profile::whereNull(['domain', 'status'])
                     ->whereUsername($username)
                     ->first();
-            } else {
-                return Profile::withTrashed()
-                    ->whereNull(['domain', 'status'])
-                    ->whereUsername($username)
-                    ->first();
             }
+
+            return Profile::withTrashed()
+                ->whereNull(['domain', 'status'])
+                ->whereUsername($username)
+                ->first();
         });
     }
 
@@ -320,7 +314,7 @@ class ProfileController extends Controller
                 $headers['Last-Modified'] = now()->parse($items->first()['created_at'])->toRfc7231String();
             }
 
-            return compact('items', 'permalink', 'headers');
+            return ['items' => $items, 'permalink' => $permalink, 'headers' => $headers];
         });
         abort_if(! $data || ! isset($data['items']) || ! isset($data['permalink']), 404);
 
@@ -378,7 +372,7 @@ class ProfileController extends Controller
         }
 
         $profile = AccountService::get($profile->id);
-        $res = view('profile.embed', compact('profile'));
+        $res = view('profile.embed', ['profile' => $profile]);
 
         return response($res)->withHeaders(['X-Frame-Options' => 'ALLOWALL']);
     }
@@ -395,6 +389,6 @@ class ProfileController extends Controller
             ->exists();
         abort_unless($exists, 404);
 
-        return view('profile.story', compact('pid', 'profile'));
+        return view('profile.story', ['pid' => $pid, 'profile' => $profile]);
     }
 }

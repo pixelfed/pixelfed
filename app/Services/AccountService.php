@@ -93,7 +93,7 @@ class AccountService
 
             return collect($settings)
                 ->filter(function ($item, $key) {
-                    return in_array($key, array_keys(self::defaultSettings())) == true;
+                    return in_array($key, array_keys(self::defaultSettings())) === true;
                 })
                 ->map(function ($item, $key) {
                     if ($key == 'compose_settings') {
@@ -163,7 +163,7 @@ class AccountService
         return ! $res['disable_embeds'];
     }
 
-    public static function defaultSettings()
+    public static function defaultSettings(): array
     {
         return [
             'crawlable' => true,
@@ -202,7 +202,7 @@ class AccountService
         $key = self::CACHE_KEY.'pcs:'.$id;
 
         if (Cache::has($key)) {
-            return;
+            return null;
         }
 
         $count = Status::whereProfileId($id)
@@ -313,16 +313,18 @@ class AccountService
         $num = intval($num);
         $formatter = new NumberFormatter('en_US', NumberFormatter::DECIMAL);
         $formatter->setAttribute(NumberFormatter::MAX_FRACTION_DIGITS, 1);
-
         if ($num >= 1000000000) {
             return $formatter->format($num / 1000000000).'B';
-        } elseif ($num >= 1000000) {
-            return $formatter->format($num / 1000000).'M';
-        } elseif ($num >= 1000) {
-            return $formatter->format($num / 1000).'K';
-        } else {
-            return $formatter->format($num);
         }
+        if ($num >= 1000000) {
+            return $formatter->format($num / 1000000).'M';
+        }
+
+        if ($num >= 1000) {
+            return $formatter->format($num / 1000).'K';
+        }
+
+        return $formatter->format($num);
     }
 
     public static function getUserIdFromProfileId($profileId): ?int
@@ -330,7 +332,7 @@ class AccountService
         return Profile::whereKey($profileId)->value('user_id');
     }
 
-    public static function getMetaDescription($id)
+    public static function getMetaDescription($id): string
     {
         $account = self::get($id, true);
 

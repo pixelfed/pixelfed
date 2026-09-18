@@ -28,7 +28,7 @@ abstract class Regex
     /**
      * Contains all generated regular expressions.
      *
-     * @var string The regex patterns.
+     * @var array<string, string> The regex patterns.
      */
     protected static $patterns = [];
 

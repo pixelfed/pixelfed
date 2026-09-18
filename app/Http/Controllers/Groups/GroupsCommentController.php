@@ -271,12 +271,12 @@ class GroupsCommentController extends Controller
 
         if ($request->wantsJson()) {
             return response()->json(['Status successfully deleted.']);
-        } else {
-            return redirect('/groups/feed');
         }
+
+        return redirect('/groups/feed');
     }
 
-    public function likePost(Request $request)
+    public function likePost(Request $request): array
     {
         $this->validate($request, [
             'gid' => 'required',
@@ -326,7 +326,7 @@ class GroupsCommentController extends Controller
         return $response;
     }
 
-    public function unlikePost(Request $request)
+    public function unlikePost(Request $request): array
     {
         $this->validate($request, [
             'gid' => 'required',

@@ -72,7 +72,7 @@ class Group extends Model
         return GroupService::isMember($this->id, $id);
     }
 
-    public function getMembershipType()
+    public function getMembershipType(): string
     {
         return $this->is_private ? 'private' : ($this->is_local ? 'local' : 'all');
     }

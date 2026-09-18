@@ -59,7 +59,7 @@ class SeedFollows extends Command
                 if ($follow->wasRecentlyCreated == true) {
                     FollowPipeline::dispatch($follow);
                 }
-            } catch (Exception $e) {
+            } catch (Exception) {
                 continue;
             }
         }

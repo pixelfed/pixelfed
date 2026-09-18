@@ -75,7 +75,7 @@ class StatusHashtagService
         return $cc->cached_count ?? 0;
     }
 
-    public static function getStatus($statusId, $hashtagId)
+    public static function getStatus($statusId, $hashtagId): array
     {
         return ['status' => StatusService::get($statusId)];
     }

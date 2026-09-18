@@ -17,7 +17,7 @@ class LiveStream extends Model
         return url($path);
     }
 
-    public function getStreamServer()
+    public function getStreamServer(): string
     {
         $proto = 'rtmp://';
         $host = config('livestreaming.server.host');
@@ -27,7 +27,7 @@ class LiveStream extends Model
         return $proto.$host.$port.$path;
     }
 
-    public function getStreamKeyUrl()
+    public function getStreamKeyUrl(): string
     {
         $path = $this->getStreamServer().'?';
         $query = http_build_query([
@@ -37,7 +37,7 @@ class LiveStream extends Model
         return $path.$query;
     }
 
-    public function getStreamRtmpUrl()
+    public function getStreamRtmpUrl(): string
     {
         return $this->getStreamServer().'/'.$this->stream_id;
     }

@@ -11,7 +11,7 @@ class CaptchaServiceProvider extends ServiceProvider
 {
     public function register(): void
     {
-        $this->app->singleton('captcha.manager', fn ($app) => new CaptchaManager($app));
+        $this->app->singleton('captcha.manager', fn ($app): CaptchaManager => new CaptchaManager($app));
         $this->app->alias('captcha.manager', CaptchaManager::class);
     }
 

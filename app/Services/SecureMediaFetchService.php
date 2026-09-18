@@ -26,11 +26,11 @@ use Psr\Http\Message\ResponseInterface;
  */
 class SecureMediaFetchService
 {
-    private const MAX_REDIRECTS = 2;
+    private const int MAX_REDIRECTS = 2;
 
-    private const CONNECT_TIMEOUT = 5;
+    private const int CONNECT_TIMEOUT = 5;
 
-    private const TIMEOUT = 15;
+    private const int TIMEOUT = 15;
 
     /**
      * Perform a HEAD request through the pinned, validated path.
@@ -134,11 +134,7 @@ class SecureMediaFetchService
                     ->timeout(self::TIMEOUT)
                     ->connectTimeout(self::CONNECT_TIMEOUT)
                     ->{$method}($currentUrl);
-            } catch (RequestException $e) {
-                return false;
-            } catch (ConnectionException $e) {
-                return false;
-            } catch (\Throwable $e) {
+            } catch (RequestException|ConnectionException|\Throwable) {
                 return false;
             }
 
@@ -227,7 +223,7 @@ class SecureMediaFetchService
             $resolved = (string) BaseUri::from($baseUrl)->resolve($location);
 
             return Helpers::validateUrl($resolved) ? $resolved : null;
-        } catch (\Throwable $e) {
+        } catch (\Throwable) {
             return null;
         }
     }

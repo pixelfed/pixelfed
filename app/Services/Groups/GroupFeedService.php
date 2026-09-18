@@ -84,5 +84,7 @@ class GroupFeedService
 
             return 1;
         }
+
+        return null;
     }
 }

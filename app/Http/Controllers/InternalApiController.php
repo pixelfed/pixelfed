@@ -64,7 +64,7 @@ class InternalApiController extends Controller
             ->take(12)
             ->values();
 
-        return response()->json(compact('posts'));
+        return response()->json(['posts' => $posts]);
     }
 
     public function directMessage(Request $request, $profileId, $threadId): JsonResponse
@@ -84,7 +84,7 @@ class InternalApiController extends Controller
             ->orderBy('created_at', 'asc')
             ->paginate(30);
 
-        return response()->json(compact('msg', 'profile', 'thread'), 200, [], JSON_PRETTY_PRINT);
+        return response()->json(['msg' => $msg, 'profile' => $profile, 'thread' => $thread], 200, [], JSON_PRETTY_PRINT);
     }
 
     public function statusReplies(Request $request, int $id): JsonResponse
@@ -311,12 +311,12 @@ class InternalApiController extends Controller
             }
             $pid = $request->user()->profile->id;
             $following = FollowerService::getFollowingIds($pid);
-            $visibility = in_array($profile->id, $following) == true ? ['public', 'unlisted', 'private'] : [];
+            $visibility = in_array($profile->id, $following) === true ? ['public', 'unlisted', 'private'] : [];
         } else {
             if ($request->user() !== null) {
                 $pid = $request->user()->profile->id;
                 $following = FollowerService::getFollowingIds($pid);
-                $visibility = in_array($profile->id, $following) == true ? ['public', 'unlisted', 'private'] : ['public', 'unlisted'];
+                $visibility = in_array($profile->id, $following) === true ? ['public', 'unlisted', 'private'] : ['public', 'unlisted'];
             } else {
                 $visibility = ['public', 'unlisted'];
             }
@@ -368,7 +368,7 @@ class InternalApiController extends Controller
         $pid = $request->user()->profile_id;
         $exists = Redis::sismember('email:manual', $pid);
 
-        return view('account.email.request_verification', compact('exists'));
+        return view('account.email.request_verification', ['exists' => $exists]);
     }
 
     public function requestEmailVerificationStore(Request $request): RedirectResponse

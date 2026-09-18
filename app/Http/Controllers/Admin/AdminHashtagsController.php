@@ -38,7 +38,8 @@ trait AdminHashtagsController
             ->when($action, function ($q, $action) {
                 if ($action === 'banned') {
                     return $q->whereIsBanned(true);
-                } elseif ($action === 'nsfw') {
+                }
+                if ($action === 'nsfw') {
                     return $q->whereIsNsfw(true);
                 }
             })
@@ -91,7 +92,7 @@ trait AdminHashtagsController
         return new AdminHashtag($hashtag);
     }
 
-    public function hashtagsClearTrendingCache(Request $request)
+    public function hashtagsClearTrendingCache(Request $request): array
     {
         TrendingHashtagService::refresh();
 

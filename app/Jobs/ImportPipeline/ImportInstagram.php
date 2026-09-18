@@ -81,13 +81,14 @@ class ImportInstagram implements ShouldQueue
 
         foreach ($collection as $import) {
             $caption = $import['caption'];
+            $taken_at = now();
             try {
                 $min = Carbon::create(2010, 10, 6, 0, 0, 0);
                 $taken_at = Carbon::parse($import['taken_at']);
                 if (! $min->lt($taken_at)) {
                     $taken_at = now();
                 }
-            } catch (\Exception $e) {
+            } catch (\Exception) {
 
             }
             $filename = last(explode('/', $import['path']));
@@ -95,7 +96,7 @@ class ImportInstagram implements ShouldQueue
                 ->whereOriginalName($filename)
                 ->first();
 
-            if (empty($importData) || is_file(storage_path("app/$importData->path")) == false) {
+            if (empty($importData) || is_file(storage_path("app/$importData->path")) === false) {
                 continue;
             }
 

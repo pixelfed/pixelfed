@@ -39,21 +39,7 @@ trait AdminSettingsController
         $regState = $openReg ? 'open' : ($curOnboarding ? 'filtered' : 'closed');
         $accountMigration = (bool) config_cache('federation.migration');
 
-        return view('admin.settings.home', compact(
-            'jpeg',
-            'png',
-            'gif',
-            'mp4',
-            'webp',
-            'rules',
-            'cloud_storage',
-            'cloud_disk',
-            'cloud_ready',
-            'availableAdmins',
-            'currentAdmin',
-            'regState',
-            'accountMigration'
-        ));
+        return view('admin.settings.home', ['jpeg' => $jpeg, 'png' => $png, 'gif' => $gif, 'mp4' => $mp4, 'webp' => $webp, 'rules' => $rules, 'cloud_storage' => $cloud_storage, 'cloud_disk' => $cloud_disk, 'cloud_ready' => $cloud_ready, 'availableAdmins' => $availableAdmins, 'currentAdmin' => $currentAdmin, 'regState' => $regState, 'accountMigration' => $accountMigration]);
     }
 
     public function settingsHomeStore(Request $request)
@@ -190,11 +176,11 @@ trait AdminSettingsController
         foreach ($bools as $key => $value) {
             $active = $request->input($key) == 'on';
 
-            if ($key == 'activitypub' && $active && ! InstanceActor::exists()) {
+            if ($key === 'activitypub' && $active && ! InstanceActor::exists()) {
                 Artisan::call('instance:actor');
             }
 
-            if ($key == 'mobile_apis' &&
+            if ($key === 'mobile_apis' &&
                 $active &&
                 ! file_exists(storage_path('oauth-public.key')) &&
                 ! config_cache('passport.public_key') &&
@@ -249,7 +235,7 @@ trait AdminSettingsController
         $path = storage_path('app/'.config('app.name'));
         $files = is_dir($path) ? new \DirectoryIterator($path) : [];
 
-        return view('admin.settings.backups', compact('files'));
+        return view('admin.settings.backups', ['files' => $files]);
     }
 
     public function settingsMaintenance(Request $request)
@@ -261,7 +247,7 @@ trait AdminSettingsController
     {
         $storage = [];
 
-        return view('admin.settings.storage', compact('storage'));
+        return view('admin.settings.storage', ['storage' => $storage]);
     }
 
     public function settingsFeatures(Request $request)
@@ -273,7 +259,7 @@ trait AdminSettingsController
     {
         $pages = Page::orderByDesc('updated_at')->paginate(10);
 
-        return view('admin.pages.home', compact('pages'));
+        return view('admin.pages.home', ['pages' => $pages]);
     }
 
     public function settingsPageEdit(Request $request)
@@ -317,7 +303,7 @@ trait AdminSettingsController
                 break;
         }
 
-        return view('admin.settings.system', compact('sys'));
+        return view('admin.settings.system', ['sys' => $sys]);
     }
 
     public function settingsApiFetch(Request $request)
@@ -387,15 +373,14 @@ trait AdminSettingsController
 
         if (! $rules) {
             return [];
-        } else {
-            $json = json_decode($rules, true);
-            $idx = array_search($val, $json);
-            if ($idx !== false) {
-                unset($json[$idx]);
-                $json = array_values($json);
-            }
-            ConfigCacheService::put('app.rules', json_encode(array_values($json)));
         }
+        $json = json_decode($rules, true);
+        $idx = array_search($val, $json);
+        if ($idx !== false) {
+            unset($json[$idx]);
+            $json = array_values($json);
+        }
+        ConfigCacheService::put('app.rules', json_encode(array_values($json)));
 
         Cache::forget('api:v1:instance-data:rules');
         Cache::forget('api:v1:instance-data-response-v1');
@@ -411,9 +396,8 @@ trait AdminSettingsController
 
         if (! $rules) {
             return [];
-        } else {
-            ConfigCacheService::put('app.rules', json_encode([]));
         }
+        ConfigCacheService::put('app.rules', json_encode([]));
 
         Cache::forget('api:v1:instance-data:rules');
         Cache::forget('api:v1:instance-data-response-v1');
@@ -519,7 +503,6 @@ trait AdminSettingsController
 
             default:
                 abort(404);
-                break;
         }
     }
 
@@ -549,9 +532,8 @@ trait AdminSettingsController
                 $cloud_ready = ! empty(config('filesystems.disks.'.$cloud_disk.'.key')) && ! empty(config('filesystems.disks.'.$cloud_disk.'.secret'));
                 if (! $cloud_ready) {
                     return redirect()->back()->withErrors(['cloud_storage' => 'Must configure cloud storage before enabling!']);
-                } else {
-                    ConfigCacheService::put('pixelfed.cloud_storage', true);
                 }
+                ConfigCacheService::put('pixelfed.cloud_storage', true);
             }
         }
         ConfigCacheService::put('federation.activitypub.authorized_fetch', $request->boolean('authorized_fetch'));
@@ -647,7 +629,7 @@ trait AdminSettingsController
         return $request->all();
     }
 
-    public function settingsApiUpdatePostsType($request)
+    public function settingsApiUpdatePostsType($request): array
     {
         $this->validate($request, [
             'max_caption_length' => 'required|integer|min:5|max:10000',
@@ -668,7 +650,7 @@ trait AdminSettingsController
         return $res;
     }
 
-    public function settingsApiUpdatePlatformType($request)
+    public function settingsApiUpdatePlatformType($request): array
     {
         $this->validate($request, [
             'allow_app_registration' => 'required',
@@ -811,7 +793,7 @@ trait AdminSettingsController
                 } else {
                     $names = $adminAutofollowAccounts;
                 }
-                if (! $names || count($names) == 0) {
+                if (! $names || count($names) === 0) {
                     return response()->json(['message' => 'You need to assign autofollow accounts before you can enable it.'], 400);
                 }
                 if (count($names) > 5) {
@@ -882,12 +864,12 @@ trait AdminSettingsController
             $visibility = $request->input('disk_config.visibility');
             $url = $request->input('disk_config.url');
             $endpoint = $request->input('disk_config.endpoint');
-            if (strpos($key, '*') === false && $key != config_cache($dkey.'key')) {
+            if (! str_contains($key, '*') && $key != config_cache($dkey.'key')) {
                 array_push($changes, 'key');
             } else {
                 $ckey = config_cache($dkey.'key');
             }
-            if (strpos($secret, '*') === false && $secret != config_cache($dkey.'secret')) {
+            if (! str_contains($secret, '*') && $secret != config_cache($dkey.'secret')) {
                 array_push($changes, 'secret');
             } else {
                 $csecret = config_cache($dkey.'secret');

@@ -13,7 +13,7 @@ use League\Fractal;
 
 class NotificationTransformer extends Fractal\TransformerAbstract
 {
-    public function transform(Notification $notification)
+    public function transform(Notification $notification): array
     {
         $res = [
             'id' => (string) $notification->id,

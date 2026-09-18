@@ -34,6 +34,9 @@ use Illuminate\Support\Facades\Storage;
  * @property Carbon|null $deleted_at
  * @property-read User|null $user
  * @property-read Avatar $avatar
+ * @property-read \Illuminate\Database\Eloquent\Collection<int, ProfileAlias> $aliases
+ * @property-read bool $is_followed computed/dynamic attribute
+ * @property-read int $profile_id joined-column alias (followers.profile_id)
  */
 class Profile extends Model
 {
@@ -201,11 +204,11 @@ class Profile extends Model
             }
 
             if ($avatar->cdn_url) {
-                if (substr($avatar->cdn_url, 0, 8) === 'https://') {
+                if (str_starts_with($avatar->cdn_url, 'https://')) {
                     return $avatar->cdn_url;
-                } else {
-                    return url('/storage/avatars/default.jpg');
                 }
+
+                return url('/storage/avatars/default.jpg');
             }
 
             $path = $avatar->media_path;
@@ -216,7 +219,7 @@ class Profile extends Model
 
             if ($avatar->is_remote &&
                 $avatar->remote_url &&
-                boolval(config_cache('federation.avatars.store_local')) == true
+                boolval(config_cache('federation.avatars.store_local')) === true
             ) {
                 return $avatar->remote_url;
             }
@@ -225,7 +228,7 @@ class Profile extends Model
                 return url('/storage/avatars/default.jpg');
             }
 
-            if (substr($path, 0, 6) !== 'public') {
+            if (! str_starts_with($path, 'public')) {
                 return url('/storage/avatars/default.jpg');
             }
 
@@ -315,12 +318,15 @@ class Profile extends Model
         return $this->sharedInbox ?? $this->inboxUrl();
     }
 
-    public function getDefaultScope()
+    public function getDefaultScope(): string
     {
         return $this->is_private == true ? 'private' : 'public';
     }
 
-    public function getAudience($scope = false)
+    /**
+     * @return mixed[][]
+     */
+    public function getAudience($scope = false): array
     {
         if ($this->remote_url) {
             return [];

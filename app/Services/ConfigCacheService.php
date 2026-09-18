@@ -170,9 +170,9 @@ class ConfigCacheService
                 if ($c) {
                     if ($protect) {
                         return decrypt($c->v) ?? config($key);
-                    } else {
-                        return $c->v ?? config($key);
                     }
+
+                    return $c->v ?? config($key);
                 }
 
                 if ($v === null) {
@@ -190,7 +190,7 @@ class ConfigCacheService
 
                 return $v;
             });
-        } catch (Exception|QueryException $e) {
+        } catch (Exception|QueryException) {
             return config($key);
         }
     }

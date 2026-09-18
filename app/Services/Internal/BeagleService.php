@@ -28,11 +28,7 @@ class BeagleService
                     ->connectTimeout(5)
                     ->retry(2, 500)
                     ->get('https://beagle.pixelfed.net/api/v1/common/suggestions/rules');
-            } catch (RequestException $e) {
-                return;
-            } catch (ConnectionException $e) {
-                return;
-            } catch (\Exception $e) {
+            } catch (RequestException|ConnectionException|\Exception) {
                 return;
             }
 
@@ -52,11 +48,11 @@ class BeagleService
 
     public static function getDiscover()
     {
-        if ((bool) config_cache('federation.activitypub.enabled') == false) {
+        if ((bool) config_cache('federation.activitypub.enabled') === false) {
             return [];
         }
 
-        if ((bool) config('instance.discover.beagle_api') == false) {
+        if ((bool) config('instance.discover.beagle_api') === false) {
             return [];
         }
 
@@ -69,11 +65,7 @@ class BeagleService
                     ->connectTimeout(5)
                     ->retry(2, 500)
                     ->get('https://beagle.pixelfed.net/api/v1/discover');
-            } catch (RequestException $e) {
-                return;
-            } catch (ConnectionException $e) {
-                return;
-            } catch (\Exception $e) {
+            } catch (RequestException|ConnectionException|\Exception) {
                 return;
             }
 
@@ -93,11 +85,11 @@ class BeagleService
 
     public static function getDiscoverPosts()
     {
-        if ((bool) config_cache('federation.activitypub.enabled') == false) {
+        if ((bool) config_cache('federation.activitypub.enabled') === false) {
             return [];
         }
 
-        if ((bool) config('instance.discover.beagle_api') == false) {
+        if ((bool) config('instance.discover.beagle_api') === false) {
             return [];
         }
 

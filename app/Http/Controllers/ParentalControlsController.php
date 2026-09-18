@@ -46,7 +46,7 @@ class ParentalControlsController extends Controller
         $this->authPreflight($request);
         $children = ParentalControls::whereParentId($request->user()->id)->latest()->paginate(5);
 
-        return view('settings.parental-controls.index', compact('children'));
+        return view('settings.parental-controls.index', ['children' => $children]);
     }
 
     public function add(Request $request): View
@@ -62,7 +62,7 @@ class ParentalControlsController extends Controller
         $uid = $request->user()->id;
         $pc = ParentalControls::whereParentId($uid)->findOrFail($id);
 
-        return view('settings.parental-controls.manage', compact('pc'));
+        return view('settings.parental-controls.manage', ['pc' => $pc]);
     }
 
     public function update(Request $request, $id): RedirectResponse
@@ -112,7 +112,7 @@ class ParentalControlsController extends Controller
             $title = 'You cannot complete this action on this device.';
             $body = 'Please log out or use a different device or browser to complete the invitation registration.';
 
-            return view('errors.custom', compact('title', 'body'));
+            return view('errors.custom', ['title' => $title, 'body' => $body]);
         }
 
         $this->authPreflight($request, true, false);
@@ -120,7 +120,7 @@ class ParentalControlsController extends Controller
         $pc = ParentalControls::whereRaw('verify_code = BINARY ?', $code)->whereNull(['email_verified_at', 'child_id'])->findOrFail($id);
         abort_unless(User::whereId($pc->parent_id)->exists(), 404);
 
-        return view('settings.parental-controls.invite-register-form', compact('pc'));
+        return view('settings.parental-controls.invite-register-form', ['pc' => $pc]);
     }
 
     public function inviteRegisterStore(Request $request, $id, $code): RedirectResponse|View
@@ -129,7 +129,7 @@ class ParentalControlsController extends Controller
             $title = 'You cannot complete this action on this device.';
             $body = 'Please log out or use a different device or browser to complete the invitation registration.';
 
-            return view('errors.custom', compact('title', 'body'));
+            return view('errors.custom', ['title' => $title, 'body' => $body]);
         }
 
         $this->authPreflight($request, true, false);
@@ -175,7 +175,7 @@ class ParentalControlsController extends Controller
             ->whereNull(['email_verified_at', 'child_id'])
             ->findOrFail($id);
 
-        return view('settings.parental-controls.delete-invite', compact('pc'));
+        return view('settings.parental-controls.delete-invite', ['pc' => $pc]);
     }
 
     public function cancelInviteHandle(Request $request, $id): RedirectResponse
@@ -197,7 +197,7 @@ class ParentalControlsController extends Controller
             ->whereNotNull(['email_verified_at', 'child_id'])
             ->findOrFail($id);
 
-        return view('settings.parental-controls.stop-managing', compact('pc'));
+        return view('settings.parental-controls.stop-managing', ['pc' => $pc]);
     }
 
     public function stopManagingHandle(Request $request, $id): RedirectResponse
@@ -215,7 +215,7 @@ class ParentalControlsController extends Controller
         return redirect('/settings/parental-controls');
     }
 
-    protected function requestFormFields($request)
+    protected function requestFormFields($request): array
     {
         $state = [];
         $fields = [
