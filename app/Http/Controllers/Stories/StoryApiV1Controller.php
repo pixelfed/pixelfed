@@ -770,7 +770,7 @@ class StoryApiV1Controller extends Controller
             'image/jpeg',
             'image/png',
             'video/mp4',
-        ]) == false) {
+        ]) === false) {
             abort(400, 'Invalid media type');
 
             return;

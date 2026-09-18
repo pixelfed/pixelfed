@@ -219,7 +219,7 @@ class StatusEntityLexer implements ShouldQueue
             }
         }
 
-        if ((bool) config_cache('federation.activitypub.enabled') == true && config('app.env') == 'production') {
+        if ((bool) config_cache('federation.activitypub.enabled') === true && config('app.env') == 'production') {
             StatusActivityPubDeliver::dispatch($status);
         }
     }

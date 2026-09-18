@@ -550,7 +550,7 @@ class RemoteAuthController extends Controller
         $host = strtolower(config('pixelfed.domain.app'));
         $domain = strtolower(parse_url($account, PHP_URL_HOST));
 
-        if ($domain == $host) {
+        if ($domain === $host) {
             $username = Str::afterLast($account, '/');
             $user = User::where('username', $username)->first();
             if ($user) {
@@ -595,7 +595,7 @@ class RemoteAuthController extends Controller
         $avatar->remote_url = $request->input('avatar_url');
         $avatar->save();
 
-        MediaStorageService::avatar($avatar, (bool) config_cache('pixelfed.cloud_storage') == false);
+        MediaStorageService::avatar($avatar, (bool) config_cache('pixelfed.cloud_storage') === false);
 
         return [200];
     }

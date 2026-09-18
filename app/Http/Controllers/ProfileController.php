@@ -133,9 +133,9 @@ class ProfileController extends Controller
             $isBlocked = $this->blockedProfileCheck($user);
 
             $owner = $loggedIn && Auth::id() === $user->user_id;
-            $is_following = ($owner == false && $request->user() !== null) ? $user->followedBy($request->user()->profile) : false;
+            $is_following = ($owner === false && $request->user() !== null) ? $user->followedBy($request->user()->profile) : false;
 
-            if ($isPrivate == true || $isBlocked == true) {
+            if ($isPrivate === true || $isBlocked === true) {
                 $requested = $request->user() !== null ? FollowRequest::whereFollowerId($request->user()->profile_id)
                     ->whereFollowingId($user->id)
                     ->exists() : false;

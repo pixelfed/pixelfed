@@ -108,7 +108,7 @@ class SearchApiV2Service
             ->limit($limit)
             ->get()
             ->filter(function ($profile) use ($banned) {
-                return in_array($profile->domain, $banned) == false;
+                return in_array($profile->domain, $banned) === false;
             })
             ->map(function ($res) use ($mastodonMode) {
                 return $mastodonMode ?

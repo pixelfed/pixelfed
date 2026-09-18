@@ -50,7 +50,7 @@ trait AdminReportController
 
         $mailVerifications = Redis::scard('email:manual');
 
-        if ($filter == 'open' && $page == 1) {
+        if ($filter === 'open' && $page == 1) {
             $reports = Cache::remember('admin-dash:reports:list-cache', 300, function () use ($filter) {
                 return Report::whereHas('status')
                     ->whereHas('reportedUser')

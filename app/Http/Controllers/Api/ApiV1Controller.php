@@ -1067,15 +1067,15 @@ class ApiV1Controller extends Controller
             abort(400, 'You cannot follow more than '.Follower::MAX_FOLLOWING.' accounts');
         }
 
-        if ($private == true) {
+        if ($private === true) {
             $follow = FollowRequest::firstOrCreate([
                 'follower_id' => $user->profile_id,
                 'following_id' => $target->id,
             ]);
-            if ($remote == true && config('federation.activitypub.remoteFollow') == true) {
+            if ($remote === true && config('federation.activitypub.remoteFollow') == true) {
                 (new FollowerController)->sendFollow($user->profile, $target);
             }
-        } elseif ($remote == true) {
+        } elseif ($remote === true) {
             $follow = FollowRequest::firstOrCreate([
                 'follower_id' => $user->profile_id,
                 'following_id' => $target->id,
@@ -1164,7 +1164,7 @@ class ApiV1Controller extends Controller
 
         UnfollowPipeline::dispatch($user->profile_id, $target->id)->onQueue('high');
 
-        if ($remote == true && config('federation.activitypub.remoteFollow') == true) {
+        if ($remote === true && config('federation.activitypub.remoteFollow') == true) {
             (new FollowerController)->sendUndoFollow($user->profile, $target);
         }
 
@@ -1367,7 +1367,7 @@ class ApiV1Controller extends Controller
 
         $count = UserFilterService::blockCount($pid);
         $maxLimit = (int) config_cache('instance.user_filters.max_user_blocks');
-        if ($count == 0) {
+        if ($count === 0) {
             $filterCount = UserFilter::whereUserId($pid)
                 ->whereFilterType('block')
                 ->get()
@@ -2095,7 +2095,7 @@ class ApiV1Controller extends Controller
         $sizeInKbs = (int) ceil($fileSize / 1000);
         $updatedAccountSize = (int) $accountSize + (int) $sizeInKbs;
 
-        if ((bool) config_cache('pixelfed.enforce_account_limit') == true) {
+        if ((bool) config_cache('pixelfed.enforce_account_limit') === true) {
             $limit = (int) config_cache('pixelfed.max_account_size');
             if ($updatedAccountSize >= $limit) {
                 abort(403, 'Account size limit reached.');
@@ -2106,7 +2106,7 @@ class ApiV1Controller extends Controller
         $filterName = in_array($request->input('filter_name'), Filter::names()) ? $request->input('filter_name') : null;
 
         $mimes = explode(',', config_cache('pixelfed.media_types'));
-        if (in_array($photo->getMimeType(), $mimes) == false) {
+        if (in_array($photo->getMimeType(), $mimes) === false) {
             abort(403, 'Invalid or unsupported mime type.');
         }
 
@@ -2334,7 +2334,7 @@ class ApiV1Controller extends Controller
         $sizeInKbs = (int) ceil($fileSize / 1000);
         $updatedAccountSize = (int) $accountSize + (int) $sizeInKbs;
 
-        if ((bool) config_cache('pixelfed.enforce_account_limit') == true) {
+        if ((bool) config_cache('pixelfed.enforce_account_limit') === true) {
             $limit = (int) config_cache('pixelfed.max_account_size');
             if ($updatedAccountSize >= $limit) {
                 abort(403, 'Account size limit reached.');
@@ -2345,7 +2345,7 @@ class ApiV1Controller extends Controller
         $filterName = in_array($request->input('filter_name'), Filter::names()) ? $request->input('filter_name') : null;
 
         $mimes = explode(',', config_cache('pixelfed.media_types'));
-        if (in_array($photo->getMimeType(), $mimes) == false) {
+        if (in_array($photo->getMimeType(), $mimes) === false) {
             abort(403, 'Invalid or unsupported mime type.');
         }
 
@@ -2512,7 +2512,7 @@ class ApiV1Controller extends Controller
 
         $count = UserFilterService::muteCount($pid);
         $maxLimit = (int) config_cache('instance.user_filters.max_user_mutes');
-        if ($count == 0) {
+        if ($count === 0) {
             $filterCount = UserFilter::whereUserId($pid)
                 ->whereFilterType('mute')
                 ->get()
@@ -3211,7 +3211,7 @@ class ApiV1Controller extends Controller
                 return $status;
             })
             ->filter(function ($s) use ($filtered) {
-                return $s && isset($s['account']) && in_array($s['account']['id'], $filtered) == false;
+                return $s && isset($s['account']) && in_array($s['account']['id'], $filtered) === false;
             })
             ->filter(function ($s) use ($domainBlocks) {
                 if (! $domainBlocks || ! count($domainBlocks)) {
@@ -4904,7 +4904,7 @@ class ApiV1Controller extends Controller
      */
     public function instancePeers(Request $request)
     {
-        if ((bool) config('instance.show_peers') == false) {
+        if ((bool) config('instance.show_peers') === false) {
             return $this->json([]);
         }
 

@@ -407,7 +407,7 @@ trait AdminDirectoryController
         $testimonials = $configCache->v ? collect(json_decode($configCache->v, true)) : collect([]);
 
         abort_if($testimonials->contains('profile_id', $user->profile_id), 422, 'Testimonial already exists');
-        abort_if($testimonials->count() == 10, 422, 'You can only have 10 active testimonials');
+        abort_if($testimonials->count() === 10, 422, 'You can only have 10 active testimonials');
 
         $testimonials->push([
             'profile_id' => (string) $user->profile_id,

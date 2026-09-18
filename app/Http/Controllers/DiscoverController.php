@@ -363,7 +363,7 @@ class DiscoverController extends Controller
                 $len = strlen($v);
                 $pos = strpos($v, '.');
                 $domain = trim($v);
-                if ($pos == false || $pos == ($len + 1)) {
+                if ($pos == false || $pos === $len + 1) {
                     return false;
                 }
                 if (! Instance::whereDomain($domain)->exists()) {

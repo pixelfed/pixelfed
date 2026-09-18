@@ -190,11 +190,11 @@ trait AdminSettingsController
         foreach ($bools as $key => $value) {
             $active = $request->input($key) == 'on';
 
-            if ($key == 'activitypub' && $active && ! InstanceActor::exists()) {
+            if ($key === 'activitypub' && $active && ! InstanceActor::exists()) {
                 Artisan::call('instance:actor');
             }
 
-            if ($key == 'mobile_apis' &&
+            if ($key === 'mobile_apis' &&
                 $active &&
                 ! file_exists(storage_path('oauth-public.key')) &&
                 ! config_cache('passport.public_key') &&
@@ -811,7 +811,7 @@ trait AdminSettingsController
                 } else {
                     $names = $adminAutofollowAccounts;
                 }
-                if (! $names || count($names) == 0) {
+                if (! $names || count($names) === 0) {
                     return response()->json(['message' => 'You need to assign autofollow accounts before you can enable it.'], 400);
                 }
                 if (count($names) > 5) {

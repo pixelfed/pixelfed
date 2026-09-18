@@ -395,7 +395,7 @@ class AdminController extends Controller
             switch ($type) {
                 case 'string':
                     if ($request->{$field} != $news->{$field}) {
-                        if ($field == 'title') {
+                        if ($field === 'title') {
                             $news->slug = $slug;
                         }
                         $news->{$field} = $request->{$field};
@@ -415,7 +415,7 @@ class AdminController extends Controller
                 case 'published':
                     $state = $request->{$field} == 'on' ? true : false;
                     $published = $news->published_at != null;
-                    if ($state != $published) {
+                    if ($state !== $published) {
                         $news->published_at = $state ? now() : null;
                         $changed = true;
                         array_push($changedFields, $field);
@@ -461,7 +461,7 @@ class AdminController extends Controller
             switch ($type) {
                 case 'string':
                     if ($request->{$field} != $news->{$field}) {
-                        if ($field == 'title') {
+                        if ($field === 'title') {
                             $news->slug = $slug;
                         }
                         $news->{$field} = $request->{$field};
@@ -481,7 +481,7 @@ class AdminController extends Controller
                 case 'published':
                     $state = $request->{$field} == 'on' ? true : false;
                     $published = $news->published_at != null;
-                    if ($state != $published) {
+                    if ($state !== $published) {
                         $news->published_at = $state ? now() : null;
                         $changed = true;
                         array_push($changedFields, $field);

@@ -538,7 +538,7 @@ class Helpers
                 return false;
             }
             $res = json_decode($res, true, 8);
-            if (json_last_error() == JSON_ERROR_NONE) {
+            if (json_last_error() === JSON_ERROR_NONE) {
                 return $res;
             } else {
                 return false;
@@ -879,7 +879,7 @@ class Helpers
         $reply_to = self::getReplyTo($activity, $depth);
         $ts = self::pluckval($activity['published']);
         $scope = self::getScope($activity, $url);
-        $commentsDisabled = isset($activity['commentsEnabled']) ? (bool) $activity['commentsEnabled'] == false : false;
+        $commentsDisabled = isset($activity['commentsEnabled']) ? (bool) $activity['commentsEnabled'] === false : false;
         $cw = self::getSensitive($activity, $url);
 
         if ($profile->unlisted) {
@@ -1075,7 +1075,7 @@ class Helpers
         $urlDomain = parse_url(self::pluckval($url), PHP_URL_HOST);
         $scope = 'private';
 
-        if (isset($activity['to']) == true) {
+        if (isset($activity['to']) === true) {
             if (is_array($activity['to']) && in_array('https://www.w3.org/ns/activitystreams#Public', $activity['to'])) {
                 $scope = 'public';
             }
@@ -1084,7 +1084,7 @@ class Helpers
             }
         }
 
-        if (isset($activity['cc']) == true) {
+        if (isset($activity['cc']) === true) {
             if (is_array($activity['cc']) && in_array('https://www.w3.org/ns/activitystreams#Public', $activity['cc'])) {
                 $scope = 'unlisted';
             }
@@ -1093,7 +1093,7 @@ class Helpers
             }
         }
 
-        if ($scope == 'public' && in_array($urlDomain, InstanceService::getUnlistedDomains())) {
+        if ($scope === 'public' && in_array($urlDomain, InstanceService::getUnlistedDomains())) {
             $scope = 'unlisted';
         }
 

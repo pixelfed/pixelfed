@@ -190,7 +190,7 @@ class StatusRemoteUpdatePipeline implements ShouldQueue
         }
 
         if (isset($activity['sensitive'])) {
-            if ((bool) $activity['sensitive'] == false) {
+            if ((bool) $activity['sensitive'] === false) {
                 $status->is_nsfw = false;
                 $exists = ModLog::whereObjectType('App\Status::class')
                     ->whereObjectId($status->id)

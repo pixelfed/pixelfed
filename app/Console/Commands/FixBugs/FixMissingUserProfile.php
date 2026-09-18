@@ -99,7 +99,7 @@ class FixMissingUserProfile extends Command
                 CreateAvatar::dispatch($profile);
             });
 
-            if ((bool) config_cache('account.autofollow') == true) {
+            if ((bool) config_cache('account.autofollow') === true) {
                 $names = config_cache('account.autofollow_usernames');
                 $names = explode(',', $names);
 
