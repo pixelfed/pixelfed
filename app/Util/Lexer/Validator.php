@@ -379,7 +379,7 @@ class Validator extends Regex
      * @param  bool  $optional  Whether a match is compulsory or not.
      * @return bool Whether an exact match was found.
      */
-    protected static function isValidMatch($string, $pattern, $optional = false)
+    protected static function isValidMatch($string, $pattern, $optional = false): bool
     {
         $found = preg_match($pattern, $string, $matches);
         if (! $optional) {

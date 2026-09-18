@@ -28,7 +28,7 @@ class DirectMessage extends Model
         return $this->belongsTo(Profile::class, 'to_id', 'id');
     }
 
-    public function me()
+    public function me(): bool
     {
         return Auth::user()->profile->id === $this->from_id;
     }

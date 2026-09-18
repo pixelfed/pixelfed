@@ -60,7 +60,7 @@ class AutospamService
         });
     }
 
-    public static function active()
+    public static function active(): bool
     {
         return config_cache('autospam.nlp.enabled') && self::eligible();
     }

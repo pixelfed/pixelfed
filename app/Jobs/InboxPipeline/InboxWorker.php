@@ -182,7 +182,7 @@ class InboxWorker implements ShouldQueue
      * path is not, a single trailing slash is ignored. Query and fragment
      * are part of the comparison so they cannot be used to alias an actor.
      */
-    protected static function sameActorUrl($a, $b)
+    protected static function sameActorUrl($a, $b): bool
     {
         $a = self::normalizeUrl($a);
         $b = self::normalizeUrl($b);

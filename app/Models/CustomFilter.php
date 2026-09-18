@@ -124,7 +124,7 @@ class CustomFilter extends Model
         $this->attributes['action'] = $value ? self::ACTION_HIDE : self::ACTION_WARN;
     }
 
-    public function getIrreversibleAttribute()
+    public function getIrreversibleAttribute(): bool
     {
         return $this->action === self::ACTION_HIDE;
     }
@@ -153,7 +153,7 @@ class CustomFilter extends Model
         });
     }
 
-    public function isExpired()
+    public function isExpired(): bool
     {
         return $this->expires_at !== null && $this->expires_at->isPast();
     }

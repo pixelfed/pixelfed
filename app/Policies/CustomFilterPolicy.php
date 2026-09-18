@@ -20,7 +20,7 @@ class CustomFilterPolicy
      *
      * @return bool
      */
-    public function view(User $user, CustomFilter $filter)
+    public function view(User $user, CustomFilter $filter): bool
     {
         return $user->profile_id === $filter->profile_id;
     }
@@ -38,7 +38,7 @@ class CustomFilterPolicy
      *
      * @return bool
      */
-    public function update(User $user, CustomFilter $filter)
+    public function update(User $user, CustomFilter $filter): bool
     {
         return $user->profile_id === $filter->profile_id;
     }
@@ -48,7 +48,7 @@ class CustomFilterPolicy
      *
      * @return bool
      */
-    public function delete(User $user, CustomFilter $filter)
+    public function delete(User $user, CustomFilter $filter): bool
     {
         return $user->profile_id === $filter->profile_id;
     }
