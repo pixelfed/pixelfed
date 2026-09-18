@@ -122,7 +122,7 @@ class ExportLanguages extends Command
             ];
         }, $langs);
 
-        usort($locales, function (array $a, array $b) {
+        usort($locales, function ($a, $b) {
             return strcasecmp($a['name'], $b['name']);
         });
 

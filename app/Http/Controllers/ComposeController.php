@@ -406,9 +406,9 @@ class ComposeController extends Controller
             ->limit((strlen($raw) > 5 ? 360 : 30))
             ->get()
             ->sortByDesc(function ($place) use ($popular) {
-                return $popular->filter(function (array $p) use ($place) {
+                return $popular->filter(function ($p) use ($place) {
                     return $p['id'] == $place->id;
-                })->map(function (array $p) use ($place) {
+                })->map(function ($p) use ($place) {
                     return in_array($place->country, ['Canada', 'USA', 'France', 'Germany', 'United Kingdom']) ? $p['count'] : 1;
                 })->values();
             })

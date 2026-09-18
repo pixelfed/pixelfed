@@ -125,7 +125,7 @@ class DeleteWorker implements ShouldQueue
 
     }
 
-    protected function verifySignature(array $headers, $payload)
+    protected function verifySignature($headers, $payload)
     {
         $body = $this->payload;
         $bodyDecoded = $payload;

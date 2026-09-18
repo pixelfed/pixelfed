@@ -95,13 +95,13 @@ class BeagleService
 
         return Cache::remember(self::DISCOVER_POSTS_CACHE_KEY, now()->addHours(1), function () {
             $posts = collect(self::getDiscover())
-                ->filter(function (array $post) {
+                ->filter(function ($post) {
                     $bannedInstances = InstanceService::getBannedDomains();
                     $domain = parse_url($post['id'], PHP_URL_HOST);
 
                     return ! in_array($domain, $bannedInstances);
                 })
-                ->map(function (array $post) {
+                ->map(function ($post) {
                     $domain = parse_url($post['id'], PHP_URL_HOST);
                     if ($domain === config_cache('pixelfed.domain.app')) {
                         $parts = explode('/', $post['id']);

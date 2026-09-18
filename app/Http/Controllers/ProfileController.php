@@ -300,7 +300,7 @@ class ProfileController extends Controller
                 ->map(function ($status) {
                     return StatusService::get($status->id, true);
                 })
-                ->filter(function (array $status) {
+                ->filter(function ($status) {
                     return $status &&
                         isset($status['account']) &&
                         isset($status['media_attachments']) &&

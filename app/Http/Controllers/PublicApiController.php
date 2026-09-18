@@ -298,7 +298,7 @@ class PublicApiController extends Controller
 
                         return $status;
                     })
-                    ->filter(function (array $s) use ($filtered) {
+                    ->filter(function ($s) use ($filtered) {
                         return $s && isset($s['account']) && in_array($s['account']['id'], $filtered) === false;
                     })
                     ->values();
@@ -344,7 +344,7 @@ class PublicApiController extends Controller
 
                         return $status;
                     })
-                    ->filter(function (array $s) use ($filtered) {
+                    ->filter(function ($s) use ($filtered) {
                         return $s && isset($s['account']) && in_array($s['account']['id'], $filtered) === false;
                     })
                     ->values();
@@ -379,7 +379,7 @@ class PublicApiController extends Controller
 
                     return $status;
                 })
-                ->filter(function (array $s) use ($filtered) {
+                ->filter(function ($s) use ($filtered) {
                     return $s && isset($s['account']) && in_array($s['account']['id'], $filtered) === false;
                 })
                 ->values()
@@ -477,7 +477,7 @@ class PublicApiController extends Controller
 
                     return $status;
                 })
-                ->filter(function (array $s) use ($filtered) {
+                ->filter(function ($s) use ($filtered) {
                     return $s && isset($s['account']) && in_array($s['account']['id'], $filtered) === false;
                 })
                 ->values()
@@ -527,7 +527,7 @@ class PublicApiController extends Controller
 
                 return $status;
             })
-            ->filter(function (array $s) use ($filtered) {
+            ->filter(function ($s) use ($filtered) {
                 return $s && isset($s['account']) && in_array($s['account']['id'], $filtered) === false;
             })
             ->values()
@@ -593,7 +593,7 @@ class PublicApiController extends Controller
 
                         return $status;
                     })
-                    ->filter(function (array $s) {
+                    ->filter(function ($s) {
                         // Drop statuses whose account failed to resolve (e.g. a
                         // deleted remote profile) so we never return account=null.
                         return $s && isset($s['account']);
@@ -630,7 +630,7 @@ class PublicApiController extends Controller
 
                         return $status;
                     })
-                    ->filter(function (array $s) {
+                    ->filter(function ($s) {
                         // Drop statuses whose account failed to resolve (e.g. a
                         // deleted remote profile) so we never return account=null.
                         return $s && isset($s['account']);
@@ -666,7 +666,7 @@ class PublicApiController extends Controller
 
                     return $status;
                 })
-                ->filter(function (array $s) use ($filtered) {
+                ->filter(function ($s) use ($filtered) {
                     return $s && isset($s['account']) && in_array($s['account']['id'], $filtered) === false;
                 })
                 ->values()
@@ -834,7 +834,7 @@ class PublicApiController extends Controller
         return $this->json($status);
     }
 
-    private function determineVisibility(array $profile, $user): array
+    private function determineVisibility($profile, $user): array
     {
         if (! $profile || ! isset($profile['id'])) {
             return [];
@@ -884,7 +884,7 @@ class PublicApiController extends Controller
                 return null;
             }
         })
-            ->filter(function (array $status) use ($onlyMedia) {
+            ->filter(function ($status) use ($onlyMedia) {
                 if (! $status) {
                     return false;
                 }

@@ -110,12 +110,12 @@ class SearchApiV2Service
             ->filter(function ($profile) use ($banned) {
                 return in_array($profile->domain, $banned) === false;
             })
-            ->map(function (array $res) use ($mastodonMode) {
+            ->map(function ($res) use ($mastodonMode) {
                 return $mastodonMode ?
                 AccountService::getMastodon($res['id']) :
                 AccountService::get($res['id']);
             })
-            ->filter(function (array $account) {
+            ->filter(function ($account) {
                 return $account && isset($account['id']) && ! isset($account['moved'], $account['moved']['id']);
             })
             ->values();

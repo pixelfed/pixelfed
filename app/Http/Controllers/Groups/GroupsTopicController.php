@@ -100,7 +100,7 @@ class GroupsTopicController extends Controller
             ->whereHashtagId($hashtag->id)
             ->orderByDesc('id')
             ->simplePaginate($limit)
-            ->map(function (array $gp) use ($pid) {
+            ->map(function ($gp) use ($pid) {
                 $status = GroupPostService::get($gp['group_id'], $gp['status_id']);
                 if (! $status) {
                     return false;

@@ -91,13 +91,13 @@ class StatusRemoteUpdatePipeline implements ShouldQueue
         }
     }
 
-    protected function updateMedia($status, array $activity)
+    protected function updateMedia($status, $activity)
     {
         if (! isset($activity['attachment'])) {
             return;
         }
         $ogm = $status->media->count() ? $status->media()->orderBy('order')->get() : collect([]);
-        $nm = collect($activity['attachment'])->filter(function (array $nm) {
+        $nm = collect($activity['attachment'])->filter(function ($nm) {
             return isset(
                 $nm['type'],
                 $nm['mediaType'],
@@ -116,7 +116,7 @@ class StatusRemoteUpdatePipeline implements ShouldQueue
         // served-MIME) and collect the survivors. Do NOT touch the existing
         // media yet, so a transient fetch/validation failure can't destroy it.
         $validated = [];
-        $nm->each(function (array $n, $key) use (&$validated) {
+        $nm->each(function ($n, $key) use (&$validated) {
             // Validate the attacker-controlled attachment URL before issuing any
             // server-side request. This rejects http://, IP-literal, and
             // (with DNS checks) private-resolving hosts, closing the SSRF sink.
@@ -182,7 +182,7 @@ class StatusRemoteUpdatePipeline implements ShouldQueue
         MediaService::del($status->id);
     }
 
-    protected function updateImmediateAttributes($status, array $activity)
+    protected function updateImmediateAttributes($status, $activity)
     {
         if (isset($activity['content'])) {
             $cleanedCaption = app(SanitizeService::class)->html($activity['content']);
@@ -219,7 +219,7 @@ class StatusRemoteUpdatePipeline implements ShouldQueue
         StatusService::del($status->id);
     }
 
-    protected function createEdit($status, array $activity)
+    protected function createEdit($status, $activity)
     {
         $cleaned = isset($activity['content']) ? app(SanitizeService::class)->html($activity['content']) : null;
         $spoiler_text = isset($activity['summary']) ? app(SanitizeService::class)->html($activity['summary']) : null;

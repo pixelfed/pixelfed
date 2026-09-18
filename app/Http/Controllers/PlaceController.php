@@ -27,7 +27,7 @@ class PlaceController extends Controller
 
         $posts = $statusIds->map(function ($item) {
             return StatusService::get($item->id);
-        })->filter(function (array $item) {
+        })->filter(function ($item) {
             return $item && count($item['media_attachments'][0]);
         })->take(108)->values();
 

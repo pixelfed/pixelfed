@@ -36,7 +36,7 @@ class GroupsMemberController extends Controller
         $members = GroupMember::whereGroupId($gid)
             ->whereJoinRequest(false)
             ->simplePaginate(10)
-            ->map(function (array $member) use ($pid) {
+            ->map(function ($member) use ($pid) {
                 $account = AccountService::get($member['profile_id']);
                 $account['role'] = $member['role'];
                 $account['joined'] = $member['created_at'];

@@ -412,7 +412,7 @@ class AdminApiController extends Controller
                 'key' => 'pixelfed.bouncer.enabled',
             ],
         ])
-            ->map(function (array $s) {
+            ->map(function ($s) {
                 $s['state'] = (bool) config_cache($s['key']);
 
                 return $s;
@@ -478,7 +478,7 @@ class AdminApiController extends Controller
                 'key' => 'pixelfed.bouncer.enabled',
             ],
         ])
-            ->map(function (array $s) {
+            ->map(function ($s) {
                 $s['state'] = (bool) config_cache($s['key']);
 
                 return $s;

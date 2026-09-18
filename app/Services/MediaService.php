@@ -30,7 +30,7 @@ class MediaService
             return [];
         }
         $medias = collect($media)
-            ->map(function (array $media) {
+            ->map(function ($media) {
                 $mime = $media['mime'] ? explode('/', $media['mime']) : false;
                 unset(
                     $media['optimized_url'],
@@ -47,7 +47,7 @@ class MediaService
 
                 return $media;
             })
-            ->filter(function (array $m) {
+            ->filter(function ($m) {
                 return $m && isset($m['url']);
             })
             ->values();
@@ -71,7 +71,7 @@ class MediaService
             return [];
         }
 
-        return collect($status)->map(function (array $s) {
+        return collect($status)->map(function ($s) {
             $original = Arr::get($s, 'meta.original', []);
             $mime = $s['mime'] === 'image/jpg' ? 'image/jpeg' : $s['mime'];
 

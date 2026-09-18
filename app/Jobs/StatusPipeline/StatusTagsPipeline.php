@@ -70,18 +70,18 @@ class StatusTagsPipeline implements ShouldQueue
         $tags = collect($res['tag']);
 
         // Emoji
-        $tags->filter(function (array $tag) {
+        $tags->filter(function ($tag) {
             return $tag && isset($tag['id'], $tag['icon'], $tag['name'], $tag['type']) && $tag['type'] == 'Emoji';
         })
-            ->map(function (array $tag) {
+            ->map(function ($tag) {
                 CustomEmojiService::import($tag['id'], $this->status->id);
             });
 
         // Hashtags
-        $tags->filter(function (array $tag) {
+        $tags->filter(function ($tag) {
             return $tag && $tag['type'] == 'Hashtag' && isset($tag['href'], $tag['name']);
         })
-            ->map(function (array $tag) use ($status) {
+            ->map(function ($tag) use ($status) {
                 $name = str_starts_with($tag['name'], '#') ?
                     substr($tag['name'], 1) : $tag['name'];
 
@@ -139,13 +139,13 @@ class StatusTagsPipeline implements ShouldQueue
             });
 
         // Mentions
-        $tags->filter(function (array $tag) {
+        $tags->filter(function ($tag) {
             return $tag &&
                 $tag['type'] == 'Mention' &&
                 isset($tag['href']) &&
                 str_starts_with($tag['href'], 'https://');
         })
-            ->map(function (array $tag) use ($status) {
+            ->map(function ($tag) use ($status) {
                 if (Helpers::validateLocalUrl($tag['href'])) {
                     $parts = explode('/', $tag['href']);
                     if (! $parts) {

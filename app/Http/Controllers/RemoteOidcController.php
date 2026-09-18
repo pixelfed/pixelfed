@@ -90,7 +90,7 @@ class RemoteOidcController extends Controller
         return redirect('/');
     }
 
-    protected function createUser(array $data)
+    protected function createUser($data)
     {
         $this->validate(new Request($data), [
             'email' => [

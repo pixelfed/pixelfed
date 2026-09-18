@@ -336,7 +336,7 @@ class CustomFilter extends Model
             //     $filtersHash[$filterId]['status_ids'] = $statuses->take($maxStatusIds)->pluck('status_id')->toArray();
             // });
 
-            return array_map(function (array $item) {
+            return array_map(function ($item) {
                 $filter = $item['filter'];
                 unset($item['filter']);
 
@@ -358,7 +358,7 @@ class CustomFilter extends Model
      * @param  mixed  $status  The status to check
      * @return array The filter matches
      */
-    public static function applyCachedFilters($cachedFilters, array $status): array
+    public static function applyCachedFilters($cachedFilters, $status): array
     {
         $results = [];
 

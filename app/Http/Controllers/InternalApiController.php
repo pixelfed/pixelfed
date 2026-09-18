@@ -55,7 +55,7 @@ class InternalApiController extends Controller
         $posts = $forYou->take(50)->map(function ($post) {
             return StatusService::get($post);
         })
-            ->filter(function (array $post) use ($filters) {
+            ->filter(function ($post) use ($filters) {
                 return $post &&
                     isset($post['account']) &&
                     isset($post['account']['id']) &&
@@ -276,7 +276,7 @@ class InternalApiController extends Controller
 
                 return $status;
             })
-            ->filter(function (array $bookmark) {
+            ->filter(function ($bookmark) {
                 return $bookmark && isset($bookmark['id']);
             })
             ->values();

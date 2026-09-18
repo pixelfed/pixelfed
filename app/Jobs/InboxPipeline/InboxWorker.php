@@ -70,7 +70,7 @@ class InboxWorker implements ShouldQueue
         return null;
     }
 
-    protected function verifySignature(array $headers, $payload)
+    protected function verifySignature($headers, $payload)
     {
         $body = $this->payload;
         $bodyDecoded = $payload;

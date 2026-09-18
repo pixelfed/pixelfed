@@ -89,7 +89,7 @@ class HashtagUnfollowPipeline implements ShouldQueue
                 continue;
             }
 
-            $tags = collect($status['tags'])->map(function (array $tag) {
+            $tags = collect($status['tags'])->map(function ($tag) {
                 return strtolower($tag['name']);
             })->filter()->values()->toArray();
 

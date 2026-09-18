@@ -149,7 +149,7 @@ class NotificationService
             'story:comment',
         ]);
 
-        return function (array $n) use ($statusTypes, $otherTypes) {
+        return function ($n) use ($statusTypes, $otherTypes) {
             if (! isset($n['account']['id'])) {
                 return null;
             }
@@ -341,7 +341,7 @@ class NotificationService
         ]) ?: []);
     }
 
-    public static function rewriteMastodonTypes(array $notification)
+    public static function rewriteMastodonTypes($notification)
     {
         if (! $notification || ! isset($notification['type'])) {
             return $notification;

@@ -618,7 +618,7 @@ class ApiV1Controller extends Controller
                 ->map(function ($follower) use ($napi) {
                     return $napi ? AccountService::get($follower->profile_id, true) : AccountService::getMastodon($follower->profile_id, true);
                 })
-                ->filter(function (array $account) {
+                ->filter(function ($account) {
                     return $account && isset($account['id']);
                 })
                 ->values()
@@ -654,7 +654,7 @@ class ApiV1Controller extends Controller
         $res = $paginator->map(function ($follower) use ($napi) {
             return $napi ? AccountService::get($follower->profile_id, true) : AccountService::getMastodon($follower->profile_id, true);
         })
-            ->filter(function (array $account) {
+            ->filter(function ($account) {
                 return $account && isset($account['id']);
             })
             ->values()
@@ -734,7 +734,7 @@ class ApiV1Controller extends Controller
                 ->map(function ($follower) use ($napi) {
                     return $napi ? AccountService::get($follower->following_id, true) : AccountService::getMastodon($follower->following_id, true);
                 })
-                ->filter(function (array $account) {
+                ->filter(function ($account) {
                     return $account && isset($account['id']);
                 })
                 ->values()
@@ -770,7 +770,7 @@ class ApiV1Controller extends Controller
         $res = $paginator->map(function ($follower) use ($napi) {
             return $napi ? AccountService::get($follower->following_id, true) : AccountService::getMastodon($follower->following_id, true);
         })
-            ->filter(function (array $account) {
+            ->filter(function ($account) {
                 return $account && isset($account['id']);
             })
             ->values()
@@ -1270,7 +1270,7 @@ class ApiV1Controller extends Controller
             ->map(function ($id) {
                 return AccountService::getMastodon($id);
             })
-            ->filter(function (array $account) {
+            ->filter(function ($account) {
                 return $account && isset($account['id']);
             })
             ->values();
@@ -1313,7 +1313,7 @@ class ApiV1Controller extends Controller
             ->map(function ($id) {
                 return AccountService::get($id, true);
             })
-            ->filter(function (array $account) {
+            ->filter(function ($account) {
                 return $account && isset($account['id']);
             })
             ->values();
@@ -1374,7 +1374,7 @@ class ApiV1Controller extends Controller
                 ->map(function ($rec) {
                     return AccountService::get($rec->filterable_id, true);
                 })
-                ->filter(function (array $account) {
+                ->filter(function ($account) {
                     return $account && isset($account['id']);
                 })
                 ->values()
@@ -1550,7 +1550,7 @@ class ApiV1Controller extends Controller
             ->orderByDesc('id')
             ->limit($limit)
             ->get()
-            ->map(function (array $like) {
+            ->map(function ($like) {
                 $status = StatusService::getMastodon($like['status_id'], false);
                 $status['favourited'] = true;
                 $status['like_id'] = $like->id;
@@ -1558,13 +1558,13 @@ class ApiV1Controller extends Controller
 
                 return $status;
             })
-            ->filter(function (array $status) {
+            ->filter(function ($status) {
                 return $status && isset($status['id'], $status['like_id']);
             })
             ->values();
 
         if ($res->count()) {
-            $ids = $res->map(function (array $status) {
+            $ids = $res->map(function ($status) {
                 return $status['like_id'];
             })->filter();
 
@@ -1794,7 +1794,7 @@ class ApiV1Controller extends Controller
             ->map(function ($id) {
                 return AccountService::getMastodon($id, true);
             })
-            ->filter(function (array $acct) {
+            ->filter(function ($acct) {
                 return $acct && isset($acct['id']);
             })
             ->values();
@@ -2458,7 +2458,7 @@ class ApiV1Controller extends Controller
             ->map(function ($id) {
                 return AccountService::get($id, true);
             })
-            ->filter(function (array $account) {
+            ->filter(function ($account) {
                 return $account && isset($account['id']);
             })
             ->values();
@@ -2519,7 +2519,7 @@ class ApiV1Controller extends Controller
                 ->map(function ($rec) {
                     return AccountService::get($rec->filterable_id, true);
                 })
-                ->filter(function (array $account) {
+                ->filter(function ($account) {
                     return $account && isset($account['id']);
                 })
                 ->values()
@@ -2640,7 +2640,7 @@ class ApiV1Controller extends Controller
         }
 
         $res = collect($page['data'])
-            ->map(function (array $n) use ($pid) {
+            ->map(function ($n) use ($pid) {
                 if (isset($n['status']['id'])) {
                     $n['status']['favourited'] = (bool) LikeService::liked($pid, $n['status']['id']);
                     $n['status']['reblogged'] = (bool) ReblogService::get($pid, $n['status']['id']);
@@ -2748,18 +2748,18 @@ class ApiV1Controller extends Controller
                 ->map(function ($id) use ($napi) {
                     return $napi ? StatusService::get($id, false) : StatusService::getMastodon($id, false);
                 })
-                ->filter(function (array $res) {
+                ->filter(function ($res) {
                     return $res && isset($res['account']);
                 })
-                ->filter(function (array $s) use ($includeReblogs) {
+                ->filter(function ($s) use ($includeReblogs) {
                     return $includeReblogs ? true : $s['reblog'] == null;
                 })
-                ->map(function (array $status) use ($homeFilters) {
+                ->map(function ($status) use ($homeFilters) {
                     $filterResults = CustomFilter::applyCachedFilters($homeFilters, $status);
 
                     if (! empty($filterResults)) {
                         $status['filtered'] = $filterResults;
-                        $shouldHide = collect($filterResults)->contains(function (array $result) {
+                        $shouldHide = collect($filterResults)->contains(function ($result) {
                             return $result['filter']['filter_action'] === 'hide';
                         });
 
@@ -2772,7 +2772,7 @@ class ApiV1Controller extends Controller
                 })
                 ->filter()
                 ->take($limit)
-                ->map(function (array $status) use ($pid) {
+                ->map(function ($status) use ($pid) {
                     if ($pid) {
                         $status['favourited'] = (bool) LikeService::liked($pid, $status['id']);
                         $status['reblogged'] = (bool) ReblogService::get($pid, $status['id']);
@@ -2784,10 +2784,10 @@ class ApiV1Controller extends Controller
                 ->values();
 
             $baseUrl = $napi ? config('app.url').'/api/v1/timelines/home?limit='.$limit.'&_pe=1&' : config('app.url').'/api/v1/timelines/home?limit='.$limit.'&';
-            $minId = $res->map(function (array $s) {
+            $minId = $res->map(function ($s) {
                 return ['id' => $s['id']];
             })->min('id');
-            $maxId = $res->map(function (array $s) {
+            $maxId = $res->map(function ($s) {
                 return ['id' => $s['id']];
             })->max('id');
 
@@ -2839,7 +2839,7 @@ class ApiV1Controller extends Controller
                 ->orderByDesc('id')
                 ->take(($limit * 2))
                 ->get()
-                ->map(function (array $s) use ($pid, $napi) {
+                ->map(function ($s) use ($pid, $napi) {
                     try {
                         $account = $napi ? AccountService::get($s['profile_id'], true) : AccountService::getMastodon($s['profile_id'], true);
                         if (! $account) {
@@ -2863,10 +2863,10 @@ class ApiV1Controller extends Controller
 
                     return $status;
                 })
-                ->filter(function (array $status) {
+                ->filter(function ($status) {
                     return $status && isset($status['account']);
                 })
-                ->map(function (array $status) use ($pid) {
+                ->map(function ($status) use ($pid) {
                     if (! empty($status['reblog'])) {
                         $status['reblog']['favourited'] = (bool) LikeService::liked($pid, $status['reblog']['id']);
                         $status['reblog']['reblogged'] = (bool) ReblogService::get($pid, $status['reblog']['id']);
@@ -2875,12 +2875,12 @@ class ApiV1Controller extends Controller
 
                     return $status;
                 })
-                ->map(function (array $status) use ($homeFilters) {
+                ->map(function ($status) use ($homeFilters) {
                     $filterResults = CustomFilter::applyCachedFilters($homeFilters, $status);
 
                     if (! empty($filterResults)) {
                         $status['filtered'] = $filterResults;
-                        $shouldHide = collect($filterResults)->contains(function (array $result) {
+                        $shouldHide = collect($filterResults)->contains(function ($result) {
                             return $result['filter']['filter_action'] === 'hide';
                         });
 
@@ -2910,7 +2910,7 @@ class ApiV1Controller extends Controller
                 ->orderByDesc('id')
                 ->take(($limit * 2))
                 ->get()
-                ->map(function (array $s) use ($pid, $napi) {
+                ->map(function ($s) use ($pid, $napi) {
                     try {
                         $account = $napi ? AccountService::get($s['profile_id'], true) : AccountService::getMastodon($s['profile_id'], true);
                         if (! $account) {
@@ -2934,10 +2934,10 @@ class ApiV1Controller extends Controller
 
                     return $status;
                 })
-                ->filter(function (array $status) {
+                ->filter(function ($status) {
                     return $status && isset($status['account']);
                 })
-                ->map(function (array $status) use ($pid) {
+                ->map(function ($status) use ($pid) {
                     if (! empty($status['reblog'])) {
                         $status['reblog']['favourited'] = (bool) LikeService::liked($pid, $status['reblog']['id']);
                         $status['reblog']['reblogged'] = (bool) ReblogService::get($pid, $status['reblog']['id']);
@@ -2946,12 +2946,12 @@ class ApiV1Controller extends Controller
 
                     return $status;
                 })
-                ->map(function (array $status) use ($homeFilters) {
+                ->map(function ($status) use ($homeFilters) {
                     $filterResults = CustomFilter::applyCachedFilters($homeFilters, $status);
 
                     if (! empty($filterResults)) {
                         $status['filtered'] = $filterResults;
-                        $shouldHide = collect($filterResults)->contains(function (array $result) {
+                        $shouldHide = collect($filterResults)->contains(function ($result) {
                             return $result['filter']['filter_action'] === 'hide';
                         });
 
@@ -2968,10 +2968,10 @@ class ApiV1Controller extends Controller
         }
 
         $baseUrl = $napi ? config('app.url').'/api/v1/timelines/home?limit='.$limit.'&_pe=1&' : config('app.url').'/api/v1/timelines/home?limit='.$limit.'&';
-        $minId = $res->map(function (array $s) {
+        $minId = $res->map(function ($s) {
             return ['id' => $s['id']];
         })->min('id');
-        $maxId = $res->map(function (array $s) {
+        $maxId = $res->map(function ($s) {
             return ['id' => $s['id']];
         })->max('id');
 
@@ -3209,10 +3209,10 @@ class ApiV1Controller extends Controller
 
                 return $status;
             })
-            ->filter(function (array $s) use ($filtered) {
+            ->filter(function ($s) use ($filtered) {
                 return $s && isset($s['account']) && in_array($s['account']['id'], $filtered) === false;
             })
-            ->filter(function (array $s) use ($domainBlocks) {
+            ->filter(function ($s) use ($domainBlocks) {
                 if (! $domainBlocks || ! count($domainBlocks)) {
                     return $s;
                 }
@@ -3220,7 +3220,7 @@ class ApiV1Controller extends Controller
 
                 return ! in_array($domain, $domainBlocks);
             })
-            ->filter(function (array $s) use ($asf, $user) {
+            ->filter(function ($s) use ($asf, $user) {
                 if (! $asf || count($asf) === 0) {
                     return true;
                 }
@@ -3235,12 +3235,12 @@ class ApiV1Controller extends Controller
 
                 return true;
             })
-            ->map(function (array $status) use ($homeFilters) {
+            ->map(function ($status) use ($homeFilters) {
                 $filterResults = CustomFilter::applyCachedFilters($homeFilters, $status);
 
                 if (! empty($filterResults)) {
                     $status['filtered'] = $filterResults;
-                    $shouldHide = collect($filterResults)->contains(function (array $result) {
+                    $shouldHide = collect($filterResults)->contains(function ($result) {
                         return $result['filter']['filter_action'] === 'hide';
                     });
 
@@ -3262,10 +3262,10 @@ class ApiV1Controller extends Controller
         if ($local) {
             $baseUrl .= 'local=1&';
         }
-        $minId = $res->map(function (array $s) {
+        $minId = $res->map(function ($s) {
             return ['id' => $s['id']];
         })->min('id');
-        $maxId = $res->map(function (array $s) {
+        $maxId = $res->map(function ($s) {
             return ['id' => $s['id']];
         })->max('id');
 
@@ -3396,7 +3396,7 @@ class ApiV1Controller extends Controller
                 'last_status' => StatusService::getDirectMessage($dm->status_id),
             ];
         })
-            ->filter(function (array $dm) {
+            ->filter(function ($dm) {
                 return $dm
                     && ! empty($dm['last_status'])
                     && isset($dm['accounts'])
@@ -3404,7 +3404,7 @@ class ApiV1Controller extends Controller
                     && isset($dm['accounts'][0])
                     && isset($dm['accounts'][0]['id']);
             })
-            ->unique(function (array $item) {
+            ->unique(function ($item) {
                 return $item['accounts'][0]['id'];
             })
             ->values();
@@ -3577,12 +3577,12 @@ class ApiV1Controller extends Controller
                             $pid
                         );
                 })
-                ->filter(function (array $post) use ($filters) {
+                ->filter(function ($post) use ($filters) {
                     return $post &&
                         isset($post['account']['id']) &&
                         ! in_array($post['account']['id'], $filters);
                 })
-                ->map(function (array $status) use ($pid) {
+                ->map(function ($status) use ($pid) {
                     $status['favourited'] = LikeService::liked(
                         $pid,
                         $status['id']
@@ -3710,7 +3710,7 @@ class ApiV1Controller extends Controller
 
             return $account;
         })
-            ->filter(function (array $account) {
+            ->filter(function ($account) {
                 return $account && isset($account['id']);
             })
             ->values();
@@ -3813,7 +3813,7 @@ class ApiV1Controller extends Controller
 
             return $account;
         })
-            ->filter(function (array $account) {
+            ->filter(function ($account) {
                 return $account && isset($account['id']);
             })
             ->values();
@@ -4294,7 +4294,7 @@ class ApiV1Controller extends Controller
             ->map(function ($i) use ($pe) {
                 return $pe ? StatusService::get($i, false) : StatusService::getMastodon($i, false);
             })
-            ->filter(function (array $i) use ($onlyMedia, $pid) {
+            ->filter(function ($i) use ($onlyMedia, $pid) {
                 if (! $i || ! isset($i['account'], $i['account']['id'])) {
                     return false;
                 }
@@ -4316,17 +4316,17 @@ class ApiV1Controller extends Controller
 
                 return $i && isset($i['account'], $i['url']);
             })
-            ->filter(function (array $i) use ($filters, $domainBlocks) {
+            ->filter(function ($i) use ($filters, $domainBlocks) {
                 $domain = strtolower(parse_url($i['url'], PHP_URL_HOST));
 
                 return ! in_array($i['account']['id'], $filters) && ! in_array($domain, $domainBlocks);
             })
-            ->map(function (array $status) use ($tagFilters) {
+            ->map(function ($status) use ($tagFilters) {
                 $filterResults = CustomFilter::applyCachedFilters($tagFilters, $status);
 
                 if (! empty($filterResults)) {
                     $status['filtered'] = $filterResults;
-                    $shouldHide = collect($filterResults)->contains(function (array $result) {
+                    $shouldHide = collect($filterResults)->contains(function ($result) {
                         return $result['filter']['filter_action'] === 'hide';
                     });
 
@@ -4527,7 +4527,7 @@ class ApiV1Controller extends Controller
         $posts = $forYou->take(50)->map(function ($post) {
             return StatusService::getMastodon($post);
         })
-            ->filter(function (array $post) use ($filters) {
+            ->filter(function ($post) use ($filters) {
                 return $post &&
                     isset($post['account']) &&
                     isset($post['account']['id']) &&
@@ -4623,7 +4623,7 @@ class ApiV1Controller extends Controller
 
                 return $status;
             })
-            ->map(function (array $post) {
+            ->map(function ($post) {
                 if (isset($post['account']) && isset($post['account']['id'])) {
                     $account = AccountService::get($post['account']['id'], true);
                     $post['account'] = $account;
@@ -4631,7 +4631,7 @@ class ApiV1Controller extends Controller
 
                 return $post;
             })
-            ->filter(function (array $post) {
+            ->filter(function ($post) {
                 return $post && isset($post['id']) && isset($post['account']) && isset($post['account']['id']);
             })
             ->values();

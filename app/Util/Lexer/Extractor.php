@@ -546,7 +546,7 @@ class Extractor extends Regex
     /**
      * sort by entity start index.
      */
-    protected function sortEntites(array $a, array $b): int
+    protected function sortEntites($a, $b): int
     {
         if ($a['indices'][0] == $b['indices'][0]) {
             return 0;

@@ -134,7 +134,7 @@ class AdminCuratedRegisterController extends Controller
         }
 
         foreach ($userResponses as $ur) {
-            $res = $res->map(function (array $r) use ($ur) {
+            $res = $res->map(function ($r) use ($ur) {
                 if (! isset($r['aid'])) {
                     return $r;
                 }

@@ -65,7 +65,7 @@ trait AdminUserController
             })
             ->limit($limit)
             ->get()
-            ->map(function (array $u) {
+            ->map(function ($u) {
                 $u['account'] = AccountService::get($u->profile_id, true);
 
                 return $u;

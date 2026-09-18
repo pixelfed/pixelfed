@@ -133,7 +133,7 @@ class CustomFilterController extends Controller
 
         try {
 
-            $requestedKeywords = array_map(function (array $item) {
+            $requestedKeywords = array_map(function ($item) {
                 return mb_strtolower(trim($item['keyword']));
             }, $validatedData['keywords_attributes']);
 
@@ -272,7 +272,7 @@ class CustomFilterController extends Controller
                 'array',
                 'min:1',
                 function ($attribute, $value, $fail) {
-                    $activeKeywords = collect($value)->filter(function (array $keyword) {
+                    $activeKeywords = collect($value)->filter(function ($keyword) {
                         return ! isset($keyword['_destroy']) || $keyword['_destroy'] !== true;
                     })->count();
 

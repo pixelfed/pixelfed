@@ -79,7 +79,7 @@ class CustomEmoji extends Model
                     ];
                 }
             })
-            ->filter(function (array $tag) use ($activitypub) {
+            ->filter(function ($tag) use ($activitypub) {
                 if ($activitypub == true) {
                     return $tag && isset($tag['icon']);
                 }

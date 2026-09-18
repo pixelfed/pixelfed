@@ -166,7 +166,7 @@ trait AdminAutospamController
 
         $accts = $request->input('accounts');
 
-        $accounts = Profile::whereNull(['domain', 'status'])->find(collect($accts)->map(function (array $a) {
+        $accounts = Profile::whereNull(['domain', 'status'])->find(collect($accts)->map(function ($a) {
             return $a['id'];
         }));
 

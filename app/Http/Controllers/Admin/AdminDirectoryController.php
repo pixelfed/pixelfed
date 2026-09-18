@@ -61,7 +61,7 @@ trait AdminDirectoryController
             $res['favourite_posts'] = collect($res['favourite_posts'])->map(function ($id) {
                 return StatusService::get($id);
             })
-                ->filter(function (array $post) {
+                ->filter(function ($post) {
                     return $post && isset($post['account']);
                 })
                 ->values();
@@ -91,7 +91,7 @@ trait AdminDirectoryController
 
         if (config_cache('pixelfed.directory.testimonials')) {
             $testimonials = collect(json_decode(config_cache('pixelfed.directory.testimonials'), true))
-                ->map(function (array $t) {
+                ->map(function ($t) {
                     return [
                         'profile' => AccountService::get($t['profile_id']),
                         'body' => $t['body'],
@@ -164,7 +164,7 @@ trait AdminDirectoryController
         return $res;
     }
 
-    protected function validVal(array $res, $val, $count = false, $minLen = false)
+    protected function validVal($res, $val, $count = false, $minLen = false)
     {
         if (! isset($res[$val])) {
             return false;
@@ -348,7 +348,7 @@ trait AdminDirectoryController
         $res = $ids->map(function ($id) {
             return StatusService::get($id);
         })
-            ->filter(function (array $post) {
+            ->filter(function ($post) {
                 return $post && isset($post['account']);
             })
             ->values();
@@ -382,7 +382,7 @@ trait AdminDirectoryController
         $profile_id = $request->input('profile_id');
         $testimonials = ConfigCache::whereK('pixelfed.directory.testimonials')->firstOrFail();
         $existing = collect(json_decode($testimonials->v, true))
-            ->filter(function (array $t) use ($profile_id) {
+            ->filter(function ($t) use ($profile_id) {
                 return $t['profile_id'] !== $profile_id;
             })
             ->values();
@@ -443,7 +443,7 @@ trait AdminDirectoryController
 
         $testimonials = $configCache->v ? collect(json_decode($configCache->v, true)) : collect([]);
 
-        $updated = $testimonials->map(function (array $t) use ($profile_id, $body) {
+        $updated = $testimonials->map(function ($t) use ($profile_id, $body) {
             if ($t['profile_id'] == $profile_id) {
                 $t['body'] = $body;
             }

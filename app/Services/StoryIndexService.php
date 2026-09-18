@@ -579,7 +579,7 @@ class StoryIndexService
             ];
         }
 
-        usort($nodes, function (array $a, array $b) {
+        usort($nodes, function ($a, $b) {
             if ($a['is_author'] && ! $b['is_author']) {
                 return -1;
             }
@@ -672,7 +672,7 @@ class StoryIndexService
             ];
         }
 
-        usort($nodes, function (array $a, array $b) {
+        usort($nodes, function ($a, $b) {
             if ($a['is_author'] && ! $b['is_author']) {
                 return -1;
             }

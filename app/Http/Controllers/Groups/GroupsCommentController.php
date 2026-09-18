@@ -63,7 +63,7 @@ class GroupsCommentController extends Controller
             })
             ->take($limit)
             ->get()
-            ->map(function (array $gp) use ($pid) {
+            ->map(function ($gp) use ($pid) {
                 $status = GroupCommentService::get($gp['group_id'], $gp['id']);
                 $status['reply_count'] = $gp['reply_count'];
                 $status['url'] = $gp->url();

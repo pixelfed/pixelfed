@@ -550,7 +550,7 @@ class Autolink extends Regex
 
         if ($this->autolinkActiveUsersOnly == true) {
             $entities = collect($entities)
-                ->filter(function (array $entity) {
+                ->filter(function ($entity) {
                     return AutolinkService::mentionedUsernameExists($entity['screen_name']);
                 })
                 ->toArray();
@@ -614,7 +614,7 @@ class Autolink extends Regex
         return $this->autoLinkEntities($tweet, $entities);
     }
 
-    public function linkToUrl(array $entity)
+    public function linkToUrl($entity)
     {
         if (! empty($this->class_url)) {
             $attributes['class'] = $this->class_url;
@@ -696,7 +696,7 @@ class Autolink extends Regex
      *
      * @since 1.1.0
      */
-    public function linkToHashtag(array $entity, $tweet = null)
+    public function linkToHashtag($entity, $tweet = null)
     {
         if (is_null($tweet)) {
             $tweet = $this->tweet;
@@ -727,7 +727,7 @@ class Autolink extends Regex
      *
      * @since 1.1.0
      */
-    public function linkToMentionAndList(array $entity)
+    public function linkToMentionAndList($entity)
     {
         $attributes = [];
         $screen_name = $entity['screen_name'];
@@ -763,7 +763,7 @@ class Autolink extends Regex
      *
      * @since 1.1.0
      */
-    public function linkToCashtag(array $entity, $tweet = null)
+    public function linkToCashtag($entity, $tweet = null)
     {
         if (is_null($tweet)) {
             $tweet = $this->tweet;
@@ -785,7 +785,7 @@ class Autolink extends Regex
      *
      * @since 1.1.0
      */
-    public function linkToText(array $entity, $text, array $attributes = []): string
+    public function linkToText(array $entity, $text, $attributes = []): string
     {
         $rel = [];
         if ($this->external) {

@@ -185,7 +185,7 @@ class PortfolioController extends Controller
             return collect($portfolio->metadata['posts'])->map(function ($p) {
                 return StatusService::get($p);
             })
-                ->filter(function (array $p) {
+                ->filter(function ($p) {
                     return $p && isset($p['account']);
                 });
         });
@@ -213,7 +213,7 @@ class PortfolioController extends Controller
         return $media->map(function ($sid) {
             return StatusService::get($sid);
         })
-            ->filter(function (array $post) {
+            ->filter(function ($post) {
                 return $post &&
                     isset($post['media_attachments']) &&
                     ! empty($post['media_attachments']) &&
@@ -505,7 +505,7 @@ class PortfolioController extends Controller
                     })
                         ->filter()
                         ->values()
-                        ->map(function (array $post, $idx) use ($portfolioLayout, $portfolioUrl) {
+                        ->map(function ($post, $idx) use ($portfolioLayout, $portfolioUrl) {
                             $ts = now()->parse($post['created_at']);
                             $url = $portfolioLayout == 'album' ? $portfolioUrl.'?slide='.($idx + 1) : $portfolioUrl.'/'.$post['id'];
 
@@ -561,7 +561,7 @@ class PortfolioController extends Controller
                 return StatusService::get($p);
             })
                 ->filter()
-                ->map(function (array $p) {
+                ->map(function ($p) {
                     return $p['url'];
                 })
                 ->values();

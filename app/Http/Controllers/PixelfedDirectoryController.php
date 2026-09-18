@@ -62,10 +62,10 @@ class PixelfedDirectoryController extends Controller
             $res['favourite_posts'] = collect($res['favourite_posts'])->map(function ($id) {
                 return StatusService::get($id);
             })
-                ->filter(function (array $post) {
+                ->filter(function ($post) {
                     return $post && isset($post['account']);
                 })
-                ->map(function (array $post) {
+                ->map(function ($post) {
                     return [
                         'avatar' => $post['account']['avatar'],
                         'display_name' => $post['account']['display_name'],
@@ -119,7 +119,7 @@ class PixelfedDirectoryController extends Controller
 
         if (config_cache('pixelfed.directory.testimonials')) {
             $res['testimonials'] = collect(json_decode(config_cache('pixelfed.directory.testimonials'), true))
-                ->map(function (array $testimonial) {
+                ->map(function ($testimonial) {
                     $profile = AccountService::get($testimonial['profile_id']);
 
                     return [
@@ -155,7 +155,7 @@ class PixelfedDirectoryController extends Controller
         return $res;
     }
 
-    protected function validVal(array $res, $val, $count = false, $minLen = false)
+    protected function validVal($res, $val, $count = false, $minLen = false)
     {
         if (! isset($res[$val])) {
             return false;
