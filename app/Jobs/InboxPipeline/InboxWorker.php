@@ -160,6 +160,7 @@ class InboxWorker implements ShouldQueue
         if ($verified == 1) {
             return true;
         }
+
         return false;
     }
 

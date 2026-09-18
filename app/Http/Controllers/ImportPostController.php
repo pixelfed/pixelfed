@@ -276,8 +276,10 @@ class ImportPostController extends Controller
                 if ($exts->contains('jpg', 'png', 'webp')) {
                     return 'photo:video:album';
                 }
+
                 return 'video:album';
             }
+
             return 'photo:album';
         }
         if ($exts->isEmpty()) {
@@ -290,6 +292,7 @@ class ImportPostController extends Controller
         if (in_array($ext, ['mp4'])) {
             return 'video';
         }
+
         return 'photo';
     }
 
@@ -316,6 +319,7 @@ class ImportPostController extends Controller
             if (! $abortOnFail) {
                 return true;
             }
+
             return true;
         }
 

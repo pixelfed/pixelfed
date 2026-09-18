@@ -25,6 +25,7 @@ class SiteController extends Controller
         if ($request->user() !== null) {
             return $this->homeTimeline($request);
         }
+
         return $this->homeGuest();
     }
 

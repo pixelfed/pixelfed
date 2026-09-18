@@ -35,10 +35,13 @@ class AccountInterstitial
 
                     return response()->json($res, 403);
                 }
+
                 return redirect('/i/warning');
             }
+
             return $next($request);
         }
+
         return $next($request);
     }
 }

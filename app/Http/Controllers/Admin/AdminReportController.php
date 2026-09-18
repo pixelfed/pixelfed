@@ -792,6 +792,7 @@ trait AdminReportController
 
                 return [200];
         }
+
         return null;
     }
 
@@ -1070,6 +1071,7 @@ trait AdminReportController
 
                 return [200];
         }
+
         return null;
     }
 
@@ -1222,6 +1224,7 @@ trait AdminReportController
 
                 return [200];
         }
+
         return null;
     }
 

@@ -560,6 +560,7 @@ class AdminController extends Controller
                 if ($pg) {
                     return $query->latest();
                 }
+
                 return $query->groupBy('shortcode')->latest();
             }
             if ($sort == 'local') {
@@ -584,6 +585,7 @@ class AdminController extends Controller
                         $q = $q->groupBy('shortcode');
                     }
                 }
+
                 return $q;
             }
         })
@@ -711,6 +713,7 @@ class AdminController extends Controller
                 if ($filter === 'newest') {
                     return $q->orderByDesc('id');
                 }
+
                 return $q;
             })
             ->cursorPaginate(10)

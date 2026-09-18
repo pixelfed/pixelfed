@@ -90,8 +90,6 @@ class AdminNewReport extends Mailable
 
     /**
      * Get the attachments for the message.
-     *
-     * @return array
      */
     public function attachments(): array
     {

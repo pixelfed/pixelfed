@@ -84,10 +84,10 @@ class SearchApiV2Service
         $rawQuery = $initalQuery ? $initalQuery : $this->query->input('q');
         $query = $rawQuery.'%';
         $webfingerQuery = $query;
-        if (Str::substrCount($rawQuery, '@') == 1 && !str_starts_with($rawQuery, '@')) {
+        if (Str::substrCount($rawQuery, '@') == 1 && ! str_starts_with($rawQuery, '@')) {
             $query = '@'.$query;
         }
-        if (!str_starts_with($webfingerQuery, '@')) {
+        if (! str_starts_with($webfingerQuery, '@')) {
             $webfingerQuery = '@'.$webfingerQuery;
         }
         $banned = InstanceService::getBannedDomains() ?? [];
@@ -234,16 +234,17 @@ class SearchApiV2Service
             if (Str::contains($query, 'i/web/profile/')) {
                 return $this->resolveLocalProfileId();
             }
+
             return $this->resolveLocalProfile();
         }
-        if (! Helpers::validateUrl($query) && !str_contains($query, '@')) {
+        if (! Helpers::validateUrl($query) && ! str_contains($query, '@')) {
             return $default;
         }
         if (
             ! Str::startsWith($query, 'http') &&
             Str::substrCount($query, '@') == 1 &&
             str_contains($query, '@') &&
-            !str_starts_with($query, '@')
+            ! str_starts_with($query, '@')
         ) {
             try {
                 $res = WebfingerService::lookup('@'.$query, $mastodonMode);
@@ -264,6 +265,7 @@ class SearchApiV2Service
 
                 return $default;
             }
+
             return $default;
         }
         if (Str::substrCount($query, '@') == 2) {
@@ -286,6 +288,7 @@ class SearchApiV2Service
 
                 return $default;
             }
+
             return $default;
         }
         if ($sid = Status::whereUri($query)->first()) {
@@ -361,6 +364,7 @@ class SearchApiV2Service
                 'statuses' => [],
             ];
         }
+
         return $default;
     }
 

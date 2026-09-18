@@ -110,6 +110,7 @@ class SendUpdateActor extends Command
         $instance->actors_last_synced_at = now();
         $instance->save();
         $this->info('Finished!');
+
         return Command::SUCCESS;
 
         return Command::SUCCESS;

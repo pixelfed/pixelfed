@@ -148,8 +148,10 @@ class ActiveSharedInboxService
                 if ($res['version'] === self::CACHE_FILE_VERSION) {
                     return $res;
                 }
+
                 return false;
             }
+
             return false;
         }
 

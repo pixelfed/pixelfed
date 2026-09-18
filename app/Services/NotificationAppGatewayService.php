@@ -121,6 +121,7 @@ class NotificationAppGatewayService
         } catch (RequestException|Exception) {
             return null;
         }
+
         return null;
     }
 }

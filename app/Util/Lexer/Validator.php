@@ -385,6 +385,7 @@ class Validator extends Regex
         if (! $optional) {
             return ($string || $string === '') && $found && $matches[0] === $string;
         }
+
         return ! (($string || $string === '') && (! $found || $matches[0] !== $string));
     }
 }

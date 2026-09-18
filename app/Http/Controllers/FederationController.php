@@ -105,6 +105,7 @@ class FederationController extends Controller
                 return response()->json($webfinger, 200, [], JSON_UNESCAPED_SLASHES)
                     ->header('Access-Control-Allow-Origin', '*');
             }
+
             return response('', 400);
         }
         $hash = hash('sha256', $resource);
@@ -112,7 +113,7 @@ class FederationController extends Controller
         if ($cached = Cache::get($key)) {
             return response()->json($cached, 200, [], JSON_UNESCAPED_SLASHES);
         }
-        if (!str_contains($resource, $domain)) {
+        if (! str_contains($resource, $domain)) {
             return response('', 400);
         }
         $parsed = Nickname::normalizeProfileUrl($resource);
@@ -205,13 +206,13 @@ class FederationController extends Controller
                     return;
                 }
             }
+
             return;
         }
 
         if (isset($obj['type']) && in_array($obj['type'], ['Follow', 'Accept'])) {
             dispatch(new InboxValidator($username, $headers, $payload))->onQueue('follow');
-        }
-        else {
+        } else {
             dispatch(new InboxValidator($username, $headers, $payload))->onQueue('high');
         }
     }
@@ -261,13 +262,13 @@ class FederationController extends Controller
                     return;
                 }
             }
+
             return;
         }
 
         if (isset($obj['type']) && in_array($obj['type'], ['Follow', 'Accept'])) {
             dispatch(new InboxWorker($headers, $payload))->onQueue('follow');
-        }
-        else {
+        } else {
             dispatch(new InboxWorker($headers, $payload))->onQueue('shared');
         }
     }

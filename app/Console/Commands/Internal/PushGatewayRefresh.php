@@ -55,11 +55,12 @@ class PushGatewayRefresh extends Command
             $this->line(' ');
             $this->line('For more info, visit https://docs.pixelfed.org/running-pixelfed/push-notifications.html');
             $this->line(' ');
+
             return;
 
             return;
         }
         exit;
-        return;
+
     }
 }

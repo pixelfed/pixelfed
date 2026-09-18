@@ -254,6 +254,7 @@ class GroupsPostController extends Controller
         if ($request->wantsJson()) {
             return response()->json(['Status successfully deleted.']);
         }
+
         return redirect($user->url());
     }
 

@@ -156,6 +156,7 @@ class RegisterController extends Controller
 
                 return view('auth.register');
             }
+
             return view('auth.register');
         }
         if ((bool) config_cache('instance.curated_registration.enabled') && config('instance.curated_registration.state.fallback_on_closed_reg')) {

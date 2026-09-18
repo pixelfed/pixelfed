@@ -292,7 +292,6 @@ class FollowerService
      * @param  int  $profileId
      * @param  int  $limit
      * @param  int|null  $cursor
-     * @return array
      */
     public static function getMutualsForDM($profileId, $limit = 20, $cursor = null): array
     {

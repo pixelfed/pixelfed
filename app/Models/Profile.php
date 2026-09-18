@@ -225,7 +225,7 @@ class Profile extends Model
                 return url('/storage/avatars/default.jpg');
             }
 
-            if (!str_starts_with($path, 'public')) {
+            if (! str_starts_with($path, 'public')) {
                 return url('/storage/avatars/default.jpg');
             }
 

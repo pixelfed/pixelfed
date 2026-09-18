@@ -101,14 +101,17 @@ class DeleteWorker implements ShouldQueue
 
                         return 1;
                     }
+
                     // Signature verification failed, exit.
                     return 1;
                 }
+
                 // Remote user doesn't exist, exit early.
                 return 1;
 
                 return 1;
             }
+
             return 1;
         }
         $profile = null;
@@ -117,6 +120,7 @@ class DeleteWorker implements ShouldQueue
 
             return 1;
         }
+
         return 1;
 
     }
@@ -195,6 +199,7 @@ class DeleteWorker implements ShouldQueue
         if ($verified == 1) {
             return true;
         }
+
         return false;
     }
 }

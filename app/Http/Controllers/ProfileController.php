@@ -143,6 +143,7 @@ class ProfileController extends Controller
         if ($carousel) {
             return view('profile.show_carousel', ['profile' => $profile, 'settings' => $settings]);
         }
+
         return view('profile.show', ['profile' => $profile, 'settings' => $settings]);
     }
 
@@ -160,6 +161,7 @@ class ProfileController extends Controller
                     ->whereUsername($username)
                     ->first();
             }
+
             return Profile::withTrashed()
                 ->whereNull(['domain', 'status'])
                 ->whereUsername($username)

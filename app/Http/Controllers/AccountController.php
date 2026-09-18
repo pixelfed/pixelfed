@@ -134,6 +134,7 @@ class AccountController extends Controller
         if ($request->wantsJson()) {
             return response()->json($res);
         }
+
         return redirect()->back();
     }
 
@@ -185,6 +186,7 @@ class AccountController extends Controller
         if ($request->wantsJson()) {
             return response()->json($res);
         }
+
         return redirect()->back();
     }
 
@@ -270,6 +272,7 @@ class AccountController extends Controller
         if ($request->wantsJson()) {
             return response()->json($res);
         }
+
         return redirect()->back();
     }
 
@@ -320,6 +323,7 @@ class AccountController extends Controller
         if ($request->wantsJson()) {
             return response()->json($res);
         }
+
         return redirect()->back();
     }
 

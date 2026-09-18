@@ -27,6 +27,7 @@ class AdminShadowFilterController extends Controller
                 if ($filter == 'inactive') {
                     return $q->whereActive(false);
                 }
+
                 return $q;
             }, function ($q, $filter) {
                 return $q->whereActive(true);

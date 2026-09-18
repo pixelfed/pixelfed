@@ -24,7 +24,6 @@ class StringUtils
      * @param  int  $start
      * @param  int  $length
      * @param  string  $encoding
-     * @return string
      */
     public static function substr($str, $start, $length = null, $encoding = 'UTF-8'): string
     {
@@ -41,7 +40,6 @@ class StringUtils
      *
      * @param  string  $str
      * @param  string  $encoding
-     * @return int
      */
     public static function strlen($str, $encoding = 'UTF-8'): int
     {

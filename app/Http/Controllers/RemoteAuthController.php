@@ -556,6 +556,7 @@ class RemoteAuthController extends Controller
             if ($user) {
                 return ['id' => (string) $user->profile_id];
             }
+
             return [];
         }
         try {
@@ -563,6 +564,7 @@ class RemoteAuthController extends Controller
             if ($profile) {
                 return ['id' => (string) $profile->id];
             }
+
             return [];
         } catch (RequestException|\Exception) {
             return [];

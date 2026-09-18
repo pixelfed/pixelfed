@@ -45,6 +45,7 @@ class PublicApiController extends Controller
         if (! $user) {
             return [];
         }
+
         return AccountService::get($user->profile_id);
     }
 
@@ -482,6 +483,7 @@ class PublicApiController extends Controller
                 ->values()
                 ->toArray();
         }
+
         return Status::select(
             'id',
             'uri',
@@ -858,6 +860,7 @@ class PublicApiController extends Controller
 
             return $isFollowing ? ['public', 'unlisted', 'private'] : ['public', 'unlisted'];
         }
+
         return ['public', 'unlisted'];
     }
 

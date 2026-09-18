@@ -332,7 +332,7 @@ class Extractor extends Regex
         }
 
         $needle = $this->extractURLWithoutProtocol() ? '.' : ':';
-        if (!str_contains($tweet, $needle)) {
+        if (! str_contains($tweet, $needle)) {
             return [];
         }
 
@@ -525,7 +525,6 @@ class Extractor extends Regex
      * This returns a new array with no overlapping entities.
      *
      * @param  array  $entities
-     * @return array
      */
     public function removeOverlappingEntities($entities): array
     {
@@ -546,10 +545,6 @@ class Extractor extends Regex
 
     /**
      * sort by entity start index.
-     *
-     * @param  array  $a
-     * @param  array  $b
-     * @return int
      */
     protected function sortEntites(array $a, array $b): int
     {

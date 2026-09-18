@@ -541,6 +541,7 @@ class Helpers
             if (json_last_error() === JSON_ERROR_NONE) {
                 return $res;
             }
+
             return false;
         });
     }

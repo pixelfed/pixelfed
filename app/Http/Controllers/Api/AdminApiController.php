@@ -601,6 +601,7 @@ class AdminApiController extends Controller
                 AccountService::del($profile->id);
                 DeleteRemoteProfilePipeline::dispatch($profile)->onQueue('high');
             }
+
             return [
                 'status' => 200,
                 'msg' => 'deleted',
@@ -678,8 +679,7 @@ class AdminApiController extends Controller
                 ->save();
             $profile->no_autolink = ! $profile->no_autolink;
             $profile->save();
-        }
-        else {
+        } else {
             $profile->{$action} = filter_var($request->input('value'), FILTER_VALIDATE_BOOLEAN);
             $profile->save();
 
@@ -736,6 +736,7 @@ class AdminApiController extends Controller
                 if ($filter === 'all') {
                     return $query;
                 }
+
                 return $query->where($filter, true);
             })
             ->when($sortBy, function ($query, $sortBy) use ($sort) {

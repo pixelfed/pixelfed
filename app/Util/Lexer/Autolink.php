@@ -425,7 +425,6 @@ class Autolink extends Regex
      *
      * @param  string  $tweet
      * @param  array  $entities
-     * @return string
      *
      * @since 1.1.0
      */
@@ -502,7 +501,6 @@ class Autolink extends Regex
      * convert Object to Array.
      *
      * @param  mixed  $obj
-     * @return array
      */
     protected function object2array($obj): array
     {
@@ -693,7 +691,6 @@ class Autolink extends Regex
     }
 
     /**
-     * @param  array  $entity
      * @param  string  $tweet
      * @return string
      *
@@ -726,7 +723,6 @@ class Autolink extends Regex
     }
 
     /**
-     * @param  array  $entity
      * @return string
      *
      * @since 1.1.0
@@ -762,7 +758,6 @@ class Autolink extends Regex
     }
 
     /**
-     * @param  array  $entity
      * @param  string  $tweet
      * @return string
      *
@@ -787,8 +782,6 @@ class Autolink extends Regex
 
     /**
      * @param  string  $text
-     * @param  array  $attributes
-     * @return string
      *
      * @since 1.1.0
      */
@@ -823,7 +816,6 @@ class Autolink extends Regex
      * html escape.
      *
      * @param  string  $text
-     * @return string
      */
     protected function escapeHTML($text): string
     {
