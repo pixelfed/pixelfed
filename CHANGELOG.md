@@ -1,8 +1,22 @@
 # Release Notes
 
-## [Unreleased](https://github.com/pixelfed/pixelfed/compare/v0.13.1...dev)
+## [Unreleased](https://github.com/pixelfed/pixelfed/compare/v0.15.0...dev)
 
 -   in progress
+
+## [v0.14.0 (2026-09-17)](https://github.com/pixelfed/pixelfed/compare/v0.14.0...dev)
+This release includes `FEP-044f: Consent-respecting quote posts`, `FEP-8fcf followers collection synchronization`, and a bunch of ActivityPub federation improvements.
+
+- Add FEP-044f: Consent-respecting quote posts ([823efcaad](https://github.com/pixelfed/pixelfed/commit/823efcaad70f05ad513eab26b0fc07d00fb40e9c))
+- Add FEP-8fcf followers collection synchronization ([dedfa67b7](https://github.com/pixelfed/pixelfed/commit/dedfa67b708f3f4ea73aff92889cf1bb95a44329))
+- Update Login view, fix tab from email to password ([e215fb64f](https://github.com/pixelfed/pixelfed/commit/e215fb64f97effe5558345eb6b614237fb479f9a))
+- Update FeedInsertRemotePipeline, prevent statuses older than a week from being distributed ([c7600fb51](https://github.com/pixelfed/pixelfed/commit/c7600fb51a303eeda39b92c5e5481f60dd0fc23b))
+- Update ActivityPub helpers, improve url resolution and reply handling ([8a741d998](https://github.com/pixelfed/pixelfed/commit/8a741d998ddd0c0b36796d397732a6599656c0d5))
+- Add Federation Debug command ([fc856fd1f](https://github.com/pixelfed/pixelfed/commit/fc856fd1f3aac60f408bdf6928b2f780cffa3741))
+- Fix video embeds. Closes [#7373](https://github.com/pixelfed/pixelfed/issues/7373) ([9909bd0d3](https://github.com/pixelfed/pixelfed/commit/9909bd0d33fb9bdda2030606350b1ffa3ca239e3))
+- Fix federation comment threading ([80f792038](https://github.com/pixelfed/pixelfed/commit/80f792038ce1907448304f84c6990cbe705d04bd))
+- Added a ton of type checks, and resolved a lot of larastan issues.
+- Approved recently translated language files.
 
 ## [v0.13.0 (2026-09-17)](https://github.com/pixelfed/pixelfed/compare/v0.13.0...dev)
 This release includes the initial support for FeaturedCollections, and a few bug fixes.
