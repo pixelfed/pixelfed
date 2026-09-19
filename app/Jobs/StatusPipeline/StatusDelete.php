@@ -23,6 +23,7 @@ use App\Services\ActivityPubDeliveryService;
 use App\Services\CollectionService;
 use App\Services\FractalService;
 use App\Services\NotificationService;
+use App\Services\Status\ReplyCleanupService;
 use App\Services\StatusService;
 use App\Transformer\ActivityPub\Verb\DeleteNote;
 use Illuminate\Bus\Queueable;
@@ -188,7 +189,7 @@ class StatusDelete implements ShouldQueue
         // decrements hashtags.cached_count (a query-builder delete bypasses it).
         StatusHashtag::whereStatusId($status->id)->get()->each->delete();
         StatusView::whereStatusId($status->id)->delete();
-        Status::whereInReplyToId($status->id)->update(['in_reply_to_id' => null]);
+        ReplyCleanupService::releaseRepliesOf($status);
 
         AccountInterstitial::where('item_type', Status::class)
             ->where('item_id', $status->id)

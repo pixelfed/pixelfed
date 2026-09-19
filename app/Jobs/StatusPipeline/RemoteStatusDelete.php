@@ -21,6 +21,7 @@ use App\Services\Account\AccountStatService;
 use App\Services\AccountService;
 use App\Services\CollectionService;
 use App\Services\NotificationService;
+use App\Services\Status\ReplyCleanupService;
 use App\Services\StatusService;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldBeUniqueUntilProcessing;
@@ -191,7 +192,7 @@ class RemoteStatusDelete implements ShouldBeUniqueUntilProcessing, ShouldQueue
         // decrements hashtags.cached_count (a query-builder delete bypasses it).
         StatusHashtag::whereStatusId($status->id)->get()->each->delete();
         StatusView::whereStatusId($status->id)->delete();
-        Status::whereInReplyToId($status->id)->update(['in_reply_to_id' => null]);
+        ReplyCleanupService::releaseRepliesOf($status);
 
         StatusService::del($status->id, true);
         AccountService::del($status->profile_id);
