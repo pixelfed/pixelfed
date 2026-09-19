@@ -2,9 +2,9 @@
 
 use App\Http\Controllers\Admin\AdminUserInviteController;
 use App\Http\Controllers\AdminController;
-use App\Http\Controllers\Api\v2026\Admin\ConfigCacheDiagnostics;
 use App\Http\Controllers\AdminCuratedRegisterController;
 use App\Http\Controllers\AdminShadowFilterController;
+use App\Http\Controllers\Api\v2026\Admin\ConfigCacheDiagnostics;
 use App\Http\Controllers\PageController;
 
 Route::domain(config('pixelfed.domain.admin'))->prefix('i/admin')->middleware(['localization'])->group(function () {
