@@ -13,10 +13,20 @@ class ConfigCacheService
 {
     const CACHE_KEY = 'config_cache:_v0-key:';
 
+    // Keys whose value is a secret and must be encrypted at rest and masked
+    // when read back through the admin API / debug page.
+    const PROTECTED_KEYS = [
+        'filesystems.disks.s3.secret',
+        'filesystems.disks.spaces.secret',
+        'captcha.hcaptcha.secret',
+        'captcha.turnstile.secret',
+        'captcha.cap.secret',
+    ];
+
     const KEYS = [
         // filesystems.php — s3 disk
-        'filesystems.disks.s3.key' => ['list' => 'ENVCONFIG', 'env' => 'AWS_ACCESS_KEY_ID', 'rule' => 'string', 'secret' => true],
-        'filesystems.disks.s3.secret' => ['list' => 'ENVCONFIG', 'env' => 'AWS_SECRET_ACCESS_KEY', 'rule' => 'string', 'secret' => true],
+        'filesystems.disks.s3.key' => ['list' => 'ENVCONFIG', 'env' => 'AWS_ACCESS_KEY_ID', 'rule' => 'string'],
+        'filesystems.disks.s3.secret' => ['list' => 'ENVCONFIG', 'env' => 'AWS_SECRET_ACCESS_KEY', 'rule' => 'string'],
         'filesystems.disks.s3.region' => ['list' => 'ENVCONFIG', 'env' => 'AWS_DEFAULT_REGION', 'rule' => 'string'],
         'filesystems.disks.s3.bucket' => ['list' => 'ENVCONFIG', 'env' => 'AWS_BUCKET', 'rule' => 'string'],
         'filesystems.disks.s3.visibility' => ['list' => 'ENVCONFIG', 'env' => 'AWS_VISIBILITY', 'rule' => 'in:public,private'],
@@ -25,8 +35,8 @@ class ConfigCacheService
         'filesystems.disks.s3.use_path_style_endpoint' => ['list' => 'ENVCONFIG', 'env' => 'AWS_USE_PATH_STYLE_ENDPOINT', 'rule' => 'boolean'],
 
         // filesystems.php — spaces disk
-        'filesystems.disks.spaces.key' => ['list' => 'ENVCONFIG', 'env' => 'DO_SPACES_KEY', 'rule' => 'string', 'secret' => true],
-        'filesystems.disks.spaces.secret' => ['list' => 'ENVCONFIG', 'env' => 'DO_SPACES_SECRET', 'rule' => 'string', 'secret' => true],
+        'filesystems.disks.spaces.key' => ['list' => 'ENVCONFIG', 'env' => 'DO_SPACES_KEY', 'rule' => 'string'],
+        'filesystems.disks.spaces.secret' => ['list' => 'ENVCONFIG', 'env' => 'DO_SPACES_SECRET', 'rule' => 'string'],
         'filesystems.disks.spaces.region' => ['list' => 'ENVCONFIG', 'env' => 'DO_SPACES_REGION', 'rule' => 'string'],
         'filesystems.disks.spaces.bucket' => ['list' => 'ENVCONFIG', 'env' => 'DO_SPACES_BUCKET', 'rule' => 'string'],
         'filesystems.disks.spaces.url' => ['list' => 'ENVCONFIG', 'env' => 'DO_SPACES_URL', 'rule' => 'url'],
@@ -95,13 +105,13 @@ class ConfigCacheService
         // captcha.php
         'captcha.enabled' => ['list' => 'ENVCONFIG', 'env' => 'CAPTCHA_ENABLED', 'rule' => 'boolean'],
         'captcha.driver' => ['list' => 'ENVCONFIG', 'env' => 'CAPTCHA_DRIVER', 'rule' => 'in:hcaptcha,turnstile,cap'],
-        'captcha.hcaptcha.secret' => ['list' => 'ENVCONFIG', 'env' => 'CAPTCHA_H_SECRET', 'rule' => 'string', 'secret' => true],
+        'captcha.hcaptcha.secret' => ['list' => 'ENVCONFIG', 'env' => 'CAPTCHA_H_SECRET', 'rule' => 'string'],
         'captcha.hcaptcha.sitekey' => ['list' => 'ENVCONFIG', 'env' => 'CAPTCHA_H_SITEKEY', 'rule' => 'string'],
-        'captcha.turnstile.secret' => ['list' => 'ENVCONFIG', 'env' => 'CAPTCHA_TURNSTILE_SECRET', 'rule' => 'string', 'secret' => true],
+        'captcha.turnstile.secret' => ['list' => 'ENVCONFIG', 'env' => 'CAPTCHA_TURNSTILE_SECRET', 'rule' => 'string'],
         'captcha.turnstile.sitekey' => ['list' => 'ENVCONFIG', 'env' => 'CAPTCHA_TURNSTILE_SITEKEY', 'rule' => 'string'],
         'captcha.cap.endpoint' => ['list' => 'ENVCONFIG', 'env' => 'CAPTCHA_CAP_ENDPOINT', 'rule' => 'url'],
         'captcha.cap.sitekey' => ['list' => 'ENVCONFIG', 'env' => 'CAPTCHA_CAP_SITEKEY', 'rule' => 'string'],
-        'captcha.cap.secret' => ['list' => 'ENVCONFIG', 'env' => 'CAPTCHA_CAP_SECRET', 'rule' => 'string', 'secret' => true],
+        'captcha.cap.secret' => ['list' => 'ENVCONFIG', 'env' => 'CAPTCHA_CAP_SECRET', 'rule' => 'string'],
         'captcha.active.login' => ['list' => 'ENVCONFIG', 'env' => 'CAPTCHA_ENABLED_ON_LOGIN', 'rule' => 'boolean'],
         'captcha.active.register' => ['list' => 'ENVCONFIG', 'env' => 'CAPTCHA_ENABLED_ON_REGISTER', 'rule' => 'boolean'],
         'captcha.active.forgot_password' => ['list' => 'ENVCONFIG', 'env' => 'CAPTCHA_ENABLED_ON_FORGOT_PASSWORD', 'rule' => 'boolean'],
@@ -147,7 +157,7 @@ class ConfigCacheService
 
     public static function isProtected(string $key): bool
     {
-        return (self::KEYS[$key]['secret'] ?? false) === true;
+        return in_array($key, self::PROTECTED_KEYS, true);
     }
 
     public static function ruleFor(string $key): ?string

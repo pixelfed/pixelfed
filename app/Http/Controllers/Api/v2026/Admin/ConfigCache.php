@@ -15,36 +15,39 @@ use Illuminate\Support\Str;
 
 class ConfigCache extends Controller
 {
-    // GET config — bulk read; ?keys[] filters, unknown keys reject with 422.
+    // GET config — bulk read; requires an explicit ?keys[] filter. Unknown keys
+    // reject with 422. There is no fetch-everything default.
     public function index(Request $request): JsonResponse
     {
         $this->authorizeAdmin($request, 'admin:read');
 
         $requested = $request->input('keys');
 
-        if ($requested !== null) {
-            if (! is_array($requested)) {
-                return response()->json([
-                    'message' => 'The keys parameter must be an array.',
-                ], 422);
-            }
-
-            $unknown = array_values(array_filter(
-                $requested,
-                fn ($key) => ! is_string($key) || ! ConfigCacheService::isCached($key)
-            ));
-
-            if (! empty($unknown)) {
-                return response()->json([
-                    'message' => 'One or more requested keys are unknown or uncached.',
-                    'unknown_keys' => $unknown,
-                ], 422);
-            }
-
-            $keys = array_values(array_unique($requested));
-        } else {
-            $keys = ConfigCacheService::adminVisibleKeys();
+        if ($requested === null) {
+            return response()->json([
+                'message' => 'The keys parameter is required and must be a non-empty array.',
+            ], 422);
         }
+
+        if (! is_array($requested) || empty($requested)) {
+            return response()->json([
+                'message' => 'The keys parameter is required and must be a non-empty array.',
+            ], 422);
+        }
+
+        $unknown = array_values(array_filter(
+            $requested,
+            fn ($key) => ! is_string($key) || ! ConfigCacheService::isCached($key)
+        ));
+
+        if (! empty($unknown)) {
+            return response()->json([
+                'message' => 'One or more requested keys are unknown or uncached.',
+                'unknown_keys' => $unknown,
+            ], 422);
+        }
+
+        $keys = array_values(array_unique($requested));
 
         return response()->json([
             'data' => array_map(fn ($key) => $this->itemFor($key), $keys),
@@ -87,7 +90,10 @@ class ConfigCache extends Controller
         ]);
     }
 
-    // POST config — bulk write, all-or-nothing. Payload: { config: { key: value } }.
+    // POST config — bulk write, partial success. Payload: { config: { key: value } }.
+    // Valid keys are persisted even when others fail; per-key failures are
+    // reported in `errors`. Returns 422 only when the payload is malformed or
+    // no submitted key was writable.
     public function store(Request $request): JsonResponse
     {
         $this->authorizeAdmin($request, 'admin:write');
@@ -103,7 +109,7 @@ class ConfigCache extends Controller
         $errors = [];
         $permitted = $this->collectWritable($config, $errors);
 
-        if (! empty($errors)) {
+        if (empty($permitted) && ! empty($errors)) {
             return response()->json([
                 'message' => 'The submitted configuration is invalid.',
                 'errors' => $errors,
@@ -112,6 +118,7 @@ class ConfigCache extends Controller
 
         return response()->json([
             'changed' => array_values($this->persist($permitted)),
+            'errors' => empty($errors) ? (object) [] : $errors,
         ]);
     }
 

@@ -169,18 +169,19 @@ test('GET single for an unknown/uncached key returns 404, not a silent fallback 
 |--------------------------------------------------------------------------
 */
 
-test('GET bulk with no filter returns every admin-visible key (5.3)', function () {
+test('GET bulk with no filter is rejected 422: keys are required (5.3)', function () {
     apiAdmin(['admin:read']);
 
-    $expectedCount = count(ConfigCacheService::adminVisibleKeys());
+    $this->getJson('/api/v2026/admin/config')
+        ->assertStatus(422)
+        ->assertJsonStructure(['message']);
+});
 
-    $response = $this->getJson('/api/v2026/admin/config')
-        ->assertOk()
-        ->assertJsonCount($expectedCount, 'data');
+test('GET bulk with an empty keys array is rejected 422 (5.3b)', function () {
+    apiAdmin(['admin:read']);
 
-    $keys = collect($response->json('data'))->pluck('key');
-    expect($keys)->toContain(API_ADMINONLY_KEY);
-    expect($keys)->toContain(API_ENVBOUND_KEY);
+    $this->getJson('/api/v2026/admin/config?keys[]=')
+        ->assertStatus(422);
 });
 
 test('GET bulk with a ?keys[]= filter returns exactly the requested keys (5.4)', function () {
@@ -344,7 +345,7 @@ test('POST single with a value failing its rule is rejected 422 (6.1)', function
 |--------------------------------------------------------------------------
 */
 
-test('POST bulk is all-or-nothing: one invalid entry rejects the whole batch, nothing persists (6.2)', function () {
+test('POST bulk is partial success: valid entries persist, invalid entries are reported (6.2)', function () {
     apiAdmin(['admin:write']);
     Config::set(API_ADMINONLY_KEY, '/* default css */');
     apiForget(API_ADMINONLY_KEY);
@@ -359,11 +360,29 @@ test('POST bulk is all-or-nothing: one invalid entry rejects the whole batch, no
             API_ENVBOUND_KEY => 'eu-west-9',                     // invalid: env-locked
         ],
     ])
-        ->assertStatus(422)
-        ->assertJsonStructure(['errors' => [API_ENVBOUND_KEY]]);
+        ->assertOk()
+        ->assertJsonStructure(['changed', 'errors' => [API_ENVBOUND_KEY]]);
 
-    // The VALID entry must NOT have been written (all-or-nothing).
-    expect(ConfigCacheModel::where('k', API_ADMINONLY_KEY)->exists())->toBeFalse();
+    // The VALID entry IS written; the invalid one is not.
+    expect(ConfigCacheModel::where('k', API_ADMINONLY_KEY)->exists())->toBeTrue();
+    expect(ConfigCacheModel::where('k', API_ENVBOUND_KEY)->exists())->toBeFalse();
+});
+
+test('POST bulk with every entry invalid rejects 422 and persists nothing (6.2b)', function () {
+    apiAdmin(['admin:write']);
+
+    apiSetProcessEnv(API_ENVBOUND_VAR, 'us-east-1');
+    Config::set(API_ENVBOUND_KEY, 'us-east-1');
+
+    $this->postJson('/api/v2026/admin/config', [
+        'config' => [
+            API_ENVBOUND_KEY => 'eu-west-9',                 // invalid: env-locked
+            'this.key.is.not.cached' => 'x',                 // invalid: unknown
+        ],
+    ])
+        ->assertStatus(422)
+        ->assertJsonStructure(['errors' => [API_ENVBOUND_KEY, 'this.key.is.not.cached']]);
+
     expect(ConfigCacheModel::where('k', API_ENVBOUND_KEY)->exists())->toBeFalse();
 });
 
