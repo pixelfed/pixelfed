@@ -34,8 +34,10 @@ beforeEach(function () {
         'use_path_style_endpoint' => true,
         'visibility' => 'public',
     ]);
-    // Enable cloud storage. config_cache() falls through to config() when
-    // instance.enable_cc is off (as in CI), so set both to be safe.
+    // Enable cloud storage. pixelfed.cloud_storage is ENVCONFIG (env
+    // PF_ENABLE_CLOUD), which is absent under the test env, so config_cache()
+    // resolves the DB/config value — set both config() and the persisted row so
+    // the command's cloud-enabled guard sees it enabled.
     Config::set('pixelfed.cloud_storage', true);
     ConfigCacheService::put('pixelfed.cloud_storage', true);
 });

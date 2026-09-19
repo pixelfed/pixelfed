@@ -10,6 +10,7 @@ use App\Services\QuoteService;
 use App\Transformer\ActivityPub\Verb\CreateNote;
 use App\Transformer\ActivityPub\Verb\Note;
 use App\Util\ActivityPub\Inbox;
+use App\Util\ActivityPub\Validator\QuoteRequestValidator;
 use Illuminate\Foundation\Testing\LazilyRefreshDatabase;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\DB;
@@ -732,5 +733,266 @@ describe('api', function () {
         ])->assertNotFound();
 
         expect($status->fresh()->quote_policy)->toBeNull();
+    });
+});
+
+/*
+|--------------------------------------------------------------------------
+| Additional coverage (regression + new)
+|--------------------------------------------------------------------------
+*/
+
+describe('policy resolution units', function () {
+    it('forces nobody for a remote profile regardless of settings', function () {
+        $bob = quoteRemoteProfile();
+
+        expect(QuoteService::accountPolicy($bob))->toBe(QuoteService::POLICY_NOBODY);
+    });
+
+    it('falls back to everyone for an unknown can_quote value', function () {
+        $user = quoteLocalUser();
+        $settings = $user->settings;
+        $settings->can_quote = 'garbage-value';
+        $settings->save();
+        QuoteService::forgetPolicy($user->profile->id);
+
+        expect(QuoteService::accountPolicy($user->profile))->toBe(QuoteService::POLICY_EVERYONE);
+    });
+
+    it('caches the account policy until forgetPolicy clears it', function () {
+        $user = quoteLocalUser();
+        $profileId = $user->profile->id;
+
+        // Warm the cache at the default.
+        expect(QuoteService::accountPolicy($user->profile))->toBe(QuoteService::POLICY_EVERYONE);
+
+        // Change the stored setting behind the cache's back.
+        $settings = $user->settings;
+        $settings->can_quote = 'followers';
+        $settings->save();
+
+        // Still served from cache (re-read the profile so it is not the stale
+        // in-memory relation but the value still comes from the warmed cache).
+        expect(QuoteService::accountPolicy(Profile::find($profileId)))->toBe(QuoteService::POLICY_EVERYONE);
+
+        // After invalidation the new value resolves from the fresh settings.
+        QuoteService::forgetPolicy($profileId);
+        expect(QuoteService::accountPolicy(Profile::find($profileId)))->toBe(QuoteService::POLICY_FOLLOWERS);
+    });
+
+    it('maps bitmasks to and from api policy strings', function () {
+        expect(QuoteService::toApiPolicy(QuoteService::FLAG_PUBLIC))->toBe('public')
+            ->and(QuoteService::toApiPolicy(QuoteService::FLAG_FOLLOWERS))->toBe('followers')
+            ->and(QuoteService::toApiPolicy(QuoteService::FLAGS_NOBODY))->toBe('nobody');
+    });
+
+    it('splits a combined bitmask into automatic and manual bytes', function () {
+        $flags = QuoteService::FLAG_FOLLOWERS
+            | (QuoteService::FLAG_PUBLIC << QuoteService::MANUAL_SHIFT);
+
+        expect(QuoteService::automatic($flags))->toBe(QuoteService::FLAG_FOLLOWERS)
+            ->and(QuoteService::manual($flags))->toBe(QuoteService::FLAG_PUBLIC);
+    });
+});
+
+describe('isQuotable structural checks', function () {
+    it('is not quotable when the post is a reblog', function () {
+        $user = quoteLocalUser();
+        $original = quoteLocalStatus($user->profile);
+        $reblog = quoteLocalStatus($user->profile, ['reblog_of_id' => $original->id]);
+
+        expect(QuoteService::isQuotable($reblog))->toBeFalse();
+    });
+
+    it('is not quotable for a private-scope post', function () {
+        $user = quoteLocalUser();
+        $status = quoteLocalStatus($user->profile, ['scope' => 'private', 'visibility' => 'private']);
+
+        expect(QuoteService::isQuotable($status))->toBeFalse();
+    });
+
+    it('is not quotable when the author account is deleted/suspended', function () {
+        $user = quoteLocalUser();
+        $status = quoteLocalStatus($user->profile);
+
+        $profile = $user->profile;
+        $profile->status = 'delete';
+        $profile->save();
+
+        expect(QuoteService::isQuotable($status->fresh()))->toBeFalse();
+    });
+});
+
+describe('canQuote guards', function () {
+    it('refuses a local actor', function () {
+        $author = quoteLocalUser();
+        $status = quoteLocalStatus($author->profile);
+        $localActor = quoteLocalUser();
+
+        expect(QuoteService::canQuote($status, $localActor->profile))->toBeFalse();
+    });
+
+    it('refuses a suspended remote actor', function () {
+        $author = quoteLocalUser();
+        $status = quoteLocalStatus($author->profile);
+        $bob = quoteRemoteProfile();
+        $bob->status = 'delete';
+        $bob->save();
+
+        expect(QuoteService::canQuote($status, $bob->fresh()))->toBeFalse();
+    });
+
+    it('allows a remote actor under an everyone policy', function () {
+        $author = quoteLocalUser();
+        $status = quoteLocalStatus($author->profile);
+        $bob = quoteRemoteProfile();
+
+        expect(QuoteService::canQuote($status, $bob))->toBeTrue();
+    });
+});
+
+describe('QuoteRequest payload validation', function () {
+    it('accepts a well-formed QuoteRequest payload', function () {
+        $user = quoteLocalUser();
+        $status = quoteLocalStatus($user->profile);
+        $bob = quoteRemoteProfile();
+
+        expect(QuoteRequestValidator::validate(quoteRequestPayload($bob, $status)))->toBeTrue();
+    });
+
+    it('rejects payloads missing required fields or with the wrong type', function () {
+        $user = quoteLocalUser();
+        $status = quoteLocalStatus($user->profile);
+        $bob = quoteRemoteProfile();
+
+        $base = quoteRequestPayload($bob, $status);
+
+        foreach (['@context', 'actor', 'object', 'instrument'] as $field) {
+            $missing = $base;
+            unset($missing[$field]);
+            expect(QuoteRequestValidator::validate($missing))->toBeFalse("missing {$field} should fail");
+        }
+
+        expect(QuoteRequestValidator::validate(array_merge($base, ['type' => 'Create'])))->toBeFalse()
+            ->and(QuoteRequestValidator::validate(array_merge($base, ['id' => 'not-a-url'])))->toBeFalse()
+            ->and(QuoteRequestValidator::validate(array_merge($base, ['id' => 'https://x.example/'.str_repeat('a', 600)])))->toBeFalse();
+    });
+});
+
+describe('inbound collision + drops', function () {
+    it('rejects a second actor requesting a quote_url another actor already holds', function () {
+        $user = quoteLocalUser();
+        $status = quoteLocalStatus($user->profile);
+        $bob = quoteRemoteProfile('remote.example', 'bob');
+        $carol = quoteRemoteProfile('remote.example', 'carol');
+        quoteSeedHosts();
+
+        // bob is approved for a given quote_url.
+        $quoteUrl = $bob->remote_url.'/statuses/1';
+        QuoteService::authorize($status, $bob, $quoteUrl);
+
+        // carol requests using the SAME quote_url (a collision) → Reject, no new stamp.
+        quoteDeliver($carol, quoteRequestPayload($carol, $status, [
+            'id' => $carol->remote_url.'/statuses/9/quote',
+            'instrument' => $quoteUrl,
+        ]));
+
+        expect(QuoteAuthorization::count())->toBe(1)
+            ->and(quoteSentActivities()[0]['type'])->toBe('Reject');
+    });
+
+    it('drops an invalid QuoteRequest without answering', function () {
+        $user = quoteLocalUser();
+        $status = quoteLocalStatus($user->profile);
+        $bob = quoteRemoteProfile();
+        quoteSeedHosts();
+
+        // Missing instrument → validator fails → Inbox drops it silently.
+        $payload = quoteRequestPayload($bob, $status);
+        unset($payload['instrument']);
+
+        quoteDeliver($bob, $payload);
+
+        expect(QuoteAuthorization::count())->toBe(0)
+            ->and(quoteSentActivities())->toBeEmpty();
+    });
+});
+
+describe('revocation guards', function () {
+    it('revoke is idempotent: a second call does not re-dispatch a Delete', function () {
+        $user = quoteLocalUser();
+        $status = quoteLocalStatus($user->profile);
+        $bob = quoteRemoteProfile();
+
+        $auth = QuoteService::authorize($status, $bob, $bob->remote_url.'/statuses/1');
+
+        QuoteService::revoke($auth);
+        QuoteService::revoke($auth->fresh());
+
+        Queue::assertPushed(RevokeQuoteAuthorizationPipeline::class, 1);
+    });
+
+    it('the pipeline sends nothing when the authorization is missing', function () {
+        quoteInProduction(fn () => (new RevokeQuoteAuthorizationPipeline(999999999))->handle());
+
+        expect(quoteSentActivities())->toBeEmpty();
+    });
+
+    it('the pipeline sends nothing when the authorization is still approved', function () {
+        $user = quoteLocalUser();
+        $status = quoteLocalStatus($user->profile);
+        $bob = quoteRemoteProfile();
+        quoteSeedHosts();
+
+        $auth = QuoteService::authorize($status, $bob, $bob->remote_url.'/statuses/1');
+
+        // Not revoked → handle() must early-return without a Delete.
+        quoteInProduction(fn () => (new RevokeQuoteAuthorizationPipeline($auth->id))->handle());
+
+        expect(quoteSentActivities())->toBeEmpty();
+    });
+
+    it('forgetQuote hard-deletes a stamp without federating anything', function () {
+        $user = quoteLocalUser();
+        $status = quoteLocalStatus($user->profile);
+        $bob = quoteRemoteProfile();
+
+        $quoteUrl = $bob->remote_url.'/statuses/1';
+        QuoteService::authorize($status, $bob, $quoteUrl);
+
+        QuoteService::forgetQuote($bob->id, $quoteUrl);
+
+        expect(QuoteAuthorization::count())->toBe(0);
+        Queue::assertNotPushed(RevokeQuoteAuthorizationPipeline::class);
+        expect(quoteSentActivities())->toBeEmpty();
+    });
+});
+
+describe('sameUrl normalization', function () {
+    it('ignores scheme/host case and a trailing slash', function () {
+        expect(QuoteService::sameUrl('https://Remote.Example/users/bob', 'https://remote.example/users/bob'))->toBeTrue()
+            ->and(QuoteService::sameUrl('https://remote.example/users/bob/', 'https://remote.example/users/bob'))->toBeTrue();
+    });
+
+    it('treats different paths and non-string input as not equal', function () {
+        expect(QuoteService::sameUrl('https://remote.example/users/bob', 'https://remote.example/users/carol'))->toBeFalse()
+            ->and(QuoteService::sameUrl(null, 'https://remote.example/users/bob'))->toBeFalse()
+            ->and(QuoteService::sameUrl('not-a-url', 'also-not'))->toBeFalse();
+    });
+});
+
+describe('privacy settings guards', function () {
+    it('ignores an invalid can_quote value', function () {
+        $user = quoteLocalUser();
+
+        $this->actingAs($user->fresh())
+            ->post('/settings/privacy', ['can_quote' => 'not-a-policy'])
+            ->assertRedirect();
+
+        // The stored setting is unchanged (still the default) and the account
+        // policy stays everyone.
+        QuoteService::forgetPolicy($user->profile->id);
+        expect($user->settings()->first()->can_quote)->not->toBe('not-a-policy')
+            ->and(QuoteService::accountPolicy($user->profile->fresh()))->toBe(QuoteService::POLICY_EVERYONE);
     });
 });

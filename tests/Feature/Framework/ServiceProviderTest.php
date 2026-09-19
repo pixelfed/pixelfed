@@ -46,8 +46,12 @@ it('has routes loaded', function () {
 });
 
 it('binds the config_cache helper', function () {
-    config(['instance.enable_cc' => false]);
-
-    // config_cache falls back to config() when CC is disabled
+    // app.name is ENVCONFIG and env-authoritative under the test env (APP_NAME
+    // present), so config_cache() returns config(). This confirms the helper is
+    // bound and resolves a sensible value with the config cache always on (the
+    // master switch has been removed).
     expect(config_cache('app.name'))->toBe(config('app.name'));
+
+    // An unlisted key passes straight through to config().
+    expect(config_cache('app.url'))->toBe(config('app.url'));
 });
