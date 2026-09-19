@@ -4,6 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Str;
 
@@ -16,8 +17,9 @@ use Illuminate\Support\Str;
  * @property string|null $uri
  * @property string|null $image_remote_url
  * @property int|null $category_id
- * @property \Illuminate\Support\Carbon|null $created_at
- * @property \Illuminate\Support\Carbon|null $updated_at
+ * @property Carbon|null $created_at
+ * @property Carbon|null $updated_at
+ *
  * @method static \Illuminate\Database\Eloquent\Builder<static>|CustomEmoji duplicateShortcodes()
  * @method static \Illuminate\Database\Eloquent\Builder<static>|CustomEmoji newModelQuery()
  * @method static \Illuminate\Database\Eloquent\Builder<static>|CustomEmoji newQuery()
@@ -32,6 +34,7 @@ use Illuminate\Support\Str;
  * @method static \Illuminate\Database\Eloquent\Builder<static>|CustomEmoji whereShortcode($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|CustomEmoji whereUpdatedAt($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|CustomEmoji whereUri($value)
+ *
  * @mixin \Eloquent
  */
 class CustomEmoji extends Model

@@ -2,6 +2,9 @@
 
 namespace App\Models;
 
+use Illuminate\Support\Carbon;
+use Laravel\Passport\Client;
+use Laravel\Passport\RefreshToken;
 use Laravel\Passport\Token as PassportToken;
 
 /**
@@ -11,11 +14,12 @@ use Laravel\Passport\Token as PassportToken;
  * @property string|null $name
  * @property array<array-key, mixed>|null $scopes
  * @property bool $revoked
- * @property \Illuminate\Support\Carbon|null $created_at
- * @property \Illuminate\Support\Carbon|null $updated_at
- * @property \Illuminate\Support\Carbon|null $expires_at
- * @property-read \Laravel\Passport\Client|null $client
- * @property-read \Laravel\Passport\RefreshToken|null $refreshToken
+ * @property Carbon|null $created_at
+ * @property Carbon|null $updated_at
+ * @property Carbon|null $expires_at
+ * @property-read Client|null $client
+ * @property-read RefreshToken|null $refreshToken
+ *
  * @method static \Illuminate\Database\Eloquent\Builder<static>|OAuthToken existsIn(array $haystack)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|OAuthToken newModelQuery()
  * @method static \Illuminate\Database\Eloquent\Builder<static>|OAuthToken newQuery()
@@ -29,6 +33,7 @@ use Laravel\Passport\Token as PassportToken;
  * @method static \Illuminate\Database\Eloquent\Builder<static>|OAuthToken whereScopes($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|OAuthToken whereUpdatedAt($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|OAuthToken whereUserId($value)
+ *
  * @mixin \Eloquent
  */
 class OAuthToken extends PassportToken

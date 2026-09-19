@@ -4,6 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
+use Illuminate\Support\Carbon;
 
 /**
  * @property int $id
@@ -14,12 +15,13 @@ use Illuminate\Database\Eloquent\SoftDeletes;
  * @property int|null $is_remote
  * @property int|null $size
  * @property int $change_count
- * @property \Illuminate\Support\Carbon|null $last_fetched_at
- * @property \Illuminate\Support\Carbon|null $last_processed_at
- * @property \Illuminate\Support\Carbon|null $created_at
- * @property \Illuminate\Support\Carbon|null $updated_at
- * @property \Illuminate\Support\Carbon|null $deleted_at
- * @property-read \App\Models\Profile|null $profile
+ * @property Carbon|null $last_fetched_at
+ * @property Carbon|null $last_processed_at
+ * @property Carbon|null $created_at
+ * @property Carbon|null $updated_at
+ * @property Carbon|null $deleted_at
+ * @property-read Profile|null $profile
+ *
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Avatar newModelQuery()
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Avatar newQuery()
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Avatar onlyTrashed()
@@ -39,6 +41,7 @@ use Illuminate\Database\Eloquent\SoftDeletes;
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Avatar whereUpdatedAt($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Avatar withTrashed(bool $withTrashed = true)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Avatar withoutTrashed()
+ *
  * @mixin \Eloquent
  */
 class Avatar extends Model

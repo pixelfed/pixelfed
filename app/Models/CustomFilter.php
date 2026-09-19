@@ -2,8 +2,10 @@
 
 namespace App\Models;
 
+use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Log;
 
@@ -13,18 +15,19 @@ use Illuminate\Support\Facades\Log;
  * @property string $phrase
  * @property int $action
  * @property array<array-key, mixed>|null $context
- * @property \Illuminate\Support\Carbon|null $expires_at
- * @property \Illuminate\Support\Carbon|null $created_at
- * @property \Illuminate\Support\Carbon|null $updated_at
- * @property-read \App\Models\Profile|null $account
+ * @property Carbon|null $expires_at
+ * @property Carbon|null $created_at
+ * @property Carbon|null $updated_at
+ * @property-read Profile|null $account
  * @property-read mixed $expires_in
  * @property mixed $filter_action
  * @property bool $irreversible
  * @property mixed $title
- * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Models\CustomFilterKeyword> $keywords
+ * @property-read Collection<int, CustomFilterKeyword> $keywords
  * @property-read int|null $keywords_count
- * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Models\CustomFilterStatus> $statuses
+ * @property-read Collection<int, CustomFilterStatus> $statuses
  * @property-read int|null $statuses_count
+ *
  * @method static \Illuminate\Database\Eloquent\Builder<static>|CustomFilter newModelQuery()
  * @method static \Illuminate\Database\Eloquent\Builder<static>|CustomFilter newQuery()
  * @method static \Illuminate\Database\Eloquent\Builder<static>|CustomFilter query()
@@ -37,6 +40,7 @@ use Illuminate\Support\Facades\Log;
  * @method static \Illuminate\Database\Eloquent\Builder<static>|CustomFilter wherePhrase($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|CustomFilter whereProfileId($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|CustomFilter whereUpdatedAt($value)
+ *
  * @mixin \Eloquent
  */
 class CustomFilter extends Model

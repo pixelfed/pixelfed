@@ -2,7 +2,9 @@
 
 namespace App\Models;
 
+use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Carbon;
 
 /**
  * @property int $id
@@ -15,13 +17,13 @@ use Illuminate\Database\Eloquent\Model;
  * @property int $unlisted
  * @property int $auto_cw
  * @property int $banned
- * @property \Illuminate\Support\Carbon|null $created_at
- * @property \Illuminate\Support\Carbon|null $updated_at
+ * @property Carbon|null $created_at
+ * @property Carbon|null $updated_at
  * @property string|null $software
  * @property int|null $user_count
  * @property int|null $status_count
- * @property \Illuminate\Support\Carbon|null $last_crawled_at
- * @property \Illuminate\Support\Carbon|null $actors_last_synced_at
+ * @property Carbon|null $last_crawled_at
+ * @property Carbon|null $actors_last_synced_at
  * @property array<array-key, mixed>|null $notes
  * @property int $manually_added
  * @property string|null $base_domain
@@ -29,22 +31,23 @@ use Illuminate\Database\Eloquent\Model;
  * @property string|null $ip_address
  * @property int $list_limitation
  * @property int|null $valid_nodeinfo
- * @property \Illuminate\Support\Carbon|null $nodeinfo_last_fetched
+ * @property Carbon|null $nodeinfo_last_fetched
  * @property int $delivery_timeout
- * @property \Illuminate\Support\Carbon|null $delivery_next_after
+ * @property Carbon|null $delivery_next_after
  * @property string|null $shared_inbox
  * @property int|null $allowlisted
  * @property int $delivery_failures
- * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Models\Media> $media
+ * @property-read Collection<int, Media> $media
  * @property-read int|null $media_count
- * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Models\Profile> $profiles
+ * @property-read Collection<int, Profile> $profiles
  * @property-read int|null $profiles_count
- * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Models\Report> $reported
+ * @property-read Collection<int, Report> $reported
  * @property-read int|null $reported_count
- * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Models\Report> $reports
+ * @property-read Collection<int, Report> $reports
  * @property-read int|null $reports_count
- * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Models\Status> $statuses
+ * @property-read Collection<int, Status> $statuses
  * @property-read int|null $statuses_count
+ *
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Instance moderated()
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Instance newModelQuery()
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Instance newQuery()
@@ -79,6 +82,7 @@ use Illuminate\Database\Eloquent\Model;
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Instance whereUrl($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Instance whereUserCount($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Instance whereValidNodeinfo($value)
+ *
  * @mixin \Eloquent
  */
 class Instance extends Model

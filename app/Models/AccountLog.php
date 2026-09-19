@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Carbon;
 
 /**
  * @property int $id
@@ -15,9 +16,10 @@ use Illuminate\Database\Eloquent\Model;
  * @property string|null $ip_address
  * @property string|null $user_agent
  * @property string|null $metadata
- * @property \Illuminate\Support\Carbon|null $created_at
- * @property \Illuminate\Support\Carbon|null $updated_at
- * @property-read \App\Models\User|null $user
+ * @property Carbon|null $created_at
+ * @property Carbon|null $updated_at
+ * @property-read User|null $user
+ *
  * @method static \Illuminate\Database\Eloquent\Builder<static>|AccountLog newModelQuery()
  * @method static \Illuminate\Database\Eloquent\Builder<static>|AccountLog newQuery()
  * @method static \Illuminate\Database\Eloquent\Builder<static>|AccountLog query()
@@ -33,6 +35,7 @@ use Illuminate\Database\Eloquent\Model;
  * @method static \Illuminate\Database\Eloquent\Builder<static>|AccountLog whereUpdatedAt($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|AccountLog whereUserAgent($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|AccountLog whereUserId($value)
+ *
  * @mixin \Eloquent
  */
 class AccountLog extends Model

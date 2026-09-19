@@ -4,6 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Carbon;
 
 /**
  * @property int $id
@@ -16,8 +17,9 @@ use Illuminate\Database\Eloquent\Model;
  * @property array<array-key, mixed>|null $report_meta
  * @property array<array-key, mixed>|null $action_taken_meta
  * @property int|null $action_taken_by_account_id
- * @property \Illuminate\Support\Carbon|null $created_at
- * @property \Illuminate\Support\Carbon|null $updated_at
+ * @property Carbon|null $created_at
+ * @property Carbon|null $updated_at
+ *
  * @method static \Illuminate\Database\Eloquent\Builder<static>|RemoteReport newModelQuery()
  * @method static \Illuminate\Database\Eloquent\Builder<static>|RemoteReport newQuery()
  * @method static \Illuminate\Database\Eloquent\Builder<static>|RemoteReport query()
@@ -33,6 +35,7 @@ use Illuminate\Database\Eloquent\Model;
  * @method static \Illuminate\Database\Eloquent\Builder<static>|RemoteReport whereStatusIds($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|RemoteReport whereUpdatedAt($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|RemoteReport whereUri($value)
+ *
  * @mixin \Eloquent
  */
 class RemoteReport extends Model

@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Carbon;
 
 /**
  * @property int $id
@@ -19,9 +20,10 @@ use Illuminate\Database\Eloquent\Model;
  * @property int $show_timeline
  * @property int $show_link
  * @property int $auth_only
- * @property \Illuminate\Support\Carbon|null $published_at
- * @property \Illuminate\Support\Carbon|null $created_at
- * @property \Illuminate\Support\Carbon|null $updated_at
+ * @property Carbon|null $published_at
+ * @property Carbon|null $created_at
+ * @property Carbon|null $updated_at
+ *
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Newsroom newModelQuery()
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Newsroom newQuery()
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Newsroom query()
@@ -42,6 +44,7 @@ use Illuminate\Database\Eloquent\Model;
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Newsroom whereTitle($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Newsroom whereUpdatedAt($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Newsroom whereUserId($value)
+ *
  * @mixin \Eloquent
  */
 class Newsroom extends Model

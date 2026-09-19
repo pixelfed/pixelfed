@@ -4,6 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Support\Carbon;
 
 /**
  * @property int $id
@@ -14,17 +15,18 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
  * @property int|null $reported_profile_id
  * @property string|null $type
  * @property string|null $message
- * @property \Illuminate\Support\Carbon|null $admin_seen
+ * @property Carbon|null $admin_seen
  * @property int $not_interested
  * @property int $spam
  * @property int $nsfw
  * @property int $abusive
  * @property string|null $meta
- * @property \Illuminate\Support\Carbon|null $created_at
- * @property \Illuminate\Support\Carbon|null $updated_at
- * @property-read \App\Models\Profile|null $reportedUser
- * @property-read \App\Models\Profile|null $reporter
- * @property-read \App\Models\Status|null $status
+ * @property Carbon|null $created_at
+ * @property Carbon|null $updated_at
+ * @property-read Profile|null $reportedUser
+ * @property-read Profile|null $reporter
+ * @property-read Status|null $status
+ *
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Report newModelQuery()
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Report newQuery()
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Report query()
@@ -44,6 +46,7 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Report whereType($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Report whereUpdatedAt($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Report whereUserId($value)
+ *
  * @mixin \Eloquent
  */
 class Report extends Model

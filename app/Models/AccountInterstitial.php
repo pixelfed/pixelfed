@@ -4,6 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Support\Carbon;
 
 /**
  * @property int $id
@@ -23,15 +24,16 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
  * @property string|null $violation_body
  * @property string|null $meta
  * @property string|null $appeal_message
- * @property \Illuminate\Support\Carbon|null $appeal_requested_at
+ * @property Carbon|null $appeal_requested_at
  * @property string|null $appeal_handled_at
- * @property \Illuminate\Support\Carbon|null $read_at
- * @property \Illuminate\Support\Carbon|null $created_at
- * @property \Illuminate\Support\Carbon|null $updated_at
+ * @property Carbon|null $read_at
+ * @property Carbon|null $created_at
+ * @property Carbon|null $updated_at
  * @property int|null $severity_index
  * @property int|null $thread_id
  * @property string|null $emailed_at
- * @property-read \App\Models\User|null $user
+ * @property-read User|null $user
+ *
  * @method static \Illuminate\Database\Eloquent\Builder<static>|AccountInterstitial newModelQuery()
  * @method static \Illuminate\Database\Eloquent\Builder<static>|AccountInterstitial newQuery()
  * @method static \Illuminate\Database\Eloquent\Builder<static>|AccountInterstitial query()
@@ -60,6 +62,7 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
  * @method static \Illuminate\Database\Eloquent\Builder<static>|AccountInterstitial whereViolationBody($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|AccountInterstitial whereViolationHeader($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|AccountInterstitial whereViolationId($value)
+ *
  * @mixin \Eloquent
  */
 class AccountInterstitial extends Model

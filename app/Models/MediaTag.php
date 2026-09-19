@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Carbon;
 
 /**
  * @property int $id
@@ -12,9 +13,10 @@ use Illuminate\Database\Eloquent\Model;
  * @property string|null $tagged_username
  * @property int $is_public
  * @property string|null $metadata
- * @property \Illuminate\Support\Carbon|null $created_at
- * @property \Illuminate\Support\Carbon|null $updated_at
- * @property-read \App\Models\Status|null $status
+ * @property Carbon|null $created_at
+ * @property Carbon|null $updated_at
+ * @property-read Status|null $status
+ *
  * @method static \Illuminate\Database\Eloquent\Builder<static>|MediaTag newModelQuery()
  * @method static \Illuminate\Database\Eloquent\Builder<static>|MediaTag newQuery()
  * @method static \Illuminate\Database\Eloquent\Builder<static>|MediaTag query()
@@ -27,6 +29,7 @@ use Illuminate\Database\Eloquent\Model;
  * @method static \Illuminate\Database\Eloquent\Builder<static>|MediaTag whereStatusId($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|MediaTag whereTaggedUsername($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|MediaTag whereUpdatedAt($value)
+ *
  * @mixin \Eloquent
  */
 class MediaTag extends Model

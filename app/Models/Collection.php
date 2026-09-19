@@ -4,6 +4,7 @@ namespace App\Models;
 
 use App\HasSnowflakePrimary;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Carbon;
 
 /**
  * @property int $id
@@ -13,13 +14,14 @@ use Illuminate\Database\Eloquent\Model;
  * @property int $is_nsfw
  * @property string $visibility
  * @property string|null $published_at
- * @property \Illuminate\Support\Carbon|null $created_at
- * @property \Illuminate\Support\Carbon|null $updated_at
- * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Models\CollectionItem> $items
+ * @property Carbon|null $created_at
+ * @property Carbon|null $updated_at
+ * @property-read \Illuminate\Database\Eloquent\Collection<int, CollectionItem> $items
  * @property-read int|null $items_count
- * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Models\Status> $posts
+ * @property-read \Illuminate\Database\Eloquent\Collection<int, Status> $posts
  * @property-read int|null $posts_count
- * @property-read \App\Models\Profile|null $profile
+ * @property-read Profile|null $profile
+ *
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Collection newModelQuery()
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Collection newQuery()
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Collection query()
@@ -32,6 +34,7 @@ use Illuminate\Database\Eloquent\Model;
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Collection whereTitle($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Collection whereUpdatedAt($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Collection whereVisibility($value)
+ *
  * @mixin \Eloquent
  */
 class Collection extends Model

@@ -9,14 +9,16 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 /**
  * FEP-044f approval stamp issued by a local author for a remote quote post.
  *
- * @property-read \App\Models\Profile|null $actor
- * @property-read \App\Models\Profile|null $profile
- * @property-read \App\Models\Status|null $status
+ * @property-read Profile|null $actor
+ * @property-read Profile|null $profile
+ * @property-read Status|null $status
+ *
  * @method static \Illuminate\Database\Eloquent\Builder<static>|QuoteAuthorization approved()
  * @method static \Illuminate\Database\Eloquent\Builder<static>|QuoteAuthorization newModelQuery()
  * @method static \Illuminate\Database\Eloquent\Builder<static>|QuoteAuthorization newQuery()
  * @method static \Illuminate\Database\Eloquent\Builder<static>|QuoteAuthorization query()
  * @method static \Illuminate\Database\Eloquent\Builder<static>|QuoteAuthorization revoked()
+ *
  * @mixin \Eloquent
  */
 class QuoteAuthorization extends Model

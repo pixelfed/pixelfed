@@ -15,10 +15,11 @@ use Illuminate\Support\Carbon;
  * @property string|null $handled_at
  * @property Carbon|null $created_at
  * @property Carbon|null $updated_at
- * @property-read \App\Models\Profile|null $actor
- * @property-read \App\Models\Profile|null $follower
- * @property-read \App\Models\Profile|null $following
- * @property-read \App\Models\Profile|null $target
+ * @property-read Profile|null $actor
+ * @property-read Profile|null $follower
+ * @property-read Profile|null $following
+ * @property-read Profile|null $target
+ *
  * @method static \Illuminate\Database\Eloquent\Builder<static>|FollowRequest newModelQuery()
  * @method static \Illuminate\Database\Eloquent\Builder<static>|FollowRequest newQuery()
  * @method static \Illuminate\Database\Eloquent\Builder<static>|FollowRequest query()
@@ -31,6 +32,7 @@ use Illuminate\Support\Carbon;
  * @method static \Illuminate\Database\Eloquent\Builder<static>|FollowRequest whereIsLocal($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|FollowRequest whereIsRejected($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|FollowRequest whereUpdatedAt($value)
+ *
  * @mixin \Eloquent
  */
 class FollowRequest extends Model

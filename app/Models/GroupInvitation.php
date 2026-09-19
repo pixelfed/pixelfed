@@ -4,6 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Carbon;
 
 /**
  * @property int $id
@@ -13,8 +14,9 @@ use Illuminate\Database\Eloquent\Model;
  * @property string|null $role
  * @property int $to_local
  * @property int $from_local
- * @property \Illuminate\Support\Carbon|null $created_at
- * @property \Illuminate\Support\Carbon|null $updated_at
+ * @property Carbon|null $created_at
+ * @property Carbon|null $updated_at
+ *
  * @method static \Illuminate\Database\Eloquent\Builder<static>|GroupInvitation newModelQuery()
  * @method static \Illuminate\Database\Eloquent\Builder<static>|GroupInvitation newQuery()
  * @method static \Illuminate\Database\Eloquent\Builder<static>|GroupInvitation query()
@@ -27,6 +29,7 @@ use Illuminate\Database\Eloquent\Model;
  * @method static \Illuminate\Database\Eloquent\Builder<static>|GroupInvitation whereToLocal($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|GroupInvitation whereToProfileId($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|GroupInvitation whereUpdatedAt($value)
+ *
  * @mixin \Eloquent
  */
 class GroupInvitation extends Model

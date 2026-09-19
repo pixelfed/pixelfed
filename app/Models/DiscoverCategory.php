@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Carbon;
 
@@ -19,11 +20,12 @@ use Illuminate\Support\Carbon;
  * @property string|null $active_until
  * @property Carbon|null $created_at
  * @property Carbon|null $updated_at
- * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Models\Hashtag> $hashtags
+ * @property-read Collection<int, Hashtag> $hashtags
  * @property-read int|null $hashtags_count
- * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Models\DiscoverCategoryHashtag> $items
+ * @property-read Collection<int, DiscoverCategoryHashtag> $items
  * @property-read int|null $items_count
- * @property-read \App\Models\Media|null $media
+ * @property-read Media|null $media
+ *
  * @method static \Illuminate\Database\Eloquent\Builder<static>|DiscoverCategory newModelQuery()
  * @method static \Illuminate\Database\Eloquent\Builder<static>|DiscoverCategory newQuery()
  * @method static \Illuminate\Database\Eloquent\Builder<static>|DiscoverCategory query()
@@ -40,6 +42,7 @@ use Illuminate\Support\Carbon;
  * @method static \Illuminate\Database\Eloquent\Builder<static>|DiscoverCategory wherePublicOnly($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|DiscoverCategory whereSlug($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|DiscoverCategory whereUpdatedAt($value)
+ *
  * @mixin \Eloquent
  */
 class DiscoverCategory extends Model

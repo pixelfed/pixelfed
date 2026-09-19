@@ -2,7 +2,9 @@
 
 namespace App\Models;
 
+use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Carbon;
 
 /**
  * @property int $id
@@ -13,11 +15,12 @@ use Illuminate\Database\Eloquent\Model;
  * @property int $stage
  * @property string|null $media_json
  * @property string|null $completed_at
- * @property \Illuminate\Support\Carbon|null $created_at
- * @property \Illuminate\Support\Carbon|null $updated_at
- * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Models\ImportData> $files
+ * @property Carbon|null $created_at
+ * @property Carbon|null $updated_at
+ * @property-read Collection<int, ImportData> $files
  * @property-read int|null $files_count
- * @property-read \App\Models\Profile|null $profile
+ * @property-read Profile|null $profile
+ *
  * @method static \Illuminate\Database\Eloquent\Builder<static>|ImportJob newModelQuery()
  * @method static \Illuminate\Database\Eloquent\Builder<static>|ImportJob newQuery()
  * @method static \Illuminate\Database\Eloquent\Builder<static>|ImportJob query()
@@ -31,6 +34,7 @@ use Illuminate\Database\Eloquent\Model;
  * @method static \Illuminate\Database\Eloquent\Builder<static>|ImportJob whereStoragePath($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|ImportJob whereUpdatedAt($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|ImportJob whereUuid($value)
+ *
  * @mixin \Eloquent
  */
 class ImportJob extends Model

@@ -5,6 +5,7 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\MorphTo;
 use Illuminate\Database\Eloquent\SoftDeletes;
+use Illuminate\Support\Carbon;
 
 /**
  * @property int $id
@@ -14,14 +15,15 @@ use Illuminate\Database\Eloquent\SoftDeletes;
  * @property string|null $item_type
  * @property string|null $action
  * @property string|null $read_at
- * @property \Illuminate\Support\Carbon|null $created_at
- * @property \Illuminate\Support\Carbon|null $updated_at
- * @property \Illuminate\Support\Carbon|null $deleted_at
- * @property-read \App\Models\Profile|null $actor
+ * @property Carbon|null $created_at
+ * @property Carbon|null $updated_at
+ * @property Carbon|null $deleted_at
+ * @property-read Profile|null $actor
  * @property-read Model|\Eloquent|null $item
- * @property-read \App\Models\Profile|null $profile
- * @property-read \App\Models\Status|null $status
- * @property-read \App\Models\MediaTag|null $tag
+ * @property-read Profile|null $profile
+ * @property-read Status|null $status
+ * @property-read MediaTag|null $tag
+ *
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Notification newModelQuery()
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Notification newQuery()
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Notification onlyTrashed()
@@ -38,6 +40,7 @@ use Illuminate\Database\Eloquent\SoftDeletes;
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Notification whereUpdatedAt($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Notification withTrashed(bool $withTrashed = true)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Notification withoutTrashed()
+ *
  * @mixin \Eloquent
  */
 class Notification extends Model

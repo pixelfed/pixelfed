@@ -4,6 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Carbon;
 
 /**
  * @property int $id
@@ -11,9 +12,10 @@ use Illuminate\Database\Eloquent\Model;
  * @property int $profile_id
  * @property array<array-key, mixed>|null $common
  * @property array<array-key, mixed>|null $custom
- * @property \Illuminate\Support\Carbon|null $created_at
- * @property \Illuminate\Support\Carbon|null $updated_at
- * @property-read \App\Models\User|null $user
+ * @property Carbon|null $created_at
+ * @property Carbon|null $updated_at
+ * @property-read User|null $user
+ *
  * @method static \Illuminate\Database\Eloquent\Builder<static>|UserAppSettings newModelQuery()
  * @method static \Illuminate\Database\Eloquent\Builder<static>|UserAppSettings newQuery()
  * @method static \Illuminate\Database\Eloquent\Builder<static>|UserAppSettings query()
@@ -24,6 +26,7 @@ use Illuminate\Database\Eloquent\Model;
  * @method static \Illuminate\Database\Eloquent\Builder<static>|UserAppSettings whereProfileId($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|UserAppSettings whereUpdatedAt($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|UserAppSettings whereUserId($value)
+ *
  * @mixin \Eloquent
  */
 class UserAppSettings extends Model

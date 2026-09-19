@@ -13,6 +13,7 @@ use Illuminate\Database\Eloquent\Model;
  * @property int|null $status_id
  * @property string|null $status_visibility
  * @property int $nsfw
+ *
  * @method static \Illuminate\Database\Eloquent\Builder<static>|GroupPostHashtag newModelQuery()
  * @method static \Illuminate\Database\Eloquent\Builder<static>|GroupPostHashtag newQuery()
  * @method static \Illuminate\Database\Eloquent\Builder<static>|GroupPostHashtag query()
@@ -23,6 +24,7 @@ use Illuminate\Database\Eloquent\Model;
  * @method static \Illuminate\Database\Eloquent\Builder<static>|GroupPostHashtag whereProfileId($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|GroupPostHashtag whereStatusId($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|GroupPostHashtag whereStatusVisibility($value)
+ *
  * @mixin \Eloquent
  */
 class GroupPostHashtag extends Model

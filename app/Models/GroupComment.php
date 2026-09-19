@@ -4,6 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Carbon;
 
 /**
  * @property int $id
@@ -23,9 +24,10 @@ use Illuminate\Database\Eloquent\Model;
  * @property string|null $type
  * @property int $local
  * @property string|null $metadata
- * @property \Illuminate\Support\Carbon|null $created_at
- * @property \Illuminate\Support\Carbon|null $updated_at
- * @property-read \App\Models\Profile|null $profile
+ * @property Carbon|null $created_at
+ * @property Carbon|null $updated_at
+ * @property-read Profile|null $profile
+ *
  * @method static \Illuminate\Database\Eloquent\Builder<static>|GroupComment newModelQuery()
  * @method static \Illuminate\Database\Eloquent\Builder<static>|GroupComment newQuery()
  * @method static \Illuminate\Database\Eloquent\Builder<static>|GroupComment query()
@@ -48,6 +50,7 @@ use Illuminate\Database\Eloquent\Model;
  * @method static \Illuminate\Database\Eloquent\Builder<static>|GroupComment whereType($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|GroupComment whereUpdatedAt($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|GroupComment whereVisibility($value)
+ *
  * @mixin \Eloquent
  */
 class GroupComment extends Model

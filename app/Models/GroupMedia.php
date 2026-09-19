@@ -4,6 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\Storage;
 
 /**
@@ -29,10 +30,11 @@ use Illuminate\Support\Facades\Storage;
  * @property array<array-key, mixed>|null $metadata
  * @property string $version
  * @property int $skip_optimize
- * @property \Illuminate\Support\Carbon|null $processed_at
- * @property \Illuminate\Support\Carbon|null $thumbnail_generated
- * @property \Illuminate\Support\Carbon|null $created_at
- * @property \Illuminate\Support\Carbon|null $updated_at
+ * @property Carbon|null $processed_at
+ * @property Carbon|null $thumbnail_generated
+ * @property Carbon|null $created_at
+ * @property Carbon|null $updated_at
+ *
  * @method static \Illuminate\Database\Eloquent\Builder<static>|GroupMedia newModelQuery()
  * @method static \Illuminate\Database\Eloquent\Builder<static>|GroupMedia newQuery()
  * @method static \Illuminate\Database\Eloquent\Builder<static>|GroupMedia query()
@@ -62,6 +64,7 @@ use Illuminate\Support\Facades\Storage;
  * @method static \Illuminate\Database\Eloquent\Builder<static>|GroupMedia whereUrl($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|GroupMedia whereVersion($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|GroupMedia whereWidth($value)
+ *
  * @mixin \Eloquent
  */
 class GroupMedia extends Model

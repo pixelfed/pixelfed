@@ -13,6 +13,7 @@ use Illuminate\Database\Eloquent\Model;
  * @property string $payload
  * @property string $exception
  * @property \Illuminate\Support\Carbon $failed_at
+ *
  * @method static \Illuminate\Database\Eloquent\Builder<static>|FailedJob newModelQuery()
  * @method static \Illuminate\Database\Eloquent\Builder<static>|FailedJob newQuery()
  * @method static \Illuminate\Database\Eloquent\Builder<static>|FailedJob query()
@@ -23,6 +24,7 @@ use Illuminate\Database\Eloquent\Model;
  * @method static \Illuminate\Database\Eloquent\Builder<static>|FailedJob wherePayload($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|FailedJob whereQueue($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|FailedJob whereUuid($value)
+ *
  * @mixin \Eloquent
  */
 class FailedJob extends Model

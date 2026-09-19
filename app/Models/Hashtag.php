@@ -2,8 +2,10 @@
 
 namespace App\Models;
 
+use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\HasManyThrough;
+use Illuminate\Support\Carbon;
 
 /**
  * @property int $id
@@ -13,11 +15,12 @@ use Illuminate\Database\Eloquent\Relations\HasManyThrough;
  * @property int|null $can_search
  * @property int $is_nsfw
  * @property int $is_banned
- * @property \Illuminate\Support\Carbon|null $created_at
- * @property \Illuminate\Support\Carbon|null $updated_at
+ * @property Carbon|null $created_at
+ * @property Carbon|null $updated_at
  * @property int|null $cached_count
- * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Models\Status> $posts
+ * @property-read Collection<int, Status> $posts
  * @property-read int|null $posts_count
+ *
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Hashtag newModelQuery()
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Hashtag newQuery()
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Hashtag query()
@@ -31,6 +34,7 @@ use Illuminate\Database\Eloquent\Relations\HasManyThrough;
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Hashtag whereName($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Hashtag whereSlug($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Hashtag whereUpdatedAt($value)
+ *
  * @mixin \Eloquent
  */
 class Hashtag extends Model

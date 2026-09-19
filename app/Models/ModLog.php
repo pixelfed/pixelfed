@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Carbon;
 
 /**
  * @property int $id
@@ -15,9 +16,10 @@ use Illuminate\Database\Eloquent\Model;
  * @property string|null $message
  * @property string|null $metadata
  * @property string|null $access_level
- * @property \Illuminate\Support\Carbon|null $created_at
- * @property \Illuminate\Support\Carbon|null $updated_at
- * @property-read \App\Models\User|null $admin
+ * @property Carbon|null $created_at
+ * @property Carbon|null $updated_at
+ * @property-read User|null $admin
+ *
  * @method static \Illuminate\Database\Eloquent\Builder<static>|ModLog newModelQuery()
  * @method static \Illuminate\Database\Eloquent\Builder<static>|ModLog newQuery()
  * @method static \Illuminate\Database\Eloquent\Builder<static>|ModLog query()
@@ -33,6 +35,7 @@ use Illuminate\Database\Eloquent\Model;
  * @method static \Illuminate\Database\Eloquent\Builder<static>|ModLog whereUpdatedAt($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|ModLog whereUserId($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|ModLog whereUserUsername($value)
+ *
  * @mixin \Eloquent
  */
 class ModLog extends Model

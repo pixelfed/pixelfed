@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Carbon;
 
 /**
  * @property int $id
@@ -10,11 +11,12 @@ use Illuminate\Database\Eloquent\Model;
  * @property int|null $from_id
  * @property string|null $object_type
  * @property string|null $data
- * @property \Illuminate\Support\Carbon|null $processed_at
- * @property \Illuminate\Support\Carbon|null $created_at
- * @property \Illuminate\Support\Carbon|null $updated_at
- * @property-read \App\Models\Profile|null $fromProfile
- * @property-read \App\Models\Profile|null $toProfile
+ * @property Carbon|null $processed_at
+ * @property Carbon|null $created_at
+ * @property Carbon|null $updated_at
+ * @property-read Profile|null $fromProfile
+ * @property-read Profile|null $toProfile
+ *
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Activity newModelQuery()
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Activity newQuery()
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Activity query()
@@ -26,6 +28,7 @@ use Illuminate\Database\Eloquent\Model;
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Activity whereProcessedAt($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Activity whereToId($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Activity whereUpdatedAt($value)
+ *
  * @mixin \Eloquent
  */
 class Activity extends Model

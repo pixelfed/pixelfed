@@ -4,13 +4,15 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Carbon;
 
 /**
  * @property int $id
  * @property string|null $private_key
  * @property string|null $public_key
- * @property \Illuminate\Support\Carbon|null $created_at
- * @property \Illuminate\Support\Carbon|null $updated_at
+ * @property Carbon|null $created_at
+ * @property Carbon|null $updated_at
+ *
  * @method static \Illuminate\Database\Eloquent\Builder<static>|InstanceActor newModelQuery()
  * @method static \Illuminate\Database\Eloquent\Builder<static>|InstanceActor newQuery()
  * @method static \Illuminate\Database\Eloquent\Builder<static>|InstanceActor query()
@@ -19,6 +21,7 @@ use Illuminate\Database\Eloquent\Model;
  * @method static \Illuminate\Database\Eloquent\Builder<static>|InstanceActor wherePrivateKey($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|InstanceActor wherePublicKey($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|InstanceActor whereUpdatedAt($value)
+ *
  * @mixin \Eloquent
  */
 class InstanceActor extends Model

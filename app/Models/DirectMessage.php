@@ -4,6 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\Auth;
 
 /**
@@ -17,11 +18,12 @@ use Illuminate\Support\Facades\Auth;
  * @property string|null $meta
  * @property int $status_id
  * @property string|null $read_at
- * @property \Illuminate\Support\Carbon|null $created_at
- * @property \Illuminate\Support\Carbon|null $updated_at
- * @property-read \App\Models\Profile|null $author
- * @property-read \App\Models\Profile|null $recipient
- * @property-read \App\Models\Status|null $status
+ * @property Carbon|null $created_at
+ * @property Carbon|null $updated_at
+ * @property-read Profile|null $author
+ * @property-read Profile|null $recipient
+ * @property-read Status|null $status
+ *
  * @method static \Illuminate\Database\Eloquent\Builder<static>|DirectMessage newModelQuery()
  * @method static \Illuminate\Database\Eloquent\Builder<static>|DirectMessage newQuery()
  * @method static \Illuminate\Database\Eloquent\Builder<static>|DirectMessage query()
@@ -37,6 +39,7 @@ use Illuminate\Support\Facades\Auth;
  * @method static \Illuminate\Database\Eloquent\Builder<static>|DirectMessage whereToId($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|DirectMessage whereType($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|DirectMessage whereUpdatedAt($value)
+ *
  * @mixin \Eloquent
  */
 class DirectMessage extends Model

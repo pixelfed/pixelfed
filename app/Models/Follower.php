@@ -15,9 +15,10 @@ use Illuminate\Support\Carbon;
  * @property int $notify
  * @property Carbon|null $created_at
  * @property Carbon|null $updated_at
- * @property-read \App\Models\Profile|null $actor
- * @property-read \App\Models\Profile|null $profile
- * @property-read \App\Models\Profile|null $target
+ * @property-read Profile|null $actor
+ * @property-read Profile|null $profile
+ * @property-read Profile|null $target
+ *
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Follower newModelQuery()
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Follower newQuery()
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Follower query()
@@ -30,6 +31,7 @@ use Illuminate\Support\Carbon;
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Follower whereProfileId($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Follower whereShowReblogs($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Follower whereUpdatedAt($value)
+ *
  * @mixin \Eloquent
  */
 class Follower extends Model

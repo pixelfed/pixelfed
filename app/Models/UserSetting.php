@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Carbon;
 
 /**
  * @property int $id
@@ -25,8 +26,8 @@ use Illuminate\Database\Eloquent\Model;
  * @property int $send_email_on_share
  * @property int $send_email_on_like
  * @property int $send_email_on_mention
- * @property \Illuminate\Support\Carbon|null $created_at
- * @property \Illuminate\Support\Carbon|null $updated_at
+ * @property Carbon|null $created_at
+ * @property Carbon|null $updated_at
  * @property int $show_profile_followers
  * @property int $show_profile_follower_count
  * @property int $show_profile_following
@@ -35,6 +36,7 @@ use Illuminate\Database\Eloquent\Model;
  * @property array<array-key, mixed>|null $other
  * @property int $show_atom
  * @property string $can_feature
+ *
  * @method static \Illuminate\Database\Eloquent\Builder<static>|UserSetting newModelQuery()
  * @method static \Illuminate\Database\Eloquent\Builder<static>|UserSetting newQuery()
  * @method static \Illuminate\Database\Eloquent\Builder<static>|UserSetting query()
@@ -68,6 +70,7 @@ use Illuminate\Database\Eloquent\Model;
  * @method static \Illuminate\Database\Eloquent\Builder<static>|UserSetting whereUpdatedAt($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|UserSetting whereUserId($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|UserSetting whereVideoAutoplay($value)
+ *
  * @mixin \Eloquent
  */
 class UserSetting extends Model

@@ -2,7 +2,9 @@
 
 namespace App\Models;
 
+use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Carbon;
 
 /**
  * @property int $id
@@ -12,11 +14,12 @@ use Illuminate\Database\Eloquent\Model;
  * @property string $scope
  * @property int $bcc
  * @property int $active
- * @property \Illuminate\Support\Carbon|null $created_at
- * @property \Illuminate\Support\Carbon|null $updated_at
- * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Models\Profile> $members
+ * @property Carbon|null $created_at
+ * @property Carbon|null $updated_at
+ * @property-read Collection<int, Profile> $members
  * @property-read int|null $members_count
- * @property-read \App\Models\Profile|null $owner
+ * @property-read Profile|null $owner
+ *
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Circle newModelQuery()
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Circle newQuery()
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Circle query()
@@ -29,6 +32,7 @@ use Illuminate\Database\Eloquent\Model;
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Circle whereProfileId($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Circle whereScope($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Circle whereUpdatedAt($value)
+ *
  * @mixin \Eloquent
  */
 class Circle extends Model

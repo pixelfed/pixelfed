@@ -3,15 +3,17 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Carbon;
 
 /**
  * @property int $id
  * @property int $status_id
  * @property int $profile_id
- * @property \Illuminate\Support\Carbon|null $created_at
- * @property \Illuminate\Support\Carbon|null $updated_at
- * @property-read \App\Models\Profile|null $profile
- * @property-read \App\Models\Status|null $status
+ * @property Carbon|null $created_at
+ * @property Carbon|null $updated_at
+ * @property-read Profile|null $profile
+ * @property-read Status|null $status
+ *
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Bookmark newModelQuery()
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Bookmark newQuery()
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Bookmark query()
@@ -20,6 +22,7 @@ use Illuminate\Database\Eloquent\Model;
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Bookmark whereProfileId($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Bookmark whereStatusId($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Bookmark whereUpdatedAt($value)
+ *
  * @mixin \Eloquent
  */
 class Bookmark extends Model

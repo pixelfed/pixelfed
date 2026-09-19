@@ -4,6 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Support\Carbon;
 
 /**
  * @property int $id
@@ -15,9 +16,10 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
  * @property int $personal_access_client
  * @property int $password_client
  * @property int $revoked
- * @property \Illuminate\Support\Carbon|null $created_at
- * @property \Illuminate\Support\Carbon|null $updated_at
- * @property-read \App\Models\User|null $user
+ * @property Carbon|null $created_at
+ * @property Carbon|null $updated_at
+ * @property-read User|null $user
+ *
  * @method static \Illuminate\Database\Eloquent\Builder<static>|OauthClient newModelQuery()
  * @method static \Illuminate\Database\Eloquent\Builder<static>|OauthClient newQuery()
  * @method static \Illuminate\Database\Eloquent\Builder<static>|OauthClient query()
@@ -32,6 +34,7 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
  * @method static \Illuminate\Database\Eloquent\Builder<static>|OauthClient whereSecret($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|OauthClient whereUpdatedAt($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|OauthClient whereUserId($value)
+ *
  * @mixin \Eloquent
  */
 class OauthClient extends Model

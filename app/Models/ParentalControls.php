@@ -20,8 +20,9 @@ use Illuminate\Support\Carbon;
  * @property Carbon|null $deleted_at
  * @property Carbon|null $created_at
  * @property Carbon|null $updated_at
- * @property-read \App\Models\User|null $child
- * @property-read \App\Models\User|null $parent
+ * @property-read User|null $child
+ * @property-read User|null $parent
+ *
  * @method static \Illuminate\Database\Eloquent\Builder<static>|ParentalControls newModelQuery()
  * @method static \Illuminate\Database\Eloquent\Builder<static>|ParentalControls newQuery()
  * @method static \Illuminate\Database\Eloquent\Builder<static>|ParentalControls onlyTrashed()
@@ -39,6 +40,7 @@ use Illuminate\Support\Carbon;
  * @method static \Illuminate\Database\Eloquent\Builder<static>|ParentalControls whereVerifyCode($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|ParentalControls withTrashed(bool $withTrashed = true)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|ParentalControls withoutTrashed()
+ *
  * @mixin \Eloquent
  */
 class ParentalControls extends Model

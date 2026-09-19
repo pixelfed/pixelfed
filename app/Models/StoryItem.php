@@ -3,15 +3,16 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\Storage;
 use Pixelfed\Snowflake\HasSnowflakePrimary;
 
 /**
- * @property-read \App\Models\Story|null $story
+ * @property-read Story|null $story
+ *
  * @method static \Illuminate\Database\Eloquent\Builder<static>|StoryItem newModelQuery()
  * @method static \Illuminate\Database\Eloquent\Builder<static>|StoryItem newQuery()
  * @method static \Illuminate\Database\Eloquent\Builder<static>|StoryItem query()
+ *
  * @mixin \Eloquent
  */
 class StoryItem extends Model

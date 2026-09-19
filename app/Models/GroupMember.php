@@ -4,6 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Carbon;
 
 /**
  * @property int $id
@@ -15,9 +16,10 @@ use Illuminate\Database\Eloquent\Model;
  * @property int $join_request
  * @property string|null $approved_at
  * @property string|null $rejected_at
- * @property \Illuminate\Support\Carbon|null $created_at
- * @property \Illuminate\Support\Carbon|null $updated_at
- * @property-read \App\Models\Group|null $group
+ * @property Carbon|null $created_at
+ * @property Carbon|null $updated_at
+ * @property-read Group|null $group
+ *
  * @method static \Illuminate\Database\Eloquent\Builder<static>|GroupMember newModelQuery()
  * @method static \Illuminate\Database\Eloquent\Builder<static>|GroupMember newQuery()
  * @method static \Illuminate\Database\Eloquent\Builder<static>|GroupMember query()
@@ -32,6 +34,7 @@ use Illuminate\Database\Eloquent\Model;
  * @method static \Illuminate\Database\Eloquent\Builder<static>|GroupMember whereRejectedAt($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|GroupMember whereRole($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|GroupMember whereUpdatedAt($value)
+ *
  * @mixin \Eloquent
  */
 class GroupMember extends Model

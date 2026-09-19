@@ -4,6 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Carbon;
 
 /**
  * @property int $id
@@ -17,8 +18,9 @@ use Illuminate\Database\Eloquent\Model;
  * @property int $is_noautolink
  * @property int $is_nodms
  * @property int $is_notrending
- * @property \Illuminate\Support\Carbon|null $created_at
- * @property \Illuminate\Support\Carbon|null $updated_at
+ * @property Carbon|null $created_at
+ * @property Carbon|null $updated_at
+ *
  * @method static \Illuminate\Database\Eloquent\Builder<static>|ModeratedProfile newModelQuery()
  * @method static \Illuminate\Database\Eloquent\Builder<static>|ModeratedProfile newQuery()
  * @method static \Illuminate\Database\Eloquent\Builder<static>|ModeratedProfile query()
@@ -35,6 +37,7 @@ use Illuminate\Database\Eloquent\Model;
  * @method static \Illuminate\Database\Eloquent\Builder<static>|ModeratedProfile whereProfileId($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|ModeratedProfile whereProfileUrl($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|ModeratedProfile whereUpdatedAt($value)
+ *
  * @mixin \Eloquent
  */
 class ModeratedProfile extends Model

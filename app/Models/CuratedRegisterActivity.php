@@ -4,6 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Carbon;
 
 /**
  * @property int $id
@@ -20,11 +21,12 @@ use Illuminate\Database\Eloquent\Model;
  * @property int $from_user
  * @property int $admin_only_view
  * @property int $action_required
- * @property \Illuminate\Support\Carbon|null $admin_notified_at
- * @property \Illuminate\Support\Carbon|null $action_taken_at
- * @property \Illuminate\Support\Carbon|null $created_at
- * @property \Illuminate\Support\Carbon|null $updated_at
- * @property-read \App\Models\CuratedRegister|null $application
+ * @property Carbon|null $admin_notified_at
+ * @property Carbon|null $action_taken_at
+ * @property Carbon|null $created_at
+ * @property Carbon|null $updated_at
+ * @property-read CuratedRegister|null $application
+ *
  * @method static \Illuminate\Database\Eloquent\Builder<static>|CuratedRegisterActivity newModelQuery()
  * @method static \Illuminate\Database\Eloquent\Builder<static>|CuratedRegisterActivity newQuery()
  * @method static \Illuminate\Database\Eloquent\Builder<static>|CuratedRegisterActivity query()
@@ -46,6 +48,7 @@ use Illuminate\Database\Eloquent\Model;
  * @method static \Illuminate\Database\Eloquent\Builder<static>|CuratedRegisterActivity whereTitle($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|CuratedRegisterActivity whereType($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|CuratedRegisterActivity whereUpdatedAt($value)
+ *
  * @mixin \Eloquent
  */
 class CuratedRegisterActivity extends Model

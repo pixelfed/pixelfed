@@ -58,34 +58,35 @@ use Illuminate\Support\Facades\Storage;
  * @property int|null $moved_to_profile_id
  * @property int $indexable
  * @property string|null $followers_url
- * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Models\ProfileAlias> $aliases
+ * @property-read \Illuminate\Database\Eloquent\Collection<int, ProfileAlias> $aliases
  * @property-read int|null $aliases_count
- * @property-read \App\Models\Avatar $avatar
- * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Models\Status> $bookmarks
+ * @property-read Avatar $avatar
+ * @property-read \Illuminate\Database\Eloquent\Collection<int, Status> $bookmarks
  * @property-read int|null $bookmarks_count
- * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Models\Circle> $circles
+ * @property-read \Illuminate\Database\Eloquent\Collection<int, Circle> $circles
  * @property-read int|null $circles_count
- * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Models\Collection> $collections
+ * @property-read \Illuminate\Database\Eloquent\Collection<int, Collection> $collections
  * @property-read int|null $collections_count
  * @property-read \Illuminate\Database\Eloquent\Collection<int, Profile> $followers
  * @property-read \Illuminate\Database\Eloquent\Collection<int, Profile> $following
- * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Models\HashtagFollow> $hashtagFollowing
+ * @property-read \Illuminate\Database\Eloquent\Collection<int, HashtagFollow> $hashtagFollowing
  * @property-read int|null $hashtag_following_count
- * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Models\Hashtag> $hashtags
+ * @property-read \Illuminate\Database\Eloquent\Collection<int, Hashtag> $hashtags
  * @property-read int|null $hashtags_count
- * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Models\Like> $likes
+ * @property-read \Illuminate\Database\Eloquent\Collection<int, Like> $likes
  * @property-read int|null $likes_count
- * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Models\Media> $media
+ * @property-read \Illuminate\Database\Eloquent\Collection<int, Media> $media
  * @property-read int|null $media_count
- * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Models\Report> $reported
+ * @property-read \Illuminate\Database\Eloquent\Collection<int, Report> $reported
  * @property-read int|null $reported_count
- * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Models\Report> $reports
+ * @property-read \Illuminate\Database\Eloquent\Collection<int, Report> $reports
  * @property-read int|null $reports_count
- * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Models\Status> $statuses
+ * @property-read \Illuminate\Database\Eloquent\Collection<int, Status> $statuses
  * @property-read int|null $statuses_count
- * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Models\Story> $stories
+ * @property-read \Illuminate\Database\Eloquent\Collection<int, Story> $stories
  * @property-read int|null $stories_count
- * @property-read \App\Models\User|null $user
+ * @property-read User|null $user
+ *
  * @method static \Database\Factories\ProfileFactory factory($count = null, $state = [])
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Profile newModelQuery()
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Profile newQuery()
@@ -134,6 +135,7 @@ use Illuminate\Support\Facades\Storage;
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Profile whereWebsite($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Profile withTrashed(bool $withTrashed = true)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Profile withoutTrashed()
+ *
  * @mixin \Eloquent
  */
 class Profile extends Model

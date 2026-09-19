@@ -2,9 +2,11 @@
 
 namespace App\Models;
 
+use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasManyThrough;
+use Illuminate\Support\Carbon;
 
 /**
  * @property int $id
@@ -12,13 +14,14 @@ use Illuminate\Database\Eloquent\Relations\HasManyThrough;
  * @property int $hashtag_id
  * @property int|null $profile_id
  * @property string|null $status_visibility
- * @property \Illuminate\Support\Carbon|null $created_at
- * @property \Illuminate\Support\Carbon|null $updated_at
- * @property-read \App\Models\Hashtag|null $hashtag
- * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Models\Media> $media
+ * @property Carbon|null $created_at
+ * @property Carbon|null $updated_at
+ * @property-read Hashtag|null $hashtag
+ * @property-read Collection<int, Media> $media
  * @property-read int|null $media_count
- * @property-read \App\Models\Profile|null $profile
- * @property-read \App\Models\Status|null $status
+ * @property-read Profile|null $profile
+ * @property-read Status|null $status
+ *
  * @method static \Illuminate\Database\Eloquent\Builder<static>|StatusHashtag newModelQuery()
  * @method static \Illuminate\Database\Eloquent\Builder<static>|StatusHashtag newQuery()
  * @method static \Illuminate\Database\Eloquent\Builder<static>|StatusHashtag query()
@@ -29,6 +32,7 @@ use Illuminate\Database\Eloquent\Relations\HasManyThrough;
  * @method static \Illuminate\Database\Eloquent\Builder<static>|StatusHashtag whereStatusId($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|StatusHashtag whereStatusVisibility($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|StatusHashtag whereUpdatedAt($value)
+ *
  * @mixin \Eloquent
  */
 class StatusHashtag extends Model

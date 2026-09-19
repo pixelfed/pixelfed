@@ -5,6 +5,7 @@ namespace App\Models;
 use App\HasSnowflakePrimary;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Support\Carbon;
 
 /**
  * @property int $id
@@ -14,11 +15,12 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
  * @property string|null $collection_name
  * @property string|null $request_url
  * @property string $state
- * @property \Illuminate\Support\Carbon|null $revoked_at
- * @property \Illuminate\Support\Carbon|null $created_at
- * @property \Illuminate\Support\Carbon|null $updated_at
- * @property-read \App\Models\Profile|null $actor
- * @property-read \App\Models\Profile|null $profile
+ * @property Carbon|null $revoked_at
+ * @property Carbon|null $created_at
+ * @property Carbon|null $updated_at
+ * @property-read Profile|null $actor
+ * @property-read Profile|null $profile
+ *
  * @method static \Illuminate\Database\Eloquent\Builder<static>|FeatureAuthorization approved()
  * @method static \Illuminate\Database\Eloquent\Builder<static>|FeatureAuthorization newModelQuery()
  * @method static \Illuminate\Database\Eloquent\Builder<static>|FeatureAuthorization newQuery()
@@ -34,6 +36,7 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
  * @method static \Illuminate\Database\Eloquent\Builder<static>|FeatureAuthorization whereRevokedAt($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|FeatureAuthorization whereState($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|FeatureAuthorization whereUpdatedAt($value)
+ *
  * @mixin \Eloquent
  */
 class FeatureAuthorization extends Model

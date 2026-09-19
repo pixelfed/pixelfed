@@ -5,6 +5,7 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\HasOne;
+use Illuminate\Support\Carbon;
 
 /**
  * @property int $id
@@ -22,13 +23,14 @@ use Illuminate\Database\Eloquent\Relations\HasOne;
  * @property int|null $creation_day
  * @property int|null $creation_id
  * @property int|null $status_id
- * @property \Illuminate\Support\Carbon|null $creation_date
+ * @property Carbon|null $creation_date
  * @property array<array-key, mixed>|null $metadata
  * @property int $skip_missing_media
  * @property int $uploaded_to_s3
- * @property \Illuminate\Support\Carbon|null $created_at
- * @property \Illuminate\Support\Carbon|null $updated_at
- * @property-read \App\Models\Status|null $status
+ * @property Carbon|null $created_at
+ * @property Carbon|null $updated_at
+ * @property-read Status|null $status
+ *
  * @method static \Illuminate\Database\Eloquent\Builder<static>|ImportPost newModelQuery()
  * @method static \Illuminate\Database\Eloquent\Builder<static>|ImportPost newQuery()
  * @method static \Illuminate\Database\Eloquent\Builder<static>|ImportPost query()
@@ -53,6 +55,7 @@ use Illuminate\Database\Eloquent\Relations\HasOne;
  * @method static \Illuminate\Database\Eloquent\Builder<static>|ImportPost whereUpdatedAt($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|ImportPost whereUploadedToS3($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|ImportPost whereUserId($value)
+ *
  * @mixin \Eloquent
  */
 class ImportPost extends Model

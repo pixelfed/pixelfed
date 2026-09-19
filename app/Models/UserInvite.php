@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Carbon;
 
 /**
  * @property int $id
@@ -14,9 +15,10 @@ use Illuminate\Database\Eloquent\Model;
  * @property string $token
  * @property string|null $valid_until
  * @property string|null $used_at
- * @property \Illuminate\Support\Carbon|null $created_at
- * @property \Illuminate\Support\Carbon|null $updated_at
- * @property-read \App\Models\Profile|null $sender
+ * @property Carbon|null $created_at
+ * @property Carbon|null $updated_at
+ * @property-read Profile|null $sender
+ *
  * @method static \Illuminate\Database\Eloquent\Builder<static>|UserInvite newModelQuery()
  * @method static \Illuminate\Database\Eloquent\Builder<static>|UserInvite newQuery()
  * @method static \Illuminate\Database\Eloquent\Builder<static>|UserInvite query()
@@ -31,6 +33,7 @@ use Illuminate\Database\Eloquent\Model;
  * @method static \Illuminate\Database\Eloquent\Builder<static>|UserInvite whereUsedAt($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|UserInvite whereUserId($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|UserInvite whereValidUntil($value)
+ *
  * @mixin \Eloquent
  */
 class UserInvite extends Model

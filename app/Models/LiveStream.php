@@ -4,6 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\Storage;
 
 /**
@@ -20,8 +21,9 @@ use Illuminate\Support\Facades\Storage;
  * @property string|null $mod_ids
  * @property int|null $discoverable
  * @property string|null $live_at
- * @property \Illuminate\Support\Carbon|null $created_at
- * @property \Illuminate\Support\Carbon|null $updated_at
+ * @property Carbon|null $created_at
+ * @property Carbon|null $updated_at
+ *
  * @method static \Illuminate\Database\Eloquent\Builder<static>|LiveStream newModelQuery()
  * @method static \Illuminate\Database\Eloquent\Builder<static>|LiveStream newQuery()
  * @method static \Illuminate\Database\Eloquent\Builder<static>|LiveStream query()
@@ -40,6 +42,7 @@ use Illuminate\Support\Facades\Storage;
  * @method static \Illuminate\Database\Eloquent\Builder<static>|LiveStream whereThumbnailPath($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|LiveStream whereUpdatedAt($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|LiveStream whereVisibility($value)
+ *
  * @mixin \Eloquent
  */
 class LiveStream extends Model

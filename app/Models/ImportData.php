@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Carbon;
 
 /**
  * @property int $id
@@ -14,8 +15,9 @@ use Illuminate\Database\Eloquent\Model;
  * @property string|null $original_name
  * @property int|null $import_accepted
  * @property string|null $completed_at
- * @property \Illuminate\Support\Carbon|null $created_at
- * @property \Illuminate\Support\Carbon|null $updated_at
+ * @property Carbon|null $created_at
+ * @property Carbon|null $updated_at
+ *
  * @method static \Illuminate\Database\Eloquent\Builder<static>|ImportData newModelQuery()
  * @method static \Illuminate\Database\Eloquent\Builder<static>|ImportData newQuery()
  * @method static \Illuminate\Database\Eloquent\Builder<static>|ImportData query()
@@ -30,6 +32,7 @@ use Illuminate\Database\Eloquent\Model;
  * @method static \Illuminate\Database\Eloquent\Builder<static>|ImportData whereService($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|ImportData whereStage($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|ImportData whereUpdatedAt($value)
+ *
  * @mixin \Eloquent
  */
 class ImportData extends Model

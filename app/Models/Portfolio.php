@@ -5,6 +5,7 @@ namespace App\Models;
 use App\Services\AccountService;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Carbon;
 
 /**
  * @property int $id
@@ -22,8 +23,9 @@ use Illuminate\Database\Eloquent\Model;
  * @property string|null $profile_layout
  * @property string|null $profile_container
  * @property array<array-key, mixed>|null $metadata
- * @property \Illuminate\Support\Carbon|null $created_at
- * @property \Illuminate\Support\Carbon|null $updated_at
+ * @property Carbon|null $created_at
+ * @property Carbon|null $updated_at
+ *
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Portfolio newModelQuery()
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Portfolio newQuery()
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Portfolio query()
@@ -44,6 +46,7 @@ use Illuminate\Database\Eloquent\Model;
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Portfolio whereShowTimestamp($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Portfolio whereUpdatedAt($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Portfolio whereUserId($value)
+ *
  * @mixin \Eloquent
  */
 class Portfolio extends Model

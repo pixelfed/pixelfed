@@ -6,6 +6,7 @@ use App\Util\Media\License;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\SoftDeletes;
+use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
 
@@ -35,9 +36,9 @@ use Illuminate\Support\Str;
  * @property string|null $license
  * @property string|null $processed_at
  * @property string|null $hls_transcoded_at
- * @property \Illuminate\Support\Carbon|null $created_at
- * @property \Illuminate\Support\Carbon|null $updated_at
- * @property \Illuminate\Support\Carbon|null $deleted_at
+ * @property Carbon|null $created_at
+ * @property Carbon|null $updated_at
+ * @property Carbon|null $deleted_at
  * @property string|null $key
  * @property string|null $metadata
  * @property int $version
@@ -47,8 +48,9 @@ use Illuminate\Support\Str;
  * @property int|null $height
  * @property bool|null $skip_optimize
  * @property string|null $replicated_at
- * @property-read \App\Models\Profile|null $profile
- * @property-read \App\Models\Status|null $status
+ * @property-read Profile|null $profile
+ * @property-read Status|null $status
+ *
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Media newModelQuery()
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Media newQuery()
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Media onlyTrashed()
@@ -92,6 +94,7 @@ use Illuminate\Support\Str;
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Media whereWidth($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Media withTrashed(bool $withTrashed = true)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Media withoutTrashed()
+ *
  * @mixin \Eloquent
  */
 class Media extends Model

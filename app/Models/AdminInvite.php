@@ -4,6 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Carbon;
 use Illuminate\Support\Str;
 
 /**
@@ -15,11 +16,12 @@ use Illuminate\Support\Str;
  * @property int|null $max_uses
  * @property int|null $uses
  * @property int $skip_email_verification
- * @property \Illuminate\Support\Carbon|null $expires_at
+ * @property Carbon|null $expires_at
  * @property array<array-key, mixed>|null $used_by
  * @property int|null $admin_user_id
- * @property \Illuminate\Support\Carbon|null $created_at
- * @property \Illuminate\Support\Carbon|null $updated_at
+ * @property Carbon|null $created_at
+ * @property Carbon|null $updated_at
+ *
  * @method static Builder<static>|AdminInvite newModelQuery()
  * @method static Builder<static>|AdminInvite newQuery()
  * @method static Builder<static>|AdminInvite query()
@@ -36,6 +38,7 @@ use Illuminate\Support\Str;
  * @method static Builder<static>|AdminInvite whereUpdatedAt($value)
  * @method static Builder<static>|AdminInvite whereUsedBy($value)
  * @method static Builder<static>|AdminInvite whereUses($value)
+ *
  * @mixin \Eloquent
  */
 class AdminInvite extends Model

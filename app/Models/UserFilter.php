@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Carbon;
 
 /**
  * @property int $id
@@ -10,10 +11,11 @@ use Illuminate\Database\Eloquent\Model;
  * @property int $filterable_id
  * @property string $filterable_type
  * @property string $filter_type
- * @property \Illuminate\Support\Carbon|null $created_at
- * @property \Illuminate\Support\Carbon|null $updated_at
- * @property-read \App\Models\Instance|null $instance
- * @property-read \App\Models\Profile|null $user
+ * @property Carbon|null $created_at
+ * @property Carbon|null $updated_at
+ * @property-read Instance|null $instance
+ * @property-read Profile|null $user
+ *
  * @method static \Illuminate\Database\Eloquent\Builder<static>|UserFilter newModelQuery()
  * @method static \Illuminate\Database\Eloquent\Builder<static>|UserFilter newQuery()
  * @method static \Illuminate\Database\Eloquent\Builder<static>|UserFilter query()
@@ -24,6 +26,7 @@ use Illuminate\Database\Eloquent\Model;
  * @method static \Illuminate\Database\Eloquent\Builder<static>|UserFilter whereId($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|UserFilter whereUpdatedAt($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|UserFilter whereUserId($value)
+ *
  * @mixin \Eloquent
  */
 class UserFilter extends Model

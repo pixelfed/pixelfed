@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Carbon;
 
 /**
  * @property int $id
@@ -10,9 +11,10 @@ use Illuminate\Database\Eloquent\Model;
  * @property string|null $email
  * @property string $user_token
  * @property string $random_token
- * @property \Illuminate\Support\Carbon|null $created_at
- * @property \Illuminate\Support\Carbon|null $updated_at
- * @property-read \App\Models\User|null $user
+ * @property Carbon|null $created_at
+ * @property Carbon|null $updated_at
+ * @property-read User|null $user
+ *
  * @method static \Illuminate\Database\Eloquent\Builder<static>|EmailVerification newModelQuery()
  * @method static \Illuminate\Database\Eloquent\Builder<static>|EmailVerification newQuery()
  * @method static \Illuminate\Database\Eloquent\Builder<static>|EmailVerification query()
@@ -23,6 +25,7 @@ use Illuminate\Database\Eloquent\Model;
  * @method static \Illuminate\Database\Eloquent\Builder<static>|EmailVerification whereUpdatedAt($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|EmailVerification whereUserId($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|EmailVerification whereUserToken($value)
+ *
  * @mixin \Eloquent
  */
 class EmailVerification extends Model

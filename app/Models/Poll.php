@@ -3,8 +3,10 @@
 namespace App\Models;
 
 use App\HasSnowflakePrimary;
+use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Carbon;
 
 /**
  * @property int $id
@@ -18,10 +20,11 @@ use Illuminate\Database\Eloquent\Model;
  * @property int $hide_totals
  * @property-read int|null $votes_count
  * @property string|null $last_fetched_at
- * @property \Illuminate\Support\Carbon|null $expires_at
- * @property \Illuminate\Support\Carbon|null $created_at
- * @property \Illuminate\Support\Carbon|null $updated_at
- * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Models\PollVote> $votes
+ * @property Carbon|null $expires_at
+ * @property Carbon|null $created_at
+ * @property Carbon|null $updated_at
+ * @property-read Collection<int, PollVote> $votes
+ *
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Poll newModelQuery()
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Poll newQuery()
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Poll query()
@@ -39,6 +42,7 @@ use Illuminate\Database\Eloquent\Model;
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Poll whereStoryId($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Poll whereUpdatedAt($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Poll whereVotesCount($value)
+ *
  * @mixin \Eloquent
  */
 class Poll extends Model

@@ -4,6 +4,7 @@ namespace App\Models;
 
 use App\Services\UserAgentService;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Carbon;
 
 /**
  * @property int $id
@@ -14,9 +15,10 @@ use Illuminate\Database\Eloquent\Model;
  * @property string|null $name
  * @property int|null $trusted
  * @property string|null $last_active_at
- * @property \Illuminate\Support\Carbon|null $created_at
- * @property \Illuminate\Support\Carbon|null $updated_at
- * @property-read \App\Models\User|null $user
+ * @property Carbon|null $created_at
+ * @property Carbon|null $updated_at
+ * @property-read User|null $user
+ *
  * @method static \Illuminate\Database\Eloquent\Builder<static>|UserDevice newModelQuery()
  * @method static \Illuminate\Database\Eloquent\Builder<static>|UserDevice newQuery()
  * @method static \Illuminate\Database\Eloquent\Builder<static>|UserDevice query()
@@ -30,6 +32,7 @@ use Illuminate\Database\Eloquent\Model;
  * @method static \Illuminate\Database\Eloquent\Builder<static>|UserDevice whereUpdatedAt($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|UserDevice whereUserAgent($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|UserDevice whereUserId($value)
+ *
  * @mixin \Eloquent
  */
 class UserDevice extends Model

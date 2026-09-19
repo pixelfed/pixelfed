@@ -56,26 +56,27 @@ use Illuminate\Support\Str;
  * @property int|null $quote_policy
  * @property-read Collection<int, Status> $comments
  * @property-read int|null $comments_count
- * @property-read \App\Models\Conversation|null $conversation
- * @property-read \App\Models\DirectMessage|null $directMessage
- * @property-read Collection<int, \App\Models\StatusEdit> $edits
+ * @property-read Conversation|null $conversation
+ * @property-read DirectMessage|null $directMessage
+ * @property-read Collection<int, StatusEdit> $edits
  * @property-read int|null $edits_count
- * @property-read Collection<int, \App\Models\Hashtag> $hashtags
+ * @property-read Collection<int, Hashtag> $hashtags
  * @property-read int|null $hashtags_count
- * @property-read Collection<int, \App\Models\Profile> $likedBy
+ * @property-read Collection<int, Profile> $likedBy
  * @property-read int|null $liked_by_count
- * @property-read Collection<int, \App\Models\Like> $likes
- * @property-read Collection<int, \App\Models\Media> $media
+ * @property-read Collection<int, Like> $likes
+ * @property-read Collection<int, Media> $media
  * @property-read int|null $media_count
- * @property-read Collection<int, \App\Models\Profile> $mentions
+ * @property-read Collection<int, Profile> $mentions
  * @property-read int|null $mentions_count
- * @property-read \App\Models\Place|null $place
- * @property-read \App\Models\Poll|null $poll
- * @property-read \App\Models\Profile|null $profile
- * @property-read Collection<int, \App\Models\Profile> $sharedBy
+ * @property-read Place|null $place
+ * @property-read Poll|null $poll
+ * @property-read Profile|null $profile
+ * @property-read Collection<int, Profile> $sharedBy
  * @property-read int|null $shared_by_count
  * @property-read Collection<int, Status> $shares
  * @property-read int|null $shares_count
+ *
  * @method static \Database\Factories\StatusFactory factory($count = null, $state = [])
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Status newModelQuery()
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Status newQuery()
@@ -119,6 +120,7 @@ use Illuminate\Support\Str;
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Status whereVisibility($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Status withTrashed(bool $withTrashed = true)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Status withoutTrashed()
+ *
  * @mixin \Eloquent
  */
 class Status extends Model

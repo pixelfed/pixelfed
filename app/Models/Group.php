@@ -4,6 +4,7 @@ namespace App\Models;
 
 use App\HasSnowflakePrimary;
 use App\Services\GroupService;
+use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
@@ -35,9 +36,10 @@ use Illuminate\Support\Carbon;
  * @property int $verified
  * @property string|null $last_active_at
  * @property Carbon|null $deleted_at
- * @property-read \App\Models\Profile|null $admin
- * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Models\GroupMember> $members
+ * @property-read Profile|null $admin
+ * @property-read Collection<int, GroupMember> $members
  * @property-read int|null $members_count
+ *
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Group newModelQuery()
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Group newQuery()
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Group onlyTrashed()
@@ -69,6 +71,7 @@ use Illuminate\Support\Carbon;
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Group whereVerified($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Group withTrashed(bool $withTrashed = true)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Group withoutTrashed()
+ *
  * @mixin \Eloquent
  */
 class Group extends Model

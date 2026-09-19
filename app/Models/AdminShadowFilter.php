@@ -6,6 +6,7 @@ use App\Services\AccountService;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Support\Carbon;
 
 /**
  * @property int $id
@@ -30,9 +31,10 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
  * @property int $hide_from_search_autocomplete
  * @property int $hide_from_search
  * @property int $requires_login
- * @property \Illuminate\Support\Carbon|null $created_at
- * @property \Illuminate\Support\Carbon|null $updated_at
- * @property-read \App\Models\Profile|null $profile
+ * @property Carbon|null $created_at
+ * @property Carbon|null $updated_at
+ * @property-read Profile|null $profile
+ *
  * @method static \Illuminate\Database\Eloquent\Builder<static>|AdminShadowFilter newModelQuery()
  * @method static \Illuminate\Database\Eloquent\Builder<static>|AdminShadowFilter newQuery()
  * @method static \Illuminate\Database\Eloquent\Builder<static>|AdminShadowFilter query()
@@ -60,6 +62,7 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
  * @method static \Illuminate\Database\Eloquent\Builder<static>|AdminShadowFilter whereRequiresLogin($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|AdminShadowFilter whereRuleset($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|AdminShadowFilter whereUpdatedAt($value)
+ *
  * @mixin \Eloquent
  */
 class AdminShadowFilter extends Model

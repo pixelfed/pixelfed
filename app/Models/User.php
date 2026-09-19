@@ -4,14 +4,20 @@ namespace App\Models;
 
 use App\Services\AvatarService;
 use App\Util\RateLimit\User as UserRateLimit;
+use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Foundation\Auth\User as Authenticatable;
+use Illuminate\Notifications\DatabaseNotification;
+use Illuminate\Notifications\DatabaseNotificationCollection;
 use Illuminate\Notifications\Notifiable;
+use Illuminate\Support\Carbon;
+use Laravel\Passport\Client;
 use Laravel\Passport\Contracts\OAuthenticatable;
 use Laravel\Passport\HasApiTokens;
 use NotificationChannels\WebPush\HasPushSubscriptions;
+use NotificationChannels\WebPush\PushSubscription;
 
 /**
  * @property int $id
@@ -24,15 +30,15 @@ use NotificationChannels\WebPush\HasPushSubscriptions;
  * @property string $password
  * @property string|null $remember_token
  * @property bool $is_admin
- * @property \Illuminate\Support\Carbon|null $email_verified_at
- * @property \Illuminate\Support\Carbon|null $created_at
- * @property \Illuminate\Support\Carbon|null $updated_at
- * @property \Illuminate\Support\Carbon|null $deleted_at
- * @property \Illuminate\Support\Carbon|null $last_active_at
+ * @property Carbon|null $email_verified_at
+ * @property Carbon|null $created_at
+ * @property Carbon|null $updated_at
+ * @property Carbon|null $deleted_at
+ * @property Carbon|null $last_active_at
  * @property int $2fa_enabled
  * @property string|null $2fa_secret
  * @property string|null $2fa_backup_codes
- * @property \Illuminate\Support\Carbon|null $2fa_setup_at
+ * @property Carbon|null $2fa_setup_at
  * @property string|null $delete_after
  * @property int $has_interstitial
  * @property string|null $guid
@@ -45,15 +51,15 @@ use NotificationChannels\WebPush\HasPushSubscriptions;
  * @property int|null $role_id
  * @property string|null $expo_token
  * @property int $storage_used
- * @property \Illuminate\Support\Carbon|null $storage_used_updated_at
+ * @property Carbon|null $storage_used_updated_at
  * @property int $notify_enabled
- * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Models\AccountLog> $accountLog
+ * @property-read Collection<int, AccountLog> $accountLog
  * @property-read int|null $account_log_count
- * @property-read \Illuminate\Database\Eloquent\Collection<int, \Laravel\Passport\Client> $clients
+ * @property-read Collection<int, Client> $clients
  * @property-read int|null $clients_count
- * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Models\UserDevice> $devices
+ * @property-read Collection<int, UserDevice> $devices
  * @property-read int|null $devices_count
- * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Models\UserFilter> $filters
+ * @property-read Collection<int, UserFilter> $filters
  * @property-read int|null $filters_count
  * @property-read mixed $max_collections_per_day
  * @property-read mixed $max_collections_per_hour
@@ -78,20 +84,21 @@ use NotificationChannels\WebPush\HasPushSubscriptions;
  * @property-read mixed $max_stories_per_hour
  * @property-read mixed $max_story_delete_per_day
  * @property-read mixed $max_user_bans_per_day
- * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Models\AccountInterstitial> $interstitials
+ * @property-read Collection<int, AccountInterstitial> $interstitials
  * @property-read int|null $interstitials_count
- * @property-read \Illuminate\Notifications\DatabaseNotificationCollection<int, \Illuminate\Notifications\DatabaseNotification> $notifications
+ * @property-read DatabaseNotificationCollection<int, DatabaseNotification> $notifications
  * @property-read int|null $notifications_count
- * @property-read \Illuminate\Database\Eloquent\Collection<int, \Laravel\Passport\Client> $oauthApps
+ * @property-read Collection<int, Client> $oauthApps
  * @property-read int|null $oauth_apps_count
- * @property-read \App\Models\Profile|null $profile
- * @property-read \Illuminate\Database\Eloquent\Collection<int, \NotificationChannels\WebPush\PushSubscription> $pushSubscriptions
+ * @property-read Profile|null $profile
+ * @property-read Collection<int, PushSubscription> $pushSubscriptions
  * @property-read int|null $push_subscriptions_count
- * @property-read \App\Models\UserSetting|null $settings
- * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Models\Status> $statuses
+ * @property-read UserSetting|null $settings
+ * @property-read Collection<int, Status> $statuses
  * @property-read int|null $statuses_count
- * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Models\OAuthToken> $tokens
+ * @property-read Collection<int, OAuthToken> $tokens
  * @property-read int|null $tokens_count
+ *
  * @method static \Database\Factories\UserFactory factory($count = null, $state = [])
  * @method static \Illuminate\Database\Eloquent\Builder<static>|User newModelQuery()
  * @method static \Illuminate\Database\Eloquent\Builder<static>|User newQuery()
@@ -132,6 +139,7 @@ use NotificationChannels\WebPush\HasPushSubscriptions;
  * @method static \Illuminate\Database\Eloquent\Builder<static>|User whereUsername($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|User withTrashed(bool $withTrashed = true)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|User withoutTrashed()
+ *
  * @mixin \Eloquent
  */
 class User extends Authenticatable implements OAuthenticatable

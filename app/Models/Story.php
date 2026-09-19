@@ -4,6 +4,7 @@ namespace App\Models;
 
 use App\HasSnowflakePrimary;
 use App\Util\Lexer\Bearcap;
+use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Support\Carbon;
@@ -37,9 +38,10 @@ use Illuminate\Support\Facades\Storage;
  * @property string|null $object_id
  * @property string|null $object_uri
  * @property string|null $bearcap_token
- * @property-read \App\Models\Profile|null $profile
- * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Models\StoryView> $views
+ * @property-read Profile|null $profile
+ * @property-read Collection<int, StoryView> $views
  * @property-read int|null $views_count
+ *
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Story newModelQuery()
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Story newQuery()
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Story query()
@@ -70,6 +72,7 @@ use Illuminate\Support\Facades\Storage;
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Story whereType($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Story whereUpdatedAt($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Story whereViewCount($value)
+ *
  * @mixin \Eloquent
  */
 class Story extends Model
