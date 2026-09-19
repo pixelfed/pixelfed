@@ -8,6 +8,7 @@ use App\Http\Controllers\Api\ApiV2Controller;
 use App\Http\Controllers\Api\V1\Admin\DomainBlocksController;
 use App\Http\Controllers\Api\V1\DomainBlockController;
 use App\Http\Controllers\Api\V1\TagsController;
+use App\Http\Controllers\Api\v2026\Admin\ConfigCache as AdminConfigCacheController;
 use App\Http\Controllers\ApiController;
 use App\Http\Controllers\AppRegisterController;
 use App\Http\Controllers\CollectionController;
@@ -125,6 +126,17 @@ Route::prefix('api/v0/groups')->middleware($middleware)->group(function () {
     Route::post('{id}/settings', [GroupController::class, 'updateGroup']);
     Route::get('{id}/likes/{sid}', [GroupController::class, 'showStatusLikes']);
     Route::get('{id}', [GroupController::class, 'getGroup']);
+});
+
+Route::prefix('api')->group(function () use ($middleware) {
+    Route::prefix('v2026')->group(function () use ($middleware) {
+        Route::prefix('admin')->group(function () use ($middleware) {
+            Route::get('config', [AdminConfigCacheController::class, 'index'])->middleware($middleware);
+            Route::post('config', [AdminConfigCacheController::class, 'store'])->middleware($middleware);
+            Route::get('config/{key}', [AdminConfigCacheController::class, 'show'])->where('key', '.*')->middleware($middleware);
+            Route::post('config/{key}', [AdminConfigCacheController::class, 'update'])->where('key', '.*')->middleware($middleware);
+        });
+    });
 });
 
 Route::prefix('api')->group(function () use ($middleware) {
