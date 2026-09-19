@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\Api\v2026\Admin\ConfigCacheController;
 use App\Models\ConfigCache as ConfigCacheModel;
 use App\Models\User;
 use App\Services\ConfigCacheService;
@@ -410,7 +411,7 @@ test('POST bulk success returns ONLY the keys whose value actually changed (6.8)
     expect($changedKeys)->toBe([$secondKey]);
 });
 
-test('POST write skips a PROTECTED masked/empty value (no error, unchanged) (6.7)', function () {
+test('POST write skips a PROTECTED masked value (no error, unchanged) (6.7)', function () {
     apiAdmin(['admin:write']);
 
     // Editable protected key: env absent, seed a known value.
@@ -419,9 +420,12 @@ test('POST write skips a PROTECTED masked/empty value (no error, unchanged) (6.7
     ConfigCacheService::putRaw(API_PROTECTED_KEY, 'original-secret-value');
     apiForget(API_PROTECTED_KEY);
 
-    // Submit a masked placeholder (contains '*') → skipped, no error, no change.
+    // The exact masked placeholder the API renders for this secret. Submitting
+    // it back verbatim (untouched field) → skipped, no change.
+    $masked = ConfigCacheController::maskProtectedConfig('original-secret-value');
+
     $this->postJson('/api/v2026/admin/config/'.API_PROTECTED_KEY, [
-        'value' => 'or******ue',
+        'value' => $masked,
     ])
         ->assertOk()
         ->assertJsonPath('changed', []);
@@ -429,6 +433,46 @@ test('POST write skips a PROTECTED masked/empty value (no error, unchanged) (6.7
     // Stored value unchanged.
     $stored = ConfigCacheModel::where('k', API_PROTECTED_KEY)->value('v');
     expect(decrypt($stored))->toBe('original-secret-value');
+});
+
+test('POST write to a PROTECTED key accepts a real secret that contains asterisks (6.7b)', function () {
+    apiAdmin(['admin:write']);
+
+    apiSetProcessEnv(API_PROTECTED_VAR, null);
+    Config::set(API_PROTECTED_KEY, null);
+    ConfigCacheService::putRaw(API_PROTECTED_KEY, 'original-secret-value');
+    apiForget(API_PROTECTED_KEY);
+
+    // A genuine new secret that happens to contain '*' must NOT be mistaken for
+    // the masked placeholder — it is written.
+    $newSecret = 'p@ss*w0rd*with*stars';
+
+    $this->postJson('/api/v2026/admin/config/'.API_PROTECTED_KEY, [
+        'value' => $newSecret,
+    ])->assertOk();
+
+    $stored = ConfigCacheModel::where('k', API_PROTECTED_KEY)->value('v');
+    expect(decrypt($stored))->toBe($newSecret);
+});
+
+test('POST write with an empty value resets the key: the DB row is cleared (6.9)', function () {
+    apiAdmin(['admin:write']);
+
+    // Seed a stored override, then submit an empty value to reset it.
+    Config::set(API_ADMINONLY_KEY, '/* default css */');
+    ConfigCacheService::putRaw(API_ADMINONLY_KEY, '.override { color: red; }');
+    apiForget(API_ADMINONLY_KEY);
+
+    expect(ConfigCacheModel::where('k', API_ADMINONLY_KEY)->exists())->toBeTrue();
+
+    $this->postJson('/api/v2026/admin/config/'.API_ADMINONLY_KEY, [
+        'value' => '',
+    ])->assertOk();
+
+    // The override is cleared → the key reverts to its config default. (A read
+    // may re-memoize a row at the default value; the point is the override is gone.)
+    apiForget(API_ADMINONLY_KEY);
+    expect(ConfigCacheService::get(API_ADMINONLY_KEY))->toBe('/* default css */');
 });
 
 /*

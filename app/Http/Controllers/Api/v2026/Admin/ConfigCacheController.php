@@ -125,7 +125,7 @@ class ConfigCacheController extends Controller
     // writable pairs; the caller persists only when $errors is empty.
     protected function validateSubmitted(array $submitted, array &$errors): array
     {
-        $permitted = [];
+        $validated = [];
 
         foreach ($submitted as $key => $value) {
             $key = (string) $key;
@@ -144,7 +144,16 @@ class ConfigCacheController extends Controller
                 continue;
             }
 
-            if (ConfigCacheService::isProtected($key) && $this->isMaskedOrEmpty($value)) {
+            // Resubmitting the exact masked placeholder means "no change" — skip.
+            if (ConfigCacheService::isProtected($key) && $this->isMaskedPlaceholder($key, $value)) {
+                continue;
+            }
+
+            // An empty value is a reset request: it clears the stored row so the
+            // key falls back to its config/env default. Skip rule validation.
+            if ($value === null || $value === '') {
+                $validated[$key] = null;
+
                 continue;
             }
 
@@ -161,20 +170,28 @@ class ConfigCacheController extends Controller
                 }
             }
 
-            $permitted[$key] = $value;
+            $validated[$key] = $value;
         }
 
-        return $permitted;
+        return $validated;
     }
 
-    // Persist pairs; return only the keys whose effective value changed.
-    protected function saveToDB(array $permitted): array
+    // Persist pairs; return only the keys whose effective value changed. A null
+    // value is a reset — the stored row is cleared so the key reverts to its
+    // config/env default.
+    protected function saveToDB(array $validated): array
     {
         $changed = [];
 
-        foreach ($permitted as $key => $value) {
+        foreach ($validated as $key => $value) {
             $before = ConfigCacheService::get($key);
-            ConfigCacheService::put($key, $value);
+
+            if ($value === null) {
+                ConfigCacheService::forget($key);
+            } else {
+                ConfigCacheService::put($key, $value);
+            }
+
             $after = ConfigCacheService::get($key);
 
             if ($before !== $after) {
@@ -185,14 +202,19 @@ class ConfigCacheController extends Controller
         return $changed;
     }
 
-    // A masked (contains '*') or empty value is not a real new secret.
-    protected function isMaskedOrEmpty($value): bool
+    protected function isMaskedPlaceholder(string $key, $value): bool
     {
-        if ($value === null || $value === '') {
-            return true;
+        if (! is_string($value) || $value === '') {
+            return false;
         }
 
-        return str_contains((string) $value, '*');
+        $current = ConfigCacheService::get($key);
+
+        if ($current === null || $current === '') {
+            return false;
+        }
+
+        return $value === self::maskProtectedConfig($current);
     }
 
     // Metadata for a key; protected values are masked.
