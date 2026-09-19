@@ -110,7 +110,7 @@ class StatusController extends Controller
             intval($status['account']['id']) !== intval($profile['id']) ||
             $status['sensitive'] ||
             $status['visibility'] !== 'public' ||
-            ! in_array($status['pf_type'], ['photo', 'photo:album'])
+            ! in_array($status['pf_type'], ['photo', 'photo:album', 'video'])
         ) {
             return $this->embedRemoved();
         }
