@@ -73,11 +73,52 @@ class Helpers
 
     public const string REPLY_PARENT_REJECTED = 'rejected';
 
+    /**
+     * Why validateUrlWithReason() accepted or rejected a url.
+     *
+     * These exist so a rejection is loggable. Before this, every failure
+     * mode in validateUrl() collapsed into a bare false, and an admin
+     * reporting "federation is broken" gave no way to tell a banned domain
+     * from a dead host from a resolver that cannot answer at all.
+     *
+     * OK          usable, the normalized url is returned alongside
+     * MALFORMED   not a parseable string url, or failed the input filters
+     * URI         parsed, but not an https url we will ever talk to
+     * HOST        the hostname is unusable (ip literal, single label,
+     *             localhost, invalid idn)
+     * BANNED      the domain is on the instance ban list
+     * UNRESOLVED  no A/AAAA records came back from any resolution path.
+     *             Ambiguous, see lookupHostIps().
+     * PRIVATE_IP  the host positively resolves into non-global address
+     *             space. This is the SSRF signal and is never allowed.
+     */
+    public const string URL_OK = 'ok';
+
+    public const string URL_MALFORMED = 'malformed';
+
+    public const string URL_URI = 'uri';
+
+    public const string URL_HOST = 'host';
+
+    public const string URL_BANNED = 'banned';
+
+    public const string URL_UNRESOLVED = 'unresolved';
+
+    public const string URL_PRIVATE_IP = 'private_ip';
+
     private const int MAX_URL_LENGTH = 4096;
 
     private const int DNS_TTL_POSITIVE = 86400;
 
     private const int DNS_TTL_NEGATIVE = 300;
+
+    /**
+     * An unresolved host expires quickly. Caching it for the same five
+     * minutes as a confirmed private-range answer turns one resolver hiccup
+     * into five minutes of dropped deliveries to a host that is actually up,
+     * with DeliveryHostService recording a failure against it each time.
+     */
+    private const int DNS_TTL_UNRESOLVED = 60;
 
     /**
      * Maximum number of ancestors a single status fetch may walk up an
@@ -204,31 +245,38 @@ class Helpers
     }
 
     /**
-     * Validate a URL that may be used for federation.
+     * Validate a URL that may be used for federation, reporting why when it
+     * is rejected.
+     *
+     * Order matters. Cheap syntactic checks first, then the local-domain
+     * short circuit, then the instance ban list, and only then anything
+     * that depends on a working resolver.
+     *
+     * @return array{url: ?string, reason: string}
      */
-    public static function validateUrl(
+    public static function validateUrlWithReason(
         mixed $url,
         bool $disableDNSCheck = false,
         bool $forceBanCheck = false
-    ): string|bool {
+    ): array {
         $url = self::normalizeUrl($url);
 
         if (! $url) {
-            return false;
+            return self::urlResult(null, self::URL_MALFORMED);
         }
 
         try {
             $uri = Uri::new($url);
-        } catch (\Throwable $e) {
-            return false;
+        } catch (\Throwable) {
+            return self::urlResult(null, self::URL_MALFORMED);
         }
 
         if (! self::isValidUri($uri)) {
-            return false;
+            return self::urlResult(null, self::URL_URI);
         }
 
-        // Urls on our own domain are trusted by definition, so they skip the
-        // dns/ip and ban checks below. The app domain frequently does not
+        // Urls on our own domain are trusted by definition and skip the ban
+        // list and resolution below. The app domain frequently does not
         // resolve to a globally routable address from inside the app
         // container (docker networks, split-horizon dns, CGNAT), and failing
         // it here breaks local audience normalization and local actor
@@ -236,36 +284,181 @@ class Helpers
         if (self::shouldSkipLocalChecks() && self::isAppDomain($uri->getHost())) {
             $localHost = self::normalizeHostLoose($uri->getHost());
 
+            if (! $localHost) {
+                return self::urlResult(null, self::URL_HOST);
+            }
+
             try {
-                return $uri->withHost($localHost)->toString();
+                return self::urlResult(
+                    $uri->withHost($localHost)->toString(),
+                    self::URL_OK
+                );
             } catch (\Throwable) {
-                return false;
+                return self::urlResult(null, self::URL_HOST);
             }
         }
 
         $host = self::normalizeHost($uri->getHost());
 
         if (! $host) {
-            return false;
+            return self::urlResult(null, self::URL_HOST);
         }
 
         try {
             $uri = $uri->withHost($host);
         } catch (\Throwable) {
-            return false;
+            return self::urlResult(null, self::URL_HOST);
         }
 
         if ($forceBanCheck || self::shouldCheckBans()) {
             if (self::isHostBanned($host)) {
-                return false;
+                return self::urlResult(null, self::URL_BANNED);
             }
         }
 
-        if (empty(self::resolvePublicIps($host))) {
+        if ($disableDNSCheck === true) {
+            return self::urlResult($uri->toString(), self::URL_OK);
+        }
+
+        $resolved = self::resolveHostIps($host);
+
+        // A host that positively resolves into non-global address space is
+        // refused no matter what. This is the check that actually does work.
+        if ($resolved['state'] === self::URL_PRIVATE_IP) {
+            return self::urlResult(null, self::URL_PRIVATE_IP);
+        }
+
+        if (
+            $resolved['state'] !== self::URL_OK &&
+            ! self::allowUnresolvedHosts()
+        ) {
+            return self::urlResult(null, self::URL_UNRESOLVED);
+        }
+
+        return self::urlResult($uri->toString(), self::URL_OK);
+    }
+
+    /**
+     * @return array{url: ?string, reason: string}
+     */
+    private static function urlResult(?string $url, string $reason): array
+    {
+        return ['url' => $url, 'reason' => $reason];
+    }
+
+    /**
+     * Validate a URL that may be used for federation.
+     *
+     * Thin wrapper over validateUrlWithReason() for the many callers that
+     * only need a usable url or false. Anything that logs a rejection should
+     * call validateUrlWithReason() directly so the log says why.
+     */
+    public static function validateUrl(
+        mixed $url,
+        bool $disableDNSCheck = false,
+        bool $forceBanCheck = false
+    ): string|bool {
+        return self::validateUrlWithReason(
+            $url,
+            $disableDNSCheck,
+            $forceBanCheck
+        )['url'] ?? false;
+    }
+
+    /**
+     * Whether url validation may bypass resolution and ban checks for urls
+     * on this instance's own domain.
+     */
+    public static function shouldSkipLocalChecks(): bool
+    {
+        return (bool) config('federation.url_validation.skip_local_checks', true);
+    }
+
+    /**
+     * Whether a host that returned no records at all may still be used.
+     *
+     * Defaults to true. An empty answer is far more often a container with
+     * no usable resolver than a hostile url, and failing closed there takes
+     * the whole instance off the network. Hosts that positively resolve into
+     * non-global space are rejected regardless of this setting, and
+     * normalizeHost() has already refused ip literals, single label hosts
+     * and the loopback names before resolution is ever attempted.
+     */
+    public static function allowUnresolvedHosts(): bool
+    {
+        return (bool) config('federation.url_validation.allow_unresolved', true);
+    }
+
+    /**
+     * Hosts that belong to this instance.
+     *
+     * APP_URL is the canonical source. APP_DOMAIN is included because
+     * deployments are free to set it to a different value than the url host,
+     * and both forms appear in locally generated uris.
+     *
+     * @return array<int, string>
+     */
+    public static function localDomains(): array
+    {
+        $domains = [];
+
+        foreach ([config('app.url'), config('pixelfed.domain.app')] as $candidate) {
+            $host = self::hostFromSetting($candidate);
+
+            if ($host !== null) {
+                $domains[$host] = true;
+            }
+        }
+
+        return array_keys($domains);
+    }
+
+    /**
+     * Whether a host is one of this instance's own domains.
+     */
+    public static function isAppDomain(?string $host): bool
+    {
+        $host = self::normalizeHostLoose($host);
+
+        if ($host === null) {
             return false;
         }
 
-        return $uri->toString();
+        return in_array($host, self::localDomains(), true);
+    }
+
+    /**
+     * Pull a host out of a config value.
+     *
+     * Admins set these by hand, so accept what they actually write:
+     * APP_DOMAIN=https://example.com/ and APP_DOMAIN=example.com:8443 are
+     * both common, and treating either as a literal hostname silently
+     * disables the local skip for the people who most need it.
+     */
+    private static function hostFromSetting(mixed $value): ?string
+    {
+        if (! is_string($value)) {
+            return null;
+        }
+
+        $value = trim($value);
+
+        if ($value === '') {
+            return null;
+        }
+
+        if (str_contains($value, '://')) {
+            $value = (string) parse_url($value, PHP_URL_HOST);
+        } else {
+            $value = explode('/', $value, 2)[0];
+
+            // Strip a port, but leave bare ipv6 literals alone.
+            if (substr_count($value, ':') === 1) {
+                $value = explode(':', $value, 2)[0];
+            }
+        }
+
+        return self::normalizeHostLoose($value);
     }
 
     /**
@@ -283,7 +476,7 @@ class Helpers
 
         $url = trim($url);
 
-        if ($url === '' || strlen($url) > 4096) {
+        if ($url === '' || strlen($url) > self::MAX_URL_LENGTH) {
             return null;
         }
 
@@ -330,6 +523,50 @@ class Helpers
         return true;
     }
 
+    /**
+     * Case, trailing dot and punycode normalization only.
+     *
+     * Deliberately does not apply the routable-host rules in
+     * normalizeHost(): an instance may legitimately live on a single label
+     * host, an ip literal or a name that only resolves internally, and
+     * comparing such a host to the app domain must still work.
+     */
+    public static function normalizeHostLoose(?string $host): ?string
+    {
+        if (! is_string($host)) {
+            return null;
+        }
+
+        $host = strtolower(rtrim(trim($host), '.'));
+
+        if ($host === '' || strlen($host) > 253) {
+            return null;
+        }
+
+        if (preg_match('/[^\x00-\x7f]/', $host)) {
+            if (! function_exists('idn_to_ascii')) {
+                return null;
+            }
+
+            $host = idn_to_ascii(
+                $host,
+                IDNA_DEFAULT,
+                INTL_IDNA_VARIANT_UTS46
+            );
+
+            if (! $host) {
+                return null;
+            }
+
+            $host = strtolower(rtrim($host, '.'));
+        }
+
+        return $host === '' ? null : $host;
+    }
+
+    /**
+     * Normalize a host that we intend to make outbound requests to.
+     */
     public static function normalizeHost(?string $host): ?string
     {
         $host = self::normalizeHostLoose($host);
@@ -361,58 +598,122 @@ class Helpers
         return $host;
     }
 
-    private static function lookupPublicIps(string $host): array
+    /**
+     * Resolve a host to its A/AAAA records.
+     *
+     * Three outcomes, not two. A lookup that returns nothing is ambiguous:
+     * NXDOMAIN, SERVFAIL, a resolver the container cannot reach, or a libc
+     * whose res_* functions PHP cannot use (musl/Alpine images, where
+     * dns_get_record() fails for every host while getaddrinfo works fine).
+     * A record that resolves into non-global address space is unambiguous.
+     * Only the second is a reason to refuse the url outright.
+     *
+     * @return array{state: string, ips: array<int, string>}
+     */
+    private static function lookupHostIps(string $host): array
     {
-        $records = @dns_get_record($host.'.', DNS_A | DNS_AAAA);
-
-        if (! is_array($records) || $records === []) {
-            return [];
-        }
+        // No trailing dot. glibc tolerates the fully qualified form, musl
+        // and some resolvers return nothing for it.
+        $records = @dns_get_record($host, DNS_A | DNS_AAAA);
 
         $ips = [];
 
-        foreach ($records as $record) {
-            $ip = $record['ip'] ?? $record['ipv6'] ?? null;
+        if (is_array($records)) {
+            foreach ($records as $record) {
+                $ip = $record['ip'] ?? $record['ipv6'] ?? null;
 
+                if (! is_string($ip) || $ip === '' || isset($ips[$ip])) {
+                    continue;
+                }
+
+                if (! self::isPublicIp($ip)) {
+                    return ['state' => self::URL_PRIVATE_IP, 'ips' => []];
+                }
+
+                $ips[$ip] = true;
+            }
+        }
+
+        if ($ips !== []) {
+            return ['state' => self::URL_OK, 'ips' => array_keys($ips)];
+        }
+
+        // dns_get_record() goes through libc res_*, which is unavailable or
+        // broken on musl and needs a resolv.conf the container may not have.
+        // gethostbynamel() goes through getaddrinfo, the same path cURL uses
+        // to connect. IPv4 only, which is why it is the fallback and not the
+        // primary.
+        $fallback = @gethostbynamel($host);
+
+        if (! is_array($fallback) || $fallback === []) {
+            return ['state' => self::URL_UNRESOLVED, 'ips' => []];
+        }
+
+        foreach ($fallback as $ip) {
             if (! is_string($ip) || $ip === '' || isset($ips[$ip])) {
                 continue;
             }
 
             if (! self::isPublicIp($ip)) {
-                return [];
+                return ['state' => self::URL_PRIVATE_IP, 'ips' => []];
             }
 
             $ips[$ip] = true;
         }
 
-        return array_keys($ips);
+        return $ips === []
+            ? ['state' => self::URL_UNRESOLVED, 'ips' => []]
+            : ['state' => self::URL_OK, 'ips' => array_keys($ips)];
     }
 
-    public static function resolvePublicIps(string $host): array
+    /**
+     * Cached host resolution.
+     *
+     * @return array{state: string, ips: array<int, string>}
+     */
+    public static function resolveHostIps(string $host): array
     {
         $host = self::normalizeHost($host);
 
         if (! $host) {
-            return [];
+            return ['state' => self::URL_HOST, 'ips' => []];
         }
 
-        $key = self::URL_CACHE_PREFIX.'public-ips:'.hash('xxh128', $host);
+        // v2: the cached value used to be a bare list of ips. Anything that
+        // does not carry a state is a stale entry from that shape and is
+        // looked up again.
+        $key = self::URL_CACHE_PREFIX.'public-ips:v2:'.hash('xxh128', $host);
 
         $cached = Cache::get($key);
 
-        if (is_array($cached)) {
+        if (is_array($cached) && isset($cached['state'], $cached['ips'])) {
             return $cached;
         }
 
-        $ips = self::lookupPublicIps($host);
+        $result = self::lookupHostIps($host);
 
-        Cache::put(
-            $key,
-            $ips,
-            $ips === [] ? self::DNS_TTL_NEGATIVE : self::DNS_TTL_POSITIVE
-        );
+        $ttl = match ($result['state']) {
+            self::URL_OK => self::DNS_TTL_POSITIVE,
+            self::URL_UNRESOLVED => self::DNS_TTL_UNRESOLVED,
+            default => self::DNS_TTL_NEGATIVE,
+        };
 
-        return $ips;
+        Cache::put($key, $result, $ttl);
+
+        return $result;
+    }
+
+    /**
+     * Resolved public addresses for a host, or an empty array.
+     *
+     * Kept for callers that only want the addresses. Note that an empty
+     * result no longer means the host is unusable, see resolveHostIps().
+     *
+     * @return array<int, string>
+     */
+    public static function resolvePublicIps(string $host): array
+    {
+        return self::resolveHostIps($host)['ips'];
     }
 
     /**
@@ -420,23 +721,7 @@ class Helpers
      */
     public static function isValidHost(?string $host): bool
     {
-        if (! $host || $host === '') {
-            return false;
-        }
-
-        if (! filter_var($host, FILTER_VALIDATE_DOMAIN, FILTER_FLAG_HOSTNAME)) {
-            return false;
-        }
-
-        if (! str_contains($host, '.')) {
-            return false;
-        }
-
-        if (in_array($host, self::LOCALHOST_DOMAINS)) {
-            return false;
-        }
-
-        return true;
+        return self::normalizeHost($host) !== null;
     }
 
     public static function isPublicIp(string $ip): bool
@@ -450,6 +735,9 @@ class Helpers
 
     /**
      * Check DNS and banned status if required
+     *
+     * @deprecated validateUrlWithReason() no longer routes through this.
+     *             Left in place for external callers.
      */
     public static function passesSecurityChecks(string $host, bool $disableDNSCheck, bool $forceBanCheck): bool
     {
@@ -478,6 +766,9 @@ class Helpers
 
     /**
      * Validate domain DNS records
+     *
+     * @deprecated Superseded by resolveHostIps(), which distinguishes an
+     *             unresolvable host from one resolving into private space.
      */
     public static function hasValidDNS(string $host): bool
     {
@@ -524,99 +815,6 @@ class Helpers
         }
 
         return self::isAppDomain(parse_url($url, PHP_URL_HOST)) ? $url : false;
-    }
-
-    /**
-     * Whether url validation may bypass dns/ip and ban checks for urls on
-     * this instance's own domain.
-     */
-    public static function shouldSkipLocalChecks(): bool
-    {
-        return (bool) config('federation.url_validation.skip_local_checks', true);
-    }
-
-    /**
-     * Hosts that belong to this instance.
-     *
-     * APP_URL is the canonical source. APP_DOMAIN is included because
-     * deployments are free to set it to a different value than the url host,
-     * and both forms appear in locally generated uris.
-     */
-    public static function localDomains(): array
-    {
-        $candidates = [
-            parse_url((string) config('app.url'), PHP_URL_HOST),
-            config('pixelfed.domain.app'),
-        ];
-
-        $domains = [];
-
-        foreach ($candidates as $candidate) {
-            $host = self::normalizeHostLoose(
-                is_string($candidate) ? $candidate : null
-            );
-
-            if ($host !== null) {
-                $domains[$host] = true;
-            }
-        }
-
-        return array_keys($domains);
-    }
-
-    /**
-     * Whether a host is one of this instance's own domains.
-     */
-    public static function isAppDomain(?string $host): bool
-    {
-        $host = self::normalizeHostLoose($host);
-
-        if ($host === null) {
-            return false;
-        }
-
-        return in_array($host, self::localDomains(), true);
-    }
-
-    /**
-     * Case, trailing dot and punycode normalization only.
-     *
-     * Deliberately does not apply the routable-host rules in normalizeHost():
-     * an instance may legitimately live on a single label host, an ip literal
-     * or a name that only resolves internally, and comparing such a host to
-     * the app domain must still work.
-     */
-    public static function normalizeHostLoose(?string $host): ?string
-    {
-        if (! is_string($host)) {
-            return null;
-        }
-
-        $host = strtolower(rtrim(trim($host), '.'));
-
-        if ($host === '' || strlen($host) > 253) {
-            return null;
-        }
-
-        if (preg_match('/[^\x00-\x7f]/', $host)) {
-            if (! function_exists('idn_to_ascii')) {
-                return null;
-            }
-
-            $host = idn_to_ascii(
-                $host,
-                IDNA_DEFAULT,
-                INTL_IDNA_VARIANT_UTS46
-            );
-
-            if (! $host) {
-                return null;
-            }
-
-            $host = strtolower(rtrim($host, '.'));
-        }
-
-        return $host === '' ? null : $host;
     }
 
     /**
@@ -1265,9 +1463,11 @@ class Helpers
                     'id' => $id,
                     'id_host' => parse_url($id, PHP_URL_HOST),
                     'id_valid_url' => self::validateUrl($id),
+                    'id_reason' => self::validateUrlWithReason($id)['reason'],
                     'url' => $url,
                     'url_host' => parse_url($url, PHP_URL_HOST),
                     'url_valid_url' => self::validateUrl($url),
+                    'url_reason' => self::validateUrlWithReason($url)['reason'],
                 ],
                 'expected' => 'id host and url host to be valid and match (case-insensitive)',
                 'payload' => $object,
@@ -1934,6 +2134,9 @@ class Helpers
 
     /**
      * Check if domain is local
+     *
+     * Accepts null because every caller feeds this from parse_url(), which
+     * returns null for a malformed host.
      */
     public static function isLocalDomain(?string $host): bool
     {
