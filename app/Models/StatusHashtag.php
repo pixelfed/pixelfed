@@ -7,8 +7,29 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasManyThrough;
 
 /**
- * @property-read int $count aggregate/computed alias
- * @property-read int $total aggregate/computed alias
+ * @property int $id
+ * @property int $status_id
+ * @property int $hashtag_id
+ * @property int|null $profile_id
+ * @property string|null $status_visibility
+ * @property \Illuminate\Support\Carbon|null $created_at
+ * @property \Illuminate\Support\Carbon|null $updated_at
+ * @property-read \App\Models\Hashtag|null $hashtag
+ * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Models\Media> $media
+ * @property-read int|null $media_count
+ * @property-read \App\Models\Profile|null $profile
+ * @property-read \App\Models\Status|null $status
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|StatusHashtag newModelQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|StatusHashtag newQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|StatusHashtag query()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|StatusHashtag whereCreatedAt($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|StatusHashtag whereHashtagId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|StatusHashtag whereId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|StatusHashtag whereProfileId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|StatusHashtag whereStatusId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|StatusHashtag whereStatusVisibility($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|StatusHashtag whereUpdatedAt($value)
+ * @mixin \Eloquent
  */
 class StatusHashtag extends Model
 {

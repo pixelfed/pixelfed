@@ -7,7 +7,38 @@ use Illuminate\Database\Eloquent\Relations\MorphTo;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
 /**
- * @property-read Profile|null $actor
+ * @property int $id
+ * @property int $profile_id
+ * @property int|null $actor_id
+ * @property int|null $item_id
+ * @property string|null $item_type
+ * @property string|null $action
+ * @property string|null $read_at
+ * @property \Illuminate\Support\Carbon|null $created_at
+ * @property \Illuminate\Support\Carbon|null $updated_at
+ * @property \Illuminate\Support\Carbon|null $deleted_at
+ * @property-read \App\Models\Profile|null $actor
+ * @property-read Model|\Eloquent|null $item
+ * @property-read \App\Models\Profile|null $profile
+ * @property-read \App\Models\Status|null $status
+ * @property-read \App\Models\MediaTag|null $tag
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Notification newModelQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Notification newQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Notification onlyTrashed()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Notification query()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Notification whereAction($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Notification whereActorId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Notification whereCreatedAt($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Notification whereDeletedAt($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Notification whereId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Notification whereItemId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Notification whereItemType($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Notification whereProfileId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Notification whereReadAt($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Notification whereUpdatedAt($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Notification withTrashed(bool $withTrashed = true)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Notification withoutTrashed()
+ * @mixin \Eloquent
  */
 class Notification extends Model
 {

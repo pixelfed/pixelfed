@@ -7,7 +7,36 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Str;
 
 /**
- * @method static Builder|AdminInvite whereInviteCode(string $value)
+ * @property int $id
+ * @property string|null $name
+ * @property string $invite_code
+ * @property string|null $description
+ * @property string|null $message
+ * @property int|null $max_uses
+ * @property int|null $uses
+ * @property int $skip_email_verification
+ * @property \Illuminate\Support\Carbon|null $expires_at
+ * @property array<array-key, mixed>|null $used_by
+ * @property int|null $admin_user_id
+ * @property \Illuminate\Support\Carbon|null $created_at
+ * @property \Illuminate\Support\Carbon|null $updated_at
+ * @method static Builder<static>|AdminInvite newModelQuery()
+ * @method static Builder<static>|AdminInvite newQuery()
+ * @method static Builder<static>|AdminInvite query()
+ * @method static Builder<static>|AdminInvite whereAdminUserId($value)
+ * @method static Builder<static>|AdminInvite whereCreatedAt($value)
+ * @method static Builder<static>|AdminInvite whereDescription($value)
+ * @method static Builder<static>|AdminInvite whereExpiresAt($value)
+ * @method static Builder<static>|AdminInvite whereId($value)
+ * @method static Builder<static>|AdminInvite whereInviteCode($value)
+ * @method static Builder<static>|AdminInvite whereMaxUses($value)
+ * @method static Builder<static>|AdminInvite whereMessage($value)
+ * @method static Builder<static>|AdminInvite whereName($value)
+ * @method static Builder<static>|AdminInvite whereSkipEmailVerification($value)
+ * @method static Builder<static>|AdminInvite whereUpdatedAt($value)
+ * @method static Builder<static>|AdminInvite whereUsedBy($value)
+ * @method static Builder<static>|AdminInvite whereUses($value)
+ * @mixin \Eloquent
  */
 class AdminInvite extends Model
 {

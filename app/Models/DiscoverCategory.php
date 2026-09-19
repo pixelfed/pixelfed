@@ -7,11 +7,40 @@ use Illuminate\Support\Carbon;
 
 /**
  * @property int $id
+ * @property string|null $name
  * @property string $slug
+ * @property int $active
+ * @property int $order
  * @property int|null $media_id
+ * @property int $no_nsfw
+ * @property int $local_only
+ * @property int $public_only
+ * @property int $photos_only
+ * @property string|null $active_until
  * @property Carbon|null $created_at
  * @property Carbon|null $updated_at
- * @property-read Media|null $media
+ * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Models\Hashtag> $hashtags
+ * @property-read int|null $hashtags_count
+ * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Models\DiscoverCategoryHashtag> $items
+ * @property-read int|null $items_count
+ * @property-read \App\Models\Media|null $media
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|DiscoverCategory newModelQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|DiscoverCategory newQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|DiscoverCategory query()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|DiscoverCategory whereActive($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|DiscoverCategory whereActiveUntil($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|DiscoverCategory whereCreatedAt($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|DiscoverCategory whereId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|DiscoverCategory whereLocalOnly($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|DiscoverCategory whereMediaId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|DiscoverCategory whereName($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|DiscoverCategory whereNoNsfw($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|DiscoverCategory whereOrder($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|DiscoverCategory wherePhotosOnly($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|DiscoverCategory wherePublicOnly($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|DiscoverCategory whereSlug($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|DiscoverCategory whereUpdatedAt($value)
+ * @mixin \Eloquent
  */
 class DiscoverCategory extends Model
 {

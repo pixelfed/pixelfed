@@ -4,6 +4,33 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 
+/**
+ * @property int $id
+ * @property int $profile_id
+ * @property string|null $name
+ * @property string|null $description
+ * @property string $scope
+ * @property int $bcc
+ * @property int $active
+ * @property \Illuminate\Support\Carbon|null $created_at
+ * @property \Illuminate\Support\Carbon|null $updated_at
+ * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Models\Profile> $members
+ * @property-read int|null $members_count
+ * @property-read \App\Models\Profile|null $owner
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Circle newModelQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Circle newQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Circle query()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Circle whereActive($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Circle whereBcc($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Circle whereCreatedAt($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Circle whereDescription($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Circle whereId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Circle whereName($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Circle whereProfileId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Circle whereScope($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Circle whereUpdatedAt($value)
+ * @mixin \Eloquent
+ */
 class Circle extends Model
 {
     protected $guarded = [];

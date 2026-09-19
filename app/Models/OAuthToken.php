@@ -4,6 +4,33 @@ namespace App\Models;
 
 use Laravel\Passport\Token as PassportToken;
 
+/**
+ * @property string $id
+ * @property int|null $user_id
+ * @property int $client_id
+ * @property string|null $name
+ * @property array<array-key, mixed>|null $scopes
+ * @property bool $revoked
+ * @property \Illuminate\Support\Carbon|null $created_at
+ * @property \Illuminate\Support\Carbon|null $updated_at
+ * @property \Illuminate\Support\Carbon|null $expires_at
+ * @property-read \Laravel\Passport\Client|null $client
+ * @property-read \Laravel\Passport\RefreshToken|null $refreshToken
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|OAuthToken existsIn(array $haystack)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|OAuthToken newModelQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|OAuthToken newQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|OAuthToken query()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|OAuthToken whereClientId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|OAuthToken whereCreatedAt($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|OAuthToken whereExpiresAt($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|OAuthToken whereId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|OAuthToken whereName($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|OAuthToken whereRevoked($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|OAuthToken whereScopes($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|OAuthToken whereUpdatedAt($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|OAuthToken whereUserId($value)
+ * @mixin \Eloquent
+ */
 class OAuthToken extends PassportToken
 {
     protected $visible = [

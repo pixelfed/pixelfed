@@ -4,6 +4,35 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 
+/**
+ * @property int $id
+ * @property int $profile_id
+ * @property string $service
+ * @property string|null $uuid
+ * @property string|null $storage_path
+ * @property int $stage
+ * @property string|null $media_json
+ * @property string|null $completed_at
+ * @property \Illuminate\Support\Carbon|null $created_at
+ * @property \Illuminate\Support\Carbon|null $updated_at
+ * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Models\ImportData> $files
+ * @property-read int|null $files_count
+ * @property-read \App\Models\Profile|null $profile
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|ImportJob newModelQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|ImportJob newQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|ImportJob query()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|ImportJob whereCompletedAt($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|ImportJob whereCreatedAt($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|ImportJob whereId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|ImportJob whereMediaJson($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|ImportJob whereProfileId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|ImportJob whereService($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|ImportJob whereStage($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|ImportJob whereStoragePath($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|ImportJob whereUpdatedAt($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|ImportJob whereUuid($value)
+ * @mixin \Eloquent
+ */
 class ImportJob extends Model
 {
     public function profile()

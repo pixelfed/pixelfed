@@ -8,14 +8,11 @@ use Illuminate\Support\Facades\Storage;
 use Pixelfed\Snowflake\HasSnowflakePrimary;
 
 /**
- * @property int $id
- * @property int $story_id
- * @property string|null $media_path
- * @property Carbon|null $expires_at
- * @property Carbon|null $created_at
- * @property Carbon|null $updated_at
- * @property string $type
- * @property-read Story|null $story
+ * @property-read \App\Models\Story|null $story
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|StoryItem newModelQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|StoryItem newQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|StoryItem query()
+ * @mixin \Eloquent
  */
 class StoryItem extends Model
 {

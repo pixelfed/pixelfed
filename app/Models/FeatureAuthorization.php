@@ -6,6 +6,36 @@ use App\HasSnowflakePrimary;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
+/**
+ * @property int $id
+ * @property int $profile_id
+ * @property int $actor_id
+ * @property string $collection_url
+ * @property string|null $collection_name
+ * @property string|null $request_url
+ * @property string $state
+ * @property \Illuminate\Support\Carbon|null $revoked_at
+ * @property \Illuminate\Support\Carbon|null $created_at
+ * @property \Illuminate\Support\Carbon|null $updated_at
+ * @property-read \App\Models\Profile|null $actor
+ * @property-read \App\Models\Profile|null $profile
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|FeatureAuthorization approved()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|FeatureAuthorization newModelQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|FeatureAuthorization newQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|FeatureAuthorization query()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|FeatureAuthorization revoked()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|FeatureAuthorization whereActorId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|FeatureAuthorization whereCollectionName($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|FeatureAuthorization whereCollectionUrl($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|FeatureAuthorization whereCreatedAt($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|FeatureAuthorization whereId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|FeatureAuthorization whereProfileId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|FeatureAuthorization whereRequestUrl($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|FeatureAuthorization whereRevokedAt($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|FeatureAuthorization whereState($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|FeatureAuthorization whereUpdatedAt($value)
+ * @mixin \Eloquent
+ */
 class FeatureAuthorization extends Model
 {
     use HasSnowflakePrimary;

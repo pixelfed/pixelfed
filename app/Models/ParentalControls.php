@@ -11,16 +11,35 @@ use Illuminate\Support\Carbon;
 /**
  * @property int $id
  * @property int $parent_id
- * @property int $child_id
- * @property array|null $permissions
+ * @property int|null $child_id
+ * @property string|null $email
  * @property string|null $verify_code
  * @property Carbon|null $email_sent_at
  * @property Carbon|null $email_verified_at
+ * @property array<array-key, mixed>|null $permissions
+ * @property Carbon|null $deleted_at
  * @property Carbon|null $created_at
  * @property Carbon|null $updated_at
- * @property Carbon|null $deleted_at
- * @property-read User $parent
- * @property-read User $child
+ * @property-read \App\Models\User|null $child
+ * @property-read \App\Models\User|null $parent
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|ParentalControls newModelQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|ParentalControls newQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|ParentalControls onlyTrashed()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|ParentalControls query()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|ParentalControls whereChildId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|ParentalControls whereCreatedAt($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|ParentalControls whereDeletedAt($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|ParentalControls whereEmail($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|ParentalControls whereEmailSentAt($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|ParentalControls whereEmailVerifiedAt($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|ParentalControls whereId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|ParentalControls whereParentId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|ParentalControls wherePermissions($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|ParentalControls whereUpdatedAt($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|ParentalControls whereVerifyCode($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|ParentalControls withTrashed(bool $withTrashed = true)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|ParentalControls withoutTrashed()
+ * @mixin \Eloquent
  */
 class ParentalControls extends Model
 {

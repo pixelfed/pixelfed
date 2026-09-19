@@ -20,34 +20,106 @@ use Illuminate\Support\Str;
 
 /**
  * @property int $id
- * @property int $profile_id
- * @property string|null $type
+ * @property string|null $uri
  * @property string|null $caption
+ * @property string|null $rendered
+ * @property int|null $profile_id
+ * @property string|null $type
  * @property int|null $in_reply_to_id
- * @property int|null $in_reply_to_profile_id
  * @property int|null $reblog_of_id
- * @property bool $is_nsfw
- * @property string|null $scope
- * @property string|null $visibility
- * @property string|null $cw_summary
- * @property bool $comments_disabled
- * @property int|null $quote_policy FEP-044f per-post canQuote bitmask (see QuoteService), null = account default, 0 = nobody
- * @property int $likes_count
+ * @property string|null $url
+ * @property int $is_nsfw
+ * @property string $scope
+ * @property string $visibility
+ * @property int $reply
+ * @property-read int|null $likes_count
  * @property int $reblogs_count
- * @property int $reply_count
- * @property bool $local
- * @property int|null $place_id
- * @property-read Place|null $place
+ * @property string|null $language
+ * @property int|null $conversation_id
+ * @property int $local
+ * @property int|null $application_id
+ * @property int|null $in_reply_to_profile_id
+ * @property string|null $entities
  * @property Carbon|null $created_at
  * @property Carbon|null $updated_at
  * @property Carbon|null $deleted_at
+ * @property string|null $cw_summary
+ * @property int|null $reply_count
+ * @property int $comments_disabled
+ * @property int|null $place_id
+ * @property string|null $object_url
  * @property Carbon|null $edited_at
- * @property-read Profile $profile
- * @property-read Collection<int, Media> $media
- * @property-read Collection<int, Profile> $mentions
- * @property-read Poll|null $poll
- * @property-read int $count aggregate/computed alias
- * @property-read int $pc aggregate/computed alias
+ * @property int|null $trendable
+ * @property string|null $media_ids
+ * @property int|null $pinned_order
+ * @property int|null $group_id
+ * @property int|null $quote_policy
+ * @property-read Collection<int, Status> $comments
+ * @property-read int|null $comments_count
+ * @property-read \App\Models\Conversation|null $conversation
+ * @property-read \App\Models\DirectMessage|null $directMessage
+ * @property-read Collection<int, \App\Models\StatusEdit> $edits
+ * @property-read int|null $edits_count
+ * @property-read Collection<int, \App\Models\Hashtag> $hashtags
+ * @property-read int|null $hashtags_count
+ * @property-read Collection<int, \App\Models\Profile> $likedBy
+ * @property-read int|null $liked_by_count
+ * @property-read Collection<int, \App\Models\Like> $likes
+ * @property-read Collection<int, \App\Models\Media> $media
+ * @property-read int|null $media_count
+ * @property-read Collection<int, \App\Models\Profile> $mentions
+ * @property-read int|null $mentions_count
+ * @property-read \App\Models\Place|null $place
+ * @property-read \App\Models\Poll|null $poll
+ * @property-read \App\Models\Profile|null $profile
+ * @property-read Collection<int, \App\Models\Profile> $sharedBy
+ * @property-read int|null $shared_by_count
+ * @property-read Collection<int, Status> $shares
+ * @property-read int|null $shares_count
+ * @method static \Database\Factories\StatusFactory factory($count = null, $state = [])
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Status newModelQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Status newQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Status onlyTrashed()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Status query()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Status toAudience()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Status whereApplicationId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Status whereCaption($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Status whereCommentsDisabled($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Status whereConversationId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Status whereCreatedAt($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Status whereCwSummary($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Status whereDeletedAt($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Status whereEditedAt($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Status whereEntities($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Status whereGroupId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Status whereId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Status whereInReplyToId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Status whereInReplyToProfileId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Status whereIsNsfw($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Status whereLanguage($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Status whereLikesCount($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Status whereLocal($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Status whereMediaIds($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Status whereObjectUrl($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Status wherePinnedOrder($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Status wherePlaceId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Status whereProfileId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Status whereQuotePolicy($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Status whereReblogOfId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Status whereReblogsCount($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Status whereRendered($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Status whereReply($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Status whereReplyCount($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Status whereScope($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Status whereTrendable($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Status whereType($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Status whereUpdatedAt($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Status whereUri($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Status whereUrl($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Status whereVisibility($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Status withTrashed(bool $withTrashed = true)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Status withoutTrashed()
+ * @mixin \Eloquent
  */
 class Status extends Model
 {

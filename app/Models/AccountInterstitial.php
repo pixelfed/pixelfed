@@ -6,9 +6,61 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 /**
- * @property-read Status|null $status
- * @property-read int $count aggregate/computed alias
- * @property-read string $month_year aggregate/computed alias
+ * @property int $id
+ * @property int|null $user_id
+ * @property string|null $type
+ * @property string|null $view
+ * @property int|null $item_id
+ * @property string|null $item_type
+ * @property int|null $is_spam
+ * @property int|null $in_violation
+ * @property int|null $violation_id
+ * @property int|null $email_notify
+ * @property int|null $has_media
+ * @property string|null $blurhash
+ * @property string|null $message
+ * @property string|null $violation_header
+ * @property string|null $violation_body
+ * @property string|null $meta
+ * @property string|null $appeal_message
+ * @property \Illuminate\Support\Carbon|null $appeal_requested_at
+ * @property string|null $appeal_handled_at
+ * @property \Illuminate\Support\Carbon|null $read_at
+ * @property \Illuminate\Support\Carbon|null $created_at
+ * @property \Illuminate\Support\Carbon|null $updated_at
+ * @property int|null $severity_index
+ * @property int|null $thread_id
+ * @property string|null $emailed_at
+ * @property-read \App\Models\User|null $user
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|AccountInterstitial newModelQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|AccountInterstitial newQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|AccountInterstitial query()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|AccountInterstitial whereAppealHandledAt($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|AccountInterstitial whereAppealMessage($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|AccountInterstitial whereAppealRequestedAt($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|AccountInterstitial whereBlurhash($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|AccountInterstitial whereCreatedAt($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|AccountInterstitial whereEmailNotify($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|AccountInterstitial whereEmailedAt($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|AccountInterstitial whereHasMedia($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|AccountInterstitial whereId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|AccountInterstitial whereInViolation($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|AccountInterstitial whereIsSpam($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|AccountInterstitial whereItemId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|AccountInterstitial whereItemType($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|AccountInterstitial whereMessage($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|AccountInterstitial whereMeta($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|AccountInterstitial whereReadAt($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|AccountInterstitial whereSeverityIndex($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|AccountInterstitial whereThreadId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|AccountInterstitial whereType($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|AccountInterstitial whereUpdatedAt($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|AccountInterstitial whereUserId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|AccountInterstitial whereView($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|AccountInterstitial whereViolationBody($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|AccountInterstitial whereViolationHeader($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|AccountInterstitial whereViolationId($value)
+ * @mixin \Eloquent
  */
 class AccountInterstitial extends Model
 {

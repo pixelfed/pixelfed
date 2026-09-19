@@ -14,7 +14,125 @@ use Laravel\Passport\HasApiTokens;
 use NotificationChannels\WebPush\HasPushSubscriptions;
 
 /**
- * @property-read UserSetting|null $settings
+ * @property int $id
+ * @property int|null $profile_id
+ * @property string|null $name
+ * @property string|null $username
+ * @property string $email
+ * @property string|null $status
+ * @property string|null $language
+ * @property string $password
+ * @property string|null $remember_token
+ * @property bool $is_admin
+ * @property \Illuminate\Support\Carbon|null $email_verified_at
+ * @property \Illuminate\Support\Carbon|null $created_at
+ * @property \Illuminate\Support\Carbon|null $updated_at
+ * @property \Illuminate\Support\Carbon|null $deleted_at
+ * @property \Illuminate\Support\Carbon|null $last_active_at
+ * @property int $2fa_enabled
+ * @property string|null $2fa_secret
+ * @property string|null $2fa_backup_codes
+ * @property \Illuminate\Support\Carbon|null $2fa_setup_at
+ * @property string|null $delete_after
+ * @property int $has_interstitial
+ * @property string|null $guid
+ * @property string|null $domain
+ * @property string|null $register_source
+ * @property string|null $app_register_token
+ * @property string|null $app_register_ip
+ * @property int $has_roles
+ * @property int|null $parent_id
+ * @property int|null $role_id
+ * @property string|null $expo_token
+ * @property int $storage_used
+ * @property \Illuminate\Support\Carbon|null $storage_used_updated_at
+ * @property int $notify_enabled
+ * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Models\AccountLog> $accountLog
+ * @property-read int|null $account_log_count
+ * @property-read \Illuminate\Database\Eloquent\Collection<int, \Laravel\Passport\Client> $clients
+ * @property-read int|null $clients_count
+ * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Models\UserDevice> $devices
+ * @property-read int|null $devices_count
+ * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Models\UserFilter> $filters
+ * @property-read int|null $filters_count
+ * @property-read mixed $max_collections_per_day
+ * @property-read mixed $max_collections_per_hour
+ * @property-read mixed $max_collections_per_month
+ * @property-read mixed $max_comments_per_day
+ * @property-read mixed $max_comments_per_hour
+ * @property-read mixed $max_compose_media_updates_per_day
+ * @property-read mixed $max_compose_media_updates_per_hour
+ * @property-read mixed $max_compose_media_updates_per_month
+ * @property-read mixed $max_hashtag_follows_per_day
+ * @property-read mixed $max_hashtag_follows_per_hour
+ * @property-read mixed $max_instance_bans_per_day
+ * @property-read int $max_likes_per_day
+ * @property-read int $max_likes_per_hour
+ * @property-read mixed $max_post_edits_per_day
+ * @property-read mixed $max_post_edits_per_hour
+ * @property-read mixed $max_posts_per_day
+ * @property-read mixed $max_posts_per_hour
+ * @property-read mixed $max_shares_per_day
+ * @property-read mixed $max_shares_per_hour
+ * @property-read mixed $max_stories_per_day
+ * @property-read mixed $max_stories_per_hour
+ * @property-read mixed $max_story_delete_per_day
+ * @property-read mixed $max_user_bans_per_day
+ * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Models\AccountInterstitial> $interstitials
+ * @property-read int|null $interstitials_count
+ * @property-read \Illuminate\Notifications\DatabaseNotificationCollection<int, \Illuminate\Notifications\DatabaseNotification> $notifications
+ * @property-read int|null $notifications_count
+ * @property-read \Illuminate\Database\Eloquent\Collection<int, \Laravel\Passport\Client> $oauthApps
+ * @property-read int|null $oauth_apps_count
+ * @property-read \App\Models\Profile|null $profile
+ * @property-read \Illuminate\Database\Eloquent\Collection<int, \NotificationChannels\WebPush\PushSubscription> $pushSubscriptions
+ * @property-read int|null $push_subscriptions_count
+ * @property-read \App\Models\UserSetting|null $settings
+ * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Models\Status> $statuses
+ * @property-read int|null $statuses_count
+ * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Models\OAuthToken> $tokens
+ * @property-read int|null $tokens_count
+ * @method static \Database\Factories\UserFactory factory($count = null, $state = [])
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|User newModelQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|User newQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|User onlyTrashed()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|User query()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|User where2faBackupCodes($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|User where2faEnabled($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|User where2faSecret($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|User where2faSetupAt($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|User whereAppRegisterIp($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|User whereAppRegisterToken($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|User whereCreatedAt($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|User whereDeleteAfter($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|User whereDeletedAt($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|User whereDomain($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|User whereEmail($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|User whereEmailVerifiedAt($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|User whereExpoToken($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|User whereGuid($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|User whereHasInterstitial($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|User whereHasRoles($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|User whereId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|User whereIsAdmin($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|User whereLanguage($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|User whereLastActiveAt($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|User whereName($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|User whereNotifyEnabled($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|User whereParentId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|User wherePassword($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|User whereProfileId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|User whereRegisterSource($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|User whereRememberToken($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|User whereRoleId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|User whereStatus($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|User whereStorageUsed($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|User whereStorageUsedUpdatedAt($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|User whereUpdatedAt($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|User whereUsername($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|User withTrashed(bool $withTrashed = true)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|User withoutTrashed()
+ * @mixin \Eloquent
  */
 class User extends Authenticatable implements OAuthenticatable
 {
