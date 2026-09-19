@@ -33,6 +33,8 @@ class ConfigCacheService
         'captcha.cap.secret',
     ];
 
+
+    // the rules are type checks - string, url, boolean, enum "in", integer, json
     const KEYS = [
         // filesystems.php — s3 disk
         'filesystems.disks.s3.key' => ['list' => 'ENVCONFIG', 'env' => 'AWS_ACCESS_KEY_ID', 'rule' => 'string'],
