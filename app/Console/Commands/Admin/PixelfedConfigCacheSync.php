@@ -13,7 +13,7 @@ class PixelfedConfigCacheSync extends Command
         {--no-sync : Skip the sync (mirrors PIXELFED_CONFIG_CACHE_SYNC=false)}
         {--force : Reconcile even when the change-hash is unchanged (cleans up stale/orphaned rows on demand)}';
 
-    protected $description = 'Reconcile .env into config_cache for env-bound keys (hash-gated)';
+    protected $description = 'Sync updated .env variables into DB backed config_cache and redis cache';
 
     // Always exits 0: the sync is best-effort and must never fail a deploy.
     public function handle(): int
