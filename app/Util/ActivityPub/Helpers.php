@@ -227,6 +227,22 @@ class Helpers
             return false;
         }
 
+        // Urls on our own domain are trusted by definition, so they skip the
+        // dns/ip and ban checks below. The app domain frequently does not
+        // resolve to a globally routable address from inside the app
+        // container (docker networks, split-horizon dns, CGNAT), and failing
+        // it here breaks local audience normalization and local actor
+        // resolution on otherwise healthy instances.
+        if (self::shouldSkipLocalChecks() && self::isAppDomain($uri->getHost())) {
+            $localHost = self::normalizeHostLoose($uri->getHost());
+
+            try {
+                return $uri->withHost($localHost)->toString();
+            } catch (\Throwable) {
+                return false;
+            }
+        }
+
         $host = self::normalizeHost($uri->getHost());
 
         if (! $host) {
@@ -316,36 +332,14 @@ class Helpers
 
     public static function normalizeHost(?string $host): ?string
     {
-        if (! is_string($host) || $host === '') {
-            return null;
-        }
+        $host = self::normalizeHostLoose($host);
 
-        $host = strtolower(rtrim($host, '.'));
-
-        if ($host === '' || strlen($host) > 253) {
+        if ($host === null) {
             return null;
         }
 
         if (filter_var($host, FILTER_VALIDATE_IP) !== false) {
             return null;
-        }
-
-        if (preg_match('/[^\x00-\x7f]/', $host)) {
-            if (! function_exists('idn_to_ascii')) {
-                return null;
-            }
-
-            $host = idn_to_ascii(
-                $host,
-                IDNA_DEFAULT,
-                INTL_IDNA_VARIANT_UTS46
-            );
-
-            if (! $host) {
-                return null;
-            }
-
-            $host = strtolower(rtrim($host, '.'));
         }
 
         if (! filter_var(
@@ -524,19 +518,105 @@ class Helpers
     public static function validateLocalUrl(string $url): string|bool
     {
         $url = self::validateUrl($url);
-        if ($url) {
-            $domain = config('pixelfed.domain.app');
-            $uri = Uri::new($url);
-            $host = $uri->getHost();
 
-            if (! $host || empty($host)) {
-                return false;
-            }
-
-            return strtolower($domain) === strtolower($host) ? $url : false;
+        if (! $url) {
+            return false;
         }
 
-        return false;
+        return self::isAppDomain(parse_url($url, PHP_URL_HOST)) ? $url : false;
+    }
+
+    /**
+     * Whether url validation may bypass dns/ip and ban checks for urls on
+     * this instance's own domain.
+     */
+    public static function shouldSkipLocalChecks(): bool
+    {
+        return (bool) config('federation.url_validation.skip_local_checks', true);
+    }
+
+    /**
+     * Hosts that belong to this instance.
+     *
+     * APP_URL is the canonical source. APP_DOMAIN is included because
+     * deployments are free to set it to a different value than the url host,
+     * and both forms appear in locally generated uris.
+     */
+    public static function localDomains(): array
+    {
+        $candidates = [
+            parse_url((string) config('app.url'), PHP_URL_HOST),
+            config('pixelfed.domain.app'),
+        ];
+
+        $domains = [];
+
+        foreach ($candidates as $candidate) {
+            $host = self::normalizeHostLoose(
+                is_string($candidate) ? $candidate : null
+            );
+
+            if ($host !== null) {
+                $domains[$host] = true;
+            }
+        }
+
+        return array_keys($domains);
+    }
+
+    /**
+     * Whether a host is one of this instance's own domains.
+     */
+    public static function isAppDomain(?string $host): bool
+    {
+        $host = self::normalizeHostLoose($host);
+
+        if ($host === null) {
+            return false;
+        }
+
+        return in_array($host, self::localDomains(), true);
+    }
+
+    /**
+     * Case, trailing dot and punycode normalization only.
+     *
+     * Deliberately does not apply the routable-host rules in normalizeHost():
+     * an instance may legitimately live on a single label host, an ip literal
+     * or a name that only resolves internally, and comparing such a host to
+     * the app domain must still work.
+     */
+    public static function normalizeHostLoose(?string $host): ?string
+    {
+        if (! is_string($host)) {
+            return null;
+        }
+
+        $host = strtolower(rtrim(trim($host), '.'));
+
+        if ($host === '' || strlen($host) > 253) {
+            return null;
+        }
+
+        if (preg_match('/[^\x00-\x7f]/', $host)) {
+            if (! function_exists('idn_to_ascii')) {
+                return null;
+            }
+
+            $host = idn_to_ascii(
+                $host,
+                IDNA_DEFAULT,
+                INTL_IDNA_VARIANT_UTS46
+            );
+
+            if (! $host) {
+                return null;
+            }
+
+            $host = strtolower(rtrim($host, '.'));
+        }
+
+        return $host === '' ? null : $host;
     }
 
     /**
@@ -1855,9 +1935,9 @@ class Helpers
     /**
      * Check if domain is local
      */
-    public static function isLocalDomain(string $host): bool
+    public static function isLocalDomain(?string $host): bool
     {
-        return config('pixelfed.domain.app') == $host;
+        return self::isAppDomain($host);
     }
 
     /**
