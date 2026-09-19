@@ -373,11 +373,11 @@ class ConfigCache extends Controller
     // Sync-health panel: stored change-hash and best-effort lock state.
     protected function syncHealth(): array
     {
-        $syncHash = Cache::get('config-cache:sync-hash');
+        $syncHash = Cache::get(ConfigCacheService::MARKER_KEY);
 
         $lockHeld = null;
         try {
-            $lock = Cache::lock('config-cache:sync', 1);
+            $lock = Cache::lock(ConfigCacheService::LOCK_KEY, 1);
             if ($lock->get()) {
                 $lock->release();
                 $lockHeld = false;

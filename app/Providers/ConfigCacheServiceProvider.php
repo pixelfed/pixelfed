@@ -2,8 +2,8 @@
 
 namespace App\Providers;
 
-use App\Console\Commands\Admin\PixelfedConfigCacheSync;
 use App\Services\Config\EnvConfigValidator;
+use App\Services\ConfigCacheService;
 use Illuminate\Console\Events\CommandFinished;
 use Illuminate\Support\Facades\Artisan;
 use Illuminate\Support\Facades\Event;
@@ -22,7 +22,7 @@ class ConfigCacheServiceProvider extends ServiceProvider
                 return;
             }
 
-            if (! PixelfedConfigCacheSync::syncEnabled()) {
+            if (! ConfigCacheService::syncEnabled()) {
                 return;
             }
 

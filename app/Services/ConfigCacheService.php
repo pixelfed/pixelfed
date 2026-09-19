@@ -8,10 +8,20 @@ use Exception;
 use Illuminate\Database\QueryException;
 use Illuminate\Support\Env;
 use Illuminate\Support\Facades\Cache;
+use Illuminate\Support\Facades\Log;
 
 class ConfigCacheService
 {
     const CACHE_KEY = 'config_cache:_v0-key:';
+
+    // Cache key holding the last-reconciled change-hash of governed env values.
+    const MARKER_KEY = 'config-cache:sync-hash';
+
+    // Lock key preventing concurrent reconciles.
+    const LOCK_KEY = 'config-cache:sync';
+
+    // Lock TTL in seconds.
+    const LOCK_TTL = 15;
 
     // Keys whose value is a secret and must be encrypted at rest and masked
     // when read back through the admin API / debug page.
@@ -290,5 +300,83 @@ class ConfigCacheService
         }
 
         return count($keys);
+    }
+
+    // Whether the .env → config_cache reconcile is enabled.
+    public static function syncEnabled(): bool
+    {
+        return (bool) Env::get('PIXELFED_CONFIG_CACHE_SYNC', true);
+    }
+
+    // Reconcile .env into config_cache for env-bound keys. Hash-gated (skips when
+    // governed values are unchanged, unless $force) and lock-guarded against
+    // concurrent runs. Writes the change-hash marker on completion.
+    public static function sync(bool $force = false): void
+    {
+        $hash = self::configHash();
+
+        if (! $force && Cache::get(self::MARKER_KEY) === $hash) {
+            Log::info('config-cache sync skipped: hash unchanged '.$hash);
+
+            return;
+        }
+
+        $lock = Cache::lock(self::LOCK_KEY, self::LOCK_TTL);
+
+        if (! $lock->get()) {
+            return;
+        }
+
+        try {
+            self::refreshEnv();
+            self::flushAll();
+            Cache::forever(self::MARKER_KEY, $hash);
+        } finally {
+            $lock->release();
+        }
+    }
+
+    // Reconcile each ENVCONFIG key's row against its authoritative env/config
+    // value: seed unlocked keys, prune stale locked rows when empty, overwrite
+    // drift when locked.
+    public static function refreshEnv(): void
+    {
+        foreach (self::keysInList('ENVCONFIG') as $key) {
+            $row = ConfigCacheModel::where('k', $key)->first();
+            $value = config($key);
+            $empty = $value === null || $value === '';
+
+            if (! self::isLocked($key)) {
+                if ($row === null && ! $empty) {
+                    self::putRaw($key, $value);
+                }
+
+                continue;
+            }
+
+            if ($empty) {
+                if ($row !== null) {
+                    self::forget($key);
+                }
+                // != on purpose: `v` is a text column, so a stored
+                // "5" must count as equal to an int 5 due to loose typing.
+            } elseif ($row === null || $row->v != $value) {
+                self::putRaw($key, $value);
+            }
+        }
+    }
+
+    // Stable sha256 over every governed ENVCONFIG key's effective config value.
+    public static function configHash(): string
+    {
+        $keys = self::keysInList('ENVCONFIG');
+        sort($keys);
+
+        $payload = [];
+        foreach ($keys as $k) {
+            $payload[$k] = config($k);
+        }
+
+        return hash('sha256', json_encode($payload));
     }
 }

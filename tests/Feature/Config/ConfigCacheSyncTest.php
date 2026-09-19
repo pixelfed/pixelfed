@@ -1,6 +1,5 @@
 <?php
 
-use App\Console\Commands\Admin\PixelfedConfigCacheSync;
 use App\Models\ConfigCache as ConfigCacheModel;
 use App\Services\ConfigCacheService;
 use Illuminate\Console\Events\CommandFinished;
@@ -281,13 +280,8 @@ test('marker written on success equals the current change hash (8.7)', function 
 
     expect(runSync())->toBe(0);
 
-    // Recompute the change hash the same way the command does and compare.
-    $expected = (function () {
-        $method = new ReflectionMethod(PixelfedConfigCacheSync::class, 'configHash');
-        $method->setAccessible(true);
-
-        return $method->invoke(new PixelfedConfigCacheSync);
-    })();
+    // Recompute the change hash the same way the service does and compare.
+    $expected = ConfigCacheService::configHash();
 
     expect(Cache::get(SYNC_MARKER_KEY))->toBe($expected);
 });
