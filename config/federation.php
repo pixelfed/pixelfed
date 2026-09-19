@@ -81,4 +81,8 @@ return [
     ],
 
     'migration' => env('PF_ACCT_MIGRATION_ENABLED', true),
+
+    'url_validation' => [
+        'skip_local_checks' => env('AP_SKIP_LOCAL_URL_CHECKS', true),
+    ],
 ];
