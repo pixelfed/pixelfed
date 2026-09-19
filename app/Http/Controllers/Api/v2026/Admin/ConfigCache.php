@@ -5,11 +5,8 @@ namespace App\Http\Controllers\Api\v2026\Admin;
 use App\Http\Controllers\Controller;
 use App\Models\ConfigCache as ConfigCacheModel;
 use App\Services\ConfigCacheService;
-use Illuminate\Contracts\View\View;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Artisan;
-use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Str;
 
@@ -17,7 +14,7 @@ class ConfigCache extends Controller
 {
     // GET config — bulk read; requires an explicit ?keys[] filter. Unknown keys
     // reject with 422. There is no fetch-everything default.
-    public function index(Request $request): JsonResponse
+    public function showBulk(Request $request): JsonResponse
     {
         $this->authorizeAdmin($request, 'admin:read');
 
@@ -44,7 +41,7 @@ class ConfigCache extends Controller
         $keys = array_values(array_unique($requested));
 
         return response()->json([
-            'data' => array_map(fn ($key) => $this->itemFor($key), $keys),
+            'data' => array_map(fn ($key) => $this->itemMetadata($key), $keys),
         ]);
     }
 
@@ -60,7 +57,7 @@ class ConfigCache extends Controller
             ], 404);
         }
 
-        return response()->json(['data' => $this->itemFor($key)]);
+        return response()->json(['data' => $this->itemMetadata($key)]);
     }
 
     // POST config/{key} — single write from the `value` field.
@@ -69,7 +66,7 @@ class ConfigCache extends Controller
         $this->authorizeAdmin($request, 'admin:write');
 
         $errors = [];
-        $permitted = $this->collectWritable([$key => $request->input('value')], $errors);
+        $permitted = $this->validateSubmitted([$key => $request->input('value')], $errors);
 
         if (! empty($errors)) {
             return response()->json([
@@ -79,8 +76,8 @@ class ConfigCache extends Controller
         }
 
         return response()->json([
-            'changed' => array_values($this->persist($permitted)),
-            'data' => $this->itemFor($key),
+            'changed' => array_values($this->saveToDB($permitted)),
+            'data' => $this->itemMetadata($key),
         ]);
     }
 
@@ -88,7 +85,7 @@ class ConfigCache extends Controller
     // Valid keys are persisted even when others fail; per-key failures are
     // reported in `errors`. Returns 422 only when the payload is malformed or
     // no submitted key was writable.
-    public function store(Request $request): JsonResponse
+    public function updateBulk(Request $request): JsonResponse
     {
         $this->authorizeAdmin($request, 'admin:write');
 
@@ -101,7 +98,7 @@ class ConfigCache extends Controller
         }
 
         $errors = [];
-        $permitted = $this->collectWritable($config, $errors);
+        $permitted = $this->validateSubmitted($config, $errors);
 
         if (empty($permitted) && ! empty($errors)) {
             return response()->json([
@@ -111,7 +108,7 @@ class ConfigCache extends Controller
         }
 
         return response()->json([
-            'changed' => array_values($this->persist($permitted)),
+            'changed' => array_values($this->saveToDB($permitted)),
             'errors' => empty($errors) ? (object) [] : $errors,
         ]);
     }
@@ -126,7 +123,7 @@ class ConfigCache extends Controller
     // Validate submitted key/values, collecting per-key errors. Unknown, locked,
     // or rule-failing keys error; masked/empty secrets are skipped. Returns the
     // writable pairs; the caller persists only when $errors is empty.
-    protected function collectWritable(array $submitted, array &$errors): array
+    protected function validateSubmitted(array $submitted, array &$errors): array
     {
         $permitted = [];
 
@@ -171,7 +168,7 @@ class ConfigCache extends Controller
     }
 
     // Persist pairs; return only the keys whose effective value changed.
-    protected function persist(array $permitted): array
+    protected function saveToDB(array $permitted): array
     {
         $changed = [];
 
@@ -181,7 +178,7 @@ class ConfigCache extends Controller
             $after = ConfigCacheService::get($key);
 
             if ($before !== $after) {
-                $changed[$key] = $this->itemFor($key);
+                $changed[$key] = $this->itemMetadata($key);
             }
         }
 
@@ -199,13 +196,13 @@ class ConfigCache extends Controller
     }
 
     // Metadata for a key; protected values are masked.
-    protected function itemFor(string $key): array
+    protected function itemMetadata(string $key): array
     {
         $protected = ConfigCacheService::isProtected($key);
         $value = ConfigCacheService::get($key);
 
         if ($protected) {
-            $value = self::maskSecret($value);
+            $value = self::maskProtectedConfig($value);
         }
 
         return [
@@ -213,13 +210,13 @@ class ConfigCache extends Controller
             'value' => $value,
             'list' => ConfigCacheService::listOf($key),
             'locked' => ConfigCacheService::isLocked($key),
-            'source' => $this->sourceFor($key),
+            'source' => $this->itemSource($key),
             'protected' => $protected,
         ];
     }
 
     // 'env' (env wins), 'db' (row exists), or 'default' (config file value).
-    protected function sourceFor(string $key): string
+    protected function itemSource(string $key): string
     {
         if (ConfigCacheService::isLocked($key)) {
             return 'env';
@@ -233,7 +230,7 @@ class ConfigCache extends Controller
     }
 
     // Mask a secret: 4 chars visible each end, rest '*'; <8 chars fully masked.
-    public static function maskSecret($value): ?string
+    public static function maskProtectedConfig($value): ?string
     {
         if (empty($value)) {
             return $value === null ? null : (string) $value;
@@ -244,147 +241,5 @@ class ConfigCache extends Controller
         }
 
         return Str::mask((string) $value, '*', 4, -4);
-    }
-
-    // Read-only debug page showing effective/DB/config values per key.
-    public function debugPage(Request $request): View
-    {
-        $rows = collect(ConfigCacheService::adminVisibleKeys())
-            ->map(fn ($key) => $this->debugRow($key))
-            ->values()
-            ->all();
-
-        return view('admin.config-cache.home', [
-            'rows' => $rows,
-            'sync' => $this->syncHealth(),
-        ]);
-    }
-
-    // Force a full reconcile + cache flush so the server matches .env/config.
-    public function clearCache(Request $request)
-    {
-        Artisan::call('admin:pixelfed-config-cache-sync', ['--force' => true]);
-
-        return redirect()
-            ->route('admin.config-cache')
-            ->with('status', 'Config cache reconciled and cleared. The server now reflects the current .env and config.');
-    }
-
-    // A debug-page row; secrets are decrypted only to compute match, then masked.
-    protected function debugRow(string $key): array
-    {
-        $protected = ConfigCacheService::isProtected($key);
-        $effective = ConfigCacheService::get($key);
-        $configVal = config($key);
-
-        $rawDb = ConfigCacheModel::where('k', $key)->value('v');
-        $dbPlain = $rawDb;
-        if ($protected && $rawDb !== null && $rawDb !== '') {
-            try {
-                $dbPlain = decrypt($rawDb);
-            } catch (\Throwable $e) {
-                $dbPlain = null;
-            }
-        }
-
-        $source = $this->sourceFor($key);
-
-        $match = $source === 'db'
-            ? $this->looseEquals($effective, $dbPlain)
-            : $this->looseEquals($effective, $configVal);
-
-        if ($protected) {
-            $effectiveDisplay = self::maskSecret(is_scalar($effective) ? (string) $effective : null);
-            $dbDisplay = $rawDb === null ? null : self::maskSecret($dbPlain !== null && is_scalar($dbPlain) ? (string) $dbPlain : (string) $rawDb);
-            $configDisplay = self::maskSecret(is_scalar($configVal) ? (string) $configVal : null);
-        } else {
-            $effectiveDisplay = $this->scalarize($effective);
-            $dbDisplay = $rawDb === null ? null : $this->scalarize($rawDb);
-            $configDisplay = $this->scalarize($configVal);
-        }
-
-        return [
-            'key' => $key,
-            'env' => ConfigCacheService::envVarFor($key),
-            'list' => ConfigCacheService::listOf($key),
-            'source' => $source,
-            'locked' => ConfigCacheService::isLocked($key),
-            'protected' => $protected,
-            'effective' => $effectiveDisplay,
-            'db' => $dbDisplay,
-            'config' => $configDisplay,
-            'match' => $match,
-        ];
-    }
-
-    // Loose equality so a DB string ("5"/"0") matches a typed value (5/false).
-    protected function looseEquals($a, $b): bool
-    {
-        if ($a === null || $b === null) {
-            return $a === $b;
-        }
-
-        if (! is_scalar($a) || ! is_scalar($b)) {
-            return $a === $b;
-        }
-
-        return $this->normalizeScalar($a) === $this->normalizeScalar($b);
-    }
-
-    // Canonicalize booleans and boolean-ish strings to "1"/"0" so false matches
-    // a DB "0" (PHP casts false to "", not "0"). Others compare as strings.
-    protected function normalizeScalar($value): string
-    {
-        if (is_bool($value)) {
-            return $value ? '1' : '0';
-        }
-
-        if (in_array($value, [0, 1, '0', '1', 'true', 'false', true, false], true)) {
-            return filter_var($value, FILTER_VALIDATE_BOOLEAN) ? '1' : '0';
-        }
-
-        return (string) $value;
-    }
-
-    // Render a non-secret value: scalars to string, arrays to JSON.
-    protected function scalarize($value): ?string
-    {
-        if ($value === null) {
-            return null;
-        }
-
-        if (is_bool($value)) {
-            return $value ? 'true' : 'false';
-        }
-
-        if (is_scalar($value)) {
-            return (string) $value;
-        }
-
-        return json_encode($value);
-    }
-
-    // Sync-health panel: stored change-hash and best-effort lock state.
-    protected function syncHealth(): array
-    {
-        $syncHash = Cache::get(ConfigCacheService::MARKER_KEY);
-
-        $lockHeld = null;
-        try {
-            $lock = Cache::lock(ConfigCacheService::LOCK_KEY, 1);
-            if ($lock->get()) {
-                $lock->release();
-                $lockHeld = false;
-            } else {
-                $lockHeld = true;
-            }
-        } catch (\Throwable $e) {
-            $lockHeld = null;
-        }
-
-        return [
-            'sync_hash' => $syncHash,
-            'lock_held' => $lockHeld,
-        ];
     }
 }

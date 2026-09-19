@@ -53,7 +53,7 @@ it('config_cache resolves an ENVCONFIG key from db/config when its env var is ab
     // master switch (removed in the config-cache refactor).
     $key = 'instance.landing.show_directory';
 
-    // The persisted DB row stringifies scalars, so compare loosely (truthy/falsy)
+    // The persisted DB row stringifies booleans, so compare loosely (truthy/falsy)
     // rather than strict boolean identity.
     Config::set($key, true);
     ConfigCacheService::put($key, true);

@@ -37,19 +37,19 @@ function routingFind(string $uri, string $method): ?Illuminate\Routing\Route
     return null;
 }
 
-test('GET api/v2026/admin/config maps to ConfigCache@index', function () {
+test('GET api/v2026/admin/config maps to ConfigCache@showBulk', function () {
     $route = routingFind('api/v2026/admin/config', 'GET');
 
     expect($route)->not->toBeNull();
-    expect($route->getActionName())->toBe(ROUTING_CONTROLLER.'@index');
-    expect($route->getAction('controller'))->toBe(ROUTING_CONTROLLER.'@index');
+    expect($route->getActionName())->toBe(ROUTING_CONTROLLER.'@showBulk');
+    expect($route->getAction('controller'))->toBe(ROUTING_CONTROLLER.'@showBulk');
 });
 
-test('POST api/v2026/admin/config maps to ConfigCache@store', function () {
+test('POST api/v2026/admin/config maps to ConfigCache@updateBulk', function () {
     $route = routingFind('api/v2026/admin/config', 'POST');
 
     expect($route)->not->toBeNull();
-    expect($route->getActionName())->toBe(ROUTING_CONTROLLER.'@store');
+    expect($route->getActionName())->toBe(ROUTING_CONTROLLER.'@updateBulk');
 });
 
 test('GET api/v2026/admin/config/{key} maps to ConfigCache@show with a dotted-key constraint', function () {

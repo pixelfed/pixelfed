@@ -19,7 +19,7 @@ uses(LazilyRefreshDatabase::class);
 |
 | instance.stats.total_local_posts is ADMINONLY (no env var), so put() writes a
 | row and config_cache resolves DB-row-first, else the config-file fallback.
-| config_cache DB rows stringify scalars, so we compare loosely (string cast).
+| config_cache DB rows stringify booleans, so we compare loosely (string cast).
 |
 | Validates: Requirements 11.4
 |
