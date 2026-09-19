@@ -4,7 +4,7 @@ use App\Http\Controllers\Admin\AdminUserInviteController;
 use App\Http\Controllers\AdminController;
 use App\Http\Controllers\AdminCuratedRegisterController;
 use App\Http\Controllers\AdminShadowFilterController;
-use App\Http\Controllers\Api\v2026\Admin\ConfigCacheDiagnostics;
+use App\Http\Controllers\Api\v2026\Admin\ConfigCacheDiagnosticsController;
 use App\Http\Controllers\PageController;
 
 Route::domain(config('pixelfed.domain.admin'))->prefix('i/admin')->middleware(['localization'])->group(function () {
@@ -99,8 +99,8 @@ Route::domain(config('pixelfed.domain.admin'))->prefix('i/admin')->middleware(['
     Route::post('newsroom/create', [AdminController::class, 'newsroomStore']);
 
     Route::get('diagnostics/home', [AdminController::class, 'diagnosticsHome'])->name('admin.diagnostics');
-    Route::get('diagnostics/config-cache', [ConfigCacheDiagnostics::class, 'debugPage'])->middleware(['admin', 'dangerzone'])->name('admin.config-cache');
-    Route::post('diagnostics/config-cache/clear-cache', [ConfigCacheDiagnostics::class, 'clearCache'])->middleware(['admin', 'dangerzone'])->name('admin.config-cache.clear');
+    Route::get('diagnostics/config-cache', [ConfigCacheDiagnosticsController::class, 'debugPage'])->middleware(['admin', 'dangerzone'])->name('admin.config-cache');
+    Route::post('diagnostics/config-cache/clear-cache', [ConfigCacheDiagnosticsController::class, 'clearCache'])->middleware(['admin', 'dangerzone'])->name('admin.config-cache.clear');
     Route::post('diagnostics/decrypt', [AdminController::class, 'diagnosticsDecrypt'])->name('admin.diagnostics.decrypt');
     Route::get('custom-emoji/home', [AdminController::class, 'customEmojiHome'])->name('admin.custom-emoji');
     Route::post('custom-emoji/toggle-active/{id}', [AdminController::class, 'customEmojiToggleActive']);

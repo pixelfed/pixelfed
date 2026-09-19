@@ -10,7 +10,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Artisan;
 use Illuminate\Support\Facades\Cache;
 
-class ConfigCacheDiagnostics extends Controller
+class ConfigCacheDiagnosticsController extends Controller
 {
     // Read-only debug page showing effective/DB/config values per key.
     public function debugPage(Request $request): View
@@ -60,9 +60,9 @@ class ConfigCacheDiagnostics extends Controller
             : $this->looseEquals($effective, $configVal);
 
         if ($protected) {
-            $effectiveDisplay = ConfigCache::maskProtectedConfig(is_scalar($effective) ? (string) $effective : null);
-            $dbDisplay = $rawDb === null ? null : ConfigCache::maskProtectedConfig($dbPlain !== null && is_scalar($dbPlain) ? (string) $dbPlain : (string) $rawDb);
-            $configDisplay = ConfigCache::maskProtectedConfig(is_scalar($configVal) ? (string) $configVal : null);
+            $effectiveDisplay = ConfigCacheController::maskProtectedConfig(is_scalar($effective) ? (string) $effective : null);
+            $dbDisplay = $rawDb === null ? null : ConfigCacheController::maskProtectedConfig($dbPlain !== null && is_scalar($dbPlain) ? (string) $dbPlain : (string) $rawDb);
+            $configDisplay = ConfigCacheController::maskProtectedConfig(is_scalar($configVal) ? (string) $configVal : null);
         } else {
             $effectiveDisplay = $this->returnType($effective);
             $dbDisplay = $rawDb === null ? null : $this->returnType($rawDb);

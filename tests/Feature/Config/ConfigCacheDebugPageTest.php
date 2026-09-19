@@ -1,6 +1,6 @@
 <?php
 
-use App\Http\Controllers\Api\v2026\Admin\ConfigCacheDiagnostics;
+use App\Http\Controllers\Api\v2026\Admin\ConfigCacheDiagnosticsController;
 use App\Models\User;
 use Illuminate\Foundation\Testing\LazilyRefreshDatabase;
 use Illuminate\Support\Facades\Route;
@@ -54,7 +54,7 @@ test('the config-cache debug route is registered with the admin + dangerzone mid
 
     expect($route)->not->toBeNull();
     expect($route->getActionName())
-        ->toBe(ConfigCacheDiagnostics::class.'@debugPage');
+        ->toBe(ConfigCacheDiagnosticsController::class.'@debugPage');
 
     $middleware = $route->gatherMiddleware();
     expect($middleware)->toContain('admin');

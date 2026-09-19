@@ -1,6 +1,6 @@
 <?php
 
-use App\Http\Controllers\Api\v2026\Admin\ConfigCache as AdminConfigCacheController;
+use App\Http\Controllers\Api\v2026\Admin\ConfigCacheController as AdminConfigCacheController;
 use Illuminate\Support\Facades\Route;
 
 $middleware = ['auth:sanctum,api'];

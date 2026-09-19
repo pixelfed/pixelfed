@@ -10,7 +10,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Str;
 
-class ConfigCache extends Controller
+class ConfigCacheController extends Controller
 {
     // GET config — bulk read; requires an explicit ?keys[] filter. Unknown keys
     // reject with 422. There is no fetch-everything default.

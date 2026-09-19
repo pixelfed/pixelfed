@@ -1,6 +1,6 @@
 <?php
 
-use App\Http\Controllers\Api\v2026\Admin\ConfigCacheDiagnostics;
+use App\Http\Controllers\Api\v2026\Admin\ConfigCacheDiagnosticsController;
 use App\Models\ConfigCache as ConfigCacheModel;
 use App\Models\User;
 use App\Services\ConfigCacheService;
@@ -148,7 +148,7 @@ test('the clear-cache route is registered as POST with admin + dangerzone middle
 
     expect($route)->not->toBeNull();
     expect($route->methods())->toContain('POST');
-    expect($route->getActionName())->toBe(ConfigCacheDiagnostics::class.'@clearCache');
+    expect($route->getActionName())->toBe(ConfigCacheDiagnosticsController::class.'@clearCache');
 
     $middleware = $route->gatherMiddleware();
     expect($middleware)->toContain('admin');

@@ -1,6 +1,6 @@
 <?php
 
-use App\Http\Controllers\Api\v2026\Admin\ConfigCache;
+use App\Http\Controllers\Api\v2026\Admin\ConfigCacheController;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -21,7 +21,7 @@ use Illuminate\Support\Facades\Route;
 |
 */
 
-const ROUTING_CONTROLLER = ConfigCache::class;
+const ROUTING_CONTROLLER = ConfigCacheController::class;
 
 /**
  * Find the registered route matching an exact URI + HTTP method, or null.
