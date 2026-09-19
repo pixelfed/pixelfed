@@ -68,7 +68,6 @@ test('POST api/v2026/admin/config/{key} maps to ConfigCache@update with a dotted
     expect($route->wheres['key'] ?? null)->toBe('.*');
 });
 
-
 test('the OLD pre-move api/v2026/config paths are NOT registered', function () {
     expect(routingFind('api/v2026/config', 'GET'))->toBeNull();
     expect(routingFind('api/v2026/config', 'POST'))->toBeNull();
