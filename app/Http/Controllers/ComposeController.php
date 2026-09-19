@@ -21,6 +21,7 @@ use App\Services\MediaPathService;
 use App\Services\MediaStorageService;
 use App\Services\MediaTagService;
 use App\Services\PlaceService;
+use App\Services\QuoteService;
 use App\Services\SnowflakeService;
 use App\Services\UserFilterService;
 use App\Services\UserRoleService;
@@ -535,6 +536,7 @@ class ComposeController extends Controller
             'license' => 'nullable|integer|min:1|max:16',
             'collections' => 'sometimes|array|min:1|max:5',
             'spoiler_text' => 'nullable|string|max:140',
+            'quote_approval_policy' => 'sometimes|nullable|string|in:public,followers,nobody',
             // 'optimize_media' => 'nullable'
         ]);
 
@@ -622,6 +624,10 @@ class ComposeController extends Controller
 
         if ($request->filled('spoiler_text') && $cw) {
             $status->cw_summary = $request->input('spoiler_text');
+        }
+
+        if ($request->filled('quote_approval_policy')) {
+            $status->quote_policy = QuoteService::fromApiPolicy($request->input('quote_approval_policy'));
         }
 
         $defaultCaption = '';

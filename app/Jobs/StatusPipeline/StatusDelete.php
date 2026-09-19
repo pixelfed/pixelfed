@@ -12,6 +12,7 @@ use App\Models\Media;
 use App\Models\MediaTag;
 use App\Models\Mention;
 use App\Models\Notification;
+use App\Models\QuoteAuthorization;
 use App\Models\Report;
 use App\Models\Status;
 use App\Models\StatusArchived;
@@ -126,6 +127,8 @@ class StatusDelete implements ShouldQueue
         }
 
         Bookmark::whereStatusId($status->id)->delete();
+
+        QuoteAuthorization::whereStatusId($status->id)->delete();
 
         CollectionItem::whereObjectType(Status::class)
             ->whereObjectId($status->id)

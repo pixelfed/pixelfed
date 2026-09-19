@@ -212,6 +212,7 @@ Route::prefix('api')->group(function () use ($middleware) {
         Route::get('tags/{id}', [TagsController::class, 'getHashtag'])->middleware($middleware);
 
         Route::get('statuses/{id}/history', [StatusEditController::class, 'history'])->middleware($middleware);
+        Route::put('statuses/{id}/interaction_policy', [StatusEditController::class, 'interactionPolicy'])->middleware($middleware);
         Route::put('statuses/{id}', [StatusEditController::class, 'store'])->middleware($middleware);
 
         Route::prefix('admin')->group(function () use ($middleware) {

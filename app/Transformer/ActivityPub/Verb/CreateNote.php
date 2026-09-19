@@ -5,6 +5,7 @@ namespace App\Transformer\ActivityPub\Verb;
 use App\Models\CustomEmoji;
 use App\Models\Status;
 use App\Services\MediaService;
+use App\Services\QuoteService;
 use App\Util\Lexer\Autolink;
 use Illuminate\Support\Str;
 use League\Fractal;
@@ -87,6 +88,7 @@ class CreateNote extends Fractal\TransformerAbstract
                     'toot' => 'http://joinmastodon.org/ns#',
                     'Emoji' => 'toot:Emoji',
                     'blurhash' => 'toot:blurhash',
+                    ...QuoteService::NOTE_CONTEXT_TERMS,
                 ],
             ],
             'id' => $status->permalink(),
@@ -110,6 +112,7 @@ class CreateNote extends Fractal\TransformerAbstract
                 'attachment' => MediaService::activitypub($status->id, true),
                 'tag' => $tags,
                 'commentsEnabled' => (bool) ! $status->comments_disabled,
+                'interactionPolicy' => QuoteService::interactionPolicy($status),
                 'capabilities' => [
                     'announce' => 'https://www.w3.org/ns/activitystreams#Public',
                     'like' => 'https://www.w3.org/ns/activitystreams#Public',
