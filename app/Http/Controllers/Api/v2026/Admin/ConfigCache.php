@@ -23,12 +23,6 @@ class ConfigCache extends Controller
 
         $requested = $request->input('keys');
 
-        if ($requested === null) {
-            return response()->json([
-                'message' => 'The keys parameter is required and must be a non-empty array.',
-            ], 422);
-        }
-
         if (! is_array($requested) || empty($requested)) {
             return response()->json([
                 'message' => 'The keys parameter is required and must be a non-empty array.',
