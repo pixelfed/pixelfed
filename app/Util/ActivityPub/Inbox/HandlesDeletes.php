@@ -10,6 +10,7 @@ use App\Models\Notification;
 use App\Models\Profile;
 use App\Models\Status;
 use App\Models\Story;
+use App\Services\QuoteService;
 use App\Util\ActivityPub\Helpers;
 
 trait HandlesDeletes
@@ -106,6 +107,9 @@ trait HandlesDeletes
         if (! $profile || $profile->private_key != null) {
             return;
         }
+
+        // FEP-044f: if this post was an approved quote, its stamp goes with it
+        QuoteService::forgetQuote($profile->id, $objectId);
 
         $status = Status::where('object_url', $objectId)->first();
         if (! $status) {

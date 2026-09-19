@@ -593,6 +593,59 @@
             </div>
         </div>
 
+        {{-- Quote posts --}}
+        <div class="privacy-section">
+            <div class="privacy-section-header">
+                <h5>Quote Posts</h5>
+                <p>Control whether people on other servers can quote your posts.</p>
+            </div>
+
+            <div class="privacy-select">
+                <label for="can_quote">
+                    Who can quote your posts
+                </label>
+
+                <p class="privacy-description mb-0">
+                    This is the default for your public and unlisted posts. Apps can
+                    set a different choice on individual posts. Followers-only posts
+                    can never be quoted by anyone else.
+                </p>
+
+                <select
+                    class="form-control"
+                    name="can_quote"
+                    id="can_quote">
+
+                    <option
+                        value="everyone"
+                        {{ ($settings->can_quote ?? 'everyone') === 'everyone' ? 'selected' : '' }}>
+                        Everyone
+                    </option>
+
+                    <option
+                        value="followers"
+                        {{ ($settings->can_quote ?? 'everyone') === 'followers' ? 'selected' : '' }}>
+                        People who follow you
+                    </option>
+
+                    <option
+                        value="nobody"
+                        {{ ($settings->can_quote ?? 'everyone') === 'nobody' ? 'selected' : '' }}>
+                        Nobody
+                    </option>
+                </select>
+
+                <p class="privacy-description mt-2 mb-0">
+                    You can review quotes of your posts and revoke any of them from
+                    <a
+                        href="{{ route('settings.privacy.quotes') }}"
+                        class="font-weight-bold">
+                        Quotes of your posts
+                    </a>.
+                </p>
+            </div>
+        </div>
+
         <div class="privacy-save">
             <button
                 type="submit"

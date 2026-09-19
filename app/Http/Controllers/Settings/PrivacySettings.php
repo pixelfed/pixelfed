@@ -6,9 +6,11 @@ use App\Jobs\HomeFeedPipeline\FeedUnfollowPipeline;
 use App\Models\FeatureAuthorization;
 use App\Models\Follower;
 use App\Models\Profile;
+use App\Models\QuoteAuthorization;
 use App\Models\UserFilter;
 use App\Services\AccountService;
 use App\Services\FeaturedCollectionService;
+use App\Services\QuoteService;
 use App\Services\RelationshipService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Cache;
@@ -107,6 +109,13 @@ trait PrivacySettings
             FeaturedCollectionService::forgetPolicy($pid);
         }
 
+        $canQuote = $request->input('can_quote');
+        if (in_array($canQuote, QuoteService::POLICIES, true) && $canQuote !== $settings->can_quote) {
+            $settings->can_quote = $canQuote;
+            $settings->save();
+            QuoteService::forgetPolicy($pid);
+        }
+
         Cache::forget('profile:settings:'.$pid);
         Cache::forget('user:account:id:'.$profile->user_id);
         Cache::forget('profile:follower_count:'.$pid);
@@ -178,6 +187,33 @@ trait PrivacySettings
         FeaturedCollectionService::revoke($auth);
 
         return redirect()->back()->with('status', 'You have been removed from the collection.');
+    }
+
+    public function quotes(Request $request)
+    {
+        $pid = $request->user()->profile->id;
+        $quotes = QuoteAuthorization::whereProfileId($pid)
+            ->approved()
+            ->with(['actor', 'status'])
+            ->orderByDesc('id')
+            ->simplePaginate(15);
+
+        return view('settings.privacy.quotes', ['quotes' => $quotes]);
+    }
+
+    public function quotesRevoke(Request $request)
+    {
+        $this->validate($request, [
+            'id' => 'required|integer|min:1',
+        ]);
+        $pid = $request->user()->profile->id;
+        $auth = QuoteAuthorization::whereProfileId($pid)
+            ->approved()
+            ->findOrFail($request->input('id'));
+
+        QuoteService::revoke($auth);
+
+        return redirect()->back()->with('status', 'Quote approval revoked.');
     }
 
     public function blockedUsers(Request $request)

@@ -29,6 +29,7 @@ use App\Models\Profile;
 use App\Models\ProfileAlias;
 use App\Models\ProfileMigration;
 use App\Models\ProfileSponsor;
+use App\Models\QuoteAuthorization;
 use App\Models\RemoteAuth;
 use App\Models\RemoteReport;
 use App\Models\Report;
@@ -195,6 +196,7 @@ class DeleteAccountPipeline implements ShouldQueue
         UserDevice::whereUserId($user->id)->forceDelete();
         UserFilter::whereUserId($user->id)->forceDelete();
         FeatureAuthorization::whereProfileId($id)->delete();
+        QuoteAuthorization::whereProfileId($id)->delete();
         UserSetting::whereUserId($user->id)->forceDelete();
 
         Mention::whereProfileId($id)->forceDelete();

@@ -62,6 +62,7 @@ use App\Services\MediaService;
 use App\Services\NetworkTimelineService;
 use App\Services\NotificationService;
 use App\Services\PublicTimelineService;
+use App\Services\QuoteService;
 use App\Services\ReblogService;
 use App\Services\RelationshipService;
 use App\Services\SanitizeService;
@@ -3758,6 +3759,7 @@ class ApiV1Controller extends Controller
             'place_id' => 'sometimes|integer|min:1|max:128769',
             'collection_ids' => 'sometimes|array|max:3',
             'comments_disabled' => 'sometimes|boolean',
+            'quote_approval_policy' => 'sometimes|nullable|string|in:public,followers,nobody',
         ]);
 
         if ($request->filled('visibility') && $request->input('visibility') === 'direct') {
@@ -3835,6 +3837,8 @@ class ApiV1Controller extends Controller
         $status = null;
         $parent = null;
 
+        $quotePolicy = QuoteService::fromApiPolicy($request->input('quote_approval_policy'));
+
         if ($in_reply_to_id) {
             $parent = Status::findOrFail($in_reply_to_id);
 
@@ -3867,6 +3871,7 @@ class ApiV1Controller extends Controller
             $status->cw_summary = $spoilerText;
             $status->in_reply_to_id = $parent->id;
             $status->in_reply_to_profile_id = $parent->profile_id;
+            $status->quote_policy = $quotePolicy;
             $status->save();
             StatusService::del($parent->id);
             Cache::forget('status:replies:all:'.$parent->id);
@@ -3922,6 +3927,7 @@ class ApiV1Controller extends Controller
                 $status->comments_disabled = true;
             }
 
+            $status->quote_policy = $quotePolicy;
             $status->scope = $visibility;
             $status->visibility = $visibility;
             $status->type = StatusController::mimeTypeCheck($mimes);

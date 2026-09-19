@@ -7,6 +7,7 @@ use App\Models\Profile;
 use App\Services\AccountService;
 use App\Services\UserFilterService;
 use App\Util\ActivityPub\Helpers;
+use App\Util\ActivityPub\HttpSignature;
 use Illuminate\Support\Facades\Cache;
 
 trait InboxHelpers
@@ -22,6 +23,37 @@ trait InboxHelpers
         }
 
         return Helpers::profileFetch($actorUrl);
+    }
+
+    /**
+     * The known profile that owns the key this request was signed with.
+     * The inbox validators already verified the signature against that key.
+     */
+    public function signingProfile(): ?Profile
+    {
+        $signature = $this->headers['signature'] ?? null;
+
+        if (is_array($signature)) {
+            $signature = $signature[0] ?? null;
+        }
+
+        if (! is_string($signature) || $signature === '') {
+            return null;
+        }
+
+        $data = HttpSignature::parseSignatureHeader($signature);
+
+        if (isset($data['error']) || empty($data['keyId'])) {
+            return null;
+        }
+
+        $keyId = Helpers::validateUrl($data['keyId']);
+
+        if (! $keyId) {
+            return null;
+        }
+
+        return Profile::whereKeyId($keyId)->first();
     }
 
     /**

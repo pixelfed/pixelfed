@@ -31,6 +31,7 @@ use Illuminate\Support\Str;
  * @property string|null $visibility
  * @property string|null $cw_summary
  * @property bool $comments_disabled
+ * @property int|null $quote_policy FEP-044f per-post canQuote bitmask (see QuoteService), null = account default, 0 = nobody
  * @property int $likes_count
  * @property int $reblogs_count
  * @property int $reply_count
@@ -66,6 +67,7 @@ class Status extends Model
         return [
             'deleted_at' => 'datetime',
             'edited_at' => 'datetime',
+            'quote_policy' => 'integer',
         ];
     }
 
