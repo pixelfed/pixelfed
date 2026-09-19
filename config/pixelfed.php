@@ -23,7 +23,7 @@ return [
     | This value is the version of your Pixelfed instance.
     |
     */
-    'version' => '0.14.0',
+    'version' => '0.14.1',
 
     /*
     |--------------------------------------------------------------------------
@@ -34,7 +34,7 @@ return [
     |
     */
     'nodeinfo' => [
-        'url' => config('app.url').'/api/nodeinfo/2.0.json',
+        'url' => config('app.url') . '/api/nodeinfo/2.0.json',
     ],
 
     /*

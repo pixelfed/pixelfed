@@ -4,7 +4,11 @@
 
 -   in progress
 
-## [v0.14.0 (2026-09-17)](https://github.com/pixelfed/pixelfed/compare/v0.14.0...dev)
+## [v0.14.1 (2026-09-19)](https://github.com/pixelfed/pixelfed/compare/v0.14.1...dev)
+
+- Update Helpers::validateUrl(), skip validation for app domain/url optionally ([81e71a04f](https://github.com/pixelfed/pixelfed/commit/81e71a04f81b2b5cce22ae5e4a94b802350083d5))
+
+## [v0.14.0 (2026-09-18)](https://github.com/pixelfed/pixelfed/compare/v0.14.0...dev)
 This release includes `FEP-044f: Consent-respecting quote posts`, `FEP-8fcf followers collection synchronization`, and a bunch of ActivityPub federation improvements.
 
 - Add FEP-044f: Consent-respecting quote posts ([823efcaad](https://github.com/pixelfed/pixelfed/commit/823efcaad70f05ad513eab26b0fc07d00fb40e9c))
