@@ -411,6 +411,61 @@ test('POST bulk success returns ONLY the keys whose value actually changed (6.8)
     expect($changedKeys)->toBe([$secondKey]);
 });
 
+test('POST bulk with an empty value resets that key while writing the others (6.9b)', function () {
+    apiAdmin(['admin:write']);
+
+    // First key has a stored override we will reset via an empty value.
+    Config::set(API_ADMINONLY_KEY, '/* default css */');
+    ConfigCacheService::putRaw(API_ADMINONLY_KEY, '.override { color: red; }');
+    apiForget(API_ADMINONLY_KEY);
+
+    // Second ADMINONLY key gets a genuine new value in the same batch.
+    $secondKey = 'uikit.custom.js';
+    apiForget($secondKey);
+
+    expect(ConfigCacheModel::where('k', API_ADMINONLY_KEY)->exists())->toBeTrue();
+
+    $this->postJson('/api/v2026/admin/config', [
+        'config' => [
+            API_ADMINONLY_KEY => '',                     // reset to default
+            $secondKey => 'console.log("kept");',        // written
+        ],
+    ])->assertOk();
+
+    // The reset key reverts to its config default; the other key is written.
+    apiForget(API_ADMINONLY_KEY);
+    expect(ConfigCacheService::get(API_ADMINONLY_KEY))->toBe('/* default css */');
+    expect(ConfigCacheModel::where('k', $secondKey)->value('v'))->toBe('console.log("kept");');
+});
+
+test('POST bulk skips a PROTECTED masked placeholder but writes a real change (6.7c)', function () {
+    apiAdmin(['admin:write']);
+
+    // Protected key with a known stored secret (env absent so it is editable).
+    apiSetProcessEnv(API_PROTECTED_VAR, null);
+    Config::set(API_PROTECTED_KEY, null);
+    ConfigCacheService::putRaw(API_PROTECTED_KEY, 'original-secret-value');
+    apiForget(API_PROTECTED_KEY);
+
+    // Second ADMINONLY key changes for real, in the same batch.
+    Config::set(API_ADMINONLY_KEY, '/* default css */');
+    apiForget(API_ADMINONLY_KEY);
+
+    $masked = ConfigCacheController::maskProtectedConfig('original-secret-value');
+
+    $response = $this->postJson('/api/v2026/admin/config', [
+        'config' => [
+            API_PROTECTED_KEY => $masked,                 // untouched placeholder → skipped
+            API_ADMINONLY_KEY => '.brand { color: red; }', // real change
+        ],
+    ])->assertOk();
+
+    // The secret is unchanged; only the ADMINONLY key appears in `changed`.
+    expect(decrypt(ConfigCacheModel::where('k', API_PROTECTED_KEY)->value('v')))->toBe('original-secret-value');
+    $changedKeys = collect($response->json('changed'))->pluck('key')->all();
+    expect($changedKeys)->toBe([API_ADMINONLY_KEY]);
+});
+
 test('POST write skips a PROTECTED masked value (no error, unchanged) (6.7)', function () {
     apiAdmin(['admin:write']);
 
@@ -453,6 +508,44 @@ test('POST write to a PROTECTED key accepts a real secret that contains asterisk
 
     $stored = ConfigCacheModel::where('k', API_PROTECTED_KEY)->value('v');
     expect(decrypt($stored))->toBe($newSecret);
+});
+
+test('POST write treats a short secret masked placeholder as unchanged (6.7d)', function () {
+    apiAdmin(['admin:write']);
+
+    // A short secret (<8 chars) masks to all-asterisks; resubmitting it is a skip.
+    apiSetProcessEnv(API_PROTECTED_VAR, null);
+    Config::set(API_PROTECTED_KEY, null);
+    ConfigCacheService::putRaw(API_PROTECTED_KEY, 'short');
+    apiForget(API_PROTECTED_KEY);
+
+    $masked = ConfigCacheController::maskProtectedConfig('short'); // "*****"
+
+    $this->postJson('/api/v2026/admin/config/'.API_PROTECTED_KEY, [
+        'value' => $masked,
+    ])
+        ->assertOk()
+        ->assertJsonPath('changed', []);
+
+    expect(decrypt(ConfigCacheModel::where('k', API_PROTECTED_KEY)->value('v')))->toBe('short');
+});
+
+test('POST write does NOT skip a masked-looking value when the secret has no current value (6.7e)', function () {
+    apiAdmin(['admin:write']);
+
+    // No stored secret and empty config → there is no placeholder to match, so a
+    // value that merely looks masked is written as a genuine new secret.
+    apiSetProcessEnv(API_PROTECTED_VAR, null);
+    Config::set(API_PROTECTED_KEY, '');
+    ConfigCacheModel::where('k', API_PROTECTED_KEY)->delete();
+    apiForget(API_PROTECTED_KEY);
+
+    $this->postJson('/api/v2026/admin/config/'.API_PROTECTED_KEY, [
+        'value' => '****',
+    ])->assertOk();
+
+    // It was persisted, not skipped.
+    expect(decrypt(ConfigCacheModel::where('k', API_PROTECTED_KEY)->value('v')))->toBe('****');
 });
 
 test('POST write with an empty value resets the key: the DB row is cleared (6.9)', function () {
