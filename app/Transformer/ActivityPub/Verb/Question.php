@@ -73,7 +73,7 @@ class Question extends Fractal\TransformerAbstract
             'type' => 'Question',
             'summary' => null,
             'content' => $content,
-            'inReplyTo' => $status->in_reply_to_id ? $status->parent()->url() : null,
+            'inReplyTo' => $status->inReplyToUri(),
             'published' => $status->created_at->toAtomString(),
             'url' => $status->url(),
             'attributedTo' => $status->profile->permalink(),

@@ -69,6 +69,7 @@ full argument and option list.
 | `fix:profile:duplicates`            | Fix duplicate profiles.                                                                                                                |
 | `fix:hashtags`                      | Fix hashtag records.                                                                                                                   |
 | `fix:likes`                         | Recalculate like counts.                                                                                                               |
+| `fix:orphaned-replies`              | Find remote replies stored without a parent and relink them (`--fix`), optionally deleting unrecoverable ones (`--prune`). Read-only by default. |
 | `media:fix-nonlocal-driver`         | Repair filesystem records when `FILESYSTEM_DRIVER` is not set to local.                                                                |
 | `app:fix-missing-user-profile`      | Interactively create a missing profile for an affected user.                                                                           |
 | `fix:usernames`                     | Fix invalid usernames.                                                                                                                 |

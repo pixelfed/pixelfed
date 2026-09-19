@@ -285,6 +285,29 @@ class Status extends Model
         return false;
     }
 
+    /**
+     * ActivityPub id of the status this one replies to, for use as inReplyTo.
+     *
+     * For a remote parent this is object_url (the object's id), not uri.
+     * uri holds the object's `url` property, which for most software is the
+     * HTML permalink. Servers that thread by id cannot match a permalink, so
+     * sending it detaches our reply from the thread on their side.
+     */
+    public function inReplyToUri(): ?string
+    {
+        if (! $this->in_reply_to_id) {
+            return null;
+        }
+
+        $parent = self::find($this->in_reply_to_id);
+
+        if (! $parent) {
+            return null;
+        }
+
+        return $parent->object_url ?: $parent->url();
+    }
+
     public function conversation()
     {
         return $this->hasOne(Conversation::class);

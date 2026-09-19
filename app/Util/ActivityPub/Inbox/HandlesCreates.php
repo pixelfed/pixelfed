@@ -3,6 +3,7 @@
 namespace App\Util\ActivityPub\Inbox;
 
 use App\Jobs\PushNotificationPipeline\MentionPushNotifyPipeline;
+use App\Jobs\StatusPipeline\RemoteReplyResolvePipeline;
 use App\Models\Conversation;
 use App\Models\DirectMessage;
 use App\Models\Media;
@@ -48,6 +49,20 @@ trait HandlesCreates
             return;
         }
 
+        // A poll vote is addressed to the poll author alone, which is also
+        // the shape of a direct message, so it has to be recognised first.
+        // Votes are tallies: never a DM, never a comment.
+        if ($activity['type'] == 'Note' && $this->isPollVoteObject($activity)) {
+            if (
+                is_string($activity['inReplyTo']) &&
+                Helpers::validateLocalUrl($activity['inReplyTo'])
+            ) {
+                $this->handlePollVote();
+            }
+
+            return;
+        }
+
         if ($this->isDirectMessage($to, $cc)) {
             $this->handleDirectMessage();
 
@@ -64,16 +79,113 @@ trait HandlesCreates
         }
     }
 
+    /**
+     * Handle a delivered reply.
+     *
+     * The object is stored from the signed delivery, not re-fetched. Fetching
+     * loses every reply our instance actor cannot read (followers-only
+     * replies to local posts), and the old fetch used object.url, which is an
+     * HTML permalink on most software and an array on some.
+     *
+     * A reply is only ever stored with its parent attached. If the parent
+     * cannot be resolved right now the delivery is parked in
+     * RemoteReplyResolvePipeline and retried, never written as a top-level
+     * status.
+     */
     public function handleNoteReply(): void
     {
-        $activity = $this->payload['object'];
-        $actor = $this->validateAndFetchActor($this->payload['actor']);
+        $object = $this->payload['object'];
+
+        $actorUrl = Helpers::pluckval($this->payload['actor'] ?? null);
+        if (! is_string($actorUrl)) {
+            return;
+        }
+
+        $actor = $this->validateAndFetchActor($actorUrl);
         if (! $actor || $actor->domain == null) {
             return;
         }
 
-        $url = $activity['url'] ?? $activity['id'];
-        Helpers::statusFirstOrFetch($url, true);
+        $id = Helpers::pluckval($object['id'] ?? null);
+        if (! is_string($id) || ! Helpers::validateUrl($id)) {
+            return;
+        }
+
+        if (Helpers::findExistingStatus($id)) {
+            return;
+        }
+
+        if (! $this->deliveredObjectIsTrusted($object, $actor, $id)) {
+            // Not provably authored by the sender. Ask the origin, by id.
+            Helpers::statusFirstOrFetch($id, true);
+
+            return;
+        }
+
+        $published = Helpers::pluckval($object['published'] ?? null);
+        if (! is_string($published) || ! Helpers::validateTimestamp($published)) {
+            return;
+        }
+
+        $resolution = Helpers::resolveReplyParent($object, $actor);
+
+        if ($resolution['state'] === Helpers::REPLY_PARENT_UNRESOLVED) {
+            RemoteReplyResolvePipeline::park($object, $actor);
+
+            return;
+        }
+
+        if (! Helpers::replyParentAllowsStore($resolution)) {
+            return;
+        }
+
+        Helpers::storeStatus($id, $actor, $object);
+    }
+
+    /**
+     * A delivered object can be stored as-is only when the sender is its
+     * author: attributedTo is exactly the activity actor, the object id lives
+     * on the actor's host, and, when the signing key maps to a known profile,
+     * that profile is the actor. InboxValidator only binds these by host.
+     */
+    protected function deliveredObjectIsTrusted(array $object, Profile $actor, string $id): bool
+    {
+        $attributedTo = $object['attributedTo'] ?? null;
+
+        if (! is_string($attributedTo) && ! is_array($attributedTo)) {
+            return false;
+        }
+
+        $author = Helpers::extractAttributedTo($attributedTo);
+
+        if (! is_string($author) || $author !== $actor->remote_url) {
+            return false;
+        }
+
+        $idHost = parse_url($id, PHP_URL_HOST);
+        $actorHost = parse_url((string) $actor->remote_url, PHP_URL_HOST);
+
+        if (
+            ! is_string($idHost) ||
+            ! is_string($actorHost) ||
+            strcasecmp($idHost, $actorHost) !== 0
+        ) {
+            return false;
+        }
+
+        $signer = $this->signingProfile();
+
+        return ! $signer || (string) $signer->id === (string) $actor->id;
+    }
+
+    /**
+     * A poll vote: a Note that names an option and says nothing else.
+     */
+    protected function isPollVoteObject(array $object): bool
+    {
+        return isset($object['inReplyTo'], $object['name']) &&
+            ! isset($object['content']) &&
+            ! isset($object['attachment']);
     }
 
     public function handlePollCreate(): void
@@ -126,6 +238,21 @@ trait HandlesCreates
             if (Status::whereObjectUrl($url)->exists()) {
                 return;
             }
+        }
+
+        $id = Helpers::pluckval($activity['id'] ?? null);
+
+        if (! is_string($id) || ! Helpers::validateUrl($id)) {
+            return;
+        }
+
+        // Same rule as replies: only store the delivered object when the
+        // sender is provably its author. Otherwise an actor could claim
+        // another server's object id and squat its unique object_url.
+        if (! $this->deliveredObjectIsTrusted($activity, $actor, $id)) {
+            Helpers::statusFirstOrFetch($id);
+
+            return;
         }
 
         Helpers::storeStatus($url, $actor, $activity);
