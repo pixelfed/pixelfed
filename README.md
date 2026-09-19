@@ -59,6 +59,7 @@ Pixelfed is open-sourced software licensed under the AGPL license.
 The ways you can communicate on the project are below. Before interacting, please
 read through the [Code Of Conduct](CODE_OF_CONDUCT.md).
 
+-   Matrix: [matrix.to/#/#pixeldev:matrix.org](https://matrix.to/#/#pixeldev:matrix.org)
 -   Mastodon: [@pixelfed@mastodon.social](https://mastodon.social/@pixelfed)
 -   E-mail: [hello@pixelfed.org](mailto:hello@pixelfed.org)
 
