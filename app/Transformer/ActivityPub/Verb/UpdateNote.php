@@ -5,6 +5,7 @@ namespace App\Transformer\ActivityPub\Verb;
 use App\Models\CustomEmoji;
 use App\Models\Status;
 use App\Services\MediaService;
+use App\Services\QuoteService;
 use App\Util\Lexer\Autolink;
 use Illuminate\Support\Str;
 use League\Fractal;
@@ -88,6 +89,7 @@ class UpdateNote extends Fractal\TransformerAbstract
                     ],
                     'toot' => 'http://joinmastodon.org/ns#',
                     'Emoji' => 'toot:Emoji',
+                    ...QuoteService::NOTE_CONTEXT_TERMS,
                 ],
             ],
             'id' => $status->permalink('#updates/'.$latestEdit->id),
@@ -111,6 +113,7 @@ class UpdateNote extends Fractal\TransformerAbstract
                 'attachment' => MediaService::activitypub($status->id, true),
                 'tag' => $tags,
                 'commentsEnabled' => (bool) ! $status->comments_disabled,
+                'interactionPolicy' => QuoteService::interactionPolicy($status),
                 'updated' => $latestEdit->created_at->toAtomString(),
                 'capabilities' => [
                     'announce' => 'https://www.w3.org/ns/activitystreams#Public',

@@ -7,12 +7,14 @@ use App\Jobs\InboxPipeline\InboxValidator;
 use App\Jobs\InboxPipeline\InboxWorker;
 use App\Models\FeatureAuthorization;
 use App\Models\Profile;
+use App\Models\QuoteAuthorization;
 use App\Models\Status;
 use App\Services\AccountService;
 use App\Services\ActivityPubSignedFetchService;
 use App\Services\FeaturedCollectionService;
 use App\Services\FollowersSyncService;
 use App\Services\InstanceService;
+use App\Services\QuoteService;
 use App\Util\Lexer\Nickname;
 use App\Util\Site\Nodeinfo;
 use App\Util\Webfinger\Webfinger;
@@ -364,6 +366,33 @@ class FederationController extends Controller
 
         return response()
             ->json(FeaturedCollectionService::stampObject($auth), 200, [], JSON_UNESCAPED_SLASHES)
+            ->header('Content-Type', 'application/activity+json');
+    }
+
+    /**
+     * FEP-044f QuoteAuthorization stamp.
+     *
+     * Stamps are only ever issued for public and unlisted posts and carry
+     * nothing but ids, so they are publicly dereferenceable.
+     */
+    public function userQuoteAuthorization(Request $request, $username, $id): JsonResponse
+    {
+        abort_if(! (bool) config_cache('federation.activitypub.enabled'), 404);
+        abort_if(! ctype_digit((string) $id), 404);
+
+        $pid = AccountService::usernameToId($username);
+        abort_if(! $pid, 404);
+
+        $auth = QuoteAuthorization::with(['profile', 'status'])
+            ->whereProfileId($pid)
+            ->find((int) $id);
+
+        abort_if(! $auth || ! $auth->profile || $auth->profile->domain !== null, 404);
+        abort_if(! $auth->status || ! QuoteService::isQuotable($auth->status), 404);
+        abort_if($auth->isRevoked(), 410);
+
+        return response()
+            ->json(QuoteService::stampObject($auth), 200, [], JSON_UNESCAPED_SLASHES)
             ->header('Content-Type', 'application/activity+json');
     }
 }

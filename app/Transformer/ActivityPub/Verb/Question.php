@@ -3,6 +3,7 @@
 namespace App\Transformer\ActivityPub\Verb;
 
 use App\Models\Status;
+use App\Services\QuoteService;
 use App\Util\Lexer\Autolink;
 use Illuminate\Support\Str;
 use League\Fractal;
@@ -65,6 +66,7 @@ class Question extends Fractal\TransformerAbstract
                     ],
                     'toot' => 'http://joinmastodon.org/ns#',
                     'Emoji' => 'toot:Emoji',
+                    ...QuoteService::NOTE_CONTEXT_TERMS,
                 ],
             ],
             'id' => $status->url(),
@@ -81,6 +83,7 @@ class Question extends Fractal\TransformerAbstract
             'attachment' => [],
             'tag' => $tags,
             'commentsEnabled' => (bool) ! $status->comments_disabled,
+            'interactionPolicy' => QuoteService::interactionPolicy($status),
             'capabilities' => [
                 'announce' => 'https://www.w3.org/ns/activitystreams#Public',
                 'like' => 'https://www.w3.org/ns/activitystreams#Public',
