@@ -4,6 +4,7 @@ use App\Http\Controllers\Api\v2026\Admin\ConfigCacheDiagnosticsController;
 use App\Models\ConfigCache as ConfigCacheModel;
 use App\Models\User;
 use App\Services\ConfigCacheService;
+use Illuminate\Foundation\Http\Middleware\PreventRequestForgery;
 use Illuminate\Foundation\Testing\LazilyRefreshDatabase;
 use Illuminate\Support\Env;
 use Illuminate\Support\Facades\Cache;
@@ -91,8 +92,13 @@ function e2eAdmin(): User
 /** POST the clear-cache route as a confirmed-password admin. */
 function e2ePostClear($test, User $admin)
 {
+    // pixelfed enables CSRF protection in every environment via
+    // preventRequestForgery() (bootstrap/app.php), so a test POST without a
+    // real token 419s. Bypass the CSRF middleware — these tests exercise the
+    // controller/reconcile flow, not token verification.
     return $test->actingAs($admin)
         ->withSession(['auth.password_confirmed_at' => time()])
+        ->withoutMiddleware(PreventRequestForgery::class)
         ->post(route('admin.config-cache.clear'));
 }
 
@@ -169,6 +175,7 @@ test('a non-admin is blocked from the clear-cache route', function () {
 
     $this->actingAs($user)
         ->withSession(['auth.password_confirmed_at' => time()])
+        ->withoutMiddleware(PreventRequestForgery::class)
         ->post(route('admin.config-cache.clear'))
         ->assertRedirect(config('app.url'));
 
