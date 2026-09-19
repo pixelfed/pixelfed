@@ -22,6 +22,7 @@ class SoftwareUpdateService
 
         if ($flushCache) {
             Cache::forget(self::cacheKey());
+            Cache::forget('api:nodeinfo');
         }
 
         $versions = Cache::remember(self::cacheKey(), 1800, function () {
