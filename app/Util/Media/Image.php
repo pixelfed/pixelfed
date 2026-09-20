@@ -297,7 +297,7 @@ class Image
             $media->save();
 
             if ($thumbnail) {
-                $this->generateBlurhash($media);
+                $this->generateBlurhash($media, $encoded->toString());
             }
 
             if ($media->status_id) {
@@ -354,27 +354,28 @@ class Image
         return ['path' => $basePath, 'png' => false];
     }
 
-    protected function generateBlurhash($media)
+    /**
+     * Hash the thumbnail that was just encoded. The bytes are already in memory,
+     * so they are hashed directly instead of being read back from disk (or pulled
+     * back down from cloud storage into a temp file) a moment after being written.
+     */
+    protected function generateBlurhash($media, ?string $contents = null)
     {
         try {
-            if ($this->defaultDisk === 'local') {
-                $thumbnailPath = storage_path('app/'.$media->thumbnail_path);
-                $blurhash = Blurhash::generate($media, $thumbnailPath);
-            } else {
-                $tempFile = tempnam(sys_get_temp_dir(), 'blurhash_');
-                $contents = Storage::disk($this->defaultDisk)->get($media->thumbnail_path);
-                file_put_contents($tempFile, $contents);
-
-                $blurhash = Blurhash::generate($media, $tempFile);
-
-                unlink($tempFile);
+            if ($contents === null) {
+                $contents = $this->defaultDisk === 'local'
+                    ? file_get_contents(storage_path('app/'.$media->thumbnail_path))
+                    : Storage::disk($this->defaultDisk)->get($media->thumbnail_path);
             }
 
-            if ($blurhash) {
-                $media->blurhash = $blurhash;
-                $media->save();
-            }
-        } catch (\Exception $e) {
+            $blurhash = $contents ? Blurhash::fromBinary($contents) : null;
+
+            $media->blurhash = $blurhash ?? Blurhash::DEFAULT_HASH;
+            $media->save();
+        } catch (\Throwable $e) {
+            // \Throwable, not \Exception: the blurhash is decorative and must never
+            // fail the thumbnail job, which still has to mark the media as processed
+            // and dispatch ImageUpdate.
             if (config('app.dev_log')) {
                 Log::info('Blurhash generation failed: '.$e->getMessage());
             }
