@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
@@ -10,44 +11,453 @@
     <meta property="og:title" content="{{ $title ?? config_cache('app.name', 'pixelfed') }}">
     <meta property="og:type" content="article">
     <meta property="og:url" content="{{$status['url']}}">
-    <meta name="medium" content="image">
+    <meta name="medium" content="{{ $status['pf_type'] === 'video' ? 'video' : 'image' }}">
     <meta name="theme-color" content="#10c5f8">
     <meta name="apple-mobile-web-app-capable" content="yes">
     <link rel="shortcut icon" type="image/png" href="/img/favicon.png?v=2">
     <link rel="apple-touch-icon" type="image/png" href="/img/favicon.png?v=2">
     <style type="text/css">
-    :root {
-        --dark: #000;
-        --body-bg: rgba(243,244,246,1);
-        --body-color: #212529;
-        --primary: #3B82F6;
-        --card-bg: #fff;
-    }
-    @media (prefers-color-scheme: dark) {
         :root {
+            --dark: #000;
+            --body-bg: rgba(243, 244, 246, 1);
+            --body-color: #212529;
+            --primary: #3B82F6;
+            --card-bg: #fff;
+        }
+
+        @media (prefers-color-scheme: dark) {
+            :root {
+                --dark: #fff;
+                --body-bg: #000;
+                --body-color: #9ca3af;
+                --card-bg: #161618;
+            }
+        }
+
+        .force-light-mode {
+            --dark: #000;
+            --body-bg: rgba(243, 244, 246, 1);
+            --body-color: #212529;
+            --primary: #3B82F6;
+            --card-bg: #fff;
+        }
+
+        .force-dark-mode {
             --dark: #fff;
             --body-bg: #000;
             --body-color: #9ca3af;
             --card-bg: #161618;
         }
-    }
-    .force-light-mode {
-        --dark: #000;
-        --body-bg: rgba(243,244,246,1);
-        --body-color: #212529;
-        --primary: #3B82F6;
-        --card-bg: #fff;
-    }
 
-    .force-dark-mode {
-        --dark: #fff;
-        --body-bg: #000;
-        --body-color: #9ca3af;
-        --card-bg: #161618;
-    }
-    hr,p{margin-bottom:1rem}.small,body{font-weight:400}.card,body{display:flex}*,::after,::before{box-sizing:border-box}p{margin-top:0}a{color:#2c78bf;text-decoration:none;background-color:transparent}a:hover{color:var(--primary);text-decoration:underline}img{vertical-align:middle;border-style:none}hr{box-sizing:content-box;height:0;overflow:visible;margin-top:1rem;border:0;border-top:1px solid rgba(0,0,0,.1)}.small{font-size:.875em}.card{position:relative;flex-direction:column;min-width:0;word-wrap:break-word;background-color:var(--card-bg);background-clip:border-box;border:1px solid rgba(0,0,0,.125);border-radius:.25rem}.card-body{flex:1 1 auto;min-height:1px;padding:1.25rem;background-color:var(--card-bg)}.card-footer,.card-header{padding:.75rem 1.25rem;background-color:var(--card-bg)}.card-header{margin-bottom:0;border-bottom:1px solid rgba(0,0,0,.125)}.card-header:first-child{border-radius:calc(.25rem - 1px) calc(.25rem - 1px) 0 0}.card-footer{border-top:1px solid rgba(0,0,0,.125)}.card-footer:last-child{border-radius:0 0 calc(.25rem - 1px) calc(.25rem - 1px)}.border{border:1px solid var(--card-bg)!important}.d-inline-flex{display:inline-flex!important}.justify-content-between{justify-content:space-between!important}.align-items-center{align-items:center!important}.my-0{margin-top:0!important}.mb-0,.my-0{margin-bottom:0!important}.mb-2{margin-bottom:.5rem!important}.pr-1{padding-right:.25rem!important}.pl-2{padding-left:.5rem!important}.text-uppercase{text-transform:uppercase!important}.font-weight-bold{font-weight:700!important}a.text-dark:focus,a.text-dark:hover{color:var(--dark)!important}a.text-muted:focus,a.text-muted:hover{color:var(--dark)!important}.text-muted{color:#6c757d!important}@media print{*,::after,::before{text-shadow:none!important;box-shadow:none!important}a:not(.btn){text-decoration:underline}img{page-break-inside:avoid}p{orphans:3;widows:3}body{min-width:992px!important}}body{margin:0;font-size:.9rem;line-height:1.6;color:var(--body-color);text-align:left;background-color:rgba(247,251,253,.4705882353);min-height:100vh;flex-flow:column;font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif}.text-dark{color:var(--body-color)!important}@media (max-width:576px){.card-md-rounded-0{border-width:1px 0;border-radius:0!important}}.card{box-shadow:0 2px 6px 0 hsla(0,0%,0%,.2);border:none}.status-card-embed{box-shadow:none;border-radius:4px;overflow:hidden}body.embed-card{background:var(--card-bg)!important;margin:0;padding-bottom:0}.avatar{border-radius:100%}image-carousel{display:block;position:relative;width:100%;overflow:hidden}image-carousel img{width:100%;display:none}image-carousel img.active{display:block}.carousel-buttons{position:absolute;top:50%;width:100%;display:flex;justify-content:space-between;transform:translateY(-50%);pointer-events:none}.carousel-button{display:flex;justify-content:center;align-items:center;width:40px;height:40px;background:#fff;color:#000;border:1px solid #ccc;border-radius:100%;padding:10px;margin:5px;cursor:none;pointer-events:none;opacity:0;z-index:2;transition:opacity .1s ease-out}.carousel-button.active{cursor:pointer;pointer-events:all}image-carousel:hover .carousel-button.active{opacity:1;transition:opacity .3s ease-out}.carousel-button.prev{align-self:flex-start}.carousel-button.next{align-self:flex-end}.carousel-indicators{position:absolute;bottom:10px;width:100%;display:flex;justify-content:center}.carousel-indicator{background:rgba(0,0,0,.5);border-radius:50%;width:10px;height:10px;margin:0 5px;cursor:pointer;transition:background .1s ease-out}.carousel-indicator.active{background:#fff}
+        hr,
+        p {
+            margin-bottom: 1rem
+        }
+
+        .small,
+        body {
+            font-weight: 400
+        }
+
+        .card,
+        body {
+            display: flex
+        }
+
+        *,
+        ::after,
+        ::before {
+            box-sizing: border-box
+        }
+
+        p {
+            margin-top: 0
+        }
+
+        a {
+            color: #2c78bf;
+            text-decoration: none;
+            background-color: transparent
+        }
+
+        a:hover {
+            color: var(--primary);
+            text-decoration: underline
+        }
+
+        img {
+            vertical-align: middle;
+            border-style: none
+        }
+
+        hr {
+            box-sizing: content-box;
+            height: 0;
+            overflow: visible;
+            margin-top: 1rem;
+            border: 0;
+            border-top: 1px solid rgba(0, 0, 0, .1)
+        }
+
+        .small {
+            font-size: .875em
+        }
+
+        .card {
+            position: relative;
+            flex-direction: column;
+            min-width: 0;
+            word-wrap: break-word;
+            background-color: var(--card-bg);
+            background-clip: border-box;
+            border: 1px solid rgba(0, 0, 0, .125);
+            border-radius: .25rem
+        }
+
+        .card-body {
+            flex: 1 1 auto;
+            min-height: 1px;
+            padding: 1.25rem;
+            background-color: var(--card-bg)
+        }
+
+        .card-footer,
+        .card-header {
+            padding: .75rem 1.25rem;
+            background-color: var(--card-bg)
+        }
+
+        .card-header {
+            margin-bottom: 0;
+            border-bottom: 1px solid rgba(0, 0, 0, .125)
+        }
+
+        .card-header:first-child {
+            border-radius: calc(.25rem - 1px) calc(.25rem - 1px) 0 0
+        }
+
+        .card-footer {
+            border-top: 1px solid rgba(0, 0, 0, .125)
+        }
+
+        .card-footer:last-child {
+            border-radius: 0 0 calc(.25rem - 1px) calc(.25rem - 1px)
+        }
+
+        .border {
+            border: 1px solid var(--card-bg) !important
+        }
+
+        .d-inline-flex {
+            display: inline-flex !important
+        }
+
+        .justify-content-between {
+            justify-content: space-between !important
+        }
+
+        .align-items-center {
+            align-items: center !important
+        }
+
+        .my-0 {
+            margin-top: 0 !important
+        }
+
+        .mb-0,
+        .my-0 {
+            margin-bottom: 0 !important
+        }
+
+        .mb-2 {
+            margin-bottom: .5rem !important
+        }
+
+        .pr-1 {
+            padding-right: .25rem !important
+        }
+
+        .pl-2 {
+            padding-left: .5rem !important
+        }
+
+        .text-uppercase {
+            text-transform: uppercase !important
+        }
+
+        .font-weight-bold {
+            font-weight: 700 !important
+        }
+
+        a.text-dark:focus,
+        a.text-dark:hover {
+            color: var(--dark) !important
+        }
+
+        a.text-muted:focus,
+        a.text-muted:hover {
+            color: var(--dark) !important
+        }
+
+        .text-muted {
+            color: #6c757d !important
+        }
+
+        @media print {
+
+            *,
+            ::after,
+            ::before {
+                text-shadow: none !important;
+                box-shadow: none !important
+            }
+
+            a:not(.btn) {
+                text-decoration: underline
+            }
+
+            img {
+                page-break-inside: avoid
+            }
+
+            p {
+                orphans: 3;
+                widows: 3
+            }
+
+            body {
+                min-width: 992px !important
+            }
+        }
+
+        body {
+            margin: 0;
+            font-size: .9rem;
+            line-height: 1.6;
+            color: var(--body-color);
+            text-align: left;
+            background-color: rgba(247, 251, 253, .4705882353);
+            min-height: 100vh;
+            flex-flow: column;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif
+        }
+
+        .text-dark {
+            color: var(--body-color) !important
+        }
+
+        @media (max-width:576px) {
+            .card-md-rounded-0 {
+                border-width: 1px 0;
+                border-radius: 0 !important
+            }
+        }
+
+        .card {
+            box-shadow: 0 2px 6px 0 hsla(0, 0%, 0%, .2);
+            border: none
+        }
+
+        .status-card-embed {
+            box-shadow: none;
+            border-radius: 4px;
+            overflow: hidden
+        }
+
+        body.embed-card {
+            background: var(--card-bg) !important;
+            margin: 0;
+            padding-bottom: 0
+        }
+
+        .avatar {
+            border-radius: 100%
+        }
+
+        image-carousel {
+            display: block;
+            position: relative;
+            width: 100%;
+            overflow: hidden
+        }
+
+        image-carousel img {
+            width: 100%;
+            display: none
+        }
+
+        image-carousel img.active {
+            display: block
+        }
+
+        .carousel-buttons {
+            position: absolute;
+            top: 50%;
+            width: 100%;
+            display: flex;
+            justify-content: space-between;
+            transform: translateY(-50%);
+            pointer-events: none
+        }
+
+        .carousel-button {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            width: 40px;
+            height: 40px;
+            background: #fff;
+            color: #000;
+            border: 1px solid #ccc;
+            border-radius: 100%;
+            padding: 10px;
+            margin: 5px;
+            cursor: none;
+            pointer-events: none;
+            opacity: 0;
+            z-index: 2;
+            transition: opacity .1s ease-out
+        }
+
+        .carousel-button.active {
+            cursor: pointer;
+            pointer-events: all
+        }
+
+        image-carousel:hover .carousel-button.active {
+            opacity: 1;
+            transition: opacity .3s ease-out
+        }
+
+        .carousel-button.prev {
+            align-self: flex-start
+        }
+
+        .carousel-button.next {
+            align-self: flex-end
+        }
+
+        .carousel-indicators {
+            position: absolute;
+            bottom: 10px;
+            width: 100%;
+            display: flex;
+            justify-content: center
+        }
+
+        .carousel-indicator {
+            background: rgba(0, 0, 0, .5);
+            border-radius: 50%;
+            width: 10px;
+            height: 10px;
+            margin: 0 5px;
+            cursor: pointer;
+            transition: background .1s ease-out
+        }
+
+        .carousel-indicator.active {
+            background: #fff
+        }
+
+        video-player {
+            display: block;
+            position: relative;
+            width: 100%;
+            aspect-ratio: 16/9;
+            background: #000;
+            overflow: hidden
+        }
+
+        video-player video {
+            display: block;
+            width: 100%;
+            height: 100%;
+            object-fit: contain;
+            background: #000
+        }
+
+        .video-play {
+            position: absolute;
+            top: 0;
+            right: 0;
+            bottom: 0;
+            left: 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 100%;
+            height: 100%;
+            margin: 0;
+            padding: 0;
+            border: 0;
+            background: rgba(0, 0, 0, .15);
+            cursor: pointer
+        }
+
+        .video-play:hover {
+            background: rgba(0, 0, 0, .3)
+        }
+
+        .video-play:focus-visible {
+            outline: 3px solid var(--primary);
+            outline-offset: -5px
+        }
+
+        .video-play span {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 64px;
+            height: 64px;
+            border-radius: 100%;
+            background: rgba(0, 0, 0, .6)
+        }
+
+        .video-play svg {
+            width: 26px;
+            height: 26px;
+            margin-left: 4px;
+            fill: #fff
+        }
+
+        video-player.started .video-play {
+            display: none
+        }
+
+        .video-error,
+        .video-error:hover,
+        .video-error:focus {
+            position: absolute;
+            top: 0;
+            right: 0;
+            bottom: 0;
+            left: 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 1rem;
+            text-align: center;
+            font-weight: 700;
+            color: #fff;
+            background: rgba(0, 0, 0, .7)
+        }
+
+        @media (prefers-reduced-motion:no-preference) {
+            .video-play {
+                transition: background .15s ease-out
+            }
+
+            .video-play span {
+                transition: transform .15s ease-out
+            }
+
+            .video-play:hover span {
+                transform: scale(1.06)
+            }
+        }
     </style>
 </head>
+
 <body class="
 @if(request('ui-mode') === 'light')
     force-light-mode
@@ -72,9 +482,28 @@
             @elseif($status['pf_type'] === 'photo:album')
             <image-carousel>
                 @foreach($status['media_attachments'] as $media)
-                    <img src="{{$media['url']}}">
+                <img src="{{$media['url']}}">
                 @endforeach
             </image-carousel>
+            @elseif($status['pf_type'] === 'video')
+            @php
+            $video = $status['media_attachments'][0];
+            $videoPoster = $video['preview_url'] ?? null;
+            if ($videoPoster && str_ends_with((string) parse_url($videoPoster, PHP_URL_PATH), 'no-preview.png')) {
+            $videoPoster = null;
+            }
+            $videoWidth = (int) data_get($video, 'meta.original.width');
+            $videoHeight = (int) data_get($video, 'meta.original.height');
+            @endphp
+            <video-player data-url="{{$status['url']}}" @if($videoWidth && $videoHeight) style="aspect-ratio: {{$videoWidth}} / {{$videoHeight}}" @endif>
+                <video
+                    src="{{$video['url']}}"
+                    @if($videoPoster) poster="{{$videoPoster}}" @endif
+                    @if(!empty($video['description'])) aria-label="{{$video['description']}}" @endif
+                    preload="metadata"
+                    playsinline
+                    controls></video>
+            </video-player>
             @endif
             @if($layout != 'compact')
             <div class="card-body">
@@ -110,9 +539,150 @@
         </div>
     </div>
     <script>
-        window.addEventListener("message",e=>{const t=e.data||{};window.parent&&"setHeight"===t.type&&window.parent.postMessage({type:"setHeight",id:t.id,height:document.getElementsByTagName("html")[0].scrollHeight},"*")});
-        document.querySelectorAll('.caption-container a').forEach(function(i) {i.setAttribute('target', '_blank');});
-        document.addEventListener("DOMContentLoaded",()=>{class t extends HTMLElement{constructor(){super(),this.currentIndex=0,this.images=null,this.totalImages=0,this.indicators=[]}connectedCallback(){if(this.images=this.querySelectorAll("img"),this.totalImages=this.images.length,0===this.totalImages){console.error("No images found in the carousel");return}this.createButtons(),this.createIndicators(),this.showImage(this.currentIndex)}createButtons(){this.nextButton=document.createElement("button"),this.nextButton.innerHTML='<svg xmlns="http://www.w3.org/2000/svg" height="12" width="6" viewBox="0 0 256 512"><path d="M24.7 38.1L4.9 57.9c-4.7 4.7-4.7 12.3 0 17L185.6 256 4.9 437.1c-4.7 4.7-4.7 12.3 0 17L24.7 473.9c4.7 4.7 12.3 4.7 17 0l209.4-209.4c4.7-4.7 4.7-12.3 0-17L41.7 38.1c-4.7-4.7-12.3-4.7-17 0z"/></svg>',this.nextButton.className="carousel-button next",this.nextButton.addEventListener("click",()=>this.nextImage()),this.prevButton=document.createElement("button"),this.prevButton.innerHTML='<svg xmlns="http://www.w3.org/2000/svg" height="12" width="6" viewBox="0 0 256 512"><path d="M231.3 473.9l19.8-19.8c4.7-4.7 4.7-12.3 0-17L70.4 256 251.1 74.9c4.7-4.7 4.7-12.3 0-17L231.3 38.1c-4.7-4.7-12.3-4.7-17 0L4.9 247.5c-4.7 4.7-4.7 12.3 0 17L214.3 473.9c4.7 4.7 12.3 4.7 17 0z"/></svg>',this.prevButton.className="carousel-button prev",this.prevButton.addEventListener("click",()=>this.prevImage());let t=document.createElement("div");t.className="carousel-buttons",t.appendChild(this.prevButton),t.appendChild(this.nextButton),this.appendChild(t),this.updateButtonVisibility()}createIndicators(){this.indicatorsContainer=document.createElement("div"),this.indicatorsContainer.className="carousel-indicators",this.indicators=Array.from(this.images).map((t,e)=>{let i=document.createElement("div");return i.className="carousel-indicator",i.addEventListener("click",()=>this.showImage(e)),this.indicatorsContainer.appendChild(i),i}),this.appendChild(this.indicatorsContainer),this.updateIndicators()}showImage(t){if(!this.images||!this.indicators){console.error("Images or indicators are not initialized");return}this.images.forEach((e,i)=>{e.classList.toggle("active",i===t)}),this.indicators.forEach((e,i)=>{e.classList.toggle("active",i===t)}),this.currentIndex=t,this.updateButtonVisibility()}nextImage(){this.currentIndex<this.totalImages-1&&this.showImage(this.currentIndex+1)}prevImage(){this.currentIndex>0&&this.showImage(this.currentIndex-1)}updateButtonVisibility(){this.prevButton.classList.toggle("active",0!==this.currentIndex),this.nextButton.classList.toggle("active",this.currentIndex!==this.totalImages-1)}updateIndicators(){if(!this.indicators){console.error("Indicators are not initialized");return}this.indicators.forEach((t,e)=>{t.classList.toggle("active",e===this.currentIndex)})}}customElements.define("image-carousel",t)});
+        (() => {
+            let embedId = null;
+            const card = document.querySelector('.embed-card');
+            const postHeight = () => {
+                if (embedId === null || !window.parent) return;
+                const height = card ?
+                    Math.ceil(card.getBoundingClientRect().height) :
+                    document.documentElement.scrollHeight;
+                window.parent.postMessage({
+                    type: 'setHeight',
+                    id: embedId,
+                    height
+                }, '*');
+            };
+            window.addEventListener('message', e => {
+                const data = e.data || {};
+                if (data.type !== 'setHeight') return;
+                embedId = data.id;
+                postHeight();
+            });
+            if (card && 'ResizeObserver' in window) {
+                new ResizeObserver(postHeight).observe(card);
+            }
+        })();
+
+        document.querySelectorAll('.caption-container a').forEach(function(i) {
+            i.setAttribute('target', '_blank');
+        });
+
+        document.addEventListener("DOMContentLoaded", () => {
+            class t extends HTMLElement {
+                constructor() {
+                    super(), this.currentIndex = 0, this.images = null, this.totalImages = 0, this.indicators = []
+                }
+                connectedCallback() {
+                    if (this.images = this.querySelectorAll("img"), this.totalImages = this.images.length, 0 === this.totalImages) {
+                        console.error("No images found in the carousel");
+                        return
+                    }
+                    this.createButtons(), this.createIndicators(), this.showImage(this.currentIndex)
+                }
+                createButtons() {
+                    this.nextButton = document.createElement("button"), this.nextButton.innerHTML = '<svg xmlns="http://www.w3.org/2000/svg" height="12" width="6" viewBox="0 0 256 512"><path d="M24.7 38.1L4.9 57.9c-4.7 4.7-4.7 12.3 0 17L185.6 256 4.9 437.1c-4.7 4.7-4.7 12.3 0 17L24.7 473.9c4.7 4.7 12.3 4.7 17 0l209.4-209.4c4.7-4.7 4.7-12.3 0-17L41.7 38.1c-4.7-4.7-12.3-4.7-17 0z"/></svg>', this.nextButton.className = "carousel-button next", this.nextButton.addEventListener("click", () => this.nextImage()), this.prevButton = document.createElement("button"), this.prevButton.innerHTML = '<svg xmlns="http://www.w3.org/2000/svg" height="12" width="6" viewBox="0 0 256 512"><path d="M231.3 473.9l19.8-19.8c4.7-4.7 4.7-12.3 0-17L70.4 256 251.1 74.9c4.7-4.7 4.7-12.3 0-17L231.3 38.1c-4.7-4.7-12.3-4.7-17 0L4.9 247.5c-4.7 4.7-4.7 12.3 0 17L214.3 473.9c4.7 4.7 12.3 4.7 17 0z"/></svg>', this.prevButton.className = "carousel-button prev", this.prevButton.addEventListener("click", () => this.prevImage());
+                    let t = document.createElement("div");
+                    t.className = "carousel-buttons", t.appendChild(this.prevButton), t.appendChild(this.nextButton), this.appendChild(t), this.updateButtonVisibility()
+                }
+                createIndicators() {
+                    this.indicatorsContainer = document.createElement("div"), this.indicatorsContainer.className = "carousel-indicators", this.indicators = Array.from(this.images).map((t, e) => {
+                        let i = document.createElement("div");
+                        return i.className = "carousel-indicator", i.addEventListener("click", () => this.showImage(e)), this.indicatorsContainer.appendChild(i), i
+                    }), this.appendChild(this.indicatorsContainer), this.updateIndicators()
+                }
+                showImage(t) {
+                    if (!this.images || !this.indicators) {
+                        console.error("Images or indicators are not initialized");
+                        return
+                    }
+                    this.images.forEach((e, i) => {
+                        e.classList.toggle("active", i === t)
+                    }), this.indicators.forEach((e, i) => {
+                        e.classList.toggle("active", i === t)
+                    }), this.currentIndex = t, this.updateButtonVisibility()
+                }
+                nextImage() {
+                    this.currentIndex < this.totalImages - 1 && this.showImage(this.currentIndex + 1)
+                }
+                prevImage() {
+                    this.currentIndex > 0 && this.showImage(this.currentIndex - 1)
+                }
+                updateButtonVisibility() {
+                    this.prevButton.classList.toggle("active", 0 !== this.currentIndex), this.nextButton.classList.toggle("active", this.currentIndex !== this.totalImages - 1)
+                }
+                updateIndicators() {
+                    if (!this.indicators) {
+                        console.error("Indicators are not initialized");
+                        return
+                    }
+                    this.indicators.forEach((t, e) => {
+                        t.classList.toggle("active", e === this.currentIndex)
+                    })
+                }
+            }
+            customElements.define("image-carousel", t)
+        });
+
+        class VideoPlayer extends HTMLElement {
+            connectedCallback() {
+                if (this.button) return;
+                this.video = this.querySelector('video');
+                if (!this.video) return;
+
+                this.video.controls = false;
+
+                this.button = document.createElement('button');
+                this.button.type = 'button';
+                this.button.className = 'video-play';
+                this.button.setAttribute('aria-label', 'Play video');
+                this.button.innerHTML = '<span><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" aria-hidden="true"><path d="M8 5v14l11-7z"/></svg></span>';
+                this.button.addEventListener('click', () => this.start());
+                this.appendChild(this.button);
+
+                this.video.addEventListener('loadedmetadata', () => this.fit());
+                this.video.addEventListener('error', () => this.fail());
+
+                if (this.video.error) {
+                    this.fail();
+                } else if (this.video.readyState >= 1) {
+                    this.fit();
+                }
+            }
+
+            start() {
+                this.classList.add('started');
+                this.video.controls = true;
+                const attempt = this.video.play();
+                if (attempt && attempt.catch) attempt.catch(() => {});
+                this.video.focus();
+            }
+
+            fit() {
+                const {
+                    videoWidth,
+                    videoHeight
+                } = this.video;
+                if (videoWidth && videoHeight) {
+                    this.style.aspectRatio = videoWidth + ' / ' + videoHeight;
+                }
+            }
+
+            fail() {
+                if (this.classList.contains('failed')) return;
+                this.classList.add('failed', 'started');
+                this.video.controls = false;
+                const link = document.createElement('a');
+                link.className = 'video-error';
+                link.href = this.dataset.url || '#';
+                link.target = '_blank';
+                link.rel = 'ugc';
+                link.textContent = "This video can't play here. Watch it on Pixelfed";
+                this.appendChild(link);
+            }
+        }
+        customElements.define('video-player', VideoPlayer);
     </script>
 </body>
+
 </html>

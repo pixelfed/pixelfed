@@ -296,7 +296,7 @@
                             <div class="scope-icon {{ $level !== 'default' ? 'scope-icon-' . $level : '' }}">
                                 <i class="{{ $scopeIcons[$scope->id] ?? 'fas fa-unlock' }}"></i>
                             </div>
-                            <div class="scope-body">
+                            <div class="scope-body small">
                                 <p class="scope-desc">{{ $scope->description }}</p>
                                 <span class="scope-id">{{ $scope->id }}</span>
                             </div>
