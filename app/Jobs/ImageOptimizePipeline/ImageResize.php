@@ -81,10 +81,8 @@ class ImageResize implements ShouldQueue
         try {
             $img = new Image;
             $img->resizeImage($media);
-        } catch (\Exception $e) {
-            if (config('app.dev_log')) {
-                Log::error('Image resize failed: '.$e->getMessage());
-            }
+        } catch (\Throwable $e) {
+            Log::error("ImageResize: media {$media->id} was not resized [".$e::class.']: '.$e->getMessage());
         }
 
         ImageThumbnail::dispatch($media)->onQueue('mmo');
