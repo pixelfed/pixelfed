@@ -32,7 +32,7 @@ use Illuminate\Support\Str;
  * @property string $scope
  * @property string $visibility
  * @property int $reply
- * @property-read int|null $likes_count
+ * @property int $likes_count
  * @property int $reblogs_count
  * @property string|null $language
  * @property int|null $conversation_id

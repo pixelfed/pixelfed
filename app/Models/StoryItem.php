@@ -3,11 +3,14 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\Storage;
 use Pixelfed\Snowflake\HasSnowflakePrimary;
 
 /**
- * @property-read Story|null $story
+ * @property Story|null $story
+ * @property string|null $type
+ * @property Carbon $created_at
  *
  * @method static \Illuminate\Database\Eloquent\Builder<static>|StoryItem newModelQuery()
  * @method static \Illuminate\Database\Eloquent\Builder<static>|StoryItem newQuery()

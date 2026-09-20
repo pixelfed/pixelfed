@@ -18,7 +18,7 @@ use Illuminate\Support\Carbon;
  * @property array<array-key, mixed>|null $cached_tallies
  * @property int $multiple
  * @property int $hide_totals
- * @property-read int|null $votes_count
+ * @property int $votes_count
  * @property string|null $last_fetched_at
  * @property Carbon|null $expires_at
  * @property Carbon|null $created_at
