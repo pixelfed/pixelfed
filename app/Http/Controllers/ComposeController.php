@@ -376,6 +376,7 @@ class ComposeController extends Controller
                     ->values();
             }
 
+            // @phpstan-ignore-next-line
             return Status::selectRaw('id, place_id, count(place_id) as pc')
                 ->whereNotNull('place_id')
                 ->where('id', '>', $minId)
