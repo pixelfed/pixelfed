@@ -35,7 +35,7 @@ class AvatarController extends Controller
             $loc = $request->file('avatar')->storePubliclyAs($public, $name);
 
             $avatar = Avatar::firstOrNew(['profile_id' => $profile->id]);
-            $currentAvatar = $avatar->recentlyCreated ? null : storage_path('app/'.$profile->avatar->media_path);
+            $currentAvatar = $avatar->wasRecentlyCreated ? null : storage_path('app/'.$profile->avatar->media_path);
             $avatar->media_path = "$public/$name";
             $avatar->change_count = ++$avatar->change_count;
             $avatar->last_processed_at = null;
@@ -130,7 +130,8 @@ class AvatarController extends Controller
 
         $avatar = $profile->avatar;
 
-        if ($avatar->media_path == 'public/avatars/default.png' ||
+        if (
+            $avatar->media_path == 'public/avatars/default.png' ||
             $avatar->media_path == 'public/avatars/default.jpg'
         ) {
             return response()->json(200);

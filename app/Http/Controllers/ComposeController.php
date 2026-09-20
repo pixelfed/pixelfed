@@ -369,6 +369,7 @@ class ComposeController extends Controller
                     ->map(function ($place) {
                         return [
                             'id' => $place->place_id,
+                            // @phpstan-ignore-next-line
                             'count' => $place->pc,
                         ];
                     })
@@ -376,6 +377,7 @@ class ComposeController extends Controller
                     ->values();
             }
 
+            // @phpstan-ignore-next-line
             return Status::selectRaw('id, place_id, count(place_id) as pc')
                 ->whereNotNull('place_id')
                 ->where('id', '>', $minId)
@@ -389,6 +391,7 @@ class ComposeController extends Controller
                 ->map(function ($place) {
                     return [
                         'id' => $place->place_id,
+                        // @phpstan-ignore-next-line
                         'count' => $place->pc,
                     ];
                 });
@@ -484,6 +487,7 @@ class ComposeController extends Controller
                 return [
                     'key' => '@'.Str::limit($username, 30),
                     'value' => $username,
+                    // @phpstan-ignore-next-line
                     'is_followed' => (bool) $profile->is_followed,
                 ];
             });

@@ -20,6 +20,15 @@ class ActivityPubDeliveryService
 {
     private const string CONTENT_TYPE = 'application/ld+json; profile="https://www.w3.org/ns/activitystreams"';
 
+    /**
+     * Rejection reasons that say something about the remote host rather than
+     * about one inbox row. Only these count against the domain's health.
+     */
+    private const array HOST_LEVEL_REASONS = [
+        Helpers::URL_UNRESOLVED,
+        Helpers::URL_PRIVATE_IP,
+    ];
+
     public ?Profile $sender = null;
 
     public ?string $to = null;
@@ -80,15 +89,18 @@ class ActivityPubDeliveryService
 
         $domain = DeliveryHostService::domain($this->to);
 
-        $url = self::validateDestination($this->to);
+        $destination = self::validateDestination($this->to);
+
+        $url = $destination['url'];
 
         if (! $url) {
-            if ($domain) {
+            if ($domain && self::reasonIndictsHost($destination['reason'])) {
                 DeliveryHostService::recordFailure($domain);
             }
 
             throw new InvalidDeliveryDestinationException(
-                'Invalid ActivityPub destination URL.'
+                'Invalid ActivityPub destination URL: '.$destination['reason'],
+                $destination['reason']
             );
         }
 
@@ -176,8 +188,9 @@ class ActivityPubDeliveryService
      *
      * Hosts currently marked unavailable by DeliveryHostService are skipped
      * silently (counted in the result, no $onError call). Connection
-     * failures, 5xx responses and inbox URLs that fail validation count
-     * against the host; any other response clears its failure count.
+     * failures and 5xx responses count against the host, as do inbox URLs
+     * rejected for a host-level reason (see HOST_LEVEL_REASONS). Any other
+     * response clears its failure count.
      *
      * @param  Profile  $profile  Local sender used for HTTP signatures
      * @param  array<int, string>  $audience  Inbox URLs
@@ -272,7 +285,8 @@ class ActivityPubDeliveryService
             try {
                 if (! is_string($destination) || trim($destination) === '') {
                     throw new InvalidDeliveryDestinationException(
-                        'ActivityPub inbox URL must be a non-empty string.'
+                        'ActivityPub inbox URL must be a non-empty string.',
+                        Helpers::URL_MALFORMED
                     );
                 }
 
@@ -284,11 +298,14 @@ class ActivityPubDeliveryService
                     continue;
                 }
 
-                $url = self::validateDestination($destination);
+                $destinationResult = self::validateDestination($destination);
+
+                $url = $destinationResult['url'];
 
                 if (! $url) {
                     throw new InvalidDeliveryDestinationException(
-                        'Invalid ActivityPub destination URL.'
+                        'Invalid ActivityPub destination URL: '.$destinationResult['reason'],
+                        $destinationResult['reason']
                     );
                 }
 
@@ -331,12 +348,17 @@ class ActivityPubDeliveryService
             } catch (InvalidDeliveryDestinationException $e) {
                 /*
                  * Expected churn: dead hosts, banned instances, stale rows.
-                 * Counted against the host and reported to the caller, but
-                 * not worth a warning per inbox per activity.
+                 * Reported to the caller, but not worth a warning per inbox
+                 * per activity.
+                 *
+                 * Only host-level reasons count against the domain. A
+                 * malformed or banned inbox url describes that one row, and
+                 * marking the whole domain unavailable over it suppresses
+                 * delivery to every other valid inbox on the same host.
                  */
                 $result['invalid']++;
 
-                if ($domain) {
+                if ($domain && self::reasonIndictsHost($e->reason)) {
                     $hostFailures[$domain] = true;
                 }
 
@@ -346,6 +368,7 @@ class ActivityPubDeliveryService
                     'url' => is_string($destination)
                         ? $destination
                         : null,
+                    'reason' => $e->reason,
                     'error' => $e->getMessage(),
                 ]);
 
@@ -553,30 +576,40 @@ class ActivityPubDeliveryService
     }
 
     /**
-     * Validate and normalize an ActivityPub inbox URL.
+     * Whether a validation reason describes the remote host itself.
      */
-    private static function validateDestination(string $url): string|false
+    private static function reasonIndictsHost(string $reason): bool
+    {
+        return in_array($reason, self::HOST_LEVEL_REASONS, true);
+    }
+
+    /**
+     * Validate and normalize an ActivityPub inbox URL.
+     *
+     * @return array{url: ?string, reason: string}
+     */
+    private static function validateDestination(string $url): array
     {
         $url = trim($url);
 
         if ($url === '') {
-            return false;
+            return ['url' => null, 'reason' => Helpers::URL_MALFORMED];
         }
 
         /*
-         * Helpers::validateUrl() provides Pixelfed's SSRF / hostname /
-         * federation URL validation.
+         * Helpers::validateUrlWithReason() provides Pixelfed's SSRF /
+         * hostname / federation URL validation, and reports why it refused.
          *
          * Use the normalized URL it returns rather than continuing with the
          * caller-provided value.
          */
-        $validated = Helpers::validateUrl($url);
+        $result = Helpers::validateUrlWithReason($url);
 
-        if (! is_string($validated) || $validated === '') {
-            return false;
+        if (! is_string($result['url']) || $result['url'] === '') {
+            return ['url' => null, 'reason' => $result['reason']];
         }
 
-        return $validated;
+        return $result;
     }
 
     /**

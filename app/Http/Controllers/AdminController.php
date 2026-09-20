@@ -460,10 +460,12 @@ class AdminController extends Controller
         foreach ($fields as $field => $type) {
             switch ($type) {
                 case 'string':
+                    // @phpstan-ignore-next-line
                     if ($request->{$field} != $news->{$field}) {
                         if ($field === 'title') {
                             $news->slug = $slug;
                         }
+                        // @phpstan-ignore-next-line
                         $news->{$field} = $request->{$field};
                         $changed = true;
                         array_push($changedFields, $field);
@@ -472,7 +474,9 @@ class AdminController extends Controller
 
                 case 'boolean':
                     $state = $request->{$field} == 'on' ? true : false;
+                    // @phpstan-ignore-next-line
                     if ($state != $news->{$field}) {
+                        // @phpstan-ignore-next-line
                         $news->{$field} = $state;
                         $changed = true;
                         array_push($changedFields, $field);

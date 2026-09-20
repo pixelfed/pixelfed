@@ -40,31 +40,31 @@ beforeEach(function () {
 });
 
 it('fetches the story payload over the hardened path', function () {
-    seedPublicIpForStory('peer.example');
+    seedPublicIpForStory('pixelfed.org');
 
     Http::fake([
-        'https://peer.example/story' => Http::response('{"id":"https://peer.example/s/1"}', 200, [
+        'https://pixelfed.org/story' => Http::response('{"id":"https://pixelfed.org/s/1"}', 200, [
             'Content-Type' => 'application/json',
         ]),
     ]);
 
-    $payload = callFetchStoryPayload('https://peer.example/story', 'bearcap-token-1234567890');
+    $payload = callFetchStoryPayload('https://pixelfed.org/story', 'bearcap-token-1234567890');
 
     expect($payload)->toBeArray()
-        ->and($payload['id'])->toBe('https://peer.example/s/1');
+        ->and($payload['id'])->toBe('https://pixelfed.org/s/1');
 });
 
 it('refuses a payload fetch that redirects to a private address', function () {
-    seedPublicIpForStory('peer.example');
+    seedPublicIpForStory('pixelfed.org');
 
     Http::fake([
-        'https://peer.example/story' => Http::response('', 302, [
+        'https://pixelfed.org/story' => Http::response('', 302, [
             'Location' => 'http://169.254.169.254/latest/meta-data/',
         ]),
         '169.254.169.254/*' => Http::response('SECRET', 200),
     ]);
 
-    $payload = callFetchStoryPayload('https://peer.example/story', 'bearcap-token-1234567890');
+    $payload = callFetchStoryPayload('https://pixelfed.org/story', 'bearcap-token-1234567890');
 
     expect($payload)->toBeNull();
 

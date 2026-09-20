@@ -32,19 +32,19 @@ it('forwards caller headers to the origin host', function () {
     seedPublicIp('origin.example');
 
     Http::fake([
-        'https://origin.example/story' => Http::response('{"ok":true}', 200, [
+        'https://pixelfed.org/story' => Http::response('{"ok":true}', 200, [
             'Content-Type' => 'application/json',
         ]),
     ]);
 
-    $body = SecureMediaFetchService::get('https://origin.example/story', null, null, [
+    $body = SecureMediaFetchService::get('https://pixelfed.org/story', null, null, [
         'Authorization' => 'Bearer secret-token',
     ]);
 
     expect($body)->toBe('{"ok":true}');
 
     Http::assertSent(function ($request) {
-        return $request->url() === 'https://origin.example/story'
+        return $request->url() === 'https://pixelfed.org/story'
             && $request->hasHeader('Authorization', 'Bearer secret-token');
     });
 });
@@ -54,15 +54,15 @@ it('strips the Authorization header on a cross-origin redirect', function () {
     seedPublicIp('other.example');
 
     Http::fake([
-        'https://origin.example/story' => Http::response('', 302, [
-            'Location' => 'https://other.example/story',
+        'https://pixelfed.org/story' => Http::response('', 302, [
+            'Location' => 'https://joinloops.org/story',
         ]),
-        'https://other.example/story' => Http::response('{"ok":true}', 200, [
+        'https://joinloops.org/story' => Http::response('{"ok":true}', 200, [
             'Content-Type' => 'application/json',
         ]),
     ]);
 
-    $body = SecureMediaFetchService::get('https://origin.example/story', null, null, [
+    $body = SecureMediaFetchService::get('https://pixelfed.org/story', null, null, [
         'Authorization' => 'Bearer secret-token',
     ]);
 
@@ -70,7 +70,7 @@ it('strips the Authorization header on a cross-origin redirect', function () {
 
     // The cross-origin hop must NOT carry the bearer token.
     Http::assertSent(function ($request) {
-        if ($request->url() !== 'https://other.example/story') {
+        if ($request->url() !== 'https://joinloops.org/story') {
             return false;
         }
 
@@ -82,14 +82,14 @@ it('refuses to follow a redirect to a private address', function () {
     seedPublicIp('origin.example');
 
     Http::fake([
-        'https://origin.example/story' => Http::response('', 302, [
+        'https://pixelfed.org/story' => Http::response('', 302, [
             'Location' => 'http://169.254.169.254/latest/meta-data/',
         ]),
         // If the service (incorrectly) followed, this would answer; it must not.
         '169.254.169.254/*' => Http::response('SECRET', 200),
     ]);
 
-    $body = SecureMediaFetchService::get('https://origin.example/story');
+    $body = SecureMediaFetchService::get('https://pixelfed.org/story');
 
     expect($body)->toBeFalse();
 

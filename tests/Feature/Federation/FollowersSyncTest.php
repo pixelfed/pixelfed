@@ -169,20 +169,20 @@ describe('sender', function () {
 
         $profile = fsyncLocalProfile();
 
-        $alice = fsyncRemoteProfile('remote1.example', 'alice');
-        $bob = fsyncRemoteProfile('remote1.example', 'bob');
+        $alice = fsyncRemoteProfile('joinloops.org', 'alice');
+        $bob = fsyncRemoteProfile('joinloops.org', 'bob');
         $carol = fsyncRemoteProfile('remote2.example', 'carol');
 
         foreach ([$alice, $bob, $carol] as $follower) {
             fsyncFollow($follower, $profile);
         }
 
-        fsyncSeedHosts(['remote1.example', 'remote2.example', 'remote3.example']);
+        fsyncSeedHosts(['joinloops.org', 'remote2.example', 'remote3.example']);
 
         fsyncInProduction(fn () => ActivityPubDeliveryService::pool(
             $profile,
             [
-                'https://remote1.example/inbox',
+                'https://joinloops.org/inbox',
                 'https://remote2.example/inbox',
                 'https://remote3.example/inbox',
             ],
@@ -192,7 +192,7 @@ describe('sender', function () {
         ));
 
         $expected = [
-            'https://remote1.example/inbox' => FollowersSyncService::digest([$alice->remote_url, $bob->remote_url]),
+            'https://joinloops.org/inbox' => FollowersSyncService::digest([$alice->remote_url, $bob->remote_url]),
             'https://remote2.example/inbox' => FollowersSyncService::digest([$carol->remote_url]),
             'https://remote3.example/inbox' => FollowersSyncService::EMPTY_DIGEST,
         ];
@@ -219,12 +219,12 @@ describe('sender', function () {
         Http::fake();
 
         $profile = fsyncLocalProfile();
-        fsyncFollow(fsyncRemoteProfile('remote1.example', 'alice'), $profile);
-        fsyncSeedHosts(['remote1.example']);
+        fsyncFollow(fsyncRemoteProfile('joinloops.org', 'alice'), $profile);
+        fsyncSeedHosts(['joinloops.org']);
 
         fsyncInProduction(fn () => ActivityPubDeliveryService::pool(
             $profile,
-            ['https://remote1.example/inbox'],
+            ['https://joinloops.org/inbox'],
             ['id' => $profile->permalink('#create'), 'type' => 'Create', 'actor' => $profile->permalink()]
         ));
 
@@ -233,7 +233,7 @@ describe('sender', function () {
 
     it('drops the cached digests when a relationship changes', function () {
         $profile = fsyncLocalProfile();
-        $alice = fsyncRemoteProfile('remote1.example', 'alice');
+        $alice = fsyncRemoteProfile('joinloops.org', 'alice');
 
         expect(FollowersSyncService::outboundDigests($profile))->toBe([]);
 
@@ -241,7 +241,7 @@ describe('sender', function () {
         RelationshipService::forget($alice->id, $profile->id);
 
         expect(FollowersSyncService::outboundDigests($profile))->toBe([
-            'https://remote1.example' => FollowersSyncService::digest([$alice->remote_url]),
+            'https://joinloops.org' => FollowersSyncService::digest([$alice->remote_url]),
         ]);
     });
 });
@@ -259,11 +259,11 @@ describe('partial followers endpoint', function () {
 
         $profile = fsyncLocalProfile();
         [$private] = fsyncKeyPair();
-        fsyncSeedHosts(['remote1.example']);
+        fsyncSeedHosts(['joinloops.org']);
 
         $path = "/users/{$profile->username}/followers_synchronization";
 
-        $this->get($path, fsyncSignedGetHeaders($private, 'https://remote1.example/actor#main-key', $path))
+        $this->get($path, fsyncSignedGetHeaders($private, 'https://joinloops.org/actor#main-key', $path))
             ->assertStatus(401);
 
         Http::assertNothingSent();
@@ -274,25 +274,25 @@ describe('partial followers endpoint', function () {
         $profile = fsyncLocalProfile();
         [$private, $public] = fsyncKeyPair();
 
-        fsyncRemoteProfile('remote1.example', 'actor', [
-            'remote_url' => 'https://remote1.example/actor',
-            'key_id' => 'https://remote1.example/actor#main-key',
+        fsyncRemoteProfile('joinloops.org', 'actor', [
+            'remote_url' => 'https://joinloops.org/actor',
+            'key_id' => 'https://joinloops.org/actor#main-key',
             'public_key' => $public,
         ]);
 
-        $alice = fsyncRemoteProfile('remote1.example', 'alice');
-        $bob = fsyncRemoteProfile('remote1.example', 'bob');
+        $alice = fsyncRemoteProfile('joinloops.org', 'alice');
+        $bob = fsyncRemoteProfile('joinloops.org', 'bob');
         $carol = fsyncRemoteProfile('remote2.example', 'carol');
 
         foreach ([$alice, $bob, $carol] as $follower) {
             fsyncFollow($follower, $profile);
         }
 
-        fsyncSeedHosts(['remote1.example']);
+        fsyncSeedHosts(['joinloops.org']);
 
         $path = "/users/{$profile->username}/followers_synchronization";
 
-        $response = $this->get($path, fsyncSignedGetHeaders($private, 'https://remote1.example/actor#main-key', $path))
+        $response = $this->get($path, fsyncSignedGetHeaders($private, 'https://joinloops.org/actor#main-key', $path))
             ->assertOk()
             ->assertJsonPath('type', 'OrderedCollection')
             ->assertJsonPath('id', $profile->permalink('/followers_synchronization'));
@@ -304,15 +304,15 @@ describe('partial followers endpoint', function () {
         $profile = fsyncLocalProfile();
         [$private, $public] = fsyncKeyPair();
 
-        fsyncRemoteProfile('remote1.example', 'actor', [
-            'remote_url' => 'https://remote1.example/actor',
-            'key_id' => 'https://remote1.example/actor#main-key',
+        fsyncRemoteProfile('joinloops.org', 'actor', [
+            'remote_url' => 'https://joinloops.org/actor',
+            'key_id' => 'https://joinloops.org/actor#main-key',
             'public_key' => $public,
         ]);
 
-        fsyncSeedHosts(['remote1.example']);
+        fsyncSeedHosts(['joinloops.org']);
 
-        $headers = fsyncSignedGetHeaders($private, 'https://remote1.example/actor#main-key', "/users/{$profile->username}/followers");
+        $headers = fsyncSignedGetHeaders($private, 'https://joinloops.org/actor#main-key', "/users/{$profile->username}/followers");
 
         $this->get("/users/{$profile->username}/followers_synchronization", $headers)
             ->assertStatus(401);
@@ -322,9 +322,9 @@ describe('partial followers endpoint', function () {
 describe('inbound header', function () {
     it('queues a synchronization when the digests differ', function () {
         $local = fsyncLocalProfile();
-        $sender = fsyncRemoteProfile('remote1.example', 'alice', ['key_id' => 'https://remote1.example/users/alice#main-key']);
+        $sender = fsyncRemoteProfile('joinloops.org', 'alice', ['key_id' => 'https://joinloops.org/users/alice#main-key']);
         fsyncFollow($local, $sender);
-        fsyncSeedHosts(['remote1.example']);
+        fsyncSeedHosts(['joinloops.org']);
 
         FollowersSyncService::handleInboundHeaders(fsyncInboundHeaders($sender, [
             'collectionId' => $sender->followers_url,
@@ -337,9 +337,9 @@ describe('inbound header', function () {
 
     it('stays quiet when the digests agree', function () {
         $local = fsyncLocalProfile();
-        $sender = fsyncRemoteProfile('remote1.example', 'alice', ['key_id' => 'https://remote1.example/users/alice#main-key']);
+        $sender = fsyncRemoteProfile('joinloops.org', 'alice', ['key_id' => 'https://joinloops.org/users/alice#main-key']);
         fsyncFollow($local, $sender);
-        fsyncSeedHosts(['remote1.example']);
+        fsyncSeedHosts(['joinloops.org']);
 
         FollowersSyncService::handleInboundHeaders(fsyncInboundHeaders($sender, [
             'collectionId' => $sender->followers_url,
@@ -351,9 +351,9 @@ describe('inbound header', function () {
     });
 
     it('ignores a header that is not covered by the signature', function () {
-        $sender = fsyncRemoteProfile('remote1.example', 'alice', ['key_id' => 'https://remote1.example/users/alice#main-key']);
+        $sender = fsyncRemoteProfile('joinloops.org', 'alice', ['key_id' => 'https://joinloops.org/users/alice#main-key']);
         fsyncFollow(fsyncLocalProfile(), $sender);
-        fsyncSeedHosts(['remote1.example']);
+        fsyncSeedHosts(['joinloops.org']);
 
         FollowersSyncService::handleInboundHeaders(fsyncInboundHeaders($sender, [
             'collectionId' => $sender->followers_url,
@@ -365,12 +365,12 @@ describe('inbound header', function () {
     });
 
     it('ignores a collection or url that does not belong to the sender', function () {
-        $sender = fsyncRemoteProfile('remote1.example', 'alice', ['key_id' => 'https://remote1.example/users/alice#main-key']);
+        $sender = fsyncRemoteProfile('joinloops.org', 'alice', ['key_id' => 'https://joinloops.org/users/alice#main-key']);
         fsyncFollow(fsyncLocalProfile(), $sender);
-        fsyncSeedHosts(['remote1.example']);
+        fsyncSeedHosts(['joinloops.org']);
 
         FollowersSyncService::handleInboundHeaders(fsyncInboundHeaders($sender, [
-            'collectionId' => 'https://remote1.example/users/mallory/followers',
+            'collectionId' => 'https://joinloops.org/users/mallory/followers',
             'url' => $sender->remote_url.'/followers_synchronization',
             'digest' => FollowersSyncService::EMPTY_DIGEST,
         ]));
@@ -385,9 +385,9 @@ describe('inbound header', function () {
     });
 
     it('synchronizes the same actor once per cooldown window', function () {
-        $sender = fsyncRemoteProfile('remote1.example', 'alice', ['key_id' => 'https://remote1.example/users/alice#main-key']);
+        $sender = fsyncRemoteProfile('joinloops.org', 'alice', ['key_id' => 'https://joinloops.org/users/alice#main-key']);
         fsyncFollow(fsyncLocalProfile(), $sender);
-        fsyncSeedHosts(['remote1.example']);
+        fsyncSeedHosts(['joinloops.org']);
 
         $headers = fsyncInboundHeaders($sender, [
             'collectionId' => $sender->followers_url,
@@ -406,12 +406,12 @@ describe('synchronization', function () {
     it('removes local followers the authoritative server does not list', function () {
         $kept = fsyncLocalProfile();
         $stale = fsyncLocalProfile();
-        $sender = fsyncRemoteProfile('remote1.example', 'alice');
+        $sender = fsyncRemoteProfile('joinloops.org', 'alice');
         fsyncFollow($kept, $sender);
         fsyncFollow($stale, $sender);
 
         $url = $sender->remote_url.'/followers_synchronization';
-        fsyncSeedHosts(['remote1.example']);
+        fsyncSeedHosts(['joinloops.org']);
         fsyncFakeCollection($url, [$kept->permalink()]);
 
         $result = FollowersSyncService::synchronize(
@@ -431,12 +431,12 @@ describe('synchronization', function () {
     it('removes nothing when the list does not hash to the signed digest', function () {
         $kept = fsyncLocalProfile();
         $stale = fsyncLocalProfile();
-        $sender = fsyncRemoteProfile('remote1.example', 'alice');
+        $sender = fsyncRemoteProfile('joinloops.org', 'alice');
         fsyncFollow($kept, $sender);
         fsyncFollow($stale, $sender);
 
         $url = $sender->remote_url.'/followers_synchronization';
-        fsyncSeedHosts(['remote1.example']);
+        fsyncSeedHosts(['joinloops.org']);
         fsyncFakeCollection($url, [$kept->permalink()]);
 
         $result = FollowersSyncService::synchronize(
@@ -452,12 +452,12 @@ describe('synchronization', function () {
 
     it('never treats a failed fetch as an empty collection', function () {
         $local = fsyncLocalProfile();
-        $sender = fsyncRemoteProfile('remote1.example', 'alice');
+        $sender = fsyncRemoteProfile('joinloops.org', 'alice');
         fsyncFollow($local, $sender);
 
         [$private] = fsyncKeyPair();
         Cache::forever(InstanceActor::PKI_PRIVATE, $private);
-        fsyncSeedHosts(['remote1.example']);
+        fsyncSeedHosts(['joinloops.org']);
         Http::fake(['*' => Http::response('', 500)]);
 
         $result = FollowersSyncService::synchronize(
@@ -473,11 +473,11 @@ describe('synchronization', function () {
 
     it('keeps a follow that is younger than the grace period', function () {
         $local = fsyncLocalProfile();
-        $sender = fsyncRemoteProfile('remote1.example', 'alice');
+        $sender = fsyncRemoteProfile('joinloops.org', 'alice');
         fsyncFollow($local, $sender, 1);
 
         $url = $sender->remote_url.'/followers_synchronization';
-        fsyncSeedHosts(['remote1.example']);
+        fsyncSeedHosts(['joinloops.org']);
         fsyncFakeCollection($url, []);
 
         $result = FollowersSyncService::synchronize($sender, $sender->followers_url, $url, FollowersSyncService::EMPTY_DIGEST);
@@ -488,12 +488,12 @@ describe('synchronization', function () {
 
     it('keeps a follower that is listed under its id based actor url', function () {
         $local = fsyncLocalProfile();
-        $sender = fsyncRemoteProfile('remote1.example', 'alice');
+        $sender = fsyncRemoteProfile('joinloops.org', 'alice');
         fsyncFollow($local, $sender);
 
         $listedAs = url('users/'.$local->id);
         $url = $sender->remote_url.'/followers_synchronization';
-        fsyncSeedHosts(['remote1.example']);
+        fsyncSeedHosts(['joinloops.org']);
         fsyncFakeCollection($url, [$listedAs]);
 
         $result = FollowersSyncService::synchronize($sender, $sender->followers_url, $url, FollowersSyncService::digest([$listedAs]));
@@ -505,12 +505,12 @@ describe('synchronization', function () {
 
     it('removes nothing when the list holds a local url it cannot interpret', function () {
         $local = fsyncLocalProfile();
-        $sender = fsyncRemoteProfile('remote1.example', 'alice');
+        $sender = fsyncRemoteProfile('joinloops.org', 'alice');
         fsyncFollow($local, $sender);
 
         $listedAs = url('@'.$local->username);
         $url = $sender->remote_url.'/followers_synchronization';
-        fsyncSeedHosts(['remote1.example']);
+        fsyncSeedHosts(['joinloops.org']);
         fsyncFakeCollection($url, [$listedAs]);
 
         $result = FollowersSyncService::synchronize($sender, $sender->followers_url, $url, FollowersSyncService::digest([$listedAs]));
@@ -521,7 +521,7 @@ describe('synchronization', function () {
 
     it('accepts a pending follow request the authoritative server already lists', function () {
         $local = fsyncLocalProfile();
-        $sender = fsyncRemoteProfile('remote1.example', 'alice');
+        $sender = fsyncRemoteProfile('joinloops.org', 'alice');
 
         FollowRequest::create([
             'follower_id' => $local->id,
@@ -529,7 +529,7 @@ describe('synchronization', function () {
         ]);
 
         $url = $sender->remote_url.'/followers_synchronization';
-        fsyncSeedHosts(['remote1.example']);
+        fsyncSeedHosts(['joinloops.org']);
         fsyncFakeCollection($url, [$local->permalink()]);
 
         $result = FollowersSyncService::synchronize($sender, $sender->followers_url, $url, FollowersSyncService::digest([$local->permalink()]));
@@ -541,10 +541,10 @@ describe('synchronization', function () {
 
     it('undoes a follow the authoritative server lists but we do not know', function () {
         $local = fsyncLocalProfile();
-        $sender = fsyncRemoteProfile('remote1.example', 'alice');
+        $sender = fsyncRemoteProfile('joinloops.org', 'alice');
 
         $url = $sender->remote_url.'/followers_synchronization';
-        fsyncSeedHosts(['remote1.example']);
+        fsyncSeedHosts(['joinloops.org']);
         fsyncFakeCollection($url, [$local->permalink()]);
 
         $result = FollowersSyncService::synchronize($sender, $sender->followers_url, $url, FollowersSyncService::digest([$local->permalink()]));
@@ -557,13 +557,13 @@ describe('synchronization', function () {
         Http::fake();
 
         $local = fsyncLocalProfile();
-        $sender = fsyncRemoteProfile('remote1.example', 'alice');
+        $sender = fsyncRemoteProfile('joinloops.org', 'alice');
         fsyncFollow($local, $sender);
-        fsyncSeedHosts(['remote1.example']);
+        fsyncSeedHosts(['joinloops.org']);
 
         $result = FollowersSyncService::synchronize(
             $sender,
-            'https://remote1.example/users/mallory/followers',
+            'https://joinloops.org/users/mallory/followers',
             $sender->remote_url.'/followers_synchronization',
             FollowersSyncService::EMPTY_DIGEST
         );
