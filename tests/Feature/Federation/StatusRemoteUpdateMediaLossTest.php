@@ -27,12 +27,12 @@ function seedMediaHost(string $host): void
     Cache::put('helpers:url:public-ips:'.hash('xxh128', $host), ['203.0.113.20'], 3600);
 }
 
-function remoteStatusWithMedia(string $remoteUrl = 'https://media.example/original.jpg'): Status
+function remoteStatusWithMedia(string $remoteUrl = 'https://pixelfed.org/original.jpg'): Status
 {
     $user = User::factory()->create();
     $user->refresh();
 
-    $objectUrl = 'https://remote.example/users/bob/statuses/'.uniqid();
+    $objectUrl = 'https://joinloops.org/users/bob/statuses/'.uniqid();
 
     $status = Status::factory()->create([
         'profile_id' => $user->profile_id,
@@ -67,11 +67,11 @@ function updateActivity(string $objectUrl, array $attachment): array
 }
 
 it('keeps existing media when the replacement attachment HEAD fails', function () {
-    seedMediaHost('media.example');
+    seedMediaHost('pixelfed.org');
 
     // The replacement fetch fails (transient 500) -> no survivors.
     Http::fake([
-        'https://media.example/replacement.jpg' => Http::response('', 500),
+        'https://pixelfed.org/replacement.jpg' => Http::response('', 500),
     ]);
 
     $status = remoteStatusWithMedia();
@@ -81,7 +81,7 @@ it('keeps existing media when the replacement attachment HEAD fails', function (
         [
             'type' => 'Image',
             'mediaType' => 'image/jpeg',
-            'url' => 'https://media.example/replacement.jpg',
+            'url' => 'https://pixelfed.org/replacement.jpg',
         ],
     ]);
 
@@ -90,15 +90,15 @@ it('keeps existing media when the replacement attachment HEAD fails', function (
     // Original media is retained (not orphaned) since nothing could replace it.
     expect(Media::whereStatusId($status->id)->count())->toBe(1)
         ->and(Media::whereStatusId($status->id)->first()->remote_url)
-        ->toBe('https://media.example/original.jpg');
+        ->toBe('https://pixelfed.org/original.jpg');
 });
 
 it('keeps existing media when the replacement served MIME is disallowed', function () {
-    seedMediaHost('media.example');
+    seedMediaHost('pixelfed.org');
 
     // HEAD succeeds but serves a disallowed MIME -> no survivors.
     Http::fake([
-        'https://media.example/replacement.jpg' => Http::response('', 200, [
+        'https://pixelfed.org/replacement.jpg' => Http::response('', 200, [
             'Content-Type' => 'application/pdf',
             'Content-Length' => '50000',
         ]),
@@ -110,7 +110,7 @@ it('keeps existing media when the replacement served MIME is disallowed', functi
         [
             'type' => 'Image',
             'mediaType' => 'image/jpeg',
-            'url' => 'https://media.example/replacement.jpg',
+            'url' => 'https://pixelfed.org/replacement.jpg',
         ],
     ]);
 
@@ -118,14 +118,14 @@ it('keeps existing media when the replacement served MIME is disallowed', functi
 
     expect(Media::whereStatusId($status->id)->count())->toBe(1)
         ->and(Media::whereStatusId($status->id)->first()->remote_url)
-        ->toBe('https://media.example/original.jpg');
+        ->toBe('https://pixelfed.org/original.jpg');
 });
 
 it('swaps media when the replacement attachment validates', function () {
-    seedMediaHost('media.example');
+    seedMediaHost('pixelfed.org');
 
     Http::fake([
-        'https://media.example/replacement.jpg' => Http::response('', 200, [
+        'https://pixelfed.org/replacement.jpg' => Http::response('', 200, [
             'Content-Type' => 'image/jpeg',
             'Content-Length' => '50000',
         ]),
@@ -137,7 +137,7 @@ it('swaps media when the replacement attachment validates', function () {
         [
             'type' => 'Image',
             'mediaType' => 'image/jpeg',
-            'url' => 'https://media.example/replacement.jpg',
+            'url' => 'https://pixelfed.org/replacement.jpg',
         ],
     ]);
 
@@ -146,8 +146,8 @@ it('swaps media when the replacement attachment validates', function () {
     // Old media detached, new media attached.
     $attached = Media::whereStatusId($status->id)->get();
     expect($attached)->toHaveCount(1)
-        ->and($attached->first()->remote_url)->toBe('https://media.example/replacement.jpg');
-    expect(Media::whereStatusId($status->id)->whereRemoteUrl('https://media.example/original.jpg')->exists())
+        ->and($attached->first()->remote_url)->toBe('https://pixelfed.org/replacement.jpg');
+    expect(Media::whereStatusId($status->id)->whereRemoteUrl('https://pixelfed.org/original.jpg')->exists())
         ->toBeFalse();
 });
 
