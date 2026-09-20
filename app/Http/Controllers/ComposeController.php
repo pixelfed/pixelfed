@@ -369,6 +369,7 @@ class ComposeController extends Controller
                     ->map(function ($place) {
                         return [
                             'id' => $place->place_id,
+                            // @phpstan-ignore-next-line
                             'count' => $place->pc,
                         ];
                     })
@@ -390,6 +391,7 @@ class ComposeController extends Controller
                 ->map(function ($place) {
                     return [
                         'id' => $place->place_id,
+                        // @phpstan-ignore-next-line
                         'count' => $place->pc,
                     ];
                 });
@@ -485,6 +487,7 @@ class ComposeController extends Controller
                 return [
                     'key' => '@'.Str::limit($username, 30),
                     'value' => $username,
+                    // @phpstan-ignore-next-line
                     'is_followed' => (bool) $profile->is_followed,
                 ];
             });

@@ -47,11 +47,13 @@ trait AdminAutospamController
                 ->groupBy($gb)
                 ->get()
                 ->map(function ($s) {
+                    // @phpstan-ignore-next-line
                     $dt = now()->parse('01-'.$s->month_year);
 
                     return [
                         'id' => $dt->format('Ym'),
                         'x' => $dt->format('M Y'),
+                        // @phpstan-ignore-next-line
                         'y' => $s->count,
                     ];
                 })
