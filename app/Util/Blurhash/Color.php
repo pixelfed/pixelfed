@@ -17,8 +17,13 @@ final class Color
     {
         $normalized = max(0, min(1, $value));
 
-        return ($normalized <= 0.0031308)
+        $result = ($normalized <= 0.0031308)
             ? (int) round($normalized * 12.92 * 255 + 0.5)
             : (int) round((1.055 * pow($normalized, 1 / 2.4) - 0.055) * 255 + 0.5);
+
+        // The + 0.5 rounds a fully saturated channel up to 256, which does not fit
+        // in the 8 bits DC::encode() packs it into and carries into the next channel
+        // (pure white came out as R=257 G=1 B=0). Clamp like upstream php-blurhash.
+        return max(0, min($result, 255));
     }
 }
