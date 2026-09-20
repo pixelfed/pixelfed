@@ -306,10 +306,18 @@ class Image
                 StatusService::del($media->status_id);
             }
 
-        } catch (\Exception $e) {
-            if (config('app.dev_log')) {
-                Log::info('MediaResizeException: '.$e->getMessage().' | Could not process media id: '.$media->id);
-            }
+        } catch (\Throwable $e) {
+            // Always logged, never gated behind dev_log: when this fails the
+            // untouched original upload keeps being served at full size, and
+            // nothing else in the app surfaces that.
+            Log::error(sprintf(
+                'MediaResizeException: could not %s media id %s (%s) [%s]: %s',
+                $thumbnail ? 'thumbnail' : 'resize',
+                $media->id,
+                $media->mime,
+                $e::class,
+                $e->getMessage()
+            ));
         }
     }
 
