@@ -50,8 +50,8 @@ use Illuminate\Support\Facades\Storage;
  * @property int $is_suggestable
  * @property Carbon|null $last_fetched_at
  * @property int|null $status_count
- * @property-read int|null $followers_count
- * @property-read int|null $following_count
+ * @property int $followers_count
+ * @property int $following_count
  * @property string|null $webfinger
  * @property string|null $avatar_url
  * @property Carbon|null $last_status_at
@@ -317,7 +317,8 @@ class Profile extends Model
                 return url('/storage/avatars/default.jpg');
             }
 
-            if ($avatar->is_remote &&
+            if (
+                $avatar->is_remote &&
                 $avatar->remote_url &&
                 boolval(config_cache('federation.avatars.store_local')) === true
             ) {
@@ -447,8 +448,7 @@ class Profile extends Model
 
             case 'unlisted':
                 $audience = [
-                    'to' => [
-                    ],
+                    'to' => [],
                     'cc' => [
                         'https://www.w3.org/ns/activitystreams#Public',
                         $this->permalink('/followers'),
@@ -461,8 +461,7 @@ class Profile extends Model
                     'to' => [
                         $this->permalink('/followers'),
                     ],
-                    'cc' => [
-                    ],
+                    'cc' => [],
                 ];
                 break;
         }

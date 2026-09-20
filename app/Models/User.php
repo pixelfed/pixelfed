@@ -34,11 +34,6 @@ use NotificationChannels\WebPush\PushSubscription;
  * @property Carbon|null $created_at
  * @property Carbon|null $updated_at
  * @property Carbon|null $deleted_at
- * @property Carbon|null $last_active_at
- * @property int $2fa_enabled
- * @property string|null $2fa_secret
- * @property string|null $2fa_backup_codes
- * @property Carbon|null $2fa_setup_at
  * @property string|null $delete_after
  * @property int $has_interstitial
  * @property string|null $guid
