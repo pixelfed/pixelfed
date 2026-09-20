@@ -126,7 +126,7 @@ class Group extends Model
 
     public function getMembershipType(): string
     {
-        return $this->is_private ? 'private' : ($this->is_local ? 'local' : 'all');
+        return $this->is_private ? 'private' : ($this->local ? 'local' : 'all');
     }
 
     public function selfRole($id = false)

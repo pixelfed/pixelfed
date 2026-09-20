@@ -18,7 +18,6 @@ use App\Http\Controllers\PortfolioController;
 use App\Http\Controllers\ProfileSponsorController;
 use App\Http\Controllers\PublicApiController;
 use App\Http\Controllers\SearchController;
-use App\Http\Controllers\SeasonalController;
 use App\Http\Controllers\SoftwareUpdateController;
 use App\Http\Controllers\SpaController;
 use App\Http\Controllers\StatusController;
@@ -119,8 +118,6 @@ Route::domain(config('pixelfed.domain.app'))->middleware(['localization'])->grou
                 Route::get('discover/posts/trending', [DiscoverController::class, 'trendingApi']);
                 Route::get('discover/posts/hashtags', [DiscoverController::class, 'trendingHashtags']);
                 Route::get('discover/posts/places', [DiscoverController::class, 'trendingPlaces']);
-                Route::get('seasonal/yir', [SeasonalController::class, 'getData']);
-                Route::post('seasonal/yir', [SeasonalController::class, 'store']);
                 Route::get('mutes', [AccountController::class, 'accountMutesV2']);
                 Route::get('blocks', [AccountController::class, 'accountBlocksV2']);
                 Route::get('filters', [AccountController::class, 'accountFiltersV2']);
