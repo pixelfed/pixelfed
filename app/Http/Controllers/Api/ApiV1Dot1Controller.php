@@ -349,44 +349,55 @@ class ApiV1Dot1Controller extends Controller
      */
     public function accountLoginActivity(Request $request)
     {
-        abort_if(! $request->user() || ! $request->user()->token(), 403);
-        abort_unless($request->user()->tokenCan('read'), 403);
-
         $user = $request->user();
-        abort_if($user->status != null, 403);
+
+        abort_if(! $user || ! $user->token(), 403);
+        abort_unless($user->tokenCan('read'), 403);
+        abort_if($user->status !== null, 403);
+
         if (config('pixelfed.bouncer.cloud_ips.ban_signups')) {
             abort_if(BouncerService::checkIp($request->ip()), 404);
         }
-        $agent = new UserAgentService;
-        $currentIp = $request->ip();
 
-        // Deduplicate by IP while keeping the newest login per IP. A bare
-        // groupBy over SELECT * is invalid under ONLY_FULL_GROUP_BY (500 on
-        // strict MySQL/MariaDB and Postgres) and indeterminate otherwise, so
-        // select MAX(id) per ip_address and fetch those rows.
-        $activity = AccountLog::whereIn('id', function ($q) use ($user) {
-            $q->from('account_logs')
-                ->selectRaw('MAX(id)')
-                ->where('user_id', $user->id)
-                ->where('action', 'auth.login')
-                ->groupBy('ip_address');
-        })
-            ->orderBy('created_at', 'desc')
+        $currentIp = $request->ip();
+        $cutoff = now()->subYear();
+
+        $latestLoginIds = AccountLog::query()
+            ->selectRaw('MAX(id)')
+            ->where('user_id', $user->id)
+            ->where('action', 'auth.login')
+            ->where('created_at', '>=', $cutoff)
+            ->groupBy('ip_address');
+
+        $activity = AccountLog::query()
+            ->select([
+                'id',
+                'action',
+                'ip_address',
+                'user_agent',
+                'created_at',
+            ])
+            ->whereIn('id', $latestLoginIds)
+            ->orderByDesc('created_at')
             ->limit(10)
             ->get()
-            ->map(function ($item) use ($agent, $currentIp) {
+            ->map(function (AccountLog $item) use ($currentIp) {
+                $agent = new UserAgentService;
                 $agent->setUserAgent($item->user_agent);
 
                 return [
                     'id' => $item->id,
                     'action' => $item->action,
                     'ip' => $item->ip_address,
-                    'ip_current' => $item->ip_address === $currentIp,
+                    'ip_current' => hash_equals(
+                        (string) $item->ip_address,
+                        (string) $currentIp
+                    ),
                     'is_mobile' => $agent->isMobile(),
                     'device' => $agent->device(),
                     'browser' => $agent->browser(),
                     'platform' => $agent->platform(),
-                    'created_at' => $item->created_at->format('c'),
+                    'created_at' => $item->created_at->toISOString(),
                 ];
             });
 
