@@ -49,7 +49,7 @@ class DmConversation extends Model
     public static function participantsHash(array $profileIds): string
     {
         $ids = array_values(array_unique(array_map('intval', $profileIds)));
-        sort($ids, SORT_NUMERIC);
+        sort($ids);
 
         return hash('sha256', implode(':', $ids));
     }

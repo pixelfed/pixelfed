@@ -6,6 +6,7 @@ use App\Models\User;
 use App\Models\UserSetting;
 use App\Util\ActivityPub\Inbox;
 use Illuminate\Support\Facades\Cache;
+use Illuminate\Support\Facades\DB;
 
 if (! function_exists('dmLocalUser')) {
     /**
@@ -40,6 +41,18 @@ if (! function_exists('dmLocalUser')) {
             'sharedInbox' => "https://{$domain}/inbox",
             'last_fetched_at' => now(),
         ]);
+    }
+
+    /**
+     * Give $b the id right after $a, the way two profiles created in the same
+     * millisecond end up. Ids that close are equal once compared as floats,
+     * so anything that orders or matches ids has to cope with it.
+     */
+    function dmNeighbour(Profile $a, Profile $b): Profile
+    {
+        DB::table('profiles')->where('id', $b->id)->update(['id' => $a->id + 1]);
+
+        return Profile::findOrFail($a->id + 1);
     }
 
     /**
