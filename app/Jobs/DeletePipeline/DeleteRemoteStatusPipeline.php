@@ -15,6 +15,7 @@ use App\Models\Status;
 use App\Models\StatusHashtag;
 use App\Models\StatusView;
 use App\Services\Account\AccountStatService;
+use App\Services\DirectMessageService;
 use App\Services\NetworkTimelineService;
 use App\Services\StatusService;
 use Illuminate\Bus\Queueable;
@@ -80,6 +81,7 @@ class DeleteRemoteStatusPipeline implements ShouldQueue
                 ->whereItemId($status->id)
                 ->forceDelete();
             DirectMessage::whereStatusId($status->id)->delete();
+            app(DirectMessageService::class)->deleteByStatusId($status->id);
             Like::whereStatusId($status->id)->forceDelete();
             MediaTag::whereStatusId($status->id)->delete();
             $media = Media::whereStatusId($status->id)->get();

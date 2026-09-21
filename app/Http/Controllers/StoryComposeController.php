@@ -6,14 +6,12 @@ use App\Jobs\StoryPipeline\StoryDelete;
 use App\Jobs\StoryPipeline\StoryFanout;
 use App\Jobs\StoryPipeline\StoryReactionDeliver;
 use App\Jobs\StoryPipeline\StoryReplyDeliver;
-use App\Models\Conversation;
-use App\Models\DirectMessage;
-use App\Models\Notification;
 use App\Models\Poll;
 use App\Models\PollVote;
 use App\Models\Report;
 use App\Models\Status;
 use App\Models\Story;
+use App\Services\DirectMessageService;
 use App\Services\FollowerService;
 use App\Services\MediaPathService;
 use App\Services\StoryIndexService;
@@ -522,43 +520,24 @@ class StoryComposeController extends Controller
             ? url(Storage::url($story->path))
             : Storage::disk(config('filesystems.default'))->url($story->path);
 
-        $dm = new DirectMessage;
-        $dm->to_id = $story->profile_id;
-        $dm->from_id = $pid;
-        $dm->type = 'story:react';
-        $dm->status_id = $status->id;
-        $dm->meta = json_encode([
-            'story_username' => $story->profile->username,
-            'story_actor_username' => $request->user()->username,
-            'story_id' => $story->id,
-            'story_media_url' => $mediaUrl,
-            'reaction' => $text,
-        ]);
-        $dm->save();
-
-        Conversation::updateOrInsert(
+        // Shows up in the conversation with the story author, who is
+        // notified when they are on this server
+        app(DirectMessageService::class)->storeStoryMessage(
+            $request->user()->profile,
+            $story->profile,
+            'story:react',
+            $text,
             [
-                'to_id' => $story->profile_id,
-                'from_id' => $pid,
+                'story_username' => $story->profile->username,
+                'story_actor_username' => $request->user()->username,
+                'story_id' => $story->id,
+                'story_media_url' => $mediaUrl,
+                'reaction' => $text,
             ],
-            [
-                'type' => 'story:react',
-                'status_id' => $status->id,
-                'dm_id' => $dm->id,
-                'is_hidden' => false,
-            ]
+            $status->id
         );
 
-        if ($story->local) {
-            // generate notification
-            $n = new Notification;
-            $n->profile_id = $dm->to_id;
-            $n->actor_id = $dm->from_id;
-            $n->item_id = $dm->id;
-            $n->item_type = DirectMessage::class;
-            $n->action = 'story:react';
-            $n->save();
-        } else {
+        if (! $story->local) {
             StoryReactionDeliver::dispatch($story, $status)->onQueue('story');
         }
 
@@ -605,43 +584,24 @@ class StoryComposeController extends Controller
             ? url(Storage::url($story->path))
             : Storage::disk(config('filesystems.default'))->url($story->path);
 
-        $dm = new DirectMessage;
-        $dm->to_id = $story->profile_id;
-        $dm->from_id = $pid;
-        $dm->type = 'story:comment';
-        $dm->status_id = $status->id;
-        $dm->meta = json_encode([
-            'story_username' => $story->profile->username,
-            'story_actor_username' => $request->user()->username,
-            'story_id' => $story->id,
-            'story_media_url' => $mediaUrl,
-            'caption' => $text,
-        ]);
-        $dm->save();
-
-        Conversation::updateOrInsert(
+        // Shows up in the conversation with the story author, who is
+        // notified when they are on this server
+        app(DirectMessageService::class)->storeStoryMessage(
+            $request->user()->profile,
+            $story->profile,
+            'story:comment',
+            $text,
             [
-                'to_id' => $story->profile_id,
-                'from_id' => $pid,
+                'story_username' => $story->profile->username,
+                'story_actor_username' => $request->user()->username,
+                'story_id' => $story->id,
+                'story_media_url' => $mediaUrl,
+                'caption' => $text,
             ],
-            [
-                'type' => 'story:comment',
-                'status_id' => $status->id,
-                'dm_id' => $dm->id,
-                'is_hidden' => false,
-            ]
+            $status->id
         );
 
-        if ($story->local) {
-            // generate notification
-            $n = new Notification;
-            $n->profile_id = $dm->to_id;
-            $n->actor_id = $dm->from_id;
-            $n->item_id = $dm->id;
-            $n->item_type = DirectMessage::class;
-            $n->action = 'story:comment';
-            $n->save();
-        } else {
+        if (! $story->local) {
             StoryReplyDeliver::dispatch($story, $status)->onQueue('story');
         }
 

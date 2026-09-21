@@ -20,6 +20,7 @@ use App\Models\StatusView;
 use App\Services\Account\AccountStatService;
 use App\Services\AccountService;
 use App\Services\CollectionService;
+use App\Services\DirectMessageService;
 use App\Services\NotificationService;
 use App\Services\Status\ReplyCleanupService;
 use App\Services\StatusService;
@@ -150,6 +151,7 @@ class RemoteStatusDelete implements ShouldBeUniqueUntilProcessing, ShouldQueue
                 });
             DirectMessage::whereIn('id', $dmIds)->delete();
         }
+        app(DirectMessageService::class)->deleteByStatusId($status->id);
         Like::whereStatusId($status->id)->forceDelete();
         $media = Media::whereStatusId($status->id)->get();
         // Detach media from the status before dispatching deletion. status_id

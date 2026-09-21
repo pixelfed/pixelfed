@@ -23,6 +23,7 @@ use App\Models\Story;
 use App\Models\StoryView;
 use App\Models\UserFilter;
 use App\Services\AccountService;
+use App\Services\DirectMessageService;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
@@ -94,6 +95,7 @@ class DeleteRemoteProfilePipeline implements ShouldQueue
         // Delete DMs
         DirectMessage::whereFromId($pid)->orWhere('to_id', $pid)->delete();
         Conversation::whereFromId($pid)->orWhere('to_id', $pid)->delete();
+        app(DirectMessageService::class)->purgeProfile($pid);
 
         // Delete FollowRequests
         FollowRequest::whereFollowingId($pid)

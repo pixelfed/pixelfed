@@ -21,6 +21,7 @@ use App\Models\StatusHashtag;
 use App\Models\StatusView;
 use App\Services\ActivityPubDeliveryService;
 use App\Services\CollectionService;
+use App\Services\DirectMessageService;
 use App\Services\FractalService;
 use App\Services\NotificationService;
 use App\Services\Status\ReplyCleanupService;
@@ -150,6 +151,7 @@ class StatusDelete implements ShouldQueue
                 });
             DirectMessage::whereIn('id', $dmIds)->delete();
         }
+        app(DirectMessageService::class)->deleteByStatusId($status->id);
         Like::whereStatusId($status->id)->delete();
 
         $mediaTagIds = MediaTag::where('status_id', $status->id)->pluck('id');

@@ -3,13 +3,11 @@
 namespace App\Util\ActivityPub\Inbox;
 
 use App\Jobs\StoryPipeline\StoryFetch;
-use App\Models\Conversation;
-use App\Models\DirectMessage;
 use App\Models\Status;
 use App\Models\Story;
 use App\Models\StoryView;
+use App\Services\DirectMessageService;
 use App\Services\FollowerService;
-use App\Services\NotificationService;
 use App\Services\SanitizeService;
 use App\Services\StoryIndexService;
 use App\Util\ActivityPub\Helpers;
@@ -190,33 +188,20 @@ trait HandlesStories
         ]);
         $status->save();
 
-        $dm = new DirectMessage;
-        $dm->to_id = $story->profile_id;
-        $dm->from_id = $actorProfile->id;
-        $dm->type = $dmType;
-        $dm->status_id = $status->id;
-        $dm->meta = json_encode([
-            'story_username' => $targetProfile->username,
-            'story_actor_username' => $actorProfile->username,
-            'story_id' => $story->id,
-            'story_media_url' => url(Storage::url($story->path)),
-            $metaKey => $text,
-        ]);
-        $dm->save();
-
-        Conversation::updateOrInsert(
+        app(DirectMessageService::class)->storeStoryMessage(
+            $actorProfile,
+            $targetProfile,
+            $dmType,
+            $text,
             [
-                'to_id' => $story->profile_id,
-                'from_id' => $actorProfile->id,
+                'story_username' => $targetProfile->username,
+                'story_actor_username' => $actorProfile->username,
+                'story_id' => $story->id,
+                'story_media_url' => url(Storage::url($story->path)),
+                $metaKey => $text,
             ],
-            [
-                'type' => $dmType,
-                'status_id' => $status->id,
-                'dm_id' => $dm->id,
-                'is_hidden' => false,
-            ]
+            $status->id,
+            $url
         );
-
-        NotificationService::createNotification($dm->to_id, $dm->from_id, $dmType, $dm->id, DirectMessage::class);
     }
 }

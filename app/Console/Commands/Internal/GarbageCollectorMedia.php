@@ -41,7 +41,9 @@ class GarbageCollectorMedia extends Command
     {
         $limit = 500;
 
+        // Direct message media has no status either, and is not garbage
         $gc = Media::whereNull('status_id')
+            ->notInDirectMessage()
             ->where('created_at', '<', now()->subHours(2)->toDateTimeString())
             ->take($limit)
             ->get();

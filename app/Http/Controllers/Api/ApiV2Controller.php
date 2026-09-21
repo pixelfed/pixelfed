@@ -100,6 +100,14 @@ class ApiV2Controller extends Controller
                     'accounts' => [
                         'max_featured_tags' => 0,
                     ],
+                    'direct_messages' => [
+                        'max_characters' => (int) config('dm.max_message_length'),
+                        'max_media_attachments' => (int) config('dm.max_media'),
+                        'group_chats' => [
+                            'enabled' => (bool) config('dm.groups.enabled'),
+                            'max_participants' => (int) config('dm.groups.max_participants'),
+                        ],
+                    ],
                     'statuses' => [
                         'max_characters' => (int) config_cache('pixelfed.max_caption_length'),
                         'max_media_attachments' => (int) config_cache('pixelfed.max_album_length'),

@@ -7,7 +7,7 @@
             <img v-if="!convo.isAuthor && !hideAvatars" class="mr-3 shadow msg-avatar" :src="thread.avatar" alt="avatar" width="50" onerror="this.onerror=null;this.src='/storage/avatars/default.jpg';">
 
             <div class="media-body">
-                <p v-if="convo.type == 'photo'" class="pill-to p-0 shadow">
+                <p v-if="convo.type == 'photo' || convo.type == 'photos'" class="pill-to p-0 shadow">
                     <img
                         :src="convo.media"
                         class="media-embed"
@@ -32,7 +32,7 @@
                         </div>
                     </div>
                 </div>
-                <p v-else-if="convo.type == 'video'" class="pill-to p-0 shadow mb-0" style="line-height: 0;">
+                <p v-else-if="convo.type == 'video' || convo.type == 'videos'" class="pill-to p-0 shadow mb-0" style="line-height: 0;">
                     <video :src="convo.media" class="media-embed" style="border-radius:20px;" controls>
                     </video>
                     <!-- <span class="d-block bg-primary d-flex align-items-center justify-content-center" style="width:200px;height: 110px;border-radius: 20px;">
@@ -62,6 +62,9 @@
                     </span>
                 </span>
                 <p v-else :class="[largerText ? 'pill-to shadow larger-text text-break':'pill-to shadow text-break']">
+                    {{convo.text}}
+                </p>
+                <p v-if="hasMediaCaption" :class="[largerText ? 'pill-to shadow larger-text text-break mt-2':'pill-to shadow text-break mt-2']">
                     {{convo.text}}
                 </p>
                 <p v-if="convo.type == 'story:react'" class="small text-muted mb-0 ml-0">
@@ -133,6 +136,14 @@
         data() {
             return {
                 profile: window._sharedData.user
+            }
+        },
+
+        computed: {
+            hasMediaCaption() {
+                return ['photo', 'photos', 'video', 'videos', 'media'].includes(this.convo.type)
+                    && !!this.convo.text
+                    && this.convo.text.length > 0;
             }
         },
 

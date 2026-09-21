@@ -117,6 +117,20 @@ class Media extends Model
         return $this->belongsTo(Status::class);
     }
 
+    /**
+     * Direct message media has no status_id, just like an upload that was
+     * never posted. This keeps it out of the queries that treat a null
+     * status_id as "unattached" (garbage collection, attaching to a post).
+     */
+    public function scopeNotInDirectMessage($query)
+    {
+        return $query->whereNotExists(function ($sub) {
+            $sub->selectRaw('1')
+                ->from('dm_message_media')
+                ->whereColumn('dm_message_media.media_id', 'media.id');
+        });
+    }
+
     public function profile()
     {
         return $this->belongsTo(Profile::class);

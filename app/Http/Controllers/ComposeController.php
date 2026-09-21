@@ -16,6 +16,7 @@ use App\Models\Profile;
 use App\Models\Status;
 use App\Services\AccountService;
 use App\Services\CollectionService;
+use App\Services\DirectMessageService;
 use App\Services\MediaBlocklistService;
 use App\Services\MediaPathService;
 use App\Services\MediaStorageService;
@@ -226,6 +227,7 @@ class ComposeController extends Controller
 
         $media = Media::whereNull('status_id')
             ->whereUserId(Auth::id())
+            ->notInDirectMessage()
             ->findOrFail($request->input('id'));
 
         MediaStorageService::delete($media, true);
@@ -592,7 +594,7 @@ class ComposeController extends Controller
                 continue;
             }
             $m = Media::findOrFail($media['id']);
-            if ($m->profile_id !== $profile->id || $m->status_id) {
+            if ($m->profile_id !== $profile->id || $m->status_id || DirectMessageService::isMessageMedia($m->id)) {
                 abort(403, 'Invalid media id');
             }
             $m->filter_class = in_array($media['filter_class'], Filter::classes()) ? $media['filter_class'] : null;

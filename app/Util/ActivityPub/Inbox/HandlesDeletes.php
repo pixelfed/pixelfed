@@ -2,6 +2,7 @@
 
 namespace App\Util\ActivityPub\Inbox;
 
+use App\Federation\Handlers\DirectMessageHandler;
 use App\Jobs\DeletePipeline\DeleteRemoteProfilePipeline;
 use App\Jobs\HomeFeedPipeline\FeedRemoveRemotePipeline;
 use App\Jobs\StatusPipeline\RemoteStatusDelete;
@@ -105,6 +106,10 @@ trait HandlesDeletes
         $profile = Profile::whereRemoteUrl($actorUrl)->first();
 
         if (! $profile || $profile->private_key != null) {
+            return;
+        }
+
+        if (app(DirectMessageHandler::class)->handleDelete($profile, $objectId)) {
             return;
         }
 

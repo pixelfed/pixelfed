@@ -2,26 +2,15 @@
 
 namespace App\Util\ActivityPub\Inbox;
 
-use App\Jobs\PushNotificationPipeline\MentionPushNotifyPipeline;
+use App\Federation\Handlers\DirectMessageHandler;
+use App\Federation\Validators\DirectMessageValidator;
 use App\Jobs\StatusPipeline\RemoteReplyResolvePipeline;
-use App\Models\Conversation;
-use App\Models\DirectMessage;
-use App\Models\Media;
-use App\Models\Notification;
 use App\Models\PollVote;
 use App\Models\Profile;
 use App\Models\Status;
-use App\Models\User;
-use App\Models\UserFilter;
 use App\Services\FollowerService;
-use App\Services\NotificationAppGatewayService;
-use App\Services\NotificationService;
 use App\Services\PollService;
-use App\Services\PushNotificationService;
-use App\Services\SanitizeService;
 use App\Util\ActivityPub\Helpers;
-use Illuminate\Support\Arr;
-use Illuminate\Support\Str;
 
 trait HandlesCreates
 {
@@ -42,9 +31,6 @@ trait HandlesCreates
             return;
         }
 
-        $to = $this->normalizeRecipients($activity['to'] ?? []);
-        $cc = $this->normalizeRecipients($activity['cc'] ?? []);
-
         if ($activity['type'] == 'Question') {
             return;
         }
@@ -63,8 +49,12 @@ trait HandlesCreates
             return;
         }
 
-        if ($this->isDirectMessage($to, $cc)) {
-            $this->handleDirectMessage();
+        // Anything addressed only to people is a direct message, whether it
+        // names one of them or several. It stops here even when it cannot be
+        // stored: the paths below file every non-public Note as
+        // followers-only, which would show it to the sender's followers.
+        if (DirectMessageValidator::isDirect($activity, $actor)) {
+            $this->handleDirectMessage($actor);
 
             return;
         }
@@ -311,62 +301,26 @@ trait HandlesCreates
         PollService::del($status->id);
     }
 
-    public function handleDirectMessage(): void
+    /**
+     * Hand a direct Note to the direct message handler.
+     */
+    public function handleDirectMessage(Profile $actor): void
     {
-        $activity = $this->payload['object'];
-        $to = $this->normalizeRecipients($activity['to'] ?? []);
+        $object = $this->payload['object'];
 
-        $actor = $this->validateAndFetchActor($this->payload['actor']);
-        $profile = Profile::whereNull('domain')
-            ->whereUsername(Arr::last(explode('/', $to[0])))
-            ->firstOrFail();
+        $id = Helpers::pluckval($object['id'] ?? null);
 
-        if (! $actor || in_array($actor->id, $profile->blockedIds()->toArray())) {
+        if (! is_string($id) || ! Helpers::validateUrl($id)) {
             return;
         }
 
-        if ($this->isDomainBlocked($profile->id, $actor->domain)) {
+        // Only the author can deliver their own message. A direct message is
+        // never fetched to double check: it is not readable by anyone else.
+        if (! $this->deliveredObjectIsTrusted($object, $actor, $id)) {
             return;
         }
 
-        $msgText = $this->sanitizeDirectMessageContent($activity['content'], $profile->username);
-        $hidden = $this->determineDirectMessageVisibility($profile, $actor);
-
-        $status = new Status;
-        $status->profile_id = $actor->id;
-        $status->caption = $msgText;
-        $status->visibility = 'direct';
-        $status->scope = 'direct';
-        $status->url = $activity['id'];
-        $status->uri = $activity['id'];
-        $status->object_url = $activity['id'];
-        $status->in_reply_to_profile_id = $profile->id;
-        $status->save();
-
-        $dm = new DirectMessage;
-        $dm->to_id = $profile->id;
-        $dm->from_id = $actor->id;
-        $dm->status_id = $status->id;
-        $dm->is_hidden = $hidden;
-        $dm->type = 'text';
-        $dm->save();
-
-        Conversation::updateOrInsert(
-            [
-                'to_id' => $profile->id,
-                'from_id' => $actor->id,
-            ],
-            [
-                'type' => 'text',
-                'status_id' => $status->id,
-                'dm_id' => $dm->id,
-                'is_hidden' => $hidden,
-            ]
-        );
-
-        $this->processDirectMessageAttachments($activity, $status, $dm);
-        $this->processDirectMessageLink($msgText, $dm);
-        $this->notifyDirectMessageRecipient($profile, $actor, $dm, $hidden);
+        app(DirectMessageHandler::class)->handleCreate($object, $actor);
     }
 
     /**
@@ -397,155 +351,5 @@ trait HandlesCreates
         }
 
         return false;
-    }
-
-    /**
-     * Normalize recipients to always be an array (JSON-LD allows single strings).
-     */
-    protected function normalizeRecipients(mixed $recipients): array
-    {
-        if (is_string($recipients)) {
-            return [$recipients];
-        }
-
-        return is_array($recipients) ? $recipients : [];
-    }
-
-    /**
-     * Determine if the activity is a direct message (single local recipient, no cc).
-     */
-    protected function isDirectMessage(array $to, array $cc): bool
-    {
-        return is_array($to) &&
-            is_array($cc) &&
-            count($to) === 1 &&
-            count($cc) === 0 &&
-            parse_url($to[0], PHP_URL_HOST) == config('pixelfed.domain.app');
-    }
-
-    /**
-     * Sanitize DM content and strip leading @mention of the recipient.
-     */
-    protected function sanitizeDirectMessageContent(string $content, string $username): string
-    {
-        $msg = app(SanitizeService::class)->html($content);
-        $msgText = strip_tags($msg);
-
-        if (Str::startsWith($msgText, '@'.$username)) {
-            $len = strlen('@'.$username);
-            $msgText = substr($msgText, $len + 1);
-        }
-
-        return $msgText;
-    }
-
-    /**
-     * Determine if a DM should be hidden based on recipient privacy settings.
-     */
-    protected function determineDirectMessageVisibility(Profile $profile, Profile $actor): bool
-    {
-        if ($profile->user->settings->public_dm == false || $profile->is_private) {
-            return $profile->follows($actor) !== true;
-        }
-
-        return false;
-    }
-
-    /**
-     * Process attachments on a direct message.
-     */
-    protected function processDirectMessageAttachments(array $activity, Status $status, DirectMessage $dm): void
-    {
-        if (! count($activity['attachment'] ?? [])) {
-            return;
-        }
-
-        $photos = 0;
-        $videos = 0;
-        $allowed = explode(',', config_cache('pixelfed.media_types'));
-        $attachments = array_slice($activity['attachment'], 0, config_cache('pixelfed.max_album_length'));
-
-        foreach ($attachments as $a) {
-            $type = $a['mediaType'];
-            $url = $a['url'];
-
-            if (! in_array($type, $allowed) || ! Helpers::validateUrl($url)) {
-                continue;
-            }
-
-            $media = new Media;
-            $media->remote_media = true;
-            $media->status_id = $status->id;
-            $media->profile_id = $status->profile_id;
-            $media->user_id = null;
-            $media->media_path = $url;
-            $media->remote_url = $url;
-            $media->mime = $type;
-            $media->save();
-
-            if (explode('/', $type)[0] == 'image') {
-                $photos++;
-            }
-            if (explode('/', $type)[0] == 'video') {
-                $videos++;
-            }
-        }
-
-        if ($photos && $videos === 0) {
-            $dm->type = $photos === 1 ? 'photo' : 'photos';
-            $dm->save();
-        }
-        if ($videos && $photos === 0) {
-            $dm->type = $videos === 1 ? 'video' : 'videos';
-            $dm->save();
-        }
-    }
-
-    /**
-     * If the DM text is a valid URL, mark the DM type as 'link'.
-     */
-    protected function processDirectMessageLink(string $msgText, DirectMessage $dm): void
-    {
-        if (! filter_var($msgText, FILTER_VALIDATE_URL)) {
-            return;
-        }
-
-        if (! Helpers::validateUrl($msgText)) {
-            return;
-        }
-
-        $dm->type = 'link';
-        $dm->meta = [
-            'domain' => parse_url($msgText, PHP_URL_HOST),
-            'local' => parse_url($msgText, PHP_URL_HOST) == parse_url(config('app.url'), PHP_URL_HOST),
-        ];
-        $dm->save();
-    }
-
-    /**
-     * Send notification to DM recipient if applicable.
-     */
-    protected function notifyDirectMessageRecipient(Profile $profile, Profile $actor, DirectMessage $dm, bool $hidden): void
-    {
-        $isMuted = UserFilter::whereUserId($profile->id)
-            ->whereFilterableId($actor->id)
-            ->whereFilterableType(Profile::class)
-            ->whereFilterType('dm.mute')
-            ->exists();
-
-        if ($profile->domain != null || $hidden || $isMuted) {
-            return;
-        }
-
-        NotificationService::createNotification($profile->id, $actor->id, 'dm', $dm->id, DirectMessage::class);
-
-        if (NotificationAppGatewayService::enabled()) {
-            if (PushNotificationService::check('mention', $profile->id)) {
-                $user = User::whereProfileId($profile->id)->first();
-                if ($user && $user->expo_token && $user->notify_enabled) {
-                    MentionPushNotifyPipeline::dispatch($user->expo_token, $actor->username)->onQueue('pushnotify');
-                }
-            }
-        }
     }
 }

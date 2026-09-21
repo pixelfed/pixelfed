@@ -14,6 +14,8 @@ use App\Jobs\VideoPipeline\VideoThumbnail;
 use App\Mail\ConfirmAppEmail;
 use App\Mail\PasswordChange;
 use App\Models\AccountLog;
+use App\Models\DmConversationParticipant;
+use App\Models\DmMessage;
 use App\Models\EmailVerification;
 use App\Models\Follower;
 use App\Models\Media;
@@ -111,7 +113,7 @@ class ApiV1Dot1Controller extends Controller
         $validator = Validator::make($request->all(), [
             'report_type' => ['required', 'string', Rule::in(self::REPORT_TYPES)],
             'object_id' => ['required', 'integer', 'min:1'],
-            'object_type' => ['required', 'string', Rule::in(['post', 'user', 'story'])],
+            'object_type' => ['required', 'string', Rule::in(['post', 'user', 'story', 'direct_message'])],
             'message' => ['nullable', 'string'],
         ]);
 
@@ -129,8 +131,15 @@ class ApiV1Dot1Controller extends Controller
             return $this->error('Message is too long', 400, ['error_code' => 'ERROR_MESSAGE_TOO_LONG']);
         }
 
+        // Older clients report a direct message as a post, using the id the
+        // thread endpoint gave them
+        if ($objectType === 'post' && ! Status::whereKey($objectId)->exists()) {
+            $objectType = 'direct_message';
+        }
+
         [$object, $modelClass, $reportedProfileId] = match ($objectType) {
             'post' => [$post = Status::find($objectId), Status::class, $post?->profile_id],
+            'direct_message' => [$dm = $this->reportableDirectMessage($user->profile_id, $objectId), DmMessage::class, $dm?->profile_id],
             'user' => [$profile = Profile::find($objectId), Profile::class, $profile?->id],
             'story' => [$story = Story::whereActive(true)->find($objectId), Story::class, $story?->profile_id],
             default => [null, null, null],
@@ -181,6 +190,25 @@ class ApiV1Dot1Controller extends Controller
             'msg' => 'Successfully sent report',
             'code' => 200,
         ]);
+    }
+
+    /**
+     * A direct message can only be reported by someone who is in the
+     * conversation it was sent to.
+     */
+    protected function reportableDirectMessage(int $profileId, $messageId): ?DmMessage
+    {
+        $message = DmMessage::find($messageId);
+
+        if (! $message) {
+            return null;
+        }
+
+        $isParticipant = DmConversationParticipant::where('conversation_id', $message->conversation_id)
+            ->where('profile_id', $profileId)
+            ->exists();
+
+        return $isParticipant ? $message : null;
     }
 
     protected function sanitizeReportMessage(?string $message): string|false|null

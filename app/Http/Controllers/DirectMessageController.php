@@ -2,37 +2,42 @@
 
 namespace App\Http\Controllers;
 
-use App\Jobs\DirectPipeline\DirectDeletePipeline;
-use App\Jobs\DirectPipeline\DirectDeliverPipeline;
-use App\Jobs\StatusPipeline\StatusDelete;
-use App\Models\Conversation;
-use App\Models\DirectMessage;
+use App\Exceptions\DirectMessageException;
+use App\Models\DmConversation;
+use App\Models\DmConversationParticipant;
+use App\Models\DmMessage;
 use App\Models\Media;
 use App\Models\Profile;
-use App\Models\Status;
-use App\Models\UserFilter;
 use App\Services\AccountService;
+use App\Services\DirectMessagePayloadService;
+use App\Services\DirectMessageService;
 use App\Services\FollowerService;
 use App\Services\MediaBlocklistService;
 use App\Services\MediaPathService;
-use App\Services\MediaService;
-use App\Services\NotificationService;
-use App\Services\StatusService;
+use App\Services\MediaStorageService;
 use App\Services\UserFilterService;
 use App\Services\UserRoleService;
 use App\Services\UserStorageService;
 use App\Services\WebfingerService;
 use App\Util\ActivityPub\Helpers;
-use App\Util\Lexer\Autolink;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
-use Illuminate\Support\Arr;
 use Illuminate\Support\Str;
 
+/**
+ * The original one-to-one direct message endpoints.
+ *
+ * Threads here are keyed by the other person's profile id, which is what the
+ * Blade UI and the older mobile app speak. They are thin wrappers around the
+ * conversation model and only ever see one-to-one conversations. Anything new
+ * should use DirectConversationController.
+ */
 class DirectMessageController extends Controller
 {
-    public function __construct()
-    {
+    public function __construct(
+        protected DirectMessageService $service,
+        protected DirectMessagePayloadService $payloads
+    ) {
         $this->middleware('auth');
     }
 
@@ -44,198 +49,91 @@ class DirectMessageController extends Controller
         ]);
 
         $user = $request->user();
-        if ($user->has_roles && ! UserRoleService::can('can-direct-message', $user->id)) {
+        if (! $this->service->canUseDirectMessages($user)) {
             return [];
         }
 
-        $profile = $user->profile_id;
+        $pid = $user->profile_id;
         $action = $request->input('a', 'inbox');
-        $page = $request->input('page', 1);
         $limit = 8;
-        $offset = ($page - 1) * $limit;
+        $offset = ((int) $request->input('page', 1) - 1) * $limit;
 
-        $baseQuery = DirectMessage::select(
-            'id', 'type', 'to_id', 'from_id', 'status_id',
-            'is_hidden', 'meta', 'created_at', 'read_at'
-        )->with(['author', 'status', 'recipient']);
+        $rows = DmConversationParticipant::query()
+            ->join('dm_conversations', 'dm_conversations.id', '=', 'dm_conversation_participants.conversation_id')
+            ->where('dm_conversations.type', DmConversation::TYPE_DM)
+            ->where('dm_conversation_participants.profile_id', $pid)
+            ->whereNotNull('dm_conversation_participants.last_activity_at')
+            ->whereNull('dm_conversation_participants.hidden_at')
+            ->when($action === 'filtered', fn ($q) => $q->where('dm_conversation_participants.state', DmConversationParticipant::STATE_REQUEST))
+            ->when($action !== 'filtered', fn ($q) => $q->where('dm_conversation_participants.state', DmConversationParticipant::STATE_ACTIVE))
+            ->when($action === 'sent', fn ($q) => $q->where('dm_conversations.created_by_profile_id', $pid))
+            ->orderByDesc('dm_conversation_participants.last_activity_at')
+            ->offset($offset)
+            ->limit($limit)
+            ->get(['dm_conversation_participants.*', 'dm_conversations.last_message_id']);
 
-        if (db_is_pgsql()) {
-            $query = match ($action) {
-                'inbox' => $baseQuery->whereToId($profile)
-                    ->whereIsHidden(false)
-                    ->orderBy('created_at', 'desc'),
-                'sent' => $baseQuery->whereFromId($profile)
-                    ->orderBy('created_at', 'desc'),
-                'filtered' => $baseQuery->whereToId($profile)
-                    ->whereIsHidden(true)
-                    ->orderBy('created_at', 'desc'),
-                default => throw new \InvalidArgumentException('Invalid action')
-            };
+        $others = DmConversationParticipant::whereIn('conversation_id', $rows->pluck('conversation_id'))
+            ->where('profile_id', '!=', $pid)
+            ->pluck('profile_id', 'conversation_id');
 
-            $dms = $query->offset($offset)
-                ->limit($limit)
-                ->get();
+        $profiles = Profile::whereIn('id', $others->values())->get()->keyBy('id');
+        $lastIds = $rows->pluck('last_message_id', 'conversation_id');
+        $lastMessages = DmMessage::whereIn('id', $lastIds->filter())->get()->keyBy('id');
 
-            $dms = $action === 'sent' ?
-                   $dms->unique('to_id') :
-                   $dms->unique('from_id');
-        } else {
-            $query = match ($action) {
-                'inbox' => $baseQuery->whereToId($profile)
-                    ->whereIsHidden(false)
-                    ->groupBy('from_id', 'id', 'type', 'to_id', 'status_id',
-                        'is_hidden', 'meta', 'created_at', 'read_at')
-                    ->orderBy('created_at', 'desc'),
-                'sent' => $baseQuery->whereFromId($profile)
-                    ->groupBy('to_id', 'id', 'type', 'from_id', 'status_id',
-                        'is_hidden', 'meta', 'created_at', 'read_at')
-                    ->orderBy('created_at', 'desc'),
-                'filtered' => $baseQuery->whereToId($profile)
-                    ->whereIsHidden(true)
-                    ->groupBy('from_id', 'id', 'type', 'to_id', 'status_id',
-                        'is_hidden', 'meta', 'created_at', 'read_at')
-                    ->orderBy('created_at', 'desc'),
-                default => throw new \InvalidArgumentException('Invalid action')
-            };
+        $threads = $rows->map(function ($row) use ($others, $profiles, $lastIds, $lastMessages) {
+            $other = $profiles->get($others->get($row->conversation_id));
 
-            $dms = $query->offset($offset)
-                ->limit($limit)
-                ->get();
-        }
-
-        $mappedDms = $dms->map(function ($r) use ($action) {
-            if ($action === 'sent') {
-                return [
-                    'id' => (string) $r->to_id,
-                    'name' => $r->recipient->name,
-                    'username' => $r->recipient->username,
-                    'avatar' => $r->recipient->avatarUrl(),
-                    'url' => $r->recipient->url(),
-                    'isLocal' => (bool) ! $r->recipient->domain,
-                    'domain' => $r->recipient->domain,
-                    'timeAgo' => $r->created_at->diffForHumans(null, true, true),
-                    'lastMessage' => $r->status->caption,
-                    'messages' => [],
-                ];
+            if (! $other) {
+                return null;
             }
 
+            $last = $lastMessages->get($lastIds->get($row->conversation_id));
+
             return [
-                'id' => (string) $r->from_id,
-                'name' => $r->author->name,
-                'username' => $r->author->username,
-                'avatar' => $r->author->avatarUrl(),
-                'url' => $r->author->url(),
-                'isLocal' => (bool) ! $r->author->domain,
-                'domain' => $r->author->domain,
-                'timeAgo' => $r->created_at->diffForHumans(null, true, true),
-                'lastMessage' => $r->status->caption,
+                'id' => (string) $other->id,
+                'name' => $other->name,
+                'username' => $other->username,
+                'avatar' => $other->avatarUrl(),
+                'url' => $other->url(),
+                'isLocal' => (bool) ! $other->domain,
+                'domain' => $other->domain,
+                'timeAgo' => $row->last_activity_at->diffForHumans(null, true, true),
+                'lastMessage' => $last?->body,
                 'messages' => [],
             ];
-        });
+        })->filter()->values();
 
-        return response()->json($mappedDms->values());
+        return response()->json($threads);
     }
 
     public function create(Request $request): JsonResponse
     {
         $this->validate($request, [
             'to_id' => 'required',
-            'message' => 'required|string|min:1|max:500',
+            'message' => 'required|string|min:1|max:'.(int) config('dm.max_message_length'),
             'type' => 'required|in:text,emoji',
         ]);
 
         $user = $request->user();
-        abort_if($user->has_roles && ! UserRoleService::can('can-direct-message', $user->id), 403, 'Invalid permissions for this action');
-        if (! $user->is_admin) {
-            if ((bool) ! config_cache('instance.allow_new_account_dms')) {
-                abort_if($user->created_at->gt(now()->subHours(72)), 400, 'You need to wait a bit before you can DM another account');
-            }
-        }
+        $this->authorizeSend($user);
+
         $profile = $user->profile;
         $recipient = Profile::where('id', '!=', $profile->id)->findOrFail($request->input('to_id'));
 
-        abort_if(in_array($profile->id, $recipient->blockedIds()->toArray()), 403);
-        $msg = $request->input('message');
+        abort_if(! $this->service->canMessage($profile, $recipient), 403);
 
-        if ((! $recipient->domain && $recipient->user->settings->public_dm == false) || $recipient->is_private) {
-            if ($recipient->follows($profile) == true) {
-                $hidden = false;
-            } else {
-                $hidden = true;
-            }
-        } else {
-            $hidden = false;
-        }
+        $conversation = $this->service->findOrCreateDm($profile, $recipient);
 
-        $status = new Status;
-        $status->profile_id = $profile->id;
-        $status->caption = $msg;
-        $status->visibility = 'direct';
-        $status->scope = 'direct';
-        $status->in_reply_to_profile_id = $recipient->id;
-        $status->save();
+        $message = $this->service->sendMessage($conversation, $profile, [
+            'body' => $request->input('message'),
+            'type' => $request->input('type'),
+        ]);
 
-        $dm = new DirectMessage;
-        $dm->to_id = $recipient->id;
-        $dm->from_id = $profile->id;
-        $dm->status_id = $status->id;
-        $dm->is_hidden = $hidden;
-        $dm->type = $request->input('type');
-        $dm->save();
-
-        Conversation::updateOrInsert(
-            [
-                'to_id' => $recipient->id,
-                'from_id' => $profile->id,
-            ],
-            [
-                'type' => $dm->type,
-                'status_id' => $status->id,
-                'dm_id' => $dm->id,
-                'is_hidden' => $hidden,
-            ]
-        );
-
-        if (filter_var($msg, FILTER_VALIDATE_URL)) {
-            if (Helpers::validateUrl($msg)) {
-                $dm->type = 'link';
-                $dm->meta = [
-                    'domain' => parse_url($msg, PHP_URL_HOST),
-                    'local' => parse_url($msg, PHP_URL_HOST) ==
-                    parse_url(config('app.url'), PHP_URL_HOST),
-                ];
-                $dm->save();
-            }
-        }
-
-        $nf = UserFilter::whereUserId($recipient->id)
-            ->whereFilterableId($profile->id)
-            ->whereFilterableType(Profile::class)
-            ->whereFilterType('dm.mute')
-            ->exists();
-
-        if ($recipient->domain == null && $hidden === false && ! $nf) {
-            NotificationService::createNotification($recipient->id, $profile->id, 'dm', $dm->id, DirectMessage::class);
-        }
-
-        if ($recipient->domain) {
-            $this->remoteDeliver($dm);
-        }
-
-        $res = [
-            'id' => (string) $dm->id,
-            'isAuthor' => $profile->id == $dm->from_id,
-            'reportId' => (string) $dm->status_id,
-            'hidden' => (bool) $dm->is_hidden,
-            'type' => $dm->type,
-            'text' => $dm->status->caption,
-            'media' => null,
-            'timeAgo' => $dm->created_at->diffForHumans(null, null, true),
-            'seen' => $dm->read_at != null,
-            'meta' => $dm->meta,
-        ];
-
-        return response()->json($res);
+        return response()->json($this->payloads->legacyMessage(
+            $message,
+            $profile->id,
+            $this->isRequest($conversation, $recipient->id)
+        ));
     }
 
     public function thread(Request $request): JsonResponse
@@ -247,85 +145,47 @@ class DirectMessageController extends Controller
         ]);
 
         $user = $request->user();
-        abort_if(
-            $user->has_roles && ! UserRoleService::can('can-direct-message', $user->id),
-            403,
-            'Invalid permissions for this action'
-        );
+        abort_if(! $this->service->canUseDirectMessages($user), 403, 'Invalid permissions for this action');
 
         $uid = $user->profile_id;
-        $pid = $request->input('pid');
-        $max_id = $request->input('max_id');
-        $min_id = $request->input('min_id');
+        $profile = Profile::findOrFail($request->input('pid'));
 
-        $profile = Profile::findOrFail($pid);
+        $conversation = $this->service->findDm($uid, $profile->id);
+        $messages = collect();
+        $muted = false;
 
-        $query = DirectMessage::select(
-            'id',
-            'is_hidden',
-            'from_id',
-            'to_id',
-            'type',
-            'status_id',
-            'meta',
-            'created_at',
-            'read_at'
-        )->with(['status']);
+        if ($conversation) {
+            $viewer = $this->service->participant($conversation, $uid);
+            $other = $this->service->participant($conversation, $profile->id);
+            $muted = (bool) $viewer?->muted_at;
+            $hidden = (bool) ($viewer?->isRequest() || $other?->isRequest());
 
-        if ($min_id) {
-            $res = $query->where('id', '>', $min_id)
-                ->where(function ($query) use ($pid, $uid) {
-                    $query->where('from_id', $pid)->where('to_id', $uid);
-                })->orWhere(function ($query) use ($pid, $uid) {
-                    $query->where('from_id', $uid)->where('to_id', $pid);
-                })
-                ->orderBy('id', 'asc')
-                ->take(8)
-                ->get()
-                ->reverse();
-        } elseif ($max_id) {
-            $res = $query->where('id', '<', $max_id)
-                ->where(function ($query) use ($pid, $uid) {
-                    $query->where('from_id', $pid)->where('to_id', $uid);
-                })->orWhere(function ($query) use ($pid, $uid) {
-                    $query->where('from_id', $uid)->where('to_id', $pid);
-                })
-                ->orderBy('id', 'desc')
-                ->take(8)
-                ->get();
-        } else {
-            $res = $query->where(function ($query) use ($pid, $uid) {
-                $query->where('from_id', $pid)->where('to_id', $uid);
-            })->orWhere(function ($query) use ($pid, $uid) {
-                $query->where('from_id', $uid)->where('to_id', $pid);
-            })
-                ->orderBy('id', 'desc')
-                ->take(8)
-                ->get();
+            $query = DmMessage::with('media')
+                ->where('conversation_id', $conversation->id)
+                ->whereNotIn('profile_id', $this->payloads->blockedIds($uid) ?: [0]);
+
+            if ($request->filled('min_id')) {
+                $res = $query->where('id', '>', $request->input('min_id'))
+                    ->orderBy('id')
+                    ->take(8)
+                    ->get()
+                    ->reverse();
+            } else {
+                if ($request->filled('max_id')) {
+                    $query->where('id', '<', $request->input('max_id'));
+                }
+
+                $res = $query->orderByDesc('id')->take(8)->get();
+            }
+
+            $messages = $res->map(fn (DmMessage $message) => $this->payloads->legacyMessage(
+                $message,
+                $uid,
+                $hidden,
+                $other?->last_read_message_id,
+                $viewer?->last_read_message_id
+            ))->values();
         }
-
-        $messages = $res->filter(function ($message) {
-            return $message && $message->status;
-        })->map(function ($message) use ($uid) {
-            $firstMedia = $message->status->media->sortBy('order')->first();
-
-            return [
-                'id' => (string) $message->id,
-                'hidden' => (bool) $message->is_hidden,
-                'isAuthor' => $uid == $message->from_id,
-                'type' => $message->type,
-                'text' => $message->status->caption,
-                'media' => $firstMedia ? $firstMedia->url() : null,
-                'carousel' => MediaService::get($message->status_id),
-                'created_at' => $message->created_at->format('c'),
-                'timeAgo' => $message->created_at->diffForHumans(null, null, true),
-                'seen' => $message->read_at != null,
-                'reportId' => (string) $message->status_id,
-                'meta' => is_string($message->meta) ? json_decode($message->meta, true) : $message->meta,
-            ];
-        })->values();
-
-        $filters = UserFilterService::mutes($uid);
 
         return response()->json([
             'id' => (string) $profile->id,
@@ -333,7 +193,7 @@ class DirectMessageController extends Controller
             'username' => $profile->username,
             'avatar' => $profile->avatarUrl(),
             'url' => $profile->url(),
-            'muted' => in_array($profile->id, $filters),
+            'muted' => $muted,
             'isLocal' => (bool) ! $profile->domain,
             'domain' => $profile->domain,
             'created_at' => $profile->created_at->format('c'),
@@ -341,6 +201,7 @@ class DirectMessageController extends Controller
             'timeAgo' => $profile->created_at->diffForHumans(null, true, true),
             'lastMessage' => '',
             'messages' => $messages,
+            'conversation_id' => $conversation ? (string) $conversation->id : null,
         ], 200, [], JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES);
     }
 
@@ -350,83 +211,12 @@ class DirectMessageController extends Controller
             'id' => 'required',
         ]);
 
-        $sid = $request->input('id');
-        $pid = $request->user()->profile_id;
+        $message = DmMessage::where('profile_id', $request->user()->profile_id)
+            ->findOrFail($request->input('id'));
 
-        $dm = DirectMessage::whereFromId($pid)
-            ->whereStatusId($sid)
-            ->firstOrFail();
-
-        $status = Status::whereProfileId($pid)
-            ->findOrFail($dm->status_id);
-
-        $recipient = AccountService::get($dm->to_id);
-
-        if (! $recipient) {
-            return response('', 422);
-        }
-
-        if ($recipient['local'] == false) {
-            $dmc = $dm;
-            $this->remoteDelete($dmc);
-        } else {
-            StatusDelete::dispatch($status)->onQueue('high');
-        }
-
-        if (Conversation::whereStatusId($sid)->count()) {
-            $latest = DirectMessage::where(['from_id' => $dm->from_id, 'to_id' => $dm->to_id])
-                ->orWhere(['to_id' => $dm->from_id, 'from_id' => $dm->to_id])
-                ->latest()
-                ->first();
-
-            if ($latest->status_id == $sid) {
-                Conversation::where(['to_id' => $dm->from_id, 'from_id' => $dm->to_id])
-                    ->update([
-                        'updated_at' => $latest->updated_at,
-                        'status_id' => $latest->status_id,
-                        'type' => $latest->type,
-                        'is_hidden' => false,
-                    ]);
-
-                Conversation::where(['to_id' => $dm->to_id, 'from_id' => $dm->from_id])
-                    ->update([
-                        'updated_at' => $latest->updated_at,
-                        'status_id' => $latest->status_id,
-                        'type' => $latest->type,
-                        'is_hidden' => false,
-                    ]);
-            } else {
-                Conversation::where([
-                    'status_id' => $sid,
-                    'to_id' => $dm->from_id,
-                    'from_id' => $dm->to_id,
-                ])->delete();
-
-                Conversation::where([
-                    'status_id' => $sid,
-                    'from_id' => $dm->from_id,
-                    'to_id' => $dm->to_id,
-                ])->delete();
-            }
-        }
-
-        StatusService::del($status->id, true);
-
-        $status->forceDeleteQuietly();
+        $this->service->deleteMessage($message);
 
         return [200];
-    }
-
-    public function get(Request $request, $id): JsonResponse
-    {
-        $user = $request->user();
-        abort_if($user->has_roles && ! UserRoleService::can('can-direct-message', $user->id), 403, 'Invalid permissions for this action');
-
-        $pid = $request->user()->profile_id;
-        $dm = DirectMessage::whereStatusId($id)->firstOrFail();
-        abort_if($pid !== $dm->to_id && $pid !== $dm->from_id, 404);
-
-        return response()->json($dm, 200, [], JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES);
     }
 
     public function mediaUpload(Request $request): array
@@ -438,23 +228,16 @@ class DirectMessageController extends Controller
                 'max:'.config_cache('pixelfed.max_photo_size'),
             ],
             'to_id' => 'required',
+            'message' => 'sometimes|nullable|string|max:'.(int) config('dm.max_message_length'),
         ]);
 
         $user = $request->user();
-        abort_if($user->has_roles && ! UserRoleService::can('can-direct-message', $user->id), 403, 'Invalid permissions for this action');
+        $this->authorizeSend($user);
+
         $profile = $user->profile;
         $recipient = Profile::where('id', '!=', $profile->id)->findOrFail($request->input('to_id'));
-        abort_if(in_array($profile->id, $recipient->blockedIds()->toArray()), 403);
 
-        if ((! $recipient->domain && $recipient->user->settings->public_dm == false) || $recipient->is_private) {
-            if ($recipient->follows($profile) == true) {
-                $hidden = false;
-            } else {
-                $hidden = true;
-            }
-        } else {
-            $hidden = false;
-        }
+        abort_if(! $this->service->canMessage($profile, $recipient), 403);
 
         $accountSize = UserStorageService::get($user->id);
         abort_if($accountSize === -1, 403, 'Invalid request.');
@@ -481,19 +264,13 @@ class DirectMessageController extends Controller
         $hash = \hash_file('sha256', $photo->getRealPath());
         abort_if(MediaBlocklistService::exists($hash) == true, 451);
 
+        $conversation = $this->service->findOrCreateDm($profile, $recipient);
+
         $storagePath = MediaPathService::get($user, 2).Str::random(8);
         $path = $photo->storePublicly($storagePath);
 
-        $status = new Status;
-        $status->profile_id = $profile->id;
-        $status->caption = null;
-        $status->visibility = 'direct';
-        $status->scope = 'direct';
-        $status->in_reply_to_profile_id = $recipient->id;
-        $status->save();
-
         $media = new Media;
-        $media->status_id = $status->id;
+        $media->status_id = null;
         $media->profile_id = $profile->id;
         $media->user_id = $user->id;
         $media->media_path = $path;
@@ -505,37 +282,23 @@ class DirectMessageController extends Controller
         $media->filter_name = null;
         $media->save();
 
-        $dm = new DirectMessage;
-        $dm->to_id = $recipient->id;
-        $dm->from_id = $profile->id;
-        $dm->status_id = $status->id;
-        $dm->type = Arr::first(explode('/', $media->mime)) == 'video' ? 'video' : 'photo';
-        $dm->is_hidden = $hidden;
-        $dm->save();
+        try {
+            $message = $this->service->sendMessage($conversation, $profile, [
+                'body' => $request->input('message'),
+                'media' => collect([$media]),
+            ]);
+        } catch (DirectMessageException $e) {
+            MediaStorageService::delete($media, true);
 
-        Conversation::updateOrInsert(
-            [
-                'to_id' => $recipient->id,
-                'from_id' => $profile->id,
-            ],
-            [
-                'type' => $dm->type,
-                'status_id' => $status->id,
-                'dm_id' => $dm->id,
-                'is_hidden' => $hidden,
-            ]
-        );
+            throw $e;
+        }
 
         UserStorageService::increaseStorageUsed($user->id, $fileSize);
 
-        if ($recipient->domain) {
-            $this->remoteDeliver($dm);
-        }
-
         return [
-            'id' => $dm->id,
-            'reportId' => (string) $dm->status_id,
-            'type' => $dm->type,
+            'id' => (string) $message->id,
+            'reportId' => (string) $message->id,
+            'type' => $message->type,
             'url' => $media->url(),
         ];
     }
@@ -614,151 +377,71 @@ class DirectMessageController extends Controller
             'sid' => 'required',
         ]);
 
-        $pid = $request->input('pid');
-        $sid = $request->input('sid');
         $user = $request->user();
-        abort_if($user->has_roles && ! UserRoleService::can('can-direct-message', $user->id), 403, 'Invalid permissions for this action');
+        abort_if(! $this->service->canUseDirectMessages($user), 403, 'Invalid permissions for this action');
 
-        $ids = DirectMessage::whereToId($request->user()->profile_id)
-            ->whereFromId($pid)
-            ->where('status_id', '>=', $sid)
+        $conversation = $this->service->findDm($user->profile_id, (int) $request->input('pid'));
+        $participant = $conversation ? $this->service->participant($conversation, $user->profile_id) : null;
+
+        if (! $participant) {
+            return response()->json([]);
+        }
+
+        $ids = DmMessage::where('conversation_id', $conversation->id)
+            ->where('profile_id', $request->input('pid'))
+            ->where('id', '>=', $request->input('sid'))
+            ->when($participant->last_read_message_id, fn ($q) => $q->where('id', '>', $participant->last_read_message_id))
             ->pluck('id');
 
         if ($ids->isNotEmpty()) {
-            $now = now();
-            DirectMessage::whereIn('id', $ids)->update([
-                'read_at' => $now,
-                'updated_at' => $now,
-            ]);
+            $this->service->markRead($participant, (int) $ids->max());
         }
 
-        return response()->json($ids);
+        return response()->json($ids->map(fn ($id) => (string) $id)->values());
     }
 
     public function mute(Request $request): array
     {
-        $this->validate($request, [
-            'id' => 'required',
-        ]);
-
-        $user = $request->user();
-        abort_if($user->has_roles && ! UserRoleService::can('can-direct-message', $user->id), 403, 'Invalid permissions for this action');
-        $fid = $request->input('id');
-        $pid = $request->user()->profile_id;
-
-        UserFilter::firstOrCreate(
-            [
-                'user_id' => $pid,
-                'filterable_id' => $fid,
-                'filterable_type' => Profile::class,
-                'filter_type' => 'dm.mute',
-            ]
-        );
+        $this->toggleMute($request, true);
 
         return [200];
     }
 
     public function unmute(Request $request): array
     {
+        $this->toggleMute($request, false);
+
+        return [200];
+    }
+
+    protected function toggleMute(Request $request, bool $muted): void
+    {
         $this->validate($request, [
             'id' => 'required',
         ]);
 
         $user = $request->user();
-        abort_if($user->has_roles && ! UserRoleService::can('can-direct-message', $user->id), 403, 'Invalid permissions for this action');
+        abort_if(! $this->service->canUseDirectMessages($user), 403, 'Invalid permissions for this action');
 
-        $fid = $request->input('id');
-        $pid = $request->user()->profile_id;
+        $other = Profile::where('id', '!=', $user->profile_id)->findOrFail($request->input('id'));
 
-        $f = UserFilter::whereUserId($pid)
-            ->whereFilterableId($fid)
-            ->whereFilterableType(Profile::class)
-            ->whereFilterType('dm.mute')
-            ->firstOrFail();
+        $conversation = $muted
+            ? $this->service->findOrCreateDm($user->profile, $other)
+            : $this->service->findDm($user->profile_id, $other->id);
 
-        $f->delete();
+        abort_if(! $conversation, 404);
 
-        return [200];
+        $this->service->setMuted($this->service->participant($conversation, $user->profile_id), $muted);
     }
 
-    public function remoteDeliver($dm): void
+    protected function authorizeSend($user): void
     {
-        $profile = $dm->author;
-        $url = $dm->recipient->sharedInbox ?? $dm->recipient->inbox_url;
-        $status = $dm->status;
-
-        if (! $status) {
-            return;
-        }
-
-        $tags = [
-            [
-                'type' => 'Mention',
-                'href' => $dm->recipient->permalink(),
-                'name' => $dm->recipient->emailUrl(),
-            ],
-        ];
-
-        $content = $status->caption ? Autolink::create()->autolink($status->caption) : null;
-
-        $body = [
-            '@context' => [
-                'https://w3id.org/security/v1',
-                'https://www.w3.org/ns/activitystreams',
-            ],
-            'id' => $dm->status->permalink(),
-            'type' => 'Create',
-            'actor' => $dm->status->profile->permalink(),
-            'published' => $dm->status->created_at->toAtomString(),
-            'to' => [$dm->recipient->permalink()],
-            'cc' => [],
-            'object' => [
-                'id' => $dm->status->url(),
-                'type' => 'Note',
-                'summary' => null,
-                'content' => $content,
-                'inReplyTo' => null,
-                'published' => $dm->status->created_at->toAtomString(),
-                'url' => $dm->status->url(),
-                'attributedTo' => $dm->status->profile->permalink(),
-                'to' => [$dm->recipient->permalink()],
-                'cc' => [],
-                'sensitive' => (bool) $dm->status->is_nsfw,
-                'attachment' => $dm->status->media()->orderBy('order')->get()->map(function ($media) {
-                    return [
-                        'type' => $media->activityVerb(),
-                        'mediaType' => $media->mime,
-                        'url' => $media->url(),
-                        'name' => $media->caption,
-                    ];
-                })->toArray(),
-                'tag' => $tags,
-            ],
-        ];
-
-        DirectDeliverPipeline::dispatch($profile, $url, $body)->onQueue('high');
+        abort_if(! $this->service->canUseDirectMessages($user), 403, 'Invalid permissions for this action');
+        abort_if(! $this->service->canInitiateConversation($user), 400, 'You need to wait a bit before you can DM another account');
     }
 
-    public function remoteDelete($dm): void
+    protected function isRequest(DmConversation $conversation, int $profileId): bool
     {
-        $profile = $dm->author;
-        $url = $dm->recipient->sharedInbox ?? $dm->recipient->inbox_url;
-
-        $body = [
-            '@context' => [
-                'https://www.w3.org/ns/activitystreams',
-            ],
-            'id' => $dm->status->permalink('#delete'),
-            'to' => [
-                'https://www.w3.org/ns/activitystreams#Public',
-            ],
-            'type' => 'Delete',
-            'actor' => $dm->status->profile->permalink(),
-            'object' => [
-                'id' => $dm->status->url(),
-                'type' => 'Tombstone',
-            ],
-        ];
-        DirectDeletePipeline::dispatch($profile, $url, $body)->onQueue('high');
+        return (bool) $this->service->participant($conversation, $profileId)?->isRequest();
     }
 }
