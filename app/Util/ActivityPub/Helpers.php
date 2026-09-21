@@ -864,7 +864,55 @@ class Helpers
                 : now()->addMinutes(self::FETCH_CACHE_TTL)
         );
 
+        /*
+         * Alongside a cached failure, remember whether it looked temporary
+         * (timeout, connection error, 5xx, 429) as opposed to the remote
+         * saying no (401, 403, 404, 410, not ActivityPub). Callers that can
+         * retry later use fetchFailedTransiently() to tell the two apart.
+         * The marker lives exactly as long as the cached failure.
+         */
+        $marker = self::fetchTransientKey($url);
+
+        if ($res === false && ActivityPubFetchService::lastFailureWasTransient()) {
+            Cache::put($marker, 1, self::FETCH_NEGATIVE_TTL);
+        } else {
+            Cache::forget($marker);
+        }
+
         return $res;
+    }
+
+    private static function fetchTransientKey(string $url): string
+    {
+        return 'helpers:url:fetcher:transient:sha256-'.hash('sha256', $url);
+    }
+
+    /**
+     * Did the last attempt to fetch this URL fail in a way that is worth
+     * retrying later? Only answers while that failure is still negatively
+     * cached, so a retry has to wait longer than FETCH_NEGATIVE_TTL or it
+     * will just find the cached failure again.
+     */
+    public static function fetchFailedTransiently(mixed $url): bool
+    {
+        if (! is_string($url) || $url === '') {
+            return false;
+        }
+
+        $candidates = [$url];
+        $validated = self::validateUrl($url);
+
+        if (is_string($validated)) {
+            $candidates[] = $validated;
+        }
+
+        foreach (array_unique($candidates) as $candidate) {
+            if (Cache::has(self::fetchTransientKey($candidate))) {
+                return true;
+            }
+        }
+
+        return false;
     }
 
     public static function fetchCacheKey(string $url): string

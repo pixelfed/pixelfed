@@ -67,11 +67,24 @@ class ActivityPubDeliveryService
     }
 
     /**
+     * Same as send(), but hands back the remote's response so the caller
+     * can decide whether to try again. Null means nothing reached the
+     * remote: delivery is skipped outside production, the host is marked
+     * unavailable, or the connection failed.
+     *
+     * @throws InvalidDeliveryDestinationException when the inbox URL fails validation
+     */
+    public function deliver(): ?Response
+    {
+        return $this->queueDelivery();
+    }
+
+    /**
      * Deliver a single ActivityPub activity.
      *
      * @throws InvalidDeliveryDestinationException when the inbox URL fails validation
      */
-    protected function queueDelivery(): void
+    protected function queueDelivery(): ?Response
     {
         if (! $this->sender) {
             throw new InvalidArgumentException('Missing ActivityPub sender.');
@@ -110,7 +123,7 @@ class ActivityPubDeliveryService
                 'url' => $url,
             ]);
 
-            return;
+            return null;
         }
 
         if ($domain && DeliveryHostService::isUnavailable($domain)) {
@@ -119,7 +132,7 @@ class ActivityPubDeliveryService
                 'url' => $url,
             ]);
 
-            return;
+            return null;
         }
 
         try {
@@ -152,6 +165,8 @@ class ActivityPubDeliveryService
                     $response
                 );
             }
+
+            return $response;
         } catch (Throwable $e) {
             if ($domain && $e instanceof ConnectionException) {
                 DeliveryHostService::recordFailure($domain);
@@ -172,7 +187,7 @@ class ActivityPubDeliveryService
             // Other exception types (invalid sender/destination, signing,
             // serialization) still throw, as they did before the rewrite.
             if ($e instanceof ConnectionException) {
-                return;
+                return null;
             }
 
             throw $e;

@@ -5,6 +5,7 @@ namespace App\Jobs\StatusPipeline;
 use App\Models\Profile;
 use App\Util\ActivityPub\Helpers;
 use Illuminate\Bus\Queueable;
+use Illuminate\Contracts\Queue\ShouldBeUniqueUntilProcessing;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
 use Illuminate\Queue\InteractsWithQueue;
@@ -23,8 +24,15 @@ use Illuminate\Support\Facades\Log;
  * Attempts are tracked on the job and re-dispatched with a delay instead of
  * using release()/tries, so an unreachable parent does not end up in
  * failed_jobs.
+ *
+ * Two guards keep this to one queued job per reply. The pending key spans
+ * the whole chain and stops a redelivered activity from parking a second
+ * one. The unique lock covers each queued attempt, whatever dispatched it.
+ * It has to be ShouldBeUniqueUntilProcessing: plain ShouldBeUnique holds the
+ * lock until handle() returns, so the re-dispatch in retryOrDrop() would
+ * fail to acquire it and be discarded without an error.
  */
-class RemoteReplyResolvePipeline implements ShouldQueue
+class RemoteReplyResolvePipeline implements ShouldBeUniqueUntilProcessing, ShouldQueue
 {
     use Dispatchable, InteractsWithQueue, Queueable;
 
@@ -36,10 +44,13 @@ class RemoteReplyResolvePipeline implements ShouldQueue
     public const array BACKOFF = [180, 900, 3600, 21600];
 
     /**
-     * How long a reply is considered pending, a little over the sum of
-     * BACKOFF. Stops a redelivered activity from starting a second chain.
+     * Added to the delay of the attempt being scheduled to get the TTL of
+     * the pending key and the unique lock. Has to cover how far the low
+     * queue can run behind, plus one attempt's $timeout. If the queue lags
+     * more than this, both expire before the attempt runs and a redelivered
+     * activity can start a second chain.
      */
-    private const int PENDING_TTL = 28800;
+    private const int LAG_MARGIN = 3600;
 
     public $timeout = 300;
 
@@ -71,7 +82,7 @@ class RemoteReplyResolvePipeline implements ShouldQueue
             return false;
         }
 
-        if (! Cache::add(self::pendingKey($id), 1, self::PENDING_TTL)) {
+        if (! Cache::add(self::pendingKey($id), 1, self::ttlFor(0))) {
             return false;
         }
 
@@ -85,6 +96,33 @@ class RemoteReplyResolvePipeline implements ShouldQueue
     public static function pendingKey(string $id): string
     {
         return 'pf:ap:reply-resolve:pending:'.hash('sha256', $id);
+    }
+
+    /**
+     * Seconds the pending key and the unique lock are held while waiting for
+     * the given attempt.
+     */
+    private static function ttlFor(int $attempt): int
+    {
+        return (self::BACKOFF[$attempt] ?? max(self::BACKOFF)) + self::LAG_MARGIN;
+    }
+
+    /**
+     * One queued attempt per reply. The lock is taken on dispatch and
+     * released as the attempt starts processing.
+     */
+    public function uniqueId(): string
+    {
+        return hash('sha256', (string) Helpers::pluckval($this->object['id'] ?? null));
+    }
+
+    /**
+     * Safety expiry for the lock, in case the queued attempt is lost (queue
+     * cleared, payload evicted) and never gets to release it.
+     */
+    public function uniqueFor(): int
+    {
+        return self::ttlFor($this->attempt);
     }
 
     public function handle(): void
@@ -141,6 +179,11 @@ class RemoteReplyResolvePipeline implements ShouldQueue
 
             return;
         }
+
+        // Re-arm the pending key for the wait ahead. It is sized per attempt
+        // instead of once for the whole chain, so a chain that runs late
+        // cannot outlive it.
+        Cache::put(self::pendingKey($id), 1, self::ttlFor($next));
 
         self::dispatch($this->object, $this->profileId, $next)
             ->delay(now()->addSeconds(self::BACKOFF[$next]))

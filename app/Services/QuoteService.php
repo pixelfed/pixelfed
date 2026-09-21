@@ -2,13 +2,11 @@
 
 namespace App\Services;
 
-use App\Jobs\QuotePipeline\RevokeQuoteAuthorizationPipeline;
+use App\Jobs\QuotePipeline\DeliverQuoteActivityPipeline;
 use App\Models\Profile;
 use App\Models\QuoteAuthorization;
 use App\Models\Status;
-use App\Util\ActivityPub\Helpers;
 use Illuminate\Support\Facades\Cache;
-use Illuminate\Support\Facades\Log;
 
 /**
  * FEP-044f: Consent-respecting quote posts.
@@ -438,7 +436,7 @@ class QuoteService
     /**
      * Withdraw consent. The row is kept (state revoked) so a repeat request
      * for the same quote post is auto-rejected, and the stamp URL serves
-     * 410 Gone. The Delete activity is sent from a queued job.
+     * 410 Gone. The Delete is delivered from a queued job, with retries.
      */
     public static function revoke(QuoteAuthorization $auth, bool $notify = true): void
     {
@@ -451,7 +449,7 @@ class QuoteService
         $auth->save();
 
         if ($notify) {
-            RevokeQuoteAuthorizationPipeline::dispatch($auth->id)->onQueue('high');
+            self::sendDelete($auth);
         }
     }
 
@@ -613,22 +611,15 @@ class QuoteService
     }
 
     /**
+     * Hand the activity to a queued job that retries on temporary failures.
+     * The quoting server sends its QuoteRequest once, so a lost Accept would
+     * leave the quote pending on their side for good.
+     *
      * @param  array<string, mixed>  $activity
      */
     private static function deliver(Profile $from, Profile $to, array $activity): void
     {
-        $inbox = $to->sharedInbox ?? $to->inbox_url;
-
-        if (! $inbox) {
-            Log::info('QuoteService: remote actor has no inbox', [
-                'profile_id' => $from->id,
-                'actor_id' => $to->id,
-            ]);
-
-            return;
-        }
-
-        Helpers::sendSignedObject($from, $inbox, $activity);
+        DeliverQuoteActivityPipeline::dispatch($from->id, $to->id, $activity)->onQueue('high');
     }
 
     /**
