@@ -11,6 +11,7 @@ use App\Models\Notification;
 use App\Models\Status;
 use App\Models\UserDomainBlock;
 use App\Models\UserFilter;
+use App\Services\DirectMessageService;
 use Illuminate\Foundation\Testing\LazilyRefreshDatabase;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Http;
@@ -439,7 +440,7 @@ describe('groups', function () {
     it('drops a message when the only person it could reach here has left the group', function () {
         $bob = dmProfile(dmLocalUser());
         $alice = dmRemoteProfile();
-        $carol = dmRemoteProfile('carol', 'other.example');
+        $carol = dmNeighbour($alice, dmRemoteProfile('carol', 'other.example'));
         dmSeedHosts();
 
         dmDeliver($alice, dmNote($alice, '1', [$bob, $carol]));
@@ -461,6 +462,30 @@ describe('groups', function () {
         dmDeliver($alice, dmNote($alice, '2', [$bob, $dave]));
 
         expect(DmConversation::count())->toBe(2);
+    });
+});
+
+describe('conversation identity', function () {
+    it('hashes the same people to the same conversation whatever order they come in', function () {
+        $a = 1007571621538590723;
+        $b = $a + 1;
+        $c = $a + 2;
+        expect(DmConversation::dmHash($a, $b))->toBe(DmConversation::dmHash($b, $a))->and(DmConversation::participantsHash([$a, $b, $c]))->toBe(DmConversation::participantsHash([$c, $a, $b]))->and(DmConversation::participantsHash([$a, $b, $c]))->toBe(DmConversation::participantsHash([(string) $b, $c, $a, $a]))->and(DmConversation::dmHash($a, $b))->not->toBe(DmConversation::dmHash($a, $c));
+    });
+
+    it('keeps one conversation when two participants have neighbouring ids', function () {
+        $bob = dmProfile(dmLocalUser());
+        $alice = dmRemoteProfile();
+        $carol = dmNeighbour($alice, dmRemoteProfile('carol', 'other.example'));
+        dmSeedHosts();
+
+        dmDeliver($carol, dmNote($carol, '1', [$alice, $bob]));
+        dmDeliver($alice, dmNote($alice, '2', [$bob, $carol]));
+
+        $mine = app(DirectMessageService::class)->findOrCreateConversation($bob, collect([$alice, $carol]));
+
+        expect(DmConversation::count())->toBe(1)
+            ->and(DmMessage::where('conversation_id', $mine->id)->count())->toBe(2);
     });
 });
 

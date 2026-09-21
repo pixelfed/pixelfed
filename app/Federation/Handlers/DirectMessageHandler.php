@@ -74,9 +74,10 @@ class DirectMessageHandler
             $left = DmConversationParticipant::where('conversation_id', $existing->id)
                 ->where('state', DmConversationParticipant::STATE_LEFT)
                 ->pluck('profile_id')
+                ->map(fn ($id) => (int) $id)
                 ->all();
 
-            $readers = $readers->reject(fn (Profile $profile) => in_array($profile->id, $left));
+            $readers = $readers->reject(fn (Profile $profile) => in_array((int) $profile->id, $left, true));
 
             if ($readers->isEmpty() || $this->requestLimitReached($existing, $actor, $readers)) {
                 return null;
