@@ -1,5 +1,6 @@
 <?php
 
+use App\Federation\Handlers\DirectMessageHandler;
 use App\Jobs\Federation\DeliverDirectMessageActivity;
 use App\Models\DirectMessage;
 use App\Models\DmConversation;
@@ -25,6 +26,9 @@ beforeEach(function () {
     Redis::spy();
     Queue::fake();
     Http::fake();
+
+    // Ids minted in the same millisecond only sort by creation order when the
+    // worker bits are fixed. Left unset they are random for every id.
     config(['snowflake.datacenter_id' => 1, 'snowflake.worker_id' => 1]);
 });
 
@@ -143,6 +147,35 @@ describe('dm:backfill-conversations', function () {
 
         expect(DmConversationParticipant::where('conversation_id', $carolThread->id)->where('profile_id', $bob->id)->value('state'))->toBe('request')
             ->and(DmConversationParticipant::where('conversation_id', $aliceThread->id)->where('profile_id', $bob->id)->value('muted_at'))->not->toBeNull();
+    });
+});
+
+describe('remote deletes of converted messages', function () {
+    it('hands a converted message back to the status path so the legacy status goes too', function () {
+        $bob = dmProfile(dmLocalUser());
+        $carol = dmRemoteProfile('carol');
+
+        dmLegacy($carol, $bob, 'old one', [], ['uri' => $carol->remote_url.'/statuses/9']);
+        $this->artisan('dm:backfill-conversations', ['--force' => true])->assertSuccessful();
+
+        $handler = app(DirectMessageHandler::class);
+
+        expect($handler->handleDelete($carol, $carol->remote_url.'/statuses/9'))->toBeFalse()
+            ->and(DmMessage::count())->toBe(0);
+    });
+
+    it('fully handles a message that never was a status', function () {
+        $bob = dmProfile(dmLocalUser());
+        $carol = dmRemoteProfile('carol');
+
+        $service = app(DirectMessageService::class);
+        $service->storeMessage($service->findOrCreateDm($carol, $bob), $carol, [
+            'body' => 'new one',
+            'ap_object_uri' => $carol->remote_url.'/statuses/10',
+        ]);
+
+        expect(app(DirectMessageHandler::class)->handleDelete($carol, $carol->remote_url.'/statuses/10'))->toBeTrue()
+            ->and(DmMessage::count())->toBe(0);
     });
 });
 
