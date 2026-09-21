@@ -2786,7 +2786,8 @@ class ApiV1Controller extends Controller
                         return false;
                     }
 
-                    $status['account'] = $account;
+                    // Not $status['account'] = $account: $account is resolved from
+                    // the row, StatusService picks the right one per client
 
                     if ($pid) {
                         $status['favourited'] = (bool) LikeService::liked($pid, $s['id']);
@@ -2857,7 +2858,8 @@ class ApiV1Controller extends Controller
                         return false;
                     }
 
-                    $status['account'] = $account;
+                    // Not $status['account'] = $account: $account is resolved from
+                    // the row, StatusService picks the right one per client
 
                     if ($pid) {
                         $status['favourited'] = (bool) LikeService::liked($pid, $s['id']);
