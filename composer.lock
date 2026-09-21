@@ -6894,16 +6894,16 @@
         },
         {
             "name": "spatie/laravel-honeypot",
-            "version": "4.7.2",
+            "version": "4.7.3",
             "source": {
                 "type": "git",
                 "url": "https://github.com/spatie/laravel-honeypot.git",
-                "reference": "b99f668c5b673ddc8abbc58743584339cc8db3a9"
+                "reference": "be1374c1b799c4d2f7dd466bc62f6a4d992829ff"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/spatie/laravel-honeypot/zipball/b99f668c5b673ddc8abbc58743584339cc8db3a9",
-                "reference": "b99f668c5b673ddc8abbc58743584339cc8db3a9",
+                "url": "https://api.github.com/repos/spatie/laravel-honeypot/zipball/be1374c1b799c4d2f7dd466bc62f6a4d992829ff",
+                "reference": "be1374c1b799c4d2f7dd466bc62f6a4d992829ff",
                 "shasum": ""
             },
             "require": {
@@ -6958,7 +6958,7 @@
                 "spatie"
             ],
             "support": {
-                "source": "https://github.com/spatie/laravel-honeypot/tree/4.7.2"
+                "source": "https://github.com/spatie/laravel-honeypot/tree/4.7.3"
             },
             "funding": [
                 {
@@ -6966,7 +6966,7 @@
                     "type": "custom"
                 }
             ],
-            "time": "2026-06-25T15:09:40+00:00"
+            "time": "2026-09-11T12:44:32+00:00"
         },
         {
             "name": "spatie/laravel-image-optimizer",
