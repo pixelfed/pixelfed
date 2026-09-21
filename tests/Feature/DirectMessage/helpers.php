@@ -44,18 +44,6 @@ if (! function_exists('dmLocalUser')) {
     }
 
     /**
-     * Give $b the id right after $a, the way two profiles created in the same
-     * millisecond end up. Ids that close are equal once compared as floats,
-     * so anything that orders or matches ids has to cope with it.
-     */
-    function dmNeighbour(Profile $a, Profile $b): Profile
-    {
-        DB::table('profiles')->where('id', $b->id)->update(['id' => $a->id + 1]);
-
-        return Profile::findOrFail($a->id + 1);
-    }
-
-    /**
      * Seed the DNS and banned-domain caches so URL validation passes without
      * a network lookup. Call after factories, the lazy refresh can flush the
      * cache.
@@ -69,6 +57,18 @@ if (! function_exists('dmLocalUser')) {
         }
 
         Cache::put('instances:banned:domains', [], 1209600);
+    }
+
+    /**
+     * Give $b the id right after $a, the way two profiles created in the same
+     * millisecond end up. Ids that close are equal once compared as floats,
+     * so anything that orders or matches ids has to cope with it.
+     */
+    function dmNeighbour(Profile $a, Profile $b): Profile
+    {
+        DB::table('profiles')->where('id', $b->id)->update(['id' => $a->id + 1]);
+
+        return Profile::findOrFail($a->id + 1);
     }
 
     function dmFollow(Profile $follower, Profile $target): void

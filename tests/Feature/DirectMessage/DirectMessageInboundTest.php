@@ -2,6 +2,7 @@
 
 use App\Federation\Handlers\DirectMessageHandler;
 use App\Federation\Validators\DirectMessageValidator;
+use App\Jobs\InboxPipeline\DeleteWorker;
 use App\Jobs\MediaPipeline\MediaDeletePipeline;
 use App\Models\DmConversation;
 use App\Models\DmConversationParticipant;
@@ -40,11 +41,13 @@ beforeEach(function () {
     Queue::fake();
     Http::fake();
 
+    // Ids minted in the same millisecond only sort by creation order when the
+    // worker bits are fixed. Left unset they are random for every id.
+    config(['snowflake.datacenter_id' => 1, 'snowflake.worker_id' => 1]);
+
     config([
         'instance.enable_cc' => false,
         'federation.activitypub.enabled' => true,
-        'snowflake.datacenter_id' => 1,
-        'snowflake.worker_id' => 1,
     ]);
 });
 
@@ -467,10 +470,16 @@ describe('groups', function () {
 
 describe('conversation identity', function () {
     it('hashes the same people to the same conversation whatever order they come in', function () {
+        // Snowflake ids minted in the same millisecond differ only in their
+        // last bits, which a float comparison cannot see
         $a = 1007571621538590723;
         $b = $a + 1;
         $c = $a + 2;
-        expect(DmConversation::dmHash($a, $b))->toBe(DmConversation::dmHash($b, $a))->and(DmConversation::participantsHash([$a, $b, $c]))->toBe(DmConversation::participantsHash([$c, $a, $b]))->and(DmConversation::participantsHash([$a, $b, $c]))->toBe(DmConversation::participantsHash([(string) $b, $c, $a, $a]))->and(DmConversation::dmHash($a, $b))->not->toBe(DmConversation::dmHash($a, $c));
+
+        expect(DmConversation::dmHash($a, $b))->toBe(DmConversation::dmHash($b, $a))
+            ->and(DmConversation::participantsHash([$a, $b, $c]))->toBe(DmConversation::participantsHash([$c, $a, $b]))
+            ->and(DmConversation::participantsHash([$a, $b, $c]))->toBe(DmConversation::participantsHash([(string) $b, $c, $a, $a]))
+            ->and(DmConversation::dmHash($a, $b))->not->toBe(DmConversation::dmHash($a, $c));
     });
 
     it('keeps one conversation when two participants have neighbouring ids', function () {
@@ -619,6 +628,43 @@ describe('deletes', function () {
             ->and(DB::table('dm_message_media')->count())->toBe(0);
 
         Queue::assertPushed(MediaDeletePipeline::class, 1);
+    });
+
+    it('lets a delete for a direct message through the inbox endpoints', function (string $endpoint) {
+        $bobUser = dmLocalUser();
+        $bob = dmProfile($bobUser);
+        $alice = dmRemoteProfile();
+        dmSeedHosts();
+
+        dmDeliver($alice, dmNote($alice, '1', [$bob]));
+
+        // What Loops and Mastodon send
+        $delete = [
+            '@context' => 'https://www.w3.org/ns/activitystreams',
+            'id' => $alice->remote_url.'/statuses/1#delete',
+            'type' => 'Delete',
+            'actor' => $alice->remote_url,
+            'to' => [$bob->permalink()],
+            'object' => ['id' => $alice->remote_url.'/statuses/1', 'type' => 'Tombstone'],
+        ];
+
+        $this->postJson(str_replace('{username}', $bobUser->username, $endpoint), $delete)->assertOk();
+
+        Queue::assertPushed(DeleteWorker::class, 1);
+    })->with(['/f/inbox', '/users/{username}/inbox']);
+
+    it('still drops a delete for something this server has never seen', function () {
+        $alice = dmRemoteProfile();
+        dmSeedHosts();
+
+        $this->postJson('/f/inbox', [
+            'id' => $alice->remote_url.'/statuses/404#delete',
+            'type' => 'Delete',
+            'actor' => $alice->remote_url,
+            'object' => ['id' => $alice->remote_url.'/statuses/404', 'type' => 'Tombstone'],
+        ])->assertOk();
+
+        Queue::assertNotPushed(DeleteWorker::class);
     });
 
     it('ignores a delete from someone who did not write the message', function () {

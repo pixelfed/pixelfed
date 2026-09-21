@@ -21,6 +21,8 @@ class DeleteWorker implements ShouldQueue
 
     protected $payload;
 
+    protected $inboxPath = '/f/inbox';
+
     public $timeout = 300;
 
     public $tries = 1;
@@ -32,10 +34,13 @@ class DeleteWorker implements ShouldQueue
      *
      * @return void
      */
-    public function __construct($headers, $payload)
+    public function __construct($headers, $payload, ?string $inboxPath = null)
     {
         $this->headers = $headers;
         $this->payload = $payload;
+        if ($inboxPath) {
+            $this->inboxPath = $inboxPath;
+        }
     }
 
     /**
@@ -77,14 +82,15 @@ class DeleteWorker implements ShouldQueue
             return;
         }
 
-        if ($payload['type'] === 'Delete' &&
+        if (
+            $payload['type'] === 'Delete' &&
             ((is_string($payload['object']) &&
                 $payload['object'] === $payload['actor']) ||
-            (is_array($payload['object']) &&
-              isset($payload['object']['id'], $payload['object']['type']) &&
-              $payload['object']['type'] === 'Person' &&
-              $payload['actor'] === $payload['object']['id']
-            ))
+                (is_array($payload['object']) &&
+                    isset($payload['object']['id'], $payload['object']['type']) &&
+                    $payload['object']['type'] === 'Person' &&
+                    $payload['actor'] === $payload['object']['id']
+                ))
         ) {
             $actor = $payload['actor'];
             if ($this->verifySignature($headers, $payload) == true) {
@@ -132,8 +138,9 @@ class DeleteWorker implements ShouldQueue
         if (! $date) {
             return false;
         }
-        if (! now()->parse($date)->gt(now()->subDays(1)) ||
-           ! now()->parse($date)->lt(now()->addDays(1))
+        if (
+            ! now()->parse($date)->gt(now()->subDays(1)) ||
+            ! now()->parse($date)->lt(now()->addDays(1))
         ) {
             return false;
         }
@@ -148,7 +155,8 @@ class DeleteWorker implements ShouldQueue
         $keyDomain = parse_url($keyId, PHP_URL_HOST);
         $idDomain = parse_url($id, PHP_URL_HOST);
         $actorDomain = parse_url($bodyDecoded['actor'] ?? '', PHP_URL_HOST);
-        if (isset($bodyDecoded['object'])
+        if (
+            isset($bodyDecoded['object'])
             && is_array($bodyDecoded['object'])
             && isset($bodyDecoded['object']['attributedTo'])
         ) {
@@ -189,8 +197,7 @@ class DeleteWorker implements ShouldQueue
         if (! $pkey) {
             return false;
         }
-        $inboxPath = '/f/inbox';
-        [$verified, $headers] = HttpSignature::verify($pkey, $signatureData, $headers, $inboxPath, $body);
+        [$verified, $headers] = HttpSignature::verify($pkey, $signatureData, $headers, $this->inboxPath, $body);
         if ($verified == 1) {
             return true;
         }
