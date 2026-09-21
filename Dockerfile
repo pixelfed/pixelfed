@@ -78,9 +78,15 @@ RUN ./configure \
 # PHP base image — FrankenPHP (includes Caddy built-in)
 FROM serversideup/php:8.5-frankenphp
 
+ARG RUNTIME_UID=33
+ARG RUNTIME_GID=33
+
 WORKDIR /var/www/html
 
 USER root
+
+RUN docker-php-serversideup-set-id www-data ${RUNTIME_UID}:${RUNTIME_GID} && \
+    docker-php-serversideup-set-file-permissions --owner ${RUNTIME_UID}:${RUNTIME_GID} --service frankenphp --dir /var/www/html
 
 RUN apt-get update && apt-get install -y \
     unzip \
