@@ -47,6 +47,7 @@ use App\Models\UserPronoun;
 use App\Models\UserSetting;
 use App\Services\AccountRevocationService;
 use App\Services\AccountService;
+use App\Services\DirectMessageService;
 use App\Services\FollowerService;
 use App\Services\PublicTimelineService;
 use Illuminate\Bus\Queueable;
@@ -169,6 +170,7 @@ class DeleteAccountPipeline implements ShouldQueue
         StatusHashtag::whereProfileId($id)->get()->each->delete();
         DirectMessage::whereFromId($id)->orWhere('to_id', $id)->delete();
         Conversation::whereFromId($id)->orWhere('to_id', $id)->delete();
+        app(DirectMessageService::class)->purgeProfile($id);
         StatusArchived::whereProfileId($id)->delete();
         UserPronoun::whereProfileId($id)->delete();
         FollowRequest::whereFollowingId($id)

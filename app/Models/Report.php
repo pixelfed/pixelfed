@@ -79,6 +79,9 @@ class Report extends Model
                 $column = 'id';
                 break;
 
+            case DmMessage::class:
+                return DmMessage::withTrashed()->find($this->object_id);
+
             default:
                 $class = Status::class;
                 $column = 'id';

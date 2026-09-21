@@ -28,9 +28,10 @@ use App\Models\Avatar;
 use App\Models\Bookmark;
 use App\Models\Collection;
 use App\Models\CollectionItem;
-use App\Models\Conversation;
 use App\Models\CustomFilter;
-use App\Models\DirectMessage;
+use App\Models\DmConversation;
+use App\Models\DmConversationParticipant;
+use App\Models\DmMessage;
 use App\Models\Follower;
 use App\Models\FollowRequest;
 use App\Models\Hashtag;
@@ -50,6 +51,8 @@ use App\Services\BookmarkService;
 use App\Services\BouncerService;
 use App\Services\CollectionService;
 use App\Services\CustomEmojiService;
+use App\Services\DirectMessagePayloadService;
+use App\Services\DirectMessageService;
 use App\Services\DiscoverService;
 use App\Services\FollowerService;
 use App\Services\HomeTimelineService;
@@ -3220,7 +3223,10 @@ class ApiV1Controller extends Controller
     /**
      * GET /api/v1/conversations
      *
-     *   Not implemented
+     * Mastodon compatible view of direct message conversations. Group
+     * conversations are only included when `include_groups` is set, because
+     * older clients open a conversation by its first account and would show
+     * a group as a one-to-one thread.
      */
     public function conversations(Request $request)
     {
@@ -3233,106 +3239,64 @@ class ApiV1Controller extends Controller
             'min_id' => 'nullable|integer',
             'max_id' => 'nullable|integer',
             'since_id' => 'nullable|integer',
+            'include_groups' => 'sometimes',
         ]);
 
-        $limit = $request->input('limit', 20);
-        if ($limit > 20) {
-            $limit = 20;
-        }
+        $limit = min((int) $request->input('limit', 20), 20);
         $scope = $request->input('scope', 'inbox');
         $user = $request->user();
-        $min_id = $request->input('min_id');
         $max_id = $request->input('max_id');
-        $since_id = $request->input('since_id');
+        $since_id = $request->input('since_id') ?? $request->input('min_id');
+        $includeGroups = $request->boolean('include_groups');
 
-        if ($user->has_roles && ! UserRoleService::can('can-direct-message', $user->id)) {
+        $service = app(DirectMessageService::class);
+        $payloads = app(DirectMessagePayloadService::class);
+
+        if (! $service->canUseDirectMessages($user)) {
             return [];
         }
 
         $pid = $user->profile_id;
 
-        $isPgsql = db_is_pgsql();
+        $rows = DmConversationParticipant::query()
+            ->join('dm_conversations', 'dm_conversations.id', '=', 'dm_conversation_participants.conversation_id')
+            ->where('dm_conversation_participants.profile_id', $pid)
+            ->whereNotNull('dm_conversation_participants.last_activity_at')
+            ->whereNull('dm_conversation_participants.hidden_at')
+            ->whereNotNull('dm_conversations.last_message_id')
+            ->where(
+                'dm_conversation_participants.state',
+                $scope === 'requests' ? DmConversationParticipant::STATE_REQUEST : DmConversationParticipant::STATE_ACTIVE
+            )
+            ->when(! $includeGroups, fn ($q) => $q->where('dm_conversations.type', DmConversation::TYPE_DM))
+            ->when($scope === 'sent', fn ($q) => $q->where('dm_conversations.created_by_profile_id', $pid))
+            ->when($max_id, fn ($q) => $q->where('dm_conversations.last_message_id', '<', $max_id))
+            ->when($since_id, fn ($q) => $q->where('dm_conversations.last_message_id', '>', $since_id))
+            ->orderByDesc('dm_conversations.last_message_id')
+            ->limit($limit + 1)
+            ->get(['dm_conversation_participants.*', 'dm_conversations.last_message_id']);
 
-        if ($isPgsql) {
-            $dms = DirectMessage::when($scope === 'inbox', function ($q) use ($pid) {
-                return $q->whereIsHidden(false)
-                    ->where(function ($query) use ($pid) {
-                        $query->where('to_id', $pid)
-                            ->orWhere('from_id', $pid);
-                    });
-            })
-                ->when($scope === 'sent', function ($q) use ($pid) {
-                    return $q->whereFromId($pid)
-                        ->groupBy(['to_id', 'id']);
-                })
-                ->when($scope === 'requests', function ($q) use ($pid) {
-                    return $q->whereToId($pid)
-                        ->whereIsHidden(true);
-                });
-        } else {
-            $dms = Conversation::when($scope === 'inbox', function ($q) use ($pid) {
-                return $q->whereIsHidden(false)
-                    ->where(function ($query) use ($pid) {
-                        $query->where('to_id', $pid)
-                            ->orWhere('from_id', $pid);
-                    })
-                    ->orderByDesc('status_id')
-                    ->groupBy(['to_id', 'from_id']);
-            })
-                ->when($scope === 'sent', function ($q) use ($pid) {
-                    return $q->whereFromId($pid)
-                        ->groupBy('to_id');
-                })
-                ->when($scope === 'requests', function ($q) use ($pid) {
-                    return $q->whereToId($pid)
-                        ->whereIsHidden(true);
-                });
-        }
+        $hasNextPage = $rows->count() > $limit;
+        $rows = $rows->take($limit);
 
-        if ($min_id) {
-            $dms = $dms->where('id', '>', $min_id);
-        }
-        if ($max_id) {
-            $dms = $dms->where('id', '<', $max_id);
-        }
-        if ($since_id) {
-            $dms = $dms->where('id', '>', $since_id);
-        }
+        $conversations = DmConversation::whereIn('id', $rows->pluck('conversation_id'))->get()->keyBy('id');
+        $members = DmConversationParticipant::whereIn('conversation_id', $rows->pluck('conversation_id'))
+            ->orderBy('id')
+            ->get()
+            ->groupBy('conversation_id');
+        $lastMessages = DmMessage::with('media')->whereIn('id', $rows->pluck('last_message_id'))->get()->keyBy('id');
+        $blocked = $payloads->blockedIds($pid);
 
-        $dms = $dms->orderByDesc('status_id')->orderBy('id');
+        $transformedDms = $rows->map(function ($row) use ($conversations, $members, $lastMessages, $blocked, $payloads, $pid) {
+            $conversation = $conversations->get($row->conversation_id);
+            $last = $lastMessages->get($conversation?->last_message_id);
 
-        $dmResults = $dms->limit($limit + 1)->get();
+            if (! $conversation || ! $last || in_array((int) $last->profile_id, $blocked, true)) {
+                return null;
+            }
 
-        $hasNextPage = $dmResults->count() > $limit;
-
-        if ($hasNextPage) {
-            $dmResults = $dmResults->take($limit);
-        }
-
-        $transformedDms = $dmResults->map(function ($dm) use ($pid) {
-            $from = $pid == $dm->to_id ? $dm->from_id : $dm->to_id;
-
-            return [
-                'id' => $dm->id,
-                'unread' => false,
-                'accounts' => [
-                    AccountService::getMastodon($from, true),
-                ],
-                'last_status' => StatusService::getDirectMessage($dm->status_id),
-            ];
-        })
-            ->filter(function ($dm) {
-                return $dm
-                    && ! empty($dm['last_status'])
-                    && isset($dm['accounts'])
-                    && count($dm['accounts'])
-                    && isset($dm['accounts'][0])
-                    && isset($dm['accounts'][0]['id']);
-            })
-            ->unique(function ($item) {
-                return $item['accounts'][0]['id'];
-            })
-            ->values();
+            return $payloads->mastodonConversation($conversation, $row, $members->get($row->conversation_id, collect()), $last, $pid);
+        })->filter()->values();
 
         $links = [];
 
@@ -3342,8 +3306,9 @@ class ApiV1Controller extends Controller
                 ['limit' => $limit]
             ));
 
-            $firstId = $transformedDms->first()['id'];
-            $lastId = $transformedDms->last()['id'];
+            // Mastodon pages conversations by the id of their last status
+            $firstId = $transformedDms->first()['last_status']['id'];
+            $lastId = $transformedDms->last()['last_status']['id'];
 
             $firstLink = $baseUrl;
             $links[] = '<'.$firstLink.'>; rel="first"';
@@ -3365,6 +3330,58 @@ class ApiV1Controller extends Controller
         }
 
         return $this->json($transformedDms);
+    }
+
+    /**
+     * DELETE /api/v1/conversations/{id}
+     *
+     * Removes the conversation from the caller's list. Nothing is deleted for
+     * the other participants.
+     */
+    public function conversationDelete(Request $request, $id)
+    {
+        abort_if(! $request->user() || ! $request->user()->token(), 403);
+        abort_unless($request->user()->tokenCan('write'), 403);
+
+        $service = app(DirectMessageService::class);
+        $found = is_numeric($id) ? $service->conversationFor($id, $request->user()->profile_id) : null;
+        abort_if(! $found, 404);
+
+        $service->setHidden($found[1], true);
+
+        return $this->json([]);
+    }
+
+    /**
+     * POST /api/v1/conversations/{id}/read
+     */
+    public function conversationRead(Request $request, $id)
+    {
+        abort_if(! $request->user() || ! $request->user()->token(), 403);
+        abort_unless($request->user()->tokenCan('write'), 403);
+
+        $service = app(DirectMessageService::class);
+        $payloads = app(DirectMessagePayloadService::class);
+        $pid = $request->user()->profile_id;
+
+        $found = is_numeric($id) ? $service->conversationFor($id, $pid) : null;
+        abort_if(! $found, 404);
+
+        [$conversation, $participant] = $found;
+
+        $service->markRead($participant);
+
+        $res = $payloads->mastodonConversation(
+            $conversation,
+            $participant,
+            DmConversationParticipant::where('conversation_id', $conversation->id)->orderBy('id')->get(),
+            $conversation->last_message_id ? DmMessage::with('media')->find($conversation->last_message_id) : null,
+            $pid
+        );
+
+        abort_if(! $res, 404);
+
+        return $this->json($res);
     }
 
     /**
@@ -3881,6 +3898,7 @@ class ApiV1Controller extends Controller
             if (
                 Media::whereUserId($user->id)
                     ->whereNull('status_id')
+                    ->notInDirectMessage()
                     ->find($ids)
                     ->count() == 0
             ) {
@@ -3908,7 +3926,7 @@ class ApiV1Controller extends Controller
                 if ($k + 1 > (int) config_cache('pixelfed.max_album_length')) {
                     continue;
                 }
-                $m = Media::whereUserId($user->id)->whereNull('status_id')->findOrFail($v);
+                $m = Media::whereUserId($user->id)->whereNull('status_id')->notInDirectMessage()->findOrFail($v);
                 if ($m->profile_id !== $user->profile_id || $m->status_id) {
                     abort(403, 'Invalid media id');
                 }

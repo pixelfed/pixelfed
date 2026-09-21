@@ -42,7 +42,7 @@
 						<div v-if="!convo.isAuthor" class="media d-inline-flex mb-0">
 							<img v-if="!hideAvatars" class="mr-3 mt-2 rounded-circle img-thumbnail" :src="thread.avatar" alt="avatar" width="32" onerror="this.onerror=null;this.src='/storage/avatars/default.jpg';">
 							<div class="media-body">
-								<p v-if="convo.type == 'photo'" class="pill-to p-0 shadow">
+								<p v-if="convo.type == 'photo' || convo.type == 'photos'" class="pill-to p-0 shadow">
 									<img :src="convo.media" width="140" style="border-radius:20px;" onerror="this.onerror=null;this.src='/storage/no-preview.png';">
 								</p>
 								<div v-else-if="convo.type == 'link'" class="media d-inline-flex mb-0 cursor-pointer">
@@ -64,7 +64,7 @@
 										</div>
 									</div>
 								</div>
-								<p v-else-if="convo.type == 'video'" class="pill-to p-0 shadow">
+								<p v-else-if="convo.type == 'video' || convo.type == 'videos'" class="pill-to p-0 shadow">
 									<!-- <video :src="convo.media" width="140px" style="border-radius:20px;"></video> -->
 									<span class="d-block bg-primary d-flex align-items-center justify-content-center" style="width:200px;height: 110px;border-radius: 20px;">
 										<div class="text-center">
@@ -95,6 +95,9 @@
 								<p v-else :class="[largerText ? 'pill-to shadow larger-text text-break':'pill-to shadow text-break']">
 									{{convo.text}}
 								</p>
+								<p v-if="hasMediaCaption(convo)" :class="[largerText ? 'pill-to shadow larger-text text-break mt-2':'pill-to shadow text-break mt-2']">
+									{{convo.text}}
+								</p>
 								<p v-if="convo.type == 'story:react'" class="small text-muted mb-0 ml-0">
 									<span class="font-weight-bold">{{ convo.meta.story_actor_username }}</span> reacted your story
 								</p>
@@ -107,7 +110,7 @@
 						</div>
 						<div v-else class="media d-inline-flex float-right mb-0 mr-2">
 							<div class="media-body">
-								<p v-if="convo.type == 'photo'" class="pill-from p-0 shadow">
+								<p v-if="convo.type == 'photo' || convo.type == 'photos'" class="pill-from p-0 shadow">
 									<img :src="convo.media" width="140" style="border-radius:20px;" onerror="this.onerror=null;this.src='/storage/no-preview.png';">
 								</p>
 								<div v-else-if="convo.type == 'link'" class="media d-inline-flex float-right mb-0 cursor-pointer">
@@ -129,7 +132,7 @@
 										</div>
 									</div>
 								</div>
-								<p v-else-if="convo.type == 'video'" class="pill-from p-0 shadow">
+								<p v-else-if="convo.type == 'video' || convo.type == 'videos'" class="pill-from p-0 shadow">
 									<!-- <video :src="convo.media" width="140px" style="border-radius:20px;"></video> -->
 									<span class="rounded-pill bg-primary d-flex align-items-center justify-content-center" style="width:200px;height: 110px">
 										<div class="text-center">
@@ -158,6 +161,9 @@
 									</span>
 								</span>
 								<p v-else :class="[largerText ? 'pill-from shadow larger-text text-break':'pill-from shadow text-break']">
+									{{convo.text}}
+								</p>
+								<p v-if="hasMediaCaption(convo)" :class="[largerText ? 'pill-from shadow larger-text text-break mt-2':'pill-from shadow text-break mt-2']">
 									{{convo.text}}
 								</p>
 								<p v-if="convo.type == 'story:react'" class="small text-muted text-right mb-0 mr-0">
@@ -465,6 +471,12 @@
 		},
 
 		methods: {
+			hasMediaCaption(convo) {
+				return ['photo', 'photos', 'video', 'videos', 'media'].includes(convo.type)
+					&& !!convo.text
+					&& convo.text.length > 0;
+			},
+
 			fetchProfile() {
 				axios.get('/api/pixelfed/v1/accounts/verify_credentials').then(res => {
 					this.profile = res.data;

@@ -55,6 +55,7 @@ class StoreStatusEditRequest extends FormRequest
                 'max:'.(int) config_cache('pixelfed.max_album_length'),
                 function (string $attribute, mixed $value, Closure $fail) {
                     Media::whereProfileId($this->user()->profile_id)
+                        ->notInDirectMessage()
                         ->where(function ($query) {
                             return $query->whereNull('status_id')
                                 ->orWhere('status_id', '=', $this->route('id'));

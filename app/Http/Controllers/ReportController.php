@@ -3,6 +3,8 @@
 namespace App\Http\Controllers;
 
 use App\Jobs\ReportPipeline\ReportNotifyAdminViaEmail;
+use App\Models\DmConversationParticipant;
+use App\Models\DmMessage;
 use App\Models\Group;
 use App\Models\Profile;
 use App\Models\Report;
@@ -152,11 +154,27 @@ class ReportController extends Controller
         switch ($object_type) {
             case 'post':
             case 'comment':
-                $object = Status::findOrFail($object_id);
-                $object_type = Status::class;
+                $object = Status::find($object_id);
+
+                // Direct messages are reported from the thread view as a
+                // post. They are no longer statuses, so look there next.
+                if (! $object) {
+                    $object = DmMessage::findOrFail($object_id);
+
+                    $isParticipant = DmConversationParticipant::where('conversation_id', $object->conversation_id)
+                        ->where('profile_id', $profile->id)
+                        ->exists();
+
+                    abort_if(! $isParticipant, 404);
+
+                    $object_type = DmMessage::class;
+                } else {
+                    $object_type = Status::class;
+                }
+
                 $exists = Report::whereUserId(Auth::id())
                     ->whereObjectId($object->id)
-                    ->whereObjectType(Status::class)
+                    ->whereObjectType($object_type)
                     ->count();
 
                 $rpid = $object->profile_id;
