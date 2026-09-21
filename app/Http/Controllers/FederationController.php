@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Jobs\InboxPipeline\DeleteWorker;
 use App\Jobs\InboxPipeline\InboxValidator;
 use App\Jobs\InboxPipeline\InboxWorker;
+use App\Models\DmMessage;
 use App\Models\FeatureAuthorization;
 use App\Models\Profile;
 use App\Models\QuoteAuthorization;
@@ -197,7 +198,7 @@ class FederationController extends Controller
                 }
 
                 if ($obj['object']['type'] === 'Tombstone') {
-                    if (Status::whereObjectUrl($obj['object']['id'])->exists()) {
+                    if ($this->isKnownTombstone($obj['object']['id'])) {
                         dispatch(new DeleteWorker($headers, $payload))->onQueue('delete');
 
                         return;
@@ -219,6 +220,21 @@ class FederationController extends Controller
         } else {
             dispatch(new InboxValidator($username, $headers, $payload))->onQueue('high');
         }
+    }
+
+    /**
+     * Deletes are dropped at the door unless they are for something this
+     * server has. A direct message is not a status, so it has to be looked
+     * for separately or its Delete never reaches the inbox worker.
+     */
+    protected function isKnownTombstone(mixed $id): bool
+    {
+        if (! is_string($id) || $id === '') {
+            return false;
+        }
+
+        return Status::whereObjectUrl($id)->exists()
+            || DmMessage::whereObjectUri($id)->exists();
     }
 
     public function sharedInbox(Request $request): void
