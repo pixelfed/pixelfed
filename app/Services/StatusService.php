@@ -153,6 +153,7 @@ class StatusService
             MediaService::getMastodon($status['id'])
         );
 
+        $status['favourited'] = false;
         $status['muted'] = false;
         $status['reblogged'] = false;
 
