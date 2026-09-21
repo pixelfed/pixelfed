@@ -328,6 +328,7 @@ class InternalApiController extends Controller
             'id',
             'uri',
             'caption',
+            'rendered',
             'profile_id',
             'type',
             'in_reply_to_id',
