@@ -2,6 +2,7 @@
 
 namespace App\Jobs\DeletePipeline;
 
+use App\Jobs\Federation\FanoutAccountDeleteActivity;
 use App\Jobs\StatusPipeline\StatusDelete;
 use App\Models\AccountInterstitial;
 use App\Models\AccountLog;
@@ -222,6 +223,11 @@ class DeleteAccountPipeline implements ShouldQueue
         $this->deleteUserColumns($user);
         AccountService::del($user->profile_id);
         Profile::whereUserId($user->id)->delete();
+
+        // Last, so remote servers only hear about it once the account is
+        // really gone here. Every path that deletes a local account runs
+        // this pipeline, so they all federate from this one place.
+        FanoutAccountDeleteActivity::dispatch((int) $id)->onQueue('delete');
     }
 
     protected function deleteUserColumns($user)
