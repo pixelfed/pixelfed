@@ -127,6 +127,8 @@ RUN install-php-extensions \
     vips \
     ffi
 
+RUN printf 'ffi.enable=1\n' > /usr/local/etc/php/conf.d/zz-ffi-enable.ini
+
 COPY --from=ffmpeg /usr/local/ffmpeg/bin/ffmpeg /usr/bin/ffmpeg
 COPY --from=ffmpeg /usr/local/ffmpeg/bin/ffprobe /usr/bin/ffprobe
 COPY --from=ffmpeg /usr/local/ffmpeg/lib /usr/local/lib
