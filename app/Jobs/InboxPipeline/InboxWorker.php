@@ -2,6 +2,7 @@
 
 namespace App\Jobs\InboxPipeline;
 
+use App\Jobs\InboxPipeline\Concerns\RetriesWhenActorUnavailable;
 use App\Models\Profile;
 use App\Services\FollowersSyncService;
 use App\Util\ActivityPub\Helpers;
@@ -16,6 +17,7 @@ use Illuminate\Support\Facades\Cache;
 class InboxWorker implements ShouldQueue
 {
     use Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
+    use RetriesWhenActorUnavailable;
 
     protected $headers;
 
@@ -23,7 +25,9 @@ class InboxWorker implements ShouldQueue
 
     public $timeout = 300;
 
-    public $tries = 1;
+    // One attempt plus the retries in RetriesWhenActorUnavailable. Exceptions
+    // still fail the job immediately because of $maxExceptions below.
+    public $tries = 4;
 
     public $maxExceptions = 1;
 
@@ -70,6 +74,8 @@ class InboxWorker implements ShouldQueue
 
             return;
         }
+
+        $this->retryLaterIfActorUnavailable();
     }
 
     protected function verifySignature($headers, $payload)
@@ -141,6 +147,8 @@ class InboxWorker implements ShouldQueue
             $signer = Helpers::profileFirstOrNew($claimedActor);
         }
         if (! $signer) {
+            $this->markActorUnavailable($claimedActor);
+
             return false;
         }
 

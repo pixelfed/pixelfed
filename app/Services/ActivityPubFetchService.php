@@ -19,17 +19,62 @@ class ActivityPubFetchService
 
     private const MAX_RESPONSE_SIZE = 2 * 1024 * 1024;
 
+    /**
+     * Statuses worth another attempt later. Everything else in the 4xx
+     * range (401, 403, 404, 410...) is the remote telling us no.
+     */
+    private const array TRANSIENT_STATUSES = [408, 425, 429];
+
+    /**
+     * Whether the most recent failed fetch in this process looked temporary
+     * (timeout, connection error, DNS, 5xx, 429) rather than permanent.
+     * Null when the last fetch did not fail.
+     */
+    private static ?bool $lastFailureTransient = null;
+
+    /**
+     * True when the fetch that just returned nothing failed in a way that
+     * is likely to work if tried again later. Only meaningful right after
+     * a call to get() or fetchRequest() came back empty.
+     */
+    public static function lastFailureWasTransient(): bool
+    {
+        return self::$lastFailureTransient === true;
+    }
+
+    private static function isTransientStatus(int $status): bool
+    {
+        return $status >= 500 || in_array($status, self::TRANSIENT_STATUSES, true);
+    }
+
+    /**
+     * Record why a fetch failed. Always returns null so call sites can
+     * `return self::failed(...)`.
+     */
+    private static function failed(bool $transient): null
+    {
+        self::$lastFailureTransient = $transient;
+
+        return null;
+    }
+
     public static function get($url, $validateUrl = true)
     {
+        self::$lastFailureTransient = null;
+
         $url = Helpers::validateUrl($url);
 
         if (! $url) {
+            self::failed(false);
+
             return false;
         }
 
         $host = parse_url($url, PHP_URL_HOST);
 
         if (! $host) {
+            self::failed(false);
+
             return false;
         }
 
@@ -49,26 +94,30 @@ class ActivityPubFetchService
 
     public static function fetchRequest($url, $returnJsonFormat = false)
     {
+        self::$lastFailureTransient = null;
+
         $currentUrl = $url;
 
         for ($redirects = 0; $redirects <= self::MAX_REDIRECTS; $redirects++) {
             $currentUrl = Helpers::validateUrl($currentUrl);
 
             if (! $currentUrl) {
-                return;
+                return self::failed(false);
             }
 
             $host = parse_url($currentUrl, PHP_URL_HOST);
             $port = parse_url($currentUrl, PHP_URL_PORT) ?: 443;
 
             if (! $host) {
-                return;
+                return self::failed(false);
             }
 
             $ips = Helpers::resolvePublicIps($host);
 
             if ($ips === []) {
-                return;
+                // A host that just delivered to us but does not resolve is
+                // far more likely a DNS blip than a dead domain.
+                return self::failed(true);
             }
 
             $headers = self::signedHeaders($currentUrl);
@@ -109,25 +158,30 @@ class ActivityPubFetchService
                     ->connectTimeout(5)
                     ->retry(2, 250)
                     ->get($currentUrl);
-            } catch (RequestException|ConnectionException|\Throwable $e) {
-                return;
+            } catch (RequestException $e) {
+                // retry() throws once its attempts are used up
+                return self::failed(self::isTransientStatus($e->response->status()));
+            } catch (ConnectionException $e) {
+                return self::failed(true);
+            } catch (\Throwable $e) {
+                return self::failed(false);
             }
 
             if (in_array($res->status(), [301, 302, 303, 307, 308], true)) {
                 if ($redirects >= self::MAX_REDIRECTS) {
-                    return;
+                    return self::failed(false);
                 }
 
                 $location = $res->header('Location');
 
                 if (! $location) {
-                    return;
+                    return self::failed(false);
                 }
 
                 $nextUrl = self::resolveRedirect($currentUrl, $location);
 
                 if (! $nextUrl) {
-                    return;
+                    return self::failed(false);
                 }
 
                 $currentUrl = $nextUrl;
@@ -136,11 +190,11 @@ class ActivityPubFetchService
             }
 
             if (! $res->ok()) {
-                return;
+                return self::failed(self::isTransientStatus($res->status()));
             }
 
             if (! self::hasValidContentType($res)) {
-                return;
+                return self::failed(false);
             }
 
             $body = $res->body();
@@ -149,7 +203,7 @@ class ActivityPubFetchService
                 $body === '' ||
                 strlen($body) > self::MAX_RESPONSE_SIZE
             ) {
-                return;
+                return self::failed(false);
             }
 
             if (! $returnJsonFormat) {
@@ -164,7 +218,7 @@ class ActivityPubFetchService
                     JSON_THROW_ON_ERROR
                 );
             } catch (\JsonException) {
-                return;
+                return self::failed(false);
             }
         }
 

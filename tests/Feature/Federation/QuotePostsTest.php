@@ -1,6 +1,6 @@
 <?php
 
-use App\Jobs\QuotePipeline\RevokeQuoteAuthorizationPipeline;
+use App\Jobs\QuotePipeline\DeliverQuoteActivityPipeline;
 use App\Models\Profile;
 use App\Models\QuoteAuthorization;
 use App\Models\Status;
@@ -9,8 +9,11 @@ use App\Models\UserFilter;
 use App\Services\QuoteService;
 use App\Transformer\ActivityPub\Verb\CreateNote;
 use App\Transformer\ActivityPub\Verb\Note;
+use App\Util\ActivityPub\Helpers;
 use App\Util\ActivityPub\Inbox;
 use Illuminate\Foundation\Testing\LazilyRefreshDatabase;
+use Illuminate\Http\Client\ConnectionException;
+use Illuminate\Http\Client\Factory;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Http;
@@ -83,7 +86,11 @@ function quoteSeedHosts(array $hosts = ['remote.example', 'other.example']): voi
     $hosts[] = config('pixelfed.domain.app');
 
     foreach ($hosts as $host) {
-        Cache::put('helpers:url:public-ips:'.hash('xxh128', $host), ['203.0.113.40'], 3600);
+        Cache::put(
+            'helpers:url:public-ips:v2:'.hash('xxh128', $host),
+            ['state' => Helpers::URL_OK, 'ips' => ['203.0.113.40']],
+            3600
+        );
     }
 
     Cache::put('instances:banned:domains', [], 1209600);
@@ -131,14 +138,21 @@ function quoteDeliver(Profile $actor, array $payload, ?Profile $signer = null): 
     quoteInProduction(fn () => (new Inbox($headers, null, $payload))->handle());
 }
 
+/**
+ * Activities handed to the delivery job, in order. Accept, Reject and Delete
+ * are all delivered from DeliverQuoteActivityPipeline.
+ */
 function quoteSentActivities(): array
 {
-    return collect(Http::recorded())
-        ->filter(fn ($pair) => $pair[0]->method() === 'POST')
-        ->map(fn ($pair) => json_decode($pair[0]->body(), true))
-        ->filter()
+    return Queue::pushed(DeliverQuoteActivityPipeline::class)
+        ->map(fn (DeliverQuoteActivityPipeline $job) => $job->activity())
         ->values()
         ->all();
+}
+
+function quoteSentOfType(string $type): array
+{
+    return array_values(array_filter(quoteSentActivities(), fn ($activity) => $activity['type'] === $type));
 }
 
 function quoteNoteObject(Status $status): array
@@ -291,7 +305,13 @@ describe('QuoteRequest', function () {
             ->and($accept['object']['object'])->toBe($status->url())
             ->and($accept['object']['instrument'])->toBe($payload['instrument']);
 
-        Http::assertSent(fn ($request) => $request->url() === 'https://remote.example/inbox');
+        $job = Queue::pushed(DeliverQuoteActivityPipeline::class)->first();
+
+        quoteInProduction(fn () => $job->handle());
+
+        Http::assertSent(fn ($request) => $request->method() === 'POST'
+            && $request->url() === 'https://remote.example/inbox'
+            && json_decode($request->body(), true)['type'] === 'Accept');
     });
 
     it('rejects when the account policy is nobody', function () {
@@ -536,10 +556,73 @@ describe('QuoteRequest', function () {
         QuoteService::revoke(QuoteAuthorization::first());
         quoteDeliver($bob, quoteRequestPayload($bob, $status));
 
-        $sent = quoteSentActivities();
-
-        expect($sent[1]['type'])->toBe('Reject')
+        expect(array_column(quoteSentActivities(), 'type'))->toBe(['Accept', 'Delete', 'Reject'])
             ->and(QuoteAuthorization::approved()->count())->toBe(0);
+    });
+});
+
+describe('delivery', function () {
+    function quoteDeliveryJob(): DeliverQuoteActivityPipeline
+    {
+        $user = quoteLocalUser();
+        $status = quoteLocalStatus($user->profile);
+        $bob = quoteRemoteProfile();
+        quoteSeedHosts();
+
+        $auth = QuoteService::authorize($status, $bob, $bob->remote_url.'/statuses/1');
+
+        return (new DeliverQuoteActivityPipeline(
+            $user->profile->id,
+            $bob->id,
+            QuoteService::acceptActivity($auth, $bob->remote_url.'/statuses/1/quote')
+        ))->withFakeQueueInteractions();
+    }
+
+    it('is done after a 2xx', function () {
+        $job = quoteDeliveryJob();
+        Http::swap(new Factory);
+        Http::fake(['*' => Http::response('', 202)]);
+
+        quoteInProduction(fn () => $job->handle());
+
+        $job->assertNotReleased();
+        Http::assertSentCount(1);
+    });
+
+    it('tries again later when the remote is struggling', function (mixed $failure) {
+        $job = quoteDeliveryJob();
+
+        Http::swap(new Factory);
+        Http::fake(['*' => function () use ($failure) {
+            if ($failure === 'connection') {
+                throw new ConnectionException('timed out');
+            }
+
+            return Http::response('', $failure);
+        }]);
+
+        quoteInProduction(fn () => $job->handle());
+
+        $job->assertReleased(delay: 30);
+    })->with([
+        '500' => [500],
+        '503' => [503],
+        '429' => [429],
+        'connection error' => ['connection'],
+    ]);
+
+    it('gives up when the remote refuses', function (int $status) {
+        $job = quoteDeliveryJob();
+        Http::swap(new Factory);
+        Http::fake(['*' => Http::response('', $status)]);
+
+        quoteInProduction(fn () => $job->handle());
+
+        $job->assertNotReleased();
+    })->with([400, 401, 403, 404, 410]);
+
+    it('has one more try than it has delays', function () {
+        expect(quoteDeliveryJob()->tries)->toBe(count(DeliverQuoteActivityPipeline::RETRY_DELAYS) + 1);
     });
 });
 
@@ -596,11 +679,9 @@ describe('revocation', function () {
 
         QuoteService::revoke($auth);
 
-        Queue::assertPushed(RevokeQuoteAuthorizationPipeline::class, 1);
+        expect(quoteSentOfType('Delete'))->toHaveCount(1);
 
-        quoteInProduction(fn () => (new RevokeQuoteAuthorizationPipeline($auth->id))->handle());
-
-        $delete = quoteSentActivities()[0];
+        $delete = quoteSentOfType('Delete')[0];
 
         expect($delete['type'])->toBe('Delete')
             ->and($delete['actor'])->toBe($user->profile->permalink())
@@ -625,7 +706,7 @@ describe('revocation', function () {
         expect(QuoteAuthorization::approved()->count())->toBe(1)
             ->and((int) QuoteAuthorization::approved()->first()->actor_id)->toBe((int) $carol->id);
 
-        Queue::assertPushed(RevokeQuoteAuthorizationPipeline::class, 2);
+        expect(quoteSentOfType('Delete'))->toHaveCount(2);
     });
 
     it('revokes every stamp issued to a domain when the author blocks it', function () {
@@ -681,7 +762,7 @@ describe('settings', function () {
 
         expect($auth->fresh()->isRevoked())->toBeTrue();
 
-        Queue::assertPushed(RevokeQuoteAuthorizationPipeline::class, 1);
+        expect(quoteSentOfType('Delete'))->toHaveCount(1);
     });
 
     it('does not let someone revoke a stamp that is not theirs', function () {
