@@ -6613,16 +6613,16 @@
         },
         {
             "name": "resend/resend-php",
-            "version": "v1.14.0",
+            "version": "v1.15.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/resend/resend-php.git",
-                "reference": "9751fa31d099cf6a4eb172535e826636b87c932c"
+                "reference": "048d4d481ca6c29c6542f4a48d49f01bd5196d6b"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/resend/resend-php/zipball/9751fa31d099cf6a4eb172535e826636b87c932c",
-                "reference": "9751fa31d099cf6a4eb172535e826636b87c932c",
+                "url": "https://api.github.com/repos/resend/resend-php/zipball/048d4d481ca6c29c6542f4a48d49f01bd5196d6b",
+                "reference": "048d4d481ca6c29c6542f4a48d49f01bd5196d6b",
                 "shasum": ""
             },
             "require": {
@@ -6666,9 +6666,9 @@
             ],
             "support": {
                 "issues": "https://github.com/resend/resend-php/issues",
-                "source": "https://github.com/resend/resend-php/tree/v1.14.0"
+                "source": "https://github.com/resend/resend-php/tree/v1.15.0"
             },
-            "time": "2026-09-09T19:48:04+00:00"
+            "time": "2026-09-11T19:42:51+00:00"
         },
         {
             "name": "spatie/db-dumper",
