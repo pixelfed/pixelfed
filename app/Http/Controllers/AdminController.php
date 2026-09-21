@@ -56,7 +56,6 @@ class AdminController extends Controller
     public function __construct()
     {
         $this->middleware('admin');
-        $this->middleware('dangerzone');
     }
 
     public function home(): View
