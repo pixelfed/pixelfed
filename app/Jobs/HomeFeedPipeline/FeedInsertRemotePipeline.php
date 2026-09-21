@@ -8,6 +8,7 @@ use App\Models\UserFilter;
 use App\Services\FollowerService;
 use App\Services\HomeTimelineService;
 use App\Services\StatusService;
+use DateTimeInterface;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldBeUniqueUntilProcessing;
 use Illuminate\Contracts\Queue\ShouldQueue;
@@ -15,6 +16,7 @@ use Illuminate\Foundation\Bus\Dispatchable;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\Middleware\WithoutOverlapping;
 use Illuminate\Queue\SerializesModels;
+use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\Log;
 use Throwable;
 
@@ -109,7 +111,15 @@ class FeedInsertRemotePipeline implements ShouldBeUniqueUntilProcessing, ShouldQ
             return;
         }
 
-        if (! in_array($status['pf_type'], ['photo', 'photo:album', 'video', 'video:album', 'photo:video:album'])) {
+        $type = $status['pf_type'] ?? null;
+
+        if (! in_array($type, [
+            'photo',
+            'photo:album',
+            'video',
+            'video:album',
+            'photo:video:album',
+        ], true)) {
             return;
         }
 
@@ -123,7 +133,13 @@ class FeedInsertRemotePipeline implements ShouldBeUniqueUntilProcessing, ShouldQ
             return;
         }
 
-        $domain = strtolower(parse_url($status['url'], PHP_URL_HOST));
+        $domain = parse_url($status['url'], PHP_URL_HOST);
+
+        if (! is_string($domain) || $domain === '') {
+            return;
+        }
+
+        $domain = strtolower($domain);
         $skipIds = [];
 
         if (strtolower(config('pixelfed.domain.app')) !== $domain) {
@@ -149,14 +165,30 @@ class FeedInsertRemotePipeline implements ShouldBeUniqueUntilProcessing, ShouldQ
         }
     }
 
-    public static function isTooOld(string|\DateTimeInterface|null $createdAt): bool
+    public static function isTooOld(mixed $createdAt): bool
     {
         if ($createdAt === null || $createdAt === '') {
             return true;
         }
 
+        if (is_array($createdAt)) {
+            $createdAt = $createdAt['date']
+                ?? $createdAt['created_at']
+                ?? null;
+        }
+
+        if ($createdAt === null || $createdAt === '') {
+            return true;
+        }
+
         try {
-            $published = now()->parse($createdAt);
+            if ($createdAt instanceof DateTimeInterface) {
+                $published = Carbon::instance($createdAt);
+            } elseif (is_string($createdAt)) {
+                $published = Carbon::parse($createdAt);
+            } else {
+                return true;
+            }
         } catch (Throwable) {
             return true;
         }
