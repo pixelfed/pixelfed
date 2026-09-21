@@ -172,11 +172,13 @@ class DirectMessageHandler
             return false;
         }
 
-        if ((int) $message->profile_id === (int) $actor->id) {
-            $this->service->deleteMessage($message, false);
+        if ((int) $message->profile_id !== (int) $actor->id) {
+            return true;
         }
 
-        return true;
+        $this->service->deleteMessage($message, false);
+
+        return $message->status_id === null;
     }
 
     /**
