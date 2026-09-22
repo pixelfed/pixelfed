@@ -99,9 +99,6 @@ class RestrictedNames
         'mix-manifest.json',
         'robots.txt',
 
-        // Laravel Horizon
-        'horizon',
-
         // Reserved routes
         'a',
         'app',
