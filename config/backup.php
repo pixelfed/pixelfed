@@ -77,8 +77,23 @@ return [
                 ],
             ],
 
+            'mariadb' => [
+                'dump' => [
+                    'useSingleTransaction' => true,
+                    'useQuick' => true,
+                ],
+            ],
+
+            'pgsql' => [
+                'dump' => [
+                    'useSingleTransaction' => true,
+                    'useQuick' => true,
+                ],
+            ],
+
+            // Hardcoding 'mysql' breaks backup:run on non-MySQL installs
             'databases' => [
-                'mysql',
+                env('DB_CONNECTION', 'mysql'),
             ],
         ],
 

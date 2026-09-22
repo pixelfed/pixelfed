@@ -90,6 +90,20 @@ class StatusService
             unset($res['_pid']);
         }
 
+        // A client that resolves reblogs declares include_reblogs; one that
+        // only reads the top level renders a boost as an empty card, so give it
+        // the shared status there instead.
+        if (! $mastodonMode
+            && request()->has('_pe')
+            && ! request()->filled('include_reblogs')
+            && ! empty($res['reblog'])) {
+            foreach (['account', 'content', 'content_text', 'emojis', 'media_attachments'] as $key) {
+                if (array_key_exists($key, $res['reblog'])) {
+                    $res[$key] = $res['reblog'][$key];
+                }
+            }
+        }
+
         return $res;
     }
 
@@ -113,6 +127,14 @@ class StatusService
 
         if (config('exp.emc') == false) {
             return $status;
+        }
+
+        // The shared status nests under `reblog` and needs Mastodon field names too
+        if (! empty($status['reblog'])) {
+            $status['reblog']['replies_count'] = $status['reblog']['reply_count'] ?? 0;
+            $status['reblog']['favourited'] = false;
+            $status['reblog']['muted'] = false;
+            $status['reblog']['reblogged'] = false;
         }
 
         unset(
@@ -153,6 +175,7 @@ class StatusService
             MediaService::getMastodon($status['id'])
         );
 
+        $status['favourited'] = false;
         $status['muted'] = false;
         $status['reblogged'] = false;
 

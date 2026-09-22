@@ -340,7 +340,10 @@ class SearchController extends Controller
             if ($media) {
                 $url = $media->remote_url;
             }
-            $content = $item->caption ? Autolink::create()->autolink($item->caption) : null;
+            // Remote posts keep the HTML they arrived with, so the link targets survive
+            $content = $item->local || ! $item->rendered
+                ? ($item->caption ? Autolink::create()->autolink($item->caption) : null)
+                : $item->rendered;
             $this->tokens['posts'] = [[
                 'count' => 0,
                 'url' => "/i/web/post/_/$item->profile_id/$item->id",
@@ -364,7 +367,10 @@ class SearchController extends Controller
             if ($media) {
                 $url = $media->remote_url;
             }
-            $content = $item->caption ? Autolink::create()->autolink($item->caption) : null;
+            // Remote posts keep the HTML they arrived with, so the link targets survive
+            $content = $item->local || ! $item->rendered
+                ? ($item->caption ? Autolink::create()->autolink($item->caption) : null)
+                : $item->rendered;
             $this->tokens['posts'] = [[
                 'count' => 0,
                 'url' => "/i/web/post/_/$item->profile_id/$item->id",
