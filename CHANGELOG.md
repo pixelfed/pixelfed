@@ -4,7 +4,18 @@
 
 -   in progress
 
-## [v0.14.2 (2026-09-21)](https://github.com/pixelfed/pixelfed/compare/v0.14.1...dev)
+## [v0.14.3 (2026-09-22)](https://github.com/pixelfed/pixelfed/compare/v0.14.3...dev)
+
+## What's Changed
+* Fix missing replies_count on reblogs in Mastodon mode by @lilithmooncohen in https://github.com/pixelfed/pixelfed/pull/7417
+* Honor the photo_reblogs_only setting in the home timeline by @lilithmooncohen in https://github.com/pixelfed/pixelfed/pull/7418
+* Render boosts for clients that only read the top level by @lilithmooncohen in https://github.com/pixelfed/pixelfed/pull/7419
+* Fix PostgreSQL backups and statuses nullability by @lilithmooncohen in https://github.com/pixelfed/pixelfed/pull/7420
+* Fix the vips image driver in web SAPIs by @lilithmooncohen in https://github.com/pixelfed/pixelfed/pull/7422
+* Preserve the delivered HTML for remote status content by @lilithmooncohen in https://github.com/pixelfed/pixelfed/pull/7424
+* Return favourited as a boolean in Mastodon mode by @lilithmooncohen in https://github.com/pixelfed/pixelfed/pull/7425
+
+## [v0.14.2 (2026-09-21)](https://github.com/pixelfed/pixelfed/compare/v0.14.2...dev)
 
 -   Fix ActivityPub url resolution ([0e0de62dd](https://github.com/pixelfed/pixelfed/commit/0e0de62dd9767f8da8a76fa0ff4e5e2be5981744))
 -   Update Models ([a031ecef0](https://github.com/pixelfed/pixelfed/commit/a031ecef0cacdf03dee084b30ff5ea052d8691dc))
