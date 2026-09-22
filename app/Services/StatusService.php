@@ -115,6 +115,14 @@ class StatusService
             return $status;
         }
 
+        // The shared status nests under `reblog` and needs Mastodon field names too
+        if (! empty($status['reblog'])) {
+            $status['reblog']['replies_count'] = $status['reblog']['reply_count'] ?? 0;
+            $status['reblog']['favourited'] = false;
+            $status['reblog']['muted'] = false;
+            $status['reblog']['reblogged'] = false;
+        }
+
         unset(
             $status['_v'],
             $status['comments_disabled'],
