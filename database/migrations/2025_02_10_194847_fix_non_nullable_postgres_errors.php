@@ -1,7 +1,6 @@
 <?php
 
 use Illuminate\Database\Migrations\Migration;
-use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
 return new class extends Migration
@@ -17,6 +16,10 @@ return new class extends Migration
     public function up(): void
     {
         Schema::table('statuses', function ($table) {
+            if (config('database.default') !== 'postgres') {
+                return;
+            }
+
             $table->text('caption')->nullable()->change();
             $table->text('rendered')->nullable()->change();
         });
