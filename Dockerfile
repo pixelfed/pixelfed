@@ -75,6 +75,102 @@ RUN ./configure \
     make -j"$(nproc)"; \
     make install
 
+# libvips builder — compile from source for a current release with full
+# AVIF/HEIC support.
+FROM serversideup/php:8.5-frankenphp AS vips
+
+# libvips version to compile, change with [--build-arg VIPS_VERSION="8.18.6"]
+ARG VIPS_VERSION=8.18.6
+ARG VIPS_URL=https://github.com/libvips/libvips/releases/download
+# sha256 of vips-${VIPS_VERSION}.tar.xz (from the release .sha256sum asset)
+ARG VIPS_SHA256=3c41e1d5458081bfa4a5bc54e116c46259c75c6760a18027764555632b9dda3e
+
+USER root
+SHELL ["/bin/bash", "-o", "pipefail", "-o", "errexit", "-c"]
+
+RUN apt-get update && apt-get install -y --no-install-recommends \
+    build-essential \
+    ca-certificates \
+    meson \
+    ninja-build \
+    pkg-config \
+    wget \
+    xz-utils \
+    libglib2.0-dev \
+    libexpat1-dev \
+    libjpeg-dev \
+    libpng-dev \
+    libwebp-dev \
+    libexif-dev \
+    liblcms2-dev \
+    libheif-dev \
+    libaom-dev \
+    libdav1d-dev \
+    libjxl-dev \
+    liborc-0.4-dev \
+    && rm -rf /var/lib/apt/lists/*
+
+WORKDIR /usr/local/vips/src
+RUN wget -q "${VIPS_URL}/v${VIPS_VERSION}/vips-${VIPS_VERSION}.tar.xz" \
+    && echo "${VIPS_SHA256}  vips-${VIPS_VERSION}.tar.xz" | sha256sum -c - \
+    && tar xf "vips-${VIPS_VERSION}.tar.xz"
+
+WORKDIR /usr/local/vips/src/vips-${VIPS_VERSION}
+# Pixelfed only handles common web formats (jpeg/png/gif/webp) plus modern
+# avif/heic and jpeg-xl. We enable exactly those delegates and explicitly
+# disable every other loader (tiff, pdf, svg, openexr, fits, magick, ...) to
+# keep the library small and reduce the attack surface for untrusted uploads.
+#   - gif     : load uses libvips' bundled libnsgif, save uses bundled cgif,
+#               so no giflib dev package is required.
+#   - heif    : AVIF/HEIC read+write via distro libheif -> aom/dav1d.
+#   - jpeg-xl : JXL read+write via distro libjxl.
+#   -Ddebug   : off, and we strip for a lean runtime library.
+RUN meson setup build \
+        --prefix=/usr/local/vips \
+        --libdir=lib \
+        --buildtype=release \
+        -Ddeprecated=false \
+        -Dexamples=false \
+        -Dcplusplus=false \
+        -Djpeg=enabled \
+        -Dpng=enabled \
+        -Dwebp=enabled \
+        -Dheif=enabled \
+        -Djpeg-xl=enabled \
+        -Dlcms=enabled \
+        -Dexif=enabled \
+        -Dtiff=disabled \
+        -Dopenjpeg=disabled \
+        -Dpdfium=disabled \
+        -Dpoppler=disabled \
+        -Drsvg=disabled \
+        -Dopenexr=disabled \
+        -Dopenslide=disabled \
+        -Dmatio=disabled \
+        -Dnifti=disabled \
+        -Dcfitsio=disabled \
+        -Dmagick=disabled \
+        -Draw=disabled \
+        -Duhdr=disabled \
+        -Dfftw=disabled \
+        -Dfontconfig=disabled \
+        -Dpangocairo=disabled \
+        -Darchive=disabled \
+        -Dppm=false \
+        -Danalyze=false \
+        -Dradiance=false \
+    && meson compile -C build \
+    && meson install -C build \
+    && strip --strip-unneeded /usr/local/vips/lib/libvips.so.* || true
+
+# Confirm the formats we care about made it into the build. Register the lib
+# with the loader first so the vips CLI can dlopen libvips.so.42 and its
+# delegates. Fails the build if AVIF/HEIC or JXL support is missing.
+RUN echo "/usr/local/vips/lib" > /etc/ld.so.conf.d/vips.conf && ldconfig \
+    && /usr/local/vips/bin/vips --vips-version \
+    && /usr/local/vips/bin/vips list | grep -i heif \
+    && /usr/local/vips/bin/vips list | grep -i jxl
+
 # PHP base image — FrankenPHP (includes Caddy built-in)
 FROM serversideup/php:8.5-frankenphp
 
@@ -95,11 +191,8 @@ RUN apt-get update && apt-get install -y \
     optipng \
     pngquant \
     gifsicle \
-    libvips42 \
     git \
     curl \
-    libaom-dev \
-    libdav1d-dev \
     libmp3lame0 \
     libnuma1 \
     libopus0 \
@@ -110,7 +203,27 @@ RUN apt-get update && apt-get install -y \
     libwebpmux3 \
     libx264-dev \
     libx265-dev \
+    libglib2.0-0t64 \
+    libexpat1 \
+    libjpeg62-turbo \
+    libpng16-16t64 \
+    libexif12 \
+    liblcms2-2 \
+    liborc-0.4-0t64 \
+    libheif1 \
+    libaom3 \
+    libdav1d7 \
+    libjxl0.11 \
+    libhwy1t64 \
     && rm -rf /var/lib/apt/lists/*
+
+# Bring in the libvips we compiled (shared lib + headers + pkg-config + tools),
+# then refresh the linker cache so the PHP vips extension links against it.
+COPY --from=vips /usr/local/vips /usr/local/vips
+RUN echo "/usr/local/vips/lib" > /etc/ld.so.conf.d/vips.conf && ldconfig
+
+ENV PKG_CONFIG_PATH=/usr/local/vips/lib/pkgconfig \
+    PATH=/usr/local/vips/bin:$PATH
 
 RUN install-php-extensions \
     bcmath \
@@ -124,9 +237,12 @@ RUN install-php-extensions \
     zip \
     pdo_mysql \
     redis \
-    vips \
     ffi
 
+# Pixelfed talks to libvips through jcupitt/vips (via intervention/image-driver-vips),
+# which is an FFI binding — it dlopens libvips.so at runtime and does NOT need the
+# ext-vips C extension. So we only enable ffi here. (The old php-vips C extension
+# also fails to compile against libvips 8.18 due to removed public symbols.)
 RUN tee /usr/local/etc/php/conf.d/zz-pixelfed.ini > /dev/null <<'EOF'
 ffi.enable=true
 EOF
@@ -139,6 +255,13 @@ RUN ldconfig \
     && /usr/bin/ffmpeg -version \
     && /usr/bin/ffprobe -version
 
+# Sanity-check the compiled libvips and that PHP FFI is enabled (php-vips
+# needs FFI, not the ext-vips extension). Confirm avif + jxl are available.
+RUN php -r 'exit(ini_get("ffi.enable") ? 0 : 1);' \
+    && vips --vips-version \
+    && vips list | grep -i heif \
+    && vips list | grep -i jxl
+
 COPY --chown=www-data:www-data . /var/www/html
 
 RUN chown -R www-data:www-data /var/www/html \
@@ -147,6 +270,16 @@ RUN chown -R www-data:www-data /var/www/html \
     && chmod -R ug+rwx /var/www/html/storage /var/www/html/bootstrap/cache
 
 RUN composer install --no-ansi --no-interaction --optimize-autoloader
+
+# End-to-end check: php-vips (FFI) opens our compiled libvips and can round-trip
+# an image through the AVIF and JXL savers. Fails the build if wiring is broken.
+RUN php -r '\
+        require "vendor/autoload.php"; \
+        $im = Jcupitt\Vips\Image::black(16, 16); \
+        $im->writeToBuffer(".avif"); \
+        $im->writeToBuffer(".jxl"); \
+        echo "php-vips FFI OK: libvips " . Jcupitt\Vips\Config::version() . "\n"; \
+    '
 
 USER www-data
 
