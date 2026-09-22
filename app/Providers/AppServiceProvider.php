@@ -112,7 +112,9 @@ class AppServiceProvider extends ServiceProvider
         Event::listen(Failed::class, LogFailedLogin::class);
 
         Gate::define('viewPulse', function (User $user) {
-            return $user->is_admin === 1;
+            // is_admin is cast to bool on the User model, so a strict `=== 1`
+            // never matches. Use a boolean check, consistent with viewHorizon.
+            return (bool) $user->is_admin === true;
         });
 
         if (config('pulse.enabled', false)) {
