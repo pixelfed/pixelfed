@@ -30,51 +30,17 @@ $id = Str::random(14);
 
 @push('scripts')
 <script>
+    const minAge = {{ (int) config('pixelfed.min_registration_age', 16) }};
+
     function onSubmit() {
         @if ($errors->any())
         document.getElementById('{{$id}}').submit();
         return;
         @endif
-        swal({
-            text: "Please select the region you are located in",
-            icon: "info",
-            buttons: {
-                cancel: false,
-                usa: {
-                    text: "United States",
-                    className: "swal-button--cancel",
-                    value: "usa"
-                },
-                uk: {
-                    text: "UK",
-                    className: "swal-button--cancel",
-                    value: "uk"
-                },
-                eu: {
-                    text: "EU",
-                    className: "swal-button--cancel",
-                    value: "eu"
-                },
-                other: {
-                    text: "Other",
-                    className: "swal-button--cancel",
-                    value: "other"
-                }
-            },
-            dangerMode: false,
-        }).then((region) => {
-            handleRegion(region);
-        })
+        promptDateOfBirth();
     }
 
-    function handleRegion(region) {
-        if(!region) {
-            return;
-        }
-        let minAge = 16;
-        if(['usa', 'uk', 'other'].includes(region)) {
-            minAge = 13;
-        }
+    function promptDateOfBirth() {
         swal({
             title: "Enter Your Date of Birth",
             text: "We require your birthdate solely to confirm that you meet our age requirement.\n\n Rest assured, this information is not stored or used for any other purpose.",
@@ -126,7 +92,7 @@ $id = Str::random(14);
                 } else {
                     swal({
                         title: "Ineligible to join",
-                        text: `Sorry, you must be at least ${minAge} years old to join our service according to the laws of your country or region.`,
+                        text: `Sorry, you must be at least ${minAge} years old to join this server.`,
                         icon: "error",
                         buttons: {
                             cancel: "I understand"
