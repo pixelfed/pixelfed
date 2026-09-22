@@ -4,6 +4,14 @@ FROM serversideup/php:8.5-frankenphp AS ffmpeg
 ARG FFMPEG_VERSION=9.0.1
 ARG FFMPEG_URL=https://ffmpeg.org/releases
 
+# x264 has no numbered releases; it is built from its rolling `stable` branch.
+ARG X264_URL=https://code.videolan.org/videolan/x264.git
+ARG X264_BRANCH=stable
+
+# x265 version to compile, change with [--build-arg X265_VERSION="4.2"]
+ARG X265_VERSION=4.2
+ARG X265_URL=https://bitbucket.org/multicoreware/x265_git/get
+
 USER root
 SHELL ["/bin/bash", "-o", "pipefail", "-o", "errexit", "-c"]
 
@@ -30,12 +38,34 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     libvorbis-dev \
     libvpx-dev \
     libwebp-dev \
-    libx264-dev \
-    libx265-dev \
     zlib1g-dev \
     liblzma-dev \
     libbz2-dev \
     && rm -rf /var/lib/apt/lists/*
+
+WORKDIR /usr/local/x264/src
+RUN git clone --depth 1 --branch ${X264_BRANCH} ${X264_URL} . \
+    && ./configure \
+    --prefix=/usr/local \
+    --enable-shared \
+    --enable-pic \
+    --disable-cli \
+    && make -j"$(nproc)" \
+    && make install \
+    && ldconfig
+
+WORKDIR /usr/local/x265/src
+ADD ${X265_URL}/${X265_VERSION}.tar.gz /usr/local/x265/src/x265.tar.gz
+RUN tar xf x265.tar.gz --strip-components=1
+WORKDIR /usr/local/x265/src/build/linux
+RUN cmake -G "Unix Makefiles" \
+    -DCMAKE_INSTALL_PREFIX=/usr/local \
+    -DENABLE_SHARED=ON \
+    -DENABLE_CLI=OFF \
+    ../../source \
+    && make -j"$(nproc)" \
+    && make install \
+    && ldconfig
 
 WORKDIR /usr/local/ffmpeg/src
 ADD ${FFMPEG_URL}/ffmpeg-${FFMPEG_VERSION}.tar.xz /usr/local/ffmpeg/src/
@@ -43,11 +73,12 @@ RUN tar xf ffmpeg-${FFMPEG_VERSION}.tar.xz
 
 WORKDIR /usr/local/ffmpeg/src/ffmpeg-${FFMPEG_VERSION}
 
-#   --toolchain=hardened : compiler hardening (stack protector, FORTIFY, RELRO)
-#                          for a tool that parses untrusted user-uploaded media.
-#   --enable-lto         : link-time optimization for a small runtime speedup.
+# --toolchain=hardened : compiler hardening (stack protector, FORTIFY, RELRO) for a tool that parses untrusted user-uploaded media.
+ENV PKG_CONFIG_PATH="/usr/local/lib/pkgconfig"
 RUN ./configure \
     --prefix=/usr/local/ffmpeg \
+    --extra-cflags="-I/usr/local/include" \
+    --extra-ldflags="-L/usr/local/lib" \
     --toolchain=hardened \
     --enable-lto \
     --disable-debug \
@@ -108,8 +139,6 @@ RUN apt-get update && apt-get install -y \
     libvpx-dev \
     libwebp7 \
     libwebpmux3 \
-    libx264-dev \
-    libx265-dev \
     && rm -rf /var/lib/apt/lists/*
 
 RUN install-php-extensions \
@@ -134,6 +163,8 @@ EOF
 COPY --from=ffmpeg /usr/local/ffmpeg/bin/ffmpeg /usr/bin/ffmpeg
 COPY --from=ffmpeg /usr/local/ffmpeg/bin/ffprobe /usr/bin/ffprobe
 COPY --from=ffmpeg /usr/local/ffmpeg/lib /usr/local/lib
+COPY --from=ffmpeg /usr/local/lib/libx264.so* /usr/local/lib/
+COPY --from=ffmpeg /usr/local/lib/libx265.so* /usr/local/lib/
 
 RUN ldconfig \
     && /usr/bin/ffmpeg -version \
