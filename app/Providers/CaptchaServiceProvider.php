@@ -3,6 +3,7 @@
 namespace App\Providers;
 
 use App\Services\Captcha\CaptchaManager;
+use Illuminate\Container\Container;
 use Illuminate\Support\Facades\Blade;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\ServiceProvider;
@@ -11,7 +12,12 @@ class CaptchaServiceProvider extends ServiceProvider
 {
     public function register(): void
     {
-        $this->app->singleton('captcha.manager', fn ($app): CaptchaManager => new CaptchaManager($app));
+        // Resolve the current container via Container::getInstance() rather than
+        // capturing the $app injected at boot time, so the manager never holds a
+        // stale container instance across requests under Octane.
+        $this->app->singleton('captcha.manager', function (): CaptchaManager {
+            return new CaptchaManager(Container::getInstance());
+        });
         $this->app->alias('captcha.manager', CaptchaManager::class);
     }
 
