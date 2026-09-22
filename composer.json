@@ -24,7 +24,7 @@
         "laravel/framework": "^13.0",
         "laravel/horizon": "^5.0",
         "laravel/passport": "^13.4.4",
-        "laravel/pulse": "^1.3",
+        "laravel/pulse": "^1.8",
         "laravel/sanctum": "^4.3",
         "laravel/tinker": "^3.0",
         "laravel/ui": "^4.2",

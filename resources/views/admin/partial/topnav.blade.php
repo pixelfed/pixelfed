@@ -67,7 +67,10 @@
 						<a class="dropdown-item font-weight-bold {{request()->is('*site-news*')?'active':''}}" href="/i/admin/site-news">Newsroom</a>
 						<a class="dropdown-item font-weight-bold {{request()->is('*profiles*')?'active':''}}" href="/i/admin/profiles">Profiles</a>
 						<div class="dropdown-divider"></div>
-						<a class="dropdown-item font-weight-bold" href="/horizon">Horizon</a>
+						<a class="dropdown-item font-weight-bold" href="/admin/horizon">Horizon</a>
+						@if(config('pulse.enabled'))
+						<a class="dropdown-item font-weight-bold" href="/{{ config('pulse.path', 'admin/pulse') }}">Pulse</a>
+						@endif
 					</div>
 				</li>
 			</ul>
