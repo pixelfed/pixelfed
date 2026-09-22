@@ -90,6 +90,20 @@ class StatusService
             unset($res['_pid']);
         }
 
+        // A client that resolves reblogs declares include_reblogs; one that
+        // only reads the top level renders a boost as an empty card, so give it
+        // the shared status there instead.
+        if (! $mastodonMode
+            && request()->has('_pe')
+            && ! request()->filled('include_reblogs')
+            && ! empty($res['reblog'])) {
+            foreach (['account', 'content', 'content_text', 'emojis', 'media_attachments'] as $key) {
+                if (array_key_exists($key, $res['reblog'])) {
+                    $res[$key] = $res['reblog'][$key];
+                }
+            }
+        }
+
         return $res;
     }
 
