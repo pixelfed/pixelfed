@@ -230,6 +230,7 @@ class AppServiceProvider extends ServiceProvider
     public function register()
     {
         Passport::ignoreRoutes();
+        Pulse::ignoreRoutes();
 
         $this->app->bind(UserOidcService::class, function () {
             return UserOidcService::build();

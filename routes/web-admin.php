@@ -5,6 +5,34 @@ use App\Http\Controllers\AdminController;
 use App\Http\Controllers\AdminCuratedRegisterController;
 use App\Http\Controllers\AdminShadowFilterController;
 use App\Http\Controllers\PageController;
+use Illuminate\Contracts\View\Factory;
+use Laravel\Horizon\Http\Controllers\HomeController as HorizonHomeController;
+use Laravel\Pulse\Pulse;
+
+// Laravel Pulse + Horizon dashboards, kept under `admin/*` so their routes can
+// never collide with the `{username}` profile catch-all in routes/web.php
+// (a username cannot contain a slash). This file loads before routes/web.php and
+// before Horizon's provider routes (see bootstrap/app.php), so these definitions
+// win on route-match order.
+//
+// Pulse: registered explicitly (with Pulse::ignoreRoutes() set in AppServiceProvider
+// so the package does not self-register at its default path).
+//
+// Horizon: the explicit base-path GET below is deliberately identical to Horizon's
+// own optional `{view?}` catch-all (same HomeController@index action, same 'horizon'
+// middleware group) which would otherwise serve this path. It is not required for
+// correctness; it exists only to make admin/horizon visible in Pixelfed's own route
+// files. All other Horizon subpaths (admin/horizon/dashboard, /api/*, assets) are
+// still served by Horizon itself.
+Route::domain(config('pixelfed.domain.app'))->middleware(['localization'])->group(function () {
+    Route::get(config('pulse.path', 'admin/pulse'), function (Pulse $pulse, Factory $view) {
+        return $view->make('pulse::dashboard');
+    })->middleware('pulse')->name('pulse');
+
+    Route::get(config('horizon.path'), [HorizonHomeController::class, 'index'])
+        ->middleware('horizon')
+        ->name('horizon.base');
+});
 
 Route::domain(config('pixelfed.domain.admin'))->prefix('i/admin')->middleware(['localization'])->group(function () {
     Route::redirect('/', '/dashboard');
