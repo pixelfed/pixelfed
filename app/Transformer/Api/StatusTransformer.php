@@ -24,7 +24,10 @@ class StatusTransformer extends Fractal\TransformerAbstract
         $pid = request()->user()->profile_id;
         $taggedPeople = MediaTagService::get($status->id);
         $poll = $status->type === 'poll' ? PollService::get($status->id, $pid) : null;
-        $content = $status->caption ? nl2br(Autolink::create()->autolink($status->caption)) : '';
+        // Remote posts keep the HTML they arrived with, so the link targets survive
+        $content = $status->local || ! $status->rendered
+            ? ($status->caption ? nl2br(Autolink::create()->autolink($status->caption)) : '')
+            : $status->rendered;
 
         return [
             '_v' => 1,
