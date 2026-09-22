@@ -3,11 +3,30 @@
 use App\Models\Media;
 use App\Models\Status;
 use App\Models\User;
+use App\Services\ConfigCacheService;
 use Illuminate\Foundation\Testing\LazilyRefreshDatabase;
+use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Config;
 use Illuminate\Support\Facades\Storage;
 
 uses(LazilyRefreshDatabase::class);
+
+/**
+ * Set pixelfed.cloud_storage deterministically for a test.
+ *
+ * pixelfed.cloud_storage is ENVCONFIG (env PF_ENABLE_CLOUD). With the master
+ * switch removed, config_cache() always memoizes the resolved value under its
+ * 12h cache key, so a bare Config::set() can be shadowed by a value another
+ * test in the same process already memoized. Per Requirement 9.4, drive the
+ * value through Config::set() + ConfigCacheService::put() and forget the
+ * memoized entry so the next config_cache() re-resolves it.
+ */
+function setCloudStorage(bool $enabled): void
+{
+    Config::set('pixelfed.cloud_storage', $enabled);
+    ConfigCacheService::put('pixelfed.cloud_storage', $enabled);
+    Cache::forget(ConfigCacheService::CACHE_KEY.'pixelfed.cloud_storage');
+}
 
 /*
 |--------------------------------------------------------------------------
@@ -117,7 +136,7 @@ describe('unstable:MediaMoveStorageCloudToLocal', function () {
     it('sets PF_ENABLE_CLOUD=false in .env and runtime when cloud is enabled', function () {
         // Start with cloud enabled.
         file_put_contents(app()->environmentFilePath(), "APP_KEY=base64:test\nPF_ENABLE_CLOUD=true\n");
-        Config::set('pixelfed.cloud_storage', true);
+        setCloudStorage(true);
         makeCloudMedia();
 
         $this->artisan('unstable:MediaMoveStorageCloudToLocal', ['--force' => true])
@@ -140,7 +159,7 @@ describe('admin:MediaMoveStorageLocalToCloud', function () {
 
     it('enables cloud storage before migrating (dry-run reports it)', function () {
         // cloud currently disabled (config_cache resolves falsy in tests).
-        Config::set('pixelfed.cloud_storage', false);
+        setCloudStorage(false);
 
         $this->artisan('admin:MediaMoveStorageLocalToCloud', ['--dry-run' => true])
             ->expectsOutputToContain('Cloud storage')
@@ -159,7 +178,7 @@ describe('admin:MediaMoveStorageLocalToCloud', function () {
         app()->useEnvironmentPath($emptyDir);
         expect(is_file(app()->environmentFilePath()))->toBeFalse();
 
-        Config::set('pixelfed.cloud_storage', false);
+        setCloudStorage(false);
 
         // Regression: previously threw
         // "file_get_contents(.env): Failed to open stream" and exited 1.
@@ -176,7 +195,7 @@ describe('admin:MediaMoveStorageLocalToCloud', function () {
         // stored hash describes the pre-optimization bytes. Verify must not
         // compare against it, otherwise every optimized image fails verify
         // (pixelfed#7203 follow-up: moved=0, failed=N).
-        Config::set('pixelfed.cloud_storage', true);
+        setCloudStorage(true);
         $media = makeLocalMediaWithStaleSha();
 
         $this->artisan('admin:MediaMoveStorageLocalToCloud', ['--force' => true])

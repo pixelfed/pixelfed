@@ -1,6 +1,11 @@
 <?php
 
+use App\Services\ConfigCacheService;
+use Illuminate\Foundation\Testing\LazilyRefreshDatabase;
 use Illuminate\Support\Facades\Cache;
+use Illuminate\Support\Facades\Config;
+
+uses(LazilyRefreshDatabase::class);
 
 /*
 |--------------------------------------------------------------------------
@@ -40,25 +45,39 @@ it('has the encryption key set', function () {
     expect(config('app.key'))->not->toBeNull()->not->toBeEmpty();
 });
 
-it('config_cache falls back to config when CC is disabled', function () {
-    config(['instance.enable_cc' => false]);
+it('config_cache resolves an ENVCONFIG key from db/config when its env var is absent', function () {
+    // instance.landing.show_directory is ENVCONFIG (env
+    // INSTANCE_LANDING_SHOW_DIRECTORY), which is absent under the test env — so
+    // config_cache() takes the DB-value-or-config-fallback path. Persisting via
+    // put() + clearing the memoized entry makes the read deterministic without any
+    // master switch (removed in the config-cache refactor).
+    $key = 'instance.landing.show_directory';
 
-    config(['pixelfed.open_registration' => true]);
-    expect(config_cache('pixelfed.open_registration'))->toBeTrue();
+    // The persisted DB row stringifies booleans, so compare loosely (truthy/falsy)
+    // rather than strict boolean identity.
+    Config::set($key, true);
+    ConfigCacheService::put($key, true);
+    Cache::forget(ConfigCacheService::CACHE_KEY.$key);
+    expect((bool) config_cache($key))->toBeTrue();
 
-    config(['pixelfed.open_registration' => false]);
-    expect(config_cache('pixelfed.open_registration'))->toBeFalse();
+    Config::set($key, false);
+    ConfigCacheService::put($key, false);
+    Cache::forget(ConfigCacheService::CACHE_KEY.$key);
+    expect((bool) config_cache($key))->toBeFalse();
 });
 
-it('config_cache reads from cache when CC is enabled', function () {
-    config(['instance.enable_cc' => true]);
+it('config_cache reads a persisted value from the cache', function () {
+    // Seed the memoized cache entry under the real CACHE_KEY prefix and confirm
+    // config_cache() serves it back for an ENVCONFIG key whose env var is absent
+    // (instance.landing.show_directory / INSTANCE_LANDING_SHOW_DIRECTORY), so the
+    // read takes the DB-value-or-config-fallback (cache-backed) path.
+    $key = 'instance.landing.show_directory';
 
-    Cache::put('pf:services:config:pixelfed.max_photo_size', '20000', 3600);
+    Cache::put(ConfigCacheService::CACHE_KEY.$key, 'cached-value', 3600);
 
-    $value = config_cache('pixelfed.max_photo_size');
+    $value = config_cache($key);
 
-    // Returns either the cached value or the config fallback
-    expect($value)->not->toBeNull();
+    expect($value)->toBe('cached-value');
 });
 
 it('loads auth configuration correctly', function () {

@@ -72,6 +72,7 @@ services:
       AUTORUN_LARAVEL_ROUTE_CACHE: "true"
       AUTORUN_LARAVEL_VIEW_CACHE: "true"
       AUTORUN_LARAVEL_CONFIG_CACHE: "true"
+      PIXELFED_CONFIG_CACHE_SYNC: "true"
 
     volumes:
       - ./storage:/var/www/html/storage
@@ -103,6 +104,8 @@ services:
       PHP_POST_MAX_SIZE: "500M"
       PHP_UPLOAD_MAX_FILE_SIZE: "500M"
       PHP_OPCACHE_ENABLE: "1"
+      PIXELFED_CONFIG_CACHE_SYNC: "false"
+
     volumes:
       - ./storage:/var/www/html/storage
     depends_on:
@@ -136,6 +139,8 @@ services:
       AUTORUN_LARAVEL_ROUTE_CACHE: "false"
       AUTORUN_LARAVEL_VIEW_CACHE: "false"
       AUTORUN_LARAVEL_CONFIG_CACHE: "true"
+      PIXELFED_CONFIG_CACHE_SYNC: "false"
+
       PHP_POST_MAX_SIZE: "500M"
       PHP_UPLOAD_MAX_FILE_SIZE: "500M"
       PHP_OPCACHE_ENABLE: "1"

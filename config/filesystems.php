@@ -123,13 +123,14 @@ return [
             'endpoint' => env('DO_SPACES_ENDPOINT'),
             'region' => env('DO_SPACES_REGION'),
             'bucket' => env('DO_SPACES_BUCKET'),
-            'visibility' => 'public',
+            'visibility' => env('DO_SPACES_VISIBILITY', 'public'),
+            'use_path_style_endpoint' => env('DO_SPACES_USE_PATH_STYLE_ENDPOINT', false),
             'options' => [
                 'CacheControl' => 'max-age=31536000',
             ],
             'root' => env('DO_SPACES_ROOT', ''),
             'throw' => true,
-            'url' => env('AWS_URL'),
+            'url' => env('DO_SPACES_URL'),
         ],
 
         'backup' => [
