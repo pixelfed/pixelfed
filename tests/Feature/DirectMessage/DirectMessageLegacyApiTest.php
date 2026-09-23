@@ -15,7 +15,7 @@ use Illuminate\Support\Facades\Redis;
 use Illuminate\Support\Facades\Storage;
 use Laravel\Passport\Passport;
 
-require_once __DIR__ . '/helpers.php';
+require_once __DIR__.'/helpers.php';
 
 uses(LazilyRefreshDatabase::class);
 
@@ -74,7 +74,7 @@ describe('thread endpoints', function () {
 
         Passport::actingAs($bob, ['read', 'write']);
 
-        $thread = $this->getJson('/api/v1.1/direct/thread?pid=' . $alice->profile_id);
+        $thread = $this->getJson('/api/v1.1/direct/thread?pid='.$alice->profile_id);
 
         $thread->assertOk()
             ->assertJsonPath('id', (string) $alice->profile_id)
@@ -92,7 +92,7 @@ describe('thread endpoints', function () {
 
         Passport::actingAs($alice, ['read', 'write']);
 
-        $this->getJson('/api/v1.1/direct/thread?pid=' . $bob->profile_id)
+        $this->getJson('/api/v1.1/direct/thread?pid='.$bob->profile_id)
             ->assertOk()
             ->assertJsonCount(0, 'messages')
             ->assertJsonPath('conversation_id', null);
@@ -121,12 +121,12 @@ describe('thread endpoints', function () {
 
         Passport::actingAs($bob, ['read', 'write']);
 
-        $this->getJson('/api/v1.1/direct/thread?pid=' . $alice->profile_id)
+        $this->getJson('/api/v1.1/direct/thread?pid='.$alice->profile_id)
             ->assertJsonPath('messages.0.text', 'my cat')
             ->assertJsonPath('messages.0.type', 'photo')
             ->assertJsonCount(1, 'messages.0.carousel');
 
-        expect($this->getJson('/api/v1.1/direct/thread?pid=' . $alice->profile_id)->json('messages.0.media'))->not->toBeNull();
+        expect($this->getJson('/api/v1.1/direct/thread?pid='.$alice->profile_id)->json('messages.0.media'))->not->toBeNull();
     });
 
     it('marks a thread read and reports it as seen to the sender', function () {
@@ -144,7 +144,7 @@ describe('thread endpoints', function () {
         expect(DmConversationParticipant::where('profile_id', $bob->profile_id)->value('unread_count'))->toBe(0);
 
         Passport::actingAs($alice, ['read', 'write']);
-        $this->getJson('/api/v1.1/direct/thread?pid=' . $bob->profile_id)->assertJsonPath('messages.0.seen', true);
+        $this->getJson('/api/v1.1/direct/thread?pid='.$bob->profile_id)->assertJsonPath('messages.0.seen', true);
     });
 
     it('deletes by the id the thread handed out', function () {
