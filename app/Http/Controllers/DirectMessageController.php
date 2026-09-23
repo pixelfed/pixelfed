@@ -372,12 +372,18 @@ class DirectMessageController extends Controller
 
     public function composeMutuals(Request $request)
     {
+        $validated = $request->validate([
+            'cursor' => 'sometimes|nullable|integer|min:1|max:'.PHP_INT_MAX,
+        ]);
+
         $user = $request->user();
+        $cursor = $validated['cursor'] ?? null;
+
         if ($user->has_roles && ! UserRoleService::can('can-direct-message', $user->id)) {
             return [];
         }
 
-        return response()->json(FollowerService::getMutualsWithProfiles($user->profile_id, 10));
+        return response()->json(FollowerService::getMutualsWithProfiles($user->profile_id, 10, $cursor));
     }
 
     public function read(Request $request): JsonResponse
