@@ -99,6 +99,9 @@ class RestrictedNames
         'mix-manifest.json',
         'robots.txt',
 
+        // Horizon
+        'horizon',
+
         // Reserved routes
         'a',
         'app',
