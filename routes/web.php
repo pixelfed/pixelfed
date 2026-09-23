@@ -526,6 +526,8 @@ Route::domain(config('pixelfed.domain.app'))->middleware(['localization'])->grou
     });
     Route::get('g/{hid}', [GroupController::class, 'groupShortLinkRedirect']);
 
+    Route::redirect('/horizon', '/admin/horizon');
+
     Route::get('stories/{username}', [ProfileController::class, 'stories']);
     Route::get('p/{id}', [StatusController::class, 'shortcodeRedirect']);
     Route::get('c/{collection}', [CollectionController::class, 'show']);

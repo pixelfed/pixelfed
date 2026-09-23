@@ -25,7 +25,7 @@ class FollowerService
 
     const FOLLOWERS_INTER_KEY = 'pf:services:follow:followers:inter:id:';
 
-    const FOLLOWERS_MUTUALS_KEY = 'pf:services:follow:mutuals:';
+    const FOLLOWERS_MUTUALS_KEY = 'pf:services:follow:mutuals:v2:';
 
     public static function add($actor, $target, $refresh = true)
     {
@@ -165,7 +165,6 @@ class FollowerService
             }
             FollowServiceWarmCache::dispatch($id)->onQueue('low');
         }
-
     }
 
     public static function audience($profile, $scope = null)
@@ -285,6 +284,22 @@ class FollowerService
         return [];
     }
 
+    protected static function warmMutuals($profileId): string
+    {
+        $mutualsKey = self::FOLLOWERS_MUTUALS_KEY.$profileId;
+
+        $ttl = Redis::ttl($mutualsKey);
+        if ($ttl === -2 || $ttl < 300) {
+            Redis::zinterstore($mutualsKey, [
+                self::FOLLOWING_KEY.$profileId,
+                self::FOLLOWERS_KEY.$profileId,
+            ], ['aggregate' => 'max']);
+            Redis::expire($mutualsKey, 7200);
+        }
+
+        return $mutualsKey;
+    }
+
     /**
      * Get mutual followers for DM suggestions using Redis set intersection
      * This is extremely fast as it operates entirely in Redis memory
@@ -308,26 +323,18 @@ class FollowerService
         self::cacheSyncCheck($profileId, 'followers');
         self::cacheSyncCheck($profileId, 'following');
 
-        $followingKey = self::FOLLOWING_KEY.$profileId;
-        $followersKey = self::FOLLOWERS_KEY.$profileId;
-        $mutualsKey = self::FOLLOWERS_MUTUALS_KEY.$profileId;
-
-        $ttl = Redis::ttl($mutualsKey);
-        if ($ttl === -2 || $ttl < 300) {
-            Redis::zinterstore($mutualsKey, [$followingKey, $followersKey]);
-            Redis::expire($mutualsKey, 7200);
-        }
+        $mutualsKey = self::warmMutuals($profileId);
 
         $start = 0;
 
         if ($cursor) {
-            $cursorRank = Redis::zrank($mutualsKey, $cursor);
-            if ($cursorRank !== false) {
+            $cursorRank = Redis::zrevrank($mutualsKey, $cursor);
+            if (is_int($cursorRank)) {
                 $start = $cursorRank + 1;
             }
         }
 
-        $mutuals = Redis::zrange($mutualsKey, $start, $start + $limit);
+        $mutuals = Redis::zrevrange($mutualsKey, $start, $start + $limit);
 
         $hasMore = count($mutuals) > $limit;
         if ($hasMore) {
@@ -377,28 +384,12 @@ class FollowerService
         ];
     }
 
-    /**
-     * Get mutual count efficiently using Redis intersection
-     *
-     * @param  int  $profileId
-     * @return int
-     */
     public static function getMutualCount($profileId)
     {
         self::cacheSyncCheck($profileId, 'followers');
         self::cacheSyncCheck($profileId, 'following');
 
-        $followingKey = self::FOLLOWING_KEY.$profileId;
-        $followersKey = self::FOLLOWERS_KEY.$profileId;
-        $mutualsKey = self::FOLLOWERS_MUTUALS_KEY.$profileId;
-
-        $ttl = Redis::ttl($mutualsKey);
-        if ($ttl === -2 || $ttl < 300) {
-            Redis::zinterstore($mutualsKey, [$followingKey, $followersKey]);
-            Redis::expire($mutualsKey, 7200);
-        }
-
-        return Redis::zcard($mutualsKey);
+        return Redis::zcard(self::warmMutuals($profileId));
     }
 
     public static function delCache($id)
