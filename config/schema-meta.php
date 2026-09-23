@@ -27,6 +27,9 @@
  *                              make invalid.
  *   cast         string        PHP cast that goes with an `env` override: one of
  *                              "int", "bool", "float" or "string".
+ *   sensitive    bool          Whether the value is a secret.  Overrules
+ *                              `PROTECTED_KEYS` and the name patterns, for a
+ *                              key that they do not classify correctly.
  *
  * Structural data (env var name, default value, x-config-cache, x-sensitive)
  * is derived automatically from the config PHP files and ConfigCacheService.
@@ -519,6 +522,10 @@ return [
     'captcha.sitekey' => [
         'description' => 'hCaptcha site key (public, used in the browser widget).',
         'group' => 'captcha',
+        // The browser widget gets the site key, so the value is not a secret.
+        // It is in `PROTECTED_KEYS` only because the admin panel encrypts it
+        // together with the secret.
+        'sensitive' => false,
     ],
     'captcha.secret' => [
         'description' => 'hCaptcha secret key (private, used for server-side verification).',
@@ -663,6 +670,18 @@ return [
     ],
 
     // Infrastructure
+
+    // The `cache` and `default` connections give `REDIS_PORT` a string
+    // default, and the other connections that read it give an integer. One
+    // environment variable must have one type.
+    'database.redis.cache.port' => [
+        'type' => 'integer',
+        'default' => 6379,
+    ],
+    'database.redis.default.port' => [
+        'type' => 'integer',
+        'default' => 6379,
+    ],
 
     'logging.channels.stack.channels' => [
         'description' => 'Comma-separated log channels that the `stack` channel writes to.',

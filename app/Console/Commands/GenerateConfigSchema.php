@@ -152,7 +152,9 @@ class GenerateConfigSchema extends Command
             }
             $prop['x-config-cache'] = in_array($key, $cachedKeys);
             $prop['x-group'] = $overlay['group'] ?? $this->inferGroup($key);
-            if (in_array($key, $sensitiveKeys) || $this->isSensitiveEnv($mapping['env'] ?? null, $prop['type'])) {
+            $sensitive = $overlay['sensitive']
+                ?? (in_array($key, $sensitiveKeys) || $this->isSensitiveEnv($mapping['env'] ?? null, $prop['type']));
+            if ($sensitive) {
                 $prop['x-sensitive'] = true;
             }
 

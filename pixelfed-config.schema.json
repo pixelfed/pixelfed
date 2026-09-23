@@ -874,8 +874,7 @@
             "default": "default_sitekey",
             "x-env": "CAPTCHA_SITEKEY",
             "x-config-cache": true,
-            "x-group": "captcha",
-            "x-sensitive": true
+            "x-group": "captcha"
         },
         "captcha.triggers.login.attempts": {
             "description": "Number of failed login attempts that trigger the captcha.",
@@ -1370,8 +1369,8 @@
         },
         "database.redis.cache.port": {
             "description": "",
-            "type": "string",
-            "default": "6379",
+            "type": "integer",
+            "default": 6379,
             "x-env": "REDIS_PORT",
             "x-config-cache": false,
             "x-group": "general"
@@ -1475,8 +1474,8 @@
         },
         "database.redis.default.port": {
             "description": "",
-            "type": "string",
-            "default": "6379",
+            "type": "integer",
+            "default": 6379,
             "x-env": "REDIS_PORT",
             "x-config-cache": false,
             "x-group": "general"

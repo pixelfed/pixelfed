@@ -123,7 +123,8 @@ variable name matches `SENSITIVE_ENV_PATTERNS` therefore also gets
 `x-sensitive: true`.  `NON_SENSITIVE_ENV_PATTERNS` overrules those patterns for
 names that hold a public value, as `VAPID_PUBLIC_KEY` and `STRIPE_KEY` do, and
 a numeric or boolean option is never sensitive, which keeps
-`MIN_PASSWORD_LENGTH` out.
+`MIN_PASSWORD_LENGTH` out.  A `sensitive` entry in `config/schema-meta.php`
+overrules all of these, as it does for the public `captcha.sitekey`.
 
 ### Source 3 -- `config/schema-meta.php` (human-authored annotations)
 
@@ -153,6 +154,7 @@ Supported fields:
 | `env` | Environment variable that sets the key; needed when the config file transforms the `env()` result |
 | `default` | Default value; overrules the default that the config file gives |
 | `cast` | PHP cast that goes with an `env` entry: `int`, `bool`, `float` or `string` |
+| `sensitive` | Whether the value is a secret; overrules `PROTECTED_KEYS` and the name patterns |
 
 An entry in `schema-meta.php` is **optional**.  New options that appear in
 `config/*.php` or `ConfigCacheService::$allowed` will appear in the schema
