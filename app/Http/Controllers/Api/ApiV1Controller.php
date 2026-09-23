@@ -3370,7 +3370,7 @@ class ApiV1Controller extends Controller
         abort_unless($request->user()->tokenCan('write'), 403);
 
         $service = app(DirectMessageService::class);
-        $found = is_numeric($id) ? $service->conversationFor($id, $request->user()->profile_id) : null;
+        $found = is_numeric($id) ? $service->conversationForMastodonId($id, $request->user()->profile_id) : null;
         abort_if(! $found, 404);
 
         $service->setHidden($found[1], true);
@@ -3390,7 +3390,7 @@ class ApiV1Controller extends Controller
         $payloads = app(DirectMessagePayloadService::class);
         $pid = $request->user()->profile_id;
 
-        $found = is_numeric($id) ? $service->conversationFor($id, $pid) : null;
+        $found = is_numeric($id) ? $service->conversationForMastodonId($id, $pid) : null;
         abort_if(! $found, 404);
 
         [$conversation, $participant] = $found;
@@ -3425,6 +3425,14 @@ class ApiV1Controller extends Controller
 
         $res = $request->has(self::PF_API_ENTITY_KEY) ? StatusService::get($id, false) : StatusService::getMastodon($id, false);
         if (! $res || ! isset($res['visibility'])) {
+            // Direct messages are no longer statuses, but clients still take
+            // the id they got from /api/v1/conversations to this endpoint
+            $direct = app(DirectMessagePayloadService::class)->mastodonStatusById($id, $pid);
+
+            if ($direct) {
+                return $this->json($direct);
+            }
+
             abort(404);
         }
 
@@ -3478,6 +3486,12 @@ class ApiV1Controller extends Controller
         );
 
         if (! $status || ! isset($status['account'])) {
+            $direct = app(DirectMessagePayloadService::class)->mastodonContext($id, $pid);
+
+            if ($direct) {
+                return $this->json($direct);
+            }
+
             return response('', 404);
         }
 
@@ -4040,8 +4054,24 @@ class ApiV1Controller extends Controller
         abort_unless($request->user()->tokenCan('write'), 403);
 
         AccountService::setLastActive($request->user()->id);
-        $status = Status::whereProfileId($request->user()->profile->id)
-            ->findOrFail($id);
+        $pid = $request->user()->profile_id;
+        $status = Status::whereProfileId($pid)->find($id);
+
+        if (! $status) {
+            $message = DmMessage::where('profile_id', $pid)->find($id);
+            abort_if(! $message, 404);
+
+            $payloads = app(DirectMessagePayloadService::class);
+            $res = $payloads->mastodonStatusById($message->id, $pid);
+            abort_if(! $res, 404);
+
+            app(DirectMessageService::class)->deleteMessage($message);
+
+            $res['text'] = $res['content_text'];
+            unset($res['content']);
+
+            return $this->json($res);
+        }
 
         $resource = new Fractal\Resource\Item($status, new StatusTransformer);
 

@@ -233,6 +233,28 @@ class DirectMessageService
     }
 
     /**
+     * The conversation behind an id from /api/v1/conversations, which is the
+     * viewer's participant row. A conversation id is accepted too.
+     *
+     * @return array{0: DmConversation, 1: DmConversationParticipant}|null
+     */
+    public function conversationForMastodonId(int|string $id, int $profileId): ?array
+    {
+        $participant = DmConversationParticipant::where('id', $id)
+            ->where('profile_id', $profileId)
+            ->where('state', '!=', DmConversationParticipant::STATE_LEFT)
+            ->first();
+
+        if ($participant) {
+            $conversation = DmConversation::find($participant->conversation_id);
+
+            return $conversation ? [$conversation, $participant] : null;
+        }
+
+        return $this->conversationFor($id, $profileId);
+    }
+
+    /**
      * Profile ids of everyone in the conversation.
      *
      * @return array<int, int>
