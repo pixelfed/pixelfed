@@ -34,6 +34,8 @@ use Illuminate\Support\Str;
  */
 class DirectMessageController extends Controller
 {
+    const PF_API_ENTITY_KEY = '_pe';
+
     public function __construct(
         protected DirectMessageService $service,
         protected DirectMessagePayloadService $payloads
@@ -315,6 +317,8 @@ class DirectMessageController extends Controller
             return [];
         }
 
+        $napi = $request->has(self::PF_API_ENTITY_KEY);
+
         $q = $request->input('q');
         $r = $request->input('remote', false);
 
@@ -344,8 +348,14 @@ class DirectMessageController extends Controller
             ->orderBy('domain')
             ->limit(8)
             ->get()
-            ->map(function ($r) {
-                $acct = AccountService::get($r->id);
+            ->map(function ($r) use ($napi) {
+                if ($napi) {
+                    $acct = AccountService::get($r->id, true);
+
+                    return $acct;
+                }
+
+                $acct = AccountService::get($r->id, true);
 
                 return [
                     'local' => (bool) ! $r->domain,
