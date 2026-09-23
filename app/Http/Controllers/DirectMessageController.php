@@ -383,7 +383,20 @@ class DirectMessageController extends Controller
             return [];
         }
 
-        return response()->json(FollowerService::getMutualsWithProfiles($user->profile_id, 10, $cursor));
+        $res = FollowerService::getMutualsWithProfiles($user->profile_id, 10, $cursor);
+
+        if ($res && isset($res['total_count']) && is_int($res['total_count']) && $res['total_count'] > 100) {
+            $empty = [
+                'data' => [],
+                'has_more' => false,
+                'next_cursor' => false,
+                'total_count' => $res['total_count'],
+            ];
+
+            return response()->json($empty);
+        }
+
+        return response()->json($res);
     }
 
     public function read(Request $request): JsonResponse
