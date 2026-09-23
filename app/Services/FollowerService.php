@@ -27,6 +27,8 @@ class FollowerService
 
     const FOLLOWERS_MUTUALS_KEY = 'pf:services:follow:mutuals:v2:';
 
+    const MUTUALS_DM_MAX_PAGES = 5;
+
     public static function add($actor, $target, $refresh = true)
     {
         $ts = (int) microtime(true);
@@ -301,29 +303,32 @@ class FollowerService
     }
 
     /**
-     * Get mutual followers for DM suggestions using Redis set intersection
-     * This is extremely fast as it operates entirely in Redis memory
+     * Get mutual followers for DM suggestions, newest mutuals first.
+     * Pagination is capped internally at MUTUALS_DM_MAX_PAGES pages.
      *
      * @param  int  $profileId
      * @param  int  $limit
-     * @param  int|null  $cursor
+     * @param  int|null  $cursor  Profile id of the last item seen
      */
     public static function getMutualsForDM($profileId, $limit = 20, $cursor = null): array
     {
+        $empty = [
+            'data' => [],
+            'has_more' => false,
+            'next_cursor' => null,
+            'total_count' => 0,
+        ];
+
         $acct = AccountService::get($profileId, true);
         if (! $acct || ! isset($acct['id'])) {
-            return [
-                'data' => [],
-                'has_more' => false,
-                'next_cursor' => null,
-                'total_count' => 0,
-            ];
+            return $empty;
         }
 
         self::cacheSyncCheck($profileId, 'followers');
         self::cacheSyncCheck($profileId, 'following');
 
         $mutualsKey = self::warmMutuals($profileId);
+        $totalCount = Redis::zcard($mutualsKey);
 
         $start = 0;
 
@@ -334,20 +339,28 @@ class FollowerService
             }
         }
 
-        $mutuals = Redis::zrevrange($mutualsKey, $start, $start + $limit);
+        $maxItems = self::MUTUALS_DM_MAX_PAGES * $limit;
 
-        $hasMore = count($mutuals) > $limit;
-        if ($hasMore) {
-            $mutuals = array_slice($mutuals, 0, $limit);
+        if ($start >= $maxItems) {
+            $empty['total_count'] = $totalCount;
+
+            return $empty;
         }
 
-        $nextCursor = $hasMore && ! empty($mutuals) ? end($mutuals) : null;
+        $end = min($start + $limit, $maxItems);
+
+        $mutuals = Redis::zrevrange($mutualsKey, $start, $end);
+
+        $hasMore = count($mutuals) > $limit && ($start + $limit) < $maxItems;
+        $mutuals = array_slice($mutuals, 0, $limit);
+
+        $nextCursor = $hasMore && ! empty($mutuals) ? (int) end($mutuals) : null;
 
         return [
             'data' => array_map('intval', $mutuals),
             'has_more' => $hasMore,
-            'next_cursor' => $nextCursor ? (int) $nextCursor : null,
-            'total_count' => Redis::zcard($mutualsKey),
+            'next_cursor' => $nextCursor,
+            'total_count' => $totalCount,
         ];
     }
 
@@ -376,12 +389,9 @@ class FollowerService
             }
         }
 
-        return [
-            'data' => $orderedProfiles,
-            'has_more' => $mutuals['has_more'],
-            'next_cursor' => $mutuals['next_cursor'],
-            'total_count' => $mutuals['total_count'],
-        ];
+        $mutuals['data'] = $orderedProfiles;
+
+        return $mutuals;
     }
 
     public static function getMutualCount($profileId)
