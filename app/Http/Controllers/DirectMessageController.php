@@ -385,7 +385,7 @@ class DirectMessageController extends Controller
 
         $res = FollowerService::getMutualsWithProfiles($user->profile_id, 10, $cursor);
 
-        if ($res && isset($res['total_count']) && is_int($res['total_count']) && $res['total_count'] > 100) {
+        if ($cursor && $res && isset($res['total_count']) && is_int($res['total_count']) && $res['total_count'] > 100) {
             $empty = [
                 'data' => [],
                 'has_more' => false,
