@@ -186,10 +186,13 @@ class DirectMessagePayloadService
      */
     public function mastodonConversation(DmConversation $conversation, DmConversationParticipant $viewer, Collection $members, ?DmMessage $last, int $viewerId): ?array
     {
-        $accounts = $members
-            ->filter(fn ($member) => (int) $member->profile_id !== $viewerId)
+        $everyone = $members
             ->map(fn ($member) => AccountService::getMastodon($member->profile_id, true))
             ->filter(fn ($account) => $account && isset($account['id']))
+            ->values();
+
+        $accounts = $everyone
+            ->filter(fn ($account) => (int) $account['id'] !== $viewerId)
             ->values()
             ->all();
 
@@ -197,22 +200,108 @@ class DirectMessagePayloadService
             return null;
         }
 
+        // The id is the viewer's participant row, not the conversation. It
+        // is an autoincrement, and the old endpoint handed out one of those
+        // too, so clients that store this as a 32-bit int (Pixelix does)
+        // keep working. It is only used for the DELETE and read calls, where
+        // it resolves back to the conversation for this viewer.
         return [
-            'id' => (string) $conversation->id,
+            'id' => (string) $viewer->id,
             'unread' => $viewer->unread_count > 0,
             'accounts' => $accounts,
-            'last_status' => $this->mastodonStatus($last, $accounts, $viewerId),
+            'last_status' => $this->mastodonStatus($last, $everyone->all(), $viewerId),
         ];
     }
 
     /**
-     * Messages are not statuses any more, but Mastodon clients expect one as
-     * `last_status`, so this builds the entity from the message.
+     * The message as a status entity, for a viewer who is in its
+     * conversation. Mastodon clients take the `last_status` id from
+     * /api/v1/conversations straight to /api/v1/statuses/{id}.
      *
-     * @param  array<int, array<string, mixed>>  $accounts
+     * @return array<string, mixed>|null
+     */
+    public function mastodonStatusById(int|string $messageId, int $viewerId): ?array
+    {
+        $message = DmMessage::with('media')->find($messageId);
+
+        if (! $message) {
+            return null;
+        }
+
+        $found = app(DirectMessageService::class)->conversationFor($message->conversation_id, $viewerId);
+
+        if (! $found || in_array((int) $message->profile_id, $this->blockedIds($viewerId), true)) {
+            return null;
+        }
+
+        return $this->mastodonStatus($message, $this->mastodonParticipants($found[0]), $viewerId);
+    }
+
+    /**
+     * The rest of the conversation around a message, in the shape of
+     * /api/v1/statuses/{id}/context: what came before as ancestors and what
+     * came after as descendants.
+     *
+     * @return array{ancestors: array<int, array<string, mixed>>, descendants: array<int, array<string, mixed>>}|null
+     */
+    public function mastodonContext(int|string $messageId, int $viewerId, int $limit = 40): ?array
+    {
+        $message = DmMessage::find($messageId);
+
+        if (! $message) {
+            return null;
+        }
+
+        $found = app(DirectMessageService::class)->conversationFor($message->conversation_id, $viewerId);
+
+        if (! $found) {
+            return null;
+        }
+
+        $participants = $this->mastodonParticipants($found[0]);
+        $blocked = $this->blockedIds($viewerId) ?: [0];
+
+        $query = fn () => DmMessage::with('media')
+            ->where('conversation_id', $message->conversation_id)
+            ->whereNotIn('profile_id', $blocked);
+
+        $ancestors = $query()->where('id', '<', $message->id)->orderByDesc('id')->limit($limit)->get()->reverse();
+        $descendants = $query()->where('id', '>', $message->id)->orderBy('id')->limit($limit)->get();
+
+        $toStatus = fn (DmMessage $m) => $this->mastodonStatus($m, $participants, $viewerId);
+
+        return [
+            'ancestors' => $ancestors->map($toStatus)->values()->all(),
+            'descendants' => $descendants->map($toStatus)->values()->all(),
+        ];
+    }
+
+    /**
+     * Everyone in the conversation, as Mastodon account entities.
+     *
+     * @return array<int, array<string, mixed>>
+     */
+    public function mastodonParticipants(DmConversation $conversation): array
+    {
+        return DmConversationParticipant::where('conversation_id', $conversation->id)
+            ->orderBy('id')
+            ->pluck('profile_id')
+            ->map(fn ($id) => AccountService::getMastodon($id, true))
+            ->filter(fn ($account) => $account && isset($account['id']))
+            ->values()
+            ->all();
+    }
+
+    /**
+     * Messages are not statuses any more, but Mastodon clients expect one as
+     * `last_status`, so this builds the entity from the message. Everyone in
+     * the conversation other than the author is a mention, the viewer
+     * included: that is how a client tells the message was addressed to them.
+     *
+     * @param  array<int, array<string, mixed>>  $participants  Everyone in the conversation, as account entities
      * @return array<string, mixed>
      */
-    public function mastodonStatus(DmMessage $message, array $accounts, int $viewerId): array
+    public function mastodonStatus(DmMessage $message, array $participants, int $viewerId): array
     {
         $media = collect($this->media($message))->map(function (array $item) {
             $mime = $item['mime'] ?? null;
@@ -259,7 +348,7 @@ class DirectMessagePayloadService
             'visibility' => 'direct',
             'application' => null,
             'language' => null,
-            'mentions' => collect($accounts)
+            'mentions' => collect($participants)
                 ->filter(fn ($account) => (string) $account['id'] !== (string) $message->profile_id)
                 ->map(fn ($account) => [
                     'id' => (string) $account['id'],

@@ -35,13 +35,19 @@ beforeEach(function () {
     Queue::fake();
     Http::fake();
 
+    // Ids minted in the same millisecond only sort by creation order when the
+    // worker bits are fixed. Left unset they are random for every id.
+    config(['snowflake.datacenter_id' => 1, 'snowflake.worker_id' => 1]);
+
     $this->withoutMiddleware(ThrottleRequests::class);
+
+    // Ids minted in the same millisecond only sort by creation order when the
+    // worker bits are fixed. Left unset they are random for every id.
+    config(['snowflake.datacenter_id' => 1, 'snowflake.worker_id' => 1]);
 
     config([
         'instance.enable_cc' => false,
         'federation.activitypub.enabled' => true,
-        'snowflake.datacenter_id' => 1,
-        'snowflake.worker_id' => 1,
     ]);
 });
 
@@ -195,20 +201,48 @@ describe('GET /api/v1/conversations', function () {
 
         Passport::actingAs($bob, ['read', 'write']);
 
-        $this->getJson('/api/v1/conversations')
+        $response = $this->getJson('/api/v1/conversations')
             ->assertOk()
             ->assertJsonCount(1)
-            ->assertJsonPath('0.id', (string) $conversation->id)
             ->assertJsonPath('0.unread', true)
             ->assertJsonPath('0.accounts.0.id', (string) $alice->profile_id)
             ->assertJsonPath('0.last_status.id', (string) $message->id)
             ->assertJsonPath('0.last_status.visibility', 'direct')
             ->assertJsonPath('0.last_status.content', '<p>hello</p>')
-            ->assertJsonPath('0.last_status.account.id', (string) $alice->profile_id);
+            ->assertJsonPath('0.last_status.account.id', (string) $alice->profile_id)
+            ->assertJsonPath('0.last_status.mentions.0.id', (string) $bob->profile_id);
 
-        $this->postJson("/api/v1/conversations/{$conversation->id}/read")->assertOk()->assertJsonPath('unread', false);
-        $this->deleteJson("/api/v1/conversations/{$conversation->id}")->assertOk();
+        // Pixelix stores this id as a 32-bit int, as the old endpoint allowed
+        $id = $response->json('0.id');
+        expect((int) $id)->toBeLessThan(2 ** 31)
+            ->and((int) $id)->toBeGreaterThan(0)
+            ->and((int) $id)->toBe(DmConversationParticipant::where('profile_id', $bob->profile_id)->value('id'));
+
+        $this->postJson("/api/v1/conversations/{$id}/read")->assertOk()->assertJsonPath('unread', false);
+
+        // The real conversation id still works for clients written against it
+        $this->postJson("/api/v1/conversations/{$conversation->id}/read")->assertOk();
+
+        $this->deleteJson("/api/v1/conversations/{$id}")->assertOk();
         $this->getJson('/api/v1/conversations')->assertJsonCount(0);
+    });
+
+    it('does not let one person use another persons conversation id', function () {
+        $alice = dmLocalUser();
+        $bob = dmLocalUser();
+        $eve = dmLocalUser();
+
+        $service = app(DirectMessageService::class);
+        $conversation = $service->findOrCreateDm(dmProfile($alice), dmProfile($bob));
+        $service->sendMessage($conversation, dmProfile($alice), ['body' => 'hello']);
+
+        Passport::actingAs($bob, ['read', 'write']);
+        $id = $this->getJson('/api/v1/conversations')->json('0.id');
+
+        Passport::actingAs($eve, ['read', 'write']);
+        $this->postJson("/api/v1/conversations/{$id}/read")->assertNotFound();
+        $this->deleteJson("/api/v1/conversations/{$id}")->assertNotFound();
+        $this->deleteJson("/api/v1/conversations/{$conversation->id}")->assertNotFound();
     });
 
     it('only includes groups when asked', function () {
@@ -240,6 +274,78 @@ describe('GET /api/v1/conversations', function () {
 
         $this->getJson('/api/v1/conversations')->assertJsonCount(0);
         $this->getJson('/api/v1/conversations?scope=requests')->assertJsonCount(1);
+    });
+});
+
+describe('mastodon status endpoints', function () {
+    it('serves a message as a status to people in the conversation and nobody else', function () {
+        $alice = dmLocalUser();
+        $bob = dmLocalUser();
+        $eve = dmLocalUser();
+
+        $service = app(DirectMessageService::class);
+        $conversation = $service->findOrCreateDm(dmProfile($alice), dmProfile($bob));
+        $message = $service->sendMessage($conversation, dmProfile($alice), ['body' => 'hello']);
+
+        Passport::actingAs($bob, ['read', 'write']);
+
+        $this->getJson("/api/v1/statuses/{$message->id}")
+            ->assertOk()
+            ->assertJsonPath('id', (string) $message->id)
+            ->assertJsonPath('visibility', 'direct')
+            ->assertJsonPath('content', '<p>hello</p>')
+            ->assertJsonPath('account.id', (string) $alice->profile_id)
+            ->assertJsonPath('mentions.0.id', (string) $bob->profile_id);
+
+        Passport::actingAs($eve, ['read', 'write']);
+
+        $this->getJson("/api/v1/statuses/{$message->id}")->assertNotFound();
+    });
+
+    it('returns the rest of the conversation as the context of a message', function () {
+        $alice = dmLocalUser();
+        $bob = dmLocalUser();
+
+        $service = app(DirectMessageService::class);
+        $conversation = $service->findOrCreateDm(dmProfile($alice), dmProfile($bob));
+        $one = $service->sendMessage($conversation, dmProfile($alice), ['body' => 'one']);
+        $two = $service->sendMessage($conversation, dmProfile($bob), ['body' => 'two']);
+        $three = $service->sendMessage($conversation, dmProfile($alice), ['body' => 'three']);
+
+        Passport::actingAs($bob, ['read', 'write']);
+
+        $this->getJson("/api/v1/statuses/{$two->id}/context")
+            ->assertOk()
+            ->assertJsonCount(1, 'ancestors')
+            ->assertJsonPath('ancestors.0.id', (string) $one->id)
+            ->assertJsonCount(1, 'descendants')
+            ->assertJsonPath('descendants.0.id', (string) $three->id)
+            ->assertJsonPath('descendants.0.visibility', 'direct');
+
+        // The usual client flow: open the conversation from its last status
+        $this->getJson("/api/v1/statuses/{$three->id}/context")
+            ->assertOk()
+            ->assertJsonCount(2, 'ancestors')
+            ->assertJsonCount(0, 'descendants');
+    });
+
+    it('lets the author delete a message through the status endpoint', function () {
+        $alice = dmLocalUser();
+        $bob = dmLocalUser();
+
+        $service = app(DirectMessageService::class);
+        $conversation = $service->findOrCreateDm(dmProfile($alice), dmProfile($bob));
+        $message = $service->sendMessage($conversation, dmProfile($alice), ['body' => 'oops']);
+
+        Passport::actingAs($bob, ['read', 'write']);
+        $this->deleteJson("/api/v1/statuses/{$message->id}")->assertNotFound();
+
+        Passport::actingAs($alice, ['read', 'write']);
+        $this->deleteJson("/api/v1/statuses/{$message->id}")
+            ->assertOk()
+            ->assertJsonPath('text', 'oops');
+
+        expect(DmMessage::count())->toBe(0);
     });
 });
 
