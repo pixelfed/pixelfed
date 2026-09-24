@@ -443,7 +443,7 @@ class LoginController extends Controller
 
     protected function requiresEmailVerification(User $user): bool
     {
-        return (bool) config('pixelfed.enforce_email_verification')
+        return (bool) config_cache('pixelfed.enforce_email_verification')
             && is_null($user->email_verified_at);
     }
 

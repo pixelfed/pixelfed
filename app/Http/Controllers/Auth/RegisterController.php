@@ -193,7 +193,7 @@ class RegisterController extends Controller
 
         event(new Registered($user = $this->create($request->all())));
 
-        if ((bool) config('pixelfed.enforce_email_verification') && is_null($user->email_verified_at)) {
+        if ((bool) config_cache('pixelfed.enforce_email_verification') && is_null($user->email_verified_at)) {
             PendingLoginService::start($request, $user, false, PendingLoginService::STEP_VERIFY);
             EmailVerificationService::send($user);
 
