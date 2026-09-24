@@ -377,15 +377,16 @@ trait AdminReportController
                 'no_autolink' => true,
             ]);
 
-            Status::whereProfileId($pro->id)
-                ->get()
-                ->each(function ($status) {
-                    $status->is_nsfw = true;
-                    $status->scope = 'public';
-                    $status->visibility = 'public';
-                    $status->save();
-                    StatusService::del($status->id, true);
-                });
+            // Tag the spammer's posts NSFW and drop them from the public
+            // timeline. Never widen scope/visibility: promoting them to public
+            // would leak the user's private and direct posts, and the profile
+            // update above is restrictive by design.
+            foreach (Status::whereProfileId($pro->id)->cursor() as $status) {
+                $status->is_nsfw = true;
+                $status->save();
+                StatusService::del($status->id, true);
+                PublicTimelineService::rem($status->id);
+            }
 
             Cache::forget('pf:bouncer_v0:exemption_by_pid:'.$appeal->user->profile_id);
             Cache::forget('pf:bouncer_v0:recent_by_pid:'.$appeal->user->profile_id);
