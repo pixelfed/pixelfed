@@ -63,7 +63,10 @@ class DiscoverController extends Controller
         ]);
 
         $page = $request->input('page') ?? '1';
-        $end = $page > 1 ? $page * 9 : (($page * 9) + 9);
+        // Standard fixed-page-size offset. The previous formula yielded 18 for
+        // both page 1 and page 2 (identical results, and the freshest 18 rows
+        // unreachable); this gives 0, 9, 18, ... for 9-per-page paging.
+        $end = ($page - 1) * 9;
         $tag = $request->input('hashtag');
 
         if (db_is_pgsql()) {
