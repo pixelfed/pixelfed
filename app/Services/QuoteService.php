@@ -486,11 +486,17 @@ class QuoteService
     /**
      * Drop the stamp for a quote post whose author deleted it. Nothing is
      * federated, the quote is already gone on their side.
+     *
+     * Only approved rows are removed. A revoked row is a permanent deny-record
+     * that keeps a repeat request for the same quote post auto-rejected, so it
+     * must survive a Tombstone: otherwise a revoked quoter could Delete their
+     * own quote url to erase the deny-record and re-request a fresh stamp.
      */
     public static function forgetQuote(int $actorId, string $quoteUrl): void
     {
         QuoteAuthorization::whereActorId($actorId)
             ->whereQuoteUrl($quoteUrl)
+            ->approved()
             ->delete();
     }
 
@@ -594,6 +600,35 @@ class QuoteService
     public static function sendAccept(QuoteAuthorization $auth, string $requestUrl): void
     {
         self::deliver($auth->profile, $auth->actor, self::acceptActivity($auth, $requestUrl));
+    }
+
+    /**
+     * Accept a QuoteRequest from a requester other than the actor the stamp is
+     * stored under, referencing the existing stamp as its result.
+     *
+     * Instrument validation is host-authoritative (a quote url only has to
+     * live on the requester's host), and the stamp is unique per
+     * (status_id, quote_url), so a second same-host requester for a quote url
+     * that already has a live stamp is answered with that stamp rather than
+     * rejected for an actor mismatch the validation layer never established.
+     * The Accept is addressed to the requester so it reaches them, not the
+     * first claimant.
+     */
+    public static function sendAcceptTo(QuoteAuthorization $auth, Profile $requester, string $requestUrl): void
+    {
+        $target = $auth->profile;
+
+        $activity = [
+            '@context' => self::REQUEST_CONTEXT,
+            'id' => $target->permalink('#accepts/quotes/'.$auth->id),
+            'type' => 'Accept',
+            'actor' => $target->permalink(),
+            'to' => $requester->permalink(),
+            'object' => self::requestObject($requester, $auth->status, $auth->quote_url, $requestUrl),
+            'result' => $auth->permalink(),
+        ];
+
+        self::deliver($target, $requester, $activity);
     }
 
     public static function sendReject(Status $status, Profile $actor, string $quoteUrl, string $requestUrl): void

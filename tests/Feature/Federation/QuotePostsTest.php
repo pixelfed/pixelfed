@@ -1,6 +1,7 @@
 <?php
 
 use App\Jobs\QuotePipeline\DeliverQuoteActivityPipeline;
+use App\Jobs\StatusPipeline\StatusDelete;
 use App\Models\Profile;
 use App\Models\QuoteAuthorization;
 use App\Models\Status;
@@ -813,5 +814,227 @@ describe('api', function () {
         ])->assertNotFound();
 
         expect($status->fresh()->quote_policy)->toBeNull();
+    });
+});
+
+/*
+|--------------------------------------------------------------------------
+| FEP-044f hardening regressions
+|--------------------------------------------------------------------------
+*/
+
+describe('co-hosted stamp contention', function () {
+    it('does not let a co-hosted actor lock the legitimate author out of the stamp', function () {
+        $user = quoteLocalUser();
+        $status = quoteLocalStatus($user->profile);
+        $bob = quoteRemoteProfile('remote.example', 'bob');
+        $carol = quoteRemoteProfile('remote.example', 'carol');
+        quoteSeedHosts();
+
+        // Both request the same quote url. Carol claims it first, Bob (the
+        // rightful author of that url) requests it second.
+        $quoteUrl = $bob->remote_url.'/statuses/1';
+
+        quoteDeliver($carol, quoteRequestPayload($carol, $status, [
+            'id' => $quoteUrl.'/quote-carol',
+            'instrument' => $quoteUrl,
+        ]));
+
+        quoteDeliver($bob, quoteRequestPayload($bob, $status, [
+            'id' => $quoteUrl.'/quote-bob',
+            'instrument' => $quoteUrl,
+        ]));
+
+        $sent = quoteSentActivities();
+
+        // Both requesters get an Accept for the single shared stamp, and the
+        // second Accept is addressed to the second requester rather than the
+        // first claimant.
+        expect($sent)->toHaveCount(2)
+            ->and($sent[0]['type'])->toBe('Accept')
+            ->and($sent[1]['type'])->toBe('Accept')
+            ->and($sent[1]['result'])->toBe($sent[0]['result'])
+            ->and(QuoteAuthorization::count())->toBe(1);
+    });
+
+    it('addresses the re-issued Accept to the second requester', function () {
+        $user = quoteLocalUser();
+        $status = quoteLocalStatus($user->profile);
+        $carol = quoteRemoteProfile('remote.example', 'carol');
+        $bob = quoteRemoteProfile('remote.example', 'bob');
+        quoteSeedHosts();
+
+        $quoteUrl = $bob->remote_url.'/statuses/1';
+
+        quoteDeliver($carol, quoteRequestPayload($carol, $status, [
+            'id' => $quoteUrl.'/quote-carol',
+            'instrument' => $quoteUrl,
+        ]));
+
+        quoteDeliver($bob, quoteRequestPayload($bob, $status, [
+            'id' => $quoteUrl.'/quote-bob',
+            'instrument' => $quoteUrl,
+        ]));
+
+        $sent = quoteSentActivities();
+
+        // Stamp is stored under the first claimant, but the second Accept must
+        // reach the actor that actually asked.
+        expect($sent[0]['to'])->toBe($carol->remote_url)
+            ->and($sent[1]['to'])->toBe($bob->remote_url)
+            ->and($sent[1]['object']['actor'])->toBe($bob->remote_url);
+    });
+
+    it('still rejects a second requester once the shared stamp is revoked', function () {
+        $user = quoteLocalUser();
+        $status = quoteLocalStatus($user->profile);
+        $carol = quoteRemoteProfile('remote.example', 'carol');
+        $bob = quoteRemoteProfile('remote.example', 'bob');
+        quoteSeedHosts();
+
+        $quoteUrl = $bob->remote_url.'/statuses/1';
+
+        quoteDeliver($carol, quoteRequestPayload($carol, $status, [
+            'id' => $quoteUrl.'/quote-carol',
+            'instrument' => $quoteUrl,
+        ]));
+
+        QuoteService::revoke(QuoteAuthorization::first());
+
+        quoteDeliver($bob, quoteRequestPayload($bob, $status, [
+            'id' => $quoteUrl.'/quote-bob',
+            'instrument' => $quoteUrl,
+        ]));
+
+        $sent = quoteSentActivities();
+
+        expect(array_column($sent, 'type'))->toBe(['Accept', 'Delete', 'Reject']);
+    });
+});
+
+describe('revoked deny-record survives a tombstone', function () {
+    it('re-rejects a quote whose revoked row a tombstone tried to erase', function () {
+        $user = quoteLocalUser();
+        $status = quoteLocalStatus($user->profile);
+        $bob = quoteRemoteProfile();
+        quoteSeedHosts();
+
+        $quoteUrl = $bob->remote_url.'/statuses/1';
+
+        // 1. Bob quotes once, approved.
+        quoteDeliver($bob, quoteRequestPayload($bob, $status));
+        expect(QuoteAuthorization::approved()->count())->toBe(1);
+
+        // 2. Local user revokes: a permanent deny-record.
+        QuoteService::revoke(QuoteAuthorization::first());
+        expect(QuoteAuthorization::revoked()->count())->toBe(1);
+
+        // 3. Bob sends Delete{Tombstone} for his own quote url.
+        quoteDeliver($bob, [
+            '@context' => 'https://www.w3.org/ns/activitystreams',
+            'id' => $bob->remote_url.'/activities/delete-quote-1',
+            'type' => 'Delete',
+            'actor' => $bob->remote_url,
+            'object' => [
+                'id' => $quoteUrl,
+                'type' => 'Tombstone',
+            ],
+        ]);
+
+        // The revoked deny-record must survive the tombstone.
+        expect(QuoteAuthorization::revoked()->count())->toBe(1);
+
+        // 4. Bob re-requests the same quote.
+        quoteDeliver($bob, quoteRequestPayload($bob, $status, [
+            'id' => $quoteUrl.'/quote-2',
+        ]));
+
+        $sent = quoteSentActivities();
+        $last = end($sent);
+
+        expect($last['type'])->toBe('Reject')
+            ->and(QuoteAuthorization::approved()->count())->toBe(0);
+    });
+
+    it('still forgets an approved stamp when the quote post is genuinely deleted', function () {
+        $user = quoteLocalUser();
+        $status = quoteLocalStatus($user->profile);
+        $bob = quoteRemoteProfile();
+        quoteSeedHosts();
+
+        $quoteUrl = $bob->remote_url.'/statuses/1';
+
+        quoteDeliver($bob, quoteRequestPayload($bob, $status));
+        expect(QuoteAuthorization::approved()->count())->toBe(1);
+
+        QuoteService::forgetQuote($bob->id, $quoteUrl);
+
+        expect(QuoteAuthorization::whereQuoteUrl($quoteUrl)->count())->toBe(0);
+    });
+});
+
+describe('deleting a quoted post revokes stamps through the contract', function () {
+    it('federates a Delete{QuoteAuthorization} when the quoted post is deleted', function () {
+        $user = quoteLocalUser();
+        $status = quoteLocalStatus($user->profile);
+        $bob = quoteRemoteProfile();
+        quoteSeedHosts();
+
+        $auth = QuoteService::authorize($status, $bob, $bob->remote_url.'/statuses/1');
+
+        (new StatusDelete($status))->unlinkRemoveMedia($status);
+
+        // The stamp rows are gone, but a Delete{QuoteAuthorization} was
+        // federated to the remote quoter before the status was destroyed.
+        expect(QuoteAuthorization::whereStatusId($status->id)->count())->toBe(0);
+
+        $deletes = quoteSentOfType('Delete');
+
+        expect($deletes)->toHaveCount(1)
+            ->and($deletes[0]['object']['type'])->toBe('QuoteAuthorization')
+            ->and($deletes[0]['object']['id'])->toBe($auth->permalink())
+            ->and($deletes[0]['to'])->toBe($bob->remote_url);
+    });
+
+    it('does not federate a revocation when there was no stamp', function () {
+        $user = quoteLocalUser();
+        $status = quoteLocalStatus($user->profile);
+        quoteSeedHosts();
+
+        (new StatusDelete($status))->unlinkRemoveMedia($status);
+
+        expect(quoteSentOfType('Delete'))->toBeEmpty();
+    });
+});
+
+describe('host case-insensitivity', function () {
+    it('processes a QuoteRequest whose activity id host differs only in case', function () {
+        $user = quoteLocalUser();
+        $status = quoteLocalStatus($user->profile);
+        $bob = quoteRemoteProfile('remote.example', 'bob');
+        quoteSeedHosts();
+
+        // The activity id carries the host in a different letter case than the
+        // stored actor remote_url. Valid per RFC 3986, must not be dropped.
+        quoteDeliver($bob, quoteRequestPayload($bob, $status, [
+            'id' => 'https://REMOTE.example/users/bob/statuses/1/quote',
+        ]));
+
+        expect(QuoteAuthorization::count())->toBe(1)
+            ->and(quoteSentActivities()[0]['type'])->toBe('Accept');
+    });
+
+    it('processes a QuoteRequest whose instrument host differs only in case', function () {
+        $user = quoteLocalUser();
+        $status = quoteLocalStatus($user->profile);
+        $bob = quoteRemoteProfile('remote.example', 'bob');
+        quoteSeedHosts();
+
+        quoteDeliver($bob, quoteRequestPayload($bob, $status, [
+            'instrument' => 'https://REMOTE.example/users/bob/statuses/1',
+        ]));
+
+        expect(QuoteAuthorization::count())->toBe(1)
+            ->and(quoteSentActivities()[0]['type'])->toBe('Accept');
     });
 });

@@ -24,6 +24,7 @@ use App\Services\CollectionService;
 use App\Services\DirectMessageService;
 use App\Services\FractalService;
 use App\Services\NotificationService;
+use App\Services\QuoteService;
 use App\Services\Status\ReplyCleanupService;
 use App\Services\StatusService;
 use App\Transformer\ActivityPub\Verb\DeleteNote;
@@ -129,6 +130,22 @@ class StatusDelete implements ShouldQueue
         }
 
         Bookmark::whereStatusId($status->id)->delete();
+
+        // FEP-044f: revoke through the QuoteService contract so a
+        // Delete{QuoteAuthorization} reaches the remote quoter, who may not be
+        // a follower and so misses the Delete{Status} fanout. The stamp must be
+        // federated while $status still resolves: sendDelete() reads
+        // $auth->status->url() and Status is soft-deleted below, so a queued
+        // job would no-op. Send synchronously, then remove the rows.
+        QuoteAuthorization::whereStatusId($status->id)
+            ->approved()
+            ->get()
+            ->each(function (QuoteAuthorization $auth) {
+                $auth->state = QuoteAuthorization::STATE_REVOKED;
+                $auth->revoked_at = now();
+                $auth->save();
+                QuoteService::sendDelete($auth);
+            });
 
         QuoteAuthorization::whereStatusId($status->id)->delete();
 

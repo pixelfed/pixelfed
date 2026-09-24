@@ -123,10 +123,16 @@ trait InboxHelpers
 
     /**
      * Verify that the host of two URLs match (e.g. actor and object belong to same origin).
+     *
+     * Hosts are compared case-insensitively: RFC 3986 §3.2.2 defines the host
+     * as case-insensitive and parse_url preserves the original case, so a peer
+     * that emits its actor id and activity id with different host casing (both
+     * valid) must still be treated as the same origin.
      */
     public function hostsMatch(string $url1, string $url2): bool
     {
-        return parse_url($url1, PHP_URL_HOST) === parse_url($url2, PHP_URL_HOST);
+        return strtolower((string) parse_url($url1, PHP_URL_HOST))
+            === strtolower((string) parse_url($url2, PHP_URL_HOST));
     }
 
     /**
