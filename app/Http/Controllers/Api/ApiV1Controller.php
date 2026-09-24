@@ -331,8 +331,8 @@ class ApiV1Controller extends Controller
             $changes = true;
         }
 
-        if ($request->has('source[language]')) {
-            $lang = $request->input('source[language]');
+        if ($request->has('source.language')) {
+            $lang = $request->input('source.language');
             if (in_array($lang, Localization::languages())) {
                 $user->language = $lang;
                 $changes = true;
@@ -468,8 +468,8 @@ class ApiV1Controller extends Controller
             }
         }
 
-        if ($request->has('source[privacy]')) {
-            $scope = $request->input('source[privacy]');
+        if ($request->has('source.privacy')) {
+            $scope = $request->input('source.privacy');
             if (in_array($scope, ['public', 'private', 'unlisted'])) {
                 if ($composeSettings['default_scope'] != $scope) {
                     $composeSettings['default_scope'] = $profile->is_private ? 'private' : $scope;
@@ -4834,8 +4834,8 @@ class ApiV1Controller extends Controller
         abort_unless($request->user()->tokenCan('write'), 403);
 
         $pid = $request->user()->profile_id;
-        $home = $request->input('home[last_read_id]');
-        $notifications = $request->input('notifications[last_read_id]');
+        $home = $request->input('home.last_read_id');
+        $notifications = $request->input('notifications.last_read_id');
 
         if ($home) {
             return $this->json(MarkerService::set($pid, 'home', $home));
