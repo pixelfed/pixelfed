@@ -4,6 +4,7 @@ namespace App\Jobs\StatusPipeline;
 
 use App\Models\Media;
 use App\Models\Status;
+use App\Support\TransientException;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
@@ -11,6 +12,7 @@ use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Log;
+use Throwable;
 
 class NewStatusPipeline implements ShouldQueue
 {
@@ -86,6 +88,33 @@ class NewStatusPipeline implements ShouldQueue
             return;
         }
 
+        // A transient DB/cache/queue failure here (connection drop, failover,
+        // deadlock) should retry via tries=3/backoff, not fail the job on the
+        // first exception. maxExceptions=1 would fail-fast on a rethrow, so
+        // release the job instead — that reschedules without incrementing the
+        // worker's exception counter, leaving the retry budget for real bugs,
+        // which still propagate and fail fast. publish() frees its own lock
+        // before rethrowing, so the retry can re-acquire and federate.
+        try {
+            $this->publish($status);
+        } catch (Throwable $e) {
+            if (TransientException::matches($e)) {
+                Log::warning("NewStatusPipeline: transient failure for status {$status->id}, retrying: ".$e->getMessage());
+                $this->release($this->backoff[$this->attempts() - 1] ?? 5);
+
+                return;
+            }
+
+            throw $e;
+        }
+    }
+
+    /**
+     * Publish the status. No-ops when there is nothing to publish (deleted
+     * status, still-processing media, or the publish lock is already held).
+     */
+    protected function publish(Status $status): void
+    {
         if (! Status::where('id', $status->id)->exists()) {
             // The status has already been deleted by the time the job is running
             // Don't publish the status, and just no-op
@@ -135,11 +164,11 @@ class NewStatusPipeline implements ShouldQueue
 
         try {
             StatusEntityLexer::dispatch($status);
-        } catch (\Exception $e) {
-            // Let the queue retry take the lock next time.
+        } catch (Throwable $e) {
+            // Free the lock so the retry (handled by handle()) can re-acquire
+            // and federate, then rethrow for transient/fatal classification.
             Cache::forget($lock);
 
-            Log::warning("NewStatusPipeline: Failed to dispatch StatusEntityLexer for status {$status->id}: ".$e->getMessage());
             throw $e;
         }
     }
