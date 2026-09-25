@@ -153,9 +153,7 @@ trait SecuritySettings
             abort(403);
         }
 
-        // Removing 2FA is a security-critical change: require proof of the
-        // second factor (a current TOTP code or an unused backup code), not
-        // just an authenticated session. Mirrors the login verification path.
+        // Removing 2FA is a security-critical change: require proof of the second factor (a current TOTP code or an unused backup code).
         if (! PendingLoginService::verifyCode($user, $request->input('code'))) {
             return response()->json(['msg' => 'Invalid 2FA code'], 403);
         }
