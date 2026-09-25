@@ -5,6 +5,7 @@ namespace App\Jobs\MovePipeline;
 use App\Http\Controllers\FollowerController;
 use App\Models\Follower;
 use App\Models\Profile;
+use App\Services\FollowerService;
 use App\Util\ActivityPub\Helpers;
 use DateTime;
 use Exception;
@@ -162,5 +163,9 @@ class MoveMigrateFollowersPipeline implements ShouldQueue
                     }
                 }
             }, 'profiles.id', 'id');
+
+        // Clear the migrated (old) actor's cached follower/following sets so
+        // FollowerService::follows() does not return stale relationships.
+        FollowerService::delCache($actorAccount['id']);
     }
 }

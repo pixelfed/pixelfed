@@ -6,6 +6,7 @@ use App\Http\Controllers\FollowerController;
 use App\Models\Follower;
 use App\Models\Profile;
 use App\Services\AccountService;
+use App\Services\FollowerService;
 use Illuminate\Bus\Batchable;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldBeUniqueUntilProcessing;
@@ -87,8 +88,17 @@ class ProfileMigrationMoveFollowersPipeline implements ShouldBeUniqueUntilProces
         $targetInbox = $ne['sharedInbox'] ?? $ne['inbox_url'];
         foreach (Follower::whereFollowingId($this->oldPid)->lazyById(200, 'id') as $follower) {
             try {
+                // Changing following_id via save() does not fire the
+                // create/delete observers, so the Redis follower sets are not
+                // updated. Explicitly move the cached relationship so
+                // FollowerService::follows() stops returning the stale OLD
+                // relationship (which gates access to private content).
+                FollowerService::remove($follower->profile_id, $this->oldPid, true);
+
                 $follower->following_id = $this->newPid;
                 $follower->save();
+
+                FollowerService::add($follower->profile_id, $this->newPid);
 
                 // If a local user has migrated to a different instance, send a
                 // follow request for each local follower to the new instance
@@ -100,6 +110,11 @@ class ProfileMigrationMoveFollowersPipeline implements ShouldBeUniqueUntilProces
                 Log::error($e);
             }
         }
+
+        // Clear the old profile's cached follower/following sets so no stale
+        // relationship remains after the migration.
+        FollowerService::delCache($this->oldPid);
+
         AccountService::del($this->oldPid);
         AccountService::del($this->newPid);
     }
