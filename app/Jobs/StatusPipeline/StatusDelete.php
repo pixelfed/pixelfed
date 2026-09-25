@@ -123,8 +123,7 @@ class StatusDelete implements ShouldQueue
         if ($status->in_reply_to_id) {
             $parent = Status::find($status->in_reply_to_id);
             if ($parent) {
-                $parent->reply_count = max(0, $parent->reply_count - 1);
-                $parent->save();
+                Status::whereId($parent->id)->where('reply_count', '>', 0)->decrement('reply_count');
                 StatusService::del($parent->id);
             }
         }

@@ -1,6 +1,7 @@
 <?php
 
 use App\Jobs\CommentPipeline\CommentPipeline;
+use App\Jobs\StatusPipeline\StatusDelete;
 use App\Models\Status;
 use App\Models\User;
 use Illuminate\Foundation\Testing\LazilyRefreshDatabase;
@@ -51,4 +52,62 @@ it('counts both replies even when both jobs hold a stale parent snapshot', funct
     (new CommentPipeline($staleB, $replyB))->handle();
 
     expect((int) Status::find($parent->id)->reply_count)->toBe(2);
+});
+
+it('decrements reply_count for both deleted replies without losing an update', function () {
+    config(['federation.activitypub.enabled' => false]);
+
+    $author = User::factory()->create();
+    $author->refresh();
+    $replier = User::factory()->create();
+    $replier->refresh();
+
+    // Parent already has two replies counted.
+    $parent = Status::factory()->create([
+        'profile_id' => $author->profile_id,
+        'type' => 'photo',
+        'reply_count' => 2,
+    ]);
+
+    $replyA = Status::factory()->create([
+        'profile_id' => $replier->profile_id,
+        'in_reply_to_id' => $parent->id,
+        'in_reply_to_profile_id' => $author->profile_id,
+    ]);
+    $replyB = Status::factory()->create([
+        'profile_id' => $replier->profile_id,
+        'in_reply_to_id' => $parent->id,
+        'in_reply_to_profile_id' => $author->profile_id,
+    ]);
+
+    (new StatusDelete($replyA))->handle();
+    (new StatusDelete($replyB))->handle();
+
+    expect((int) Status::find($parent->id)->reply_count)->toBe(0);
+});
+
+it('never decrements reply_count below zero', function () {
+    config(['federation.activitypub.enabled' => false]);
+
+    $author = User::factory()->create();
+    $author->refresh();
+    $replier = User::factory()->create();
+    $replier->refresh();
+
+    // Parent count is already 0 (drifted low); a delete must not underflow.
+    $parent = Status::factory()->create([
+        'profile_id' => $author->profile_id,
+        'type' => 'photo',
+        'reply_count' => 0,
+    ]);
+
+    $reply = Status::factory()->create([
+        'profile_id' => $replier->profile_id,
+        'in_reply_to_id' => $parent->id,
+        'in_reply_to_profile_id' => $author->profile_id,
+    ]);
+
+    (new StatusDelete($reply))->handle();
+
+    expect((int) Status::find($parent->id)->reply_count)->toBe(0);
 });
