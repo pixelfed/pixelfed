@@ -38,13 +38,31 @@ class Classifier
      */
     public function tokenize(string $string): Collection
     {
+        $ignored = $this->ignoredTokens();
+
         if ($this->tokenizer) {
             $tokens = call_user_func($this->tokenizer, $string);
 
-            return collect($tokens);
+            return collect($tokens)->reject(fn ($t) => in_array($t, $ignored, true))->values();
         }
 
-        return Str::matchAll('/[[:alpha:]]+/u', Str::lower($string));
+        return Str::matchAll('/[[:alpha:]]+/u', Str::lower($string))
+            ->reject(fn ($t) => in_array($t, $ignored, true))
+            ->values();
+    }
+
+    /**
+     * Stop-words dropped from both training and inference for every class, so
+     * the spam and ham lexicons stay symmetric and stop-words never enter the
+     * likelihood product.
+     *
+     * @return array<int, string>
+     */
+    private function ignoredTokens(): array
+    {
+        $ignored = config('autospam.ignored_tokens');
+
+        return $ignored ? explode(',', $ignored) : ['the', 'a', 'of', 'and'];
     }
 
     /**
@@ -111,15 +129,8 @@ class Classifier
      */
     private function incrementWord(string $type, string $word): void
     {
-        $ignored = config('autospam.ignored_tokens');
-        if (! $ignored) {
-            $ignored = ['the', 'a', 'of', 'and'];
-        } else {
-            $ignored = explode(',', $ignored);
-        }
-        if ($type === 'spam' && in_array($word, $ignored)) {
-            return;
-        }
+        // Stop-words are already dropped in tokenize() for every class, so no
+        // per-class filtering is needed here.
         if (! isset($this->words[$type][$word])) {
             $this->words[$type][$word] = 0;
         }
