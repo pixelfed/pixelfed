@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Settings;
 
 use App\Models\AccountLog;
 use App\Models\UserDevice;
+use App\Services\PendingLoginService;
 use BaconQrCode\Renderer\Image\SvgImageBackEnd;
 use BaconQrCode\Renderer\ImageRenderer;
 use BaconQrCode\Renderer\RendererStyle\RendererStyle;
@@ -145,10 +146,18 @@ trait SecuritySettings
 
         $this->validate($request, [
             'action' => 'required|string|max:12',
+            'code' => 'required|string|min:6|max:24',
         ]);
 
         if ($request->action !== 'remove') {
             abort(403);
+        }
+
+        // Removing 2FA is a security-critical change: require proof of the
+        // second factor (a current TOTP code or an unused backup code), not
+        // just an authenticated session. Mirrors the login verification path.
+        if (! PendingLoginService::verifyCode($user, $request->input('code'))) {
+            return response()->json(['msg' => 'Invalid 2FA code'], 403);
         }
 
         $user->{'2fa_enabled'} = false;
@@ -156,6 +165,17 @@ trait SecuritySettings
         $user->{'2fa_backup_codes'} = null;
         $user->{'2fa_setup_at'} = null;
         $user->save();
+
+        $log = new AccountLog;
+        $log->user_id = $user->id;
+        $log->item_id = $user->id;
+        $log->item_type = 'App\Models\User';
+        $log->action = 'account.security.2fa.remove';
+        $log->message = 'Two-factor authentication removed';
+        $log->link = null;
+        $log->ip_address = $request->ip();
+        $log->user_agent = $request->userAgent();
+        $log->save();
 
         return response()->json([
             'msg' => 'Successfully removed 2fa device',
