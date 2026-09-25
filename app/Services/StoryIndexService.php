@@ -391,12 +391,27 @@ class StoryIndexService
 
     private function clearStoryCache(): void
     {
+        $lockKey = $this->rebuildLockKey();
+        $prefix = (string) config('database.redis.options.prefix');
+
         $storyKeys = $this->redisArray(fn () => Redis::keys('story:*'));
-        $storyKeys = array_filter($storyKeys, function ($key) {
-            return ! str_contains($key, 'following:');
+        $storyKeys = array_filter($storyKeys, function ($key) use ($lockKey) {
+            // Never delete follower carousels or the rebuild mutex itself, or we
+            // release the lock rebuildIndex() is holding.
+            return ! str_contains($key, 'following:')
+                && ! str_contains($key, $lockKey);
         });
 
         if (! empty($storyKeys)) {
+            // Redis::keys() returns prefixed key names, but Redis::del() re-adds
+            // the prefix. Strip it so del() targets the real keys instead of a
+            // double-prefixed no-op.
+            if ($prefix !== '') {
+                $storyKeys = array_map(function ($key) use ($prefix) {
+                    return str_starts_with($key, $prefix) ? substr($key, strlen($prefix)) : $key;
+                }, $storyKeys);
+            }
+
             $chunks = array_chunk($storyKeys, 1000);
             foreach ($chunks as $chunk) {
                 Redis::del(...$chunk);
