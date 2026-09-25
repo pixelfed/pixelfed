@@ -6,6 +6,7 @@ use App\Models\Profile;
 use App\Models\Status;
 use App\Models\User;
 use App\Services\NotificationService;
+use Illuminate\Database\QueryException;
 use Illuminate\Foundation\Testing\LazilyRefreshDatabase;
 use Illuminate\Support\Facades\Log;
 
@@ -390,5 +391,68 @@ describe('NotificationService pagination termination (pixelfed#7195)', function 
         $page = NotificationService::getMaxPage($user->profile_id, $topId, 20);
 
         expect($page['data'])->toBeEmpty();
+    });
+});
+
+describe('NotificationService::firstOrCreateNotification dedup race (regression)', function () {
+    it('enforces a unique index on the dedup tuple at the database level', function () {
+        $user = User::factory()->create();
+        $user->refresh();
+        $actor = User::factory()->create();
+        $actor->refresh();
+
+        $status = Status::factory()->create(['profile_id' => $user->profile_id]);
+
+        $attributes = [
+            'profile_id' => $user->profile_id,
+            'actor_id' => $actor->profile_id,
+            'action' => 'like',
+            'item_id' => $status->id,
+            'item_type' => Status::class,
+        ];
+
+        Notification::create($attributes);
+
+        // A second raw insert of the identical tuple must be rejected by the
+        // unique index rather than silently creating a duplicate row.
+        expect(fn () => Notification::create($attributes))
+            ->toThrow(QueryException::class);
+    });
+
+    it('returns the existing row when a duplicate insert loses the race', function () {
+        $user = User::factory()->create();
+        $user->refresh();
+        $actor = User::factory()->create();
+        $actor->refresh();
+
+        $status = Status::factory()->create(['profile_id' => $user->profile_id]);
+
+        // Simulate the winner of the race having already inserted the row
+        // between our SELECT and INSERT.
+        $existing = Notification::create([
+            'profile_id' => $user->profile_id,
+            'actor_id' => $actor->profile_id,
+            'action' => 'like',
+            'item_id' => $status->id,
+            'item_type' => Status::class,
+        ]);
+
+        $result = NotificationService::firstOrCreateNotification(
+            $user->profile_id,
+            $actor->profile_id,
+            'like',
+            $status->id,
+            Status::class
+        );
+
+        expect($result->id)->toBe($existing->id);
+
+        $count = Notification::where('profile_id', $user->profile_id)
+            ->where('actor_id', $actor->profile_id)
+            ->where('action', 'like')
+            ->where('item_id', $status->id)
+            ->count();
+
+        expect($count)->toBe(1);
     });
 });
