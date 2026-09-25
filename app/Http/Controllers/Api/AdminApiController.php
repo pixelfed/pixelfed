@@ -803,7 +803,7 @@ class AdminApiController extends Controller
         $id = $request->input('id');
         $instance = Instance::findOrFail($id);
         $instance->user_count = Profile::whereDomain($instance->domain)->count();
-        $instance->status_count = Profile::whereDomain($instance->domain)->leftJoin('statuses', 'profiles.id', '=', 'statuses.profile_id')->count();
+        $instance->status_count = Profile::whereDomain($instance->domain)->leftJoin('statuses', 'profiles.id', '=', 'statuses.profile_id')->count('statuses.id');
         $instance->save();
 
         return new AdminInstance($instance);
