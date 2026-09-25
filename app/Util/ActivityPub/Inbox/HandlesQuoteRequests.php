@@ -45,14 +45,25 @@ trait HandlesQuoteRequests
 
         $existing = QuoteService::find($status, $quoteUrl);
 
-        if ($existing && ($existing->isRevoked() || $existing->actor_id !== $actor->id)) {
+        if ($existing && $existing->isRevoked()) {
             QuoteService::sendReject($status, $actor, $quoteUrl, $requestUrl);
 
             return;
         }
 
+        // A live stamp already covers this quote post. The stamp is unique per
+        // (status_id, quote_url) and instrument validation only binds the quote
+        // url to the requester's host, so re-issue the existing stamp instead
+        // of rejecting a co-hosted requester for an actor mismatch that the
+        // validation layer cannot establish. Answer the actual requester: for
+        // the original claimant this is the same actor, for anyone else the
+        // Accept is addressed to them rather than the stored actor.
         if ($existing && $existing->isApproved()) {
-            QuoteService::sendAccept($existing, $requestUrl);
+            if ((int) $existing->actor_id === (int) $actor->id) {
+                QuoteService::sendAccept($existing, $requestUrl);
+            } else {
+                QuoteService::sendAcceptTo($existing, $actor, $requestUrl);
+            }
 
             return;
         }

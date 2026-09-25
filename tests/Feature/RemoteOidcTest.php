@@ -150,13 +150,21 @@ it('ensures a valid username from the oidc callback', function () {
     $dataset = [
         'john.doe@domain.com' => 'johndoe',
         'test+user@part1@domain.com' => 'testuser',
-        'user!#$%^&*()_test' => 'user_test',
+        // Underscores are stripped so the result satisfies ValidUsername's
+        // single-separator cap (see the multi-underscore cases below).
+        'user!#$%^&*()_test' => 'usertest',
         'jean-luc.picard' => 'jeanlucpicard',
         'supercalifragilisticexpialidøcious@test.com' => 'supercalifragilisticexpialidci',
-        'hélène_renåud' => 'hlne_renud',
+        'hélène_renåud' => 'hlnerenud',
         '123456789' => '123456789',
-        '  user _ name  ' => 'user_name',
+        '  jane _ name  ' => 'janename',
         'foo+bar@sub.domain.co.uk' => 'foobar',
+        // Multi-underscore preferred_usernames used to survive sanitization and
+        // then fail ValidUsername (>1 separator), permanently locking the user
+        // out of OIDC provisioning. They must now provision cleanly.
+        'a_b_c' => 'abc',
+        'john_doe_test' => 'johndoetest',
+        'first_last_dept' => 'firstlastdept',
     ];
 
     foreach ($dataset as $input => $expected) {

@@ -19,6 +19,7 @@ use App\Models\Profile;
 use App\Models\QuoteAuthorization;
 use App\Models\Report;
 use App\Models\Status;
+use App\Models\StatusEdit;
 use App\Models\Story;
 use App\Models\StoryView;
 use App\Models\UserFilter;
@@ -72,13 +73,19 @@ class DeleteRemoteProfilePipeline implements ShouldQueue
 
         AccountService::del($pid);
 
-        // Delete statuses
+        // Delete statuses. chunkById, not chunk: RemoteStatusDelete
+        // soft-deletes the rows it is handed, so OFFSET paging would skip rows
+        // as the live set shrinks. Keyset paging on the monotonic id is stable.
         Status::whereProfileId($pid)
-            ->chunk(50, function ($statuses) {
+            ->chunkById(50, function ($statuses) {
                 foreach ($statuses as $status) {
                     RemoteStatusDelete::dispatch($status)->onQueue('delete');
                 }
             });
+
+        // Safety net: purge any edit-history rows for this profile in case a
+        // per-status delete job was skipped or failed (mirrors DeleteAccountPipeline).
+        StatusEdit::whereProfileId($pid)->delete();
 
         // Delete Poll Votes
         PollVote::whereProfileId($pid)->delete();
@@ -129,10 +136,15 @@ class DeleteRemoteProfilePipeline implements ShouldQueue
         // Delete quote approval stamps issued to this actor
         QuoteAuthorization::whereActorId($pid)->delete();
 
-        // Delete notifications
-        Notification::whereProfileId($pid)
-            ->orWhere('actor_id', $pid)
-            ->chunk(50, function ($notifications) {
+        // Delete notifications. chunkById, not chunk: the loop force-deletes
+        // rows, so OFFSET paging would skip half of them. The profile/actor
+        // match is grouped so chunkById's appended id constraint ANDs against
+        // the whole predicate instead of only the actor_id branch.
+        Notification::where(function ($query) use ($pid) {
+            $query->where('profile_id', $pid)
+                ->orWhere('actor_id', $pid);
+        })
+            ->chunkById(50, function ($notifications) {
                 foreach ($notifications as $n) {
                     $n->forceDelete();
                 }

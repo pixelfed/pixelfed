@@ -31,9 +31,9 @@ return [
         'sensitive' => 'Wrażliwe',
         'sensitiveContent' => 'Treść wrażliwa',
         'sensitiveContentWarning' => 'Ten post może zawierać wrażliwe treści',
-        'javascript' => '',
-        'loading' => '',
-        'continue' => '',
+        'javascript' => 'Aby wyświetlić tę zawartość, włącz obsługę języka JavaScript.',
+        'loading' => 'Ładowanie...',
+        'continue' => 'Kontynuuj',
     ],
 
     'site' => [
@@ -61,10 +61,10 @@ return [
         'profile' => 'Profil',
         'drive' => 'Dysk',
         'settings' => 'Ustawienia',
-        'appearance' => '',
+        'appearance' => 'Wygląd',
         'compose' => 'Utwórz nowy',
         'logout' => 'Wyloguj się',
-        'createStory' => '',
+        'createStory' => 'Utwórz historię',
 
         // Nav footer
         'about' => 'O nas',
@@ -72,8 +72,8 @@ return [
         'language' => 'Język',
         'privacy' => 'Prywatność',
         'terms' => 'Regulamin',
-        'legalNotice' => '',
-        'mobileApps' => '',
+        'legalNotice' => 'Nota prawna',
+        'mobileApps' => 'Aplikacje mobilne',
 
         // Temporary links
         'backToPreviousDesign' => 'Wróć do poprzedniego wyglądu',
@@ -87,7 +87,7 @@ return [
     ],
 
     'notifications' => [
-        'title' => '',
+        'title' => 'Powiadomienia',
         'liked' => 'polubił(a) twoje',
         'commented' => 'skomentował(a) twoje',
         'reacted' => 'zareagował(a) na twoje',
@@ -118,7 +118,7 @@ return [
         'filteringResults' => '',
         'mentions' => '',
         'mentionsDescription' => '',
-        'likes' => '',
+        'likes' => 'Polubienia',
         'likesDescription' => '',
         'followers' => '',
         'followersDescription' => '',

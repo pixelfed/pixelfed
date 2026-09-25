@@ -175,6 +175,7 @@ class TransformImports extends Command
                     $status = new Status;
                     $status->profile_id = $pid;
                     $status->caption = $caption;
+                    $status->rendered = '';
                     $status->type = $ip->post_type;
                     $status->scope = 'public';
                     $status->visibility = 'public';

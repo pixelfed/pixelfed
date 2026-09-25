@@ -25,12 +25,22 @@ trait HomeSettings
     {
         $id = $request->user()->profile_id;
         $storage = [];
-        $used = Media::whereProfileId($id)->sum('size');
-        $storage['limit'] = config_cache('pixelfed.max_account_size') * 1024;
-        $storage['used'] = $used;
-        $storage['percentUsed'] = ceil($storage['used'] / $storage['limit'] * 100);
-        $storage['limitPretty'] = PrettyNumber::size($storage['limit']);
-        $storage['usedPretty'] = PrettyNumber::size($storage['used']);
+
+        // Only compute storage stats when account limits are enforced — the
+        // view renders this block behind the same guard. max_account_size can
+        // resolve to '' or 0 from .env, so cast to int and never divide by a
+        // non-positive limit (which threw DivisionByZeroError/TypeError and
+        // 500'd the settings page).
+        if (config_cache('pixelfed.enforce_account_limit')) {
+            $limit = (int) config_cache('pixelfed.max_account_size') * 1024;
+            $used = Media::whereProfileId($id)->sum('size');
+            $storage['limit'] = $limit;
+            $storage['used'] = $used;
+            $storage['percentUsed'] = $limit > 0 ? ceil($used / $limit * 100) : 0;
+            $storage['limitPretty'] = PrettyNumber::size($limit);
+            $storage['usedPretty'] = PrettyNumber::size($used);
+        }
+
         $pronouns = PronounService::get($id);
 
         return view('settings.home', ['storage' => $storage, 'pronouns' => $pronouns]);
@@ -47,7 +57,10 @@ trait HomeSettings
         ]);
 
         $changes = false;
-        $name = strip_tags(Purify::clean($request->input('name')));
+        $name = htmlspecialchars_decode(
+            strip_tags(Purify::clean($request->input('name'))),
+            ENT_QUOTES | ENT_HTML5
+        );
         $bio = $request->filled('bio') ? strip_tags(Purify::clean($request->input('bio'))) : null;
         $website = $request->input('website');
         $language = $request->input('language');

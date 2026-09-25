@@ -847,10 +847,16 @@ trait AdminSettingsController
             'disk_config.url' => 'nullable',
         ]);
 
-        ConfigCacheService::put('pixelfed.cloud_storage', $request->input('primary_disk') === 'cloud');
+        $primaryDisk = $request->input('primary_disk');
         $res = [
-            'primary_disk' => $request->input('primary_disk'),
+            'primary_disk' => $primaryDisk,
         ];
+
+        // Switching to local storage never needs credential verification.
+        if ($primaryDisk === 'local') {
+            ConfigCacheService::put('pixelfed.cloud_storage', false);
+        }
+
         if ($request->has('update_disk')) {
             $res['disk_config'] = $request->input('disk_config');
             $changes = [];
@@ -911,6 +917,26 @@ trait AdminSettingsController
             }
             $res['changes'] = json_encode($changes);
         }
+
+        // Only flip cloud_storage on AFTER any credential verification has
+        // passed, and only when the cloud disk the driver actually uses is
+        // configured. Mirrors settingsApiUpdateHomeType's cloud_ready guard so
+        // the pipeline is never routed to an unverified cloud disk.
+        if ($primaryDisk === 'cloud') {
+            $cloudDisk = config('filesystems.cloud');
+            $cloudReady = ! empty(config('filesystems.disks.'.$cloudDisk.'.key'))
+                && ! empty(config('filesystems.disks.'.$cloudDisk.'.secret'));
+
+            if (! $cloudReady) {
+                return response()->json([
+                    'error' => true,
+                    'message' => 'Must configure cloud storage before enabling!',
+                ], 400);
+            }
+
+            ConfigCacheService::put('pixelfed.cloud_storage', true);
+        }
+
         Cache::forget('api:v1:instance-data:rules');
         Cache::forget('api:v1:instance-data-response-v1');
         Cache::forget('api:v2:instance-data-response-v2');

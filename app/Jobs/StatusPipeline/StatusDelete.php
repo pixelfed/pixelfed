@@ -19,11 +19,13 @@ use App\Models\StatusArchived;
 use App\Models\StatusEdit;
 use App\Models\StatusHashtag;
 use App\Models\StatusView;
+use App\Services\Account\AccountStatService;
 use App\Services\ActivityPubDeliveryService;
 use App\Services\CollectionService;
 use App\Services\DirectMessageService;
 use App\Services\FractalService;
 use App\Services\NotificationService;
+use App\Services\QuoteService;
 use App\Services\Status\ReplyCleanupService;
 use App\Services\StatusService;
 use App\Transformer\ActivityPub\Verb\DeleteNote;
@@ -89,7 +91,7 @@ class StatusDelete implements ShouldQueue
 
         StatusService::del($status->id, true);
         if ($profile) {
-            if (in_array($status->type, ['photo', 'photo:album', 'video', 'video:album', 'photo:video:album'])) {
+            if (in_array($status->type, AccountStatService::COUNTABLE_STATUS_TYPES)) {
                 $profile->status_count = $profile->status_count - 1;
                 $profile->save();
             }
@@ -122,17 +124,32 @@ class StatusDelete implements ShouldQueue
         if ($status->in_reply_to_id) {
             $parent = Status::find($status->in_reply_to_id);
             if ($parent) {
-                $parent->reply_count = max(0, $parent->reply_count - 1);
-                $parent->save();
+                Status::whereId($parent->id)->where('reply_count', '>', 0)->decrement('reply_count');
                 StatusService::del($parent->id);
             }
         }
 
         Bookmark::whereStatusId($status->id)->delete();
 
+        // FEP-044f: revoke through the QuoteService contract so a
+        // Delete{QuoteAuthorization} reaches the remote quoter, who may not be
+        // a follower and so misses the Delete{Status} fanout. The stamp must be
+        // federated while $status still resolves: sendDelete() reads
+        // $auth->status->url() and Status is soft-deleted below, so a queued
+        // job would no-op. Send synchronously, then remove the rows.
+        QuoteAuthorization::whereStatusId($status->id)
+            ->approved()
+            ->get()
+            ->each(function (QuoteAuthorization $auth) {
+                $auth->state = QuoteAuthorization::STATE_REVOKED;
+                $auth->revoked_at = now();
+                $auth->save();
+                QuoteService::sendDelete($auth);
+            });
+
         QuoteAuthorization::whereStatusId($status->id)->delete();
 
-        CollectionItem::whereObjectType(Status::class)
+        CollectionItem::whereIn('object_type', ['App\Status', Status::class])
             ->whereObjectId($status->id)
             ->get()
             ->each(function ($col) {
@@ -179,7 +196,7 @@ class StatusDelete implements ShouldQueue
                 $not->forceDeleteQuietly();
             });
 
-        Report::whereObjectType(Status::class)
+        Report::whereIn('object_type', ['App\Status', Status::class])
             ->whereObjectId($status->id)
             ->delete();
 
@@ -193,7 +210,7 @@ class StatusDelete implements ShouldQueue
         StatusView::whereStatusId($status->id)->delete();
         ReplyCleanupService::releaseRepliesOf($status);
 
-        AccountInterstitial::where('item_type', Status::class)
+        AccountInterstitial::whereIn('item_type', ['App\Status', Status::class])
             ->where('item_id', $status->id)
             ->delete();
 

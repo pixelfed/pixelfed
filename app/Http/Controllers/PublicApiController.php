@@ -747,6 +747,7 @@ class PublicApiController extends Controller
         if ($pinned && ! $hasCursor) {
             $pinnedStatuses = Status::whereProfileId($profile['id'])
                 ->whereNotNull('pinned_order')
+                ->whereIn('scope', $visibility)
                 ->orderBy('pinned_order')
                 ->get();
 

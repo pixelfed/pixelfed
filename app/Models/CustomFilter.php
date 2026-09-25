@@ -323,7 +323,7 @@ class CustomFilter extends Model
                     return;
                 }
 
-                $maxPatternsPerFilter = self::getMaxFiltersPerUser();
+                $maxPatternsPerFilter = self::getMaxKeywordsPerFilter();
                 $keywordsToProcess = $keywords->take($maxPatternsPerFilter);
 
                 $regexPatterns = $keywordsToProcess->map(function ($keyword) {

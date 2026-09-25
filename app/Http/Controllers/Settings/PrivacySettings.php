@@ -50,6 +50,11 @@ trait PrivacySettings
             'show_atom',
         ];
 
+        // Captured before the loop mutates is_private. When the account was
+        // private at render time the crawlable checkbox is disabled and omitted
+        // from the POST, so its prior value must be preserved rather than reset.
+        $wasPrivate = (bool) $profile->getOriginal('is_private');
+
         $profile->indexable = $request->input('indexable') == 'on';
         $profile->is_suggestable = $request->input('is_suggestable') == 'on';
         $profile->save();
@@ -78,6 +83,9 @@ trait PrivacySettings
                 }
                 Cache::forget('profiles:private');
             } elseif ($field === 'crawlable') {
+                if ($wasPrivate) {
+                    continue;
+                }
                 if ($form == 'on') {
                     $settings->{$field} = false;
                 } else {

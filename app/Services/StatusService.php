@@ -99,7 +99,7 @@ class StatusService
             && ! request()->filled('include_reblogs')
             && ! empty($res['reblog'])
         ) {
-            foreach (['content', 'content_text', 'emojis', 'media_attachments'] as $key) {
+            foreach (['content', 'content_text', 'emojis', 'media_attachments', 'sensitive', 'spoiler_text'] as $key) {
                 if (array_key_exists($key, $res['reblog'])) {
                     $res[$key] = $res['reblog'][$key];
                 }

@@ -165,12 +165,17 @@ class MediaMoveStorageCloudToCloud extends Command
                 if ($media->thumbnail_path && $sourceDisk->exists($media->thumbnail_path)) {
                     $this->copy($media->thumbnail_path, $sourceDisk, $destDisk);
                 }
+            }
 
-                if (! $this->verify($media->media_path, $sourceDisk, $destDisk, $media->original_sha256)) {
-                    $this->warn(PHP_EOL.'Verify failed for media '.$media->id.' ('.$media->media_path.'); left source intact, URLs unchanged.');
+            // Verify whenever the source still exists to compare against —
+            // including the adopt-existing-destination path, so a wrong object
+            // pre-seeded at the destination key cannot be adopted while the good
+            // source is GC'd. Skip only when the source is already gone (a
+            // legitimate idempotent resume after a prior successful move).
+            if ($onSource && ! $this->verify($media->media_path, $sourceDisk, $destDisk)) {
+                $this->warn(PHP_EOL.'Verify failed for media '.$media->id.' ('.$media->media_path.'); left source intact, URLs unchanged.');
 
-                    return 'failed';
-                }
+                return 'failed';
             }
 
             // Rewrite URLs to the destination bucket.
@@ -218,10 +223,17 @@ class MediaMoveStorageCloudToCloud extends Command
     }
 
     /**
-     * Verify the destination copy matches the source by size, and by sha256
-     * against the stored original checksum when available. Fails closed.
+     * Verify the destination copy matches the source by existence and size.
+     *
+     * Content hashing is intentionally not used: original_sha256 is the hash
+     * of the file as originally uploaded, but the optimize pipeline rewrites
+     * the file in place afterwards, so the migrated (optimized) object never
+     * matches original_sha256 for optimized jpeg/png/webp/avif media —
+     * comparing against it would fail every optimized image. A cloud→cloud copy
+     * transfers identical bytes, so existence + size parity is the sound
+     * signal. Fails closed.
      */
-    protected function verify(string $path, $sourceDisk, $destDisk, ?string $expectedSha = null): bool
+    protected function verify(string $path, $sourceDisk, $destDisk): bool
     {
         if (! $destDisk->exists($path)) {
             return false;
@@ -231,23 +243,6 @@ class MediaMoveStorageCloudToCloud extends Command
         $destSize = $destDisk->size($path);
         if ($sourceSize === false || $destSize === false || $sourceSize !== $destSize) {
             return false;
-        }
-
-        if ($expectedSha) {
-            // Hash the freshly written destination object to confirm integrity.
-            $stream = $destDisk->readStream($path);
-            if ($stream === false || $stream === null) {
-                return false;
-            }
-            $ctx = hash_init('sha256');
-            hash_update_stream($ctx, $stream);
-            if (is_resource($stream)) {
-                fclose($stream);
-            }
-            $destSha = hash_final($ctx);
-            if (! hash_equals($expectedSha, $destSha)) {
-                return false;
-            }
         }
 
         return true;

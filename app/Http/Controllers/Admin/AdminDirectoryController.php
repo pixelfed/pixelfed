@@ -323,12 +323,12 @@ trait AdminDirectoryController
         }
 
         $directoryArr['banner_image'] = 'public/headers/default.jpg';
-        $directory->v = $directoryArr;
+        $directory->v = json_encode($directoryArr);
         $directory->save();
         $bannerImage->v = url(Storage::url('public/headers/default.jpg'));
         $bannerImage->save();
         Cache::forget('api:v1:instance-data-response-v1');
-        ConfigCacheService::put('pixelfed.directory', $directory);
+        ConfigCacheService::put('pixelfed.directory', $directory->v);
 
         return $bannerImage->v;
     }

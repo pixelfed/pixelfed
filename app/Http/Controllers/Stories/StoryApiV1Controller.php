@@ -520,7 +520,7 @@ class StoryApiV1Controller extends Controller
                                 $parsedUrl = parse_url($content);
                                 if (! in_array($parsedUrl['scheme'] ?? '', ['https'])) {
                                     throw ValidationException::withMessages([
-                                        "overlays.{$index}.content" => 'Only HTTP and HTTPS URLs are allowed.',
+                                        "overlays.{$index}.content" => 'Only HTTPS URLs are allowed.',
                                     ]);
                                 }
                                 break;
@@ -697,7 +697,8 @@ class StoryApiV1Controller extends Controller
         $pid = $request->user()->profile_id;
         $text = $request->input('caption');
 
-        $story = Story::findOrFail($request->input('sid'));
+        $story = Story::whereActive(true)->findOrFail($request->input('sid'));
+        abort_if(now()->gt($story->expires_at), 404);
 
         $following = Follower::whereProfileId($pid)->whereFollowingId($story->profile_id)->exists();
         abort_if(! $following, 403, 'Invalid permission');

@@ -82,16 +82,16 @@ class SiteController extends Controller
 
     public function communityGuidelines(Request $request)
     {
-        // Scope by locale: the rendered layout contains translated strings,
-        // so a shared key would leak one locale's render to other locales.
-        $cacheKey = 'site:help:community-guidelines:'.app()->getLocale();
-
-        return Cache::remember($cacheKey, now()->addMinutes(15), function () {
-            $slug = '/site/kb/community-guidelines';
-            $page = Page::whereSlug($slug)->whereActive(true)->first();
-
-            return view('site.help.community-guidelines', ['page' => $page])->render();
+        // Cache only the page payload and render the view per request, so the
+        // layout/footer (config version/domain, canonical url, csrf token) is
+        // evaluated on every request rather than baked into a cached HTML blob.
+        Cache::remember('site:help:community-guidelines', now()->addDays(120), function () {
+            return $this->cachedPage('/site/kb/community-guidelines');
         });
+
+        $page = Page::whereSlug('/site/kb/community-guidelines')->whereActive(true)->first();
+
+        return view('site.help.community-guidelines', ['page' => $page])->render();
     }
 
     public function privacy(Request $request)

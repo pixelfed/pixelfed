@@ -18,6 +18,7 @@ use App\Models\RemoteReport;
 use App\Models\Report;
 use App\Models\Status;
 use App\Models\User;
+use App\Services\Account\AccountStatService;
 use App\Services\AccountService;
 use App\Services\AdminStatsService;
 use App\Services\ConfigCacheService;
@@ -222,13 +223,16 @@ class AdminApiController extends Controller
                 ->whereNull('appeal_handled_at')
                 ->whereUserId($appeal->user_id)
                 ->get()
-                ->each(function ($report) use ($meta) {
+                ->each(function ($report) {
                     $report->is_spam = false;
                     $report->appeal_handled_at = now();
                     $report->save();
                     $status = Status::find($report->item_id);
                     if ($status) {
-                        $status->is_nsfw = $meta->is_nsfw;
+                        // Restore each status from its own appeal's snapshot,
+                        // not the trigger appeal's, so mixed NSFW/SFW posts keep
+                        // their own content-warning state.
+                        $status->is_nsfw = json_decode($report->meta)->is_nsfw;
                         $status->scope = 'public';
                         $status->visibility = 'public';
                         $status->save();
@@ -611,12 +615,7 @@ class AdminApiController extends Controller
         if ($action === 'refresh_stats') {
             $profile->following_count = DB::table('followers')->whereProfileId($user->profile_id)->count();
             $profile->followers_count = DB::table('followers')->whereFollowingId($user->profile_id)->count();
-            $statusCount = Status::whereProfileId($user->profile_id)
-                ->whereNull('in_reply_to_id')
-                ->whereNull('reblog_of_id')
-                ->whereIn('scope', ['public', 'unlisted', 'private'])
-                ->count();
-            $profile->status_count = $statusCount;
+            $profile->status_count = AccountStatService::recalculateStatusCount($user->profile_id);
             $profile->save();
         } elseif ($action === 'verify_email') {
             $user->email_verified_at = now();
@@ -803,7 +802,7 @@ class AdminApiController extends Controller
         $id = $request->input('id');
         $instance = Instance::findOrFail($id);
         $instance->user_count = Profile::whereDomain($instance->domain)->count();
-        $instance->status_count = Profile::whereDomain($instance->domain)->leftJoin('statuses', 'profiles.id', '=', 'statuses.profile_id')->count();
+        $instance->status_count = Profile::whereDomain($instance->domain)->leftJoin('statuses', 'profiles.id', '=', 'statuses.profile_id')->count('statuses.id');
         $instance->save();
 
         return new AdminInstance($instance);
@@ -961,14 +960,14 @@ class AdminApiController extends Controller
                 'type' => $status->type,
                 'scope' => $status->scope,
                 'is_nsfw' => (bool) $status->is_nsfw,
-                'report_count' => Report::whereObjectType(Status::class)
+                'report_count' => Report::whereIn('object_type', ['App\Status', Status::class])
                     ->whereObjectId($status->id)
                     ->count(),
-                'open_report_count' => Report::whereObjectType(Status::class)
+                'open_report_count' => Report::whereIn('object_type', ['App\Status', Status::class])
                     ->whereObjectId($status->id)
                     ->whereNull('admin_seen')
                     ->count(),
-                'autospam' => AccountInterstitial::whereItemType(Status::class)
+                'autospam' => AccountInterstitial::whereIn('item_type', ['App\Status', Status::class])
                     ->whereItemId($status->id)
                     ->whereType('post.autospam')
                     ->whereNull('appeal_handled_at')

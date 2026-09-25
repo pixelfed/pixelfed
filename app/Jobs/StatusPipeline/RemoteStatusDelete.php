@@ -15,6 +15,7 @@ use App\Models\Notification;
 use App\Models\Report;
 use App\Models\Status;
 use App\Models\StatusArchived;
+use App\Models\StatusEdit;
 use App\Models\StatusHashtag;
 use App\Models\StatusView;
 use App\Services\Account\AccountStatService;
@@ -121,19 +122,16 @@ class RemoteStatusDelete implements ShouldBeUniqueUntilProcessing, ShouldQueue
         if ($status->in_reply_to_id) {
             $parent = Status::find($status->in_reply_to_id);
             if ($parent) {
-                if ($parent->reply_count) {
-                    $parent->reply_count = $parent->reply_count - 1;
-                    $parent->save();
-                }
+                Status::whereId($parent->id)->where('reply_count', '>', 0)->decrement('reply_count');
                 StatusService::del($parent->id);
             }
         }
 
-        AccountInterstitial::where('item_type', Status::class)
+        AccountInterstitial::whereIn('item_type', ['App\Status', Status::class])
             ->where('item_id', $status->id)
             ->delete();
         Bookmark::whereStatusId($status->id)->delete();
-        CollectionItem::whereObjectType(Status::class)
+        CollectionItem::whereIn('object_type', ['App\Status', Status::class])
             ->whereObjectId($status->id)
             ->get()
             ->each(function ($col) {
@@ -186,10 +184,13 @@ class RemoteStatusDelete implements ShouldBeUniqueUntilProcessing, ShouldQueue
                 NotificationService::del($not->profile_id, $not->id);
                 $not->forceDeleteQuietly();
             });
-        Report::whereObjectType(Status::class)
+        Report::whereIn('object_type', ['App\Status', Status::class])
             ->whereObjectId($status->id)
             ->delete();
         StatusArchived::whereStatusId($status->id)->delete();
+        // Purge edit history so remote deletion doesn't leave prior caption/CW
+        // versions behind (status_edits has no FK/cascade), mirroring StatusDelete.
+        StatusEdit::whereStatusId($status->id)->delete();
         // Model-based delete so StatusHashtagObserver::deleted() runs and
         // decrements hashtags.cached_count (a query-builder delete bypasses it).
         StatusHashtag::whereStatusId($status->id)->get()->each->delete();

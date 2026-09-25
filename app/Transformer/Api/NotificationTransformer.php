@@ -56,7 +56,7 @@ class NotificationTransformer extends Fractal\TransformerAbstract
             }
         }
 
-        if ($n->item_id && $n->item_type == MediaTag::class) {
+        if ($n->item_id && in_array($n->item_type, ['App\MediaTag', MediaTag::class])) {
             $ml = $n->item;
             if ($ml && $ml->tagged_username) {
                 $np = StatusService::get($ml->status_id, false);

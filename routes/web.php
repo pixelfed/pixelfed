@@ -211,7 +211,7 @@ Route::domain(config('pixelfed.domain.app'))->middleware(['localization'])->grou
         // Route::post('verify-email/request', [InternalApiController::class, 'requestEmailVerificationStore']);
 
         Route::get('auth/sudo', [AccountController::class, 'confirmPassword'])->name('password.confirm');
-        Route::post('auth/sudo', [AccountController::class, 'confirmPasswordStore']);
+        Route::post('auth/sudo', [AccountController::class, 'confirmPasswordStore'])->middleware('throttle:5,1');
 
         Route::get('results', [SearchController::class, 'results']);
         Route::post('visibility', [StatusController::class, 'toggleVisibility']);
@@ -295,7 +295,7 @@ Route::domain(config('pixelfed.domain.app'))->middleware(['localization'])->grou
         Route::get('password', [SettingsController::class, 'password'])->name('settings.password')->middleware('dangerzone');
         Route::post('password', [SettingsController::class, 'passwordUpdate'])->middleware('dangerzone');
         Route::get('email', [SettingsController::class, 'email'])->name('settings.email')->middleware('dangerzone');
-        Route::post('email', [SettingsController::class, 'emailUpdate'])->middleware('dangerzone');
+        Route::post('email', [SettingsController::class, 'emailUpdate'])->middleware(['dangerzone', 'throttle:3,10']);
         Route::post('email/resend', [SettingsController::class, 'emailVerificationResend'])->name('settings.email.resend')->middleware(['dangerzone', 'throttle:3,10']);
         Route::get('notifications', [SettingsController::class, 'notifications'])->name('settings.notifications');
         Route::get('privacy', [SettingsController::class, 'privacy'])->name('settings.privacy');

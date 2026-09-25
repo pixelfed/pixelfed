@@ -622,6 +622,7 @@ class AdminController extends Controller
         $emoji->save();
         $key = CustomEmoji::CACHE_KEY.str_replace(':', '', $emoji->shortcode);
         Cache::forget($key);
+        Cache::forget('pf:custom_emoji');
 
         return redirect()->back();
     }
@@ -671,6 +672,7 @@ class AdminController extends Controller
         $emoji = CustomEmoji::findOrFail($id);
         Storage::delete("public/{$emoji->media_path}");
         Cache::forget('pf:custom_emoji');
+        Cache::forget(CustomEmoji::CACHE_KEY.str_replace(':', '', $emoji->shortcode));
         $emoji->delete();
 
         return redirect(route('admin.custom-emoji'));

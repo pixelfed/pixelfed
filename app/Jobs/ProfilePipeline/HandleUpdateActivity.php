@@ -82,7 +82,10 @@ class HandleUpdateActivity implements ShouldQueue
         }
 
         if ($profile->name !== $payload['object']['name']) {
-            $profile->name = Purify::clean(substr($payload['object']['name'], 0, config('pixelfed.max_name_length')));
+            $profile->name = htmlspecialchars_decode(
+                Purify::clean(substr($payload['object']['name'], 0, config('pixelfed.max_name_length'))),
+                ENT_QUOTES | ENT_HTML5
+            );
         }
 
         if ($profile->isDirty()) {

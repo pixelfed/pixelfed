@@ -848,7 +848,16 @@
             .then(() => {
                 window.location.reload();
             })
-            .catch(() => {
+            .catch((err) => {
+                if (err.response && err.response.status === 423) {
+                    // RequirePassword rejected: send the user through password
+                    // confirmation, then back here to retry.
+                    window.location.href =
+                        "{{ route('password.confirm') }}?redirect=" +
+                        encodeURIComponent(window.location.pathname + window.location.search);
+                    return;
+                }
+
                 privateModeConfirmed = false;
 
                 $('#is_private').prop('checked', false);

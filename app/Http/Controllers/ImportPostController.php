@@ -273,7 +273,11 @@ class ImportPostController extends Controller
     {
         if ($exts->count() > 1) {
             if ($exts->contains('mp4')) {
-                if ($exts->contains('jpg', 'png', 'webp')) {
+                // intersect(), not the multi-arg contains(): contains() with
+                // 2+ args is a where-style filter that is always false on a
+                // list of plain extension strings, so this branch was dead and
+                // mixed photo+video albums were mislabeled video:album.
+                if ($exts->intersect(['jpg', 'jpeg', 'png', 'webp'])->isNotEmpty()) {
                     return 'photo:video:album';
                 }
 
