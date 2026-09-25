@@ -140,7 +140,12 @@ trait HandlesStories
             return;
         }
 
-        if (Status::whereObjectUrl($id)->exists()) {
+        // Dedup against the canonical (suffix-stripped) form that is actually
+        // stored, so a redelivered activity is recognized instead of racing the
+        // unique index on statuses.object_url / statuses.uri.
+        $url = $this->stripActivitySuffix($id);
+
+        if (Status::whereObjectUrl($url)->exists()) {
             return;
         }
 
@@ -166,8 +171,6 @@ trait HandlesStories
         if (! FollowerService::follows($actorProfile->id, $targetProfile->id)) {
             return;
         }
-
-        $url = $this->stripActivitySuffix($id);
 
         $entitiesKey = $statusType === 'story:reaction' ? 'reaction' : 'caption';
         $metaKey = $statusType === 'story:reaction' ? 'reaction' : 'caption';
