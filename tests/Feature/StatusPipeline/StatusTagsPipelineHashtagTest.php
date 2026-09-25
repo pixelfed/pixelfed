@@ -66,3 +66,23 @@ it('reuses an existing hashtag row rather than erroring', function () {
     expect(Hashtag::where('slug', 'existingtag')->count())->toBe(1);
     expect(StatusHashtag::where('hashtag_id', $existing->id)->where('status_id', $status->id)->exists())->toBeTrue();
 });
+
+it('keeps distinct names that share a base slug as separate rows', function () {
+    $user = User::factory()->create();
+    $user->refresh();
+
+    // 'c' and 'c++' both slugify to base 'c'; they must remain distinct rows.
+    $statusA = Status::factory()->create(['profile_id' => $user->profile_id, 'type' => 'photo']);
+    $statusB = Status::factory()->create(['profile_id' => $user->profile_id, 'type' => 'photo']);
+
+    (new StatusTagsPipeline(hashtagActivity('c'), $statusA))->handle();
+    (new StatusTagsPipeline(hashtagActivity('c++'), $statusB))->handle();
+
+    expect(Hashtag::where('name', 'c')->count())->toBe(1);
+    expect(Hashtag::where('name', 'c++')->count())->toBe(1);
+
+    // Slugs must differ so the unique slug index is not violated.
+    $slugC = Hashtag::where('name', 'c')->value('slug');
+    $slugCpp = Hashtag::where('name', 'c++')->value('slug');
+    expect($slugC)->not->toBe($slugCpp);
+});

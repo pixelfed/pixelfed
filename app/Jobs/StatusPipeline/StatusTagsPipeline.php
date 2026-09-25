@@ -16,7 +16,6 @@ use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
-use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Str;
 
@@ -93,33 +92,23 @@ class StatusTagsPipeline implements ShouldQueue
                     }
                 }
 
-                if (db_is_pgsql()) {
-                    // firstOrCreate -> createOrFirst catches the unique-violation
-                    // and re-selects, so two workers racing the same brand-new
-                    // slug resolve to one row instead of throwing SQLSTATE 23505.
-                    $slug = Str::slug($name, '-', false);
-                    $hashtag = Hashtag::firstOrCreate(
-                        ['slug' => $slug],
-                        ['name' => $name],
-                    );
-                } else {
-                    $hashtag = DB::transaction(function () use ($name) {
-                        $baseSlug = Str::slug($name, '-', false);
-                        $slug = $baseSlug;
-                        $counter = 1;
-
-                        while (Hashtag::where('slug', $slug)
-                            ->where('name', '!=', $name)
-                            ->exists()) {
-                            $slug = $baseSlug.'-'.$counter++;
-                        }
-
-                        return Hashtag::updateOrCreate(
-                            ['name' => $name],
-                            ['slug' => $slug]
-                        );
-                    });
+                // Resolve a slug that does not collide with a *different* name,
+                // so two distinct names sharing a base slug keep separate rows.
+                $baseSlug = Str::slug($name, '-', false);
+                $slug = $baseSlug;
+                $counter = 1;
+                while (Hashtag::where('slug', $slug)->where('name', '!=', $name)->exists()) {
+                    $slug = $baseSlug.'-'.$counter++;
                 }
+
+                // Keyed on the unique `name` column: firstOrCreate -> createOrFirst
+                // catches the unique-constraint violation and re-selects, so two
+                // workers racing the same brand-new hashtag resolve to one row
+                // instead of throwing (SQLSTATE 23505 on pgsql, 1062 on mysql).
+                $hashtag = Hashtag::firstOrCreate(
+                    ['name' => $name],
+                    ['slug' => $slug],
+                );
 
                 StatusHashtag::firstOrCreate([
                     'status_id' => $status->id,
