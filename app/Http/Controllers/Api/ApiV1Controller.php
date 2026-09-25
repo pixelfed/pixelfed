@@ -367,7 +367,12 @@ class ApiV1Controller extends Controller
         }
 
         if ($request->has('display_name')) {
-            $displayName = strip_tags(Purify::clean($request->input('display_name')));
+            // Purify entity-encodes &, <, > even in plain text; decode after the
+            // tag/XSS strip so the display name is stored as readable text.
+            $displayName = htmlspecialchars_decode(
+                strip_tags(Purify::clean($request->input('display_name'))),
+                ENT_QUOTES | ENT_HTML5
+            );
             if ($displayName !== $user->name) {
                 $user->name = $displayName;
                 $profile->name = $displayName;

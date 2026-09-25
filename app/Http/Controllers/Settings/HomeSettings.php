@@ -57,7 +57,10 @@ trait HomeSettings
         ]);
 
         $changes = false;
-        $name = strip_tags(Purify::clean($request->input('name')));
+        $name = htmlspecialchars_decode(
+            strip_tags(Purify::clean($request->input('name'))),
+            ENT_QUOTES | ENT_HTML5
+        );
         $bio = $request->filled('bio') ? strip_tags(Purify::clean($request->input('bio'))) : null;
         $website = $request->input('website');
         $language = $request->input('language');
