@@ -64,6 +64,7 @@ use App\Services\MediaPathService;
 use App\Services\MediaService;
 use App\Services\NetworkTimelineService;
 use App\Services\NotificationService;
+use App\Services\PlaceService;
 use App\Services\PublicTimelineService;
 use App\Services\QuoteService;
 use App\Services\ReblogService;
@@ -3956,6 +3957,7 @@ class ApiV1Controller extends Controller
                 $status->visibility = 'draft';
                 if ($request->has('place_id')) {
                     $status->place_id = $request->input('place_id');
+                    PlaceService::clearStatusesByPlaceId($request->input('place_id'));
                 }
                 $status->save();
             }
