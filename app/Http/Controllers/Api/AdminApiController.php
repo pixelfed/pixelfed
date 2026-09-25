@@ -222,13 +222,16 @@ class AdminApiController extends Controller
                 ->whereNull('appeal_handled_at')
                 ->whereUserId($appeal->user_id)
                 ->get()
-                ->each(function ($report) use ($meta) {
+                ->each(function ($report) {
                     $report->is_spam = false;
                     $report->appeal_handled_at = now();
                     $report->save();
                     $status = Status::find($report->item_id);
                     if ($status) {
-                        $status->is_nsfw = $meta->is_nsfw;
+                        // Restore each status from its own appeal's snapshot,
+                        // not the trigger appeal's, so mixed NSFW/SFW posts keep
+                        // their own content-warning state.
+                        $status->is_nsfw = json_decode($report->meta)->is_nsfw;
                         $status->scope = 'public';
                         $status->visibility = 'public';
                         $status->save();
