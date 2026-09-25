@@ -148,7 +148,7 @@ class StatusDelete implements ShouldQueue
 
         QuoteAuthorization::whereStatusId($status->id)->delete();
 
-        CollectionItem::whereObjectType(Status::class)
+        CollectionItem::whereIn('object_type', ['App\Status', Status::class])
             ->whereObjectId($status->id)
             ->get()
             ->each(function ($col) {
@@ -195,7 +195,7 @@ class StatusDelete implements ShouldQueue
                 $not->forceDeleteQuietly();
             });
 
-        Report::whereObjectType(Status::class)
+        Report::whereIn('object_type', ['App\Status', Status::class])
             ->whereObjectId($status->id)
             ->delete();
 
@@ -209,7 +209,7 @@ class StatusDelete implements ShouldQueue
         StatusView::whereStatusId($status->id)->delete();
         ReplyCleanupService::releaseRepliesOf($status);
 
-        AccountInterstitial::where('item_type', Status::class)
+        AccountInterstitial::whereIn('item_type', ['App\Status', Status::class])
             ->where('item_id', $status->id)
             ->delete();
 
