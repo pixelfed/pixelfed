@@ -520,7 +520,7 @@ class StoryApiV1Controller extends Controller
                                 $parsedUrl = parse_url($content);
                                 if (! in_array($parsedUrl['scheme'] ?? '', ['https'])) {
                                     throw ValidationException::withMessages([
-                                        "overlays.{$index}.content" => 'Only HTTP and HTTPS URLs are allowed.',
+                                        "overlays.{$index}.content" => 'Only HTTPS URLs are allowed.',
                                     ]);
                                 }
                                 break;
