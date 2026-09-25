@@ -2,9 +2,16 @@
 
 use App\Models\User;
 use Illuminate\Foundation\Testing\LazilyRefreshDatabase;
+use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Hash;
 
 uses(LazilyRefreshDatabase::class);
+
+beforeEach(function () {
+    // password.confirm is throttled; clear limiter state so earlier tests in
+    // the shared-process suite do not push these requests into a 429.
+    Cache::flush();
+});
 
 /*
 |--------------------------------------------------------------------------

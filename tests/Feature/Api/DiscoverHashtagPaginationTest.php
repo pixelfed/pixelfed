@@ -7,6 +7,7 @@ use App\Models\StatusHashtag;
 use App\Models\User;
 use App\Services\StatusService;
 use Illuminate\Foundation\Testing\LazilyRefreshDatabase;
+use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Redis;
 
 uses(LazilyRefreshDatabase::class);
@@ -24,6 +25,10 @@ uses(LazilyRefreshDatabase::class);
 */
 
 beforeEach(function () {
+    // The discover feed caches per hashtag id (discover:tags:public_feed:{id}
+    // :page:{n}). LazilyRefreshDatabase resets ids but not Redis, so a stale
+    // cached page from an earlier test under the same id would leak in.
+    Cache::flush();
     Redis::spy();
 });
 

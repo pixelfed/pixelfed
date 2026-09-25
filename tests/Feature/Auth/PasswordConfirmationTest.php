@@ -2,6 +2,7 @@
 
 use App\Models\User;
 use Illuminate\Foundation\Testing\LazilyRefreshDatabase;
+use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Hash;
 
 uses(LazilyRefreshDatabase::class);
@@ -11,6 +12,12 @@ uses(LazilyRefreshDatabase::class);
 | Password Confirmation (Sudo Mode)
 |--------------------------------------------------------------------------
 */
+
+beforeEach(function () {
+    // password.confirm is throttled; clear limiter state so earlier tests in
+    // the shared-process suite do not push these requests into a 429.
+    Cache::flush();
+});
 
 it('renders the password confirmation page', function () {
     $user = User::factory()->create();

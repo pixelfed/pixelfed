@@ -22,7 +22,7 @@ uses(LazilyRefreshDatabase::class);
 |
 */
 
-function makeStory(Profile $author, Carbon\Carbon $createdAt, Carbon\Carbon $expiresAt): Story
+function makeAuthorTtlStory(Profile $author, Carbon\Carbon $createdAt, Carbon\Carbon $expiresAt): Story
 {
     $story = new Story;
     $story->profile_id = $author->id;
@@ -47,8 +47,8 @@ it('keeps the author-key TTL at the longest-lived story when the oldest is index
     Redis::del("story:by_author:{$author->id}");
 
     // Story B: newer, ~25h remaining. Story A: older, ~4h remaining.
-    $newer = makeStory($author, now()->subHour(), now()->addHours(24));
-    $older = makeStory($author, now()->subHours(20), now()->addHours(4));
+    $newer = makeAuthorTtlStory($author, now()->subHour(), now()->addHours(24));
+    $older = makeAuthorTtlStory($author, now()->subHours(20), now()->addHours(4));
 
     $index = app(StoryIndexService::class);
 
@@ -75,12 +75,12 @@ it('extends the author-key TTL when a newer story is indexed after an older one'
     $index = app(StoryIndexService::class);
 
     // Index a short-lived story first, then a longer-lived one.
-    $short = makeStory($author, now()->subHours(20), now()->addHours(4));
+    $short = makeAuthorTtlStory($author, now()->subHours(20), now()->addHours(4));
     $index->indexStory($short);
     expect((int) Redis::ttl("story:by_author:{$author->id}"))
         ->toBeLessThanOrEqual(4 * 3600 + 3600);
 
-    $long = makeStory($author, now(), now()->addHours(24));
+    $long = makeAuthorTtlStory($author, now(), now()->addHours(24));
     $index->indexStory($long);
 
     // TTL extended up to the longer story, never shortened back.

@@ -2,6 +2,7 @@
 
 use App\Models\User;
 use Illuminate\Foundation\Testing\LazilyRefreshDatabase;
+use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Mail;
 
 uses(LazilyRefreshDatabase::class);
@@ -19,6 +20,9 @@ uses(LazilyRefreshDatabase::class);
 */
 
 beforeEach(function () {
+    // Start from a clean limiter bucket so throttle state from earlier tests
+    // in the shared-process suite cannot pre-consume this test's budget.
+    Cache::flush();
     config(['pixelfed.enforce_email_verification' => true]);
     config(['instance.enable_cc' => false]);
     Mail::fake();
