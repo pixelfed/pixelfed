@@ -18,6 +18,7 @@ use App\Models\RemoteReport;
 use App\Models\Report;
 use App\Models\Status;
 use App\Models\User;
+use App\Services\Account\AccountStatService;
 use App\Services\AccountService;
 use App\Services\AdminStatsService;
 use App\Services\ConfigCacheService;
@@ -614,12 +615,7 @@ class AdminApiController extends Controller
         if ($action === 'refresh_stats') {
             $profile->following_count = DB::table('followers')->whereProfileId($user->profile_id)->count();
             $profile->followers_count = DB::table('followers')->whereFollowingId($user->profile_id)->count();
-            $statusCount = Status::whereProfileId($user->profile_id)
-                ->whereNull('in_reply_to_id')
-                ->whereNull('reblog_of_id')
-                ->whereIn('scope', ['public', 'unlisted', 'private'])
-                ->count();
-            $profile->status_count = $statusCount;
+            $profile->status_count = AccountStatService::recalculateStatusCount($user->profile_id);
             $profile->save();
         } elseif ($action === 'verify_email') {
             $user->email_verified_at = now();
