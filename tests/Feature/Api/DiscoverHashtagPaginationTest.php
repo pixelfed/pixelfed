@@ -45,11 +45,13 @@ function taggedMediaStatus(int $profileId, Hashtag $hashtag, ?int $ageSeconds = 
         'visibility' => 'public',
     ];
 
-    // Distinct timestamps so latest() (created_at DESC) is deterministic; the
-    // suite creates rows within the same second otherwise.
-    if ($ageSeconds !== null) {
-        $attributes['created_at'] = now()->subSeconds($ageSeconds);
-    }
+    // The discover feed orders StatusHashtag rows by their own created_at
+    // (StatusHashtagService::get() uses ->latest()), NOT the status's
+    // created_at or id. Give both rows the same distinct timestamp so
+    // latest() is fully deterministic; larger $ageSeconds => older => later
+    // in the newest-first list.
+    $createdAt = $ageSeconds !== null ? now()->subSeconds($ageSeconds) : now();
+    $attributes['created_at'] = $createdAt;
 
     $status = Status::factory()->create($attributes);
 
@@ -61,12 +63,16 @@ function taggedMediaStatus(int $profileId, Hashtag $hashtag, ?int $ageSeconds = 
     $media->order = 1;
     $media->save();
 
-    StatusHashtag::create([
+    $statusHashtag = StatusHashtag::create([
         'status_id' => $status->id,
         'hashtag_id' => $hashtag->id,
         'profile_id' => $profileId,
         'status_visibility' => 'public',
     ]);
+    // created_at is not fillable; set the join row's timestamp explicitly so
+    // ->latest() sorts on a value the test controls.
+    $statusHashtag->created_at = $createdAt;
+    $statusHashtag->save();
 
     StatusService::del($status->id);
 
