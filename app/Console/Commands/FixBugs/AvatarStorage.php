@@ -48,8 +48,14 @@ class AvatarStorage extends Command
         $segments = [
             [
                 'Local',
-                Avatar::whereNull('is_remote')->count(),
-                PrettyNumber::size(Avatar::whereNull('is_remote')->sum('size')),
+                Avatar::where(function ($q) {
+                    $q->where('is_remote', false)->orWhereNull('is_remote');
+                })->whereHas('profile', fn ($q) => $q->whereNull('domain'))->count(),
+                PrettyNumber::size(
+                    Avatar::where(function ($q) {
+                        $q->where('is_remote', false)->orWhereNull('is_remote');
+                    })->whereHas('profile', fn ($q) => $q->whereNull('domain'))->sum('size')
+                ),
             ],
             [
                 'Remote',
@@ -179,7 +185,9 @@ class AvatarStorage extends Command
             $disk->put('cache/avatars/default.jpg', Storage::get('public/avatars/default.jpg'));
         }
 
-        Avatar::whereNull('is_remote')->chunk(5, function ($avatars) use ($disk) {
+        Avatar::where(function ($q) {
+            $q->where('is_remote', false)->orWhereNull('is_remote');
+        })->whereHas('profile', fn ($q) => $q->whereNull('domain'))->chunk(5, function ($avatars) use ($disk) {
             foreach ($avatars as $avatar) {
                 if ($avatar->media_path === 'public/avatars/default.jpg') {
                     $avatar->cdn_url = $disk->url('cache/avatars/default.jpg');
