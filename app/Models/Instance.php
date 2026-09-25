@@ -97,6 +97,7 @@ class Instance extends Model
             'notes' => 'array',
             'nodeinfo_last_fetched' => 'datetime',
             'delivery_next_after' => 'datetime',
+            'nodeinfo_next_after' => 'datetime',
         ];
     }
 
