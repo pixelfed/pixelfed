@@ -94,23 +94,14 @@ class StatusTagsPipeline implements ShouldQueue
                 }
 
                 if (db_is_pgsql()) {
-                    $hashtag = DB::transaction(function () use ($name) {
-                        $slug = Str::slug($name, '-', false);
-
-                        // Use slug for lookup (case-insensitive via Str::slug normalization)
-                        $existing = Hashtag::where('slug', $slug)
-                            ->lockForUpdate()
-                            ->first();
-
-                        if ($existing) {
-                            return $existing;
-                        }
-
-                        return Hashtag::create([
-                            'name' => $name,
-                            'slug' => $slug,
-                        ]);
-                    });
+                    // firstOrCreate -> createOrFirst catches the unique-violation
+                    // and re-selects, so two workers racing the same brand-new
+                    // slug resolve to one row instead of throwing SQLSTATE 23505.
+                    $slug = Str::slug($name, '-', false);
+                    $hashtag = Hashtag::firstOrCreate(
+                        ['slug' => $slug],
+                        ['name' => $name],
+                    );
                 } else {
                     $hashtag = DB::transaction(function () use ($name) {
                         $baseSlug = Str::slug($name, '-', false);
