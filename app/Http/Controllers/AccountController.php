@@ -407,6 +407,8 @@ class AccountController extends Controller
 
         Cache::forget('profile:follower_count:'.$pid);
         Cache::forget('profile:following_count:'.$pid);
+        Cache::forget('profile:follower_count:'.$follower->id);
+        Cache::forget('profile:following_count:'.$follower->id);
         RelationshipService::refresh($pid, $follower->id);
 
         return response()->json(['msg' => 'success'], 200);
