@@ -107,6 +107,7 @@ class ImportInstagram implements ShouldQueue
                 $status = new Status;
                 $status->profile_id = $profile->id;
                 $status->caption = strip_tags($caption);
+                $status->rendered = '';
                 $status->is_nsfw = false;
                 $status->type = 'photo';
                 $status->scope = 'unlisted';
