@@ -140,7 +140,7 @@ class MediaMoveStorageCloudToLocal extends Command
                 $this->copyToLocal($media->thumbnail_path, $localDisk, $cloudDisk);
             }
 
-            if (! $this->verify($media->media_path, $localDisk, $cloudDisk, $media->original_sha256)) {
+            if (! $this->verify($media->media_path, $localDisk, $cloudDisk)) {
                 $this->warn(PHP_EOL.'Verify failed for media '.$media->id.' ('.$media->media_path.'); left cloud copy intact.');
 
                 return 'failed';
@@ -202,10 +202,17 @@ class MediaMoveStorageCloudToLocal extends Command
     }
 
     /**
-     * Verify the local copy matches the cloud source by size, and by sha256
-     * against the stored original checksum when available. Fails closed.
+     * Verify the local copy matches the cloud source by existence and size.
+     *
+     * Content hashing is intentionally not used: original_sha256 is the hash
+     * of the file as originally uploaded, but the optimize pipeline rewrites
+     * the local file in place afterwards and the cloud copy is uploaded from
+     * that optimized file, so the downloaded object never matches
+     * original_sha256 for optimized jpeg/png/webp/avif media. Comparing against
+     * it would fail every optimized image. Existence + size parity is the sound
+     * signal for the copy we just downloaded. Fails closed.
      */
-    protected function verify(string $path, $localDisk, $cloudDisk, ?string $expectedSha = null): bool
+    protected function verify(string $path, $localDisk, $cloudDisk): bool
     {
         if (! $localDisk->exists($path)) {
             return false;
@@ -215,13 +222,6 @@ class MediaMoveStorageCloudToLocal extends Command
         $cloudSize = $cloudDisk->size($path);
         if ($localSize === false || $cloudSize === false || $localSize !== $cloudSize) {
             return false;
-        }
-
-        if ($expectedSha) {
-            $localSha = @hash_file('sha256', $localDisk->path($path));
-            if ($localSha && ! hash_equals($expectedSha, $localSha)) {
-                return false;
-            }
         }
 
         return true;

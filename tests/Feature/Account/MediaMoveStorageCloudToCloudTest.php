@@ -27,7 +27,7 @@ beforeEach(function () {
     Storage::fake('s3-old', ['url' => 'https://cdn.pixelfed.au']);
 });
 
-function makeOldBucketMedia(string $oldHost = 'https://cdn.pixelfed.au'): Media
+function makeOldBucketMedia(string $oldHost = 'https://cdn.pixelfed.au', ?string $originalSha = null): Media
 {
     $user = User::factory()->create();
     $user->refresh();
@@ -52,6 +52,7 @@ function makeOldBucketMedia(string $oldHost = 'https://cdn.pixelfed.au'): Media
         'optimized_url' => $oldHost.'/'.$path,
         'mime' => 'image/jpeg',
         'size' => strlen('PRIMARY-BYTES-1234567890'),
+        'original_sha256' => $originalSha,
         'remote_media' => false,
         'version' => 4,
         'replicated_at' => now(),
@@ -112,4 +113,19 @@ it('skips media already pointing at the destination host', function () {
 it('errors when source and destination are the same disk', function () {
     $this->artisan('unstable:MediaMoveStorageCloudToCloud', ['--sourceDisk' => 's3', '--force' => true])
         ->assertExitCode(1);
+});
+
+it('migrates media whose stored bytes no longer match original_sha256', function () {
+    // Optimized images carry the pre-optimization upload hash in
+    // original_sha256, while both buckets hold the optimized bytes. verify()
+    // must not compare against original_sha256, or every optimized image is
+    // left un-migrated on the old bucket.
+    $media = makeOldBucketMedia('https://cdn.pixelfed.au', hash('sha256', 'ORIGINAL-UPLOAD-BYTES-BEFORE-OPTIMIZE'));
+
+    $this->artisan('unstable:MediaMoveStorageCloudToCloud', ['--force' => true])
+        ->assertExitCode(0);
+
+    expect(Storage::disk('s3')->exists($media->media_path))->toBeTrue();
+    expect(Storage::disk('s3-old')->exists($media->media_path))->toBeFalse();
+    expect(parse_url($media->fresh()->cdn_url, PHP_URL_HOST))->toBe('cdneast.pixelfed.au');
 });
