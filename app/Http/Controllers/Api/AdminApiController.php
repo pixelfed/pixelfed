@@ -961,14 +961,14 @@ class AdminApiController extends Controller
                 'type' => $status->type,
                 'scope' => $status->scope,
                 'is_nsfw' => (bool) $status->is_nsfw,
-                'report_count' => Report::whereObjectType(Status::class)
+                'report_count' => Report::whereIn('object_type', ['App\Status', Status::class])
                     ->whereObjectId($status->id)
                     ->count(),
-                'open_report_count' => Report::whereObjectType(Status::class)
+                'open_report_count' => Report::whereIn('object_type', ['App\Status', Status::class])
                     ->whereObjectId($status->id)
                     ->whereNull('admin_seen')
                     ->count(),
-                'autospam' => AccountInterstitial::whereItemType(Status::class)
+                'autospam' => AccountInterstitial::whereIn('item_type', ['App\Status', Status::class])
                     ->whereItemId($status->id)
                     ->whereType('post.autospam')
                     ->whereNull('appeal_handled_at')
