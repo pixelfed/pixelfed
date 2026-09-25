@@ -1328,6 +1328,7 @@ trait AdminReportController
         if ($action == 'mark-all-not-spam') {
             AccountInterstitial::whereType('post.autospam')
                 ->whereIn('item_type', ['App\Status', Status::class])
+                ->whereNull('appeal_handled_at')
                 ->whereUserId($appeal->user_id)
                 ->get()
                 ->each(function ($report) use ($meta) {
