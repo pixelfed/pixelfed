@@ -198,13 +198,23 @@ class ComposeController extends Controller
             ->whereNull('status_id')
             ->findOrFail($id);
 
-        $media->save();
+        // Enforce the content blocklist on the replacement bytes, mirroring
+        // mediaUpload — mediaUpdate overwrites the previously-validated file.
+        $hash = \hash_file('sha256', $photo->getRealPath());
+        abort_if(MediaBlocklistService::exists($hash) == true, 451);
 
         $fragments = explode('/', $media->media_path);
         $name = last($fragments);
         array_pop($fragments);
         $dir = implode('/', $fragments);
         $path = $photo->storePubliclyAs($dir, $name);
+
+        // Keep the row in sync with the new bytes.
+        $media->original_sha256 = $hash;
+        $media->mime = $photo->getMimeType();
+        $media->size = $photo->getSize();
+        $media->save();
+
         $res = [
             'url' => $media->url().'?v='.time(),
         ];
