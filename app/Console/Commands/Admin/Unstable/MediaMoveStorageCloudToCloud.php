@@ -165,12 +165,17 @@ class MediaMoveStorageCloudToCloud extends Command
                 if ($media->thumbnail_path && $sourceDisk->exists($media->thumbnail_path)) {
                     $this->copy($media->thumbnail_path, $sourceDisk, $destDisk);
                 }
+            }
 
-                if (! $this->verify($media->media_path, $sourceDisk, $destDisk)) {
-                    $this->warn(PHP_EOL.'Verify failed for media '.$media->id.' ('.$media->media_path.'); left source intact, URLs unchanged.');
+            // Verify whenever the source still exists to compare against —
+            // including the adopt-existing-destination path, so a wrong object
+            // pre-seeded at the destination key cannot be adopted while the good
+            // source is GC'd. Skip only when the source is already gone (a
+            // legitimate idempotent resume after a prior successful move).
+            if ($onSource && ! $this->verify($media->media_path, $sourceDisk, $destDisk)) {
+                $this->warn(PHP_EOL.'Verify failed for media '.$media->id.' ('.$media->media_path.'); left source intact, URLs unchanged.');
 
-                    return 'failed';
-                }
+                return 'failed';
             }
 
             // Rewrite URLs to the destination bucket.
