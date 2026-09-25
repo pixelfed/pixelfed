@@ -36,7 +36,7 @@ class NetworkTimelineService
             return [];
         }
 
-        return array_keys(Redis::zrevrangebyscore(self::CACHE_KEY, '+inf', $end, [
+        return array_keys(Redis::zrevrangebyscore(self::CACHE_KEY, '+inf', '('.$end, [
             'withscores' => true,
             'limit' => [0, $limit],
         ]));
