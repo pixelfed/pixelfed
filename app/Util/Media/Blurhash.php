@@ -102,13 +102,12 @@ class Blurhash
 
     protected static function candidateDrivers(): array
     {
-        $drivers = [config('image.driver', 'vips')];
-
-        if (function_exists('imagecreatefromstring')) {
-            $drivers[] = 'gd';
-        }
-
-        return array_values(array_unique($drivers));
+        // Single source of truth: match the thumbnail pipeline's fallback order
+        // (configured driver, then imagick, then gd). The old local list only
+        // added gd, so on a vips-configured host with ext-imagick but no ext-gd
+        // the thumbnail degraded to imagick while blurhash silently fell back to
+        // the placeholder hash.
+        return ImageDriverManager::candidateDrivers();
     }
 
     /**
