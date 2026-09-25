@@ -29,8 +29,15 @@ class ConfigCacheService
             return config($key);
         }
 
+        $protect = in_array($key, self::PROTECTED_KEYS);
+
         try {
-            return Cache::remember($cacheKey, $ttl, function () use ($key) {
+            $cached = Cache::get($cacheKey);
+            if ($cached !== null) {
+                return $protect ? decrypt($cached) : $cached;
+            }
+
+            $stored = (function () use ($key) {
                 $allowed = [
                     'app.name',
                     'app.short_description',
@@ -150,46 +157,40 @@ class ConfigCacheService
                     // 'system.user_mode'
                 ];
 
-                if (! config('instance.enable_cc')) {
-                    return config($key);
-                }
-
                 if (! in_array($key, $allowed)) {
-                    return config($key);
+                    return false;
                 }
 
-                $protect = false;
-                $protected = null;
-                if (in_array($key, self::PROTECTED_KEYS)) {
-                    $protect = true;
-                }
+                $protect = in_array($key, self::PROTECTED_KEYS);
 
                 $v = config($key);
                 $c = ConfigCacheModel::where('k', $key)->first();
 
                 if ($c) {
-                    if ($protect) {
-                        return decrypt($c->v) ?? config($key);
-                    }
-
-                    return $c->v ?? config($key);
+                    return $c->v ?? ($v === null ? false : ($protect ? encrypt($v) : $v));
                 }
 
                 if ($v === null) {
-                    return;
+                    return false;
                 }
 
-                if ($protect && $v) {
-                    $protected = encrypt($v);
-                }
+                $stored = $protect ? encrypt($v) : $v;
 
                 $cc = new ConfigCacheModel;
                 $cc->k = $key;
-                $cc->v = $protect ? $protected : $v;
+                $cc->v = $stored;
                 $cc->save();
 
-                return $v;
-            });
+                return $stored;
+            })();
+
+            if ($stored === false) {
+                return config($key);
+            }
+
+            Cache::put($cacheKey, $stored, $ttl);
+
+            return $protect ? decrypt($stored) : $stored;
         } catch (Exception|QueryException) {
             return config($key);
         }
@@ -199,27 +200,23 @@ class ConfigCacheService
     {
         $exists = ConfigCacheModel::whereK($key)->first();
 
-        $protect = false;
-        $protected = null;
-        if (in_array($key, self::PROTECTED_KEYS)) {
-            $protect = true;
-            $protected = encrypt($val);
-        }
+        $protect = in_array($key, self::PROTECTED_KEYS);
+        $stored = $protect ? encrypt($val) : $val;
 
         if ($exists) {
-            $exists->v = $protect ? $protected : $val;
+            $exists->v = $stored;
             $exists->save();
-            Cache::put(self::CACHE_KEY.$key, $val, now()->addHours(12));
+            Cache::put(self::CACHE_KEY.$key, $stored, now()->addHours(12));
 
             return self::get($key);
         }
 
         $cc = new ConfigCacheModel;
         $cc->k = $key;
-        $cc->v = $protect ? $protected : $val;
+        $cc->v = $stored;
         $cc->save();
 
-        Cache::put(self::CACHE_KEY.$key, $val, now()->addHours(12));
+        Cache::put(self::CACHE_KEY.$key, $stored, now()->addHours(12));
 
         return self::get($key);
     }
