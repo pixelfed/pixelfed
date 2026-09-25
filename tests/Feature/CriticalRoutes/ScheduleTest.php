@@ -49,3 +49,21 @@ test('all scheduled commands run on one server', function () {
         );
     });
 });
+
+test('cloud storage media move task runs on one server when enabled', function () {
+    config(['instance.enable_cc' => false]);
+    config(['pixelfed.cloud_storage' => true]);
+    config(['media.delete_local_after_cloud' => true]);
+
+    // Resolve the schedule with the cloud-storage flags enabled so the gated
+    // MediaMoveStorageLocalToCloud event is registered.
+    Artisan::call('schedule:list');
+    $events = collect(app(Schedule::class)->events());
+
+    $event = $events->first(
+        fn ($e) => str_contains((string) $e->command, 'admin:MediaMoveStorageLocalToCloud')
+    );
+
+    expect($event)->not->toBeNull('the gated media-move task should be registered when cloud storage is enabled');
+    expect($event->onOneServer)->toBeTrue('MediaMoveStorageLocalToCloud must run on one server');
+});
