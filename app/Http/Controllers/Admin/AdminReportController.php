@@ -145,10 +145,13 @@ trait AdminReportController
                 return 0;
             }
 
-            return AccountInterstitial::selectRaw('*, count(id) as counter')
-                ->whereType('post.autospam')
-                ->groupBy('user_id')
-                ->get()
+            return DB::query()
+                ->fromSub(
+                    AccountInterstitial::selectRaw('count(id) as counter')
+                        ->whereType('post.autospam')
+                        ->groupBy('user_id'),
+                    'agg'
+                )
                 ->avg('counter');
         });
 
@@ -156,7 +159,7 @@ trait AdminReportController
             if (! db_is_mysql_maria()) {
                 return '0';
             }
-            $seconds = AccountInterstitial::selectRaw('DATE(created_at) AS start_date, AVG(TIME_TO_SEC(TIMEDIFF(appeal_handled_at, created_at))) AS timediff')->whereType('post.autospam')->whereNotNull('appeal_handled_at')->where('created_at', '>', now()->subMonth())->get();
+            $seconds = AccountInterstitial::selectRaw('AVG(TIME_TO_SEC(TIMEDIFF(appeal_handled_at, created_at))) AS timediff')->whereType('post.autospam')->whereNotNull('appeal_handled_at')->where('created_at', '>', now()->subMonth())->get();
             if (! $seconds) {
                 return '0';
             }
