@@ -8,6 +8,7 @@ use App\Models\Status;
 use App\Models\StatusEdit;
 use App\Services\MediaService;
 use App\Services\MediaStorageService;
+use App\Services\PlaceService;
 use App\Services\StatusService;
 use Purify;
 
@@ -91,10 +92,19 @@ class UpdateStatusService
             $status->cw_summary = Purify::clean($attributes['spoiler_text']);
         }
         if (isset($attributes['location'])) {
+            $oldPlaceId = $status->getOriginal('place_id');
             if (isset($attributes['location']['id'])) {
                 $status->place_id = $attributes['location']['id'];
             } else {
                 $status->place_id = null;
+            }
+            if ($oldPlaceId != $status->place_id) {
+                if ($oldPlaceId) {
+                    PlaceService::clearStatusesByPlaceId($oldPlaceId);
+                }
+                if ($status->place_id) {
+                    PlaceService::clearStatusesByPlaceId($status->place_id);
+                }
             }
         }
         if ($status->cw_summary && ! $status->is_nsfw) {
