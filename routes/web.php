@@ -211,7 +211,7 @@ Route::domain(config('pixelfed.domain.app'))->middleware(['localization'])->grou
         // Route::post('verify-email/request', [InternalApiController::class, 'requestEmailVerificationStore']);
 
         Route::get('auth/sudo', [AccountController::class, 'confirmPassword'])->name('password.confirm');
-        Route::post('auth/sudo', [AccountController::class, 'confirmPasswordStore']);
+        Route::post('auth/sudo', [AccountController::class, 'confirmPasswordStore'])->middleware('throttle:5,1');
 
         Route::get('results', [SearchController::class, 'results']);
         Route::post('visibility', [StatusController::class, 'toggleVisibility']);
