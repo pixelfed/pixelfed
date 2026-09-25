@@ -97,18 +97,7 @@ class StatusReplyPipeline implements ShouldQueue
             return;
         }
 
-        if (db_is_mysql_maria()) {
-            // todo: refactor
-            // $exp = DB::raw("select id, in_reply_to_id from statuses, (select @pv := :kid) initialisation where id > @pv and find_in_set(in_reply_to_id, @pv) > 0 and @pv := concat(@pv, ',', id)");
-            // $expQuery = $exp->getValue(DB::connection()->getQueryGrammar());
-            // $count = DB::select($expQuery, [ 'kid' => $reply->id ]);
-            // $reply->reply_count = count($count);
-            $reply->reply_count = $reply->reply_count + 1;
-            $reply->save();
-        } else {
-            $reply->reply_count = $reply->reply_count + 1;
-            $reply->save();
-        }
+        Status::whereId($reply->id)->increment('reply_count');
 
         StatusService::del($reply->id);
         StatusService::del($status->id);
