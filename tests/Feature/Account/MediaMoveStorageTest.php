@@ -42,7 +42,7 @@ afterEach(function () {
     }
 });
 
-function makeCloudMedia(): Media
+function makeCloudMedia(?string $originalSha = null): Media
 {
     $user = User::factory()->create();
     $user->refresh();
@@ -67,6 +67,7 @@ function makeCloudMedia(): Media
         'optimized_url' => Storage::disk('s3')->url($path),
         'mime' => 'image/jpeg',
         'size' => strlen('PRIMARY-BYTES-1234567890'),
+        'original_sha256' => $originalSha,
         'remote_media' => false,
         'version' => 4,
         'replicated_at' => now(),
@@ -125,6 +126,28 @@ describe('unstable:MediaMoveStorageCloudToLocal', function () {
 
         expect(file_get_contents(app()->environmentFilePath()))->toContain('PF_ENABLE_CLOUD="false"');
         expect(config('pixelfed.cloud_storage'))->toBeFalse();
+    });
+
+    it('migrates cloud media whose bytes no longer match original_sha256', function () {
+        // Optimized images: original_sha256 is the pre-optimization upload hash,
+        // but the cloud object holds the optimized bytes. verify() must not
+        // compare against original_sha256, otherwise every optimized image is
+        // rejected and left permanently un-migratable.
+        $media = makeCloudMedia(hash('sha256', 'ORIGINAL-UPLOAD-BYTES-BEFORE-OPTIMIZE'));
+
+        $this->artisan('unstable:MediaMoveStorageCloudToLocal', ['--force' => true])
+            ->assertExitCode(0);
+
+        // Migration completed despite the stale hash: file local, cloud GC'd,
+        // urls cleared, version rolled back.
+        expect(Storage::disk('local')->exists($media->media_path))->toBeTrue();
+        expect(Storage::disk('s3')->exists($media->media_path))->toBeFalse();
+
+        $media->refresh();
+        expect($media->cdn_url)->toBeNull();
+        expect($media->optimized_url)->toBeNull();
+        expect($media->replicated_at)->toBeNull();
+        expect((string) $media->version)->toBe('3');
     });
 });
 
