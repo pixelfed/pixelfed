@@ -26,8 +26,9 @@ class EmailVerificationService
             return false;
         }
 
+        // Key the cooldown on user_id alone (not email) so rapidly changing
+        // the address does not bypass the per-user send rate.
         $recent = EmailVerification::where('user_id', $user->id)
-            ->where('email', $user->email)
             ->where('created_at', '>', now()->subSeconds($cooldownSeconds))
             ->exists();
 
