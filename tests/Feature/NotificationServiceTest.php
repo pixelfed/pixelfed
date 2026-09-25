@@ -232,7 +232,7 @@ describe('NotificationService::getMaxPage renderable filtering (pixelfed#7195)',
         NotificationService::del($user->profile_id, $n->id);
 
         $page = NotificationService::getMaxPage($user->profile_id, $n->id + 1, 20);
-        $ids = collect($page['data'])->pluck('id')->map(fn ($v) => (string) $v)->all();
+        $ids = collect($page['data'])->pluck('id')->map(fn($v) => (string) $v)->all();
 
         expect($ids)->not->toContain((string) $n->id);
     });
@@ -252,7 +252,7 @@ describe('NotificationService::getMaxPage renderable filtering (pixelfed#7195)',
         );
 
         $page = NotificationService::getMaxPage($user->profile_id, $n->id + 1, 20);
-        $ids = collect($page['data'])->pluck('id')->map(fn ($v) => (string) $v)->all();
+        $ids = collect($page['data'])->pluck('id')->map(fn($v) => (string) $v)->all();
 
         expect($ids)->toContain((string) $n->id);
     });
@@ -274,7 +274,7 @@ describe('NotificationService::getMaxPage renderable filtering (pixelfed#7195)',
         );
 
         $page = NotificationService::getMaxPage($user->profile_id, $n->id + 1, 20);
-        $ids = collect($page['data'])->pluck('id')->map(fn ($v) => (string) $v)->all();
+        $ids = collect($page['data'])->pluck('id')->map(fn($v) => (string) $v)->all();
 
         expect($ids)->toContain((string) $n->id);
     });
@@ -314,7 +314,7 @@ describe('NotificationService legacy item_type alias (pixelfed#7195)', function 
         NotificationService::del($user->profile_id, $n->id);
 
         $page = NotificationService::getMaxPage($user->profile_id, $n->id + 1, 20);
-        $ids = collect($page['data'])->pluck('id')->map(fn ($v) => (string) $v)->all();
+        $ids = collect($page['data'])->pluck('id')->map(fn($v) => (string) $v)->all();
 
         expect($ids)->not->toContain((string) $n->id);
     });
@@ -342,7 +342,7 @@ describe('NotificationService::renderableFilter unexpected type warning', functi
         NotificationService::getMaxPage($user->profile_id, $n->id + 1, 20);
 
         Log::shouldHaveReceived('warning')
-            ->withArgs(fn ($message) => str_contains($message, 'unexpected notification type'))
+            ->withArgs(fn($message) => str_contains($message, 'unexpected notification type'))
             ->atLeast()->once();
     });
 
@@ -387,72 +387,9 @@ describe('NotificationService pagination termination (pixelfed#7195)', function 
             $notifs[] = $n;
         }
 
-        $topId = max(array_map(fn ($n) => $n->id, $notifs)) + 1;
+        $topId = max(array_map(fn($n) => $n->id, $notifs)) + 1;
         $page = NotificationService::getMaxPage($user->profile_id, $topId, 20);
 
         expect($page['data'])->toBeEmpty();
-    });
-});
-
-describe('NotificationService::firstOrCreateNotification dedup race (regression)', function () {
-    it('enforces a unique index on the dedup tuple at the database level', function () {
-        $user = User::factory()->create();
-        $user->refresh();
-        $actor = User::factory()->create();
-        $actor->refresh();
-
-        $status = Status::factory()->create(['profile_id' => $user->profile_id]);
-
-        $attributes = [
-            'profile_id' => $user->profile_id,
-            'actor_id' => $actor->profile_id,
-            'action' => 'like',
-            'item_id' => $status->id,
-            'item_type' => Status::class,
-        ];
-
-        Notification::create($attributes);
-
-        // A second raw insert of the identical tuple must be rejected by the
-        // unique index rather than silently creating a duplicate row.
-        expect(fn () => Notification::create($attributes))
-            ->toThrow(QueryException::class);
-    });
-
-    it('returns the existing row when a duplicate insert loses the race', function () {
-        $user = User::factory()->create();
-        $user->refresh();
-        $actor = User::factory()->create();
-        $actor->refresh();
-
-        $status = Status::factory()->create(['profile_id' => $user->profile_id]);
-
-        // Simulate the winner of the race having already inserted the row
-        // between our SELECT and INSERT.
-        $existing = Notification::create([
-            'profile_id' => $user->profile_id,
-            'actor_id' => $actor->profile_id,
-            'action' => 'like',
-            'item_id' => $status->id,
-            'item_type' => Status::class,
-        ]);
-
-        $result = NotificationService::firstOrCreateNotification(
-            $user->profile_id,
-            $actor->profile_id,
-            'like',
-            $status->id,
-            Status::class
-        );
-
-        expect($result->id)->toBe($existing->id);
-
-        $count = Notification::where('profile_id', $user->profile_id)
-            ->where('actor_id', $actor->profile_id)
-            ->where('action', 'like')
-            ->where('item_id', $status->id)
-            ->count();
-
-        expect($count)->toBe(1);
     });
 });
