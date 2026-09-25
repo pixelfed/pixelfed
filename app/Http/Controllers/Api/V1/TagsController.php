@@ -179,8 +179,8 @@ class TagsController extends Controller
             ->withQueryString();
 
         $pagination = false;
-        $prevPage = $res->nextPageUrl();
-        $nextPage = $res->previousPageUrl();
+        $nextPage = $res->nextPageUrl();
+        $prevPage = $res->previousPageUrl();
         if ($nextPage && $prevPage) {
             $pagination = '<'.$nextPage.'>; rel="next", <'.$prevPage.'>; rel="prev"';
         } elseif ($nextPage && ! $prevPage) {
