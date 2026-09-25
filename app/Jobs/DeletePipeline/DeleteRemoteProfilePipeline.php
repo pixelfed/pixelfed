@@ -19,6 +19,7 @@ use App\Models\Profile;
 use App\Models\QuoteAuthorization;
 use App\Models\Report;
 use App\Models\Status;
+use App\Models\StatusEdit;
 use App\Models\Story;
 use App\Models\StoryView;
 use App\Models\UserFilter;
@@ -81,6 +82,10 @@ class DeleteRemoteProfilePipeline implements ShouldQueue
                     RemoteStatusDelete::dispatch($status)->onQueue('delete');
                 }
             });
+
+        // Safety net: purge any edit-history rows for this profile in case a
+        // per-status delete job was skipped or failed (mirrors DeleteAccountPipeline).
+        StatusEdit::whereProfileId($pid)->delete();
 
         // Delete Poll Votes
         PollVote::whereProfileId($pid)->delete();
