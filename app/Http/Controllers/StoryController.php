@@ -42,7 +42,9 @@ class StoryController extends StoryComposeController
         $s = Cache::remember('pf:stories:recent-by-id:'.$pid, 900, function () use ($pid) {
             return Story::select('stories.*')
                 ->join('followers', 'followers.following_id', 'stories.profile_id')
+                ->join('profiles', 'profiles.id', 'stories.profile_id')
                 ->where('followers.profile_id', $pid)
+                ->whereNull('profiles.status')
                 ->where('stories.active', true)
                 ->whereRaw('stories.id = (
                     select max(s2.id)
@@ -115,6 +117,10 @@ class StoryController extends StoryComposeController
         }
         $authed = $user->profile_id;
         $profile = Profile::findOrFail($id);
+
+        // Suspended/deleted profiles are unavailable to everyone, including the
+        // account itself, matching the status gate on posts and other content.
+        abort_if($profile->status !== null, 404);
 
         if ($authed != $profile->id && ! FollowerService::follows($authed, $profile->id)) {
             abort(403);
