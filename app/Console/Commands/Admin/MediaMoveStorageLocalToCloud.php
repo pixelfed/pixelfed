@@ -477,15 +477,54 @@ class MediaMoveStorageLocalToCloud extends Command
              * whether --keep-local was requested. Keeping the local file
              * should not cause this media row to be selected forever.
              */
+            // Verify the thumbnail on the configured cloud disk before it can
+            // be deleted locally. In resilient mode the thumbnail can be routed
+            // to an alternate disk, so a successful copyToCloud() does not imply
+            // the configured cloud disk holds it. Fail the row (keeping both
+            // local files) rather than delete an unverified thumbnail.
+            $hasThumbnail = $media->thumbnail_path && $localDisk->exists($media->thumbnail_path);
+            if ($hasThumbnail) {
+                $thumbVerifyFailure = $this->verify(
+                    $media->thumbnail_path,
+                    $localDisk,
+                    $cloudDisk
+                );
+
+                if ($thumbVerifyFailure !== null) {
+                    $this->warn(
+                        PHP_EOL.
+                            'Verify failed for media '.
+                            $media->id.
+                            ' thumbnail ('.
+                            $media->thumbnail_path.
+                            '): '.
+                            $thumbVerifyFailure['reason'].
+                            '; left local copy intact.'
+                    );
+
+                    Log::error(
+                        'MediaMoveStorageLocalToCloud: thumbnail verify failed after upload; left local copy intact.',
+                        array_merge(
+                            [
+                                'media_id' => $media->id,
+                                'status_id' => $media->status_id,
+                                'thumbnail_path' => $media->thumbnail_path,
+                                'cloud_destination' => $this->cloudDestination($media->thumbnail_path, $cloudDisk),
+                            ],
+                            $thumbVerifyFailure
+                        )
+                    );
+
+                    return 'failed';
+                }
+            }
+
             $this->markAsReplicated($media, $cloudDisk, true);
 
             if (! $this->option('keep-local')) {
                 $localDisk->delete($mediaPath);
 
-                if (
-                    $media->thumbnail_path &&
-                    $localDisk->exists($media->thumbnail_path)
-                ) {
+                if ($hasThumbnail) {
                     $localDisk->delete($media->thumbnail_path);
                 }
             }
