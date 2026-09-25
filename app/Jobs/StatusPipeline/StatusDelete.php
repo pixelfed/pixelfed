@@ -19,6 +19,7 @@ use App\Models\StatusArchived;
 use App\Models\StatusEdit;
 use App\Models\StatusHashtag;
 use App\Models\StatusView;
+use App\Services\Account\AccountStatService;
 use App\Services\ActivityPubDeliveryService;
 use App\Services\CollectionService;
 use App\Services\DirectMessageService;
@@ -90,7 +91,7 @@ class StatusDelete implements ShouldQueue
 
         StatusService::del($status->id, true);
         if ($profile) {
-            if (in_array($status->type, ['photo', 'photo:album', 'video', 'video:album', 'photo:video:album'])) {
+            if (in_array($status->type, AccountStatService::COUNTABLE_STATUS_TYPES)) {
                 $profile->status_count = $profile->status_count - 1;
                 $profile->save();
             }
