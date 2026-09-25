@@ -129,11 +129,11 @@ class RemoteStatusDelete implements ShouldBeUniqueUntilProcessing, ShouldQueue
             }
         }
 
-        AccountInterstitial::where('item_type', Status::class)
+        AccountInterstitial::whereIn('item_type', ['App\Status', Status::class])
             ->where('item_id', $status->id)
             ->delete();
         Bookmark::whereStatusId($status->id)->delete();
-        CollectionItem::whereObjectType(Status::class)
+        CollectionItem::whereIn('object_type', ['App\Status', Status::class])
             ->whereObjectId($status->id)
             ->get()
             ->each(function ($col) {
@@ -186,7 +186,7 @@ class RemoteStatusDelete implements ShouldBeUniqueUntilProcessing, ShouldQueue
                 NotificationService::del($not->profile_id, $not->id);
                 $not->forceDeleteQuietly();
             });
-        Report::whereObjectType(Status::class)
+        Report::whereIn('object_type', ['App\Status', Status::class])
             ->whereObjectId($status->id)
             ->delete();
         StatusArchived::whereStatusId($status->id)->delete();
