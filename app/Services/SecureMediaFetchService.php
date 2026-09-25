@@ -76,9 +76,10 @@ class SecureMediaFetchService
         // Host of the original request. Caller-supplied headers (e.g. an
         // Authorization bearer token) are only sent to this host and are
         // stripped on any cross-origin redirect hop, mirroring Guzzle's
-        // RedirectMiddleware credential-stripping behaviour.
-        $originHost = parse_url($url, PHP_URL_HOST);
-        $originHost = is_string($originHost) ? strtolower($originHost) : null;
+        // RedirectMiddleware credential-stripping behaviour. Captured from
+        // the first validated hop so the comparison uses the same host
+        // normalization (case, trailing dot, IDN punycode) as every hop.
+        $originHost = null;
 
         for ($redirects = 0; $redirects <= self::MAX_REDIRECTS; $redirects++) {
             $currentUrl = Helpers::validateUrl($currentUrl);
@@ -95,10 +96,23 @@ class SecureMediaFetchService
                 return false;
             }
 
+            // validateUrl() already rebuilt the url with a normalized host,
+            // but normalize again so the origin comparison is defensive and
+            // uses identical case/trailing-dot/punycode rules on every hop.
+            $host = Helpers::normalizeHostLoose($host);
+
+            if (! $host) {
+                return false;
+            }
+
+            if ($originHost === null) {
+                $originHost = $host;
+            }
+
             // Only forward caller headers when the current hop is the same host
             // as the original request; drop them across origins.
             $headers = ['User-Agent' => self::userAgent()];
-            if (! empty($extraHeaders) && strtolower((string) $host) === $originHost) {
+            if (! empty($extraHeaders) && $host === $originHost) {
                 $headers = array_merge($extraHeaders, $headers);
             }
 
