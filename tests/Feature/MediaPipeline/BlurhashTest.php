@@ -130,24 +130,44 @@ it('falls back to gd when the configured driver is unavailable', function () {
         test()->markTestSkipped('ext-gd is not installed.');
     }
 
-    $unavailable = collect(['imagick', 'vips'])->first(function ($driver) {
-        try {
-            ImageDriverManager::createImageManager([], $driver);
-
-            return false;
-        } catch (Throwable $e) {
-            return true;
-        }
-    });
-
-    if (! $unavailable) {
-        test()->markTestSkipped('Every image driver is available, nothing to fall back from.');
-    }
-
     $png = blurhashFixture(64, 48, '3366cc', 'png', 'gd');
 
-    Config::set('image.driver', $unavailable);
+    // Unavailability is a DECODE-time property, not a build-time one:
+    // Intervention constructs a manager lazily, so createImageManager() never
+    // throws for a missing runtime. fromBinary() only falls back when the
+    // actual decode fails, so probe the same way.
+    $decodes = function (string $driver) use ($png): bool {
+        try {
+            ImageDriverManager::createImageManager(['decodeAnimation' => false], $driver)
+                ->decodeBinary($png);
 
+            return true;
+        } catch (Throwable $e) {
+            return false;
+        }
+    };
+
+    $unavailable = collect(['vips', 'imagick'])->first(fn ($driver) => ! $decodes($driver));
+
+    if ($unavailable !== null) {
+        // A driver is genuinely missing: configure it so fromBinary() hits a
+        // decode failure on the leading candidate and must fall back to gd,
+        // still producing a valid hash.
+        Config::set('image.driver', $unavailable);
+
+        expect(Blurhash::fromBinary($png))->toBeString()->toHaveLength(36);
+
+        return;
+    }
+
+    // Every driver decodes on this host, so a missing-driver scenario cannot
+    // be reproduced without mocking Intervention internals. Assert the
+    // fallback invariant that makes the degradation possible instead: the
+    // candidate list always ends with gd (the universal fallback), and gd
+    // decodes the bytes to a valid hash.
+    expect(ImageDriverManager::candidateDrivers('vips'))->toContain('gd');
+
+    Config::set('image.driver', 'gd');
     expect(Blurhash::fromBinary($png))->toBeString()->toHaveLength(36);
 });
 
