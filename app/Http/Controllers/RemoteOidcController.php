@@ -135,6 +135,12 @@ class RemoteOidcController extends Controller
     {
         $starting_username = explode('@', $starting_username)[0];
         $temp_username = preg_replace('/[^a-z0-9_]+/i', '', $starting_username);
+        // Strip underscores too: preg_replace keeps them, but ValidUsername
+        // allows at most one separator total, so a multi-underscore IdP
+        // preferred_username (a_b_c) would fail validation and permanently
+        // lock the user out of OIDC provisioning. Removing all underscores
+        // guarantees a zero-separator, validator-safe username.
+        $temp_username = str_replace('_', '', $temp_username);
 
         return substr($temp_username, 0, 30);
     }
