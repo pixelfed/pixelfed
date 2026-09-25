@@ -3,10 +3,10 @@
 namespace App\Services;
 
 use App\Models\Profile;
-use App\Models\Status;
 use App\Models\User;
 use App\Models\UserDomainBlock;
 use App\Models\UserSetting;
+use App\Services\Account\AccountStatService;
 use App\Transformer\Api\AccountTransformer;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\DB;
@@ -210,13 +210,10 @@ class AccountService
             return null;
         }
 
-        $count = Status::whereProfileId($id)
-            ->whereNull(['in_reply_to_id', 'reblog_of_id'])
-            ->whereIn('scope', ['public', 'unlisted', 'private'])
-            ->count();
-
-        $profile->status_count = $count;
+        $profile->status_count = AccountStatService::recalculateStatusCount($id);
         $profile->save();
+
+        self::del($id);
 
         Cache::put($key, 1, 259200);
 
