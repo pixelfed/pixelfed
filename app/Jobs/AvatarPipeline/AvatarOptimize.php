@@ -135,12 +135,13 @@ class AvatarOptimize implements ShouldQueue
         $base = 'cache/avatars/'.$avatar->profile_id;
         $disk = Storage::disk(config('filesystems.cloud'));
         $disk->deleteDirectory($base);
-        $path = $base.'/'.'avatar_'.strtolower(Str::random(random_int(3, 6))).$avatar->change_count.'.'.pathinfo($avatar->media_path, PATHINFO_EXTENSION);
-        $url = $disk->put($path, Storage::get($avatar->media_path));
+        $local = $avatar->media_path;
+        $path = $base.'/'.'avatar_'.strtolower(Str::random(random_int(3, 6))).$avatar->change_count.'.'.pathinfo($local, PATHINFO_EXTENSION);
+        $url = $disk->put($path, Storage::get($local));
         $avatar->media_path = $path;
         $avatar->cdn_url = $disk->url($path);
         $avatar->save();
-        Storage::delete($avatar->media_path);
+        Storage::delete($local);
         Cache::forget('avatar:'.$avatar->profile_id);
     }
 }
