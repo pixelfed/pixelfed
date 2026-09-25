@@ -101,8 +101,11 @@ class SearchApiV2Service
         }
         $operator = db_is_pgsql() ? 'ilike' : 'like';
         $results = Profile::select('username', 'id', 'followers_count', 'domain')
-            ->where('username', $operator, $query)
-            ->orWhere('webfinger', $operator, $webfingerQuery)
+            ->whereNull('status')
+            ->where(function ($q) use ($operator, $query, $webfingerQuery) {
+                $q->where('username', $operator, $query)
+                    ->orWhere('webfinger', $operator, $webfingerQuery);
+            })
             ->orderByDesc('profiles.followers_count')
             ->offset($offset)
             ->limit($limit)
