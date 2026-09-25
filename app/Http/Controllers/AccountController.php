@@ -416,6 +416,14 @@ class AccountController extends Controller
 
     public function confirmPassword(Request $request): View
     {
+        // Honor a same-origin return path so XHR callers (e.g. the privacy
+        // modal) that hit the 423 JSON branch can round-trip back after
+        // confirming. Only relative paths are accepted to avoid open redirects.
+        $redirect = $request->input('redirect');
+        if ($redirect && str_starts_with($redirect, '/') && ! str_starts_with($redirect, '//')) {
+            redirect()->setIntendedUrl($redirect);
+        }
+
         return view('auth.sudo');
     }
 
