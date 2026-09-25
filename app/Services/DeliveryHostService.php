@@ -152,6 +152,8 @@ class DeliveryHostService
      */
     public static function recordSuccesses(array $domains): void
     {
+        self::flush();
+
         $flagged = self::flagged();
 
         $domains = array_filter(
