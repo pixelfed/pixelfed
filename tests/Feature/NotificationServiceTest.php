@@ -6,7 +6,6 @@ use App\Models\Profile;
 use App\Models\Status;
 use App\Models\User;
 use App\Services\NotificationService;
-use Illuminate\Database\QueryException;
 use Illuminate\Foundation\Testing\LazilyRefreshDatabase;
 use Illuminate\Support\Facades\Log;
 
@@ -232,7 +231,7 @@ describe('NotificationService::getMaxPage renderable filtering (pixelfed#7195)',
         NotificationService::del($user->profile_id, $n->id);
 
         $page = NotificationService::getMaxPage($user->profile_id, $n->id + 1, 20);
-        $ids = collect($page['data'])->pluck('id')->map(fn($v) => (string) $v)->all();
+        $ids = collect($page['data'])->pluck('id')->map(fn ($v) => (string) $v)->all();
 
         expect($ids)->not->toContain((string) $n->id);
     });
@@ -252,7 +251,7 @@ describe('NotificationService::getMaxPage renderable filtering (pixelfed#7195)',
         );
 
         $page = NotificationService::getMaxPage($user->profile_id, $n->id + 1, 20);
-        $ids = collect($page['data'])->pluck('id')->map(fn($v) => (string) $v)->all();
+        $ids = collect($page['data'])->pluck('id')->map(fn ($v) => (string) $v)->all();
 
         expect($ids)->toContain((string) $n->id);
     });
@@ -274,7 +273,7 @@ describe('NotificationService::getMaxPage renderable filtering (pixelfed#7195)',
         );
 
         $page = NotificationService::getMaxPage($user->profile_id, $n->id + 1, 20);
-        $ids = collect($page['data'])->pluck('id')->map(fn($v) => (string) $v)->all();
+        $ids = collect($page['data'])->pluck('id')->map(fn ($v) => (string) $v)->all();
 
         expect($ids)->toContain((string) $n->id);
     });
@@ -314,7 +313,7 @@ describe('NotificationService legacy item_type alias (pixelfed#7195)', function 
         NotificationService::del($user->profile_id, $n->id);
 
         $page = NotificationService::getMaxPage($user->profile_id, $n->id + 1, 20);
-        $ids = collect($page['data'])->pluck('id')->map(fn($v) => (string) $v)->all();
+        $ids = collect($page['data'])->pluck('id')->map(fn ($v) => (string) $v)->all();
 
         expect($ids)->not->toContain((string) $n->id);
     });
@@ -342,7 +341,7 @@ describe('NotificationService::renderableFilter unexpected type warning', functi
         NotificationService::getMaxPage($user->profile_id, $n->id + 1, 20);
 
         Log::shouldHaveReceived('warning')
-            ->withArgs(fn($message) => str_contains($message, 'unexpected notification type'))
+            ->withArgs(fn ($message) => str_contains($message, 'unexpected notification type'))
             ->atLeast()->once();
     });
 
@@ -387,7 +386,7 @@ describe('NotificationService pagination termination (pixelfed#7195)', function 
             $notifs[] = $n;
         }
 
-        $topId = max(array_map(fn($n) => $n->id, $notifs)) + 1;
+        $topId = max(array_map(fn ($n) => $n->id, $notifs)) + 1;
         $page = NotificationService::getMaxPage($user->profile_id, $topId, 20);
 
         expect($page['data'])->toBeEmpty();
