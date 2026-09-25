@@ -115,6 +115,20 @@ class SettingsController extends Controller
         $profile->status = 'disabled';
         $user->save();
         $profile->save();
+
+        // Revoke OAuth tokens so previously-authorized third-party clients
+        // cannot keep acting on a disabled account. oauth_refresh_tokens has no
+        // user_id column, so delete it via access_token_id before removing the
+        // access tokens themselves.
+        $accessTokenIds = DB::table('oauth_access_tokens')
+            ->where('user_id', $user->id)
+            ->pluck('id')
+            ->all();
+        DB::table('oauth_refresh_tokens')
+            ->whereIn('access_token_id', $accessTokenIds)
+            ->delete();
+        DB::table('oauth_access_tokens')->where('user_id', $user->id)->delete();
+
         Auth::logout();
         Cache::forget('profiles:private');
 
@@ -154,8 +168,16 @@ class SettingsController extends Controller
         $profile->save();
         Cache::forget('profiles:private');
         AccountService::del($profile->id);
+        // oauth_refresh_tokens keys on access_token_id, not user_id, so delete
+        // it via the user's access-token ids before removing the access tokens.
+        $accessTokenIds = DB::table('oauth_access_tokens')
+            ->where('user_id', $user->id)
+            ->pluck('id')
+            ->all();
+        DB::table('oauth_refresh_tokens')
+            ->whereIn('access_token_id', $accessTokenIds)
+            ->delete();
         DB::table('oauth_access_tokens')->where('user_id', $user->id)->delete();
-        DB::table('oauth_refresh_tokens')->where('user_id', $user->id)->delete();
         OauthClient::where('user_id', $user->id)->delete();
         Auth::logout();
         DeleteAccountPipeline::dispatch($user)->onQueue('low');
