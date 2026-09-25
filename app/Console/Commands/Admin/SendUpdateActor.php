@@ -66,6 +66,12 @@ class SendUpdateActor extends Command
                 return Command::FAILURE;
             }
         }
+        if ($this->option('force')) {
+            // --force is the escape hatch past the "already synced" guard, so it
+            // must re-deliver to every actor. Clear the resume cursor from the
+            // prior run, otherwise the id > cursor filter skips them all.
+            Storage::delete('actor-update-cache/'.$domain);
+        }
         $this->touchStorageCache($domain);
         $this->line(' ');
         $this->error('Keep this window open during this process or it will not complete!');
