@@ -177,7 +177,7 @@ class CustomFilterController extends Controller
 
                     $filter->keywords()->create([
                         'keyword' => $keyword,
-                        'whole_word' => (bool) $keywordData['whole_word'] ?? true,
+                        'whole_word' => (bool) ($keywordData['whole_word'] ?? true),
                     ]);
                 }
             }
