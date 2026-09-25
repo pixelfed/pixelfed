@@ -1100,10 +1100,14 @@ trait AdminReportController
                 $status->save();
                 StatusService::del($status->id);
 
+                // Write the same status-scoped row shape as the addcw path in
+                // InternalApiController so the remote-update NSFW lock actually
+                // finds this decision (it keys on object_id = status id and
+                // object_type = 'App\Status::class').
                 ModLogService::boot()
-                    ->objectUid($status->profile_id)
-                    ->objectId($status->profile_id)
-                    ->objectType('App\Models\Status::class')
+                    ->objectUid($status->profile->user_id)
+                    ->objectId($status->id)
+                    ->objectType('App\Status::class')
                     ->user(request()->user())
                     ->action('admin.status.moderate')
                     ->metadata([
@@ -1138,9 +1142,9 @@ trait AdminReportController
                 PublicTimelineService::rem($status->id);
 
                 ModLogService::boot()
-                    ->objectUid($status->profile_id)
-                    ->objectId($status->profile_id)
-                    ->objectType('App\Models\Status::class')
+                    ->objectUid($status->profile->user_id)
+                    ->objectId($status->id)
+                    ->objectType('App\Status::class')
                     ->user(request()->user())
                     ->action('admin.status.moderate')
                     ->metadata([
@@ -1176,9 +1180,9 @@ trait AdminReportController
                 }
 
                 ModLogService::boot()
-                    ->objectUid($status->profile_id)
-                    ->objectId($status->profile_id)
-                    ->objectType('App\Models\Status::class')
+                    ->objectUid($status->profile->user_id)
+                    ->objectId($status->id)
+                    ->objectType('App\Status::class')
                     ->user(request()->user())
                     ->action('admin.status.moderate')
                     ->metadata([

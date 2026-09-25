@@ -69,9 +69,16 @@ class UpdateStatusService
         if (isset($attributes['sensitive'])) {
             if ($status->is_nsfw != (bool) $attributes['sensitive'] &&
               (bool) $attributes['sensitive'] === false) {
-                $exists = ModLog::whereObjectType('App\Status::class')
-                    ->whereObjectId($status->id)
-                    ->whereAction('admin.status.moderate')
+                // Same admin NSFW lock as StatusRemoteUpdatePipeline: accept
+                // both object_type literals and object_id conventions, and gate
+                // on metadata.action = 'cw' so only a genuine NSFW-add re-locks.
+                $exists = ModLog::whereAction('admin.status.moderate')
+                    ->whereIn('object_type', ['App\Status::class', 'App\Models\Status::class'])
+                    ->where(function ($q) use ($status) {
+                        $q->where('object_id', $status->id)
+                            ->orWhere('object_id', $status->profile_id);
+                    })
+                    ->where('metadata->action', 'cw')
                     ->exists();
                 if (! $exists) {
                     $status->is_nsfw = (bool) $attributes['sensitive'];
