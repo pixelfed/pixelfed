@@ -182,9 +182,13 @@ class StoryFetch implements ShouldQueue
             return false;
         }
 
-        // Normalize hosts (remove www prefix if present)
-        $host1 = ltrim(strtolower($host1), 'www.');
-        $host2 = ltrim(strtolower($host2), 'www.');
+        // Normalize hosts (remove a leading www. prefix if present). Use an
+        // anchored prefix match, not ltrim(): ltrim($host, 'www.') treats the
+        // argument as a character set and strips any leading w/. run, so
+        // wwworld.victim.com would collapse to orld.victim.com and falsely
+        // match a different domain.
+        $host1 = preg_replace('/^www\./', '', strtolower($host1));
+        $host2 = preg_replace('/^www\./', '', strtolower($host2));
 
         return $host1 === $host2;
     }
