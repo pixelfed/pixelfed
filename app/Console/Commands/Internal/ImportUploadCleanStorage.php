@@ -27,7 +27,11 @@ class ImportUploadCleanStorage extends Command
      */
     public function handle()
     {
-        $dirs = Storage::allDirectories('imports');
+        // Only the top-level imports/{user_id} directories are named after
+        // user ids. allDirectories() recurses, so a valid user's nested folder
+        // (e.g. imports/1/media) would be read as uid "media", match no user,
+        // and be deleted — wiping that user's import data.
+        $dirs = Storage::directories('imports');
 
         foreach ($dirs as $dir) {
             $uid = last(explode('/', $dir));
