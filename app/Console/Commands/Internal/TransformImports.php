@@ -147,10 +147,14 @@ class TransformImports extends Command
                 $mime = $disk->mimeType($og);
                 $newFile = Str::random(40).'.'.$ext;
                 $np = $basePath.'/'.$newFile;
-                $disk->move($og, $np);
+                // Copy, not move: the source in imports/ must survive until the
+                // DB transaction commits. A move followed by delete-on-failure
+                // destroys the only copy and makes the import unrecoverable.
+                $disk->copy($og, $np);
 
                 $mediaRecords[] = [
                     'media_path' => $np,
+                    'source_path' => $og,
                     'mime' => $mime,
                     'size' => $size,
                 ];
@@ -233,6 +237,15 @@ class TransformImports extends Command
                             continue;
                         }
                         throw $e;
+                    }
+                }
+
+                // Commit succeeded: now it is safe to remove the originals from
+                // imports/. Until this point the source copy is the fallback
+                // that lets a failed import be retried.
+                foreach ($mediaRecords as $mediaData) {
+                    if (isset($mediaData['source_path']) && $disk->exists($mediaData['source_path'])) {
+                        $disk->delete($mediaData['source_path']);
                     }
                 }
 
