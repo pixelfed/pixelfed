@@ -11,6 +11,7 @@ use App\Services\MediaStorageService;
 use App\Services\PlaceService;
 use App\Services\StatusService;
 use Purify;
+use Illuminate\Support\Facades\Log;
 
 class UpdateStatusService
 {
@@ -92,7 +93,7 @@ class UpdateStatusService
             $status->cw_summary = Purify::clean($attributes['spoiler_text']);
         }
         $oldPlaceId = null;
-        if (isset($attributes['location'])) {
+        if (array_key_exists('location', $attributes)) {
             $oldPlaceId = $status->getOriginal('place_id');
             if (isset($attributes['location']['id'])) {
                 $status->place_id = $attributes['location']['id'];
