@@ -9,6 +9,8 @@ class UndoAnnounce extends Fractal\TransformerAbstract
 {
     public function transform(Status $status): array
     {
+        $parent = $status->parent();
+
         return [
             '@context' => 'https://www.w3.org/ns/activitystreams',
             'id' => $status->permalink('/undo'),
@@ -24,7 +26,7 @@ class UndoAnnounce extends Fractal\TransformerAbstract
                     $status->profile->follower_url ?? $status->profile->permalink('/followers'),
                 ],
                 'published' => $status->created_at->format(DATE_ISO8601),
-                'object' => $status->parent()->url(),
+                'object' => $parent ? $parent->url() : null,
             ],
         ];
     }

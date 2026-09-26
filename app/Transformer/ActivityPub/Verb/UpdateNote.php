@@ -28,7 +28,7 @@ class UpdateNote extends Fractal\TransformerAbstract
         })->toArray();
 
         if ($status->in_reply_to_id != null) {
-            $parent = $status->parent()->profile;
+            $parent = $status->parent()?->profile;
             if ($parent) {
                 $webfinger = $parent->emailUrl();
                 $name = Str::startsWith($webfinger, '@') ?
