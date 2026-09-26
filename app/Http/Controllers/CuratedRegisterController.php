@@ -332,6 +332,13 @@ class CuratedRegisterController extends Controller
 
         switch ($step) {
             case 1:
+                // Enforce the age gate server-side: step 1 cannot advance
+                // without the age-verification confirmation set by the client
+                // after the date-of-birth check. This prevents bypassing the
+                // gate by manipulating the client-side script.
+                $this->validate($request, [
+                    'age_verified' => 'required|accepted',
+                ]);
                 $step = 2;
                 $request->session()->put('cur-step', 1);
 
