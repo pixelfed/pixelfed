@@ -49,6 +49,37 @@ it('clears old and new place caches when the location changes', function () {
     expect(Cache::has(PlaceService::STATUSES_CACHE_KEY.'200'))->toBeFalse('new place cache must be cleared');
 });
 
+it('does not leave a concurrently re-warmed old place cache behind (REGRESSION)', function () {
+    $user = User::factory()->create();
+    $user->refresh();
+
+    $status = Status::factory()->create([
+        'profile_id' => $user->profile_id,
+        'type' => 'photo',
+        'scope' => 'public',
+        'place_id' => 100,
+    ]);
+
+    // Simulate a concurrent PlaceController::show read that lands mid-save: the
+    // `updating` event fires inside save() *before* the DB UPDATE commits, so the
+    // DB still holds the old place_id here. Re-warm the old place cache from that
+    // pre-move state, exactly as a racing reader's Cache::remember would.
+    Status::updating(function ($model) {
+        expect((int) $model->getOriginal('place_id'))->toBe(100);
+        warmPlaceCache(100);
+    });
+
+    UpdateStatusService::handleImmediateAttributes($status, [
+        'location' => ['id' => 200],
+    ]);
+
+    Status::flushEventListeners();
+
+    // The invalidation must win: after the move, the old place cache must not
+    // survive, otherwise place 100 lists a status that left it for up to 4 days.
+    expect(Cache::has(PlaceService::STATUSES_CACHE_KEY.'100'))->toBeFalse('stale re-warm of old place cache must be cleared after save');
+});
+
 it('clears the old place cache when the location is removed', function () {
     $user = User::factory()->create();
     $user->refresh();
