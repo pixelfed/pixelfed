@@ -3,6 +3,7 @@
 namespace App\Jobs\HomeFeedPipeline;
 
 use App\Models\Status;
+use App\Services\FollowerService;
 use App\Services\HomeTimelineService;
 use App\Services\SnowflakeService;
 use Illuminate\Bus\Queueable;
@@ -86,13 +87,32 @@ class FeedFollowPipeline implements ShouldBeUniqueUntilProcessing, ShouldQueue
             return;
         }
 
+        // Only backfill when a real relationship exists. This job is also
+        // dispatched on unblock/unmute, where no follow may exist — backfilling
+        // then would leak the target's posts (including followers-only ones)
+        // into a non-follower's home feed.
+        $isSelf = $actorId == $followingId;
+        $isFollowing = $isSelf || FollowerService::follows($actorId, $followingId);
+
+        if (! $isFollowing) {
+            return;
+        }
+
+        // Followers-only (private) posts require an accepted follow. A pending
+        // follow request creates no Follower row, so follows() is false for it;
+        // include private only for self or an accepted follower.
+        $visibility = ['public', 'unlisted'];
+        if ($isSelf || FollowerService::follows($actorId, $followingId)) {
+            $visibility[] = 'private';
+        }
+
         $minId = SnowflakeService::byDate(now()->subWeeks(6));
 
         $ids = Status::where('id', '>', $minId)
             ->where('profile_id', $followingId)
             ->whereNull(['in_reply_to_id', 'reblog_of_id'])
             ->whereIn('type', ['photo', 'photo:album', 'video', 'video:album', 'photo:video:album'])
-            ->whereIn('visibility', ['public', 'unlisted', 'private'])
+            ->whereIn('visibility', $visibility)
             ->orderByDesc('id')
             ->limit(HomeTimelineService::FOLLOWER_FEED_POST_LIMIT)
             ->pluck('id');
