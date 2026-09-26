@@ -2642,6 +2642,10 @@ class ApiV1Controller extends Controller
         $userEnableReblogs = data_get($other, 'enable_reblogs', false);
         $includeReblogs = $request->filled('include_reblogs') ? $request->boolean('include_reblogs') : $userEnableReblogs;
 
+        // Mirrors the StatusService lift condition: these clients render a boost
+        // from the top level, so the original author has to be lifted with the content
+        $liftReblogAuthor = $napi && $includeReblogs && ! $request->filled('include_reblogs');
+
         $nullFields = $includeReblogs ?
             ['in_reply_to_id'] :
             ['in_reply_to_id', 'reblog_of_id'];
@@ -2726,9 +2730,18 @@ class ApiV1Controller extends Controller
                         $status['favourited'] = (bool) LikeService::liked($pid, $status['id']);
                         $status['reblogged'] = (bool) ReblogService::get($pid, $status['id']);
                         $status['bookmarked'] = (bool) BookmarkService::get($pid, $status['id']);
+
+                        if (! empty($status['reblog'])) {
+                            $status['reblog']['favourited'] = (bool) LikeService::liked($pid, $status['reblog']['id']);
+                            $status['reblog']['reblogged'] = (bool) ReblogService::get($pid, $status['reblog']['id']);
+                            $status['reblog']['bookmarked'] = (bool) BookmarkService::get($pid, $status['reblog']['id']);
+                        }
                     }
 
                     return $status;
+                })
+                ->map(function ($status) use ($liftReblogAuthor) {
+                    return $liftReblogAuthor ? $this->liftReblogAuthor($status) : $status;
                 })
                 ->values();
 
@@ -2827,7 +2840,7 @@ class ApiV1Controller extends Controller
                     if (! empty($status['reblog'])) {
                         $status['reblog']['favourited'] = (bool) LikeService::liked($pid, $status['reblog']['id']);
                         $status['reblog']['reblogged'] = (bool) ReblogService::get($pid, $status['reblog']['id']);
-                        $status['bookmarked'] = (bool) BookmarkService::get($pid, $status['id']);
+                        $status['reblog']['bookmarked'] = (bool) BookmarkService::get($pid, $status['reblog']['id']);
                     }
 
                     return $status;
@@ -2850,6 +2863,9 @@ class ApiV1Controller extends Controller
                 })
                 ->filter()
                 ->take($limit)
+                ->map(function ($status) use ($liftReblogAuthor) {
+                    return $liftReblogAuthor ? $this->liftReblogAuthor($status) : $status;
+                })
                 ->values();
         } else {
             $res = Status::select(
@@ -2906,7 +2922,7 @@ class ApiV1Controller extends Controller
                     if (! empty($status['reblog'])) {
                         $status['reblog']['favourited'] = (bool) LikeService::liked($pid, $status['reblog']['id']);
                         $status['reblog']['reblogged'] = (bool) ReblogService::get($pid, $status['reblog']['id']);
-                        $status['bookmarked'] = (bool) BookmarkService::get($pid, $status['id']);
+                        $status['reblog']['bookmarked'] = (bool) BookmarkService::get($pid, $status['reblog']['id']);
                     }
 
                     return $status;
@@ -2929,6 +2945,9 @@ class ApiV1Controller extends Controller
                 })
                 ->filter()
                 ->take($limit)
+                ->map(function ($status) use ($liftReblogAuthor) {
+                    return $liftReblogAuthor ? $this->liftReblogAuthor($status) : $status;
+                })
                 ->values();
         }
 
@@ -2959,6 +2978,22 @@ class ApiV1Controller extends Controller
         $headers = isset($link) ? ['Link' => $link] : [];
 
         return $this->json($res->toArray(), 200, $headers);
+    }
+
+    /**
+     * StatusService lifts a boost's content to the top level for _pe clients
+     * that don't send include_reblogs. In the home feed those clients render
+     * the card from the top level alone, so the author must be lifted too or
+     * the booster gets credited with someone else's post. Scoped to the home
+     * timeline: profile feeds and single-status views keep the booster.
+     */
+    protected function liftReblogAuthor(array $status): array
+    {
+        if (! empty($status['reblog']['account'])) {
+            $status['account'] = $status['reblog']['account'];
+        }
+
+        return $status;
     }
 
     /**
