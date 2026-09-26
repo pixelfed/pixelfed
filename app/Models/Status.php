@@ -353,7 +353,10 @@ class Status extends Model
     {
         $parent = $this->in_reply_to_id ?? $this->reblog_of_id;
         if (! empty($parent)) {
-            return $this->findOrFail($parent);
+            // A deleted parent must not throw: callers treat the result as
+            // nullable (reply/reblog to a since-removed status), so return
+            // null rather than raising ModelNotFoundException.
+            return $this->find($parent);
         }
 
         return false;
