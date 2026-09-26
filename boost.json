@@ -2,7 +2,8 @@
     "agents": [
         "copilot",
         "pi",
-        "claude_code"
+        "claude_code",
+        "kiro"
     ],
     "cloud": false,
     "guidelines": true,

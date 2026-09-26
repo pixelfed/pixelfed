@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Settings;
 
 use App\Models\AccountLog;
 use App\Models\UserDevice;
+use App\Services\PendingLoginService;
 use BaconQrCode\Renderer\Image\SvgImageBackEnd;
 use BaconQrCode\Renderer\ImageRenderer;
 use BaconQrCode\Renderer\RendererStyle\RendererStyle;
@@ -37,7 +38,6 @@ trait SecuritySettings
         if ($user->{'2fa_enabled'} && $user->{'2fa_secret'}) {
             return redirect(route('settings.security'));
         }
-        $backups = $this->generateBackupCodes();
         // $google2fa = new Google2FA();
         $google2fa = app(Google2FA::class);
         $key = $google2fa->generateSecretKey(32);
@@ -54,11 +54,15 @@ trait SecuritySettings
             )
         );
         $qrcode = $writer->writeString($qrcode);
+        // Only the secret is provisioned on GET (the user must see it to add
+        // the authenticator). Backup codes are NOT generated or rendered here:
+        // they are sensitive recovery data and are created + returned only
+        // after the TOTP code is verified, which also avoids regenerating them
+        // (and invalidating copied ones) on every page refresh.
         $user->{'2fa_secret'} = $key;
-        $user->{'2fa_backup_codes'} = json_encode($backups);
         $user->save();
 
-        return view('settings.security.2fa.setup', ['user' => $user, 'qrcode' => $qrcode, 'backups' => $backups]);
+        return view('settings.security.2fa.setup', ['user' => $user, 'qrcode' => $qrcode]);
     }
 
     /**
@@ -88,11 +92,16 @@ trait SecuritySettings
         $google2fa = new Google2FA;
         $verify = $google2fa->verifyKey($user->{'2fa_secret'}, $code);
         if ($verify) {
+            // Generate and persist backup codes only now that possession of the
+            // authenticator is proven, and return them once so the client can
+            // display them. They are not rendered on the setup GET page.
+            $backups = $this->generateBackupCodes();
             $user->{'2fa_enabled'} = true;
+            $user->{'2fa_backup_codes'} = json_encode($backups);
             $user->{'2fa_setup_at'} = now();
             $user->save();
 
-            return response()->json(['msg' => 'success']);
+            return response()->json(['msg' => 'success', 'backup_codes' => $backups]);
         }
 
         return response()->json(['msg' => 'fail'], 403);
@@ -145,10 +154,16 @@ trait SecuritySettings
 
         $this->validate($request, [
             'action' => 'required|string|max:12',
+            'code' => 'required|string|min:6|max:24',
         ]);
 
         if ($request->action !== 'remove') {
             abort(403);
+        }
+
+        // Removing 2FA is a security-critical change: require proof of the second factor (a current TOTP code or an unused backup code).
+        if (! PendingLoginService::verifyCode($user, $request->input('code'))) {
+            return response()->json(['msg' => 'Invalid 2FA code'], 403);
         }
 
         $user->{'2fa_enabled'} = false;
@@ -156,6 +171,17 @@ trait SecuritySettings
         $user->{'2fa_backup_codes'} = null;
         $user->{'2fa_setup_at'} = null;
         $user->save();
+
+        $log = new AccountLog;
+        $log->user_id = $user->id;
+        $log->item_id = $user->id;
+        $log->item_type = 'App\Models\User';
+        $log->action = 'account.security.2fa.remove';
+        $log->message = 'Two-factor authentication removed';
+        $log->link = null;
+        $log->ip_address = $request->ip();
+        $log->user_agent = $request->userAgent();
+        $log->save();
 
         return response()->json([
             'msg' => 'Successfully removed 2fa device',

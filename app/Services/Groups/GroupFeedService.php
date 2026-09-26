@@ -26,9 +26,9 @@ class GroupFeedService
             return [];
         }
 
-        return array_keys(Redis::zrevrangebyscore(self::CACHE_KEY.$gid, $start, '-inf', [
+        return array_keys(Redis::zrevrangebyscore(self::CACHE_KEY.$gid, '('.$start, '-inf', [
             'withscores' => true,
-            'limit' => [1, $limit],
+            'limit' => [0, $limit],
         ]));
     }
 

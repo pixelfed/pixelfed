@@ -111,7 +111,7 @@ class TransformImports extends Command
 
             $missingMedia = false;
             foreach ($ip->media as $ipm) {
-                $fileName = last(explode('/', $ipm['uri']));
+                $fileName = $this->sanitizeFilename(last(explode('/', $ipm['uri'])));
                 $og = 'imports/'.$id.'/'.$fileName;
                 if (! $disk->exists($og)) {
                     $missingMedia = true;
@@ -129,8 +129,7 @@ class TransformImports extends Command
 
             $mediaRecords = [];
             foreach ($ip->media as $ipm) {
-                $fileName = last(explode('/', $ipm['uri']));
-                $ext = last(explode('.', $fileName));
+                $fileName = $this->sanitizeFilename(last(explode('/', $ipm['uri'])));
                 $ext = strtolower(last(explode('.', $fileName)));
                 if (! in_array($ext, ['jpg', 'jpeg', 'png', 'webp', 'mp4'], true)) {
                     continue;
@@ -147,17 +146,21 @@ class TransformImports extends Command
                 $mime = $disk->mimeType($og);
                 $newFile = Str::random(40).'.'.$ext;
                 $np = $basePath.'/'.$newFile;
-                $disk->move($og, $np);
+                // Copy, not move: the source in imports/ must survive until the
+                // DB transaction commits. A move followed by delete-on-failure
+                // destroys the only copy and makes the import unrecoverable.
+                $disk->copy($og, $np);
 
                 $mediaRecords[] = [
                     'media_path' => $np,
+                    'source_path' => $og,
                     'mime' => $mime,
                     'size' => $size,
                 ];
             }
 
             try {
-                DB::transaction(function () use ($ip, $profile, $id, $pid, $caption, $mediaRecords) {
+                $runImport = function () use ($ip, $profile, $id, $pid, $caption, $mediaRecords) {
                     $uniqueIdData = ImportService::getUniqueCreationId(
                         $id,
                         $ip->creation_year,
@@ -214,7 +217,36 @@ class TransformImports extends Command
 
                     $profile->status_count = $profile->status_count + 1;
                     $profile->save();
-                });
+                };
+
+                // A concurrent import can win the statuses.id insert race,
+                // failing this transaction with a unique violation (SQLSTATE
+                // 23000). That is recoverable: retry so getUniqueCreationId()
+                // picks the next id from the now-committed row, instead of
+                // permanently marking the post skipped.
+                $maxAttempts = 3;
+                for ($attempt = 1; ; $attempt++) {
+                    try {
+                        DB::transaction($runImport);
+                        break;
+                    } catch (QueryException $e) {
+                        if ($e->getCode() === '23000' && $attempt < $maxAttempts) {
+                            usleep(random_int(100, 1000));
+
+                            continue;
+                        }
+                        throw $e;
+                    }
+                }
+
+                // Commit succeeded: now it is safe to remove the originals from
+                // imports/. Until this point the source copy is the fallback
+                // that lets a failed import be retried.
+                foreach ($mediaRecords as $mediaData) {
+                    if (isset($mediaData['source_path']) && $disk->exists($mediaData['source_path'])) {
+                        $disk->delete($mediaData['source_path']);
+                    }
+                }
 
                 AccountService::del($profile->id);
                 ImportService::clearAttempts($profile->id);
@@ -253,5 +285,23 @@ class TransformImports extends Command
                 $disk->deleteDirectory($importDir);
             }
         }
+    }
+
+    /**
+     * Sanitize a filename to match how ImportPostController::storeMedia wrote
+     * it to disk. The uploaded file is stored under a name with unsafe chars
+     * replaced by underscores, so a lookup built from the raw import URI (which
+     * may contain spaces/special chars) would miss the file and wrongly skip
+     * the post as "missing media".
+     */
+    private function sanitizeFilename(string $filename): string
+    {
+        $parts = explode('.', $filename);
+        $extension = array_pop($parts);
+        $originalName = implode('.', $parts);
+
+        $safeFilename = preg_replace('/[^a-zA-Z0-9_.-]/', '_', $originalName);
+
+        return $safeFilename.'.'.$extension;
     }
 }

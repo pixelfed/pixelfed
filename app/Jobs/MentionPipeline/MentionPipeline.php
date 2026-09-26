@@ -11,6 +11,7 @@ use App\Services\NotificationAppGatewayService;
 use App\Services\NotificationService;
 use App\Services\PushNotificationService;
 use App\Services\StatusService;
+use App\Services\UserFilterService;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
@@ -82,6 +83,15 @@ class MentionPipeline implements ShouldQueue
         if (! $target) {
             Log::info("MentionPipeline: Target profile ID missing for mention {$mention->id}, skipping job");
 
+            return;
+        }
+
+        // Suppress the mention notification when the target has blocked the
+        // actor. This is the shared sink for every mention path (including AP
+        // ingest, which dispatches without a block check), so a blocked account
+        // could otherwise still ping and push-notify the target.
+        $blocks = UserFilterService::blocks($target);
+        if ($blocks && in_array($actor->id, $blocks)) {
             return;
         }
 

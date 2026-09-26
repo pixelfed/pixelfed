@@ -127,8 +127,18 @@ class DeleteRemoteProfilePipeline implements ShouldQueue
             $story->forceDelete();
         });
 
-        // Delete mutes/blocks
-        UserFilter::whereFilterableType(Profile::class)->whereFilterableId($pid)->delete();
+        // Delete mutes/blocks. Per-row delete (not a bulk ->delete()) so the
+        // UserFilterObserver fires and UserFilterService::unmute()/unblock()
+        // clears each muting/blocking user's Redis cache; a bulk delete would
+        // leave stale entries (and inflated mute/block counts) for up to the
+        // 90-day cache TTL. chunkById is safe while deleting.
+        UserFilter::whereFilterableType(Profile::class)
+            ->whereFilterableId($pid)
+            ->chunkById(100, function ($filters) {
+                foreach ($filters as $filter) {
+                    $filter->delete();
+                }
+            });
 
         // Delete mentions
         Mention::whereProfileId($pid)->forceDelete();
