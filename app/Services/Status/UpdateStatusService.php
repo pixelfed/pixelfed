@@ -11,7 +11,6 @@ use App\Services\MediaStorageService;
 use App\Services\PlaceService;
 use App\Services\StatusService;
 use Purify;
-use Illuminate\Support\Facades\Log;
 
 class UpdateStatusService
 {
