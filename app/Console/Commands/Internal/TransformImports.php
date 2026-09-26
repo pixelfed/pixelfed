@@ -111,7 +111,7 @@ class TransformImports extends Command
 
             $missingMedia = false;
             foreach ($ip->media as $ipm) {
-                $fileName = last(explode('/', $ipm['uri']));
+                $fileName = $this->sanitizeFilename(last(explode('/', $ipm['uri'])));
                 $og = 'imports/'.$id.'/'.$fileName;
                 if (! $disk->exists($og)) {
                     $missingMedia = true;
@@ -129,8 +129,7 @@ class TransformImports extends Command
 
             $mediaRecords = [];
             foreach ($ip->media as $ipm) {
-                $fileName = last(explode('/', $ipm['uri']));
-                $ext = last(explode('.', $fileName));
+                $fileName = $this->sanitizeFilename(last(explode('/', $ipm['uri'])));
                 $ext = strtolower(last(explode('.', $fileName)));
                 if (! in_array($ext, ['jpg', 'jpeg', 'png', 'webp', 'mp4'], true)) {
                     continue;
@@ -286,5 +285,23 @@ class TransformImports extends Command
                 $disk->deleteDirectory($importDir);
             }
         }
+    }
+
+    /**
+     * Sanitize a filename to match how ImportPostController::storeMedia wrote
+     * it to disk. The uploaded file is stored under a name with unsafe chars
+     * replaced by underscores, so a lookup built from the raw import URI (which
+     * may contain spaces/special chars) would miss the file and wrongly skip
+     * the post as "missing media".
+     */
+    private function sanitizeFilename(string $filename): string
+    {
+        $parts = explode('.', $filename);
+        $extension = array_pop($parts);
+        $originalName = implode('.', $parts);
+
+        $safeFilename = preg_replace('/[^a-zA-Z0-9_.-]/', '_', $originalName);
+
+        return $safeFilename.'.'.$extension;
     }
 }
