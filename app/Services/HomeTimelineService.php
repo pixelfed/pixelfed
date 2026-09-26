@@ -29,9 +29,9 @@ class HomeTimelineService
             return [];
         }
 
-        return array_keys(Redis::zrevrangebyscore(self::CACHE_KEY.$id, $start, '-inf', [
+        return array_keys(Redis::zrevrangebyscore(self::CACHE_KEY.$id, '('.$start, '-inf', [
             'withscores' => true,
-            'limit' => [1, $limit - 1],
+            'limit' => [0, $limit],
         ]));
     }
 
