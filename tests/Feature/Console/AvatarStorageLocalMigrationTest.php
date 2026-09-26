@@ -22,7 +22,6 @@ uses(LazilyRefreshDatabase::class);
 beforeEach(function () {
     config(['instance.enable_cc' => false]);
     config(['pixelfed.cloud_storage' => true]);
-    config(['instance.avatar.local_to_cloud' => true]);
     config(['filesystems.cloud' => 's3']);
     Storage::fake('local');
     Storage::fake('s3');
