@@ -34,15 +34,17 @@ Photo sharing the way it should be. Pixelfed lets your casual shots and creative
 ## Database Support (Please report any regressions)
 * MySQL 9+ is officially supported (Strict mode is not default).
 * MariaDB 11+ is officially supported (Strict mode is default).
-* PostgreSQL 14+ is best effort _as of writing_.
+* PostgreSQL 14+ is best effort _as of writing_ (Not recommended).
 
 Notice: We need to improve the ecosystem to test/validate the codebase to be database agnostic, but this will require considerable engineering effort. Thank you for your understanding.
 
 ## Official Documentation
 
+* As of September 2026, we recommend using Docker compose to run your instances. Non-docker is obviously supported, but the Dockerfile will be maintained and updated with best practices and latest releases.
+
 Documentation for Pixelfed can be found on the [Pixelfed documentation website](https://docs.pixelfed.org/).
 
-## Host your own instance with
+## Host your own instance with these unofficial cloud providers
 
 [![Install on YunoHost](https://user-images.githubusercontent.com/42862428/139559471-9495f1e9-e7a4-49f1-9a4b-675ddcc510a2.png "Install on YunoHost")](https://install-app.yunohost.org/?app=pixelfed)
 
