@@ -15,7 +15,10 @@ class ValidUrl implements ValidationRule
      */
     public function validate(string $attribute, mixed $value, Closure $fail): void
     {
-        if (! str_starts_with(strtolower($value), 'https://')) {
+        // A non-string (array/object) can arrive from a malformed or
+        // spec-compliant federated payload where a url field is an array;
+        // fail validation instead of letting strtolower() throw a TypeError.
+        if (! is_string($value) || ! str_starts_with(strtolower($value), 'https://')) {
             $fail('The :attribute must start with https://.');
         }
     }
