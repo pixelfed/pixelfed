@@ -78,11 +78,7 @@
 			  	<div class="collapse" id="step3">
 				  	<p>Please store the following codes in a safe place, each backup code can be used only once if you do not have access to your 2FA mobile app.</p>
 
-				  	<code>
-				  	@foreach($backups as $code)
-				  	<p class="mb-0">{{$code}}</p>
-				  	@endforeach
-				  	</code>
+				  	<code id="backup-codes"></code>
 			  	</div>
 			  </section>
 
@@ -139,6 +135,17 @@ $(document).ready(function() {
 			code: code
 		}).then((res) => {
 			twoFactor.validated = true;
+			// Backup codes are returned only after verification; inject them
+			// into the DOM now rather than rendering them on page load.
+			let codes = (res.data && res.data.backup_codes) ? res.data.backup_codes : [];
+			let container = document.getElementById('backup-codes');
+			container.innerHTML = '';
+			codes.forEach(function(c) {
+				let p = document.createElement('p');
+				p.className = 'mb-0';
+				p.textContent = c;
+				container.appendChild(p);
+			});
 			$('#step3').removeClass('d-none');
 			$('#step3').collapse('show');
 			$('#step1').collapse('hide');

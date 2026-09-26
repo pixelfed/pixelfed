@@ -37,7 +37,6 @@ trait SecuritySettings
         if ($user->{'2fa_enabled'} && $user->{'2fa_secret'}) {
             return redirect(route('settings.security'));
         }
-        $backups = $this->generateBackupCodes();
         // $google2fa = new Google2FA();
         $google2fa = app(Google2FA::class);
         $key = $google2fa->generateSecretKey(32);
@@ -54,11 +53,15 @@ trait SecuritySettings
             )
         );
         $qrcode = $writer->writeString($qrcode);
+        // Only the secret is provisioned on GET (the user must see it to add
+        // the authenticator). Backup codes are NOT generated or rendered here:
+        // they are sensitive recovery data and are created + returned only
+        // after the TOTP code is verified, which also avoids regenerating them
+        // (and invalidating copied ones) on every page refresh.
         $user->{'2fa_secret'} = $key;
-        $user->{'2fa_backup_codes'} = json_encode($backups);
         $user->save();
 
-        return view('settings.security.2fa.setup', ['user' => $user, 'qrcode' => $qrcode, 'backups' => $backups]);
+        return view('settings.security.2fa.setup', ['user' => $user, 'qrcode' => $qrcode]);
     }
 
     /**
@@ -88,11 +91,16 @@ trait SecuritySettings
         $google2fa = new Google2FA;
         $verify = $google2fa->verifyKey($user->{'2fa_secret'}, $code);
         if ($verify) {
+            // Generate and persist backup codes only now that possession of the
+            // authenticator is proven, and return them once so the client can
+            // display them. They are not rendered on the setup GET page.
+            $backups = $this->generateBackupCodes();
             $user->{'2fa_enabled'} = true;
+            $user->{'2fa_backup_codes'} = json_encode($backups);
             $user->{'2fa_setup_at'} = now();
             $user->save();
 
-            return response()->json(['msg' => 'success']);
+            return response()->json(['msg' => 'success', 'backup_codes' => $backups]);
         }
 
         return response()->json(['msg' => 'fail'], 403);
