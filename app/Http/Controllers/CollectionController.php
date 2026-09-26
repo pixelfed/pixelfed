@@ -298,7 +298,7 @@ class CollectionController extends Controller
         $item->delete();
 
         CollectionItem::whereCollectionId($collection->id)
-            ->orderBy('created_at')
+            ->orderBy('order')
             ->get()
             ->each(function ($item, $index) {
                 $item->order = $index;
