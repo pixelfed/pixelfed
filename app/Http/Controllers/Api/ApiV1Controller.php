@@ -2628,354 +2628,161 @@ class ApiV1Controller extends Controller
         ]);
 
         $napi = $request->has(self::PF_API_ENTITY_KEY);
-        $page = $request->input('page');
         $min = $request->input('min_id');
         $max = $request->input('max_id');
-        $limit = $request->input('limit') ?? 20;
-        if ($limit > 40) {
-            $limit = 40;
-        }
+        $limit = min((int) ($request->input('limit') ?? 20), 40);
         $pid = $request->user()->profile_id;
-        $userSettings = $request->user()->settings;
-        $other = $userSettings->other ?? [];
+        $other = $request->user()->settings->other ?? [];
 
-        $userEnableReblogs = data_get($other, 'enable_reblogs', false);
-        $includeReblogs = $request->filled('include_reblogs') ? $request->boolean('include_reblogs') : $userEnableReblogs;
+        $includeReblogs = $request->filled('include_reblogs')
+            ? $request->boolean('include_reblogs')
+            : (bool) data_get($other, 'enable_reblogs', false);
+
+        // "Photo reblogs only"
+        $photosReblogsOnly = $request->filled('photos_reblogs_only')
+            ? $request->boolean('photos_reblogs_only')
+            : (bool) data_get($other, 'photo_reblogs_only', false);
 
         // Mirrors the StatusService lift condition: these clients render a boost
         // from the top level, so the original author has to be lifted with the content
         $liftReblogAuthor = $napi && $includeReblogs && ! $request->filled('include_reblogs');
 
-        $nullFields = $includeReblogs ?
-            ['in_reply_to_id'] :
-            ['in_reply_to_id', 'reblog_of_id'];
-        $inTypes = $includeReblogs ?
-            ['photo', 'photo:album', 'video', 'video:album', 'photo:video:album', 'share'] :
-            ['photo', 'photo:album', 'video', 'video:album', 'photo:video:album'];
-
-        // "Photo reblogs only"
-        $photosReblogsOnly = $request->filled('photos_reblogs_only')
-            ? $request->boolean('photos_reblogs_only')
-            : data_get($other, 'photo_reblogs_only', false);
-        $reblogTargetTypes = array_diff($inTypes, ['share']);
-
-        // Filtering happens after the fetch, so fetch deeper to fill a page
-        $fetchLimit = $photosReblogsOnly ? $limit * 6 : $limit * 2;
+        $postTypes = ['photo', 'photo:album', 'video', 'video:album', 'photo:video:album'];
+        $inTypes = $includeReblogs ? [...$postTypes, 'share'] : $postTypes;
 
         AccountService::setLastActive($request->user()->id);
 
-        $cachedFilters = CustomFilter::getCachedFiltersForAccount($pid);
+        $homeFilters = array_filter(
+            CustomFilter::getCachedFiltersForAccount($pid),
+            function ($item) {
+                [$filter, $rules] = $item;
 
-        $homeFilters = array_filter($cachedFilters, function ($item) {
-            [$filter, $rules] = $item;
+                return in_array('home', $filter->context);
+            }
+        );
 
-            return in_array('home', $filter->context);
-        });
+        $cached = (bool) config('exp.cached_home_timeline');
 
-        if (config('exp.cached_home_timeline')) {
+        if ($cached) {
             $paddedLimit = $includeReblogs ? $limit + 10 : $limit + 50;
+
             if ($min || $max) {
-                if ($request->has('min_id')) {
-                    $res = HomeTimelineService::getRankedMinId($pid, $min ?? 0, $paddedLimit);
-                } else {
-                    $res = HomeTimelineService::getRankedMaxId($pid, $max ?? 0, $paddedLimit);
-                }
+                $ids = $request->has('min_id')
+                    ? HomeTimelineService::getRankedMinId($pid, $min ?? 0, $paddedLimit)
+                    : HomeTimelineService::getRankedMaxId($pid, $max ?? 0, $paddedLimit);
             } else {
-                $res = HomeTimelineService::get($pid, 0, $paddedLimit);
+                $ids = HomeTimelineService::get($pid, 0, $paddedLimit);
             }
 
-            if (! $res) {
-                $res = Cache::has('pf:services:apiv1:home:cached:coldbootcheck:'.$pid);
-                if (! $res) {
-                    Cache::set('pf:services:apiv1:home:cached:coldbootcheck:'.$pid, 1, 86400);
+            if (! $ids) {
+                $coldBootKey = 'pf:services:apiv1:home:cached:coldbootcheck:'.$pid;
+
+                if (! Cache::has($coldBootKey)) {
+                    Cache::set($coldBootKey, 1, 86400);
                     FeedWarmCachePipeline::dispatchSync($pid);
 
                     return response()->json([], 206);
                 }
-                Cache::set('pf:services:apiv1:home:cached:coldbootcheck:'.$pid, 1, 86400);
+
+                Cache::set($coldBootKey, 1, 86400);
 
                 return response()->json([], 206);
             }
-
-            $res = collect($res)
-                ->map(function ($id) use ($napi) {
-                    return $napi ? StatusService::get($id, false) : StatusService::getMastodon($id, false);
-                })
-                ->filter(function ($res) {
-                    return $res && isset($res['account']);
-                })
-                ->filter(function ($s) use ($includeReblogs) {
-                    return $includeReblogs ? true : $s['reblog'] == null;
-                })
-                ->map(function ($status) use ($homeFilters) {
-                    $filterResults = CustomFilter::applyCachedFilters($homeFilters, $status);
-
-                    if (! empty($filterResults)) {
-                        $status['filtered'] = $filterResults;
-                        $shouldHide = collect($filterResults)->contains(function ($result) {
-                            return $result['filter']['filter_action'] === 'hide';
-                        });
-
-                        if ($shouldHide) {
-                            return null;
-                        }
-                    }
-
-                    return $status;
-                })
-                ->filter()
-                ->take($limit)
-                ->map(function ($status) use ($pid) {
-                    if ($pid) {
-                        $status['favourited'] = (bool) LikeService::liked($pid, $status['id']);
-                        $status['reblogged'] = (bool) ReblogService::get($pid, $status['id']);
-                        $status['bookmarked'] = (bool) BookmarkService::get($pid, $status['id']);
-
-                        if (! empty($status['reblog'])) {
-                            $status['reblog']['favourited'] = (bool) LikeService::liked($pid, $status['reblog']['id']);
-                            $status['reblog']['reblogged'] = (bool) ReblogService::get($pid, $status['reblog']['id']);
-                            $status['reblog']['bookmarked'] = (bool) BookmarkService::get($pid, $status['reblog']['id']);
-                        }
-                    }
-
-                    return $status;
-                })
-                ->map(function ($status) use ($liftReblogAuthor) {
-                    return $liftReblogAuthor ? $this->liftReblogAuthor($status) : $status;
-                })
-                ->values();
-
-            $baseUrl = $napi ? config('app.url').'/api/v1/timelines/home?limit='.$limit.'&_pe=1&' : config('app.url').'/api/v1/timelines/home?limit='.$limit.'&';
-            $minId = $res->map(function ($s) {
-                return ['id' => $s['id']];
-            })->min('id');
-            $maxId = $res->map(function ($s) {
-                return ['id' => $s['id']];
-            })->max('id');
-
-            if ($minId == $maxId) {
-                $minId = null;
-            }
-
-            if ($maxId && $res->count() >= $limit) {
-                $link = '<'.$baseUrl.'max_id='.$minId.'>; rel="next"';
-            }
-
-            if ($minId) {
-                $link = '<'.$baseUrl.'min_id='.$maxId.'>; rel="prev"';
-            }
-
-            if ($maxId && $minId) {
-                $link = '<'.$baseUrl.'max_id='.$minId.'>; rel="next",<'.$baseUrl.'min_id='.$maxId.'>; rel="prev"';
-            }
-
-            $headers = isset($link) ? ['Link' => $link] : [];
-
-            return $this->json($res->toArray(), 200, $headers);
-        }
-
-        $following = FollowerService::getFollowingIds($pid);
-
-        $muted = UserFilterService::mutes($pid);
-
-        if ($muted && count($muted)) {
-            $following = array_diff($following, $muted);
-        }
-
-        if ($min || $max) {
-            $dir = $min ? '>' : '<';
-            $id = $min ?? $max;
-            $res = Status::select(
-                'id',
-                'profile_id',
-                'type',
-                'visibility',
-                'in_reply_to_id',
-                'reblog_of_id'
-            )
-                ->where('id', $dir, $id)
-                ->whereNull($nullFields)
-                ->whereIntegerInRaw('profile_id', $following)
-                ->whereIn('type', $inTypes)
-                ->whereIn('visibility', ['public', 'unlisted', 'private'])
-                ->orderByDesc('id')
-                ->take($fetchLimit)
-                ->get()
-                ->map(function ($s) use ($pid, $napi) {
-                    try {
-                        $account = $napi ? AccountService::get($s['profile_id'], true) : AccountService::getMastodon($s['profile_id'], true);
-                        if (! $account) {
-                            return false;
-                        }
-                        $status = $napi ? StatusService::get($s['id'], false) : StatusService::getMastodon($s['id'], false);
-                        if (! $status || ! isset($status['account']) || ! isset($status['account']['id'])) {
-                            return false;
-                        }
-                    } catch (\Exception) {
-                        return false;
-                    }
-
-                    // Not $status['account'] = $account: $account is resolved from
-                    // the row, StatusService picks the right one per client
-
-                    if ($pid) {
-                        $status['favourited'] = (bool) LikeService::liked($pid, $s['id']);
-                        $status['reblogged'] = (bool) ReblogService::get($pid, $status['id']);
-                        $status['bookmarked'] = (bool) BookmarkService::get($pid, $status['id']);
-                    }
-
-                    return $status;
-                })
-                ->filter(function ($status) use ($photosReblogsOnly, $reblogTargetTypes) {
-                    if (! $status || ! isset($status['account'])) {
-                        return false;
-                    }
-
-                    // direct posts pass; a boost must share a photo or video
-                    return ! $photosReblogsOnly
-                        || empty($status['reblog'])
-                        || in_array(data_get($status['reblog'], 'pf_type'), $reblogTargetTypes);
-                })
-                ->map(function ($status) use ($pid) {
-                    if (! empty($status['reblog'])) {
-                        $status['reblog']['favourited'] = (bool) LikeService::liked($pid, $status['reblog']['id']);
-                        $status['reblog']['reblogged'] = (bool) ReblogService::get($pid, $status['reblog']['id']);
-                        $status['reblog']['bookmarked'] = (bool) BookmarkService::get($pid, $status['reblog']['id']);
-                    }
-
-                    return $status;
-                })
-                ->map(function ($status) use ($homeFilters) {
-                    $filterResults = CustomFilter::applyCachedFilters($homeFilters, $status);
-
-                    if (! empty($filterResults)) {
-                        $status['filtered'] = $filterResults;
-                        $shouldHide = collect($filterResults)->contains(function ($result) {
-                            return $result['filter']['filter_action'] === 'hide';
-                        });
-
-                        if ($shouldHide) {
-                            return null;
-                        }
-                    }
-
-                    return $status;
-                })
-                ->filter()
-                ->take($limit)
-                ->map(function ($status) use ($liftReblogAuthor) {
-                    return $liftReblogAuthor ? $this->liftReblogAuthor($status) : $status;
-                })
-                ->values();
         } else {
-            $res = Status::select(
-                'id',
-                'profile_id',
-                'type',
-                'visibility',
-                'in_reply_to_id',
-                'reblog_of_id',
-            )
-                ->whereNull($nullFields)
+            $following = FollowerService::getFollowingIds($pid);
+            $muted = UserFilterService::mutes($pid);
+
+            if ($muted && count($muted)) {
+                $following = array_diff($following, $muted);
+            }
+
+            // Filtering happens after the fetch, so fetch deeper to fill a page
+            $fetchLimit = $photosReblogsOnly ? $limit * 6 : $limit * 2;
+
+            $ids = Status::query()
+                ->when($min || $max, function ($q) use ($min, $max) {
+                    return $q->where('id', $min ? '>' : '<', $min ?: $max);
+                })
+                ->whereNull($includeReblogs ? ['in_reply_to_id'] : ['in_reply_to_id', 'reblog_of_id'])
                 ->whereIntegerInRaw('profile_id', $following)
                 ->whereIn('type', $inTypes)
                 ->whereIn('visibility', ['public', 'unlisted', 'private'])
                 ->orderByDesc('id')
                 ->take($fetchLimit)
-                ->get()
-                ->map(function ($s) use ($pid, $napi) {
-                    try {
-                        $account = $napi ? AccountService::get($s['profile_id'], true) : AccountService::getMastodon($s['profile_id'], true);
-                        if (! $account) {
-                            return false;
-                        }
-                        $status = $napi ? StatusService::get($s['id'], false) : StatusService::getMastodon($s['id'], false);
-                        if (! $status || ! isset($status['account']) || ! isset($status['account']['id'])) {
-                            return false;
-                        }
-                    } catch (\Exception) {
-                        return false;
-                    }
-
-                    // Not $status['account'] = $account: $account is resolved from
-                    // the row, StatusService picks the right one per client
-
-                    if ($pid) {
-                        $status['favourited'] = (bool) LikeService::liked($pid, $s['id']);
-                        $status['reblogged'] = (bool) ReblogService::get($pid, $status['id']);
-                        $status['bookmarked'] = (bool) BookmarkService::get($pid, $status['id']);
-                    }
-
-                    return $status;
-                })
-                ->filter(function ($status) use ($photosReblogsOnly, $reblogTargetTypes) {
-                    if (! $status || ! isset($status['account'])) {
-                        return false;
-                    }
-
-                    // direct posts pass; a boost must share a photo or video
-                    return ! $photosReblogsOnly
-                        || empty($status['reblog'])
-                        || in_array(data_get($status['reblog'], 'pf_type'), $reblogTargetTypes);
-                })
-                ->map(function ($status) use ($pid) {
-                    if (! empty($status['reblog'])) {
-                        $status['reblog']['favourited'] = (bool) LikeService::liked($pid, $status['reblog']['id']);
-                        $status['reblog']['reblogged'] = (bool) ReblogService::get($pid, $status['reblog']['id']);
-                        $status['reblog']['bookmarked'] = (bool) BookmarkService::get($pid, $status['reblog']['id']);
-                    }
-
-                    return $status;
-                })
-                ->map(function ($status) use ($homeFilters) {
-                    $filterResults = CustomFilter::applyCachedFilters($homeFilters, $status);
-
-                    if (! empty($filterResults)) {
-                        $status['filtered'] = $filterResults;
-                        $shouldHide = collect($filterResults)->contains(function ($result) {
-                            return $result['filter']['filter_action'] === 'hide';
-                        });
-
-                        if ($shouldHide) {
-                            return null;
-                        }
-                    }
-
-                    return $status;
-                })
-                ->filter()
-                ->take($limit)
-                ->map(function ($status) use ($liftReblogAuthor) {
-                    return $liftReblogAuthor ? $this->liftReblogAuthor($status) : $status;
-                })
-                ->values();
+                ->pluck('id');
         }
 
-        $baseUrl = $napi ? config('app.url').'/api/v1/timelines/home?limit='.$limit.'&_pe=1&' : config('app.url').'/api/v1/timelines/home?limit='.$limit.'&';
-        $minId = $res->map(function ($s) {
-            return ['id' => $s['id']];
-        })->min('id');
-        $maxId = $res->map(function ($s) {
-            return ['id' => $s['id']];
-        })->max('id');
+        // The cached feed has never applied photo_reblogs_only; kept as-is
+        $applyPhotosReblogsOnly = ! $cached && $photosReblogsOnly;
 
-        if ($minId == $maxId) {
-            $minId = null;
+        $res = collect($ids)
+            ->map(function ($id) use ($napi) {
+                try {
+                    $status = $napi ? StatusService::get($id, false) : StatusService::getMastodon($id, false);
+                } catch (\Exception) {
+                    return null;
+                }
+
+                return isset($status['account']['id']) ? $status : null;
+            })
+            ->filter()
+            ->filter(function ($status) use ($includeReblogs, $applyPhotosReblogsOnly, $postTypes) {
+                if (empty($status['reblog'])) {
+                    return true;
+                }
+
+                if (! $includeReblogs) {
+                    return false;
+                }
+
+                // a boost must share a photo or video
+                return ! $applyPhotosReblogsOnly
+                    || in_array(data_get($status['reblog'], 'pf_type'), $postTypes);
+            })
+            ->map(function ($status) use ($homeFilters) {
+                $filterResults = CustomFilter::applyCachedFilters($homeFilters, $status);
+
+                if (! empty($filterResults)) {
+                    $status['filtered'] = $filterResults;
+                    $shouldHide = collect($filterResults)->contains(function ($result) {
+                        return $result['filter']['filter_action'] === 'hide';
+                    });
+
+                    if ($shouldHide) {
+                        return null;
+                    }
+                }
+
+                return $status;
+            })
+            ->filter()
+            ->take($limit)
+            ->map(function ($status) use ($pid) {
+                $status['favourited'] = (bool) LikeService::liked($pid, $status['id']);
+                $status['reblogged'] = (bool) ReblogService::get($pid, $status['id']);
+                $status['bookmarked'] = (bool) BookmarkService::get($pid, $status['id']);
+
+                if (! empty($status['reblog'])) {
+                    $status['reblog']['favourited'] = (bool) LikeService::liked($pid, $status['reblog']['id']);
+                    $status['reblog']['reblogged'] = (bool) ReblogService::get($pid, $status['reblog']['id']);
+                    $status['reblog']['bookmarked'] = (bool) BookmarkService::get($pid, $status['reblog']['id']);
+                }
+
+                return $status;
+            })
+            ->map(function ($status) use ($liftReblogAuthor) {
+                return $liftReblogAuthor ? $this->liftReblogAuthor($status) : $status;
+            })
+            ->values();
+
+        $headers = [];
+
+        if ($res->isNotEmpty()) {
+            $baseUrl = config('app.url').'/api/v1/timelines/home?limit='.$limit.'&'.($napi ? '_pe=1&' : '');
+            $pageIds = $res->pluck('id');
+
+            $headers['Link'] = '<'.$baseUrl.'max_id='.$pageIds->min().'>; rel="next",<'.$baseUrl.'min_id='.$pageIds->max().'>; rel="prev"';
         }
-
-        if ($maxId) {
-            $link = '<'.$baseUrl.'max_id='.$minId.'>; rel="next"';
-        }
-
-        if ($minId) {
-            $link = '<'.$baseUrl.'min_id='.$maxId.'>; rel="prev"';
-        }
-
-        if ($maxId && $minId) {
-            $link = '<'.$baseUrl.'max_id='.$minId.'>; rel="next",<'.$baseUrl.'min_id='.$maxId.'>; rel="prev"';
-        }
-
-        $headers = isset($link) ? ['Link' => $link] : [];
 
         return $this->json($res->toArray(), 200, $headers);
     }
@@ -2983,14 +2790,35 @@ class ApiV1Controller extends Controller
     /**
      * StatusService lifts a boost's content to the top level for _pe clients
      * that don't send include_reblogs. In the home feed those clients render
-     * the card from the top level alone, so the author must be lifted too or
-     * the booster gets credited with someone else's post. Scoped to the home
-     * timeline: profile feeds and single-status views keep the booster.
+     * the card from the top level alone, so the author, counts and viewer
+     * state must come from the shared post too. Actions on the card resolve
+     * to that post (resolveReblogTargetId), so the state has to match it.
+     * Scoped to the home timeline: profile feeds and single-status views
+     * keep the booster.
      */
     protected function liftReblogAuthor(array $status): array
     {
-        if (! empty($status['reblog']['account'])) {
-            $status['account'] = $status['reblog']['account'];
+        if (empty($status['reblog']['account'])) {
+            return $status;
+        }
+
+        $status['reblogged_by'] = $status['account'];
+
+        foreach (
+            [
+                'account',
+                'favourites_count',
+                'reblogs_count',
+                'reply_count',
+                'liked_by',
+                'favourited',
+                'reblogged',
+                'bookmarked',
+            ] as $key
+        ) {
+            if (array_key_exists($key, $status['reblog'])) {
+                $status[$key] = $status['reblog'][$key];
+            }
         }
 
         return $status;
