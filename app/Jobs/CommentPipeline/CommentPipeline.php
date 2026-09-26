@@ -83,7 +83,9 @@ class CommentPipeline implements ShouldQueue
             return;
         }
 
-        Status::whereId($status->id)->increment('reply_count');
+        Status::whereId($status->id)->update([
+            'reply_count' => DB::raw('COALESCE(reply_count, 0) + 1'),
+        ]);
 
         StatusService::del($comment->id);
         StatusService::del($status->id);

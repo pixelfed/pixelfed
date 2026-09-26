@@ -91,6 +91,7 @@ class UpdateStatusService
         if (isset($attributes['spoiler_text'])) {
             $status->cw_summary = Purify::clean($attributes['spoiler_text']);
         }
+        $oldPlaceId = null;
         if (isset($attributes['location'])) {
             $oldPlaceId = $status->getOriginal('place_id');
             if (isset($attributes['location']['id'])) {
@@ -98,20 +99,20 @@ class UpdateStatusService
             } else {
                 $status->place_id = null;
             }
-            if ($oldPlaceId != $status->place_id) {
-                if ($oldPlaceId) {
-                    PlaceService::clearStatusesByPlaceId($oldPlaceId);
-                }
-                if ($status->place_id) {
-                    PlaceService::clearStatusesByPlaceId($status->place_id);
-                }
-            }
         }
         if ($status->cw_summary && ! $status->is_nsfw) {
             $status->cw_summary = null;
         }
         $status->edited_at = now();
         $status->save();
+        if (isset($attributes['location']) && $oldPlaceId != $status->place_id) {
+            if ($oldPlaceId) {
+                PlaceService::clearStatusesByPlaceId($oldPlaceId);
+            }
+            if ($status->place_id) {
+                PlaceService::clearStatusesByPlaceId($status->place_id);
+            }
+        }
         StatusService::del($status->id);
     }
 

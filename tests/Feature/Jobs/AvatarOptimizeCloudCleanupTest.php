@@ -13,7 +13,7 @@ uses(LazilyRefreshDatabase::class);
 | AvatarOptimize cloud cleanup - regression
 |--------------------------------------------------------------------------
 |
-| When both cloud_storage and avatar.local_to_cloud are enabled, the job
+| When cloud_storage is enabled, the job
 | mirrors the optimized avatar to the cloud disk and must delete the local
 | copy. uploadToCloud() reassigned media_path to the cloud key before the
 | Storage::delete() call, so the delete ran against the wrong path on the
@@ -27,7 +27,6 @@ uses(LazilyRefreshDatabase::class);
 
 it('deletes the local avatar file after uploading it to the cloud', function () {
     config(['pixelfed.cloud_storage' => true]);
-    config(['instance.avatar.local_to_cloud' => true]);
     config(['filesystems.cloud' => 's3']);
 
     Storage::fake('s3');

@@ -247,6 +247,8 @@ class AppRegisterController extends Controller
             return redirect('/');
         }
 
+        $this->normalizeRegistrationInput($request);
+
         $this->validate($request, [
             'email' => 'required|email:rfc,dns,spoof,strict|unique:users,email|exists:app_registers,email',
             'verify_code' => ['required', 'digits:6', 'numeric'],
@@ -388,6 +390,27 @@ class AppRegisterController extends Controller
                 'username' => $user->username,
             ],
             'account' => AccountService::get($user->profile_id, true),
+        ]);
+    }
+
+    /**
+     * Lowercase the username and email before validation and storage on
+     * PostgreSQL, whose string comparison (and unique index) is case-sensitive.
+     *
+     * Every other signup path (Auth\RegisterController,
+     * ApiV1Dot1Controller::inAppRegistration, RemoteAuthController) applies the
+     * same normalization; without it, `Alice` and `alice` can both register on
+     * pgsql, defeating the platform's lowercase-username contract.
+     */
+    protected function normalizeRegistrationInput(Request $request): void
+    {
+        if (! db_is_pgsql()) {
+            return;
+        }
+
+        $request->merge([
+            'username' => strtolower((string) $request->input('username')),
+            'email' => strtolower((string) $request->input('email')),
         ]);
     }
 
