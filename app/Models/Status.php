@@ -136,6 +136,10 @@ class Status extends Model
 
     protected $guarded = [];
 
+    protected $attributes = [
+        'reply_count' => 0,
+    ];
+
     protected function casts(): array
     {
         return [

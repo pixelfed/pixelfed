@@ -97,7 +97,9 @@ class StatusReplyPipeline implements ShouldQueue
             return;
         }
 
-        Status::whereId($reply->id)->increment('reply_count');
+        Status::whereId($reply->id)->update([
+            'reply_count' => DB::raw('COALESCE(reply_count, 0) + 1'),
+        ]);
 
         StatusService::del($reply->id);
         StatusService::del($status->id);
