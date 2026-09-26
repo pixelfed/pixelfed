@@ -266,6 +266,9 @@ class Status extends Model
     public function mediaUrl()
     {
         $media = $this->firstMedia();
+        if (! $media) {
+            return null;
+        }
         $path = $media->media_path;
         $hash = is_null($media->processed_at) ? md5('unprocessed') : md5($media->created_at);
         $url = $media->cdn_url ? $media->cdn_url."?v={$hash}" : url(Storage::url($path)."?v={$hash}");
