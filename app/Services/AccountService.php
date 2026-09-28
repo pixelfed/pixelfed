@@ -228,9 +228,9 @@ class AccountService
             if (Str::contains($username, '@') && ! Str::startsWith($username, '@')) {
                 $username = "@{$username}";
             }
-            if(preg_match('/^@([^@]+)@'.preg_quote(config('pixelfed.domain.app')).'$/i', $username, $matches)) {
-                # The username is the fully qualified @user@example.com and the pixelfed site is example.com
-                # Normalize this username to just user
+            if (preg_match('/^@([^@]+)@'.preg_quote(config('pixelfed.domain.app')).'$/i', $username, $matches)) {
+                // The username is the fully qualified @user@example.com and the pixelfed site is example.com
+                // Normalize this username to just user
                 $username = $matches[1];
             }
 
