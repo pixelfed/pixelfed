@@ -4240,7 +4240,7 @@ class ApiV1Controller extends Controller
             ->cursorPaginate($limit);
 
         $bookmarks = $bookmarkQuery->map(function ($bookmark) use ($pid, $pe) {
-            $status = $pe ? StatusService::get($bookmark->status_id, false) : StatusService::getMastodon($bookmark->status_id, false);
+            $status = $pe ? StatusService::get($bookmark->status_id, false, false, $pid) : StatusService::getMastodon($bookmark->status_id, false, $pid);
 
             if ($status) {
                 $status['bookmarked'] = true;
