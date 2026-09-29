@@ -5,6 +5,7 @@ use App\Http\Controllers\Api\AdminApiController;
 use App\Http\Controllers\Api\ApiV1Controller;
 use App\Http\Controllers\Api\ApiV1Dot1Controller;
 use App\Http\Controllers\Api\ApiV2Controller;
+use App\Http\Controllers\Api\ApiV2Dot1Controller;
 use App\Http\Controllers\Api\V1\Admin\DomainBlocksController;
 use App\Http\Controllers\Api\V1\DomainBlockController;
 use App\Http\Controllers\Api\V1\TagsController;
@@ -363,6 +364,10 @@ Route::prefix('api')->group(function () use ($middleware) {
             Route::get('carousel', [StoryApiV1Controller::class, 'carouselNext'])->middleware($middleware);
             Route::get('mention-autocomplete', [StoryApiV1Controller::class, 'mentionAutocomplete'])->middleware($middleware);
         });
+    });
+
+    Route::prefix('v2.1')->group(function () {
+        Route::get('config', [ApiV2Dot1Controller::class, 'getConfig']);
     });
 
     Route::prefix('live')->group(function () {
