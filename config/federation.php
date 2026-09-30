@@ -52,6 +52,14 @@ return [
             // Maximum collection pages fetched from a remote server per synchronization
             'max_pages' => env('AP_FOLLOWERS_SYNC_MAX_PAGES', 10),
         ],
+
+        'block_sync' => [
+            'enabled' => env('AP_BLOCK_SYNC', true),
+            'disclose' => env('AP_BLOCK_SYNC_DISCLOSE', true),
+            'cooldown' => env('AP_BLOCK_SYNC_COOLDOWN', 900),
+            'max_pages' => env('AP_BLOCK_SYNC_MAX_PAGES', 10),
+            'reconcile_limit' => env('AP_BLOCK_SYNC_RECONCILE_LIMIT', 1000),
+        ],
     ],
 
     'atom' => [
