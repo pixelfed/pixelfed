@@ -276,6 +276,19 @@ class ActivityPubDeliveryService
             }
         }
 
+        $blockSyncDigests = null;
+
+        if (BlockSyncService::disclosing()) {
+            try {
+                $blockSyncDigests = BlockSyncService::outboundDigests();
+            } catch (Throwable $e) {
+                Log::warning('Unable to compute block synchronization digests', [
+                    'exception' => $e::class,
+                    'error' => $e->getMessage(),
+                ]);
+            }
+        }
+
         /*
          * Prepare and sign every delivery before starting the HTTP pool.
          *
@@ -344,6 +357,14 @@ class ActivityPubDeliveryService
 
                     if ($syncHeader !== null) {
                         $extraHeaders[FollowersSyncService::HEADER] = $syncHeader;
+                    }
+                }
+
+                if ($blockSyncDigests !== null) {
+                    $blockSyncHeader = BlockSyncService::header($url, $blockSyncDigests);
+
+                    if ($blockSyncHeader !== null) {
+                        $extraHeaders[BlockSyncService::HEADER] = $blockSyncHeader;
                     }
                 }
 
