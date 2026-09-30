@@ -2,22 +2,30 @@
 
 namespace App\Services;
 
+use App\Jobs\Federation\BlockSyncPipeline;
+use App\Jobs\Federation\DeliverBlockActivity;
+use App\Jobs\FollowPipeline\UnfollowPipeline;
+use App\Models\Follower;
+use App\Models\FollowRequest;
 use App\Models\Profile;
+use App\Models\UserFilter;
 use App\Util\ActivityPub\Helpers;
+use App\Util\ActivityPub\HttpSignature;
 use Illuminate\Database\Query\Builder;
+use Illuminate\Support\Carbon;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
 use Throwable;
 
-/**
- * Implements FEP-070c: Block synchronization across servers. Our first FEP :)
- */
 class BlockSyncService
 {
     const HEADER = 'Block-Synchronization';
 
     const CONTEXT_TERM = 'https://w3id.org/fep/070c#blockSynchronization';
+
+    const DIGEST_CONTEXT_TERM = 'https://w3id.org/fep/070c#blockSynchronizationDigest';
 
     const DIGESTS_CACHE_KEY = 'pf:services:block-sync:digests:v1';
 
@@ -32,6 +40,12 @@ class BlockSyncService
     const RECEIVED_DIGEST_KEY = 'pf:services:block-sync:received:v1:';
 
     const RECEIVED_DIGEST_TTL = 3600;
+
+    const SIGNED_DIGEST_KEY = 'pf:services:block-sync:signed-digest:';
+
+    const SIGNED_DIGEST_TTL = 3600;
+
+    const FAILURE_COOLDOWN = 21600;
 
     const REMOVAL_GRACE_MINUTES = 10;
 
@@ -62,7 +76,7 @@ class BlockSyncService
     public static function disclosing(): bool
     {
         return self::federating()
-            && (bool) config('federation.activitypub.block_sync.disclose', true);
+            && (bool) config('federation.activitypub.block_sync.disclose', false);
     }
 
     public static function endpointUrl(): string
@@ -362,6 +376,54 @@ class BlockSyncService
         return $actor;
     }
 
+    public static function localBlockChanged(UserFilter $filter, bool $created): void
+    {
+        try {
+            if ($filter->filterable_type !== Profile::class || $filter->filter_type !== 'block') {
+                return;
+            }
+
+            $blocker = Profile::withTrashed()->find($filter->user_id, ['id', 'username', 'domain', 'remote_url']);
+
+            if (! $blocker || $blocker->domain !== null) {
+                return;
+            }
+
+            $blocked = Profile::withTrashed()->find($filter->filterable_id, ['id', 'domain', 'remote_url', 'inbox_url', 'deleted_at']);
+
+            if (! $blocked || $blocked->domain === null || ! $blocked->remote_url) {
+                return;
+            }
+
+            $authority = FollowersSyncService::authority($blocked->remote_url);
+
+            if (! $authority) {
+                return;
+            }
+
+            self::toggleOutboundDigest($authority, FollowersSyncService::localActorId($blocker), $blocked->remote_url);
+
+            if (
+                self::disclosing()
+                && ! $blocked->trashed()
+                && $blocked->inbox_url
+                && self::isDisclosedPeer($authority)
+            ) {
+                DeliverBlockActivity::dispatch(
+                    (int) $blocker->id,
+                    (int) $blocked->id,
+                    (int) $filter->id,
+                    ! $created
+                )->onQueue('high');
+            }
+        } catch (Throwable $e) {
+            Log::warning('BlockSync: unable to process local block change', [
+                'filter_id' => $filter->id,
+                'error' => $e->getMessage(),
+            ]);
+        }
+    }
+
     protected static function receivedQuery(string $host): Builder
     {
         return DB::table('user_filters as uf')
@@ -425,6 +487,122 @@ class BlockSyncService
         }
     }
 
+    public static function handleInboundHeaders(mixed $headers): void
+    {
+        try {
+            self::processInboundHeaders($headers);
+        } catch (Throwable $e) {
+            Log::debug('BlockSync: unable to process Block-Synchronization header', [
+                'exception' => $e::class,
+                'error' => $e->getMessage(),
+            ]);
+        }
+    }
+
+    private static function processInboundHeaders(mixed $headers): void
+    {
+        if (! self::receiving() || ! is_array($headers)) {
+            return;
+        }
+
+        $headers = array_change_key_case($headers, CASE_LOWER);
+
+        $raw = self::singleHeaderValue($headers[strtolower(self::HEADER)] ?? null);
+        $signature = self::singleHeaderValue($headers['signature'] ?? null);
+
+        if ($raw === null || $signature === null) {
+            return;
+        }
+
+        $signatureData = HttpSignature::parseSignatureHeader($signature);
+
+        if (isset($signatureData['error']) || ! isset($signatureData['keyId'], $signatureData['headers'])) {
+            return;
+        }
+
+        $signed = preg_split('/\s+/', strtolower(trim($signatureData['headers']))) ?: [];
+
+        if (! in_array(strtolower(self::HEADER), $signed, true)) {
+            return;
+        }
+
+        $params = self::parseHeader($raw);
+
+        if (! $params) {
+            return;
+        }
+
+        $keyId = Helpers::validateUrl($signatureData['keyId']);
+
+        if (! $keyId) {
+            return;
+        }
+
+        $sender = Profile::whereKeyId($keyId)
+            ->whereNotNull('domain')
+            ->first();
+
+        if (! $sender || $sender->status !== null) {
+            return;
+        }
+
+        $authority = FollowersSyncService::authority($sender->remote_url);
+
+        if (
+            ! $authority
+            || $authority === FollowersSyncService::localAuthority()
+            || FollowersSyncService::authority($params['url']) !== $authority
+        ) {
+            return;
+        }
+
+        self::rememberSyncUrl($authority, $params['url']);
+
+        if (hash_equals($params['digest'], self::receivedDigest($authority))) {
+            return;
+        }
+
+        self::rememberSignedDigest($authority, $params['url'], $params['digest']);
+
+        $cooldown = max(60, (int) config('federation.activitypub.block_sync.cooldown', 900));
+
+        if (! Cache::add(self::COOLDOWN_KEY.hash('sha256', $authority), 1, $cooldown)) {
+            return;
+        }
+
+        BlockSyncPipeline::dispatch($authority, $params['url'])->onQueue('follow');
+    }
+
+    public static function rememberSignedDigest(string $authority, string $url, string $digest): void
+    {
+        Cache::put(self::SIGNED_DIGEST_KEY.hash('sha256', $authority), [
+            'url' => $url,
+            'digest' => $digest,
+        ], self::SIGNED_DIGEST_TTL);
+    }
+
+    public static function pullSignedDigest(string $authority): ?array
+    {
+        $value = Cache::pull(self::SIGNED_DIGEST_KEY.hash('sha256', $authority));
+
+        if (
+            ! is_array($value)
+            || ! is_string($value['url'] ?? null)
+            || ! is_string($value['digest'] ?? null)
+            || FollowersSyncService::authority($value['url']) !== $authority
+            || ! preg_match('/^[0-9a-f]{64}$/', $value['digest'])
+        ) {
+            return null;
+        }
+
+        return ['url' => $value['url'], 'digest' => $value['digest']];
+    }
+
+    public static function backOff(string $authority): void
+    {
+        Cache::put(self::COOLDOWN_KEY.hash('sha256', $authority), 1, self::FAILURE_COOLDOWN);
+    }
+
     public static function rememberSyncUrl(string $authority, string $url): void
     {
         if (strlen($url) > 255 || FollowersSyncService::authority($url) !== $authority) {
@@ -450,7 +628,156 @@ class BlockSyncService
             ->update(['block_sync_url' => $url]);
     }
 
-    protected static function resolveRemoteActors(array $actorUrls): array
+    public static function synchronize(string $authority, string $url, ?string $expectedDigest = null, ?float $deadline = null): array
+    {
+        $result = [
+            'status' => 'skipped',
+            'added' => 0,
+            'removed' => 0,
+            'unresolved' => 0,
+        ];
+
+        if ($expectedDigest !== null) {
+            $expectedDigest = strtolower($expectedDigest);
+        }
+
+        if (
+            ! self::receiving()
+            || FollowersSyncService::authority($authority) !== $authority
+            || $authority === FollowersSyncService::localAuthority()
+            || FollowersSyncService::authority($url) !== $authority
+            || ($expectedDigest !== null && ! preg_match('/^[0-9a-f]{64}$/', $expectedDigest))
+        ) {
+            return $result;
+        }
+
+        $host = strtolower((string) parse_url($authority, PHP_URL_HOST));
+
+        if (in_array($host, (array) InstanceService::getBannedDomains(), true)) {
+            return $result;
+        }
+
+        if ($expectedDigest !== null && hash_equals($expectedDigest, self::receivedDigest($authority, true))) {
+            $result['status'] = 'in_sync';
+
+            return $result;
+        }
+
+        $collection = self::fetchCollection($url, $authority, $deadline);
+
+        if ($collection === null) {
+            $result['status'] = 'fetch_failed';
+
+            return $result;
+        }
+
+        $items = $collection['items'];
+
+        $canRemove = $collection['complete']
+            && ! $collection['malformed']
+            && $collection['digest'] !== null
+            && hash_equals($collection['digest'], self::digest($items));
+
+        $segments = [];
+        $pairs = [];
+
+        foreach ($items as $pair) {
+            $segment = FollowersSyncService::localActorSegment($pair['object']);
+
+            if (FollowersSyncService::authority($pair['actor']) !== $authority || $segment === null) {
+                $canRemove = false;
+
+                continue;
+            }
+
+            $segments[] = $segment;
+            $pairs[] = $pair + ['segment' => $segment];
+        }
+
+        $localBySegment = [];
+
+        foreach (FollowersSyncService::resolveLocalActorSegments($segments) as $profile) {
+            $localBySegment[strtolower((string) $profile->username)] = $profile;
+            $localBySegment[(string) $profile->id] = $profile;
+        }
+
+        $remoteByUrl = self::resolveRemoteActors(
+            array_values(array_unique(array_column($pairs, 'actor'))),
+            $deadline
+        );
+
+        $desired = [];
+
+        foreach ($pairs as $pair) {
+            $local = $localBySegment[strtolower($pair['segment'])] ?? $localBySegment[$pair['segment']] ?? null;
+
+            if (! $local) {
+                $canRemove = false;
+
+                continue;
+            }
+
+            $remote = $remoteByUrl[$pair['actor']] ?? null;
+
+            if (! $remote) {
+                $result['unresolved']++;
+
+                continue;
+            }
+
+            $desired[$remote->id.':'.$local->id] = [$remote, $local];
+        }
+
+        $known = self::receivedBlocks($authority);
+
+        foreach ($desired as $key => [$remote, $local]) {
+            if ($known->has($key)) {
+                continue;
+            }
+
+            if ($result['added'] >= self::MAX_APPLY_PER_RUN) {
+                break;
+            }
+
+            if (self::applyRemoteBlock($remote, $local)) {
+                $result['added']++;
+            }
+        }
+
+        if ($canRemove) {
+            $graceCutoff = now()->subMinutes(self::REMOVAL_GRACE_MINUTES);
+
+            foreach ($known as $key => $row) {
+                if (isset($desired[$key])) {
+                    continue;
+                }
+
+                if ($row['created_at'] !== null && Carbon::parse($row['created_at'])->gt($graceCutoff)) {
+                    continue;
+                }
+
+                if (self::removeRemoteBlockById($row['id'], $row['blocker_id'], $row['blocked_id'])) {
+                    $result['removed']++;
+                }
+            }
+        }
+
+        if ($result['added'] || $result['removed']) {
+            self::forgetReceivedDigest($authority);
+        }
+
+        $result['status'] = $canRemove ? 'synchronized' : 'synchronized_without_removals';
+
+        if ($result['added'] || $result['removed']) {
+            Log::info('BlockSync: reconciled blocks from remote instance', [
+                'authority' => $authority,
+            ] + $result);
+        }
+
+        return $result;
+    }
+
+    protected static function resolveRemoteActors(array $actorUrls, ?float $deadline = null): array
     {
         $resolved = [];
 
@@ -466,8 +793,12 @@ class BlockSyncService
         $fetched = 0;
 
         foreach ($actorUrls as $url) {
-            if (isset($resolved[$url]) || $fetched >= self::MAX_NEW_ACTORS_PER_RUN) {
+            if (isset($resolved[$url])) {
                 continue;
+            }
+
+            if ($fetched >= self::MAX_NEW_ACTORS_PER_RUN || self::pastDeadline($deadline)) {
+                break;
             }
 
             $fetched++;
@@ -486,17 +817,17 @@ class BlockSyncService
         return $resolved;
     }
 
-    public static function fetchCollection(string $url, string $authority): ?array
+    public static function fetchCollection(string $url, string $authority, ?float $deadline = null): ?array
     {
         $maxPages = max(1, (int) config('federation.activitypub.block_sync.max_pages', 10));
 
         $document = self::fetchDocument($url, $authority);
 
-        if (! self::isCollection($document)) {
+        if (! is_array($document) || ! self::isCollection($document)) {
             return null;
         }
 
-        $total = isset($document['totalItems']) && is_int($document['totalItems']) ? $document['totalItems'] : null;
+        $digest = self::collectionDigest($document);
 
         $items = [];
         $malformed = false;
@@ -513,15 +844,15 @@ class BlockSyncService
                     return null;
                 }
 
-                if (++$pages > $maxPages) {
-                    return ['items' => $items, 'complete' => false, 'malformed' => $malformed, 'total' => $total];
+                if (++$pages > $maxPages || self::pastDeadline($deadline)) {
+                    return ['items' => $items, 'complete' => false, 'malformed' => $malformed, 'digest' => $digest];
                 }
 
                 $seen[$page] = true;
                 $page = self::fetchDocument($page, $authority);
             }
 
-            if (! self::isCollection($page)) {
+            if (! is_array($page) || ! self::isCollection($page)) {
                 return null;
             }
 
@@ -558,7 +889,25 @@ class BlockSyncService
             }
         }
 
-        return ['items' => $items, 'complete' => true, 'malformed' => $malformed, 'total' => $total];
+        return ['items' => $items, 'complete' => true, 'malformed' => $malformed, 'digest' => $digest];
+    }
+
+    public static function collectionDigest(array $document): ?string
+    {
+        $value = $document['blockSynchronizationDigest'] ?? $document[self::DIGEST_CONTEXT_TERM] ?? null;
+
+        if (! is_string($value)) {
+            return null;
+        }
+
+        $value = strtolower($value);
+
+        return preg_match('/^[0-9a-f]{64}$/', $value) ? $value : null;
+    }
+
+    private static function pastDeadline(?float $deadline): bool
+    {
+        return $deadline !== null && microtime(true) >= $deadline;
     }
 
     private static function fetchDocument(string $url, string $authority): ?array
@@ -591,5 +940,114 @@ class BlockSyncService
     {
         return array_key_exists('orderedItems', $document)
             || array_key_exists('items', $document);
+    }
+
+    public static function applyRemoteBlock(Profile $blocker, Profile $blocked): bool
+    {
+        if ($blocker->domain === null || $blocked->domain !== null || $blocker->id === $blocked->id) {
+            return false;
+        }
+
+        $exists = UserFilter::whereUserId($blocker->id)
+            ->whereFilterableId($blocked->id)
+            ->whereFilterableType(Profile::class)
+            ->whereFilterType('block')
+            ->exists();
+
+        if ($exists) {
+            return false;
+        }
+
+        $follows = Follower::where(function ($query) use ($blocker, $blocked) {
+            $query->where('profile_id', $blocked->id)->where('following_id', $blocker->id);
+        })->orWhere(function ($query) use ($blocker, $blocked) {
+            $query->where('profile_id', $blocker->id)->where('following_id', $blocked->id);
+        })->get();
+
+        foreach ($follows as $follow) {
+            $profileId = $follow->profile_id;
+            $followingId = $follow->following_id;
+
+            $follow->delete();
+
+            UnfollowPipeline::dispatch($profileId, $followingId)->onQueue('high');
+        }
+
+        FollowRequest::where(function ($query) use ($blocker, $blocked) {
+            $query->where('follower_id', $blocked->id)->where('following_id', $blocker->id);
+        })->orWhere(function ($query) use ($blocker, $blocked) {
+            $query->where('follower_id', $blocker->id)->where('following_id', $blocked->id);
+        })->delete();
+
+        UserFilter::firstOrCreate([
+            'user_id' => $blocker->id,
+            'filterable_id' => $blocked->id,
+            'filterable_type' => Profile::class,
+            'filter_type' => 'block',
+        ]);
+
+        RelationshipService::refresh($blocked->id, $blocker->id);
+
+        self::forgetReceivedDigest(FollowersSyncService::authority($blocker->remote_url));
+
+        return true;
+    }
+
+    public static function removeRemoteBlock(Profile $blocker, Profile $blocked): bool
+    {
+        if ($blocker->domain === null || $blocked->domain !== null) {
+            return false;
+        }
+
+        $filter = UserFilter::whereUserId($blocker->id)
+            ->whereFilterableId($blocked->id)
+            ->whereFilterableType(Profile::class)
+            ->whereFilterType('block')
+            ->first();
+
+        if (! $filter) {
+            return false;
+        }
+
+        $filter->delete();
+
+        RelationshipService::refresh($blocked->id, $blocker->id);
+
+        self::forgetReceivedDigest(FollowersSyncService::authority($blocker->remote_url));
+
+        return true;
+    }
+
+    protected static function removeRemoteBlockById(int $filterId, int $blockerId, int $blockedId): bool
+    {
+        $filter = UserFilter::whereKey($filterId)
+            ->whereUserId($blockerId)
+            ->whereFilterableId($blockedId)
+            ->whereFilterableType(Profile::class)
+            ->whereFilterType('block')
+            ->first();
+
+        if (! $filter) {
+            return false;
+        }
+
+        $filter->delete();
+
+        RelationshipService::refresh($blockedId, $blockerId);
+
+        return true;
+    }
+
+    private static function singleHeaderValue(mixed $value): ?string
+    {
+        if (is_array($value)) {
+            if (count($value) !== 1) {
+                return null;
+            }
+
+            $value = reset($value);
+        }
+
+        return is_string($value) && trim($value) !== '' ? trim($value) : null;
     }
 }
