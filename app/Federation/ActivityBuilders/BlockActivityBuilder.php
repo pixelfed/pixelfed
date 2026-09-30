@@ -14,7 +14,7 @@ class BlockActivityBuilder
     public function build(Profile $blocker, Profile $blocked, int $filterId): array
     {
         return [
-            ...$this->object($blocker, $blocked, $filterId)
+            ...$this->object($blocker, $blocked, $filterId),
             '@context' => 'https://www.w3.org/ns/activitystreams',
         ];
     }
