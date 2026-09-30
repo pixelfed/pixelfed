@@ -1,7 +1,9 @@
 <?php
 
+use App\Jobs\Federation\BlockSyncPipeline;
 use App\Jobs\Federation\DeliverBlockActivity;
 use App\Models\Follower;
+use App\Models\Instance;
 use App\Models\InstanceActor;
 use App\Models\Profile;
 use App\Models\User;
@@ -396,6 +398,178 @@ describe('inbox', function () {
             'object' => $local->permalink(),
         ]))->handle();
 
+        expect(bsyncBlocks($alice, $local))->toBeFalse();
+    });
+});
+
+describe('inbound header', function () {
+    it('queues a synchronization when the digests differ and remembers the endpoint', function () {
+        $local = bsyncLocalProfile();
+        $alice = bsyncRemoteProfile('joinloops.org', 'alice');
+        Instance::updateOrCreate(['domain' => 'joinloops.org']);
+        bsyncSeedHosts(['joinloops.org']);
+
+        BlockSyncService::handleInboundHeaders(bsyncInboundHeaders(
+            $alice,
+            'https://joinloops.org/f/block_sync',
+            BlockSyncService::digest([bsyncPair($alice, $local)])
+        ));
+
+        Queue::assertPushed(BlockSyncPipeline::class, 1);
+        expect(Instance::whereDomain('joinloops.org')->value('block_sync_url'))->toBe('https://joinloops.org/f/block_sync');
+    });
+
+    it('stays quiet when the digests agree', function () {
+        $local = bsyncLocalProfile();
+        $alice = bsyncRemoteProfile('joinloops.org', 'alice');
+        bsyncBlock($alice, $local);
+        bsyncSeedHosts(['joinloops.org']);
+
+        BlockSyncService::handleInboundHeaders(bsyncInboundHeaders(
+            $alice,
+            'https://joinloops.org/f/block_sync',
+            BlockSyncService::digest([bsyncPair($alice, $local)])
+        ));
+
+        Queue::assertNotPushed(BlockSyncPipeline::class);
+    });
+
+    it('ignores unsigned headers and endpoints on another server', function () {
+        $alice = bsyncRemoteProfile('joinloops.org', 'alice');
+        bsyncSeedHosts(['joinloops.org']);
+
+        BlockSyncService::handleInboundHeaders(bsyncInboundHeaders($alice, 'https://joinloops.org/f/block_sync', str_repeat('1', 64), false));
+        BlockSyncService::handleInboundHeaders(bsyncInboundHeaders($alice, 'https://victim.example/f/block_sync', str_repeat('1', 64)));
+
+        Queue::assertNotPushed(BlockSyncPipeline::class);
+    });
+});
+
+describe('synchronization', function () {
+    it('adds blocks the authoritative server lists', function () {
+        $local = bsyncLocalProfile();
+        $alice = bsyncRemoteProfile('joinloops.org', 'alice');
+        $url = 'https://joinloops.org/f/block_sync';
+        bsyncSeedHosts(['joinloops.org']);
+        bsyncFakeCollection($url, [bsyncPair($alice, $local)]);
+
+        $result = BlockSyncService::synchronize('https://joinloops.org', $url, BlockSyncService::digest([bsyncPair($alice, $local)]));
+
+        expect($result['added'])->toBe(1);
+        expect(bsyncBlocks($alice, $local))->toBeTrue();
+    });
+
+    it('removes stale blocks when the collection hashes to its own digest', function () {
+        $kept = bsyncLocalProfile();
+        $stale = bsyncLocalProfile();
+        $alice = bsyncRemoteProfile('joinloops.org', 'alice');
+        bsyncBlock($alice, $kept);
+        bsyncBlock($alice, $stale);
+
+        $url = 'https://joinloops.org/f/block_sync';
+        bsyncSeedHosts(['joinloops.org']);
+        bsyncFakeCollection($url, [bsyncPair($alice, $kept)]);
+
+        $result = BlockSyncService::synchronize('https://joinloops.org', $url, BlockSyncService::digest([bsyncPair($alice, $kept)]));
+
+        expect($result['status'])->toBe('synchronized');
+        expect($result['removed'])->toBe(1);
+        expect(bsyncBlocks($alice, $kept))->toBeTrue();
+        expect(bsyncBlocks($alice, $stale))->toBeFalse();
+    });
+
+    it('removes nothing when the collection changed while it was fetched', function () {
+        $local = bsyncLocalProfile();
+        $alice = bsyncRemoteProfile('joinloops.org', 'alice');
+        bsyncBlock($alice, $local);
+
+        $url = 'https://joinloops.org/f/block_sync';
+        bsyncSeedHosts(['joinloops.org']);
+
+        bsyncFakeCollection($url, [], BlockSyncService::digest([bsyncPair($alice, $local)]));
+
+        $result = BlockSyncService::synchronize('https://joinloops.org', $url, str_repeat('1', 64));
+
+        expect($result['status'])->toBe('synchronized_without_removals');
+        expect(bsyncBlocks($alice, $local))->toBeTrue();
+    });
+
+    it('checks removals against the collection, not the header digest', function () {
+        $local = bsyncLocalProfile();
+        $alice = bsyncRemoteProfile('joinloops.org', 'alice');
+        bsyncBlock($alice, $local);
+
+        $url = 'https://joinloops.org/f/block_sync';
+        bsyncSeedHosts(['joinloops.org']);
+        bsyncFakeCollection($url, []);
+
+        $result = BlockSyncService::synchronize('https://joinloops.org', $url, str_repeat('1', 64));
+
+        expect($result['status'])->toBe('synchronized');
+        expect(bsyncBlocks($alice, $local))->toBeFalse();
+    });
+
+    it('still adds blocks from a collection it cannot verify', function () {
+        $local = bsyncLocalProfile();
+        $alice = bsyncRemoteProfile('joinloops.org', 'alice');
+
+        $url = 'https://joinloops.org/f/block_sync';
+        bsyncSeedHosts(['joinloops.org']);
+        bsyncFakeCollection($url, [bsyncPair($alice, $local)], str_repeat('1', 64));
+
+        $result = BlockSyncService::synchronize('https://joinloops.org', $url);
+
+        expect($result['status'])->toBe('synchronized_without_removals');
+        expect($result['added'])->toBe(1);
+        expect(bsyncBlocks($alice, $local))->toBeTrue();
+    });
+
+    it('keeps a block that is younger than the grace period', function () {
+        $local = bsyncLocalProfile();
+        $alice = bsyncRemoteProfile('joinloops.org', 'alice');
+        bsyncBlock($alice, $local, 1);
+
+        $url = 'https://joinloops.org/f/block_sync';
+        bsyncSeedHosts(['joinloops.org']);
+        bsyncFakeCollection($url, []);
+
+        $result = BlockSyncService::synchronize('https://joinloops.org', $url, BlockSyncService::digest([]));
+
+        expect($result['removed'])->toBe(0);
+        expect(bsyncBlocks($alice, $local))->toBeTrue();
+    });
+
+    it('never treats a failed fetch as an empty collection', function () {
+        $local = bsyncLocalProfile();
+        $alice = bsyncRemoteProfile('joinloops.org', 'alice');
+        bsyncBlock($alice, $local);
+
+        [$private] = bsyncKeyPair();
+        Cache::forever(InstanceActor::PKI_PRIVATE, $private);
+        bsyncSeedHosts(['joinloops.org']);
+        Http::fake(['*' => Http::response('', 500)]);
+
+        $result = BlockSyncService::synchronize('https://joinloops.org', 'https://joinloops.org/f/block_sync', BlockSyncService::digest([]));
+
+        expect($result['status'])->toBe('fetch_failed');
+        expect(bsyncBlocks($alice, $local))->toBeTrue();
+    });
+
+    it('only removes during periodic reconciliation when the collection carries a digest', function () {
+        $local = bsyncLocalProfile();
+        $alice = bsyncRemoteProfile('joinloops.org', 'alice');
+        bsyncBlock($alice, $local);
+
+        $url = 'https://joinloops.org/f/block_sync';
+        bsyncSeedHosts(['joinloops.org']);
+
+        bsyncFakeCollection($url, [], false);
+        expect(BlockSyncService::synchronize('https://joinloops.org', $url)['removed'])->toBe(0);
+        expect(bsyncBlocks($alice, $local))->toBeTrue();
+
+        $url = 'https://joinloops.org/f/block_sync_complete';
+        bsyncFakeCollection($url, []);
+        expect(BlockSyncService::synchronize('https://joinloops.org', $url)['removed'])->toBe(1);
         expect(bsyncBlocks($alice, $local))->toBeFalse();
     });
 });
