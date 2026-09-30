@@ -131,6 +131,18 @@ return [
 
     /*
     |--------------------------------------------------------------------------
+    | Minimum registration age
+    |--------------------------------------------------------------------------
+    |
+    | The minimum age (in years) a user must be to register an account. This
+    | lets instance admins comply with the legislation of their jurisdiction.
+    | Defaults to 16.
+    |
+    */
+    'min_registration_age' => (int) env('PF_MIN_REGISTRATION_AGE', 16),
+
+    /*
+    |--------------------------------------------------------------------------
     | Album size limit
     |--------------------------------------------------------------------------
     |

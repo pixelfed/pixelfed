@@ -18,7 +18,7 @@ return [
     'username' => 'Username',
     'confirm-password' => 'Confirm Password',
 
-    'age' => 'I am at least 16 years old',
+    'age' => 'I am at least '.(int) config('pixelfed.min_registration_age', 16).' years old',
     'terms' => 'By signing up, you agree to our <a href="'.route('site.terms').'" class="font-weight-bold text-dark">Terms of Use</a> and <a href="'.route('site.privacy').'" class="font-weight-bold text-dark">Privacy Policy</a>.',
 
     'emailAddress' => 'E-Mail Address',
