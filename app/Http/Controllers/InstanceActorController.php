@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\InstanceActor;
+use App\Services\BlockSyncService;
 use Illuminate\Http\Response;
 use Illuminate\Support\Facades\Cache;
 
@@ -15,6 +16,14 @@ class InstanceActorController extends Controller
 
             return json_encode($res, JSON_UNESCAPED_SLASHES);
         });
+
+        if (BlockSyncService::disclosing()) {
+            $actor = json_decode((string) $res, true);
+
+            if (is_array($actor)) {
+                $res = json_encode(BlockSyncService::decorateInstanceActor($actor), JSON_UNESCAPED_SLASHES) ?: $res;
+            }
+        }
 
         return response($res)->header('Content-Type', 'application/activity+json');
     }
