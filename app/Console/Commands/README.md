@@ -92,6 +92,7 @@ These are primarily invoked by the scheduler (see `bootstrap/app.php`) rather th
 | ------------------------------------------ | ------------------------------------------------------- |
 | `app:account-post-count-stat-update`       | Update post counts from recent activity.                |
 | `app:cleanup-expired-app-registrations`    | Delete app registrations older than 90 days.            |
+| `federation:block-sync-reconcile`          | FEP-070c: reconcile blocks received from peers.         |
 | `gc:sessions`                              | Garbage-collect database sessions.                      |
 | `gc:failedjobs`                            | Delete failed jobs older than one month.                |
 | `app:hashtag-cached-count-update`          | Update cached hashtag counters (`--limit`).             |

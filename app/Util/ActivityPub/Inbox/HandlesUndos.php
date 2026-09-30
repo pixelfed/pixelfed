@@ -34,7 +34,7 @@ trait HandlesUndos
         match ($obj['type']) {
             'Accept' => null,
             'Announce' => $this->handleUndoAnnounce($profile, $obj),
-            'Block' => null,
+            'Block' => $this->handleUndoBlock($profile, $obj),
             'Follow' => $this->handleUndoFollow($profile, $obj),
             'Like' => $this->handleUndoLike($profile, $obj),
             default => null,

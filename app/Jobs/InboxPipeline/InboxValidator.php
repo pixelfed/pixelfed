@@ -4,6 +4,7 @@ namespace App\Jobs\InboxPipeline;
 
 use App\Jobs\InboxPipeline\Concerns\RetriesWhenActorUnavailable;
 use App\Models\Profile;
+use App\Services\BlockSyncService;
 use App\Services\FollowersSyncService;
 use App\Util\ActivityPub\Helpers;
 use App\Util\ActivityPub\HttpSignature;
@@ -83,6 +84,9 @@ class InboxValidator implements ShouldQueue
 
             // FEP-8fcf: compare the sender's followers digest with our copy
             FollowersSyncService::handleInboundHeaders($headers);
+
+            // FEP-070c: compare the sender's block digest with our copy
+            BlockSyncService::handleInboundHeaders($headers);
 
             if (isset($payload['type']) && in_array($payload['type'], ['Follow', 'Accept'])) {
                 ActivityHandler::dispatch($headers, $profile, $payload)->onQueue('follow');
