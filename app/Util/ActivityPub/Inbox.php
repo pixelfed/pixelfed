@@ -3,6 +3,7 @@
 namespace App\Util\ActivityPub;
 
 use App\Util\ActivityPub\Inbox\HandlesAnnouncements;
+use App\Util\ActivityPub\Inbox\HandlesBlocks;
 use App\Util\ActivityPub\Inbox\HandlesCreates;
 use App\Util\ActivityPub\Inbox\HandlesDeletes;
 use App\Util\ActivityPub\Inbox\HandlesFeatureRequests;
@@ -28,6 +29,7 @@ use Illuminate\Support\Facades\Log;
 class Inbox
 {
     use HandlesAnnouncements;
+    use HandlesBlocks;
     use HandlesCreates;
     use HandlesDeletes;
     use HandlesFeatureRequests;
@@ -68,6 +70,10 @@ class Inbox
         switch ($verb) {
             case 'Add':
                 $this->handleAddActivity();
+                break;
+
+            case 'Block':
+                $this->handleBlockActivity();
                 break;
 
             case 'Create':
