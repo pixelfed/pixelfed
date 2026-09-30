@@ -37,6 +37,7 @@ use Illuminate\Support\Carbon;
  * @property string|null $shared_inbox
  * @property int|null $allowlisted
  * @property int $delivery_failures
+ * @property string|null $block_sync_url
  * @property-read Collection<int, Media> $media
  * @property-read int|null $media_count
  * @property-read Collection<int, Profile> $profiles
