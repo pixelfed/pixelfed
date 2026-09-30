@@ -1,12 +1,14 @@
 <?php
 
 use App\Jobs\Federation\DeliverBlockActivity;
+use App\Models\Follower;
 use App\Models\InstanceActor;
 use App\Models\Profile;
 use App\Models\User;
 use App\Models\UserFilter;
 use App\Services\ActivityPubDeliveryService;
 use App\Services\BlockSyncService;
+use App\Util\ActivityPub\Inbox;
 use Illuminate\Foundation\Testing\LazilyRefreshDatabase;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\DB;
@@ -278,5 +280,122 @@ describe('sender', function () {
         bsyncBlock(bsyncRemoteProfile('joinloops.org', 'alice'), $local);
 
         expect(BlockSyncService::outboundDigests())->toBe([]);
+    });
+});
+
+describe('endpoint', function () {
+    it('rejects unsigned requests', function () {
+        $this->get('/f/block_sync', ['Accept' => 'application/activity+json'])->assertStatus(401);
+    });
+
+    it('only lists blocks of actors hosted by the instance that signed the request', function () {
+        $local = bsyncLocalProfile();
+        [$private, $public] = bsyncKeyPair();
+
+        bsyncRemoteProfile('joinloops.org', 'actor', [
+            'remote_url' => 'https://joinloops.org/actor',
+            'key_id' => 'https://joinloops.org/actor#main-key',
+            'public_key' => $public,
+        ]);
+
+        $alice = bsyncRemoteProfile('joinloops.org', 'alice');
+        $carol = bsyncRemoteProfile('remote2.example', 'carol');
+        bsyncBlock($local, $alice);
+        bsyncBlock($local, $carol);
+        bsyncSeedHosts(['joinloops.org']);
+
+        $response = $this->get('/f/block_sync', bsyncSignedGetHeaders($private, 'https://joinloops.org/actor#main-key', '/f/block_sync'))
+            ->assertOk()
+            ->assertJsonPath('type', 'OrderedCollection')
+            ->assertJsonPath('totalItems', 1);
+
+        $digest = BlockSyncService::digest([bsyncPair($local, $alice)]);
+
+        expect($response->json('orderedItems'))->toBe([['type' => 'Block'] + bsyncPair($local, $alice)]);
+        expect($response->json('blockSynchronizationDigest'))->toBe($digest);
+        expect($response->headers->get('ETag'))->toBe('"'.$digest.'"');
+    });
+
+    it('refuses limited peers instead of answering with an empty set', function () {
+        [$private, $public] = bsyncKeyPair();
+
+        bsyncRemoteProfile('joinloops.org', 'actor', [
+            'remote_url' => 'https://joinloops.org/actor',
+            'key_id' => 'https://joinloops.org/actor#main-key',
+            'public_key' => $public,
+        ]);
+
+        bsyncSeedHosts(['joinloops.org']);
+        Cache::put('instances:unlisted:domains', ['joinloops.org'], 1209600);
+
+        $this->get('/f/block_sync', bsyncSignedGetHeaders($private, 'https://joinloops.org/actor#main-key', '/f/block_sync'))
+            ->assertForbidden();
+    });
+});
+
+describe('inbox', function () {
+    it('applies a Block activity and drops follows in both directions', function () {
+        $local = bsyncLocalProfile();
+        $alice = bsyncRemoteProfile('joinloops.org', 'alice');
+        bsyncSeedHosts(['joinloops.org']);
+
+        DB::table('followers')->insert([
+            ['profile_id' => $local->id, 'following_id' => $alice->id, 'created_at' => now(), 'updated_at' => now()],
+            ['profile_id' => $alice->id, 'following_id' => $local->id, 'created_at' => now(), 'updated_at' => now()],
+        ]);
+
+        $headers = bsyncInboundHeaders($alice, 'https://joinloops.org/f/block_sync', BlockSyncService::digest([]));
+
+        (new Inbox($headers, $local, [
+            'id' => 'https://joinloops.org/blocks/1',
+            'type' => 'Block',
+            'actor' => $alice->remote_url,
+            'object' => $local->permalink(),
+        ]))->handle();
+
+        expect(bsyncBlocks($alice, $local))->toBeTrue();
+        expect(Follower::whereProfileId($local->id)->whereFollowingId($alice->id)->exists())->toBeFalse();
+        expect(Follower::whereProfileId($alice->id)->whereFollowingId($local->id)->exists())->toBeFalse();
+    });
+
+    it('removes the block on Undo Block', function () {
+        $local = bsyncLocalProfile();
+        $alice = bsyncRemoteProfile('joinloops.org', 'alice');
+        bsyncBlock($alice, $local);
+        bsyncSeedHosts(['joinloops.org']);
+
+        $headers = bsyncInboundHeaders($alice, 'https://joinloops.org/f/block_sync', BlockSyncService::digest([]));
+
+        (new Inbox($headers, $local, [
+            'id' => 'https://joinloops.org/blocks/1/undo',
+            'type' => 'Undo',
+            'actor' => $alice->remote_url,
+            'object' => [
+                'id' => 'https://joinloops.org/blocks/1',
+                'type' => 'Block',
+                'actor' => $alice->remote_url,
+                'object' => $local->permalink(),
+            ],
+        ]))->handle();
+
+        expect(bsyncBlocks($alice, $local))->toBeFalse();
+    });
+
+    it('ignores a Block signed from another server', function () {
+        $local = bsyncLocalProfile();
+        $alice = bsyncRemoteProfile('joinloops.org', 'alice');
+        $mallory = bsyncRemoteProfile('evil.example', 'mallory');
+        bsyncSeedHosts(['joinloops.org', 'evil.example']);
+
+        $headers = bsyncInboundHeaders($mallory, 'https://evil.example/f/block_sync', BlockSyncService::digest([]));
+
+        (new Inbox($headers, $local, [
+            'id' => 'https://joinloops.org/blocks/1',
+            'type' => 'Block',
+            'actor' => $alice->remote_url,
+            'object' => $local->permalink(),
+        ]))->handle();
+
+        expect(bsyncBlocks($alice, $local))->toBeFalse();
     });
 });
