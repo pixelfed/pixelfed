@@ -19,9 +19,12 @@ it('renders the registration page when open registration is enabled', function (
 });
 
 it('creates a user with valid registration data', function () {
+    // pixelfed.open_registration is ENVCONFIG and env-authoritative under the
+    // test env (OPEN_REGISTRATION present + valid), so config_cache() returns
+    // config() — setting config() makes registration deterministically open now
+    // that the config-cache master switch has been removed.
     config(['pixelfed.open_registration' => true]);
     config(['pixelfed.max_users' => 1000]);
-    config(['instance.enable_cc' => false]);
 
     // Disable the honeypot spam protection so the test submission isn't
     // flagged for being submitted faster than the minimum timestamp threshold.

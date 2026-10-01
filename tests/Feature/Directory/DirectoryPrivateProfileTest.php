@@ -1,7 +1,10 @@
 <?php
 
 use App\Models\User;
+use App\Services\ConfigCacheService;
 use Illuminate\Foundation\Testing\LazilyRefreshDatabase;
+use Illuminate\Support\Facades\Cache;
+use Illuminate\Support\Facades\Config;
 
 uses(LazilyRefreshDatabase::class);
 
@@ -16,8 +19,13 @@ uses(LazilyRefreshDatabase::class);
 */
 
 beforeEach(function () {
-    config(['instance.landing.show_directory' => true]);
-    config(['instance.enable_cc' => false]);
+    // instance.landing.show_directory is ENVCONFIG; its env var
+    // (INSTANCE_LANDING_SHOW_DIRECTORY) is absent under the test env, so the value
+    // is DB/config-driven. Persist it via put() + clear the memoized cache entry so
+    // config_cache() reliably resolves true (the master switch no longer exists).
+    Config::set('instance.landing.show_directory', true);
+    ConfigCacheService::put('instance.landing.show_directory', true);
+    Cache::forget(ConfigCacheService::CACHE_KEY.'instance.landing.show_directory');
 });
 
 it('excludes private suggestable profiles from the directory', function () {

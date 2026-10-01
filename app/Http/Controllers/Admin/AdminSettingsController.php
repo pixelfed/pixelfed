@@ -335,8 +335,25 @@ trait AdminSettingsController
         return response()->json($res);
     }
 
+    // Rules live in app.rules, which PF_RULES can lock. Returns the rejection
+    // response when it is env-managed, otherwise null.
+    protected function rulesLockedResponse()
+    {
+        if (! ConfigCacheService::isLocked('app.rules')) {
+            return null;
+        }
+
+        return response()->json([
+            'message' => 'Instance rules are managed by the PF_RULES environment variable and cannot be edited here.',
+        ], 422);
+    }
+
     public function settingsApiRulesAdd(Request $request)
     {
+        if ($locked = $this->rulesLockedResponse()) {
+            return $locked;
+        }
+
         $this->validate($request, [
             'rule' => 'required|string|min:5|max:1000',
         ]);
@@ -364,6 +381,10 @@ trait AdminSettingsController
 
     public function settingsApiRulesDelete(Request $request)
     {
+        if ($locked = $this->rulesLockedResponse()) {
+            return $locked;
+        }
+
         $this->validate($request, [
             'rule' => 'required|string',
         ]);
@@ -392,6 +413,10 @@ trait AdminSettingsController
 
     public function settingsApiRulesDeleteAll(Request $request)
     {
+        if ($locked = $this->rulesLockedResponse()) {
+            return $locked;
+        }
+
         $rules = ConfigCacheService::get('app.rules');
 
         if (! $rules) {

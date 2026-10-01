@@ -383,8 +383,6 @@ class AdminApiController extends Controller
         abort_unless($request->user()->is_admin == 1, 404);
         abort_unless($request->user()->tokenCan('admin:read'), 404);
 
-        abort_unless(config('instance.enable_cc'), 400);
-
         return collect([
             [
                 'name' => 'ActivityPub Federation',
@@ -429,8 +427,6 @@ class AdminApiController extends Controller
 
         abort_unless($request->user()->is_admin == 1, 404);
         abort_unless($request->user()->tokenCan('admin:write'), 404);
-
-        abort_unless(config('instance.enable_cc'), 400);
 
         $this->validate($request, [
             'key' => 'required',

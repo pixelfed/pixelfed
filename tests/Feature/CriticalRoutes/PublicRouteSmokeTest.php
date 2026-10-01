@@ -269,10 +269,11 @@ describe('profile activitypub object (regression: cached AP object)', function (
     uses(LazilyRefreshDatabase::class);
 
     beforeEach(function () {
-        // config_cache() falls back to config() when the DB-backed config
-        // cache is disabled, so setting these makes the test deterministic.
+        // federation.activitypub.enabled is ENVCONFIG and env-authoritative under
+        // the test env (ACTIVITY_PUB present + valid), so config_cache() returns
+        // config() — setting config() makes the test deterministic now that the
+        // config-cache master switch has been removed.
         config([
-            'instance.enable_cc' => false,
             'federation.activitypub.enabled' => true,
         ]);
     });

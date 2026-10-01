@@ -66,6 +66,9 @@ return Application::configure(basePath: dirname(__DIR__))
 
             Route::middleware('api')
                 ->group(base_path('routes/api.php'));
+
+            Route::middleware('api')
+                ->group(base_path('routes/v2026.php'));
         },
         channels: __DIR__.'/../routes/channels.php',
         commands: __DIR__.'/../routes/console.php',
