@@ -26,7 +26,7 @@ class UndoAnnounce extends Fractal\TransformerAbstract
                     $status->profile->follower_url ?? $status->profile->permalink('/followers'),
                 ],
                 'published' => $status->created_at->format(DATE_ISO8601),
-                'object' => $parent ? $parent->url() : null,
+                'object' => $parent ? ($parent->object_url ?: $parent->url()) : null,
             ],
         ];
     }
