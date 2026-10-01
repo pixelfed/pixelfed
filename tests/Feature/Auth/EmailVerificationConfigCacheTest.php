@@ -1,10 +1,12 @@
 <?php
 
 use App\Http\Controllers\Auth\LoginController;
+use App\Models\ConfigCache;
 use App\Models\User;
 use App\Services\ConfigCacheService;
 use Illuminate\Foundation\Testing\LazilyRefreshDatabase;
 use Illuminate\Support\Facades\Cache;
+use Illuminate\Support\Env;
 
 uses(LazilyRefreshDatabase::class);
 
@@ -38,12 +40,27 @@ function callRequiresEmailVerification(User $user): bool
 /**
  * Set the admin-toggled runtime value the way ConfigCacheService::get reads it,
  * while leaving the boot-time config() value at $bootValue so the two diverge.
+ *
+ * The key is only admin-managed (config_cache diverges from config) when it is
+ * NOT env-locked, so we clear the ENFORCE_EMAIL_VERIFICATION env var: with the
+ * env unset the key is unlocked and get() honours the DB-backed value instead
+ * of falling back to config().
  */
 function setEnforceVerification(bool $runtimeValue, bool $bootValue): void
 {
+    // Unlock the key: an unset env var means .env is not authoritative, so the
+    // admin/db value governs (ConfigCacheService::isLocked() returns false).
+    putenv('ENFORCE_EMAIL_VERIFICATION');
+    Env::getRepository()->clear('ENFORCE_EMAIL_VERIFICATION');
+
     config(['pixelfed.enforce_email_verification' => $bootValue]);
-    // Forget first: a prior config_cache() read may have memoized the closure
-    // result for this key in the shared cache store.
+
+    // Persist the admin-set runtime value as a config_cache row and prime the
+    // cache entry get() reads, so the gate sees it diverge from the boot value.
+    $row = ConfigCache::firstOrNew(['k' => 'pixelfed.enforce_email_verification']);
+    $row->v = $runtimeValue;
+    $row->save();
+
     Cache::forget(ConfigCacheService::CACHE_KEY.'pixelfed.enforce_email_verification');
     Cache::put(
         ConfigCacheService::CACHE_KEY.'pixelfed.enforce_email_verification',

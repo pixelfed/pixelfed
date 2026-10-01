@@ -287,9 +287,11 @@ class AppFederation extends Command
     }
 
     /**
-     * Report a boolean config key that the admin dashboard can override
-     * through the config_cache table, without calling config_cache() itself
-     * (it inserts a row when none exists).
+     * Report a boolean config key, resolving it the way ConfigCacheService
+     * does: .env is authoritative, so an env-locked key reads its .env value
+     * and the config_cache row is only consulted when the key is unlocked.
+     * Reads the row directly (never config_cache(), which seeds a row when
+     * none exists).
      */
     protected function checkToggle(string $key, string $label, string $envName, bool $required): void
     {
@@ -297,33 +299,43 @@ class AppFederation extends Command
         $effective = $envValue;
         $parts = ['env='.$this->bool($envValue)];
 
-        try {
-            $row = ConfigCache::where('k', $key)->first();
-            $cached = Cache::get(ConfigCacheService::CACHE_KEY.$key);
+        // Mirror ConfigCacheService precedence: .env is authoritative. When the
+        // key is env-locked (env var present and valid) the .env value wins and
+        // the config_cache row is ignored. Only when it is NOT locked does the
+        // DB row (then its cache entry) apply, otherwise fall back to config().
+        $locked = ConfigCacheService::isLocked($key);
 
-            if ($row) {
-                $dbValue = $this->truthy($row->v);
-                $effective = $dbValue;
-                $parts[] = 'admin setting='.$this->bool($dbValue);
+        if ($locked) {
+            $parts[] = 'locked=env';
+        } else {
+            try {
+                $row = ConfigCache::where('k', $key)->first();
+                $cached = Cache::get(ConfigCacheService::CACHE_KEY.$key);
 
-                if ($cached !== null && $this->truthy($cached) !== $dbValue) {
+                if ($row) {
+                    $dbValue = $this->truthy($row->v);
+                    $effective = $dbValue;
+                    $parts[] = 'admin setting='.$this->bool($dbValue);
+
+                    if ($cached !== null && $this->truthy($cached) !== $dbValue) {
+                        $effective = $this->truthy($cached);
+
+                        $this->caution(
+                            $label.' setting cache is stale',
+                            'cached='.$this->bool($effective).' database='.$this->bool($dbValue),
+                            'php artisan cache:forget "'.ConfigCacheService::CACHE_KEY.$key.'"'
+                        );
+                    }
+                } elseif ($cached !== null) {
                     $effective = $this->truthy($cached);
-
-                    $this->caution(
-                        $label.' setting cache is stale',
-                        'cached='.$this->bool($effective).' database='.$this->bool($dbValue),
-                        'php artisan cache:forget "'.ConfigCacheService::CACHE_KEY.$key.'"'
-                    );
+                    $parts[] = 'cached='.$this->bool($effective);
                 }
-            } elseif ($cached !== null) {
-                $effective = $this->truthy($cached);
-                $parts[] = 'cached='.$this->bool($effective);
+            } catch (Throwable $e) {
+                $this->caution(
+                    'Could not read the admin override for '.$key,
+                    class_basename($e)
+                );
             }
-        } catch (Throwable $e) {
-            $this->caution(
-                'Could not read the admin override for '.$key,
-                class_basename($e)
-            );
         }
 
         $detail = implode(' ', $parts);
@@ -338,8 +350,8 @@ class AppFederation extends Command
             $this->problem(
                 $label.' is disabled',
                 $detail,
-                $envValue
-                    ? 'The admin settings override is turning it off. Re-enable it in the admin dashboard.'
+                (! $locked && $envValue)
+                    ? 'The admin settings override is turning it off while no .env value locks it. Re-enable it in the admin dashboard, or set '.$envName.'=true to make .env authoritative.'
                     : 'Set '.$envName.'=true, then run php artisan config:cache.'
             );
 
@@ -347,7 +359,9 @@ class AppFederation extends Command
         }
 
         if ($effective !== $envValue) {
-            $this->caution($label.' enabled by admin setting only', $detail, 'The .env value disagrees with the admin setting. The admin setting wins.');
+            // Only reachable when the key is NOT env-locked: no valid .env value
+            // is set, so the admin/db override is what takes effect.
+            $this->caution($label.' enabled by admin setting only', $detail, 'No .env value locks this key, so the admin setting is in effect. Set '.$envName.'=true to make .env authoritative (.env wins over the admin override once set).');
 
             return;
         }
