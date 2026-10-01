@@ -18,7 +18,7 @@ return [
     'username' => 'Uživatelské jméno',
     'confirm-password' => 'Potvrdit heslo',
 
-    'age' => 'Je mi nejméně 16 let',
+    'age' => ''.(int) config('pixelfed.min_registration_age', 16).'',
     'terms' => 'Registrací souhlasíte s našimi <a href="'.route('site.terms').'" class="font-weight-bold text-dark">Podmínkami použití</a> a <a href="'.route('site.privacy').'" class="font-weight-bold text-dark">Zásady ochrany osobních údajů</a>',
 
     'emailAddress' => 'E-mailová adresa',

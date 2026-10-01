@@ -18,7 +18,7 @@ return [
     'username' => 'Όνομα χρήστη',
     'confirm-password' => 'Επιβεβαίωση Κωδικού',
 
-    'age' => 'Είμαι τουλάχιστον 16 ετών',
+    'age' => ''.(int) config('pixelfed.min_registration_age', 16).'',
     'terms' => 'Με την εγγραφή, συμφωνείτε με τους <a href="'.route('site.terms').'" class="font-weight-bold text-dark">Όρους Χρήσης</a> και τη <a href="'.route('site.privacy').'" class="font-weight-bold text-dark">Πολιτική απορρήτου</a>.',
 
     'emailAddress' => 'Διεύθυνση Email',
