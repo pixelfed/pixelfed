@@ -81,7 +81,7 @@ FROM serversideup/php:8.5-frankenphp AS vips
 # libvips version to compile, change with [--build-arg VIPS_VERSION="8.18.6"]
 ARG VIPS_VERSION=8.18.7
 ARG VIPS_URL=https://github.com/libvips/libvips/releases/download
-ARG VIPS_SHA256=3c41e1d5458081bfa4a5bc54e116c46259c75c6760a18027764555632b9dda3e
+ARG VIPS_SHA256=5baaead3b0bb20ffdb9e9ff09aa9fda08620923df77b63b436654cb5e0b3bf94
 
 USER root
 SHELL ["/bin/bash", "-o", "pipefail", "-o", "errexit", "-c"]
