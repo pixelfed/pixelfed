@@ -26,7 +26,6 @@ uses(LazilyRefreshDatabase::class);
 beforeEach(function () {
     Config::set('filesystems.cloud', 's3');
     Config::set('pixelfed.cloud_storage', true);
-    Config::set('instance.enable_cc', false);
 
     // Resilient mode routes the 2nd upload (the thumbnail) to an alt disk.
     Config::set('media.storage.remote.resilient_mode', true);

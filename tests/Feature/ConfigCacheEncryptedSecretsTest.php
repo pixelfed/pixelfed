@@ -19,7 +19,6 @@ uses(LazilyRefreshDatabase::class);
 */
 
 beforeEach(function () {
-    config(['instance.enable_cc' => true]);
 });
 
 it('does not store protected secrets as plaintext in cache on put', function () {

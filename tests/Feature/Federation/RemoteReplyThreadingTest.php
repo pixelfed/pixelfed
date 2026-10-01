@@ -39,7 +39,6 @@ beforeEach(function () {
     Http::fake();
 
     config([
-        'instance.enable_cc' => false,
         'federation.activitypub.enabled' => true,
     ]);
 });

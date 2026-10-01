@@ -24,7 +24,6 @@ beforeEach(function () {
     // in the shared-process suite cannot pre-consume this test's budget.
     Cache::flush();
     config(['pixelfed.enforce_email_verification' => true]);
-    config(['instance.enable_cc' => false]);
     Mail::fake();
 });
 

@@ -25,7 +25,6 @@ beforeEach(function () {
     Queue::fake();
 
     config([
-        'instance.enable_cc' => false,
         'federation.activitypub.enabled' => true,
         'federation.activitypub.block_sync.enabled' => true,
         'federation.activitypub.block_sync.disclose' => true,

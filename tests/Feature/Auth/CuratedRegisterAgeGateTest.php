@@ -20,7 +20,6 @@ uses(LazilyRefreshDatabase::class);
 
 beforeEach(function () {
     $this->withoutMiddleware(ThrottleRequests::class);
-    config(['instance.enable_cc' => false]);
     config(['instance.curated_registration.enabled' => true]);
     config(['pixelfed.open_registration' => false]);
     config(['instance.curated_registration.state.fallback_on_closed_reg' => true]);

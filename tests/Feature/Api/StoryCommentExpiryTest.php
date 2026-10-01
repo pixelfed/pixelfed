@@ -22,7 +22,6 @@ uses(LazilyRefreshDatabase::class);
 
 beforeEach(function () {
     config(['instance.stories.enabled' => true]);
-    config(['instance.enable_cc' => false]);
 });
 
 function makeStory(int $profileId, bool $active, $expiresAt): Story

@@ -31,7 +31,6 @@ beforeEach(function () {
     Queue::fake();
 
     config([
-        'instance.enable_cc' => false,
         'federation.activitypub.enabled' => true,
         'federation.activitypub.remoteFollow' => true,
         'federation.activitypub.followers_sync.enabled' => true,

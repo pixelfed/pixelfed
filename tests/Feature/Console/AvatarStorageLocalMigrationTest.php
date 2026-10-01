@@ -20,7 +20,6 @@ uses(LazilyRefreshDatabase::class);
 */
 
 beforeEach(function () {
-    config(['instance.enable_cc' => false]);
     config(['pixelfed.cloud_storage' => true]);
     config(['filesystems.cloud' => 's3']);
     Storage::fake('local');

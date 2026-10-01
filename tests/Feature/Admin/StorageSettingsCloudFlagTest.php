@@ -6,8 +6,7 @@ use App\Services\ConfigCacheService;
 use Illuminate\Foundation\Testing\LazilyRefreshDatabase;
 use Illuminate\Http\Request;
 
-// Read the persisted config_cache row directly so the assertion does not
-// depend on ConfigCacheService::get's enable_cc fallthrough behavior.
+// Read the persisted config_cache row directly.
 function storedCloudStorage(): ?string
 {
     return ConfigCache::whereK('pixelfed.cloud_storage')->value('v');
@@ -28,7 +27,6 @@ uses(LazilyRefreshDatabase::class);
 */
 
 beforeEach(function () {
-    config(['instance.enable_cc' => false]);
     config(['filesystems.cloud' => 's3']);
     ConfigCacheService::put('pixelfed.cloud_storage', false);
 });

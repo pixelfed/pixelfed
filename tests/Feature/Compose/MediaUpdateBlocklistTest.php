@@ -35,7 +35,6 @@ function gifUpload(): UploadedFile
 }
 
 beforeEach(function () {
-    config(['instance.enable_cc' => false]);
     config(['pixelfed.media_types' => 'image/jpeg,image/png,image/gif']);
     config(['pixelfed.max_photo_size' => 15000]);
     Storage::fake('local');

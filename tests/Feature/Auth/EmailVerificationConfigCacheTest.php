@@ -21,9 +21,6 @@ uses(LazilyRefreshDatabase::class);
 */
 
 beforeEach(function () {
-    // config_cache() only diverges from config() when the DB-backed cache is
-    // enabled; CI runs with it off.
-    config(['instance.enable_cc' => true]);
 });
 
 /**

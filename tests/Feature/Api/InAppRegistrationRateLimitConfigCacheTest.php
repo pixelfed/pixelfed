@@ -18,7 +18,6 @@ uses(LazilyRefreshDatabase::class);
 */
 
 beforeEach(function () {
-    config(['instance.enable_cc' => true]);
 });
 
 it('reads admin-saved rate-limit attempts via config_cache', function () {

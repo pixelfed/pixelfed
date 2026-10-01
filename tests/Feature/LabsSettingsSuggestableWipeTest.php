@@ -19,7 +19,6 @@ uses(LazilyRefreshDatabase::class);
 
 beforeEach(function () {
     config(['instance.landing.show_directory' => true]);
-    config(['instance.enable_cc' => false]);
 });
 
 it('does not clear is_suggestable when the labs form is saved', function () {

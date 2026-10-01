@@ -35,7 +35,6 @@ function resetCustomFilterLimits(): void
 }
 
 beforeEach(function () {
-    config(['instance.enable_cc' => false]);
     // The buggy state: fewer filters-per-user than keywords-per-filter.
     config(['instance.custom_filters.max_filters_per_user' => 2]);
     config(['instance.custom_filters.max_keywords_per_filter' => 10]);

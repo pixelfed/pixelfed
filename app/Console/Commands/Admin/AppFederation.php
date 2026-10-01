@@ -297,35 +297,33 @@ class AppFederation extends Command
         $effective = $envValue;
         $parts = ['env='.$this->bool($envValue)];
 
-        if (config('instance.enable_cc')) {
-            try {
-                $row = ConfigCache::where('k', $key)->first();
-                $cached = Cache::get(ConfigCacheService::CACHE_KEY.$key);
+        try {
+            $row = ConfigCache::where('k', $key)->first();
+            $cached = Cache::get(ConfigCacheService::CACHE_KEY.$key);
 
-                if ($row) {
-                    $dbValue = $this->truthy($row->v);
-                    $effective = $dbValue;
-                    $parts[] = 'admin setting='.$this->bool($dbValue);
+            if ($row) {
+                $dbValue = $this->truthy($row->v);
+                $effective = $dbValue;
+                $parts[] = 'admin setting='.$this->bool($dbValue);
 
-                    if ($cached !== null && $this->truthy($cached) !== $dbValue) {
-                        $effective = $this->truthy($cached);
-
-                        $this->caution(
-                            $label.' setting cache is stale',
-                            'cached='.$this->bool($effective).' database='.$this->bool($dbValue),
-                            'php artisan cache:forget "'.ConfigCacheService::CACHE_KEY.$key.'"'
-                        );
-                    }
-                } elseif ($cached !== null) {
+                if ($cached !== null && $this->truthy($cached) !== $dbValue) {
                     $effective = $this->truthy($cached);
-                    $parts[] = 'cached='.$this->bool($effective);
+
+                    $this->caution(
+                        $label.' setting cache is stale',
+                        'cached='.$this->bool($effective).' database='.$this->bool($dbValue),
+                        'php artisan cache:forget "'.ConfigCacheService::CACHE_KEY.$key.'"'
+                    );
                 }
-            } catch (Throwable $e) {
-                $this->caution(
-                    'Could not read the admin override for '.$key,
-                    class_basename($e)
-                );
+            } elseif ($cached !== null) {
+                $effective = $this->truthy($cached);
+                $parts[] = 'cached='.$this->bool($effective);
             }
+        } catch (Throwable $e) {
+            $this->caution(
+                'Could not read the admin override for '.$key,
+                class_basename($e)
+            );
         }
 
         $detail = implode(' ', $parts);
@@ -349,7 +347,7 @@ class AppFederation extends Command
         }
 
         if ($effective !== $envValue) {
-            $this->caution($label.' enabled by admin setting only', $detail, 'The .env value disagrees with the admin setting. The admin setting wins while ENABLE_CONFIG_CACHE is on.');
+            $this->caution($label.' enabled by admin setting only', $detail, 'The .env value disagrees with the admin setting. The admin setting wins.');
 
             return;
         }

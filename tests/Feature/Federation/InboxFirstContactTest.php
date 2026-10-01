@@ -38,7 +38,6 @@ beforeEach(function () {
     Queue::fake();
 
     config([
-        'instance.enable_cc' => false,
         'federation.activitypub.enabled' => true,
     ]);
 });

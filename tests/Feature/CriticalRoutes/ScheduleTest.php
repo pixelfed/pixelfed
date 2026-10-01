@@ -51,7 +51,6 @@ test('all scheduled commands run on one server', function () {
 });
 
 test('cloud storage media move task runs on one server when enabled', function () {
-    config(['instance.enable_cc' => false]);
     config(['pixelfed.cloud_storage' => true]);
     config(['media.delete_local_after_cloud' => true]);
 

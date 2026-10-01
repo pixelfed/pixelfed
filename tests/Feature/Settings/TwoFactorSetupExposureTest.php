@@ -22,7 +22,6 @@ uses(LazilyRefreshDatabase::class);
 
 beforeEach(function () {
     $this->withoutMiddleware(ThrottleRequests::class);
-    config(['instance.enable_cc' => false]);
 });
 
 function sudo(): array

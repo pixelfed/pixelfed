@@ -35,7 +35,6 @@ beforeEach(function () {
     config([
         'snowflake.datacenter_id' => 1,
         'snowflake.worker_id' => 1,
-        'instance.enable_cc' => false,
         'federation.activitypub.enabled' => true,
     ]);
 });

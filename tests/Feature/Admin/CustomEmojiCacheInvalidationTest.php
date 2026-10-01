@@ -22,7 +22,6 @@ uses(LazilyRefreshDatabase::class);
 
 beforeEach(function () {
     config(['federation.custom_emoji.enabled' => true]);
-    config(['instance.enable_cc' => false]);
     Storage::fake('public');
 });
 

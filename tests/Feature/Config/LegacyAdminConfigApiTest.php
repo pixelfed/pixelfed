@@ -36,7 +36,7 @@ test('GET /api/admin/config as admin returns the 5 config items with name/descri
     }
 });
 
-test('GET /api/admin/config is not gated by enable_cc: an admin always gets 200, never 400', function () {
+test('GET /api/admin/config: an admin always gets 200, never 400', function () {
     legacyAdmin(['admin:read']);
 
     $this->getJson('/api/admin/config')
