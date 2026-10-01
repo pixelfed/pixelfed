@@ -2,7 +2,6 @@
 
 namespace App\Providers;
 
-use App\Services\Config\EnvConfigValidator;
 use App\Services\ConfigCacheService;
 use Illuminate\Console\Events\CommandFinished;
 use Illuminate\Support\Facades\Artisan;
@@ -13,7 +12,7 @@ class ConfigCacheServiceProvider extends ServiceProvider
 {
     public function boot(): void
     {
-        EnvConfigValidator::validateBootEnv();
+        ConfigCacheService::validateBootEnv();
 
         // `optimize` caches config silently (no nested config:cache event), so react to both.
         Event::listen(CommandFinished::class, function (CommandFinished $event) {

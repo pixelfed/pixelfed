@@ -70,21 +70,14 @@ class ConfigCacheDiagnosticsController extends Controller
             }
         }
 
-        $source = $this->itemSource($key);
+        $source = ConfigCacheService::sourceOf($key);
 
         $match = $source === 'db'
             ? $this->looseEquals($effective, $dbPlain)
             : $this->looseEquals($effective, $configVal);
 
-        if ($protected) {
-            $effectiveDisplay = ConfigCacheController::maskProtectedConfig(is_scalar($effective) ? (string) $effective : null);
-            $dbDisplay = $rawDb === null ? null : ConfigCacheController::maskProtectedConfig($dbPlain !== null && is_scalar($dbPlain) ? (string) $dbPlain : (string) $rawDb);
-            $configDisplay = ConfigCacheController::maskProtectedConfig(is_scalar($configVal) ? (string) $configVal : null);
-        } else {
-            $effectiveDisplay = $this->returnType($effective);
-            $dbDisplay = $rawDb === null ? null : $this->returnType($rawDb);
-            $configDisplay = $this->returnType($configVal);
-        }
+        // For a protected row, mask the decrypted value when usable, else the raw ciphertext.
+        $dbRaw = $protected ? (($dbPlain !== null && is_scalar($dbPlain)) ? $dbPlain : $rawDb) : $rawDb;
 
         return [
             'key' => $key,
@@ -93,25 +86,33 @@ class ConfigCacheDiagnosticsController extends Controller
             'source' => $source,
             'locked' => ConfigCacheService::isLocked($key),
             'protected' => $protected,
-            'effective' => $effectiveDisplay,
-            'db' => $dbDisplay,
-            'config' => $configDisplay,
+            'effective' => $this->displayValue($key, $effective, $protected),
+            'db' => $rawDb === null ? null : $this->displayValue($key, $dbRaw, $protected),
+            'config' => $this->displayValue($key, $configVal, $protected),
             'match' => $match,
         ];
     }
 
-    // 'env' (env wins), 'db' (row exists), or 'default' (config file value).
-    protected function itemSource(string $key): string
+    // Display string for one value: masked when protected, else rendered by type.
+    protected function displayValue(string $key, $raw, bool $protected): ?string
     {
-        if (ConfigCacheService::isLocked($key)) {
-            return 'env';
+        if ($protected) {
+            return ConfigCacheController::maskProtectedConfig(is_scalar($raw) ? (string) $raw : null);
         }
 
-        if (ConfigCacheModel::where('k', $key)->exists()) {
-            return 'db';
+        if ($raw === null) {
+            return null;
         }
 
-        return 'default';
+        if (is_bool($raw)) {
+            return $raw ? 'true' : 'false';
+        }
+
+        if (is_scalar($raw)) {
+            return (string) $raw;
+        }
+
+        return json_encode($raw);
     }
 
     // Loose equality so a DB string ("5"/"0") matches a typed value (5/false).
@@ -140,24 +141,6 @@ class ConfigCacheDiagnosticsController extends Controller
         }
 
         return (string) $value;
-    }
-
-    // Render a non-secret value: booleans to string, arrays to JSON.
-    protected function returnType($value): ?string
-    {
-        if ($value === null) {
-            return null;
-        }
-
-        if (is_bool($value)) {
-            return $value ? 'true' : 'false';
-        }
-
-        if (is_scalar($value)) {
-            return (string) $value;
-        }
-
-        return json_encode($value);
     }
 
     // Sync-health panel: stored change-hash and best-effort lock state.

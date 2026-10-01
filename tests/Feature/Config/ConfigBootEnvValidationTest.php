@@ -1,6 +1,5 @@
 <?php
 
-use App\Services\Config\EnvConfigValidator;
 use App\Services\Config\InvalidEnvironmentConfigException;
 use App\Services\ConfigCacheService;
 use Illuminate\Support\Env;
@@ -56,7 +55,7 @@ test('validateBootEnv does not throw for a present, valid governed env var', fun
     evSetProcessEnv(EV_VAR, 'turnstile');
     Config::set(EV_KEY, 'turnstile');
 
-    EnvConfigValidator::validateBootEnv();
+    ConfigCacheService::validateBootEnv();
 
     // Reaching here means no exception was raised.
     expect(true)->toBeTrue();
@@ -67,7 +66,7 @@ test('validateBootEnv throws naming the var + value for an invalid governed env 
     Config::set(EV_KEY, 'banana'); // env resolved into config, fails in: rule
 
     try {
-        EnvConfigValidator::validateBootEnv();
+        ConfigCacheService::validateBootEnv();
         $this->fail('Expected InvalidEnvironmentConfigException was not thrown.');
     } catch (InvalidEnvironmentConfigException $e) {
         expect($e->getMessage())->toContain(EV_VAR);
@@ -81,7 +80,7 @@ test('validateBootEnv does not throw or warn when the governed env var is absent
 
     Log::spy();
 
-    EnvConfigValidator::validateBootEnv();
+    ConfigCacheService::validateBootEnv();
 
     // Absence is legal: no warning is logged for the absent var.
     Log::shouldNotHaveReceived('warning');
@@ -93,40 +92,40 @@ test('validateBootEnv treats an empty-string env var as absent', function () {
     Config::set(EV_KEY, 'hcaptcha');
 
     // Empty string counts as absent, so an "invalid" empty value must NOT fatal.
-    EnvConfigValidator::validateBootEnv();
+    ConfigCacheService::validateBootEnv();
 
     expect(true)->toBeTrue();
 });
 
-test('isValidEnvValue is true for a present, valid governed value', function () {
+test('isValidValue is true for a present, valid governed value', function () {
     evSetProcessEnv(EV_VAR, 'cap');
     Config::set(EV_KEY, 'cap');
 
-    expect(EnvConfigValidator::isValidEnvValue(EV_KEY))->toBeTrue();
+    expect(ConfigCacheService::isValidValue(EV_KEY, config(EV_KEY)))->toBeTrue();
 });
 
-test('isValidEnvValue is false for an invalid governed value', function () {
+test('isValidValue is false for an invalid governed value', function () {
     evSetProcessEnv(EV_VAR, 'banana');
     Config::set(EV_KEY, 'banana');
 
-    expect(EnvConfigValidator::isValidEnvValue(EV_KEY))->toBeFalse();
+    expect(ConfigCacheService::isValidValue(EV_KEY, config(EV_KEY)))->toBeFalse();
 });
 
 test('isValidValue validates an arbitrary value against the shared rule', function () {
     // Shared rule set reused by the write API: captcha.driver is in:hcaptcha,turnstile,cap.
-    expect(EnvConfigValidator::isValidValue(EV_KEY, 'turnstile'))->toBeTrue();
-    expect(EnvConfigValidator::isValidValue(EV_KEY, 'banana'))->toBeFalse();
-});
-
-test('isValidEnvValue returns true when no rule is declared for the key', function () {
-    $unlistedKey = 'this.key.has.no.rule';
-
-    expect(ConfigCacheService::ruleFor($unlistedKey))->toBeNull();
-    expect(EnvConfigValidator::isValidEnvValue($unlistedKey))->toBeTrue();
+    expect(ConfigCacheService::isValidValue(EV_KEY, 'turnstile'))->toBeTrue();
+    expect(ConfigCacheService::isValidValue(EV_KEY, 'banana'))->toBeFalse();
 });
 
 test('isValidValue returns true when no rule is declared for the key', function () {
     $unlistedKey = 'this.key.has.no.rule';
 
-    expect(EnvConfigValidator::isValidValue($unlistedKey, 'anything-goes'))->toBeTrue();
+    expect(ConfigCacheService::ruleFor($unlistedKey))->toBeNull();
+    expect(ConfigCacheService::isValidValue($unlistedKey, config($unlistedKey)))->toBeTrue();
+});
+
+test('isValidValue returns true when no rule is declared and an arbitrary value is given', function () {
+    $unlistedKey = 'this.key.has.no.rule';
+
+    expect(ConfigCacheService::isValidValue($unlistedKey, 'anything-goes'))->toBeTrue();
 });

@@ -3,12 +3,13 @@
 namespace App\Services;
 
 use App\Models\ConfigCache as ConfigCacheModel;
-use App\Services\Config\EnvConfigValidator;
+use App\Services\Config\InvalidEnvironmentConfigException;
 use Exception;
 use Illuminate\Database\QueryException;
 use Illuminate\Support\Env;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Validator;
 
 class ConfigCacheService
 {
@@ -201,7 +202,7 @@ class ConfigCacheService
             return false;
         }
 
-        return EnvConfigValidator::isValidEnvValue($key);
+        return self::isValidValue($key, config($key));
     }
 
     // An empty string counts as unset.
@@ -210,6 +211,57 @@ class ConfigCacheService
         $v = Env::get($envVar);
 
         return $v !== null && $v !== '';
+    }
+
+    // 'env' (env wins), 'db' (row exists), or 'default' (config file value).
+    public static function sourceOf(string $key): string
+    {
+        if (self::isLocked($key)) {
+            return 'env';
+        }
+
+        if (ConfigCacheModel::where('k', $key)->exists()) {
+            return 'db';
+        }
+
+        return 'default';
+    }
+
+    // Boot-time env validation: reads config/Env only, no DB (safe pre-migration).
+    public static function validateBootEnv(): void
+    {
+        foreach (self::keysInList('ENVCONFIG') as $key) {
+            $envVar = self::envVarFor($key);
+
+            if ($envVar === null || ! self::envIsSet($envVar)) {
+                continue;
+            }
+
+            $rule = self::ruleFor($key);
+
+            if ($rule === null) {
+                Log::warning("config-cache: no validation rule for {$key} (env {$envVar}); treated as valid.");
+
+                continue;
+            }
+
+            if (! self::passesValue($rule, config($key))) {
+                throw InvalidEnvironmentConfigException::forEnvVar($envVar, config($key), $rule);
+            }
+        }
+    }
+
+    // Validate an arbitrary value against the key's declared rule (no rule = valid).
+    public static function isValidValue(string $key, mixed $value): bool
+    {
+        $rule = self::ruleFor($key);
+
+        return $rule === null ? true : self::passesValue($rule, $value);
+    }
+
+    protected static function passesValue(string $rule, mixed $value): bool
+    {
+        return Validator::make(['value' => $value], ['value' => $rule])->passes();
     }
 
     public static function get($key)

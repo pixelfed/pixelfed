@@ -3,7 +3,6 @@
 namespace App\Http\Controllers\Api\v2026\Admin;
 
 use App\Http\Controllers\Controller;
-use App\Models\ConfigCache as ConfigCacheModel;
 use App\Services\ConfigCacheService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
@@ -223,23 +222,9 @@ class ConfigCacheController extends Controller
             'value' => $value,
             'list' => ConfigCacheService::listOf($key),
             'locked' => ConfigCacheService::isLocked($key),
-            'source' => $this->itemSource($key),
+            'source' => ConfigCacheService::sourceOf($key),
             'protected' => $protected,
         ];
-    }
-
-    // 'env' (env wins), 'db' (row exists), or 'default' (config file value).
-    protected function itemSource(string $key): string
-    {
-        if (ConfigCacheService::isLocked($key)) {
-            return 'env';
-        }
-
-        if (ConfigCacheModel::where('k', $key)->exists()) {
-            return 'db';
-        }
-
-        return 'default';
     }
 
     // Mask a secret: 4 chars visible each end, rest '*'; <8 chars fully masked.
