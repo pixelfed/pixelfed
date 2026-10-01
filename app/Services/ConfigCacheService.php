@@ -35,121 +35,125 @@ class ConfigCacheService
 
 
     // the rules are type checks - string, url, boolean, enum "in", integer, json
+    //
+    // A key's list is implied by its env binding: an entry with an `env` field
+    // is ENVCONFIG (env-governed), one without is ADMINONLY (admin-managed, no
+    // env var). See listOf()/keysInList().
     const KEYS = [
         // filesystems.php — s3 disk
-        'filesystems.disks.s3.key' => ['list' => 'ENVCONFIG', 'env' => 'AWS_ACCESS_KEY_ID', 'rule' => 'string'],
-        'filesystems.disks.s3.secret' => ['list' => 'ENVCONFIG', 'env' => 'AWS_SECRET_ACCESS_KEY', 'rule' => 'string'],
-        'filesystems.disks.s3.region' => ['list' => 'ENVCONFIG', 'env' => 'AWS_DEFAULT_REGION', 'rule' => 'string'],
-        'filesystems.disks.s3.bucket' => ['list' => 'ENVCONFIG', 'env' => 'AWS_BUCKET', 'rule' => 'string'],
-        'filesystems.disks.s3.visibility' => ['list' => 'ENVCONFIG', 'env' => 'AWS_VISIBILITY', 'rule' => 'in:public,private'],
-        'filesystems.disks.s3.url' => ['list' => 'ENVCONFIG', 'env' => 'AWS_URL', 'rule' => 'url'],
-        'filesystems.disks.s3.endpoint' => ['list' => 'ENVCONFIG', 'env' => 'AWS_ENDPOINT', 'rule' => 'url'],
-        'filesystems.disks.s3.use_path_style_endpoint' => ['list' => 'ENVCONFIG', 'env' => 'AWS_USE_PATH_STYLE_ENDPOINT', 'rule' => 'boolean'],
+        'filesystems.disks.s3.key' => ['env' => 'AWS_ACCESS_KEY_ID', 'rule' => 'string'],
+        'filesystems.disks.s3.secret' => ['env' => 'AWS_SECRET_ACCESS_KEY', 'rule' => 'string'],
+        'filesystems.disks.s3.region' => ['env' => 'AWS_DEFAULT_REGION', 'rule' => 'string'],
+        'filesystems.disks.s3.bucket' => ['env' => 'AWS_BUCKET', 'rule' => 'string'],
+        'filesystems.disks.s3.visibility' => ['env' => 'AWS_VISIBILITY', 'rule' => 'in:public,private'],
+        'filesystems.disks.s3.url' => ['env' => 'AWS_URL', 'rule' => 'url'],
+        'filesystems.disks.s3.endpoint' => ['env' => 'AWS_ENDPOINT', 'rule' => 'url'],
+        'filesystems.disks.s3.use_path_style_endpoint' => ['env' => 'AWS_USE_PATH_STYLE_ENDPOINT', 'rule' => 'boolean'],
 
         // filesystems.php — spaces disk
-        'filesystems.disks.spaces.key' => ['list' => 'ENVCONFIG', 'env' => 'DO_SPACES_KEY', 'rule' => 'string'],
-        'filesystems.disks.spaces.secret' => ['list' => 'ENVCONFIG', 'env' => 'DO_SPACES_SECRET', 'rule' => 'string'],
-        'filesystems.disks.spaces.region' => ['list' => 'ENVCONFIG', 'env' => 'DO_SPACES_REGION', 'rule' => 'string'],
-        'filesystems.disks.spaces.bucket' => ['list' => 'ENVCONFIG', 'env' => 'DO_SPACES_BUCKET', 'rule' => 'string'],
-        'filesystems.disks.spaces.url' => ['list' => 'ENVCONFIG', 'env' => 'DO_SPACES_URL', 'rule' => 'url'],
-        'filesystems.disks.spaces.endpoint' => ['list' => 'ENVCONFIG', 'env' => 'DO_SPACES_ENDPOINT', 'rule' => 'url'],
-        'filesystems.disks.spaces.visibility' => ['list' => 'ENVCONFIG', 'env' => 'DO_SPACES_VISIBILITY', 'rule' => 'in:public,private'],
-        'filesystems.disks.spaces.use_path_style_endpoint' => ['list' => 'ENVCONFIG', 'env' => 'DO_SPACES_USE_PATH_STYLE_ENDPOINT', 'rule' => 'boolean'],
+        'filesystems.disks.spaces.key' => ['env' => 'DO_SPACES_KEY', 'rule' => 'string'],
+        'filesystems.disks.spaces.secret' => ['env' => 'DO_SPACES_SECRET', 'rule' => 'string'],
+        'filesystems.disks.spaces.region' => ['env' => 'DO_SPACES_REGION', 'rule' => 'string'],
+        'filesystems.disks.spaces.bucket' => ['env' => 'DO_SPACES_BUCKET', 'rule' => 'string'],
+        'filesystems.disks.spaces.url' => ['env' => 'DO_SPACES_URL', 'rule' => 'url'],
+        'filesystems.disks.spaces.endpoint' => ['env' => 'DO_SPACES_ENDPOINT', 'rule' => 'url'],
+        'filesystems.disks.spaces.visibility' => ['env' => 'DO_SPACES_VISIBILITY', 'rule' => 'in:public,private'],
+        'filesystems.disks.spaces.use_path_style_endpoint' => ['env' => 'DO_SPACES_USE_PATH_STYLE_ENDPOINT', 'rule' => 'boolean'],
 
         // app.php
-        'app.name' => ['list' => 'ENVCONFIG', 'env' => 'APP_NAME', 'rule' => 'string'],
-        'app.short_description' => ['list' => 'ENVCONFIG', 'env' => 'PF_SHORT_DESCRIPTION', 'rule' => 'string'],
-        'app.description' => ['list' => 'ENVCONFIG', 'env' => 'PF_DESCRIPTION', 'rule' => 'string'],
-        'app.rules' => ['list' => 'ENVCONFIG', 'env' => 'PF_RULES', 'rule' => 'json'],
+        'app.name' => ['env' => 'APP_NAME', 'rule' => 'string'],
+        'app.short_description' => ['env' => 'PF_SHORT_DESCRIPTION', 'rule' => 'string'],
+        'app.description' => ['env' => 'PF_DESCRIPTION', 'rule' => 'string'],
+        'app.rules' => ['env' => 'PF_RULES', 'rule' => 'json'],
 
         // pixelfed.php
-        'pixelfed.max_photo_size' => ['list' => 'ENVCONFIG', 'env' => 'MAX_PHOTO_SIZE', 'rule' => 'integer|min:100'],
-        'pixelfed.max_album_length' => ['list' => 'ENVCONFIG', 'env' => 'MAX_ALBUM_LENGTH', 'rule' => 'integer|min:1|max:20'],
-        'pixelfed.image_quality' => ['list' => 'ENVCONFIG', 'env' => 'IMAGE_QUALITY', 'rule' => 'integer|min:1|max:100'],
-        'pixelfed.media_types' => ['list' => 'ENVCONFIG', 'env' => 'MEDIA_TYPES', 'rule' => 'string'],
-        'pixelfed.open_registration' => ['list' => 'ENVCONFIG', 'env' => 'OPEN_REGISTRATION', 'rule' => 'boolean'],
-        'pixelfed.oauth_enabled' => ['list' => 'ENVCONFIG', 'env' => 'OAUTH_ENABLED', 'rule' => 'boolean'],
-        'pixelfed.import.instagram.enabled' => ['list' => 'ENVCONFIG', 'env' => 'IMPORT_INSTAGRAM', 'rule' => 'boolean'],
-        'pixelfed.bouncer.enabled' => ['list' => 'ENVCONFIG', 'env' => 'PF_BOUNCER_ENABLED', 'rule' => 'boolean'],
-        'pixelfed.enforce_email_verification' => ['list' => 'ENVCONFIG', 'env' => 'ENFORCE_EMAIL_VERIFICATION', 'rule' => 'boolean'],
-        'pixelfed.max_account_size' => ['list' => 'ENVCONFIG', 'env' => 'MAX_ACCOUNT_SIZE', 'rule' => 'integer|min:50000'],
-        'pixelfed.enforce_account_limit' => ['list' => 'ENVCONFIG', 'env' => 'LIMIT_ACCOUNT_SIZE', 'rule' => 'boolean'],
-        'pixelfed.cloud_storage' => ['list' => 'ENVCONFIG', 'env' => 'PF_ENABLE_CLOUD', 'rule' => 'boolean'],
-        'pixelfed.max_caption_length' => ['list' => 'ENVCONFIG', 'env' => 'MAX_CAPTION_LENGTH', 'rule' => 'integer'],
-        'pixelfed.max_bio_length' => ['list' => 'ENVCONFIG', 'env' => 'MAX_BIO_LENGTH', 'rule' => 'integer'],
-        'pixelfed.max_name_length' => ['list' => 'ENVCONFIG', 'env' => 'MAX_NAME_LENGTH', 'rule' => 'integer'],
-        'pixelfed.min_password_length' => ['list' => 'ENVCONFIG', 'env' => 'MIN_PASSWORD_LENGTH', 'rule' => 'integer|min:6'],
-        'pixelfed.max_avatar_size' => ['list' => 'ENVCONFIG', 'env' => 'MAX_AVATAR_SIZE', 'rule' => 'integer'],
-        'pixelfed.max_altext_length' => ['list' => 'ENVCONFIG', 'env' => 'PF_MEDIA_MAX_ALTTEXT_LENGTH', 'rule' => 'integer'],
-        'pixelfed.allow_app_registration' => ['list' => 'ENVCONFIG', 'env' => 'PF_ALLOW_APP_REGISTRATION', 'rule' => 'boolean'],
-        'pixelfed.app_registration_rate_limit_attempts' => ['list' => 'ENVCONFIG', 'env' => 'PF_IAR_RL_ATTEMPTS', 'rule' => 'integer'],
-        'pixelfed.app_registration_rate_limit_decay' => ['list' => 'ENVCONFIG', 'env' => 'PF_IAR_RL_DECAY', 'rule' => 'integer'],
-        'pixelfed.app_registration_confirm_rate_limit_attempts' => ['list' => 'ENVCONFIG', 'env' => 'PF_IARC_RL_ATTEMPTS', 'rule' => 'integer'],
-        'pixelfed.app_registration_confirm_rate_limit_decay' => ['list' => 'ENVCONFIG', 'env' => 'PF_IARC_RL_DECAY', 'rule' => 'integer'],
-        'pixelfed.optimize_image' => ['list' => 'ENVCONFIG', 'env' => 'PF_OPTIMIZE_IMAGES', 'rule' => 'boolean'],
-        'pixelfed.optimize_video' => ['list' => 'ENVCONFIG', 'env' => 'PF_OPTIMIZE_VIDEOS', 'rule' => 'boolean'],
-        'pixelfed.max_collection_length' => ['list' => 'ENVCONFIG', 'env' => 'PF_MAX_COLLECTION_LENGTH', 'rule' => 'integer'],
+        'pixelfed.max_photo_size' => ['env' => 'MAX_PHOTO_SIZE', 'rule' => 'integer|min:100'],
+        'pixelfed.max_album_length' => ['env' => 'MAX_ALBUM_LENGTH', 'rule' => 'integer|min:1|max:20'],
+        'pixelfed.image_quality' => ['env' => 'IMAGE_QUALITY', 'rule' => 'integer|min:1|max:100'],
+        'pixelfed.media_types' => ['env' => 'MEDIA_TYPES', 'rule' => 'string'],
+        'pixelfed.open_registration' => ['env' => 'OPEN_REGISTRATION', 'rule' => 'boolean'],
+        'pixelfed.oauth_enabled' => ['env' => 'OAUTH_ENABLED', 'rule' => 'boolean'],
+        'pixelfed.import.instagram.enabled' => ['env' => 'IMPORT_INSTAGRAM', 'rule' => 'boolean'],
+        'pixelfed.bouncer.enabled' => ['env' => 'PF_BOUNCER_ENABLED', 'rule' => 'boolean'],
+        'pixelfed.enforce_email_verification' => ['env' => 'ENFORCE_EMAIL_VERIFICATION', 'rule' => 'boolean'],
+        'pixelfed.max_account_size' => ['env' => 'MAX_ACCOUNT_SIZE', 'rule' => 'integer|min:50000'],
+        'pixelfed.enforce_account_limit' => ['env' => 'LIMIT_ACCOUNT_SIZE', 'rule' => 'boolean'],
+        'pixelfed.cloud_storage' => ['env' => 'PF_ENABLE_CLOUD', 'rule' => 'boolean'],
+        'pixelfed.max_caption_length' => ['env' => 'MAX_CAPTION_LENGTH', 'rule' => 'integer'],
+        'pixelfed.max_bio_length' => ['env' => 'MAX_BIO_LENGTH', 'rule' => 'integer'],
+        'pixelfed.max_name_length' => ['env' => 'MAX_NAME_LENGTH', 'rule' => 'integer'],
+        'pixelfed.min_password_length' => ['env' => 'MIN_PASSWORD_LENGTH', 'rule' => 'integer|min:6'],
+        'pixelfed.max_avatar_size' => ['env' => 'MAX_AVATAR_SIZE', 'rule' => 'integer'],
+        'pixelfed.max_altext_length' => ['env' => 'PF_MEDIA_MAX_ALTTEXT_LENGTH', 'rule' => 'integer'],
+        'pixelfed.allow_app_registration' => ['env' => 'PF_ALLOW_APP_REGISTRATION', 'rule' => 'boolean'],
+        'pixelfed.app_registration_rate_limit_attempts' => ['env' => 'PF_IAR_RL_ATTEMPTS', 'rule' => 'integer'],
+        'pixelfed.app_registration_rate_limit_decay' => ['env' => 'PF_IAR_RL_DECAY', 'rule' => 'integer'],
+        'pixelfed.app_registration_confirm_rate_limit_attempts' => ['env' => 'PF_IARC_RL_ATTEMPTS', 'rule' => 'integer'],
+        'pixelfed.app_registration_confirm_rate_limit_decay' => ['env' => 'PF_IARC_RL_DECAY', 'rule' => 'integer'],
+        'pixelfed.optimize_image' => ['env' => 'PF_OPTIMIZE_IMAGES', 'rule' => 'boolean'],
+        'pixelfed.optimize_video' => ['env' => 'PF_OPTIMIZE_VIDEOS', 'rule' => 'boolean'],
+        'pixelfed.max_collection_length' => ['env' => 'PF_MAX_COLLECTION_LENGTH', 'rule' => 'integer'],
 
         // federation.php
-        'federation.activitypub.enabled' => ['list' => 'ENVCONFIG', 'env' => 'ACTIVITY_PUB', 'rule' => 'boolean'],
-        'federation.activitypub.authorized_fetch' => ['list' => 'ENVCONFIG', 'env' => 'AUTHORIZED_FETCH', 'rule' => 'boolean'],
-        'federation.migration' => ['list' => 'ENVCONFIG', 'env' => 'PF_ACCT_MIGRATION_ENABLED', 'rule' => 'boolean'],
-        'federation.custom_emoji.enabled' => ['list' => 'ENVCONFIG', 'env' => 'CUSTOM_EMOJI', 'rule' => 'boolean'],
+        'federation.activitypub.enabled' => ['env' => 'ACTIVITY_PUB', 'rule' => 'boolean'],
+        'federation.activitypub.authorized_fetch' => ['env' => 'AUTHORIZED_FETCH', 'rule' => 'boolean'],
+        'federation.migration' => ['env' => 'PF_ACCT_MIGRATION_ENABLED', 'rule' => 'boolean'],
+        'federation.custom_emoji.enabled' => ['env' => 'CUSTOM_EMOJI', 'rule' => 'boolean'],
 
         // instance.php
-        'instance.stories.enabled' => ['list' => 'ENVCONFIG', 'env' => 'STORIES_ENABLED', 'rule' => 'boolean'],
-        'instance.avatar.local_to_cloud' => ['list' => 'ENVCONFIG', 'env' => 'PF_LOCAL_AVATAR_TO_CLOUD', 'rule' => 'boolean'],
-        'instance.has_legal_notice' => ['list' => 'ENVCONFIG', 'env' => 'INSTANCE_LEGAL_NOTICE', 'rule' => 'boolean'],
-        'instance.landing.show_directory' => ['list' => 'ENVCONFIG', 'env' => 'INSTANCE_LANDING_SHOW_DIRECTORY', 'rule' => 'boolean'],
-        'instance.landing.show_explore' => ['list' => 'ENVCONFIG', 'env' => 'INSTANCE_LANDING_SHOW_EXPLORE', 'rule' => 'boolean'],
-        'instance.curated_registration.enabled' => ['list' => 'ENVCONFIG', 'env' => 'INSTANCE_CUR_REG', 'rule' => 'boolean'],
-        'instance.embed.profile' => ['list' => 'ENVCONFIG', 'env' => 'INSTANCE_PROFILE_EMBEDS', 'rule' => 'boolean'],
-        'instance.embed.post' => ['list' => 'ENVCONFIG', 'env' => 'INSTANCE_POST_EMBEDS', 'rule' => 'boolean'],
-        'instance.user_filters.max_user_blocks' => ['list' => 'ENVCONFIG', 'env' => 'PF_MAX_USER_BLOCKS', 'rule' => 'integer|min:0|max:5000'],
-        'instance.user_filters.max_user_mutes' => ['list' => 'ENVCONFIG', 'env' => 'PF_MAX_USER_MUTES', 'rule' => 'integer|min:0|max:5000'],
-        'instance.user_filters.max_domain_blocks' => ['list' => 'ENVCONFIG', 'env' => 'PF_MAX_DOMAIN_BLOCKS', 'rule' => 'integer|min:0|max:5000'],
-        'instance.admin.pid' => ['list' => 'ENVCONFIG', 'env' => 'PF_ADMIN_PID', 'rule' => 'integer'],
-        'instance.banner.blurhash' => ['list' => 'ENVCONFIG', 'env' => 'INSTANCE_BANNER_BLURHASH', 'rule' => 'string'],
+        'instance.stories.enabled' => ['env' => 'STORIES_ENABLED', 'rule' => 'boolean'],
+        'instance.avatar.local_to_cloud' => ['env' => 'PF_LOCAL_AVATAR_TO_CLOUD', 'rule' => 'boolean'],
+        'instance.has_legal_notice' => ['env' => 'INSTANCE_LEGAL_NOTICE', 'rule' => 'boolean'],
+        'instance.landing.show_directory' => ['env' => 'INSTANCE_LANDING_SHOW_DIRECTORY', 'rule' => 'boolean'],
+        'instance.landing.show_explore' => ['env' => 'INSTANCE_LANDING_SHOW_EXPLORE', 'rule' => 'boolean'],
+        'instance.curated_registration.enabled' => ['env' => 'INSTANCE_CUR_REG', 'rule' => 'boolean'],
+        'instance.embed.profile' => ['env' => 'INSTANCE_PROFILE_EMBEDS', 'rule' => 'boolean'],
+        'instance.embed.post' => ['env' => 'INSTANCE_POST_EMBEDS', 'rule' => 'boolean'],
+        'instance.user_filters.max_user_blocks' => ['env' => 'PF_MAX_USER_BLOCKS', 'rule' => 'integer|min:0|max:5000'],
+        'instance.user_filters.max_user_mutes' => ['env' => 'PF_MAX_USER_MUTES', 'rule' => 'integer|min:0|max:5000'],
+        'instance.user_filters.max_domain_blocks' => ['env' => 'PF_MAX_DOMAIN_BLOCKS', 'rule' => 'integer|min:0|max:5000'],
+        'instance.admin.pid' => ['env' => 'PF_ADMIN_PID', 'rule' => 'integer'],
+        'instance.banner.blurhash' => ['env' => 'INSTANCE_BANNER_BLURHASH', 'rule' => 'string'],
 
         // media.php
-        'media.delete_local_after_cloud' => ['list' => 'ENVCONFIG', 'env' => 'MEDIA_DELETE_LOCAL_AFTER_CLOUD', 'rule' => 'boolean'],
+        'media.delete_local_after_cloud' => ['env' => 'MEDIA_DELETE_LOCAL_AFTER_CLOUD', 'rule' => 'boolean'],
 
         // captcha.php
-        'captcha.enabled' => ['list' => 'ENVCONFIG', 'env' => 'CAPTCHA_ENABLED', 'rule' => 'boolean'],
-        'captcha.driver' => ['list' => 'ENVCONFIG', 'env' => 'CAPTCHA_DRIVER', 'rule' => 'in:hcaptcha,turnstile,cap'],
-        'captcha.hcaptcha.secret' => ['list' => 'ENVCONFIG', 'env' => 'CAPTCHA_H_SECRET', 'rule' => 'string'],
-        'captcha.hcaptcha.sitekey' => ['list' => 'ENVCONFIG', 'env' => 'CAPTCHA_H_SITEKEY', 'rule' => 'string'],
-        'captcha.turnstile.secret' => ['list' => 'ENVCONFIG', 'env' => 'CAPTCHA_TURNSTILE_SECRET', 'rule' => 'string'],
-        'captcha.turnstile.sitekey' => ['list' => 'ENVCONFIG', 'env' => 'CAPTCHA_TURNSTILE_SITEKEY', 'rule' => 'string'],
-        'captcha.cap.endpoint' => ['list' => 'ENVCONFIG', 'env' => 'CAPTCHA_CAP_ENDPOINT', 'rule' => 'url'],
-        'captcha.cap.sitekey' => ['list' => 'ENVCONFIG', 'env' => 'CAPTCHA_CAP_SITEKEY', 'rule' => 'string'],
-        'captcha.cap.secret' => ['list' => 'ENVCONFIG', 'env' => 'CAPTCHA_CAP_SECRET', 'rule' => 'string'],
-        'captcha.active.login' => ['list' => 'ENVCONFIG', 'env' => 'CAPTCHA_ENABLED_ON_LOGIN', 'rule' => 'boolean'],
-        'captcha.active.register' => ['list' => 'ENVCONFIG', 'env' => 'CAPTCHA_ENABLED_ON_REGISTER', 'rule' => 'boolean'],
-        'captcha.active.forgot_password' => ['list' => 'ENVCONFIG', 'env' => 'CAPTCHA_ENABLED_ON_FORGOT_PASSWORD', 'rule' => 'boolean'],
-        'captcha.active.password_reset' => ['list' => 'ENVCONFIG', 'env' => 'CAPTCHA_ENABLED_ON_PASSWORD_RESET', 'rule' => 'boolean'],
-        'captcha.active.forgot_email' => ['list' => 'ENVCONFIG', 'env' => 'CAPTCHA_ENABLED_ON_FORGOT_EMAIL', 'rule' => 'boolean'],
-        'captcha.active.curated_register' => ['list' => 'ENVCONFIG', 'env' => 'CAPTCHA_ENABLED_ON_CURATED_REGISTER', 'rule' => 'boolean'],
+        'captcha.enabled' => ['env' => 'CAPTCHA_ENABLED', 'rule' => 'boolean'],
+        'captcha.driver' => ['env' => 'CAPTCHA_DRIVER', 'rule' => 'in:hcaptcha,turnstile,cap'],
+        'captcha.hcaptcha.secret' => ['env' => 'CAPTCHA_H_SECRET', 'rule' => 'string'],
+        'captcha.hcaptcha.sitekey' => ['env' => 'CAPTCHA_H_SITEKEY', 'rule' => 'string'],
+        'captcha.turnstile.secret' => ['env' => 'CAPTCHA_TURNSTILE_SECRET', 'rule' => 'string'],
+        'captcha.turnstile.sitekey' => ['env' => 'CAPTCHA_TURNSTILE_SITEKEY', 'rule' => 'string'],
+        'captcha.cap.endpoint' => ['env' => 'CAPTCHA_CAP_ENDPOINT', 'rule' => 'url'],
+        'captcha.cap.sitekey' => ['env' => 'CAPTCHA_CAP_SITEKEY', 'rule' => 'string'],
+        'captcha.cap.secret' => ['env' => 'CAPTCHA_CAP_SECRET', 'rule' => 'string'],
+        'captcha.active.login' => ['env' => 'CAPTCHA_ENABLED_ON_LOGIN', 'rule' => 'boolean'],
+        'captcha.active.register' => ['env' => 'CAPTCHA_ENABLED_ON_REGISTER', 'rule' => 'boolean'],
+        'captcha.active.forgot_password' => ['env' => 'CAPTCHA_ENABLED_ON_FORGOT_PASSWORD', 'rule' => 'boolean'],
+        'captcha.active.password_reset' => ['env' => 'CAPTCHA_ENABLED_ON_PASSWORD_RESET', 'rule' => 'boolean'],
+        'captcha.active.forgot_email' => ['env' => 'CAPTCHA_ENABLED_ON_FORGOT_EMAIL', 'rule' => 'boolean'],
+        'captcha.active.curated_register' => ['env' => 'CAPTCHA_ENABLED_ON_CURATED_REGISTER', 'rule' => 'boolean'],
 
         // ADMINONLY (no env var)
-        'app.banner_image' => ['list' => 'ADMINONLY', 'rule' => 'string'],
-        'about.title' => ['list' => 'ADMINONLY', 'rule' => 'string'],
-        'uikit.custom.css' => ['list' => 'ADMINONLY', 'rule' => 'string'],
-        'uikit.custom.js' => ['list' => 'ADMINONLY', 'rule' => 'string'],
-        'uikit.show_custom.css' => ['list' => 'ADMINONLY', 'rule' => 'boolean'],
-        'uikit.show_custom.js' => ['list' => 'ADMINONLY', 'rule' => 'boolean'],
-        'account.autofollow' => ['list' => 'ADMINONLY', 'rule' => 'boolean'],
-        'account.autofollow_usernames' => ['list' => 'ADMINONLY', 'rule' => 'string'],
-        'config.discover.features' => ['list' => 'ADMINONLY', 'rule' => 'json'],
-        'pixelfed.directory' => ['list' => 'ADMINONLY', 'rule' => 'boolean'],
-        'pixelfed.directory.submission-key' => ['list' => 'ADMINONLY', 'rule' => 'string'],
-        'pixelfed.directory.submission-ts' => ['list' => 'ADMINONLY', 'rule' => 'string'],
-        'pixelfed.directory.has_submitted' => ['list' => 'ADMINONLY', 'rule' => 'boolean'],
-        'pixelfed.directory.latest_response' => ['list' => 'ADMINONLY', 'rule' => 'string'],
-        'pixelfed.directory.is_synced' => ['list' => 'ADMINONLY', 'rule' => 'boolean'],
-        'pixelfed.directory.testimonials' => ['list' => 'ADMINONLY', 'rule' => 'json'],
-        'instance.stats.total_local_posts' => ['list' => 'ADMINONLY', 'rule' => 'integer'],
-        'autospam.nlp.enabled' => ['list' => 'ADMINONLY', 'rule' => 'boolean'],
+        'app.banner_image' => ['rule' => 'string'],
+        'about.title' => ['rule' => 'string'],
+        'uikit.custom.css' => ['rule' => 'string'],
+        'uikit.custom.js' => ['rule' => 'string'],
+        'uikit.show_custom.css' => ['rule' => 'boolean'],
+        'uikit.show_custom.js' => ['rule' => 'boolean'],
+        'account.autofollow' => ['rule' => 'boolean'],
+        'account.autofollow_usernames' => ['rule' => 'string'],
+        'config.discover.features' => ['rule' => 'json'],
+        'pixelfed.directory' => ['rule' => 'boolean'],
+        'pixelfed.directory.submission-key' => ['rule' => 'string'],
+        'pixelfed.directory.submission-ts' => ['rule' => 'string'],
+        'pixelfed.directory.has_submitted' => ['rule' => 'boolean'],
+        'pixelfed.directory.latest_response' => ['rule' => 'string'],
+        'pixelfed.directory.is_synced' => ['rule' => 'boolean'],
+        'pixelfed.directory.testimonials' => ['rule' => 'json'],
+        'instance.stats.total_local_posts' => ['rule' => 'integer'],
+        'autospam.nlp.enabled' => ['rule' => 'boolean'],
     ];
 
     public static function isCached(string $key): bool
@@ -157,9 +161,15 @@ class ConfigCacheService
         return isset(self::KEYS[$key]);
     }
 
+    // A key's list is derived from its env binding: keys with an env var are
+    // ENVCONFIG, keys without are ADMINONLY. There is no stored `list` field.
     public static function listOf(string $key): ?string
     {
-        return self::KEYS[$key]['list'] ?? null;
+        if (! isset(self::KEYS[$key])) {
+            return null;
+        }
+
+        return self::envVarFor($key) !== null ? 'ENVCONFIG' : 'ADMINONLY';
     }
 
     public static function envVarFor(string $key): ?string
@@ -179,7 +189,10 @@ class ConfigCacheService
 
     public static function keysInList(string $list): array
     {
-        return array_keys(array_filter(self::KEYS, fn ($m) => ($m['list'] ?? null) === $list));
+        return array_values(array_filter(
+            array_keys(self::KEYS),
+            fn ($key) => self::listOf($key) === $list
+        ));
     }
 
     public static function adminVisibleKeys(): array

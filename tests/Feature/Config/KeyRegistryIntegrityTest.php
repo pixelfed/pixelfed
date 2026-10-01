@@ -9,10 +9,12 @@ use App\Services\ConfigCacheService;
 |
 | The unified KEYS registry replaces the old flat allow-list + separate
 | ENV_MAP. There is no separate ENV_MAP — the env binding lives inside each
-| KEYS entry's `env` field. These tests enforce the invariants that keep the
-| three lists mutually exclusive and internally consistent:
+| KEYS entry's `env` field. A key's list is not stored; it is derived from the
+| presence of that `env` field (see ConfigCacheService::listOf). These tests
+| enforce the invariants that keep the two lists mutually exclusive and
+| internally consistent:
 |
-|   - every entry declares exactly one valid list (ENVCONFIG | ADMINONLY);
+|   - every entry resolves to exactly one valid list (ENVCONFIG | ADMINONLY);
 |   - the per-list partition (keysInList) covers every key with no overlap;
 |   - every ENVCONFIG key has a non-empty env binding, and every ADMINONLY
 |     key has NO env binding (Requirement 13.4);
@@ -24,11 +26,11 @@ use App\Services\ConfigCacheService;
 
 const VALID_LISTS = ['ENVCONFIG', 'ADMINONLY'];
 
-test('every KEYS entry declares exactly one valid list', function () {
-    foreach (ConfigCacheService::KEYS as $key => $meta) {
-        expect($meta['list'] ?? null)->toBeIn(
+test('every KEYS entry resolves to exactly one valid list', function () {
+    foreach (array_keys(ConfigCacheService::KEYS) as $key) {
+        expect(ConfigCacheService::listOf($key))->toBeIn(
             VALID_LISTS,
-            "key [{$key}] must declare exactly one valid list"
+            "key [{$key}] must resolve to exactly one valid list"
         );
     }
 });
@@ -106,18 +108,18 @@ test('every ENVCONFIG key declares a validation rule', function () {
 test('ENVONLY has been fully removed from the registry', function () {
     expect(ConfigCacheService::keysInList('ENVONLY'))->toBeEmpty();
 
-    foreach (ConfigCacheService::KEYS as $key => $meta) {
-        expect($meta['list'] ?? null)->not->toBe(
+    foreach (array_keys(ConfigCacheService::KEYS) as $key) {
+        expect(ConfigCacheService::listOf($key))->not->toBe(
             'ENVONLY',
-            "key [{$key}] still uses the removed ENVONLY list; use ENVCONFIG."
+            "key [{$key}] still resolves to the removed ENVONLY list; use ENVCONFIG."
         );
     }
 });
 
-test('list matches env binding: ENVCONFIG iff an env var is declared, ADMINONLY iff not', function () {
-    foreach (ConfigCacheService::KEYS as $key => $meta) {
-        $list = $meta['list'] ?? null;
-        $hasEnv = ($meta['env'] ?? null) !== null;
+test('list is derived from env binding: ENVCONFIG iff an env var is declared, ADMINONLY iff not', function () {
+    foreach (array_keys(ConfigCacheService::KEYS) as $key) {
+        $list = ConfigCacheService::listOf($key);
+        $hasEnv = ConfigCacheService::envVarFor($key) !== null;
 
         if ($hasEnv) {
             expect($list)->toBe(
