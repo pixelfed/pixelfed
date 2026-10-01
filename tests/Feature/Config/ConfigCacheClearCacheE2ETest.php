@@ -4,12 +4,12 @@ use App\Http\Controllers\Api\v2026\Admin\ConfigCacheDiagnosticsController;
 use App\Models\ConfigCache as ConfigCacheModel;
 use App\Models\User;
 use App\Services\ConfigCacheService;
-use Illuminate\Foundation\Http\Middleware\PreventRequestForgery;
 use Illuminate\Foundation\Testing\LazilyRefreshDatabase;
 use Illuminate\Support\Env;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Config;
 use Illuminate\Support\Facades\Route;
+use Laravel\Passport\Passport;
 
 uses(LazilyRefreshDatabase::class);
 
@@ -25,6 +25,8 @@ const E2E_BOOL_KEY = 'autospam.nlp.enabled';
 
 const E2E_MARKER_KEY = 'config-cache:sync-hash';
 const E2E_LOCK_KEY = 'config-cache:sync';
+
+const E2E_CLEAR_ENDPOINT = '/api/v2.1/admin/diagnostics/config-cache/clear-cache';
 
 function e2eResetEnvRepository(): void
 {
@@ -53,7 +55,7 @@ function e2eForget(string $key): void
     Cache::forget(ConfigCacheService::CACHE_KEY.$key);
 }
 
-// An admin with a confirmed password, ready to POST the dangerzone route.
+// An admin authorized to call the admin:write diagnostics endpoint.
 function e2eAdmin(): User
 {
     $admin = User::factory()->admin()->create();
@@ -62,14 +64,12 @@ function e2eAdmin(): User
     return $admin;
 }
 
-// POST the clear-cache route as a confirmed-password admin.
+// POST the clear-cache JSON endpoint as an admin with the admin:write scope.
 function e2ePostClear($test, User $admin)
 {
-    // CSRF is on in every env, so bypass it: these tests exercise the reconcile flow.
-    return $test->actingAs($admin)
-        ->withSession(['auth.password_confirmed_at' => time()])
-        ->withoutMiddleware(PreventRequestForgery::class)
-        ->post(route('admin.config-cache.clear'));
+    Passport::actingAs($admin, ['admin:write']);
+
+    return $test->postJson(E2E_CLEAR_ENDPOINT);
 }
 
 beforeEach(function () {
@@ -112,36 +112,31 @@ afterEach(function () {
     }
 });
 
-test('the clear-cache route is registered as POST with admin + dangerzone middleware', function () {
+test('the clear-cache route is registered as POST with auth:sanctum,api middleware', function () {
     $route = collect(Route::getRoutes())
-        ->first(fn ($r) => $r->getName() === 'admin.config-cache.clear');
+        ->first(fn ($r) => $r->uri() === 'api/v2.1/admin/diagnostics/config-cache/clear-cache' && in_array('POST', $r->methods(), true));
 
     expect($route)->not->toBeNull();
-    expect($route->methods())->toContain('POST');
-    expect($route->getActionName())->toBe(ConfigCacheDiagnosticsController::class.'@clearCache');
+    expect($route->getActionName())->toBe(ConfigCacheDiagnosticsController::class.'@clearCacheApi');
 
     $middleware = $route->gatherMiddleware();
-    expect($middleware)->toContain('admin');
-    expect($middleware)->toContain('dangerzone');
+    expect($middleware)->toContain('auth:sanctum,api');
 });
 
-test('an admin with a confirmed password can POST clear-cache and is redirected back with a status', function () {
+test('an admin can POST clear-cache and gets a success message', function () {
     $admin = e2eAdmin();
 
     e2ePostClear($this, $admin)
-        ->assertRedirect(route('admin.config-cache'))
-        ->assertSessionHas('status');
+        ->assertOk()
+        ->assertJsonPath('message', 'Config cache reconciled and cleared.');
 });
 
-test('a non-admin is blocked from the clear-cache route', function () {
+test('a non-admin is blocked from the clear-cache endpoint', function () {
     $user = User::factory()->create(['is_admin' => false]);
     $user->refresh();
+    Passport::actingAs($user, ['admin:write']);
 
-    $this->actingAs($user)
-        ->withSession(['auth.password_confirmed_at' => time()])
-        ->withoutMiddleware(PreventRequestForgery::class)
-        ->post(route('admin.config-cache.clear'))
-        ->assertRedirect(config('app.url'));
+    $this->postJson(E2E_CLEAR_ENDPOINT)->assertNotFound();
 
     // No reconcile happened: no marker was written.
     expect(Cache::get(E2E_MARKER_KEY))->toBeNull();
@@ -160,7 +155,7 @@ test('clear-cache prunes a stale ENVBOUND row when the env value is empty (end t
     $row->save();
     expect(ConfigCacheModel::where('k', E2E_ENVBOUND_KEY)->exists())->toBeTrue();
 
-    e2ePostClear($this, $admin)->assertRedirect(route('admin.config-cache'));
+    e2ePostClear($this, $admin)->assertOk();
 
     // The button forces a reconcile which prunes the dead row.
     expect(ConfigCacheModel::where('k', E2E_ENVBOUND_KEY)->exists())->toBeFalse();
@@ -176,7 +171,7 @@ test('clear-cache overwrites a drifted ENVBOUND row back to the env value (end t
     ConfigCacheService::putRaw(E2E_ENVBOUND_KEY, 'eu-west-9');
     expect(ConfigCacheModel::where('k', E2E_ENVBOUND_KEY)->value('v'))->toBe('eu-west-9');
 
-    e2ePostClear($this, $admin)->assertRedirect(route('admin.config-cache'));
+    e2ePostClear($this, $admin)->assertOk();
 
     // Forced reconcile pulls the row back to the authoritative env value.
     expect(ConfigCacheModel::where('k', E2E_ENVBOUND_KEY)->value('v'))->toBe('us-east-1');
@@ -194,7 +189,7 @@ test('clear-cache preserves an ENVCONFIG row when the env var is deleted (DB kee
     $row->v = 'last-known-turnstile';
     $row->save();
 
-    e2ePostClear($this, $admin)->assertRedirect(route('admin.config-cache'));
+    e2ePostClear($this, $admin)->assertOk();
 
     // The last-known value survives — ENVCONFIG-env-absent is DB-authoritative.
     expect(ConfigCacheModel::where('k', E2E_ENVCONFIG_KEY)->value('v'))->toBe('last-known-turnstile');
@@ -208,7 +203,7 @@ test('clear-cache flushes a stale cached value for a key it does not touch (end 
     Cache::forever($adminCacheKey, 'STALE-CACHED-CSS');
     expect(Cache::get($adminCacheKey))->toBe('STALE-CACHED-CSS');
 
-    e2ePostClear($this, $admin)->assertRedirect(route('admin.config-cache'));
+    e2ePostClear($this, $admin)->assertOk();
 
     // flushAll() cleared it; the next read will re-resolve from DB/config.
     expect(Cache::get($adminCacheKey))->toBeNull();
@@ -227,7 +222,7 @@ test('after clear-cache a boolean key re-resolves to a real bool, not a stale st
     // Poison the cache with the pre-fix string value.
     Cache::forever(ConfigCacheService::CACHE_KEY.E2E_BOOL_KEY, '0');
 
-    e2ePostClear($this, $admin)->assertRedirect(route('admin.config-cache'));
+    e2ePostClear($this, $admin)->assertOk();
 
     // Cache flushed → next read casts the DB "0" back to a real bool false.
     $val = ConfigCacheService::get(E2E_BOOL_KEY);
@@ -235,7 +230,7 @@ test('after clear-cache a boolean key re-resolves to a real bool, not a stale st
     expect($val)->toBeFalse();
 });
 
-test('the debug page renders the Reconcile & Clear Cache button', function () {
+test('the debug page shows the clear button and the diagnostics endpoint', function () {
     $admin = e2eAdmin();
 
     $this->actingAs($admin)
@@ -243,5 +238,5 @@ test('the debug page renders the Reconcile & Clear Cache button', function () {
         ->get(route('admin.config-cache'))
         ->assertOk()
         ->assertSee('Clear Cache')
-        ->assertSee(route('admin.config-cache.clear'));
+        ->assertSee('/api/v2.1/admin/diagnostics/config-cache');
 });

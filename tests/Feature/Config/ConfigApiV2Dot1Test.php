@@ -99,7 +99,7 @@ test('GET single returns the metadata item for a known ADMINONLY key', function 
     apiAdmin(['admin:read']);
     Config::set(API_ADMINONLY_KEY, '/* default css */');
 
-    $this->getJson('/api/v2026/admin/config/'.API_ADMINONLY_KEY)
+    $this->getJson('/api/v2.1/admin/config/'.API_ADMINONLY_KEY)
         ->assertOk()
         ->assertJsonStructure([
             'data' => ['key', 'value', 'list', 'locked', 'source', 'protected'],
@@ -113,7 +113,7 @@ test('GET single returns the metadata item for a known ADMINONLY key', function 
 test('GET single for an unknown/uncached key returns 404, not a silent fallback', function () {
     apiAdmin(['admin:read']);
 
-    $this->getJson('/api/v2026/admin/config/this.key.is.not.cached')
+    $this->getJson('/api/v2.1/admin/config/this.key.is.not.cached')
         ->assertNotFound()
         ->assertJsonPath('key', 'this.key.is.not.cached');
 });
@@ -121,7 +121,7 @@ test('GET single for an unknown/uncached key returns 404, not a silent fallback'
 test('GET bulk with no filter is rejected 422: keys are required', function () {
     apiAdmin(['admin:read']);
 
-    $this->getJson('/api/v2026/admin/config')
+    $this->getJson('/api/v2.1/admin/config')
         ->assertStatus(422)
         ->assertJsonStructure(['message']);
 });
@@ -129,14 +129,14 @@ test('GET bulk with no filter is rejected 422: keys are required', function () {
 test('GET bulk with an empty keys array is rejected 422', function () {
     apiAdmin(['admin:read']);
 
-    $this->getJson('/api/v2026/admin/config?keys[]=')
+    $this->getJson('/api/v2.1/admin/config?keys[]=')
         ->assertStatus(422);
 });
 
 test('GET bulk with a ?keys[]= filter returns exactly the requested keys', function () {
     apiAdmin(['admin:read']);
 
-    $response = $this->getJson('/api/v2026/admin/config?keys[]='.API_ADMINONLY_KEY.'&keys[]='.API_ENVBOUND_KEY)
+    $response = $this->getJson('/api/v2.1/admin/config?keys[]='.API_ADMINONLY_KEY.'&keys[]='.API_ENVBOUND_KEY)
         ->assertOk()
         ->assertJsonCount(2, 'data');
 
@@ -148,7 +148,7 @@ test('GET bulk with a ?keys[]= filter returns exactly the requested keys', funct
 test('GET bulk with an unknown key in the filter returns 422 listing unknown_keys', function () {
     apiAdmin(['admin:read']);
 
-    $this->getJson('/api/v2026/admin/config?keys[]='.API_ADMINONLY_KEY.'&keys[]=this.key.is.not.cached')
+    $this->getJson('/api/v2.1/admin/config?keys[]='.API_ADMINONLY_KEY.'&keys[]=this.key.is.not.cached')
         ->assertStatus(422)
         ->assertJsonPath('unknown_keys', ['this.key.is.not.cached']);
 });
@@ -162,7 +162,7 @@ test('GET single masks a PROTECTED value', function () {
     ConfigCacheService::putRaw(API_PROTECTED_KEY, 'super-secret-hcaptcha-value');
     apiForget(API_PROTECTED_KEY);
 
-    $response = $this->getJson('/api/v2026/admin/config/'.API_PROTECTED_KEY)
+    $response = $this->getJson('/api/v2.1/admin/config/'.API_PROTECTED_KEY)
         ->assertOk()
         ->assertJsonPath('data.protected', true);
 
@@ -177,7 +177,7 @@ test('GET bulk for a non-admin (admin:read) returns 404', function () {
     $user->refresh();
     Passport::actingAs($user, ['admin:read']);
 
-    $this->getJson('/api/v2026/admin/config')->assertNotFound();
+    $this->getJson('/api/v2.1/admin/config')->assertNotFound();
 });
 
 test('GET bulk for an admin WITHOUT the admin:read scope returns 404', function () {
@@ -185,11 +185,11 @@ test('GET bulk for an admin WITHOUT the admin:read scope returns 404', function 
     $admin->refresh();
     Passport::actingAs($admin, ['read']);
 
-    $this->getJson('/api/v2026/admin/config')->assertNotFound();
+    $this->getJson('/api/v2.1/admin/config')->assertNotFound();
 });
 
 test('GET bulk unauthenticated returns 401', function () {
-    $this->getJson('/api/v2026/admin/config')->assertUnauthorized();
+    $this->getJson('/api/v2.1/admin/config')->assertUnauthorized();
 });
 
 test('POST single valid write to an ADMINONLY key persists and reflects on read', function () {
@@ -197,7 +197,7 @@ test('POST single valid write to an ADMINONLY key persists and reflects on read'
     Config::set(API_ADMINONLY_KEY, '/* default css */');
     apiForget(API_ADMINONLY_KEY);
 
-    $this->postJson('/api/v2026/admin/config/'.API_ADMINONLY_KEY, [
+    $this->postJson('/api/v2.1/admin/config/'.API_ADMINONLY_KEY, [
         'value' => '.brand { color: red; }',
     ])
         ->assertOk()
@@ -209,7 +209,7 @@ test('POST single valid write to an ADMINONLY key persists and reflects on read'
     expect(ConfigCacheModel::where('k', API_ADMINONLY_KEY)->value('v'))->toBe('.brand { color: red; }');
 
     Passport::actingAs(User::factory()->admin()->create()->fresh(), ['admin:read']);
-    $this->getJson('/api/v2026/admin/config/'.API_ADMINONLY_KEY)
+    $this->getJson('/api/v2.1/admin/config/'.API_ADMINONLY_KEY)
         ->assertOk()
         ->assertJsonPath('data.value', '.brand { color: red; }');
 });
@@ -220,7 +220,7 @@ test('POST single to an env-locked key (env present + valid) is rejected 422', f
     apiSetProcessEnv(API_ENVBOUND_VAR, 'us-east-1');
     Config::set(API_ENVBOUND_KEY, 'us-east-1');
 
-    $this->postJson('/api/v2026/admin/config/'.API_ENVBOUND_KEY, [
+    $this->postJson('/api/v2.1/admin/config/'.API_ENVBOUND_KEY, [
         'value' => 'eu-west-9',
     ])
         ->assertStatus(422)
@@ -234,7 +234,7 @@ test('POST single to a locked ENVCONFIG key (env present + valid) is rejected 42
     apiSetProcessEnv(API_ENVCONFIG_VAR, 'turnstile');
     Config::set(API_ENVCONFIG_KEY, 'turnstile');
 
-    $this->postJson('/api/v2026/admin/config/'.API_ENVCONFIG_KEY, [
+    $this->postJson('/api/v2.1/admin/config/'.API_ENVCONFIG_KEY, [
         'value' => 'hcaptcha',
     ])
         ->assertStatus(422)
@@ -246,7 +246,7 @@ test('POST single to a locked ENVCONFIG key (env present + valid) is rejected 42
 test('POST single to an unknown key is rejected 422', function () {
     apiAdmin(['admin:write']);
 
-    $this->postJson('/api/v2026/admin/config/this.key.is.not.cached', [
+    $this->postJson('/api/v2.1/admin/config/this.key.is.not.cached', [
         'value' => 'x',
     ])
         ->assertStatus(422)
@@ -259,7 +259,7 @@ test('POST single with a value failing its rule is rejected 422', function () {
     apiSetProcessEnv(API_ENVCONFIG_VAR, null);
     Config::set(API_ENVCONFIG_KEY, 'hcaptcha');
 
-    $this->postJson('/api/v2026/admin/config/'.API_ENVCONFIG_KEY, [
+    $this->postJson('/api/v2.1/admin/config/'.API_ENVCONFIG_KEY, [
         'value' => 'banana',
     ])
         ->assertStatus(422)
@@ -277,7 +277,7 @@ test('POST bulk is partial success: valid entries persist, invalid entries are r
     apiSetProcessEnv(API_ENVBOUND_VAR, 'us-east-1');
     Config::set(API_ENVBOUND_KEY, 'us-east-1');
 
-    $this->postJson('/api/v2026/admin/config', [
+    $this->postJson('/api/v2.1/admin/config', [
         'config' => [
             API_ADMINONLY_KEY => '.valid { color: green; }',   // valid
             API_ENVBOUND_KEY => 'eu-west-9',                     // invalid: env-locked
@@ -297,7 +297,7 @@ test('POST bulk with every entry invalid rejects 422 and persists nothing', func
     apiSetProcessEnv(API_ENVBOUND_VAR, 'us-east-1');
     Config::set(API_ENVBOUND_KEY, 'us-east-1');
 
-    $this->postJson('/api/v2026/admin/config', [
+    $this->postJson('/api/v2.1/admin/config', [
         'config' => [
             API_ENVBOUND_KEY => 'eu-west-9',                 // invalid: env-locked
             'this.key.is.not.cached' => 'x',                 // invalid: unknown
@@ -321,7 +321,7 @@ test('POST bulk success returns ONLY the keys whose value actually changed', fun
     $secondKey = 'uikit.custom.js';
     apiForget($secondKey);
 
-    $response = $this->postJson('/api/v2026/admin/config', [
+    $response = $this->postJson('/api/v2.1/admin/config', [
         'config' => [
             API_ADMINONLY_KEY => '.same { color: blue; }',  // unchanged
             $secondKey => 'console.log("new");',            // changed
@@ -346,7 +346,7 @@ test('POST bulk with an empty value resets that key while writing the others', f
 
     expect(ConfigCacheModel::where('k', API_ADMINONLY_KEY)->exists())->toBeTrue();
 
-    $this->postJson('/api/v2026/admin/config', [
+    $this->postJson('/api/v2.1/admin/config', [
         'config' => [
             API_ADMINONLY_KEY => '',                     // reset to default
             $secondKey => 'console.log("kept");',        // written
@@ -374,7 +374,7 @@ test('POST bulk skips a PROTECTED masked placeholder but writes a real change', 
 
     $masked = ConfigCacheController::maskProtectedConfig('original-secret-value');
 
-    $response = $this->postJson('/api/v2026/admin/config', [
+    $response = $this->postJson('/api/v2.1/admin/config', [
         'config' => [
             API_PROTECTED_KEY => $masked,                 // untouched placeholder → skipped
             API_ADMINONLY_KEY => '.brand { color: red; }', // real change
@@ -399,7 +399,7 @@ test('POST write skips a PROTECTED masked value (no error, unchanged)', function
     // Resubmitting the exact masked placeholder → skipped, no change.
     $masked = ConfigCacheController::maskProtectedConfig('original-secret-value');
 
-    $this->postJson('/api/v2026/admin/config/'.API_PROTECTED_KEY, [
+    $this->postJson('/api/v2.1/admin/config/'.API_PROTECTED_KEY, [
         'value' => $masked,
     ])
         ->assertOk()
@@ -421,7 +421,7 @@ test('POST write to a PROTECTED key accepts a real secret that contains asterisk
     // A real secret containing '*' must not be mistaken for the mask.
     $newSecret = 'p@ss*w0rd*with*stars';
 
-    $this->postJson('/api/v2026/admin/config/'.API_PROTECTED_KEY, [
+    $this->postJson('/api/v2.1/admin/config/'.API_PROTECTED_KEY, [
         'value' => $newSecret,
     ])->assertOk();
 
@@ -440,7 +440,7 @@ test('POST write treats a short secret masked placeholder as unchanged', functio
 
     $masked = ConfigCacheController::maskProtectedConfig('short'); // "*****"
 
-    $this->postJson('/api/v2026/admin/config/'.API_PROTECTED_KEY, [
+    $this->postJson('/api/v2.1/admin/config/'.API_PROTECTED_KEY, [
         'value' => $masked,
     ])
         ->assertOk()
@@ -458,7 +458,7 @@ test('POST write does NOT skip a masked-looking value when the secret has no cur
     ConfigCacheModel::where('k', API_PROTECTED_KEY)->delete();
     apiForget(API_PROTECTED_KEY);
 
-    $this->postJson('/api/v2026/admin/config/'.API_PROTECTED_KEY, [
+    $this->postJson('/api/v2.1/admin/config/'.API_PROTECTED_KEY, [
         'value' => '****',
     ])->assertOk();
 
@@ -476,7 +476,7 @@ test('POST write with an empty value resets the key: the DB row is cleared', fun
 
     expect(ConfigCacheModel::where('k', API_ADMINONLY_KEY)->exists())->toBeTrue();
 
-    $this->postJson('/api/v2026/admin/config/'.API_ADMINONLY_KEY, [
+    $this->postJson('/api/v2.1/admin/config/'.API_ADMINONLY_KEY, [
         'value' => '',
     ])->assertOk();
 
@@ -488,7 +488,7 @@ test('POST write with an empty value resets the key: the DB row is cleared', fun
 test('POST write with an admin:read-only token returns 404 (needs admin:write)', function () {
     apiAdmin(['admin:read']);
 
-    $this->postJson('/api/v2026/admin/config/'.API_ADMINONLY_KEY, [
+    $this->postJson('/api/v2.1/admin/config/'.API_ADMINONLY_KEY, [
         'value' => '.x { color: red; }',
     ])->assertNotFound();
 });

@@ -6,6 +6,8 @@ use App\Http\Controllers\Api\ApiV1Controller;
 use App\Http\Controllers\Api\ApiV1Dot1Controller;
 use App\Http\Controllers\Api\ApiV2Controller;
 use App\Http\Controllers\Api\ApiV2Dot1Controller;
+use App\Http\Controllers\Api\v2026\Admin\ConfigCacheController as AdminConfigCacheController;
+use App\Http\Controllers\Api\v2026\Admin\ConfigCacheDiagnosticsController as AdminConfigCacheDiagnosticsController;
 use App\Http\Controllers\Api\V1\Admin\DomainBlocksController;
 use App\Http\Controllers\Api\V1\DomainBlockController;
 use App\Http\Controllers\Api\V1\TagsController;
@@ -369,6 +371,16 @@ Route::prefix('api')->group(function () use ($middleware) {
 
     Route::prefix('v2.1')->group(function () {
         Route::get('config', [ApiV2Dot1Controller::class, 'getConfig']);
+
+        // Admin config-cache surface (bearer token or first-party session admin).
+        Route::prefix('admin')->middleware(['auth:sanctum,api'])->group(function () {
+            Route::get('config', [AdminConfigCacheController::class, 'showBulk']);
+            Route::post('config', [AdminConfigCacheController::class, 'updateBulk']);
+            Route::get('config/{key}', [AdminConfigCacheController::class, 'show'])->where('key', '.*');
+            Route::post('config/{key}', [AdminConfigCacheController::class, 'update'])->where('key', '.*');
+            Route::get('diagnostics/config-cache', [AdminConfigCacheDiagnosticsController::class, 'debug']);
+            Route::post('diagnostics/config-cache/clear-cache', [AdminConfigCacheDiagnosticsController::class, 'clearCacheApi']);
+        });
     });
 
     Route::prefix('live')->group(function () {

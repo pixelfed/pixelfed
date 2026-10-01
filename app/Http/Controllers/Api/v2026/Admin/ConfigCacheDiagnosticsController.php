@@ -6,34 +6,51 @@ use App\Http\Controllers\Controller;
 use App\Models\ConfigCache as ConfigCacheModel;
 use App\Services\ConfigCacheService;
 use Illuminate\Contracts\View\View;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Artisan;
 use Illuminate\Support\Facades\Cache;
 
 class ConfigCacheDiagnosticsController extends Controller
 {
-    // Read-only debug page showing effective/DB/config values per key.
+    // Thin shell; the page fetches its data from the diagnostics JSON API.
     public function debugPage(Request $request): View
     {
+        return view('admin.config-cache.home');
+    }
+
+    // JSON debug data: per-key rows + sync health for the admin page.
+    public function debug(Request $request): JsonResponse
+    {
+        $this->authorizeAdmin($request, 'admin:read');
+
         $rows = collect(ConfigCacheService::adminVisibleKeys())
             ->map(fn ($key) => $this->debugRow($key))
             ->values()
             ->all();
 
-        return view('admin.config-cache.home', [
+        return response()->json([
             'rows' => $rows,
             'sync' => $this->syncHealth(),
         ]);
     }
 
     // Force a full reconcile + cache flush so the server matches .env/config.
-    public function clearCache(Request $request)
+    public function clearCacheApi(Request $request): JsonResponse
     {
+        $this->authorizeAdmin($request, 'admin:write');
+
         Artisan::call('admin:pixelfed-config-cache-sync', ['--force' => true]);
 
-        return redirect()
-            ->route('admin.config-cache')
-            ->with('status', 'Config cache reconciled and cleared. The server now reflects the current .env and config.');
+        return response()->json(['message' => 'Config cache reconciled and cleared.']);
+    }
+
+    // Session-authed first-party admins get a Passport TransientToken (GrantFirstPartyToken) whose can() is always true, so this same check works for both bearer-token and cookie callers.
+    protected function authorizeAdmin(Request $request, string $ability): void
+    {
+        abort_if(! $request->user() || ! $request->user()->token(), 404);
+        abort_unless($request->user()->is_admin == 1, 404);
+        abort_unless($request->user()->tokenCan($ability), 404);
     }
 
     // A debug-page row; secrets are decrypted only to compute match, then masked.

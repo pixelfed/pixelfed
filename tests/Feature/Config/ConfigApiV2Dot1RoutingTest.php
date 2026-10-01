@@ -17,42 +17,42 @@ function routingFind(string $uri, string $method): ?Illuminate\Routing\Route
     return null;
 }
 
-test('GET api/v2026/admin/config maps to ConfigCache@showBulk', function () {
-    $route = routingFind('api/v2026/admin/config', 'GET');
+test('GET api/v2.1/admin/config maps to ConfigCache@showBulk', function () {
+    $route = routingFind('api/v2.1/admin/config', 'GET');
 
     expect($route)->not->toBeNull();
     expect($route->getActionName())->toBe(ROUTING_CONTROLLER.'@showBulk');
     expect($route->getAction('controller'))->toBe(ROUTING_CONTROLLER.'@showBulk');
 });
 
-test('POST api/v2026/admin/config maps to ConfigCache@updateBulk', function () {
-    $route = routingFind('api/v2026/admin/config', 'POST');
+test('POST api/v2.1/admin/config maps to ConfigCache@updateBulk', function () {
+    $route = routingFind('api/v2.1/admin/config', 'POST');
 
     expect($route)->not->toBeNull();
     expect($route->getActionName())->toBe(ROUTING_CONTROLLER.'@updateBulk');
 });
 
-test('GET api/v2026/admin/config/{key} maps to ConfigCache@show with a dotted-key constraint', function () {
-    $route = routingFind('api/v2026/admin/config/{key}', 'GET');
+test('GET api/v2.1/admin/config/{key} maps to ConfigCache@show with a dotted-key constraint', function () {
+    $route = routingFind('api/v2.1/admin/config/{key}', 'GET');
 
     expect($route)->not->toBeNull();
     expect($route->getActionName())->toBe(ROUTING_CONTROLLER.'@show');
     expect($route->wheres['key'] ?? null)->toBe('.*');
 });
 
-test('POST api/v2026/admin/config/{key} maps to ConfigCache@update with a dotted-key constraint', function () {
-    $route = routingFind('api/v2026/admin/config/{key}', 'POST');
+test('POST api/v2.1/admin/config/{key} maps to ConfigCache@update with a dotted-key constraint', function () {
+    $route = routingFind('api/v2.1/admin/config/{key}', 'POST');
 
     expect($route)->not->toBeNull();
     expect($route->getActionName())->toBe(ROUTING_CONTROLLER.'@update');
     expect($route->wheres['key'] ?? null)->toBe('.*');
 });
 
-test('the OLD pre-move api/v2026/config paths are NOT registered', function () {
-    expect(routingFind('api/v2026/config', 'GET'))->toBeNull();
-    expect(routingFind('api/v2026/config', 'POST'))->toBeNull();
-    expect(routingFind('api/v2026/config/{key}', 'GET'))->toBeNull();
-    expect(routingFind('api/v2026/config/{key}', 'POST'))->toBeNull();
+test('the OLD api/v2026 config paths are NOT registered', function () {
+    expect(routingFind('api/v2026/admin/config', 'GET'))->toBeNull();
+    expect(routingFind('api/v2026/admin/config', 'POST'))->toBeNull();
+    expect(routingFind('api/v2026/admin/config/{key}', 'GET'))->toBeNull();
+    expect(routingFind('api/v2026/admin/config/{key}', 'POST'))->toBeNull();
 });
 
 test('the v2026 ConfigCache controller class exists and the old AdminConfigController does not', function () {
