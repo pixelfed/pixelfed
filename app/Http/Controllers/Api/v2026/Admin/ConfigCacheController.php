@@ -12,8 +12,7 @@ use Illuminate\Support\Str;
 
 class ConfigCacheController extends Controller
 {
-    // GET config — bulk read; requires an explicit ?keys[] filter. Unknown keys
-    // reject with 422. There is no fetch-everything default.
+    // GET config — bulk read; requires an explicit ?keys[] filter. Unknown key will reject with 422. There is no fetch-everything default.
     public function showBulk(Request $request): JsonResponse
     {
         $this->authorizeAdmin($request, 'admin:read');
@@ -82,9 +81,8 @@ class ConfigCacheController extends Controller
     }
 
     // POST config — bulk write, partial success. Payload: { config: { key: value } }.
-    // Valid keys are persisted even when others fail; per-key failures are
-    // reported in `errors`. Returns 422 only when the payload is malformed or
-    // no submitted key was writable.
+    // Valid keys are persisted even when others fail; per-key failures are reported in `errors`. 
+    // Returns 422 only when the payload is malformed or no submitted key was writable.
     public function updateBulk(Request $request): JsonResponse
     {
         $this->authorizeAdmin($request, 'admin:write');
