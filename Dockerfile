@@ -1,7 +1,9 @@
 FROM serversideup/php:8.5-frankenphp AS ffmpeg
 
-# ffmpeg version to compile, change with [--build-arg FFMPEG_VERSION="9.0.1"]
-ARG FFMPEG_VERSION=9.0.1
+
+# ffmpeg version to compile, change with [--build-arg FFMPEG_VERSION="9.0.2"]
+# renovate: datasource=github-tags depName=FFmpeg/FFmpeg extractVersion=^n(?<version>\d+\.\d+(\.\d+)?)$
+ARG FFMPEG_VERSION=9.0.2
 ARG FFMPEG_URL=https://ffmpeg.org/releases
 
 USER root
