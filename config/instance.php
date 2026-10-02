@@ -23,7 +23,6 @@ return [
     'timeline' => [
         'home' => [
             'cached' => env('PF_HOME_TIMELINE_CACHE', false),
-            'cache_ttl' => env('PF_HOME_TIMELINE_CACHE_TTL', 900),
             'cache_size' => env('PF_HOME_TIMELINE_CACHE_SIZE', 1500),
             'max_backfill_days' => env('PF_HOME_TIMELINE_MAX_BACKFILL_DAYS', 30),
         ],
