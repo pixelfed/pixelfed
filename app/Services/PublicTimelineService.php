@@ -16,7 +16,10 @@ class PublicTimelineService
             $stop = 100;
         }
 
-        return Redis::zrevrange(self::CACHE_KEY, $start, $stop);
+        $res = Redis::zrevrange(self::CACHE_KEY, $start, $stop);
+        self::applyTtl();
+
+        return $res;
     }
 
     public static function getRankedMaxId($start = null, $limit = 10)
@@ -25,10 +28,13 @@ class PublicTimelineService
             return [];
         }
 
-        return array_keys(Redis::zrevrangebyscore(self::CACHE_KEY, '('.$start, '-inf', [
+        $res = array_keys(Redis::zrevrangebyscore(self::CACHE_KEY, '('.$start, '-inf', [
             'withscores' => true,
             'limit' => [0, $limit],
         ]));
+        self::applyTtl();
+
+        return $res;
     }
 
     public static function getRankedMinId($end = null, $limit = 10)
@@ -37,10 +43,27 @@ class PublicTimelineService
             return [];
         }
 
-        return array_keys(Redis::zrevrangebyscore(self::CACHE_KEY, '+inf', '('.$end, [
+        $res = array_keys(Redis::zrevrangebyscore(self::CACHE_KEY, '+inf', '('.$end, [
             'withscores' => true,
             'limit' => [0, $limit],
         ]));
+        self::applyTtl();
+
+        return $res;
+    }
+
+    /**
+     * Refresh the sliding expiry on the public timeline key. EXPIRE is a no-op
+     * on a missing key, so reads never create an empty key just to expire it.
+     */
+    private static function applyTtl(): void
+    {
+        $ttl = (int) config('instance.timeline.local.ttl');
+        if ($ttl <= 0) {
+            return;
+        }
+
+        Redis::expire(self::CACHE_KEY, $ttl * 3600);
     }
 
     // Insert many ids in one round-trip (score = id). Used by the warm rebuild,
@@ -60,6 +83,8 @@ class PublicTimelineService
             }
             Redis::zadd(self::CACHE_KEY, ...$args);
         }
+
+        self::applyTtl();
     }
 
     public static function add($val, bool $evict = true)
@@ -69,7 +94,10 @@ class PublicTimelineService
             Redis::zpopmin(self::CACHE_KEY);
         }
 
-        return Redis::zadd(self::CACHE_KEY, $val, $val);
+        $res = Redis::zadd(self::CACHE_KEY, $val, $val);
+        self::applyTtl();
+
+        return $res;
     }
 
     // Trim the oldest tail so a non-evicting write cannot grow the key past cap + one window.
