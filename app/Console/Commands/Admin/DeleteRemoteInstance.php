@@ -23,7 +23,6 @@ class DeleteRemoteInstance extends Command
         {--dry-run : Report what would be deleted without changing anything}
         {--force : Skip the confirmation prompt}
         {--chunk=2000 : Rows per batch for the SQL deletes}
-        {--debug : Print verbose per-step/per-batch diagnostics}
         {--storage-test : Run a write/read/delete probe against storage before purging}';
 
     protected $description = 'Delete a remote instance and every trace of it in bulk: all remote accounts on the domain, their posts, comments, interactions, and cached media files';
@@ -77,22 +76,17 @@ class DeleteRemoteInstance extends Command
         // Scope the big scans by a profiles.domain subquery rather than a literal
         // IN list of thousands of ids, so MySQL can use the indexes.
         $this->line('Counting content (this can take a moment on large instances) ...');
-        $this->dbg('profiles for domain: '.$profileIds->count());
 
-        $t = microtime(true);
         $statusCount = $profileIds->isEmpty()
             ? 0
             : DB::table('statuses')->whereIn('profile_id', $this->domainProfileSub($domain))->count();
-        $this->dbg('status count query took '.$this->humanDuration(microtime(true) - $t).' => '.$statusCount);
 
-        $t = microtime(true);
         $mediaFileCount = $profileIds->isEmpty()
             ? 0
             : DB::table('media')
                 ->whereIn('profile_id', $this->domainProfileSub($domain))
                 ->whereNotNull('media_path')
                 ->count();
-        $this->dbg('media count query took '.$this->humanDuration(microtime(true) - $t).' => '.$mediaFileCount);
 
         $this->table(['Domain', 'Accounts', 'Statuses', 'Media files', 'Instance row'], [[
             $domain,
@@ -192,9 +186,8 @@ class DeleteRemoteInstance extends Command
             try {
                 $s3 = $cloudDisk->getClient();
                 $bucket = config('filesystems.disks.'.config('filesystems.cloud').'.bucket');
-                $this->dbg('cloud bulk delete enabled (bucket='.$bucket.')');
             } catch (\Throwable $e) {
-                $this->dbg('could not get S3 client, falling back to disk->delete(): '.$e->getMessage());
+                // Fall back to the Flysystem disk delete below.
             }
         }
 
@@ -204,12 +197,8 @@ class DeleteRemoteInstance extends Command
         $rowsBuffered = 0;
         $deleted = 0;
         $hlsRows = [];
-        $batchNum = 0;
 
-        $deleteBatch = function (array $batch) use ($usesCloud, $s3, $bucket, $cloudDisk, $localDisk, &$batchNum): void {
-            $batchNum++;
-            $t = microtime(true);
-
+        $deleteBatch = function (array $batch) use ($usesCloud, $s3, $bucket, $cloudDisk, $localDisk): void {
             if ($usesCloud) {
                 if ($s3 && $bucket) {
                     $s3->deleteObjects([
@@ -225,8 +214,6 @@ class DeleteRemoteInstance extends Command
             } else {
                 $localDisk->delete($batch);
             }
-
-            $this->dbg('batch #'.$batchNum.': '.count($batch).' keys in '.$this->humanDuration(microtime(true) - $t));
         };
 
         $flush = function (bool $force) use (&$keys, &$rowsBuffered, &$deleted, $deleteBatch, $bar): void {
@@ -246,8 +233,6 @@ class DeleteRemoteInstance extends Command
             $rowsBuffered = 0;
         };
 
-        $this->dbg('starting media scan (chunk reads of 2000 rows)');
-
         DB::table('media')
             ->whereIn('profile_id', $this->domainProfileSub($domain))
             ->whereNotNull('media_path')
@@ -266,7 +251,6 @@ class DeleteRemoteInstance extends Command
                     }
                     $rowsBuffered++;
                 }
-                $this->dbg('read chunk of '.$rows->count().' media rows ('.count($keys).' keys buffered)');
                 $flush(false);
             });
 
@@ -541,7 +525,6 @@ class DeleteRemoteInstance extends Command
             try {
                 $t = microtime(true);
                 $disk->put($probe, $payload);
-                $this->dbg("[selftest] {$label}: put ok");
 
                 if (! $disk->exists($probe)) {
                     $this->error("  {$label}: file not found after write.");
@@ -574,13 +557,6 @@ class DeleteRemoteInstance extends Command
         }
 
         return true;
-    }
-
-    private function dbg(string $message): void
-    {
-        if ($this->option('debug')) {
-            $this->line('  <fg=gray>[debug] '.$message.'</>');
-        }
     }
 
     /**
