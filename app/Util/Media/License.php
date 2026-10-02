@@ -4,6 +4,49 @@ namespace App\Util\Media;
 
 class License
 {
+    /**
+     * FEP-6757 license identifiers, keyed by license id.
+     *
+     * The canonical form has no trailing slash.
+     *
+     * @var array<int, string>
+     */
+    public const URIS = [
+        1 => 'https://rightsstatements.org/vocab/InC/1.0',
+        5 => 'https://creativecommons.org/publicdomain/mark/1.0',
+        6 => 'https://creativecommons.org/publicdomain/zero/1.0',
+        11 => 'https://creativecommons.org/licenses/by/4.0',
+        12 => 'https://creativecommons.org/licenses/by-sa/4.0',
+        13 => 'https://creativecommons.org/licenses/by-nc/4.0',
+        14 => 'https://creativecommons.org/licenses/by-nc-sa/4.0',
+        15 => 'https://creativecommons.org/licenses/by-nd/4.0',
+        16 => 'https://creativecommons.org/licenses/by-nc-nd/4.0',
+    ];
+
+    /**
+     * FEP-6757 JSON-LD term for content objects.
+     *
+     * @var array<string, array<string, string>>
+     */
+    public const NOTE_CONTEXT_TERMS = [
+        'license' => [
+            '@id' => 'http://purl.org/dc/terms/license',
+            '@type' => '@id',
+        ],
+    ];
+
+    /**
+     * FEP-6757 JSON-LD term for actors.
+     *
+     * @var array<string, array<string, string>>
+     */
+    public const ACTOR_CONTEXT_TERMS = [
+        'preferredLicense' => [
+            '@id' => 'https://w3id.org/fep/6757#preferredLicense',
+            '@type' => '@id',
+        ],
+    ];
+
     public static function get(): array
     {
         return [
@@ -134,5 +177,73 @@ class License
         }
 
         return $license['id'];
+    }
+
+    /**
+     * Get the FEP-6757 license URI for a license id.
+     */
+    public static function uriForId(mixed $id): ?string
+    {
+        if (! is_numeric($id)) {
+            return null;
+        }
+
+        return self::URIS[(int) $id] ?? null;
+    }
+
+    /**
+     * Resolve a FEP-6757 license URI to a license id.
+     *
+     * A single trailing slash is tolerated, the rest of the URI must match exactly.
+     */
+    public static function idFromUri(mixed $uri): ?int
+    {
+        if (! is_string($uri)) {
+            return null;
+        }
+
+        $uri = trim($uri);
+
+        if (str_ends_with($uri, '/')) {
+            $uri = substr($uri, 0, -1);
+        }
+
+        $id = array_search($uri, self::URIS, true);
+
+        return $id === false ? null : $id;
+    }
+
+    /**
+     * Resolve the `license` property of an ActivityPub object to a license id.
+     *
+     * Accepts a URI, a list of URIs (FEP-6757) or a Link object, and falls
+     * back to the license title. Returns null for all rights reserved, to
+     * match how local media is stored.
+     */
+    public static function fromActivityPub(mixed $value): ?int
+    {
+        $candidates = is_array($value) && array_is_list($value) ? $value : [$value];
+
+        foreach ($candidates as $candidate) {
+            if (is_array($candidate)) {
+                $candidate = $candidate['href'] ?? $candidate['id'] ?? null;
+            }
+
+            if (! is_string($candidate) || $candidate === '') {
+                continue;
+            }
+
+            $id = self::idFromUri($candidate);
+
+            if ($id === null && ! str_contains($candidate, '://')) {
+                $id = self::nameToId($candidate);
+            }
+
+            if ($id !== null && $id > 1) {
+                return (int) $id;
+            }
+        }
+
+        return null;
     }
 }

@@ -12,6 +12,7 @@ use App\Services\SanitizeService;
 use App\Services\SecureMediaFetchService;
 use App\Services\StatusService;
 use App\Util\ActivityPub\Helpers;
+use App\Util\Media\License;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
@@ -174,6 +175,8 @@ class StatusRemoteUpdatePipeline implements ShouldQueue
             $m->blurhash = isset($n['blurhash']) && (strlen($n['blurhash']) < 50) ? $n['blurhash'] : null;
             $m->width = isset($n['width']) && ! empty($n['width']) ? $n['width'] : null;
             $m->height = isset($n['height']) && ! empty($n['height']) ? $n['height'] : null;
+            $license = License::fromActivityPub($n['license'] ?? $activity['license'] ?? null);
+            $m->license = $license === null ? null : (string) $license;
             $m->skip_optimize = true;
             $m->order = $v['key'] + 1;
             $m->save();

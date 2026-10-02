@@ -1922,9 +1922,17 @@ class Helpers
         $storagePath = MediaPathService::get($profile, 2);
         $allowedTypes = explode(',', config_cache('pixelfed.media_types'));
 
+        // FEP-6757: a license on the Note applies to attachments that do not declare their own.
+        $object = isset($data['object']) && is_array($data['object']) ? $data['object'] : $data;
+        $noteLicense = $object['license'] ?? null;
+
         foreach ($attachments as $key => $media) {
             if (! self::isValidAttachment($media, $allowedTypes)) {
                 continue;
+            }
+
+            if ($noteLicense !== null && ! isset($media['license'])) {
+                $media['license'] = $noteLicense;
             }
 
             $mediaModel = self::createMediaAttachment($media, $status, $key);
@@ -2043,7 +2051,8 @@ class Helpers
         }
 
         if (isset($data['license'])) {
-            $media->license = License::nameToId($data['license']);
+            $license = License::fromActivityPub($data['license']);
+            $media->license = $license === null ? null : (string) $license;
         }
     }
 
@@ -2158,7 +2167,8 @@ class Helpers
         }
 
         if (isset($data['license'])) {
-            $media->license = License::nameToId($data['license']);
+            $license = License::fromActivityPub($data['license']);
+            $media->license = $license === null ? null : (string) $license;
         }
     }
 
