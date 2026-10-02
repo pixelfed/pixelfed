@@ -4,7 +4,7 @@ namespace App\Jobs\StatusPipeline;
 
 use App\Models\Profile;
 use App\Models\Status;
-use App\Services\ActivityPubDeliveryService;
+use App\Services\ActivityPubFanoutService;
 use App\Services\FractalService;
 use App\Transformer\ActivityPub\Verb\CreateNote;
 use App\Transformer\ActivityPub\Verb\CreateQuestion;
@@ -119,12 +119,12 @@ class StatusActivityPubDeliver implements ShouldQueue
          * of our followers collection for access control, so they carry a
          * Collection-Synchronization header that lets it detect drift.
          */
-        ActivityPubDeliveryService::pool(
+        ActivityPubFanoutService::dispatch(
             $profile,
-            $audience,
             $activity,
-            null,
-            $status->scope === 'private'
+            $audience,
+            $status->scope === 'private',
+            (int) $status->id
         );
     }
 }
