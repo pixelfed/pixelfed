@@ -5,6 +5,7 @@ namespace App\Services;
 use App\Models\Follower;
 use App\Models\Status;
 use App\Models\UserDomainBlock;
+use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Redis;
 
@@ -45,6 +46,55 @@ class HomeTimelineService
             'withscores' => true,
             'limit' => [0, $limit],
         ]));
+    }
+
+    // Insert many ids into one profile key in batched round-trips (score = id).
+    // Callers either start from a freshly cleared key (warm) or bound the result
+    // with trimToBound afterward (backfill), so no per-id eviction is needed.
+    public static function bulkAdd($id, array $ids): void
+    {
+        if (empty($ids)) {
+            return;
+        }
+
+        foreach (array_chunk($ids, 1000) as $chunk) {
+            $args = [];
+            foreach ($chunk as $val) {
+                $args[] = (int) $val; // score
+                $args[] = (int) $val; // member
+            }
+            Redis::zadd(self::CACHE_KEY.$id, ...$args);
+        }
+    }
+
+    /**
+     * Reduce status rows to an ordered id list, dropping any whose remote host
+     * is in the viewer's domain-block list. Local posts (null uri) are never
+     * blocked. Resolving the host from the uri column avoids hydrating each row.
+     *
+     * @param  Collection<int, Status>  $rows
+     * @param  array<int, string>  $domainBlocks
+     * @return array<int, int>
+     */
+    private static function rejectBlockedDomains($rows, array $domainBlocks): array
+    {
+        if (empty($domainBlocks)) {
+            return $rows->pluck('id')->map(fn ($id) => (int) $id)->values()->all();
+        }
+
+        return $rows
+            ->reject(function ($row) use ($domainBlocks) {
+                if (! $row->uri) {
+                    return false;
+                }
+                $domain = strtolower((string) parse_url($row->uri, PHP_URL_HOST));
+
+                return in_array($domain, $domainBlocks);
+            })
+            ->pluck('id')
+            ->map(fn ($id) => (int) $id)
+            ->values()
+            ->all();
     }
 
     public static function add($id, $val, bool $evict = true)
@@ -97,30 +147,20 @@ class HomeTimelineService
 
             $domainBlocks = UserDomainBlock::whereProfileId($id)->pluck('domain')->toArray();
 
-            $ids = Status::where('id', '>', $minId)
+            $rows = Status::where('id', '>', $minId)
                 ->whereIn('profile_id', $following)
                 ->whereNull('in_reply_to_id')
                 ->whereIn('type', ['photo', 'photo:album', 'video', 'video:album', 'photo:video:album', 'share'])
                 ->whereIn('visibility', ['public', 'unlisted', 'private'])
                 ->orderByDesc('id')
                 ->limit($limit)
-                ->pluck('id');
+                ->get(['id', 'uri']);
 
-            foreach ($ids as $pid) {
-                $status = StatusService::get($pid, false);
-                if (! $status || ! isset($status['account'], $status['url'])) {
-                    continue;
-                }
-                if ($domainBlocks && count($domainBlocks)) {
-                    $domain = strtolower(parse_url($status['url'], PHP_URL_HOST));
-                    if (in_array($domain, $domainBlocks)) {
-                        continue;
-                    }
-                }
-                self::add($id, $pid);
-            }
+            $ids = self::rejectBlockedDomains($rows, $domainBlocks);
 
-            return $returnIds ? $ids : 1;
+            self::bulkAdd($id, $ids);
+
+            return $returnIds ? collect($ids) : 1;
         }
 
         return 0;
@@ -142,7 +182,7 @@ class HomeTimelineService
 
         $domainBlocks = UserDomainBlock::whereProfileId($pid)->pluck('domain')->toArray();
 
-        $ids = Status::where('id', '<', $maxId)
+        $rows = Status::where('id', '<', $maxId)
             ->where('id', '>', $floorId)
             ->whereIn('profile_id', $following)
             ->whereNull('in_reply_to_id')
@@ -150,33 +190,23 @@ class HomeTimelineService
             ->whereIn('visibility', ['public', 'unlisted', 'private'])
             ->orderByDesc('id')
             ->limit($limit)
-            ->pluck('id');
+            ->get(['id', 'uri']);
+
+        $ids = self::rejectBlockedDomains($rows, $domainBlocks);
 
         $lock = Cache::lock("pf:tl:backfill:home:{$pid}:{$maxId}", 10);
 
         if (! $lock->get()) {
-            return $ids->map(fn ($id) => (int) $id)->values()->all();
+            return $ids;
         }
 
         try {
-            foreach ($ids as $id) {
-                if ($domainBlocks && count($domainBlocks)) {
-                    $status = StatusService::get($id, false);
-                    if (! $status || ! isset($status['url'])) {
-                        continue;
-                    }
-                    $domain = strtolower(parse_url($status['url'], PHP_URL_HOST));
-                    if (in_array($domain, $domainBlocks)) {
-                        continue;
-                    }
-                }
-                self::add($pid, $id, evict: false);
-            }
+            self::bulkAdd($pid, $ids);
             self::trimToBound($pid, $limit);
         } finally {
             $lock->release();
         }
 
-        return $ids->map(fn ($id) => (int) $id)->values()->all();
+        return $ids;
     }
 }
