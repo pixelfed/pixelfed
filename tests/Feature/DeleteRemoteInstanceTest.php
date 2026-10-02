@@ -69,6 +69,19 @@ it('bulk deletes every remote account, post and interaction for a domain', funct
     $statusA = seedRemoteStatus($remoteA);
     $statusB = seedRemoteStatus($remoteB);
 
+    // An extra media row owned by the profile but with no status (the orphaned
+    // case phase 3 creates): it must still be deleted in the account phase.
+    DB::table('media')->insert([
+        'profile_id' => $remoteA->id,
+        'status_id' => null,
+        'media_path' => 'public/remote/orphan.jpg',
+        'mime' => 'image/jpeg',
+        'created_at' => now(),
+        'updated_at' => now(),
+    ]);
+
+    $remoteIds = [$remoteA->id, $remoteB->id];
+
     // A local user who followed one of the remote accounts.
     $localUser = User::factory()->create();
     $localUser->refresh();
@@ -96,6 +109,10 @@ it('bulk deletes every remote account, post and interaction for a domain', funct
     expect(DB::table('likes')->whereIn('status_id', [$statusA->id, $statusB->id])->count())->toBe(0);
     expect(DB::table('status_hashtags')->whereIn('status_id', [$statusA->id, $statusB->id])->count())->toBe(0);
     expect(DB::table('followers')->where('following_id', $remoteA->id)->count())->toBe(0);
+
+    // No media rows remain for the deleted profiles, including the orphaned one
+    // (phase 3 nulls status_id, phase 4 deletes the row by profile_id).
+    expect(DB::table('media')->whereIn('profile_id', $remoteIds)->count())->toBe(0);
 
     // Local content is untouched.
     expect(Profile::whereId($localUser->profile_id)->exists())->toBeTrue();

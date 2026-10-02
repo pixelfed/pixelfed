@@ -142,7 +142,7 @@ class DeleteRemoteInstance extends Command
             $this->purgeStatuses($domain, $statusCount, $chunk);
 
             $this->step(4, 5, "Deleting {$this->fmt($profileIds->count())} account(s)");
-            $this->purgeProfiles($profileIds, $chunk);
+            $this->purgeProfiles($profileIds);
         } else {
             $this->step(2, 5, 'No accounts to delete');
         }
@@ -397,54 +397,89 @@ class DeleteRemoteInstance extends Command
     /**
      * Delete the domain's profiles and their profile-keyed satellite rows.
      *
+     * Prints a per-table breakdown of what will be removed and reports each
+     * delete as it runs, so the account phase is never a silent wait even when
+     * one heavy account owns hundreds of thousands of rows.
+     *
      * @param  Collection<int, int>  $profileIds
      */
-    private function purgeProfiles($profileIds, int $chunk): void
+    private function purgeProfiles($profileIds): void
     {
-        $bar = $this->makeBar($profileIds->count());
+        $ids = $profileIds->all();
 
-        foreach ($profileIds->chunk($chunk) as $batch) {
-            $ids = $batch->values()->all();
+        // Per-table deletes: [table, how to scope the delete].
+        $tables = [
+            'followers (as follower/followee)' => ['followers', $this->eitherSide('profile_id', 'following_id', $ids)],
+            'follow_requests' => ['follow_requests', $this->eitherSide('follower_id', 'following_id', $ids)],
+            'likes' => ['likes', $this->byColumn('profile_id', $ids)],
+            'bookmarks' => ['bookmarks', $this->byColumn('profile_id', $ids)],
+            'mentions' => ['mentions', $this->byColumn('profile_id', $ids)],
+            'media_tags' => ['media_tags', $this->byColumn('profile_id', $ids)],
+            'poll_votes' => ['poll_votes', $this->byColumn('profile_id', $ids)],
+            'polls' => ['polls', $this->byColumn('profile_id', $ids)],
+            'story_views' => ['story_views', $this->byColumn('profile_id', $ids)],
+            'stories' => ['stories', $this->byColumn('profile_id', $ids)],
+            'direct_messages' => ['direct_messages', $this->eitherSide('from_id', 'to_id', $ids)],
+            'conversations' => ['conversations', $this->eitherSide('from_id', 'to_id', $ids)],
+            'quote_authorizations' => ['quote_authorizations', $this->byColumn('actor_id', $ids)],
+            'reports (by/against)' => ['reports', $this->eitherSide('profile_id', 'reported_profile_id', $ids)],
+            'notifications (by/actor)' => ['notifications', $this->eitherSide('profile_id', 'actor_id', $ids)],
+            'user_filters (mutes/blocks against)' => ['user_filters', function ($q) use ($ids) {
+                $q->where('filterable_type', Profile::class)->whereIn('filterable_id', $ids);
+            }],
+            'media (orphaned rows)' => ['media', $this->byColumn('profile_id', $ids)],
+            'profiles' => ['profiles', $this->byColumn('id', $ids)],
+        ];
 
-            DB::transaction(function () use ($ids) {
-                $eitherSide = fn ($a, $b) => function ($q) use ($a, $b, $ids) {
-                    $q->whereIn($a, $ids)->orWhereIn($b, $ids);
-                };
+        // Pre-count so the operator sees what the account phase will remove and
+        // which table carries the weight.
+        $this->line('  Rows to delete for '.$this->fmt(count($ids)).' account(s):');
+        $rows = [];
+        $grand = 0;
+        foreach ($tables as $label => [$table, $scope]) {
+            $n = DB::table($table)->where($scope)->count();
+            $grand += $n;
+            if ($n > 0) {
+                $rows[] = [$label, $this->fmt($n)];
+            }
+        }
+        $rows[] = ['<fg=yellow>TOTAL</>', '<fg=yellow>'.$this->fmt($grand).'</>'];
+        $this->table(['Table', 'Rows'], $rows);
 
-                DB::table('followers')->where($eitherSide('profile_id', 'following_id'))->delete();
-                DB::table('follow_requests')->where($eitherSide('follower_id', 'following_id'))->delete();
-                DB::table('likes')->whereIn('profile_id', $ids)->delete();
-                DB::table('bookmarks')->whereIn('profile_id', $ids)->delete();
-                DB::table('mentions')->whereIn('profile_id', $ids)->delete();
-                DB::table('media_tags')->whereIn('profile_id', $ids)->delete();
-                DB::table('poll_votes')->whereIn('profile_id', $ids)->delete();
-                DB::table('polls')->whereIn('profile_id', $ids)->delete();
-                DB::table('story_views')->whereIn('profile_id', $ids)->delete();
-                DB::table('stories')->whereIn('profile_id', $ids)->delete();
-                DB::table('direct_messages')->where($eitherSide('from_id', 'to_id'))->delete();
-                DB::table('conversations')->where($eitherSide('from_id', 'to_id'))->delete();
-                DB::table('quote_authorizations')->whereIn('actor_id', $ids)->delete();
-                DB::table('reports')->where($eitherSide('profile_id', 'reported_profile_id'))->delete();
-                DB::table('notifications')->where($eitherSide('profile_id', 'actor_id'))->delete();
-
-                // Mutes/blocks against these profiles.
-                DB::table('user_filters')
-                    ->where('filterable_type', Profile::class)
-                    ->whereIn('filterable_id', $ids)
-                    ->delete();
-
-                // Media files were already removed from storage; drop the rows.
-                DB::table('media')->whereIn('profile_id', $ids)->delete();
-
-                DB::table('profiles')->whereIn('id', $ids)->delete();
-            });
-
-            $bar->advance(count($ids));
+        // Delete table by table, reporting each so there is visible progress.
+        foreach ($tables as $label => [$table, $scope]) {
+            $t = microtime(true);
+            $deleted = DB::table($table)->where($scope)->delete();
+            if ($deleted > 0) {
+                $this->line('  - '.$label.': deleted '.$this->fmt($deleted).' in '.$this->humanDuration(microtime(true) - $t));
+            }
         }
 
-        $bar->finish();
-        $this->newLine();
-        $this->line("  Deleted {$this->fmt($profileIds->count())} account(s).");
+        $this->line("  Deleted {$this->fmt(count($ids))} account(s).");
+    }
+
+    /**
+     * A delete scope matching $ids in either of two columns.
+     *
+     * @param  array<int, int>  $ids
+     */
+    private function eitherSide(string $a, string $b, array $ids): \Closure
+    {
+        return function ($q) use ($a, $b, $ids) {
+            $q->whereIn($a, $ids)->orWhereIn($b, $ids);
+        };
+    }
+
+    /**
+     * A delete scope matching $ids in a single column.
+     *
+     * @param  array<int, int>  $ids
+     */
+    private function byColumn(string $column, array $ids): \Closure
+    {
+        return function ($q) use ($column, $ids) {
+            $q->whereIn($column, $ids);
+        };
     }
 
     /**
