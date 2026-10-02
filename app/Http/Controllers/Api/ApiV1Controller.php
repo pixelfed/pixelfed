@@ -3945,10 +3945,14 @@ class ApiV1Controller extends Controller
 
         $resource = new Fractal\Resource\Item($status, new StatusTransformer);
 
+        $res = $this->fractal->createData($resource)->toArray();
+
+        Cache::forget('_api:statuses:recent_9:'.$status->profile_id);
         Cache::forget('profile:status_count:'.$status->profile_id);
+        Cache::forget('profile:embed:'.$status->profile_id);
+        StatusService::del($status->id, true);
         StatusDelete::dispatch($status);
 
-        $res = $this->fractal->createData($resource)->toArray();
         $res['text'] = $res['content'];
         unset($res['content']);
 

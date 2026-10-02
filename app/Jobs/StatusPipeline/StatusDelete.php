@@ -2,6 +2,7 @@
 
 namespace App\Jobs\StatusPipeline;
 
+use App\Jobs\Federation\DeliverStatusDeleteActivity;
 use App\Jobs\MediaPipeline\MediaDeletePipeline;
 use App\Models\AccountInterstitial;
 use App\Models\Bookmark;
@@ -12,6 +13,7 @@ use App\Models\Media;
 use App\Models\MediaTag;
 use App\Models\Mention;
 use App\Models\Notification;
+use App\Models\Profile;
 use App\Models\QuoteAuthorization;
 use App\Models\Report;
 use App\Models\Status;
@@ -20,7 +22,7 @@ use App\Models\StatusEdit;
 use App\Models\StatusHashtag;
 use App\Models\StatusView;
 use App\Services\Account\AccountStatService;
-use App\Services\ActivityPubDeliveryService;
+use App\Services\AccountService;
 use App\Services\CollectionService;
 use App\Services\DirectMessageService;
 use App\Services\FractalService;
@@ -50,7 +52,7 @@ class StatusDelete implements ShouldQueue
      */
     public $deleteWhenMissingModels = true;
 
-    public $timeout = 900;
+    public $timeout = 300;
 
     public $tries = 2;
 
@@ -90,22 +92,61 @@ class StatusDelete implements ShouldQueue
         }
 
         StatusService::del($status->id, true);
-        if ($profile) {
-            if (in_array($status->type, AccountStatService::COUNTABLE_STATUS_TYPES)) {
-                $profile->status_count = $profile->status_count - 1;
-                $profile->save();
-            }
+
+        $delivery = $this->buildDelivery($status, $profile);
+
+        $this->unlinkRemoveMedia($status);
+
+        if ($delivery !== null) {
+            DeliverStatusDeleteActivity::dispatch(
+                (int) $profile->id,
+                (int) $status->id,
+                $delivery['activity'],
+                $delivery['inboxes']
+            )->onQueue('high');
+        }
+
+        if (in_array($status->type, AccountStatService::COUNTABLE_STATUS_TYPES)) {
+            Profile::withTrashed()->whereKey($profile->id)->decrement('status_count');
+            AccountService::del($profile->id);
         }
 
         Cache::forget('pf:atom:user-feed:by-id:'.$status->profile_id);
+        Cache::forget('profile:status_count:'.$status->profile_id);
+    }
 
-        if ((bool) config_cache('federation.activitypub.enabled') === true) {
-            $this->fanoutDelete($status);
-
-            return;
+    protected function buildDelivery(Status $status, Profile $profile): ?array
+    {
+        if ((bool) config_cache('federation.activitypub.enabled') !== true) {
+            return null;
         }
 
-        $this->unlinkRemoveMedia($status);
+        if ($profile->domain !== null || $profile->status !== null) {
+            return null;
+        }
+
+        try {
+            $status->setRelation('profile', $profile);
+
+            $inboxes = array_values($profile->getAudienceInbox());
+
+            if ($inboxes === []) {
+                return null;
+            }
+
+            return [
+                'activity' => FractalService::item($status, new DeleteNote),
+                'inboxes' => $inboxes,
+            ];
+        } catch (\Throwable $e) {
+            Log::warning('StatusDelete: unable to prepare federation delivery', [
+                'status_id' => $status->id,
+                'exception' => $e::class,
+                'error' => $e->getMessage(),
+            ]);
+
+            return null;
+        }
     }
 
     public function unlinkRemoveMedia($status)
@@ -218,55 +259,6 @@ class StatusDelete implements ShouldQueue
         $status->delete();
 
         StatusService::del($statusId, true);
-
-        return 1;
-    }
-
-    public function fanoutDelete($status)
-    {
-        $profile = $status->profile()->withTrashed()->first();
-
-        if (! $profile) {
-            return null;
-        }
-
-        $status->setRelation('profile', $profile);
-
-        $audience = array_values($profile->getAudienceInbox());
-        $activity = FractalService::item($status, new DeleteNote);
-
-        Log::info('StatusDelete: fanout', [
-            'status_id' => $status->id,
-            'actor' => $activity['actor'] ?? null,
-            'object' => $activity['object']['id'] ?? $activity['object'] ?? null,
-            'inboxes' => count($audience),
-        ]);
-
-        // Isolate federation delivery from local cleanup. pool() can throw
-        // synchronously (e.g. validateSender() rejects an inactive sender during
-        // account deletion, where profiles.status = 'delete'). If that exception
-        // escaped, unlinkRemoveMedia() — the whole point of this job — would be
-        // skipped and the status + its data would leak. Delivery is best-effort;
-        // local deletion is not.
-        try {
-            ActivityPubDeliveryService::pool($profile, $audience, $activity, function ($res, $i) use ($audience, $status) {
-                Log::warning('StatusDelete: delivery failed', [
-                    'status_id' => $status->id,
-                    'inbox' => $audience[$i] ?? null,
-                    'result' => $res instanceof \Throwable
-                        ? $res::class.': '.$res->getMessage()
-                        : $res->status().' '.substr($res->body(), 0, 300),
-                ]);
-            });
-        } catch (\Throwable $e) {
-            Log::warning('StatusDelete: delivery aborted, proceeding to local cleanup', [
-                'status_id' => $status->id,
-                'exception' => $e::class,
-                'error' => $e->getMessage(),
-            ]);
-        }
-
-        $this->unlinkRemoveMedia($status);
 
         return 1;
     }
