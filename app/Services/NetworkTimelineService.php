@@ -10,6 +10,8 @@ class NetworkTimelineService
 {
     const CACHE_KEY = 'pf:services:timeline:network';
 
+    const BUILT_KEY = 'pf:services:timeline:network:builtat';
+
     public static function get($start = 0, $stop = 10)
     {
         if ($stop > 100) {
@@ -53,8 +55,12 @@ class NetworkTimelineService
     }
 
     /**
-     * Refresh the sliding expiry on the network timeline key. EXPIRE is a no-op
-     * on a missing key, so reads never create an empty key just to expire it.
+     * Hold the network timeline key to an absolute ceiling measured from when it
+     * was built, never extended by reads. Expiry = built_at + ttl. A key past
+     * its ceiling is deleted so the next read cold-boots a rebuild. A key with
+     * no build marker (pre-existing or incrementally grown) falls back to
+     * ~ttl-from-now until the next full rebuild stamps a real marker. EXPIRE is
+     * a no-op on a missing key, so reads never create an empty key to expire it.
      */
     private static function applyTtl(): void
     {
@@ -63,7 +69,39 @@ class NetworkTimelineService
             return;
         }
 
-        Redis::expire(self::CACHE_KEY, $ttl * 3600);
+        $builtAt = Redis::get(self::BUILT_KEY);
+
+        if ($builtAt === null) {
+            Redis::expire(self::CACHE_KEY, $ttl * 3600);
+
+            return;
+        }
+
+        $remaining = ((int) $builtAt + $ttl * 3600) - now()->timestamp;
+
+        if ($remaining <= 0) {
+            Redis::del(self::CACHE_KEY);
+            Redis::del(self::BUILT_KEY);
+
+            return;
+        }
+
+        Redis::expire(self::CACHE_KEY, $remaining);
+    }
+
+    /**
+     * Stamp the build time and give the companion marker its own expiry equal to
+     * the ceiling so it self-cleans. Only called on a full rebuild — incremental
+     * writes must not reset the clock.
+     */
+    private static function stampBuiltAt(): void
+    {
+        $ttl = (int) config('instance.timeline.network.ttl');
+        if ($ttl <= 0) {
+            return;
+        }
+
+        Redis::setex(self::BUILT_KEY, $ttl * 3600, now()->timestamp);
     }
 
     // Insert many ids in one round-trip (score = id). Used by the warm rebuild,
@@ -179,6 +217,7 @@ class NetworkTimelineService
                 return $v;
             })->flatten()->all();
 
+            self::stampBuiltAt();
             self::bulkAdd($ids);
 
             return 1;
