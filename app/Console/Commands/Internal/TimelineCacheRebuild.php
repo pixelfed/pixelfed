@@ -141,9 +141,11 @@ class TimelineCacheRebuild extends Command
         }
 
         if ($this->option('all-home')) {
+            // Most recently active users first, so their feeds warm before idle accounts.
             return User::whereNull('deleted_at')
                 ->whereNotNull('profile_id')
                 ->whereNull('status')
+                ->orderByRaw('last_active_at IS NULL, last_active_at DESC')
                 ->pluck('profile_id')
                 ->map(fn ($v) => (int) $v)
                 ->filter(fn ($v) => $v > 0)
