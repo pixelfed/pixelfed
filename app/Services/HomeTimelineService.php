@@ -47,13 +47,24 @@ class HomeTimelineService
         ]));
     }
 
-    public static function add($id, $val)
+    public static function add($id, $val, bool $evict = true)
     {
-        if (self::count($id) >= 400) {
+        $cap = (int) config('instance.timeline.home.cache_size');
+        if ($evict && self::count($id) >= $cap) {
             Redis::zpopmin(self::CACHE_KEY.$id);
         }
 
         return Redis::zadd(self::CACHE_KEY.$id, $val, $val);
+    }
+
+    // Trim the oldest tail so a non-evicting write cannot grow the key past cap + one window.
+    public static function trimToBound(int $id, int $window)
+    {
+        $cap = (int) config('instance.timeline.home.cache_size');
+        $count = self::count($id);
+        if ($count > $cap + $window) {
+            Redis::zremrangebyrank(self::CACHE_KEY.$id, 0, $count - ($cap + $window) - 1);
+        }
     }
 
     public static function rem($id, $val)
@@ -88,8 +99,8 @@ class HomeTimelineService
 
             $ids = Status::where('id', '>', $minId)
                 ->whereIn('profile_id', $following)
-                ->whereNull(['in_reply_to_id', 'reblog_of_id'])
-                ->whereIn('type', ['photo', 'photo:album', 'video', 'video:album', 'photo:video:album'])
+                ->whereNull('in_reply_to_id')
+                ->whereIn('type', ['photo', 'photo:album', 'video', 'video:album', 'photo:video:album', 'share'])
                 ->whereIn('visibility', ['public', 'unlisted', 'private'])
                 ->orderByDesc('id')
                 ->limit($limit)
@@ -113,5 +124,59 @@ class HomeTimelineService
         }
 
         return 0;
+    }
+
+    // Pull older posts past the cached window straight from the DB and merge them back in.
+    public static function backfillOlder(int $pid, int $maxId, int $limit, array $following): array
+    {
+        $floorId = SnowflakeService::byDate(now()->subDays((int) config('instance.timeline.home.max_backfill_days')));
+
+        if ($maxId <= $floorId) {
+            return [];
+        }
+
+        $filters = UserFilterService::filters($pid);
+        if ($filters && count($filters)) {
+            $following = array_diff($following, $filters);
+        }
+
+        $domainBlocks = UserDomainBlock::whereProfileId($pid)->pluck('domain')->toArray();
+
+        $ids = Status::where('id', '<', $maxId)
+            ->where('id', '>', $floorId)
+            ->whereIn('profile_id', $following)
+            ->whereNull('in_reply_to_id')
+            ->whereIn('type', ['photo', 'photo:album', 'video', 'video:album', 'photo:video:album', 'share'])
+            ->whereIn('visibility', ['public', 'unlisted', 'private'])
+            ->orderByDesc('id')
+            ->limit($limit)
+            ->pluck('id');
+
+        $lock = Cache::lock("pf:tl:backfill:home:{$pid}:{$maxId}", 10);
+
+        if (! $lock->get()) {
+            return $ids->map(fn ($id) => (int) $id)->values()->all();
+        }
+
+        try {
+            foreach ($ids as $id) {
+                if ($domainBlocks && count($domainBlocks)) {
+                    $status = StatusService::get($id, false);
+                    if (! $status || ! isset($status['url'])) {
+                        continue;
+                    }
+                    $domain = strtolower(parse_url($status['url'], PHP_URL_HOST));
+                    if (in_array($domain, $domainBlocks)) {
+                        continue;
+                    }
+                }
+                self::add($pid, $id, evict: false);
+            }
+            self::trimToBound($pid, $limit);
+        } finally {
+            $lock->release();
+        }
+
+        return $ids->map(fn ($id) => (int) $id)->values()->all();
     }
 }

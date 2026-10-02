@@ -24,17 +24,20 @@ return [
         'home' => [
             'cached' => env('PF_HOME_TIMELINE_CACHE', false),
             'cache_ttl' => env('PF_HOME_TIMELINE_CACHE_TTL', 900),
+            'cache_size' => env('PF_HOME_TIMELINE_CACHE_SIZE', 1500),
+            'max_backfill_days' => env('PF_HOME_TIMELINE_MAX_BACKFILL_DAYS', 365),
         ],
 
         'local' => [
             'cached' => env('INSTANCE_PUBLIC_TIMELINE_CACHED', false),
-            'is_public' => env('INSTANCE_PUBLIC_LOCAL_TIMELINE', false),
+            'cache_size' => env('INSTANCE_PUBLIC_TIMELINE_CACHE_SIZE', 10000),
+            'max_backfill_days' => env('INSTANCE_PUBLIC_TIMELINE_MAX_BACKFILL_DAYS', 365),
         ],
 
         'network' => [
-            'cached' => env('PF_NETWORK_TIMELINE') ? env('INSTANCE_NETWORK_TIMELINE_CACHED', false) : false,
-            'cache_dropoff' => env('INSTANCE_NETWORK_TIMELINE_CACHE_DROPOFF', 100),
-            'max_hours_old' => env('INSTANCE_NETWORK_TIMELINE_CACHE_MAX_HOUR_INGEST', 2160),
+            'cached' => env('INSTANCE_NETWORK_TIMELINE_CACHED', false),
+            'cache_dropoff' => env('INSTANCE_NETWORK_TIMELINE_CACHE_DROPOFF', 10000),
+            'max_hours_old' => env('INSTANCE_NETWORK_TIMELINE_CACHE_MAX_HOUR_INGEST', 168),
         ],
     ],
 

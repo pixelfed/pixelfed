@@ -3,6 +3,7 @@
 namespace App\Services;
 
 use App\Models\Status;
+use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Redis;
 
 class PublicTimelineService
@@ -42,13 +43,24 @@ class PublicTimelineService
         ]));
     }
 
-    public static function add($val)
+    public static function add($val, bool $evict = true)
     {
-        if (self::count() > 400) {
+        $cap = (int) config('instance.timeline.local.cache_size');
+        if ($evict && self::count() >= $cap) {
             Redis::zpopmin(self::CACHE_KEY);
         }
 
         return Redis::zadd(self::CACHE_KEY, $val, $val);
+    }
+
+    // Trim the oldest tail so a non-evicting write cannot grow the key past cap + one window.
+    public static function trimToBound(int $window)
+    {
+        $cap = (int) config('instance.timeline.local.cache_size');
+        $count = self::count();
+        if ($count > $cap + $window) {
+            Redis::zremrangebyrank(self::CACHE_KEY, 0, $count - ($cap + $window) - 1);
+        }
     }
 
     public static function rem($val)
@@ -98,7 +110,7 @@ class PublicTimelineService
             $hideNsfw = config('instance.hide_nsfw_on_public_feeds');
             Redis::del(self::CACHE_KEY);
             $minId = SnowflakeService::byDate(now()->subDays(90));
-            $ids = Status::where('id', '>', $minId)
+            $rows = Status::where('id', '>', $minId)
                 ->whereNull(['uri', 'in_reply_to_id', 'reblog_of_id'])
                 ->when($hideNsfw, function ($q, $hideNsfw) {
                     return $q->where('is_nsfw', false);
@@ -107,10 +119,10 @@ class PublicTimelineService
                 ->whereScope('public')
                 ->orderByDesc('id')
                 ->limit($limit)
-                ->pluck('id', 'profile_id');
-            foreach ($ids as $k => $id) {
-                if (AdminShadowFilterService::canAddToPublicFeedByProfileId($k)) {
-                    self::add($id);
+                ->get(['id', 'profile_id']);
+            foreach ($rows as $row) {
+                if (AdminShadowFilterService::canAddToPublicFeedByProfileId($row->profile_id)) {
+                    self::add($row->id);
                 }
             }
 
@@ -118,5 +130,48 @@ class PublicTimelineService
         }
 
         return 0;
+    }
+
+    // Pull older posts past the cached window straight from the DB and merge them back in.
+    public static function backfillOlder(int $maxId, int $limit): array
+    {
+        $floorId = SnowflakeService::byDate(now()->subDays((int) config('instance.timeline.local.max_backfill_days')));
+
+        if ($maxId <= $floorId) {
+            return [];
+        }
+
+        $hideNsfw = config('instance.hide_nsfw_on_public_feeds');
+
+        $rows = Status::where('id', '<', $maxId)
+            ->where('id', '>', $floorId)
+            ->whereNull(['uri', 'in_reply_to_id', 'reblog_of_id'])
+            ->when($hideNsfw, function ($q, $hideNsfw) {
+                return $q->where('is_nsfw', false);
+            })
+            ->whereIn('type', ['photo', 'photo:album', 'video', 'video:album', 'photo:video:album'])
+            ->whereScope('public')
+            ->orderByDesc('id')
+            ->limit($limit)
+            ->get(['id', 'profile_id']);
+
+        $lock = Cache::lock("pf:tl:backfill:public:{$maxId}", 10);
+
+        if (! $lock->get()) {
+            return $rows->pluck('id')->map(fn ($id) => (int) $id)->values()->all();
+        }
+
+        try {
+            foreach ($rows as $row) {
+                if (AdminShadowFilterService::canAddToPublicFeedByProfileId($row->profile_id)) {
+                    self::add($row->id, evict: false);
+                }
+            }
+            self::trimToBound($limit);
+        } finally {
+            $lock->release();
+        }
+
+        return $rows->pluck('id')->map(fn ($id) => (int) $id)->values()->all();
     }
 }

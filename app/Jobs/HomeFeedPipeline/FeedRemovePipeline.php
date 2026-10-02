@@ -64,7 +64,11 @@ class FeedRemovePipeline implements ShouldBeUniqueUntilProcessing, ShouldQueue
     }
 
     /**
-     * Execute the job.
+     * Remove the status from the author's and current local followers' home feeds.
+     *
+     * A viewer who unfollows between a post's insert and its removal can keep a
+     * stale id; the next warmCache rebuild clears it and hydration filtering keeps
+     * it from ever rendering.
      */
     public function handle(): void
     {

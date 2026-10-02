@@ -2638,17 +2638,9 @@ class ApiV1Controller extends Controller
             ? $request->boolean('include_reblogs')
             : (bool) data_get($other, 'enable_reblogs', false);
 
-        // "Photo reblogs only"
-        $photosReblogsOnly = $request->filled('photos_reblogs_only')
-            ? $request->boolean('photos_reblogs_only')
-            : (bool) data_get($other, 'photo_reblogs_only', false);
-
         // Mirrors the StatusService lift condition: these clients render a boost
         // from the top level, so the original author has to be lifted with the content
         $liftReblogAuthor = $napi && $includeReblogs && ! $request->filled('include_reblogs');
-
-        $postTypes = ['photo', 'photo:album', 'video', 'video:album', 'photo:video:album'];
-        $inTypes = $includeReblogs ? [...$postTypes, 'share'] : $postTypes;
 
         AccountService::setLastActive($request->user()->id);
 
@@ -2661,20 +2653,27 @@ class ApiV1Controller extends Controller
             }
         );
 
-        $cached = (bool) config('exp.cached_home_timeline');
+        // Resolve up front so both the ranked read and the older-post lookup can use them.
+        $following = FollowerService::getFollowingIds($pid);
+        $muted = UserFilterService::mutes($pid);
 
-        if ($cached) {
-            $paddedLimit = $includeReblogs ? $limit + 10 : $limit + 50;
+        if ($muted && count($muted)) {
+            $following = array_diff($following, $muted);
+        }
 
-            if ($min || $max) {
-                $ids = $request->has('min_id')
-                    ? HomeTimelineService::getRankedMinId($pid, $min ?? 0, $paddedLimit)
-                    : HomeTimelineService::getRankedMaxId($pid, $max ?? 0, $paddedLimit);
-            } else {
-                $ids = HomeTimelineService::get($pid, 0, $paddedLimit);
-            }
+        $paddedLimit = $includeReblogs ? $limit + 10 : $limit + 50;
 
-            if (! $ids) {
+        if ($min || $max) {
+            $ids = $request->has('min_id')
+                ? HomeTimelineService::getRankedMinId($pid, $min ?? 0, $paddedLimit)
+                : HomeTimelineService::getRankedMaxId($pid, $max ?? 0, $paddedLimit);
+        } else {
+            $ids = HomeTimelineService::get($pid, 0, $paddedLimit);
+        }
+
+        if (! $ids) {
+            // Empty feed: warm it once and serve a 206 while it builds.
+            if ((int) HomeTimelineService::count($pid) === 0) {
                 $coldBootKey = 'pf:services:apiv1:home:cached:coldbootcheck:'.$pid;
 
                 if (! Cache::has($coldBootKey)) {
@@ -2688,32 +2687,23 @@ class ApiV1Controller extends Controller
 
                 return response()->json([], 206);
             }
-        } else {
-            $following = FollowerService::getFollowingIds($pid);
-            $muted = UserFilterService::mutes($pid);
 
-            if ($muted && count($muted)) {
-                $following = array_diff($following, $muted);
-            }
-
-            // Filtering happens after the fetch, so fetch deeper to fill a page
-            $fetchLimit = $photosReblogsOnly ? $limit * 6 : $limit * 2;
-
-            $ids = Status::query()
-                ->when($min || $max, function ($q) use ($min, $max) {
-                    return $q->where('id', $min ? '>' : '<', $min ?: $max);
-                })
-                ->whereNull($includeReblogs ? ['in_reply_to_id'] : ['in_reply_to_id', 'reblog_of_id'])
-                ->whereIntegerInRaw('profile_id', $following)
-                ->whereIn('type', $inTypes)
-                ->whereIn('visibility', ['public', 'unlisted', 'private'])
-                ->orderByDesc('id')
-                ->take($fetchLimit)
-                ->pluck('id');
+            // Scrolled past the oldest cached id: fall through to the older-post lookup below.
         }
 
-        // The cached feed has never applied photo_reblogs_only; kept as-is
-        $applyPhotosReblogsOnly = ! $cached && $photosReblogsOnly;
+        // When scrolling older than the cache holds, pull the rest from the DB so the feed never dead-ends.
+        if ($max && count($ids) < $limit) {
+            $backfillIds = HomeTimelineService::backfillOlder($pid, (int) $max, $paddedLimit, $following);
+            if (! empty($backfillIds)) {
+                $ids = collect($ids)
+                    ->map(fn ($id) => (int) $id)
+                    ->merge($backfillIds)
+                    ->unique()
+                    ->sortDesc()
+                    ->values()
+                    ->all();
+            }
+        }
 
         $res = collect($ids)
             ->map(function ($id) use ($napi) {
@@ -2726,18 +2716,25 @@ class ApiV1Controller extends Controller
                 return isset($status['account']['id']) ? $status : null;
             })
             ->filter()
-            ->filter(function ($status) use ($includeReblogs, $applyPhotosReblogsOnly, $postTypes) {
-                if (empty($status['reblog'])) {
+            ->filter(function ($status) use ($includeReblogs) {
+                // Keep normal posts; drop boosts when the viewer has reblogs off.
+                return empty($status['reblog']) || $includeReblogs;
+            })
+            ->filter(function ($status) use ($muted) {
+                // Drop posts from muted accounts, including boosts of a muted author.
+                if (empty($muted)) {
                     return true;
                 }
 
-                if (! $includeReblogs) {
+                if (in_array($status['account']['id'], $muted)) {
                     return false;
                 }
 
-                // a boost must share a photo or video
-                return ! $applyPhotosReblogsOnly
-                    || in_array(data_get($status['reblog'], 'pf_type'), $postTypes);
+                if (! empty($status['reblog']['account']['id']) && in_array($status['reblog']['account']['id'], $muted)) {
+                    return false;
+                }
+
+                return true;
             })
             ->map(function ($status) use ($homeFilters) {
                 $filterResults = CustomFilter::applyCachedFilters($homeFilters, $status);
@@ -2903,7 +2900,7 @@ class ApiV1Controller extends Controller
             if (config('instance.timeline.network.cached')) {
                 Cache::remember('api:v1:timelines:network:cache_check', 10368000, function () {
                     if (NetworkTimelineService::count() == 0) {
-                        NetworkTimelineService::warmCache(true, config('instance.timeline.network.cache_dropoff'));
+                        NetworkTimelineService::warmCache(true, (int) config('instance.timeline.network.cache_dropoff'));
                     }
                 });
 
@@ -2913,6 +2910,19 @@ class ApiV1Controller extends Controller
                     $feed = NetworkTimelineService::getRankedMinId($min, $limit + 5);
                 } else {
                     $feed = NetworkTimelineService::get(0, $limit + 5);
+                }
+
+                if ($max && count($feed) < $limit) {
+                    $backfillIds = NetworkTimelineService::backfillOlder((int) $max, $limit + 5);
+                    if (! empty($backfillIds)) {
+                        $feed = collect($feed)
+                            ->map(fn ($id) => (int) $id)
+                            ->merge($backfillIds)
+                            ->unique()
+                            ->sortDesc()
+                            ->values()
+                            ->toArray();
+                    }
                 }
             } else {
                 $feed = Status::select(
@@ -2960,6 +2970,19 @@ class ApiV1Controller extends Controller
                     $feed = PublicTimelineService::getRankedMinId($min, $limit + 5);
                 } else {
                     $feed = PublicTimelineService::get(0, $limit + 5);
+                }
+
+                if ($max && count($feed) < $limit) {
+                    $backfillIds = PublicTimelineService::backfillOlder((int) $max, $limit + 5);
+                    if (! empty($backfillIds)) {
+                        $feed = collect($feed)
+                            ->map(fn ($id) => (int) $id)
+                            ->merge($backfillIds)
+                            ->unique()
+                            ->sortDesc()
+                            ->values()
+                            ->toArray();
+                    }
                 }
             } else {
                 $feed = Status::select(

@@ -35,6 +35,15 @@
 /psalm.sarif.json
 /.psalm-cache
 
+# Laravel Boost
+/AGENTS.md
+/boost.json
+/.ai/
+/.agents/
+/.vscode/
+/.kiro/
+/.github/skills/
+
 # Exceptions - these *MUST* be last
 !/bootstrap/cache/.gitignore
 !/public/vendor/horizon/.gitignore

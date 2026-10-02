@@ -263,7 +263,7 @@ class PublicApiController extends Controller
         $filtered = $user ? UserFilterService::filters($user->profile_id) : [];
 
         $hideNsfw = config('instance.hide_nsfw_on_public_feeds');
-        if (config('exp.cached_public_timeline') == false) {
+        if (! config('instance.timeline.local.cached')) {
             if ($min || $max) {
                 $dir = $min ? '>' : '<';
                 $id = $min ?? $max;
@@ -362,6 +362,19 @@ class PublicApiController extends Controller
                 $feed = PublicTimelineService::getRankedMinId($min, $limit);
             } else {
                 $feed = PublicTimelineService::get(0, $limit);
+            }
+
+            if ($max && count($feed) < $limit) {
+                $backfillIds = PublicTimelineService::backfillOlder((int) $max, $limit);
+                if (! empty($backfillIds)) {
+                    $feed = collect($feed)
+                        ->map(fn ($id) => (int) $id)
+                        ->merge($backfillIds)
+                        ->unique()
+                        ->sortDesc()
+                        ->values()
+                        ->toArray();
+                }
             }
 
             $res = collect($feed)
@@ -639,7 +652,7 @@ class PublicApiController extends Controller
         } else {
             Cache::remember('api:v1:timelines:network:cache_check', 10368000, function () {
                 if (NetworkTimelineService::count() == 0) {
-                    NetworkTimelineService::warmCache(true, 400);
+                    NetworkTimelineService::warmCache(true, (int) config('instance.timeline.network.cache_dropoff'));
                 }
             });
 

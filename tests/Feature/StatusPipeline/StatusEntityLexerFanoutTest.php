@@ -22,7 +22,6 @@ uses(LazilyRefreshDatabase::class);
 
 beforeEach(function () {
     Queue::fake();
-    config(['exp.cached_home_timeline' => true]);
 });
 
 function runLexerForProfileFlag(bool $noAutolink): Status

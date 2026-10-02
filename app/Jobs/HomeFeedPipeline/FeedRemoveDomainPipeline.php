@@ -69,10 +69,6 @@ class FeedRemoveDomainPipeline implements ShouldBeUniqueUntilProcessing, ShouldQ
      */
     public function handle(): void
     {
-        if (! config('exp.cached_home_timeline')) {
-            return;
-        }
-
         if ($this->batch()->cancelled()) {
             return;
         }

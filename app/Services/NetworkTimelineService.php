@@ -3,6 +3,7 @@
 namespace App\Services;
 
 use App\Models\Status;
+use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Redis;
 
 class NetworkTimelineService
@@ -42,13 +43,24 @@ class NetworkTimelineService
         ]));
     }
 
-    public static function add($val)
+    public static function add($val, bool $evict = true)
     {
-        if (self::count() > config('instance.timeline.network.cache_dropoff')) {
+        $cap = (int) config('instance.timeline.network.cache_dropoff');
+        if ($evict && self::count() >= $cap) {
             Redis::zpopmin(self::CACHE_KEY);
         }
 
         return Redis::zadd(self::CACHE_KEY, $val, $val);
+    }
+
+    // Trim the oldest tail so a non-evicting write cannot grow the key past cap + one window.
+    public static function trimToBound(int $window)
+    {
+        $cap = (int) config('instance.timeline.network.cache_dropoff');
+        $count = self::count();
+        if ($count > $cap + $window) {
+            Redis::zremrangebyrank(self::CACHE_KEY, 0, $count - ($cap + $window) - 1);
+        }
     }
 
     public static function rem($val)
@@ -109,7 +121,7 @@ class NetworkTimelineService
                 ->whereNull('reblog_of_id')
                 ->whereIn('type', ['photo', 'photo:album', 'video', 'video:album', 'photo:video:album'])
                 ->where('created_at', '>', now()->subHours(config('instance.timeline.network.max_hours_old')))
-                ->orderByDesc('created_at')
+                ->orderByDesc('id')
                 ->limit($limit)
                 ->pluck('uri', 'id');
             $ids = $ids->filter(function ($k, $v) use ($filteredDomains) {
@@ -127,5 +139,60 @@ class NetworkTimelineService
         }
 
         return 0;
+    }
+
+    // Pull older posts past the cached window from the DB, paging by id to match the ZSET score.
+    public static function backfillOlder(int $maxId, int $limit): array
+    {
+        $floorId = SnowflakeService::byDate(now()->subHours((int) config('instance.timeline.network.max_hours_old')));
+
+        if ($maxId <= $floorId) {
+            return [];
+        }
+
+        $hideNsfw = config('instance.hide_nsfw_on_public_feeds');
+
+        $filteredDomains = collect(InstanceService::getBannedDomains())
+            ->merge(InstanceService::getUnlistedDomains())
+            ->unique()
+            ->values()
+            ->toArray();
+
+        $ids = Status::where('id', '<', $maxId)
+            ->where('id', '>', $floorId)
+            ->whereNotNull('uri')
+            ->whereScope('public')
+            ->when($hideNsfw, function ($q, $hideNsfw) {
+                return $q->where('is_nsfw', false);
+            })
+            ->whereNull('in_reply_to_id')
+            ->whereNull('reblog_of_id')
+            ->whereIn('type', ['photo', 'photo:album', 'video', 'video:album', 'photo:video:album'])
+            ->where('created_at', '>', now()->subHours(config('instance.timeline.network.max_hours_old')))
+            ->orderByDesc('id')
+            ->limit($limit)
+            ->pluck('uri', 'id')
+            ->reject(function ($uri) use ($filteredDomains) {
+                return in_array(parse_url($uri, PHP_URL_HOST), $filteredDomains);
+            });
+
+        $statusIds = $ids->keys()->map(fn ($id) => (int) $id)->values()->all();
+
+        $lock = Cache::lock("pf:tl:backfill:network:{$maxId}", 10);
+
+        if (! $lock->get()) {
+            return $statusIds;
+        }
+
+        try {
+            foreach ($statusIds as $id) {
+                self::add($id, evict: false);
+            }
+            self::trimToBound($limit);
+        } finally {
+            $lock->release();
+        }
+
+        return $statusIds;
     }
 }

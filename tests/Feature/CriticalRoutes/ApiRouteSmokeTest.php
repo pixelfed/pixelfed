@@ -33,8 +33,9 @@ test('api v1 verify credentials returns account for authed user', function () {
 test('api v1 home timeline returns array for authed user', function () {
     Passport::actingAs($this->user, ['read']);
 
+    // A new user has an empty home feed, which returns 206 while the cache warms.
     $this->getJson('/api/v1/timelines/home')
-        ->assertStatus(200)
+        ->assertStatus(206)
         ->assertJsonIsArray();
 });
 
