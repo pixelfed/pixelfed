@@ -329,43 +329,50 @@ class DeleteRemoteInstance extends Command
         $bar = $this->makeBar($total);
         $done = 0;
 
+        // Tally rows removed per satellite table across all batches so a single
+        // breakdown can be printed at the end (per-batch lines would be spammy).
+        $tally = [];
+        $add = function (string $label, int $n) use (&$tally): void {
+            $tally[$label] = ($tally[$label] ?? 0) + $n;
+        };
+
         DB::table('statuses')
             ->whereIn('profile_id', $this->domainProfileSub($domain))
             ->orderBy('id')
             ->select('id')
-            ->chunkById($chunk, function ($rows) use (&$done, $bar) {
+            ->chunkById($chunk, function ($rows) use (&$done, $bar, $add) {
                 $ids = $rows->pluck('id')->all();
 
-                DB::transaction(function () use ($ids) {
+                DB::transaction(function () use ($ids, $add) {
                     foreach (self::STATUS_SATELLITES as $table => $column) {
-                        DB::table($table)->whereIn($column, $ids)->delete();
+                        $add($table, DB::table($table)->whereIn($column, $ids)->delete());
                     }
 
                     // Orphan any remaining media rows (files already removed).
-                    DB::table('media')->whereIn('status_id', $ids)->update(['status_id' => null]);
+                    $add('media (orphaned)', DB::table('media')->whereIn('status_id', $ids)->update(['status_id' => null]));
 
                     // Morph-typed tables (match both the current and legacy alias).
-                    DB::table('notifications')
+                    $add('notifications', DB::table('notifications')
                         ->whereIn('item_type', ['App\\Status', Status::class])
                         ->whereIn('item_id', $ids)
-                        ->delete();
+                        ->delete());
 
-                    DB::table('reports')
+                    $add('reports', DB::table('reports')
                         ->whereIn('object_type', ['App\\Status', Status::class])
                         ->whereIn('object_id', $ids)
-                        ->delete();
+                        ->delete());
 
-                    DB::table('collection_items')
+                    $add('collection_items', DB::table('collection_items')
                         ->whereIn('object_type', ['App\\Status', Status::class])
                         ->whereIn('object_id', $ids)
-                        ->delete();
+                        ->delete());
 
-                    DB::table('account_interstitials')
+                    $add('account_interstitials', DB::table('account_interstitials')
                         ->whereIn('item_type', ['App\\Status', Status::class])
                         ->whereIn('item_id', $ids)
-                        ->delete();
+                        ->delete());
 
-                    DB::table('statuses')->whereIn('id', $ids)->delete();
+                    $add('statuses', DB::table('statuses')->whereIn('id', $ids)->delete());
                 });
 
                 $done += count($ids);
@@ -375,6 +382,13 @@ class DeleteRemoteInstance extends Command
 
         $bar->finish();
         $this->newLine();
+
+        foreach ($tally as $label => $n) {
+            if ($n > 0) {
+                $this->line('  - '.$label.': deleted '.$this->fmt($n));
+            }
+        }
+
         $this->line("  Deleted {$this->fmt($done)} status(es) and their interactions.");
     }
 
@@ -419,9 +433,11 @@ class DeleteRemoteInstance extends Command
         // which table carries the weight.
         $this->line('  Rows to delete for '.$this->fmt(count($ids)).' account(s):');
         $rows = [];
+        $counts = [];
         $grand = 0;
         foreach ($tables as $label => [$table, $scope]) {
             $n = DB::table($table)->where($scope)->count();
+            $counts[$label] = $n;
             $grand += $n;
             if ($n > 0) {
                 $rows[] = [$label, $this->fmt($n)];
@@ -430,13 +446,16 @@ class DeleteRemoteInstance extends Command
         $rows[] = ['<fg=yellow>TOTAL</>', '<fg=yellow>'.$this->fmt($grand).'</>'];
         $this->table(['Table', 'Rows'], $rows);
 
-        // Delete table by table, reporting each so there is visible progress.
+        // Delete table by table, announcing each before it runs so a slow table
+        // is visible while it works, then reporting the result.
         foreach ($tables as $label => [$table, $scope]) {
+            if (($counts[$label] ?? 0) === 0) {
+                continue;
+            }
+            $this->output->write('  - '.$label.': deleting '.$this->fmt($counts[$label]).' ...');
             $t = microtime(true);
             $deleted = DB::table($table)->where($scope)->delete();
-            if ($deleted > 0) {
-                $this->line('  - '.$label.': deleted '.$this->fmt($deleted).' in '.$this->humanDuration(microtime(true) - $t));
-            }
+            $this->line("\r".'  - '.$label.': deleted '.$this->fmt($deleted).' in '.$this->humanDuration(microtime(true) - $t).'          ');
         }
 
         $this->line("  Deleted {$this->fmt(count($ids))} account(s).");
