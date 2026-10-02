@@ -7,6 +7,7 @@ use App\Models\Status;
 use App\Services\MediaService;
 use App\Services\QuoteService;
 use App\Util\Lexer\Autolink;
+use App\Util\Media\License;
 use Illuminate\Support\Str;
 use League\Fractal;
 
@@ -90,6 +91,7 @@ class UpdateNote extends Fractal\TransformerAbstract
                     'toot' => 'http://joinmastodon.org/ns#',
                     'Emoji' => 'toot:Emoji',
                     ...QuoteService::NOTE_CONTEXT_TERMS,
+                    ...License::NOTE_CONTEXT_TERMS,
                 ],
             ],
             'id' => $status->permalink('#updates/'.$latestEdit->id),
@@ -111,6 +113,7 @@ class UpdateNote extends Fractal\TransformerAbstract
                 'cc' => $status->scopeToAudience('cc'),
                 'sensitive' => (bool) $status->is_nsfw,
                 'attachment' => MediaService::activitypub($status->id, true),
+                ...MediaService::noteLicense($status->id),
                 'tag' => $tags,
                 'commentsEnabled' => (bool) ! $status->comments_disabled,
                 'interactionPolicy' => QuoteService::interactionPolicy($status),
