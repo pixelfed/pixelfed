@@ -15,6 +15,7 @@ use Illuminate\Console\Command;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Storage;
+use Symfony\Component\Console\Helper\ProgressBar;
 
 class DeleteRemoteInstance extends Command
 {
@@ -104,26 +105,43 @@ class DeleteRemoteInstance extends Command
             return self::SUCCESS;
         }
 
+        $startedAt = microtime(true);
+        $this->newLine();
+        $this->info("Purging '{$domain}' ...");
+
         // Ban first (if requested) so content stops re-federating mid-purge.
         if ($this->option('block')) {
+            $this->step(1, 5, 'Banning instance');
             $this->banInstance($domain, $instance);
+        } else {
+            $this->step(1, 5, 'Skipping ban (use --block to keep + ban the instance)');
         }
 
         if ($profileIds->isNotEmpty()) {
-            $this->purgeMediaFromStorage($profileIds);
-            $this->purgeStatuses($profileIds, $chunk);
+            $this->step(2, 5, "Deleting {$this->fmt($mediaFileCount)} media file(s) from storage");
+            $this->purgeMediaFromStorage($profileIds, $mediaFileCount);
+
+            $this->step(3, 5, "Deleting {$this->fmt($statusCount)} status(es) and their interactions");
+            $this->purgeStatuses($profileIds, $statusCount, $chunk);
+
+            $this->step(4, 5, "Deleting {$this->fmt($profileIds->count())} account(s)");
             $this->purgeProfiles($profileIds, $chunk);
+        } else {
+            $this->step(2, 5, 'No accounts to delete');
         }
 
+        $this->step(5, 5, 'Rebuilding timeline caches');
         $this->flushCaches($profileIds);
 
         if (! $this->option('block') && $instance) {
             $instance->delete();
             InstanceService::refresh();
-            $this->info('Removed the instance record.');
+            $this->line('  Removed the instance record.');
         }
 
-        $this->info("Purge of '{$domain}' complete.");
+        $elapsed = $this->humanDuration(microtime(true) - $startedAt);
+        $this->newLine();
+        $this->info("Purge of '{$domain}' complete in {$elapsed}.");
 
         return self::SUCCESS;
     }
@@ -135,12 +153,19 @@ class DeleteRemoteInstance extends Command
      *
      * @param  Collection<int, int>  $profileIds
      */
-    private function purgeMediaFromStorage($profileIds): void
+    private function purgeMediaFromStorage($profileIds, int $total): void
     {
+        if ($total === 0) {
+            $this->line('  No media files to delete.');
+
+            return;
+        }
+
         $usesCloud = (bool) config_cache('pixelfed.cloud_storage');
         $cloudDisk = $usesCloud ? Storage::disk(config('filesystems.cloud')) : null;
         $localDisk = Storage::disk(config('filesystems.local'));
 
+        $bar = $this->makeBar($total);
         $keys = [];
         $deleted = 0;
 
@@ -165,7 +190,7 @@ class DeleteRemoteInstance extends Command
             ->whereNotNull('media_path')
             ->orderBy('id')
             ->select(['id', 'media_path', 'thumbnail_path', 'hls_path'])
-            ->chunkById(2000, function ($rows) use (&$keys, $flush) {
+            ->chunkById(2000, function ($rows) use (&$keys, $flush, $bar) {
                 foreach ($rows as $row) {
                     if ($row->media_path) {
                         $keys[] = $row->media_path;
@@ -178,13 +203,16 @@ class DeleteRemoteInstance extends Command
                             $keys[] = $file;
                         }
                     }
+                    $bar->advance();
                 }
                 $flush(false);
             });
 
         $flush(true);
+        $bar->finish();
+        $this->newLine();
 
-        $this->info("Deleted {$deleted} media file(s) from storage.");
+        $this->line("  Deleted {$this->fmt($deleted)} media file(s) from storage.");
     }
 
     /**
@@ -210,14 +238,21 @@ class DeleteRemoteInstance extends Command
      *
      * @param  Collection<int, int>  $profileIds
      */
-    private function purgeStatuses($profileIds, int $chunk): void
+    private function purgeStatuses($profileIds, int $total, int $chunk): void
     {
-        $total = 0;
+        if ($total === 0) {
+            $this->line('  No statuses to delete.');
+
+            return;
+        }
+
+        $bar = $this->makeBar($total);
+        $done = 0;
 
         Status::whereIn('profile_id', $profileIds)
             ->orderBy('id')
             ->select('id')
-            ->chunkById($chunk, function ($rows) use (&$total) {
+            ->chunkById($chunk, function ($rows) use (&$done, $bar) {
                 $ids = $rows->pluck('id')->all();
 
                 DB::transaction(function () use ($ids) {
@@ -252,10 +287,13 @@ class DeleteRemoteInstance extends Command
                     DB::table('statuses')->whereIn('id', $ids)->delete();
                 });
 
-                $total += count($ids);
+                $done += count($ids);
+                $bar->advance(count($ids));
             });
 
-        $this->info("Deleted {$total} status(es) and their interactions.");
+        $bar->finish();
+        $this->newLine();
+        $this->line("  Deleted {$this->fmt($done)} status(es) and their interactions.");
     }
 
     /**
@@ -265,6 +303,8 @@ class DeleteRemoteInstance extends Command
      */
     private function purgeProfiles($profileIds, int $chunk): void
     {
+        $bar = $this->makeBar($profileIds->count());
+
         foreach ($profileIds->chunk($chunk) as $batch) {
             $ids = $batch->values()->all();
 
@@ -300,9 +340,13 @@ class DeleteRemoteInstance extends Command
 
                 DB::table('profiles')->whereIn('id', $ids)->delete();
             });
+
+            $bar->advance(count($ids));
         }
 
-        $this->info("Deleted {$profileIds->count()} account(s).");
+        $bar->finish();
+        $this->newLine();
+        $this->line("  Deleted {$this->fmt($profileIds->count())} account(s).");
     }
 
     /**
@@ -319,7 +363,7 @@ class DeleteRemoteInstance extends Command
             AccountService::del($pid);
         }
 
-        $this->info('Rebuilt local and network timeline caches.');
+        $this->line('  Rebuilt local and network timeline caches.');
     }
 
     private function banInstance(string $domain, ?Instance $instance): void
@@ -329,7 +373,7 @@ class DeleteRemoteInstance extends Command
         $instance->banned = true;
         $instance->save();
         InstanceService::refresh();
-        $this->info("Banned '{$domain}'.");
+        $this->line("  Banned '{$domain}'.");
     }
 
     private function confirmByDomain(string $domain): bool
@@ -338,6 +382,49 @@ class DeleteRemoteInstance extends Command
         $answer = $this->ask("Type the domain ({$domain}) to confirm");
 
         return is_string($answer) && strtolower(trim($answer)) === $domain;
+    }
+
+    private function step(int $n, int $total, string $label): void
+    {
+        $this->newLine();
+        $this->comment("[{$n}/{$total}] {$label}");
+    }
+
+    private function fmt(int $n): string
+    {
+        return number_format($n);
+    }
+
+    /**
+     * A progress bar showing count, percentage, elapsed time and ETA.
+     */
+    private function makeBar(int $max): ProgressBar
+    {
+        $bar = $this->output->createProgressBar($max);
+        $bar->setFormat('  %current%/%max% [%bar%] %percent:3s%%  %elapsed:6s% elapsed, %estimated:-6s% left');
+        $bar->start();
+
+        return $bar;
+    }
+
+    private function humanDuration(float $seconds): string
+    {
+        $seconds = (int) round($seconds);
+
+        if ($seconds < 60) {
+            return $seconds.'s';
+        }
+
+        $minutes = intdiv($seconds, 60);
+        $rem = $seconds % 60;
+
+        if ($minutes < 60) {
+            return $minutes.'m '.$rem.'s';
+        }
+
+        $hours = intdiv($minutes, 60);
+
+        return $hours.'h '.($minutes % 60).'m';
     }
 
     private function normalizeDomain(string $input): string
