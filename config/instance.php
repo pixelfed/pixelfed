@@ -25,7 +25,8 @@ return [
             'cached' => env('PF_HOME_TIMELINE_CACHE', false),
             'cache_size' => env('PF_HOME_TIMELINE_CACHE_SIZE', 1500),
             'max_backfill_days' => env('PF_HOME_TIMELINE_MAX_BACKFILL_DAYS', 30),
-            'ttl' => env('PF_HOME_TIMELINE_TTL', 24),
+            'ttl_idle' => env('PF_HOME_TIMELINE_TTL_IDLE', 72),   // hours — sliding, refreshed on read
+            'ttl_max' => env('PF_HOME_TIMELINE_TTL_MAX', 336),   // hours — absolute ceiling from build time, NOT refreshed on read
         ],
 
         'local' => [

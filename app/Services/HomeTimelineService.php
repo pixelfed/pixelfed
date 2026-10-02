@@ -13,6 +13,8 @@ class HomeTimelineService
 {
     const CACHE_KEY = 'pf:services:timeline:home:';
 
+    const BUILT_KEY = 'pf:services:timeline:home:builtat:';
+
     const FOLLOWER_FEED_POST_LIMIT = 10;
 
     public static function get($id, $start = 0, $stop = 10)
@@ -58,17 +60,54 @@ class HomeTimelineService
     }
 
     /**
-     * Refresh the sliding expiry on a profile's timeline key. EXPIRE is a no-op
-     * on a missing key, so reads never create an empty key just to expire it.
+     * Refresh the sliding idle expiry on a profile's timeline key while never
+     * extending it past the absolute ceiling measured from when the key was
+     * built. Effective expiry = min(now + idle, built_at + max). EXPIRE is a
+     * no-op on a missing key, so reads never create an empty key just to expire
+     * it. A key already past its ceiling is deleted so the next read rebuilds.
      */
     private static function applyTtl(int|string $id): void
     {
-        $ttl = (int) config('instance.timeline.home.ttl');
-        if ($ttl <= 0) {
+        $idle = (int) config('instance.timeline.home.ttl_idle');
+        if ($idle <= 0) {
             return;
         }
 
-        Redis::expire(self::CACHE_KEY.$id, $ttl * 3600);
+        $idleSeconds = $idle * 3600;
+        $max = (int) config('instance.timeline.home.ttl_max');
+        $builtAt = Redis::get(self::BUILT_KEY.$id);
+
+        if ($max <= 0 || $builtAt === null) {
+            Redis::expire(self::CACHE_KEY.$id, $idleSeconds);
+
+            return;
+        }
+
+        $maxRemaining = ((int) $builtAt + $max * 3600) - now()->timestamp;
+
+        if ($maxRemaining <= 0) {
+            Redis::del(self::CACHE_KEY.$id);
+            Redis::del(self::BUILT_KEY.$id);
+
+            return;
+        }
+
+        Redis::expire(self::CACHE_KEY.$id, min($idleSeconds, $maxRemaining));
+    }
+
+    /**
+     * Stamp the build time for a profile's timeline key and give the companion
+     * marker its own expiry equal to the max ceiling so it self-cleans. Only
+     * called on a full rebuild — incremental writes must not reset the clock.
+     */
+    private static function stampBuiltAt(int|string $id): void
+    {
+        $max = (int) config('instance.timeline.home.ttl_max');
+        if ($max <= 0) {
+            return;
+        }
+
+        Redis::setex(self::BUILT_KEY.$id, $max * 3600, now()->timestamp);
     }
 
     // Insert many ids into one profile key in batched round-trips (score = id).
@@ -186,6 +225,7 @@ class HomeTimelineService
 
             $ids = self::rejectBlockedDomains($rows, $domainBlocks);
 
+            self::stampBuiltAt($id);
             self::bulkAdd($id, $ids);
 
             return $returnIds ? collect($ids) : 1;
