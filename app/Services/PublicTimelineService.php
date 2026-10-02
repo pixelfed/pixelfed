@@ -109,7 +109,7 @@ class PublicTimelineService
         if (self::count() == 0 || $force == true) {
             $hideNsfw = config('instance.hide_nsfw_on_public_feeds');
             Redis::del(self::CACHE_KEY);
-            $minId = SnowflakeService::byDate(now()->subDays(90));
+            $minId = SnowflakeService::byDate(now()->subDays((int) config('instance.timeline.local.max_backfill_days')));
             $rows = Status::where('id', '>', $minId)
                 ->whereNull(['uri', 'in_reply_to_id', 'reblog_of_id'])
                 ->when($hideNsfw, function ($q, $hideNsfw) {

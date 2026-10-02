@@ -87,7 +87,7 @@ class HomeTimelineService
                 return $following->push($id)->toArray();
             });
 
-            $minId = SnowflakeService::byDate(now()->subMonths(6));
+            $minId = SnowflakeService::byDate(now()->subDays((int) config('instance.timeline.home.max_backfill_days')));
 
             $filters = UserFilterService::filters($id);
 

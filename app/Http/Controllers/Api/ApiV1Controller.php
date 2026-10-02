@@ -2960,7 +2960,7 @@ class ApiV1Controller extends Controller
             if (config('instance.timeline.local.cached')) {
                 Cache::remember('api:v1:timelines:public:cache_check', 10368000, function () {
                     if (PublicTimelineService::count() == 0) {
-                        PublicTimelineService::warmCache(true, 400);
+                        PublicTimelineService::warmCache(true, (int) config('instance.timeline.local.cache_size'));
                     }
                 });
 
