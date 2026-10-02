@@ -783,7 +783,7 @@ class AdminApiController extends Controller
         $res->save();
 
         InstanceService::refresh();
-        NetworkTimelineService::warmCache(true);
+        NetworkTimelineService::warmCache(true, (int) config('instance.timeline.network.cache_dropoff'));
 
         return new AdminInstance($res);
     }
