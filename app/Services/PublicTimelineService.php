@@ -43,6 +43,25 @@ class PublicTimelineService
         ]));
     }
 
+    // Insert many ids in one round-trip (score = id). Used by the warm rebuild,
+    // which starts from an empty key and never exceeds the cap, so no eviction.
+    public static function bulkAdd(array $ids): void
+    {
+        if (empty($ids)) {
+            return;
+        }
+
+        // Batch into a handful of ZADD calls instead of one per id.
+        foreach (array_chunk($ids, 1000) as $chunk) {
+            $args = [];
+            foreach ($chunk as $id) {
+                $args[] = (int) $id; // score
+                $args[] = (int) $id; // member
+            }
+            Redis::zadd(self::CACHE_KEY, ...$args);
+        }
+    }
+
     public static function add($val, bool $evict = true)
     {
         $cap = (int) config('instance.timeline.local.cache_size');
@@ -120,11 +139,15 @@ class PublicTimelineService
                 ->orderByDesc('id')
                 ->limit($limit)
                 ->get(['id', 'profile_id']);
-            foreach ($rows as $row) {
-                if (AdminShadowFilterService::canAddToPublicFeedByProfileId($row->profile_id)) {
-                    self::add($row->id);
-                }
-            }
+
+            $hidden = AdminShadowFilterService::getHideFromPublicFeedsList();
+
+            $ids = $rows
+                ->reject(fn ($row) => in_array($row->profile_id, $hidden))
+                ->pluck('id')
+                ->all();
+
+            self::bulkAdd($ids);
 
             return 1;
         }

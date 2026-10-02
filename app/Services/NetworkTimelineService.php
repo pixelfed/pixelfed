@@ -43,6 +43,25 @@ class NetworkTimelineService
         ]));
     }
 
+    // Insert many ids in one round-trip (score = id). Used by the warm rebuild,
+    // which starts from an empty key and never exceeds the cap, so no eviction.
+    public static function bulkAdd(array $ids): void
+    {
+        if (empty($ids)) {
+            return;
+        }
+
+        // Batch into a handful of ZADD calls instead of one per id.
+        foreach (array_chunk($ids, 1000) as $chunk) {
+            $args = [];
+            foreach ($chunk as $id) {
+                $args[] = (int) $id; // score
+                $args[] = (int) $id; // member
+            }
+            Redis::zadd(self::CACHE_KEY, ...$args);
+        }
+    }
+
     public static function add($val, bool $evict = true)
     {
         $cap = (int) config('instance.timeline.network.cache_dropoff');
@@ -130,10 +149,9 @@ class NetworkTimelineService
                 return ! in_array($domain, $filteredDomains);
             })->map(function ($k, $v) {
                 return $v;
-            })->flatten();
-            foreach ($ids as $id) {
-                self::add($id);
-            }
+            })->flatten()->all();
+
+            self::bulkAdd($ids);
 
             return 1;
         }
