@@ -3,12 +3,10 @@
 namespace App\Console\Commands\Admin;
 
 use App\Models\Instance;
-use App\Models\Media;
 use App\Models\Profile;
 use App\Models\Status;
 use App\Services\AccountService;
 use App\Services\InstanceService;
-use App\Services\Media\MediaHlsService;
 use App\Services\NetworkTimelineService;
 use App\Services\PublicTimelineService;
 use Illuminate\Console\Command;
@@ -24,7 +22,9 @@ class DeleteRemoteInstance extends Command
         {--block : Ban the instance so it stays defederated after the purge}
         {--dry-run : Report what would be deleted without changing anything}
         {--force : Skip the confirmation prompt}
-        {--chunk=2000 : Rows per batch for the SQL deletes}';
+        {--chunk=2000 : Rows per batch for the SQL deletes}
+        {--debug : Print verbose per-step/per-batch diagnostics}
+        {--storage-test : Run a write/read/delete probe against storage before purging}';
 
     protected $description = 'Delete a remote instance and every trace of it in bulk: all remote accounts on the domain, their posts, comments, interactions, and cached media files';
 
@@ -74,16 +74,25 @@ class DeleteRemoteInstance extends Command
             return self::SUCCESS;
         }
 
+        // Scope the big scans by a profiles.domain subquery rather than a literal
+        // IN list of thousands of ids, so MySQL can use the indexes.
+        $this->line('Counting content (this can take a moment on large instances) ...');
+        $this->dbg('profiles for domain: '.$profileIds->count());
+
+        $t = microtime(true);
         $statusCount = $profileIds->isEmpty()
             ? 0
-            : Status::whereIn('profile_id', $profileIds)->count();
+            : DB::table('statuses')->whereIn('profile_id', $this->domainProfileSub($domain))->count();
+        $this->dbg('status count query took '.$this->humanDuration(microtime(true) - $t).' => '.$statusCount);
 
+        $t = microtime(true);
         $mediaFileCount = $profileIds->isEmpty()
             ? 0
             : DB::table('media')
-                ->whereIn('profile_id', $profileIds)
+                ->whereIn('profile_id', $this->domainProfileSub($domain))
                 ->whereNotNull('media_path')
                 ->count();
+        $this->dbg('media count query took '.$this->humanDuration(microtime(true) - $t).' => '.$mediaFileCount);
 
         $this->table(['Domain', 'Accounts', 'Statuses', 'Media files', 'Instance row'], [[
             $domain,
@@ -107,6 +116,14 @@ class DeleteRemoteInstance extends Command
 
         $startedAt = microtime(true);
         $this->newLine();
+
+        // Optional: prove object storage is reachable before touching real files.
+        if ($this->option('storage-test') && ! $this->storageSelfTest()) {
+            $this->error('Storage self-test failed. Aborting before any deletion.');
+
+            return self::FAILURE;
+        }
+
         $this->info("Purging '{$domain}' ...");
 
         // Ban first (if requested) so content stops re-federating mid-purge.
@@ -119,10 +136,10 @@ class DeleteRemoteInstance extends Command
 
         if ($profileIds->isNotEmpty()) {
             $this->step(2, 5, "Deleting {$this->fmt($mediaFileCount)} media file(s) from storage");
-            $this->purgeMediaFromStorage($profileIds, $mediaFileCount);
+            $this->purgeMediaFromStorage($domain, $mediaFileCount);
 
             $this->step(3, 5, "Deleting {$this->fmt($statusCount)} status(es) and their interactions");
-            $this->purgeStatuses($profileIds, $statusCount, $chunk);
+            $this->purgeStatuses($domain, $statusCount, $chunk);
 
             $this->step(4, 5, "Deleting {$this->fmt($profileIds->count())} account(s)");
             $this->purgeProfiles($profileIds, $chunk);
@@ -147,13 +164,15 @@ class DeleteRemoteInstance extends Command
     }
 
     /**
-     * Collect every cached media file for the domain's statuses and delete it
-     * from object storage in bulk (S3 DeleteObjects: up to 1000 keys/request),
-     * falling back to per-file deletes on the local disk.
+     * Delete every cached media file for the domain's media rows from object
+     * storage, batched (S3 DeleteObjects: up to 1000 keys/request). The bar is
+     * sized by media ROWS and advances per row so it moves steadily; the slow
+     * S3 round-trips happen as key batches fill. HLS videos need a per-video
+     * directory listing, so they are handled in a clearly-labelled second pass.
      *
      * @param  Collection<int, int>  $profileIds
      */
-    private function purgeMediaFromStorage($profileIds, int $total): void
+    private function purgeMediaFromStorage(string $domain, int $total): void
     {
         if ($total === 0) {
             $this->line('  No media files to delete.');
@@ -165,32 +184,76 @@ class DeleteRemoteInstance extends Command
         $cloudDisk = $usesCloud ? Storage::disk(config('filesystems.cloud')) : null;
         $localDisk = Storage::disk(config('filesystems.local'));
 
-        $bar = $this->makeBar($total);
-        $keys = [];
-        $deleted = 0;
+        // Native S3 client + bucket for true batch deletes (one DeleteObjects
+        // request per 1000 keys) instead of Flysystem per-key deletes.
+        $s3 = null;
+        $bucket = null;
+        if ($usesCloud) {
+            try {
+                $s3 = $cloudDisk->getClient();
+                $bucket = config('filesystems.disks.'.config('filesystems.cloud').'.bucket');
+                $this->dbg('cloud bulk delete enabled (bucket='.$bucket.')');
+            } catch (\Throwable $e) {
+                $this->dbg('could not get S3 client, falling back to disk->delete(): '.$e->getMessage());
+            }
+        }
 
-        $flush = function (bool $force) use (&$keys, &$deleted, $usesCloud, $cloudDisk, $localDisk): void {
+        $bar = $this->makeBar($total);
+
+        $keys = [];
+        $rowsBuffered = 0;
+        $deleted = 0;
+        $hlsRows = [];
+        $batchNum = 0;
+
+        $deleteBatch = function (array $batch) use ($usesCloud, $s3, $bucket, $cloudDisk, $localDisk, &$batchNum): void {
+            $batchNum++;
+            $t = microtime(true);
+
+            if ($usesCloud) {
+                if ($s3 && $bucket) {
+                    $s3->deleteObjects([
+                        'Bucket' => $bucket,
+                        'Delete' => [
+                            'Objects' => array_map(fn ($k) => ['Key' => $k], $batch),
+                            'Quiet' => true,
+                        ],
+                    ]);
+                } else {
+                    $cloudDisk->delete($batch);
+                }
+            } else {
+                $localDisk->delete($batch);
+            }
+
+            $this->dbg('batch #'.$batchNum.': '.count($batch).' keys in '.$this->humanDuration(microtime(true) - $t));
+        };
+
+        $flush = function (bool $force) use (&$keys, &$rowsBuffered, &$deleted, $deleteBatch, $bar): void {
             if (empty($keys) || (! $force && count($keys) < 1000)) {
                 return;
             }
 
             foreach (array_chunk($keys, 1000) as $batch) {
-                if ($usesCloud && $cloudDisk) {
-                    $cloudDisk->delete($batch);
-                }
-                $localDisk->delete($batch);
+                $deleteBatch($batch);
                 $deleted += count($batch);
             }
 
+            $bar->advance($rowsBuffered);
+            $bar->setMessage($this->fmt($deleted).' files deleted');
+
             $keys = [];
+            $rowsBuffered = 0;
         };
 
+        $this->dbg('starting media scan (chunk reads of 2000 rows)');
+
         DB::table('media')
-            ->whereIn('profile_id', $profileIds)
+            ->whereIn('profile_id', $this->domainProfileSub($domain))
             ->whereNotNull('media_path')
             ->orderBy('id')
             ->select(['id', 'media_path', 'thumbnail_path', 'hls_path'])
-            ->chunkById(2000, function ($rows) use (&$keys, $flush, $bar) {
+            ->chunkById(2000, function ($rows) use (&$keys, &$rowsBuffered, &$hlsRows, $flush) {
                 foreach ($rows as $row) {
                     if ($row->media_path) {
                         $keys[] = $row->media_path;
@@ -199,34 +262,69 @@ class DeleteRemoteInstance extends Command
                         $keys[] = $row->thumbnail_path;
                     }
                     if ($row->hls_path) {
-                        foreach ($this->hlsFiles($row) as $file) {
-                            $keys[] = $file;
-                        }
+                        $hlsRows[] = $row->media_path;
                     }
-                    $bar->advance();
+                    $rowsBuffered++;
                 }
+                $this->dbg('read chunk of '.$rows->count().' media rows ('.count($keys).' keys buffered)');
                 $flush(false);
             });
 
         $flush(true);
         $bar->finish();
         $this->newLine();
+        $this->line("  Deleted {$this->fmt($deleted)} base media file(s).");
 
-        $this->line("  Deleted {$this->fmt($deleted)} media file(s) from storage.");
+        // Pass 2: HLS videos. Each needs a per-video directory listing, so this
+        // is slower; it is skipped entirely when there are no HLS rows.
+        if (! empty($hlsRows)) {
+            $this->line('  Removing HLS video segments ('.$this->fmt(count($hlsRows)).' video(s), this is slower) ...');
+            $hlsBar = $this->makeBar(count($hlsRows));
+            $hlsDeleted = 0;
+
+            foreach ($hlsRows as $mediaPath) {
+                $segments = $this->hlsSegmentKeys($mediaPath);
+                if (! empty($segments)) {
+                    foreach (array_chunk($segments, 1000) as $batch) {
+                        $deleteBatch($batch);
+                        $hlsDeleted += count($batch);
+                    }
+                }
+                $hlsBar->advance();
+            }
+
+            $hlsBar->finish();
+            $this->newLine();
+            $this->line("  Deleted {$this->fmt($hlsDeleted)} HLS segment file(s).");
+        }
     }
 
     /**
-     * Resolve all files for an HLS media row via the model, tolerating any
-     * row shape; returns an empty list if it cannot be resolved.
+     * List the HLS segment/playlist keys that share a video's base name, from
+     * whichever disk holds them. Row-shape tolerant; returns [] on any failure.
      *
      * @return array<int, string>
      */
-    private function hlsFiles(object $row): array
+    private function hlsSegmentKeys(?string $mediaPath): array
     {
-        try {
-            $media = Media::find($row->id);
+        if (! $mediaPath) {
+            return [];
+        }
 
-            return $media ? (array) MediaHlsService::allFiles($media) : [];
+        try {
+            $parts = explode('/', $mediaPath);
+            $filename = array_pop($parts);
+            $dir = implode('/', $parts);
+            $name = explode('.', $filename)[0];
+
+            $disk = (bool) config_cache('pixelfed.cloud_storage')
+                ? Storage::disk(config('filesystems.cloud'))
+                : Storage::disk(config('filesystems.local'));
+
+            return collect($disk->files($dir))
+                ->filter(fn ($p) => str_starts_with($p, $dir.'/'.$name))
+                ->values()
+                ->all();
         } catch (\Throwable $e) {
             return [];
         }
@@ -235,10 +333,8 @@ class DeleteRemoteInstance extends Command
     /**
      * Delete all statuses for the domain's profiles and their satellite rows,
      * batched by status id with a transaction per batch.
-     *
-     * @param  Collection<int, int>  $profileIds
      */
-    private function purgeStatuses($profileIds, int $total, int $chunk): void
+    private function purgeStatuses(string $domain, int $total, int $chunk): void
     {
         if ($total === 0) {
             $this->line('  No statuses to delete.');
@@ -249,7 +345,8 @@ class DeleteRemoteInstance extends Command
         $bar = $this->makeBar($total);
         $done = 0;
 
-        Status::whereIn('profile_id', $profileIds)
+        DB::table('statuses')
+            ->whereIn('profile_id', $this->domainProfileSub($domain))
             ->orderBy('id')
             ->select('id')
             ->chunkById($chunk, function ($rows) use (&$done, $bar) {
@@ -289,6 +386,7 @@ class DeleteRemoteInstance extends Command
 
                 $done += count($ids);
                 $bar->advance(count($ids));
+                $bar->setMessage($this->fmt($done).' deleted');
             });
 
         $bar->finish();
@@ -384,6 +482,83 @@ class DeleteRemoteInstance extends Command
         return is_string($answer) && strtolower(trim($answer)) === $domain;
     }
 
+    /**
+     * Round-trip a probe file through the active disk(s): write, confirm it
+     * exists, read it back, delete it, confirm it is gone. Returns false on any
+     * failure so the caller can abort before touching real files.
+     */
+    private function storageSelfTest(): bool
+    {
+        $this->comment('[0/5] Storage self-test');
+
+        $usesCloud = (bool) config_cache('pixelfed.cloud_storage');
+        $probe = 'tmp/delete-remote-instance-selftest-'.uniqid().'.txt';
+        $payload = 'selftest-'.now()->timestamp;
+
+        $disks = ['local' => Storage::disk(config('filesystems.local'))];
+        if ($usesCloud) {
+            $disks['cloud ('.config('filesystems.cloud').')'] = Storage::disk(config('filesystems.cloud'));
+        } else {
+            $this->line('  cloud_storage disabled; testing local disk only.');
+        }
+
+        foreach ($disks as $label => $disk) {
+            try {
+                $t = microtime(true);
+                $disk->put($probe, $payload);
+                $this->dbg("[selftest] {$label}: put ok");
+
+                if (! $disk->exists($probe)) {
+                    $this->error("  {$label}: file not found after write.");
+
+                    return false;
+                }
+
+                $read = $disk->get($probe);
+                if ($read !== $payload) {
+                    $this->error("  {$label}: read-back mismatch.");
+                    $disk->delete($probe);
+
+                    return false;
+                }
+
+                $disk->delete($probe);
+
+                if ($disk->exists($probe)) {
+                    $this->error("  {$label}: file still present after delete.");
+
+                    return false;
+                }
+
+                $this->line("  {$label}: write/read/delete OK ({$this->humanDuration(microtime(true) - $t)}).");
+            } catch (\Throwable $e) {
+                $this->error("  {$label}: {$e->getMessage()}");
+
+                return false;
+            }
+        }
+
+        return true;
+    }
+
+    private function dbg(string $message): void
+    {
+        if ($this->option('debug')) {
+            $this->line('  <fg=gray>[debug] '.$message.'</>');
+        }
+    }
+
+    /**
+     * A subquery of profile ids for the domain, so large scans filter via an
+     * indexed EXISTS/IN subquery instead of a literal list of thousands of ids.
+     */
+    private function domainProfileSub(string $domain): \Closure
+    {
+        return function ($query) use ($domain) {
+            $query->select('id')->from('profiles')->where('domain', $domain);
+        };
+    }
+
     private function step(int $n, int $total, string $label): void
     {
         $this->newLine();
@@ -401,7 +576,8 @@ class DeleteRemoteInstance extends Command
     private function makeBar(int $max): ProgressBar
     {
         $bar = $this->output->createProgressBar($max);
-        $bar->setFormat('  %current%/%max% [%bar%] %percent:3s%%  %elapsed:6s% elapsed, %estimated:-6s% left');
+        $bar->setFormat('  %current%/%max% [%bar%] %percent:3s%%  %elapsed:6s%/%estimated:-6s%  %message%');
+        $bar->setMessage('');
         $bar->start();
 
         return $bar;
