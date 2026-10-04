@@ -367,8 +367,11 @@ Route::prefix('api')->group(function () use ($middleware) {
         });
     });
 
-    Route::prefix('v2.1')->group(function () {
+    Route::prefix('v2.1')->group(function () use ($middleware) {
         Route::get('config', [ApiV2Dot1Controller::class, 'getConfig']);
+
+        Route::get('account/timeline/settings', [ApiV2Dot1Controller::class, 'accountTimelineSettings'])->middleware($middleware);
+        Route::post('account/timeline/settings', [ApiV2Dot1Controller::class, 'updateAccountTimelineSettings'])->middleware($middleware);
     });
 
     Route::prefix('live')->group(function () {
