@@ -36,6 +36,11 @@ return [
             'cache_dropoff' => env('INSTANCE_NETWORK_TIMELINE_CACHE_DROPOFF', 100),
             'max_hours_old' => env('INSTANCE_NETWORK_TIMELINE_CACHE_MAX_HOUR_INGEST', 2160),
         ],
+
+        'tag' => [
+            'max_pages' => env('PF_INSTANCE_TIMELINE_TAG_MAX_PAGES', 10),
+            'cursor_ttl' => env('PF_INSTANCE_TIMELINE_TAG_CURSOR_TTL', 3600),
+        ],
     ],
 
     'page' => [

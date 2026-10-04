@@ -76,6 +76,7 @@ use App\Services\StoryIndexService;
 use App\Services\UserFilterService;
 use App\Services\UserRoleService;
 use App\Services\UserStorageService;
+use App\Support\CursorToken;
 use App\Transformer\Api\Mastodon\v1\MediaTransformer;
 use App\Transformer\Api\Mastodon\v1\StatusTransformer;
 use App\Transformer\Api\RelationshipTransformer;
@@ -4081,6 +4082,7 @@ class ApiV1Controller extends Controller
 
         $this->validate($request, [
             'page' => 'nullable|integer|max:40',
+            'cursor' => 'sometimes|string|max:2000',
             'min_id' => 'nullable|integer|min:0|max:'.PHP_INT_MAX,
             'max_id' => 'nullable|integer|min:0|max:'.PHP_INT_MAX,
             'limit' => 'sometimes|integer|min:1',
@@ -4115,13 +4117,47 @@ class ApiV1Controller extends Controller
 
         $min = $request->input('min_id');
         $max = $request->input('max_id');
-        $limit = $request->input('limit', 20);
-        if ($limit > 40) {
-            $limit = 40;
-        }
+        $limit = min((int) $request->input('limit', 20), 40);
         $onlyMedia = $request->boolean('only_media', true);
         $pe = $request->has(self::PF_API_ENTITY_KEY);
-        $pid = $request->user()->profile_id;
+        $pid = (int) $user->profile_id;
+
+        $maxPages = (int) config('instance.timeline.tag.max_pages', 10);
+        $cursorTtl = (int) config('instance.timeline.tag.cursor_ttl', 3600);
+        $scanLimit = 100;
+
+        $ctx = hash('sha256', implode('|', [
+            $user->id,
+            'tag-timeline',
+            'hashtag:'.$tag->id,
+            'limit:'.$limit,
+            'only_media:'.(int) $onlyMedia,
+            'pe:'.(int) $pe,
+        ]));
+
+        $hops = 0;
+        $boundary = null;
+
+        if ($request->filled('cursor')) {
+            ['cursor' => $decoded, 'hops' => $hops] = CursorToken::decode($request->input('cursor'), $ctx);
+
+            if ($hops >= $maxPages || ! ctype_digit($decoded)) {
+                return $this->json([]);
+            }
+
+            $boundary = (int) $decoded;
+        } elseif ($max) {
+            return $this->json([]);
+        }
+
+        $sinceMode = ! $boundary && $min;
+
+        if ($sinceMode) {
+            $minMax = SnowflakeService::byDate(now()->subMonths(9));
+            if (intval($min) < $minMax) {
+                return $this->json([]);
+            }
+        }
 
         $cachedFilters = CustomFilter::getCachedFiltersForAccount($pid);
 
@@ -4131,85 +4167,101 @@ class ApiV1Controller extends Controller
             return in_array('tags', $filter->context);
         });
 
-        if ($min || $max) {
-            $minMax = SnowflakeService::byDate(now()->subMonths(9));
-            if ($min && intval($min) < $minMax) {
-                return [];
-            }
-            if ($max && intval($max) < $minMax) {
-                return [];
-            }
-        }
-
         $filters = UserFilterService::filters($pid);
         $domainBlocks = UserFilterService::domainBlocks($pid);
 
-        if (! $min && ! $max) {
-            $id = 1;
-            $dir = '>';
-        } else {
-            $dir = $min ? '>' : '<';
-            $id = $min ?? $max;
-        }
-
-        $res = StatusHashtag::whereHashtagId($tag->id)
-            ->where('status_id', $dir, $id)
+        $ids = StatusHashtag::whereHashtagId($tag->id)
+            ->when($boundary, fn ($q) => $q->where('status_id', '<', $boundary))
+            ->when($sinceMode, fn ($q) => $q->where('status_id', '>', $min))
             ->whereIn('status_visibility', ['public', 'unlisted'])
             ->orderBy('status_id', 'desc')
-            ->limit(100)
-            ->pluck('status_id')
-            ->map(function ($i) use ($pe) {
-                return $pe ? StatusService::get($i, false) : StatusService::getMastodon($i, false);
-            })
-            ->filter(function ($i) use ($onlyMedia, $pid) {
-                if (! $i || ! isset($i['account'], $i['account']['id'])) {
-                    return false;
+            ->limit($scanLimit)
+            ->pluck('status_id');
+
+        $res = [];
+        $lastScanned = null;
+
+        foreach ($ids as $sid) {
+            $lastScanned = $sid;
+
+            $status = $pe ? StatusService::get($sid, false) : StatusService::getMastodon($sid, false);
+
+            if (! $status || ! isset($status['account']['id'], $status['url'])) {
+                continue;
+            }
+
+            $authorId = (int) $status['account']['id'];
+
+            if ($status['visibility'] === 'unlisted' && $authorId !== $pid) {
+                continue;
+            }
+
+            if (
+                $status['visibility'] === 'private' &&
+                $authorId !== $pid &&
+                ! FollowerService::follows($pid, $status['account']['id'], true)
+            ) {
+                continue;
+            }
+
+            if ($onlyMedia && empty($status['media_attachments'])) {
+                continue;
+            }
+
+            if (in_array($status['account']['id'], $filters)) {
+                continue;
+            }
+
+            $domain = strtolower((string) parse_url($status['url'], PHP_URL_HOST));
+            if (in_array($domain, $domainBlocks)) {
+                continue;
+            }
+
+            $filterResults = CustomFilter::applyCachedFilters($tagFilters, $status);
+
+            if (! empty($filterResults)) {
+                $status['filtered'] = $filterResults;
+                $shouldHide = collect($filterResults)->contains(function ($result) {
+                    return $result['filter']['filter_action'] === 'hide';
+                });
+
+                if ($shouldHide) {
+                    continue;
                 }
-                if ($i['visibility'] === 'unlisted') {
-                    if ((int) $i['account']['id'] !== $pid) {
-                        return false;
-                    }
-                }
-                if ($i['visibility'] === 'private') {
-                    if ((int) $i['account']['id'] !== $pid) {
-                        return FollowerService::follows($pid, $i['account']['id'], true);
-                    }
-                }
-                if ($onlyMedia == true) {
-                    if (! isset($i['media_attachments']) || ! count($i['media_attachments'])) {
-                        return false;
-                    }
-                }
+            }
 
-                return $i && isset($i['account'], $i['url']);
-            })
-            ->filter(function ($i) use ($filters, $domainBlocks) {
-                $domain = strtolower(parse_url($i['url'], PHP_URL_HOST));
+            $res[] = $status;
 
-                return ! in_array($i['account']['id'], $filters) && ! in_array($domain, $domainBlocks);
-            })
-            ->map(function ($status) use ($tagFilters) {
-                $filterResults = CustomFilter::applyCachedFilters($tagFilters, $status);
+            if (count($res) >= $limit) {
+                break;
+            }
+        }
 
-                if (! empty($filterResults)) {
-                    $status['filtered'] = $filterResults;
-                    $shouldHide = collect($filterResults)->contains(function ($result) {
-                        return $result['filter']['filter_action'] === 'hide';
-                    });
+        $hasMore = count($res) >= $limit || $ids->count() >= $scanLimit;
 
-                    if ($shouldHide) {
-                        return null;
-                    }
-                }
+        $baseUrl = $request->url();
+        $shared = [
+            'limit' => $limit,
+            'only_media' => $onlyMedia ? 'true' : 'false',
+        ];
+        if ($pe) {
+            $shared[self::PF_API_ENTITY_KEY] = 1;
+        }
 
-                return $status;
-            })
-            ->filter()
-            ->take($limit)
-            ->values()
-            ->toArray();
+        $links = [];
 
-        return $this->json($res);
+        if (! $sinceMode && $hasMore && $lastScanned && ($hops + 1) < $maxPages) {
+            $token = CursorToken::encode((string) $lastScanned, $ctx, $hops + 1, $cursorTtl);
+            $links[] = '<'.$baseUrl.'?'.http_build_query($shared + ['cursor' => $token]).'>; rel="next"';
+        }
+
+        if (! empty($res)) {
+            $links[] = '<'.$baseUrl.'?'.http_build_query($shared + ['min_id' => $res[0]['id']]).'>; rel="prev"';
+        }
+
+        $headers = empty($links) ? [] : ['Link' => implode(', ', $links)];
+
+        return $this->json($res, 200, $headers);
     }
 
     /**
