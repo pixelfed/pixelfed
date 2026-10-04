@@ -3686,6 +3686,7 @@ class ApiV1Controller extends Controller
             'collection_ids' => 'sometimes|array|max:3',
             'comments_disabled' => 'sometimes|boolean',
             'quote_approval_policy' => 'sometimes|nullable|string|in:public,followers,nobody',
+            '_pe' => 'sometimes',
         ]);
 
         if ($request->filled('visibility') && $request->input('visibility') === 'direct') {
@@ -3731,7 +3732,7 @@ class ApiV1Controller extends Controller
         }
 
         $profile = $user->profile;
-
+        $pe = $request->has(self::PF_API_ENTITY_KEY);
         $limitKey = 'compose:rate-limit:store:'.$user->id;
         $limitTtl = now()->addMinutes(15);
         $limitReached = Cache::remember($limitKey, $limitTtl, function () use ($user) {
@@ -3904,7 +3905,7 @@ class ApiV1Controller extends Controller
                 });
         }
 
-        $res = StatusService::getMastodon($status->id, false);
+        $res = $pe ? StatusService::get($status->id, false) : StatusService::getMastodon($status->id, false);
         $res['favourited'] = false;
         $res['language'] = 'en';
         $res['bookmarked'] = false;
