@@ -35,6 +35,15 @@
 /psalm.sarif.json
 /.psalm-cache
 
+# Keep LLM supporting documents explictly out of the repo
+AGENTS.md
+boost.json
+/.agents
+/.github
+/.ai
+/.kiro
+/.vscode
+
 # Exceptions - these *MUST* be last
 !/bootstrap/cache/.gitignore
 !/public/vendor/horizon/.gitignore

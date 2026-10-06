@@ -45,7 +45,7 @@ class SiteController extends Controller
 
     public function changeLocale(Request $request, $locale): RedirectResponse
     {
-        // todo: add other locales after pushing new l10n strings
+        $locale = Localization::normalizeLocale($locale);
         $locales = Localization::languages();
         if (in_array($locale, $locales)) {
             if ($request->user()) {

@@ -255,6 +255,7 @@ class MediaStorageService
             'image/jpg',
             'image/jpeg',
             'image/png',
+            'image/webp',
         ];
 
         $mime = $head['mime'];
@@ -296,14 +297,18 @@ class MediaStorageService
         try {
             $mimeCheck = Storage::mimeType('remcache/'.$tmpPath);
 
-            if (! $mimeCheck || ! in_array($mimeCheck, ['image/png', 'image/jpeg', 'image/jpg'])) {
+            if (! $mimeCheck || ! in_array($mimeCheck, ['image/png', 'image/jpeg', 'image/jpg', 'image/webp'])) {
                 $avatar->last_fetched_at = now();
                 $avatar->save();
 
                 return;
             }
 
-            $ext = ($mimeCheck === 'image/png') ? 'png' : 'jpg';
+            $ext = match ($mimeCheck) {
+                'image/png' => 'png',
+                'image/webp' => 'webp',
+                default => 'jpg',
+            };
             $path = 'avatar_'.strtolower(Str::random(random_int(3, 6))).'.'.$ext;
 
             $disk = Storage::disk($driver);

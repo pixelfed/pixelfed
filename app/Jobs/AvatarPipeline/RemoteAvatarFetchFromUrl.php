@@ -70,6 +70,10 @@ class RemoteAvatarFetchFromUrl implements ShouldQueue
             return;
         }
 
+        if (! Avatar::isStorableRemoteUrl($this->url)) {
+            return;
+        }
+
         $avatar = Avatar::whereProfileId($profile->id)->first();
 
         if (! $avatar) {
