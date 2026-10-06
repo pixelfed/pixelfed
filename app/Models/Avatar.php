@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Util\ActivityPub\Helpers;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\SoftDeletes;
@@ -49,6 +50,8 @@ class Avatar extends Model
 {
     use SoftDeletes;
 
+    public const REMOTE_URL_MAX_LENGTH = 2048;
+
     protected $guarded = [];
 
     protected function casts(): array
@@ -70,5 +73,18 @@ class Avatar extends Model
     public function profile(): BelongsTo
     {
         return $this->belongsTo(Profile::class);
+    }
+
+    public static function isStorableRemoteUrl(mixed $url): bool
+    {
+        if (! is_string($url) || $url === '') {
+            return false;
+        }
+
+        if (strlen($url) > self::REMOTE_URL_MAX_LENGTH) {
+            return false;
+        }
+
+        return Helpers::validateUrl($url) !== false;
     }
 }

@@ -94,7 +94,7 @@ class RemoteAvatarFetch implements ShouldQueue
             return;
         }
 
-        if (! Helpers::validateUrl($person['icon']['url'])) {
+        if (! Avatar::isStorableRemoteUrl($person['icon']['url'])) {
             return;
         }
 
