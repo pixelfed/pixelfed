@@ -86,17 +86,6 @@ class StatusReplyPipeline implements ShouldQueue
             return;
         }
 
-        $exists = Notification::whereProfileId($target->id)
-            ->whereActorId($actor->id)
-            ->whereIn('action', ['mention', 'comment'])
-            ->whereItemId($status->id)
-            ->whereItemType(Status::class)
-            ->count();
-
-        if ($actor->id === $target || $exists !== 0) {
-            return;
-        }
-
         Status::whereId($reply->id)->update([
             'reply_count' => DB::raw('COALESCE(reply_count, 0) + 1'),
         ]);
@@ -105,6 +94,17 @@ class StatusReplyPipeline implements ShouldQueue
         StatusService::del($status->id);
         Cache::forget('status:replies:all:'.$reply->id);
         Cache::forget('status:replies:all:'.$status->id);
+
+        $exists = Notification::whereProfileId($target->id)
+            ->whereActorId($actor->id)
+            ->whereIn('action', ['mention', 'comment'])
+            ->whereItemId($status->id)
+            ->whereItemType(Status::class)
+            ->count();
+
+        if ($actor->id === $target->id || $exists !== 0) {
+            return;
+        }
 
         if ($target->user_id && $target->domain === null) {
             DB::transaction(function () use ($target, $actor, $status) {
