@@ -214,6 +214,15 @@ class Image
             $img = $this->imageManager->decodeBinary($fileContents);
             $img = $img->orient();
 
+            // carry the source ICC color profile across the re-encode so wide-gamut
+            // uploads (Display P3, RAW exports) are not desaturated.
+            $iccProfile = null;
+            try {
+                $iccProfile = $img->profile();
+            } catch (\Throwable $e) {
+                $iccProfile = null;
+            }
+
             $ratio = $this->getAspect($img->width(), $img->height(), $thumbnail);
             $aspect = $ratio['dimensions'];
             $orientation = $ratio['orientation'];
@@ -266,6 +275,17 @@ class Image
             }
 
             $converted = $this->setBaseName($path, $thumbnail, $outputExtension);
+
+            if ($iccProfile !== null) {
+                try {
+                    $img = $img->setProfile($iccProfile);
+                } catch (\Throwable $e) {
+                    if (config('app.dev_log')) {
+                        Log::info('ICC profile re-apply failed: '.$e->getMessage());
+                    }
+                }
+            }
+
             $encoded = $encoder->encode($img);
 
             if ($localFs) {

@@ -1,6 +1,6 @@
 type: laravel
 docroot: public
-php_version: "8.4"
+php_version: "8.5"
 webserver_type: nginx-fpm
 database:
   type: mariadb
