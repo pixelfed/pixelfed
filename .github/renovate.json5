@@ -1,0 +1,81 @@
+{
+  $schema: "https://docs.renovatebot.com/renovate-schema.json",
+
+  extends: [
+    "config:recommended",                  // sane defaults + Dependency Dashboard issue
+    "helpers:pinGitHubActionDigests",      // pin actions to commit SHAs (supply-chain safety)
+    "docker:pinDigests",                   // pin Docker base images by digest
+    "customManagers:dockerfileVersions",   // reads "# renovate:" comments above ARG/ENV *_VERSION lines
+  ],
+
+  labels: ["dependencies"],
+  prConcurrentLimit: 15,                 // don't flood the repo with PRs
+
+  minimumReleaseAge: "3 days",
+
+  vulnerabilityAlerts: {
+    labels: ["security"],
+    schedule: ["at any time"],
+    minimumReleaseAge: null,
+  },
+
+  lockFileMaintenance: {
+    enabled: true,
+    schedule: ["before 6am on sunday"],
+  },
+
+  // ---- Node.js disabled for now ----
+  npm: { enabled: false },
+  nvm: { enabled: false },
+
+
+
+  packageRules: [
+    // Upgrade PRs for these groups
+    {
+      groupName: "laravel",
+      matchManagers: ["composer"],
+      matchPackageNames: ["laravel/**", "illuminate/**"],
+      matchUpdateTypes: ["minor", "patch"],
+    },
+
+    {
+      groupName: "composer non-major",
+      matchManagers: ["composer"],
+      matchUpdateTypes: ["minor", "patch"],
+      excludePackageNames: ["laravel/**", "illuminate/**"],
+    },
+
+    {
+      matchPackageNames: ["node", "**/node"],
+      matchDatasources: ["docker", "node-version"],
+      enabled: false,
+    },
+
+    {
+      groupName: "docker base images",
+      matchManagers: ["dockerfile", "docker-compose"],
+      matchUpdateTypes: ["patch", "digest", "pin"],
+    },
+
+    {
+      groupName: "github actions",
+      matchManagers: ["github-actions"],
+      matchUpdateTypes: ["minor", "patch", "digest", "pin"],
+    },
+
+    // Manual Approval
+    {
+      matchManagers: ["composer"],
+      matchUpdateTypes: ["major"],
+      dependencyDashboardApproval: true,
+    },
+
+    {
+      matchDatasources: ["docker"],
+      matchPackageNames: ["php", "**/php"],
+      matchUpdateTypes: ["major", "minor"],
+      dependencyDashboardApproval: true,
+    },
+  ],
+}
