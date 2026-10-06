@@ -624,4 +624,30 @@ describe('outbound inReplyTo', function () {
         expect($reply->inReplyToUri())->toBe($parent->url());
         expect($parent->inReplyToUri())->toBeNull();
     });
+
+    it('returns null for a remote parent with a null object_url instead of its permalink', function () {
+        $local = replyLocalUser();
+        $alice = replyRemoteProfile('other.example', 'alice');
+
+        $permalink = 'https://pleroma.example/users/bob/statuses/123';
+
+        $parent = Status::factory()->create([
+            'profile_id' => $alice->id,
+            'uri' => $permalink,
+            'object_url' => null,
+            'in_reply_to_id' => null,
+            'local' => false,
+        ]);
+
+        $reply = Status::factory()->create([
+            'profile_id' => $local->profile_id,
+            'in_reply_to_id' => $parent->id,
+            'in_reply_to_profile_id' => $alice->id,
+            'local' => true,
+        ]);
+
+        expect($reply->inReplyToUri())
+            ->not->toBe($permalink)
+            ->and($reply->inReplyToUri())->toBeNull();
+    });
 });
