@@ -5,7 +5,8 @@
     "config:recommended",                  // sane defaults + Dependency Dashboard issue
     "helpers:pinGitHubActionDigests",      // pin actions to commit SHAs (supply-chain safety)
     "docker:pinDigests",                   // pin Docker base images by digest
-    "customManagers:dockerfileVersions",   // reads "# renovate:" comments above ARG/ENV *_VERSION lines
+    "customManagers:dockerfileVersions",   // reads "# renovate:" comments
+    "customManagers:githubActionsVersions",// reads "# renovate:" comments
   ],
 
   labels: ["dependencies"],
