@@ -1,13 +1,18 @@
 <?php
 
 use App\Jobs\StatusPipeline\StatusReplyPipeline;
+use App\Models\Notification;
 use App\Models\Profile;
 use App\Models\Status;
 use App\Models\User;
 use Illuminate\Foundation\Testing\LazilyRefreshDatabase;
-use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Redis;
 
 uses(LazilyRefreshDatabase::class);
+
+beforeEach(function () {
+    Redis::spy();
+});
 
 it('increments reply_count even when a mention notification already exists', function () {
     $localUser = User::factory()->create();
@@ -31,14 +36,10 @@ it('increments reply_count even when a mention notification already exists', fun
     ]);
 
     // Simulate MentionPipeline winning the race
-    DB::table('notifications')->insert([
+    Notification::factory()->mention()->create([
         'profile_id' => $localUser->profile_id,
         'actor_id' => $remote->id,
-        'action' => 'mention',
         'item_id' => $reply->id,
-        'item_type' => Status::class,
-        'created_at' => now(),
-        'updated_at' => now(),
     ]);
 
     (new StatusReplyPipeline($reply))->handle();
