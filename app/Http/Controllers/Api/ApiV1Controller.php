@@ -3409,28 +3409,36 @@ class ApiV1Controller extends Controller
         }
 
         if ($status['replies_count']) {
+            $parentOwnerId = $status['account']['id'];
+            $parentScope = $status['visibility'];
+
             $descendants = DB::table('statuses')
+                ->select(['id', 'profile_id', 'scope', 'local'])
                 ->where('in_reply_to_id', $id)
-                ->limit(20)
-                ->pluck('id')
-                ->map(function ($sid) use ($pe, $pid) {
-                    return $pe
-                        ? StatusService::get(
-                            $sid,
-                            false,
-                            false,
-                            $pid
-                        )
-                        : StatusService::getMastodon(
-                            $sid,
-                            false,
+                ->whereNull('deleted_at')
+                ->whereIn('scope', ['public', 'unlisted', 'private'])
+                ->orderBy('id')
+                ->limit(100)
+                ->get()
+                ->filter(function ($row) use ($filters, $pid, $parentOwnerId, $parentScope) {
+                    return ! in_array($row->profile_id, $filters) &&
+                        StatusService::isReplyVisibleTo(
+                            $row->profile_id,
+                            $row->scope,
+                            $row->local,
+                            $parentOwnerId,
+                            $parentScope,
                             $pid
                         );
                 })
-                ->filter(function ($post) use ($filters) {
-                    return $post &&
-                        isset($post['account']['id']) &&
-                        ! in_array($post['account']['id'], $filters);
+                ->take(20)
+                ->map(function ($row) use ($pe) {
+                    return $pe
+                        ? StatusService::get($row->id, false)
+                        : StatusService::getMastodon($row->id, false);
+                })
+                ->filter(function ($post) {
+                    return $post && isset($post['account']['id']);
                 })
                 ->map(function ($status) use ($pid) {
                     $status['favourited'] = LikeService::liked(
