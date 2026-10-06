@@ -72,8 +72,13 @@ class StatusService
         if ($viewerProfileId !== null) {
             $ownerProfileId = $res['_pid'] ?? null;
             $visibility = $res['visibility'] ?? null;
+            $addressee = $res['in_reply_to_account_id'] ?? null;
 
-            if (! self::isVisibleTo(
+            $isAddressee = $visibility === 'private' &&
+                $addressee &&
+                (int) $addressee === (int) $viewerProfileId;
+
+            if (! $isAddressee && ! self::isVisibleTo(
                 $ownerProfileId,
                 $visibility,
                 $viewerProfileId
@@ -219,6 +224,46 @@ class StatusService
             default:
                 return false;
         }
+    }
+
+    public static function isReplyVisibleTo(
+        $replyOwnerProfileId,
+        $replyScope,
+        $replyIsLocal,
+        $parentOwnerProfileId,
+        $parentScope,
+        $viewerProfileId
+    ): bool {
+        if (! $replyOwnerProfileId || ! $viewerProfileId) {
+            return false;
+        }
+
+        if (in_array($replyScope, ['public', 'unlisted'], true)) {
+            return true;
+        }
+
+        if ($replyScope !== 'private') {
+            return false;
+        }
+
+        $replyOwnerProfileId = (int) $replyOwnerProfileId;
+        $viewerProfileId = (int) $viewerProfileId;
+
+        if (
+            $replyOwnerProfileId === $viewerProfileId ||
+            (int) $parentOwnerProfileId === $viewerProfileId
+        ) {
+            return true;
+        }
+
+        if ($parentScope === 'private' && $replyIsLocal) {
+            return true;
+        }
+
+        return (bool) FollowerService::follows(
+            (string) $viewerProfileId,
+            (string) $replyOwnerProfileId
+        );
     }
 
     public static function clampReplyVisibility(
