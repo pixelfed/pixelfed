@@ -39,6 +39,16 @@ Photo sharing the way it should be. Pixelfed lets your casual shots and creative
 >
 > Contributors are expected to understand, author, and take responsibility for the work they submit. Tools such as linters, formatters, autocomplete, spellcheckers, and other non-generative development tools are unaffected by this policy.
 
+## PHP Support
+Notice: While older unsupported PHP versions might work, we recommend using the recommended version.
+
+- PHP 8.5 (Recommended) - Our baseline for testing/Docker images.
+- PHP 8.4 (Supported) - Active support ends _31 Dec 2026_.
+- PHP 8.3 (Unsupported) - Active support ended _31 Dec 2025_.
+- PHP 8.2 (Unsupported) - Active support ended _31 Dec 2024_.
+
+Reference: https://www.php.net/supported-versions.php
+
 ## Database Support (Please report any regressions)
 
 -   MySQL 9+ is officially supported (Strict mode is not default).
