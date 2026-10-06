@@ -4,6 +4,7 @@ namespace App\Services\Status;
 
 use App\Models\Media;
 use App\Models\ModLog;
+use App\Models\Profile;
 use App\Models\Status;
 use App\Models\StatusEdit;
 use App\Services\MediaService;
@@ -86,6 +87,10 @@ class UpdateStatusService
                 }
             } else {
                 $status->is_nsfw = (bool) $attributes['sensitive'];
+            }
+            $profile = Profile::find($status->profile_id);
+            if (! $profile || $profile->cw == true) {
+                $status->is_nsfw = true;
             }
         }
         if (isset($attributes['spoiler_text'])) {
