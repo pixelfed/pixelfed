@@ -28,7 +28,7 @@
   // ---- Node.js disabled for now ----
   npm: { enabled: false },
   nvm: { enabled: false },
-
+  nodenv: { enabled: false },
 
 
   packageRules: [
@@ -67,7 +67,21 @@
 
     // Manual Approval
     {
+      matchDatasources: ["docker"],
+      matchPackageNames: ["mysql", "mariadb", "postgres", "redis", "valkey"],
+      matchUpdateTypes: ["major", "minor"],
+      dependencyDashboardApproval: true,
+    },
+
+    {
       matchManagers: ["composer"],
+      matchUpdateTypes: ["major"],
+      dependencyDashboardApproval: true,
+    },
+
+    {
+      matchDatasources: ["docker"],
+      matchPackageNames: ["composer"],
       matchUpdateTypes: ["major"],
       dependencyDashboardApproval: true,
     },
