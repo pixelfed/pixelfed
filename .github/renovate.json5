@@ -2,15 +2,15 @@
   $schema: "https://docs.renovatebot.com/renovate-schema.json",
 
   extends: [
-    "config:recommended",                  // sane defaults + Dependency Dashboard issue
-    "helpers:pinGitHubActionDigests",      // pin actions to commit SHAs (supply-chain safety)
-    "docker:pinDigests",                   // pin Docker base images by digest
-    "customManagers:dockerfileVersions",   // reads "# renovate:" comments
-    "customManagers:githubActionsVersions",// reads "# renovate:" comments
+    "config:recommended",
+    "helpers:pinGitHubActionDigests",
+    "customManagers:dockerfileVersions",
+    "customManagers:githubActionsVersions",
+    ':enableVulnerabilityAlertsWithLabel(security)',
   ],
 
   labels: ["dependencies"],
-  prConcurrentLimit: 15,                 // don't flood the repo with PRs
+  prConcurrentLimit: 15,
 
   minimumReleaseAge: "3 days",
 
