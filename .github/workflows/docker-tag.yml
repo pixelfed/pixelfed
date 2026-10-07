@@ -1,11 +1,14 @@
 name: Build Tagged Release Image
-# Fires only when a tag matching semver-with-v-prefix is pushed, e.g. v0.12.9
-# (matches https://github.com/OWNER/REPO/tags style version tags).
-# A push to main/staging does NOT trigger this — only an actual tag push does.
+
+# Fires when a GitHub Release is published (including pre-releases).
+# Image tags produced (two per release):
+#   - Pre-release (or tag has -rc):   <tag> (e.g. v0.14.5-rc) + roaming "rc"
+#   - Release labelled "Latest":      <tag> (e.g. v0.14.5)    + roaming "stable"
+# A non-latest, non-prerelease release (e.g. a backport) only gets <tag>,
+# so "stable" never moves backwards.
 on:
-  push:
-    tags:
-      - 'v*.*.*'
+  release:
+    types: [published]
 
 concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
@@ -20,29 +23,44 @@ env:
 
 jobs:
   prepare:
+    # Keep the old "v*" tag guard. Skipping this job also skips build and merge.
+    if: startsWith(github.event.release.tag_name, 'v')
     runs-on: ubuntu-latest
     timeout-minutes: 5
     outputs:
-      tag_name: ${{ steps.latest.outputs.tag_name }}
-      is_latest: ${{ steps.latest.outputs.is_latest }}
+      tag_name: ${{ steps.channel.outputs.tag_name }}
+      channel_tag: ${{ steps.channel.outputs.channel_tag }}
     steps:
-      - name: Determine if this tag is the current latest release
-        id: latest
+      - name: Work out channel tag from release label
+        id: channel
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          TAG_NAME: ${{ github.event.release.tag_name }}
+          IS_PRERELEASE: ${{ github.event.release.prerelease }}
+          REPO: ${{ github.repository }}
         run: |
-          TAG_NAME="${{ github.ref_name }}"
           echo "tag_name=${TAG_NAME}" >> "$GITHUB_OUTPUT"
-          # GitHub's "latest release" API endpoint automatically excludes
-          # drafts and pre-releases, so this is a more reliable check than
-          # just pattern-matching the tag string for '-rc'/'-beta' etc.
-          LATEST=$(gh api "repos/${{ github.repository }}/releases/latest" --jq .tag_name 2>/dev/null || echo "")
-          if [ "$TAG_NAME" = "$LATEST" ]; then
-            echo "is_latest=true" >> "$GITHUB_OUTPUT"
+
+          CHANNEL=""
+          if [ "$IS_PRERELEASE" = "true" ] || [[ "$TAG_NAME" == *-rc* ]]; then
+            # Pre-release label OR an -rc suffix: never allow it to become "stable".
+            CHANNEL="rc"
           else
-            echo "is_latest=false" >> "$GITHUB_OUTPUT"
+            # The "latest release" endpoint excludes drafts and pre-releases.
+            # It can lag a few seconds behind publishing, so retry briefly.
+            LATEST=""
+            for attempt in 1 2 3 4 5; do
+              LATEST=$(gh api "repos/${REPO}/releases/latest" --jq .tag_name 2>/dev/null || echo "")
+              [ "$LATEST" = "$TAG_NAME" ] && break
+              sleep 5
+            done
+            if [ "$LATEST" = "$TAG_NAME" ]; then
+              CHANNEL="stable"
+            fi
           fi
-          echo "Tag: $TAG_NAME | Latest published release: ${LATEST:-<none>} | is_latest=$( [ "$TAG_NAME" = "$LATEST" ] && echo true || echo false )"
+
+          echo "channel_tag=${CHANNEL}" >> "$GITHUB_OUTPUT"
+          echo "Tag: ${TAG_NAME} | prerelease=${IS_PRERELEASE} | channel tag: ${CHANNEL:-<none>}"
 
   build:
     needs: prepare
@@ -74,9 +92,10 @@ jobs:
 
       - name: Prepare platform tag
         id: platform
+        env:
+          PLATFORM: ${{ matrix.platform }}
         run: |
-          platform=${{ matrix.platform }}
-          echo "pair=${platform//\//-}" >> "$GITHUB_OUTPUT"
+          echo "pair=${PLATFORM//\//-}" >> "$GITHUB_OUTPUT"
 
       - name: Build and push (${{ matrix.platform }})
         id: build
@@ -91,10 +110,11 @@ jobs:
           cache-to: type=gha,mode=max,scope=release-${{ steps.platform.outputs.pair }}
 
       - name: Export digest
+        env:
+          DIGEST: ${{ steps.build.outputs.digest }}
         run: |
           mkdir -p /tmp/digests
-          digest="${{ steps.build.outputs.digest }}"
-          touch "/tmp/digests/${digest#sha256:}"
+          touch "/tmp/digests/${DIGEST#sha256:}"
 
       - name: Upload digest
         uses: actions/upload-artifact@v4
@@ -128,32 +148,51 @@ jobs:
 
       - name: Build tags list
         id: tags
+        env:
+          TAG_NAME: ${{ needs.prepare.outputs.tag_name }}
+          CHANNEL_TAG: ${{ needs.prepare.outputs.channel_tag }}
         run: |
-          # One tag per line — build-push-action's `tags:` input requires
-          # newline-separated entries, not space-separated.
+          # One tag per line.
           {
             echo "tags<<EOF"
-            echo "${{ env.IMAGE_NAME }}:${{ needs.prepare.outputs.tag_name }}"
-            if [ "${{ needs.prepare.outputs.is_latest }}" = "true" ]; then
-              echo "${{ env.IMAGE_NAME }}:stable"
+            echo "${IMAGE_NAME}:${TAG_NAME}"
+            if [ -n "$CHANNEL_TAG" ]; then
+              echo "${IMAGE_NAME}:${CHANNEL_TAG}"
             fi
             echo "EOF"
           } >> "$GITHUB_OUTPUT"
 
       - name: Create manifest list and push
         working-directory: /tmp/digests
+        env:
+          TAGS: ${{ steps.tags.outputs.tags }}
         run: |
-          docker buildx imagetools create \
-            $(echo "${{ steps.tags.outputs.tags }}" | sed 's/^/-t /' | tr '\n' ' ') \
-            $(printf '${{ env.IMAGE_NAME }}@sha256:%s ' *)
+          tag_args=()
+          while read -r t; do
+            [ -n "$t" ] && tag_args+=(-t "$t")
+          done <<< "$TAGS"
+
+          digest_args=()
+          for d in *; do
+            digest_args+=("${IMAGE_NAME}@sha256:${d}")
+          done
+
+          docker buildx imagetools create "${tag_args[@]}" "${digest_args[@]}"
 
       - name: Inspect image
+        env:
+          TAG_NAME: ${{ needs.prepare.outputs.tag_name }}
         run: |
-          docker buildx imagetools inspect ${{ env.IMAGE_NAME }}:${{ needs.prepare.outputs.tag_name }}
+          docker buildx imagetools inspect "${IMAGE_NAME}:${TAG_NAME}"
 
       - name: Summary
+        env:
+          TAG_NAME: ${{ needs.prepare.outputs.tag_name }}
+          CHANNEL_TAG: ${{ needs.prepare.outputs.channel_tag }}
         run: |
-          echo "### Release image build" >> "$GITHUB_STEP_SUMMARY"
-          echo "- Tag pushed: \`${{ needs.prepare.outputs.tag_name }}\`" >> "$GITHUB_STEP_SUMMARY"
-          echo "- Also tagged 'stable': \`${{ needs.prepare.outputs.is_latest }}\`" >> "$GITHUB_STEP_SUMMARY"
-          echo "- Platforms: linux/amd64, linux/arm64" >> "$GITHUB_STEP_SUMMARY"
+          {
+            echo "### Release image build"
+            echo "- Release tag: \`${TAG_NAME}\`"
+            echo "- Channel tag: \`${CHANNEL_TAG:-none}\`"
+            echo "- Platforms: linux/amd64, linux/arm64"
+          } >> "$GITHUB_STEP_SUMMARY"
