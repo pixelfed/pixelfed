@@ -1,14 +1,19 @@
 name: Build Branch Image
 
+# Every push to dev builds an image with two tags:
+#   - dev-<short commit sha>   static, never moves
+#   - dev                      roaming, always the newest dev build
 on:
   push:
     branches:
       - dev
 
-# Cancel an in-flight build for a branch if a new push arrives before it finishes — avoids wasting runner minutes racing two builds of the same branch.
+# One run per commit, and never cancel a running build. This guarantees every
+# commit gets its own static dev-<sha> tag. The roaming "dev" tag is protected
+# from moving backwards by the head check in the merge job.
 concurrency:
-  group: ${{ github.workflow }}-${{ github.ref }}
-  cancel-in-progress: true
+  group: ${{ github.workflow }}-${{ github.sha }}
+  cancel-in-progress: false
 
 permissions:
   contents: read
@@ -24,9 +29,9 @@ jobs:
       matrix:
         include:
           - platform: linux/amd64
-            runs-on: ubuntu-26.04
+            runs-on: ubuntu-latest
           - platform: linux/arm64
-            runs-on: ubuntu-26.04-arm
+            runs-on: ubuntu-24.04-arm
     runs-on: ${{ matrix.runs-on }}
     timeout-minutes: 45
     steps:
@@ -45,9 +50,10 @@ jobs:
 
       - name: Prepare platform tag
         id: platform
+        env:
+          PLATFORM: ${{ matrix.platform }}
         run: |
-          platform=${{ matrix.platform }}
-          echo "pair=${platform//\//-}" >> "$GITHUB_OUTPUT"
+          echo "pair=${PLATFORM//\//-}" >> "$GITHUB_OUTPUT"
 
       - name: Build and push (${{ matrix.platform }})
         id: build
@@ -62,10 +68,11 @@ jobs:
           cache-to: type=gha,mode=max,scope=${{ github.ref_name }}-${{ steps.platform.outputs.pair }}
 
       - name: Export digest
+        env:
+          DIGEST: ${{ steps.build.outputs.digest }}
         run: |
           mkdir -p /tmp/digests
-          digest="${{ steps.build.outputs.digest }}"
-          touch "/tmp/digests/${digest#sha256:}"
+          touch "/tmp/digests/${DIGEST#sha256:}"
 
       - name: Upload digest
         uses: actions/upload-artifact@v4
@@ -97,24 +104,53 @@ jobs:
           username: ${{ github.actor }}
           password: ${{ secrets.GITHUB_TOKEN }}
 
+      # Builds can finish out of order (a slow older commit can finish after a
+      # newer one). Only move the roaming "dev" tag if this commit is still the
+      # tip of the branch.
+      - name: Check this commit is still the head of the branch
+        id: head
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          REPO: ${{ github.repository }}
+          BRANCH: ${{ github.ref_name }}
+          SHA: ${{ github.sha }}
+        run: |
+          HEAD_SHA=$(gh api "repos/${REPO}/git/ref/heads/${BRANCH}" --jq .object.sha 2>/dev/null || echo "$SHA")
+          if [ "$HEAD_SHA" = "$SHA" ]; then
+            echo "is_head=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "is_head=false" >> "$GITHUB_OUTPUT"
+          fi
+          echo "This commit: ${SHA} | Branch head: ${HEAD_SHA}"
+
       - name: Extract metadata
         id: meta
         uses: docker/metadata-action@v5
         with:
           images: ${{ env.IMAGE_NAME }}
           tags: |
-            type=raw,value=${{ github.ref_name == 'dev' && 'latest' || github.ref_name }}
-            type=sha,format=short,prefix=${{ github.ref_name == 'dev' && 'latest' || github.ref_name }}-
+            type=raw,value=dev,enable=${{ steps.head.outputs.is_head == 'true' }}
+            type=sha,format=short,prefix=dev-
 
       - name: Create manifest list and push
         working-directory: /tmp/digests
-        run: |
-          docker buildx imagetools create \
-            $(jq -cr '.tags | map("-t " + .) | join(" ")' <<< "$DOCKER_METADATA_OUTPUT_JSON") \
-            $(printf '${{ env.IMAGE_NAME }}@sha256:%s ' *)
         env:
           DOCKER_METADATA_OUTPUT_JSON: ${{ steps.meta.outputs.json }}
+        run: |
+          tag_args=()
+          while read -r t; do
+            [ -n "$t" ] && tag_args+=(-t "$t")
+          done < <(jq -r '.tags[]' <<< "$DOCKER_METADATA_OUTPUT_JSON")
+
+          digest_args=()
+          for d in *; do
+            digest_args+=("${IMAGE_NAME}@sha256:${d}")
+          done
+
+          docker buildx imagetools create "${tag_args[@]}" "${digest_args[@]}"
 
       - name: Inspect image
+        env:
+          VERSION: ${{ steps.meta.outputs.version }}
         run: |
-          docker buildx imagetools inspect ${{ env.IMAGE_NAME }}:${{ steps.meta.outputs.version }}
+          docker buildx imagetools inspect "${IMAGE_NAME}:${VERSION}"
