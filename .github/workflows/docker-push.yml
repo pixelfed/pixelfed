@@ -4,8 +4,6 @@ on:
   push:
     branches:
       - dev
-      - staging
-      - unstable
 
 # Cancel an in-flight build for a branch if a new push arrives before it finishes — avoids wasting runner minutes racing two builds of the same branch.
 concurrency:
