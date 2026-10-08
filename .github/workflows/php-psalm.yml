@@ -24,7 +24,7 @@ jobs:
 
     steps:
       - name: Checkout code
-        uses: actions/checkout@v7
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
 
       # Psalm 6.5.0 crashes on PHP 8.5: its internals call the now-deprecated
       # SplObjectStorage::attach(), and Psalm's error handler escalates the
@@ -32,14 +32,14 @@ jobs:
       # analyzer on 8.4 until Psalm ships a PHP 8.5-compatible release. This only
       # affects the PHP that runs Psalm; it still analyzes the same source.
       - name: Setup PHP
-        uses: shivammathur/setup-php@v2
+        uses: shivammathur/setup-php@f3e473d116dcccaddc5834248c87452386958240 # v2
         with:
           php-version: '8.4'
           extensions: mbstring, pdo_sqlite, bcmath, intl
           coverage: none
 
       - name: Cache Composer dependencies
-        uses: actions/cache@v6
+        uses: actions/cache@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6
         with:
           path: vendor
           key: composer-8.4-${{ hashFiles('composer.lock') }}
@@ -74,7 +74,7 @@ jobs:
       # when the Psalm step failed, but only when a real SARIF file was produced.
       - name: Upload SARIF to Code Scanning
         if: ${{ !cancelled() && steps.sarif.outputs.exists == 'true' }}
-        uses: github/codeql-action/upload-sarif@v4
+        uses: github/codeql-action/upload-sarif@2892aa5e19bbd11bc0cff5427e3b750a04d9e3c2 # v4
         with:
           sarif_file: psalm.sarif.json
           category: psalm
