@@ -2,7 +2,7 @@
 services:
   redis:
     container_name: ddev-${DDEV_SITENAME}-redis
-    image: ${REDIS_DOCKER_IMAGE:-redis:7}
+    image: ${REDIS_DOCKER_IMAGE:-redis:8}
     # These labels ensure this service is discoverable by ddev.
     labels:
       com.ddev.site-name: ${DDEV_SITENAME}
