@@ -89,7 +89,7 @@ jobs:
           --health-retries 10
 
       postgres:
-        image: postgres:16
+        image: postgres:18
         env:
           POSTGRES_DB: pixelfed_test
           POSTGRES_USER: pixelfed
