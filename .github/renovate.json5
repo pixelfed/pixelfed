@@ -9,6 +9,9 @@
     ':enableVulnerabilityAlertsWithLabel(security)',
   ],
 
+  baseBranchPatterns: ["staging"],
+  useBaseBranchConfig: "merge",
+
   labels: ["dependencies"],
   prConcurrentLimit: 15,
 
@@ -29,7 +32,6 @@
   npm: { enabled: false },
   nvm: { enabled: false },
   nodenv: { enabled: false },
-
 
   packageRules: [
     // Upgrade PRs for these groups
