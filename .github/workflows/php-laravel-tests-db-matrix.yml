@@ -74,7 +74,7 @@ jobs:
           --health-retries 10
 
       mariadb:
-        image: mariadb:11.8
+        image: mariadb:12.3
         env:
           MARIADB_ROOT_PASSWORD: pixelfed
           MARIADB_DATABASE: pixelfed_test
@@ -89,7 +89,7 @@ jobs:
           --health-retries 10
 
       postgres:
-        image: postgres:18
+        image: postgres:16
         env:
           POSTGRES_DB: pixelfed_test
           POSTGRES_USER: pixelfed
