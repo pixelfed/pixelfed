@@ -1986,21 +1986,21 @@
         },
         {
             "name": "laravel-notification-channels/expo",
-            "version": "2.4.0",
+            "version": "2.5.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/laravel-notification-channels/expo.git",
-                "reference": "1082e30df68aabb6b6b4a400969affe378c8e24f"
+                "reference": "4c74eeb74ad5cdd5af9dd204d29386cd6848c85f"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/laravel-notification-channels/expo/zipball/1082e30df68aabb6b6b4a400969affe378c8e24f",
-                "reference": "1082e30df68aabb6b6b4a400969affe378c8e24f",
+                "url": "https://api.github.com/repos/laravel-notification-channels/expo/zipball/4c74eeb74ad5cdd5af9dd204d29386cd6848c85f",
+                "reference": "4c74eeb74ad5cdd5af9dd204d29386cd6848c85f",
                 "shasum": ""
             },
             "require": {
                 "ext-json": "*",
-                "guzzlehttp/guzzle": "^7.1",
+                "guzzlehttp/guzzle": "^7.1|^8.0",
                 "illuminate/contracts": "^12.0|^13.0",
                 "illuminate/notifications": "^12.0|^13.0",
                 "illuminate/support": "^12.0|^13.0",
@@ -2044,9 +2044,9 @@
             "homepage": "https://github.com/laravel-notification-channels/expo",
             "support": {
                 "issues": "https://github.com/laravel-notification-channels/expo/issues",
-                "source": "https://github.com/laravel-notification-channels/expo/tree/2.4.0"
+                "source": "https://github.com/laravel-notification-channels/expo/tree/2.5.0"
             },
-            "time": "2026-08-24T16:15:05+00:00"
+            "time": "2026-10-04T00:43:47+00:00"
         },
         {
             "name": "laravel-notification-channels/webpush",
