@@ -9,11 +9,13 @@
     ':enableVulnerabilityAlertsWithLabel(security)',
   ],
 
+  // Only scan and open PRs against staging; dev is ignored.
   baseBranchPatterns: ["staging"],
+  // Renovate normally reads config only from the default branch. "merge" also applies this file as found on staging.
   useBaseBranchConfig: "merge",
 
   labels: ["dependencies"],
-  prConcurrentLimit: 15,
+  prConcurrentLimit: 10,
 
   minimumReleaseAge: "3 days",
 
@@ -34,19 +36,11 @@
   nodenv: { enabled: false },
 
   packageRules: [
-    // Upgrade PRs for these groups
     {
       groupName: "laravel",
       matchManagers: ["composer"],
       matchPackageNames: ["laravel/**", "illuminate/**"],
       matchUpdateTypes: ["minor", "patch"],
-    },
-
-    {
-      groupName: "composer non-major",
-      matchManagers: ["composer"],
-      matchUpdateTypes: ["minor", "patch"],
-      excludePackageNames: ["laravel/**", "illuminate/**"],
     },
 
     {
