@@ -15,7 +15,7 @@
   useBaseBranchConfig: "merge",
 
   labels: ["dependencies"],
-  prConcurrentLimit: 15,
+  prConcurrentLimit: 10,
 
   minimumReleaseAge: "3 days",
 
