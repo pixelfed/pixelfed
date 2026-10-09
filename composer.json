@@ -45,9 +45,9 @@
         "spatie/laravel-honeypot": "^4.7",
         "spatie/laravel-image-optimizer": "^1.8.2",
         "stevebauman/purify": "^6.2.0",
-        "symfony/http-client": "^7.3",
-        "symfony/http-foundation": "^7.4.13",
-        "symfony/mailgun-mailer": "^7.3"
+        "symfony/http-client": "^8.0",
+        "symfony/http-foundation": "^8.0.0",
+        "symfony/mailgun-mailer": "^8.0"
     },
     "require-dev": {
         "barryvdh/laravel-ide-helper": "^3.7",
