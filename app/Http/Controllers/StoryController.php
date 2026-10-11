@@ -9,8 +9,8 @@ use App\Models\StoryView;
 use App\Services\AccountService;
 use App\Services\FollowerService;
 use App\Services\PollService;
-use App\Services\StoryIndexService;
 use App\Services\StoryService;
+use App\Services\StoryViewService;
 use App\Services\UserRoleService;
 use App\Transformer\ActivityPub\Verb\StoryVerb;
 use Illuminate\Contracts\View\View;
@@ -199,26 +199,13 @@ class StoryController extends StoryComposeController
         $publicOnly = (bool) $profile->followedBy($authed);
         abort_if(! $publicOnly, 403);
 
-        $v = StoryView::firstOrCreate([
-            'story_id' => $id,
-            'profile_id' => $authed->id,
-        ]);
+        $recorded = app(StoryViewService::class)->record($story, (int) $authed->id);
 
-        if ($v->wasRecentlyCreated) {
-            Story::findOrFail($story->id)->increment('view_count');
-            $index = app(StoryIndexService::class);
-            $index->markSeen($authed->id, $story->profile_id, $story->id, $story->created_at);
-
-            if ($story->local == false) {
-                StoryViewDeliver::dispatch($story, $authed)->onQueue('story');
-            }
+        if ($recorded && $story->local == false) {
+            StoryViewDeliver::dispatch($story, $authed)->onQueue('story');
         }
 
-        // Match the key recent() writes (pf:stories:recent-by-id:{viewer_pid});
-        // the old key never matched, so the viewer's carousel snapshot (and its
-        // seen flags) stayed pinned for the full TTL.
         Cache::forget('pf:stories:recent-by-id:'.$authed->id);
-        StoryService::addSeen($authed->id, $story->id);
 
         return ['code' => 200];
     }
