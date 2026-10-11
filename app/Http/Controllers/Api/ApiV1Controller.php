@@ -813,6 +813,10 @@ class ApiV1Controller extends Controller
             return $this->json(['error' => 'Account not found'], 404);
         }
 
+        if (data_get($profile, 'moved.id') != null) {
+            return $this->json([]);
+        }
+
         if (str_contains($profile['acct'] ?? '', '@')) {
             $domain = parse_url($profile['url'] ?? '', PHP_URL_HOST);
 
@@ -4282,60 +4286,73 @@ class ApiV1Controller extends Controller
 
         $this->validate($request, [
             'limit' => 'sometimes|integer|min:1',
-            'max_id' => 'nullable|integer|min:0',
-            'since_id' => 'nullable|integer|min:0',
-            'min_id' => 'nullable|integer|min:0',
+            'cursor' => 'sometimes|string',
         ]);
 
         $pe = $request->has('_pe');
         $pid = $request->user()->profile_id;
-        $limit = $request->input('limit') ?? 20;
-        if ($limit > 40) {
-            $limit = 40;
+        $limit = min((int) $request->input('limit', 20), 40);
+
+        $query = ['limit' => $limit];
+
+        if ($pe) {
+            $query['_pe'] = 1;
         }
-        $max_id = $request->input('max_id');
-        $since_id = $request->input('since_id');
-        $min_id = $request->input('min_id');
 
-        $dir = $min_id ? '>' : '<';
-        $id = $min_id ?? $max_id;
-
-        $bookmarkQuery = Bookmark::whereProfileId($pid)
+        $page = Bookmark::query()
+            ->select('id', 'status_id')
+            ->where('profile_id', $pid)
             ->orderByDesc('id')
-            ->cursorPaginate($limit);
+            ->cursorPaginate($limit)
+            ->appends($query);
 
-        $bookmarks = $bookmarkQuery->map(function ($bookmark) use ($pid, $pe) {
-            $status = $pe ? StatusService::get($bookmark->status_id, false, false, $pid) : StatusService::getMastodon($bookmark->status_id, false, $pid);
+        $statusIds = $page->pluck('status_id')->all();
 
-            if ($status) {
-                $status['bookmarked'] = true;
-                $status['favourited'] = LikeService::liked($pid, $status['id']);
-                $status['reblogged'] = ReblogService::get($pid, $status['id']);
+        if (! $statusIds) {
+            return $this->json([]);
+        }
+
+        $liked = Like::where('profile_id', $pid)
+            ->whereIn('status_id', $statusIds)
+            ->pluck('status_id')
+            ->flip()
+            ->all();
+
+        $reblogged = Status::where('profile_id', $pid)
+            ->whereIn('reblog_of_id', $statusIds)
+            ->pluck('reblog_of_id')
+            ->flip()
+            ->all();
+
+        $bookmarks = [];
+
+        foreach ($statusIds as $statusId) {
+            $status = $pe
+                ? StatusService::get($statusId, false, false, $pid)
+                : StatusService::getMastodon($statusId, false, $pid);
+
+            if (! $status) {
+                continue;
             }
 
-            return $status;
-        })
-            ->filter()
-            ->values()
-            ->toArray();
+            $status['bookmarked'] = true;
+            $status['favourited'] = isset($liked[$statusId]);
+            $status['reblogged'] = isset($reblogged[$statusId]);
 
-        $links = null;
-        $headers = [];
-
-        if ($bookmarkQuery->nextCursor()) {
-            $links .= '<'.$bookmarkQuery->nextPageUrl().'&limit='.$limit.'>; rel="next"';
+            $bookmarks[] = $status;
         }
 
-        if ($bookmarkQuery->previousCursor()) {
-            if ($links != null) {
-                $links .= ', ';
-            }
-            $links .= '<'.$bookmarkQuery->previousPageUrl().'&limit='.$limit.'>; rel="prev"';
+        $links = [];
+
+        if ($page->nextCursor()) {
+            $links[] = '<'.$page->nextPageUrl().'>; rel="next"';
         }
 
-        if ($links) {
-            $headers = ['Link' => $links];
+        if ($page->previousCursor()) {
+            $links[] = '<'.$page->previousPageUrl().'>; rel="prev"';
         }
+
+        $headers = $links ? ['Link' => implode(', ', $links)] : [];
 
         return $this->json($bookmarks, 200, $headers);
     }
