@@ -258,6 +258,21 @@ class StoryIndexService
         Redis::expire($key, $finalTtl);
     }
 
+    public function incrementViewCount(string|int $storyId, int $by = 1): void
+    {
+        $key = $this->storyKey($storyId);
+
+        if (! $this->redisBool(fn () => Redis::exists($key))) {
+            return;
+        }
+
+        Redis::hincrby($key, 'view_count', $by);
+
+        if (! $this->redisBool(fn () => Redis::hexists($key, 'id'))) {
+            Redis::del($key);
+        }
+    }
+
     /**
      * Keep the cached following set in sync when a follow is created.
      * Only touches the key if it already exists; otherwise the next carousel

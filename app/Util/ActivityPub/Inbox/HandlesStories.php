@@ -5,11 +5,10 @@ namespace App\Util\ActivityPub\Inbox;
 use App\Jobs\StoryPipeline\StoryFetch;
 use App\Models\Status;
 use App\Models\Story;
-use App\Models\StoryView;
 use App\Services\DirectMessageService;
 use App\Services\FollowerService;
 use App\Services\SanitizeService;
-use App\Services\StoryIndexService;
+use App\Services\StoryViewService;
 use App\Util\ActivityPub\Helpers;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
@@ -82,18 +81,7 @@ trait HandlesStories
             return;
         }
 
-        $view = StoryView::firstOrCreate([
-            'story_id' => $story->id,
-            'profile_id' => $profile->id,
-        ]);
-
-        $index = app(StoryIndexService::class);
-        $index->markSeen($profile->id, $story->profile_id, $story->id, $story->created_at);
-
-        if ($view->wasRecentlyCreated == true) {
-            $story->view_count++;
-            $story->save();
-        }
+        app(StoryViewService::class)->record($story, (int) $profile->id);
     }
 
     public function handleStoryReactionActivity(): void
