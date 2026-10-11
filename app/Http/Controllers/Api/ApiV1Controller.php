@@ -245,25 +245,28 @@ class ApiV1Controller extends Controller
             'acct' => 'required|string|min:3|max:100',
         ]);
 
-        $acct = $request->acct;
+        $acct = ltrim(trim($request->acct), '@');
+        $parts = explode('@', $acct);
 
-        if (str_contains($acct, '@')) {
-            $count = mb_substr_count($acct, '@');
-
-            if ($count === 1) {
-                if (str_starts_with($acct, '@')) {
-                    $acct = substr($acct, 1);
-                } else {
-                    $acct = '@'.$acct;
-                }
-            }
-            if ($count > 2) {
-                return $this->json(['error' => 'Record not found'], 400);
-            }
+        if (count($parts) > 2 || $parts[0] === '') {
+            return $this->json(['error' => 'Record not found'], 400);
         }
-        $profile = Profile::whereUsername($acct)->first();
 
-        if (! $profile) {
+        $username = $parts[0];
+        $domain = isset($parts[1]) ? strtolower($parts[1]) : null;
+        $localDomain = strtolower((string) parse_url(config('app.url'), PHP_URL_HOST));
+
+        if ($domain === '') {
+            return $this->json(['error' => 'Record not found'], 400);
+        }
+
+        $lookup = ($domain === null || $domain === $localDomain)
+            ? $username
+            : '@'.$username.'@'.$domain;
+
+        $profile = Profile::whereUsername($lookup)->first();
+
+        if (! $profile || $profile->status != null) {
             return $this->json(['error' => 'Record not found'], 400);
         }
 
@@ -271,7 +274,7 @@ class ApiV1Controller extends Controller
         if (! $res) {
             return response()->json(['error' => 'Record not found'], 404);
         }
-        if ($res && strpos($res['acct'], '@') != -1) {
+        if (str_contains($res['acct'], '@')) {
             $domain = parse_url($res['url'], PHP_URL_HOST);
             abort_if(in_array($domain, InstanceService::getBannedDomains()), 404);
         }
