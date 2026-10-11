@@ -51,7 +51,7 @@ Reference: https://www.php.net/supported-versions.php
 
 ## Database Support (Please report any regressions)
 
--   MySQL 9+ is officially supported (Strict mode is not default).
+-   MySQL 8+ is officially supported (Strict mode is not default).
 -   MariaDB 11+ is officially supported (Strict mode is default).
 -   PostgreSQL 14+ is best effort _as of writing_ (Not recommended).
 

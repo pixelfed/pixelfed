@@ -1766,16 +1766,16 @@
         },
         {
             "name": "intervention/image-driver-vips",
-            "version": "4.1.5",
+            "version": "4.1.6",
             "source": {
                 "type": "git",
                 "url": "https://github.com/Intervention/image-driver-vips.git",
-                "reference": "e4c8e16714d46919b26163d3be067fb75d348671"
+                "reference": "d75bb9b239a630aa17b19dfd977fb549260ca889"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/Intervention/image-driver-vips/zipball/e4c8e16714d46919b26163d3be067fb75d348671",
-                "reference": "e4c8e16714d46919b26163d3be067fb75d348671",
+                "url": "https://api.github.com/repos/Intervention/image-driver-vips/zipball/d75bb9b239a630aa17b19dfd977fb549260ca889",
+                "reference": "d75bb9b239a630aa17b19dfd977fb549260ca889",
                 "shasum": ""
             },
             "require": {
@@ -1785,10 +1785,9 @@
             },
             "require-dev": {
                 "ext-fileinfo": "*",
+                "intervention/coding-standard": "^1",
                 "phpstan/phpstan": "^2",
-                "phpunit/phpunit": "^12.0",
-                "slevomat/coding-standard": "~8.0",
-                "squizlabs/php_codesniffer": "^4"
+                "phpunit/phpunit": "^12.0"
             },
             "type": "library",
             "autoload": {
@@ -1820,7 +1819,7 @@
             ],
             "support": {
                 "issues": "https://github.com/Intervention/image-driver-vips/issues",
-                "source": "https://github.com/Intervention/image-driver-vips/tree/4.1.5"
+                "source": "https://github.com/Intervention/image-driver-vips/tree/4.1.6"
             },
             "funding": [
                 {
@@ -1836,7 +1835,7 @@
                     "type": "ko_fi"
                 }
             ],
-            "time": "2026-09-09T15:00:13+00:00"
+            "time": "2026-10-10T07:47:49+00:00"
         },
         {
             "name": "intervention/image-laravel",
@@ -5645,16 +5644,16 @@
         },
         {
             "name": "predis/predis",
-            "version": "v3.6.1",
+            "version": "v3.7.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/predis/predis.git",
-                "reference": "e2db96312ecf57a01a3477bf192d1ebc0ad7e9fb"
+                "reference": "4d91f3b08a60c3bacc2afbd8dc41724559b7626a"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/predis/predis/zipball/e2db96312ecf57a01a3477bf192d1ebc0ad7e9fb",
-                "reference": "e2db96312ecf57a01a3477bf192d1ebc0ad7e9fb",
+                "url": "https://api.github.com/repos/predis/predis/zipball/4d91f3b08a60c3bacc2afbd8dc41724559b7626a",
+                "reference": "4d91f3b08a60c3bacc2afbd8dc41724559b7626a",
                 "shasum": ""
             },
             "require": {
@@ -5696,7 +5695,7 @@
             ],
             "support": {
                 "issues": "https://github.com/predis/predis/issues",
-                "source": "https://github.com/predis/predis/tree/v3.6.1"
+                "source": "https://github.com/predis/predis/tree/v3.7.0"
             },
             "funding": [
                 {
@@ -5704,7 +5703,7 @@
                     "type": "github"
                 }
             ],
-            "time": "2026-09-17T20:41:00+00:00"
+            "time": "2026-10-08T16:46:04+00:00"
         },
         {
             "name": "psr/cache",
