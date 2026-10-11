@@ -47,6 +47,24 @@ trait HandlesFollows
             return;
         }
 
+        if ($target->moved_to_profile_id) {
+            $reject = [
+                '@context' => 'https://www.w3.org/ns/activitystreams',
+                'id' => $target->permalink().'#rejects/follows/'.md5($this->payload['id']),
+                'type' => 'Reject',
+                'actor' => $target->permalink(),
+                'object' => [
+                    'id' => $this->payload['id'],
+                    'actor' => $actor->permalink(),
+                    'type' => 'Follow',
+                    'object' => $target->permalink(),
+                ],
+            ];
+            Helpers::sendSignedObject($target, $actor->inbox_url, $reject);
+
+            return;
+        }
+
         if ($target->is_private == true) {
             FollowRequest::updateOrCreate([
                 'follower_id' => $actor->id,
