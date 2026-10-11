@@ -313,7 +313,7 @@ class CustomFilter extends Model
         $activeFilters = Cache::remember("filters:v3:{$profileId}", 3600, function () use ($profileId) {
             $filtersHash = [];
 
-            $keywordFilters = CustomFilterKeyword::with(['customFilter' => function (Builder $query) use ($profileId) {
+            $keywordFilters = CustomFilterKeyword::with(['customFilter' => function ($query) use ($profileId) {
                 /** @var Builder<CustomFilter> $query */
                 $query->unexpired()->where('profile_id', $profileId);
             }])->get();
