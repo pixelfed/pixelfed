@@ -607,7 +607,7 @@ class ComposeController extends Controller
             if ($m->profile_id !== $profile->id || $m->status_id || DirectMessageService::isMessageMedia($m->id)) {
                 abort(403, 'Invalid media id');
             }
-            $m->filter_class = in_array($media['filter_class'], Filter::classes()) ? $media['filter_class'] : null;
+            $m->filter_class = isset($media['filter_class']) && in_array($media['filter_class'], Filter::classes()) ? $media['filter_class'] : null;
             $m->license = $license;
             $m->caption = isset($media['alt']) ? strip_tags($media['alt']) : null;
             $m->order = isset($media['cursor']) && is_int($media['cursor']) ? (int) $media['cursor'] : $k;
@@ -625,7 +625,7 @@ class ComposeController extends Controller
             abort(400, __('exception.compose.invalid.album'));
         }
 
-        if ($place && is_array($place)) {
+        if ($place && is_array($place) && isset($place['id'])) {
             $status->place_id = $place['id'];
             PlaceService::clearStatusesByPlaceId($place['id']);
         }
@@ -663,7 +663,10 @@ class ComposeController extends Controller
         $status->type = $mediaType;
         $status->save();
 
-        foreach ($tagged as $tg) {
+        foreach ((array) $tagged as $tg) {
+            if (! is_array($tg) || ! isset($tg['id'], $tg['name'])) {
+                continue;
+            }
             $mt = new MediaTag;
             $mt->status_id = $status->id;
             $mt->media_id = $status->media->first()->id;
@@ -752,7 +755,7 @@ class ComposeController extends Controller
         // regardless of driver rather than inserting null.
         $defaultCaption = '';
 
-        if ($place && is_array($place)) {
+        if ($place && is_array($place) && isset($place['id'])) {
             $status->place_id = $place['id'];
         }
 
@@ -779,7 +782,10 @@ class ComposeController extends Controller
         ], $entities), JSON_UNESCAPED_SLASHES);
         $status->save();
 
-        foreach ($tagged as $tg) {
+        foreach ((array) $tagged as $tg) {
+            if (! is_array($tg) || ! isset($tg['id'], $tg['name'])) {
+                continue;
+            }
             $mt = new MediaTag;
             $mt->status_id = $status->id;
             $mt->media_id = $status->media->first()->id;
