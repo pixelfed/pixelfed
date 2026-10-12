@@ -9,6 +9,8 @@ on:
   pull_request:
     branches: [staging, dev]
 
+# Only one run per branch at a time. If a push and a PR event fire for the
+# same branch, or you push again quickly, the older run is cancelled.
 concurrency:
   group: ${{ github.workflow }}-${{ github.head_ref || github.ref_name }}
   cancel-in-progress: true
@@ -16,6 +18,7 @@ concurrency:
 jobs:
   tests:
     runs-on: ubuntu-latest
+    timeout-minutes: 20
 
     services:
       redis:
@@ -36,6 +39,8 @@ jobs:
     steps:
       - name: Checkout code
         uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
+        with:
+          persist-credentials: false
 
       # libvips is the shared library used by the Intervention vips driver via
       # its FFI binding (jcupitt/vips -> ext-ffi + libvips). The default
@@ -52,10 +57,14 @@ jobs:
           coverage: none
           ini-values: memory_limit=512M, ffi.enable=true
 
+      - name: Get Composer cache dir
+        id: composer-cache
+        run: echo "dir=$(composer config cache-files-dir)" >> "$GITHUB_OUTPUT"
+
       - name: Cache Composer dependencies
         uses: actions/cache@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6
         with:
-          path: vendor
+          path: ${{ steps.composer-cache.outputs.dir }}
           key: composer-${{ matrix.php }}-${{ hashFiles('composer.lock') }}
           restore-keys: composer-${{ matrix.php }}-
 
