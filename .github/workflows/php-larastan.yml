@@ -9,6 +9,10 @@ on:
   pull_request:
     branches: [staging, dev]
 
+concurrency:
+  group: ${{ github.workflow }}-${{ github.head_ref || github.ref_name }}
+  cancel-in-progress: true
+
 jobs:
   larastan:
     runs-on: ubuntu-latest
