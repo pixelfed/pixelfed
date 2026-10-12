@@ -121,3 +121,34 @@ it('leaves a non-NSFW boost unchanged at the top level', function () {
     expect($res['sensitive'])->toBeFalse();
     expect($res['spoiler_text'])->toBe('');
 });
+
+it('serializes a boosted status account with Mastodon account fields', function () {
+    config(['exp.emc' => true]);
+
+    $author = User::factory()->create();
+    $author->refresh();
+    $sharer = User::factory()->create();
+    $sharer->refresh();
+
+    $original = Status::factory()->create([
+        'profile_id' => $author->profile_id,
+        'type' => 'photo',
+        'scope' => 'public',
+        'visibility' => 'public',
+    ]);
+
+    $boost = Status::factory()->create([
+        'profile_id' => $sharer->profile_id,
+        'type' => 'share',
+        'scope' => 'public',
+        'visibility' => 'public',
+        'reblog_of_id' => $original->id,
+    ]);
+
+    $res = StatusService::getMastodon($boost->id, false);
+    $nestedAccount = $res['reblog']['account'];
+
+    expect($nestedAccount['id'])->toBe((string) $author->profile_id);
+    expect($nestedAccount)->toHaveKey('avatar_static');
+    expect($nestedAccount['avatar_static'])->toBe($nestedAccount['avatar']);
+});
