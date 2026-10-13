@@ -138,6 +138,13 @@ class StatusService
 
         // The shared status nests under `reblog` and needs Mastodon field names too
         if (! empty($status['reblog'])) {
+            if (isset($status['reblog']['account']['id'])) {
+                $status['reblog']['account'] = AccountService::getMastodon(
+                    $status['reblog']['account']['id'],
+                    true
+                );
+            }
+
             $status['reblog']['replies_count'] = $status['reblog']['reply_count'] ?? 0;
             $status['reblog']['favourited'] = false;
             $status['reblog']['muted'] = false;
