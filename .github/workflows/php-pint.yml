@@ -42,8 +42,6 @@ jobs:
           key: composer-8.5-${{ hashFiles('composer.lock') }}
           restore-keys: composer-8.5-
 
-      # Pint doesn't boot Laravel, so post-install scripts (package:discover etc.)
-      # aren't needed here.
       - name: Install Composer dependencies
         run: composer install --no-interaction --no-progress --prefer-dist --no-scripts
 
