@@ -45,7 +45,6 @@ Notice: While older unsupported PHP versions might work, we recommend using the 
 
 -   PHP 8.5 (Recommended) - Our baseline for testing/Docker images.
 -   PHP 8.4 (Supported) - Active support ends _31 Dec 2026_.
--   PHP 8.3 (Supported) - Active support ended _31 Dec 2025_.
 
 Reference: https://www.php.net/supported-versions.php
 
