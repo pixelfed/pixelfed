@@ -9,8 +9,6 @@ on:
   pull_request:
     branches: [staging, dev]
 
-# Only one run per branch at a time. If a push and a PR event fire for the
-# same branch, or you push again quickly, the older run is cancelled.
 concurrency:
   group: ${{ github.workflow }}-${{ github.head_ref || github.ref_name }}
   cancel-in-progress: true
