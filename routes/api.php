@@ -372,6 +372,7 @@ Route::prefix('api')->group(function () use ($middleware) {
 
         Route::get('account/timeline/settings', [ApiV2Dot1Controller::class, 'accountTimelineSettings'])->middleware($middleware);
         Route::post('account/timeline/settings', [ApiV2Dot1Controller::class, 'updateAccountTimelineSettings'])->middleware($middleware);
+        Route::post('account/remove/permanent', [ApiV2Dot1Controller::class, 'accountPermanentDelete'])->middleware($middleware);
     });
 
     Route::prefix('live')->group(function () {
