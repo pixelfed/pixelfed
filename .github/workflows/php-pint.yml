@@ -1,21 +1,28 @@
 name: PHP - Pint
 
+permissions:
+  contents: read
+
 on:
   push:
     branches: [staging, dev, unstable]
   pull_request:
     branches: [staging, dev]
 
-permissions:
-  contents: read
+concurrency:
+  group: ${{ github.workflow }}-${{ github.head_ref || github.ref_name }}
+  cancel-in-progress: true
 
 jobs:
   pint:
     runs-on: ubuntu-latest
+    timeout-minutes: 10
 
     steps:
       - name: Checkout code
         uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
+        with:
+          persist-credentials: false
 
       - name: Setup PHP
         uses: shivammathur/setup-php@eb7c497e18156a6bbabfef1d3a82760b9eda3962 # v2
@@ -24,15 +31,19 @@ jobs:
           extensions: mbstring
           coverage: none
 
+      - name: Get Composer cache dir
+        id: composer-cache
+        run: echo "dir=$(composer config cache-files-dir)" >> "$GITHUB_OUTPUT"
+
       - name: Cache Composer dependencies
         uses: actions/cache@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6
         with:
-          path: vendor
+          path: ${{ steps.composer-cache.outputs.dir }}
           key: composer-8.5-${{ hashFiles('composer.lock') }}
           restore-keys: composer-8.5-
 
       - name: Install Composer dependencies
-        run: composer install --no-interaction --no-progress --prefer-dist
+        run: composer install --no-interaction --no-progress --prefer-dist --no-scripts
 
       - name: Run Pint
         run: vendor/bin/pint --test

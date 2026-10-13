@@ -3711,11 +3711,66 @@ class ApiV1Controller extends Controller
             ], 400);
         }
 
+        $pe = $request->has(self::PF_API_ENTITY_KEY);
+        $idempotencyKey = null;
+
         if ($request->hasHeader('idempotency-key')) {
-            $key = 'pf:api:v1:status:idempotency-key:'.$request->user()->id.':'.hash('sha1', $request->header('idempotency-key'));
-            $exists = Cache::has($key);
-            abort_if($exists, 400, 'Duplicate idempotency key.');
-            Cache::put($key, 1, 3600);
+            $idempotencyKey = 'pf:api:v1:status:idempotency-key:'.$request->user()->id.':'.hash('sha1', $request->header('idempotency-key'));
+
+            $existing = Cache::get($idempotencyKey);
+            if (is_numeric($existing)) {
+                $res = $pe ? StatusService::get($existing, false) : StatusService::getMastodon($existing, false);
+                if ($res) {
+                    return $this->json($this->decorateNewStatus($res));
+                }
+                Cache::forget($idempotencyKey);
+            }
+
+            abort_unless(Cache::add($idempotencyKey, 'pending', 60), 409, 'Request already in progress.');
+        }
+
+        try {
+            return $this->storeStatus($request, $pe, $idempotencyKey);
+        } finally {
+            if ($idempotencyKey && Cache::get($idempotencyKey) === 'pending') {
+                Cache::forget($idempotencyKey);
+            }
+        }
+    }
+
+    protected function decorateNewStatus(array $res): array
+    {
+        $res['favourited'] = false;
+        $res['language'] = 'en';
+        $res['bookmarked'] = false;
+        $res['card'] = null;
+
+        return $res;
+    }
+
+    protected function storeStatus(Request $request, bool $pe, ?string $idempotencyKey)
+    {
+        abort_if(! $request->user() || ! $request->user()->token(), 403);
+        abort_unless($request->user()->tokenCan('write'), 403);
+
+        $this->validate($request, [
+            'status' => 'nullable|string|max:'.(int) config_cache('pixelfed.max_caption_length'),
+            'in_reply_to_id' => 'nullable',
+            'media_ids' => 'sometimes|array|max:'.(int) config_cache('pixelfed.max_album_length'),
+            'sensitive' => 'nullable',
+            'visibility' => 'string|in:private,unlisted,public,direct',
+            'spoiler_text' => 'sometimes|max:140',
+            'place_id' => 'sometimes|integer|min:1|max:128769',
+            'collection_ids' => 'sometimes|array|max:3',
+            'comments_disabled' => 'sometimes|boolean',
+            'quote_approval_policy' => 'sometimes|nullable|string|in:public,followers,nobody',
+            '_pe' => 'sometimes',
+        ]);
+
+        if ($request->filled('visibility') && $request->input('visibility') === 'direct') {
+            return $this->json([
+                'error' => 'Direct visibility is not available.',
+            ], 400);
         }
 
         if (config('costar.enabled') == true) {
@@ -3748,7 +3803,6 @@ class ApiV1Controller extends Controller
         }
 
         $profile = $user->profile;
-        $pe = $request->has(self::PF_API_ENTITY_KEY);
         $limitKey = 'compose:rate-limit:store:'.$user->id;
         $limitTtl = now()->addMinutes(15);
         $limitReached = Cache::remember($limitKey, $limitTtl, function () use ($user) {
@@ -3883,6 +3937,9 @@ class ApiV1Controller extends Controller
             abort(500, 'An error occured.');
         }
 
+        if ($idempotencyKey) {
+            Cache::put($idempotencyKey, $status->id, 3600);
+        }
         Cache::forget('pf:status:ap:v1:sid:'.$status->id);
         Cache::forget('status:transformer:media:attachments:'.$status->id);
         Cache::forget('user:account:id:'.$user->id);
@@ -3922,12 +3979,8 @@ class ApiV1Controller extends Controller
         }
 
         $res = $pe ? StatusService::get($status->id, false) : StatusService::getMastodon($status->id, false);
-        $res['favourited'] = false;
-        $res['language'] = 'en';
-        $res['bookmarked'] = false;
-        $res['card'] = null;
 
-        return $this->json($res);
+        return $this->json($this->decorateNewStatus($res));
     }
 
     /**
