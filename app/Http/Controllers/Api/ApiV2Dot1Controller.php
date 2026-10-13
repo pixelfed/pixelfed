@@ -81,6 +81,10 @@ class ApiV2Dot1Controller extends Controller
 
     public function accountPermanentDelete(Request $request)
     {
+        abort_if(! $request->user() || ! $request->user()->token(), 403);
+        abort_unless($request->user()->tokenCan('write'), 403);
+        abort_unless($request->user()->tokenCan('security:write'), 403);
+
         $this->validate($request, [
             'current_password' => 'required|current_password:api',
         ]);
