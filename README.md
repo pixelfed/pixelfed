@@ -70,6 +70,8 @@ Pixelfed app for [YunoHost](https://yunohost.org "YunoHost"). See [the package s
 
 [![Deploy on RepoCloud](https://d16t0pc4846x52.cloudfront.net/deploylobe.svg)](https://repocloud.io/details/Pixelfed/)
 
+[![Deploy to ZopDay](https://zop.dev/deploytozopday-inkhard.svg)](https://zop.dev/zopday/app/deploy?repo=https://github.com/pixelfed/pixelfed&port=8080&name=pixelfed&utm_source=github&utm_medium=one_click&utm_content=pixelfed)
+
 ## License
 
 Pixelfed is open-sourced software licensed under the AGPL license.
