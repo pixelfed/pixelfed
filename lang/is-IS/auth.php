@@ -18,7 +18,7 @@ return [
     'username' => 'Notandanafn',
     'confirm-password' => 'Staðfestu lykilorð',
 
-    'age' => ''.(int) config('pixelfed.min_registration_age', 16).'',
+    'age' => 'Ég er að minnsta kosti '.(int) config('pixelfed.min_registration_age', 16).' ára',
     'terms' => 'Með því að skrá þig þá samþykkir þú <a href="'.route('site.terms').'" class="font-weight-bold text-dark">notkunarskilmála okkar</a> og <a href="'.route('site.privacy').'" class="font-weight-bold text-dark">stefnu varðandi meðferð persónuupplýsinga</a>.',
 
     'emailAddress' => 'Tölvupóstfang',
