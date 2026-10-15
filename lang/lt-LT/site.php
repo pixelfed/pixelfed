@@ -43,7 +43,7 @@ return [
     'organize_and_share_collections_of_multiple_posts' => '',
     'discover' => '',
     'explore_categories_hashtags_and_topics' => '',
-    'photo_filters' => '',
+    'photo_filters' => 'Nuotraukų filtrai',
     'add_a_special_touch_to_your_photos' => '',
     'stories' => '',
     'share_moments_with_your_followers_that_disappear_etc' => '',
