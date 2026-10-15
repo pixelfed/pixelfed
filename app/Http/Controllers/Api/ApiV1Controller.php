@@ -92,6 +92,7 @@ use Illuminate\Pagination\Cursor;
 use Illuminate\Pagination\CursorPaginator;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\RateLimiter;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
@@ -793,6 +794,7 @@ class ApiV1Controller extends Controller
 
         abort_if(! $user || ! $user->token(), 403);
         abort_unless($user->tokenCan('read'), 403);
+        abort_if(! $user->profile_id, 403);
 
         $this->validate($request, [
             'only_media' => 'nullable',
@@ -816,7 +818,7 @@ class ApiV1Controller extends Controller
             return $this->json(['error' => 'Account not found'], 404);
         }
 
-        if (data_get($profile, 'moved.id') != null) {
+        if (data_get($profile, 'moved.id') !== null) {
             return $this->json([]);
         }
 
@@ -831,76 +833,128 @@ class ApiV1Controller extends Controller
             }
         }
 
-        $limit = min((int) $request->input('limit', 20), 100);
-
         $profileId = (int) $profile['id'];
         $viewerId = (int) $user->profile_id;
 
-        $onlyReblogs = $request->boolean('only_reposts');
-        $onlyMedia = $request->boolean('only_media');
+        if ($profileId <= 0) {
+            return $this->json(['error' => 'Account not found'], 404);
+        }
 
-        if ($viewerId === $profileId) {
-            $visibility = ['public', 'unlisted', 'private'];
-        } else {
-            $following = FollowerService::follows($viewerId, $profileId);
+        $isOwner = $viewerId === $profileId;
 
-            if (($profile['locked'] ?? false) && ! $following) {
-                return response()->json([]);
+        $limit = (int) $request->input('limit', 20);
+
+        $onlyReposts = $request->boolean('only_reposts');
+        $onlyMedia = $request->boolean('only_media')
+            || $request->filled('media_type');
+
+        $mediaType = $request->input('media_type');
+        $excludeReplies = $request->boolean('exclude_replies');
+        $pinnedOnly = $request->boolean('pinned');
+
+        $isFollowing = false;
+
+        if (! $isOwner) {
+            $isFollowing = FollowerService::follows(
+                (string) $viewerId,
+                (string) $profileId
+            );
+
+            if (($profile['locked'] ?? false) && ! $isFollowing) {
+                return $this->json([]);
             }
-
-            $visibility = $following
-                ? ['public', 'unlisted', 'private']
-                : ['public', 'unlisted'];
         }
 
-        if ($onlyReblogs) {
-            $types = ['share'];
-        } elseif ($onlyMedia && $request->input('media_type') === 'video') {
-            $types = ['video', 'video:album'];
-        } elseif ($onlyMedia && $request->input('media_type') === 'photo') {
-            $types = ['photo', 'photo:album'];
-        } else {
-            $types = [
-                'photo',
-                'photo:album',
-                'video',
-                'video:album',
-            ];
-        }
+        $allowedScopes = ($isOwner || $isFollowing)
+            ? ['public', 'unlisted', 'private']
+            : ['public', 'unlisted'];
 
         $query = Status::query()
             ->select([
                 'id',
-                'profile_id',
                 'reblog_of_id',
             ])
             ->where('profile_id', $profileId)
-            ->whereNull('in_reply_to_id')
-            ->whereIn('type', $types)
-            ->whereIn('scope', $visibility);
+            ->whereIn('scope', $allowedScopes);
 
-        if ($onlyReblogs) {
-            $query->whereNotNull('reblog_of_id');
+        if ($excludeReplies) {
+            $query->whereNull('in_reply_to_id');
+        }
+
+        if ($pinnedOnly) {
+            $query->whereNotNull('pinned_order');
+        }
+
+        if ($onlyReposts) {
+            $query
+                ->whereNotNull('reblog_of_id')
+                ->where('type', 'share');
         } else {
             $query->whereNull('reblog_of_id');
-        }
-        if ($request->filled('min_id')) {
-            $minId = (int) $request->input('min_id');
 
-            if ($minId > 0) {
-                $query->where('id', '>', $minId);
-            }
-        } elseif ($request->filled('max_id')) {
-            $maxId = (int) $request->input('max_id');
+            if ($onlyMedia) {
+                $mediaTypes = match ($mediaType) {
+                    'photo' => [
+                        'photo',
+                        'photo:album',
+                        'photo:video:album',
+                    ],
+                    'video' => [
+                        'video',
+                        'video:album',
+                        'photo:video:album',
+                        'loop',
+                    ],
+                    default => [
+                        'photo',
+                        'photo:album',
+                        'video',
+                        'video:album',
+                        'photo:video:album',
+                        'loop',
+                    ],
+                };
 
-            if ($maxId > 0) {
-                $query->where('id', '<', $maxId);
+                $query->whereIn('type', $mediaTypes);
+            } else {
+                $types = [
+                    'text',
+                    'photo',
+                    'photo:album',
+                    'video',
+                    'video:album',
+                    'photo:video:album',
+                    'loop',
+                    'reply',
+                    'poll',
+                ];
+
+                $query->where(function ($q) use ($types) {
+                    $q->whereIn('type', $types)
+                        ->orWhereNull('type');
+                });
             }
         }
+
+        $minId = (int) $request->input('min_id', 0);
+        $sinceId = (int) $request->input('since_id', 0);
+        $maxId = (int) $request->input('max_id', 0);
+
+        $lowerBound = max($minId, $sinceId);
+
+        if ($lowerBound > 0) {
+            $query->where('id', '>', $lowerBound);
+        }
+
+        if ($maxId > 0) {
+            $query->where('id', '<', $maxId);
+        }
+
+        $scanLimit = min(200, max(20, $limit * 2));
 
         $rows = $query
             ->orderByDesc('id')
-            ->limit($limit)
+            ->limit($scanLimit + 1)
             ->toBase()
             ->get();
 
@@ -908,25 +962,136 @@ class ApiV1Controller extends Controller
             return $this->json([]);
         }
 
-        $interactionIds = [];
+        $result = [];
+        $resultInteractionIds = [];
+
+        $scanned = 0;
+        $lastScannedId = null;
 
         foreach ($rows as $row) {
-            $interactionId = $onlyReblogs
-                ? (int) $row->reblog_of_id
-                : (int) $row->id;
+            if ($scanned >= $scanLimit) {
+                break;
+            }
 
-            if ($interactionId > 0) {
-                $interactionIds[] = $interactionId;
+            $scanned++;
+
+            $statusId = (int) $row->id;
+            $lastScannedId = $statusId;
+
+            try {
+                $status = $napi
+                    ? StatusService::get(
+                        $statusId,
+                        false,
+                        false,
+                        $viewerId
+                    )
+                    : StatusService::getMastodon(
+                        $statusId,
+                        false,
+                        $viewerId
+                    );
+            } catch (\Throwable $e) {
+                Log::warning(
+                    'Failed to serialize account status',
+                    [
+                        'status_id' => $statusId,
+                        'profile_id' => $profileId,
+                        'exception' => $e::class,
+                        'message' => $e->getMessage(),
+                    ]
+                );
+
+                continue;
+            }
+
+            if (! $status || ! isset($status['account']['id'])) {
+                continue;
+            }
+
+            if ((int) $status['account']['id'] !== $profileId) {
+                continue;
+            }
+
+            if (! in_array(
+                $status['visibility'] ?? null,
+                $allowedScopes,
+                true
+            )) {
+                continue;
+            }
+
+            $interactionId = $statusId;
+
+            if ($onlyReposts) {
+                $reblogId = (int) $row->reblog_of_id;
+
+                if ($reblogId <= 0) {
+                    continue;
+                }
+
+                try {
+                    $reblog = $napi
+                        ? StatusService::get(
+                            $reblogId,
+                            false,
+                            false,
+                            $viewerId
+                        )
+                        : StatusService::getMastodon(
+                            $reblogId,
+                            false,
+                            $viewerId
+                        );
+                } catch (\Throwable $e) {
+                    Log::warning(
+                        'Failed to serialize repost target',
+                        [
+                            'status_id' => $statusId,
+                            'reblog_id' => $reblogId,
+                            'exception' => $e::class,
+                            'message' => $e->getMessage(),
+                        ]
+                    );
+
+                    continue;
+                }
+
+                if (
+                    ! $reblog ||
+                    ! isset($reblog['account']['id']) ||
+                    ! in_array(
+                        $reblog['visibility'] ?? null,
+                        ['public', 'unlisted'],
+                        true
+                    )
+                ) {
+                    continue;
+                }
+
+                $status['reblog'] = $reblog;
+                $interactionId = $reblogId;
+            }
+
+            $status['account'] = $profile;
+
+            $result[] = $status;
+            $resultInteractionIds[] = $interactionId;
+
+            if (count($result) >= $limit) {
+                break;
             }
         }
 
-        $interactionIds = array_values(array_unique($interactionIds));
+        if (! empty($result)) {
+            $interactionIds = array_values(
+                array_unique($resultInteractionIds)
+            );
 
-        $liked = [];
-        $reblogged = [];
-        $bookmarked = [];
+            $liked = [];
+            $reblogged = [];
+            $bookmarked = [];
 
-        if ($interactionIds) {
             $likedIds = DB::table('likes')
                 ->where('profile_id', $viewerId)
                 ->whereIn('status_id', $interactionIds)
@@ -954,66 +1119,37 @@ class ApiV1Controller extends Controller
             foreach ($bookmarkedIds as $statusId) {
                 $bookmarked[(int) $statusId] = true;
             }
+
+            foreach ($result as $index => &$status) {
+                $interactionId = $resultInteractionIds[$index];
+
+                $status['favourited'] = isset($liked[$interactionId]);
+                $status['reblogged'] = isset($reblogged[$interactionId]);
+                $status['bookmarked'] = isset($bookmarked[$interactionId]);
+            }
+
+            unset($status);
         }
 
-        $result = [];
+        $headers = [];
 
-        foreach ($rows as $row) {
-            try {
-                $status = $napi
-                    ? StatusService::get($row->id, false)
-                    : StatusService::getMastodon($row->id, false);
-            } catch (\Throwable) {
-                continue;
-            }
+        if (
+            $lastScannedId !== null &&
+            $scanned < $rows->count()
+        ) {
+            $params = $request->query();
 
-            if (! $status) {
-                continue;
-            }
+            $params['max_id'] = (string) $lastScannedId;
+            $params['limit'] = $limit;
 
-            $status['account'] = $profile;
+            $nextUrl = $request->url()
+                .'?'
+                .http_build_query($params);
 
-            $interactionId = (int) $row->id;
-
-            if ($onlyReblogs) {
-                $reblogId = (int) $row->reblog_of_id;
-
-                if (! $reblogId) {
-                    continue;
-                }
-
-                try {
-                    $reblog = $napi
-                        ? StatusService::get($reblogId, false)
-                        : StatusService::getMastodon($reblogId, false);
-                } catch (\Throwable) {
-                    continue;
-                }
-
-                if (
-                    ! $reblog ||
-                    ! isset($reblog['account']['id']) ||
-                    ! in_array(
-                        $reblog['visibility'] ?? null,
-                        ['public', 'unlisted'],
-                        true
-                    )
-                ) {
-                    continue;
-                }
-
-                $status['reblog'] = $reblog;
-                $interactionId = $reblogId;
-            }
-
-            $status['favourited'] = isset($liked[$interactionId]);
-            $status['reblogged'] = isset($reblogged[$interactionId]);
-            $status['bookmarked'] = isset($bookmarked[$interactionId]);
-
-            $result[] = $status;
+            $headers['Link'] = '<'.$nextUrl.'>; rel="next"';
         }
 
-        return $this->json($result);
+        return $this->json($result, 200, $headers);
     }
 
     /**
