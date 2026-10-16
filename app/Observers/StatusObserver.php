@@ -40,9 +40,7 @@ class StatusObserver
             return;
         }
 
-        if (config('instance.timeline.home.cached')) {
-            Cache::forget('pf:timelines:home:'.$status->profile_id);
-        }
+        Cache::forget('pf:timelines:home:'.$status->profile_id);
 
         if (in_array($status->scope, ['public', 'unlisted']) && in_array($status->type, ['photo', 'photo:album', 'video'])) {
             ProfileStatusService::add($status->profile_id, $status->id);
@@ -60,9 +58,7 @@ class StatusObserver
             return;
         }
 
-        if (config('instance.timeline.home.cached')) {
-            Cache::forget('pf:timelines:home:'.$status->profile_id);
-        }
+        Cache::forget('pf:timelines:home:'.$status->profile_id);
 
         ProfileStatusService::delete($status->profile_id, $status->id);
 
@@ -71,12 +67,10 @@ class StatusObserver
             ImportService::clearImportedFiles($status->profile_id);
         }
 
-        if (config('exp.cached_home_timeline')) {
-            if ($status->uri) {
-                FeedRemoveRemotePipeline::dispatch($status->id, $status->profile_id)->onQueue('feed');
-            } else {
-                FeedRemovePipeline::dispatch($status->id, $status->profile_id)->onQueue('feed');
-            }
+        if ($status->uri) {
+            FeedRemoveRemotePipeline::dispatch($status->id, $status->profile_id)->onQueue('feed');
+        } else {
+            FeedRemovePipeline::dispatch($status->id, $status->profile_id)->onQueue('feed');
         }
     }
 
