@@ -5,7 +5,7 @@ permissions:
 
 on:
   push:
-    branches: [staging, dev, unstable]
+    branches: [dev, unstable]
   pull_request:
     branches: [staging, dev]
 
