@@ -49,11 +49,13 @@ class HomeTimelineService
 
     public static function add($id, $val)
     {
-        if (self::count($id) >= 400) {
-            Redis::zpopmin(self::CACHE_KEY.$id);
+        $res = Redis::zadd(self::CACHE_KEY.$id, $val, $val);
+
+        if (self::count($id) > 400) {
+            Redis::zremrangebyrank(self::CACHE_KEY.$id, 0, -401);
         }
 
-        return Redis::zadd(self::CACHE_KEY.$id, $val, $val);
+        return $res;
     }
 
     public static function rem($id, $val)

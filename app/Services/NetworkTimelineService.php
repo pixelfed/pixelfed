@@ -44,11 +44,14 @@ class NetworkTimelineService
 
     public static function add($val)
     {
-        if (self::count() > config('instance.timeline.network.cache_dropoff')) {
-            Redis::zpopmin(self::CACHE_KEY);
+        $res = Redis::zadd(self::CACHE_KEY, $val, $val);
+
+        $limit = (int) config('instance.timeline.network.cache_dropoff');
+        if (self::count() > $limit) {
+            Redis::zremrangebyrank(self::CACHE_KEY, 0, -($limit + 1));
         }
 
-        return Redis::zadd(self::CACHE_KEY, $val, $val);
+        return $res;
     }
 
     public static function rem($val)
@@ -90,8 +93,12 @@ class NetworkTimelineService
         }
     }
 
-    public static function warmCache($force = false, $limit = 100)
+    public static function warmCache($force = false, $limit = null)
     {
+        if ($limit === null) {
+            $limit = (int) config('instance.timeline.network.cache_dropoff');
+        }
+
         if (self::count() == 0 || $force == true) {
             $hideNsfw = config('instance.hide_nsfw_on_public_feeds');
             Redis::del(self::CACHE_KEY);

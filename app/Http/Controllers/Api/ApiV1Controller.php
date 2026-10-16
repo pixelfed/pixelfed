@@ -2805,59 +2805,32 @@ class ApiV1Controller extends Controller
             }
         );
 
-        $cached = (bool) config('exp.cached_home_timeline');
+        $paddedLimit = $includeReblogs ? $limit + 10 : $limit + 50;
 
-        if ($cached) {
-            $paddedLimit = $includeReblogs ? $limit + 10 : $limit + 50;
+        if ($min || $max) {
+            $ids = $request->has('min_id')
+                ? HomeTimelineService::getRankedMinId($pid, $min ?? 0, $paddedLimit)
+                : HomeTimelineService::getRankedMaxId($pid, $max ?? 0, $paddedLimit);
+        } else {
+            $ids = HomeTimelineService::get($pid, 0, $paddedLimit);
+        }
 
-            if ($min || $max) {
-                $ids = $request->has('min_id')
-                    ? HomeTimelineService::getRankedMinId($pid, $min ?? 0, $paddedLimit)
-                    : HomeTimelineService::getRankedMaxId($pid, $max ?? 0, $paddedLimit);
-            } else {
-                $ids = HomeTimelineService::get($pid, 0, $paddedLimit);
-            }
+        if (! $ids) {
+            $coldBootKey = 'pf:services:apiv1:home:cached:coldbootcheck:'.$pid;
 
-            if (! $ids) {
-                $coldBootKey = 'pf:services:apiv1:home:cached:coldbootcheck:'.$pid;
-
-                if (! Cache::has($coldBootKey)) {
-                    Cache::set($coldBootKey, 1, 86400);
-                    FeedWarmCachePipeline::dispatchSync($pid);
-
-                    return response()->json([], 206);
-                }
-
+            if (! Cache::has($coldBootKey)) {
                 Cache::set($coldBootKey, 1, 86400);
+                FeedWarmCachePipeline::dispatchSync($pid);
 
                 return response()->json([], 206);
             }
-        } else {
-            $following = FollowerService::getFollowingIds($pid);
-            $muted = UserFilterService::mutes($pid);
 
-            if ($muted && count($muted)) {
-                $following = array_diff($following, $muted);
-            }
+            Cache::set($coldBootKey, 1, 86400);
 
-            // Filtering happens after the fetch, so fetch deeper to fill a page
-            $fetchLimit = $photosReblogsOnly ? $limit * 6 : $limit * 2;
-
-            $ids = Status::query()
-                ->when($min || $max, function ($q) use ($min, $max) {
-                    return $q->where('id', $min ? '>' : '<', $min ?: $max);
-                })
-                ->whereNull($includeReblogs ? ['in_reply_to_id'] : ['in_reply_to_id', 'reblog_of_id'])
-                ->whereIntegerInRaw('profile_id', $following)
-                ->whereIn('type', $inTypes)
-                ->whereIn('visibility', ['public', 'unlisted', 'private'])
-                ->orderByDesc('id')
-                ->take($fetchLimit)
-                ->pluck('id');
+            return response()->json([], 206);
         }
 
-        // The cached feed has never applied photo_reblogs_only; kept as-is
-        $applyPhotosReblogsOnly = ! $cached && $photosReblogsOnly;
+        $applyPhotosReblogsOnly = $photosReblogsOnly;
 
         $res = collect($ids)
             ->map(function ($id) use ($napi) {
@@ -3044,98 +3017,32 @@ class ApiV1Controller extends Controller
                 ->values()
                 ->toArray();
         } elseif ($remote && ! $local) {
-            if (config('instance.timeline.network.cached')) {
-                Cache::remember('api:v1:timelines:network:cache_check', 10368000, function () {
-                    if (NetworkTimelineService::count() == 0) {
-                        NetworkTimelineService::warmCache(true, config('instance.timeline.network.cache_dropoff'));
-                    }
-                });
-
-                if ($max) {
-                    $feed = NetworkTimelineService::getRankedMaxId($max, $limit + 5);
-                } elseif ($min) {
-                    $feed = NetworkTimelineService::getRankedMinId($min, $limit + 5);
-                } else {
-                    $feed = NetworkTimelineService::get(0, $limit + 5);
+            Cache::remember('api:v1:timelines:network:cache_check', 10368000, function () {
+                if (NetworkTimelineService::count() == 0) {
+                    NetworkTimelineService::warmCache(true, config('instance.timeline.network.cache_dropoff'));
                 }
-            } else {
-                $feed = Status::select(
-                    'id',
-                    'uri',
-                    'type',
-                    'scope',
-                    'local',
-                    'created_at',
-                    'profile_id',
-                    'in_reply_to_id',
-                    'reblog_of_id'
-                )
-                    ->when($minOrMax, function ($q, $minOrMax) use ($min, $max) {
-                        $dir = $min ? '>' : '<';
-                        $id = $min ?? $max;
+            });
 
-                        return $q->where('id', $dir, $id);
-                    })
-                    ->whereNull(['in_reply_to_id', 'reblog_of_id'])
-                    ->when($hideNsfw, function ($q, $hideNsfw) {
-                        return $q->where('is_nsfw', false);
-                    })
-                    ->whereIn('type', ['photo', 'photo:album', 'video', 'video:album', 'photo:video:album'])
-                    ->whereLocal(false)
-                    ->whereScope('public')
-                    ->where('id', '>', $amin)
-                    ->orderByDesc('id')
-                    ->limit(($limit * 2))
-                    ->pluck('id')
-                    ->values()
-                    ->toArray();
+            if ($max) {
+                $feed = NetworkTimelineService::getRankedMaxId($max, $limit + 5);
+            } elseif ($min) {
+                $feed = NetworkTimelineService::getRankedMinId($min, $limit + 5);
+            } else {
+                $feed = NetworkTimelineService::get(0, $limit + 5);
             }
         } else {
-            if (config('instance.timeline.local.cached')) {
-                Cache::remember('api:v1:timelines:public:cache_check', 10368000, function () {
-                    if (PublicTimelineService::count() == 0) {
-                        PublicTimelineService::warmCache(true, 400);
-                    }
-                });
-
-                if ($max) {
-                    $feed = PublicTimelineService::getRankedMaxId($max, $limit + 5);
-                } elseif ($min) {
-                    $feed = PublicTimelineService::getRankedMinId($min, $limit + 5);
-                } else {
-                    $feed = PublicTimelineService::get(0, $limit + 5);
+            Cache::remember('api:v1:timelines:public:cache_check', 10368000, function () {
+                if (PublicTimelineService::count() == 0) {
+                    PublicTimelineService::warmCache(true, 400);
                 }
-            } else {
-                $feed = Status::select(
-                    'id',
-                    'uri',
-                    'type',
-                    'scope',
-                    'local',
-                    'created_at',
-                    'profile_id',
-                    'in_reply_to_id',
-                    'reblog_of_id'
-                )
-                    ->when($minOrMax, function ($q, $minOrMax) use ($min, $max) {
-                        $dir = $min ? '>' : '<';
-                        $id = $min ?? $max;
+            });
 
-                        return $q->where('id', $dir, $id);
-                    })
-                    ->whereNull(['in_reply_to_id', 'reblog_of_id'])
-                    ->when($hideNsfw, function ($q, $hideNsfw) {
-                        return $q->where('is_nsfw', false);
-                    })
-                    ->whereIn('type', ['photo', 'photo:album', 'video', 'video:album', 'photo:video:album'])
-                    ->whereLocal(true)
-                    ->whereScope('public')
-                    ->where('id', '>', $amin)
-                    ->orderByDesc('id')
-                    ->limit(($limit * 2))
-                    ->pluck('id')
-                    ->values()
-                    ->toArray();
+            if ($max) {
+                $feed = PublicTimelineService::getRankedMaxId($max, $limit + 5);
+            } elseif ($min) {
+                $feed = PublicTimelineService::getRankedMinId($min, $limit + 5);
+            } else {
+                $feed = PublicTimelineService::get(0, $limit + 5);
             }
         }
 

@@ -44,11 +44,13 @@ class PublicTimelineService
 
     public static function add($val)
     {
+        $res = Redis::zadd(self::CACHE_KEY, $val, $val);
+
         if (self::count() > 400) {
-            Redis::zpopmin(self::CACHE_KEY);
+            Redis::zremrangebyrank(self::CACHE_KEY, 0, -401);
         }
 
-        return Redis::zadd(self::CACHE_KEY, $val, $val);
+        return $res;
     }
 
     public static function rem($val)
