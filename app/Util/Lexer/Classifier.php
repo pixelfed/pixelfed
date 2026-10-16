@@ -94,7 +94,7 @@ class Classifier
                     $likelihood *= $this->p($word, $type);
                 }
 
-                return (string) BigDecimal::of($likelihood);
+                return (string) BigDecimal::of((string) $likelihood);
             })
             ->sortDesc();
     }
