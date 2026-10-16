@@ -92,9 +92,7 @@ We would like to extend our thanks to the following sponsors for funding Pixelfe
 
 ## Host your own instance with these unofficial cloud providers
 
-[![Install on YunoHost](https://user-images.githubusercontent.com/42862428/139559471-9495f1e9-e7a4-49f1-9a4b-675ddcc510a2.png "Install on YunoHost")](https://install-app.yunohost.org/?app=pixelfed)
-
-Pixelfed app for [YunoHost](https://yunohost.org "YunoHost"). See [the package source code](https://github.com/YunoHost-Apps/pixelfed_ynh "pixelfed_ynh repository on GitHub")
+[![Install on YunoHost](https://user-images.githubusercontent.com/42862428/139559471-9495f1e9-e7a4-49f1-9a4b-675ddcc510a2.png "Install on YunoHost")](https://install-app.yunohost.org/?app=pixelfed) Pixelfed app for [YunoHost](https://yunohost.org "YunoHost"). See [the package source code](https://github.com/YunoHost-Apps/pixelfed_ynh "pixelfed_ynh repository on GitHub")
 
 [![Deploy on RepoCloud](https://d16t0pc4846x52.cloudfront.net/deploylobe.svg)](https://repocloud.io/details/Pixelfed/)
 
