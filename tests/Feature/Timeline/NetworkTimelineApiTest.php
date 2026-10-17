@@ -37,6 +37,8 @@ afterEach(function () {
 
 function networkRemoteStatus(?Profile $author = null, array $overrides = []): Status
 {
+    static $seq = 0;
+
     $author ??= Profile::factory()->create(['user_id' => null, 'domain' => 'remote.example']);
 
     return Status::factory()->create(array_merge([
@@ -49,7 +51,7 @@ function networkRemoteStatus(?Profile $author = null, array $overrides = []): St
         'reblog_of_id' => null,
         'is_nsfw' => false,
         'uri' => 'https://remote.example/p/'.uniqid(),
-        'created_at' => now()->subMinutes(5),
+        'created_at' => now()->subSeconds(100000 - ($seq++ * 60)),
     ], $overrides));
 }
 
@@ -76,9 +78,9 @@ it('serves a warm cache hit newest-first', function () {
     // Keep the cache_check warm from running by seeding the set first and
     // marking the check as already performed.
     $statuses = collect([1, 2, 3])->map(fn () => networkRemoteStatus());
-    $seededIds = $statuses->pluck('id')->sort()->values();
+    $ranked = $statuses->sortByDesc('created_at')->pluck('id')->map(fn ($id) => (int) $id)->values();
 
-    foreach ($seededIds as $id) {
+    foreach ($ranked->reverse() as $id) {
         NetworkTimelineService::add($id);
     }
 
@@ -90,9 +92,8 @@ it('serves a warm cache hit newest-first', function () {
         ->json();
 
     $returned = collect($res)->pluck('id')->map(fn ($id) => (int) $id)->all();
-    $expected = $seededIds->reverse()->values()->map(fn ($id) => (int) $id)->all();
 
-    expect($returned)->toBe($expected);
+    expect($returned)->toBe($ranked->values()->all());
 });
 
 it('warms synchronously on cold start and serves the first page', function () {
@@ -127,29 +128,28 @@ it('returns only entries older than max_id, bounded by limit', function () {
 
     $author = Profile::factory()->create(['user_id' => null, 'domain' => 'remote.example']);
     $statuses = collect([1, 2, 3, 4, 5])->map(fn () => networkRemoteStatus($author));
-    $ordered = $statuses->pluck('id')->map(fn ($id) => (int) $id)->sort()->values();
 
-    foreach ($ordered as $id) {
+    // Rank order is by created_at (newest first), matching the service.
+    $ranked = $statuses->sortByDesc('created_at')->pluck('id')->map(fn ($id) => (int) $id)->values();
+
+    foreach ($ranked as $id) {
         NetworkTimelineService::add($id);
     }
     Cache::put(NETWORK_CACHE_CHECK_KEY, 1, 3600);
 
-    // Cursor is the middle id; max_id returns strictly-older ids newest-first.
-    $cursor = $ordered[2];
+    // Cursor is the middle post; max_id returns strictly-older posts newest-first.
+    $cursor = $ranked[2];
     $res = $this->actingAs($user)
         ->getJson('/api/pixelfed/v1/timelines/network?max_id='.$cursor.'&limit=2')
         ->assertOk()
         ->json();
 
     $returned = collect($res)->pluck('id')->map(fn ($id) => (int) $id)->all();
-    $expected = $ordered->slice(0, 2)->reverse()->values()->all();
+    $expected = $ranked->slice(3, 2)->values()->all();
 
     expect($returned)->toBe($expected);
     expect($returned)->not->toContain($cursor);
     expect(count($returned))->toBeLessThanOrEqual(2);
-    foreach ($returned as $id) {
-        expect($id)->toBeLessThan($cursor);
-    }
 });
 
 it('returns only entries newer than min_id, bounded by limit', function () {
@@ -158,27 +158,27 @@ it('returns only entries newer than min_id, bounded by limit', function () {
 
     $author = Profile::factory()->create(['user_id' => null, 'domain' => 'remote.example']);
     $statuses = collect([1, 2, 3, 4, 5])->map(fn () => networkRemoteStatus($author));
-    $ordered = $statuses->pluck('id')->map(fn ($id) => (int) $id)->sort()->values();
 
-    foreach ($ordered as $id) {
+    // Rank order is by created_at (newest first): index 0 is newest.
+    $ranked = $statuses->sortByDesc('created_at')->pluck('id')->map(fn ($id) => (int) $id)->values();
+
+    foreach ($ranked as $id) {
         NetworkTimelineService::add($id);
     }
     Cache::put(NETWORK_CACHE_CHECK_KEY, 1, 3600);
 
-    // Cursor is the second id; min_id returns the two ids immediately newer.
-    $cursor = $ordered[1];
+    // Cursor is the second-oldest post; min_id returns the two posts
+    // immediately newer than it, newest-first.
+    $cursor = $ranked[3];
     $res = $this->actingAs($user)
         ->getJson('/api/pixelfed/v1/timelines/network?min_id='.$cursor.'&limit=2')
         ->assertOk()
         ->json();
 
     $returned = collect($res)->pluck('id')->map(fn ($id) => (int) $id)->all();
-    $expected = $ordered->slice(2, 2)->reverse()->values()->all();
+    $expected = $ranked->slice(1, 2)->values()->all();
 
     expect($returned)->toBe($expected);
     expect($returned)->not->toContain($cursor);
     expect(count($returned))->toBeLessThanOrEqual(2);
-    foreach ($returned as $id) {
-        expect($id)->toBeGreaterThan($cursor);
-    }
 });
