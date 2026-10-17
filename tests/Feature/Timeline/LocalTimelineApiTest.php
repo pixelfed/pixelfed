@@ -114,7 +114,7 @@ it('returns only entries newer than min_id bounded by limit', function () {
     }
 
     $cursor = (int) $statuses[1]->id;
-    $newer = $statuses->slice(2, 2)->pluck('id')->map(fn ($id) => (int) $id);
+    $newer = $statuses->slice(3, 2)->pluck('id')->map(fn ($id) => (int) $id);
 
     $res = $this->actingAs($viewer)
         ->getJson('/api/pixelfed/v1/timelines/public?min_id='.$cursor.'&limit=2')

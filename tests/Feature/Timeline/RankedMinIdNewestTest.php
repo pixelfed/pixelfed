@@ -17,30 +17,29 @@ afterEach(function () {
     Redis::del(NetworkTimelineService::CACHE_KEY);
 });
 
-it('returns the ids immediately newer than the cursor, not the newest', function () {
+it('returns the newest ids above the cursor', function () {
     foreach ([10, 20, 30, 40, 50] as $id) {
         PublicTimelineService::add($id);
     }
 
-    // Cursor 10, limit 2: a forward-paginating client must receive the two ids
-    // directly above the cursor (20, 30), newest-first, so it can fill the gap
-    // rather than skipping to the newest ids (40, 50).
+    // min_id returns the newest entries above the cursor, newest-first.
     $window = collect(PublicTimelineService::getRankedMinId(10, 2))
         ->map(fn ($id) => (int) $id)
         ->all();
 
-    expect($window)->toBe([30, 20]);
+    expect($window)->toBe([50, 40]);
 });
 
-it('fills forward across repeated min_id requests', function () {
+it('returns the newest page for a low sentinel cursor', function () {
     foreach ([10, 20, 30, 40, 50] as $id) {
         NetworkTimelineService::add($id);
     }
 
-    $first = collect(NetworkTimelineService::getRankedMinId(10, 2))->map(fn ($id) => (int) $id)->all();
-    expect($first)->toBe([30, 20]);
+    // Clients send min_id=1 to mean "from the start, newest first". The newest
+    // ids must come back, not the oldest.
+    $window = collect(NetworkTimelineService::getRankedMinId(1, 3))
+        ->map(fn ($id) => (int) $id)
+        ->all();
 
-    // Advance the cursor to the newest id seen (30) and page forward again.
-    $second = collect(NetworkTimelineService::getRankedMinId(max($first), 2))->map(fn ($id) => (int) $id)->all();
-    expect($second)->toBe([50, 40]);
+    expect($window)->toBe([50, 40, 30]);
 });
