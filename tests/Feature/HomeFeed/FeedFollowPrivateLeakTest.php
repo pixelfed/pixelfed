@@ -52,6 +52,10 @@ it('does not backfill any posts when the actor does not follow the target', func
 
     Redis::del(HomeTimelineService::CACHE_KEY.$actor->profile_id);
 
+    // Backfill only appends to a live feed, so give the actor one.
+    $seed = publicPost($actor);
+    HomeTimelineService::add($actor->profile_id, $seed->id);
+
     $priv = privatePost($target);
     $pub = publicPost($target);
 
@@ -70,6 +74,10 @@ it('backfills private posts for an accepted follower', function () {
     $target->refresh();
 
     Redis::del(HomeTimelineService::CACHE_KEY.$actor->profile_id);
+
+    // Backfill only appends to a live feed, so give the actor one.
+    $seed = publicPost($actor);
+    HomeTimelineService::add($actor->profile_id, $seed->id);
 
     Follower::create(['profile_id' => $actor->profile_id, 'following_id' => $target->profile_id, 'local_profile' => true]);
     FollowerService::add($actor->profile_id, $target->profile_id);

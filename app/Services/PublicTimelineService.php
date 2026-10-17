@@ -3,57 +3,46 @@
 namespace App\Services;
 
 use App\Models\Status;
+use App\Services\Concerns\SortedSetTimeline;
 use Illuminate\Support\Facades\Redis;
+use Illuminate\Support\Str;
 
 class PublicTimelineService
 {
+    use SortedSetTimeline;
+
     const CACHE_KEY = 'pf:services:timeline:public';
+
+    const FEED_LIMIT = 400;
 
     public static function get($start = 0, $stop = 10)
     {
-        if ($stop > 100) {
-            $stop = 100;
-        }
-
-        return Redis::zrevrange(self::CACHE_KEY, $start, $stop);
+        return self::setGet(self::CACHE_KEY, $start, $stop);
     }
 
     public static function getRankedMaxId($start = null, $limit = 10)
     {
-        if (! $start) {
-            return [];
-        }
-
-        return array_keys(Redis::zrevrangebyscore(self::CACHE_KEY, '('.$start, '-inf', [
-            'withscores' => true,
-            'limit' => [0, $limit],
-        ]));
+        return self::setRankedMaxId(self::CACHE_KEY, $start, $limit);
     }
 
     public static function getRankedMinId($end = null, $limit = 10)
     {
-        if (! $end) {
-            return [];
-        }
-
-        return array_keys(Redis::zrevrangebyscore(self::CACHE_KEY, '+inf', '('.$end, [
-            'withscores' => true,
-            'limit' => [0, $limit],
-        ]));
+        return self::setRankedMinId(self::CACHE_KEY, $end, $limit);
     }
 
     public static function add($val)
     {
-        if (self::count() > 400) {
-            Redis::zpopmin(self::CACHE_KEY);
-        }
+        return self::setAdd(self::CACHE_KEY, $val, self::FEED_LIMIT);
+    }
 
-        return Redis::zadd(self::CACHE_KEY, $val, $val);
+    public static function statusScore($statusId)
+    {
+        return self::scoreForStatus($statusId);
     }
 
     public static function rem($val)
     {
-        return Redis::zrem(self::CACHE_KEY, $val);
+        return self::setRem(self::CACHE_KEY, $val);
     }
 
     public static function del($val)
@@ -63,42 +52,20 @@ class PublicTimelineService
 
     public static function count()
     {
-        return Redis::zcard(self::CACHE_KEY);
+        return self::setCount(self::CACHE_KEY);
     }
 
     public static function deleteByProfileId($profileId)
     {
-        $res = Redis::zrange(self::CACHE_KEY, 0, '-1');
-        if (! $res) {
-            return;
-        }
-        foreach ($res as $postId) {
-            $s = StatusService::get($postId);
-            if (! $s) {
-                self::rem($postId);
-
-                continue;
-            }
-
-            if (! data_get($s, 'account.id')) {
-                self::rem($postId);
-
-                continue;
-            }
-
-            if ($s['account']['id'] == $profileId) {
-                self::rem($postId);
-            }
-        }
+        self::setDeleteByProfileId(self::CACHE_KEY, $profileId);
     }
 
     public static function warmCache($force = false, $limit = 100)
     {
         if (self::count() == 0 || $force == true) {
             $hideNsfw = config('instance.hide_nsfw_on_public_feeds');
-            Redis::del(self::CACHE_KEY);
             $minId = SnowflakeService::byDate(now()->subDays(90));
-            $ids = Status::where('id', '>', $minId)
+            $rows = Status::where('id', '>', $minId)
                 ->whereNull(['uri', 'in_reply_to_id', 'reblog_of_id'])
                 ->when($hideNsfw, function ($q, $hideNsfw) {
                     return $q->where('is_nsfw', false);
@@ -107,12 +74,29 @@ class PublicTimelineService
                 ->whereScope('public')
                 ->orderByDesc('id')
                 ->limit($limit)
-                ->pluck('id', 'profile_id');
-            foreach ($ids as $k => $id) {
-                if (AdminShadowFilterService::canAddToPublicFeedByProfileId($k)) {
-                    self::add($id);
+                ->get(['id', 'profile_id', 'created_at']);
+
+            $tmpKey = self::CACHE_KEY.':rebuild:'.Str::random(8);
+            $added = 0;
+            foreach ($rows as $row) {
+                if (AdminShadowFilterService::canAddToPublicFeedByProfileId($row->profile_id)) {
+                    $score = $row->created_at ? $row->created_at->timestamp : $row->id;
+                    Redis::zadd($tmpKey, $score, $row->id);
+                    $added++;
                 }
             }
+
+            if ($added === 0) {
+                Redis::del(self::CACHE_KEY);
+
+                return 1;
+            }
+
+            if ($added > self::FEED_LIMIT) {
+                Redis::zremrangebyrank($tmpKey, 0, -(self::FEED_LIMIT + 1));
+            }
+
+            Redis::rename($tmpKey, self::CACHE_KEY);
 
             return 1;
         }

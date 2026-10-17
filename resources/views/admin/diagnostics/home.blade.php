@@ -308,11 +308,6 @@
                                 	</tr>
                                 	<tr>
                                 		<td><span class="badge badge-primary">EXP</span></td>
-                                		<td><strong>EXP_CPT</strong></td>
-                                		<td><span>{{config_cache('exp.cached_public_timeline') ? '✅ true' : '❌ false' }}</span></td>
-                                	</tr>
-                                	<tr>
-                                		<td><span class="badge badge-primary">EXP</span></td>
                                 		<td><strong>EXP_GPS</strong></td>
                                 		<td><span>{{config_cache('exp.gps') ? '✅ true' : '❌ false' }}</span></td>
                                 	</tr>
@@ -513,11 +508,6 @@
                                 		<td><span>{{config_cache('instance.timeline.local.is_public') ? '✅ true' : '❌ false' }}</span></td>
                                 	</tr>
 
-                                	<tr>
-                                		<td><span class="badge badge-primary">INSTANCE</span></td>
-                                		<td><strong>INSTANCE_NETWORK_TIMELINE_CACHED</strong></td>
-                                		<td><span>{{config('instance.timeline.network.cached') }}</span></td>
-                                	</tr>
                                 	<tr>
                                 		<td><span class="badge badge-primary">INSTANCE</span></td>
                                 		<td><strong>INSTANCE_NETWORK_TIMELINE_CACHE_DROPOFF</strong></td>

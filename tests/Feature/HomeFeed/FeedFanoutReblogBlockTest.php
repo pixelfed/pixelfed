@@ -36,6 +36,16 @@ function blockProfile(int $userProfileId, int $blockedProfileId): void
     $filter->save();
 }
 
+function publicPostBy(User $author): Status
+{
+    return Status::factory()->create([
+        'profile_id' => $author->profile_id,
+        'type' => 'photo',
+        'scope' => 'public',
+        'visibility' => 'public',
+    ]);
+}
+
 function reblogStatus(User $original, User $sharer): Status
 {
     $orig = Status::factory()->create([
@@ -69,6 +79,10 @@ it('skips a follower who blocked the reblogged posts original author', function 
     FollowerService::add($viewer->profile_id, $sharer->profile_id);
     blockProfile($viewer->profile_id, $original->profile_id);
 
+    // Fan-out only appends to a live feed, so give the viewer one.
+    $seed = publicPostBy($viewer);
+    HomeTimelineService::add($viewer->profile_id, $seed->id);
+
     $boost = reblogStatus($original, $sharer);
     StatusService::get($boost->id, false);
 
@@ -90,6 +104,10 @@ it('delivers a reblog to a follower who blocked nobody', function () {
 
     Follower::create(['profile_id' => $viewer->profile_id, 'following_id' => $sharer->profile_id, 'local_profile' => true]);
     FollowerService::add($viewer->profile_id, $sharer->profile_id);
+
+    // Fan-out only appends to a live feed, so give the viewer one.
+    $seed = publicPostBy($viewer);
+    HomeTimelineService::add($viewer->profile_id, $seed->id);
 
     $boost = reblogStatus($original, $sharer);
     StatusService::get($boost->id, false);
