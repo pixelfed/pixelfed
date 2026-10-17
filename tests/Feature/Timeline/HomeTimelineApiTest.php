@@ -20,7 +20,7 @@ uses(LazilyRefreshDatabase::class);
 |--------------------------------------------------------------------------
 |
 | Exercises the cached home timeline read path: a warm-cache hit returns the
-| seeded sorted-set ids newest-first, an empty set returns 206 and warms once
+| seeded sorted-set ids newest-first, an empty set returns 200 and warms once
 | (guarded so a second request does not warm again), and min_id / max_id
 | windows land on the correct side of the cursor bounded by the limit.
 |
@@ -111,7 +111,7 @@ it('serves the seeded home set newest-first on a warm hit', function () {
     flushHome($pid);
 });
 
-it('returns 206 and warms once on cold-start, then does not warm again', function () {
+it('warms once on cold-start and does not warm again', function () {
     Bus::fake();
 
     $viewer = User::factory()->create();
@@ -122,15 +122,15 @@ it('returns 206 and warms once on cold-start, then does not warm again', functio
     Passport::actingAs($viewer, ['read']);
 
     $first = $this->getJson('/api/v1/timelines/home');
-    $first->assertStatus(206);
+    $first->assertOk();
     expect($first->json())->toBe([]);
 
     Bus::assertDispatchedSync(FeedWarmCachePipeline::class, 1);
 
-    // Second immediate request: still cold, still 206, but the coldBootKey
-    // guard must stop a second warm from dispatching.
+    // Second immediate request: still empty, and the coldBootKey guard must
+    // stop a second warm from dispatching.
     $second = $this->getJson('/api/v1/timelines/home');
-    $second->assertStatus(206);
+    $second->assertOk();
     expect($second->json())->toBe([]);
 
     Bus::assertDispatchedSync(FeedWarmCachePipeline::class, 1);

@@ -2829,10 +2829,14 @@ class ApiV1Controller extends Controller
                 Cache::set($coldBootKey, 1, 300);
                 FeedWarmCachePipeline::dispatchSync($pid);
 
-                return response()->json([], 206);
-            }
+                $ids = HomeTimelineService::get($pid, 0, $paddedLimit);
 
-            return response()->json([], 206);
+                if (! $ids) {
+                    return $this->json([]);
+                }
+            } else {
+                return $this->json([]);
+            }
         }
 
         $applyPhotosReblogsOnly = $photosReblogsOnly;
