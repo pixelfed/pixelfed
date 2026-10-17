@@ -2805,6 +2805,9 @@ class ApiV1Controller extends Controller
             }
         );
 
+        $mutedAndBlocked = UserFilterService::filters($pid);
+        $domainBlocks = UserFilterService::domainBlocks($pid);
+
         $paddedLimit = $includeReblogs ? $limit + 10 : $limit + 50;
 
         if ($min || $max) {
@@ -2843,6 +2846,32 @@ class ApiV1Controller extends Controller
                 return isset($status['account']['id']) ? $status : null;
             })
             ->filter()
+            ->filter(function ($status) use ($mutedAndBlocked, $domainBlocks) {
+                $accountIds = [(int) $status['account']['id']];
+                if (! empty($status['reblog']['account']['id'])) {
+                    $accountIds[] = (int) $status['reblog']['account']['id'];
+                }
+
+                foreach ($accountIds as $accountId) {
+                    if (in_array($accountId, $mutedAndBlocked)) {
+                        return false;
+                    }
+                }
+
+                if ($domainBlocks && count($domainBlocks)) {
+                    foreach ([$status['url'] ?? null, $status['reblog']['url'] ?? null] as $url) {
+                        if (! $url) {
+                            continue;
+                        }
+                        $domain = strtolower((string) parse_url($url, PHP_URL_HOST));
+                        if (in_array($domain, $domainBlocks)) {
+                            return false;
+                        }
+                    }
+                }
+
+                return true;
+            })
             ->filter(function ($status) use ($includeReblogs, $applyPhotosReblogsOnly, $postTypes) {
                 if (empty($status['reblog'])) {
                     return true;
