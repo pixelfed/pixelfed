@@ -48,12 +48,10 @@ class NetworkTimelineService
             return [];
         }
 
-        $ids = array_keys(Redis::zrangebyscore(self::CACHE_KEY, '('.$score, '+inf', [
+        return array_keys(Redis::zrevrangebyscore(self::CACHE_KEY, '+inf', '('.$score, [
             'withscores' => true,
             'limit' => [0, $limit],
         ]));
-
-        return array_reverse($ids);
     }
 
     public static function add($val)
