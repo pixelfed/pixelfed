@@ -1,172 +1,59 @@
 {
-    "_meta": {
-        "key_count": 84,
-        "generated": "2026-10-17T11:16:02+00:00",
-        "hash_sha256": "99eb3968d8314d95047332b944a1652be282e52c5cac875d291a7e3723b21957"
-    },
-    "auth": {
-        "age": "Man bent 16 m.",
-        "backLogin": "Gr\u012f\u017eti \u012f prisijungim\u0105",
-        "email": "El. pa\u0161tas",
-        "emailAddress": "El. pa\u0161to adresas",
-        "forgot": "Pamir\u0161au slapta\u017eod\u012f",
-        "forgotEmail": "Pamir\u0161au el. pa\u0161t\u0105",
-        "login": "Prisijungti",
-        "loginTitle": "Paskyros prisijungimas",
-        "password": "Slapta\u017eodis",
-        "register": "Registruotis",
-        "remember": "Prisiminti mane",
-        "signInMastodon": "Prisijungti su \u201eMastodon\u201c",
-        "terms": "https://localhost/site/termshttps://localhost/site/privacy"
-    },
-    "exception": {
-        "compose": {
-            "invalid": {
-                "album": "Turi b\u016bti viena nuotrauka arba vaizdo \u012fra\u0161as, arba kelios nuotraukos."
-            }
-        }
-    },
-    "helpcenter": {
-        "communityGuidelines": "Bendruomen\u0117s gair\u0117s",
-        "dataPolicy": "Duomen\u0173 politika",
-        "directMessages": "Asmenin\u0117s \u017einut\u0117s",
-        "helpcenter": "Pagalbos centras",
-        "safetyTips": "Saugumo patarimai",
-        "timelines": "Laiko juostos",
-        "whatsnew": "Kas naujo"
-    },
-    "navmenu": {
-        "admin": "Administratorius",
-        "composePost": "Kurti \u012fra\u0161\u0105",
-        "directMessages": "Asmenin\u0117s \u017einut\u0117s",
-        "discover": "Atrasti",
-        "home": "Pagrindinis",
-        "local": "Vietinis",
-        "logout": "Atsijungti",
-        "myProfile": "Mano profilis",
-        "network": "Tinklas",
-        "search": "Paie\u0161ka",
-        "settings": "Nustatymai",
-        "viewMyProfile": "Per\u017ei\u016br\u0117ti mano profil\u012f"
-    },
-    "notification": {
-        "commented": "pakomentavo ant j\u016bs\u0173 \u012fra\u0161o.",
-        "likedComment": "patiko j\u016bs\u0173 komentaras.",
-        "likedPhoto": "patiko j\u016bs\u0173 \u012fra\u0161as.",
-        "mentionedYou": "pamin\u0117jo jus.",
-        "shared": "pasidalino j\u016bs\u0173 \u012fra\u0161u.",
-        "startedFollowingYou": "prad\u0117jo sekti jus."
-    },
-    "passwords": {
-        "password": "Slapta\u017eod\u017eiai turi b\u016bti bent \u0161e\u0161i\u0173 simboli\u0173 ir atitikti patvirtinim\u0105.",
-        "reset": "J\u016bs\u0173 slapta\u017eodis i\u0161 naujo nustatytas!",
-        "sent": "Jei j\u016bs\u0173 el. pa\u0161to adresas egzistuoja m\u016bs\u0173 duomen\u0173 baz\u0117je, per kelias minutes \u012f j\u012f gausite slapta\u017eod\u017eio atk\u016brimo nuorod\u0105. Jei \u0161io lai\u0161ko negavote, patikrinkite savo \u0161lam\u0161to aplank\u0105.",
-        "token": "\u0160is slapta\u017eod\u017eio atk\u016brimo prieigos raktas yra negaliojantis / netinkamas.",
-        "user": "Jei j\u016bs\u0173 el. pa\u0161to adresas egzistuoja m\u016bs\u0173 duomen\u0173 baz\u0117je, per kelias minutes \u012f j\u012f gausite slapta\u017eod\u017eio atk\u016brimo nuorod\u0105. Jei \u0161io lai\u0161ko negavote, patikrinkite savo \u0161lam\u0161to aplank\u0105."
-    },
-    "profile": {
-        "alreadyFollow": "Jau sekate :username?",
-        "block.domain.max": "Pasiekta did\u017eiausias domeno blokavim\u0173 riba! Vienu metu galite u\u017eblokuoti tik :max domen\u0173. Papra\u0161ykite savo administratoriaus pakoreguoti \u0161\u012f rib\u0105.",
-        "blockedAccounts": "U\u017eblokuotos paskyros",
-        "blockedDomains": "U\u017eblokuoti domenai",
-        "emptyFollowers": "\u0160is naudotojas dar neturi sek\u0117j\u0173.",
-        "emptyFollowing": "\u0160is naudotojas dar neseka n\u0117 vieno.",
-        "emptySaved": "Dar nei\u0161saugojote n\u0117 vieno \u012fra\u0161o.",
-        "emptyTimeline": "\u0160is naudotojas dar neturi \u012fra\u0161\u0173.",
-        "loginToSeeProfile": "norint per\u017ei\u016br\u0117ti j\u0173 nuotraukas ir vaizdo \u012fra\u0161us.",
-        "mutedAccounts": "Nutildytos paskyros",
-        "privateProfileWarning": "\u0160i paskyra privati",
-        "savedWarning": "Tik j\u016bs galite matyti, k\u0105 i\u0161saugojote.",
-        "status.disabled.body": "Atsipra\u0161ome, \u0161is profilis \u0161iuo metu nepasiekiamas. Bandykite dar kart\u0105 po kurio laiko.",
-        "status.disabled.header": "Profilis nepasiekiamas"
+    "story": {
+        "cancel": "At\u0161aukti",
+        "viewedBy": "Per\u017ei\u016br\u0117jo"
     },
     "settings": {
-        "filters": "Filtrai"
-    },
-    "site": {
-        "about": "Apie",
-        "fediverse": "Fediversas",
-        "help": "Pagalba",
-        "language": "Kalba",
-        "opensource": "Atviro kodo",
-        "photo_filters": "Nuotrauk\u0173 filtrai",
-        "privacy": "Privatumas",
-        "terms": "S\u0105lygos"
-    },
-    "timeline": {
-        "emptyPersonalTimeline": "J\u016bs\u0173 laiko juosta yra tu\u0161\u010dia."
-    },
-    "web": {
-        "appearance": [],
-        "common": [],
-        "directMessages": [],
-        "hashtags": [],
-        "landing": {
-            "login": "Prisijungti",
-            "signup": "Registruotis",
-            "about": "Apie",
-            "directory": "Katalogas",
-            "explore": "Nar\u0161yti",
-            "decentralized_by_pixelfed": "Decentralizuota nuotrauk\u0173 bendrinimo socialin\u0117 medija, veikianti su <a href=\"https://pixelfed.org\" target=\"_blank\">\u201ePixelfed\u201c</a>.",
-            "posts": "\u012era\u0161ai",
-            "active_users": "Aktyv\u016bs naudotojai",
-            "total_users": "I\u0161 viso naudotoj\u0173",
-            "managed_by": "Valdo",
-            "server_rules": "Serverio taisykl\u0117s",
-            "features": {
-                "collections": "Rinkiniai",
-                "comments": "Komentarai",
-                "hashtags": "Grota\u017eym\u0117s",
-                "likes": "Patiktukai",
-                "notifications": "Prane\u0161imai",
-                "shares": "Pasidalinimai",
-                "federation": "Federacija",
-                "mobile_app": "Mobilios programos palaikymas",
-                "stories": "Istorijos",
-                "videos": "Vaizdo \u012fra\u0161ai"
-            },
-            "nothing_to_show": "Dar n\u0117ra k\u0105 parodyti! Patikrinkite v\u0117liau."
-        },
-        "menu": [],
-        "navmenu": [],
-        "notifications": [],
-        "post": [],
-        "powered_by_pixelfed": "Veikiama su \u201ePixelfed\u201c",
-        "profile": [],
-        "report": [],
-        "settings": {
-            "filters": {
-                "title": "Filtrai",
-                "manage_your_custom_filters": "Tvarkykite savo pasirinktinius filtrus.",
-                "customize_your_experience": "Tinkinkite savo patirt\u012f galingais turinio filtrais, kurie visame j\u016bs\u0173 paskyroje \u2013 \u012fskaitant pagrindin\u0119 ir vie\u0161\u0105j\u0105 laiko juostas bei grota\u017eymi\u0173 srautus \u2013 tikrina konkre\u010dius \u017eod\u017eius ar frazes.",
-                "add_new_filter": "Prid\u0117ti nauj\u0105 filtr\u0105",
-                "no_filters": "Dar neturite joki\u0173 turinio filtr\u0173.",
-                "no_filters_message": "Filtrai padeda pasl\u0117pti turin\u012f, kuriame yra tam tikr\u0173 \u017eod\u017ei\u0173 ar frazi\u0173, i\u0161 j\u016bs\u0173 laiko juost\u0173.",
-                "create_first_filter": "Kurti pirm\u0105j\u012f filtr\u0105",
-                "simple_mode": "Paprastas re\u017eimas",
-                "hide_media_blur": "Sl\u0117pti medij\u0105 u\u017e suliejimo",
-                "hashtags": "Grota\u017eym\u0117",
-                "conversations": "Pokalbiai",
-                "duration": "Trukm\u0117",
-                "forever": "Am\u017einai",
-                "save_changes": "I\u0161saugoti pakeitimus",
-                "create_filter": "Kurti filtr\u0105",
-                "choose_filter_action_description": "Kaip nor\u0117tum\u0117te tvarkyti turin\u012f, atitinkant\u012f j\u016bs\u0173 filtr\u0105?",
-                "hide_completely": "Visi\u0161kai pasl\u0117pti turin\u012f, kuris atitinka",
-                "choose_where_to_apply": "Pasirinkite, kur taikyti",
-                "choose_where_to_apply_description": "Pasirinkite, kuriose programos dalyse tur\u0117t\u0173 b\u016bti naudojamas \u0161is filtras.",
-                "review_your_filter_description": "\u0160tai j\u016bs\u0173 sukurto filtro ap\u017evalga.",
-                "never_expires": "Niekada nesibaigia",
-                "enter_filter_title": "\u012eveskite filtro pavadinim\u0105"
-            }
-        },
-        "site": [],
-        "story": {
-            "cancel": "At\u0161aukti",
-            "viewedBy": "Per\u017ei\u016br\u0117jo"
-        },
-        "timeline": {
-            "onboarding": []
+        "filters": {
+            "title": "Filtrai",
+            "manage_your_custom_filters": "Tvarkykite savo pasirinktinius filtrus.",
+            "customize_your_experience": "Tinkinkite savo patirt\u012f galingais turinio filtrais, kurie visame j\u016bs\u0173 paskyroje \u2013 \u012fskaitant pagrindin\u0119 ir vie\u0161\u0105j\u0105 laiko juostas bei grota\u017eymi\u0173 srautus \u2013 tikrina konkre\u010dius \u017eod\u017eius ar frazes.",
+            "add_new_filter": "Prid\u0117ti nauj\u0105 filtr\u0105",
+            "no_filters": "Dar neturite joki\u0173 turinio filtr\u0173.",
+            "no_filters_message": "Filtrai padeda pasl\u0117pti turin\u012f, kuriame yra tam tikr\u0173 \u017eod\u017ei\u0173 ar frazi\u0173, i\u0161 j\u016bs\u0173 laiko juost\u0173.",
+            "create_first_filter": "Kurti pirm\u0105j\u012f filtr\u0105",
+            "simple_mode": "Paprastas re\u017eimas",
+            "hide_media_blur": "Sl\u0117pti medij\u0105 u\u017e suliejimo",
+            "hashtags": "Grota\u017eym\u0117",
+            "conversations": "Pokalbiai",
+            "duration": "Trukm\u0117",
+            "forever": "Am\u017einai",
+            "save_changes": "I\u0161saugoti pakeitimus",
+            "create_filter": "Kurti filtr\u0105",
+            "choose_filter_action_description": "Kaip nor\u0117tum\u0117te tvarkyti turin\u012f, atitinkant\u012f j\u016bs\u0173 filtr\u0105?",
+            "hide_completely": "Visi\u0161kai pasl\u0117pti turin\u012f, kuris atitinka",
+            "choose_where_to_apply": "Pasirinkite, kur taikyti",
+            "choose_where_to_apply_description": "Pasirinkite, kuriose programos dalyse tur\u0117t\u0173 b\u016bti naudojamas \u0161is filtras.",
+            "review_your_filter_description": "\u0160tai j\u016bs\u0173 sukurto filtro ap\u017evalga.",
+            "never_expires": "Niekada nesibaigia",
+            "enter_filter_title": "\u012eveskite filtro pavadinim\u0105"
         }
+    },
+    "powered_by_pixelfed": "Veikiama su \u201ePixelfed\u201c",
+    "landing": {
+        "login": "Prisijungti",
+        "signup": "Registruotis",
+        "about": "Apie",
+        "directory": "Katalogas",
+        "explore": "Nar\u0161yti",
+        "decentralized_by_pixelfed": "Decentralizuota nuotrauk\u0173 bendrinimo socialin\u0117 medija, veikianti su <a href=\"https://pixelfed.org\" target=\"_blank\">\u201ePixelfed\u201c</a>.",
+        "posts": "\u012era\u0161ai",
+        "active_users": "Aktyv\u016bs naudotojai",
+        "total_users": "I\u0161 viso naudotoj\u0173",
+        "managed_by": "Valdo",
+        "server_rules": "Serverio taisykl\u0117s",
+        "features": {
+            "collections": "Rinkiniai",
+            "comments": "Komentarai",
+            "hashtags": "Grota\u017eym\u0117s",
+            "likes": "Patiktukai",
+            "notifications": "Prane\u0161imai",
+            "shares": "Pasidalinimai",
+            "federation": "Federacija",
+            "mobile_app": "Mobilios programos palaikymas",
+            "stories": "Istorijos",
+            "videos": "Vaizdo \u012fra\u0161ai"
+        },
+        "nothing_to_show": "Dar n\u0117ra k\u0105 parodyti! Patikrinkite v\u0117liau."
     }
 }
