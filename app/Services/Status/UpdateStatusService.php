@@ -9,7 +9,9 @@ use App\Models\Status;
 use App\Models\StatusEdit;
 use App\Services\MediaService;
 use App\Services\MediaStorageService;
+use App\Services\NetworkTimelineService;
 use App\Services\PlaceService;
+use App\Services\PublicTimelineService;
 use App\Services\StatusService;
 use Purify;
 
@@ -64,6 +66,8 @@ class UpdateStatusService
 
     public static function handleImmediateAttributes(Status $status, $attributes)
     {
+        $wasNsfw = (bool) $status->getOriginal('is_nsfw');
+
         if (isset($attributes['status'])) {
             $cleaned = Purify::clean($attributes['status']);
             $status->caption = $cleaned;
@@ -119,6 +123,33 @@ class UpdateStatusService
             }
         }
         StatusService::del($status->id);
+
+        self::reconcileFeedEligibility($status, $wasNsfw);
+    }
+
+    protected static function reconcileFeedEligibility(Status $status, bool $wasNsfw): void
+    {
+        if (! config('instance.hide_nsfw_on_public_feeds')) {
+            return;
+        }
+
+        $isNsfw = (bool) $status->is_nsfw;
+
+        if ($isNsfw === $wasNsfw) {
+            return;
+        }
+
+        if ($status->scope !== 'public' || $status->in_reply_to_id !== null || $status->reblog_of_id !== null) {
+            return;
+        }
+
+        $service = $status->uri ? NetworkTimelineService::class : PublicTimelineService::class;
+
+        if ($isNsfw) {
+            $service::rem($status->id);
+        } else {
+            $service::add($status->id);
+        }
     }
 
     public static function createPreviousEdit(Status $status)
