@@ -130,10 +130,13 @@ it('keeps getRankedMinId above the cursor and capped at limit across random inpu
         $cursor = random_int(max(1, $ids[0] - 10), end($ids) + 10);
 
         $result = toInts($minId($cursor, $limit));
+        // min_id returns the window immediately newer than the cursor: the
+        // ids just above it, presented newest-first.
         $expected = collect($ids)
             ->filter(fn ($id) => $id > $cursor)
-            ->sortDesc()
+            ->sort()
             ->take($limit)
+            ->sortDesc()
             ->values()
             ->all();
 

@@ -165,7 +165,7 @@ it('returns only entries newer than min_id, bounded by limit', function () {
     }
     Cache::put(NETWORK_CACHE_CHECK_KEY, 1, 3600);
 
-    // Cursor is the second id; min_id returns strictly-newer ids newest-first.
+    // Cursor is the second id; min_id returns the two ids immediately newer.
     $cursor = $ordered[1];
     $res = $this->actingAs($user)
         ->getJson('/api/pixelfed/v1/timelines/network?min_id='.$cursor.'&limit=2')
@@ -173,7 +173,7 @@ it('returns only entries newer than min_id, bounded by limit', function () {
         ->json();
 
     $returned = collect($res)->pluck('id')->map(fn ($id) => (int) $id)->all();
-    $expected = $ordered->slice(3, 2)->reverse()->values()->all();
+    $expected = $ordered->slice(2, 2)->reverse()->values()->all();
 
     expect($returned)->toBe($expected);
     expect($returned)->not->toContain($cursor);
