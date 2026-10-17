@@ -2931,9 +2931,14 @@ class ApiV1Controller extends Controller
         $baseUrl = config('app.url').'/api/v1/timelines/home?limit='.$limit.'&'.($napi ? '_pe=1&' : '');
 
         if ($res->isNotEmpty()) {
-            $pageIds = $res->pluck('id');
+            // The feed is ranked by created_at, so the next/prev cursors have to
+            // follow display order rather than numeric id. A remote post can
+            // carry a low id but a recent date, so picking the min/max id would
+            // point the cursor at the wrong row and re-serve posts on scroll.
+            $newest = $res->first()['id'];
+            $oldest = $res->last()['id'];
 
-            $headers['Link'] = '<'.$baseUrl.'max_id='.$pageIds->min().'>; rel="next",<'.$baseUrl.'min_id='.$pageIds->max().'>; rel="prev"';
+            $headers['Link'] = '<'.$baseUrl.'max_id='.$oldest.'>; rel="next",<'.$baseUrl.'min_id='.$newest.'>; rel="prev"';
         } else {
             $headers['Link'] = '<'.$baseUrl.'max_id='.collect($ids)->map(fn ($id) => (int) $id)->min().'>; rel="next"';
         }
@@ -3179,27 +3184,27 @@ class ApiV1Controller extends Controller
         if ($local) {
             $baseUrl .= 'local=1&';
         }
-        $minId = $res->map(function ($s) {
-            return ['id' => $s['id']];
-        })->min('id');
-        $maxId = $res->map(function ($s) {
-            return ['id' => $s['id']];
-        })->max('id');
+        // The feed is ranked by created_at, so the next/prev cursors follow
+        // display order rather than numeric id. A remote post can carry a low
+        // id but a recent date, so the min/max id would point the cursor at the
+        // wrong row and re-serve posts on scroll.
+        $newest = $res->isNotEmpty() ? $res->first()['id'] : null;
+        $oldest = $res->isNotEmpty() ? $res->last()['id'] : null;
 
-        if ($minId == $maxId) {
-            $minId = null;
+        if ($newest == $oldest) {
+            $newest = null;
         }
 
-        if ($maxId && $res->count() >= $limit) {
-            $link = '<'.$baseUrl.'max_id='.$minId.'>; rel="next"';
+        if ($oldest && $res->count() >= $limit) {
+            $link = '<'.$baseUrl.'max_id='.$oldest.'>; rel="next"';
         }
 
-        if ($minId) {
-            $link = '<'.$baseUrl.'min_id='.$maxId.'>; rel="prev"';
+        if ($newest) {
+            $link = '<'.$baseUrl.'min_id='.$newest.'>; rel="prev"';
         }
 
-        if ($maxId && $minId) {
-            $link = '<'.$baseUrl.'max_id='.$minId.'>; rel="next",<'.$baseUrl.'min_id='.$maxId.'>; rel="prev"';
+        if ($oldest && $newest) {
+            $link = '<'.$baseUrl.'max_id='.$oldest.'>; rel="next",<'.$baseUrl.'min_id='.$newest.'>; rel="prev"';
         }
 
         $headers = isset($link) ? ['Link' => $link] : [];
