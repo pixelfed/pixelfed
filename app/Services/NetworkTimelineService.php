@@ -3,132 +3,43 @@
 namespace App\Services;
 
 use App\Models\Status;
+use App\Services\Concerns\SortedSetTimeline;
 use Illuminate\Support\Facades\Redis;
 
 class NetworkTimelineService
 {
+    use SortedSetTimeline;
+
     const CACHE_KEY = 'pf:services:timeline:network';
 
     public static function get($start = 0, $stop = 10)
     {
-        if ($stop > 100) {
-            $stop = 100;
-        }
-
-        return Redis::zrevrange(self::CACHE_KEY, $start, $stop);
+        return self::setGet(self::CACHE_KEY, $start, $stop);
     }
 
     public static function getRankedMaxId($start = null, $limit = 10)
     {
-        if (! $start) {
-            return [];
-        }
-
-        $score = self::cursorScore($start);
-
-        if ($score === null) {
-            return [];
-        }
-
-        return array_keys(Redis::zrevrangebyscore(self::CACHE_KEY, '('.$score, '-inf', [
-            'withscores' => true,
-            'limit' => [0, $limit],
-        ]));
+        return self::setRankedMaxId(self::CACHE_KEY, $start, $limit);
     }
 
     public static function getRankedMinId($end = null, $limit = 10)
     {
-        if (! $end) {
-            return [];
-        }
-
-        $score = self::cursorScore($end);
-
-        if ($score === null) {
-            return [];
-        }
-
-        return array_keys(Redis::zrevrangebyscore(self::CACHE_KEY, '+inf', '('.$score, [
-            'withscores' => true,
-            'limit' => [0, $limit],
-        ]));
+        return self::setRankedMinId(self::CACHE_KEY, $end, $limit);
     }
 
     public static function add($val)
     {
-        $res = Redis::zadd(self::CACHE_KEY, self::statusScore($val), $val);
-
-        $limit = (int) config('instance.timeline.network.cache_dropoff');
-        if (self::count() > $limit) {
-            Redis::zremrangebyrank(self::CACHE_KEY, 0, -($limit + 1));
-        }
-
-        return $res;
+        return self::setAdd(self::CACHE_KEY, $val, self::feedLimit());
     }
 
     public static function statusScore($statusId)
     {
-        try {
-            $status = StatusService::get($statusId, false);
-
-            if ($status && ! empty($status['created_at'])) {
-                $ts = strtotime($status['created_at']);
-                if ($ts !== false) {
-                    return $ts;
-                }
-            }
-        } catch (\Throwable $e) {
-        }
-
-        return (int) $statusId;
-    }
-
-    protected static function cursorScore($statusId)
-    {
-        $score = Redis::zscore(self::CACHE_KEY, $statusId);
-
-        if ($score !== null && $score !== false) {
-            return (int) $score;
-        }
-
-        // Web clients parse the 19-digit snowflake cursor through a JS Number,
-        // which rounds past Number.MAX_SAFE_INTEGER, so the id they send back
-        // never matches a member exactly. Resolve it to the member it rounded
-        // from before scoring, otherwise a fabricated score sorts the whole
-        // feed back to the top and scroll stalls.
-        $member = self::resolveCursorMember($statusId);
-
-        if ($member !== null) {
-            $memberScore = Redis::zscore(self::CACHE_KEY, $member);
-
-            if ($memberScore !== null && $memberScore !== false) {
-                return (int) $memberScore;
-            }
-        }
-
-        return self::statusScore($statusId);
-    }
-
-    protected static function resolveCursorMember($statusId)
-    {
-        // The cursor missed an exact member lookup, which happens when a client
-        // rounded the id. Match it to the member that collapses to the same
-        // float value the client would have produced.
-        $target = (float) $statusId;
-        $members = Redis::zrange(self::CACHE_KEY, 0, -1);
-
-        foreach ($members as $member) {
-            if ((float) $member === $target) {
-                return $member;
-            }
-        }
-
-        return null;
+        return self::scoreForStatus($statusId);
     }
 
     public static function rem($val)
     {
-        return Redis::zrem(self::CACHE_KEY, $val);
+        return self::setRem(self::CACHE_KEY, $val);
     }
 
     public static function del($val)
@@ -138,37 +49,23 @@ class NetworkTimelineService
 
     public static function count()
     {
-        return Redis::zcard(self::CACHE_KEY);
+        return self::setCount(self::CACHE_KEY);
     }
 
     public static function deleteByProfileId($profileId)
     {
-        $res = Redis::zrange(self::CACHE_KEY, 0, '-1');
-        if (! $res) {
-            return;
-        }
-        foreach ($res as $postId) {
-            $s = StatusService::get($postId);
-            if (! $s) {
-                self::rem($postId);
+        self::setDeleteByProfileId(self::CACHE_KEY, $profileId);
+    }
 
-                continue;
-            }
-            if (! data_get($s, 'account.id')) {
-                self::rem($postId);
-
-                continue;
-            }
-            if ($s['account']['id'] == $profileId) {
-                self::rem($postId);
-            }
-        }
+    protected static function feedLimit(): int
+    {
+        return (int) config('instance.timeline.network.cache_dropoff');
     }
 
     public static function warmCache($force = false, $limit = null)
     {
         if ($limit === null) {
-            $limit = (int) config('instance.timeline.network.cache_dropoff');
+            $limit = self::feedLimit();
         }
 
         if (self::count() == 0 || $force == true) {
