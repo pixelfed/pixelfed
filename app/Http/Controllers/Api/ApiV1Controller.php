@@ -2893,12 +2893,14 @@ class ApiV1Controller extends Controller
             ->values();
 
         $headers = [];
+        $baseUrl = config('app.url').'/api/v1/timelines/home?limit='.$limit.'&'.($napi ? '_pe=1&' : '');
 
         if ($res->isNotEmpty()) {
-            $baseUrl = config('app.url').'/api/v1/timelines/home?limit='.$limit.'&'.($napi ? '_pe=1&' : '');
             $pageIds = $res->pluck('id');
 
             $headers['Link'] = '<'.$baseUrl.'max_id='.$pageIds->min().'>; rel="next",<'.$baseUrl.'min_id='.$pageIds->max().'>; rel="prev"';
+        } elseif (! empty($ids)) {
+            $headers['Link'] = '<'.$baseUrl.'max_id='.collect($ids)->map(fn ($id) => (int) $id)->min().'>; rel="next"';
         }
 
         return $this->json($res->toArray(), 200, $headers);
