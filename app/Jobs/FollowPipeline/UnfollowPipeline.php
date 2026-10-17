@@ -103,10 +103,6 @@ class UnfollowPipeline implements ShouldQueue
                 });
         }
 
-        if ($actorProfile->domain == null && config('instance.timeline.home.cached')) {
-            Cache::forget('pf:timelines:home:'.$actor);
-        }
-
         FollowRequest::whereFollowingId($target)
             ->whereFollowerId($actor)
             ->delete();

@@ -8,7 +8,6 @@ use App\Models\ImportPost;
 use App\Models\Status;
 use App\Services\ImportService;
 use App\Services\ProfileStatusService;
-use Illuminate\Support\Facades\Cache;
 
 class StatusObserver
 {
@@ -40,8 +39,6 @@ class StatusObserver
             return;
         }
 
-        Cache::forget('pf:timelines:home:'.$status->profile_id);
-
         if (in_array($status->scope, ['public', 'unlisted']) && in_array($status->type, ['photo', 'photo:album', 'video'])) {
             ProfileStatusService::add($status->profile_id, $status->id);
         }
@@ -57,8 +54,6 @@ class StatusObserver
         if (! in_array($status->scope, ['public', 'unlisted', 'private'])) {
             return;
         }
-
-        Cache::forget('pf:timelines:home:'.$status->profile_id);
 
         ProfileStatusService::delete($status->profile_id, $status->id);
 
