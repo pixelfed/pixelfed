@@ -50,7 +50,7 @@ it('returns 200 with no cold-boot when a populated feed has nothing newer than m
     expect(Cache::has('pf:services:apiv1:home:cached:coldbootcheck:'.$pid))->toBeFalse();
 });
 
-it('uses a short retry window for a genuinely cold feed', function () {
+it('warms once on a genuinely cold feed and guards re-warming', function () {
     Bus::fake();
 
     $viewer = User::factory()->create();
@@ -59,7 +59,7 @@ it('uses a short retry window for a genuinely cold feed', function () {
 
     Passport::actingAs($viewer, ['read']);
 
-    $this->getJson('/api/v1/timelines/home')->assertStatus(206);
+    $this->getJson('/api/v1/timelines/home')->assertOk();
 
     Bus::assertDispatchedSync(FeedWarmCachePipeline::class, 1);
 
