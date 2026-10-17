@@ -107,6 +107,10 @@ class HashtagInsertFanoutPipeline implements ShouldBeUniqueUntilProcessing, Shou
             return;
         }
 
+        if (($status['local'] ?? true) === false && FeedInsertRemotePipeline::isTooOld($status['created_at'] ?? null)) {
+            return;
+        }
+
         $domain = strtolower(parse_url($status['url'], PHP_URL_HOST));
         $skipIds = [];
 
