@@ -56,7 +56,7 @@ jobs:
           php artisan key:generate
 
       - name: Run localization export
-        run: php artisan i18n:export
+        run: php artisan i18n:export --force
 
       - name: Commit and push changes (if any)
         run: |
