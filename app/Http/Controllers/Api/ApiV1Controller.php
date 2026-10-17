@@ -3017,11 +3017,13 @@ class ApiV1Controller extends Controller
                 ->values()
                 ->toArray();
         } elseif ($remote && ! $local) {
-            Cache::remember('api:v1:timelines:network:cache_check', 10368000, function () {
-                if (NetworkTimelineService::count() == 0) {
-                    NetworkTimelineService::warmCache(true, config('instance.timeline.network.cache_dropoff'));
-                }
-            });
+            if (NetworkTimelineService::count() === 0) {
+                Cache::lock('api:v1:timelines:network:cache_check:lock', 10)->get(function () {
+                    if (NetworkTimelineService::count() === 0) {
+                        NetworkTimelineService::warmCache(true, config('instance.timeline.network.cache_dropoff'));
+                    }
+                });
+            }
 
             if ($max) {
                 $feed = NetworkTimelineService::getRankedMaxId($max, $limit + 5);
@@ -3031,11 +3033,13 @@ class ApiV1Controller extends Controller
                 $feed = NetworkTimelineService::get(0, $limit + 5);
             }
         } else {
-            Cache::remember('api:v1:timelines:public:cache_check', 10368000, function () {
-                if (PublicTimelineService::count() == 0) {
-                    PublicTimelineService::warmCache(true, 400);
-                }
-            });
+            if (PublicTimelineService::count() === 0) {
+                Cache::lock('api:v1:timelines:public:cache_check:lock', 10)->get(function () {
+                    if (PublicTimelineService::count() === 0) {
+                        PublicTimelineService::warmCache(true, 400);
+                    }
+                });
+            }
 
             if ($max) {
                 $feed = PublicTimelineService::getRankedMaxId($max, $limit + 5);

@@ -260,11 +260,13 @@ class PublicApiController extends Controller
         $user = $request->user();
         $filtered = $user ? UserFilterService::filters($user->profile_id) : [];
 
-        Cache::remember('api:v1:timelines:public:cache_check', 10368000, function () {
-            if (PublicTimelineService::count() == 0) {
-                PublicTimelineService::warmCache(true, 400);
-            }
-        });
+        if (PublicTimelineService::count() === 0) {
+            Cache::lock('api:v1:timelines:public:cache_check:lock', 10)->get(function () {
+                if (PublicTimelineService::count() === 0) {
+                    PublicTimelineService::warmCache(true, 400);
+                }
+            });
+        }
 
         if ($max) {
             $feed = PublicTimelineService::getRankedMaxId($max, $limit);
@@ -463,11 +465,13 @@ class PublicApiController extends Controller
 
         $filtered = $user ? UserFilterService::filters($user->profile_id) : [];
 
-        Cache::remember('api:v1:timelines:network:cache_check', 10368000, function () {
-            if (NetworkTimelineService::count() == 0) {
-                NetworkTimelineService::warmCache(true, config('instance.timeline.network.cache_dropoff'));
-            }
-        });
+        if (NetworkTimelineService::count() === 0) {
+            Cache::lock('api:v1:timelines:network:cache_check:lock', 10)->get(function () {
+                if (NetworkTimelineService::count() === 0) {
+                    NetworkTimelineService::warmCache(true, config('instance.timeline.network.cache_dropoff'));
+                }
+            });
+        }
 
         if ($max) {
             $feed = NetworkTimelineService::getRankedMaxId($max, $limit);
