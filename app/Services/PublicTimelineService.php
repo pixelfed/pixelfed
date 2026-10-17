@@ -4,6 +4,7 @@ namespace App\Services;
 
 use App\Models\Status;
 use Illuminate\Support\Facades\Redis;
+use Illuminate\Support\Str;
 
 class PublicTimelineService
 {
@@ -100,7 +101,6 @@ class PublicTimelineService
     {
         if (self::count() == 0 || $force == true) {
             $hideNsfw = config('instance.hide_nsfw_on_public_feeds');
-            Redis::del(self::CACHE_KEY);
             $minId = SnowflakeService::byDate(now()->subDays(90));
             $ids = Status::where('id', '>', $minId)
                 ->whereNull(['uri', 'in_reply_to_id', 'reblog_of_id'])
@@ -112,11 +112,27 @@ class PublicTimelineService
                 ->orderByDesc('id')
                 ->limit($limit)
                 ->pluck('profile_id', 'id');
+
+            $tmpKey = self::CACHE_KEY.':rebuild:'.Str::random(8);
+            $added = 0;
             foreach ($ids as $id => $profileId) {
                 if (AdminShadowFilterService::canAddToPublicFeedByProfileId($profileId)) {
-                    self::add($id);
+                    Redis::zadd($tmpKey, $id, $id);
+                    $added++;
                 }
             }
+
+            if ($added === 0) {
+                Redis::del(self::CACHE_KEY);
+
+                return 1;
+            }
+
+            if ($added > 400) {
+                Redis::zremrangebyrank($tmpKey, 0, -401);
+            }
+
+            Redis::rename($tmpKey, self::CACHE_KEY);
 
             return 1;
         }
