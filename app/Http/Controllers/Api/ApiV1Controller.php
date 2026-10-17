@@ -2957,7 +2957,7 @@ class ApiV1Controller extends Controller
         $napi = $request->has(self::PF_API_ENTITY_KEY);
         $min = $request->input('min_id');
         $max = $request->input('max_id');
-        if ($max == 0) {
+        if ($max !== null && (int) $max === 0) {
             $min = 1;
         }
         $minOrMax = $request->anyFilled(['max_id', 'min_id']);
