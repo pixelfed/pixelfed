@@ -7,6 +7,7 @@ use App\Models\Status;
 use App\Models\UserDomainBlock;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Redis;
+use Illuminate\Support\Str;
 
 class HomeTimelineService
 {
@@ -71,7 +72,6 @@ class HomeTimelineService
     public static function warmCache($id, $force = false, $limit = 100, $returnIds = false)
     {
         if (self::count($id) == 0 || $force == true) {
-            Redis::del(self::CACHE_KEY.$id);
             $following = Cache::remember('profile:following:'.$id, 1209600, function () use ($id) {
                 $following = Follower::whereProfileId($id)->pluck('following_id');
 
@@ -97,8 +97,10 @@ class HomeTimelineService
                 ->limit($limit)
                 ->pluck('id');
 
-            foreach ($ids as $pid) {
-                $status = StatusService::get($pid, false);
+            $tmpKey = self::CACHE_KEY.$id.':rebuild:'.Str::random(8);
+            $added = 0;
+            foreach ($ids as $sid) {
+                $status = StatusService::get($sid, false);
                 if (! $status || ! isset($status['account'], $status['url'])) {
                     continue;
                 }
@@ -108,8 +110,21 @@ class HomeTimelineService
                         continue;
                     }
                 }
-                self::add($id, $pid);
+                Redis::zadd($tmpKey, $sid, $sid);
+                $added++;
             }
+
+            if ($added === 0) {
+                Redis::del(self::CACHE_KEY.$id);
+
+                return $returnIds ? $ids : 1;
+            }
+
+            if ($added > 400) {
+                Redis::zremrangebyrank($tmpKey, 0, -401);
+            }
+
+            Redis::rename($tmpKey, self::CACHE_KEY.$id);
 
             return $returnIds ? $ids : 1;
         }
