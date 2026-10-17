@@ -11,7 +11,7 @@ class ExportLanguages extends Command
      *
      * @var string
      */
-    protected $signature = 'i18n:export';
+    protected $signature = 'i18n:export {--force : Bypass the local environment check}';
 
     /**
      * The console command description.
@@ -35,8 +35,9 @@ class ExportLanguages extends Command
      */
     public function handle(): int
     {
-        if (config('app.env') !== 'local') {
+        if (config('app.env') !== 'local' && ! $this->option('force')) {
             $this->error('This command is meant for development purposes and should only be run in a local environment');
+            $this->line('Use --force to run it anyway.');
 
             return Command::FAILURE;
         }
