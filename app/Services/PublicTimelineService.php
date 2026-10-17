@@ -109,9 +109,9 @@ class PublicTimelineService
                 ->whereScope('public')
                 ->orderByDesc('id')
                 ->limit($limit)
-                ->pluck('id', 'profile_id');
-            foreach ($ids as $k => $id) {
-                if (AdminShadowFilterService::canAddToPublicFeedByProfileId($k)) {
+                ->pluck('profile_id', 'id');
+            foreach ($ids as $id => $profileId) {
+                if (AdminShadowFilterService::canAddToPublicFeedByProfileId($profileId)) {
                     self::add($id);
                 }
             }
