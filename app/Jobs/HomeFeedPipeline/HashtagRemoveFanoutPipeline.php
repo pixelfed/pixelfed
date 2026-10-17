@@ -53,7 +53,7 @@ class HashtagRemoveFanoutPipeline implements ShouldBeUniqueUntilProcessing, Shou
      */
     public function middleware(): array
     {
-        return [(new WithoutOverlapping("hfp:hashtag:fanout:remove:{$this->hid}:{$this->sid}"))->shared()->dontRelease()];
+        return [(new WithoutOverlapping("hfp:hashtag:fanout:remove:{$this->hid}:{$this->sid}"))->shared()->expireAfter($this->timeout)->dontRelease()];
     }
 
     /**

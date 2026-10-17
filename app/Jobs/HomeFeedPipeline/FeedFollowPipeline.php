@@ -53,7 +53,7 @@ class FeedFollowPipeline implements ShouldBeUniqueUntilProcessing, ShouldQueue
      */
     public function middleware(): array
     {
-        return [(new WithoutOverlapping("hts:feed:insert:follows:aid:{$this->actorId}:fid:{$this->followingId}"))->shared()->dontRelease()];
+        return [(new WithoutOverlapping("hts:feed:insert:follows:aid:{$this->actorId}:fid:{$this->followingId}"))->shared()->expireAfter($this->timeout)->dontRelease()];
     }
 
     /**

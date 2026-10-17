@@ -69,7 +69,7 @@ class FeedInsertRemotePipeline implements ShouldBeUniqueUntilProcessing, ShouldQ
      */
     public function middleware(): array
     {
-        return [(new WithoutOverlapping("hts:feed:insert:remote:sid:{$this->sid}"))->shared()->dontRelease()];
+        return [(new WithoutOverlapping("hts:feed:insert:remote:sid:{$this->sid}"))->shared()->expireAfter($this->timeout)->dontRelease()];
     }
 
     /**

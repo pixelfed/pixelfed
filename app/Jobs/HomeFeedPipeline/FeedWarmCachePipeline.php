@@ -48,7 +48,7 @@ class FeedWarmCachePipeline implements ShouldBeUniqueUntilProcessing, ShouldQueu
      */
     public function middleware(): array
     {
-        return [(new WithoutOverlapping("hfp:warm-cache:pid:{$this->pid}"))->shared()->dontRelease()];
+        return [(new WithoutOverlapping("hfp:warm-cache:pid:{$this->pid}"))->shared()->expireAfter($this->timeout)->dontRelease()];
     }
 
     /**

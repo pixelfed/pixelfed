@@ -51,7 +51,7 @@ class FeedRemovePipeline implements ShouldBeUniqueUntilProcessing, ShouldQueue
      */
     public function middleware(): array
     {
-        return [(new WithoutOverlapping("hts:feed:remove:sid:{$this->sid}"))->shared()->dontRelease()];
+        return [(new WithoutOverlapping("hts:feed:remove:sid:{$this->sid}"))->shared()->expireAfter($this->timeout)->dontRelease()];
     }
 
     /**
