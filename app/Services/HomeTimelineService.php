@@ -129,7 +129,39 @@ class HomeTimelineService
             return (int) $score;
         }
 
+        // Web clients parse the 19-digit snowflake cursor through a JS Number,
+        // which rounds past Number.MAX_SAFE_INTEGER, so the id they send back
+        // never matches a member exactly. Resolve it to the member it rounded
+        // from before scoring, otherwise a fabricated score sorts the whole
+        // feed back to the top and scroll stalls.
+        $member = self::resolveCursorMember($id, $statusId);
+
+        if ($member !== null) {
+            $memberScore = Redis::zscore(self::CACHE_KEY.$id, $member);
+
+            if ($memberScore !== null && $memberScore !== false) {
+                return (int) $memberScore;
+            }
+        }
+
         return self::statusScore($statusId);
+    }
+
+    protected static function resolveCursorMember($id, $statusId)
+    {
+        // The cursor missed an exact member lookup, which happens when a client
+        // rounded the id. Match it to the member that collapses to the same
+        // float value the client would have produced.
+        $target = (float) $statusId;
+        $members = Redis::zrange(self::CACHE_KEY.$id, 0, -1);
+
+        foreach ($members as $member) {
+            if ((float) $member === $target) {
+                return $member;
+            }
+        }
+
+        return null;
     }
 
     public static function warmCache($id, $force = false, $limit = 100, $returnIds = false)

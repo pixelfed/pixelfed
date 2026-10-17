@@ -190,3 +190,50 @@ it('paginates the local feed without duplicates when id order differs from date 
 
     Redis::del(PublicTimelineService::CACHE_KEY);
 });
+
+it('advances the home feed when the client rounds the snowflake cursor', function () {
+    $viewer = User::factory()->create();
+    $viewer->refresh();
+    $pid = $viewer->profile_id;
+
+    $author = User::factory()->create();
+    $author->refresh();
+    Follower::create(['profile_id' => $pid, 'following_id' => $author->profile_id]);
+
+    $all = [];
+    for ($i = 0; $i < 12; $i++) {
+        $all[] = statusAt($author->profile_id, now()->subMinutes(10 * ($i + 1)));
+    }
+
+    Redis::del(HomeTimelineService::CACHE_KEY.$pid);
+    Cache::forget('pf:services:apiv1:home:cached:coldbootcheck:'.$pid);
+    HomeTimelineService::warmCache($pid, true, 400);
+
+    $ordered = collect(Redis::zrevrange(HomeTimelineService::CACHE_KEY.$pid, 0, -1))
+        ->map(fn ($v) => (string) $v)
+        ->values();
+
+    // Take a real cursor from mid-feed and round it the way a JS Number would,
+    // past Number.MAX_SAFE_INTEGER, exactly as the web client sends it back.
+    $realCursor = $ordered->get(3);
+    $roundedCursor = (string) (int) (float) $realCursor;
+
+    expect($roundedCursor)->not->toBe($realCursor);
+
+    Passport::actingAs($viewer, ['read']);
+
+    $res = $this->getJson('/api/v1/timelines/home?limit=4&max_id='.$roundedCursor.'&_pe=1')
+        ->assertOk()
+        ->json();
+
+    $ids = collect($res)->pluck('id')->map(fn ($id) => (string) $id)->values();
+
+    // The page must continue below the cursor, not restart at the newest post.
+    $cursorRank = $ordered->search($realCursor);
+    $expected = $ordered->slice($cursorRank + 1, 4)->values();
+
+    expect($ids->all())->toBe($expected->all());
+    expect($ids)->not->toContain($ordered->first());
+
+    Redis::del(HomeTimelineService::CACHE_KEY.$pid);
+});
