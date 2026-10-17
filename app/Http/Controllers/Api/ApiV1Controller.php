@@ -2819,16 +2819,18 @@ class ApiV1Controller extends Controller
         }
 
         if (! $ids) {
+            if (HomeTimelineService::count($pid) > 0) {
+                return $this->json([]);
+            }
+
             $coldBootKey = 'pf:services:apiv1:home:cached:coldbootcheck:'.$pid;
 
             if (! Cache::has($coldBootKey)) {
-                Cache::set($coldBootKey, 1, 86400);
+                Cache::set($coldBootKey, 1, 300);
                 FeedWarmCachePipeline::dispatchSync($pid);
 
                 return response()->json([], 206);
             }
-
-            Cache::set($coldBootKey, 1, 86400);
 
             return response()->json([], 206);
         }
