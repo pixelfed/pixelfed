@@ -14,6 +14,7 @@ use App\Services\BookmarkService;
 use App\Services\DiscoverService;
 use App\Services\FollowerService;
 use App\Services\ModLogService;
+use App\Services\NetworkTimelineService;
 use App\Services\PublicTimelineService;
 use App\Services\StatusService; // StatusMediaContainerTransformer,
 use App\Services\UserFilterService;
@@ -206,7 +207,18 @@ class InternalApiController extends Controller
                         ->whereItemType(Status::class)
                         ->delete();
                 }
-                break;
+
+                StatusService::del($status->id);
+
+                if ($status->scope === 'public' && $status->in_reply_to_id == null && $status->reblog_of_id == null) {
+                    if ($status->uri) {
+                        NetworkTimelineService::add($status->id);
+                    } else {
+                        PublicTimelineService::add($status->id);
+                    }
+                }
+
+                return ['msg' => 200];
 
             case 'unlist':
                 $status->scope = $status->visibility = 'unlisted';
