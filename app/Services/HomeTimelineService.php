@@ -37,7 +37,13 @@ class HomeTimelineService
 
         self::cacheKeyTouch($id);
 
-        return array_keys(Redis::zrevrangebyscore(self::CACHE_KEY.$id, '('.$start, '-inf', [
+        $score = self::cursorScore($id, $start);
+
+        if ($score === null) {
+            return [];
+        }
+
+        return array_keys(Redis::zrevrangebyscore(self::CACHE_KEY.$id, '('.$score, '-inf', [
             'withscores' => true,
             'limit' => [0, $limit],
         ]));
@@ -51,7 +57,13 @@ class HomeTimelineService
 
         self::cacheKeyTouch($id);
 
-        $ids = array_keys(Redis::zrangebyscore(self::CACHE_KEY.$id, '('.$end, '+inf', [
+        $score = self::cursorScore($id, $end);
+
+        if ($score === null) {
+            return [];
+        }
+
+        $ids = array_keys(Redis::zrangebyscore(self::CACHE_KEY.$id, '('.$score, '+inf', [
             'withscores' => true,
             'limit' => [0, $limit],
         ]));
@@ -61,7 +73,7 @@ class HomeTimelineService
 
     public static function add($id, $val)
     {
-        $res = Redis::zadd(self::CACHE_KEY.$id, $val, $val);
+        $res = Redis::zadd(self::CACHE_KEY.$id, self::statusScore($val), $val);
 
         if (self::count($id) > 400) {
             Redis::zremrangebyrank(self::CACHE_KEY.$id, 0, -401);
@@ -92,6 +104,34 @@ class HomeTimelineService
         if (Redis::exists(self::CACHE_KEY.$id)) {
             Redis::expire(self::CACHE_KEY.$id, self::CACHE_TTL);
         }
+    }
+
+    public static function statusScore($statusId)
+    {
+        try {
+            $status = StatusService::get($statusId, false);
+
+            if ($status && ! empty($status['created_at'])) {
+                $ts = strtotime($status['created_at']);
+                if ($ts !== false) {
+                    return $ts;
+                }
+            }
+        } catch (\Throwable $e) {
+        }
+
+        return (int) $statusId;
+    }
+
+    protected static function cursorScore($id, $statusId)
+    {
+        $score = Redis::zscore(self::CACHE_KEY.$id, $statusId);
+
+        if ($score !== null && $score !== false) {
+            return (int) $score;
+        }
+
+        return self::statusScore($statusId);
     }
 
     public static function warmCache($id, $force = false, $limit = 100, $returnIds = false)
@@ -157,7 +197,8 @@ class HomeTimelineService
                         continue;
                     }
                 }
-                Redis::zadd($tmpKey, $sid, $sid);
+                $score = ! empty($status['created_at']) ? strtotime($status['created_at']) : false;
+                Redis::zadd($tmpKey, $score !== false ? $score : $sid, $sid);
                 $added++;
             }
 

@@ -24,7 +24,13 @@ class NetworkTimelineService
             return [];
         }
 
-        return array_keys(Redis::zrevrangebyscore(self::CACHE_KEY, '('.$start, '-inf', [
+        $score = self::cursorScore($start);
+
+        if ($score === null) {
+            return [];
+        }
+
+        return array_keys(Redis::zrevrangebyscore(self::CACHE_KEY, '('.$score, '-inf', [
             'withscores' => true,
             'limit' => [0, $limit],
         ]));
@@ -36,7 +42,13 @@ class NetworkTimelineService
             return [];
         }
 
-        $ids = array_keys(Redis::zrangebyscore(self::CACHE_KEY, '('.$end, '+inf', [
+        $score = self::cursorScore($end);
+
+        if ($score === null) {
+            return [];
+        }
+
+        $ids = array_keys(Redis::zrangebyscore(self::CACHE_KEY, '('.$score, '+inf', [
             'withscores' => true,
             'limit' => [0, $limit],
         ]));
@@ -46,7 +58,7 @@ class NetworkTimelineService
 
     public static function add($val)
     {
-        $res = Redis::zadd(self::CACHE_KEY, $val, $val);
+        $res = Redis::zadd(self::CACHE_KEY, self::statusScore($val), $val);
 
         $limit = (int) config('instance.timeline.network.cache_dropoff');
         if (self::count() > $limit) {
@@ -54,6 +66,34 @@ class NetworkTimelineService
         }
 
         return $res;
+    }
+
+    public static function statusScore($statusId)
+    {
+        try {
+            $status = StatusService::get($statusId, false);
+
+            if ($status && ! empty($status['created_at'])) {
+                $ts = strtotime($status['created_at']);
+                if ($ts !== false) {
+                    return $ts;
+                }
+            }
+        } catch (\Throwable $e) {
+        }
+
+        return (int) $statusId;
+    }
+
+    protected static function cursorScore($statusId)
+    {
+        $score = Redis::zscore(self::CACHE_KEY, $statusId);
+
+        if ($score !== null && $score !== false) {
+            return (int) $score;
+        }
+
+        return self::statusScore($statusId);
     }
 
     public static function rem($val)

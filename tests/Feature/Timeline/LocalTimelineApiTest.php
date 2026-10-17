@@ -35,6 +35,8 @@ afterEach(function () {
 
 function eligibleLocalStatus(): Status
 {
+    static $seq = 0;
+
     return Status::factory()->create([
         'type' => 'photo',
         'scope' => 'public',
@@ -43,6 +45,7 @@ function eligibleLocalStatus(): Status
         'in_reply_to_id' => null,
         'reblog_of_id' => null,
         'uri' => null,
+        'created_at' => now()->subMinutes(1000 - ($seq++)),
     ]);
 }
 

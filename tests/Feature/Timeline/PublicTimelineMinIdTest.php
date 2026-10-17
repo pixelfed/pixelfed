@@ -23,6 +23,8 @@ afterEach(function () {
 
 function minIdLocalStatus(): Status
 {
+    static $seq = 0;
+
     $status = Status::factory()->create([
         'type' => 'photo',
         'scope' => 'public',
@@ -31,6 +33,7 @@ function minIdLocalStatus(): Status
         'in_reply_to_id' => null,
         'reblog_of_id' => null,
         'uri' => null,
+        'created_at' => now()->subMinutes(1000 - ($seq++)),
     ]);
 
     StatusService::get($status->id);

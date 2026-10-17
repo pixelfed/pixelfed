@@ -42,6 +42,8 @@ function flushHome(int $pid): void
  */
 function seedHomeStatus(int $authorPid): Status
 {
+    static $seq = 0;
+
     $status = Status::factory()->create([
         'profile_id' => $authorPid,
         'type' => 'photo',
@@ -49,6 +51,8 @@ function seedHomeStatus(int $authorPid): Status
         'visibility' => 'public',
         'in_reply_to_id' => null,
         'reblog_of_id' => null,
+        // Monotonic timestamps so chronological order matches creation order.
+        'created_at' => now()->subMinutes(1000 - ($seq++)),
     ]);
 
     // Resolve the status into the cache so the endpoint can hydrate it.

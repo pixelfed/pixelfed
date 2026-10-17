@@ -25,7 +25,13 @@ class PublicTimelineService
             return [];
         }
 
-        return array_keys(Redis::zrevrangebyscore(self::CACHE_KEY, '('.$start, '-inf', [
+        $score = self::cursorScore($start);
+
+        if ($score === null) {
+            return [];
+        }
+
+        return array_keys(Redis::zrevrangebyscore(self::CACHE_KEY, '('.$score, '-inf', [
             'withscores' => true,
             'limit' => [0, $limit],
         ]));
@@ -37,7 +43,13 @@ class PublicTimelineService
             return [];
         }
 
-        $ids = array_keys(Redis::zrangebyscore(self::CACHE_KEY, '('.$end, '+inf', [
+        $score = self::cursorScore($end);
+
+        if ($score === null) {
+            return [];
+        }
+
+        $ids = array_keys(Redis::zrangebyscore(self::CACHE_KEY, '('.$score, '+inf', [
             'withscores' => true,
             'limit' => [0, $limit],
         ]));
@@ -47,13 +59,41 @@ class PublicTimelineService
 
     public static function add($val)
     {
-        $res = Redis::zadd(self::CACHE_KEY, $val, $val);
+        $res = Redis::zadd(self::CACHE_KEY, self::statusScore($val), $val);
 
         if (self::count() > 400) {
             Redis::zremrangebyrank(self::CACHE_KEY, 0, -401);
         }
 
         return $res;
+    }
+
+    public static function statusScore($statusId)
+    {
+        try {
+            $status = StatusService::get($statusId, false);
+
+            if ($status && ! empty($status['created_at'])) {
+                $ts = strtotime($status['created_at']);
+                if ($ts !== false) {
+                    return $ts;
+                }
+            }
+        } catch (\Throwable $e) {
+        }
+
+        return (int) $statusId;
+    }
+
+    protected static function cursorScore($statusId)
+    {
+        $score = Redis::zscore(self::CACHE_KEY, $statusId);
+
+        if ($score !== null && $score !== false) {
+            return (int) $score;
+        }
+
+        return self::statusScore($statusId);
     }
 
     public static function rem($val)
@@ -102,7 +142,7 @@ class PublicTimelineService
         if (self::count() == 0 || $force == true) {
             $hideNsfw = config('instance.hide_nsfw_on_public_feeds');
             $minId = SnowflakeService::byDate(now()->subDays(90));
-            $ids = Status::where('id', '>', $minId)
+            $rows = Status::where('id', '>', $minId)
                 ->whereNull(['uri', 'in_reply_to_id', 'reblog_of_id'])
                 ->when($hideNsfw, function ($q, $hideNsfw) {
                     return $q->where('is_nsfw', false);
@@ -111,13 +151,14 @@ class PublicTimelineService
                 ->whereScope('public')
                 ->orderByDesc('id')
                 ->limit($limit)
-                ->pluck('profile_id', 'id');
+                ->get(['id', 'profile_id', 'created_at']);
 
             $tmpKey = self::CACHE_KEY.':rebuild:'.Str::random(8);
             $added = 0;
-            foreach ($ids as $id => $profileId) {
-                if (AdminShadowFilterService::canAddToPublicFeedByProfileId($profileId)) {
-                    Redis::zadd($tmpKey, $id, $id);
+            foreach ($rows as $row) {
+                if (AdminShadowFilterService::canAddToPublicFeedByProfileId($row->profile_id)) {
+                    $score = $row->created_at ? $row->created_at->timestamp : $row->id;
+                    Redis::zadd($tmpKey, $score, $row->id);
                     $added++;
                 }
             }
