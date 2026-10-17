@@ -13,7 +13,6 @@ use App\Services\NetworkTimelineService;
 use App\Services\PublicTimelineService;
 use App\Services\ReblogService;
 use App\Services\RelationshipService;
-use App\Services\SnowflakeService;
 use App\Services\StatusService;
 use App\Services\UserFilterService;
 use App\Transformer\Api\StatusStatelessTransformer;
@@ -248,7 +247,7 @@ class PublicApiController extends Controller
             'page' => 'nullable|integer|max:40',
             'min_id' => 'nullable|integer|min:0|max:'.PHP_INT_MAX,
             'max_id' => 'nullable|integer|min:0|max:'.PHP_INT_MAX,
-            'limit' => 'nullable|integer|max:30',
+            'limit' => 'nullable|integer|min:1|max:30',
         ]);
 
         if (! $request->user()) {
@@ -454,7 +453,7 @@ class PublicApiController extends Controller
             'page' => 'nullable|integer|max:40',
             'min_id' => 'nullable|integer|min:0|max:'.PHP_INT_MAX,
             'max_id' => 'nullable|integer|min:0|max:'.PHP_INT_MAX,
-            'limit' => 'nullable|integer|max:30',
+            'limit' => 'nullable|integer|min:1|max:30',
         ]);
 
         $min = $request->input('min_id');
