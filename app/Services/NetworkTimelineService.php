@@ -116,7 +116,7 @@ class NetworkTimelineService
                 ->whereNull('reblog_of_id')
                 ->whereIn('type', ['photo', 'photo:album', 'video', 'video:album', 'photo:video:album'])
                 ->where('created_at', '>', now()->subHours(config('instance.timeline.network.max_hours_old')))
-                ->orderByDesc('created_at')
+                ->orderByDesc('id')
                 ->limit($limit)
                 ->pluck('uri', 'id');
             $ids = $ids->filter(function ($k, $v) use ($filteredDomains) {
