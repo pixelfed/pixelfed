@@ -101,7 +101,9 @@ class FeedInsertPipeline implements ShouldBeUniqueUntilProcessing, ShouldQueue
             return;
         }
 
-        HomeTimelineService::add($this->pid, $this->sid);
+        if (HomeTimelineService::cacheKeyExists($this->pid)) {
+            HomeTimelineService::add($this->pid, $this->sid);
+        }
 
         $ids = FollowerService::localFollowerIds($this->pid);
 
@@ -138,7 +140,7 @@ class FeedInsertPipeline implements ShouldBeUniqueUntilProcessing, ShouldQueue
         $skipIds = array_unique(array_values($skipIds));
 
         foreach ($ids as $id) {
-            if (! in_array($id, $skipIds)) {
+            if (! in_array($id, $skipIds) && HomeTimelineService::cacheKeyExists($id)) {
                 HomeTimelineService::add($id, $this->sid);
             }
         }

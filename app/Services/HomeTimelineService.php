@@ -13,6 +13,8 @@ class HomeTimelineService
 {
     const CACHE_KEY = 'pf:services:timeline:home:';
 
+    const CACHE_TTL = 1209600;
+
     const FOLLOWER_FEED_POST_LIMIT = 10;
 
     public static function get($id, $start = 0, $stop = 10)
@@ -20,6 +22,8 @@ class HomeTimelineService
         if ($stop > 100) {
             $stop = 100;
         }
+
+        self::cacheKeyTouch($id);
 
         return Redis::zrevrange(self::CACHE_KEY.$id, $start, $stop);
     }
@@ -29,6 +33,8 @@ class HomeTimelineService
         if (! $start) {
             return [];
         }
+
+        self::cacheKeyTouch($id);
 
         return array_keys(Redis::zrevrangebyscore(self::CACHE_KEY.$id, '('.$start, '-inf', [
             'withscores' => true,
@@ -41,6 +47,8 @@ class HomeTimelineService
         if (! $end) {
             return [];
         }
+
+        self::cacheKeyTouch($id);
 
         $ids = array_keys(Redis::zrangebyscore(self::CACHE_KEY.$id, '('.$end, '+inf', [
             'withscores' => true,
@@ -58,6 +66,8 @@ class HomeTimelineService
             Redis::zremrangebyrank(self::CACHE_KEY.$id, 0, -401);
         }
 
+        self::cacheKeyTouch($id);
+
         return $res;
     }
 
@@ -69,6 +79,18 @@ class HomeTimelineService
     public static function count($id)
     {
         return Redis::zcard(self::CACHE_KEY.$id);
+    }
+
+    public static function cacheKeyExists($id)
+    {
+        return (bool) Redis::exists(self::CACHE_KEY.$id);
+    }
+
+    public static function cacheKeyTouch($id)
+    {
+        if (Redis::exists(self::CACHE_KEY.$id)) {
+            Redis::expire(self::CACHE_KEY.$id, self::CACHE_TTL);
+        }
     }
 
     public static function warmCache($id, $force = false, $limit = 100, $returnIds = false)
@@ -127,6 +149,7 @@ class HomeTimelineService
             }
 
             Redis::rename($tmpKey, self::CACHE_KEY.$id);
+            Redis::expire(self::CACHE_KEY.$id, self::CACHE_TTL);
 
             return $returnIds ? $ids : 1;
         }

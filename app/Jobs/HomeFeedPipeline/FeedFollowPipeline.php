@@ -117,6 +117,10 @@ class FeedFollowPipeline implements ShouldBeUniqueUntilProcessing, ShouldQueue
             ->limit(HomeTimelineService::FOLLOWER_FEED_POST_LIMIT)
             ->pluck('id');
 
+        if (! HomeTimelineService::cacheKeyExists($actorId)) {
+            return;
+        }
+
         foreach ($ids as $id) {
             HomeTimelineService::add($actorId, $id);
         }
