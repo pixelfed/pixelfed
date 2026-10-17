@@ -6,6 +6,7 @@ use App\Models\Follower;
 use App\Models\Status;
 use App\Models\UserDomainBlock;
 use Illuminate\Support\Facades\Cache;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Redis;
 use Illuminate\Support\Str;
 
@@ -112,14 +113,36 @@ class HomeTimelineService
 
             $domainBlocks = UserDomainBlock::whereProfileId($id)->pluck('domain')->toArray();
 
-            $ids = Status::where('id', '>', $minId)
-                ->whereIn('profile_id', $following)
-                ->whereNull(['in_reply_to_id', 'reblog_of_id'])
-                ->whereIn('type', ['photo', 'photo:album', 'video', 'video:album', 'photo:video:album'])
-                ->whereIn('visibility', ['public', 'unlisted', 'private'])
-                ->orderByDesc('id')
-                ->limit($limit)
-                ->pluck('id');
+            $baseQuery = function () use ($following, $minId) {
+                return Status::where('id', '>', $minId)
+                    ->whereIn('profile_id', $following)
+                    ->whereNull(['in_reply_to_id', 'reblog_of_id'])
+                    ->whereIn('type', ['photo', 'photo:album', 'video', 'video:album', 'photo:video:album'])
+                    ->whereIn('visibility', ['public', 'unlisted', 'private']);
+            };
+
+            $latestPerAccount = $baseQuery()
+                ->select(DB::raw('max(id) as id'))
+                ->groupBy('profile_id')
+                ->pluck('id')
+                ->sortDesc()
+                ->take($limit)
+                ->values();
+
+            $remaining = $limit - $latestPerAccount->count();
+
+            $recentIds = $remaining > 0
+                ? $baseQuery()
+                    ->whereNotIn('id', $latestPerAccount->all())
+                    ->orderByDesc('id')
+                    ->limit($remaining)
+                    ->pluck('id')
+                : collect();
+
+            $ids = $latestPerAccount
+                ->merge($recentIds)
+                ->unique()
+                ->values();
 
             $tmpKey = self::CACHE_KEY.$id.':rebuild:'.Str::random(8);
             $added = 0;
