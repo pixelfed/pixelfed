@@ -5,6 +5,7 @@ namespace App\Services;
 use App\Models\Follower;
 use App\Models\Status;
 use App\Models\UserDomainBlock;
+use App\Services\Concerns\SortedSetTimeline;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Redis;
@@ -12,70 +13,40 @@ use Illuminate\Support\Str;
 
 class HomeTimelineService
 {
+    use SortedSetTimeline;
+
     const CACHE_KEY = 'pf:services:timeline:home:';
 
     const CACHE_TTL = 1209600;
+
+    const FEED_LIMIT = 400;
 
     const FOLLOWER_FEED_POST_LIMIT = 10;
 
     public static function get($id, $start = 0, $stop = 10)
     {
-        if ($stop > 100) {
-            $stop = 100;
-        }
-
         self::cacheKeyTouch($id);
 
-        return Redis::zrevrange(self::CACHE_KEY.$id, $start, $stop);
+        return self::setGet(self::CACHE_KEY.$id, $start, $stop);
     }
 
     public static function getRankedMaxId($id, $start = null, $limit = 10)
     {
-        if (! $start) {
-            return [];
-        }
-
         self::cacheKeyTouch($id);
 
-        $score = self::cursorScore($id, $start);
-
-        if ($score === null) {
-            return [];
-        }
-
-        return array_keys(Redis::zrevrangebyscore(self::CACHE_KEY.$id, '('.$score, '-inf', [
-            'withscores' => true,
-            'limit' => [0, $limit],
-        ]));
+        return self::setRankedMaxId(self::CACHE_KEY.$id, $start, $limit);
     }
 
     public static function getRankedMinId($id, $end = null, $limit = 10)
     {
-        if (! $end) {
-            return [];
-        }
-
         self::cacheKeyTouch($id);
 
-        $score = self::cursorScore($id, $end);
-
-        if ($score === null) {
-            return [];
-        }
-
-        return array_keys(Redis::zrevrangebyscore(self::CACHE_KEY.$id, '+inf', '('.$score, [
-            'withscores' => true,
-            'limit' => [0, $limit],
-        ]));
+        return self::setRankedMinId(self::CACHE_KEY.$id, $end, $limit);
     }
 
     public static function add($id, $val)
     {
-        $res = Redis::zadd(self::CACHE_KEY.$id, self::statusScore($val), $val);
-
-        if (self::count($id) > 400) {
-            Redis::zremrangebyrank(self::CACHE_KEY.$id, 0, -401);
-        }
+        $res = self::setAdd(self::CACHE_KEY.$id, $val, self::FEED_LIMIT);
 
         self::cacheKeyTouch($id);
 
@@ -84,12 +55,17 @@ class HomeTimelineService
 
     public static function rem($id, $val)
     {
-        return Redis::zrem(self::CACHE_KEY.$id, $val);
+        return self::setRem(self::CACHE_KEY.$id, $val);
     }
 
     public static function count($id)
     {
-        return Redis::zcard(self::CACHE_KEY.$id);
+        return self::setCount(self::CACHE_KEY.$id);
+    }
+
+    public static function statusScore($statusId)
+    {
+        return self::scoreForStatus($statusId);
     }
 
     public static function cacheKeyExists($id)
@@ -102,66 +78,6 @@ class HomeTimelineService
         if (Redis::exists(self::CACHE_KEY.$id)) {
             Redis::expire(self::CACHE_KEY.$id, self::CACHE_TTL);
         }
-    }
-
-    public static function statusScore($statusId)
-    {
-        try {
-            $status = StatusService::get($statusId, false);
-
-            if ($status && ! empty($status['created_at'])) {
-                $ts = strtotime($status['created_at']);
-                if ($ts !== false) {
-                    return $ts;
-                }
-            }
-        } catch (\Throwable $e) {
-        }
-
-        return (int) $statusId;
-    }
-
-    protected static function cursorScore($id, $statusId)
-    {
-        $score = Redis::zscore(self::CACHE_KEY.$id, $statusId);
-
-        if ($score !== null && $score !== false) {
-            return (int) $score;
-        }
-
-        // Web clients parse the 19-digit snowflake cursor through a JS Number,
-        // which rounds past Number.MAX_SAFE_INTEGER, so the id they send back
-        // never matches a member exactly. Resolve it to the member it rounded
-        // from before scoring, otherwise a fabricated score sorts the whole
-        // feed back to the top and scroll stalls.
-        $member = self::resolveCursorMember($id, $statusId);
-
-        if ($member !== null) {
-            $memberScore = Redis::zscore(self::CACHE_KEY.$id, $member);
-
-            if ($memberScore !== null && $memberScore !== false) {
-                return (int) $memberScore;
-            }
-        }
-
-        return self::statusScore($statusId);
-    }
-
-    protected static function resolveCursorMember($id, $statusId)
-    {
-        // The cursor missed an exact member lookup, which happens when a client
-        // rounded the id. Match it to the member that collapses to the same
-        // float value the client would have produced.
-        $target = (float) $statusId;
-        $members = Redis::zrange(self::CACHE_KEY.$id, 0, -1);
-
-        foreach ($members as $member) {
-            if ((float) $member === $target) {
-                return $member;
-            }
-        }
-
-        return null;
     }
 
     public static function warmCache($id, $force = false, $limit = 100, $returnIds = false)
@@ -238,8 +154,8 @@ class HomeTimelineService
                 return $returnIds ? $ids : 1;
             }
 
-            if ($added > 400) {
-                Redis::zremrangebyrank($tmpKey, 0, -401);
+            if ($added > self::FEED_LIMIT) {
+                Redis::zremrangebyrank($tmpKey, 0, -(self::FEED_LIMIT + 1));
             }
 
             Redis::rename($tmpKey, self::CACHE_KEY.$id);
