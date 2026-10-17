@@ -83,6 +83,7 @@ class HomeTimelineService
     public static function warmCache($id, $force = false, $limit = 100, $returnIds = false)
     {
         if (self::count($id) == 0 || $force == true) {
+            $baseline = self::rebuildBaseline(self::CACHE_KEY.$id);
             $following = Cache::remember('profile:following:'.$id, 1209600, function () use ($id) {
                 $following = Follower::whereProfileId($id)->pluck('following_id');
 
@@ -130,6 +131,7 @@ class HomeTimelineService
                 ->unique()
                 ->values();
 
+            self::purgeRebuildKeys(self::CACHE_KEY.$id);
             $tmpKey = self::CACHE_KEY.$id.':rebuild:'.Str::random(8);
             $added = 0;
             foreach ($ids as $sid) {
@@ -145,6 +147,9 @@ class HomeTimelineService
                 }
                 $score = ! empty($status['created_at']) ? strtotime($status['created_at']) : false;
                 Redis::zadd($tmpKey, $score !== false ? $score : $sid, $sid);
+                if ($added === 0) {
+                    Redis::expire($tmpKey, self::rebuildKeyTtl());
+                }
                 $added++;
             }
 
@@ -158,7 +163,7 @@ class HomeTimelineService
                 Redis::zremrangebyrank($tmpKey, 0, -(self::FEED_LIMIT + 1));
             }
 
-            Redis::rename($tmpKey, self::CACHE_KEY.$id);
+            self::publishRebuild(self::CACHE_KEY.$id, $tmpKey, $baseline);
             Redis::expire(self::CACHE_KEY.$id, self::CACHE_TTL);
 
             return $returnIds ? $ids : 1;

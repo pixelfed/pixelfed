@@ -5,6 +5,7 @@ namespace App\Services;
 use App\Models\Status;
 use App\Services\Concerns\SortedSetTimeline;
 use Illuminate\Support\Facades\Redis;
+use Illuminate\Support\Str;
 
 class NetworkTimelineService
 {
@@ -52,6 +53,16 @@ class NetworkTimelineService
         return self::setCount(self::CACHE_KEY);
     }
 
+    public static function shouldWarmEmpty(): bool
+    {
+        return self::shouldEmptyWarm(self::CACHE_KEY);
+    }
+
+    public static function noteEmptyWarmed(): void
+    {
+        self::markEmptyWarmed(self::CACHE_KEY);
+    }
+
     public static function deleteByProfileId($profileId)
     {
         self::setDeleteByProfileId(self::CACHE_KEY, $profileId);
@@ -69,14 +80,19 @@ class NetworkTimelineService
         }
 
         if (self::count() == 0 || $force == true) {
+            $baseline = self::rebuildBaseline(self::CACHE_KEY);
             $hideNsfw = config('instance.hide_nsfw_on_public_feeds');
-            Redis::del(self::CACHE_KEY);
             $filteredDomains = collect(InstanceService::getBannedDomains())
                 ->merge(InstanceService::getUnlistedDomains())
                 ->unique()
                 ->values()
                 ->toArray();
-            $ids = Status::whereNotNull('uri')
+
+            // Select by publication time so the survivors match what live
+            // insertion keeps: both paths rank by created_at, so an id that is
+            // high but old must not outrank a newer post. Overfetch covers rows
+            // dropped by the domain filter below.
+            $rows = Status::whereNotNull('uri')
                 ->whereScope('public')
                 ->when($hideNsfw, function ($q, $hideNsfw) {
                     return $q->where('is_nsfw', false);
@@ -85,19 +101,45 @@ class NetworkTimelineService
                 ->whereNull('reblog_of_id')
                 ->whereIn('type', ['photo', 'photo:album', 'video', 'video:album', 'photo:video:album'])
                 ->where('created_at', '>', now()->subHours(config('instance.timeline.network.max_hours_old')))
+                ->orderByDesc('created_at')
                 ->orderByDesc('id')
-                ->limit($limit)
-                ->pluck('uri', 'id');
-            $ids = $ids->filter(function ($k, $v) use ($filteredDomains) {
-                $domain = parse_url($k, PHP_URL_HOST);
+                ->limit(max($limit * 2, $limit + 50))
+                ->get(['id', 'uri', 'created_at']);
 
-                return ! in_array($domain, $filteredDomains);
-            })->map(function ($k, $v) {
-                return $v;
-            })->flatten();
-            foreach ($ids as $id) {
-                self::add($id);
+            // Build into a temporary key and publish with a single atomic
+            // rename, so a reader never observes an empty or partial feed and a
+            // failure mid-rebuild leaves the previous set serving untouched.
+            self::purgeRebuildKeys(self::CACHE_KEY);
+            $tmpKey = self::CACHE_KEY.':rebuild:'.Str::random(8);
+            $added = 0;
+            foreach ($rows as $row) {
+                if ($added >= $limit) {
+                    break;
+                }
+                $domain = parse_url($row->uri, PHP_URL_HOST);
+                if (in_array($domain, $filteredDomains)) {
+                    continue;
+                }
+                $score = $row->created_at ? $row->created_at->timestamp : $row->id;
+                Redis::zadd($tmpKey, $score, $row->id);
+                if ($added === 0) {
+                    Redis::expire($tmpKey, self::rebuildKeyTtl());
+                }
+                $added++;
             }
+
+            if ($added === 0) {
+                Redis::del($tmpKey);
+                Redis::del(self::CACHE_KEY);
+
+                return 1;
+            }
+
+            if ($added > $limit) {
+                Redis::zremrangebyrank($tmpKey, 0, -($limit + 1));
+            }
+
+            self::publishRebuild(self::CACHE_KEY, $tmpKey, $baseline);
 
             return 1;
         }

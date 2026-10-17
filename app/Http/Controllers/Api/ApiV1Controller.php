@@ -2841,15 +2841,76 @@ class ApiV1Controller extends Controller
 
         $applyPhotosReblogsOnly = $photosReblogsOnly;
 
+        // Before hydrating, drop any fetched members that cannot resolve. A
+        // nonempty cache made entirely of unresolvable members (deleted rows,
+        // deleted accounts) would otherwise suppress a cold warm and strand an
+        // eligible post that still lives in the database below the stale block.
+        if (! empty($ids)) {
+            $resolvable = 0;
+            $prunedStatuses = 0;
+            foreach ($ids as $cid) {
+                // Leave non-numeric sentinels (an active-but-empty marker) in
+                // place; they are not statuses and must not be pruned.
+                if (! ctype_digit((string) $cid)) {
+                    continue;
+                }
+
+                try {
+                    $cstatus = $napi ? StatusService::get($cid, false) : StatusService::getMastodon($cid, false);
+                } catch (\Exception) {
+                    $cstatus = null;
+                }
+                if (isset($cstatus['account']['id'])) {
+                    $resolvable++;
+                } else {
+                    HomeTimelineService::rem($pid, $cid);
+                    $prunedStatuses++;
+                }
+            }
+
+            // A real stale status block resolved to nothing. If the prune
+            // emptied the cache, rebuild it from source so an eligible post
+            // becomes reachable. A feed holding only a sentinel is left alone.
+            if ($resolvable === 0 && $prunedStatuses > 0 && HomeTimelineService::count($pid) === 0) {
+                $coldBootKey = 'pf:services:apiv1:home:cached:coldbootcheck:'.$pid;
+                if (! Cache::has($coldBootKey)) {
+                    Cache::set($coldBootKey, 1, 300);
+                    FeedWarmCachePipeline::dispatchSync($pid);
+                }
+
+                if ($min || $max) {
+                    $ids = $request->has('min_id')
+                        ? HomeTimelineService::getRankedMinId($pid, $min ?? 0, $paddedLimit)
+                        : HomeTimelineService::getRankedMaxId($pid, $max ?? 0, $paddedLimit);
+                } else {
+                    $ids = HomeTimelineService::get($pid, 0, $paddedLimit);
+                }
+            }
+        }
+
+        $stalePruned = false;
         $res = collect($ids)
-            ->map(function ($id) use ($napi) {
+            ->map(function ($id) use ($napi, $pid, &$stalePruned) {
                 try {
                     $status = $napi ? StatusService::get($id, false) : StatusService::getMastodon($id, false);
                 } catch (\Exception) {
+                    $status = null;
+                }
+
+                if (! isset($status['account']['id'])) {
+                    // A numeric member that cannot hydrate (deleted row, deleted
+                    // account, or a hydration failure) is pruned so a stale
+                    // block cannot keep the feed nonempty-but-empty. Non-numeric
+                    // sentinels are left in place.
+                    if (ctype_digit((string) $id)) {
+                        HomeTimelineService::rem($pid, $id);
+                        $stalePruned = true;
+                    }
+
                     return null;
                 }
 
-                return isset($status['account']['id']) ? $status : null;
+                return $status;
             })
             ->filter()
             ->filter(function ($status) use ($mutedAndBlocked, $domainBlocks) {
@@ -2944,6 +3005,74 @@ class ApiV1Controller extends Controller
         }
 
         return $this->json($res->toArray(), 200, $headers);
+    }
+
+    /**
+     * Walk a public/network feed window forward past stale members. Any id that
+     * cannot hydrate is pruned from the cached set. If a window yields fewer
+     * resolvable members than the limit while older members remain, the walk
+     * continues from the lowest id seen so an eligible entry below a large
+     * stale block becomes reachable instead of stranding it.
+     */
+    protected function recoverStalePublicFeed(string $service, array $feed, $max, int $limit, bool $napi): array
+    {
+        $resolved = [];
+        $cursor = $max;
+        $passes = 0;
+
+        $window = $feed;
+
+        while ($passes < 25) {
+            $passes++;
+
+            if (empty($window)) {
+                break;
+            }
+
+            $lowest = null;
+            foreach ($window as $id) {
+                $lowest = $lowest === null ? $id : (((int) $id < (int) $lowest) ? $id : $lowest);
+
+                try {
+                    $status = $napi ? StatusService::get($id) : StatusService::getMastodon($id);
+                } catch (\Exception) {
+                    $status = null;
+                }
+
+                $accountId = $status['account']['id'] ?? null;
+                $account = null;
+                if ($accountId) {
+                    $account = $napi ? AccountService::get($accountId, true) : AccountService::getMastodon($accountId, true);
+                }
+
+                if (! $status || ! $accountId || ! $account) {
+                    // Unresolvable member: prune it from the cached set so the
+                    // stale block shrinks and the feed count reflects reality.
+                    $service::rem($id);
+
+                    continue;
+                }
+
+                if (! in_array($id, $resolved)) {
+                    $resolved[] = $id;
+                }
+            }
+
+            if (count($resolved) >= $limit) {
+                break;
+            }
+
+            // Fetch the next window below the lowest id seen so far. When the
+            // cursor stops advancing the set is exhausted.
+            if ($lowest === null || $lowest === $cursor) {
+                break;
+            }
+
+            $cursor = $lowest;
+            $window = $service::getRankedMaxId($cursor, $limit + 5);
+        }
+
+        return $resolved;
     }
 
     /**
@@ -3059,14 +3188,18 @@ class ApiV1Controller extends Controller
                 ->values()
                 ->toArray();
         } elseif ($remote && ! $local) {
-            if (NetworkTimelineService::count() === 0) {
+            if (NetworkTimelineService::count() === 0 && NetworkTimelineService::shouldWarmEmpty()) {
                 Cache::lock('api:v1:timelines:network:cache_check:lock', 10)->get(function () {
-                    if (NetworkTimelineService::count() === 0) {
+                    if (NetworkTimelineService::count() === 0 && NetworkTimelineService::shouldWarmEmpty()) {
                         NetworkTimelineService::warmCache(true, config('instance.timeline.network.cache_dropoff'));
+                        if (NetworkTimelineService::count() === 0) {
+                            NetworkTimelineService::noteEmptyWarmed();
+                        }
                     }
                 });
             }
 
+            $feedService = NetworkTimelineService::class;
             if ($max) {
                 $feed = NetworkTimelineService::getRankedMaxId($max, $limit + 5);
             } elseif ($min) {
@@ -3075,14 +3208,18 @@ class ApiV1Controller extends Controller
                 $feed = NetworkTimelineService::get(0, $limit + 5);
             }
         } else {
-            if (PublicTimelineService::count() === 0) {
+            if (PublicTimelineService::count() === 0 && PublicTimelineService::shouldWarmEmpty()) {
                 Cache::lock('api:v1:timelines:public:cache_check:lock', 10)->get(function () {
-                    if (PublicTimelineService::count() === 0) {
+                    if (PublicTimelineService::count() === 0 && PublicTimelineService::shouldWarmEmpty()) {
                         PublicTimelineService::warmCache(true, 400);
+                        if (PublicTimelineService::count() === 0) {
+                            PublicTimelineService::noteEmptyWarmed();
+                        }
                     }
                 });
             }
 
+            $feedService = PublicTimelineService::class;
             if ($max) {
                 $feed = PublicTimelineService::getRankedMaxId($max, $limit + 5);
             } elseif ($min) {
@@ -3090,6 +3227,14 @@ class ApiV1Controller extends Controller
             } else {
                 $feed = PublicTimelineService::get(0, $limit + 5);
             }
+        }
+
+        // A stale window larger than the overfetch can hide every resolvable
+        // member behind deleted rows or deleted accounts. Walk deeper past the
+        // stale block, pruning members that cannot hydrate, so an eligible
+        // entry below the block is reached instead of returning an empty page.
+        if (isset($feedService) && ! $min) {
+            $feed = $this->recoverStalePublicFeed($feedService, $feed, $max, $limit, $napi);
         }
 
         $res = collect($feed)

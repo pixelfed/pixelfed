@@ -229,6 +229,11 @@ class StatusRemoteUpdatePipeline implements ShouldQueue
         $status->edited_at = now();
         $status->save();
         StatusService::del($status->id);
+
+        // An edit can flip network eligibility (most often a sensitivity
+        // change under hide_nsfw_on_public_feeds); reconcile membership so the
+        // network feed matches what live insertion would hold now.
+        Helpers::reconcileNetworkMembership($status->fresh());
     }
 
     protected function createEdit($status, $activity)
