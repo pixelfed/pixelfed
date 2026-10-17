@@ -1735,7 +1735,6 @@ class Helpers
     public static function handleStatusPostProcessing(Status $status, int $profileId, string $url): void
     {
         if (
-            config('instance.timeline.network.cached') &&
             self::isEligibleForNetwork($status) &&
             ! FeedInsertRemotePipeline::isTooOld($status->created_at)
         ) {
