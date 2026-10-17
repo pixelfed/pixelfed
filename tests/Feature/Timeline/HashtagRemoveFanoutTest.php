@@ -1,6 +1,7 @@
 <?php
 
 use App\Jobs\HomeFeedPipeline\HashtagRemoveFanoutPipeline;
+use App\Models\Follower;
 use App\Models\Status;
 use App\Models\User;
 use App\Services\HashtagFollowService;
@@ -13,8 +14,6 @@ use Illuminate\Support\Facades\Redis;
 uses(LazilyRefreshDatabase::class);
 
 beforeEach(function () {
-    // Keep the delete observer's own FeedRemovePipeline from running so this
-    // test exercises only the hashtag removal job.
     Queue::fake();
 });
 
@@ -22,36 +21,79 @@ afterEach(function () {
     Redis::flushdb();
 });
 
-it('unqueues a deleted status from hashtag followers', function () {
-    $hid = 4242;
+function feedIds(int $pid): array
+{
+    return collect(HomeTimelineService::get($pid, 0, -1))->map(fn ($v) => (int) $v)->all();
+}
 
-    $follower = User::factory()->create();
-    $follower->refresh();
-    $pid = $follower->profile_id;
+it('keeps the post for a hashtag follower who also follows the author', function () {
+    $hid = 7777;
 
-    HashtagFollowService::add($hid, $pid);
+    $author = User::factory()->create();
+    $author->refresh();
+
+    $alsoFollowsAuthor = User::factory()->create();
+    $alsoFollowsAuthor->refresh();
+    Follower::create([
+        'profile_id' => $alsoFollowsAuthor->profile_id,
+        'following_id' => $author->profile_id,
+    ]);
+
+    $tagOnly = User::factory()->create();
+    $tagOnly->refresh();
+
+    foreach ([$alsoFollowsAuthor, $tagOnly] as $u) {
+        HashtagFollowService::add($hid, $u->profile_id);
+    }
     HashtagFollowService::setWarm($hid);
 
     $status = Status::factory()->create([
+        'profile_id' => $author->profile_id,
+        'type' => 'photo',
+        'scope' => 'public',
+        'visibility' => 'public',
+    ]);
+    StatusService::get($status->id, false);
+
+    HomeTimelineService::add($alsoFollowsAuthor->profile_id, $status->id);
+    HomeTimelineService::add($tagOnly->profile_id, $status->id);
+
+    (new HashtagRemoveFanoutPipeline($status->id, $hid))->handle();
+
+    expect(feedIds($alsoFollowsAuthor->profile_id))->toContain((int) $status->id)
+        ->and(feedIds($tagOnly->profile_id))->not->toContain((int) $status->id);
+});
+
+it('removes a deleted status for every hashtag follower', function () {
+    $hid = 8888;
+
+    $author = User::factory()->create();
+    $author->refresh();
+
+    $follower = User::factory()->create();
+    $follower->refresh();
+    Follower::create([
         'profile_id' => $follower->profile_id,
+        'following_id' => $author->profile_id,
+    ]);
+
+    HashtagFollowService::add($hid, $follower->profile_id);
+    HashtagFollowService::setWarm($hid);
+
+    $status = Status::factory()->create([
+        'profile_id' => $author->profile_id,
         'type' => 'photo',
         'scope' => 'public',
         'visibility' => 'public',
     ]);
 
     $sid = $status->id;
-    HomeTimelineService::add($pid, $sid);
+    HomeTimelineService::add($follower->profile_id, $sid);
 
-    // Mirror the delete path: the row is soft deleted and its cached payload
-    // purged, so StatusService::get can no longer resolve it when the job runs.
     $status->delete();
     StatusService::del($sid, true);
 
-    expect(collect(HomeTimelineService::get($pid, 0, -1))->map(fn ($v) => (int) $v)->all())
-        ->toContain((int) $sid);
-
     (new HashtagRemoveFanoutPipeline($sid, $hid))->handle();
 
-    expect(collect(HomeTimelineService::get($pid, 0, -1))->map(fn ($v) => (int) $v)->all())
-        ->not->toContain((int) $sid);
+    expect(feedIds($follower->profile_id))->not->toContain((int) $sid);
 });

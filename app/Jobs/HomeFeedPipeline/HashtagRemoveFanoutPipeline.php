@@ -3,8 +3,10 @@
 namespace App\Jobs\HomeFeedPipeline;
 
 use App\Models\Hashtag;
+use App\Services\FollowerService;
 use App\Services\HashtagFollowService;
 use App\Services\HomeTimelineService;
+use App\Services\StatusService;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldBeUniqueUntilProcessing;
 use Illuminate\Contracts\Queue\ShouldQueue;
@@ -92,7 +94,14 @@ class HashtagRemoveFanoutPipeline implements ShouldBeUniqueUntilProcessing, Shou
             return;
         }
 
+        $status = StatusService::get($sid, false);
+        $authorId = $status['account']['id'] ?? null;
+
         foreach ($ids as $id) {
+            if ($authorId !== null && FollowerService::follows((string) $id, (string) $authorId)) {
+                continue;
+            }
+
             HomeTimelineService::rem($id, $sid);
         }
     }
