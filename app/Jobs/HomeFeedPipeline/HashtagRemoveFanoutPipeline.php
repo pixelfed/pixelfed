@@ -5,7 +5,6 @@ namespace App\Jobs\HomeFeedPipeline;
 use App\Models\Hashtag;
 use App\Services\HashtagFollowService;
 use App\Services\HomeTimelineService;
-use App\Services\StatusService;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldBeUniqueUntilProcessing;
 use Illuminate\Contracts\Queue\ShouldQueue;
@@ -84,18 +83,6 @@ class HashtagRemoveFanoutPipeline implements ShouldBeUniqueUntilProcessing, Shou
         if (! $hid) {
             Log::info('HashtagRemoveFanoutPipeline: Hashtag ID not provided, skipping job');
 
-            return;
-        }
-
-        $status = StatusService::get($sid, false);
-
-        if (! $status || ! isset($status['account']) || ! isset($status['account']['id'])) {
-            Log::info("HashtagRemoveFanoutPipeline: Status {$sid} not found or invalid, skipping job");
-
-            return;
-        }
-
-        if (! in_array($status['pf_type'], ['photo', 'photo:album', 'video', 'video:album', 'photo:video:album'])) {
             return;
         }
 
