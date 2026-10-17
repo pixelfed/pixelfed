@@ -26,7 +26,10 @@
         "clickHere": "kliknij tutaj",
         "sensitive": "Wra\u017cliwe",
         "sensitiveContent": "Tre\u015b\u0107 wra\u017cliwa",
-        "sensitiveContentWarning": "Ten post mo\u017ce zawiera\u0107 wra\u017cliwe tre\u015bci"
+        "sensitiveContentWarning": "Ten post mo\u017ce zawiera\u0107 wra\u017cliwe tre\u015bci",
+        "javascript": "Aby wy\u015bwietli\u0107 t\u0119 zawarto\u015b\u0107, w\u0142\u0105cz obs\u0142ug\u0119 j\u0119zyka JavaScript.",
+        "loading": "\u0141adowanie...",
+        "continue": "Kontynuuj"
     },
     "site": {
         "terms": "Warunki U\u017cytkowania",
@@ -46,13 +49,17 @@
         "profile": "Profil",
         "drive": "Dysk",
         "settings": "Ustawienia",
+        "appearance": "Wygl\u0105d",
         "compose": "Utw\u00f3rz nowy",
         "logout": "Wyloguj si\u0119",
+        "createStory": "Utw\u00f3rz histori\u0119",
         "about": "O nas",
         "help": "Pomoc",
         "language": "J\u0119zyk",
         "privacy": "Prywatno\u015b\u0107",
         "terms": "Regulamin",
+        "legalNotice": "Nota prawna",
+        "mobileApps": "Aplikacje mobilne",
         "backToPreviousDesign": "Wr\u00f3\u0107 do poprzedniego wygl\u0105du"
     },
     "directMessages": {
@@ -61,6 +68,7 @@
         "requests": "Pro\u015bby o kontakt"
     },
     "notifications": {
+        "title": "Powiadomienia",
         "liked": "polubi\u0142(a) twoje",
         "commented": "skomentowa\u0142(a) twoje",
         "reacted": "zareagowa\u0142(a) na twoje",
@@ -79,7 +87,8 @@
         "modlog": "logi",
         "post": "post",
         "story": "opowie\u015b\u0107",
-        "noneFound": "Brak powiadomie\u0144"
+        "noneFound": "Brak powiadomie\u0144",
+        "likes": "Polubienia"
     },
     "post": {
         "shareToFollowers": "Udost\u0119pnij obserwuj\u0105cym",

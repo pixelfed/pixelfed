@@ -5,11 +5,43 @@
     },
     "settings": {
         "filters": {
-            "hide_media_blur": "Sl\u0117pti medij\u0105 u\u017e suliejimo"
+            "title": "Filtrai",
+            "manage_your_custom_filters": "Tvarkykite savo pasirinktinius filtrus.",
+            "customize_your_experience": "Tinkinkite savo patirt\u012f galingais turinio filtrais, kurie visame j\u016bs\u0173 paskyroje \u2013 \u012fskaitant pagrindin\u0119 ir vie\u0161\u0105j\u0105 laiko juostas bei grota\u017eymi\u0173 srautus \u2013 tikrina konkre\u010dius \u017eod\u017eius ar frazes.",
+            "add_new_filter": "Prid\u0117ti nauj\u0105 filtr\u0105",
+            "no_filters": "Dar neturite joki\u0173 turinio filtr\u0173.",
+            "no_filters_message": "Filtrai padeda pasl\u0117pti turin\u012f, kuriame yra tam tikr\u0173 \u017eod\u017ei\u0173 ar frazi\u0173, i\u0161 j\u016bs\u0173 laiko juost\u0173.",
+            "create_first_filter": "Kurti pirm\u0105j\u012f filtr\u0105",
+            "simple_mode": "Paprastas re\u017eimas",
+            "hide_media_blur": "Sl\u0117pti medij\u0105 u\u017e suliejimo",
+            "hashtags": "Grota\u017eym\u0117",
+            "conversations": "Pokalbiai",
+            "duration": "Trukm\u0117",
+            "forever": "Am\u017einai",
+            "save_changes": "I\u0161saugoti pakeitimus",
+            "create_filter": "Kurti filtr\u0105",
+            "choose_filter_action_description": "Kaip nor\u0117tum\u0117te tvarkyti turin\u012f, atitinkant\u012f j\u016bs\u0173 filtr\u0105?",
+            "hide_completely": "Visi\u0161kai pasl\u0117pti turin\u012f, kuris atitinka",
+            "choose_where_to_apply": "Pasirinkite, kur taikyti",
+            "choose_where_to_apply_description": "Pasirinkite, kuriose programos dalyse tur\u0117t\u0173 b\u016bti naudojamas \u0161is filtras.",
+            "review_your_filter_description": "\u0160tai j\u016bs\u0173 sukurto filtro ap\u017evalga.",
+            "never_expires": "Niekada nesibaigia",
+            "enter_filter_title": "\u012eveskite filtro pavadinim\u0105"
         }
     },
     "powered_by_pixelfed": "Veikiama su \u201ePixelfed\u201c",
     "landing": {
+        "login": "Prisijungti",
+        "signup": "Registruotis",
+        "about": "Apie",
+        "directory": "Katalogas",
+        "explore": "Nar\u0161yti",
+        "decentralized_by_pixelfed": "Decentralizuota nuotrauk\u0173 bendrinimo socialin\u0117 medija, veikianti su <a href=\"https://pixelfed.org\" target=\"_blank\">\u201ePixelfed\u201c</a>.",
+        "posts": "\u012era\u0161ai",
+        "active_users": "Aktyv\u016bs naudotojai",
+        "total_users": "I\u0161 viso naudotoj\u0173",
+        "managed_by": "Valdo",
+        "server_rules": "Serverio taisykl\u0117s",
         "features": {
             "collections": "Rinkiniai",
             "comments": "Komentarai",
@@ -18,8 +50,10 @@
             "notifications": "Prane\u0161imai",
             "shares": "Pasidalinimai",
             "federation": "Federacija",
+            "mobile_app": "Mobilios programos palaikymas",
             "stories": "Istorijos",
             "videos": "Vaizdo \u012fra\u0161ai"
-        }
+        },
+        "nothing_to_show": "Dar n\u0117ra k\u0105 parodyti! Patikrinkite v\u0117liau."
     }
 }
