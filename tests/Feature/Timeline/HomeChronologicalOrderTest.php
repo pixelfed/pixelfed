@@ -35,8 +35,11 @@ it('ranks home posts by created_at even when a remote post has a newer id but ol
         'created_at' => now()->subHour(),
     ]);
 
-    // A remote post ingested AFTER (higher id) but published weeks earlier.
+    // A remote post ingested AFTER (higher id) but published weeks earlier. The
+    // id is forced above the recent one so the ordering does not depend on the
+    // sub-millisecond gap between two factory inserts.
     $staleRemote = Status::factory()->create([
+        'id' => $recent->id + 1000,
         'profile_id' => $remoteAuthor->id,
         'type' => 'photo', 'scope' => 'public', 'visibility' => 'public',
         'in_reply_to_id' => null, 'reblog_of_id' => null,

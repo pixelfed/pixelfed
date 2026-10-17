@@ -2934,7 +2934,7 @@ class ApiV1Controller extends Controller
             $pageIds = $res->pluck('id');
 
             $headers['Link'] = '<'.$baseUrl.'max_id='.$pageIds->min().'>; rel="next",<'.$baseUrl.'min_id='.$pageIds->max().'>; rel="prev"';
-        } elseif (! empty($ids)) {
+        } else {
             $headers['Link'] = '<'.$baseUrl.'max_id='.collect($ids)->map(fn ($id) => (int) $id)->min().'>; rel="next"';
         }
 
