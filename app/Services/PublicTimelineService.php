@@ -36,10 +36,12 @@ class PublicTimelineService
             return [];
         }
 
-        return array_keys(Redis::zrevrangebyscore(self::CACHE_KEY, '+inf', '('.$end, [
+        $ids = array_keys(Redis::zrangebyscore(self::CACHE_KEY, '('.$end, '+inf', [
             'withscores' => true,
             'limit' => [0, $limit],
         ]));
+
+        return array_reverse($ids);
     }
 
     public static function add($val)
