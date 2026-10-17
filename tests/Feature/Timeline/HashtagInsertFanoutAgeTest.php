@@ -61,6 +61,9 @@ it('does not fan out a stale remote post to hashtag followers', function () {
     HashtagFollowService::add(9191, $follower->profile_id);
     HashtagFollowService::setWarm(9191);
 
+    // Fan-out only extends feeds that already exist; give the follower one.
+    HomeTimelineService::add($follower->profile_id, 1);
+
     [$status, $row] = remoteTaggedStatus(now()->subDays(30)->toDateTimeString());
 
     (new HashtagInsertFanoutPipeline($row))->handle();
@@ -73,6 +76,8 @@ it('fans out a recent remote post to hashtag followers', function () {
     $follower->refresh();
     HashtagFollowService::add(9191, $follower->profile_id);
     HashtagFollowService::setWarm(9191);
+
+    HomeTimelineService::add($follower->profile_id, 1);
 
     [$status, $row] = remoteTaggedStatus(now()->subHours(1)->toDateTimeString());
 
