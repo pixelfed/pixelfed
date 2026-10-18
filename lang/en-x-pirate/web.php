@@ -64,7 +64,7 @@ return [
         'appearance' => '',
         'compose' => '',
         'logout' => '',
-        'createStory' => '',
+        'createStory' => 'Spill Yarn',
 
         // Nav footer
         'about' => '',
