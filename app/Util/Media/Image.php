@@ -309,12 +309,14 @@ class Image
                 $media->mime = 'image/'.$outputExtension;
             }
 
+            $media->save();
+
             // Remove the file we just superseded when the new output landed at a
             // different path (extension change / thumbnail regeneration), so the
-            // old file is not orphaned in the media directory.
+            // old file is not orphaned in the media directory. Done after save so
+            // a failed save never leaves the row pointing at deleted bytes; a
+            // leftover orphan after a rare post-save crash is harmless.
             $this->deleteSupersededFile($previousPath, $converted['path'], $localFs);
-
-            $media->save();
 
             if ($thumbnail) {
                 $this->generateBlurhash($media, $encoded->toString());
