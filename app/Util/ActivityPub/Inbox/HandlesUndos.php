@@ -2,7 +2,6 @@
 
 namespace App\Util\ActivityPub\Inbox;
 
-use App\Jobs\HomeFeedPipeline\FeedRemoveRemotePipeline;
 use App\Models\Follower;
 use App\Models\FollowRequest;
 use App\Models\Like;
@@ -65,8 +64,6 @@ trait HandlesUndos
         if ($this->isDomainBlocked($status->profile_id, $profile->domain)) {
             return;
         }
-
-        FeedRemoveRemotePipeline::dispatch($status->id, $status->profile_id)->onQueue('feed');
 
         Status::whereProfileId($profile->id)
             ->whereReblogOfId($status->id)
