@@ -1763,16 +1763,16 @@
         },
         {
             "name": "intervention/image-driver-vips",
-            "version": "4.1.6",
+            "version": "4.2.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/Intervention/image-driver-vips.git",
-                "reference": "d75bb9b239a630aa17b19dfd977fb549260ca889"
+                "reference": "2aca734a68c447aed1304d8b2121b223d2790e00"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/Intervention/image-driver-vips/zipball/d75bb9b239a630aa17b19dfd977fb549260ca889",
-                "reference": "d75bb9b239a630aa17b19dfd977fb549260ca889",
+                "url": "https://api.github.com/repos/Intervention/image-driver-vips/zipball/2aca734a68c447aed1304d8b2121b223d2790e00",
+                "reference": "2aca734a68c447aed1304d8b2121b223d2790e00",
                 "shasum": ""
             },
             "require": {
@@ -1784,7 +1784,8 @@
                 "ext-fileinfo": "*",
                 "intervention/coding-standard": "^1",
                 "phpstan/phpstan": "^2",
-                "phpunit/phpunit": "^12.0"
+                "phpunit/phpunit": "^12.0",
+                "psr/http-message": "^2"
             },
             "type": "library",
             "autoload": {
@@ -1816,7 +1817,7 @@
             ],
             "support": {
                 "issues": "https://github.com/Intervention/image-driver-vips/issues",
-                "source": "https://github.com/Intervention/image-driver-vips/tree/4.1.6"
+                "source": "https://github.com/Intervention/image-driver-vips/tree/4.2.0"
             },
             "funding": [
                 {
@@ -1832,7 +1833,7 @@
                     "type": "ko_fi"
                 }
             ],
-            "time": "2026-10-10T07:47:49+00:00"
+            "time": "2026-10-17T08:04:17+00:00"
         },
         {
             "name": "intervention/image-laravel",
