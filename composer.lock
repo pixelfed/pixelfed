@@ -1415,16 +1415,16 @@
         },
         {
             "name": "guzzlehttp/psr7",
-            "version": "3.1.0",
+            "version": "3.2.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/guzzle/psr7.git",
-                "reference": "a3059ba1a84c9139c4ae03cf0f45bea276c97c74"
+                "reference": "cdc139396207a5eba10c242d241fb014cb098390"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/guzzle/psr7/zipball/a3059ba1a84c9139c4ae03cf0f45bea276c97c74",
-                "reference": "a3059ba1a84c9139c4ae03cf0f45bea276c97c74",
+                "url": "https://api.github.com/repos/guzzle/psr7/zipball/cdc139396207a5eba10c242d241fb014cb098390",
+                "reference": "cdc139396207a5eba10c242d241fb014cb098390",
                 "shasum": ""
             },
             "require": {
@@ -1514,7 +1514,7 @@
             ],
             "support": {
                 "issues": "https://github.com/guzzle/psr7/issues",
-                "source": "https://github.com/guzzle/psr7/tree/3.1.0"
+                "source": "https://github.com/guzzle/psr7/tree/3.2.0"
             },
             "funding": [
                 {
@@ -1530,7 +1530,7 @@
                     "type": "tidelift"
                 }
             ],
-            "time": "2026-08-24T11:02:13+00:00"
+            "time": "2026-10-17T23:57:19+00:00"
         },
         {
             "name": "guzzlehttp/uri-template",
@@ -1688,16 +1688,16 @@
         },
         {
             "name": "intervention/image",
-            "version": "4.3.5",
+            "version": "4.4.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/Intervention/image.git",
-                "reference": "765c15a8204877ae8f408f34953bf72f1b416d55"
+                "reference": "ddf4d8438493b1e5b98c8f95986cdc127c2b752b"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/Intervention/image/zipball/765c15a8204877ae8f408f34953bf72f1b416d55",
-                "reference": "765c15a8204877ae8f408f34953bf72f1b416d55",
+                "url": "https://api.github.com/repos/Intervention/image/zipball/ddf4d8438493b1e5b98c8f95986cdc127c2b752b",
+                "reference": "ddf4d8438493b1e5b98c8f95986cdc127c2b752b",
                 "shasum": ""
             },
             "require": {
@@ -1709,7 +1709,8 @@
                 "intervention/coding-standard": "^1",
                 "mockery/mockery": "^1.6",
                 "phpstan/phpstan": "^2.1",
-                "phpunit/phpunit": "^12.0"
+                "phpunit/phpunit": "^12.0",
+                "psr/http-message": "^2"
             },
             "suggest": {
                 "ext-exif": "Recommended to be able to read EXIF data properly."
@@ -1743,7 +1744,7 @@
             ],
             "support": {
                 "issues": "https://github.com/Intervention/image/issues",
-                "source": "https://github.com/Intervention/image/tree/4.3.5"
+                "source": "https://github.com/Intervention/image/tree/4.4.0"
             },
             "funding": [
                 {
@@ -1759,7 +1760,7 @@
                     "type": "ko_fi"
                 }
             ],
-            "time": "2026-10-10T05:44:05+00:00"
+            "time": "2026-10-17T07:53:40+00:00"
         },
         {
             "name": "intervention/image-driver-vips",
@@ -3035,16 +3036,16 @@
         },
         {
             "name": "league/commonmark",
-            "version": "2.10.3",
+            "version": "2.10.4",
             "source": {
                 "type": "git",
                 "url": "https://github.com/thephpleague/commonmark.git",
-                "reference": "6efbd9c472b91db0a3350fcd601c8332c2382e1f"
+                "reference": "40821b7606d8d946bac57dbd2290076c722e3a65"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/thephpleague/commonmark/zipball/6efbd9c472b91db0a3350fcd601c8332c2382e1f",
-                "reference": "6efbd9c472b91db0a3350fcd601c8332c2382e1f",
+                "url": "https://api.github.com/repos/thephpleague/commonmark/zipball/40821b7606d8d946bac57dbd2290076c722e3a65",
+                "reference": "40821b7606d8d946bac57dbd2290076c722e3a65",
                 "shasum": ""
             },
             "require": {
@@ -3138,7 +3139,7 @@
                     "type": "tidelift"
                 }
             ],
-            "time": "2026-09-21T13:07:34+00:00"
+            "time": "2026-10-17T19:59:50+00:00"
         },
         {
             "name": "league/config",
@@ -11295,16 +11296,16 @@
         },
         {
             "name": "brianium/paratest",
-            "version": "v7.27.1",
+            "version": "v7.27.2",
             "source": {
                 "type": "git",
                 "url": "https://github.com/paratestphp/paratest.git",
-                "reference": "739b3b1b5065c52664ef5a77716593ab9d5e263d"
+                "reference": "3b1189e2e36ac3e958d8cb362433862123eb7566"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/paratestphp/paratest/zipball/739b3b1b5065c52664ef5a77716593ab9d5e263d",
-                "reference": "739b3b1b5065c52664ef5a77716593ab9d5e263d",
+                "url": "https://api.github.com/repos/paratestphp/paratest/zipball/3b1189e2e36ac3e958d8cb362433862123eb7566",
+                "reference": "3b1189e2e36ac3e958d8cb362433862123eb7566",
                 "shasum": ""
             },
             "require": {
@@ -11318,7 +11319,7 @@
                 "phpunit/php-code-coverage": "^14.4.1",
                 "phpunit/php-file-iterator": "^7.0.2",
                 "phpunit/php-timer": "^9",
-                "phpunit/phpunit": "^13.4.1",
+                "phpunit/phpunit": "^13.4.2",
                 "sebastian/environment": "^9.3.3",
                 "symfony/console": "^7.4.20 || ^8.1.8",
                 "symfony/process": "^7.4.19 || ^8.1.7"
@@ -11372,7 +11373,7 @@
             ],
             "support": {
                 "issues": "https://github.com/paratestphp/paratest/issues",
-                "source": "https://github.com/paratestphp/paratest/tree/v7.27.1"
+                "source": "https://github.com/paratestphp/paratest/tree/v7.27.2"
             },
             "funding": [
                 {
@@ -11384,7 +11385,7 @@
                     "type": "paypal"
                 }
             ],
-            "time": "2026-10-14T05:58:28+00:00"
+            "time": "2026-10-16T12:01:22+00:00"
         },
         {
             "name": "composer/class-map-generator",
