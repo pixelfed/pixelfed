@@ -153,12 +153,29 @@ class ActivityPubDeliveryService
             if ($domain) {
                 if ($response->serverError()) {
                     DeliveryHostService::recordFailure($domain);
-                } else {
+                } elseif ($response->successful()) {
+                    /*
+                     * Only a real 2xx counts as delivered. A 3xx or 4xx
+                     * answered but did not take the activity, so the host's
+                     * failure count is left untouched (not cleared).
+                     */
                     DeliveryHostService::recordSuccess($domain);
                 }
             }
 
-            if ($response->failed()) {
+            if ($response->redirect()) {
+                /*
+                 * Requests are sent withoutRedirecting() because the
+                 * signature covers (request-target) and Host, so a redirect
+                 * means the signed body never reached the inbox.
+                 */
+                Log::warning('ActivityPub delivery not followed to redirect', [
+                    'profile_id' => $this->sender->id,
+                    'url' => $url,
+                    'status' => $response->status(),
+                    'location' => $response->header('Location'),
+                ]);
+            } elseif ($response->failed()) {
                 self::logFailedResponse(
                     $url,
                     $this->sender,
@@ -229,8 +246,8 @@ class ActivityPubDeliveryService
             'duplicate' => 0,   // same inbox URL earlier in this audience
             'invalid' => 0,     // failed validation (dead DNS, banned, malformed)
             'sent' => 0,        // requests actually made
-            'delivered' => 0,   // 2xx / 3xx
-            'rejected' => 0,    // 4xx / 5xx
+            'delivered' => 0,   // 2xx
+            'rejected' => 0,    // 3xx / 4xx / 5xx
             'failed' => 0,      // connection failure or signing error
         ];
 
@@ -525,28 +542,46 @@ class ActivityPubDeliveryService
                     continue;
                 }
 
-                if ($response->failed()) {
+                if (! $response->successful()) {
                     $result['rejected']++;
 
                     if ($domain) {
                         /*
                          * 5xx means the host is broken or dead behind a
-                         * proxy. 4xx means it answered, so it is reachable
-                         * even if it disliked the request.
+                         * proxy. A 4xx means it answered, so it is reachable
+                         * even if the request was not delivered. A 3xx is a
+                         * redirect we do not follow: it is neither a success
+                         * nor a host failure, so host state is left untouched.
                          */
                         if ($response->serverError()) {
                             $hostFailures[$domain] = true;
-                        } else {
+                        } elseif (! $response->redirect()) {
                             $hostSuccesses[$domain] = true;
                         }
                     }
 
-                    self::logFailedResponse(
-                        $url,
-                        $profile,
-                        $response,
-                        (int) $index
-                    );
+                    /*
+                     * A redirect is never a delivery here: requests are sent
+                     * withoutRedirecting() because the signature covers
+                     * (request-target) and Host, so the signed body never
+                     * reached an inbox. Surface the misconfiguration.
+                     */
+                    if ($response->redirect()) {
+                        Log::warning('ActivityPub delivery not followed to redirect', [
+                            'profile_id' => $profile->id,
+                            'index' => $index,
+                            'url' => $url,
+                            'status' => $response->status(),
+                            'location' => $response->header('Location'),
+                        ]);
+                    } else {
+                        self::logFailedResponse(
+                            $url,
+                            $profile,
+                            $response,
+                            (int) $index
+                        );
+                    }
 
                     if ($onError) {
                         $onError($response, (int) $index);

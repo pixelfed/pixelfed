@@ -166,5 +166,10 @@
         "sendingReport": "\u0110ang g\u1eedi b\u00e1o c\u00e1o...",
         "thanksMsg": "C\u1ea3m \u01a1n \u0111\u00e3 g\u1eedi b\u00e1o c\u00e1o, b\u1ea1n \u0111\u00e3 gi\u00fap c\u1ed9ng \u0111\u1ed3ng s\u1ea1ch h\u01a1n!",
         "contactAdminMsg": "N\u1ebfu c\u1ea7n thi\u1ebft, h\u00e3y li\u00ean h\u1ec7 qu\u1ea3n tr\u1ecb vi\u00ean v\u1ec1 \u1ea3nh n\u00e0y ho\u1eb7c b\u00e1o c\u00e1o"
+    },
+    "settings": {
+        "filters": {
+            "hide_media_blur": "L\u00e0m m\u1edd ph\u01b0\u01a1ng ti\u1ec7n"
+        }
     }
 }

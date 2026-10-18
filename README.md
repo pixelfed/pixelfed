@@ -62,6 +62,10 @@ Notice: We need to improve the ecosystem to test/validate the codebase to be dat
 
 Documentation for Pixelfed can be found on the [Pixelfed documentation website](https://docs.pixelfed.org/).
 
+## API/Developer Documentation
+
+API and Developer documentation for Pixelfed can be found on the [Pixelfed Developers website](https://developers.pixelfed.org).
+
 ## License
 
 Pixelfed is open-sourced software licensed under the AGPL license.

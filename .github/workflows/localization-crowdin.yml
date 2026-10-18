@@ -1,0 +1,71 @@
+name: Localization Export
+
+permissions:
+  contents: read
+
+on:
+  pull_request:
+    branches: [staging, dev]
+    types: [opened, synchronize, reopened]
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.head_ref || github.ref_name }}
+  cancel-in-progress: true
+
+jobs:
+  export:
+    # Only Crowdin's PR, and only when the branch lives in this repo (not a fork)
+    if: >
+      startsWith(github.event.pull_request.title, 'New Crowdin updates') &&
+      github.event.pull_request.head.repo.full_name == github.repository
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    permissions:
+      contents: write   # needed to push the export commit to the PR branch
+
+    steps:
+      - name: Checkout PR branch
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
+        with:
+          ref: ${{ github.event.pull_request.head.ref }}
+
+      - name: Setup PHP
+        uses: shivammathur/setup-php@eb7c497e18156a6bbabfef1d3a82760b9eda3962 # v2
+        with:
+          php-version: '8.5'
+          extensions: mbstring
+          coverage: none
+
+      - name: Get Composer cache dir
+        id: composer-cache
+        run: echo "dir=$(composer config cache-files-dir)" >> "$GITHUB_OUTPUT"
+
+      - name: Cache Composer dependencies
+        uses: actions/cache@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6
+        with:
+          path: ${{ steps.composer-cache.outputs.dir }}
+          key: composer-8.5-${{ hashFiles('composer.lock') }}
+          restore-keys: composer-8.5-
+
+      - name: Install Composer dependencies
+        run: composer install --no-interaction --no-progress --prefer-dist --no-scripts
+
+      - name: Prepare environment
+        run: |
+          cp .env.example .env
+          php artisan key:generate
+
+      - name: Run localization export
+        run: php artisan i18n:export --force
+
+      - name: Commit and push changes (if any)
+        run: |
+          if [ -z "$(git status --porcelain)" ]; then
+            echo "No changes from export."
+            exit 0
+          fi
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add -A
+          git commit -m "chore: run localization:export"
+          git push
