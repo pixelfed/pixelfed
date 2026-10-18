@@ -213,6 +213,16 @@ class FederationController extends Controller
                 }
             }
 
+            if (
+                is_string($obj['object'] ?? null)
+                && $obj['object'] === ($obj['actor'] ?? null)
+                && Profile::whereRemoteUrl($obj['object'])->exists()
+            ) {
+                dispatch(new DeleteWorker($headers, $payload, $request->getPathInfo()))->onQueue('inbox');
+
+                return;
+            }
+
             return;
         }
 
@@ -282,6 +292,16 @@ class FederationController extends Controller
 
                     return;
                 }
+            }
+
+            if (
+                is_string($obj['object'] ?? null)
+                && $obj['object'] === ($obj['actor'] ?? null)
+                && Profile::whereRemoteUrl($obj['object'])->exists()
+            ) {
+                dispatch(new DeleteWorker($headers, $payload))->onQueue('inbox');
+
+                return;
             }
 
             return;
