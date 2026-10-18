@@ -548,12 +548,14 @@ class ActivityPubDeliveryService
                     if ($domain) {
                         /*
                          * 5xx means the host is broken or dead behind a
-                         * proxy. A 3xx or 4xx means it answered, so it is
-                         * reachable even if the request was not delivered.
+                         * proxy. A 4xx means it answered, so it is reachable
+                         * even if the request was not delivered. A 3xx is a
+                         * redirect we do not follow: it is neither a success
+                         * nor a host failure, so host state is left untouched.
                          */
                         if ($response->serverError()) {
                             $hostFailures[$domain] = true;
-                        } else {
+                        } elseif (! $response->redirect()) {
                             $hostSuccesses[$domain] = true;
                         }
                     }

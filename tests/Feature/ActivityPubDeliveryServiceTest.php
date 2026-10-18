@@ -346,9 +346,10 @@ describe('ActivityPubDeliveryService::pool()', function () {
 
         expect($result['delivered'])->toBe(0);
         expect($result['rejected'])->toBe(1);
-        // A redirect answered so the host is reachable (prior failure cleared),
-        // but the signed body never reached an inbox: not a delivery.
-        expect(deliveryFailures('remote.example'))->toBe(0);
+        // A redirect is not a delivery and does not record host success: the
+        // signed body never reached an inbox, so the prior failure is left
+        // untouched rather than cleared.
+        expect(deliveryFailures('remote.example'))->toBe(1);
     })->with([301, 302, 307, 308]);
 });
 
