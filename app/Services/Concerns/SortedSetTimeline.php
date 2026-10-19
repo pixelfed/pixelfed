@@ -118,7 +118,18 @@ trait SortedSetTimeline
         } catch (\Throwable $e) {
         }
 
-        return (int) $statusId;
+        return self::snowflakeScore($statusId);
+    }
+
+    protected static function snowflakeScore($statusId): int
+    {
+        $id = (int) $statusId;
+
+        if ($id <= 0) {
+            return 0;
+        }
+
+        return (int) floor((($id >> 22) + 1549756800000) / 1000);
     }
 
     protected static function cursorScoreForKey(string $key, $statusId)

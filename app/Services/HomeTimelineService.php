@@ -15,7 +15,7 @@ class HomeTimelineService
 {
     use SortedSetTimeline;
 
-    const CACHE_KEY = 'pf:services:timeline:home:';
+    const CACHE_KEY = 'pf:services:timeline:v2:home:';
 
     const CACHE_TTL = 1209600;
 
@@ -144,7 +144,7 @@ class HomeTimelineService
                     }
                 }
                 $score = ! empty($status['created_at']) ? strtotime($status['created_at']) : false;
-                Redis::zadd($tmpKey, $score !== false ? $score : $sid, $sid);
+                Redis::zadd($tmpKey, $score !== false ? $score : self::snowflakeScore($sid), $sid);
                 $added++;
             }
 

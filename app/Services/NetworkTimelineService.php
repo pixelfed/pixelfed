@@ -10,7 +10,7 @@ class NetworkTimelineService
 {
     use SortedSetTimeline;
 
-    const CACHE_KEY = 'pf:services:timeline:network';
+    const CACHE_KEY = 'pf:services:timeline:v2:network';
 
     public static function get($start = 0, $stop = 10)
     {
