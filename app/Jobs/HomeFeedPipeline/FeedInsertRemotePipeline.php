@@ -69,7 +69,7 @@ class FeedInsertRemotePipeline implements ShouldBeUniqueUntilProcessing, ShouldQ
      */
     public function middleware(): array
     {
-        return [(new WithoutOverlapping("hts:feed:insert:remote:sid:{$this->sid}"))->shared()->dontRelease()];
+        return [(new WithoutOverlapping("hts:feed:insert:remote:sid:{$this->sid}"))->shared()->expireAfter($this->timeout)->dontRelease()];
     }
 
     /**
@@ -167,7 +167,7 @@ class FeedInsertRemotePipeline implements ShouldBeUniqueUntilProcessing, ShouldQ
         $skipIds = array_unique(array_values($skipIds));
 
         foreach ($ids as $id) {
-            if (! in_array($id, $skipIds)) {
+            if (! in_array($id, $skipIds) && HomeTimelineService::cacheKeyExists($id)) {
                 HomeTimelineService::add($id, $sid);
             }
         }

@@ -62,7 +62,7 @@ class HashtagInsertFanoutPipeline implements ShouldBeUniqueUntilProcessing, Shou
      */
     public function middleware(): array
     {
-        return [(new WithoutOverlapping("hfp:hashtag:fanout:insert:{$this->hashtag->id}"))->shared()->dontRelease()];
+        return [(new WithoutOverlapping("hfp:hashtag:fanout:insert:{$this->hashtag->id}"))->shared()->expireAfter($this->timeout)->dontRelease()];
     }
 
     /**
@@ -107,6 +107,10 @@ class HashtagInsertFanoutPipeline implements ShouldBeUniqueUntilProcessing, Shou
             return;
         }
 
+        if (($status['local'] ?? true) === false && FeedInsertRemotePipeline::isTooOld($status['created_at'] ?? null)) {
+            return;
+        }
+
         $domain = strtolower(parse_url($status['url'], PHP_URL_HOST));
         $skipIds = [];
 
@@ -141,7 +145,7 @@ class HashtagInsertFanoutPipeline implements ShouldBeUniqueUntilProcessing, Shou
         }
 
         foreach ($ids as $id) {
-            if (! in_array($id, $skipIds)) {
+            if (! in_array($id, $skipIds) && HomeTimelineService::cacheKeyExists($id)) {
                 HomeTimelineService::add($id, $hashtag->status_id);
             }
         }

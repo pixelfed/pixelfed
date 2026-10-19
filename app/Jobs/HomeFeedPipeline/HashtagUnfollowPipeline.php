@@ -79,13 +79,19 @@ class HashtagUnfollowPipeline implements ShouldQueue
 
         foreach ($statusIds as $id) {
             $status = StatusService::get($id, false);
-            if (! $status || empty($status['tags'])) {
+
+            if (! $status || ! isset($status['account']['id'])) {
                 HomeTimelineService::rem($pid, $id);
 
                 continue;
             }
+
             $following = in_array((int) $status['account']['id'], $followingIds);
             if ($following === true) {
+                continue;
+            }
+
+            if (empty($status['tags'])) {
                 continue;
             }
 

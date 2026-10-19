@@ -4,6 +4,7 @@ use App\Models\Profile;
 use App\Models\Status;
 use App\Models\User;
 use App\Services\AccountService;
+use App\Services\NetworkTimelineService;
 use Illuminate\Foundation\Testing\LazilyRefreshDatabase;
 use Illuminate\Support\Facades\Redis;
 
@@ -14,16 +15,19 @@ uses(LazilyRefreshDatabase::class);
 | GET /api/pixelfed/v1/timelines/network null-account filtering
 |--------------------------------------------------------------------------
 |
-| The non-cached network timeline path must drop statuses whose account failed
-| to resolve (e.g. a deleted remote profile) so it never returns account=null,
-| matching the cached path and the Mastodon API contract.
+| The network timeline must drop statuses whose account failed to resolve
+| (e.g. a deleted remote profile) so it never returns account=null, matching
+| the Mastodon API contract.
 |
 */
 
 beforeEach(function () {
-    Redis::spy();
     config(['federation.network_timeline' => true]);
-    config(['instance.timeline.network.cached' => false]);
+    Redis::del(NetworkTimelineService::CACHE_KEY);
+});
+
+afterEach(function () {
+    Redis::del(NetworkTimelineService::CACHE_KEY);
 });
 
 function remotePublicStatus(Profile $author): Status
@@ -34,7 +38,7 @@ function remotePublicStatus(Profile $author): Status
         'scope' => 'public',
         'visibility' => 'public',
         'local' => false,
-        'uri' => 'https://remote.example/p/'.uniqid(),
+        'uri' => 'https://remote.example/p/'.bin2hex(random_bytes(6)),
     ]);
 }
 
@@ -47,6 +51,10 @@ it('excludes statuses whose account failed to resolve', function () {
 
     $liveStatus = remotePublicStatus($liveAuthor);
     $deletedStatus = remotePublicStatus($deletedAuthor);
+
+    // Both posts are present in the cached feed.
+    NetworkTimelineService::add($liveStatus->id);
+    NetworkTimelineService::add($deletedStatus->id);
 
     // Mark the second author deleted so AccountService::get() returns null.
     $deletedAuthor->status = 'delete';
