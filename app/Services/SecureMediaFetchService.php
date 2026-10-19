@@ -129,8 +129,11 @@ class SecureMediaFetchService
                 $res = $this->send($method, $currentUrl, $host, (int) $port, $ips, $headers, $maxBytes);
 
                 if ($method === 'head' && $this->shouldProbe($res)) {
-                    $res = $this->send('get', $currentUrl, $host, (int) $port, $ips, array_merge($headers, ['Range' => 'bytes=0-0']), $maxBytes, true);
-                    $res->close();
+                    // Buffered (non-stream) 1-byte range probe: streaming can't
+                    // carry the CURLOPT_RESOLVE pin under Guzzle 8's stream
+                    // handler, and a single byte is safe to buffer. The byte
+                    // cap is still enforced up front by the on_headers callback.
+                    $res = $this->send('get', $currentUrl, $host, (int) $port, $ips, array_merge($headers, ['Range' => 'bytes=0-0']), $maxBytes);
                 }
             } catch (RequestException|ConnectionException|\Throwable) {
                 return false;
@@ -197,20 +200,37 @@ class SecureMediaFetchService
         return false;
     }
 
-    protected function send(string $method, string $url, string $host, int $port, array $ips, array $headers, int $maxBytes, bool $stream = false): Response
+    protected function send(string $method, string $url, string $host, int $port, array $ips, array $headers, int $maxBytes): Response
     {
-        return Http::withOptions([
+        return Http::withOptions($this->requestOptions($host, $port, $ips, $maxBytes))
+            ->withHeaders($headers)
+            ->timeout(self::TIMEOUT)
+            ->connectTimeout(self::CONNECT_TIMEOUT)
+            ->{$method}($url);
+    }
+
+    /**
+     * Build the client options for a single hop. The scheme is restricted to
+     * https via Guzzle's native 'protocols' option (accepted by the curl
+     * handler, unlike the CURLOPT_PROTOCOLS curl constant), redirects stay
+     * disabled so every hop is re-validated, and the connection is pinned to
+     * the already-validated IPs through CURLOPT_RESOLVE. Responses are
+     * buffered (never streamed) so the curl handler, which is the only one
+     * that honours the CURLOPT_RESOLVE pin under Guzzle 8, is always used.
+     */
+    protected function requestOptions(string $host, int $port, array $ips, int $maxBytes): array
+    {
+        return [
             'allow_redirects' => false,
+            'protocols' => ['https'],
             'sink' => null,
-            'stream' => $stream,
+            'stream' => false,
             'curl' => [
                 CURLOPT_RESOLVE => [
                     $this->buildResolveEntry($host, $port, $ips),
                 ],
                 CURLOPT_FRESH_CONNECT => true,
                 CURLOPT_FORBID_REUSE => true,
-                CURLOPT_PROTOCOLS => CURLPROTO_HTTPS,
-                CURLOPT_REDIR_PROTOCOLS => CURLPROTO_HTTPS,
             ],
             'on_headers' => function (ResponseInterface $response) use ($maxBytes) {
                 $length = $response->getHeaderLine('Content-Length');
@@ -218,11 +238,7 @@ class SecureMediaFetchService
                     throw new \RuntimeException('Remote media exceeds maximum size');
                 }
             },
-        ])
-            ->withHeaders($headers)
-            ->timeout(self::TIMEOUT)
-            ->connectTimeout(self::CONNECT_TIMEOUT)
-            ->{$method}($url);
+        ];
     }
 
     protected function shouldProbe(Response $res): bool

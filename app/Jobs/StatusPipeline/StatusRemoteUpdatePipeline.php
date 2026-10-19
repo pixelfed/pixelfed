@@ -190,6 +190,7 @@ class StatusRemoteUpdatePipeline implements ShouldQueue
         if (isset($activity['content'])) {
             $cleanedCaption = app(SanitizeService::class)->html($activity['content']);
             $status->caption = strip_tags($cleanedCaption);
+            $status->rendered = $cleanedCaption;
         }
 
         if (isset($activity['sensitive'])) {

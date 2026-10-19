@@ -324,9 +324,8 @@ class StoryIndexService
             DB::table('stories')
                 ->where('active', true)
                 ->where('expires_at', '>', now())
-                ->orderBy('profile_id')
-                ->orderBy('created_at', 'desc')
-                ->chunk(500, function ($stories) use (&$stats) {
+                ->orderBy('id')
+                ->chunkById(500, function ($stories) use (&$stats) {
                     foreach ($stories as $story) {
                         try {
                             $storyObj = (object) [
@@ -354,7 +353,7 @@ class StoryIndexService
                             }
                         }
                     }
-                });
+                }, 'id');
 
             $cutoffDate = now()->subHours(48);
 
@@ -364,6 +363,7 @@ class StoryIndexService
                 ->where('stories.active', true)
                 ->where('stories.expires_at', '>', now())
                 ->select(
+                    'story_views.id',
                     'story_views.profile_id as viewer_id',
                     'story_views.story_id',
                     'stories.profile_id as author_id',
@@ -371,7 +371,7 @@ class StoryIndexService
                     'story_views.created_at as view_created_at'
                 )
                 ->orderBy('story_views.id')
-                ->chunk(1000, function ($views) use (&$stats) {
+                ->chunkById(1000, function ($views) use (&$stats) {
                     foreach ($views as $view) {
                         try {
                             $this->markSeen(
@@ -392,7 +392,7 @@ class StoryIndexService
                             }
                         }
                     }
-                });
+                }, 'story_views.id', 'id');
 
             return [
                 'status' => 'success',

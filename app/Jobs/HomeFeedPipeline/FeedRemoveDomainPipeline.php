@@ -52,7 +52,7 @@ class FeedRemoveDomainPipeline implements ShouldBeUniqueUntilProcessing, ShouldQ
      */
     public function middleware(): array
     {
-        return [(new WithoutOverlapping("hts:feed:remove:domain:{$this->pid}:d-{$this->domain}"))->shared()->dontRelease()];
+        return [(new WithoutOverlapping("hts:feed:remove:domain:{$this->pid}:d-{$this->domain}"))->shared()->expireAfter($this->timeout)->dontRelease()];
     }
 
     /**
@@ -69,10 +69,6 @@ class FeedRemoveDomainPipeline implements ShouldBeUniqueUntilProcessing, ShouldQ
      */
     public function handle(): void
     {
-        if (! config('exp.cached_home_timeline')) {
-            return;
-        }
-
         if ($this->batch()->cancelled()) {
             return;
         }

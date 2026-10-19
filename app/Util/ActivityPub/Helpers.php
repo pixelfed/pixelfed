@@ -1735,7 +1735,6 @@ class Helpers
     public static function handleStatusPostProcessing(Status $status, int $profileId, string $url): void
     {
         if (
-            config('instance.timeline.network.cached') &&
             self::isEligibleForNetwork($status) &&
             ! FeedInsertRemotePipeline::isTooOld($status->created_at)
         ) {
@@ -1765,6 +1764,7 @@ class Helpers
     {
         return $status->in_reply_to_id === null &&
             $status->reblog_of_id === null &&
+            $status->scope === 'public' &&
             in_array($status->type, ['photo', 'photo:album', 'video', 'video:album', 'photo:video:album']) &&
             $status->created_at->gt(now()->subHours(config('instance.timeline.network.max_hours_old'))) &&
             (config('instance.hide_nsfw_on_public_feeds') ? ! $status->is_nsfw : true);

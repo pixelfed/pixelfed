@@ -61,6 +61,7 @@ class CustomEmojiService
             $res = Http::acceptJson()
                 ->withOptions([
                     'allow_redirects' => false,
+                    'protocols' => ['https'],
                     'curl' => [
                         CURLOPT_RESOLVE => [
                             $host.':'.((int) $port).':'.implode(',', array_map(
@@ -70,8 +71,6 @@ class CustomEmojiService
                         ],
                         CURLOPT_FRESH_CONNECT => true,
                         CURLOPT_FORBID_REUSE => true,
-                        CURLOPT_PROTOCOLS => CURLPROTO_HTTPS,
-                        CURLOPT_REDIR_PROTOCOLS => CURLPROTO_HTTPS,
                     ],
                 ])
                 ->timeout(15)
@@ -168,7 +167,6 @@ class CustomEmojiService
 
             return;
         }
-
     }
 
     public static function headCheck($url)
