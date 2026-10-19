@@ -5,6 +5,7 @@ namespace App\Services;
 use App\Models\Status;
 use App\Services\Concerns\SortedSetTimeline;
 use Illuminate\Support\Facades\Redis;
+use Illuminate\Support\Str;
 
 class NetworkTimelineService
 {
@@ -52,6 +53,16 @@ class NetworkTimelineService
         return self::setCount(self::CACHE_KEY);
     }
 
+    public static function shouldWarmEmpty(): bool
+    {
+        return self::shouldEmptyWarm(self::CACHE_KEY);
+    }
+
+    public static function noteEmptyWarmed(): void
+    {
+        self::markEmptyWarmed(self::CACHE_KEY);
+    }
+
     public static function deleteByProfileId($profileId)
     {
         self::setDeleteByProfileId(self::CACHE_KEY, $profileId);
@@ -69,8 +80,8 @@ class NetworkTimelineService
         }
 
         if (self::count() == 0 || $force == true) {
+            $baseline = self::rebuildBaseline(self::CACHE_KEY);
             $hideNsfw = config('instance.hide_nsfw_on_public_feeds');
-            Redis::del(self::CACHE_KEY);
             $filteredDomains = collect(InstanceService::getBannedDomains())
                 ->merge(InstanceService::getUnlistedDomains())
                 ->unique()
@@ -93,7 +104,11 @@ class NetworkTimelineService
                 ->orderByDesc('id')
                 ->limit(max($limit * 2, $limit + 50))
                 ->get(['id', 'uri', 'created_at']);
-
+            // Build into a temporary key and publish with a single atomic
+            // rename, so a reader never observes an empty or partial feed and a
+            // failure mid-rebuild leaves the previous set serving untouched.
+            self::purgeRebuildKeys(self::CACHE_KEY);
+            $tmpKey = self::CACHE_KEY.':rebuild:'.Str::random(8);
             $added = 0;
             foreach ($rows as $row) {
                 if ($added >= $limit) {
@@ -104,19 +119,22 @@ class NetworkTimelineService
                     continue;
                 }
                 $score = $row->created_at ? $row->created_at->timestamp : self::snowflakeScore($row->id);
-                Redis::zadd(self::CACHE_KEY, $score, $row->id);
+                Redis::zadd($tmpKey, $score, $row->id);
+                if ($added === 0) {
+                    Redis::expire($tmpKey, self::rebuildKeyTtl());
+                }
                 $added++;
             }
-
             if ($added === 0) {
+                Redis::del($tmpKey);
                 Redis::del(self::CACHE_KEY);
 
                 return 1;
             }
-
             if ($added > $limit) {
-                Redis::zremrangebyrank(self::CACHE_KEY, 0, -($limit + 1));
+                Redis::zremrangebyrank($tmpKey, 0, -($limit + 1));
             }
+            self::publishRebuild(self::CACHE_KEY, $tmpKey, $baseline);
 
             return 1;
         }

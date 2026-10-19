@@ -3,6 +3,7 @@
 namespace App\Services\Concerns;
 
 use App\Services\StatusService;
+use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Redis;
 
 /**
@@ -15,10 +16,16 @@ use Illuminate\Support\Facades\Redis;
  */
 trait SortedSetTimeline
 {
+    const READ_LIMIT = 100;
+
     protected static function setGet(string $key, int $start, int $stop): array
     {
-        if ($stop > 100) {
-            $stop = 100;
+        // zrevrange bounds are inclusive, so a span is (stop - start + 1)
+        // members. Clamp the span to the read ceiling rather than the index,
+        // otherwise a request for the first 100 returns 101.
+        $maxStop = $start + self::READ_LIMIT - 1;
+        if ($stop < 0 || $stop > $maxStop) {
+            $stop = $maxStop;
         }
 
         return Redis::zrevrange($key, $start, $stop) ?: [];
@@ -30,6 +37,25 @@ trait SortedSetTimeline
             return [];
         }
 
+        $member = self::resolveCursorMember($key, $start);
+
+        if ($member !== null) {
+            // The cursor is a real member. Resume strictly after it by display
+            // position so the rest of a shared-second group is not skipped the
+            // way an exclusive score bound would skip it.
+            $rank = Redis::zrevrank($key, $member);
+
+            if ($rank === null || $rank === false) {
+                return [];
+            }
+
+            $from = (int) $rank + 1;
+
+            return Redis::zrevrange($key, $from, $from + $limit - 1) ?: [];
+        }
+
+        // The cursor is not a live member (a sentinel or an id that resolved to
+        // nothing); fall back to a score bound so paging still advances.
         $score = self::cursorScoreForKey($key, $start);
 
         if ($score === null) {
@@ -48,6 +74,32 @@ trait SortedSetTimeline
             return [];
         }
 
+        $member = self::resolveCursorMember($key, $end);
+
+        if ($member !== null) {
+            // min_id returns the newest members above the cursor, newest first
+            // from the top of the set, bounded to the limit. Slicing from the
+            // top (rather than an exclusive score bound) keeps shared-second
+            // members on the newer side of the cursor reachable.
+            $rank = Redis::zrevrank($key, $member);
+
+            if ($rank === null || $rank === false) {
+                return [];
+            }
+
+            $above = (int) $rank;
+
+            if ($above <= 0) {
+                return [];
+            }
+
+            $count = min($limit, $above);
+
+            return Redis::zrevrange($key, 0, $count - 1) ?: [];
+        }
+
+        // Non-member cursor (sentinel such as min_id=1): fall back to a score
+        // bound and return the newest page above it.
         $score = self::cursorScoreForKey($key, $end);
 
         if ($score === null) {
@@ -68,17 +120,135 @@ trait SortedSetTimeline
             Redis::zremrangebyrank($key, 0, -($trim + 1));
         }
 
+        // A write means the feed is no longer settled-empty; let the next read
+        // warm again if it still comes back empty.
+        self::clearEmptyWarmGuard($key);
+
         return $res;
     }
 
     protected static function setRem(string $key, $val)
     {
+        self::clearEmptyWarmGuard($key);
+
         return Redis::zrem($key, $val);
+    }
+
+    /**
+     * Seconds a feed that warmed to nothing stays settled before another
+     * synchronous empty warm is allowed.
+     */
+    protected static function emptyWarmInterval(): int
+    {
+        return 3600;
+    }
+
+    protected static function emptyWarmGuardKey(string $key): string
+    {
+        return 'pf:timeline:empty-warm-guard:'.$key;
+    }
+
+    /**
+     * True when a synchronous empty warm is allowed right now: the guard is
+     * unset or its interval has lapsed. Expiry is evaluated against the Carbon
+     * clock so it advances deterministically under test.
+     */
+    protected static function shouldEmptyWarm(string $key): bool
+    {
+        $until = Cache::get(self::emptyWarmGuardKey($key));
+
+        return $until === null || now()->timestamp >= (int) $until;
+    }
+
+    /**
+     * Record that the feed warmed to nothing so repeated reads inside the
+     * interval do not each trigger another synchronous rebuild.
+     */
+    protected static function markEmptyWarmed(string $key): void
+    {
+        $interval = self::emptyWarmInterval();
+        Cache::put(
+            self::emptyWarmGuardKey($key),
+            now()->addSeconds($interval)->timestamp,
+            $interval + 60
+        );
+    }
+
+    protected static function clearEmptyWarmGuard(string $key): void
+    {
+        Cache::forget(self::emptyWarmGuardKey($key));
     }
 
     protected static function setCount(string $key)
     {
         return Redis::zcard($key);
+    }
+
+    /**
+     * Seconds a temporary rebuild key is allowed to linger. A rebuild that
+     * crashes before the atomic publish leaves its scratch key self-expiring
+     * instead of persisting forever.
+     */
+    protected static function rebuildKeyTtl(): int
+    {
+        return 300;
+    }
+
+    /**
+     * Drop any scratch keys left behind by an earlier interrupted rebuild so a
+     * fresh rebuild never races or inherits a stale partial set.
+     */
+    protected static function purgeRebuildKeys(string $liveKey): void
+    {
+        $prefix = config('database.redis.options.prefix', '');
+        $keys = Redis::keys($liveKey.':rebuild:*');
+        foreach ($keys as $key) {
+            if ($prefix !== '' && str_starts_with($key, $prefix)) {
+                $key = substr($key, strlen($prefix));
+            }
+            Redis::del($key);
+        }
+    }
+
+    /**
+     * Members present on the live key at the moment a rebuild starts reading
+     * its snapshot. Comparing this against the live key at publication reveals
+     * writes that landed during the rebuild window.
+     */
+    protected static function rebuildBaseline(string $liveKey): array
+    {
+        return Redis::zrange($liveKey, 0, -1) ?: [];
+    }
+
+    /**
+     * Publish a freshly built rebuild key onto the live key without discarding
+     * writes that landed during the rebuild. Additions that appeared after the
+     * snapshot are folded in; members removed during the window are not
+     * resurrected. The swap itself is a single rename so readers never see a
+     * partial set.
+     */
+    protected static function publishRebuild(string $liveKey, string $tmpKey, array $baseline): void
+    {
+        $current = Redis::zrange($liveKey, 0, -1, ['withscores' => true]) ?: [];
+        if ($current) {
+            $baselineLookup = array_flip(array_map('strval', $baseline));
+            foreach ($current as $member => $score) {
+                // A member on the live key that was not in the baseline is a
+                // concurrent addition; carry it into the set being published.
+                if (! isset($baselineLookup[(string) $member])) {
+                    Redis::zadd($tmpKey, (float) $score, $member);
+                }
+            }
+        }
+        $currentLookup = array_flip(array_map('strval', array_keys($current)));
+        foreach ($baseline as $member) {
+            // A baseline member no longer on the live key was removed during the
+            // window; drop it from the snapshot so the publish cannot replay it.
+            if (! isset($currentLookup[(string) $member])) {
+                Redis::zrem($tmpKey, $member);
+            }
+        }
+        Redis::rename($tmpKey, $liveKey);
     }
 
     protected static function setDeleteByProfileId(string $key, $profileId): void
@@ -156,6 +326,20 @@ trait SortedSetTimeline
         }
 
         return self::scoreForStatus($statusId);
+    }
+
+    protected static function resolveCursorMember(string $key, $statusId)
+    {
+        // Exact member hit: the cursor is a live member of the set.
+        $score = Redis::zscore($key, $statusId);
+
+        if ($score !== null && $score !== false) {
+            return (string) $statusId;
+        }
+
+        // Otherwise the client rounded the snowflake; resolve it to the member
+        // it collapsed from so pagination resumes from a real position.
+        return self::resolveCursorMemberForKey($key, $statusId);
     }
 
     protected static function resolveCursorMemberForKey(string $key, $statusId)

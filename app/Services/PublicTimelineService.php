@@ -55,6 +55,16 @@ class PublicTimelineService
         return self::setCount(self::CACHE_KEY);
     }
 
+    public static function shouldWarmEmpty(): bool
+    {
+        return self::shouldEmptyWarm(self::CACHE_KEY);
+    }
+
+    public static function noteEmptyWarmed(): void
+    {
+        self::markEmptyWarmed(self::CACHE_KEY);
+    }
+
     public static function deleteByProfileId($profileId)
     {
         self::setDeleteByProfileId(self::CACHE_KEY, $profileId);
@@ -63,6 +73,7 @@ class PublicTimelineService
     public static function warmCache($force = false, $limit = 100)
     {
         if (self::count() == 0 || $force == true) {
+            $baseline = self::rebuildBaseline(self::CACHE_KEY);
             $hideNsfw = config('instance.hide_nsfw_on_public_feeds');
             $minId = SnowflakeService::byDate(now()->subDays(90));
             $rows = Status::where('id', '>', $minId)
@@ -76,12 +87,16 @@ class PublicTimelineService
                 ->limit($limit)
                 ->get(['id', 'profile_id', 'created_at']);
 
+            self::purgeRebuildKeys(self::CACHE_KEY);
             $tmpKey = self::CACHE_KEY.':rebuild:'.Str::random(8);
             $added = 0;
             foreach ($rows as $row) {
                 if (AdminShadowFilterService::canAddToPublicFeedByProfileId($row->profile_id)) {
                     $score = $row->created_at ? $row->created_at->timestamp : self::snowflakeScore($row->id);
                     Redis::zadd($tmpKey, $score, $row->id);
+                    if ($added === 0) {
+                        Redis::expire($tmpKey, self::rebuildKeyTtl());
+                    }
                     $added++;
                 }
             }
@@ -96,7 +111,7 @@ class PublicTimelineService
                 Redis::zremrangebyrank($tmpKey, 0, -(self::FEED_LIMIT + 1));
             }
 
-            Redis::rename($tmpKey, self::CACHE_KEY);
+            self::publishRebuild(self::CACHE_KEY, $tmpKey, $baseline);
 
             return 1;
         }
