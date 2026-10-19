@@ -76,7 +76,11 @@ class NetworkTimelineService
                 ->unique()
                 ->values()
                 ->toArray();
-            $ids = Status::whereNotNull('uri')
+            // Select by publication time so the survivors match what live
+            // insertion keeps: both paths rank by created_at, so an id that is
+            // high but old must not outrank a newer post. Overfetch covers rows
+            // dropped by the domain filter below.
+            $rows = Status::whereNotNull('uri')
                 ->whereScope('public')
                 ->when($hideNsfw, function ($q, $hideNsfw) {
                     return $q->where('is_nsfw', false);
@@ -85,18 +89,33 @@ class NetworkTimelineService
                 ->whereNull('reblog_of_id')
                 ->whereIn('type', ['photo', 'photo:album', 'video', 'video:album', 'photo:video:album'])
                 ->where('created_at', '>', now()->subHours(config('instance.timeline.network.max_hours_old')))
+                ->orderByDesc('created_at')
                 ->orderByDesc('id')
-                ->limit($limit)
-                ->pluck('uri', 'id');
-            $ids = $ids->filter(function ($k, $v) use ($filteredDomains) {
-                $domain = parse_url($k, PHP_URL_HOST);
+                ->limit(max($limit * 2, $limit + 50))
+                ->get(['id', 'uri', 'created_at']);
 
-                return ! in_array($domain, $filteredDomains);
-            })->map(function ($k, $v) {
-                return $v;
-            })->flatten();
-            foreach ($ids as $id) {
-                self::add($id);
+            $added = 0;
+            foreach ($rows as $row) {
+                if ($added >= $limit) {
+                    break;
+                }
+                $domain = parse_url($row->uri, PHP_URL_HOST);
+                if (in_array($domain, $filteredDomains)) {
+                    continue;
+                }
+                $score = $row->created_at ? $row->created_at->timestamp : self::snowflakeScore($row->id);
+                Redis::zadd(self::CACHE_KEY, $score, $row->id);
+                $added++;
+            }
+
+            if ($added === 0) {
+                Redis::del(self::CACHE_KEY);
+
+                return 1;
+            }
+
+            if ($added > $limit) {
+                Redis::zremrangebyrank(self::CACHE_KEY, 0, -($limit + 1));
             }
 
             return 1;
