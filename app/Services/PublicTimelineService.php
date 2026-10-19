@@ -11,7 +11,7 @@ class PublicTimelineService
 {
     use SortedSetTimeline;
 
-    const CACHE_KEY = 'pf:services:timeline:public';
+    const CACHE_KEY = 'pf:services:timeline:v2:public';
 
     const FEED_LIMIT = 400;
 
@@ -80,7 +80,7 @@ class PublicTimelineService
             $added = 0;
             foreach ($rows as $row) {
                 if (AdminShadowFilterService::canAddToPublicFeedByProfileId($row->profile_id)) {
-                    $score = $row->created_at ? $row->created_at->timestamp : $row->id;
+                    $score = $row->created_at ? $row->created_at->timestamp : self::snowflakeScore($row->id);
                     Redis::zadd($tmpKey, $score, $row->id);
                     $added++;
                 }

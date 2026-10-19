@@ -293,7 +293,7 @@
                         return;
                     }
                     this.ids = ids;
-                    this.max_id = Math.min(...ids);
+                    this.max_id = ids[ids.length - 1];
                     this.feed = res.data;
 
                     if(res.data.length < 4) {
@@ -354,11 +354,11 @@
                         this.isFetchingMore = false;
                     }
                     setTimeout(() => {
+                        if(res.data.length) {
+                            this.max_id = res.data[res.data.length - 1].id;
+                        }
                         res.data.forEach(p => {
                             if(this.ids.indexOf(p.id) == -1) {
-                                if(this.max_id > p.id) {
-                                    this.max_id = p.id;
-                                }
                                 this.ids.push(p.id);
                                 this.feed.push(p);
                                 if(p && p.hasOwnProperty('relationship')) {
