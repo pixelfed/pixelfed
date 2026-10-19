@@ -3,6 +3,7 @@
 namespace App\Jobs\HomeFeedPipeline;
 
 use App\Models\Hashtag;
+use App\Models\HashtagFollow;
 use App\Services\FollowerService;
 use App\Services\HomeTimelineService;
 use App\Services\StatusService;
@@ -77,6 +78,11 @@ class HashtagUnfollowPipeline implements ShouldQueue
 
         $followingIds = FollowerService::getFollowingIds($pid);
 
+        // Slugs of every other hashtag the viewer still follows. A status that
+        // carries one of these is still sourced into the home feed and must not
+        // be removed just because one of its tags was unfollowed.
+        $otherFollowedSlugs = $this->otherFollowedHashtagSlugs($pid, $hid);
+
         foreach ($statusIds as $id) {
             $status = StatusService::get($id, false);
 
@@ -99,9 +105,32 @@ class HashtagUnfollowPipeline implements ShouldQueue
                 return strtolower($tag['name']);
             })->filter()->values()->toArray();
 
-            if (in_array($slug, $tags)) {
-                HomeTimelineService::rem($pid, $id);
+            if (! in_array($slug, $tags)) {
+                continue;
             }
+
+            // The unfollowed tag is present, but keep the member if any other
+            // followed hashtag still supplies it.
+            if (array_intersect($otherFollowedSlugs, $tags)) {
+                continue;
+            }
+
+            HomeTimelineService::rem($pid, $id);
         }
+    }
+
+    protected function otherFollowedHashtagSlugs($pid, $hid): array
+    {
+        return HashtagFollow::where('profile_id', $pid)
+            ->where('hashtag_id', '!=', $hid)
+            ->pluck('hashtag_id')
+            ->map(function ($id) {
+                $tag = Hashtag::find($id);
+
+                return $tag ? strtolower($tag->slug ?? $tag->name) : null;
+            })
+            ->filter()
+            ->values()
+            ->toArray();
     }
 }
