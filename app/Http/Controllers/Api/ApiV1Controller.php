@@ -99,7 +99,6 @@ use Illuminate\Support\Str;
 use Laravel\Passport\Client;
 use League\Fractal;
 use League\Fractal\Serializer\ArraySerializer;
-use Purify;
 
 class ApiV1Controller extends Controller
 {
@@ -372,11 +371,8 @@ class ApiV1Controller extends Controller
         }
 
         if ($request->has('display_name')) {
-            // Purify entity-encodes &, <, > even in plain text; decode after the
-            // tag/XSS strip so the display name is stored as readable text.
-            $displayName = htmlspecialchars_decode(
-                strip_tags(Purify::clean($request->input('display_name'))),
-                ENT_QUOTES | ENT_HTML5
+            $displayName = trim(
+                preg_replace('/[\x00-\x1F\x7F]/u', '', (string) $request->input('display_name'))
             );
             if ($displayName !== $user->name) {
                 $user->name = $displayName;
