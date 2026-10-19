@@ -19,12 +19,14 @@ use App\Services\AccountService;
 use App\Services\ActivityPubDeliveryService;
 use App\Services\ActivityPubFetchService;
 use App\Services\DomainService;
+use App\Services\FetchCacheService;
 use App\Services\FollowersSyncService;
 use App\Services\InstanceService;
 use App\Services\MediaPathService;
 use App\Services\NetworkTimelineService;
 use App\Services\SanitizeService;
 use App\Services\UserFilterService;
+use App\Services\WebfingerService;
 use App\Util\Media\License;
 use Carbon\Carbon;
 use Illuminate\Database\UniqueConstraintViolationException;
@@ -2264,21 +2266,79 @@ class Helpers
             return null;
         }
 
-        $webfinger = "@{$username}@{$domain}";
+        [$handleUser, $handleDomain] = self::verifiedHandle($username, $domain, $res['id']);
+        $webfinger = Purify::clean("@{$handleUser}@{$handleDomain}");
+
         $instance = self::getOrCreateInstance($domain);
         $movedToPid = $movedToCheck ? null : self::handleMovedTo($res);
+        $data = self::buildProfileData($res, $webfinger, $movedToPid);
 
-        $profile = Profile::updateOrCreate(
-            [
-                'domain' => strtolower($domain),
-                'username' => Purify::clean($webfinger),
-            ],
-            self::buildProfileData($res, $webfinger, $movedToPid)
-        );
+        $profile = Profile::whereRemoteUrl($res['id'])->first();
+
+        if ($profile && self::handleTaken($profile, $domain, $webfinger)) {
+            $webfinger = $profile->username;
+            $data['webfinger'] = $webfinger;
+        }
+
+        if ($profile) {
+            $profile->forceFill(['domain' => strtolower($domain), 'username' => $webfinger] + $data)->save();
+            AccountService::del($profile->id);
+        } else {
+            $profile = Profile::updateOrCreate(
+                [
+                    'domain' => strtolower($domain),
+                    'username' => $webfinger,
+                ],
+                $data
+            );
+        }
 
         self::handleProfileAvatar($profile);
 
         return $profile;
+    }
+
+    public static function verifiedHandle(string $username, string $actorHost, string $actorId): array
+    {
+        $fallback = [$username, $actorHost];
+        $key = 'pf:helpers:verified-handle:'.hash('sha256', $actorId.'|'.$username);
+
+        return Cache::remember($key, now()->addHours(12), function () use ($username, $actorHost, $actorId, $fallback) {
+            $record = FetchCacheService::getJson("https://{$actorHost}/.well-known/webfinger?resource=acct:{$username}@{$actorHost}");
+            $subject = is_array($record) && is_string($record['subject'] ?? null) ? $record['subject'] : null;
+
+            if (! $subject || ! preg_match('/^acct:([^@\s\/]+)@([^@\s\/]+)$/i', $subject, $m)) {
+                return $fallback;
+            }
+
+            $handleUser = $m[1];
+            $handleDomain = strtolower(rtrim($m[2], '.'));
+
+            if ($handleDomain === strtolower($actorHost)) {
+                return $fallback;
+            }
+
+            if (
+                ! ctype_alnum(str_replace(['_', '.', '-'], '', $handleUser))
+                || self::isLocalDomain($handleDomain)
+                || self::isHostBanned($handleDomain)
+            ) {
+                return $fallback;
+            }
+
+            $link = WebfingerService::rawGet("@{$handleUser}@{$handleDomain}");
+
+            return $link === $actorId ? [$handleUser, $handleDomain] : $fallback;
+        });
+    }
+
+    protected static function handleTaken(Profile $profile, string $domain, string $webfinger): bool
+    {
+        return $profile->username !== $webfinger
+            && Profile::where('domain', strtolower($domain))
+                ->where('username', $webfinger)
+                ->whereKeyNot($profile->id)
+                ->exists();
     }
 
     /**
