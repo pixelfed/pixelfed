@@ -1183,6 +1183,7 @@ trait AdminReportController
                     $status->save();
                     StatusService::del($status->id);
                     PublicTimelineService::rem($status->id);
+                    NetworkTimelineService::rem($status->id);
                 }
 
                 ModLogService::boot()
