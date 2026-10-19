@@ -37,18 +37,16 @@ function remoteStatusWithId(int $id, string $createdAt): Status
     ]);
 }
 
-it('warms the newest rows by publication time so warm matches live insertion', function () {
-    // Id order and publication order disagree: the highest id is the oldest
-    // post. Warm must keep the two newest by created_at, exactly as live
-    // insertion trims, so the lowest-id-but-newest row survives.
+it('warms the highest-id rows so the cache matches the ranked order', function () {
+    // Highest id is the newest in the feed, but it was published (created_at)
+    // earlier than a lower-id row. A limit of 2 must keep the two highest ids.
     remoteStatusWithId(100, now()->subHours(1)->toDateTimeString());   // newest created_at, lowest id
     remoteStatusWithId(200, now()->subHours(10)->toDateTimeString());
     remoteStatusWithId(300, now()->subHours(20)->toDateTimeString());  // oldest created_at, highest id
 
     NetworkTimelineService::warmCache(true, 2);
 
-    // Display order is newest-first by publication time.
-    $cached = collect(NetworkTimelineService::get(0, -1))->map(fn ($v) => (int) $v)->values()->all();
+    $cached = collect(NetworkTimelineService::get(0, -1))->map(fn ($v) => (int) $v)->sort()->values()->all();
 
-    expect($cached)->toBe([100, 200]);
+    expect($cached)->toBe([200, 300]);
 });

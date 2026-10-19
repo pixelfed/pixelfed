@@ -2,8 +2,6 @@
 
 namespace App\Jobs\HomeFeedPipeline;
 
-use App\Models\Hashtag;
-use App\Models\HashtagFollow;
 use App\Services\HomeTimelineService;
 use App\Services\StatusService;
 use Illuminate\Bus\Queueable;
@@ -87,54 +85,14 @@ class FeedUnfollowPipeline implements ShouldBeUniqueUntilProcessing, ShouldQueue
             return;
         }
 
-        // Slugs of hashtags the viewer follows. A post from the unfollowed
-        // author that carries one of these is still sourced into the home feed
-        // through the hashtag and must survive the unfollow.
-        $followedTagSlugs = $this->followedHashtagSlugs($actorId);
-
         $ids = HomeTimelineService::get($actorId, 0, -1);
         foreach ($ids as $id) {
             $status = StatusService::get($id, false);
-            if (! $status || ! isset($status['account'], $status['account']['id'])) {
-                continue;
+            if ($status && isset($status['account'], $status['account']['id'])) {
+                if ($status['account']['id'] == $followingId) {
+                    HomeTimelineService::rem($actorId, $id);
+                }
             }
-
-            if ($status['account']['id'] != $followingId) {
-                continue;
-            }
-
-            if ($followedTagSlugs && $this->statusMatchesFollowedTag($status, $followedTagSlugs)) {
-                continue;
-            }
-
-            HomeTimelineService::rem($actorId, $id);
         }
-    }
-
-    protected function statusMatchesFollowedTag(array $status, array $followedTagSlugs): bool
-    {
-        if (empty($status['tags'])) {
-            return false;
-        }
-
-        $tags = collect($status['tags'])->map(function ($tag) {
-            return strtolower($tag['name']);
-        })->filter()->values()->toArray();
-
-        return (bool) array_intersect($followedTagSlugs, $tags);
-    }
-
-    protected function followedHashtagSlugs($pid): array
-    {
-        return HashtagFollow::where('profile_id', $pid)
-            ->pluck('hashtag_id')
-            ->map(function ($id) {
-                $tag = Hashtag::find($id);
-
-                return $tag ? strtolower($tag->slug ?? $tag->name) : null;
-            })
-            ->filter()
-            ->values()
-            ->toArray();
     }
 }

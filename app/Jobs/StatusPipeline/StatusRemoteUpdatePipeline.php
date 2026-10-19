@@ -230,8 +230,6 @@ class StatusRemoteUpdatePipeline implements ShouldQueue
         $status->edited_at = now();
         $status->save();
         StatusService::del($status->id);
-
-        Helpers::reconcileNetworkMembership($status->fresh());
     }
 
     protected function createEdit($status, $activity)
