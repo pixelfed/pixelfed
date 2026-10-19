@@ -16,10 +16,16 @@ use Illuminate\Support\Facades\Redis;
  */
 trait SortedSetTimeline
 {
+    const READ_LIMIT = 100;
+
     protected static function setGet(string $key, int $start, int $stop): array
     {
-        if ($stop > 100) {
-            $stop = 100;
+        // zrevrange bounds are inclusive, so a span is (stop - start + 1)
+        // members. Clamp the span to the read ceiling rather than the index,
+        // otherwise a request for the first 100 returns 101.
+        $maxStop = $start + self::READ_LIMIT - 1;
+        if ($stop < 0 || $stop > $maxStop) {
+            $stop = $maxStop;
         }
 
         return Redis::zrevrange($key, $start, $stop) ?: [];
@@ -31,6 +37,25 @@ trait SortedSetTimeline
             return [];
         }
 
+        $member = self::resolveCursorMember($key, $start);
+
+        if ($member !== null) {
+            // The cursor is a real member. Resume strictly after it by display
+            // position so the rest of a shared-second group is not skipped the
+            // way an exclusive score bound would skip it.
+            $rank = Redis::zrevrank($key, $member);
+
+            if ($rank === null || $rank === false) {
+                return [];
+            }
+
+            $from = (int) $rank + 1;
+
+            return Redis::zrevrange($key, $from, $from + $limit - 1) ?: [];
+        }
+
+        // The cursor is not a live member (a sentinel or an id that resolved to
+        // nothing); fall back to a score bound so paging still advances.
         $score = self::cursorScoreForKey($key, $start);
 
         if ($score === null) {
@@ -49,6 +74,32 @@ trait SortedSetTimeline
             return [];
         }
 
+        $member = self::resolveCursorMember($key, $end);
+
+        if ($member !== null) {
+            // min_id returns the newest members above the cursor, newest first
+            // from the top of the set, bounded to the limit. Slicing from the
+            // top (rather than an exclusive score bound) keeps shared-second
+            // members on the newer side of the cursor reachable.
+            $rank = Redis::zrevrank($key, $member);
+
+            if ($rank === null || $rank === false) {
+                return [];
+            }
+
+            $above = (int) $rank;
+
+            if ($above <= 0) {
+                return [];
+            }
+
+            $count = min($limit, $above);
+
+            return Redis::zrevrange($key, 0, $count - 1) ?: [];
+        }
+
+        // Non-member cursor (sentinel such as min_id=1): fall back to a score
+        // bound and return the newest page above it.
         $score = self::cursorScoreForKey($key, $end);
 
         if ($score === null) {
@@ -275,6 +326,20 @@ trait SortedSetTimeline
         }
 
         return self::scoreForStatus($statusId);
+    }
+
+    protected static function resolveCursorMember(string $key, $statusId)
+    {
+        // Exact member hit: the cursor is a live member of the set.
+        $score = Redis::zscore($key, $statusId);
+
+        if ($score !== null && $score !== false) {
+            return (string) $statusId;
+        }
+
+        // Otherwise the client rounded the snowflake; resolve it to the member
+        // it collapsed from so pagination resumes from a real position.
+        return self::resolveCursorMemberForKey($key, $statusId);
     }
 
     protected static function resolveCursorMemberForKey(string $key, $statusId)
