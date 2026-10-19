@@ -1760,32 +1760,6 @@ class Helpers
     }
 
     /**
-     * Re-evaluate whether a status still belongs in the network timeline after
-     * an edit changed its eligibility (for example a remote sensitivity flip).
-     * Membership is recalculated through the same checks live insertion uses,
-     * so a status that became ineligible is removed and one that became
-     * eligible again is restored.
-     */
-    public static function reconcileNetworkMembership(Status $status): void
-    {
-        $eligible = self::isEligibleForNetwork($status) &&
-            ! FeedInsertRemotePipeline::isTooOld($status->created_at);
-
-        if ($eligible && $status->uri) {
-            $urlDomain = parse_url($status->uri, PHP_URL_HOST);
-            if (in_array($urlDomain, self::getFilteredDomains())) {
-                $eligible = false;
-            }
-        }
-
-        if ($eligible) {
-            NetworkTimelineService::add($status->id);
-        } else {
-            NetworkTimelineService::rem($status->id);
-        }
-    }
-
-    /**
      * Check if status is eligible for network timeline
      */
     public static function isEligibleForNetwork(Status $status): bool
