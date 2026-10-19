@@ -81,6 +81,73 @@ trait SortedSetTimeline
         return Redis::zcard($key);
     }
 
+    /**
+     * Seconds a temporary rebuild key is allowed to linger. A rebuild that
+     * crashes before the atomic publish leaves its scratch key self-expiring
+     * instead of persisting forever.
+     */
+    protected static function rebuildKeyTtl(): int
+    {
+        return 300;
+    }
+
+    /**
+     * Drop any scratch keys left behind by an earlier interrupted rebuild so a
+     * fresh rebuild never races or inherits a stale partial set.
+     */
+    protected static function purgeRebuildKeys(string $liveKey): void
+    {
+        $prefix = config('database.redis.options.prefix', '');
+        $keys = Redis::keys($liveKey.':rebuild:*');
+        foreach ($keys as $key) {
+            if ($prefix !== '' && str_starts_with($key, $prefix)) {
+                $key = substr($key, strlen($prefix));
+            }
+            Redis::del($key);
+        }
+    }
+
+    /**
+     * Members present on the live key at the moment a rebuild starts reading
+     * its snapshot. Comparing this against the live key at publication reveals
+     * writes that landed during the rebuild window.
+     */
+    protected static function rebuildBaseline(string $liveKey): array
+    {
+        return Redis::zrange($liveKey, 0, -1) ?: [];
+    }
+
+    /**
+     * Publish a freshly built rebuild key onto the live key without discarding
+     * writes that landed during the rebuild. Additions that appeared after the
+     * snapshot are folded in; members removed during the window are not
+     * resurrected. The swap itself is a single rename so readers never see a
+     * partial set.
+     */
+    protected static function publishRebuild(string $liveKey, string $tmpKey, array $baseline): void
+    {
+        $current = Redis::zrange($liveKey, 0, -1, ['withscores' => true]) ?: [];
+        if ($current) {
+            $baselineLookup = array_flip(array_map('strval', $baseline));
+            foreach ($current as $member => $score) {
+                // A member on the live key that was not in the baseline is a
+                // concurrent addition; carry it into the set being published.
+                if (! isset($baselineLookup[(string) $member])) {
+                    Redis::zadd($tmpKey, (float) $score, $member);
+                }
+            }
+        }
+        $currentLookup = array_flip(array_map('strval', array_keys($current)));
+        foreach ($baseline as $member) {
+            // A baseline member no longer on the live key was removed during the
+            // window; drop it from the snapshot so the publish cannot replay it.
+            if (! isset($currentLookup[(string) $member])) {
+                Redis::zrem($tmpKey, $member);
+            }
+        }
+        Redis::rename($tmpKey, $liveKey);
+    }
+
     protected static function setDeleteByProfileId(string $key, $profileId): void
     {
         $members = Redis::zrange($key, 0, '-1');
