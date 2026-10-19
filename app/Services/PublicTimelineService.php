@@ -55,6 +55,16 @@ class PublicTimelineService
         return self::setCount(self::CACHE_KEY);
     }
 
+    public static function shouldWarmEmpty(): bool
+    {
+        return self::shouldEmptyWarm(self::CACHE_KEY);
+    }
+
+    public static function noteEmptyWarmed(): void
+    {
+        self::markEmptyWarmed(self::CACHE_KEY);
+    }
+
     public static function deleteByProfileId($profileId)
     {
         self::setDeleteByProfileId(self::CACHE_KEY, $profileId);

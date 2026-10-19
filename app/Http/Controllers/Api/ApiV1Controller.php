@@ -3200,10 +3200,13 @@ class ApiV1Controller extends Controller
                 ->values()
                 ->toArray();
         } elseif ($remote && ! $local) {
-            if (NetworkTimelineService::count() === 0) {
+            if (NetworkTimelineService::count() === 0 && NetworkTimelineService::shouldWarmEmpty()) {
                 Cache::lock('api:v1:timelines:network:cache_check:lock', 10)->get(function () {
-                    if (NetworkTimelineService::count() === 0) {
+                    if (NetworkTimelineService::count() === 0 && NetworkTimelineService::shouldWarmEmpty()) {
                         NetworkTimelineService::warmCache(true, config('instance.timeline.network.cache_dropoff'));
+                        if (NetworkTimelineService::count() === 0) {
+                            NetworkTimelineService::noteEmptyWarmed();
+                        }
                     }
                 });
             }
@@ -3217,10 +3220,13 @@ class ApiV1Controller extends Controller
                 $feed = NetworkTimelineService::get(0, $limit + 5);
             }
         } else {
-            if (PublicTimelineService::count() === 0) {
+            if (PublicTimelineService::count() === 0 && PublicTimelineService::shouldWarmEmpty()) {
                 Cache::lock('api:v1:timelines:public:cache_check:lock', 10)->get(function () {
-                    if (PublicTimelineService::count() === 0) {
+                    if (PublicTimelineService::count() === 0 && PublicTimelineService::shouldWarmEmpty()) {
                         PublicTimelineService::warmCache(true, 400);
+                        if (PublicTimelineService::count() === 0) {
+                            PublicTimelineService::noteEmptyWarmed();
+                        }
                     }
                 });
             }

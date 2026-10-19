@@ -3,6 +3,7 @@
 namespace App\Services\Concerns;
 
 use App\Services\StatusService;
+use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Redis;
 
 /**
@@ -68,12 +69,63 @@ trait SortedSetTimeline
             Redis::zremrangebyrank($key, 0, -($trim + 1));
         }
 
+        // A write means the feed is no longer settled-empty; let the next read
+        // warm again if it still comes back empty.
+        self::clearEmptyWarmGuard($key);
+
         return $res;
     }
 
     protected static function setRem(string $key, $val)
     {
+        self::clearEmptyWarmGuard($key);
+
         return Redis::zrem($key, $val);
+    }
+
+    /**
+     * Seconds a feed that warmed to nothing stays settled before another
+     * synchronous empty warm is allowed.
+     */
+    protected static function emptyWarmInterval(): int
+    {
+        return 3600;
+    }
+
+    protected static function emptyWarmGuardKey(string $key): string
+    {
+        return 'pf:timeline:empty-warm-guard:'.$key;
+    }
+
+    /**
+     * True when a synchronous empty warm is allowed right now: the guard is
+     * unset or its interval has lapsed. Expiry is evaluated against the Carbon
+     * clock so it advances deterministically under test.
+     */
+    protected static function shouldEmptyWarm(string $key): bool
+    {
+        $until = Cache::get(self::emptyWarmGuardKey($key));
+
+        return $until === null || now()->timestamp >= (int) $until;
+    }
+
+    /**
+     * Record that the feed warmed to nothing so repeated reads inside the
+     * interval do not each trigger another synchronous rebuild.
+     */
+    protected static function markEmptyWarmed(string $key): void
+    {
+        $interval = self::emptyWarmInterval();
+        Cache::put(
+            self::emptyWarmGuardKey($key),
+            now()->addSeconds($interval)->timestamp,
+            $interval + 60
+        );
+    }
+
+    protected static function clearEmptyWarmGuard(string $key): void
+    {
+        Cache::forget(self::emptyWarmGuardKey($key));
     }
 
     protected static function setCount(string $key)
