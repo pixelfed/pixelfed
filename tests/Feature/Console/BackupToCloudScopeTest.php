@@ -34,6 +34,15 @@ beforeEach(function () {
         mkdir($this->decoyDir, 0755, true);
     }
 
+    // Start from a clean slate so a leftover decoy from an interrupted run
+    // can't be picked up before this run's fixtures are written.
+    foreach (glob($this->realBackupDir.'/*.zip') ?: [] as $f) {
+        @unlink($f);
+    }
+    foreach (glob($this->decoyDir.'/pf-backup-scope-decoy-*') ?: [] as $f) {
+        @unlink($f);
+    }
+
     // The cloud target is faked so we can inspect what got uploaded, and the
     // command's config guard needs these credentials to be present.
     Storage::fake('backup');
