@@ -34,7 +34,7 @@ function resetExpiredQuotaLimits(): void
     }
 }
 
-function seedFilter(int $pid, string $title, string $keyword, ?Carbon $expiresAt): CustomFilter
+function seedCustomFilter(int $pid, string $title, string $keyword, ?Carbon $expiresAt): CustomFilter
 {
     $filter = CustomFilter::create([
         'profile_id' => $pid,
@@ -80,7 +80,7 @@ it('does not count expired filters against the quota', function () {
     $pid = $user->profile_id;
 
     for ($i = 0; $i < $max; $i++) {
-        seedFilter($pid, 'expired-'.$i, 'expired'.$i, now()->subDay());
+        seedCustomFilter($pid, 'expired-'.$i, 'expired'.$i, now()->subDay());
     }
 
     Passport::actingAs($user, ['read', 'write']);
@@ -106,7 +106,7 @@ it('still enforces the quota for unexpired filters', function () {
     $pid = $user->profile_id;
 
     for ($i = 0; $i < $max; $i++) {
-        seedFilter($pid, 'live-'.$i, 'live'.$i, now()->addWeek());
+        seedCustomFilter($pid, 'live-'.$i, 'live'.$i, now()->addWeek());
     }
 
     Passport::actingAs($user, ['read', 'write']);
@@ -122,7 +122,7 @@ it('allows the policy create check to pass when all filters are expired', functi
     $pid = $user->profile_id;
 
     for ($i = 0; $i < 150; $i++) {
-        seedFilter($pid, 'expired-'.$i, 'policy'.$i, now()->subDay());
+        seedCustomFilter($pid, 'expired-'.$i, 'policy'.$i, now()->subDay());
     }
 
     expect($user->can('create', CustomFilter::class))->toBeTrue();

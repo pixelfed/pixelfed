@@ -26,7 +26,7 @@ uses(LazilyRefreshDatabase::class);
 
 const LEGACY_TYPE = 'App\Profile';
 
-function seedFilter(int $userId, int $targetId, string $filterType, string $type): UserFilter
+function seedUserFilter(int $userId, int $targetId, string $filterType, string $type): UserFilter
 {
     $filter = new UserFilter;
     $filter->user_id = $userId;
@@ -51,8 +51,8 @@ describe('legacy App\Profile rows', function () {
         $target = User::factory()->create();
         $target->refresh();
 
-        seedFilter($user->profile_id, $target->profile_id, 'block', LEGACY_TYPE);
-        seedFilter($user->profile_id, $target->profile_id, 'mute', LEGACY_TYPE);
+        seedUserFilter($user->profile_id, $target->profile_id, 'block', LEGACY_TYPE);
+        seedUserFilter($user->profile_id, $target->profile_id, 'mute', LEGACY_TYPE);
 
         $rel = RelationshipService::refresh($user->profile_id, $target->profile_id);
 
@@ -66,7 +66,7 @@ describe('legacy App\Profile rows', function () {
         $target = User::factory()->create();
         $target->refresh();
 
-        seedFilter($user->profile_id, $target->profile_id, 'block', LEGACY_TYPE);
+        seedUserFilter($user->profile_id, $target->profile_id, 'block', LEGACY_TYPE);
         Passport::actingAs($user, ['write']);
 
         $this->postJson("/api/v1/accounts/{$target->profile_id}/unblock")
@@ -85,7 +85,7 @@ describe('legacy App\Profile rows', function () {
         $target = User::factory()->create();
         $target->refresh();
 
-        seedFilter($user->profile_id, $target->profile_id, 'mute', LEGACY_TYPE);
+        seedUserFilter($user->profile_id, $target->profile_id, 'mute', LEGACY_TYPE);
         Passport::actingAs($user, ['write']);
 
         $this->postJson("/api/v1/accounts/{$target->profile_id}/unmute")
@@ -106,8 +106,8 @@ describe('legacy App\Profile rows', function () {
         $muted = User::factory()->create();
         $muted->refresh();
 
-        seedFilter($user->profile_id, $blocked->profile_id, 'block', LEGACY_TYPE);
-        seedFilter($user->profile_id, $muted->profile_id, 'mute', LEGACY_TYPE);
+        seedUserFilter($user->profile_id, $blocked->profile_id, 'block', LEGACY_TYPE);
+        seedUserFilter($user->profile_id, $muted->profile_id, 'mute', LEGACY_TYPE);
 
         $profile = Profile::find($user->profile_id);
 
@@ -123,7 +123,7 @@ describe('warm cache eviction on legacy row removal', function () {
         $target = User::factory()->create();
         $target->refresh();
 
-        seedFilter($user->profile_id, $target->profile_id, 'block', LEGACY_TYPE);
+        seedUserFilter($user->profile_id, $target->profile_id, 'block', LEGACY_TYPE);
 
         expect(collect(UserFilterService::blocks($user->profile_id))->map(fn ($i) => (string) $i))
             ->toContain((string) $target->profile_id);
@@ -143,7 +143,7 @@ describe('warm cache eviction on legacy row removal', function () {
         $target = User::factory()->create();
         $target->refresh();
 
-        seedFilter($user->profile_id, $target->profile_id, 'mute', LEGACY_TYPE);
+        seedUserFilter($user->profile_id, $target->profile_id, 'mute', LEGACY_TYPE);
 
         expect(collect(UserFilterService::mutes($user->profile_id))->map(fn ($i) => (string) $i))
             ->toContain((string) $target->profile_id);
@@ -165,7 +165,7 @@ describe('modern App\Models\Profile control', function () {
         $target = User::factory()->create();
         $target->refresh();
 
-        seedFilter($user->profile_id, $target->profile_id, 'block', Profile::class);
+        seedUserFilter($user->profile_id, $target->profile_id, 'block', Profile::class);
 
         $rel = RelationshipService::refresh($user->profile_id, $target->profile_id);
         expect($rel['blocking'])->toBeTrue();
@@ -194,14 +194,14 @@ describe('legacy morph normalization migration', function () {
         $distinct->refresh();
 
         // lone legacy row with no modern twin
-        seedFilter($user->profile_id, $lone->profile_id, 'block', LEGACY_TYPE);
+        seedUserFilter($user->profile_id, $lone->profile_id, 'block', LEGACY_TYPE);
 
         // legacy row colliding with an existing modern row on the unique tuple
-        $legacyCollision = seedFilter($user->profile_id, $collide->profile_id, 'block', LEGACY_TYPE);
-        seedFilter($user->profile_id, $collide->profile_id, 'block', Profile::class);
+        $legacyCollision = seedUserFilter($user->profile_id, $collide->profile_id, 'block', LEGACY_TYPE);
+        seedUserFilter($user->profile_id, $collide->profile_id, 'block', Profile::class);
 
         // distinct legacy row (mute) that must survive untouched in value
-        seedFilter($user->profile_id, $distinct->profile_id, 'mute', LEGACY_TYPE);
+        seedUserFilter($user->profile_id, $distinct->profile_id, 'mute', LEGACY_TYPE);
 
         runMorphNormalization();
 
