@@ -57,10 +57,6 @@ class FollowPipeline implements ShouldQueue
             return;
         }
 
-        if ($target->domain || ! $target->private_key) {
-            return;
-        }
-
         Cache::forget('profile:following:'.$actor->id);
         Cache::forget('profile:following:'.$target->id);
 
@@ -71,12 +67,12 @@ class FollowPipeline implements ShouldQueue
         $actor->save();
         AccountService::del($actor->id);
 
-        $count = Follower::whereFollowingId($target->id)->count();
-        $target->followers_count = $count;
-        $target->save();
-        AccountService::del($target->id);
-
         if ($target->user_id && $target->domain === null) {
+            $count = Follower::whereFollowingId($target->id)->count();
+            $target->followers_count = $count;
+            $target->save();
+            AccountService::del($target->id);
+
             try {
                 NotificationService::createNotification($target->id, $actor->id, 'follow', $target->id, Profile::class);
             } catch (\Exception $e) {
