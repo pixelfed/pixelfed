@@ -59,7 +59,8 @@ it('returns 200 empty when a cold feed warms to nothing', function () {
 
     $res = $this->getJson('/api/v1/timelines/home')->assertOk();
 
-    expect($res->json())->toBe([]);
+    expect($res->json())->toBe([])
+        ->and($res->headers->get('X-Pixelfed-Feed-State'))->toBe('empty');
 
     // The warm completed and found nothing, so it is recorded as empty
     // rather than left looking like a feed that needs building.

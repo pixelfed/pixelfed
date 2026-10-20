@@ -87,9 +87,11 @@ it('serves the seeded home set newest-first on a warm hit', function () {
 
     Passport::actingAs($viewer, ['read']);
 
-    $res = $this->getJson('/api/v1/timelines/home?limit=40')
-        ->assertOk()
-        ->json();
+    $response = $this->getJson('/api/v1/timelines/home?limit=40')->assertOk();
+
+    expect($response->headers->get('X-Pixelfed-Feed-State'))->toBe('ready');
+
+    $res = $response->json();
 
     $returned = collect($res)->pluck('id')->map(fn ($id) => (int) $id)->all();
 

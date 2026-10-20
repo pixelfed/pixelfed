@@ -81,7 +81,9 @@ it('still returns a next link when the whole page is filtered out', function () 
 
     $response = $this->getJson('/api/v1/timelines/home?limit=5')->assertOk();
 
-    expect($response->json())->toBe([]);
+    expect($response->json())->toBe([])
+        // A feed with content the viewer chose to hide is ready, not empty.
+        ->and($response->headers->get('X-Pixelfed-Feed-State'))->toBe('ready');
 
     // The continuation cursor has to be the oldest member in display order,
     // which is not the lowest id once a remote post is in the window.
