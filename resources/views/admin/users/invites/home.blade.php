@@ -71,8 +71,9 @@
                             {{ $invite->hasExpired() ? 'expired' : ($invite->expires_at?->diffForHumans() ?? 'never') }}
                         </td>
                         <td>
-                            <button class="btn btn-outline-secondary btn-sm py-0 mr-3"
-                                    onclick="expireInvite('{{ $invite->name ?? $invite->invite_code }}', '{{ route('admin.users.invites.expire', $invite) }}')"
+                            <button class="btn btn-outline-secondary btn-sm py-0 mr-3 expire-invite"
+                                    data-name="{{ $invite->name ?? $invite->invite_code }}"
+                                    data-route="{{ route('admin.users.invites.expire', $invite) }}"
                                     type="button">
                                 Expire
                             </button>
@@ -90,51 +91,56 @@
 
 @push('scripts')
     <script>
-        function expireInvite (inviteName, deletionRoute) {
-            event.preventDefault()
+        document.querySelectorAll('.expire-invite').forEach(el => {
+            el.addEventListener('click', (event) => {
+                event.preventDefault()
 
-            swal({
-                title: 'Expire Invite',
-                text: `Are you sure you want to expire the invite "${inviteName}"? This action cannot be undone.`,
-                icon: 'warning',
-                dangerMode: true,
-                buttons: {
-                    cancel: {
-                        text: 'Cancel',
-                        value: false,
-                        visible: true,
-                    },
-                    expire: {
-                        text: 'Expire',
-                        value: 'expire',
-                        className: 'btn-danger'
-                    }
-                }
-            })
-                .then((willExpire) => {
-                    if (willExpire === 'expire') {
-                        swal({
-                            title: 'Deleting...',
-                            text: 'Please wait while we expire the invite.',
-                            icon: 'info',
-                            buttons: false,
-                            closeOnClickOutside: false,
-                            closeOnEsc: false
-                        })
+                const inviteName = el.dataset.name
+                const deletionRoute = el.dataset.route
 
-                        axios.post(deletionRoute)
-                            .then(res => {
-                                swal('Success!', 'Invite has been expired successfully.', 'success')
-                                    .then(() => {
-                                        window.location.reload()
-                                    })
-                            })
-                            .catch(err => {
-                                console.error('Expire error:', err)
-                                swal('Error!', 'Failed to expire invite. Please try again.', 'error')
-                            })
+                swal({
+                    title: 'Expire Invite',
+                    text: `Are you sure you want to expire the invite "${inviteName}"? This action cannot be undone.`,
+                    icon: 'warning',
+                    dangerMode: true,
+                    buttons: {
+                        cancel: {
+                            text: 'Cancel',
+                            value: false,
+                            visible: true,
+                        },
+                        expire: {
+                            text: 'Expire',
+                            value: 'expire',
+                            className: 'btn-danger'
+                        }
                     }
                 })
-        }
+                    .then((willExpire) => {
+                        if (willExpire === 'expire') {
+                            swal({
+                                title: 'Deleting...',
+                                text: 'Please wait while we expire the invite.',
+                                icon: 'info',
+                                buttons: false,
+                                closeOnClickOutside: false,
+                                closeOnEsc: false
+                            })
+
+                            axios.post(deletionRoute)
+                                .then(res => {
+                                    swal('Success!', 'Invite has been expired successfully.', 'success')
+                                        .then(() => {
+                                            window.location.reload()
+                                        })
+                                })
+                                .catch(err => {
+                                    console.error('Expire error:', err)
+                                    swal('Error!', 'Failed to expire invite. Please try again.', 'error')
+                                })
+                        }
+                    })
+            })
+        })
     </script>
 @endpush
