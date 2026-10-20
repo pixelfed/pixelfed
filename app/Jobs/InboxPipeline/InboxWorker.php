@@ -2,6 +2,7 @@
 
 namespace App\Jobs\InboxPipeline;
 
+use App\Jobs\InboxPipeline\Concerns\MatchesActorUrl;
 use App\Jobs\InboxPipeline\Concerns\RetriesWhenActorUnavailable;
 use App\Models\Profile;
 use App\Services\BlockSyncService;
@@ -18,6 +19,7 @@ use Illuminate\Support\Facades\Cache;
 class InboxWorker implements ShouldQueue
 {
     use Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
+    use MatchesActorUrl;
     use RetriesWhenActorUnavailable;
 
     protected $headers;
@@ -189,42 +191,5 @@ class InboxWorker implements ShouldQueue
         }
 
         return is_string($val) && $val !== '' ? $val : null;
-    }
-
-    /**
-     * Exact actor identity match. Scheme and host are case-insensitive,
-     * path is not, a single trailing slash is ignored. Query and fragment
-     * are part of the comparison so they cannot be used to alias an actor.
-     */
-    protected static function sameActorUrl($a, $b): bool
-    {
-        $a = self::normalizeUrl($a);
-        $b = self::normalizeUrl($b);
-
-        return $a !== null && $b !== null && $a === $b;
-    }
-
-    protected static function normalizeUrl($url)
-    {
-        if (! is_string($url) || $url === '') {
-            return null;
-        }
-        $p = parse_url($url);
-        if (! $p || empty($p['scheme']) || empty($p['host'])) {
-            return null;
-        }
-        $out = strtolower($p['scheme']).'://'.strtolower($p['host']);
-        if (isset($p['port'])) {
-            $out .= ':'.$p['port'];
-        }
-        $out .= rtrim($p['path'] ?? '', '/');
-        if (isset($p['query'])) {
-            $out .= '?'.$p['query'];
-        }
-        if (isset($p['fragment'])) {
-            $out .= '#'.$p['fragment'];
-        }
-
-        return $out;
     }
 }
