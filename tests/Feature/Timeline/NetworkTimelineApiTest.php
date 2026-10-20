@@ -28,11 +28,13 @@ beforeEach(function () {
 
     Redis::del(NetworkTimelineService::CACHE_KEY);
     Cache::forget(NETWORK_CACHE_CHECK_KEY);
+    NetworkTimelineService::clearEmptyWarmed();
 });
 
 afterEach(function () {
     Redis::del(NetworkTimelineService::CACHE_KEY);
     Cache::forget(NETWORK_CACHE_CHECK_KEY);
+    NetworkTimelineService::clearEmptyWarmed();
 });
 
 function networkRemoteStatus(?Profile $author = null, array $overrides = []): Status

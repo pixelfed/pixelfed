@@ -26,11 +26,13 @@ const LOCAL_CACHE_CHECK_KEY = 'api:v1:timelines:public:cache_check';
 beforeEach(function () {
     Redis::del(PublicTimelineService::CACHE_KEY);
     Cache::forget(LOCAL_CACHE_CHECK_KEY);
+    PublicTimelineService::clearEmptyWarmed();
 });
 
 afterEach(function () {
     Redis::del(PublicTimelineService::CACHE_KEY);
     Cache::forget(LOCAL_CACHE_CHECK_KEY);
+    PublicTimelineService::clearEmptyWarmed();
 });
 
 function eligibleLocalStatus(): Status
