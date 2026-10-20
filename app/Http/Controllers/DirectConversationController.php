@@ -123,10 +123,14 @@ class DirectConversationController extends Controller
         $conversation = $this->service->findOrCreateConversation($sender, $recipients);
         $participant = $this->service->participant($conversation, $sender->id);
 
+        // Opening or re-opening a conversation is an explicit action, so it
+        // un-hides it for the caller the same way sending a message does.
         if ($participant->hasLeft()) {
             $participant->state = DmConversationParticipant::STATE_ACTIVE;
-            $participant->save();
         }
+
+        $participant->hidden_at = null;
+        $participant->save();
 
         return response()->json(
             $this->payloads->conversation($conversation, $participant, null, $this->lastVisibleMessage($conversation, $sender->id), $sender->id),
