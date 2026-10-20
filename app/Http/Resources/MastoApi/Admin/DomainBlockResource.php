@@ -44,7 +44,7 @@ class DomainBlockResource extends JsonResource
             // We don't have data for these fields
             'reject_media' => false,
             'reject_reports' => false,
-            'private_comment' => $this->notes ? implode('; ', $this->notes) : null,
+            'private_comment' => $this->notes ? (is_array($this->notes) ? implode('; ', $this->notes) : (string) $this->notes) : null,
             'public_comment' => $this->limit_reason,
             'obfuscate' => false,
         ];
