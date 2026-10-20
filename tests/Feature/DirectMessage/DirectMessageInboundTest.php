@@ -648,7 +648,10 @@ describe('deletes', function () {
             'object' => ['id' => $alice->remote_url.'/statuses/1', 'type' => 'Tombstone'],
         ];
 
-        $this->postJson(str_replace('{username}', $bobUser->username, $endpoint), $delete)->assertOk();
+        $this->postJson(str_replace('{username}', $bobUser->username, $endpoint), $delete, [
+            'Date' => now()->toRfc7231String(),
+            'Signature' => 'keyId="'.$alice->key_id.'",algorithm="rsa-sha256",headers="(request-target) host date digest",signature="'.base64_encode('sig').'"',
+        ])->assertOk();
 
         Queue::assertPushed(DeleteWorker::class, 1);
     })->with(['/f/inbox', '/users/{username}/inbox']);
@@ -662,6 +665,9 @@ describe('deletes', function () {
             'type' => 'Delete',
             'actor' => $alice->remote_url,
             'object' => ['id' => $alice->remote_url.'/statuses/404', 'type' => 'Tombstone'],
+        ], [
+            'Date' => now()->toRfc7231String(),
+            'Signature' => 'keyId="'.$alice->key_id.'",algorithm="rsa-sha256",headers="(request-target) host date digest",signature="'.base64_encode('sig').'"',
         ])->assertOk();
 
         Queue::assertNotPushed(DeleteWorker::class);
