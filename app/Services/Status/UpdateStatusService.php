@@ -25,7 +25,7 @@ class UpdateStatusService
         self::handleImmediateAttributes($status, $attributes);
         self::createEdit($status, $attributes);
 
-        return StatusService::get($status->id);
+        return StatusService::get($status->id, false);
     }
 
     public static function updateMediaAttachements(Status $status, $attributes)
