@@ -16,6 +16,7 @@ use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\Middleware\WithoutOverlapping;
 use Illuminate\Queue\SerializesModels;
 use Illuminate\Support\Facades\Cache;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Storage;
 
 class VideoThumbnailToCloudPipeline implements ShouldBeUniqueUntilProcessing, ShouldQueue
@@ -100,8 +101,10 @@ class VideoThumbnailToCloudPipeline implements ShouldBeUniqueUntilProcessing, Sh
             $i = count($path) - 1;
             $path[$i] = $t;
             $save = implode('/', $path);
-            $video = FFMpeg::open($base)
-                ->getFrameFromSeconds(1)
+
+            $video = FFMpeg::open($base);
+            $seconds = $video->getDurationInSeconds() < 1 ? 0 : 1;
+            $video->getFrameFromSeconds($seconds)
                 ->export()
                 ->toDisk('local')
                 ->save($save);
@@ -134,7 +137,10 @@ class VideoThumbnailToCloudPipeline implements ShouldBeUniqueUntilProcessing, Sh
             if (str_starts_with($media->media_path, 'public/m/_v2/') && str_ends_with($media->media_path, '.mp4')) {
                 Storage::disk('local')->delete($media->media_path);
             }
-        } catch (\Exception) {
+        } catch (\Throwable $e) {
+            if (config('app.dev_log')) {
+                Log::error('Video thumbnail (cloud) generation failed: '.$e->getMessage());
+            }
         }
 
         if ($media->status_id) {
