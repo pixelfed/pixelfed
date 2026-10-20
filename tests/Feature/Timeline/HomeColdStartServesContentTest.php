@@ -60,4 +60,8 @@ it('returns 200 empty when a cold feed warms to nothing', function () {
     $res = $this->getJson('/api/v1/timelines/home')->assertOk();
 
     expect($res->json())->toBe([]);
+
+    // The warm completed and found nothing, so it is recorded as empty
+    // rather than left looking like a feed that needs building.
+    expect(HomeTimelineService::shouldWarmEmpty($pid))->toBeFalse();
 });

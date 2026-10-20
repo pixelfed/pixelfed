@@ -106,6 +106,14 @@ class ApiV1Controller extends Controller
 
     const PF_API_ENTITY_KEY = '_pe';
 
+    /**
+     * How deep a home feed rebuild goes while a request is waiting for it.
+     * Several screens worth, rather than the full feed cap: the queued job
+     * takes it the rest of the way. Raising this means raising the warm
+     * lock's ttl with it.
+     */
+    const HOME_COLD_BOOT_DEPTH = 100;
+
     public function __construct()
     {
         $this->fractal = new Fractal\Manager;
@@ -2776,6 +2784,57 @@ class ApiV1Controller extends Controller
         ];
     }
 
+    /**
+     * Rebuild a home feed that has no cached set and serve the window the
+     * request asked for out of it.
+     *
+     * The settled-empty guard comes first, so a feed a completed warm has
+     * already found empty costs nothing to read. The lock is non-blocking and
+     * short-lived: a request that loses it serves nothing rather than running
+     * a second full warm, which is the concurrency protection the old
+     * check-then-set marker could not give. A warm that throws releases the
+     * lock and writes no record of emptiness, so the next request retries.
+     */
+    protected function homeColdBoot($pid, array $cursor, int $paddedLimit): array
+    {
+        if (! HomeTimelineService::shouldWarmEmpty($pid)) {
+            return [];
+        }
+
+        $lock = Cache::lock('pf:timeline:home:warm:lock:'.$pid, 30);
+
+        if (! $lock->get()) {
+            return [];
+        }
+
+        try {
+            $added = HomeTimelineService::warmCache($pid, true, self::HOME_COLD_BOOT_DEPTH);
+        } catch (\Throwable $e) {
+            Log::warning('timelineHome: home feed warm failed', [
+                'pid' => $pid,
+                'error' => $e->getMessage(),
+            ]);
+
+            return [];
+        } finally {
+            $lock->release();
+        }
+
+        if ($added === 0) {
+            return [];
+        }
+
+        if ($added >= self::HOME_COLD_BOOT_DEPTH) {
+            // The warm filled the depth a request should wait for, so there
+            // is more to collect than this response needs. A shallower result
+            // means the candidate set was exhausted and a deeper pass over
+            // the same query cannot find more.
+            FeedWarmCachePipeline::dispatch($pid)->onQueue('feed');
+        }
+
+        return $this->fetchHomeWindow($pid, $cursor, $paddedLimit);
+    }
+
     protected function fetchHomeWindow($pid, array $cursor, int $paddedLimit): array
     {
         if ($cursor['min']) {
@@ -2846,25 +2905,12 @@ class ApiV1Controller extends Controller
 
         $ids = $this->fetchHomeWindow($pid, $cursor, $paddedLimit);
 
-        if (! $ids) {
-            if (HomeTimelineService::count($pid) > 0) {
-                return $this->json([]);
-            }
-
-            $coldBootKey = 'pf:services:apiv1:home:cached:coldbootcheck:'.$pid;
-
-            if (! Cache::has($coldBootKey)) {
-                Cache::set($coldBootKey, 1, 300);
-                FeedWarmCachePipeline::dispatchSync($pid);
-
-                $ids = HomeTimelineService::get($pid, 0, $paddedLimit);
-
-                if (! $ids) {
-                    return $this->json([]);
-                }
-            } else {
-                return $this->json([]);
-            }
+        // No cached set at all. This fires for a cursor-ful request too: a
+        // client holding a cursor from a feed that has since gone used to get
+        // an empty page on every retry, because the rebuild only ran for a
+        // request that sent no cursor.
+        if (! HomeTimelineService::cacheKeyExists($pid)) {
+            $ids = $this->homeColdBoot($pid, $cursor, $paddedLimit);
         }
 
         $applyPhotosReblogsOnly = $photosReblogsOnly;
