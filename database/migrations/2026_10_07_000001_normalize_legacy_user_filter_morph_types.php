@@ -22,16 +22,21 @@ return new class extends Migration
             return;
         }
 
-        DB::table('user_filters as legacy')
-            ->where('legacy.filterable_type', 'App\Profile')
-            ->whereExists(function ($q) {
-                $q->from('user_filters as modern')
-                    ->whereColumn('modern.user_id', 'legacy.user_id')
-                    ->whereColumn('modern.filterable_id', 'legacy.filterable_id')
-                    ->whereColumn('modern.filter_type', 'legacy.filter_type')
-                    ->where('modern.filterable_type', 'App\Models\Profile');
+        $duplicateIds = DB::table('user_filters as legacy')
+            ->join('user_filters as modern', function ($join) {
+                $join->on('modern.user_id', '=', 'legacy.user_id')
+                    ->on('modern.filterable_id', '=', 'legacy.filterable_id')
+                    ->on('modern.filter_type', '=', 'legacy.filter_type');
             })
-            ->delete();
+            ->where('legacy.filterable_type', 'App\Profile')
+            ->where('modern.filterable_type', 'App\Models\Profile')
+            ->pluck('legacy.id');
+
+        foreach ($duplicateIds->chunk(1000) as $chunk) {
+            DB::table('user_filters')
+                ->whereIn('id', $chunk->all())
+                ->delete();
+        }
 
         DB::table('user_filters')
             ->where('filterable_type', 'App\Profile')
