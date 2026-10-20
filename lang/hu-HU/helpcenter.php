@@ -2,26 +2,26 @@
 
 return [
 
-    'helpcenter' => '',
-    'whatsnew' => '',
+    'helpcenter' => 'Súgóközpont',
+    'whatsnew' => 'Újdonságok',
 
-    'gettingStarted' => '',
+    'gettingStarted' => 'Első lépések',
     'sharingMedia' => 'Médiatartalmak megosztása',
-    'profile' => '',
-    'stories' => '',
-    'hashtags' => '',
-    'discover' => '',
-    'directMessages' => '',
-    'timelines' => '',
-    'embed' => '',
+    'profile' => 'Profil',
+    'stories' => 'Történetek',
+    'hashtags' => 'Címkék',
+    'discover' => 'Felfedezés',
+    'directMessages' => 'Közvetlen üzenetek',
+    'timelines' => 'Idővonalak',
+    'embed' => 'Beágyazás',
 
-    'communityGuidelines' => '',
-    'whatIsTheFediverse' => '',
-    'controllingVisibility' => '',
-    'blockingAccounts' => '',
-    'safetyTips' => '',
-    'reportSomething' => '',
-    'dataPolicy' => '',
+    'communityGuidelines' => 'Közösségi irányelvek',
+    'whatIsTheFediverse' => 'Mi az a Fediverzum?',
+    'controllingVisibility' => 'Láthatóság szabályozása',
+    'blockingAccounts' => 'Fiókok tiltása',
+    'safetyTips' => 'Biztonsági tippek',
+    'reportSomething' => 'Visszaélés bejelentése',
+    'dataPolicy' => 'Adatkezelési szabályzat',
 
     'taggingPeople' => 'Személyek megjelölése',
 
