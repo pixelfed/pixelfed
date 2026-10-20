@@ -118,7 +118,7 @@ trait SortedSetTimeline
         } catch (\Throwable $e) {
         }
 
-        return self::snowflakeScore($statusId);
+        return (int) $statusId;
     }
 
     protected static function snowflakeScore($statusId): int
