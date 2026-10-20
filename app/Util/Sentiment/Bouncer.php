@@ -36,7 +36,7 @@ class Bouncer
             $uid = $status->profile->user_id;
             $ids = AccountInterstitial::whereUserId($uid)
                 ->whereType('post.autospam')
-                ->whereItemType(Status::class)
+                ->whereIn('item_type', ['App\Status', Status::class])
                 ->whereNotNull('appeal_handled_at')
                 ->latest()
                 ->take(5)
