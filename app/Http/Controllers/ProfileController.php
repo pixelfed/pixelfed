@@ -223,7 +223,7 @@ class ProfileController extends Controller
         $pid = request()->user()->profile->id;
         $blocks = UserFilter::whereUserId($profile->id)
             ->whereFilterType('block')
-            ->whereFilterableType(Profile::class)
+            ->whereIn('filterable_type', ['App\Profile', Profile::class])
             ->pluck('filterable_id')
             ->toArray();
         if (in_array($pid, $blocks)) {

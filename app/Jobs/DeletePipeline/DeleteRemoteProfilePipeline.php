@@ -132,7 +132,7 @@ class DeleteRemoteProfilePipeline implements ShouldQueue
         // clears each muting/blocking user's Redis cache; a bulk delete would
         // leave stale entries (and inflated mute/block counts) for up to the
         // 90-day cache TTL. chunkById is safe while deleting.
-        UserFilter::whereFilterableType(Profile::class)
+        UserFilter::whereIn('filterable_type', ['App\Profile', Profile::class])
             ->whereFilterableId($pid)
             ->chunkById(100, function ($filters) {
                 foreach ($filters as $filter) {

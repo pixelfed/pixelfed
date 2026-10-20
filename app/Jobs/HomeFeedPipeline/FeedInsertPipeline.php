@@ -127,7 +127,7 @@ class FeedInsertPipeline implements ShouldBeUniqueUntilProcessing, ShouldQueue
             $filterableIds[] = $status['reblog']['account']['id'];
         }
 
-        $filters = UserFilter::whereFilterableType(Profile::class)
+        $filters = UserFilter::whereIn('filterable_type', ['App\Profile', Profile::class])
             ->whereIn('filterable_id', array_unique($filterableIds))
             ->whereIn('filter_type', ['mute', 'block'])
             ->pluck('user_id')
