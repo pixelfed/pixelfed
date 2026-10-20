@@ -29,9 +29,6 @@ uses(LazilyRefreshDatabase::class);
 beforeEach(function () {
     Config::set('media.hls.enabled', true);
     Config::set('filesystems.cloud', 's3');
-
-    // Pass the ffmpeg dependency gate without shelling out to a real binary.
-    Cache::forever('video-pipeline:hls:depcheck', 'ok');
 });
 
 function makeMissingLocalVideoMedia(): Media
@@ -58,6 +55,11 @@ it('does not permanently fail when the local mp4 is missing and no cloud copy ex
 
     $media = makeMissingLocalVideoMedia();
 
+    // Satisfy the ffmpeg dependency gate so execution reaches the missing
+    // source guard rather than returning early on a host without the binary.
+    // Seeded after the first DB access so the lazy refresh can't drop it.
+    Cache::forever('video-pipeline:hls:depcheck', 'ok');
+
     // Stand in for real ffmpeg: opening a source that isn't on disk throws,
     // which with maxExceptions=1 is a permanent failure. The guard must stop
     // the job before it ever reaches this call.
@@ -80,6 +82,9 @@ it('fetches the mp4 from cloud to local before transcoding when the local copy i
     Storage::fake('s3');
 
     $media = makeMissingLocalVideoMedia();
+
+    // Seeded after the first DB access so the lazy refresh can't drop it.
+    Cache::forever('video-pipeline:hls:depcheck', 'ok');
 
     // Only the cloud disk has the source, mirroring a post-upload state.
     Storage::disk('s3')->put($media->media_path, 'FAKE-MP4-BYTES');
