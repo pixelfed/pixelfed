@@ -4,6 +4,7 @@ namespace App\Util\ActivityPub\Inbox;
 
 use App\Jobs\LikePipeline\LikePipeline;
 use App\Models\Like;
+use App\Services\FollowerService;
 use App\Util\ActivityPub\Helpers;
 
 trait HandlesLikes
@@ -35,6 +36,19 @@ trait HandlesLikes
 
         if ($this->isUserBlocked($status->profile_id, $profile->id)) {
             return;
+        }
+
+        if (($status->local || $status->uri === null) && $status->scope !== 'public' && $status->scope !== 'unlisted') {
+            if ($status->scope === 'private') {
+                if (! FollowerService::follows($profile->id, $status->profile_id)) {
+                    return;
+                }
+            } else {
+                // direct posts are not likeable from federation, matching the
+                // local favourite endpoint which only permits public, unlisted,
+                // or followed-private likes for a non-owner
+                return;
+            }
         }
 
         $like = Like::firstOrCreate([
