@@ -6,7 +6,7 @@ return [
     'whatsnew' => '',
 
     'gettingStarted' => '',
-    'sharingMedia' => '',
+    'sharingMedia' => 'Médiatartalmak megosztása',
     'profile' => '',
     'stories' => '',
     'hashtags' => '',
@@ -23,6 +23,6 @@ return [
     'reportSomething' => '',
     'dataPolicy' => '',
 
-    'taggingPeople' => '',
+    'taggingPeople' => 'Személyek megjelölése',
 
 ];

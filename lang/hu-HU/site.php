@@ -4,7 +4,7 @@ return [
 
     'about' => '',
     'help' => '',
-    'language' => '',
+    'language' => 'Nyelv',
     'fediverse' => '',
     'opensource' => '',
     'terms' => '',
@@ -61,7 +61,7 @@ return [
     // site/opensource
     'the_software_that_powers_this_website_is_called' => '',
     'and_anyone_can' => '',
-    'download' => '',
+    'download' => 'letöltés',
     'opensource.or' => '',
     'view' => '',
     'the_source_code_and_run_their_own_instance' => '',
