@@ -23,8 +23,6 @@ class ImageS3UploadPipeline implements ShouldQueue
 
     protected $media;
 
-    public static $attempts = 1;
-
     /**
      * Delete the job if its models no longer exist.
      *
@@ -87,12 +85,9 @@ class ImageS3UploadPipeline implements ShouldQueue
 
     protected function handleResilientStore($storagePath, $path, $name)
     {
-        $attempts = 0;
-
-        return retry(4, function () use ($storagePath, $path, $name) {
-            self::$attempts++;
+        return retry(4, function (int $attempt) use ($storagePath, $path, $name) {
             usleep(100000);
-            $baseDisk = self::$attempts > 1 ? $this->getAltDriver() : config('filesystems.cloud');
+            $baseDisk = $attempt > 1 ? $this->getAltDriver() : config('filesystems.cloud');
             try {
                 $disk = Storage::disk($baseDisk);
                 $file = $disk->putFileAs($storagePath, new File($path), $name, 'public');

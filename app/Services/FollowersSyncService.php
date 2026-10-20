@@ -726,8 +726,9 @@ class FollowersSyncService
             }
 
             // Bounded, so a remote cannot turn its own list into a delivery flood.
-            if ($result['undone'] < self::MAX_UNDO_PER_RUN && self::sendUndoFollow($profileId, $sender)) {
+            if ($result['undone'] < self::MAX_UNDO_PER_RUN) {
                 $result['undone']++;
+                self::sendUndoFollow($profileId, $sender);
             }
         }
 

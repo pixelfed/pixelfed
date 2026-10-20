@@ -259,12 +259,10 @@ class SearchApiV2Service
                 if (in_array($domain, $banned)) {
                     return $default;
                 }
-                $paginated = collect($res)->take($limit)->skip($offset)->toArray();
-                if (! empty($paginated)) {
-                    $default['accounts'][] = $paginated;
-                } else {
-                    $default['accounts'] = [];
+                if ($offset > 0) {
+                    return $default;
                 }
+                $default['accounts'][] = $res;
 
                 return $default;
             }
@@ -282,12 +280,10 @@ class SearchApiV2Service
                 if (in_array($domain, $banned)) {
                     return $default;
                 }
-                $paginated = collect($res)->take($limit)->skip($offset)->toArray();
-                if (! empty($paginated)) {
-                    $default['accounts'][] = $paginated;
-                } else {
-                    $default['accounts'] = [];
+                if ($offset > 0) {
+                    return $default;
                 }
+                $default['accounts'][] = $res;
 
                 return $default;
             }

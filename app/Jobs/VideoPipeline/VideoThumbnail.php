@@ -83,51 +83,50 @@ class VideoThumbnail implements ShouldBeUniqueUntilProcessing, ShouldQueue
         $base = $media->media_path;
         $path = explode('/', $base);
         $name = last($path);
+
+        // Thumbnail extraction is best-effort. A failure here must never abort the
+        // job, otherwise handle() returns before the MediaStoragePipeline dispatch
+        // below and the video is stranded on local disk with no cdn_url. A clip
+        // shorter than a second also can't be seeked to 1s, so fall back to frame 0.
         try {
             $t = explode('.', $name);
             $t = $t[0].'_thumb.jpeg';
             $i = count($path) - 1;
             $path[$i] = $t;
             $save = implode('/', $path);
-            $video = FFMpeg::open($base)
-                ->getFrameFromSeconds(1)
+
+            $video = FFMpeg::open($base);
+            $seconds = $video->getDurationInSeconds() < 1 ? 0 : 1;
+            $video->getFrameFromSeconds($seconds)
                 ->export()
                 ->toDisk('local')
                 ->save($save);
 
             $media->thumbnail_path = $save;
             $media->save();
-
-            // Isolated from the thumbnail work on purpose. The blurhash is decorative;
-            // MediaStoragePipeline at the end of this method is not, and until now any
-            // failure here skipped it, leaving the video on local disk forever with no
-            // failed_jobs row to show for it (pixelfed#2652).
-            try {
-                $blurhash = Blurhash::generate($media);
-                if ($blurhash) {
-                    $media->blurhash = $blurhash;
-                    $media->save();
-                }
-            } catch (\Throwable $e) {
-                // \Throwable, not \Exception: the failure this guard exists for is a
-                // memory_limit exhaustion, which surfaces as \Error (or a fatal), not
-                // \Exception. Catching only \Exception here would let the very case
-                // that strands the video (pixelfed#2652) slip through and skip the
-                // MediaStoragePipeline dispatch below.
-                if (config('app.dev_log')) {
-                    Log::error('Video blurhash generation failed: '.$e->getMessage());
-                }
-            }
-
-            if (config('media.hls.enabled')) {
-                VideoHlsPipeline::dispatch($media)->onQueue('mmo');
-            }
-        } catch (\Exception $e) {
+        } catch (\Throwable $e) {
+            // \Throwable, not \Exception: a memory_limit exhaustion surfaces as
+            // \Error, and catching only \Exception here would let it strand the
+            // video by skipping the storage dispatch below (pixelfed#2652).
             if (config('app.dev_log')) {
                 Log::error('Video thumbnail generation failed: '.$e->getMessage());
             }
+        }
 
-            throw $e;
+        try {
+            $blurhash = Blurhash::generate($media);
+            if ($blurhash) {
+                $media->blurhash = $blurhash;
+                $media->save();
+            }
+        } catch (\Throwable $e) {
+            if (config('app.dev_log')) {
+                Log::error('Video blurhash generation failed: '.$e->getMessage());
+            }
+        }
+
+        if (config('media.hls.enabled')) {
+            VideoHlsPipeline::dispatch($media)->onQueue('mmo');
         }
 
         if ($media->status_id) {

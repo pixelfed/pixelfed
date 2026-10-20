@@ -146,7 +146,11 @@ trait HandlesStories
             return;
         }
 
-        if ($story->can_react == false) {
+        if ($statusType === 'story:reply') {
+            if ($story->can_reply == false) {
+                return;
+            }
+        } elseif ($story->can_react == false) {
             return;
         }
 
@@ -170,6 +174,7 @@ trait HandlesStories
         $status->uri = $url;
         $status->object_url = $url;
         $status->caption = $text;
+        $status->rendered = '';
         $status->scope = 'direct';
         $status->visibility = 'direct';
         $status->in_reply_to_profile_id = $story->profile_id;

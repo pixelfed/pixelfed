@@ -196,6 +196,8 @@ class GroupsCommentController extends Controller
         ImageResizePipeline::dispatchSync($media);
         ImageS3UploadPipeline::dispatchSync($media);
 
+        NewCommentPipeline::dispatch($parent, $status)->onQueue('groups');
+
         // $gp = new GroupPost;
         // $gp->group_id = $group->id;
         // $gp->profile_id = $pid;

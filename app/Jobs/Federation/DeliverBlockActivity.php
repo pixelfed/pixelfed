@@ -73,7 +73,7 @@ class DeliverBlockActivity implements ShouldBeUniqueUntilProcessing, ShouldQueue
 
         $filter = UserFilter::whereUserId($this->blockerId)
             ->whereFilterableId($this->blockedId)
-            ->whereFilterableType(Profile::class)
+            ->whereIn('filterable_type', ['App\Profile', Profile::class])
             ->whereFilterType('block')
             ->first(['id']);
 

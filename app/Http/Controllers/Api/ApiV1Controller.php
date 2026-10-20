@@ -424,7 +424,7 @@ class ApiV1Controller extends Controller
         if ($request->has('license')) {
             $license = $request->input('license');
             abort_if(! in_array($license, License::keys()), 422, 'Invalid media license id');
-            $syncLicenses = $request->input('sync_licenses') == true;
+            $syncLicenses = $request->boolean('sync_licenses');
             abort_if($syncLicenses && Cache::get('pf:settings:mls_recently:'.$user->id) == 2, 422, 'You can only sync licenses twice per 24 hours');
             if ($composeSettings['default_license'] != $license) {
                 $composeSettings['default_license'] = $license;
@@ -1179,7 +1179,7 @@ class ApiV1Controller extends Controller
         $blocked = UserFilter::whereUserId($target->id)
             ->whereFilterType('block')
             ->whereFilterableId($user->profile_id)
-            ->whereFilterableType(Profile::class)
+            ->whereIn('filterable_type', ['App\Profile', Profile::class])
             ->exists();
 
         if ($blocked == true) {
@@ -1426,7 +1426,7 @@ class ApiV1Controller extends Controller
 
         $blocks = UserFilter::select('filterable_id', 'filterable_type', 'filter_type', 'user_id')
             ->whereUserId($user->profile_id)
-            ->whereFilterableType(Profile::class)
+            ->whereIn('filterable_type', ['App\Profile', Profile::class])
             ->whereFilterType('block')
             ->orderByDesc('id')
             ->simplePaginate($limit)
@@ -1579,7 +1579,7 @@ class ApiV1Controller extends Controller
 
         $filter = UserFilter::whereUserId($pid)
             ->whereFilterableId($profile->id)
-            ->whereFilterableType(Profile::class)
+            ->whereIn('filterable_type', ['App\Profile', Profile::class])
             ->whereFilterType('block')
             ->first();
 
@@ -2535,7 +2535,7 @@ class ApiV1Controller extends Controller
         }
 
         $mutes = UserFilter::whereUserId($user->profile_id)
-            ->whereFilterableType(Profile::class)
+            ->whereIn('filterable_type', ['App\Profile', Profile::class])
             ->whereFilterType('mute')
             ->orderByDesc('id')
             ->simplePaginate($limit)
@@ -2653,7 +2653,7 @@ class ApiV1Controller extends Controller
 
         $filter = UserFilter::whereUserId($pid)
             ->whereFilterableId($profile->id)
-            ->whereFilterableType(Profile::class)
+            ->whereIn('filterable_type', ['App\Profile', Profile::class])
             ->whereFilterType('mute')
             ->first();
 
@@ -2838,9 +2838,19 @@ class ApiV1Controller extends Controller
         $applyPhotosReblogsOnly = $photosReblogsOnly;
 
         $res = collect($ids)
-            ->map(function ($id) use ($napi) {
+            ->map(function ($id) use ($napi, $pid) {
                 try {
-                    $status = $napi ? StatusService::get($id, false) : StatusService::getMastodon($id, false);
+                    $status = StatusService::get($id, false);
+
+                    if (! isset($status['account']['id']) || (($status['pf_type'] ?? null) === 'share' && empty($status['reblog']))) {
+                        HomeTimelineService::rem($pid, $id);
+
+                        return null;
+                    }
+
+                    if (! $napi) {
+                        $status = StatusService::getMastodon($id, false);
+                    }
                 } catch (\Exception) {
                     return null;
                 }
@@ -4512,6 +4522,16 @@ class ApiV1Controller extends Controller
         $account = AccountService::get($status->profile_id);
         abort_if(isset($account['moved'], $account['moved']['id']), 422, 'Cannot bookmark a post from an account that has migrated');
         abort_if($user->has_roles && ! UserRoleService::can('can-bookmark', $user->id), 403, 'Invalid permissions for this action');
+
+        if (Bookmark::whereStatusId($status->id)->whereProfileId($pid)->exists()) {
+            BookmarkService::add($pid, $status->id);
+
+            $res = StatusService::getMastodon($status->id, false);
+            $res['bookmarked'] = true;
+
+            return $this->json($res);
+        }
+
         abort_if($status->in_reply_to_id || $status->reblog_of_id, 404);
         abort_if(! in_array($status->scope, ['public', 'unlisted', 'private']), 404);
         abort_if(! in_array($status->type, ['photo', 'photo:album', 'video', 'video:album', 'photo:video:album']), 404);
@@ -4550,9 +4570,6 @@ class ApiV1Controller extends Controller
         $user = $request->user();
 
         abort_if($user->has_roles && ! UserRoleService::can('can-bookmark', $user->id), 403, 'Invalid permissions for this action');
-        abort_if($status->in_reply_to_id || $status->reblog_of_id, 404);
-        abort_if(! in_array($status->scope, ['public', 'unlisted', 'private']), 404);
-        abort_if(! in_array($status->type, ['photo', 'photo:album', 'video', 'video:album', 'photo:video:album']), 404);
 
         $bookmark = Bookmark::whereStatusId($status->id)
             ->whereProfileId($pid)

@@ -7,6 +7,7 @@ use App\Models\ModLog;
 use App\Models\Profile;
 use App\Models\Status;
 use App\Models\StatusEdit;
+use App\Services\AdminShadowFilterService;
 use App\Services\MediaService;
 use App\Services\MediaStorageService;
 use App\Services\NetworkTimelineService;
@@ -22,9 +23,12 @@ class UpdateStatusService
         self::createPreviousEdit($status);
         self::updateMediaAttachements($status, $attributes);
         self::handleImmediateAttributes($status, $attributes);
+        if (isset($attributes['status'])) {
+            StatusEntityReconciler::reconcile($status);
+        }
         self::createEdit($status, $attributes);
 
-        return StatusService::get($status->id);
+        return StatusService::get($status->id, false);
     }
 
     public static function updateMediaAttachements(Status $status, $attributes)
@@ -145,9 +149,19 @@ class UpdateStatusService
 
         $service = $status->uri ? NetworkTimelineService::class : PublicTimelineService::class;
 
+        $types = [
+            'photo',
+            'photo:album',
+            'video',
+            'video:album',
+            'photo:video:album',
+        ];
+
         if ($isNsfw) {
             $service::rem($status->id);
-        } else {
+        } elseif (in_array($status->type, $types) &&
+            AdminShadowFilterService::canAddToPublicFeedByProfileId($status->profile_id)
+        ) {
             $service::add($status->id);
         }
     }

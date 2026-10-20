@@ -134,6 +134,9 @@ class CaptchaManagerTest extends TestCase
     {
         config([
             'captcha.enabled' => true,
+            'captcha.driver' => 'hcaptcha',
+            'captcha.hcaptcha.secret' => 'a-real-secret',
+            'captcha.hcaptcha.sitekey' => 'a-real-sitekey',
             'captcha.active.login' => true,
             'captcha.active.register' => false,
             'captcha.active.forgot_password' => true,
@@ -155,7 +158,12 @@ class CaptchaManagerTest extends TestCase
     #[Test]
     public function active_on_returns_false_for_an_unknown_surface(): void
     {
-        config(['captcha.enabled' => true]);
+        config([
+            'captcha.enabled' => true,
+            'captcha.driver' => 'hcaptcha',
+            'captcha.hcaptcha.secret' => 'a-real-secret',
+            'captcha.hcaptcha.sitekey' => 'a-real-sitekey',
+        ]);
         $this->assertFalse($this->manager()->activeOn('does_not_exist'));
     }
 

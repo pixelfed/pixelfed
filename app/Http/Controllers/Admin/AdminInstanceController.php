@@ -197,8 +197,15 @@ trait AdminInstanceController
             'banned',
             'auto_cw',
             'unlisted',
-            'notes',
         ]));
+
+        // notes is stored as an array to match the model cast and the
+        // domain-block API, so normalize the submitted string before saving
+        if ($request->has('notes')) {
+            $notes = $request->input('notes');
+            $instance->notes = filled($notes) ? [$notes] : null;
+            $instance->save();
+        }
 
         InstanceService::refresh();
 
@@ -226,7 +233,8 @@ trait AdminInstanceController
         $instance->auto_cw = $request->input('auto_cw');
         $instance->unlisted = $request->input('unlisted');
         $instance->manually_added = true;
-        $instance->notes = $request->input('notes');
+        $notes = $request->input('notes');
+        $instance->notes = filled($notes) ? [$notes] : null;
         $instance->save();
 
         InstanceService::refresh();

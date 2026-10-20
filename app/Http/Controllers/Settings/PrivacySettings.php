@@ -161,7 +161,7 @@ trait PrivacySettings
         DB::transaction(function () use ($fid, $pid) {
             $filter = UserFilter::whereUserId($pid)
                 ->whereFilterableId($fid)
-                ->whereFilterableType(Profile::class)
+                ->whereIn('filterable_type', ['App\Profile', Profile::class])
                 ->whereFilterType('mute')
                 ->firstOrFail();
             $filter->delete();
@@ -244,7 +244,7 @@ trait PrivacySettings
         DB::transaction(function () use ($fid, $pid) {
             $filter = UserFilter::whereUserId($pid)
                 ->whereFilterableId($fid)
-                ->whereFilterableType(Profile::class)
+                ->whereIn('filterable_type', ['App\Profile', Profile::class])
                 ->whereFilterType('block')
                 ->firstOrFail();
             $filter->delete();

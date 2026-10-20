@@ -27,11 +27,13 @@ trait HandlesFlags
         $content = $this->sanitizeFlagContent();
         $object = $this->payload['object'];
 
-        if (empty($object) || (! is_array($object) && ! is_string($object))) {
+        if (empty($object)) {
             return;
         }
 
-        if (is_array($object) && count($object) > 100) {
+        $object = is_string($object) ? [$object] : $object;
+
+        if (! is_array($object) || count($object) > 100) {
             return;
         }
 

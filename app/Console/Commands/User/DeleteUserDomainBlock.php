@@ -4,6 +4,7 @@ namespace App\Console\Commands\User;
 
 use App\Models\DefaultDomainBlock;
 use App\Models\UserDomainBlock;
+use App\Services\UserFilterService;
 use Illuminate\Console\Command;
 
 use function Laravel\Prompts\confirm;
@@ -93,6 +94,8 @@ class DeleteUserDomainBlock extends Command
 
     protected function performTask($domainBlock)
     {
+        $pid = $domainBlock->profile_id;
         $domainBlock->deleteQuietly();
+        UserFilterService::domainBlocks($pid, true);
     }
 }

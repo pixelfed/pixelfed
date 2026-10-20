@@ -3,7 +3,7 @@
 return [
 
     'likedPhoto' => '',
-    'likedComment' => '',
+    'likedComment' => 'kedvelte a hozzászólását.',
     'startedFollowingYou' => '',
     'commented' => '',
     'mentionedYou' => '',

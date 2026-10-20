@@ -108,7 +108,7 @@ class CustomFilterController extends Controller
             'keywords_attributes.*.whole_word' => 'boolean',
         ]);
         $profile_id = $request->user()->profile_id;
-        $userFilterCount = CustomFilter::where('profile_id', $profile_id)->count();
+        $userFilterCount = CustomFilter::where('profile_id', $profile_id)->unexpired()->count();
         $maxFiltersPerUser = CustomFilter::getMaxFiltersPerUser();
 
         if (! $request->user()->is_admin && $userFilterCount >= $maxFiltersPerUser) {

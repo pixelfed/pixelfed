@@ -22,27 +22,38 @@ afterEach(function () {
     Redis::del(PublicTimelineService::CACHE_KEY);
 });
 
+// Ids are Pixelfed snowflakes. Map a small ordinal to a snowflake spaced far
+// enough apart that each one lands on a distinct, strictly-increasing score.
+function minIdSnowflake(int $ordinal): int
+{
+    return 1_000_000_000_000_000_000 + ($ordinal * 8_388_608_000);
+}
+
 it('excludes the boundary id on a partial up-page', function () {
-    foreach ([100, 200, 300] as $id) {
+    $ids = collect([1, 2, 3])->mapWithKeys(fn ($n) => [$n => minIdSnowflake($n)]);
+
+    foreach ($ids as $id) {
         PublicTimelineService::add($id);
     }
 
-    // Only ids strictly greater than 200 should come back (i.e. [300]).
-    $ids = PublicTimelineService::getRankedMinId(200, 10);
+    // Only ids strictly greater than the second entry should come back.
+    $result = PublicTimelineService::getRankedMinId($ids[2], 10);
 
-    expect($ids)->not->toContain('200');
-    expect($ids)->not->toContain(200);
-    expect(collect($ids)->map(fn ($i) => (int) $i)->all())->toBe([300]);
+    expect($result)->not->toContain((string) $ids[2]);
+    expect($result)->not->toContain($ids[2]);
+    expect(collect($result)->map(fn ($i) => (int) $i)->all())->toBe([$ids[3]]);
 });
 
 it('returns all strictly-newer ids without the boundary on a full page', function () {
-    foreach ([100, 200, 300, 400, 500] as $id) {
+    $ids = collect([1, 2, 3, 4, 5])->mapWithKeys(fn ($n) => [$n => minIdSnowflake($n)]);
+
+    foreach ($ids as $id) {
         PublicTimelineService::add($id);
     }
 
-    // limit 2, min_id 200: strictly-newer descending, capped at 2 -> [500, 400].
-    $ids = collect(PublicTimelineService::getRankedMinId(200, 2))->map(fn ($i) => (int) $i)->all();
+    // limit 2 from the second entry: strictly-newer descending, capped at 2.
+    $result = collect(PublicTimelineService::getRankedMinId($ids[2], 2))->map(fn ($i) => (int) $i)->all();
 
-    expect($ids)->toBe([500, 400]);
-    expect($ids)->not->toContain(200);
+    expect($result)->toBe([$ids[5], $ids[4]]);
+    expect($result)->not->toContain($ids[2]);
 });

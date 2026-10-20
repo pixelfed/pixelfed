@@ -30,12 +30,12 @@ class RelationshipService
                 'following' => Follower::whereProfileId($aid)->whereFollowingId($tid)->exists(),
                 'followed_by' => Follower::whereProfileId($tid)->whereFollowingId($aid)->exists(),
                 'blocking' => UserFilter::whereUserId($aid)
-                    ->whereFilterableType(Profile::class)
+                    ->whereIn('filterable_type', ['App\Profile', Profile::class])
                     ->whereFilterableId($tid)
                     ->whereFilterType('block')
                     ->exists(),
                 'muting' => UserFilter::whereUserId($aid)
-                    ->whereFilterableType(Profile::class)
+                    ->whereIn('filterable_type', ['App\Profile', Profile::class])
                     ->whereFilterableId($tid)
                     ->whereFilterType('mute')
                     ->exists(),

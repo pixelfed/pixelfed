@@ -1,5 +1,7 @@
 <?php
 
+use App\Models\Hashtag;
+use App\Models\HashtagFollow;
 use App\Models\Status;
 use App\Models\User;
 use Illuminate\Foundation\Testing\LazilyRefreshDatabase;
@@ -147,5 +149,95 @@ describe('cross-user access prevention', function () {
 
         $this->getJson("/api/v1/statuses/{$status->id}")
             ->assertForbidden();
+    });
+});
+
+describe('tag endpoints enforce token scopes', function () {
+    it('cannot follow a hashtag without the follow scope', function () {
+        $user = User::factory()->create();
+        $user->refresh();
+        $tag = Hashtag::create(['name' => 'photography', 'slug' => 'photography']);
+        Passport::actingAs($user, ['read']);
+
+        $this->postJson("/api/v1/tags/{$tag->slug}/follow")
+            ->assertForbidden();
+    });
+
+    it('cannot unfollow a hashtag without the follow scope', function () {
+        $user = User::factory()->create();
+        $user->refresh();
+        $tag = Hashtag::create(['name' => 'travel', 'slug' => 'travel']);
+        HashtagFollow::create([
+            'user_id' => $user->id,
+            'profile_id' => $user->profile_id,
+            'hashtag_id' => $tag->id,
+        ]);
+        Passport::actingAs($user, ['read']);
+
+        $this->postJson("/api/v1/tags/{$tag->slug}/unfollow")
+            ->assertForbidden();
+    });
+
+    it('cannot read a hashtag without the read scope', function () {
+        $user = User::factory()->create();
+        $user->refresh();
+        $tag = Hashtag::create(['name' => 'coffee', 'slug' => 'coffee']);
+        Passport::actingAs($user, ['write']);
+
+        $this->getJson("/api/v1/tags/{$tag->slug}")
+            ->assertForbidden();
+    });
+
+    it('cannot list followed tags without the read scope', function () {
+        $user = User::factory()->create();
+        $user->refresh();
+        Passport::actingAs($user, ['write']);
+
+        $this->getJson('/api/v1/followed_tags')
+            ->assertForbidden();
+    });
+
+    it('can follow a hashtag with the follow scope', function () {
+        $user = User::factory()->create();
+        $user->refresh();
+        $tag = Hashtag::create(['name' => 'sunsets', 'slug' => 'sunsets']);
+        Passport::actingAs($user, ['read', 'write', 'follow']);
+
+        $this->postJson("/api/v1/tags/{$tag->slug}/follow")
+            ->assertOk();
+    });
+
+    it('can unfollow a hashtag with the follow scope', function () {
+        $user = User::factory()->create();
+        $user->refresh();
+        $tag = Hashtag::create(['name' => 'mountains', 'slug' => 'mountains']);
+        HashtagFollow::create([
+            'user_id' => $user->id,
+            'profile_id' => $user->profile_id,
+            'hashtag_id' => $tag->id,
+        ]);
+        Passport::actingAs($user, ['read', 'write', 'follow']);
+
+        $this->postJson("/api/v1/tags/{$tag->slug}/unfollow")
+            ->assertOk();
+    });
+
+    it('can read a hashtag with the read scope', function () {
+        $user = User::factory()->create();
+        $user->refresh();
+        $tag = Hashtag::create(['name' => 'forests', 'slug' => 'forests']);
+        Passport::actingAs($user, ['read']);
+
+        $this->getJson("/api/v1/tags/{$tag->slug}")
+            ->assertOk();
+    });
+
+    it('can list followed tags with the read scope', function () {
+        $user = User::factory()->create();
+        $user->refresh();
+        Passport::actingAs($user, ['read']);
+
+        $this->getJson('/api/v1/followed_tags')
+            ->assertOk();
     });
 });
