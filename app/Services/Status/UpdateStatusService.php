@@ -23,6 +23,9 @@ class UpdateStatusService
         self::createPreviousEdit($status);
         self::updateMediaAttachements($status, $attributes);
         self::handleImmediateAttributes($status, $attributes);
+        if (isset($attributes['status'])) {
+            StatusEntityReconciler::reconcile($status);
+        }
         self::createEdit($status, $attributes);
 
         return StatusService::get($status->id);
