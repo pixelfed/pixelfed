@@ -64,6 +64,6 @@ return [
     'download' => 'descargar',
     'opensource.or' => 'o',
     'view' => 'revisar',
-    'the_source_code_and_run_their_own_instance' => '',
+    'the_source_code_and_run_their_own_instance' => 'el código fuente y ejecutar sus propias instancias!',
     'open_source_in_pixelfed' => 'Código abierto en Pixelfed',
 ];
