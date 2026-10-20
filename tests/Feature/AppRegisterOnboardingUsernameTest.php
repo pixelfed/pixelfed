@@ -11,8 +11,9 @@ use Illuminate\Http\Request;
 | onboarding() took the username raw and validated/stored it case-sensitively.
 | On PostgreSQL (case-sensitive unique index) that let `Alice` register
 | alongside an existing `alice`, defeating the lowercase-username contract
-| every other signup path enforces. Registration input must be lowercased on
-| pgsql before validation and storage.
+| every other signup path enforces. The username is now lowercased before
+| validation and storage on every driver; email is lowercased on pgsql, whose
+| string comparison and unique index are case-sensitive.
 |
 | db_is_pgsql() resolves the real driver from config('database.default'), so
 | swapping the default connection exercises each branch without a live server
@@ -47,20 +48,22 @@ it('lowercases username and email on postgres (REGRESSION)', function () {
     expect($out['email'])->toBe('alice@example.com');
 });
 
-it('leaves username untouched on mysql', function () {
+it('lowercases username but leaves email untouched on mysql', function () {
     $out = normalizeOnboardingInput('mysql', [
         'username' => 'Alice',
         'email' => 'Alice@Example.com',
     ]);
 
-    expect($out['username'])->toBe('Alice');
+    expect($out['username'])->toBe('alice');
+    expect($out['email'])->toBe('Alice@Example.com');
 });
 
-it('leaves username untouched on sqlite', function () {
+it('lowercases username but leaves email untouched on sqlite', function () {
     $out = normalizeOnboardingInput('sqlite', [
         'username' => 'Alice',
         'email' => 'Alice@Example.com',
     ]);
 
-    expect($out['username'])->toBe('Alice');
+    expect($out['username'])->toBe('alice');
+    expect($out['email'])->toBe('Alice@Example.com');
 });
