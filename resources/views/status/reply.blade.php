@@ -125,28 +125,31 @@
           @endif
         </div>
 
-        @if($status->comments->count())
+        @php($child = $status->comments()->first())
+        @if($child &&
+            in_array($child->scope, ['public', 'unlisted', 'private']) &&
+            !($child->scope == 'private' && (!$authed || ($child->profile_id != $pid && \App\Services\FollowerService::follows($pid, $child->profile_id) == false))))
         <div class="card-body p-0 m-0 bg-light border-bottom">
           <div class="d-flex p-0 m-0 align-items-center">
-            @if($status->comments()->first()->media()->count())
-            <img src="{{$status->comments()->first()->thumb()}}" width="150px" height="150px" class="post-thumbnail" onerror="this.onerror=null;this.src='/storage/no-preview.png?v=0';">
+            @if($child->media()->count())
+            <img src="{{$child->thumb()}}" width="150px" height="150px" class="post-thumbnail" onerror="this.onerror=null;this.src='/storage/no-preview.png?v=0';">
             @endif
             <div class="p-4 w-100">
               <div class="">
                 <div class="media">
-                  <img src="{{$status->comments()->first()->profile->avatarUrl()}}" class="rounded-circle img-thumbnail mb-1 mr-3" width="30px" onerror="this.onerror=null;this.src='/storage/avatars/default.png?v=0';">
+                  <img src="{{$child->profile->avatarUrl()}}" class="rounded-circle img-thumbnail mb-1 mr-3" width="30px" onerror="this.onerror=null;this.src='/storage/avatars/default.png?v=0';">
                   <div class="media-body">
-                    <span class="font-weight-bold" v-pre>{{$status->comments()->first()->profile->username}}</span>
+                    <span class="font-weight-bold" v-pre>{{$child->profile->username}}</span>
                     <div class="">
-                      <p class="w-100 text-break" v-pre>{!!$status->comments()->first()->rendered!!}</p>
+                      <p class="w-100 text-break" v-pre>{!!$child->rendered!!}</p>
                     </div>
                     <div class="mb-0 small">
-                      <a href="{{$status->comments()->first()->url()}}" class="text-muted">
-                        {{$status->comments()->first()->created_at->diffForHumans()}}
+                      <a href="{{$child->url()}}" class="text-muted">
+                        {{$child->created_at->diffForHumans()}}
                       </a>
                     </div>
                   </div>
-                  <a class="float-right" href="{{$status->comments()->first()->url()}}"><i class="far fa-share-square"></i></a>
+                  <a class="float-right" href="{{$child->url()}}"><i class="far fa-share-square"></i></a>
                 </div>
               </div>
             </div>

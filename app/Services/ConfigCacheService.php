@@ -34,7 +34,15 @@ class ConfigCacheService
         try {
             $cached = Cache::get($cacheKey);
             if ($cached !== null) {
-                return $protect ? decrypt($cached) : $cached;
+                if ($protect) {
+                    try {
+                        return decrypt($cached);
+                    } catch (\Illuminate\Contracts\Encryption\DecryptException) {
+                        Cache::forget($cacheKey);
+                    }
+                } else {
+                    return $cached;
+                }
             }
 
             $stored = (function () use ($key) {

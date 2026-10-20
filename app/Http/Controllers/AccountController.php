@@ -172,7 +172,7 @@ class AccountController extends Controller
 
         $filter = UserFilter::whereUserId($pid)
             ->whereFilterableId($filterable['id'])
-            ->whereFilterableType($filterable['type'])
+            ->whereIn('filterable_type', ['App\Profile', Profile::class])
             ->whereFilterType('mute')
             ->first();
 
@@ -308,7 +308,7 @@ class AccountController extends Controller
 
         $filter = UserFilter::whereUserId($pid)
             ->whereFilterableId($filterable['id'])
-            ->whereFilterableType($filterable['type'])
+            ->whereIn('filterable_type', ['App\Profile', Profile::class])
             ->whereFilterType('block')
             ->first();
 
@@ -479,7 +479,7 @@ class AccountController extends Controller
         $limit = $request->input('limit') ?? 40;
 
         $mutes = UserFilter::whereUserId($user->profile_id)
-            ->whereFilterableType(Profile::class)
+            ->whereIn('filterable_type', ['App\Profile', Profile::class])
             ->whereFilterType('mute')
             ->simplePaginate($limit)
             ->pluck('filterable_id');
@@ -512,7 +512,7 @@ class AccountController extends Controller
 
         $blocked = UserFilter::select('filterable_id', 'filterable_type', 'filter_type', 'user_id')
             ->whereUserId($user->profile_id)
-            ->whereFilterableType(Profile::class)
+            ->whereIn('filterable_type', ['App\Profile', Profile::class])
             ->whereFilterType('block')
             ->simplePaginate($limit)
             ->pluck('filterable_id');
