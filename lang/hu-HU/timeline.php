@@ -2,6 +2,6 @@
 
 return [
 
-    'emptyPersonalTimeline' => '',
+    'emptyPersonalTimeline' => 'Az idővonala üres.',
 
 ];

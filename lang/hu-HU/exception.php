@@ -4,7 +4,7 @@ return [
 
     'compose' => [
         'invalid' => [
-            'album' => '',
+            'album' => 'Egyetlen fotót vagy videót, illetve több fotót kell tartalmaznia.',
         ],
     ],
 

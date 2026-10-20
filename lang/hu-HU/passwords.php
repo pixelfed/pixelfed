@@ -13,10 +13,10 @@ return [
     |
     */
 
-    'password' => '',
-    'reset' => '',
-    'sent' => '',
-    'token' => '',
-    'user' => '',
+    'password' => 'A jelszónak legalább hat karakterből kell állnia, és meg kell egyeznie a megerősítő jelszóval.',
+    'reset' => 'Jelszó visszaállítva!',
+    'sent' => 'Ha az e-mail-címe szerepel az adatbázisunkban, néhány percen belül jelszó-visszaállítási hivatkozást küldünk Önnek. Ha nem kapta meg az e-mailt, akkor ellenőrizze a levélszemét mappát is.',
+    'token' => 'Ez a jelszó-visszaállítási token érvénytelen.',
+    'user' => 'Ha az e-mail-címe szerepel az adatbázisunkban, néhány percen belül jelszó-visszaállítási hivatkozást küldünk Önnek. Ha nem kapta meg az e-mailt, akkor ellenőrizze a levélszemét mappát is.',
 
 ];
