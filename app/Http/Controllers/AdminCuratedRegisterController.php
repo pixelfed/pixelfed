@@ -257,9 +257,11 @@ class AdminCuratedRegisterController extends Controller
             return [200];
         }
 
+        $username = strtolower((string) $record->username);
+
         $user = User::create([
-            'name' => $record->username,
-            'username' => $record->username,
+            'name' => $username,
+            'username' => $username,
             'email' => $record->email,
             'password' => $record->password,
             'app_register_ip' => $record->ip_address,

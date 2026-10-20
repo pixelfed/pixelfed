@@ -15,6 +15,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Validator;
+use Illuminate\Validation\Rule;
 use Purify;
 
 class AdminInviteController extends Controller
@@ -54,6 +55,8 @@ class AdminInviteController extends Controller
 
     public function apiUsernameCheck(Request $request): JsonResponse
     {
+        $request->merge(['username' => strtolower((string) $request->input('username'))]);
+
         $this->validate($request, [
             'token' => 'required',
             'username' => 'required',
@@ -68,7 +71,7 @@ class AdminInviteController extends Controller
             'required',
             'min:2',
             'max:30',
-            'unique:users',
+            Rule::unique('users', 'username')->where(fn ($q) => $q->whereRaw('lower(username) = ?', [strtolower((string) $request->input('username'))])),
             new ValidUsername,
         ];
 
@@ -120,13 +123,15 @@ class AdminInviteController extends Controller
 
     public function apiRegister(Request $request): JsonResponse|RedirectResponse
     {
+        $request->merge(['username' => strtolower((string) $request->input('username'))]);
+
         $this->validate($request, [
             'token' => 'required',
             'username' => [
                 'required',
                 'min:2',
                 'max:30',
-                'unique:users',
+                Rule::unique('users', 'username')->where(fn ($q) => $q->whereRaw('lower(username) = ?', [strtolower((string) $request->input('username'))])),
                 new ValidUsername,
             ],
             'name' => 'nullable|string|max:'.config('pixelfed.max_name_length'),
@@ -153,9 +158,11 @@ class AdminInviteController extends Controller
 
         $invite->uses = $invite->uses + 1;
 
+        $username = strtolower($request->input('username'));
+
         event(new Registered($user = User::create([
-            'name' => Purify::clean($request->input('name')) ?? $request->input('username'),
-            'username' => $request->input('username'),
+            'name' => Purify::clean($request->input('name')) ?? $username,
+            'username' => $username,
             'email' => $request->input('email'),
             'password' => Hash::make($request->input('password')),
         ])));

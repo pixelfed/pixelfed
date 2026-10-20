@@ -668,6 +668,8 @@ class ApiV1Dot1Controller extends Controller
         $rl = RateLimiter::attempt('pf:apiv1.1:iar:'.$request->ip(), (int) config_cache('pixelfed.app_registration_rate_limit_attempts'), function () {}, (int) config_cache('pixelfed.app_registration_rate_limit_decay'));
         abort_if(! $rl, 400, 'Too many requests');
 
+        $request->merge(['username' => strtolower((string) $request->input('username'))]);
+
         $this->validate($request, [
             'email' => [
                 'required',
@@ -686,18 +688,17 @@ class ApiV1Dot1Controller extends Controller
                 'required',
                 'min:2',
                 'max:30',
-                'unique:users',
+                Rule::unique('users', 'username')->where(fn ($q) => $q->whereRaw('lower(username) = ?', [strtolower((string) $request->input('username'))])),
                 new ValidUsername,
             ],
             'password' => 'required|string|min:8',
         ]);
 
         $email = $request->input('email');
-        $username = $request->input('username');
+        $username = strtolower($request->input('username'));
         $password = $request->input('password');
 
         if (db_is_pgsql()) {
-            $username = strtolower($username);
             $email = strtolower($email);
         }
 
