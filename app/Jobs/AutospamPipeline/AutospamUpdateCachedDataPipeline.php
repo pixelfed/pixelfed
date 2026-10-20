@@ -39,7 +39,7 @@ class AutospamUpdateCachedDataPipeline implements ShouldQueue
                 ],
             ];
         }
-        $newSpam = AutospamCustomTokens::whereCategory('spam')->get();
+        $newSpam = AutospamCustomTokens::whereCategory('spam')->where('active', true)->get();
         foreach ($newSpam as $ns) {
             $key = strtolower($ns->token);
             if (isset($spam['words']['spam'][$key])) {
@@ -68,10 +68,10 @@ class AutospamUpdateCachedDataPipeline implements ShouldQueue
                 ],
             ];
         }
-        $newHam = AutospamCustomTokens::whereCategory('ham')->get();
+        $newHam = AutospamCustomTokens::whereCategory('ham')->where('active', true)->get();
         foreach ($newHam as $ns) {
             $key = strtolower($ns->token);
-            if (isset($spam['words']['ham'][$key])) {
+            if (isset($ham['words']['ham'][$key])) {
                 $ham['words']['ham'][$key] = $ham['words']['ham'][$key] + $ns->weight;
             } else {
                 $ham['words']['ham'][$key] = $ns->weight;
