@@ -73,6 +73,6 @@ class FeedWarmCachePipeline implements ShouldBeUniqueUntilProcessing, ShouldQueu
             return;
         }
 
-        HomeTimelineService::warmCache($pid, true, 400, true);
+        HomeTimelineService::warmCache($pid, true, 400);
     }
 }

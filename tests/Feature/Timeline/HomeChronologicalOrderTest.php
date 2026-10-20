@@ -52,7 +52,7 @@ it('ranks home posts by created_at even when a remote post has a newer id but ol
     StatusService::get($recent->id, false);
     StatusService::get($staleRemote->id, false);
 
-    HomeTimelineService::warmCache($pid, true, 400, true);
+    HomeTimelineService::warmCache($pid, true, 400);
 
     $ids = collect(HomeTimelineService::get($pid, 0, -1))->map(fn ($v) => (int) $v)->all();
 
