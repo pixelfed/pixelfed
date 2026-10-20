@@ -44,7 +44,11 @@ class UserFilterService
 
         Cache::forget($key.':cached-v0');
 
-        $ids = UserFilter::whereFilterType($type)
+        $ids = UserFilter::where(function ($q) {
+            $q->where('filterable_type', Profile::class)
+                ->orWhere('filterable_type', 'App\Profile');
+        })
+            ->whereFilterType($type)
             ->whereUserId($profile_id)
             ->pluck('filterable_id')
             ->map(fn ($id) => AccountService::get($id, true)['id'] ?? false)
