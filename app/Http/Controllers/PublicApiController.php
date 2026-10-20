@@ -468,7 +468,7 @@ class PublicApiController extends Controller
         if (NetworkTimelineService::count() === 0) {
             Cache::lock('api:v1:timelines:network:cache_check:lock', 10)->get(function () {
                 if (NetworkTimelineService::count() === 0) {
-                    NetworkTimelineService::warmCache(true, config('instance.timeline.network.cache_dropoff'));
+                    NetworkTimelineService::warmCache(true);
                 }
             });
         }
