@@ -74,7 +74,7 @@ class UserFilterObserver
 
     protected function filterCreate(UserFilter $userFilter, bool $federate = true)
     {
-        if ($userFilter->filterable_type !== Profile::class) {
+        if (! in_array($userFilter->filterable_type, ['App\Profile', Profile::class], true)) {
             return;
         }
 
@@ -105,7 +105,7 @@ class UserFilterObserver
 
     protected function filterDelete(UserFilter $userFilter)
     {
-        if ($userFilter->filterable_type !== Profile::class) {
+        if (! in_array($userFilter->filterable_type, ['App\Profile', Profile::class], true)) {
             return;
         }
 

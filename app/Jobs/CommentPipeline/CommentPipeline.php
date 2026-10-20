@@ -97,7 +97,7 @@ class CommentPipeline implements ShouldQueue
         }
 
         $filtered = UserFilter::whereUserId($target->id)
-            ->whereFilterableType(Profile::class)
+            ->whereIn('filterable_type', ['App\Profile', Profile::class])
             ->whereIn('filter_type', ['mute', 'block'])
             ->whereFilterableId($actor->id)
             ->exists();

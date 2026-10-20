@@ -94,7 +94,7 @@ class UserFilterService
      */
     public static function searchExcludedProfileIds(int $profile_id)
     {
-        return UserFilter::whereFilterableType(Profile::class)
+        return UserFilter::whereIn('filterable_type', ['App\Profile', Profile::class])
             ->whereFilterType('block')
             ->whereFilterableId($profile_id)
             ->pluck('user_id')
