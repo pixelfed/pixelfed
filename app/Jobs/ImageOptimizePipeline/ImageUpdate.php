@@ -66,11 +66,21 @@ class ImageUpdate implements ShouldQueue
             $path = storage_path('app/'.$media->media_path);
             $thumbPath = storage_path('app/'.$media->thumbnail_path);
             if (! is_file($path)) {
+                // Source is gone, so mark the row to stop the hourly catch-up
+                // from re-queueing it forever instead of silently returning.
+                Log::error("ImageUpdate: media {$media->id} source file missing at {$media->media_path}, cannot process");
+                $media->skip_optimize = true;
+                $media->save();
+
                 return;
             }
             $mediaPath = $path;
         } else {
             if (! $disk->exists($media->media_path)) {
+                Log::error("ImageUpdate: media {$media->id} source file missing at {$media->media_path}, cannot process");
+                $media->skip_optimize = true;
+                $media->save();
+
                 return;
             }
         }

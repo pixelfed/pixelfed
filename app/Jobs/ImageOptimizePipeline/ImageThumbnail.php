@@ -52,11 +52,21 @@ class ImageThumbnail implements ShouldQueue
         if ($localFs) {
             $path = storage_path('app/'.$media->media_path);
             if (! is_file($path)) {
+                // Source is gone, so mark the row to stop the hourly catch-up
+                // from re-queueing it forever instead of silently returning.
+                Log::error("ImageThumbnail: media {$media->id} source file missing at {$media->media_path}, cannot process");
+                $media->skip_optimize = true;
+                $media->save();
+
                 return;
             }
         } else {
             $disk = Storage::disk(config('filesystems.default'));
             if (! $disk->exists($media->media_path)) {
+                Log::error("ImageThumbnail: media {$media->id} source file missing at {$media->media_path}, cannot process");
+                $media->skip_optimize = true;
+                $media->save();
+
                 return;
             }
         }
