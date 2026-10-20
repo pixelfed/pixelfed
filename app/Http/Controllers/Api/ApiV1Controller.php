@@ -424,7 +424,7 @@ class ApiV1Controller extends Controller
         if ($request->has('license')) {
             $license = $request->input('license');
             abort_if(! in_array($license, License::keys()), 422, 'Invalid media license id');
-            $syncLicenses = $request->input('sync_licenses') == true;
+            $syncLicenses = $request->boolean('sync_licenses');
             abort_if($syncLicenses && Cache::get('pf:settings:mls_recently:'.$user->id) == 2, 422, 'You can only sync licenses twice per 24 hours');
             if ($composeSettings['default_license'] != $license) {
                 $composeSettings['default_license'] = $license;
