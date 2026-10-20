@@ -155,7 +155,7 @@ class Installer extends Command
             if ($continue === 'no') {
                 $this->info('Exiting Installer.');
 
-                return 1;
+                exit;
             }
         }
 
@@ -176,7 +176,7 @@ class Installer extends Command
             if ($continue === 'no') {
                 $this->info('Exiting Installer. Please install FFmpeg and try again.');
 
-                return 1;
+                exit;
             }
         } else {
             $this->info('- Found FFmpeg!');
