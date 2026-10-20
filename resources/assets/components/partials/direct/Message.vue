@@ -173,7 +173,7 @@
             clickLink() {
                 let url = this.ctxContext.text;
                 if(this.ctxContext.meta.local != true) {
-                    url = '/i/redirect?url=' + encodeURI(this.ctxContext.text);
+                    url = '/i/redirect?url=' + encodeURIComponent(this.ctxContext.text);
                 }
                 window.location.href = url;
             },
