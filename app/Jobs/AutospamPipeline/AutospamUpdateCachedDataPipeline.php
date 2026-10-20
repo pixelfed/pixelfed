@@ -42,11 +42,9 @@ class AutospamUpdateCachedDataPipeline implements ShouldQueue
         $newSpam = AutospamCustomTokens::whereCategory('spam')->where('active', true)->get();
         foreach ($newSpam as $ns) {
             $key = strtolower($ns->token);
-            if (isset($spam['words']['spam'][$key])) {
-                $spam['words']['spam'][$key] = $spam['words']['spam'][$key] + $ns->weight;
-            } else {
-                $spam['words']['spam'][$key] = $ns->weight;
-            }
+            // Set the token's weight as an absolute value so re-running the job
+            // never compounds the same token's contribution.
+            $spam['words']['spam'][$key] = $ns->weight;
         }
         $newSpamCount = count($spam['words']['spam']);
         if ($newSpamCount) {
@@ -71,11 +69,9 @@ class AutospamUpdateCachedDataPipeline implements ShouldQueue
         $newHam = AutospamCustomTokens::whereCategory('ham')->where('active', true)->get();
         foreach ($newHam as $ns) {
             $key = strtolower($ns->token);
-            if (isset($ham['words']['ham'][$key])) {
-                $ham['words']['ham'][$key] = $ham['words']['ham'][$key] + $ns->weight;
-            } else {
-                $ham['words']['ham'][$key] = $ns->weight;
-            }
+            // Set the token's weight as an absolute value so re-running the job
+            // never compounds the same token's contribution.
+            $ham['words']['ham'][$key] = $ns->weight;
         }
 
         $newHamCount = count($ham['words']['ham']);
