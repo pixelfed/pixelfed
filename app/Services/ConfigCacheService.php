@@ -4,6 +4,7 @@ namespace App\Services;
 
 use App\Models\ConfigCache as ConfigCacheModel;
 use Exception;
+use Illuminate\Contracts\Encryption\DecryptException;
 use Illuminate\Database\QueryException;
 use Illuminate\Support\Facades\Cache;
 
@@ -37,7 +38,7 @@ class ConfigCacheService
                 if ($protect) {
                     try {
                         return decrypt($cached);
-                    } catch (\Illuminate\Contracts\Encryption\DecryptException) {
+                    } catch (DecryptException) {
                         Cache::forget($cacheKey);
                     }
                 } else {

@@ -4,6 +4,7 @@ use App\Models\CustomFilter;
 use App\Models\CustomFilterKeyword;
 use App\Models\User;
 use Illuminate\Foundation\Testing\LazilyRefreshDatabase;
+use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\Cache;
 use Laravel\Passport\Passport;
 
@@ -33,7 +34,7 @@ function resetExpiredQuotaLimits(): void
     }
 }
 
-function seedFilter(int $pid, string $title, string $keyword, ?\Illuminate\Support\Carbon $expiresAt): CustomFilter
+function seedFilter(int $pid, string $title, string $keyword, ?Carbon $expiresAt): CustomFilter
 {
     $filter = CustomFilter::create([
         'profile_id' => $pid,
