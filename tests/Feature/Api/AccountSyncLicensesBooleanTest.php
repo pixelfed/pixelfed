@@ -5,9 +5,8 @@ use App\Models\User;
 use Illuminate\Foundation\Testing\LazilyRefreshDatabase;
 use Illuminate\Support\Facades\Bus;
 use Laravel\Passport\Passport;
-use Tests\TestCase;
 
-uses(TestCase::class, LazilyRefreshDatabase::class);
+uses(LazilyRefreshDatabase::class);
 
 /*
 |--------------------------------------------------------------------------

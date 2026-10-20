@@ -6,9 +6,8 @@ use App\Models\User;
 use App\Services\FollowerService;
 use Illuminate\Foundation\Testing\LazilyRefreshDatabase;
 use Illuminate\Support\Facades\View;
-use Tests\TestCase;
 
-uses(TestCase::class, LazilyRefreshDatabase::class);
+uses(LazilyRefreshDatabase::class);
 
 beforeEach(function () {
     // Resolve views from the tree this test lives in, so the permalink page
