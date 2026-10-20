@@ -7,7 +7,7 @@
       <div class="card shadow-none border">
         @php($authed = request()->user())
         @php($pid = $authed ? request()->user()->profile_id : null)
-        @php($gp = $status->parent()->parent())
+        @php($gp = $status->parent()?->parent())
         @if($gp)
         <div class="card-body p-0 m-0 bg-light border-bottom">
         	@if(
@@ -46,6 +46,7 @@
         @endif
 
         @php($parent = $status->parent())
+        @if($parent)
         <div class="card-body p-0 m-0 bg-light border-bottom">
             @if(
                 !in_array($parent->scope, ['public', 'unlisted', 'private']) ||
@@ -80,6 +81,7 @@
           </div>
           @endif
         </div>
+        @endif
 
 
         <div class="card-body border-bottom">
