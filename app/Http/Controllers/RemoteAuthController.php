@@ -19,6 +19,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Str;
+use Illuminate\Validation\Rule;
 use InvalidArgumentException;
 use Purify;
 
@@ -461,13 +462,15 @@ class RemoteAuthController extends Controller
         abort_unless($request->session()->exists('oauth_masto_webfinger'), 403);
         abort_unless($request->session()->exists('oauth_masto_raid'), 403);
 
+        $request->merge(['username' => strtolower((string) $request->input('username'))]);
+
         $this->validate($request, [
             'email' => 'required|email:strict,filter_unicode,dns,spoof',
             'username' => [
                 'required',
                 'min:2',
                 'max:30',
-                'unique:users,username',
+                Rule::unique('users', 'username')->where(fn ($q) => $q->whereRaw('lower(username) = ?', [strtolower((string) $request->input('username'))])),
                 new ValidUsername,
             ],
             'password' => 'required|string|min:8|confirmed',
@@ -475,7 +478,7 @@ class RemoteAuthController extends Controller
         ]);
 
         $email = $request->input('email');
-        $username = $request->input('username');
+        $username = strtolower($request->input('username'));
         $password = $request->input('password');
         $name = $request->input('name');
 

@@ -17,6 +17,7 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Str;
+use Illuminate\Validation\Rule;
 use Laravel\Passport\Passport;
 use Laravel\Passport\RefreshToken;
 use League\OAuth2\Server\Exception\OAuthServerException;
@@ -252,7 +253,7 @@ class AppRegisterController extends Controller
         $this->validate($request, [
             'email' => 'required|email:rfc,dns,spoof,strict|unique:users,email|exists:app_registers,email',
             'verify_code' => ['required', 'digits:6', 'numeric'],
-            'username' => $this->validateUsernameRule(),
+            'username' => $this->validateUsernameRule($request->input('username')),
             'name' => 'nullable|string|max:'.config('pixelfed.max_name_length'),
             'password' => 'required|string|min:'.config('pixelfed.min_password_length'),
             'client_id' => 'nullable|string|max:80|required_with:client_secret',
@@ -394,33 +395,29 @@ class AppRegisterController extends Controller
     }
 
     /**
-     * Lowercase the username and email before validation and storage on
-     * PostgreSQL, whose string comparison (and unique index) is case-sensitive.
-     *
-     * Every other signup path (Auth\RegisterController,
-     * ApiV1Dot1Controller::inAppRegistration, RemoteAuthController) applies the
-     * same normalization; without it, `Alice` and `alice` can both register on
-     * pgsql, defeating the platform's lowercase-username contract.
+     * Lowercase the username before validation and storage so `Alice` and
+     * `alice` cannot both register, keeping the platform's lowercase-username
+     * contract. Email is only lowercased on PostgreSQL, whose string
+     * comparison and unique index are case-sensitive.
      */
     protected function normalizeRegistrationInput(Request $request): void
     {
-        if (! db_is_pgsql()) {
-            return;
+        $merge = ['username' => strtolower((string) $request->input('username'))];
+
+        if (db_is_pgsql()) {
+            $merge['email'] = strtolower((string) $request->input('email'));
         }
 
-        $request->merge([
-            'username' => strtolower((string) $request->input('username')),
-            'email' => strtolower((string) $request->input('email')),
-        ]);
+        $request->merge($merge);
     }
 
-    protected function validateUsernameRule(): array
+    protected function validateUsernameRule($value): array
     {
         return [
             'required',
             'min:2',
             'max:30',
-            'unique:users',
+            Rule::unique('users', 'username')->where(fn ($q) => $q->whereRaw('lower(username) = ?', [strtolower((string) $value)])),
             new ValidUsername,
         ];
     }

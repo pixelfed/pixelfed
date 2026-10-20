@@ -179,7 +179,7 @@ class InstallController extends Controller
 
         if ($request->filled(['admin_username', 'admin_password', 'admin_email'])) {
             $user = new User;
-            $user->username = $request->input('admin_username', 'admin');
+            $user->username = strtolower($request->input('admin_username', 'admin'));
             $user->name = $request->input('admin_username', 'admin');
             $user->email = $request->input('admin_email');
             $user->password = bcrypt($request->input('admin_password'));

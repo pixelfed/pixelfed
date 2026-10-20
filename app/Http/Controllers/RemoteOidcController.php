@@ -14,6 +14,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Str;
+use Illuminate\Validation\Rule;
 use Purify;
 
 class RemoteOidcController extends Controller
@@ -105,7 +106,7 @@ class RemoteOidcController extends Controller
                 'required',
                 'min:2',
                 'max:30',
-                'unique:users,username',
+                Rule::unique('users', 'username')->where(fn ($q) => $q->whereRaw('lower(username) = ?', [strtolower((string) ($data['username'] ?? ''))])),
                 new ValidUsername,
             ],
             'name' => 'nullable|max:30',
@@ -142,6 +143,6 @@ class RemoteOidcController extends Controller
         // guarantees a zero-separator, validator-safe username.
         $temp_username = str_replace('_', '', $temp_username);
 
-        return substr($temp_username, 0, 30);
+        return strtolower(substr($temp_username, 0, 30));
     }
 }

@@ -14,6 +14,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Str;
+use Illuminate\Validation\Rule;
 
 class CuratedRegisterController extends Controller
 {
@@ -367,6 +368,9 @@ class CuratedRegisterController extends Controller
 
     protected function stepTwo($request): void
     {
+        if ($request->filled('username')) {
+            $request->merge(['username' => strtolower((string) $request->input('username'))]);
+        }
         if ($request->filled('reason')) {
             $request->session()->put('cur-reg.form-reason', $request->input('reason'));
         }
@@ -381,8 +385,8 @@ class CuratedRegisterController extends Controller
                 'required',
                 'min:2',
                 'max:30',
-                'unique:curated_registers',
-                'unique:users',
+                Rule::unique('curated_registers', 'username')->where(fn ($q) => $q->whereRaw('lower(username) = ?', [strtolower((string) $request->input('username'))])),
+                Rule::unique('users', 'username')->where(fn ($q) => $q->whereRaw('lower(username) = ?', [strtolower((string) $request->input('username'))])),
                 new ValidUsername,
             ],
             'email' => [
@@ -428,7 +432,7 @@ class CuratedRegisterController extends Controller
         ]);
         $cr = new CuratedRegister;
         $cr->email = $request->email;
-        $cr->username = $request->session()->get('cur-reg.form-username');
+        $cr->username = strtolower((string) $request->session()->get('cur-reg.form-username'));
         $cr->password = bcrypt($request->session()->get('cur-reg.form-password'));
         $cr->ip_address = $request->ip();
         $cr->reason_to_join = $request->session()->get('cur-reg.form-reason');

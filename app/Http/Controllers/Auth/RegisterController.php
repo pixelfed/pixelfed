@@ -16,6 +16,7 @@ use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Validator;
+use Illuminate\Validation\Rule;
 use Purify;
 
 class RegisterController extends Controller
@@ -58,10 +59,10 @@ class RegisterController extends Controller
      */
     public function validator(array $data)
     {
+        if (isset($data['username'])) {
+            $data['username'] = strtolower($data['username']);
+        }
         if (db_is_pgsql()) {
-            if (isset($data['username'])) {
-                $data['username'] = strtolower($data['username']);
-            }
             if (isset($data['email'])) {
                 $data['email'] = strtolower($data['email']);
             }
@@ -71,7 +72,7 @@ class RegisterController extends Controller
             'required',
             'min:2',
             'max:30',
-            'unique:users',
+            Rule::unique('users', 'username')->where(fn ($q) => $q->whereRaw('lower(username) = ?', [strtolower((string) ($data['username'] ?? ''))])),
             new ValidUsername,
         ];
 
@@ -112,10 +113,10 @@ class RegisterController extends Controller
      */
     public function create(array $data)
     {
+        if (isset($data['username'])) {
+            $data['username'] = strtolower($data['username']);
+        }
         if (db_is_pgsql()) {
-            if (isset($data['username'])) {
-                $data['username'] = strtolower($data['username']);
-            }
             if (isset($data['email'])) {
                 $data['email'] = strtolower($data['email']);
             }
