@@ -13,8 +13,6 @@ use League\Flysystem\UnableToWriteFile;
 
 class ResilientMediaStorageService
 {
-    public static $attempts = 0;
-
     public static function store($storagePath, $path, $name)
     {
         return (bool) config_cache('pixelfed.cloud_storage') && (bool) config('media.storage.remote.resilient_mode') ?
@@ -35,12 +33,9 @@ class ResilientMediaStorageService
 
     public static function handleResilientStore($storagePath, $path, $name)
     {
-        $attempts = 0;
-
-        return retry(4, function () use ($storagePath, $path, $name) {
-            self::$attempts++;
+        return retry(4, function (int $attempt) use ($storagePath, $path, $name) {
             usleep(100000);
-            $baseDisk = self::$attempts > 1 ? self::getAltDriver() : config('filesystems.cloud');
+            $baseDisk = $attempt > 1 ? self::getAltDriver() : config('filesystems.cloud');
             try {
                 $disk = Storage::disk($baseDisk);
                 $file = $disk->putFileAs($storagePath, new File($path), $name, 'public');
