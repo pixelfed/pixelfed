@@ -2913,103 +2913,173 @@ class ApiV1Controller extends Controller
             $ids = $this->homeColdBoot($pid, $cursor, $paddedLimit);
         }
 
-        $applyPhotosReblogsOnly = $photosReblogsOnly;
+        // Why a member was dropped decides what the response can do about it.
+        $drops = ['unrenderable' => 0, 'reblog' => 0, 'viewer' => 0, 'hide' => 0];
+        $pruned = 0;
 
-        $res = collect($ids)
-            ->map(function ($id) use ($napi, $pid) {
-                try {
-                    $status = StatusService::get($id, false);
+        $hydrate = function (array $ids) use (
+            $napi,
+            $pid,
+            $mutedAndBlocked,
+            $domainBlocks,
+            $homeFilters,
+            $includeReblogs,
+            $photosReblogsOnly,
+            $postTypes,
+            $limit,
+            $liftReblogAuthor,
+            &$drops,
+            &$pruned
+        ) {
+            return collect($ids)
+                ->map(function ($id) use ($napi, $pid, &$drops, &$pruned) {
+                    try {
+                        $status = StatusService::get($id, false);
+                    } catch (\Exception) {
+                        $status = null;
+                    }
 
-                    if (! isset($status['account']['id']) || (($status['pf_type'] ?? null) === 'share' && empty($status['reblog']))) {
+                    // A share whose boosted status has gone renders as nothing
+                    // at all, same as a member with no account behind it.
+                    $brokenShare = ($status['pf_type'] ?? null) === 'share' && empty($status['reblog']);
+
+                    if (! isset($status['account']['id']) || $brokenShare) {
+                        // The member points at something that cannot be
+                        // rendered any more. Leaving it in place is how a feed
+                        // goes on reporting plenty of members while serving an
+                        // empty page on every request.
+                        $drops['unrenderable']++;
+                        $pruned++;
                         HomeTimelineService::rem($pid, $id);
 
                         return null;
                     }
 
                     if (! $napi) {
-                        $status = StatusService::getMastodon($id, false);
-                    }
-                } catch (\Exception) {
-                    return null;
-                }
-
-                return isset($status['account']['id']) ? $status : null;
-            })
-            ->filter()
-            ->filter(function ($status) use ($mutedAndBlocked, $domainBlocks) {
-                $accountIds = [(int) $status['account']['id']];
-                if (! empty($status['reblog']['account']['id'])) {
-                    $accountIds[] = (int) $status['reblog']['account']['id'];
-                }
-
-                foreach ($accountIds as $accountId) {
-                    if (in_array($accountId, $mutedAndBlocked)) {
-                        return false;
-                    }
-                }
-
-                if ($domainBlocks && count($domainBlocks)) {
-                    foreach ([$status['url'] ?? null, $status['reblog']['url'] ?? null] as $url) {
-                        if (! $url) {
-                            continue;
+                        try {
+                            $status = StatusService::getMastodon($id, false);
+                        } catch (\Exception) {
+                            $status = null;
                         }
-                        $domain = strtolower((string) parse_url($url, PHP_URL_HOST));
-                        if (in_array($domain, $domainBlocks)) {
+
+                        if (! isset($status['account']['id'])) {
+                            $drops['unrenderable']++;
+                            $pruned++;
+                            HomeTimelineService::rem($pid, $id);
+
+                            return null;
+                        }
+                    }
+
+                    return $status;
+                })
+                ->filter()
+                ->filter(function ($status) use ($mutedAndBlocked, $domainBlocks, &$drops) {
+                    $accountIds = [(int) $status['account']['id']];
+                    if (! empty($status['reblog']['account']['id'])) {
+                        $accountIds[] = (int) $status['reblog']['account']['id'];
+                    }
+
+                    foreach ($accountIds as $accountId) {
+                        if (in_array($accountId, $mutedAndBlocked)) {
+                            $drops['viewer']++;
+
                             return false;
                         }
                     }
-                }
 
-                return true;
-            })
-            ->filter(function ($status) use ($includeReblogs, $applyPhotosReblogsOnly, $postTypes) {
-                if (empty($status['reblog'])) {
-                    return true;
-                }
+                    if ($domainBlocks && count($domainBlocks)) {
+                        foreach ([$status['url'] ?? null, $status['reblog']['url'] ?? null] as $url) {
+                            if (! $url) {
+                                continue;
+                            }
+                            $domain = strtolower((string) parse_url($url, PHP_URL_HOST));
+                            if (in_array($domain, $domainBlocks)) {
+                                $drops['viewer']++;
 
-                if (! $includeReblogs) {
-                    return false;
-                }
-
-                // a boost must share a photo or video
-                return ! $applyPhotosReblogsOnly
-                    || in_array(data_get($status['reblog'], 'pf_type'), $postTypes);
-            })
-            ->map(function ($status) use ($homeFilters) {
-                $filterResults = CustomFilter::applyCachedFilters($homeFilters, $status);
-
-                if (! empty($filterResults)) {
-                    $status['filtered'] = $filterResults;
-                    $shouldHide = collect($filterResults)->contains(function ($result) {
-                        return $result['filter']['filter_action'] === 'hide';
-                    });
-
-                    if ($shouldHide) {
-                        return null;
+                                return false;
+                            }
+                        }
                     }
-                }
 
-                return $status;
-            })
-            ->filter()
-            ->take($limit)
-            ->map(function ($status) use ($pid) {
-                $status['favourited'] = (bool) LikeService::liked($pid, $status['id']);
-                $status['reblogged'] = (bool) ReblogService::get($pid, $status['id']);
-                $status['bookmarked'] = (bool) BookmarkService::get($pid, $status['id']);
+                    return true;
+                })
+                ->filter(function ($status) use ($includeReblogs, $photosReblogsOnly, $postTypes, &$drops) {
+                    if (empty($status['reblog'])) {
+                        return true;
+                    }
 
-                if (! empty($status['reblog'])) {
-                    $status['reblog']['favourited'] = (bool) LikeService::liked($pid, $status['reblog']['id']);
-                    $status['reblog']['reblogged'] = (bool) ReblogService::get($pid, $status['reblog']['id']);
-                    $status['reblog']['bookmarked'] = (bool) BookmarkService::get($pid, $status['reblog']['id']);
-                }
+                    if (! $includeReblogs) {
+                        $drops['reblog']++;
 
-                return $status;
-            })
-            ->map(function ($status) use ($liftReblogAuthor) {
-                return $liftReblogAuthor ? $this->liftReblogAuthor($status) : $status;
-            })
-            ->values();
+                        return false;
+                    }
+
+                    // a boost must share a photo or video
+                    if (! $photosReblogsOnly || in_array(data_get($status['reblog'], 'pf_type'), $postTypes)) {
+                        return true;
+                    }
+
+                    $drops['reblog']++;
+
+                    return false;
+                })
+                ->map(function ($status) use ($homeFilters, &$drops) {
+                    $filterResults = CustomFilter::applyCachedFilters($homeFilters, $status);
+
+                    if (! empty($filterResults)) {
+                        $status['filtered'] = $filterResults;
+                        $shouldHide = collect($filterResults)->contains(function ($result) {
+                            return $result['filter']['filter_action'] === 'hide';
+                        });
+
+                        if ($shouldHide) {
+                            $drops['hide']++;
+
+                            return null;
+                        }
+                    }
+
+                    return $status;
+                })
+                ->filter()
+                ->take($limit)
+                ->map(function ($status) use ($pid) {
+                    $status['favourited'] = (bool) LikeService::liked($pid, $status['id']);
+                    $status['reblogged'] = (bool) ReblogService::get($pid, $status['id']);
+                    $status['bookmarked'] = (bool) BookmarkService::get($pid, $status['id']);
+
+                    if (! empty($status['reblog'])) {
+                        $status['reblog']['favourited'] = (bool) LikeService::liked($pid, $status['reblog']['id']);
+                        $status['reblog']['reblogged'] = (bool) ReblogService::get($pid, $status['reblog']['id']);
+                        $status['reblog']['bookmarked'] = (bool) BookmarkService::get($pid, $status['reblog']['id']);
+                    }
+
+                    return $status;
+                })
+                ->map(function ($status) use ($liftReblogAuthor) {
+                    return $liftReblogAuthor ? $this->liftReblogAuthor($status) : $status;
+                })
+                ->values();
+        };
+
+        $res = $hydrate($ids);
+
+        if ($pruned) {
+            Log::info('timelineHome: pruned unrenderable home feed members', [
+                'pid' => $pid,
+                'count' => $pruned,
+            ]);
+        }
+
+        // The prune can take the last member with it, and Redis drops an empty
+        // sorted set, so the feed is now genuinely absent. Rebuilding here
+        // cannot loop: the key is gone, so the branch is unreachable a second
+        // time within the request.
+        if ($res->isEmpty() && $drops['unrenderable'] > 0 && ! HomeTimelineService::cacheKeyExists($pid)) {
+            $ids = $this->homeColdBoot($pid, $cursor, $paddedLimit);
+            $res = $hydrate($ids);
+        }
 
         $headers = [];
         $baseUrl = config('app.url').'/api/v1/timelines/home?limit='.$limit.'&'.($napi ? '_pe=1&' : '');
