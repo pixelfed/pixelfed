@@ -42,6 +42,40 @@ trait SortedSetTimeline
         ]));
     }
 
+    protected static function setRankedMaxIdOrRecent(string $key, $start, int $limit): array
+    {
+        $ids = self::setRankedMaxId($key, $start, $limit);
+
+        if ($ids || ! $start) {
+            return $ids;
+        }
+
+        $oldest = Redis::zrange($key, 0, 0);
+
+        if (! $oldest) {
+            return $ids;
+        }
+
+        $oldestScore = Redis::zscore($key, $oldest[0]);
+        $cursorScore = self::cursorScoreForKey($key, $start);
+
+        if ($cursorScore === null || $oldestScore === null || $oldestScore === false) {
+            return $ids;
+        }
+
+        if ((int) $cursorScore >= (int) $oldestScore) {
+            // Nothing older than the cursor, which is the end of the feed.
+            return $ids;
+        }
+
+        // The cursor sits below everything the feed still holds, so the window
+        // it pointed into has been trimmed away. Mastodon-API clients and the
+        // mobile app persist their cursor, so answering with an empty page
+        // means they send the same dead value forever and never see the feed
+        // again. The newest window is the only answer that recovers.
+        return self::setGet($key, 0, $limit);
+    }
+
     protected static function setRankedMinId(string $key, $end, int $limit): array
     {
         if (! $end) {

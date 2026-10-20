@@ -269,7 +269,7 @@ class PublicApiController extends Controller
         }
 
         if ($max) {
-            $feed = PublicTimelineService::getRankedMaxId($max, $limit);
+            $feed = PublicTimelineService::getRankedMaxIdOrRecent($max, $limit);
         } elseif ($min) {
             $feed = PublicTimelineService::getRankedMinId($min, $limit);
         } else {
@@ -474,7 +474,7 @@ class PublicApiController extends Controller
         }
 
         if ($max) {
-            $feed = NetworkTimelineService::getRankedMaxId($max, $limit);
+            $feed = NetworkTimelineService::getRankedMaxIdOrRecent($max, $limit);
         } elseif ($min) {
             $feed = NetworkTimelineService::getRankedMinId($min, $limit);
         } else {
