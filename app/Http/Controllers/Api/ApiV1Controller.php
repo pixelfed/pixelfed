@@ -2838,9 +2838,19 @@ class ApiV1Controller extends Controller
         $applyPhotosReblogsOnly = $photosReblogsOnly;
 
         $res = collect($ids)
-            ->map(function ($id) use ($napi) {
+            ->map(function ($id) use ($napi, $pid) {
                 try {
-                    $status = $napi ? StatusService::get($id, false) : StatusService::getMastodon($id, false);
+                    $status = StatusService::get($id, false);
+
+                    if (! isset($status['account']['id']) || (($status['pf_type'] ?? null) === 'share' && empty($status['reblog']))) {
+                        HomeTimelineService::rem($pid, $id);
+
+                        return null;
+                    }
+
+                    if (! $napi) {
+                        $status = StatusService::getMastodon($id, false);
+                    }
                 } catch (\Exception) {
                     return null;
                 }

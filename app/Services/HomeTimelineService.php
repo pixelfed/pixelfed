@@ -133,7 +133,11 @@ class HomeTimelineService
             $tmpKey = self::CACHE_KEY.$id.':rebuild:'.Str::random(8);
             $added = 0;
             foreach ($ids as $sid) {
-                $status = StatusService::get($sid, false);
+                try {
+                    $status = StatusService::get($sid, false);
+                } catch (\Exception) {
+                    continue;
+                }
                 if (! $status || ! isset($status['account'], $status['url'])) {
                     continue;
                 }
