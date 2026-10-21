@@ -1,6 +1,0 @@
-servers :{$CADDY_HTTP_PORT:8080} {
-	max_header_size 128KiB
-}
-servers :{$CADDY_HTTPS_PORT:8443} {
-	max_header_size 128KiB
-}
