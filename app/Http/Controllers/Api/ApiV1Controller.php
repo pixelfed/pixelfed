@@ -3147,9 +3147,24 @@ class ApiV1Controller extends Controller
             $oldest = $res->last()['id'];
 
             $headers['Link'] = '<'.$baseUrl.'max_id='.$oldest.'>; rel="next",<'.$baseUrl.'min_id='.$newest.'>; rel="prev"';
-        } else {
-            $headers['Link'] = '<'.$baseUrl.'max_id='.collect($cursorIds)->map(fn ($id) => (int) $id)->min().'>; rel="next"';
+        } elseif ($cursorIds) {
+            // The page is empty but the window was not, so there is a way
+            // forward. Members arrive newest-first and continuation appends
+            // older windows, so display order is array order; the numeric
+            // minimum would be the wrong member as soon as a remote post
+            // carries a low id and a recent date, and the client would skip
+            // everything between the two.
+            if ($cursor['min']) {
+                // This client asked for content newer than its cursor, so an
+                // older cursor would point it back at posts it already has.
+                $headers['Link'] = '<'.$baseUrl.'min_id='.(int) reset($cursorIds).'>; rel="prev"';
+            } else {
+                $headers['Link'] = '<'.$baseUrl.'max_id='.(int) end($cursorIds).'>; rel="next"';
+            }
         }
+
+        // An empty fetched window emits no Link at all, which is how a client
+        // is told it has reached the end of the feed.
 
         return $this->json($res->toArray(), 200, $headers);
     }
