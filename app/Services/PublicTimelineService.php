@@ -15,14 +15,36 @@ class PublicTimelineService
 
     const FEED_LIMIT = 400;
 
+    const EMPTY_WARM_INTERVAL = 3600;
+
     public static function get($start = 0, $stop = 10)
     {
         return self::setGet(self::CACHE_KEY, $start, $stop);
     }
 
+    public static function shouldWarmEmpty(): bool
+    {
+        return self::setShouldWarmEmpty(self::CACHE_KEY);
+    }
+
+    public static function markEmptyWarmed(): void
+    {
+        self::setMarkEmptyWarmed(self::CACHE_KEY, self::EMPTY_WARM_INTERVAL);
+    }
+
+    public static function clearEmptyWarmed(): void
+    {
+        self::setClearEmptyWarmed(self::CACHE_KEY);
+    }
+
     public static function getRankedMaxId($start = null, $limit = 10)
     {
         return self::setRankedMaxId(self::CACHE_KEY, $start, $limit);
+    }
+
+    public static function getRankedMaxIdOrRecent($start = null, $limit = 10)
+    {
+        return self::setRankedMaxIdOrRecent(self::CACHE_KEY, $start, $limit);
     }
 
     public static function getRankedMinId($end = null, $limit = 10)
@@ -88,6 +110,8 @@ class PublicTimelineService
 
             if ($added === 0) {
                 Redis::del(self::CACHE_KEY);
+                Redis::del($tmpKey);
+                self::markEmptyWarmed();
 
                 return 1;
             }
@@ -97,6 +121,10 @@ class PublicTimelineService
             }
 
             Redis::rename($tmpKey, self::CACHE_KEY);
+
+            // The publish is a rename rather than a write through add(), so
+            // the automatic eviction never fires for a rebuild.
+            self::clearEmptyWarmed();
 
             return 1;
         }

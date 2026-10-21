@@ -9,7 +9,6 @@ use App\Services\PublicTimelineService;
 use App\Services\StatusService;
 use Carbon\Carbon;
 use Illuminate\Foundation\Testing\LazilyRefreshDatabase;
-use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Redis;
 use Laravel\Passport\Passport;
 
@@ -90,7 +89,6 @@ it('paginates the home feed without duplicates when id order differs from date o
     }
 
     Redis::del(HomeTimelineService::CACHE_KEY.$pid);
-    Cache::forget('pf:services:apiv1:home:cached:coldbootcheck:'.$pid);
     HomeTimelineService::warmCache($pid, true, 400);
 
     $cached = collect(Redis::zrevrange(HomeTimelineService::CACHE_KEY.$pid, 0, -1))
@@ -206,7 +204,6 @@ it('advances the home feed when the client rounds the snowflake cursor', functio
     }
 
     Redis::del(HomeTimelineService::CACHE_KEY.$pid);
-    Cache::forget('pf:services:apiv1:home:cached:coldbootcheck:'.$pid);
     HomeTimelineService::warmCache($pid, true, 400);
 
     $ordered = collect(Redis::zrevrange(HomeTimelineService::CACHE_KEY.$pid, 0, -1))

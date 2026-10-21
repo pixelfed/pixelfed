@@ -103,6 +103,11 @@ class FeedInsertPipeline implements ShouldBeUniqueUntilProcessing, ShouldQueue
 
         if (HomeTimelineService::cacheKeyExists($this->pid)) {
             HomeTimelineService::add($this->pid, $this->sid);
+        } else {
+            // Posting is the clearest possible contradiction of "this feed
+            // has nothing in it", but creating the key here would leave the
+            // author with a one-post timeline and no cold boot to fill it.
+            HomeTimelineService::clearEmptyWarmed($this->pid);
         }
 
         $ids = FollowerService::localFollowerIds($this->pid);
@@ -140,8 +145,14 @@ class FeedInsertPipeline implements ShouldBeUniqueUntilProcessing, ShouldQueue
         $skipIds = array_unique(array_values($skipIds));
 
         foreach ($ids as $id) {
-            if (! in_array($id, $skipIds) && HomeTimelineService::cacheKeyExists($id)) {
+            if (in_array($id, $skipIds)) {
+                continue;
+            }
+
+            if (HomeTimelineService::cacheKeyExists($id)) {
                 HomeTimelineService::add($id, $this->sid);
+            } else {
+                HomeTimelineService::clearEmptyWarmed($id);
             }
         }
     }

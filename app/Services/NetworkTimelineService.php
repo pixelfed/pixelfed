@@ -12,14 +12,36 @@ class NetworkTimelineService
 
     const CACHE_KEY = 'pf:services:timeline:v2:network';
 
+    const EMPTY_WARM_INTERVAL = 3600;
+
     public static function get($start = 0, $stop = 10)
     {
         return self::setGet(self::CACHE_KEY, $start, $stop);
     }
 
+    public static function shouldWarmEmpty(): bool
+    {
+        return self::setShouldWarmEmpty(self::CACHE_KEY);
+    }
+
+    public static function markEmptyWarmed(): void
+    {
+        self::setMarkEmptyWarmed(self::CACHE_KEY, self::EMPTY_WARM_INTERVAL);
+    }
+
+    public static function clearEmptyWarmed(): void
+    {
+        self::setClearEmptyWarmed(self::CACHE_KEY);
+    }
+
     public static function getRankedMaxId($start = null, $limit = 10)
     {
         return self::setRankedMaxId(self::CACHE_KEY, $start, $limit);
+    }
+
+    public static function getRankedMaxIdOrRecent($start = null, $limit = 10)
+    {
+        return self::setRankedMaxIdOrRecent(self::CACHE_KEY, $start, $limit);
     }
 
     public static function getRankedMinId($end = null, $limit = 10)
@@ -57,16 +79,26 @@ class NetworkTimelineService
         self::setDeleteByProfileId(self::CACHE_KEY, $profileId);
     }
 
+    const FEED_LIMIT = 100;
+
     protected static function feedLimit(): int
     {
-        return (int) config('instance.timeline.network.cache_dropoff');
+        $configured = config('instance.timeline.network.cache_dropoff');
+
+        // A blank or non-numeric INSTANCE_NETWORK_TIMELINE_CACHE_DROPOFF casts
+        // to 0, which turns the trim into "remove everything" and leaves the
+        // network timeline permanently empty. Fall back to the documented
+        // default rather than letting the cap reach zero.
+        if (! is_numeric($configured) || (int) $configured < 1) {
+            return self::FEED_LIMIT;
+        }
+
+        return (int) $configured;
     }
 
     public static function warmCache($force = false, $limit = null)
     {
-        if ($limit === null) {
-            $limit = self::feedLimit();
-        }
+        $limit = ((int) $limit) > 0 ? (int) $limit : self::feedLimit();
 
         if (self::count() == 0 || $force == true) {
             $hideNsfw = config('instance.hide_nsfw_on_public_feeds');
@@ -97,6 +129,10 @@ class NetworkTimelineService
             })->flatten();
             foreach ($ids as $id) {
                 self::add($id);
+            }
+
+            if ($ids->count() === 0) {
+                self::markEmptyWarmed();
             }
 
             return 1;

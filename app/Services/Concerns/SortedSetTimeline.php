@@ -3,6 +3,7 @@
 namespace App\Services\Concerns;
 
 use App\Services\StatusService;
+use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Redis;
 
 /**
@@ -42,6 +43,40 @@ trait SortedSetTimeline
         ]));
     }
 
+    protected static function setRankedMaxIdOrRecent(string $key, $start, int $limit): array
+    {
+        $ids = self::setRankedMaxId($key, $start, $limit);
+
+        if ($ids || ! $start) {
+            return $ids;
+        }
+
+        $oldest = Redis::zrange($key, 0, 0);
+
+        if (! $oldest) {
+            return $ids;
+        }
+
+        $oldestScore = Redis::zscore($key, $oldest[0]);
+        $cursorScore = self::cursorScoreForKey($key, $start);
+
+        if ($cursorScore === null || $oldestScore === null || $oldestScore === false) {
+            return $ids;
+        }
+
+        if ((int) $cursorScore >= (int) $oldestScore) {
+            // Nothing older than the cursor, which is the end of the feed.
+            return $ids;
+        }
+
+        // The cursor sits below everything the feed still holds, so the window
+        // it pointed into has been trimmed away. Mastodon-API clients and the
+        // mobile app persist their cursor, so answering with an empty page
+        // means they send the same dead value forever and never see the feed
+        // again. The newest window is the only answer that recovers.
+        return self::setGet($key, 0, $limit);
+    }
+
     protected static function setRankedMinId(string $key, $end, int $limit): array
     {
         if (! $end) {
@@ -67,6 +102,12 @@ trait SortedSetTimeline
         if (self::setCount($key) > $trim) {
             Redis::zremrangebyrank($key, 0, -($trim + 1));
         }
+
+        // Anything written to a live feed contradicts "a warm found nothing",
+        // so the guard goes whatever path the write came from. Removal is not
+        // the counterpart: a feed can only get emptier that way, and re-arming
+        // the warm on the read path's prune would warm on every read.
+        self::setClearEmptyWarmed($key);
 
         return $res;
     }
@@ -102,6 +143,42 @@ trait SortedSetTimeline
                 self::setRem($key, $postId);
             }
         }
+    }
+
+    /**
+     * A feed that a completed warm found empty has no Redis key, which is
+     * indistinguishable from a feed that was never built. These three record
+     * the difference so repeated reads of a genuinely empty feed stop
+     * re-running the candidate query.
+     *
+     * The guard holds the timestamp at which it lapses and is stored with a
+     * matching cache TTL, so an absent, expired or unreadable guard always
+     * means "warm it", never "stay empty".
+     */
+    protected static function setShouldWarmEmpty(string $key): bool
+    {
+        $lapsesAt = Cache::get(self::emptyWarmGuardKey($key));
+
+        return ! $lapsesAt || (int) $lapsesAt <= now()->timestamp;
+    }
+
+    protected static function setMarkEmptyWarmed(string $key, int $interval): void
+    {
+        Cache::put(
+            self::emptyWarmGuardKey($key),
+            now()->addSeconds($interval)->timestamp,
+            $interval + 60
+        );
+    }
+
+    protected static function setClearEmptyWarmed(string $key): void
+    {
+        Cache::forget(self::emptyWarmGuardKey($key));
+    }
+
+    protected static function emptyWarmGuardKey(string $key): string
+    {
+        return 'pf:timeline:empty-warm-guard:'.$key;
     }
 
     protected static function scoreForStatus($statusId)

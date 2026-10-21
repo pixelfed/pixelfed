@@ -145,8 +145,14 @@ class HashtagInsertFanoutPipeline implements ShouldBeUniqueUntilProcessing, Shou
         }
 
         foreach ($ids as $id) {
-            if (! in_array($id, $skipIds) && HomeTimelineService::cacheKeyExists($id)) {
+            if (in_array($id, $skipIds)) {
+                continue;
+            }
+
+            if (HomeTimelineService::cacheKeyExists($id)) {
                 HomeTimelineService::add($id, $hashtag->status_id);
+            } else {
+                HomeTimelineService::clearEmptyWarmed($id);
             }
         }
     }

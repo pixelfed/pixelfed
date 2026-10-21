@@ -106,6 +106,14 @@ class ApiV1Controller extends Controller
 
     const PF_API_ENTITY_KEY = '_pe';
 
+    /**
+     * How deep a home feed rebuild goes while a request is waiting for it.
+     * Several screens worth, rather than the full feed cap: the queued job
+     * takes it the rest of the way. Raising this means raising the warm
+     * lock's ttl with it.
+     */
+    const HOME_COLD_BOOT_DEPTH = 100;
+
     public function __construct()
     {
         $this->fractal = new Fractal\Manager;
@@ -2752,6 +2760,115 @@ class ApiV1Controller extends Controller
     }
 
     /**
+     * Resolve the home timeline cursor to a pair of optional positive ids.
+     *
+     * A cursor that is sent but holds nothing usable — min_id=0, min_id=, a
+     * value the client meant as "from the start" — used to pick the getter by
+     * parameter presence alone, so min_id=0&max_id=<newest> paged against a
+     * zero floor and came back empty on every request. min_id still wins when
+     * both are sent positive, which is what clients already rely on.
+     */
+    protected function normaliseHomeCursor(Request $request): array
+    {
+        $resolve = function ($value) {
+            if ($value === null || $value === '' || ! is_numeric($value)) {
+                return null;
+            }
+
+            return (int) $value > 0 ? (int) $value : null;
+        };
+
+        return [
+            'min' => $resolve($request->input('min_id')),
+            'max' => $resolve($request->input('max_id')),
+        ];
+    }
+
+    /**
+     * Rebuild a home feed that has no cached set and serve the window the
+     * request asked for out of it.
+     *
+     * The settled-empty guard comes first, so a feed a completed warm has
+     * already found empty costs nothing to read. The lock is non-blocking and
+     * short-lived: a request that loses it serves nothing rather than running
+     * a second full warm, which is the concurrency protection the old
+     * check-then-set marker could not give. A warm that throws releases the
+     * lock and writes no record of emptiness, so the next request retries.
+     */
+    protected function homeColdBoot($pid, array $cursor, int $paddedLimit): array
+    {
+        if (! HomeTimelineService::shouldWarmEmpty($pid)) {
+            return [];
+        }
+
+        $lock = Cache::lock('pf:timeline:home:warm:lock:'.$pid, 30);
+
+        if (! $lock->get()) {
+            return [];
+        }
+
+        try {
+            $added = HomeTimelineService::warmCache($pid, true, self::HOME_COLD_BOOT_DEPTH);
+        } catch (\Throwable $e) {
+            Log::warning('timelineHome: home feed warm failed', [
+                'pid' => $pid,
+                'error' => $e->getMessage(),
+            ]);
+
+            return [];
+        } finally {
+            $lock->release();
+        }
+
+        if ($added === 0) {
+            return [];
+        }
+
+        if ($added >= self::HOME_COLD_BOOT_DEPTH) {
+            // The warm filled the depth a request should wait for, so there
+            // is more to collect than this response needs. A shallower result
+            // means the candidate set was exhausted and a deeper pass over
+            // the same query cannot find more.
+            FeedWarmCachePipeline::dispatch($pid)->onQueue('feed');
+        }
+
+        return $this->fetchHomeWindow($pid, $cursor, $paddedLimit);
+    }
+
+    /**
+     * The next window to try when the current one rendered nothing.
+     *
+     * A min_id request deepens the same bounded window rather than walking
+     * older: Redis enforces the min_id floor inside the query, so a member at
+     * or below the cursor can never be returned, whereas paging older would
+     * serve the client posts it has already displayed. Anything else walks
+     * older from the last member seen.
+     */
+    protected function continueHomeWindow($pid, array $cursor, array $prevIds, int $pass, int $paddedLimit): array
+    {
+        if ($cursor['min']) {
+            $all = HomeTimelineService::getRankedMinId($pid, $cursor['min'], $paddedLimit * ($pass + 1));
+
+            return array_slice($all, $paddedLimit * $pass);
+        }
+
+        return HomeTimelineService::getRankedMaxId($pid, end($prevIds), $paddedLimit);
+    }
+
+    protected function fetchHomeWindow($pid, array $cursor, int $paddedLimit): array
+    {
+        if ($cursor['min']) {
+            return HomeTimelineService::getRankedMinId($pid, $cursor['min'], $paddedLimit);
+        }
+
+        if ($cursor['max']) {
+            return HomeTimelineService::getRankedMaxIdOrRecent($pid, $cursor['max'], $paddedLimit);
+        }
+
+        return HomeTimelineService::get($pid, 0, $paddedLimit);
+    }
+
+    /**
      * GET /api/v1/timelines/home
      */
     public function timelineHome(Request $request)
@@ -2768,8 +2885,6 @@ class ApiV1Controller extends Controller
         ]);
 
         $napi = $request->has(self::PF_API_ENTITY_KEY);
-        $min = $request->input('min_id');
-        $max = $request->input('max_id');
         $limit = min((int) ($request->input('limit') ?? 20), 40);
         $pid = $request->user()->profile_id;
         $other = $request->user()->settings->other ?? [];
@@ -2806,132 +2921,219 @@ class ApiV1Controller extends Controller
 
         $paddedLimit = $includeReblogs ? $limit + 10 : $limit + 50;
 
-        if ($min || $max) {
-            $ids = $request->has('min_id')
-                ? HomeTimelineService::getRankedMinId($pid, $min ?? 0, $paddedLimit)
-                : HomeTimelineService::getRankedMaxId($pid, $max ?? 0, $paddedLimit);
-        } else {
-            $ids = HomeTimelineService::get($pid, 0, $paddedLimit);
+        $cursor = $this->normaliseHomeCursor($request);
+
+        $ids = $this->fetchHomeWindow($pid, $cursor, $paddedLimit);
+
+        // No cached set at all. This fires for a cursor-ful request too: a
+        // client holding a cursor from a feed that has since gone used to get
+        // an empty page on every retry, because the rebuild only ran for a
+        // request that sent no cursor.
+        if (! HomeTimelineService::cacheKeyExists($pid)) {
+            $ids = $this->homeColdBoot($pid, $cursor, $paddedLimit);
         }
 
-        if (! $ids) {
-            if (HomeTimelineService::count($pid) > 0) {
-                return $this->json([]);
-            }
+        // Why a member was dropped decides what the response can do about it.
+        $drops = ['unrenderable' => 0, 'reblog' => 0, 'viewer' => 0, 'hide' => 0];
+        $pruned = 0;
 
-            $coldBootKey = 'pf:services:apiv1:home:cached:coldbootcheck:'.$pid;
+        $hydrate = function (array $ids) use (
+            $napi,
+            $pid,
+            $mutedAndBlocked,
+            $domainBlocks,
+            $homeFilters,
+            $includeReblogs,
+            $photosReblogsOnly,
+            $postTypes,
+            $limit,
+            $liftReblogAuthor,
+            &$drops,
+            &$pruned
+        ) {
+            return collect($ids)
+                ->map(function ($id) use ($napi, $pid, &$drops, &$pruned) {
+                    try {
+                        $status = StatusService::get($id, false);
+                    } catch (\Exception) {
+                        $status = null;
+                    }
 
-            if (! Cache::has($coldBootKey)) {
-                Cache::set($coldBootKey, 1, 300);
-                FeedWarmCachePipeline::dispatchSync($pid);
+                    // A share whose boosted status has gone renders as nothing
+                    // at all, same as a member with no account behind it.
+                    $brokenShare = ($status['pf_type'] ?? null) === 'share' && empty($status['reblog']);
 
-                $ids = HomeTimelineService::get($pid, 0, $paddedLimit);
-
-                if (! $ids) {
-                    return $this->json([]);
-                }
-            } else {
-                return $this->json([]);
-            }
-        }
-
-        $applyPhotosReblogsOnly = $photosReblogsOnly;
-
-        $res = collect($ids)
-            ->map(function ($id) use ($napi, $pid) {
-                try {
-                    $status = StatusService::get($id, false);
-
-                    if (! isset($status['account']['id']) || (($status['pf_type'] ?? null) === 'share' && empty($status['reblog']))) {
+                    if (! isset($status['account']['id']) || $brokenShare) {
+                        // The member points at something that cannot be
+                        // rendered any more. Leaving it in place is how a feed
+                        // goes on reporting plenty of members while serving an
+                        // empty page on every request.
+                        $drops['unrenderable']++;
+                        $pruned++;
                         HomeTimelineService::rem($pid, $id);
 
                         return null;
                     }
 
                     if (! $napi) {
-                        $status = StatusService::getMastodon($id, false);
-                    }
-                } catch (\Exception) {
-                    return null;
-                }
-
-                return isset($status['account']['id']) ? $status : null;
-            })
-            ->filter()
-            ->filter(function ($status) use ($mutedAndBlocked, $domainBlocks) {
-                $accountIds = [(int) $status['account']['id']];
-                if (! empty($status['reblog']['account']['id'])) {
-                    $accountIds[] = (int) $status['reblog']['account']['id'];
-                }
-
-                foreach ($accountIds as $accountId) {
-                    if (in_array($accountId, $mutedAndBlocked)) {
-                        return false;
-                    }
-                }
-
-                if ($domainBlocks && count($domainBlocks)) {
-                    foreach ([$status['url'] ?? null, $status['reblog']['url'] ?? null] as $url) {
-                        if (! $url) {
-                            continue;
+                        try {
+                            $status = StatusService::getMastodon($id, false);
+                        } catch (\Exception) {
+                            $status = null;
                         }
-                        $domain = strtolower((string) parse_url($url, PHP_URL_HOST));
-                        if (in_array($domain, $domainBlocks)) {
+
+                        if (! isset($status['account']['id'])) {
+                            $drops['unrenderable']++;
+                            $pruned++;
+                            HomeTimelineService::rem($pid, $id);
+
+                            return null;
+                        }
+                    }
+
+                    return $status;
+                })
+                ->filter()
+                ->filter(function ($status) use ($mutedAndBlocked, $domainBlocks, &$drops) {
+                    $accountIds = [(int) $status['account']['id']];
+                    if (! empty($status['reblog']['account']['id'])) {
+                        $accountIds[] = (int) $status['reblog']['account']['id'];
+                    }
+
+                    foreach ($accountIds as $accountId) {
+                        if (in_array($accountId, $mutedAndBlocked)) {
+                            $drops['viewer']++;
+
                             return false;
                         }
                     }
-                }
 
-                return true;
-            })
-            ->filter(function ($status) use ($includeReblogs, $applyPhotosReblogsOnly, $postTypes) {
-                if (empty($status['reblog'])) {
-                    return true;
-                }
+                    if ($domainBlocks && count($domainBlocks)) {
+                        foreach ([$status['url'] ?? null, $status['reblog']['url'] ?? null] as $url) {
+                            if (! $url) {
+                                continue;
+                            }
+                            $domain = strtolower((string) parse_url($url, PHP_URL_HOST));
+                            if (in_array($domain, $domainBlocks)) {
+                                $drops['viewer']++;
 
-                if (! $includeReblogs) {
-                    return false;
-                }
-
-                // a boost must share a photo or video
-                return ! $applyPhotosReblogsOnly
-                    || in_array(data_get($status['reblog'], 'pf_type'), $postTypes);
-            })
-            ->map(function ($status) use ($homeFilters) {
-                $filterResults = CustomFilter::applyCachedFilters($homeFilters, $status);
-
-                if (! empty($filterResults)) {
-                    $status['filtered'] = $filterResults;
-                    $shouldHide = collect($filterResults)->contains(function ($result) {
-                        return $result['filter']['filter_action'] === 'hide';
-                    });
-
-                    if ($shouldHide) {
-                        return null;
+                                return false;
+                            }
+                        }
                     }
-                }
 
-                return $status;
-            })
-            ->filter()
-            ->take($limit)
-            ->map(function ($status) use ($pid) {
-                $status['favourited'] = (bool) LikeService::liked($pid, $status['id']);
-                $status['reblogged'] = (bool) ReblogService::get($pid, $status['id']);
-                $status['bookmarked'] = (bool) BookmarkService::get($pid, $status['id']);
+                    return true;
+                })
+                ->filter(function ($status) use ($includeReblogs, $photosReblogsOnly, $postTypes, &$drops) {
+                    if (empty($status['reblog'])) {
+                        return true;
+                    }
 
-                if (! empty($status['reblog'])) {
-                    $status['reblog']['favourited'] = (bool) LikeService::liked($pid, $status['reblog']['id']);
-                    $status['reblog']['reblogged'] = (bool) ReblogService::get($pid, $status['reblog']['id']);
-                    $status['reblog']['bookmarked'] = (bool) BookmarkService::get($pid, $status['reblog']['id']);
-                }
+                    if (! $includeReblogs) {
+                        $drops['reblog']++;
 
-                return $status;
-            })
-            ->map(function ($status) use ($liftReblogAuthor) {
-                return $liftReblogAuthor ? $this->liftReblogAuthor($status) : $status;
-            })
-            ->values();
+                        return false;
+                    }
+
+                    // a boost must share a photo or video
+                    if (! $photosReblogsOnly || in_array(data_get($status['reblog'], 'pf_type'), $postTypes)) {
+                        return true;
+                    }
+
+                    $drops['reblog']++;
+
+                    return false;
+                })
+                ->map(function ($status) use ($homeFilters, &$drops) {
+                    $filterResults = CustomFilter::applyCachedFilters($homeFilters, $status);
+
+                    if (! empty($filterResults)) {
+                        $status['filtered'] = $filterResults;
+                        $shouldHide = collect($filterResults)->contains(function ($result) {
+                            return $result['filter']['filter_action'] === 'hide';
+                        });
+
+                        if ($shouldHide) {
+                            $drops['hide']++;
+
+                            return null;
+                        }
+                    }
+
+                    return $status;
+                })
+                ->filter()
+                ->take($limit)
+                ->map(function ($status) use ($pid) {
+                    $status['favourited'] = (bool) LikeService::liked($pid, $status['id']);
+                    $status['reblogged'] = (bool) ReblogService::get($pid, $status['id']);
+                    $status['bookmarked'] = (bool) BookmarkService::get($pid, $status['id']);
+
+                    if (! empty($status['reblog'])) {
+                        $status['reblog']['favourited'] = (bool) LikeService::liked($pid, $status['reblog']['id']);
+                        $status['reblog']['reblogged'] = (bool) ReblogService::get($pid, $status['reblog']['id']);
+                        $status['reblog']['bookmarked'] = (bool) BookmarkService::get($pid, $status['reblog']['id']);
+                    }
+
+                    return $status;
+                })
+                ->map(function ($status) use ($liftReblogAuthor) {
+                    return $liftReblogAuthor ? $this->liftReblogAuthor($status) : $status;
+                })
+                ->values();
+        };
+
+        $res = $hydrate($ids);
+
+        // Every member this request fetched, across continuation passes. The
+        // Link cursor is derived from it rather than from the last pass alone,
+        // which would point the client back inside a block it has already
+        // walked.
+        $cursorIds = $ids;
+        $pass = 0;
+
+        // A window can hold plenty of members and render none of them: boosts
+        // for a viewer who has boosts off, a muted account's run of posts, the
+        // members that were just pruned. Walking on is the difference between
+        // a short page and a timeline that reports the end of the feed. An
+        // explicit filter is not a reason to walk on: the viewer asked for it.
+        while (
+            $res->isEmpty()
+            && $pass < 3
+            && $ids
+            && ($drops['unrenderable'] || $drops['reblog'] || $drops['viewer'])
+        ) {
+            $pass++;
+            $ids = $this->continueHomeWindow($pid, $cursor, $ids, $pass, $paddedLimit);
+
+            if (! $ids) {
+                break;
+            }
+
+            $cursorIds = array_merge($cursorIds, $ids);
+            $res = $hydrate($ids);
+        }
+
+        if ($pruned) {
+            Log::info('timelineHome: pruned unrenderable home feed members', [
+                'pid' => $pid,
+                'count' => $pruned,
+            ]);
+        }
+
+        // The prune can take the last member with it, and Redis drops an empty
+        // sorted set, so the feed is now genuinely absent. Rebuilding here
+        // cannot loop: the key is gone, so the branch is unreachable a second
+        // time within the request.
+        if ($res->isEmpty() && $drops['unrenderable'] > 0 && ! HomeTimelineService::cacheKeyExists($pid)) {
+            $ids = $this->homeColdBoot($pid, $cursor, $paddedLimit);
+
+            if ($ids) {
+                $cursorIds = $ids;
+            }
+
+            $res = $hydrate($ids);
+        }
 
         $headers = [];
         $baseUrl = config('app.url').'/api/v1/timelines/home?limit='.$limit.'&'.($napi ? '_pe=1&' : '');
@@ -2945,9 +3147,24 @@ class ApiV1Controller extends Controller
             $oldest = $res->last()['id'];
 
             $headers['Link'] = '<'.$baseUrl.'max_id='.$oldest.'>; rel="next",<'.$baseUrl.'min_id='.$newest.'>; rel="prev"';
-        } else {
-            $headers['Link'] = '<'.$baseUrl.'max_id='.collect($ids)->map(fn ($id) => (int) $id)->min().'>; rel="next"';
+        } elseif ($cursorIds) {
+            // The page is empty but the window was not, so there is a way
+            // forward. Members arrive newest-first and continuation appends
+            // older windows, so display order is array order; the numeric
+            // minimum would be the wrong member as soon as a remote post
+            // carries a low id and a recent date, and the client would skip
+            // everything between the two.
+            if ($cursor['min']) {
+                // This client asked for content newer than its cursor, so an
+                // older cursor would point it back at posts it already has.
+                $headers['Link'] = '<'.$baseUrl.'min_id='.(int) reset($cursorIds).'>; rel="prev"';
+            } else {
+                $headers['Link'] = '<'.$baseUrl.'max_id='.(int) end($cursorIds).'>; rel="next"';
+            }
         }
+
+        // An empty fetched window emits no Link at all, which is how a client
+        // is told it has reached the end of the feed.
 
         return $this->json($res->toArray(), 200, $headers);
     }
@@ -3035,6 +3252,11 @@ class ApiV1Controller extends Controller
 
             return in_array('public', $filter->context);
         });
+
+        // Null when no warm was attempted, true when this request ran one,
+        // false when it lost the lock to a request running one right now.
+        $warmRan = null;
+
         if ($local && $remote) {
             $feed = Status::select(
                 'id',
@@ -3065,32 +3287,38 @@ class ApiV1Controller extends Controller
                 ->values()
                 ->toArray();
         } elseif ($remote && ! $local) {
-            if (NetworkTimelineService::count() === 0) {
-                Cache::lock('api:v1:timelines:network:cache_check:lock', 10)->get(function () {
-                    if (NetworkTimelineService::count() === 0) {
-                        NetworkTimelineService::warmCache(true, config('instance.timeline.network.cache_dropoff'));
+            if (NetworkTimelineService::count() === 0 && NetworkTimelineService::shouldWarmEmpty()) {
+                $warmRan = Cache::lock('api:v1:timelines:network:cache_check:lock', 10)->get(function () {
+                    if (NetworkTimelineService::count() === 0 && NetworkTimelineService::shouldWarmEmpty()) {
+                        NetworkTimelineService::warmCache(true);
                     }
+
+                    // Returning a value is what makes a lost lock (false)
+                    // distinguishable from a warm that ran.
+                    return true;
                 });
             }
 
             if ($max) {
-                $feed = NetworkTimelineService::getRankedMaxId($max, $limit + 5);
+                $feed = NetworkTimelineService::getRankedMaxIdOrRecent($max, $limit + 5);
             } elseif ($min) {
                 $feed = NetworkTimelineService::getRankedMinId($min, $limit + 5);
             } else {
                 $feed = NetworkTimelineService::get(0, $limit + 5);
             }
         } else {
-            if (PublicTimelineService::count() === 0) {
-                Cache::lock('api:v1:timelines:public:cache_check:lock', 10)->get(function () {
-                    if (PublicTimelineService::count() === 0) {
+            if (PublicTimelineService::count() === 0 && PublicTimelineService::shouldWarmEmpty()) {
+                $warmRan = Cache::lock('api:v1:timelines:public:cache_check:lock', 10)->get(function () {
+                    if (PublicTimelineService::count() === 0 && PublicTimelineService::shouldWarmEmpty()) {
                         PublicTimelineService::warmCache(true, 400);
                     }
+
+                    return true;
                 });
             }
 
             if ($max) {
-                $feed = PublicTimelineService::getRankedMaxId($max, $limit + 5);
+                $feed = PublicTimelineService::getRankedMaxIdOrRecent($max, $limit + 5);
             } elseif ($min) {
                 $feed = PublicTimelineService::getRankedMinId($min, $limit + 5);
             } else {

@@ -260,16 +260,18 @@ class PublicApiController extends Controller
         $user = $request->user();
         $filtered = $user ? UserFilterService::filters($user->profile_id) : [];
 
-        if (PublicTimelineService::count() === 0) {
+        if (PublicTimelineService::count() === 0 && PublicTimelineService::shouldWarmEmpty()) {
             Cache::lock('api:v1:timelines:public:cache_check:lock', 10)->get(function () {
-                if (PublicTimelineService::count() === 0) {
+                if (PublicTimelineService::count() === 0 && PublicTimelineService::shouldWarmEmpty()) {
                     PublicTimelineService::warmCache(true, 400);
                 }
+
+                return true;
             });
         }
 
         if ($max) {
-            $feed = PublicTimelineService::getRankedMaxId($max, $limit);
+            $feed = PublicTimelineService::getRankedMaxIdOrRecent($max, $limit);
         } elseif ($min) {
             $feed = PublicTimelineService::getRankedMinId($min, $limit);
         } else {
@@ -465,16 +467,18 @@ class PublicApiController extends Controller
 
         $filtered = $user ? UserFilterService::filters($user->profile_id) : [];
 
-        if (NetworkTimelineService::count() === 0) {
+        if (NetworkTimelineService::count() === 0 && NetworkTimelineService::shouldWarmEmpty()) {
             Cache::lock('api:v1:timelines:network:cache_check:lock', 10)->get(function () {
-                if (NetworkTimelineService::count() === 0) {
-                    NetworkTimelineService::warmCache(true, config('instance.timeline.network.cache_dropoff'));
+                if (NetworkTimelineService::count() === 0 && NetworkTimelineService::shouldWarmEmpty()) {
+                    NetworkTimelineService::warmCache(true);
                 }
+
+                return true;
             });
         }
 
         if ($max) {
-            $feed = NetworkTimelineService::getRankedMaxId($max, $limit);
+            $feed = NetworkTimelineService::getRankedMaxIdOrRecent($max, $limit);
         } elseif ($min) {
             $feed = NetworkTimelineService::getRankedMinId($min, $limit);
         } else {
