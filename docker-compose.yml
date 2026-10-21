@@ -62,6 +62,12 @@ services:
       PHP_POST_MAX_SIZE: "500M"
       PHP_UPLOAD_MAX_FILE_SIZE: "500M"
       PHP_OPCACHE_ENABLE: "1"
+      # Code is baked into the image, so cache it until the container restarts
+      # instead of checking the filesystem on every request. Rebuild/restart to
+      # ship new code; do not hot-patch a running container.
+      PHP_OPCACHE_VALIDATE_TIMESTAMPS: "0"
+      # Validate Laravel is up, not just that Caddy accepts connections
+      HEALTHCHECK_PATH: "/up"
       
       # Laravel Auto-run Configuration
       AUTORUN_ENABLED: "true"
@@ -78,6 +84,13 @@ services:
     depends_on:
       - db
       - redis
+    healthcheck:
+      test: ["CMD", "healthcheck-frankenphp"]
+      interval: 10s
+      timeout: 5s
+      retries: 3
+      # Boot runs migrations plus the AUTORUN cache builds, so give it room
+      start_period: 30s
     networks:
       - pixelfed-network
 
@@ -103,13 +116,14 @@ services:
       PHP_POST_MAX_SIZE: "500M"
       PHP_UPLOAD_MAX_FILE_SIZE: "500M"
       PHP_OPCACHE_ENABLE: "1"
+      PHP_OPCACHE_VALIDATE_TIMESTAMPS: "0"
     volumes:
       - ./storage:/var/www/html/storage
     depends_on:
       - db
       - redis
     healthcheck:
-      test: ["CMD", "php", "artisan", "horizon:status"]
+      test: ["CMD", "healthcheck-horizon"]
       interval: 10s
       timeout: 5s
       retries: 3
@@ -139,6 +153,7 @@ services:
       PHP_POST_MAX_SIZE: "500M"
       PHP_UPLOAD_MAX_FILE_SIZE: "500M"
       PHP_OPCACHE_ENABLE: "1"
+      PHP_OPCACHE_VALIDATE_TIMESTAMPS: "0"
     volumes:
       - ./storage:/var/www/html/storage
     depends_on:
@@ -146,6 +161,9 @@ services:
       - redis
     healthcheck:
       test: ["CMD", "healthcheck-schedule"]
+      interval: 10s
+      timeout: 5s
+      retries: 3
       start_period: 10s
     networks:
       - pixelfed-network
