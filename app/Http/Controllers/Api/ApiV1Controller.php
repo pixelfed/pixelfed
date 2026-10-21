@@ -2835,6 +2835,26 @@ class ApiV1Controller extends Controller
         return $this->fetchHomeWindow($pid, $cursor, $paddedLimit);
     }
 
+    /**
+     * The next window to try when the current one rendered nothing.
+     *
+     * A min_id request deepens the same bounded window rather than walking
+     * older: Redis enforces the min_id floor inside the query, so a member at
+     * or below the cursor can never be returned, whereas paging older would
+     * serve the client posts it has already displayed. Anything else walks
+     * older from the last member seen.
+     */
+    protected function continueHomeWindow($pid, array $cursor, array $prevIds, int $pass, int $paddedLimit): array
+    {
+        if ($cursor['min']) {
+            $all = HomeTimelineService::getRankedMinId($pid, $cursor['min'], $paddedLimit * ($pass + 1));
+
+            return array_slice($all, $paddedLimit * $pass);
+        }
+
+        return HomeTimelineService::getRankedMaxId($pid, end($prevIds), $paddedLimit);
+    }
+
     protected function fetchHomeWindow($pid, array $cursor, int $paddedLimit): array
     {
         if ($cursor['min']) {
@@ -3065,6 +3085,35 @@ class ApiV1Controller extends Controller
 
         $res = $hydrate($ids);
 
+        // Every member this request fetched, across continuation passes. The
+        // Link cursor is derived from it rather than from the last pass alone,
+        // which would point the client back inside a block it has already
+        // walked.
+        $cursorIds = $ids;
+        $pass = 0;
+
+        // A window can hold plenty of members and render none of them: boosts
+        // for a viewer who has boosts off, a muted account's run of posts, the
+        // members that were just pruned. Walking on is the difference between
+        // a short page and a timeline that reports the end of the feed. An
+        // explicit filter is not a reason to walk on: the viewer asked for it.
+        while (
+            $res->isEmpty()
+            && $pass < 3
+            && $ids
+            && ($drops['unrenderable'] || $drops['reblog'] || $drops['viewer'])
+        ) {
+            $pass++;
+            $ids = $this->continueHomeWindow($pid, $cursor, $ids, $pass, $paddedLimit);
+
+            if (! $ids) {
+                break;
+            }
+
+            $cursorIds = array_merge($cursorIds, $ids);
+            $res = $hydrate($ids);
+        }
+
         if ($pruned) {
             Log::info('timelineHome: pruned unrenderable home feed members', [
                 'pid' => $pid,
@@ -3078,6 +3127,11 @@ class ApiV1Controller extends Controller
         // time within the request.
         if ($res->isEmpty() && $drops['unrenderable'] > 0 && ! HomeTimelineService::cacheKeyExists($pid)) {
             $ids = $this->homeColdBoot($pid, $cursor, $paddedLimit);
+
+            if ($ids) {
+                $cursorIds = $ids;
+            }
+
             $res = $hydrate($ids);
         }
 
@@ -3094,7 +3148,7 @@ class ApiV1Controller extends Controller
 
             $headers['Link'] = '<'.$baseUrl.'max_id='.$oldest.'>; rel="next",<'.$baseUrl.'min_id='.$newest.'>; rel="prev"';
         } else {
-            $headers['Link'] = '<'.$baseUrl.'max_id='.collect($ids)->map(fn ($id) => (int) $id)->min().'>; rel="next"';
+            $headers['Link'] = '<'.$baseUrl.'max_id='.collect($cursorIds)->map(fn ($id) => (int) $id)->min().'>; rel="next"';
         }
 
         return $this->json($res->toArray(), 200, $headers);
