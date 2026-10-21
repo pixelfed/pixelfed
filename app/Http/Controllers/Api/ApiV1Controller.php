@@ -2752,6 +2752,44 @@ class ApiV1Controller extends Controller
     }
 
     /**
+     * Resolve the home timeline cursor to a pair of optional positive ids.
+     *
+     * A cursor that is sent but holds nothing usable — min_id=0, min_id=, a
+     * value the client meant as "from the start" — used to pick the getter by
+     * parameter presence alone, so min_id=0&max_id=<newest> paged against a
+     * zero floor and came back empty on every request. min_id still wins when
+     * both are sent positive, which is what clients already rely on.
+     */
+    protected function normaliseHomeCursor(Request $request): array
+    {
+        $resolve = function ($value) {
+            if ($value === null || $value === '' || ! is_numeric($value)) {
+                return null;
+            }
+
+            return (int) $value > 0 ? (int) $value : null;
+        };
+
+        return [
+            'min' => $resolve($request->input('min_id')),
+            'max' => $resolve($request->input('max_id')),
+        ];
+    }
+
+    protected function fetchHomeWindow($pid, array $cursor, int $paddedLimit): array
+    {
+        if ($cursor['min']) {
+            return HomeTimelineService::getRankedMinId($pid, $cursor['min'], $paddedLimit);
+        }
+
+        if ($cursor['max']) {
+            return HomeTimelineService::getRankedMaxId($pid, $cursor['max'], $paddedLimit);
+        }
+
+        return HomeTimelineService::get($pid, 0, $paddedLimit);
+    }
+
+    /**
      * GET /api/v1/timelines/home
      */
     public function timelineHome(Request $request)
@@ -2768,8 +2806,6 @@ class ApiV1Controller extends Controller
         ]);
 
         $napi = $request->has(self::PF_API_ENTITY_KEY);
-        $min = $request->input('min_id');
-        $max = $request->input('max_id');
         $limit = min((int) ($request->input('limit') ?? 20), 40);
         $pid = $request->user()->profile_id;
         $other = $request->user()->settings->other ?? [];
@@ -2806,13 +2842,9 @@ class ApiV1Controller extends Controller
 
         $paddedLimit = $includeReblogs ? $limit + 10 : $limit + 50;
 
-        if ($min || $max) {
-            $ids = $request->has('min_id')
-                ? HomeTimelineService::getRankedMinId($pid, $min ?? 0, $paddedLimit)
-                : HomeTimelineService::getRankedMaxId($pid, $max ?? 0, $paddedLimit);
-        } else {
-            $ids = HomeTimelineService::get($pid, 0, $paddedLimit);
-        }
+        $cursor = $this->normaliseHomeCursor($request);
+
+        $ids = $this->fetchHomeWindow($pid, $cursor, $paddedLimit);
 
         if (! $ids) {
             if (HomeTimelineService::count($pid) > 0) {
