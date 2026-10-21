@@ -3252,6 +3252,11 @@ class ApiV1Controller extends Controller
 
             return in_array('public', $filter->context);
         });
+
+        // Null when no warm was attempted, true when this request ran one,
+        // false when it lost the lock to a request running one right now.
+        $warmRan = null;
+
         if ($local && $remote) {
             $feed = Status::select(
                 'id',
@@ -3282,11 +3287,15 @@ class ApiV1Controller extends Controller
                 ->values()
                 ->toArray();
         } elseif ($remote && ! $local) {
-            if (NetworkTimelineService::count() === 0) {
-                Cache::lock('api:v1:timelines:network:cache_check:lock', 10)->get(function () {
-                    if (NetworkTimelineService::count() === 0) {
+            if (NetworkTimelineService::count() === 0 && NetworkTimelineService::shouldWarmEmpty()) {
+                $warmRan = Cache::lock('api:v1:timelines:network:cache_check:lock', 10)->get(function () {
+                    if (NetworkTimelineService::count() === 0 && NetworkTimelineService::shouldWarmEmpty()) {
                         NetworkTimelineService::warmCache(true);
                     }
+
+                    // Returning a value is what makes a lost lock (false)
+                    // distinguishable from a warm that ran.
+                    return true;
                 });
             }
 
@@ -3298,11 +3307,13 @@ class ApiV1Controller extends Controller
                 $feed = NetworkTimelineService::get(0, $limit + 5);
             }
         } else {
-            if (PublicTimelineService::count() === 0) {
-                Cache::lock('api:v1:timelines:public:cache_check:lock', 10)->get(function () {
-                    if (PublicTimelineService::count() === 0) {
+            if (PublicTimelineService::count() === 0 && PublicTimelineService::shouldWarmEmpty()) {
+                $warmRan = Cache::lock('api:v1:timelines:public:cache_check:lock', 10)->get(function () {
+                    if (PublicTimelineService::count() === 0 && PublicTimelineService::shouldWarmEmpty()) {
                         PublicTimelineService::warmCache(true, 400);
                     }
+
+                    return true;
                 });
             }
 
