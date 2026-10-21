@@ -57,16 +57,26 @@ class NetworkTimelineService
         self::setDeleteByProfileId(self::CACHE_KEY, $profileId);
     }
 
+    const FEED_LIMIT = 100;
+
     protected static function feedLimit(): int
     {
-        return (int) config('instance.timeline.network.cache_dropoff');
+        $configured = config('instance.timeline.network.cache_dropoff');
+
+        // A blank or non-numeric INSTANCE_NETWORK_TIMELINE_CACHE_DROPOFF casts
+        // to 0, which turns the trim into "remove everything" and leaves the
+        // network timeline permanently empty. Fall back to the documented
+        // default rather than letting the cap reach zero.
+        if (! is_numeric($configured) || (int) $configured < 1) {
+            return self::FEED_LIMIT;
+        }
+
+        return (int) $configured;
     }
 
     public static function warmCache($force = false, $limit = null)
     {
-        if ($limit === null) {
-            $limit = self::feedLimit();
-        }
+        $limit = ((int) $limit) > 0 ? (int) $limit : self::feedLimit();
 
         if (self::count() == 0 || $force == true) {
             $hideNsfw = config('instance.hide_nsfw_on_public_feeds');

@@ -150,7 +150,7 @@ class RebuildHomeFeeds extends Command
             return;
         }
 
-        NetworkTimelineService::warmCache(true, config('instance.timeline.network.cache_dropoff'));
+        NetworkTimelineService::warmCache(true);
         $this->info('Rebuilt the network timeline.');
     }
 }
