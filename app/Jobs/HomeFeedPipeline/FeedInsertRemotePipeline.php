@@ -167,8 +167,14 @@ class FeedInsertRemotePipeline implements ShouldBeUniqueUntilProcessing, ShouldQ
         $skipIds = array_unique(array_values($skipIds));
 
         foreach ($ids as $id) {
-            if (! in_array($id, $skipIds) && HomeTimelineService::cacheKeyExists($id)) {
+            if (in_array($id, $skipIds)) {
+                continue;
+            }
+
+            if (HomeTimelineService::cacheKeyExists($id)) {
                 HomeTimelineService::add($id, $sid);
+            } else {
+                HomeTimelineService::clearEmptyWarmed($id);
             }
         }
     }
