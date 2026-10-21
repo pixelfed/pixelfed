@@ -2,11 +2,11 @@
 
 return [
 
-    'likedPhoto' => '',
+    'likedPhoto' => 'kedvelte a bejegyzését.',
     'likedComment' => 'kedvelte a hozzászólását.',
-    'startedFollowingYou' => '',
-    'commented' => '',
-    'mentionedYou' => '',
-    'shared' => '',
+    'startedFollowingYou' => 'elkezdett követni.',
+    'commented' => 'hozzászólt a bejegyzéséhez.',
+    'mentionedYou' => 'megemlített.',
+    'shared' => 'megosztotta a bejegyzését.',
 
 ];
