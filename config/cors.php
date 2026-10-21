@@ -53,7 +53,13 @@ return [
     /*
      * Sets the Access-Control-Expose-Headers response header with these headers.
      */
-    'exposed_headers' => ['Link', 'X-RateLimit-Limit', 'X-RateLimit-Remaining'],
+    'exposed_headers' => [
+        'Link',
+        'X-RateLimit-Limit',
+        'X-RateLimit-Remaining',
+        'X-Pixelfed-Feed-State',
+        'Retry-After',
+    ],
 
     /*
      * Sets the Access-Control-Max-Age response header when > 0.

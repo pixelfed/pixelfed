@@ -2798,13 +2798,13 @@ class ApiV1Controller extends Controller
     protected function homeColdBoot($pid, array $cursor, int $paddedLimit): array
     {
         if (! HomeTimelineService::shouldWarmEmpty($pid)) {
-            return [];
+            return [[], 'empty'];
         }
 
         $lock = Cache::lock('pf:timeline:home:warm:lock:'.$pid, 30);
 
         if (! $lock->get()) {
-            return [];
+            return [[], 'rebuilding'];
         }
 
         try {
@@ -2815,13 +2815,16 @@ class ApiV1Controller extends Controller
                 'error' => $e->getMessage(),
             ]);
 
-            return [];
+            return [[], 'rebuilding'];
         } finally {
             $lock->release();
         }
 
         if ($added === 0) {
-            return [];
+            // A warm that recorded the feed as empty established that there
+            // is nothing to show. One that did not could not finish its work,
+            // so the honest answer is that a rebuild is still outstanding.
+            return [[], HomeTimelineService::shouldWarmEmpty($pid) ? 'rebuilding' : 'empty'];
         }
 
         if ($added >= self::HOME_COLD_BOOT_DEPTH) {
@@ -2832,7 +2835,20 @@ class ApiV1Controller extends Controller
             FeedWarmCachePipeline::dispatch($pid)->onQueue('feed');
         }
 
-        return $this->fetchHomeWindow($pid, $cursor, $paddedLimit);
+        return [$this->fetchHomeWindow($pid, $cursor, $paddedLimit), 'ready'];
+    }
+
+    /**
+     * The status code a pixelfed client gets while its home feed rebuilds.
+     *
+     * Allow-listed so a typo in the config degrades to the documented default
+     * rather than emitting something that is not a status code.
+     */
+    protected function rebuildingStatus(): int
+    {
+        $configured = (int) config('instance.timeline.rebuilding_status', 206);
+
+        return in_array($configured, [200, 202, 206], true) ? $configured : 206;
     }
 
     /**
@@ -2924,13 +2940,14 @@ class ApiV1Controller extends Controller
         $cursor = $this->normaliseHomeCursor($request);
 
         $ids = $this->fetchHomeWindow($pid, $cursor, $paddedLimit);
+        $state = 'ready';
 
         // No cached set at all. This fires for a cursor-ful request too: a
         // client holding a cursor from a feed that has since gone used to get
         // an empty page on every retry, because the rebuild only ran for a
         // request that sent no cursor.
         if (! HomeTimelineService::cacheKeyExists($pid)) {
-            $ids = $this->homeColdBoot($pid, $cursor, $paddedLimit);
+            [$ids, $state] = $this->homeColdBoot($pid, $cursor, $paddedLimit);
         }
 
         // Why a member was dropped decides what the response can do about it.
@@ -3126,7 +3143,7 @@ class ApiV1Controller extends Controller
         // cannot loop: the key is gone, so the branch is unreachable a second
         // time within the request.
         if ($res->isEmpty() && $drops['unrenderable'] > 0 && ! HomeTimelineService::cacheKeyExists($pid)) {
-            $ids = $this->homeColdBoot($pid, $cursor, $paddedLimit);
+            [$ids, $state] = $this->homeColdBoot($pid, $cursor, $paddedLimit);
 
             if ($ids) {
                 $cursorIds = $ids;
@@ -3166,7 +3183,28 @@ class ApiV1Controller extends Controller
         // An empty fetched window emits no Link at all, which is how a client
         // is told it has reached the end of the feed.
 
-        return $this->json($res->toArray(), 200, $headers);
+        // An empty array is three different answers — being rebuilt, nothing
+        // to show, end of feed — and a client that cannot tell them apart
+        // renders the onboarding screen over a feed that is a second away
+        // from being ready. The header says which one it is in every state,
+        // so a client can rely on its presence.
+        $headers['X-Pixelfed-Feed-State'] = $state;
+        $status = 200;
+
+        if ($state === 'rebuilding') {
+            $headers['Retry-After'] = 5;
+
+            // The non-200 is deliberately narrow: home feed only, rebuilding
+            // only, and only for a client that identifies itself as ours.
+            // Mastodon-API clients are written against "200 and an array" and
+            // some branch on the code rather than the 2xx range. The config
+            // lets an operator fall back to 200 without a deploy.
+            if ($napi) {
+                $status = $this->rebuildingStatus();
+            }
+        }
+
+        return $this->json($res->toArray(), $status, $headers);
     }
 
     /**
@@ -3443,6 +3481,27 @@ class ApiV1Controller extends Controller
 
         $headers = isset($link) ? ['Link' => $link] : [];
 
+        $state = 'ready';
+
+        // The combined local+remote branch reads the database directly and has
+        // no cached feed behind it, so it has no rebuild state to report.
+        if ($res->isEmpty() && ! ($local && $remote)) {
+            if ($warmRan === false) {
+                $state = 'rebuilding';
+            } elseif (! ($remote ? NetworkTimelineService::shouldWarmEmpty() : PublicTimelineService::shouldWarmEmpty())) {
+                $state = 'empty';
+            }
+        }
+
+        $headers['X-Pixelfed-Feed-State'] = $state;
+
+        if ($state === 'rebuilding') {
+            $headers['Retry-After'] = 5;
+        }
+
+        // These feeds stay 200 in every state: they are instance-wide, their
+        // warm is lock-guarded and quick, and there is no per-user cold boot
+        // to signal.
         return $this->json($res->toArray(), 200, $headers);
     }
 

@@ -40,6 +40,11 @@ return [
             'max_pages' => env('PF_INSTANCE_TIMELINE_TAG_MAX_PAGES', 10),
             'cursor_ttl' => env('PF_INSTANCE_TIMELINE_TAG_CURSOR_TTL', 3600),
         ],
+
+        // Status code a pixelfed client receives on a home timeline request
+        // whose feed is being rebuilt. Set to 200 if a client release cannot
+        // handle it. Only 200, 202 and 206 are accepted.
+        'rebuilding_status' => env('PF_TIMELINE_REBUILDING_STATUS', 206),
     ],
 
     'page' => [
