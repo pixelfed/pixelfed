@@ -24,6 +24,11 @@ class NetworkTimelineService
         return self::setShouldWarmEmpty(self::CACHE_KEY);
     }
 
+    public static function markEmptyWarmed(): void
+    {
+        self::setMarkEmptyWarmed(self::CACHE_KEY, self::EMPTY_WARM_INTERVAL);
+    }
+
     public static function clearEmptyWarmed(): void
     {
         self::setClearEmptyWarmed(self::CACHE_KEY);
@@ -124,6 +129,10 @@ class NetworkTimelineService
             })->flatten();
             foreach ($ids as $id) {
                 self::add($id);
+            }
+
+            if ($ids->count() === 0) {
+                self::markEmptyWarmed();
             }
 
             return 1;

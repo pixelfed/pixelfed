@@ -27,6 +27,11 @@ class PublicTimelineService
         return self::setShouldWarmEmpty(self::CACHE_KEY);
     }
 
+    public static function markEmptyWarmed(): void
+    {
+        self::setMarkEmptyWarmed(self::CACHE_KEY, self::EMPTY_WARM_INTERVAL);
+    }
+
     public static function clearEmptyWarmed(): void
     {
         self::setClearEmptyWarmed(self::CACHE_KEY);
@@ -105,6 +110,8 @@ class PublicTimelineService
 
             if ($added === 0) {
                 Redis::del(self::CACHE_KEY);
+                Redis::del($tmpKey);
+                self::markEmptyWarmed();
 
                 return 1;
             }
@@ -114,6 +121,10 @@ class PublicTimelineService
             }
 
             Redis::rename($tmpKey, self::CACHE_KEY);
+
+            // The publish is a rename rather than a write through add(), so
+            // the automatic eviction never fires for a rebuild.
+            self::clearEmptyWarmed();
 
             return 1;
         }
