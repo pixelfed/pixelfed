@@ -122,7 +122,7 @@ class RebuildHomeFeeds extends Command
         }
 
         if ($sync) {
-            HomeTimelineService::warmCache($pid, true, 400, true);
+            HomeTimelineService::warmCache($pid, true, 400);
 
             return;
         }
