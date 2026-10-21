@@ -87,7 +87,14 @@ class HomeTimelineService
         }
     }
 
-    public static function warmCache($id, $force = false, $limit = 100, $returnIds = false)
+    /**
+     * Rebuild the cached feed, returning the number of members published.
+     *
+     * Returns 0 both when nothing was published and when the guard declined
+     * to run; the read path only ever forces, so the two cannot collide
+     * there, and every other caller treats them the same way.
+     */
+    public static function warmCache($id, bool $force = false, int $limit = 100): int
     {
         if (self::count($id) == 0 || $force == true) {
             $following = Cache::remember('profile:following:'.$id, 1209600, function () use ($id) {
@@ -160,9 +167,15 @@ class HomeTimelineService
             }
 
             if ($added === 0) {
-                Redis::del(self::CACHE_KEY.$id);
+                // The instance-wide feeds clear themselves when a warm finds
+                // nothing, because their content is the instance's content. A
+                // per-user feed is different: a warm can come up empty because
+                // this user's relationships or the statuses behind their feed
+                // could not be resolved, and throwing away a feed that was
+                // serving content is how a user ends up with a blank timeline.
+                Redis::del($tmpKey);
 
-                return $returnIds ? $ids : 1;
+                return 0;
             }
 
             if ($added > self::FEED_LIMIT) {
@@ -172,7 +185,7 @@ class HomeTimelineService
             Redis::rename($tmpKey, self::CACHE_KEY.$id);
             Redis::expire(self::CACHE_KEY.$id, self::CACHE_TTL);
 
-            return $returnIds ? $ids : 1;
+            return $added;
         }
 
         return 0;
