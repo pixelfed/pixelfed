@@ -239,6 +239,10 @@ RUN tee /usr/local/etc/php/conf.d/zz-pixelfed.ini > /dev/null <<'EOF'
 ffi.enable=true
 EOF
 
+# Caddy 2.11 caps request headers at 16KiB and returns 431 above that. Raise the
+# limit so large cookies don't break requests, while staying well under the old 1MB.
+COPY docker/frankenphp/caddyfile-global.d/max-header-size.caddyfile /etc/frankenphp/caddyfile-global.d/max-header-size.caddyfile
+
 COPY --from=ffmpeg /usr/local/ffmpeg/bin/ffmpeg /usr/bin/ffmpeg
 COPY --from=ffmpeg /usr/local/ffmpeg/bin/ffprobe /usr/bin/ffprobe
 COPY --from=ffmpeg /usr/local/ffmpeg/lib /usr/local/lib
