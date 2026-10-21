@@ -50,9 +50,12 @@ services:
     env_file:
       - .env
     environment:
+      HEALTHCHECK_PATH: "/up"
+      LOG_OUTPUT_LEVEL: "error"
+      
       # SSL Configuration (handled by reverse proxy)
       SSL_MODE: "off"
-      LOG_OUTPUT_LEVEL: "error"
+      
       # TODO: Once the new webui is completed, we will try to handle the service worker cache on that side.
       CADDY_SERVER_EXTRA_DIRECTIVES: |
         @service_worker path /sw.js
@@ -63,7 +66,6 @@ services:
       PHP_UPLOAD_MAX_FILE_SIZE: "500M"
       PHP_OPCACHE_ENABLE: "1"
       PHP_OPCACHE_VALIDATE_TIMESTAMPS: "0"
-      HEALTHCHECK_PATH: "/up"
       
       # Laravel Auto-run Configuration
       AUTORUN_ENABLED: "true"
@@ -98,6 +100,13 @@ services:
     env_file:
       - .env
     environment:
+      #HORIZON_SUPERVISOR_MEMORY: 64  # MB per queue worker
+      #HORIZON_MAX_PROCESSES: 10  # User-facing federation delivery (follows, deletes, DMs), inbox processing, and push notifications.
+      #HORIZON_DELIVER_MAX_PROCESSES: 6  # ?
+      #HORIZON_MEDIA_MAX_PROCESSES: 4  # Image/video optimization, resizing, and thumbnail generation (the `mmo` queue).
+      #HORIZON_FANOUT_MAX_PROCESSES: 6  # Timeline/story/group fanout writes triggered by posts, likes, and follows.
+      #HORIZON_BACKGROUND_MAX_PROCESSES: 4  # Imports, instance crawling, account deletion/migration, and other maintenance work that isn't user-facing time-sensitive.
+      
       # PHP Configuration
       PHP_POST_MAX_SIZE: "500M"
       PHP_UPLOAD_MAX_FILE_SIZE: "500M"
