@@ -69,7 +69,6 @@ return Application::configure(basePath: dirname(__DIR__))
         },
         channels: __DIR__.'/../routes/channels.php',
         commands: __DIR__.'/../routes/console.php',
-        health: '/up',
     )
     ->withMiddleware(function (Middleware $middleware) {
         $middleware->use([
