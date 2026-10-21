@@ -8,7 +8,7 @@ use App\Services\HomeTimelineService;
 use App\Services\StatusService;
 use Illuminate\Foundation\Testing\LazilyRefreshDatabase;
 use Illuminate\Support\Facades\Bus;
-use Illuminate\Support\Facades\Cache;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Redis;
 use Laravel\Passport\Passport;
 
@@ -26,15 +26,9 @@ uses(LazilyRefreshDatabase::class);
 |
 */
 
-function homeColdBootKey(int $pid): string
-{
-    return 'pf:services:apiv1:home:cached:coldbootcheck:'.$pid;
-}
-
 function flushHome(int $pid): void
 {
     Redis::del(HomeTimelineService::CACHE_KEY.$pid);
-    Cache::forget(homeColdBootKey($pid));
 }
 
 /**
@@ -121,19 +115,30 @@ it('warms once on cold-start and does not warm again', function () {
 
     Passport::actingAs($viewer, ['read']);
 
+    $candidateQueries = 0;
+    DB::listen(function ($query) use (&$candidateQueries) {
+        if (preg_match('/from\s+"?statuses"?/i', $query->sql)) {
+            $candidateQueries++;
+        }
+    });
+
     $first = $this->getJson('/api/v1/timelines/home');
     $first->assertOk();
     expect($first->json())->toBe([]);
+    expect($candidateQueries)->toBeGreaterThan(0);
 
-    Bus::assertDispatchedSync(FeedWarmCachePipeline::class, 1);
+    // Second immediate request: still empty, and the record of the completed
+    // empty warm must stop it querying for candidates again.
+    $candidateQueries = 0;
 
-    // Second immediate request: still empty, and the coldBootKey guard must
-    // stop a second warm from dispatching.
     $second = $this->getJson('/api/v1/timelines/home');
     $second->assertOk();
     expect($second->json())->toBe([]);
+    expect($candidateQueries)->toBe(0);
 
-    Bus::assertDispatchedSync(FeedWarmCachePipeline::class, 1);
+    // The queued deepening job only runs when the warm filled its depth.
+    Bus::assertNotDispatched(FeedWarmCachePipeline::class);
+    expect(HomeTimelineService::shouldWarmEmpty($pid))->toBeFalse();
 
     flushHome($pid);
 });
