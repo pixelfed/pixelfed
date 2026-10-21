@@ -47,7 +47,7 @@ it('returns 200 with no cold-boot when a populated feed has nothing newer than m
 
     // A populated-but-empty-window read must not trip cold-boot warming.
     Bus::assertNotDispatched(FeedWarmCachePipeline::class);
-    expect(Cache::has('pf:services:apiv1:home:cached:coldbootcheck:'.$pid))->toBeFalse();
+    expect(HomeTimelineService::shouldWarmEmpty($pid))->toBeTrue();
 });
 
 it('warms once on a genuinely cold feed and guards re-warming', function () {
@@ -61,8 +61,13 @@ it('warms once on a genuinely cold feed and guards re-warming', function () {
 
     $this->getJson('/api/v1/timelines/home')->assertOk();
 
-    Bus::assertDispatchedSync(FeedWarmCachePipeline::class, 1);
+    // The warm ran in-request and found nothing, so it is recorded and no
+    // deepening job was queued.
+    expect(HomeTimelineService::shouldWarmEmpty($pid))->toBeFalse();
+    Bus::assertNotDispatched(FeedWarmCachePipeline::class);
 
-    $ttl = Cache::has('pf:services:apiv1:home:cached:coldbootcheck:'.$pid);
-    expect($ttl)->toBeTrue();
+    // And the warm lock was released rather than left held for its ttl.
+    $lock = Cache::lock('pf:timeline:home:warm:lock:'.$pid, 30);
+    expect($lock->get())->toBeTrue();
+    $lock->release();
 });
