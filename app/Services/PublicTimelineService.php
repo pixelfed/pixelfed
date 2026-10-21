@@ -25,6 +25,11 @@ class PublicTimelineService
         return self::setRankedMaxId(self::CACHE_KEY, $start, $limit);
     }
 
+    public static function getRankedMaxIdOrRecent($start = null, $limit = 10)
+    {
+        return self::setRankedMaxIdOrRecent(self::CACHE_KEY, $start, $limit);
+    }
+
     public static function getRankedMinId($end = null, $limit = 10)
     {
         return self::setRankedMinId(self::CACHE_KEY, $end, $limit);

@@ -37,6 +37,13 @@ class HomeTimelineService
         return self::setRankedMaxId(self::CACHE_KEY.$id, $start, $limit);
     }
 
+    public static function getRankedMaxIdOrRecent($id, $start = null, $limit = 10)
+    {
+        self::cacheKeyTouch($id);
+
+        return self::setRankedMaxIdOrRecent(self::CACHE_KEY.$id, $start, $limit);
+    }
+
     public static function getRankedMinId($id, $end = null, $limit = 10)
     {
         self::cacheKeyTouch($id);
