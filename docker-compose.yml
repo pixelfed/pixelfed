@@ -62,11 +62,7 @@ services:
       PHP_POST_MAX_SIZE: "500M"
       PHP_UPLOAD_MAX_FILE_SIZE: "500M"
       PHP_OPCACHE_ENABLE: "1"
-      # Code is baked into the image, so cache it until the container restarts
-      # instead of checking the filesystem on every request. Rebuild/restart to
-      # ship new code; do not hot-patch a running container.
       PHP_OPCACHE_VALIDATE_TIMESTAMPS: "0"
-      # Validate Laravel is up, not just that Caddy accepts connections
       HEALTHCHECK_PATH: "/up"
       
       # Laravel Auto-run Configuration
@@ -78,7 +74,6 @@ services:
       AUTORUN_LARAVEL_ROUTE_CACHE: "true"
       AUTORUN_LARAVEL_VIEW_CACHE: "true"
       AUTORUN_LARAVEL_CONFIG_CACHE: "true"
-
     volumes:
       - ./storage:/var/www/html/storage
     depends_on:
@@ -89,7 +84,6 @@ services:
       interval: 10s
       timeout: 5s
       retries: 3
-      # Boot runs migrations plus the AUTORUN cache builds, so give it room
       start_period: 30s
     networks:
       - pixelfed-network
@@ -104,6 +98,12 @@ services:
     env_file:
       - .env
     environment:
+      # PHP Configuration
+      PHP_POST_MAX_SIZE: "500M"
+      PHP_UPLOAD_MAX_FILE_SIZE: "500M"
+      PHP_OPCACHE_ENABLE: "1"
+      PHP_OPCACHE_VALIDATE_TIMESTAMPS: "0"
+      
       # Laravel Auto-run Configuration
       AUTORUN_ENABLED: "false"
       AUTORUN_LARAVEL_MIGRATION: "false"
@@ -113,10 +113,6 @@ services:
       AUTORUN_LARAVEL_ROUTE_CACHE: "false"
       AUTORUN_LARAVEL_VIEW_CACHE: "false"
       AUTORUN_LARAVEL_CONFIG_CACHE: "true"
-      PHP_POST_MAX_SIZE: "500M"
-      PHP_UPLOAD_MAX_FILE_SIZE: "500M"
-      PHP_OPCACHE_ENABLE: "1"
-      PHP_OPCACHE_VALIDATE_TIMESTAMPS: "0"
     volumes:
       - ./storage:/var/www/html/storage
     depends_on:
@@ -141,6 +137,12 @@ services:
     env_file:
       - .env
     environment:
+      # PHP Configuration
+      PHP_POST_MAX_SIZE: "500M"
+      PHP_UPLOAD_MAX_FILE_SIZE: "500M"
+      PHP_OPCACHE_ENABLE: "1"
+      PHP_OPCACHE_VALIDATE_TIMESTAMPS: "0"
+      
       # Laravel Auto-run Configuration
       AUTORUN_ENABLED: "false"
       AUTORUN_LARAVEL_MIGRATION: "false"
@@ -150,10 +152,6 @@ services:
       AUTORUN_LARAVEL_ROUTE_CACHE: "false"
       AUTORUN_LARAVEL_VIEW_CACHE: "false"
       AUTORUN_LARAVEL_CONFIG_CACHE: "true"
-      PHP_POST_MAX_SIZE: "500M"
-      PHP_UPLOAD_MAX_FILE_SIZE: "500M"
-      PHP_OPCACHE_ENABLE: "1"
-      PHP_OPCACHE_VALIDATE_TIMESTAMPS: "0"
     volumes:
       - ./storage:/var/www/html/storage
     depends_on:
