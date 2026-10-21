@@ -62,6 +62,8 @@ services:
       PHP_POST_MAX_SIZE: "500M"
       PHP_UPLOAD_MAX_FILE_SIZE: "500M"
       PHP_OPCACHE_ENABLE: "1"
+      PHP_OPCACHE_VALIDATE_TIMESTAMPS: "0"
+      HEALTHCHECK_PATH: "/up"
       
       # Laravel Auto-run Configuration
       AUTORUN_ENABLED: "true"
@@ -72,12 +74,17 @@ services:
       AUTORUN_LARAVEL_ROUTE_CACHE: "true"
       AUTORUN_LARAVEL_VIEW_CACHE: "true"
       AUTORUN_LARAVEL_CONFIG_CACHE: "true"
-
     volumes:
       - ./storage:/var/www/html/storage
     depends_on:
       - db
       - redis
+    healthcheck:
+      test: ["CMD", "healthcheck-frankenphp"]
+      interval: 10s
+      timeout: 5s
+      retries: 3
+      start_period: 30s
     networks:
       - pixelfed-network
 
@@ -91,6 +98,12 @@ services:
     env_file:
       - .env
     environment:
+      # PHP Configuration
+      PHP_POST_MAX_SIZE: "500M"
+      PHP_UPLOAD_MAX_FILE_SIZE: "500M"
+      PHP_OPCACHE_ENABLE: "1"
+      PHP_OPCACHE_VALIDATE_TIMESTAMPS: "0"
+      
       # Laravel Auto-run Configuration
       AUTORUN_ENABLED: "false"
       AUTORUN_LARAVEL_MIGRATION: "false"
@@ -100,16 +113,13 @@ services:
       AUTORUN_LARAVEL_ROUTE_CACHE: "false"
       AUTORUN_LARAVEL_VIEW_CACHE: "false"
       AUTORUN_LARAVEL_CONFIG_CACHE: "true"
-      PHP_POST_MAX_SIZE: "500M"
-      PHP_UPLOAD_MAX_FILE_SIZE: "500M"
-      PHP_OPCACHE_ENABLE: "1"
     volumes:
       - ./storage:/var/www/html/storage
     depends_on:
       - db
       - redis
     healthcheck:
-      test: ["CMD", "php", "artisan", "horizon:status"]
+      test: ["CMD", "healthcheck-horizon"]
       interval: 10s
       timeout: 5s
       retries: 3
@@ -127,6 +137,12 @@ services:
     env_file:
       - .env
     environment:
+      # PHP Configuration
+      PHP_POST_MAX_SIZE: "500M"
+      PHP_UPLOAD_MAX_FILE_SIZE: "500M"
+      PHP_OPCACHE_ENABLE: "1"
+      PHP_OPCACHE_VALIDATE_TIMESTAMPS: "0"
+      
       # Laravel Auto-run Configuration
       AUTORUN_ENABLED: "false"
       AUTORUN_LARAVEL_MIGRATION: "false"
@@ -136,9 +152,6 @@ services:
       AUTORUN_LARAVEL_ROUTE_CACHE: "false"
       AUTORUN_LARAVEL_VIEW_CACHE: "false"
       AUTORUN_LARAVEL_CONFIG_CACHE: "true"
-      PHP_POST_MAX_SIZE: "500M"
-      PHP_UPLOAD_MAX_FILE_SIZE: "500M"
-      PHP_OPCACHE_ENABLE: "1"
     volumes:
       - ./storage:/var/www/html/storage
     depends_on:
@@ -146,6 +159,9 @@ services:
       - redis
     healthcheck:
       test: ["CMD", "healthcheck-schedule"]
+      interval: 10s
+      timeout: 5s
+      retries: 3
       start_period: 10s
     networks:
       - pixelfed-network

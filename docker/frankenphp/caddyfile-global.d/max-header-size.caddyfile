@@ -1,0 +1,3 @@
+servers {
+	max_header_size 128KiB
+}
