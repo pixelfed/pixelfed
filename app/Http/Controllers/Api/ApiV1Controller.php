@@ -2783,7 +2783,7 @@ class ApiV1Controller extends Controller
         }
 
         if ($cursor['max']) {
-            return HomeTimelineService::getRankedMaxId($pid, $cursor['max'], $paddedLimit);
+            return HomeTimelineService::getRankedMaxIdOrRecent($pid, $cursor['max'], $paddedLimit);
         }
 
         return HomeTimelineService::get($pid, 0, $paddedLimit);
@@ -3106,7 +3106,7 @@ class ApiV1Controller extends Controller
             }
 
             if ($max) {
-                $feed = NetworkTimelineService::getRankedMaxId($max, $limit + 5);
+                $feed = NetworkTimelineService::getRankedMaxIdOrRecent($max, $limit + 5);
             } elseif ($min) {
                 $feed = NetworkTimelineService::getRankedMinId($min, $limit + 5);
             } else {
@@ -3122,7 +3122,7 @@ class ApiV1Controller extends Controller
             }
 
             if ($max) {
-                $feed = PublicTimelineService::getRankedMaxId($max, $limit + 5);
+                $feed = PublicTimelineService::getRankedMaxIdOrRecent($max, $limit + 5);
             } elseif ($min) {
                 $feed = PublicTimelineService::getRankedMinId($min, $limit + 5);
             } else {
