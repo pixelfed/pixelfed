@@ -15,9 +15,21 @@ class PublicTimelineService
 
     const FEED_LIMIT = 400;
 
+    const EMPTY_WARM_INTERVAL = 3600;
+
     public static function get($start = 0, $stop = 10)
     {
         return self::setGet(self::CACHE_KEY, $start, $stop);
+    }
+
+    public static function shouldWarmEmpty(): bool
+    {
+        return self::setShouldWarmEmpty(self::CACHE_KEY);
+    }
+
+    public static function clearEmptyWarmed(): void
+    {
+        self::setClearEmptyWarmed(self::CACHE_KEY);
     }
 
     public static function getRankedMaxId($start = null, $limit = 10)

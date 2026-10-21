@@ -3,6 +3,7 @@
 namespace App\Services\Concerns;
 
 use App\Services\StatusService;
+use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Redis;
 
 /**
@@ -102,6 +103,12 @@ trait SortedSetTimeline
             Redis::zremrangebyrank($key, 0, -($trim + 1));
         }
 
+        // Anything written to a live feed contradicts "a warm found nothing",
+        // so the guard goes whatever path the write came from. Removal is not
+        // the counterpart: a feed can only get emptier that way, and re-arming
+        // the warm on the read path's prune would warm on every read.
+        self::setClearEmptyWarmed($key);
+
         return $res;
     }
 
@@ -136,6 +143,42 @@ trait SortedSetTimeline
                 self::setRem($key, $postId);
             }
         }
+    }
+
+    /**
+     * A feed that a completed warm found empty has no Redis key, which is
+     * indistinguishable from a feed that was never built. These three record
+     * the difference so repeated reads of a genuinely empty feed stop
+     * re-running the candidate query.
+     *
+     * The guard holds the timestamp at which it lapses and is stored with a
+     * matching cache TTL, so an absent, expired or unreadable guard always
+     * means "warm it", never "stay empty".
+     */
+    protected static function setShouldWarmEmpty(string $key): bool
+    {
+        $lapsesAt = Cache::get(self::emptyWarmGuardKey($key));
+
+        return ! $lapsesAt || (int) $lapsesAt <= now()->timestamp;
+    }
+
+    protected static function setMarkEmptyWarmed(string $key, int $interval): void
+    {
+        Cache::put(
+            self::emptyWarmGuardKey($key),
+            now()->addSeconds($interval)->timestamp,
+            $interval + 60
+        );
+    }
+
+    protected static function setClearEmptyWarmed(string $key): void
+    {
+        Cache::forget(self::emptyWarmGuardKey($key));
+    }
+
+    protected static function emptyWarmGuardKey(string $key): string
+    {
+        return 'pf:timeline:empty-warm-guard:'.$key;
     }
 
     protected static function scoreForStatus($statusId)

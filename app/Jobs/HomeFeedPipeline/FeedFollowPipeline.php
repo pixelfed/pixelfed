@@ -118,6 +118,11 @@ class FeedFollowPipeline implements ShouldBeUniqueUntilProcessing, ShouldQueue
             ->pluck('id');
 
         if (! HomeTimelineService::cacheKeyExists($actorId)) {
+            // A new follow is the action most likely to turn an empty feed
+            // into a full one, so the empty record has to go even though
+            // there is no feed here to backfill into.
+            HomeTimelineService::clearEmptyWarmed($actorId);
+
             return;
         }
 

@@ -8,6 +8,7 @@ use App\Models\UserDomainBlock;
 use App\Services\Concerns\SortedSetTimeline;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Redis;
 use Illuminate\Support\Str;
 
@@ -22,6 +23,13 @@ class HomeTimelineService
     const FEED_LIMIT = 400;
 
     const FOLLOWER_FEED_POST_LIMIT = 10;
+
+    /**
+     * How long a home feed stays recorded as genuinely empty. Shorter than
+     * the instance-wide feeds because a home feed turns non-empty through
+     * other people's actions, which may not reach a gated key.
+     */
+    const EMPTY_WARM_INTERVAL = 900;
 
     public static function get($id, $start = 0, $stop = 10)
     {
@@ -87,6 +95,21 @@ class HomeTimelineService
         }
     }
 
+    public static function shouldWarmEmpty($id): bool
+    {
+        return self::setShouldWarmEmpty(self::CACHE_KEY.$id);
+    }
+
+    public static function markEmptyWarmed($id): void
+    {
+        self::setMarkEmptyWarmed(self::CACHE_KEY.$id, self::EMPTY_WARM_INTERVAL);
+    }
+
+    public static function clearEmptyWarmed($id): void
+    {
+        self::setClearEmptyWarmed(self::CACHE_KEY.$id);
+    }
+
     /**
      * Rebuild the cached feed, returning the number of members published.
      *
@@ -105,10 +128,13 @@ class HomeTimelineService
         $following = self::followingForWarm($id);
         $domainBlocks = UserDomainBlock::whereProfileId($id)->pluck('domain')->toArray();
 
-        $added = self::publishWarm($id, self::warmCandidates($following, $limit, true, false), $domainBlocks);
+        $pass = self::publishWarm($id, self::warmCandidates($following, $limit, true, false), $domainBlocks);
+        $unresolved = $pass['unresolved'];
 
-        if ($added > 0) {
-            return $added;
+        if ($pass['added'] > 0) {
+            self::clearEmptyWarmed($id);
+
+            return $pass['added'];
         }
 
         // Nothing publishable inside the fast path. Before concluding there is
@@ -122,7 +148,31 @@ class HomeTimelineService
             $following = self::followingForWarm($id);
         }
 
-        return self::publishWarm($id, self::warmCandidates($following, $limit, false, true), $domainBlocks);
+        $pass = self::publishWarm($id, self::warmCandidates($following, $limit, false, true), $domainBlocks);
+        $unresolved += $pass['unresolved'];
+
+        if ($pass['added'] > 0) {
+            self::clearEmptyWarmed($id);
+
+            return $pass['added'];
+        }
+
+        if ($unresolved > 0) {
+            // Candidates were there and could not be resolved, so this warm
+            // never established that the feed is empty. Recording it as empty
+            // here is how a transient failure becomes a blank timeline the
+            // user cannot get out of.
+            Log::warning('HomeTimelineService: home warm could not resolve any candidate', [
+                'pid' => $id,
+                'unresolved' => $unresolved,
+            ]);
+
+            return 0;
+        }
+
+        self::markEmptyWarmed($id);
+
+        return 0;
     }
 
     protected static function followingForWarm($id): array
@@ -203,26 +253,39 @@ class HomeTimelineService
     /**
      * Hydrate the candidates into a scratch set and publish it atomically.
      *
-     * Returns the number of members published, 0 if none were.
+     * Returns the number of members published and the number of candidates
+     * that could not be resolved at all. The caller needs the two apart: a
+     * candidate skipped by a domain block is a decision, while a candidate
+     * that would not resolve means the warm did not finish its work.
      */
-    protected static function publishWarm($id, $candidates, array $domainBlocks): int
+    protected static function publishWarm($id, $candidates, array $domainBlocks): array
     {
         $tmpKey = self::CACHE_KEY.$id.':rebuild:'.Str::random(8);
         $added = 0;
+        $unresolved = 0;
 
         foreach ($candidates as $sid) {
             try {
                 $status = StatusService::get($sid, false);
-            } catch (\Exception) {
+            } catch (\Throwable $e) {
+                $unresolved++;
+
                 continue;
             }
 
             if (! $status || ! isset($status['account'], $status['url'])) {
+                $unresolved++;
+
                 continue;
             }
             if ($domainBlocks && count($domainBlocks)) {
-                $domain = strtolower(parse_url($status['url'], PHP_URL_HOST));
-                if (in_array($domain, $domainBlocks)) {
+                $domain = parse_url($status['url'], PHP_URL_HOST);
+                if (! is_string($domain) || $domain === '') {
+                    $unresolved++;
+
+                    continue;
+                }
+                if (in_array(strtolower($domain), $domainBlocks)) {
                     continue;
                 }
             }
@@ -240,7 +303,7 @@ class HomeTimelineService
             // serving content is how a user ends up with a blank timeline.
             Redis::del($tmpKey);
 
-            return 0;
+            return ['added' => 0, 'unresolved' => $unresolved];
         }
 
         if ($added > self::FEED_LIMIT) {
@@ -250,6 +313,6 @@ class HomeTimelineService
         Redis::rename($tmpKey, self::CACHE_KEY.$id);
         Redis::expire(self::CACHE_KEY.$id, self::CACHE_TTL);
 
-        return $added;
+        return ['added' => $added, 'unresolved' => $unresolved];
     }
 }
