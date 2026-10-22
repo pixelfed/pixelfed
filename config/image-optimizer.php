@@ -26,7 +26,11 @@ return [
 
         Optipng::class => [
             '-i0', // this will result in a non-interlaced, progressive scanned image
-            '-o7',  // this set the optimization level to two (multiple IDAT compression trials)
+            // Optimization level. optipng runtime grows steeply with the level while
+            // the extra lossless savings shrink, and pngquant already runs first and
+            // captures the bulk of the reduction. -o7 can spend 20s+ on a ~1MP PNG for
+            // marginal gain; -o2 is far faster with a negligible size difference.
+            '-o'.(int) env('IMAGE_OPTIPNG_LEVEL', 2),
             '-strip all',
             '-quiet', // required parameter for this package
         ],
