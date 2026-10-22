@@ -48,12 +48,12 @@ return [
             'root' => storage_path('app'),
             'permissions' => [
                 'file' => [
-                    'public' => env('PF_FILESYSTEM_LOCAL_FILE_PUBLIC', 0644),
-                    'private' => env('PF_FILESYSTEM_LOCAL_FILE_PRIVATE', 0640),
+                    'public' => octdec(env('PF_FILESYSTEM_LOCAL_FILE_PUBLIC', 0644)),
+                    'private' => octdec(env('PF_FILESYSTEM_LOCAL_FILE_PRIVATE', 0640)),
                 ],
                 'dir' => [
-                    'public' => env('PF_FILESYSTEM_LOCAL_DIR_PUBLIC', 0755),
-                    'private' => env('PF_FILESYSTEM_LOCAL_DIR_PRIVATE', 0750),
+                    'public' => octdec(env('PF_FILESYSTEM_LOCAL_DIR_PUBLIC', 0755)),
+                    'private' => octdec(env('PF_FILESYSTEM_LOCAL_DIR_PRIVATE', '0750')),
                 ],
             ],
             'serve' => true,
