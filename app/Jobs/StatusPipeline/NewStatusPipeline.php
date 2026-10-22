@@ -19,14 +19,25 @@ class NewStatusPipeline implements ShouldQueue
     use Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
 
     /**
-     * Seconds between checks while attached media is still being processed.
+     * The media-ready poll is a fallback: MediaStorageService::cloudStore()
+     * re-dispatches this job the moment the last attachment lands on cloud
+     * storage, and the poll only covers the case where that event is lost.
+     *
+     * The delay escalates so the common case (media ready within a couple of
+     * seconds) publishes quickly instead of waiting out a fixed bucket, while
+     * the gap widens and caps for the rare genuinely-slow media so we are not
+     * polling tightly for minutes. The delay for check N (0-indexed) is
+     * min(N + 1, MEDIA_WAIT_CAP_SECONDS): 1, 2, 3, ... up to the cap, then held.
      */
-    public const MEDIA_WAIT_SECONDS = 10;
+    public const MEDIA_WAIT_CAP_SECONDS = 10;
 
     /**
-     * How many checks to make before giving up (30 x 10s = 5 minutes).
+     * How many checks to make before giving up. The first
+     * MEDIA_WAIT_CAP_SECONDS checks escalate (1..cap seconds), then each
+     * remaining check waits the cap. With cap=10 and max=37 the total window
+     * is ~5.4 minutes, in line with the previous fixed 30 x 10s = 5 minutes.
      */
-    public const MEDIA_WAIT_MAX = 30;
+    public const MEDIA_WAIT_MAX = 37;
 
     /**
      * Seconds to hold the publish lock. Long enough to cover the waiting
@@ -110,6 +121,29 @@ class NewStatusPipeline implements ShouldQueue
     }
 
     /**
+     * Seconds to wait before the next media-ready check for a given check
+     * index. Escalates 1, 2, 3, ... then holds at MEDIA_WAIT_CAP_SECONDS.
+     */
+    private static function mediaWaitDelay(int $check): int
+    {
+        return min($check + 1, self::MEDIA_WAIT_CAP_SECONDS);
+    }
+
+    /**
+     * Total seconds the escalating poll spans across all MEDIA_WAIT_MAX checks.
+     * Used only for the give-up log message.
+     */
+    private static function mediaWaitTotalSeconds(): int
+    {
+        $total = 0;
+        for ($i = 0; $i < self::MEDIA_WAIT_MAX; $i++) {
+            $total += self::mediaWaitDelay($i);
+        }
+
+        return $total;
+    }
+
+    /**
      * Publish the status. No-ops when there is nothing to publish (deleted
      * status, still-processing media, or the publish lock is already held).
      */
@@ -137,7 +171,7 @@ class NewStatusPipeline implements ShouldQueue
                 if ($this->mediaWait >= self::MEDIA_WAIT_MAX) {
                     Log::warning(
                         "NewStatusPipeline: Media for status {$status->id} never finished processing, giving up after "
-                            .(self::MEDIA_WAIT_MAX * self::MEDIA_WAIT_SECONDS).'s'
+                            .self::mediaWaitTotalSeconds().'s'
                     );
 
                     return;
@@ -145,7 +179,7 @@ class NewStatusPipeline implements ShouldQueue
 
                 self::dispatch($status, $this->mediaWait + 1)
                     ->onQueue($this->queue)
-                    ->delay(now()->addSeconds(self::MEDIA_WAIT_SECONDS));
+                    ->delay(now()->addSeconds(self::mediaWaitDelay($this->mediaWait)));
 
                 return;
             }
