@@ -68,7 +68,8 @@ ARG PHP_PECL_EXTENSIONS_EXTRA=
 # !       so [php8.4-bcmath] should just be [bcmath] here
 ARG PHP_EXTENSIONS="bcmath curl gd imagick intl mbstring redis vips xml yaml zip ffi"
 ARG PHP_EXTENSIONS_EXTRA=""
-ARG PHP_EXTENSIONS_DATABASE="pgsql mysql sqlite"
+ARG PHP_EXTENSIONS_DATABASE="pgsql mysql sqlite3"
+#ARG PHP_EXTENSIONS_DATABASE="pgsql mysql sqlite"
 
 # GPG key for nginx apt repository
 ARG NGINX_GPGKEY="573BFD6B3D8FBC641079A6ABABF5BD827BD9BF62"
