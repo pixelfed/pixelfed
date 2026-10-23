@@ -3,7 +3,32 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Carbon;
 
+/**
+ * @property int $id
+ * @property int $user_id
+ * @property int $filterable_id
+ * @property string $filterable_type
+ * @property string $filter_type
+ * @property Carbon|null $created_at
+ * @property Carbon|null $updated_at
+ * @property-read Instance|null $instance
+ * @property-read Profile|null $user
+ *
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|UserFilter newModelQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|UserFilter newQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|UserFilter query()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|UserFilter whereCreatedAt($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|UserFilter whereFilterType($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|UserFilter whereFilterableId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|UserFilter whereFilterableType($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|UserFilter whereId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|UserFilter whereUpdatedAt($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|UserFilter whereUserId($value)
+ *
+ * @mixin \Eloquent
+ */
 class UserFilter extends Model
 {
     protected $guarded = [];

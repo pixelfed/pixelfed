@@ -43,7 +43,7 @@ class SettingsController extends Controller
     {
         $settings = $request->user()->settings;
 
-        return view('settings.accessibility', compact('settings'));
+        return view('settings.accessibility', ['settings' => $settings]);
     }
 
     public function accessibilityStore(Request $request): RedirectResponse
@@ -115,6 +115,20 @@ class SettingsController extends Controller
         $profile->status = 'disabled';
         $user->save();
         $profile->save();
+
+        // Revoke OAuth tokens so previously-authorized third-party clients
+        // cannot keep acting on a disabled account. oauth_refresh_tokens has no
+        // user_id column, so delete it via access_token_id before removing the
+        // access tokens themselves.
+        $accessTokenIds = DB::table('oauth_access_tokens')
+            ->where('user_id', $user->id)
+            ->pluck('id')
+            ->all();
+        DB::table('oauth_refresh_tokens')
+            ->whereIn('access_token_id', $accessTokenIds)
+            ->delete();
+        DB::table('oauth_access_tokens')->where('user_id', $user->id)->delete();
+
         Auth::logout();
         Cache::forget('profiles:private');
 
@@ -154,8 +168,16 @@ class SettingsController extends Controller
         $profile->save();
         Cache::forget('profiles:private');
         AccountService::del($profile->id);
+        // oauth_refresh_tokens keys on access_token_id, not user_id, so delete
+        // it via the user's access-token ids before removing the access tokens.
+        $accessTokenIds = DB::table('oauth_access_tokens')
+            ->where('user_id', $user->id)
+            ->pluck('id')
+            ->all();
+        DB::table('oauth_refresh_tokens')
+            ->whereIn('access_token_id', $accessTokenIds)
+            ->delete();
         DB::table('oauth_access_tokens')->where('user_id', $user->id)->delete();
-        DB::table('oauth_refresh_tokens')->where('user_id', $user->id)->delete();
         OauthClient::where('user_id', $user->id)->delete();
         Auth::logout();
         DeleteAccountPipeline::dispatch($user)->onQueue('low');
@@ -197,7 +219,7 @@ class SettingsController extends Controller
         $sponsors = ProfileSponsor::whereProfileId($request->user()->profile->id)->first();
         $sponsors = $sponsors ? json_decode($sponsors->sponsors, true) : $default;
 
-        return view('settings.sponsor', compact('sponsors'));
+        return view('settings.sponsor', ['sponsors' => $sponsors]);
     }
 
     public function sponsorStore(Request $request): RedirectResponse
@@ -266,7 +288,7 @@ class SettingsController extends Controller
                 $userSettings->other);
         }
 
-        return view('settings.timeline', compact('top', 'replies', 'userSettings'));
+        return view('settings.timeline', ['top' => $top, 'replies' => $replies, 'userSettings' => $userSettings]);
     }
 
     public function updateTimelineSettings(Request $request): RedirectResponse
@@ -306,7 +328,7 @@ class SettingsController extends Controller
             'media_descriptions' => false,
         ];
 
-        return view('settings.media', compact('compose'));
+        return view('settings.media', ['compose' => $compose]);
     }
 
     public function updateMediaSettings(Request $request): RedirectResponse

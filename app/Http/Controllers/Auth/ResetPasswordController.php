@@ -5,9 +5,7 @@ namespace App\Http\Controllers\Auth;
 use App\Http\Controllers\Controller;
 use App\Services\BouncerService;
 use Illuminate\Auth\Events\PasswordReset;
-use Illuminate\Contracts\View\Factory;
 use Illuminate\Foundation\Auth\ResetsPasswords;
-use Illuminate\Http\JsonResponse;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Password;
@@ -87,8 +85,6 @@ class ResetPasswordController extends Controller
      * Display the password reset view for the given token.
      *
      * If no token is present, display the link request form.
-     *
-     * @return Factory|View
      */
     public function showResetForm(Request $request): View
     {
@@ -150,7 +146,6 @@ class ResetPasswordController extends Controller
      * Get the response for a failed password reset.
      *
      * @param  string  $response
-     * @return RedirectResponse|JsonResponse
      */
     protected function sendResetFailedResponse(Request $request, $response): RedirectResponse
     {

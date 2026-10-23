@@ -54,8 +54,9 @@ class FetchNodeinfoPipeline implements ShouldBeUniqueUntilProcessing, ShouldQueu
 
         if ($instance->nodeinfo_last_fetched &&
             $instance->nodeinfo_last_fetched->gt(now()->subHours(12)) ||
-            $instance->delivery_timeout &&
-            $instance->delivery_next_after->gt(now())
+            $instance->nodeinfo_timeout &&
+            $instance->nodeinfo_next_after &&
+            $instance->nodeinfo_next_after->gt(now())
         ) {
             return;
         }
@@ -69,14 +70,14 @@ class FetchNodeinfoPipeline implements ShouldBeUniqueUntilProcessing, ShouldQueu
                 $instance->user_count = Profile::whereDomain($instance->domain)->count();
                 $instance->nodeinfo_last_fetched = now();
                 $instance->last_crawled_at = now();
-                $instance->delivery_timeout = 0;
+                $instance->nodeinfo_timeout = 0;
                 $instance->save();
             }
         } else {
             $instance->user_count = Profile::whereDomain($instance->domain)->count();
-            $instance->delivery_timeout = 1;
+            $instance->nodeinfo_timeout = 1;
             $instance->last_crawled_at = now();
-            $instance->delivery_next_after = now()->addHours(14);
+            $instance->nodeinfo_next_after = now()->addHours(14);
             $instance->save();
         }
     }

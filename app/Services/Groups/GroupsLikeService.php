@@ -71,7 +71,7 @@ class GroupsLikeService
         });
     }
 
-    public static function likedBy($status)
+    public static function likedBy($status): array
     {
         $empty = [
             'username' => null,

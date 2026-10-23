@@ -74,7 +74,7 @@ class ImportService
                 }
                 throw $e;
             } catch (\Exception $e) {
-                if (strpos($e->getMessage(), 'Could not find valid next date') !== false) {
+                if (str_contains($e->getMessage(), 'Could not find valid next date')) {
                     return null;
                 }
                 throw $e;
@@ -169,7 +169,7 @@ class ImportService
 
                 throw $e;
             } catch (\Exception $e) {
-                if (strpos($e->getMessage(), 'Could not find valid next date') !== false) {
+                if (str_contains($e->getMessage(), 'Could not find valid next date')) {
                     return null;
                 }
                 throw $e;
@@ -238,7 +238,7 @@ class ImportService
         }, 3);
     }
 
-    public static function getPostCount($profileId, $refresh = false)
+    public static function getPostCount($profileId, $refresh = false): int
     {
         $key = self::CACHE_KEY.'totalPostCountByProfileId:'.$profileId;
         if ($refresh) {
@@ -250,7 +250,7 @@ class ImportService
         }));
     }
 
-    public static function getAttempts($profileId)
+    public static function getAttempts($profileId): int
     {
         $key = self::CACHE_KEY.'attemptsByProfileId:'.$profileId;
 
@@ -314,7 +314,7 @@ class ImportService
                 $nextDay->month,
                 $nextDay->day,
             ];
-        } catch (\Exception $e) {
+        } catch (\Exception) {
             return [null, null, null];
         }
     }

@@ -3,6 +3,7 @@
 namespace App\Transformer\ActivityPub\Verb;
 
 use App\Models\Status;
+use App\Services\QuoteService;
 use League\Fractal;
 
 class CreateQuestion extends Fractal\TransformerAbstract
@@ -11,7 +12,7 @@ class CreateQuestion extends Fractal\TransformerAbstract
         'object',
     ];
 
-    public function transform(Status $status)
+    public function transform(Status $status): array
     {
         return [
             '@context' => [
@@ -44,6 +45,7 @@ class CreateQuestion extends Fractal\TransformerAbstract
                     ],
                     'toot' => 'http://joinmastodon.org/ns#',
                     'Emoji' => 'toot:Emoji',
+                    ...QuoteService::NOTE_CONTEXT_TERMS,
                 ],
             ],
             'id' => $status->permalink(),

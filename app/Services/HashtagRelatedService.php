@@ -21,6 +21,7 @@ class HashtagRelatedService
     public static function fetchRelatedTags($tag)
     {
         $res = StatusHashtag::query()
+            // @phpstan-ignore-next-line
             ->select('h2.name', DB::raw('COUNT(*) as related_count'))
             ->join('status_hashtags as hs2', function ($join) {
                 $join->on('status_hashtags.status_id', '=', 'hs2.status_id')

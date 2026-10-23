@@ -14,6 +14,7 @@ $id = Str::random(14);
     <form method="post" id="{{$id}}" class="flex-grow-1">
         @csrf
         <input type="hidden" name="step" value="1">
+        <input type="hidden" name="age_verified" id="{{$id}}-age-verified" value="">
         <button type="button" class="btn btn-primary rounded-pill font-weight-bold btn-block flex-grow-1" onclick="onSubmit()">Accept</button>
     </form>
 
@@ -30,51 +31,22 @@ $id = Str::random(14);
 
 @push('scripts')
 <script>
+    const minAge = {{ (int) config('pixelfed.min_registration_age', 16) }};
+
     function onSubmit() {
-        @if ($errors->any())
-        document.getElementById('{{$id}}').submit();
-        return;
-        @endif
-        swal({
-            text: "Please select the region you are located in",
-            icon: "info",
-            buttons: {
-                cancel: false,
-                usa: {
-                    text: "United States",
-                    className: "swal-button--cancel",
-                    value: "usa"
-                },
-                uk: {
-                    text: "UK",
-                    className: "swal-button--cancel",
-                    value: "uk"
-                },
-                eu: {
-                    text: "EU",
-                    className: "swal-button--cancel",
-                    value: "eu"
-                },
-                other: {
-                    text: "Other",
-                    className: "swal-button--cancel",
-                    value: "other"
-                }
-            },
-            dangerMode: false,
-        }).then((region) => {
-            handleRegion(region);
-        })
+        // Age verification must always run before advancing past step 1, even
+        // when the page re-rendered with step 2 validation errors. The server
+        // also enforces the age_verified flag, so this cannot be bypassed by
+        // skipping the prompt.
+        promptDateOfBirth();
     }
 
-    function handleRegion(region) {
-        if(!region) {
-            return;
-        }
-        let minAge = 16;
-        if(['usa', 'uk', 'other'].includes(region)) {
-            minAge = 13;
-        }
+    function submitAgeVerified() {
+        document.getElementById('{{$id}}-age-verified').value = '1';
+        document.getElementById('{{$id}}').submit();
+    }
+
+    function promptDateOfBirth() {
         swal({
             title: "Enter Your Date of Birth",
             text: "We require your birthdate solely to confirm that you meet our age requirement.\n\n Rest assured, this information is not stored or used for any other purpose.",
@@ -122,11 +94,11 @@ $id = Str::random(14);
                     return;
                 }
                 if (age >= minAge) {
-                    document.getElementById('{{$id}}').submit();
+                    submitAgeVerified();
                 } else {
                     swal({
                         title: "Ineligible to join",
-                        text: `Sorry, you must be at least ${minAge} years old to join our service according to the laws of your country or region.`,
+                        text: `Sorry, you must be at least ${minAge} years old to join this server.`,
                         icon: "error",
                         buttons: {
                             cancel: "I understand"

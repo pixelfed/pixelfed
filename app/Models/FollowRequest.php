@@ -9,14 +9,31 @@ use Illuminate\Support\Carbon;
  * @property int $id
  * @property int $follower_id
  * @property int $following_id
- * @property array|null $activity
- * @property Carbon|null $handled_at
+ * @property array<array-key, mixed>|null $activity
+ * @property int $is_rejected
+ * @property int $is_local
+ * @property string|null $handled_at
  * @property Carbon|null $created_at
  * @property Carbon|null $updated_at
- * @property-read Profile $target
- * @property-read Profile $actor
- * @property-read Profile $follower
- * @property-read Profile $following
+ * @property-read Profile|null $actor
+ * @property-read Profile|null $follower
+ * @property-read Profile|null $following
+ * @property-read Profile|null $target
+ *
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|FollowRequest newModelQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|FollowRequest newQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|FollowRequest query()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|FollowRequest whereActivity($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|FollowRequest whereCreatedAt($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|FollowRequest whereFollowerId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|FollowRequest whereFollowingId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|FollowRequest whereHandledAt($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|FollowRequest whereId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|FollowRequest whereIsLocal($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|FollowRequest whereIsRejected($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|FollowRequest whereUpdatedAt($value)
+ *
+ * @mixin \Eloquent
  */
 class FollowRequest extends Model
 {

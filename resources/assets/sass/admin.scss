@@ -17,6 +17,18 @@ body, button, input, textarea {
 .nav-pills .nav-item {
     padding-right: 1rem;
 }
+// Backdrop shown behind the mobile sidenav so tapping outside the menu
+// (or on the overlay) closes it. Argon appends `.backdrop` via JS but ships
+// no styles for it, which left the mobile admin menu impossible to close.
+.backdrop {
+    position: fixed;
+    top: 0;
+    left: 0;
+    z-index: 1039; // just below the sidenav (z-index: 1040)
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.5);
+}
 
 .list-fade-bottom {
 	position: relative;

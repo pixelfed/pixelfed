@@ -19,21 +19,124 @@ use Illuminate\Support\Facades\Storage;
 /**
  * @property int $id
  * @property int|null $user_id
- * @property string $username
- * @property string|null $name
  * @property string|null $domain
+ * @property string|null $username
+ * @property string|null $status
+ * @property string|null $name
+ * @property string|null $bio
+ * @property int $unlisted
+ * @property int $cw
+ * @property int $no_autolink
+ * @property string|null $location
+ * @property string|null $website
+ * @property string|null $fields
+ * @property string|null $profile_layout
+ * @property string|null $header_bg
+ * @property string|null $post_layout
+ * @property int $is_private
+ * @property string|null $sharedInbox
+ * @property string|null $inbox_url
+ * @property string|null $outbox_url
+ * @property string|null $key_id
+ * @property string|null $follower_url
+ * @property string|null $following_url
+ * @property string|null $private_key
+ * @property string|null $public_key
  * @property string|null $remote_url
- * @property bool $is_private
- * @property int $status_count
- * @property int $following_count
- * @property int $followers_count
- * @property Carbon|null $last_fetched_at
- * @property Carbon|null $last_status_at
  * @property Carbon|null $created_at
  * @property Carbon|null $updated_at
  * @property Carbon|null $deleted_at
- * @property-read User|null $user
+ * @property string|null $delete_after
+ * @property int $is_suggestable
+ * @property Carbon|null $last_fetched_at
+ * @property int|null $status_count
+ * @property int $followers_count
+ * @property int $following_count
+ * @property string|null $webfinger
+ * @property string|null $avatar_url
+ * @property Carbon|null $last_status_at
+ * @property int|null $moved_to_profile_id
+ * @property int $indexable
+ * @property string|null $followers_url
+ * @property-read \Illuminate\Database\Eloquent\Collection<int, ProfileAlias> $aliases
+ * @property-read int|null $aliases_count
  * @property-read Avatar $avatar
+ * @property-read \Illuminate\Database\Eloquent\Collection<int, Status> $bookmarks
+ * @property-read int|null $bookmarks_count
+ * @property-read \Illuminate\Database\Eloquent\Collection<int, Circle> $circles
+ * @property-read int|null $circles_count
+ * @property-read \Illuminate\Database\Eloquent\Collection<int, Collection> $collections
+ * @property-read int|null $collections_count
+ * @property-read \Illuminate\Database\Eloquent\Collection<int, Profile> $followers
+ * @property-read \Illuminate\Database\Eloquent\Collection<int, Profile> $following
+ * @property-read \Illuminate\Database\Eloquent\Collection<int, HashtagFollow> $hashtagFollowing
+ * @property-read int|null $hashtag_following_count
+ * @property-read \Illuminate\Database\Eloquent\Collection<int, Hashtag> $hashtags
+ * @property-read int|null $hashtags_count
+ * @property-read \Illuminate\Database\Eloquent\Collection<int, Like> $likes
+ * @property-read int|null $likes_count
+ * @property-read \Illuminate\Database\Eloquent\Collection<int, Media> $media
+ * @property-read int|null $media_count
+ * @property-read \Illuminate\Database\Eloquent\Collection<int, Report> $reported
+ * @property-read int|null $reported_count
+ * @property-read \Illuminate\Database\Eloquent\Collection<int, Report> $reports
+ * @property-read int|null $reports_count
+ * @property-read \Illuminate\Database\Eloquent\Collection<int, Status> $statuses
+ * @property-read int|null $statuses_count
+ * @property-read \Illuminate\Database\Eloquent\Collection<int, Story> $stories
+ * @property-read int|null $stories_count
+ * @property-read User|null $user
+ *
+ * @method static \Database\Factories\ProfileFactory factory($count = null, $state = [])
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Profile newModelQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Profile newQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Profile onlyTrashed()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Profile query()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Profile whereAvatarUrl($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Profile whereBio($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Profile whereCreatedAt($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Profile whereCw($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Profile whereDeleteAfter($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Profile whereDeletedAt($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Profile whereDomain($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Profile whereFields($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Profile whereFollowerUrl($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Profile whereFollowersCount($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Profile whereFollowersUrl($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Profile whereFollowingCount($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Profile whereFollowingUrl($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Profile whereHeaderBg($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Profile whereId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Profile whereInboxUrl($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Profile whereIndexable($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Profile whereIsPrivate($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Profile whereIsSuggestable($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Profile whereKeyId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Profile whereLastFetchedAt($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Profile whereLastStatusAt($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Profile whereLocation($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Profile whereMovedToProfileId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Profile whereName($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Profile whereNoAutolink($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Profile whereOutboxUrl($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Profile wherePostLayout($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Profile wherePrivateKey($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Profile whereProfileLayout($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Profile wherePublicKey($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Profile whereRemoteUrl($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Profile whereSharedInbox($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Profile whereStatus($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Profile whereStatusCount($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Profile whereUnlisted($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Profile whereUpdatedAt($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Profile whereUserId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Profile whereUsername($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Profile whereWebfinger($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Profile whereWebsite($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Profile withTrashed(bool $withTrashed = true)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Profile withoutTrashed()
+ *
+ * @mixin \Eloquent
  */
 class Profile extends Model
 {
@@ -201,11 +304,11 @@ class Profile extends Model
             }
 
             if ($avatar->cdn_url) {
-                if (substr($avatar->cdn_url, 0, 8) === 'https://') {
+                if (str_starts_with($avatar->cdn_url, 'https://')) {
                     return $avatar->cdn_url;
-                } else {
-                    return url('/storage/avatars/default.jpg');
                 }
+
+                return url('/storage/avatars/default.jpg');
             }
 
             $path = $avatar->media_path;
@@ -214,9 +317,10 @@ class Profile extends Model
                 return url('/storage/avatars/default.jpg');
             }
 
-            if ($avatar->is_remote &&
+            if (
+                $avatar->is_remote &&
                 $avatar->remote_url &&
-                boolval(config_cache('federation.avatars.store_local')) == true
+                boolval(config_cache('federation.avatars.store_local')) === true
             ) {
                 return $avatar->remote_url;
             }
@@ -225,7 +329,7 @@ class Profile extends Model
                 return url('/storage/avatars/default.jpg');
             }
 
-            if (substr($path, 0, 6) !== 'public') {
+            if (! str_starts_with($path, 'public')) {
                 return url('/storage/avatars/default.jpg');
             }
 
@@ -315,12 +419,15 @@ class Profile extends Model
         return $this->sharedInbox ?? $this->inboxUrl();
     }
 
-    public function getDefaultScope()
+    public function getDefaultScope(): string
     {
         return $this->is_private == true ? 'private' : 'public';
     }
 
-    public function getAudience($scope = false)
+    /**
+     * @return mixed[][]
+     */
+    public function getAudience($scope = false): array
     {
         if ($this->remote_url) {
             return [];
@@ -341,8 +448,7 @@ class Profile extends Model
 
             case 'unlisted':
                 $audience = [
-                    'to' => [
-                    ],
+                    'to' => [],
                     'cc' => [
                         'https://www.w3.org/ns/activitystreams#Public',
                         $this->permalink('/followers'),
@@ -355,8 +461,7 @@ class Profile extends Model
                     'to' => [
                         $this->permalink('/followers'),
                     ],
-                    'cc' => [
-                    ],
+                    'cc' => [],
                 ];
                 break;
         }

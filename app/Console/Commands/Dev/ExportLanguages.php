@@ -32,10 +32,8 @@ class ExportLanguages extends Command
 
     /**
      * Execute the console command.
-     *
-     * @return int
      */
-    public function handle()
+    public function handle(): int
     {
         if (config('app.env') !== 'local') {
             $this->error('This command is meant for development purposes and should only be run in a local environment');
@@ -174,7 +172,7 @@ class ExportLanguages extends Command
         foreach ($strings as $key => $value) {
             if (is_array($value)) {
                 $filtered = $this->stripEmptyStrings($value);
-                if (! empty($filtered)) {
+                if ($filtered !== []) {
                     $result[$key] = $filtered;
                 }
             } elseif (is_string($value)) {

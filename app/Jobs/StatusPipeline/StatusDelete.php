@@ -12,16 +12,21 @@ use App\Models\Media;
 use App\Models\MediaTag;
 use App\Models\Mention;
 use App\Models\Notification;
+use App\Models\QuoteAuthorization;
 use App\Models\Report;
 use App\Models\Status;
 use App\Models\StatusArchived;
 use App\Models\StatusEdit;
 use App\Models\StatusHashtag;
 use App\Models\StatusView;
+use App\Services\Account\AccountStatService;
 use App\Services\ActivityPubDeliveryService;
 use App\Services\CollectionService;
+use App\Services\DirectMessageService;
 use App\Services\FractalService;
 use App\Services\NotificationService;
+use App\Services\QuoteService;
+use App\Services\Status\ReplyCleanupService;
 use App\Services\StatusService;
 use App\Transformer\ActivityPub\Verb\DeleteNote;
 use Illuminate\Bus\Queueable;
@@ -86,7 +91,7 @@ class StatusDelete implements ShouldQueue
 
         StatusService::del($status->id, true);
         if ($profile) {
-            if (in_array($status->type, ['photo', 'photo:album', 'video', 'video:album', 'photo:video:album'])) {
+            if (in_array($status->type, AccountStatService::COUNTABLE_STATUS_TYPES)) {
                 $profile->status_count = $profile->status_count - 1;
                 $profile->save();
             }
@@ -94,11 +99,13 @@ class StatusDelete implements ShouldQueue
 
         Cache::forget('pf:atom:user-feed:by-id:'.$status->profile_id);
 
-        if ((bool) config_cache('federation.activitypub.enabled') == true) {
-            return $this->fanoutDelete($status);
-        } else {
-            return $this->unlinkRemoveMedia($status);
+        if ((bool) config_cache('federation.activitypub.enabled') === true) {
+            $this->fanoutDelete($status);
+
+            return;
         }
+
+        $this->unlinkRemoveMedia($status);
     }
 
     public function unlinkRemoveMedia($status)
@@ -117,15 +124,32 @@ class StatusDelete implements ShouldQueue
         if ($status->in_reply_to_id) {
             $parent = Status::find($status->in_reply_to_id);
             if ($parent) {
-                $parent->reply_count = max(0, $parent->reply_count - 1);
-                $parent->save();
+                Status::whereId($parent->id)->where('reply_count', '>', 0)->decrement('reply_count');
                 StatusService::del($parent->id);
             }
         }
 
         Bookmark::whereStatusId($status->id)->delete();
 
-        CollectionItem::whereObjectType(Status::class)
+        // FEP-044f: revoke through the QuoteService contract so a
+        // Delete{QuoteAuthorization} reaches the remote quoter, who may not be
+        // a follower and so misses the Delete{Status} fanout. The stamp must be
+        // federated while $status still resolves: sendDelete() reads
+        // $auth->status->url() and Status is soft-deleted below, so a queued
+        // job would no-op. Send synchronously, then remove the rows.
+        QuoteAuthorization::whereStatusId($status->id)
+            ->approved()
+            ->get()
+            ->each(function (QuoteAuthorization $auth) {
+                $auth->state = QuoteAuthorization::STATE_REVOKED;
+                $auth->revoked_at = now();
+                $auth->save();
+                QuoteService::sendDelete($auth);
+            });
+
+        QuoteAuthorization::whereStatusId($status->id)->delete();
+
+        CollectionItem::whereIn('object_type', ['App\Status', Status::class])
             ->whereObjectId($status->id)
             ->get()
             ->each(function ($col) {
@@ -144,6 +168,7 @@ class StatusDelete implements ShouldQueue
                 });
             DirectMessage::whereIn('id', $dmIds)->delete();
         }
+        app(DirectMessageService::class)->deleteByStatusId($status->id);
         Like::whereStatusId($status->id)->delete();
 
         $mediaTagIds = MediaTag::where('status_id', $status->id)->pluck('id');
@@ -171,7 +196,7 @@ class StatusDelete implements ShouldQueue
                 $not->forceDeleteQuietly();
             });
 
-        Report::whereObjectType(Status::class)
+        Report::whereIn('object_type', ['App\Status', Status::class])
             ->whereObjectId($status->id)
             ->delete();
 
@@ -183,9 +208,9 @@ class StatusDelete implements ShouldQueue
         // decrements hashtags.cached_count (a query-builder delete bypasses it).
         StatusHashtag::whereStatusId($status->id)->get()->each->delete();
         StatusView::whereStatusId($status->id)->delete();
-        Status::whereInReplyToId($status->id)->update(['in_reply_to_id' => null]);
+        ReplyCleanupService::releaseRepliesOf($status);
 
-        AccountInterstitial::where('item_type', Status::class)
+        AccountInterstitial::whereIn('item_type', ['App\Status', Status::class])
             ->where('item_id', $status->id)
             ->delete();
 
@@ -202,7 +227,7 @@ class StatusDelete implements ShouldQueue
         $profile = $status->profile()->withTrashed()->first();
 
         if (! $profile) {
-            return;
+            return null;
         }
 
         $status->setRelation('profile', $profile);
@@ -229,7 +254,7 @@ class StatusDelete implements ShouldQueue
                     'status_id' => $status->id,
                     'inbox' => $audience[$i] ?? null,
                     'result' => $res instanceof \Throwable
-                        ? get_class($res).': '.$res->getMessage()
+                        ? $res::class.': '.$res->getMessage()
                         : $res->status().' '.substr($res->body(), 0, 300),
                 ]);
             });

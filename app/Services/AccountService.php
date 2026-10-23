@@ -3,10 +3,10 @@
 namespace App\Services;
 
 use App\Models\Profile;
-use App\Models\Status;
 use App\Models\User;
 use App\Models\UserDomainBlock;
 use App\Models\UserSetting;
+use App\Services\Account\AccountStatService;
 use App\Transformer\Api\AccountTransformer;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\DB;
@@ -93,7 +93,7 @@ class AccountService
 
             return collect($settings)
                 ->filter(function ($item, $key) {
-                    return in_array($key, array_keys(self::defaultSettings())) == true;
+                    return in_array($key, array_keys(self::defaultSettings())) === true;
                 })
                 ->map(function ($item, $key) {
                     if ($key == 'compose_settings') {
@@ -125,23 +125,28 @@ class AccountService
                 return [];
             }
 
+            // A User can legitimately have no user_settings row (hasOne is
+            // nullable, no FK/backfill guarantee). Fall back to defaults for
+            // the scalar reads instead of dereferencing null, matching the
+            // sibling settings()/hiddenFollowers() methods.
             $settings = $user->settings;
-            $other = array_merge(self::defaultSettings()['other'], $settings->other ?? []);
-            $compose = array_merge(self::defaultSettings()['compose_settings'], $settings->compose_settings ?? []);
+            $defaults = self::defaultSettings();
+            $other = array_merge($defaults['other'], $settings->other ?? []);
+            $compose = array_merge($defaults['compose_settings'], $settings->compose_settings ?? []);
 
             return [
-                'reduce_motion' => (bool) $settings->reduce_motion,
-                'high_contrast_mode' => (bool) $settings->high_contrast_mode,
-                'video_autoplay' => (bool) $settings->video_autoplay,
+                'reduce_motion' => (bool) ($settings->reduce_motion ?? $defaults['reduce_motion']),
+                'high_contrast_mode' => (bool) ($settings->high_contrast_mode ?? $defaults['high_contrast_mode']),
+                'video_autoplay' => (bool) ($settings->video_autoplay ?? $defaults['video_autoplay']),
                 'media_descriptions' => (bool) $compose['media_descriptions'],
                 'default_scope' => (string) $compose['default_scope'],
                 'default_license' => (int) $compose['default_license'],
-                'crawlable' => (bool) $settings->crawlable,
-                'show_profile_follower_count' => (bool) $settings->show_profile_follower_count,
-                'show_profile_following_count' => (bool) $settings->show_profile_following_count,
-                'public_dm' => (bool) $settings->public_dm,
+                'crawlable' => (bool) ($settings->crawlable ?? $defaults['crawlable']),
+                'show_profile_follower_count' => (bool) ($settings->show_profile_follower_count ?? $defaults['show_profile_follower_count']),
+                'show_profile_following_count' => (bool) ($settings->show_profile_following_count ?? $defaults['show_profile_following_count']),
+                'public_dm' => (bool) ($settings->public_dm ?? $defaults['public_dm']),
                 'disable_embeds' => (bool) $other['disable_embeds'],
-                'show_atom' => (bool) $settings->show_atom,
+                'show_atom' => (bool) ($settings->show_atom ?? false),
                 'is_suggestable' => (bool) $user->profile->is_suggestable,
                 'indexable' => (bool) $user->profile->indexable,
             ];
@@ -163,7 +168,7 @@ class AccountService
         return ! $res['disable_embeds'];
     }
 
-    public static function defaultSettings()
+    public static function defaultSettings(): array
     {
         return [
             'crawlable' => true,
@@ -202,16 +207,13 @@ class AccountService
         $key = self::CACHE_KEY.'pcs:'.$id;
 
         if (Cache::has($key)) {
-            return;
+            return null;
         }
 
-        $count = Status::whereProfileId($id)
-            ->whereNull(['in_reply_to_id', 'reblog_of_id'])
-            ->whereIn('scope', ['public', 'unlisted', 'private'])
-            ->count();
-
-        $profile->status_count = $count;
+        $profile->status_count = AccountStatService::recalculateStatusCount($id);
         $profile->save();
+
+        self::del($id);
 
         Cache::put($key, 1, 259200);
 
@@ -226,13 +228,11 @@ class AccountService
             if (Str::contains($username, '@') && ! Str::startsWith($username, '@')) {
                 $username = "@{$username}";
             }
-            // GLITCH MODIFIED START: allow login/lookup with full @user@this-domain handle
-            if(preg_match('/^@([^@]+)@'.preg_quote(config('pixelfed.domain.app')).'$/i', $username, $matches)) {
-                # The username is the fully qualified @user@example.com and the pixelfed site is example.com
-                # Normalize this username to just user
+            if (preg_match('/^@([^@]+)@'.preg_quote(config('pixelfed.domain.app')).'$/i', $username, $matches)) {
+                // The username is the fully qualified @user@example.com and the pixelfed site is example.com
+                // Normalize this username to just user
                 $username = $matches[1];
             }
-            // GLITCH MODIFIED END
 
             $profile = DB::table('profiles')
                 ->whereUsername($username)
@@ -321,16 +321,18 @@ class AccountService
         $num = intval($num);
         $formatter = new NumberFormatter('en_US', NumberFormatter::DECIMAL);
         $formatter->setAttribute(NumberFormatter::MAX_FRACTION_DIGITS, 1);
-
         if ($num >= 1000000000) {
             return $formatter->format($num / 1000000000).'B';
-        } elseif ($num >= 1000000) {
-            return $formatter->format($num / 1000000).'M';
-        } elseif ($num >= 1000) {
-            return $formatter->format($num / 1000).'K';
-        } else {
-            return $formatter->format($num);
         }
+        if ($num >= 1000000) {
+            return $formatter->format($num / 1000000).'M';
+        }
+
+        if ($num >= 1000) {
+            return $formatter->format($num / 1000).'K';
+        }
+
+        return $formatter->format($num);
     }
 
     public static function getUserIdFromProfileId($profileId): ?int
@@ -338,7 +340,7 @@ class AccountService
         return Profile::whereKey($profileId)->value('user_id');
     }
 
-    public static function getMetaDescription($id)
+    public static function getMetaDescription($id): string
     {
         $account = self::get($id, true);
 

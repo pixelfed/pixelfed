@@ -6,9 +6,97 @@ use App\Util\Media\License;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\SoftDeletes;
+use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
 
+/**
+ * @property int $id
+ * @property int|null $status_id
+ * @property int|null $profile_id
+ * @property int|null $user_id
+ * @property int $is_nsfw
+ * @property int $remote_media
+ * @property string|null $original_sha256
+ * @property string|null $optimized_sha256
+ * @property string $media_path
+ * @property string|null $thumbnail_path
+ * @property string|null $cdn_url
+ * @property string|null $optimized_url
+ * @property string|null $thumbnail_url
+ * @property string|null $remote_url
+ * @property string|null $caption
+ * @property string|null $hls_path
+ * @property int $order
+ * @property string|null $mime
+ * @property int|null $size
+ * @property string|null $orientation
+ * @property string|null $filter_name
+ * @property string|null $filter_class
+ * @property string|null $license
+ * @property string|null $processed_at
+ * @property string|null $hls_transcoded_at
+ * @property Carbon|null $created_at
+ * @property Carbon|null $updated_at
+ * @property Carbon|null $deleted_at
+ * @property string|null $key
+ * @property string|null $metadata
+ * @property int $version
+ * @property string|null $blurhash
+ * @property array<array-key, mixed>|null $srcset
+ * @property int|null $width
+ * @property int|null $height
+ * @property bool|null $skip_optimize
+ * @property string|null $replicated_at
+ * @property-read Profile|null $profile
+ * @property-read Status|null $status
+ *
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Media newModelQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Media newQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Media onlyTrashed()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Media query()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Media whereBlurhash($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Media whereCaption($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Media whereCdnUrl($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Media whereCreatedAt($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Media whereDeletedAt($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Media whereFilterClass($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Media whereFilterName($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Media whereHeight($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Media whereHlsPath($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Media whereHlsTranscodedAt($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Media whereId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Media whereIsNsfw($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Media whereKey($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Media whereLicense($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Media whereMediaPath($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Media whereMetadata($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Media whereMime($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Media whereOptimizedSha256($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Media whereOptimizedUrl($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Media whereOrder($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Media whereOrientation($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Media whereOriginalSha256($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Media whereProcessedAt($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Media whereProfileId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Media whereRemoteMedia($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Media whereRemoteUrl($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Media whereReplicatedAt($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Media whereSize($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Media whereSkipOptimize($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Media whereSrcset($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Media whereStatusId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Media whereThumbnailPath($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Media whereThumbnailUrl($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Media whereUpdatedAt($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Media whereUserId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Media whereVersion($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Media whereWidth($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Media withTrashed(bool $withTrashed = true)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Media withoutTrashed()
+ *
+ * @mixin \Eloquent
+ */
 class Media extends Model
 {
     use SoftDeletes;
@@ -27,6 +115,20 @@ class Media extends Model
     public function status(): BelongsTo
     {
         return $this->belongsTo(Status::class);
+    }
+
+    /**
+     * Direct message media has no status_id, just like an upload that was
+     * never posted. This keeps it out of the queries that treat a null
+     * status_id as "unattached" (garbage collection, attaching to a post).
+     */
+    public function scopeNotInDirectMessage($query)
+    {
+        return $query->whereNotExists(function ($sub) {
+            $sub->selectRaw('1')
+                ->from('dm_message_media')
+                ->whereColumn('dm_message_media.media_id', 'media.id');
+        });
     }
 
     public function profile()
@@ -79,13 +181,13 @@ class Media extends Model
     public function mimeType()
     {
         if (! $this->mime) {
-            return;
+            return null;
         }
 
         return explode('/', $this->mime)[0];
     }
 
-    public function activityVerb()
+    public function activityVerb(): string
     {
         $verb = 'Document';
         switch ($this->mimeType()) {
@@ -109,7 +211,7 @@ class Media extends Model
         return $verb;
     }
 
-    public function mediaType()
+    public function mediaType(): string
     {
         $verb = 'Document';
         switch ($this->mimeType()) {

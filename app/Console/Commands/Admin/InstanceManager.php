@@ -96,7 +96,7 @@ class InstanceManager extends Command
     {
         $id = search(
             'Search by domain',
-            fn (string $value) => strlen($value) > 0
+            fn (string $value) => $value !== ''
                 ? Instance::whereUnlisted(false)->where('domain', 'like', "%{$value}%")->pluck('domain', 'id')->all()
                 : []
         );
@@ -136,7 +136,7 @@ class InstanceManager extends Command
     {
         $id = search(
             'Search by domain',
-            fn (string $value) => strlen($value) > 0
+            fn (string $value) => $value !== ''
                 ? Instance::whereUnlisted(true)->where('domain', 'like', "%{$value}%")->pluck('domain', 'id')->all()
                 : []
         );
@@ -176,7 +176,7 @@ class InstanceManager extends Command
     {
         $id = search(
             'Search by domain',
-            fn (string $value) => strlen($value) > 0
+            fn (string $value) => $value !== ''
                 ? Instance::whereBanned(false)->where('domain', 'like', "%{$value}%")->pluck('domain', 'id')->all()
                 : []
         );
@@ -216,7 +216,7 @@ class InstanceManager extends Command
     {
         $id = search(
             'Search by domain',
-            fn (string $value) => strlen($value) > 0
+            fn (string $value) => $value !== ''
                 ? Instance::whereBanned(true)->where('domain', 'like', "%{$value}%")->pluck('domain', 'id')->all()
                 : []
         );

@@ -8,7 +8,7 @@
 
             <div class="media-body">
                 <!-- GLITCH MODIFIED START: DM message body as stacked divs (media, story media + reaction/comment bubble, text); fixes invalid <p> nesting -->
-                <div v-if="convo.type == 'photo'" class="p-0">
+                <div v-if="convo.type == 'photo' || convo.type == 'photos'" class="p-0">
                     <img
                         :src="convo.media"
                         class="media-embed shadow"
@@ -16,7 +16,7 @@
                         onerror="this.onerror=null;this.src='/storage/no-preview.png';"
                         @click.prevent="expandMedia">
                 </div>
-                <div v-else-if="convo.type == 'video'" class="p-0 mb-0" style="line-height: 0;">
+                <div v-else-if="convo.type == 'video' || convo.type == 'videos'" class="p-0 mb-0" style="line-height: 0;">
                     <video :src="convo.media" class="media-embed shadow" style="border-radius:20px;" controls>
                     </video>
                     <!-- <span class="d-block bg-primary d-flex align-items-center justify-content-center" style="width:200px;height: 110px;border-radius: 20px;">

@@ -24,9 +24,9 @@ class NetworkTimelineService
             return [];
         }
 
-        return array_keys(Redis::zrevrangebyscore(self::CACHE_KEY, $start, '-inf', [
+        return array_keys(Redis::zrevrangebyscore(self::CACHE_KEY, '('.$start, '-inf', [
             'withscores' => true,
-            'limit' => [1, $limit],
+            'limit' => [0, $limit],
         ]));
     }
 
@@ -36,7 +36,7 @@ class NetworkTimelineService
             return [];
         }
 
-        return array_keys(Redis::zrevrangebyscore(self::CACHE_KEY, '+inf', $end, [
+        return array_keys(Redis::zrevrangebyscore(self::CACHE_KEY, '+inf', '('.$end, [
             'withscores' => true,
             'limit' => [0, $limit],
         ]));

@@ -75,7 +75,7 @@ trait ManagesMediaStorageEnv
             $host = parse_url($url, PHP_URL_HOST);
 
             return $host ?: null;
-        } catch (\Throwable $e) {
+        } catch (\Throwable) {
             return null;
         }
     }

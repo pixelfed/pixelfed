@@ -3,33 +3,33 @@
 return [
 
     'verifyYourEmailAddress' => '',
-    'loginTitle' => '',
+    'loginTitle' => 'Paskyros prisijungimas',
     'failed' => '',
     'throttle' => '',
-    'password' => '',
-    'remember' => '',
-    'forgot' => '',
-    'login' => '',
+    'password' => 'Slaptažodis',
+    'remember' => 'Prisiminti mane',
+    'forgot' => 'Pamiršau slaptažodį',
+    'login' => 'Prisijungti',
 
-    'register' => '',
+    'register' => 'Registruotis',
     'reset' => '',
 
     'name' => '',
     'username' => '',
     'confirm-password' => '',
 
-    'age' => '',
+    'age' => 'Esu bent 16 metų',
     'terms' => ''.route('site.terms').''.route('site.privacy').'',
 
-    'emailAddress' => '',
-    'email' => '',
-    'forgotEmail' => '',
+    'emailAddress' => 'El. pašto adresas',
+    'email' => 'El. paštas',
+    'forgotEmail' => 'Pamiršau el. paštą',
 
     'registerTitle' => '',
 
     'sendReset' => '',
-    'backLogin' => '',
+    'backLogin' => 'Grįžti į prisijungimą',
 
-    'signInMastodon' => '',
+    'signInMastodon' => 'Prisijungti su „Mastodon“',
 
 ];

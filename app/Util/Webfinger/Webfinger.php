@@ -59,7 +59,7 @@ class Webfinger
         ];
     }
 
-    public function generate()
+    public function generate(): array
     {
         return [
             'subject' => $this->subject,

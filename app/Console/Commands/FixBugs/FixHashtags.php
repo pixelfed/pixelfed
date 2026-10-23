@@ -56,21 +56,19 @@ class FixHashtags extends Command
         $this->info('Found '.Hashtag::count().' total hashtags!');
         $count = 0;
         foreach (Hashtag::lazyById(100, 'id') as $tag) {
-            $slug = Str::slug($tag->name, '-', false);
+            $slug = Str::slug($tag->name, '-', null);
             if ($slug === $tag->slug) {
                 continue;
             }
-            $count = Hashtag::whereName($tag->name)->where('slug', '===', $slug)->count();
+            $count = Hashtag::whereName($tag->name)->where('slug', '=', $slug)->count();
             if (! $count) {
                 continue;
             }
-            $this->info($count.':'.$tag->slug.' : '.Str::slug($tag->name, '-', false));
+            $this->info($count.':'.$tag->slug.' : '.Str::slug($tag->name, '-', null));
 
         }
 
         $this->info('Found '.$count.' broken tags');
-
-        return;
 
         $missingCount = StatusHashtag::doesntHave('profile')->doesntHave('status')->count();
         if ($missingCount > 0) {

@@ -116,8 +116,17 @@ class FeedInsertPipeline implements ShouldBeUniqueUntilProcessing, ShouldQueue
             $skipIds = UserDomainBlock::where('domain', $domain)->pluck('profile_id')->toArray();
         }
 
+        $filterableIds = [$status['account']['id']];
+
+        // For a reblog, also honor mutes/blocks against the ORIGINAL author,
+        // not just the sharer — otherwise a blocked account's post reappears
+        // in a viewer's feed when a followed account boosts it.
+        if (isset($status['reblog']['account']['id'])) {
+            $filterableIds[] = $status['reblog']['account']['id'];
+        }
+
         $filters = UserFilter::whereFilterableType(Profile::class)
-            ->whereFilterableId($status['account']['id'])
+            ->whereIn('filterable_id', array_unique($filterableIds))
             ->whereIn('filter_type', ['mute', 'block'])
             ->pluck('user_id')
             ->toArray();

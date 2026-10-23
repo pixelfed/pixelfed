@@ -15,7 +15,7 @@ class EmailService
         return in_array(strtolower(last($parts)), array_map('strtolower', self::bannedDomains()));
     }
 
-    public static function bannedDomains()
+    public static function bannedDomains(): array
     {
         return [
             '0-00.usa.cc',

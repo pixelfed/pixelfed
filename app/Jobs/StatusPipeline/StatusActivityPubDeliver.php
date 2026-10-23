@@ -97,7 +97,7 @@ class StatusActivityPubDeliver implements ShouldQueue
 
         $audience = array_values(array_unique(array_merge($audience, $mentions, $parentInbox)));
 
-        if (empty($audience) || ! in_array($status->scope, ['public', 'unlisted', 'private'])) {
+        if ($audience === [] || ! in_array($status->scope, ['public', 'unlisted', 'private'])) {
             // Return on profiles with no remote followers
             return;
         }
@@ -114,6 +114,17 @@ class StatusActivityPubDeliver implements ShouldQueue
 
         $activity = FractalService::item($status, $activitypubObject);
 
-        ActivityPubDeliveryService::pool($profile, $audience, $activity);
+        /*
+         * FEP-8fcf: followers-only posts rely on the receiving server's copy
+         * of our followers collection for access control, so they carry a
+         * Collection-Synchronization header that lets it detect drift.
+         */
+        ActivityPubDeliveryService::pool(
+            $profile,
+            $audience,
+            $activity,
+            null,
+            $status->scope === 'private'
+        );
     }
 }

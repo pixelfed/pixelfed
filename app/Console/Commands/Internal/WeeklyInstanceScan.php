@@ -29,7 +29,7 @@ class WeeklyInstanceScan extends Command
      */
     public function handle()
     {
-        if ((bool) config_cache('federation.activitypub.enabled') == false) {
+        if ((bool) config_cache('federation.activitypub.enabled') === false) {
             return;
         }
 

@@ -2,11 +2,47 @@
 
 namespace App\Models;
 
+use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Log;
 
+/**
+ * @property string $id
+ * @property int $profile_id
+ * @property string $phrase
+ * @property int $action
+ * @property array<array-key, mixed>|null $context
+ * @property Carbon|null $expires_at
+ * @property Carbon|null $created_at
+ * @property Carbon|null $updated_at
+ * @property-read Profile|null $account
+ * @property-read mixed $expires_in
+ * @property mixed $filter_action
+ * @property bool $irreversible
+ * @property mixed $title
+ * @property-read Collection<int, CustomFilterKeyword> $keywords
+ * @property-read int|null $keywords_count
+ * @property-read Collection<int, CustomFilterStatus> $statuses
+ * @property-read int|null $statuses_count
+ *
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|CustomFilter newModelQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|CustomFilter newQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|CustomFilter query()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|CustomFilter unexpired()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|CustomFilter whereAction($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|CustomFilter whereContext($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|CustomFilter whereCreatedAt($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|CustomFilter whereExpiresAt($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|CustomFilter whereId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|CustomFilter wherePhrase($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|CustomFilter whereProfileId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|CustomFilter whereUpdatedAt($value)
+ *
+ * @mixin \Eloquent
+ */
 class CustomFilter extends Model
 {
     public $shouldInvalidateCache = false;
@@ -77,7 +113,7 @@ class CustomFilter extends Model
         return $this->hasMany(CustomFilterStatus::class);
     }
 
-    public function toFilterArray()
+    public function toFilterArray(): array
     {
         return [
             'id' => $this->id,
@@ -100,6 +136,8 @@ class CustomFilter extends Model
             case 2:
                 return 'blur';
         }
+
+        return null;
     }
 
     public function getTitleAttribute()
@@ -122,7 +160,7 @@ class CustomFilter extends Model
         $this->attributes['action'] = $value ? self::ACTION_HIDE : self::ACTION_WARN;
     }
 
-    public function getIrreversibleAttribute()
+    public function getIrreversibleAttribute(): bool
     {
         return $this->action === self::ACTION_HIDE;
     }
@@ -151,7 +189,7 @@ class CustomFilter extends Model
         });
     }
 
-    public function isExpired()
+    public function isExpired(): bool
     {
         return $this->expires_at !== null && $this->expires_at->isPast();
     }
@@ -268,7 +306,6 @@ class CustomFilter extends Model
      * Get cached filters for an account with simplified, secure approach
      *
      * @param  int  $profileId  The profile ID
-     * @return Collection The collection of filters
      */
     public static function getCachedFiltersForAccount($profileId)
     {
@@ -286,14 +323,14 @@ class CustomFilter extends Model
                     return;
                 }
 
-                $maxPatternsPerFilter = self::getMaxFiltersPerUser();
+                $maxPatternsPerFilter = self::getMaxKeywordsPerFilter();
                 $keywordsToProcess = $keywords->take($maxPatternsPerFilter);
 
                 $regexPatterns = $keywordsToProcess->map(function ($keyword) {
                     $pattern = preg_quote($keyword->keyword, '/');
 
                     if ($keyword->whole_word) {
-                        $pattern = '\b'.$pattern.'\b';
+                        return '\b'.$pattern.'\b';
                     }
 
                     return $pattern;
@@ -356,7 +393,7 @@ class CustomFilter extends Model
      * @param  mixed  $status  The status to check
      * @return array The filter matches
      */
-    public static function applyCachedFilters($cachedFilters, $status)
+    public static function applyCachedFilters($cachedFilters, $status): array
     {
         $results = [];
 
@@ -395,7 +432,7 @@ class CustomFilter extends Model
             //     }
             // }
 
-            if (! empty($keywordMatches) || ! empty($statusMatches)) {
+            if ($keywordMatches !== [] || ! empty($statusMatches)) {
                 $results[] = [
                     'filter' => $filter->toFilterArray(),
                     'keyword_matches' => $keywordMatches ?: null,

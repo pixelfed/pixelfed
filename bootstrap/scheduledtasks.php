@@ -29,7 +29,7 @@ $schedule->command('notifications:prune-old')->everySixHours(33)->onOneServer()-
 
 if ((bool) config_cache('pixelfed.cloud_storage') && (bool) config_cache('media.delete_local_after_cloud')) {
     // Upload any local stragglers to cloud and GC verified local copies.
-    $schedule->command('admin:MediaMoveStorageLocalToCloud --force --limit=500')->hourlyAt(15);
+    $schedule->command('admin:MediaMoveStorageLocalToCloud --force --limit=500')->hourlyAt(15)->onOneServer()->withoutOverlapping(3600);
 }
 
 if (config('import.instagram.enabled')) {
@@ -51,3 +51,7 @@ if ((bool) config('scheduledtasks.account_storage_reconcile')) {
 }
 
 $schedule->command('app:instance-update-total-local-posts')->twiceDailyAt(1, 13, 45)->onOneServer();
+
+if ((bool) config('federation.activitypub.block_sync.enabled', true)) {
+    $schedule->command('federation:block-sync-reconcile')->dailyAt('03:40')->onOneServer()->withoutOverlapping(120);
+}

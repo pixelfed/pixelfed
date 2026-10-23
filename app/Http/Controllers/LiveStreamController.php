@@ -135,7 +135,7 @@ class LiveStreamController extends Controller
 
         abort_if(! $request->user() && $stream && $stream->visibility !== 'public', 404);
 
-        return view('live.player', compact('id'));
+        return view('live.player', ['id' => $id]);
     }
 
     public function deleteStream(Request $request): array
@@ -194,7 +194,7 @@ class LiveStreamController extends Controller
         return $res;
     }
 
-    public function addChatComment(Request $request)
+    public function addChatComment(Request $request): array
     {
         abort_if(! config('livestreaming.enabled'), 400);
         abort_if(! $request->user(), 403);
@@ -363,27 +363,23 @@ class LiveStreamController extends Controller
             $key = $request->filled('name') ? $request->input('name') : $url['name'];
         }
 
-        $token = substr($name, 0, 10) === 'streamkey-';
+        $token = str_starts_with($name, 'streamkey-');
 
         if ($token) {
             $stream = LiveStream::whereStreamKey($key)->firstOrFail();
 
             return redirect($stream->getStreamRtmpUrl(), 301);
-        } else {
-            $stream = LiveStream::whereStreamId($key)->firstOrFail();
         }
+        $stream = LiveStream::whereStreamId($key)->firstOrFail();
 
         StreamStart::dispatch($stream->profile_id);
 
-        if ($request->filled('name') && $token == false) {
+        if ($request->filled('name') && $token === false) {
             $stream->live_at = now();
             $stream->save();
 
             return [];
-        } else {
-            abort(400);
         }
-
         abort(400);
     }
 

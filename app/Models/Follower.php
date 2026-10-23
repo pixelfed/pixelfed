@@ -9,12 +9,30 @@ use Illuminate\Support\Carbon;
  * @property int $id
  * @property int $profile_id
  * @property int $following_id
- * @property bool|null $local_profile
+ * @property int $local_profile
+ * @property int $local_following
+ * @property int $show_reblogs
+ * @property int $notify
  * @property Carbon|null $created_at
  * @property Carbon|null $updated_at
- * @property-read Profile $actor
- * @property-read Profile $target
- * @property-read Profile $profile
+ * @property-read Profile|null $actor
+ * @property-read Profile|null $profile
+ * @property-read Profile|null $target
+ *
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Follower newModelQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Follower newQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Follower query()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Follower whereCreatedAt($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Follower whereFollowingId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Follower whereId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Follower whereLocalFollowing($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Follower whereLocalProfile($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Follower whereNotify($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Follower whereProfileId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Follower whereShowReblogs($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Follower whereUpdatedAt($value)
+ *
+ * @mixin \Eloquent
  */
 class Follower extends Model
 {

@@ -5,13 +5,14 @@ namespace App\Transformer\ActivityPub\Verb;
 use App\Models\CustomEmoji;
 use App\Models\Status;
 use App\Services\MediaService;
+use App\Services\QuoteService;
 use App\Util\Lexer\Autolink;
 use Illuminate\Support\Str;
 use League\Fractal;
 
 class UpdateNote extends Fractal\TransformerAbstract
 {
-    public function transform(Status $status)
+    public function transform(Status $status): array
     {
         $mentions = $status->mentions->map(function ($mention) {
             $webfinger = $mention->emailUrl();
@@ -27,7 +28,7 @@ class UpdateNote extends Fractal\TransformerAbstract
         })->toArray();
 
         if ($status->in_reply_to_id != null) {
-            $parent = $status->parent()->profile;
+            $parent = $status->parent()?->profile;
             if ($parent) {
                 $webfinger = $parent->emailUrl();
                 $name = Str::startsWith($webfinger, '@') ?
@@ -88,6 +89,7 @@ class UpdateNote extends Fractal\TransformerAbstract
                     ],
                     'toot' => 'http://joinmastodon.org/ns#',
                     'Emoji' => 'toot:Emoji',
+                    ...QuoteService::NOTE_CONTEXT_TERMS,
                 ],
             ],
             'id' => $status->permalink('#updates/'.$latestEdit->id),
@@ -101,7 +103,7 @@ class UpdateNote extends Fractal\TransformerAbstract
                 'type' => 'Note',
                 'summary' => $status->is_nsfw ? $status->cw_summary : null,
                 'content' => $content,
-                'inReplyTo' => $status->in_reply_to_id ? $status->parent()->url() : null,
+                'inReplyTo' => $status->inReplyToUri(),
                 'published' => $status->created_at->toAtomString(),
                 'url' => $status->url(),
                 'attributedTo' => $status->profile->permalink(),
@@ -111,11 +113,12 @@ class UpdateNote extends Fractal\TransformerAbstract
                 'attachment' => MediaService::activitypub($status->id, true),
                 'tag' => $tags,
                 'commentsEnabled' => (bool) ! $status->comments_disabled,
+                'interactionPolicy' => QuoteService::interactionPolicy($status),
                 'updated' => $latestEdit->created_at->toAtomString(),
                 'capabilities' => [
                     'announce' => 'https://www.w3.org/ns/activitystreams#Public',
                     'like' => 'https://www.w3.org/ns/activitystreams#Public',
-                    'reply' => $status->comments_disabled == true ? '[]' : 'https://www.w3.org/ns/activitystreams#Public',
+                    'reply' => $status->comments_disabled == true ? [] : 'https://www.w3.org/ns/activitystreams#Public',
                 ],
                 'location' => $status->place_id ? [
                     'type' => 'Place',

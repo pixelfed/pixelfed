@@ -24,7 +24,7 @@ class SnowflakeService
         | 0;
     }
 
-    public static function next()
+    public static function next(): int
     {
         /*
          * Atomically obtain the next sequence value. Cache::increment()

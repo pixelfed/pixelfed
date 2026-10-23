@@ -35,7 +35,7 @@ class AdminShadowFilterService
         });
     }
 
-    public static function canAddToPublicFeedByProfileId($profileId)
+    public static function canAddToPublicFeedByProfileId($profileId): bool
     {
         return ! in_array($profileId, self::getHideFromPublicFeedsList());
     }

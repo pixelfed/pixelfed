@@ -62,6 +62,6 @@ class ContactController extends Controller
             ->whereNotNull('responded_at')
             ->findOrFail($id);
 
-        return view('site.contact.admin-response', compact('contact'));
+        return view('site.contact.admin-response', ['contact' => $contact]);
     }
 }

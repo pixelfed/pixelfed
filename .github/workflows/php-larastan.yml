@@ -1,5 +1,8 @@
 name: PHP - Larastan
 
+permissions:
+  contents: read
+
 on:
   push:
     branches: [staging, dev, unstable]

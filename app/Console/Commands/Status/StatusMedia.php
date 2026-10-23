@@ -288,7 +288,7 @@ class StatusMedia extends Command
 
             return Storage::disk('local')->exists('public/'.$mediaPath)
                 || Storage::disk('local')->exists($mediaPath);
-        } catch (\Throwable $e) {
+        } catch (\Throwable) {
             return false;
         }
     }
@@ -301,7 +301,7 @@ class StatusMedia extends Command
 
         try {
             return (string) Storage::disk(config('filesystems.cloud'))->url($mediaPath);
-        } catch (\Throwable $e) {
+        } catch (\Throwable) {
             return '(cloud disk not resolvable in this environment)';
         }
     }

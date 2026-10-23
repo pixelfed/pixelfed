@@ -28,11 +28,7 @@ class NodeinfoService
                 ->withHeaders($headers)
                 ->timeout(5)
                 ->get($wk);
-        } catch (RequestException $e) {
-            return false;
-        } catch (ConnectionException $e) {
-            return false;
-        } catch (\Exception $e) {
+        } catch (RequestException|ConnectionException|\Exception $e) {
             return false;
         }
 
@@ -77,11 +73,7 @@ class NodeinfoService
                 ->withHeaders($headers)
                 ->timeout(5)
                 ->get($href);
-        } catch (RequestException $e) {
-            return false;
-        } catch (ConnectionException $e) {
-            return false;
-        } catch (\Exception $e) {
+        } catch (RequestException|ConnectionException|\Exception) {
             return false;
         }
 

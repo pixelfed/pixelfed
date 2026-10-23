@@ -685,7 +685,7 @@
                                       <span>{{ collection.post_count }} Posts</span>
                                       <span>&middot;</span>
                                       <span v-if="collection.visibility === 'draft'" class="primary"><i class="far fa-lock fa-sm"></i> {{ $t("profile.draft")}}</span>
-                                      <span v-else>Created {{ timeago(collection.published_at) }} ago</span>
+                                      <span v-else>Created {{ timeAgo(collection.published_at) }} ago</span>
                                     </p>
                                   </div>
                                 </div>

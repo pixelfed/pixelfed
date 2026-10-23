@@ -6,9 +6,12 @@ use App\Jobs\HomeFeedPipeline\FeedUnfollowPipeline;
 use App\Models\FeatureAuthorization;
 use App\Models\Follower;
 use App\Models\Profile;
+use App\Models\QuoteAuthorization;
 use App\Models\UserFilter;
 use App\Services\AccountService;
 use App\Services\FeaturedCollectionService;
+use App\Services\FollowerService;
+use App\Services\QuoteService;
 use App\Services\RelationshipService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Cache;
@@ -30,7 +33,7 @@ trait PrivacySettings
             $settings['disable_embeds'] = false;
         }
 
-        return view('settings.privacy', compact('settings', 'profile'));
+        return view('settings.privacy', ['settings' => $settings, 'profile' => $profile]);
     }
 
     public function privacyStore(Request $request)
@@ -48,6 +51,11 @@ trait PrivacySettings
             'show_atom',
         ];
 
+        // Captured before the loop mutates is_private. When the account was
+        // private at render time the crawlable checkbox is disabled and omitted
+        // from the POST, so its prior value must be preserved rather than reset.
+        $wasPrivate = (bool) $profile->getOriginal('is_private');
+
         $profile->indexable = $request->input('indexable') == 'on';
         $profile->is_suggestable = $request->input('is_suggestable') == 'on';
         $profile->save();
@@ -64,7 +72,7 @@ trait PrivacySettings
 
         foreach ($fields as $field) {
             $form = $request->input($field);
-            if ($field == 'is_private') {
+            if ($field === 'is_private') {
                 if ($form == 'on') {
                     $profile->{$field} = true;
                     $settings->show_guests = false;
@@ -75,19 +83,22 @@ trait PrivacySettings
                     $profile->save();
                 }
                 Cache::forget('profiles:private');
-            } elseif ($field == 'crawlable') {
+            } elseif ($field === 'crawlable') {
+                if ($wasPrivate) {
+                    continue;
+                }
                 if ($form == 'on') {
                     $settings->{$field} = false;
                 } else {
                     $settings->{$field} = true;
                 }
-            } elseif ($field == 'public_dm') {
+            } elseif ($field === 'public_dm') {
                 if ($form == 'on') {
                     $settings->{$field} = true;
                 } else {
                     $settings->{$field} = false;
                 }
-            } elseif ($field == 'indexable') {
+            } elseif ($field === 'indexable') {
             } else {
                 if ($form == 'on') {
                     $settings->{$field} = true;
@@ -105,6 +116,13 @@ trait PrivacySettings
             $settings->save();
             FeatureAuthorization::whereProfileId($pid)->revoked()->delete();
             FeaturedCollectionService::forgetPolicy($pid);
+        }
+
+        $canQuote = $request->input('can_quote');
+        if (in_array($canQuote, QuoteService::POLICIES, true) && $canQuote !== $settings->can_quote) {
+            $settings->can_quote = $canQuote;
+            $settings->save();
+            QuoteService::forgetPolicy($pid);
         }
 
         Cache::forget('profile:settings:'.$pid);
@@ -130,7 +148,7 @@ trait PrivacySettings
         $ids = (new UserFilter)->mutedUserIds($pid);
         $users = Profile::whereIn('id', $ids)->simplePaginate(15);
 
-        return view('settings.privacy.muted', compact('users'));
+        return view('settings.privacy.muted', ['users' => $users]);
     }
 
     public function mutedUsersUpdate(Request $request)
@@ -162,7 +180,7 @@ trait PrivacySettings
             ->orderByDesc('created_at')
             ->simplePaginate(15);
 
-        return view('settings.privacy.featured-collections', compact('collections'));
+        return view('settings.privacy.featured-collections', ['collections' => $collections]);
     }
 
     public function featuredCollectionsRemove(Request $request)
@@ -180,13 +198,40 @@ trait PrivacySettings
         return redirect()->back()->with('status', 'You have been removed from the collection.');
     }
 
+    public function quotes(Request $request)
+    {
+        $pid = $request->user()->profile->id;
+        $quotes = QuoteAuthorization::whereProfileId($pid)
+            ->approved()
+            ->with(['actor', 'status'])
+            ->orderByDesc('id')
+            ->simplePaginate(15);
+
+        return view('settings.privacy.quotes', ['quotes' => $quotes]);
+    }
+
+    public function quotesRevoke(Request $request)
+    {
+        $this->validate($request, [
+            'id' => 'required|integer|min:1',
+        ]);
+        $pid = $request->user()->profile->id;
+        $auth = QuoteAuthorization::whereProfileId($pid)
+            ->approved()
+            ->findOrFail($request->input('id'));
+
+        QuoteService::revoke($auth);
+
+        return redirect()->back()->with('status', 'Quote approval revoked.');
+    }
+
     public function blockedUsers(Request $request)
     {
         $pid = $request->user()->profile->id;
         $ids = (new UserFilter)->blockedUserIds($pid);
         $users = Profile::whereIn('id', $ids)->simplePaginate(15);
 
-        return view('settings.privacy.blocked', compact('users'));
+        return view('settings.privacy.blocked', ['users' => $users]);
     }
 
     public function blockedUsersUpdate(Request $request)
@@ -237,7 +282,7 @@ trait PrivacySettings
         return view('settings.privacy.blocked-keywords');
     }
 
-    public function privateAccountOptions(Request $request)
+    public function privateAccountOptions(Request $request): array
     {
         $this->validate($request, [
             'mode' => 'required|string|in:keep-all,mutual-only,only-followers,remove-all',
@@ -251,30 +296,42 @@ trait PrivacySettings
         $settings = $request->user()->settings;
 
         if ($mode !== 'keep-all') {
+            $query = Follower::whereFollowingId($profile->id);
+
             switch ($mode) {
                 case 'mutual-only':
                     $following = $profile->following()->pluck('profiles.id');
-                    Follower::whereFollowingId($profile->id)->whereNotIn('profile_id', $following)->delete();
+                    $query->whereNotIn('profile_id', $following);
                     break;
 
                 case 'only-followers':
                     $ts = now()->subMinutes($duration);
-                    Follower::whereFollowingId($profile->id)->where('created_at', '>', $ts)->delete();
+                    $query->where('created_at', '>', $ts);
                     break;
 
                 case 'remove-all':
-                    Follower::whereFollowingId($profile->id)
-                        ->chunkById(100, function ($followers) {
-                            foreach ($followers as $follower) {
-                                FeedUnfollowPipeline::dispatch($follower->profile_id, $follower->following_id)->onQueue('feed');
-                            }
-                        });
-                    Follower::whereFollowingId($profile->id)->delete();
+                    // no additional constraint: remove every follower
                     break;
 
                 default:
-                    // code...
+                    $query = null;
                     break;
+            }
+
+            // Delete followers one at a time so FollowerService::remove() runs
+            // for each: a bulk ->delete() skips the model event / observer and
+            // leaves the follower in the Redis sorted sets that back
+            // FollowerService::follows(), which gates private-content access.
+            // A removed follower must lose access, not keep it for the 7-day
+            // cache-marker window.
+            if ($query) {
+                $query->chunkById(100, function ($followers) {
+                    foreach ($followers as $follower) {
+                        FollowerService::remove($follower->profile_id, $follower->following_id);
+                        FeedUnfollowPipeline::dispatch($follower->profile_id, $follower->following_id)->onQueue('feed');
+                        $follower->delete();
+                    }
+                });
             }
         }
         $profile->is_private = true;

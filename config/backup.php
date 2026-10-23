@@ -77,7 +77,6 @@ return [
                 ],
             ],
 
-            // GLITCH MODIFIED START: dump settings for every driver, back up the configured connection (upstream only backs up 'mysql')
             'mariadb' => [
                 'dump' => [
                     'useSingleTransaction' => true,
@@ -92,24 +91,10 @@ return [
                 ],
             ],
 
-            'sqlite' => [
-                'dump' => [
-                    'useSingleTransaction' => true,
-                    'useQuick' => true,
-                ],
-            ],
-
-            'sqlsrv' => [
-                'dump' => [
-                    'useSingleTransaction' => true,
-                    'useQuick' => true,
-                ],
-            ],
-
+            // Hardcoding 'mysql' breaks backup:run on non-MySQL installs
             'databases' => [
                 env('DB_CONNECTION', 'mysql'),
             ],
-            // GLITCH MODIFIED END
         ],
 
         /*

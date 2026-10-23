@@ -66,14 +66,12 @@ class AvatarStorageDeepClean extends Command
             if (! $this->confirm('Do you want to continue where you left off?')) {
                 $this->error('Aborting...');
                 exit;
-            } else {
-                $start = Cache::has('cmd:asdp') ? (int) Cache::get('cmd:asdp') : (int) Storage::get('avatar-deep-clean.json');
-
-                if ($start && $start < 1 || $start > PHP_INT_MAX) {
-                    $this->error('Error fetching cached value');
-                    $this->error('Aborting...');
-                    exit;
-                }
+            }
+            $start = Cache::has('cmd:asdp') ? (int) Cache::get('cmd:asdp') : (int) Storage::get('avatar-deep-clean.json');
+            if ($start && $start < 1 || $start > PHP_INT_MAX) {
+                $this->error('Error fetching cached value');
+                $this->error('Aborting...');
+                exit;
             }
         }
 
@@ -97,13 +95,9 @@ class AvatarStorageDeepClean extends Command
         }
     }
 
-    protected function activeCheck()
+    protected function activeCheck(): bool
     {
-        if (Storage::exists('avatar-deep-clean.json') || Cache::has('cmd:asdp')) {
-            return false;
-        }
-
-        return true;
+        return ! Storage::exists('avatar-deep-clean.json') && ! Cache::has('cmd:asdp');
     }
 
     protected function handleAvatar($avatar)

@@ -2,6 +2,7 @@
 
 namespace App\Transformer\Api;
 
+use App\Models\DmMessage;
 use App\Models\MediaTag;
 use App\Models\ModLog;
 use App\Models\Notification;
@@ -13,7 +14,7 @@ use League\Fractal;
 
 class NotificationTransformer extends Fractal\TransformerAbstract
 {
-    public function transform(Notification $notification)
+    public function transform(Notification $notification): array
     {
         $res = [
             'id' => (string) $notification->id,
@@ -34,6 +35,17 @@ class NotificationTransformer extends Fractal\TransformerAbstract
             $res['status'] = StatusService::get($n->item_id, false);
         }
 
+        // Lets a client open the right conversation from the notification
+        if ($n->item_id && $n->item_type == DmMessage::class) {
+            $message = DmMessage::find($n->item_id);
+            if ($message) {
+                $res['direct'] = [
+                    'conversation_id' => (string) $message->conversation_id,
+                    'message_id' => (string) $message->id,
+                ];
+            }
+        }
+
         if ($n->item_id && $n->item_type == ModLog::class) {
             $ml = $n->item;
             if ($ml && $ml->object_uid) {
@@ -44,7 +56,7 @@ class NotificationTransformer extends Fractal\TransformerAbstract
             }
         }
 
-        if ($n->item_id && $n->item_type == MediaTag::class) {
+        if ($n->item_id && in_array($n->item_type, ['App\MediaTag', MediaTag::class])) {
             $ml = $n->item;
             if ($ml && $ml->tagged_username) {
                 $np = StatusService::get($ml->status_id, false);

@@ -41,7 +41,7 @@ class GenerateInstanceActor extends Command
             });
             $this->info('Instance actor succesfully generated. You do not need to run this command again.');
 
-            return;
+            return null;
         }
 
         $pkiConfig = [

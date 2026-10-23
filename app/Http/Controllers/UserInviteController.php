@@ -31,7 +31,7 @@ class UserInviteController extends Controller
         $limit = config('pixelfed.user_invites.limit.total');
         $used = UserInvite::whereUserId(Auth::id())->count();
 
-        return view('settings.invites.home', compact('invites', 'limit', 'used'));
+        return view('settings.invites.home', ['invites' => $invites, 'limit' => $limit, 'used' => $used]);
     }
 
     public function store(Request $request): RedirectResponse
@@ -77,7 +77,7 @@ class UserInviteController extends Controller
             ->where('token', $token)
             ->first();
 
-        return view('invite.landing', compact('invite'));
+        return view('invite.landing', ['invite' => $invite]);
         // return response()->json([
         //  'key' => $key,
         //  'token' => $token,
@@ -119,6 +119,6 @@ class UserInviteController extends Controller
         abort_if(! $request->session()->has('invite_verified'), 404);
         $invite = UserInvite::find($request->session()->get('invite_id'));
 
-        return view('invite.verified', compact('invite'));
+        return view('invite.verified', ['invite' => $invite]);
     }
 }

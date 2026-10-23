@@ -16,11 +16,13 @@ use App\Models\Profile;
 use App\Models\Status;
 use App\Services\AccountService;
 use App\Services\CollectionService;
+use App\Services\DirectMessageService;
 use App\Services\MediaBlocklistService;
 use App\Services\MediaPathService;
 use App\Services\MediaStorageService;
 use App\Services\MediaTagService;
 use App\Services\PlaceService;
+use App\Services\QuoteService;
 use App\Services\SnowflakeService;
 use App\Services\UserFilterService;
 use App\Services\UserRoleService;
@@ -96,7 +98,7 @@ class ComposeController extends Controller
         $sizeInKbs = (int) ceil($fileSize / 1000);
         $updatedAccountSize = (int) $accountSize + (int) $sizeInKbs;
 
-        if ((bool) config_cache('pixelfed.enforce_account_limit') == true) {
+        if ((bool) config_cache('pixelfed.enforce_account_limit') === true) {
             $limit = (int) config_cache('pixelfed.max_account_size');
             if ($updatedAccountSize >= $limit) {
                 abort(403, 'Account size limit reached.');
@@ -105,7 +107,7 @@ class ComposeController extends Controller
 
         $mimes = explode(',', config_cache('pixelfed.media_types'));
 
-        abort_if(in_array($photo->getMimeType(), $mimes) == false, 400, 'Invalid media format');
+        abort_if(in_array($photo->getMimeType(), $mimes) === false, 400, 'Invalid media format');
 
         // Check the blocklist against the temp upload BEFORE storing, so a
         // blocked upload never leaves an orphaned file on disk (media:gc only
@@ -164,7 +166,7 @@ class ComposeController extends Controller
         return response()->json($res);
     }
 
-    public function mediaUpdate(Request $request)
+    public function mediaUpdate(Request $request): array
     {
         $this->validate($request, [
             'id' => 'required',
@@ -196,13 +198,23 @@ class ComposeController extends Controller
             ->whereNull('status_id')
             ->findOrFail($id);
 
-        $media->save();
+        // Enforce the content blocklist on the replacement bytes, mirroring
+        // mediaUpload — mediaUpdate overwrites the previously-validated file.
+        $hash = \hash_file('sha256', $photo->getRealPath());
+        abort_if(MediaBlocklistService::exists($hash) == true, 451);
 
         $fragments = explode('/', $media->media_path);
         $name = last($fragments);
         array_pop($fragments);
         $dir = implode('/', $fragments);
         $path = $photo->storePubliclyAs($dir, $name);
+
+        // Keep the row in sync with the new bytes.
+        $media->original_sha256 = $hash;
+        $media->mime = $photo->getMimeType();
+        $media->size = $photo->getSize();
+        $media->save();
+
         $res = [
             'url' => $media->url().'?v='.time(),
         ];
@@ -225,6 +237,7 @@ class ComposeController extends Controller
 
         $media = Media::whereNull('status_id')
             ->whereUserId(Auth::id())
+            ->notInDirectMessage()
             ->findOrFail($request->input('id'));
 
         MediaStorageService::delete($media, true);
@@ -368,6 +381,7 @@ class ComposeController extends Controller
                     ->map(function ($place) {
                         return [
                             'id' => $place->place_id,
+                            // @phpstan-ignore-next-line
                             'count' => $place->pc,
                         ];
                     })
@@ -375,6 +389,7 @@ class ComposeController extends Controller
                     ->values();
             }
 
+            // @phpstan-ignore-next-line
             return Status::selectRaw('id, place_id, count(place_id) as pc')
                 ->whereNotNull('place_id')
                 ->where('id', '>', $minId)
@@ -388,6 +403,7 @@ class ComposeController extends Controller
                 ->map(function ($place) {
                     return [
                         'id' => $place->place_id,
+                        // @phpstan-ignore-next-line
                         'count' => $place->pc,
                     ];
                 });
@@ -483,6 +499,7 @@ class ComposeController extends Controller
                 return [
                     'key' => '@'.Str::limit($username, 30),
                     'value' => $username,
+                    // @phpstan-ignore-next-line
                     'is_followed' => (bool) $profile->is_followed,
                 ];
             });
@@ -535,6 +552,7 @@ class ComposeController extends Controller
             'license' => 'nullable|integer|min:1|max:16',
             'collections' => 'sometimes|array|min:1|max:5',
             'spoiler_text' => 'nullable|string|max:140',
+            'quote_approval_policy' => 'sometimes|nullable|string|in:public,followers,nobody',
             // 'optimize_media' => 'nullable'
         ]);
 
@@ -586,7 +604,7 @@ class ComposeController extends Controller
                 continue;
             }
             $m = Media::findOrFail($media['id']);
-            if ($m->profile_id !== $profile->id || $m->status_id) {
+            if ($m->profile_id !== $profile->id || $m->status_id || DirectMessageService::isMessageMedia($m->id)) {
                 abort(403, 'Invalid media id');
             }
             $m->filter_class = in_array($media['filter_class'], Filter::classes()) ? $media['filter_class'] : null;
@@ -607,7 +625,7 @@ class ComposeController extends Controller
 
         $mediaType = StatusController::mimeTypeCheck($mimes);
 
-        if (in_array($mediaType, ['photo', 'video', 'photo:album']) == false) {
+        if (in_array($mediaType, ['photo', 'video', 'photo:album']) === false) {
             abort(400, __('exception.compose.invalid.album'));
         }
 
@@ -622,6 +640,10 @@ class ComposeController extends Controller
 
         if ($request->filled('spoiler_text') && $cw) {
             $status->cw_summary = $request->input('spoiler_text');
+        }
+
+        if ($request->filled('quote_approval_policy')) {
+            $status->quote_policy = QuoteService::fromApiPolicy($request->input('quote_approval_policy'));
         }
 
         $defaultCaption = '';

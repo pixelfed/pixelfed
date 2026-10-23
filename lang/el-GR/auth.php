@@ -2,34 +2,34 @@
 
 return [
 
-    'verifyYourEmailAddress' => '',
-    'loginTitle' => '',
+    'verifyYourEmailAddress' => ' - Επαλήθευσε Τη Διεύθυνση Email Σου',
+    'loginTitle' => 'Είσοδος Χρήστη',
     'failed' => 'Αυτά τα στοιχεία δεν υπάρχουν στα κατάστιχά μας.',
     'throttle' => 'Λόγω πολλαπλών δοκιμών, παρακαλώ δοκιμάστε ξανά σε :seconds δευτερόλεπτα.',
-    'password' => '',
-    'remember' => '',
-    'forgot' => '',
-    'login' => '',
+    'password' => 'Κωδικός πρόσβασης',
+    'remember' => 'Να με θυμάσαι',
+    'forgot' => 'Ξέχασα Τον Κωδικό',
+    'login' => 'Είσοδος',
 
-    'register' => '',
-    'reset' => '',
+    'register' => 'Εγγραφή',
+    'reset' => 'Επαναφορά Κωδικού Πρόσβασης',
 
-    'name' => '',
-    'username' => '',
-    'confirm-password' => '',
+    'name' => 'Όνομα',
+    'username' => 'Όνομα χρήστη',
+    'confirm-password' => 'Επιβεβαίωση Κωδικού',
 
-    'age' => '',
-    'terms' => ''.route('site.terms').''.route('site.privacy').'',
+    'age' => 'Είμαι τουλάχιστον 16 ετών',
+    'terms' => 'Με την εγγραφή, συμφωνείτε με τους <a href="'.route('site.terms').'" class="font-weight-bold text-dark">Όρους Χρήσης</a> και τη <a href="'.route('site.privacy').'" class="font-weight-bold text-dark">Πολιτική απορρήτου</a>.',
 
-    'emailAddress' => '',
-    'email' => '',
-    'forgotEmail' => '',
+    'emailAddress' => 'Διεύθυνση Email',
+    'email' => 'E-mail',
+    'forgotEmail' => 'Ξέχασα το e-mail',
 
-    'registerTitle' => '',
+    'registerTitle' => 'Εγγραφή νέου λογαριασμού',
 
-    'sendReset' => '',
-    'backLogin' => '',
+    'sendReset' => 'Αποστολή συνδέσμου επαναφοράς κωδικού',
+    'backLogin' => 'Πίσω στην Σύνδεση Χρήστη',
 
-    'signInMastodon' => '',
+    'signInMastodon' => 'Σύνδεση με Mastodon',
 
 ];

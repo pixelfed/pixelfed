@@ -2,18 +2,12 @@
 
 namespace App\Console\Commands\User;
 
-use App\Models\Instance;
 use App\Models\Profile;
 use App\Models\User;
+use App\Services\AccountDeleteFederationService;
 use App\Services\AccountRevocationService;
-use App\Util\ActivityPub\HttpSignature;
 use Illuminate\Console\Command;
-use Illuminate\Http\Client\PendingRequest;
-use Illuminate\Http\Client\Pool;
-use Illuminate\Http\Client\Response;
-use Illuminate\Support\Collection;
-use Illuminate\Support\Facades\Http;
-use JsonException;
+use RuntimeException;
 
 use function Laravel\Prompts\confirm;
 use function Laravel\Prompts\search;
@@ -22,8 +16,8 @@ use function Laravel\Prompts\table;
 class UserAccountDelete extends Command
 {
     protected $signature = 'app:user-account-delete
-        {--concurrency=50 : Number of concurrent deliveries}
-        {--chunk=500 : Number of inbox rows to process per DB chunk}
+        {--concurrency= : Number of concurrent deliveries (default: federation.activitypub.delivery.concurrency)}
+        {--chunk=500 : Number of inboxes to process per batch}
         {--attempts=2 : Max attempts for retryable failures}
         {--target= : Send to a single inbox URL for debugging}
         {--verbose-errors : Log each failure to console}
@@ -31,10 +25,10 @@ class UserAccountDelete extends Command
 
     protected $description = 'Federate Account Deletion';
 
-    public function handle(): int
+    public function handle(AccountDeleteFederationService $service): int
     {
         $user = $this->promptForDeletedUser();
-        if (! $user) {
+        if (! $user instanceof User) {
             $this->error('No deleted user selected.');
 
             return self::FAILURE;
@@ -65,82 +59,38 @@ class UserAccountDelete extends Command
             return self::FAILURE;
         }
 
-        $activity = $this->buildDeleteActivity($profile);
-
         try {
-            $payload = json_encode(
-                $activity,
-                JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE | JSON_THROW_ON_ERROR
-            );
-
-            $digest = base64_encode(hash('sha256', $payload, true));
-            $payloadLen = strlen($payload);
-        } catch (JsonException $e) {
-            $this->error("Failed to encode delete payload: {$e->getMessage()}");
+            $prepared = $service->prepare($profile);
+        } catch (RuntimeException $e) {
+            $this->error($e->getMessage());
 
             return self::FAILURE;
         }
-
-        $query = $this->sharedInboxQuery();
 
         $chunkSize = max(1, (int) $this->option('chunk'));
         $attempts = max(1, (int) $this->option('attempts'));
-        $concurrency = max(1, (int) $this->option('concurrency'));
+        $concurrency = $this->option('concurrency') !== null
+            ? max(1, (int) $this->option('concurrency'))
+            : null;
 
-        $totalTargets = (clone $query)
-            ->toBase()
-            ->distinct()
-            ->count('shared_inbox');
-
-        $privateKey = $profile->private_key;
-
-        if (empty($privateKey)) {
-            $this->error('Profile private key has been wiped — cannot sign deletion activity.');
-
-            return self::FAILURE;
-        }
-
-        $keyId = $profile->keyId();
-
-        if (empty($keyId)) {
-            $this->error('Profile key id has been wiped — cannot sign deletion activity.');
-
-            return self::FAILURE;
-        }
-
-        try {
-            $testHeaders = HttpSignature::signRawWithDigest(
-                $privateKey,
-                $keyId,
-                config('app.url').'/inbox',
-                $digest,
-            );
-            if (empty($testHeaders) || ! isset($testHeaders['Signature'])) {
-                $this->error('Instance actor signing failed — run php artisan instance:actor');
-
-                return self::FAILURE;
-            }
-        } catch (\Exception $e) {
-            $this->error("Instance actor error: {$e->getMessage()}");
-
-            return self::FAILURE;
-        }
+        $audience = $service->audience();
+        $totalTargets = $audience->count();
 
         if ($this->option('dry-run')) {
             $this->line('Dry run only.');
             $this->line("Audience size: {$totalTargets}");
             $this->line("Chunk size: {$chunkSize}");
             $this->line("Attempts: {$attempts}");
-            $this->line("Concurrency: {$concurrency}");
-            $this->line("Digest: {$digest}");
-            $this->line("Key ID: {$keyId}");
-            $this->line($payload);
+            $this->line('Concurrency: '.($concurrency ?? 'config default'));
+            $this->line("Digest: {$prepared['digest']}");
+            $this->line("Key ID: {$prepared['key_id']}");
+            $this->line($prepared['payload']);
 
             return self::SUCCESS;
         }
 
         if ($target = $this->option('target')) {
-            return $this->sendDebug($target, $payload, $digest, $privateKey, $keyId);
+            return $this->sendDebug($service, $profile, $prepared, $target);
         }
 
         if ($totalTargets === 0) {
@@ -149,91 +99,67 @@ class UserAccountDelete extends Command
             return self::SUCCESS;
         }
 
-        $client = $this->makeHttpClient();
+        $onFailure = $this->option('verbose-errors')
+            ? function (string $url, string $reason, ?int $status): void {
+                if ($status === null) {
+                    $this->error("  [TRANSPORT] {$url} - {$reason}");
+
+                    return;
+                }
+
+                $this->warn("  [{$status}] {$url} - {$reason}");
+            }
+        : null;
 
         $results = [
             'delivered' => 0,
+            'skipped' => 0,
+            'invalid' => [],
             'http_failed' => [],
-            'transport_failed' => [],
             'retry_exhausted' => [],
         ];
 
         $bar = $this->output->createProgressBar($totalTargets);
         $bar->start();
 
-        $query
-            ->orderBy('shared_inbox')
-            ->chunk($chunkSize, function ($instances) use (
-                $client,
-                $payload,
-                $privateKey,
-                $payloadLen,
-                $keyId,
-                $digest,
-                $concurrency,
-                $attempts,
-                &$results,
-                $bar
-            ) {
-                $urls = $instances
-                    ->pluck('shared_inbox')
-                    ->filter()
-                    ->unique()
-                    ->values();
+        foreach ($audience->chunk($chunkSize) as $chunk) {
+            $pending = $chunk->values()->all();
+            $resolved = 0;
 
-                if ($urls->isEmpty()) {
-                    return;
+            for ($attempt = 1; $attempt <= $attempts && $pending !== []; $attempt++) {
+                $batch = $service->deliver($profile, $prepared, $pending, $concurrency, $onFailure);
+
+                $results['delivered'] += count($batch['delivered']);
+                $results['skipped'] += count($batch['skipped']);
+                $results['invalid'] += $batch['invalid'];
+                $results['http_failed'] += $batch['http_failed'];
+
+                $resolved += count($batch['delivered'])
+                    + count($batch['skipped'])
+                    + count($batch['invalid'])
+                    + count($batch['http_failed']);
+
+                $pending = array_keys($batch['retryable']);
+
+                if ($attempt === $attempts) {
+                    $results['retry_exhausted'] += $batch['retryable'];
+                    $resolved += count($batch['retryable']);
+                } elseif ($pending !== []) {
+                    usleep(100_000);
                 }
+            }
 
-                $pending = $urls;
-                $terminalDelivered = 0;
-                $terminalHttpFailed = [];
-                $terminalTransportFailed = [];
-
-                for ($attempt = 1; $attempt <= $attempts && $pending->isNotEmpty(); $attempt++) {
-                    $batch = $this->sendBatch(
-                        client: $client,
-                        privateKey: $privateKey,
-                        keyId: $keyId,
-                        digest: $digest,
-                        urls: $pending,
-                        payload: $payload,
-                        payloadLen: $payloadLen,
-                        concurrency: $concurrency,
-                        verboseErrors: $this->option('verbose-errors')
-                    );
-
-                    $terminalDelivered += count($batch['delivered']);
-                    $terminalHttpFailed += $batch['http_failed'];
-
-                    $pending = collect($batch['retryable']->keys())->values();
-
-                    if ($attempt === $attempts && $pending->isNotEmpty()) {
-                        foreach ($pending as $url) {
-                            $terminalTransportFailed[$url] = $batch['retryable'][$url] ?? 'retry exhausted';
-                        }
-                    }
-
-                    if ($attempt < $attempts && $pending->isNotEmpty()) {
-                        usleep(100_000);
-                    }
-                }
-
-                $results['delivered'] += $terminalDelivered;
-                $results['http_failed'] += $terminalHttpFailed;
-                $results['transport_failed'] += $terminalTransportFailed;
-                $results['retry_exhausted'] += $terminalTransportFailed;
-
-                $resolved = $terminalDelivered + count($terminalHttpFailed) + count($terminalTransportFailed);
-                $bar->advance($resolved);
-            });
+            $bar->advance($resolved);
+        }
 
         $bar->finish();
         $this->newLine(2);
 
         $this->info("Delivered: {$results['delivered']}");
+        $this->line("Skipped (host marked unavailable): {$results['skipped']}");
+        $this->warn('Invalid inbox URLs: '.count($results['invalid']));
         $this->warn('HTTP failures: '.count($results['http_failed']));
-        $this->warn('Transport/retry-exhausted failures: '.count($results['transport_failed']));
+        $this->warn('Transport/retry-exhausted failures: '.count($results['retry_exhausted']));
 
         return self::SUCCESS;
     }
@@ -242,14 +168,14 @@ class UserAccountDelete extends Command
     {
         $id = search(
             label: 'Search for the account to delete by username',
-            placeholder: 'john.appleseed',
-            options: fn (string $value) => strlen($value) > 0
+            options: fn (string $value) => $value !== ''
                 ? User::withTrashed()
                     ->whereIn('status', ['deleted', 'delete'])
                     ->where('username', 'like', "%{$value}%")
                     ->pluck('username', 'id')
                     ->all()
                 : [],
+            placeholder: 'john.appleseed',
         );
 
         return User::withTrashed()->find($id);
@@ -268,145 +194,16 @@ class UserAccountDelete extends Command
         );
     }
 
-    protected function buildDeleteActivity(Profile $profile): array
-    {
-        $actorId = $profile->permalink();
-
-        return [
-            '@context' => 'https://www.w3.org/ns/activitystreams',
-            'id' => $actorId.'#delete',
-            'type' => 'Delete',
-            'actor' => $actorId,
-            'to' => ['https://www.w3.org/ns/activitystreams#Public'],
-            'object' => $actorId,
-        ];
-    }
-
-    protected function sharedInboxQuery()
-    {
-        return Instance::query()
-            ->whereNotNull('shared_inbox')
-            ->whereNotNull('nodeinfo_last_fetched')
-            ->where('nodeinfo_last_fetched', '>', now()->subDays(30))
-            ->select('shared_inbox')
-            ->distinct();
-    }
-
-    protected function makeHttpClient(): PendingRequest
-    {
-        return Http::timeout(10)
-            ->connectTimeout(5)
-            ->withOptions([
-                'allow_redirects' => false,
-            ])
-            ->withHeaders([
-                'User-Agent' => 'Pixelfed ('.config('app.url').')',
-                'Accept' => 'application/activity+json, application/ld+json; profile="https://www.w3.org/ns/activitystreams"',
-            ]);
-    }
-
-    protected function sendBatch(
-        PendingRequest $client,
-        string $privateKey,
-        string $keyId,
-        string $digest,
-        Collection $urls,
-        string $payload,
-        int $payloadLen,
-        int $concurrency,
-        bool $verboseErrors = false
-    ): array {
-
-        $delivered = [];
-        $httpFailed = [];
-        $retryable = [];
-
-        $urlList = $urls->values()->all();
-
-        $responses = Http::pool(function (Pool $pool) use ($urlList, $privateKey, $keyId, $digest, $payload, $payloadLen) {
-            foreach ($urlList as $url) {
-                // Pass User-Agent/Accept per request so they are actually sent
-                // (and signed); Http::pool does not inherit the makeHttpClient
-                // instance headers, so without this Guzzle sends its default UA.
-                $headers = HttpSignature::signRawWithDigest($privateKey, $keyId, $url, $digest, [
-                    'User-Agent' => 'Pixelfed ('.config('app.url').')',
-                    'Accept' => 'application/activity+json, application/ld+json; profile="https://www.w3.org/ns/activitystreams"',
-                ]);
-                $headers['Content-Type'] = 'application/ld+json; profile="https://www.w3.org/ns/activitystreams"';
-                $headers['Content-Length'] = (string) $payloadLen;
-
-                $pool->as($url)
-                    ->timeout(10)
-                    ->connectTimeout(5)
-                    ->withOptions(['allow_redirects' => false])
-                    ->withHeaders($headers)
-                    ->withBody($payload, 'application/ld+json; profile="https://www.w3.org/ns/activitystreams"')
-                    ->post($url);
-            }
-        });
-
-        foreach ($urlList as $url) {
-            $response = $responses[$url] ?? null;
-
-            if (! $response) {
-                $retryable[$url] = 'No response';
-
-                continue;
-            }
-
-            if ($response instanceof Response) {
-                $status = $response->status();
-
-                if ($status >= 200 && $status < 300) {
-                    $delivered[$url] = $status;
-
-                    continue;
-                }
-
-                $body = mb_substr((string) $response->body(), 0, 500);
-
-                if ($verboseErrors) {
-                    $this->warn("  [{$status}] {$url} — {$body}");
-                }
-
-                if ($this->isRetryableStatus($status)) {
-                    $retryable[$url] = "HTTP {$status}";
-
-                    continue;
-                }
-
-                $httpFailed[$url] = [
-                    'status' => $status,
-                    'body' => $body,
-                ];
-            } else {
-                $message = $response instanceof \Throwable
-                    ? $response->getMessage()
-                    : (string) $response;
-
-                if ($verboseErrors) {
-                    $this->error("  [TRANSPORT] {$url} — {$message}");
-                }
-
-                $retryable[$url] = $message;
-            }
-        }
-
-        return [
-            'delivered' => $delivered,
-            'http_failed' => $httpFailed,
-            'retryable' => collect($retryable),
-        ];
-    }
-
-    protected function sendDebug(string $url, string $payload, string $digest, string $privateKey, string $keyId): int
-    {
-        $headers = HttpSignature::signRawWithDigest($privateKey, $keyId, $url, $digest, [
-            'User-Agent' => 'Pixelfed ('.config('app.url').')',
-            'Accept' => 'application/activity+json, application/ld+json; profile="https://www.w3.org/ns/activitystreams"',
-        ]);
-
-        $headers['Content-Type'] = 'application/ld+json; profile="https://www.w3.org/ns/activitystreams"';
+    /**
+     * @param  array{payload: string, digest: string, length: int, key_id: string}  $prepared
+     */
+    protected function sendDebug(
+        AccountDeleteFederationService $service,
+        Profile $profile,
+        array $prepared,
+        string $url
+    ): int {
+        $headers = $service->signedHeaders($profile, $prepared, $url);
 
         $this->info('Target: '.$url);
         $this->newLine();
@@ -418,16 +215,11 @@ class UserAccountDelete extends Command
         $this->newLine();
 
         $this->info('Payload:');
-        $this->line($payload);
+        $this->line($prepared['payload']);
         $this->newLine();
 
         try {
-            $response = Http::timeout(15)
-                ->connectTimeout(5)
-                ->withOptions(['allow_redirects' => false])
-                ->withHeaders($headers)
-                ->withBody($payload, 'application/ld+json; profile="https://www.w3.org/ns/activitystreams"')
-                ->post($url);
+            $response = $service->send($profile, $prepared, $url, 15, $headers);
 
             $status = $response->status();
             $body = $response->body();
@@ -450,10 +242,5 @@ class UserAccountDelete extends Command
 
             return self::FAILURE;
         }
-    }
-
-    protected function isRetryableStatus(int $status): bool
-    {
-        return in_array($status, [408, 425, 429, 500, 502, 503, 504], true);
     }
 }

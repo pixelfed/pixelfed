@@ -11,6 +11,7 @@ use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Facades\Validator;
 
 class PixelfedDirectoryController extends Controller
 {
@@ -110,12 +111,37 @@ class PixelfedDirectoryController extends Controller
             'account_deletion' => (bool) config_cache('pixelfed.account_deletion'),
         ];
 
-        $res['is_eligible'] = $this->validVal($res, 'admin') &&
+        // Eligibility must match AdminDirectoryController::buildListing() so
+        // the submission payload agrees with what the admin panel shows.
+        $validator = Validator::make($res['feature_config'], [
+            'media_types' => [
+                'required',
+                function ($attribute, $value, $fail) {
+                    $types = is_array($value) ? $value : collect($value)->toArray();
+                    if (! in_array('image/jpeg', $types) || ! in_array('image/png', $types)) {
+                        $fail('You must enable image/jpeg and image/png support.');
+                    }
+                },
+            ],
+            'image_quality' => 'required_if:optimize_image,true|integer|min:75|max:100',
+            'max_altext_length' => 'required|integer|min:1000|max:5000',
+            'max_photo_size' => 'required|integer|min:15000|max:100000',
+            'max_account_size' => 'required_if:enforce_account_limit,true|integer|min:1000000',
+            'max_album_length' => 'required|integer|min:4|max:20',
+            'account_deletion' => 'required|accepted',
+            'max_caption_length' => 'required|integer|min:500|max:10000',
+        ]);
+
+        $res['is_eligible'] = (bool) (($res['open_registration'] || $res['curated_onboarding']) &&
+            $res['oauth_enabled'] &&
+            $res['activitypub_enabled'] &&
+            count($validator->errors()) === 0 &&
+            $this->validVal($res, 'admin') &&
             $this->validVal($res, 'summary', null, 10) &&
             $this->validVal($res, 'favourite_posts', 3) &&
             $this->validVal($res, 'contact_email') &&
             $this->validVal($res, 'privacy_pledge') &&
-            $this->validVal($res, 'location');
+            $this->validVal($res, 'location'));
 
         if (config_cache('pixelfed.directory.testimonials')) {
             $res['testimonials'] = collect(json_decode(config_cache('pixelfed.directory.testimonials'), true))

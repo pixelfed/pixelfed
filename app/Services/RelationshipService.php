@@ -61,6 +61,8 @@ class RelationshipService
     {
         Cache::forget('pf:services:follower:audience:'.$aid);
         Cache::forget('pf:services:follower:audience:'.$tid);
+        FollowersSyncService::forgetOutboundDigests($aid);
+        FollowersSyncService::forgetOutboundDigests($tid);
         self::delete($tid, $aid);
         self::delete($aid, $tid);
         self::get($tid, $aid);
@@ -72,11 +74,13 @@ class RelationshipService
     {
         Cache::forget('pf:services:follower:audience:'.$aid);
         Cache::forget('pf:services:follower:audience:'.$tid);
+        FollowersSyncService::forgetOutboundDigests($aid);
+        FollowersSyncService::forgetOutboundDigests($tid);
         self::delete($tid, $aid);
         self::delete($aid, $tid);
     }
 
-    public static function defaultRelation($tid)
+    public static function defaultRelation($tid): array
     {
         return [
             'id' => (string) $tid,
@@ -92,7 +96,7 @@ class RelationshipService
         ];
     }
 
-    protected static function key($suffix)
+    protected static function key($suffix): string
     {
         return self::CACHE_KEY.$suffix;
     }

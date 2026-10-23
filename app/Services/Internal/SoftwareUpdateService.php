@@ -11,17 +11,18 @@ class SoftwareUpdateService
 {
     const CACHE_KEY = 'pf:services:software-update:';
 
-    public static function cacheKey()
+    public static function cacheKey(): string
     {
         return self::CACHE_KEY.'latest:v1.0.0';
     }
 
-    public static function get($flushCache = false)
+    public static function get($flushCache = false): array
     {
         $curVersion = config('pixelfed.version');
 
         if ($flushCache) {
             Cache::forget(self::cacheKey());
+            Cache::forget('api:nodeinfo');
         }
 
         // GLITCH MODIFIED: update check against pixelfed-glitch GitHub releases (glitch version scheme)
@@ -71,7 +72,7 @@ class SoftwareUpdateService
         ];
     }
 
-    public static function compareVersions($current, $latest)
+    public static function compareVersions($current, $latest): int
     {
         return version_compare(
             self::normalizeVersion($current),
@@ -79,7 +80,7 @@ class SoftwareUpdateService
         );
     }
 
-    public static function normalizeVersion($version)
+    public static function normalizeVersion($version): string
     {
         return ltrim(trim((string) $version), 'vV');
     }
@@ -93,11 +94,7 @@ class SoftwareUpdateService
                 ->retry(2, 500)
                 // GLITCH MODIFIED: glitch releases instead of versions.pixelfed.org
                 ->get('https://api.github.com/repos/pixelfed-glitch/pixelfed/releases/latest');
-        } catch (RequestException $e) {
-            return;
-        } catch (ConnectionException $e) {
-            return;
-        } catch (\Exception $e) {
+        } catch (RequestException|ConnectionException|\Exception) {
             return;
         }
 

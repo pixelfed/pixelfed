@@ -21,7 +21,7 @@ class CircleController extends Controller
             ->orderByDesc('created_at')
             ->paginate(10);
 
-        return view('account.circles.home', compact('circles'));
+        return view('account.circles.home', ['circles' => $circles]);
     }
 
     public function create(Request $request): View
@@ -62,6 +62,6 @@ class CircleController extends Controller
     {
         $circle = Circle::findOrFail($id);
 
-        return view('account.circles.show', compact('circle'));
+        return view('account.circles.show', ['circle' => $circle]);
     }
 }

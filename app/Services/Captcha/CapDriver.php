@@ -25,7 +25,7 @@ class CapDriver implements CaptchaDriver
      * Default @cap.js/widget version served from the CDN. "latest" tracks the
      * newest stable release; override via captcha.cap.widget_version.
      */
-    private const DEFAULT_WIDGET_VERSION = 'latest';
+    private const string DEFAULT_WIDGET_VERSION = 'latest';
 
     public function name(): string
     {

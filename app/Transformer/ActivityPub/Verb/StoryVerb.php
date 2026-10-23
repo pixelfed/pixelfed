@@ -8,7 +8,7 @@ use League\Fractal;
 
 class StoryVerb extends Fractal\TransformerAbstract
 {
-    public function transform(Story $story)
+    public function transform(Story $story): array
     {
         $type = $story->type == 'photo' ? 'Image' :
             ($story->type == 'video' ? 'Video' :

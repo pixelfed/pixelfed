@@ -55,7 +55,7 @@ class LikeController extends Controller
                     'video',
                     'video:album',
                     'photo:video:album',
-                ]) == false;
+                ]) === false;
                 $like->save();
                 $status->save();
                 LikePipeline::dispatch($like)->onQueue('feed');
@@ -66,11 +66,9 @@ class LikeController extends Controller
         StatusService::refresh($status->id);
 
         if ($request->ajax()) {
-            $response = ['code' => 200, 'msg' => 'Like saved', 'count' => 0];
-        } else {
-            $response = redirect($status->url());
+            return ['code' => 200, 'msg' => 'Like saved', 'count' => 0];
         }
 
-        return $response;
+        return redirect($status->url());
     }
 }

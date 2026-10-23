@@ -17,7 +17,7 @@ trait AdminGroupsController
     {
         $stats = $this->groupAdminStats();
 
-        return view('admin.groups.home', compact('stats'));
+        return view('admin.groups.home', ['stats' => $stats]);
     }
 
     protected function groupAdminStats()

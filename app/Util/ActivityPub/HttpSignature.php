@@ -24,11 +24,11 @@ class HttpSignature
      * ActivityPub interoperability.
      */
 
-    private const SIGNATURE_ALGORITHM = 'rsa-sha256';
+    private const string SIGNATURE_ALGORITHM = 'rsa-sha256';
 
-    private const OPENSSL_ALGORITHM = OPENSSL_ALGO_SHA256;
+    private const int OPENSSL_ALGORITHM = OPENSSL_ALGO_SHA256;
 
-    private const SUPPORTED_METHODS = [
+    private const array SUPPORTED_METHODS = [
         'get',
         'post',
     ];

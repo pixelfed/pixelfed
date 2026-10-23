@@ -41,9 +41,6 @@ class TagsController extends Controller
 
     /**
      * POST /api/v1/tags/:id/follow
-     *
-     *
-     * @return object
      */
     public function followHashtag(Request $request, $id): JsonResponse
     {
@@ -83,9 +80,6 @@ class TagsController extends Controller
 
     /**
      * POST /api/v1/tags/:id/unfollow
-     *
-     *
-     * @return object
      */
     public function unfollowHashtag(Request $request, $id)
     {
@@ -129,9 +123,6 @@ class TagsController extends Controller
 
     /**
      * GET /api/v1/tags/:id
-     *
-     *
-     * @return object
      */
     public function getHashtag(Request $request, $id)
     {
@@ -169,9 +160,6 @@ class TagsController extends Controller
 
     /**
      * GET /api/v1/followed_tags
-     *
-     *
-     * @return array
      */
     public function getFollowedTags(Request $request): JsonResponse
     {
@@ -191,8 +179,8 @@ class TagsController extends Controller
             ->withQueryString();
 
         $pagination = false;
-        $prevPage = $res->nextPageUrl();
-        $nextPage = $res->previousPageUrl();
+        $nextPage = $res->nextPageUrl();
+        $prevPage = $res->previousPageUrl();
         if ($nextPage && $prevPage) {
             $pagination = '<'.$nextPage.'>; rel="next", <'.$prevPage.'>; rel="prev"';
         } elseif ($nextPage && ! $prevPage) {

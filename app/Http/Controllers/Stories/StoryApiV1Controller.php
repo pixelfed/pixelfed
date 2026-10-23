@@ -8,14 +8,12 @@ use App\Jobs\StoryPipeline\StoryDelete;
 use App\Jobs\StoryPipeline\StoryFanout;
 use App\Jobs\StoryPipeline\StoryReplyDeliver;
 use App\Jobs\StoryPipeline\StoryViewDeliver;
-use App\Models\Conversation;
-use App\Models\DirectMessage;
 use App\Models\Follower;
-use App\Models\Notification;
 use App\Models\Status;
 use App\Models\Story;
 use App\Models\StoryView;
 use App\Services\AccountService;
+use App\Services\DirectMessageService;
 use App\Services\MediaPathService;
 use App\Services\StoryIndexService;
 use App\Services\StoryService;
@@ -281,7 +279,7 @@ class StoryApiV1Controller extends Controller
         return response()->json($res, 200, [], JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES);
     }
 
-    public function add(Request $request)
+    public function add(Request $request): array
     {
         abort_if(! (bool) config_cache('instance.stories.enabled') || ! $request->user(), 404);
 
@@ -522,7 +520,7 @@ class StoryApiV1Controller extends Controller
                                 $parsedUrl = parse_url($content);
                                 if (! in_array($parsedUrl['scheme'] ?? '', ['https'])) {
                                     throw ValidationException::withMessages([
-                                        "overlays.{$index}.content" => 'Only HTTP and HTTPS URLs are allowed.',
+                                        "overlays.{$index}.content" => 'Only HTTPS URLs are allowed.',
                                     ]);
                                 }
                                 break;
@@ -699,7 +697,8 @@ class StoryApiV1Controller extends Controller
         $pid = $request->user()->profile_id;
         $text = $request->input('caption');
 
-        $story = Story::findOrFail($request->input('sid'));
+        $story = Story::whereActive(true)->findOrFail($request->input('sid'));
+        abort_if(now()->gt($story->expires_at), 404);
 
         $following = Follower::whereProfileId($pid)->whereFollowingId($story->profile_id)->exists();
         abort_if(! $following, 403, 'Invalid permission');
@@ -718,42 +717,24 @@ class StoryApiV1Controller extends Controller
         ]);
         $status->save();
 
-        $dm = new DirectMessage;
-        $dm->to_id = $story->profile_id;
-        $dm->from_id = $pid;
-        $dm->type = 'story:comment';
-        $dm->status_id = $status->id;
-        $dm->meta = json_encode([
-            'story_username' => $story->profile->username,
-            'story_actor_username' => $request->user()->username,
-            'story_id' => $story->id,
-            'story_media_url' => url(Storage::url($story->path)),
-            'caption' => $text,
-        ]);
-        $dm->save();
-
-        Conversation::updateOrInsert(
+        // Shows up in the conversation with the story author, who is
+        // notified when they are on this server
+        app(DirectMessageService::class)->storeStoryMessage(
+            $request->user()->profile,
+            $story->profile,
+            'story:comment',
+            $text,
             [
-                'to_id' => $story->profile_id,
-                'from_id' => $pid,
+                'story_username' => $story->profile->username,
+                'story_actor_username' => $request->user()->username,
+                'story_id' => $story->id,
+                'story_media_url' => url(Storage::url($story->path)),
+                'caption' => $text,
             ],
-            [
-                'type' => 'story:comment',
-                'status_id' => $status->id,
-                'dm_id' => $dm->id,
-                'is_hidden' => false,
-            ]
+            $status->id
         );
 
-        if ($story->local) {
-            $n = new Notification;
-            $n->profile_id = $dm->to_id;
-            $n->actor_id = $dm->from_id;
-            $n->item_id = $dm->id;
-            $n->item_type = DirectMessage::class;
-            $n->action = 'story:comment';
-            $n->save();
-        } else {
+        if (! $story->local) {
             StoryReplyDeliver::dispatch($story, $status)->onQueue('story');
         }
 
@@ -770,10 +751,8 @@ class StoryApiV1Controller extends Controller
             'image/jpeg',
             'image/png',
             'video/mp4',
-        ]) == false) {
+        ]) === false) {
             abort(400, 'Invalid media type');
-
-            return;
         }
 
         $storagePath = MediaPathService::story($user->profile);

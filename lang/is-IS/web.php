@@ -328,7 +328,7 @@ return [
             'partial_word' => 'Orðhluti',
             'duplicate_not_allowed' => 'Tvítekin stikkorð eru ekki leyfð',
             'filter_action' => 'Aðgerð síu',
-            'hide_media_blur' => '',
+            'hide_media_blur' => 'Fela myndefni í móðu',
             'show_warning' => 'Birta aðvörun á undan birtingu efnis',
             'hide_content_completely' => 'Fela efnið alveg',
             'apply_filters_to' => 'Beita síum á',

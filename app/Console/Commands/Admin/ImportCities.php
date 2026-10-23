@@ -123,7 +123,7 @@ class ImportCities extends Command
 
             $count++;
 
-            if ($count % $this->argument('chunk') == 0) {
+            if ($count % (int) $this->argument('chunk') === 0) {
                 $this->insertBuffer($buffer);
                 $bar->advance(count($buffer));
                 $buffer = [];

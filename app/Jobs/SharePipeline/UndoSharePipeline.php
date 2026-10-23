@@ -63,16 +63,16 @@ class UndoSharePipeline implements ShouldQueue
             return;
         }
 
-        if (config('app.env') !== 'production' || (bool) config_cache('federation.activitypub.enabled') == false) {
+        if (config('app.env') !== 'production' || (bool) config_cache('federation.activitypub.enabled') === false) {
             return $status->delete();
-        } else {
-            return $this->remoteAnnounceDeliver();
         }
+
+        return $this->remoteAnnounceDeliver();
     }
 
     public function remoteAnnounceDeliver()
     {
-        if (config('app.env') !== 'production' || (bool) config_cache('federation.activitypub.enabled') == false) {
+        if (config('app.env') !== 'production' || (bool) config_cache('federation.activitypub.enabled') === false) {
             $this->status->delete();
 
             return 1;

@@ -8,6 +8,7 @@ use App\Models\UserFilter;
 use App\Services\FollowerService;
 use App\Services\HomeTimelineService;
 use App\Services\StatusService;
+use DateTimeInterface;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldBeUniqueUntilProcessing;
 use Illuminate\Contracts\Queue\ShouldQueue;
@@ -15,11 +16,24 @@ use Illuminate\Foundation\Bus\Dispatchable;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\Middleware\WithoutOverlapping;
 use Illuminate\Queue\SerializesModels;
+use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\Log;
+use Throwable;
 
 class FeedInsertRemotePipeline implements ShouldBeUniqueUntilProcessing, ShouldQueue
 {
     use Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
+
+    /**
+     * Remote statuses published more than this many days ago are not
+     * inserted into home feeds.
+     *
+     * The home timeline is scored by status id, and a remote status gets
+     * its id when we first store it, not when it was published. Without
+     * this guard an old post that is fetched for the first time (a boost,
+     * an edit, a reply to it) lands at the top of every follower's feed.
+     */
+    public const MAX_AGE_DAYS = 7;
 
     protected $sid;
 
@@ -97,7 +111,19 @@ class FeedInsertRemotePipeline implements ShouldBeUniqueUntilProcessing, ShouldQ
             return;
         }
 
-        if (! in_array($status['pf_type'], ['photo', 'photo:album', 'video', 'video:album', 'photo:video:album'])) {
+        $type = $status['pf_type'] ?? null;
+
+        if (! in_array($type, [
+            'photo',
+            'photo:album',
+            'video',
+            'video:album',
+            'photo:video:album',
+        ], true)) {
+            return;
+        }
+
+        if (self::isTooOld($status['created_at'] ?? null)) {
             return;
         }
 
@@ -107,15 +133,29 @@ class FeedInsertRemotePipeline implements ShouldBeUniqueUntilProcessing, ShouldQ
             return;
         }
 
-        $domain = strtolower(parse_url($status['url'], PHP_URL_HOST));
+        $domain = parse_url($status['url'], PHP_URL_HOST);
+
+        if (! is_string($domain) || $domain === '') {
+            return;
+        }
+
+        $domain = strtolower($domain);
         $skipIds = [];
 
         if (strtolower(config('pixelfed.domain.app')) !== $domain) {
             $skipIds = UserDomainBlock::where('domain', $domain)->pluck('profile_id')->toArray();
         }
 
+        $filterableIds = [$status['account']['id']];
+
+        // For a reblog, also honor mutes/blocks against the ORIGINAL author,
+        // not just the sharer.
+        if (isset($status['reblog']['account']['id'])) {
+            $filterableIds[] = $status['reblog']['account']['id'];
+        }
+
         $filters = UserFilter::whereFilterableType(Profile::class)
-            ->whereFilterableId($status['account']['id'])
+            ->whereIn('filterable_id', array_unique($filterableIds))
             ->whereIn('filter_type', ['mute', 'block'])
             ->pluck('user_id')
             ->toArray();
@@ -131,5 +171,36 @@ class FeedInsertRemotePipeline implements ShouldBeUniqueUntilProcessing, ShouldQ
                 HomeTimelineService::add($id, $sid);
             }
         }
+    }
+
+    public static function isTooOld(mixed $createdAt): bool
+    {
+        if ($createdAt === null || $createdAt === '') {
+            return true;
+        }
+
+        if (is_array($createdAt)) {
+            $createdAt = $createdAt['date']
+                ?? $createdAt['created_at']
+                ?? null;
+        }
+
+        if ($createdAt === null || $createdAt === '') {
+            return true;
+        }
+
+        try {
+            if ($createdAt instanceof DateTimeInterface) {
+                $published = Carbon::instance($createdAt);
+            } elseif (is_string($createdAt)) {
+                $published = Carbon::parse($createdAt);
+            } else {
+                return true;
+            }
+        } catch (Throwable) {
+            return true;
+        }
+
+        return $published->lt(now()->subDays(self::MAX_AGE_DAYS));
     }
 }

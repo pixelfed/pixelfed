@@ -62,7 +62,7 @@ class StatusController extends Controller
 
         $template = $status->in_reply_to_id ? 'status.reply' : 'status.show';
 
-        return view($template, compact('user', 'status'));
+        return view($template, ['user' => $user, 'status' => $status]);
     }
 
     public function shortcodeRedirect(Request $request, string $id): RedirectResponse
@@ -110,7 +110,7 @@ class StatusController extends Controller
             intval($status['account']['id']) !== intval($profile['id']) ||
             $status['sensitive'] ||
             $status['visibility'] !== 'public' ||
-            ! in_array($status['pf_type'], ['photo', 'photo:album'])
+            ! in_array($status['pf_type'], ['photo', 'photo:album', 'video'])
         ) {
             return $this->embedRemoved();
         }
@@ -119,7 +119,7 @@ class StatusController extends Controller
         $showCaption = $request->boolean('caption');
         $layout = $request->input('layout') === 'compact' ? 'compact' : 'full';
 
-        return response(view('status.embed', compact('status', 'showLikes', 'showCaption', 'layout')))
+        return response(view('status.embed', ['status' => $status, 'showLikes' => $showLikes, 'showCaption' => $showCaption, 'layout' => $layout]))
             ->header('X-Frame-Options', 'ALLOWALL');
     }
 
@@ -270,7 +270,7 @@ class StatusController extends Controller
             ->findOrFail($id);
         $licenses = License::get();
 
-        return view('status.edit', compact('user', 'status', 'licenses'));
+        return view('status.edit', ['user' => $user, 'status' => $status, 'licenses' => $licenses]);
     }
 
     public function editStore(Request $request, string $username, string $id): RedirectResponse
@@ -335,11 +335,11 @@ class StatusController extends Controller
         Cache::forget('profile:home-timeline-cursor:'.$request->user()->id);
 
         $rows = collect($views)
-            ->filter(fn ($view) => is_array($view)
+            ->filter(fn ($view): bool => is_array($view)
                 && isset($view['sid'], $view['pid'])
                 && is_numeric($view['sid'])
                 && is_numeric($view['pid']))
-            ->map(fn ($view) => [
+            ->map(fn ($view): array => [
                 'status_id' => (int) $view['sid'],
                 'status_profile_id' => (int) $view['pid'],
                 'profile_id' => $pid,
@@ -355,10 +355,10 @@ class StatusController extends Controller
         $seen = StatusView::whereProfileId($pid)
             ->whereIn('status_id', $rows->pluck('status_id'))
             ->pluck('status_id')
-            ->map(fn ($id) => (int) $id)
+            ->map(fn ($id): int => (int) $id)
             ->all();
 
-        $rows->reject(fn ($row) => in_array($row['status_id'], $seen, true))
+        $rows->reject(fn ($row): bool => in_array($row['status_id'], $seen, true))
             ->each(fn ($row) => StatusView::create($row));
 
         return response()->json(1);

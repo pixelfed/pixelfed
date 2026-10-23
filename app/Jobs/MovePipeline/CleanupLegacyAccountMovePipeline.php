@@ -71,7 +71,7 @@ class CleanupLegacyAccountMovePipeline implements ShouldQueue
      */
     public function handle(): void
     {
-        if (config('app.env') !== 'production' || (bool) config_cache('federation.activitypub.enabled') == false) {
+        if (config('app.env') !== 'production' || (bool) config_cache('federation.activitypub.enabled') === false) {
             throw new Exception('Activitypub not enabled');
         }
 

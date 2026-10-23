@@ -13,7 +13,7 @@ class GroupMediaService
     public static function path($gid, $pid, $sid = false)
     {
         if (! $gid || ! $pid) {
-            return;
+            return null;
         }
         $groupHashid = HashidService::encode($gid);
         $monthHash = HashidService::encode(date('Y').date('n'));

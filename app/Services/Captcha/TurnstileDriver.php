@@ -13,9 +13,9 @@ use Illuminate\Support\Facades\Log;
  */
 class TurnstileDriver implements CaptchaDriver
 {
-    private const VERIFY_URL = 'https://challenges.cloudflare.com/turnstile/v0/siteverify';
+    private const string VERIFY_URL = 'https://challenges.cloudflare.com/turnstile/v0/siteverify';
 
-    private const SCRIPT_URL = 'https://challenges.cloudflare.com/turnstile/v0/api.js';
+    private const string SCRIPT_URL = 'https://challenges.cloudflare.com/turnstile/v0/api.js';
 
     public function name(): string
     {

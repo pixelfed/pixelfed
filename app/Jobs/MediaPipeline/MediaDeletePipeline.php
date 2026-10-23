@@ -117,7 +117,7 @@ class MediaDeletePipeline implements ShouldBeUniqueUntilProcessing, ShouldQueue
         $i = implode('/', $e);
 
         try {
-            if ((bool) config_cache('pixelfed.cloud_storage') == true) {
+            if ((bool) config_cache('pixelfed.cloud_storage') === true) {
                 $disk = Storage::disk(config('filesystems.cloud'));
 
                 if ($path && $disk->exists($path)) {

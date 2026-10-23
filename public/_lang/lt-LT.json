@@ -1,1 +1,25 @@
-[]
+{
+    "story": {
+        "cancel": "At\u0161aukti",
+        "viewedBy": "Per\u017ei\u016br\u0117jo"
+    },
+    "settings": {
+        "filters": {
+            "hide_media_blur": "Sl\u0117pti medij\u0105 u\u017e suliejimo"
+        }
+    },
+    "powered_by_pixelfed": "Veikiama su \u201ePixelfed\u201c",
+    "landing": {
+        "features": {
+            "collections": "Rinkiniai",
+            "comments": "Komentarai",
+            "hashtags": "Grota\u017eym\u0117s",
+            "likes": "Patiktukai",
+            "notifications": "Prane\u0161imai",
+            "shares": "Pasidalinimai",
+            "federation": "Federacija",
+            "stories": "Istorijos",
+            "videos": "Vaizdo \u012fra\u0161ai"
+        }
+    }
+}

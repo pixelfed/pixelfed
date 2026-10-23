@@ -20,29 +20,108 @@ use Illuminate\Support\Str;
 
 /**
  * @property int $id
- * @property int $profile_id
- * @property string|null $type
+ * @property string|null $uri
  * @property string|null $caption
+ * @property string|null $rendered
+ * @property int|null $profile_id
+ * @property string|null $type
  * @property int|null $in_reply_to_id
- * @property int|null $in_reply_to_profile_id
  * @property int|null $reblog_of_id
- * @property bool $is_nsfw
- * @property string|null $scope
- * @property string|null $visibility
- * @property string|null $cw_summary
- * @property bool $comments_disabled
+ * @property string|null $url
+ * @property int $is_nsfw
+ * @property string $scope
+ * @property string $visibility
+ * @property int $reply
  * @property int $likes_count
  * @property int $reblogs_count
- * @property int $reply_count
- * @property bool $local
- * @property string|null $place
+ * @property string|null $language
+ * @property int|null $conversation_id
+ * @property int $local
+ * @property int|null $application_id
+ * @property int|null $in_reply_to_profile_id
+ * @property string|null $entities
  * @property Carbon|null $created_at
  * @property Carbon|null $updated_at
  * @property Carbon|null $deleted_at
+ * @property string|null $cw_summary
+ * @property int|null $reply_count
+ * @property int $comments_disabled
+ * @property int|null $place_id
+ * @property string|null $object_url
  * @property Carbon|null $edited_at
- * @property-read Profile $profile
+ * @property int|null $trendable
+ * @property string|null $media_ids
+ * @property int|null $pinned_order
+ * @property int|null $group_id
+ * @property int|null $quote_policy
+ * @property-read Collection<int, Status> $comments
+ * @property-read int|null $comments_count
+ * @property-read Conversation|null $conversation
+ * @property-read DirectMessage|null $directMessage
+ * @property-read Collection<int, StatusEdit> $edits
+ * @property-read int|null $edits_count
+ * @property-read Collection<int, Hashtag> $hashtags
+ * @property-read int|null $hashtags_count
+ * @property-read Collection<int, Profile> $likedBy
+ * @property-read int|null $liked_by_count
+ * @property-read Collection<int, Like> $likes
  * @property-read Collection<int, Media> $media
- * @property-read Collection<int, Mention> $mentions
+ * @property-read int|null $media_count
+ * @property-read Collection<int, Profile> $mentions
+ * @property-read int|null $mentions_count
+ * @property-read Place|null $place
+ * @property-read Poll|null $poll
+ * @property-read Profile|null $profile
+ * @property-read Collection<int, Profile> $sharedBy
+ * @property-read int|null $shared_by_count
+ * @property-read Collection<int, Status> $shares
+ * @property-read int|null $shares_count
+ *
+ * @method static \Database\Factories\StatusFactory factory($count = null, $state = [])
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Status newModelQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Status newQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Status onlyTrashed()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Status query()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Status toAudience()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Status whereApplicationId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Status whereCaption($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Status whereCommentsDisabled($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Status whereConversationId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Status whereCreatedAt($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Status whereCwSummary($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Status whereDeletedAt($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Status whereEditedAt($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Status whereEntities($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Status whereGroupId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Status whereId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Status whereInReplyToId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Status whereInReplyToProfileId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Status whereIsNsfw($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Status whereLanguage($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Status whereLikesCount($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Status whereLocal($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Status whereMediaIds($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Status whereObjectUrl($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Status wherePinnedOrder($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Status wherePlaceId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Status whereProfileId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Status whereQuotePolicy($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Status whereReblogOfId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Status whereReblogsCount($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Status whereRendered($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Status whereReply($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Status whereReplyCount($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Status whereScope($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Status whereTrendable($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Status whereType($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Status whereUpdatedAt($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Status whereUri($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Status whereUrl($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Status whereVisibility($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Status withTrashed(bool $withTrashed = true)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Status withoutTrashed()
+ *
+ * @mixin \Eloquent
  */
 class Status extends Model
 {
@@ -57,11 +136,16 @@ class Status extends Model
 
     protected $guarded = [];
 
+    protected $attributes = [
+        'reply_count' => 0,
+    ];
+
     protected function casts(): array
     {
         return [
             'deleted_at' => 'datetime',
             'edited_at' => 'datetime',
+            'quote_policy' => 'integer',
         ];
     }
 
@@ -143,7 +227,7 @@ class Status extends Model
         }
 
         return collect($entity['media_attachments'])
-            ->filter(fn ($media) => $media['type'] == 'image' && in_array($media['mime'], ['image/jpeg', 'image/png', 'image/jpg']))
+            ->filter(fn ($media): bool => $media['type'] == 'image' && in_array($media['mime'], ['image/jpeg', 'image/png', 'image/jpg']))
             ->map(function ($media) {
                 if (! Str::endsWith($media['preview_url'], ['no-preview.png', 'no-preview.jpg'])) {
                     return $media['preview_url'];
@@ -158,16 +242,15 @@ class Status extends Model
     {
         if ($this->uri) {
             return $forceLocal ? "/i/web/post/_/{$this->profile_id}/{$this->id}" : $this->uri;
-        } else {
-            $id = $this->id;
-            $account = AccountService::get($this->profile_id, true);
-            if (! $account || ! isset($account['username'])) {
-                return '/404';
-            }
-            $path = url(config('app.url')."/p/{$account['username']}/{$id}");
-
-            return $path;
         }
+        $id = $this->id;
+        $account = AccountService::get($this->profile_id, true);
+        if (! $account || ! isset($account['username'])) {
+            return '/404';
+        }
+        $path = url(config('app.url')."/p/{$account['username']}/{$id}");
+
+        return $path;
     }
 
     public function permalink($suffix = '/activity')
@@ -179,7 +262,7 @@ class Status extends Model
         return url($path);
     }
 
-    public function editUrl()
+    public function editUrl(): string
     {
         return $this->url().'/edit';
     }
@@ -187,6 +270,9 @@ class Status extends Model
     public function mediaUrl()
     {
         $media = $this->firstMedia();
+        if (! $media) {
+            return null;
+        }
         $path = $media->media_path;
         $hash = is_null($media->processed_at) ? md5('unprocessed') : md5($media->created_at);
         $url = $media->cdn_url ? $media->cdn_url."?v={$hash}" : url(Storage::url($path)."?v={$hash}");
@@ -274,10 +360,36 @@ class Status extends Model
     {
         $parent = $this->in_reply_to_id ?? $this->reblog_of_id;
         if (! empty($parent)) {
-            return $this->findOrFail($parent);
-        } else {
-            return false;
+            // A deleted parent must not throw: callers treat the result as
+            // nullable (reply/reblog to a since-removed status), so return
+            // null rather than raising ModelNotFoundException.
+            return $this->find($parent);
         }
+
+        return false;
+    }
+
+    /**
+     * ActivityPub id of the status this one replies to, for use as inReplyTo.
+     *
+     * For a remote parent this is object_url (the object's id), not uri.
+     * uri holds the object's `url` property, which for most software is the
+     * HTML permalink. Servers that thread by id cannot match a permalink, so
+     * sending it detaches our reply from the thread on their side.
+     */
+    public function inReplyToUri(): ?string
+    {
+        if (! $this->in_reply_to_id) {
+            return null;
+        }
+
+        $parent = self::find($this->in_reply_to_id);
+
+        if (! $parent) {
+            return null;
+        }
+
+        return $parent->object_url ?: $parent->url();
     }
 
     public function conversation()
@@ -309,12 +421,12 @@ class Status extends Model
         );
     }
 
-    public function reportUrl()
+    public function reportUrl(): string
     {
         return route('report.form')."?type=post&id={$this->id}";
     }
 
-    public function toActivityStream()
+    public function toActivityStream(): array
     {
         $media = $this->media;
         $mediaCollection = [];
@@ -343,7 +455,7 @@ class Status extends Model
     public function scopeToAudience($audience)
     {
         if (! in_array($audience, ['to', 'cc']) || $this->local == false) {
-            return;
+            return null;
         }
         $res = [];
         $res['to'] = [];

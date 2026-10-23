@@ -30,10 +30,8 @@ class ImportEmojis extends Command
 
     /**
      * Execute the console command.
-     *
-     * @return int
      */
-    public function handle()
+    public function handle(): int
     {
         $path = $this->argument('path');
 
@@ -104,14 +102,14 @@ class ImportEmojis extends Command
         return Command::SUCCESS;
     }
 
-    private function isImage($file)
+    private function isImage($file): bool
     {
         $image = getimagesize($file->getPathname());
 
         return $image !== false;
     }
 
-    private function isEmoji($filename)
+    private function isEmoji($filename): bool
     {
         $allowedMimeTypes = ['image/png', 'image/jpeg', 'image/webp', 'image/jpg'];
         $mimeType = mime_content_type($filename);

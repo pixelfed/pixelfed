@@ -23,7 +23,7 @@ class ProfileAliasController extends Controller
     {
         $aliases = $request->user()->profile->aliases;
 
-        return view('settings.aliases.index', compact('aliases'));
+        return view('settings.aliases.index', ['aliases' => $aliases]);
     }
 
     public function store(Request $request): RedirectResponse

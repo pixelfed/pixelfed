@@ -32,6 +32,6 @@ class ContactAdmin extends Mailable
     {
         $contact = $this->contact;
 
-        return $this->subject('New Support Message')->markdown('emails.contact.admin')->with(compact('contact'));
+        return $this->subject('New Support Message')->markdown('emails.contact.admin')->with(['contact' => $contact]);
     }
 }

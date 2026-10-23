@@ -38,7 +38,7 @@ class UserTable extends Command
      */
     public function handle()
     {
-        $limit = $this->argument('limit');
+        $limit = (int) $this->argument('limit');
 
         $headers = ['ID', 'Username', 'Name', 'Registered'];
 

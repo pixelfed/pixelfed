@@ -48,8 +48,14 @@ class AvatarStorage extends Command
         $segments = [
             [
                 'Local',
-                Avatar::whereNull('is_remote')->count(),
-                PrettyNumber::size(Avatar::whereNull('is_remote')->sum('size')),
+                Avatar::where(function ($q) {
+                    $q->where('is_remote', false)->orWhereNull('is_remote');
+                })->whereHas('profile', fn ($q) => $q->whereNull('domain'))->count(),
+                PrettyNumber::size(
+                    Avatar::where(function ($q) {
+                        $q->where('is_remote', false)->orWhereNull('is_remote');
+                    })->whereHas('profile', fn ($q) => $q->whereNull('domain'))->sum('size')
+                ),
             ],
             [
                 'Remote',
@@ -89,12 +95,7 @@ class AvatarStorage extends Command
             $this->line(' ');
         }
 
-        if (config('instance.avatar.local_to_cloud')) {
-            $this->info('✅ - Store avatars on cloud filesystem');
-            $this->line(' ');
-        }
-
-        if ((bool) config_cache('pixelfed.cloud_storage') && config('instance.avatar.local_to_cloud')) {
+        if ((bool) config_cache('pixelfed.cloud_storage')) {
             $disk = Storage::disk(config_cache('filesystems.cloud'));
             $exists = $disk->exists('cache/avatars/default.jpg');
             $state = $exists ? '✅' : '❌';
@@ -102,7 +103,7 @@ class AvatarStorage extends Command
             $this->info($msg);
         }
 
-        $options = (bool) config_cache('pixelfed.cloud_storage') && config('instance.avatar.local_to_cloud') ?
+        $options = (bool) config_cache('pixelfed.cloud_storage') ?
             [
                 'Cancel',
                 'Upload default avatar to cloud',
@@ -161,8 +162,8 @@ class AvatarStorage extends Command
 
     protected function uploadAvatarsToCloud()
     {
-        if (! (bool) config_cache('pixelfed.cloud_storage') || ! config('instance.avatar.local_to_cloud')) {
-            $this->error('Enable cloud storage and avatar cloud storage to perform this action');
+        if (! (bool) config_cache('pixelfed.cloud_storage')) {
+            $this->error('Enable cloud storage to perform this action');
 
             return;
         }
@@ -179,7 +180,9 @@ class AvatarStorage extends Command
             $disk->put('cache/avatars/default.jpg', Storage::get('public/avatars/default.jpg'));
         }
 
-        Avatar::whereNull('is_remote')->chunk(5, function ($avatars) use ($disk) {
+        Avatar::where(function ($q) {
+            $q->where('is_remote', false)->orWhereNull('is_remote');
+        })->whereHas('profile', fn ($q) => $q->whereNull('domain'))->chunk(5, function ($avatars) use ($disk) {
             foreach ($avatars as $avatar) {
                 if ($avatar->media_path === 'public/avatars/default.jpg') {
                     $avatar->cdn_url = $disk->url('cache/avatars/default.jpg');
@@ -212,7 +215,7 @@ class AvatarStorage extends Command
             return;
         }
 
-        if ((bool) config_cache('pixelfed.cloud_storage') == false && config_cache('federation.avatars.store_local') == false) {
+        if ((bool) config_cache('pixelfed.cloud_storage') === false && config_cache('federation.avatars.store_local') == false) {
             $this->error('You have cloud storage disabled and local avatar storage disabled, we cannot refetch avatars.');
 
             return;

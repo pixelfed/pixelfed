@@ -319,7 +319,7 @@ return [
             'partial_word' => 'Partie du mot',
             'duplicate_not_allowed' => 'Les doublons de mots-clés ne sont pas autorisés',
             'filter_action' => 'Action du filtre',
-            'hide_media_blur' => '',
+            'hide_media_blur' => 'Flouter les médias',
             'show_warning' => 'Afficher un avertissement avant d\'afficher le contenu',
             'hide_content_completely' => 'Cacher le contenu complètement',
             'apply_filters_to' => 'Appliquer les filtres à',

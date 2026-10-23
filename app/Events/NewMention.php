@@ -38,7 +38,7 @@ class NewMention implements ShouldBroadcastNow
         return new PrivateChannel('App.User.'.$this->user->id);
     }
 
-    public function broadcastWith()
+    public function broadcastWith(): array
     {
         return ['id' => $this->user->id];
     }

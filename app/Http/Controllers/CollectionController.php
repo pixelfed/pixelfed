@@ -26,7 +26,7 @@ class CollectionController extends Controller
         $collection->visibility = 'draft';
         $collection->save();
 
-        return view('collection.create', compact('collection'));
+        return view('collection.create', ['collection' => $collection]);
     }
 
     public function show(Request $request, $id): View
@@ -44,7 +44,7 @@ class CollectionController extends Controller
             }
         }
 
-        return view('collection.show', compact('collection'));
+        return view('collection.show', ['collection' => $collection]);
     }
 
     public function store(Request $request, $id)
@@ -298,7 +298,7 @@ class CollectionController extends Controller
         $item->delete();
 
         CollectionItem::whereCollectionId($collection->id)
-            ->orderBy('created_at')
+            ->orderBy('order')
             ->get()
             ->each(function ($item, $index) {
                 $item->order = $index;

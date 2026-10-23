@@ -43,7 +43,7 @@ class GroupsSearchController extends Controller
         );
 
         $candidateIds = collect($uid)
-            ->filter(fn ($u) => $u != $pid)
+            ->filter(fn ($u): bool => $u != $pid)
             ->unique()
             ->values();
 
@@ -61,8 +61,8 @@ class GroupsSearchController extends Controller
             ->all();
 
         $profiles
-            ->filter(fn ($u) => in_array($u->id, $followedIds))
-            ->filter(fn ($u) => ! in_array($u->id, $alreadyInvitedIds))
+            ->filter(fn ($u): bool => in_array($u->id, $followedIds))
+            ->filter(fn ($u): bool => ! in_array($u->id, $alreadyInvitedIds))
             ->each(function ($u) use ($gid, $pid) {
                 $gi = new GroupInvitation;
                 $gi->group_id = $gid;
@@ -98,19 +98,19 @@ class GroupsSearchController extends Controller
             ->take(10)
             ->get()
             ->filter(function ($p) use ($group) {
-                return $group->isMember($p->profile_id) == false;
+                return $group->isMember($p->id) == false;
             })
             ->filter(function ($p) use ($group, $pid) {
                 return GroupInvitation::whereGroupId($group->id)
                     ->whereFromProfileId($pid)
-                    ->whereToProfileId($p->profile_id)
+                    ->whereToProfileId($p->id)
                     ->exists() == false;
             })
             ->map(function ($gm) use ($gid) {
-                $a = AccountService::get($gm->profile_id);
+                $a = AccountService::get($gm->id);
 
                 return [
-                    'id' => (string) $gm->profile_id,
+                    'id' => (string) $gm->id,
                     'username' => $a['acct'],
                     'url' => url("/groups/{$gid}/user/{$a['id']}?rf=group_search"),
                 ];
@@ -132,7 +132,6 @@ class GroupsSearchController extends Controller
         if (str_starts_with($q, 'https://')) {
             $res = Helpers::getSignedFetch($q);
             if ($res && $res = json_decode($res, true)) {
-
             }
             if ($res && isset($res['type']) && in_array($res['type'], ['Group', 'Note', 'Page'])) {
                 if ($res['type'] === 'Group') {

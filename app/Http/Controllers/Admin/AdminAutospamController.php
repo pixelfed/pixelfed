@@ -25,7 +25,7 @@ trait AdminAutospamController
         return view('admin.autospam.home');
     }
 
-    public function getAutospamConfigApi(Request $request)
+    public function getAutospamConfigApi(Request $request): array
     {
         $open = Cache::remember('admin-dash:reports:spam-count', 3600, function () {
             return AccountInterstitial::whereType('post.autospam')->whereNull('appeal_handled_at')->count();
@@ -47,11 +47,13 @@ trait AdminAutospamController
                 ->groupBy($gb)
                 ->get()
                 ->map(function ($s) {
+                    // @phpstan-ignore-next-line
                     $dt = now()->parse('01-'.$s->month_year);
 
                     return [
                         'id' => $dt->format('Ym'),
                         'x' => $dt->format('M Y'),
+                        // @phpstan-ignore-next-line
                         'y' => $s->count,
                     ];
                 })
@@ -95,8 +97,8 @@ trait AdminAutospamController
             'files' => $files,
             'open' => $open,
             'closed' => $closed,
-            'graph' => collect($thisWeek)->map(fn ($s) => $s['y'])->values(),
-            'graphLabels' => collect($thisWeek)->map(fn ($s) => $s['x'])->values(),
+            'graph' => collect($thisWeek)->map(fn ($s): mixed => $s['y'])->values(),
+            'graphLabels' => collect($thisWeek)->map(fn ($s): mixed => $s['x'])->values(),
         ];
     }
 
@@ -114,7 +116,7 @@ trait AdminAutospamController
         return $appeals;
     }
 
-    public function postAutospamTrainSpamApi(Request $request)
+    public function postAutospamTrainSpamApi(Request $request): array
     {
         $aiCount = AccountInterstitial::whereItemType(Status::class)
             ->whereIsSpam(true)
@@ -229,7 +231,7 @@ trait AdminAutospamController
         return Storage::download(AutospamService::MODEL_SPAM_PATH);
     }
 
-    public function enableAutospamApi(Request $request)
+    public function enableAutospamApi(Request $request): array
     {
         ConfigCacheService::put('autospam.nlp.enabled', true);
         Cache::forget(AutospamService::CHCKD_CACHE_KEY);
@@ -237,7 +239,7 @@ trait AdminAutospamController
         return ['msg' => 'Success'];
     }
 
-    public function disableAutospamApi(Request $request)
+    public function disableAutospamApi(Request $request): array
     {
         ConfigCacheService::put('autospam.nlp.enabled', false);
         Cache::forget(AutospamService::CHCKD_CACHE_KEY);

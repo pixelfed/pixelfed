@@ -11,7 +11,7 @@ class GroupCommentService
 {
     const CACHE_KEY = 'pf:services:groups:comment:';
 
-    public static function key($gid, $pid)
+    public static function key($gid, $pid): string
     {
         return self::CACHE_KEY.$gid.':'.$pid;
     }

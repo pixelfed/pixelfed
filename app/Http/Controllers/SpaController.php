@@ -52,7 +52,7 @@ class SpaController extends Controller
     {
         abort_unless(config('exp.spa'), 404);
         if ($request->user()) {
-            if (substr($id, 0, 1) == '@') {
+            if (str_starts_with($id, '@')) {
                 $id = AccountService::usernameToId(substr($id, 1));
 
                 return redirect("/i/web/profile/{$id}");

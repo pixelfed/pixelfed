@@ -38,7 +38,7 @@ class ImportUploadMediaToCloudStorage extends Command
             return;
         }
 
-        $limit = $this->option('limit');
+        $limit = (int) $this->option('limit');
 
         $progress = progress(label: 'Migrating import media', steps: $limit);
 

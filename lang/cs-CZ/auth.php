@@ -2,34 +2,34 @@
 
 return [
 
-    'verifyYourEmailAddress' => '',
-    'loginTitle' => '',
+    'verifyYourEmailAddress' => ' - Ověřte svoji emailovou adresu',
+    'loginTitle' => 'Přihlášení k účtu',
     'failed' => 'Tyto přihlašovací údaje se neshodují s našemi záznamy.',
     'throttle' => 'Příliš mnoho pokusů o přihlášení. Prosím zkuste to znovu za :seconds sekund.',
-    'password' => '',
-    'remember' => '',
-    'forgot' => '',
-    'login' => '',
+    'password' => 'Heslo',
+    'remember' => 'Pamatuj si mě',
+    'forgot' => 'Zapomenuté heslo',
+    'login' => 'Přihlášení',
 
-    'register' => '',
-    'reset' => '',
+    'register' => 'Registrovat',
+    'reset' => 'Obnovení hesla',
 
-    'name' => '',
-    'username' => '',
-    'confirm-password' => '',
+    'name' => 'Jméno',
+    'username' => 'Uživatelské jméno',
+    'confirm-password' => 'Potvrdit heslo',
 
-    'age' => '',
-    'terms' => ''.route('site.terms').''.route('site.privacy').'',
+    'age' => 'Je mi nejméně 16 let',
+    'terms' => 'Registrací souhlasíte s našimi <a href="'.route('site.terms').'" class="font-weight-bold text-dark">Podmínkami použití</a> a <a href="'.route('site.privacy').'" class="font-weight-bold text-dark">Zásady ochrany osobních údajů</a>',
 
-    'emailAddress' => '',
-    'email' => '',
-    'forgotEmail' => '',
+    'emailAddress' => 'E-mailová adresa',
+    'email' => 'E-mail',
+    'forgotEmail' => 'Zapomenutý e-mail',
 
-    'registerTitle' => '',
+    'registerTitle' => 'Registrovat nový účet',
 
-    'sendReset' => '',
-    'backLogin' => '',
+    'sendReset' => 'Poslat odkaz na obnovení hesla',
+    'backLogin' => 'Zpět k přihlášení',
 
-    'signInMastodon' => '',
+    'signInMastodon' => 'Přihlásit se přes Mastodon',
 
 ];

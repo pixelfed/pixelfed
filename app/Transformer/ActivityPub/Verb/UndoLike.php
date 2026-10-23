@@ -7,7 +7,7 @@ use League\Fractal;
 
 class UndoLike extends Fractal\TransformerAbstract
 {
-    public function transform(LikeModel $like)
+    public function transform(LikeModel $like): array
     {
         return [
             '@context' => 'https://www.w3.org/ns/activitystreams',

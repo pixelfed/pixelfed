@@ -23,11 +23,12 @@ class AdminShadowFilterController extends Controller
             ->when($filter, function ($q, $filter) {
                 if ($filter == 'all') {
                     return $q;
-                } elseif ($filter == 'inactive') {
-                    return $q->whereActive(false);
-                } else {
-                    return $q;
                 }
+                if ($filter == 'inactive') {
+                    return $q->whereActive(false);
+                }
+
+                return $q;
             }, function ($q, $filter) {
                 return $q->whereActive(true);
             })
@@ -43,7 +44,7 @@ class AdminShadowFilterController extends Controller
             ->paginate(10)
             ->withQueryString();
 
-        return view('admin.asf.home', compact('filters'));
+        return view('admin.asf.home', ['filters' => $filters]);
     }
 
     public function create(Request $request)
@@ -56,7 +57,7 @@ class AdminShadowFilterController extends Controller
         $filter = AdminShadowFilter::findOrFail($id);
         $profile = AccountService::get($filter->item_id);
 
-        return view('admin.asf.edit', compact('filter', 'profile'));
+        return view('admin.asf.edit', ['filter' => $filter, 'profile' => $profile]);
     }
 
     public function store(Request $request)
@@ -82,7 +83,7 @@ class AdminShadowFilterController extends Controller
 
         AdminShadowFilter::updateOrCreate([
             'item_id' => $profile->id,
-            'item_type' => get_class($profile),
+            'item_type' => $profile::class,
         ], [
             'is_local' => $profile->domain === null,
             'note' => $request->input('note'),

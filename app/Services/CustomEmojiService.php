@@ -24,7 +24,7 @@ class CustomEmojiService
 
     public static function get($shortcode)
     {
-        if ((bool) config_cache('federation.custom_emoji.enabled') == false) {
+        if ((bool) config_cache('federation.custom_emoji.enabled') === false) {
             return;
         }
 
@@ -33,7 +33,7 @@ class CustomEmojiService
 
     public static function import($url, $id = false)
     {
-        if ((bool) config_cache('federation.custom_emoji.enabled') == false) {
+        if ((bool) config_cache('federation.custom_emoji.enabled') === false) {
             return;
         }
 
@@ -53,7 +53,7 @@ class CustomEmojiService
         $host = parse_url($url, PHP_URL_HOST);
         $port = parse_url($url, PHP_URL_PORT) ?: 443;
         $ips = $host ? Helpers::resolvePublicIps($host) : [];
-        if (empty($ips)) {
+        if ($ips === []) {
             return;
         }
 
@@ -77,9 +77,7 @@ class CustomEmojiService
                 ->timeout(15)
                 ->connectTimeout(5)
                 ->get($url);
-        } catch (RequestException $e) {
-            return;
-        } catch (\Exception $e) {
+        } catch (RequestException|\Exception) {
             return;
         }
 
@@ -109,19 +107,23 @@ class CustomEmojiService
                 return;
             }
 
-            $emoji = CustomEmoji::firstOrCreate([
+            // The (shortcode, domain) collision key is derived from the
+            // document's declared id, so its host must match the URL we
+            // actually fetched. Otherwise a peer could serve a document from
+            // its own host declaring a victim (shortcode, host) and hijack /
+            // clobber the victim's cached emoji. Host-only (not byte equality)
+            // so a legit id whose path differs from the fetch URL still passes.
+            if (strcasecmp((string) parse_url($json['id'], PHP_URL_HOST), (string) parse_url($url, PHP_URL_HOST)) !== 0) {
+                return;
+            }
+
+            $emoji = CustomEmoji::updateOrCreate([
                 'shortcode' => $json['name'],
                 'domain' => parse_url($json['id'], PHP_URL_HOST),
             ], [
                 'uri' => $json['id'],
                 'image_remote_url' => $json['icon']['url'],
             ]);
-
-            if ($emoji->wasRecentlyCreated == false) {
-                if (Storage::exists('public/'.$emoji->media_path)) {
-                    Storage::delete('public/'.$emoji->media_path);
-                }
-            }
 
             $ext = '.'.last(explode('/', $json['icon']['mediaType']));
             $mediaPath = 'emoji/'.$emoji->id.$ext;
@@ -133,14 +135,26 @@ class CustomEmojiService
                 $body = SecureMediaFetchService::get($json['icon']['url'], $maxSize > 0 ? $maxSize : null);
 
                 if ($body === false) {
+                    // Download failed: keep the previous working media rather
+                    // than deleting it up-front, so the emoji keeps rendering.
                     return;
                 }
+
+                // Store the new bytes first, persist media_path, and only then
+                // delete the previous file if the path changed.
+                $oldPath = ($emoji->media_path && $emoji->media_path !== $mediaPath)
+                    ? $emoji->media_path
+                    : null;
 
                 Storage::put('public/'.$mediaPath, $body);
 
                 $emoji->media_path = $mediaPath;
                 $emoji->save();
-            } catch (\Exception $e) {
+
+                if ($oldPath && Storage::exists('public/'.$oldPath)) {
+                    Storage::delete('public/'.$oldPath);
+                }
+            } catch (\Exception) {
                 // Download failed
                 return;
             }
@@ -153,9 +167,8 @@ class CustomEmojiService
             }
 
             return;
-        } else {
-            return;
         }
+
     }
 
     public static function headCheck($url)
@@ -173,11 +186,7 @@ class CustomEmojiService
             return false;
         }
 
-        if ($maxSize > 0 && $head['length'] > $maxSize) {
-            return false;
-        }
-
-        return true;
+        return $maxSize <= 0 || $head['length'] <= $maxSize;
     }
 
     /**
@@ -191,7 +200,7 @@ class CustomEmojiService
      */
     public static function resync(CustomEmoji $emoji): string
     {
-        if ((bool) config_cache('federation.custom_emoji.enabled') == false) {
+        if ((bool) config_cache('federation.custom_emoji.enabled') === false) {
             return 'skipped';
         }
 
@@ -236,7 +245,7 @@ class CustomEmojiService
                 $emoji->media_path = $mediaPath;
                 $emoji->save();
             }
-        } catch (\Throwable $e) {
+        } catch (\Throwable) {
             return 'failed';
         }
 

@@ -4,7 +4,7 @@ namespace App\Util\Media;
 
 class License
 {
-    public static function get()
+    public static function get(): array
     {
         return [
             1 => [

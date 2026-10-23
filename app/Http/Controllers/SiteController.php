@@ -24,9 +24,9 @@ class SiteController extends Controller
     {
         if ($request->user() !== null) {
             return $this->homeTimeline($request);
-        } else {
-            return $this->homeGuest();
         }
+
+        return $this->homeGuest();
     }
 
     public function homeGuest(): View
@@ -72,7 +72,7 @@ class SiteController extends Controller
             $post_count = number_format(StatusService::totalLocalStatuses());
             $rules = config_cache('app.rules') ? json_decode(config_cache('app.rules'), true) : null;
 
-            return view('site.about', compact('rules', 'user_count', 'post_count'))->render();
+            return view('site.about', ['rules' => $rules, 'user_count' => $user_count, 'post_count' => $post_count])->render();
         });
     }
 
@@ -83,16 +83,16 @@ class SiteController extends Controller
 
     public function communityGuidelines(Request $request)
     {
-        // Scope by locale: the rendered layout contains translated strings,
-        // so a shared key would leak one locale's render to other locales.
-        $cacheKey = 'site:help:community-guidelines:'.app()->getLocale();
-
-        return Cache::remember($cacheKey, now()->addMinutes(15), function () {
-            $slug = '/site/kb/community-guidelines';
-            $page = Page::whereSlug($slug)->whereActive(true)->first();
-
-            return view('site.help.community-guidelines', compact('page'))->render();
+        // Cache only the page payload and render the view per request, so the
+        // layout/footer (config version/domain, canonical url, csrf token) is
+        // evaluated on every request rather than baked into a cached HTML blob.
+        Cache::remember('site:help:community-guidelines', now()->addDays(120), function () {
+            return $this->cachedPage('/site/kb/community-guidelines');
         });
+
+        $page = Page::whereSlug('/site/kb/community-guidelines')->whereActive(true)->first();
+
+        return view('site.help.community-guidelines', ['page' => $page])->render();
     }
 
     public function privacy(Request $request)
@@ -101,7 +101,7 @@ class SiteController extends Controller
             return $this->cachedPage('/site/privacy');
         });
 
-        return view('site.privacy', compact('page'))->render();
+        return view('site.privacy', ['page' => $page])->render();
     }
 
     public function terms(Request $request)
@@ -110,7 +110,7 @@ class SiteController extends Controller
             return $this->cachedPage('/site/terms');
         });
 
-        return view('site.terms', compact('page'))->render();
+        return view('site.terms', ['page' => $page])->render();
     }
 
     public function redirectUrl(Request $request): View
@@ -122,7 +122,7 @@ class SiteController extends Controller
         $url = request()->input('url');
         abort_if(Helpers::validateUrl($url) == false, 404);
 
-        return view('site.redirect', compact('url'));
+        return view('site.redirect', ['url' => $url]);
     }
 
     public function followIntent(Request $request): View
@@ -135,7 +135,7 @@ class SiteController extends Controller
         abort_if($user && $profile->id == $user->profile_id, 404);
         $following = $user != null ? FollowerService::follows($user->profile_id, $profile->id) : false;
 
-        return view('site.intents.follow', compact('profile', 'user', 'following'));
+        return view('site.intents.follow', ['profile' => $profile, 'user' => $user, 'following' => $following]);
     }
 
     public function legacyProfileRedirect(Request $request, $username): RedirectResponse
@@ -183,7 +183,7 @@ class SiteController extends Controller
         });
         abort_if(! $page, 404);
 
-        return view('site.legal-notice', compact('page'))->render();
+        return view('site.legal-notice', ['page' => $page])->render();
     }
 
     public function curatedOnboarding(Request $request): RedirectResponse|View

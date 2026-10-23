@@ -17,7 +17,7 @@ class MobileController extends Controller
             return $this->cachedPage('/site/terms');
         });
 
-        return View::make('mobile.terms')->with(compact('page'))->render();
+        return View::make('mobile.terms')->with(['page' => $page])->render();
     }
 
     public function privacy(Request $request)
@@ -26,6 +26,6 @@ class MobileController extends Controller
             return $this->cachedPage('/site/privacy');
         });
 
-        return View::make('mobile.privacy')->with(compact('page'))->render();
+        return View::make('mobile.privacy')->with(['page' => $page])->render();
     }
 }

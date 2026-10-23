@@ -43,7 +43,7 @@ class NewChatComment implements ShouldBroadcast
         return 'chat.new-message';
     }
 
-    public function broadcastWith()
+    public function broadcastWith(): array
     {
         return ['msg' => $this->chatmsg];
     }

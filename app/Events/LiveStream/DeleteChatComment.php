@@ -43,7 +43,7 @@ class DeleteChatComment implements ShouldBroadcast
         return 'chat.delete-message';
     }
 
-    public function broadcastWith()
+    public function broadcastWith(): array
     {
         return ['id' => $this->chatmsg['id']];
     }

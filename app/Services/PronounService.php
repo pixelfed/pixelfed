@@ -55,7 +55,7 @@ class PronounService
         AccountService::del($id);
     }
 
-    public static function pronouns()
+    public static function pronouns(): array
     {
         return [
             'co',

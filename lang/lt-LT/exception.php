@@ -4,7 +4,7 @@ return [
 
     'compose' => [
         'invalid' => [
-            'album' => '',
+            'album' => 'Turi būti viena nuotrauka arba vaizdo įrašas, arba kelios nuotraukos.',
         ],
     ],
 

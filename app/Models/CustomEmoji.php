@@ -4,9 +4,39 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Str;
 
+/**
+ * @property int $id
+ * @property string $shortcode
+ * @property string|null $media_path
+ * @property string|null $domain
+ * @property int $disabled
+ * @property string|null $uri
+ * @property string|null $image_remote_url
+ * @property int|null $category_id
+ * @property Carbon|null $created_at
+ * @property Carbon|null $updated_at
+ *
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|CustomEmoji duplicateShortcodes()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|CustomEmoji newModelQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|CustomEmoji newQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|CustomEmoji query()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|CustomEmoji whereCategoryId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|CustomEmoji whereCreatedAt($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|CustomEmoji whereDisabled($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|CustomEmoji whereDomain($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|CustomEmoji whereId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|CustomEmoji whereImageRemoteUrl($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|CustomEmoji whereMediaPath($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|CustomEmoji whereShortcode($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|CustomEmoji whereUpdatedAt($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|CustomEmoji whereUri($value)
+ *
+ * @mixin \Eloquent
+ */
 class CustomEmoji extends Model
 {
     use HasFactory;
@@ -30,7 +60,7 @@ class CustomEmoji extends Model
 
     public static function scan($text, $activitypub = false)
     {
-        if ((bool) config_cache('federation.custom_emoji.enabled') == false) {
+        if ((bool) config_cache('federation.custom_emoji.enabled') === false) {
             return [];
         }
 
@@ -69,22 +99,22 @@ class CustomEmoji extends Model
                                 'url' => $url,
                             ],
                         ];
-                    } else {
-                        return [
-                            'shortcode' => $match,
-                            'url' => $url,
-                            'static_url' => $url,
-                            'visible_in_picker' => $tag['disabled'] == false,
-                        ];
                     }
+
+                    return [
+                        'shortcode' => $match,
+                        'url' => $url,
+                        'static_url' => $url,
+                        'visible_in_picker' => $tag['disabled'] == false,
+                    ];
                 }
             })
             ->filter(function ($tag) use ($activitypub) {
                 if ($activitypub == true) {
                     return $tag && isset($tag['icon']);
-                } else {
-                    return $tag && isset($tag['static_url']);
                 }
+
+                return $tag && isset($tag['static_url']);
             })
             ->values()
             ->toArray();

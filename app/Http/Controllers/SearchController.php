@@ -94,7 +94,7 @@ class SearchController extends Controller
         $hash = hash('sha256', $tag);
         if (Helpers::validateUrl($tag) != false &&
             Helpers::validateLocalUrl($tag) != true &&
-            (bool) config_cache('federation.activitypub.enabled') == true &&
+            (bool) config_cache('federation.activitypub.enabled') === true &&
             config('federation.activitypub.remoteFollow') == true
         ) {
             $remote = Helpers::fetchFromUrl($tag);
@@ -215,7 +215,7 @@ class SearchController extends Controller
         $ttl = now()->addHours(2);
         if (Helpers::validateUrl($tag) != false &&
             Helpers::validateLocalUrl($tag) != true &&
-            (bool) config_cache('federation.activitypub.enabled') == true &&
+            (bool) config_cache('federation.activitypub.enabled') === true &&
             config('federation.activitypub.remoteFollow') == true
         ) {
             $remote = Helpers::fetchFromUrl($tag);
@@ -340,7 +340,10 @@ class SearchController extends Controller
             if ($media) {
                 $url = $media->remote_url;
             }
-            $content = $item->caption ? Autolink::create()->autolink($item->caption) : null;
+            // Remote posts keep the HTML they arrived with, so the link targets survive
+            $content = $item->local || ! $item->rendered
+                ? ($item->caption ? Autolink::create()->autolink($item->caption) : null)
+                : $item->rendered;
             $this->tokens['posts'] = [[
                 'count' => 0,
                 'url' => "/i/web/post/_/$item->profile_id/$item->id",
@@ -364,7 +367,10 @@ class SearchController extends Controller
             if ($media) {
                 $url = $media->remote_url;
             }
-            $content = $item->caption ? Autolink::create()->autolink($item->caption) : null;
+            // Remote posts keep the HTML they arrived with, so the link targets survive
+            $content = $item->local || ! $item->rendered
+                ? ($item->caption ? Autolink::create()->autolink($item->caption) : null)
+                : $item->rendered;
             $this->tokens['posts'] = [[
                 'count' => 0,
                 'url' => "/i/web/post/_/$item->profile_id/$item->id",

@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Http\Requests\ProfileMigrationStoreRequest;
 use App\Jobs\ProfilePipeline\ProfileMigrationDeliverMoveActivityPipeline;
 use App\Jobs\ProfilePipeline\ProfileMigrationMoveFollowersPipeline;
+use App\Models\Profile;
 use App\Models\ProfileAlias;
 use App\Models\ProfileMigration;
 use App\Services\AccountService;
@@ -33,7 +34,7 @@ class ProfileMigrationController extends Controller
             ->where('created_at', '>', now()->subDays(30))
             ->exists();
 
-        return view('settings.migration.index', compact('hasExistingMigration'));
+        return view('settings.migration.index', ['hasExistingMigration' => $hasExistingMigration]);
     }
 
     public function store(ProfileMigrationStoreRequest $request): RedirectResponse
@@ -44,7 +45,7 @@ class ProfileMigrationController extends Controller
             return redirect()->back()->withErrors(['acct' => 'The new account you provided is not responding to our requests.']);
         }
         $newAccount = Helpers::profileFetch($acct);
-        if (! $newAccount) {
+        if (! $newAccount instanceof Profile) {
             return redirect()->back()->withErrors(['acct' => 'An error occured, please try again later. Code: res-failed-account-fetch']);
         }
         $user = $request->user();

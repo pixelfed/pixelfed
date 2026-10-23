@@ -27,6 +27,7 @@
         "sensitive": "Sensible",
         "sensitiveContent": "Contenido Sensible",
         "sensitiveContentWarning": "Esta publicaci\u00f3n podr\u00eda contener contenido sensible",
+        "javascript": "Por favor, habilite javascript para ver este contenido.",
         "loading": "Cargando...",
         "continue": "Continuar"
     },
@@ -48,6 +49,7 @@
         "profile": "Perfil",
         "drive": "Multimedia",
         "settings": "Ajustes",
+        "appearance": "Apariencia",
         "compose": "Crear Nuevo",
         "logout": "Cerrar sesi\u00f3n",
         "createStory": "Crear Historia",
@@ -57,6 +59,7 @@
         "privacy": "Privacidad",
         "terms": "T\u00e9rminos",
         "legalNotice": "Aviso Legal",
+        "mobileApps": "Aplicaciones M\u00f3viles",
         "backToPreviousDesign": "Volver al dise\u00f1o anterior"
     },
     "directMessages": {
@@ -236,6 +239,19 @@
         "thanksMsg": "Gracias por el reporte, \u00a1personas como t\u00fa ayudan a mantener nuestra comunidad segura!",
         "contactAdminMsg": "Si quieres contactar un administrador sobre esta publicaci\u00f3n o reporte"
     },
+    "appearance": {
+        "theme": "Tema",
+        "profileLayout": "Dise\u00f1o del perfil",
+        "compactPreviews": "Previsualizaci\u00f3n de medios compactos",
+        "loadComments": "Cargar comentarios",
+        "hideStats": "Ocultar recuentos y estad\u00edsticas",
+        "auto": "Autom\u00e1tico",
+        "lightMode": "Modo claro",
+        "darkMode": "Modo oscuro",
+        "grid": "Cuadr\u00edcula",
+        "masonry": "Mosaico",
+        "feed": "Publicaciones"
+    },
     "settings": {
         "filters": {
             "title": "Filtros",
@@ -260,6 +276,7 @@
             "partial_word": "Palabra parcial",
             "duplicate_not_allowed": "No est\u00e1n permitidas las palabras clave duplicadas",
             "filter_action": "Acci\u00f3n del Filtro",
+            "hide_media_blur": "Ocultar medios detr\u00e1s de un efecto difuminado",
             "show_warning": "Mostrar advertencia antes de mosrtar el contenido",
             "hide_content_completely": "Ocultar el contenido completamente",
             "apply_filters_to": "Aplicar filtros a",
@@ -308,5 +325,41 @@
             "add_keyword": "Agregar palabra clave...",
             "enter_filter_title": "Introduce el t\u00edtulo del filtro"
         }
+    },
+    "powered_by_pixelfed": "Desarrollado por",
+    "landing": {
+        "login": "Iniciar Sesi\u00f3n",
+        "signup": "Registrarse",
+        "about": "Acerca de",
+        "directory": "Directorio",
+        "explore": "Explora",
+        "decentralized_by_pixelfed": "Red social descentralizada para compartir fotos, desarrollada por <a href=\"https://pixelfed.org\" target=\"_blank\">Pixelfed</a>",
+        "posts": "Publicaciones",
+        "active_users": "Usuarios activos",
+        "total_users": "Total de usuarios",
+        "managed_by": "Administrado por",
+        "server_rules": "Reglas del servidor",
+        "supported_features": "Caracter\u00edsticas soportadas",
+        "features": {
+            "photo_posts": "Publicaciones de fotos",
+            "photo_albums": "\u00c1lbumes de fotos",
+            "photo_filters": "Filtros de fotos",
+            "collections": "Colecciones",
+            "comments": "Comentarios",
+            "hashtags": "Hashtags",
+            "likes": "Me gusta",
+            "notifications": "Notificaciones",
+            "shares": "Compartidos",
+            "share_up_to_n_photos": "Puedes compartir hasta <span class=\"font-weight-bold\">{num_photos}</span> fotos al mismo tiempo con hasta <span class=\"font-weight-bold\">{caption_length}</span> caracteres en la descripci\u00f3n.",
+            "share_up_to_n_photos_videos": "Puedes compartir hasta <span class=\"font-weight-bold\">{num_photos}</span> fotos o hasta <span class=\"font-weight-bold\">{num_video}</span> videos* al mismo tiempo con hasta <span class=\"font-weight-bold\">{caption_length}</span> caracteres en la descripci\u00f3n.",
+            "file_size": "* - El tama\u00f1o m\u00e1ximo del archivo es {max_size}",
+            "federation": "Federaci\u00f3n",
+            "mobile_app": "Soporte para aplicaciones m\u00f3viles",
+            "stories": "Historias",
+            "videos": "Videos"
+        },
+        "discover_accounts": "Descubre cuentas y personas",
+        "nothing_to_show": "\u00a1A\u00fan no hay nada que mostrar! Vuelve m\u00e1s tarde.",
+        "explore_trending": "Explora publicaciones en tendencia"
     }
 }

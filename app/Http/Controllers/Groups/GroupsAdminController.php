@@ -331,6 +331,7 @@ class GroupsAdminController extends Controller
                     'profile' => GroupAccountService::get($group->id, $report->profile_id),
                     'type' => $report->type,
                     'created_at' => $report->created_at->format('c'),
+                    // @phpstan-ignore-next-line
                     'total_count' => $report->total,
                 ];
 

@@ -4,24 +4,16 @@ namespace App\Transformer\ActivityPub;
 
 use App\Models\Status;
 use App\Services\MediaService;
-use App\Services\StatusService;
 use App\Util\Lexer\Autolink;
 use League\Fractal;
 
 class StatusTransformer extends Fractal\TransformerAbstract
 {
-    public function transform(Status $status)
+    public function transform(Status $status): array
     {
         $content = $status->caption ? nl2br(Autolink::create()->autolink($status->caption)) : '';
 
-        $inReplyTo = null;
-
-        if ($status->in_reply_to_id) {
-            $reply = StatusService::get($status->in_reply_to_id, true);
-            if ($reply && isset($reply['url'])) {
-                $inReplyTo = $reply['url'];
-            }
-        }
+        $inReplyTo = $status->inReplyToUri();
 
         return [
             '@context' => [

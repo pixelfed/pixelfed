@@ -79,7 +79,7 @@ class PersonalAccessTokenController extends Controller
                 $validated['name'],
                 $scopes
             );
-        } catch (\RuntimeException $e) {
+        } catch (\RuntimeException) {
             return response()->json([
                 'error' => 'Unable to create personal access token. The server may not have a personal access client configured. Please contact your administrator.',
             ], 500);

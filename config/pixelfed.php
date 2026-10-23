@@ -24,7 +24,7 @@ return [
     |
     */
     // GLITCH MODIFIED: glitch version string, set by CI via PIXELFED_VERSION
-    'version' => env('PIXELFED_VERSION', '0.13.0+glitch.1.13.0?'),
+    'version' => env('PIXELFED_VERSION', '0.14.4+glitch.1.13.0?'),
 
     /*
     |--------------------------------------------------------------------------
@@ -129,6 +129,18 @@ return [
     |
     */
     'min_password_length' => env('MIN_PASSWORD_LENGTH', 8),
+
+    /*
+    |--------------------------------------------------------------------------
+    | Minimum registration age
+    |--------------------------------------------------------------------------
+    |
+    | The minimum age (in years) a user must be to register an account. This
+    | lets instance admins comply with the legislation of their jurisdiction.
+    | Defaults to 16.
+    |
+    */
+    'min_registration_age' => (int) env('PF_MIN_REGISTRATION_AGE', 16),
 
     /*
     |--------------------------------------------------------------------------

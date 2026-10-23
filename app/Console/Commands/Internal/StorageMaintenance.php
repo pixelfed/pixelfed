@@ -91,7 +91,7 @@ class StorageMaintenance extends Command
         }
 
         return collect(explode(',', $value))
-            ->map(fn ($v) => trim($v))
+            ->map(fn ($v): string => trim($v))
             ->filter()
             ->unique()
             ->values()
@@ -199,7 +199,7 @@ class StorageMaintenance extends Command
         $directories = $disk->allDirectories($root);
 
         // Deepest first so children are evaluated before their parents.
-        usort($directories, fn ($a, $b) => substr_count($b, '/') <=> substr_count($a, '/'));
+        usort($directories, fn ($a, $b): int => substr_count($b, '/') <=> substr_count($a, '/'));
 
         $removed = 0;
 

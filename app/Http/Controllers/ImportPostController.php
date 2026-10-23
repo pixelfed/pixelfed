@@ -273,29 +273,31 @@ class ImportPostController extends Controller
     {
         if ($exts->count() > 1) {
             if ($exts->contains('mp4')) {
-                if ($exts->contains('jpg', 'png', 'webp')) {
+                // intersect(), not the multi-arg contains(): contains() with
+                // 2+ args is a where-style filter that is always false on a
+                // list of plain extension strings, so this branch was dead and
+                // mixed photo+video albums were mislabeled video:album.
+                if ($exts->intersect(['jpg', 'jpeg', 'png', 'webp'])->isNotEmpty()) {
                     return 'photo:video:album';
-                } else {
-                    return 'video:album';
                 }
-            } else {
-                return 'photo:album';
-            }
-        } else {
-            if ($exts->isEmpty()) {
-                return 'photo';
+
+                return 'video:album';
             }
 
-            $ext = $exts[0];
-
-            if (in_array($ext, ['jpg', 'jpeg', 'png', 'webp'])) {
-                return 'photo';
-            } elseif (in_array($ext, ['mp4'])) {
-                return 'video';
-            } else {
-                return 'photo';
-            }
+            return 'photo:album';
         }
+        if ($exts->isEmpty()) {
+            return 'photo';
+        }
+        $ext = $exts[0];
+        if (in_array($ext, ['jpg', 'jpeg', 'png', 'webp'])) {
+            return 'photo';
+        }
+        if (in_array($ext, ['mp4'])) {
+            return 'video';
+        }
+
+        return 'photo';
     }
 
     private function sanitizeFilename($filename): string
@@ -320,9 +322,9 @@ class ImportPostController extends Controller
         if ($user->is_admin) {
             if (! $abortOnFail) {
                 return true;
-            } else {
-                return true;
             }
+
+            return true;
         }
 
         $admin = User::whereIsAdmin(true)->first();

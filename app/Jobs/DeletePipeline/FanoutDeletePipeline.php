@@ -40,14 +40,14 @@ class FanoutDeletePipeline implements ShouldQueue
         if (! $profile) {
             Log::info('FanoutDeletePipeline: Profile no longer exists, skipping job');
 
-            return;
+            return null;
         }
 
         // Verify profile has required fields for ActivityPub
         if (! $profile->permalink() || ! $profile->private_key) {
             Log::info("FanoutDeletePipeline: Profile {$profile->id} missing required fields for ActivityPub, skipping job");
 
-            return;
+            return null;
         }
 
         try {

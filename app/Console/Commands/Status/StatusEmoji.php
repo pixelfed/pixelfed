@@ -29,7 +29,7 @@ class StatusEmoji extends Command
     {
         $emoji = $this->resolve($this->argument('id'));
 
-        if (! $emoji) {
+        if (! $emoji instanceof CustomEmoji) {
             $this->error('No custom emoji found for "'.$this->argument('id').'" (tried id, shortcode, then media filename).');
 
             return self::FAILURE;
@@ -155,7 +155,7 @@ class StatusEmoji extends Command
 
             return Storage::disk('local')->exists('public/'.$mediaPath)
                 || Storage::disk('local')->exists($mediaPath);
-        } catch (\Throwable $e) {
+        } catch (\Throwable) {
             return false;
         }
     }

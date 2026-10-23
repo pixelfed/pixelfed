@@ -9,6 +9,7 @@ use App\Models\Mention;
 use App\Models\Profile;
 use App\Models\Status;
 use App\Models\StatusHashtag;
+use App\Services\Account\AccountStatService;
 use App\Services\AdminShadowFilterService;
 use App\Services\PublicTimelineService;
 use App\Services\StatusService;
@@ -83,7 +84,7 @@ class StatusEntityLexer implements ShouldQueue
             return;
         }
 
-        if (in_array($status->type, ['photo', 'photo:album', 'video', 'video:album', 'photo:video:album'])) {
+        if (in_array($status->type, AccountStatService::COUNTABLE_STATUS_TYPES)) {
             $profile->status_count = $profile->status_count + 1;
             $profile->save();
         }
@@ -219,7 +220,7 @@ class StatusEntityLexer implements ShouldQueue
             }
         }
 
-        if ((bool) config_cache('federation.activitypub.enabled') == true && config('app.env') == 'production') {
+        if ((bool) config_cache('federation.activitypub.enabled') === true && config('app.env') == 'production') {
             StatusActivityPubDeliver::dispatch($status);
         }
     }

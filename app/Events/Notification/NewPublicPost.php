@@ -40,7 +40,7 @@ class NewPublicPost implements ShouldBroadcastNow
         return new Channel('firehost.public');
     }
 
-    public function broadcastWith()
+    public function broadcastWith(): array
     {
         $resource = new Fractal\Resource\Item($this->status, new StatusTransformer);
         $res = $this->fractal->createData($resource)->toArray();

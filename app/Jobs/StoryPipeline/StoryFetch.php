@@ -30,7 +30,7 @@ class StoryFetch implements ShouldQueue
 
     protected $activity;
 
-    private const MAX_DURATION = 300;
+    private const int MAX_DURATION = 300;
 
     // Rate limiting
     public $tries = 3;
@@ -182,9 +182,13 @@ class StoryFetch implements ShouldQueue
             return false;
         }
 
-        // Normalize hosts (remove www prefix if present)
-        $host1 = ltrim(strtolower($host1), 'www.');
-        $host2 = ltrim(strtolower($host2), 'www.');
+        // Normalize hosts (remove a leading www. prefix if present). Use an
+        // anchored prefix match, not ltrim(): ltrim($host, 'www.') treats the
+        // argument as a character set and strips any leading w/. run, so
+        // wwworld.victim.com would collapse to orld.victim.com and falsely
+        // match a different domain.
+        $host1 = preg_replace('/^www\./', '', strtolower($host1));
+        $host2 = preg_replace('/^www\./', '', strtolower($host2));
 
         return $host1 === $host2;
     }
@@ -528,11 +532,12 @@ class StoryFetch implements ShouldQueue
 
             return false;
         }
-
         // Additional file type specific validations
         if (str_starts_with($actualMimeType, 'image/')) {
             return $this->validateImageFile($filePath);
-        } elseif (str_starts_with($actualMimeType, 'video/')) {
+        }
+
+        if (str_starts_with($actualMimeType, 'video/')) {
             return $this->validateVideoFile($filePath);
         }
 
@@ -555,7 +560,7 @@ class StoryFetch implements ShouldQueue
 
         // Check reasonable dimensions (not too large, not too small)
         [$width, $height] = $imageInfo;
-        if ($width < 1 || $height < 1 || $width != 1080 || $height != 1920) {
+        if ($width < 1 || $height < 1 || $width !== 1080 || $height !== 1920) {
             if (config('app.dev_log')) {
                 Log::warning('Image dimensions out of range', [
                     'width' => $width,

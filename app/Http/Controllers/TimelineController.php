@@ -31,7 +31,7 @@ class TimelineController extends Controller
         ]);
         $layout = $request->input('layout', 'feed');
 
-        return view('timeline.local', compact('layout'));
+        return view('timeline.local', ['layout' => $layout]);
     }
 
     public function network(Request $request): View
@@ -42,7 +42,7 @@ class TimelineController extends Controller
         ]);
         $layout = $request->input('layout', 'feed');
 
-        return view('timeline.network', compact('layout'));
+        return view('timeline.network', ['layout' => $layout]);
     }
 
     // public function publicApi(Request $request)

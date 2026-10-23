@@ -69,6 +69,7 @@ full argument and option list.
 | `fix:profile:duplicates`            | Fix duplicate profiles.                                                                                                                |
 | `fix:hashtags`                      | Fix hashtag records.                                                                                                                   |
 | `fix:likes`                         | Recalculate like counts.                                                                                                               |
+| `fix:orphaned-replies`              | Find remote replies stored without a parent and relink them (`--fix`), optionally deleting unrecoverable ones (`--prune`). Read-only by default. |
 | `media:fix-nonlocal-driver`         | Repair filesystem records when `FILESYSTEM_DRIVER` is not set to local.                                                                |
 | `app:fix-missing-user-profile`      | Interactively create a missing profile for an affected user.                                                                           |
 | `fix:usernames`                     | Fix invalid usernames.                                                                                                                 |
@@ -91,6 +92,7 @@ These are primarily invoked by the scheduler (see `bootstrap/app.php`) rather th
 | ------------------------------------------ | ------------------------------------------------------- |
 | `app:account-post-count-stat-update`       | Update post counts from recent activity.                |
 | `app:cleanup-expired-app-registrations`    | Delete app registrations older than 90 days.            |
+| `federation:block-sync-reconcile`          | FEP-070c: reconcile blocks received from peers.         |
 | `gc:sessions`                              | Garbage-collect database sessions.                      |
 | `gc:failedjobs`                            | Delete failed jobs older than one month.                |
 | `app:hashtag-cached-count-update`          | Update cached hashtag counters (`--limit`).             |

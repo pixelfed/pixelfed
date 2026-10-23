@@ -146,11 +146,20 @@
                     </li>
 
 					<li class="nav-item">
-						<a class="nav-link" href="/horizon">
+						<a class="nav-link" href="/admin/horizon">
 							<i class="ni ni-bold-right text-primary"></i>
 							<span class="nav-link-text">Horizon</span>
 						</a>
 					</li>
+
+					@if(config('pulse.enabled'))
+					<li class="nav-item">
+						<a class="nav-link" href="/{{ config('pulse.path', 'admin/pulse') }}">
+							<i class="ni ni-bold-right text-primary"></i>
+							<span class="nav-link-text">Pulse</span>
+						</a>
+					</li>
+					@endif
 
 
 					<li class="nav-item">

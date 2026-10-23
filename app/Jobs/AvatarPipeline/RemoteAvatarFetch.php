@@ -56,12 +56,12 @@ class RemoteAvatarFetch implements ShouldQueue
     {
         $profile = $this->profile;
 
-        if ((bool) config_cache('pixelfed.cloud_storage') == false && (bool) config_cache('federation.avatars.store_local') == false) {
-            return 1;
+        if ((bool) config_cache('pixelfed.cloud_storage') === false && (bool) config_cache('federation.avatars.store_local') === false) {
+            return;
         }
 
         if ($profile->domain == null || $profile->private_key) {
-            return 1;
+            return;
         }
 
         $avatar = Avatar::whereProfileId($profile->id)->first();
@@ -81,22 +81,22 @@ class RemoteAvatarFetch implements ShouldQueue
         $person = Helpers::fetchFromUrl($profile->remote_url);
 
         if (! $person || ! isset($person['@context'])) {
-            return 1;
+            return;
         }
 
         if (! isset($person['icon']) ||
             ! isset($person['icon']['type']) ||
             ! isset($person['icon']['url'])
         ) {
-            return 1;
+            return;
         }
 
         if ($person['icon']['type'] !== 'Image') {
-            return 1;
+            return;
         }
 
         if (! Helpers::validateUrl($person['icon']['url'])) {
-            return 1;
+            return;
         }
 
         $icon = $person['icon'];
@@ -104,8 +104,6 @@ class RemoteAvatarFetch implements ShouldQueue
         $avatar->remote_url = $icon['url'];
         $avatar->save();
 
-        MediaStorageService::avatar($avatar, (bool) config_cache('pixelfed.cloud_storage') == false, true);
-
-        return 1;
+        MediaStorageService::avatar($avatar, (bool) config_cache('pixelfed.cloud_storage') === false, true);
     }
 }

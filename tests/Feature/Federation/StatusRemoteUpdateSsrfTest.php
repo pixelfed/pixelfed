@@ -27,7 +27,7 @@ function remoteNoteStatus(): Status
     $user = User::factory()->create();
     $user->refresh();
 
-    $objectUrl = 'https://remote.example/users/bob/statuses/1';
+    $objectUrl = 'https://joinloops.org/users/bob/statuses/1';
 
     $status = Status::factory()->create([
         'profile_id' => $user->profile_id,
@@ -105,13 +105,13 @@ it('persists media for a valid https attachment via the hardened HEAD path', fun
     // publicly resolvable without a real network lookup, keeping the test
     // deterministic.
     Cache::put(
-        'helpers:url:public-ips:'.hash('xxh128', 'media.example'),
+        'helpers:url:public-ips:'.hash('xxh128', 'pixelfed.org'),
         ['203.0.113.20'],
         3600
     );
 
     Http::fake([
-        'https://media.example/photo.jpg' => Http::response('', 200, [
+        'https://pixelfed.org/photo.jpg' => Http::response('', 200, [
             'Content-Type' => 'image/jpeg',
             'Content-Length' => '50000',
         ]),
@@ -120,12 +120,12 @@ it('persists media for a valid https attachment via the hardened HEAD path', fun
     $status = remoteNoteStatus();
     $activity = updateActivityWithAttachmentUrl(
         $status->object_url,
-        'https://media.example/photo.jpg'
+        'https://pixelfed.org/photo.jpg'
     );
 
     (new StatusRemoteUpdatePipeline($activity))->handle();
 
-    $media = Media::whereStatusId($status->id)->whereRemoteUrl('https://media.example/photo.jpg')->first();
+    $media = Media::whereStatusId($status->id)->whereRemoteUrl('https://pixelfed.org/photo.jpg')->first();
 
     expect($media)->not->toBeNull()
         ->and($media->mime)->toBe('image/jpeg');

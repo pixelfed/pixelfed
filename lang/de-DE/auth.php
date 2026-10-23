@@ -2,34 +2,34 @@
 
 return [
 
-    'verifyYourEmailAddress' => '',
-    'loginTitle' => '',
+    'verifyYourEmailAddress' => ' - Verifiziere deine E-Mail-Adresse',
+    'loginTitle' => 'Kontoanmeldung',
     'failed' => 'Diese Anmeldeinformationen stimmen nicht mit unseren Daten überein.',
     'throttle' => 'Zu viele Anmeldeversuche. Versuche es in :seconds Sekunden erneut.',
-    'password' => '',
-    'remember' => '',
-    'forgot' => '',
-    'login' => '',
+    'password' => 'Passwort',
+    'remember' => 'Erinnere mich',
+    'forgot' => 'Passwort vergessen',
+    'login' => 'Login',
 
-    'register' => '',
-    'reset' => '',
+    'register' => 'Konto erstellen',
+    'reset' => 'Passwort zurücksetzen',
 
-    'name' => '',
-    'username' => '',
-    'confirm-password' => '',
+    'name' => 'Name',
+    'username' => 'Nickname',
+    'confirm-password' => 'Passwort bestätigen',
 
-    'age' => '',
+    'age' => 'Ich bin mindestens 16 Jahre alt',
     'terms' => ''.route('site.terms').''.route('site.privacy').'',
 
-    'emailAddress' => '',
-    'email' => '',
-    'forgotEmail' => '',
+    'emailAddress' => 'E-Mail-Adresse',
+    'email' => 'E-Mail',
+    'forgotEmail' => 'E-Mail-Adresse vergessen',
 
-    'registerTitle' => '',
+    'registerTitle' => 'Erstelle ein neues Konto',
 
-    'sendReset' => '',
-    'backLogin' => '',
+    'sendReset' => 'Zurücksetzungslink für das Passwort senden',
+    'backLogin' => 'Zurück zur Anmeldung',
 
-    'signInMastodon' => '',
+    'signInMastodon' => 'Sign-in mit Mastodon',
 
 ];

@@ -2,20 +2,20 @@
 
 return [
     'emptyTimeline' => 'Αυτός ο χρήστης δεν έχει δημοσιεύσει τίποτα ακόμη!',
-    'emptyFollowers' => '',
-    'emptyFollowing' => '',
-    'emptySaved' => '',
-    'savedWarning' => '',
-    'privateProfileWarning' => '',
-    'alreadyFollow' => '',
-    'loginToSeeProfile' => '',
+    'emptyFollowers' => 'Αυτός ο χρήστης δεν έχει ακόμα ακολούθους!',
+    'emptyFollowing' => 'Αυτός ο χρήστης δεν ακολουθεί κανέναν ακόμα!',
+    'emptySaved' => 'Δεν έχεις αποθηκεύσει καμία ανάρτηση ακόμα!',
+    'savedWarning' => 'Μόνο εσύ μπορείς να δεις τι έχεις αποθηκεύσει',
+    'privateProfileWarning' => 'Αυτός ο λογαριασμός είναι ιδιωτικός',
+    'alreadyFollow' => 'Ακολουθείς ήδη :username;',
+    'loginToSeeProfile' => 'για να δεις τις φωτογραφίες και τα βίντεο του.',
 
-    'status.disabled.header' => '',
-    'status.disabled.body' => '',
+    'status.disabled.header' => 'Μη Διαθέσιμο Προφίλ',
+    'status.disabled.body' => 'Λυπούμαστε, αυτό το προφίλ δεν είναι διαθέσιμο προς το παρόν. Παρακαλώ δοκίμασε ξανά σύντομα.',
 
-    'block.domain.max' => '',
+    'block.domain.max' => 'Συμπληρώθηκε το μέγιστο όριο των αποκλεισμών τομέα! Μπορείς να μπλοκάρεις μόνο :max domains κάθε φορά. Ζήτα από τον διαχειριστή να προσαρμόσει αυτό το όριο.',
 
-    'mutedAccounts' => '',
-    'blockedAccounts' => '',
-    'blockedDomains' => '',
+    'mutedAccounts' => 'Λογαριασμοί σε Σίγαση',
+    'blockedAccounts' => 'Αποκλεισμένοι Λογαριασμοί',
+    'blockedDomains' => 'Αποκλεισμένοι Τομείς',
 ];

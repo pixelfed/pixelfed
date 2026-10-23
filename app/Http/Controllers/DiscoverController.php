@@ -49,7 +49,7 @@ class DiscoverController extends Controller
             ->firstOrFail();
         $tagCount = $tag->cached_count ?? 0;
 
-        return view('discover.tags.show', compact('tag', 'tagCount'));
+        return view('discover.tags.show', ['tag' => $tag, 'tagCount' => $tagCount]);
     }
 
     public function getHashtags(Request $request)
@@ -63,7 +63,10 @@ class DiscoverController extends Controller
         ]);
 
         $page = $request->input('page') ?? '1';
-        $end = $page > 1 ? $page * 9 : (($page * 9) + 9);
+        // Standard fixed-page-size offset. The previous formula yielded 18 for
+        // both page 1 and page 2 (identical results, and the freshest 18 rows
+        // unreachable); this gives 0, 9, 18, ... for 9-per-page paging.
+        $end = ($page - 1) * 9;
         $tag = $request->input('hashtag');
 
         if (db_is_pgsql()) {
@@ -216,6 +219,7 @@ class DiscoverController extends Controller
         $pid = $request->user()->profile_id;
         abort_if(! $this->config()['memories']['enabled'], 404);
         $type = $request->input('type') ?? 'posts';
+        $res = collect();
 
         switch ($type) {
             case 'posts':
@@ -363,7 +367,7 @@ class DiscoverController extends Controller
                 $len = strlen($v);
                 $pos = strpos($v, '.');
                 $domain = trim($v);
-                if ($pos == false || $pos == ($len + 1)) {
+                if ($pos == false || $pos === $len + 1) {
                     return false;
                 }
                 if (! Instance::whereDomain($domain)->exists()) {

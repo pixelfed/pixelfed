@@ -58,7 +58,7 @@ class BaseApiController extends Controller
         }
 
         $res = collect($page['data'])
-            ->filter(fn ($n) => isset($n['account']['id']))
+            ->filter(fn ($n): bool => isset($n['account']['id']))
             ->values();
 
         $headers = [];

@@ -4,7 +4,26 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Carbon;
 
+/**
+ * @property int $id
+ * @property string|null $private_key
+ * @property string|null $public_key
+ * @property Carbon|null $created_at
+ * @property Carbon|null $updated_at
+ *
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|InstanceActor newModelQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|InstanceActor newQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|InstanceActor query()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|InstanceActor whereCreatedAt($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|InstanceActor whereId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|InstanceActor wherePrivateKey($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|InstanceActor wherePublicKey($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|InstanceActor whereUpdatedAt($value)
+ *
+ * @mixin \Eloquent
+ */
 class InstanceActor extends Model
 {
     use HasFactory;
@@ -24,7 +43,7 @@ class InstanceActor extends Model
         return url(self::PROFILE_BASE.$suffix);
     }
 
-    public function getActor()
+    public function getActor(): array
     {
         return [
             '@context' => [

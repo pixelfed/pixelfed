@@ -42,7 +42,7 @@ class LikePipeline implements ShouldQueue
         $this->like = $like;
     }
 
-    public function middleware()
+    public function middleware(): array
     {
         return [
             (new WithoutOverlapping("like:{$this->like->status_id}:{$this->like->profile_id}"))

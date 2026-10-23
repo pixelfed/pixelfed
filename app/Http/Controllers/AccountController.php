@@ -20,6 +20,7 @@ use Illuminate\Contracts\View\View;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Hash;
 use League\Fractal;
@@ -68,7 +69,7 @@ class AccountController extends Controller
             ->orderBy('notifications.created_at', 'desc')
             ->simplePaginate(30);
 
-        return view('account.following', compact('profile', 'notifications'));
+        return view('account.following', ['profile' => $profile, 'notifications' => $notifications]);
     }
 
     public function direct(): View
@@ -81,7 +82,7 @@ class AccountController extends Controller
         $profile = Profile::where('id', '!=', $request->user()->profile_id)
             ->findOrFail($id);
 
-        return view('account.directmessage', compact('id'));
+        return view('account.directmessage', ['id' => $id]);
     }
 
     public function mute(Request $request): JsonResponse|RedirectResponse
@@ -95,7 +96,7 @@ class AccountController extends Controller
         $count = UserFilterService::muteCount($pid);
         $maxLimit = (int) config_cache('instance.user_filters.max_user_mutes');
         abort_if($count >= $maxLimit, 422, self::FILTER_LIMIT_MUTE_TEXT.$maxLimit.' accounts');
-        if ($count == 0) {
+        if ($count === 0) {
             $filterCount = UserFilter::whereUserId($pid)->count();
             abort_if($filterCount >= $maxLimit, 422, self::FILTER_LIMIT_MUTE_TEXT.$maxLimit.' accounts');
         }
@@ -115,7 +116,7 @@ class AccountController extends Controller
                 if ($profile->id == $pid) {
                     return abort(403);
                 }
-                $class = get_class($profile);
+                $class = $profile::class;
                 $filterable['id'] = $profile->id;
                 $filterable['type'] = $class;
                 break;
@@ -133,9 +134,9 @@ class AccountController extends Controller
 
         if ($request->wantsJson()) {
             return response()->json($res);
-        } else {
-            return redirect()->back();
         }
+
+        return redirect()->back();
     }
 
     public function unmute(Request $request): JsonResponse|RedirectResponse
@@ -160,14 +161,13 @@ class AccountController extends Controller
                 if ($profile->id == $pid) {
                     return abort(403);
                 }
-                $class = get_class($profile);
+                $class = $profile::class;
                 $filterable['id'] = $profile->id;
                 $filterable['type'] = $class;
                 break;
 
             default:
                 abort(400);
-                break;
         }
 
         $filter = UserFilter::whereUserId($pid)
@@ -185,9 +185,9 @@ class AccountController extends Controller
 
         if ($request->wantsJson()) {
             return response()->json($res);
-        } else {
-            return redirect()->back();
         }
+
+        return redirect()->back();
     }
 
     public function block(Request $request): JsonResponse|RedirectResponse
@@ -200,7 +200,7 @@ class AccountController extends Controller
         $count = UserFilterService::blockCount($pid);
         $maxLimit = (int) config_cache('instance.user_filters.max_user_blocks');
         abort_if($count >= $maxLimit, 422, self::FILTER_LIMIT_BLOCK_TEXT.$maxLimit.' accounts');
-        if ($count == 0) {
+        if ($count === 0) {
             $filterCount = UserFilter::whereUserId($pid)->whereFilterType('block')->count();
             abort_if($filterCount >= $maxLimit, 422, self::FILTER_LIMIT_BLOCK_TEXT.$maxLimit.' accounts');
         }
@@ -219,7 +219,7 @@ class AccountController extends Controller
                 if ($profile->id == $pid || ($profile->user && $profile->user->is_admin == true)) {
                     return abort(403);
                 }
-                $class = get_class($profile);
+                $class = $profile::class;
                 $filterable['id'] = $profile->id;
                 $filterable['type'] = $class;
 
@@ -271,9 +271,9 @@ class AccountController extends Controller
 
         if ($request->wantsJson()) {
             return response()->json($res);
-        } else {
-            return redirect()->back();
         }
+
+        return redirect()->back();
     }
 
     public function unblock(Request $request): JsonResponse|RedirectResponse
@@ -297,14 +297,13 @@ class AccountController extends Controller
                 if ($profile->id == $pid) {
                     return abort(403);
                 }
-                $class = get_class($profile);
+                $class = $profile::class;
                 $filterable['id'] = $profile->id;
                 $filterable['type'] = $class;
                 break;
 
             default:
                 abort(400);
-                break;
         }
 
         $filter = UserFilter::whereUserId($pid)
@@ -322,9 +321,9 @@ class AccountController extends Controller
 
         if ($request->wantsJson()) {
             return response()->json($res);
-        } else {
-            return redirect()->back();
         }
+
+        return redirect()->back();
     }
 
     public function followRequests(Request $request): View
@@ -332,7 +331,7 @@ class AccountController extends Controller
         $pid = $request->user()->profile->id;
         $followers = FollowRequest::whereFollowingId($pid)->orderBy('id', 'desc')->whereIsRejected(0)->simplePaginate(10);
 
-        return view('account.follow-requests', compact('followers'));
+        return view('account.follow-requests', ['followers' => $followers]);
     }
 
     public function followRequestsJson(Request $request): JsonResponse
@@ -408,6 +407,8 @@ class AccountController extends Controller
 
         Cache::forget('profile:follower_count:'.$pid);
         Cache::forget('profile:following_count:'.$pid);
+        Cache::forget('profile:follower_count:'.$follower->id);
+        Cache::forget('profile:following_count:'.$follower->id);
         RelationshipService::refresh($pid, $follower->id);
 
         return response()->json(['msg' => 'success'], 200);
@@ -415,8 +416,23 @@ class AccountController extends Controller
 
     public function confirmPassword(Request $request): View
     {
+        // Honor a same-origin return path so XHR callers (e.g. the privacy
+        // modal) that hit the 423 JSON branch can round-trip back after
+        // confirming. Only relative paths are accepted to avoid open redirects.
+        $redirect = $request->input('redirect');
+        if ($redirect && str_starts_with($redirect, '/') && ! str_starts_with($redirect, '//')) {
+            redirect()->setIntendedUrl($redirect);
+        }
+
         return view('auth.sudo');
     }
+
+    /**
+     * Failed sudo-mode confirmations allowed before the session is force
+     * logged out and invalidated. Mirrors the pre-refactor DangerZone cap so a
+     * stolen session cannot brute-force the password-confirmation endpoint.
+     */
+    const SUDO_MODE_MAX_ATTEMPTS = 3;
 
     public function confirmPasswordStore(Request $request): RedirectResponse
     {
@@ -425,11 +441,25 @@ class AccountController extends Controller
         ]);
 
         if (! Hash::check($request->password, $request->user()->password)) {
+            $attempts = (int) $request->session()->get('sudoModeAttempts', 0) + 1;
+            $request->session()->put('sudoModeAttempts', $attempts);
+
+            // Hard cap: too many failures ends the session entirely, so a
+            // hijacked cookie cannot be used to guess the password at leisure.
+            if ($attempts >= self::SUDO_MODE_MAX_ATTEMPTS) {
+                Auth::logout();
+                $request->session()->invalidate();
+                $request->session()->regenerateToken();
+
+                return redirect(route('login'));
+            }
+
             return redirect()
                 ->back()
                 ->withErrors(['password' => __('auth.failed')]);
         }
 
+        $request->session()->forget('sudoModeAttempts');
         $request->session()->passwordConfirmed();
 
         return redirect()->intended();

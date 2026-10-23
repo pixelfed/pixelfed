@@ -57,7 +57,7 @@ class NewCommentPipeline implements ShouldQueue
         $status = $this->status;
         $parent = $this->parent;
         $profile = $this->status->profile;
-        $parentClass = get_class($parent);
+        $parentClass = $parent::class;
         $groupId = $status->group_id;
         $postId = $status->id;
 

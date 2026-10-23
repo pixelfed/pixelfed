@@ -152,6 +152,7 @@ return [
     |
     */
 
+    // GLITCH MODIFIED: keep the pre-0.14 APP_DOMAIN fallback; upstream 0.14 dropped it, which rescopes existing cookies
     'domain' => env('SESSION_DOMAIN', env('APP_DOMAIN', null)),
 
     /*

@@ -52,5 +52,7 @@ class MediaSyncLicensePipeline implements ShouldQueue
                     StatusService::del($media->status_id);
                 }
             });
+
+        return null;
     }
 }

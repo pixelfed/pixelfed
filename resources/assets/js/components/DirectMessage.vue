@@ -43,10 +43,10 @@
 							<img v-if="!hideAvatars" class="mr-3 mt-2 rounded-circle img-thumbnail" :src="thread.avatar" alt="avatar" width="32" onerror="this.onerror=null;this.src='/storage/avatars/default.jpg';">
 							<div class="media-body">
 								<!-- GLITCH MODIFIED START: DM message body as stacked divs (media, story media + reaction/comment bubble, text); fixes invalid <p> nesting -->
-								<div v-if="convo.type == 'photo'" class="p-0">
+								<div v-if="convo.type == 'photo' || convo.type == 'photos'" class="p-0">
 									<img :src="convo.media" class="shadow" width="140" style="border-radius:20px;" onerror="this.onerror=null;this.src='/storage/no-preview.png';">
 								</div>
-								<div v-else-if="convo.type == 'video'" class="p-0">
+								<div v-else-if="convo.type == 'video' || convo.type == 'videos'" class="p-0">
 									<!-- <video :src="convo.media" width="140px" style="border-radius:20px;"></video> -->
 									<span class="d-block bg-primary d-flex align-items-center justify-content-center shadow" style="width:200px;height: 110px;border-radius: 20px;">
 										<div class="text-center">
@@ -109,10 +109,10 @@
 						<div v-else class="media d-inline-flex float-right mb-0 mr-2">
 							<div class="media-body">
 								<!-- GLITCH MODIFIED START: DM message body as stacked divs (media, story media + reaction/comment bubble, text); fixes invalid <p> nesting -->
-								<div v-if="convo.type == 'photo'" class="p-0">
+								<div v-if="convo.type == 'photo' || convo.type == 'photos'" class="p-0">
 									<img :src="convo.media" class="shadow" width="140" style="border-radius:20px;" onerror="this.onerror=null;this.src='/storage/no-preview.png';">
 								</div>
-								<div v-else-if="convo.type == 'video'" class="p-0">
+								<div v-else-if="convo.type == 'video' || convo.type == 'videos'" class="p-0">
 									<!-- <video :src="convo.media" width="140px" style="border-radius:20px;"></video> -->
 									<span class="rounded-pill bg-primary d-flex align-items-center justify-content-center shadow" style="width:200px;height: 110px">
 										<div class="text-center">

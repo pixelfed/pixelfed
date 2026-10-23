@@ -36,6 +36,7 @@ it('accepts an unchanged email submission as a no-op', function () {
 
     $this->actingAs($user)
         ->withSession(['auth.password_confirmed_at' => time()])
+        ->withoutMiddleware(ThrottleRequests::class)
         ->post('/settings/email', ['email' => $user->email])
         ->assertRedirect('/settings/email')
         ->assertSessionHasNoErrors();
@@ -49,6 +50,7 @@ it('persists a genuinely new email', function () {
 
     $this->actingAs($user)
         ->withSession(['auth.password_confirmed_at' => time()])
+        ->withoutMiddleware(ThrottleRequests::class)
         ->post('/settings/email', ['email' => $newEmail])
         ->assertSessionHasNoErrors();
 
@@ -62,6 +64,7 @@ it('rejects an email already used by another account', function () {
 
     $this->actingAs($user)
         ->withSession(['auth.password_confirmed_at' => time()])
+        ->withoutMiddleware(ThrottleRequests::class)
         ->post('/settings/email', ['email' => 'taken@example.com'])
         ->assertSessionHasErrors('email');
 
@@ -91,6 +94,7 @@ it('dispatches a verification email when a non-admin changes email and verificat
 
     $this->actingAs($user)
         ->withSession(confirmedSession())
+        ->withoutMiddleware(ThrottleRequests::class)
         ->post('/settings/email', ['email' => $newEmail])
         ->assertSessionHasNoErrors();
 
@@ -117,6 +121,7 @@ it('auto-verifies an admin email change without dispatching verification mail', 
 
     $this->actingAs($user)
         ->withSession(confirmedSession())
+        ->withoutMiddleware(ThrottleRequests::class)
         ->post('/settings/email', ['email' => $newEmail])
         ->assertSessionHasNoErrors();
 
@@ -136,6 +141,7 @@ it('does not touch verification state when enforcement is disabled', function ()
 
     $this->actingAs($user)
         ->withSession(confirmedSession())
+        ->withoutMiddleware(ThrottleRequests::class)
         ->post('/settings/email', ['email' => $newEmail])
         ->assertSessionHasNoErrors();
 

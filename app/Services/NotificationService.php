@@ -5,6 +5,7 @@ namespace App\Services;
 use App\Models\Notification;
 use App\Models\Status;
 use App\Transformer\Api\NotificationTransformer;
+use Illuminate\Database\QueryException;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Redis;
@@ -312,7 +313,7 @@ class NotificationService
             }
         }
 
-        return $q->pluck('id')->map(fn ($v) => (int) $v)->all();
+        return $q->pluck('id')->map(fn ($v): int => (int) $v)->all();
     }
 
     /**
@@ -431,7 +432,7 @@ class NotificationService
         return self::del($id, $val);
     }
 
-    public static function count($id)
+    public static function count($id): int
     {
         return (int) Redis::zcard(self::CACHE_KEY.$id);
     }
@@ -724,13 +725,23 @@ class NotificationService
      */
     public static function firstOrCreateNotification(int $profileId, int $actorId, string $action, int $itemId, string $itemType): Notification
     {
-        $notification = Notification::firstOrCreate([
+        $attributes = [
             'profile_id' => $profileId,
             'actor_id' => $actorId,
             'action' => $action,
             'item_id' => $itemId,
             'item_type' => $itemType,
-        ]);
+        ];
+
+        try {
+            $notification = Notification::firstOrCreate($attributes);
+        } catch (QueryException $e) {
+            if ($e->getCode() !== '23000') {
+                throw $e;
+            }
+
+            return Notification::where($attributes)->firstOrFail();
+        }
 
         if ($notification->wasRecentlyCreated) {
             self::setNotification($notification);

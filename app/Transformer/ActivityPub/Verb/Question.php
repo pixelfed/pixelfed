@@ -3,13 +3,14 @@
 namespace App\Transformer\ActivityPub\Verb;
 
 use App\Models\Status;
+use App\Services\QuoteService;
 use App\Util\Lexer\Autolink;
 use Illuminate\Support\Str;
 use League\Fractal;
 
 class Question extends Fractal\TransformerAbstract
 {
-    public function transform(Status $status)
+    public function transform(Status $status): array
     {
         $mentions = $status->mentions->map(function ($mention) {
             $webfinger = $mention->emailUrl();
@@ -65,13 +66,14 @@ class Question extends Fractal\TransformerAbstract
                     ],
                     'toot' => 'http://joinmastodon.org/ns#',
                     'Emoji' => 'toot:Emoji',
+                    ...QuoteService::NOTE_CONTEXT_TERMS,
                 ],
             ],
             'id' => $status->url(),
             'type' => 'Question',
             'summary' => null,
             'content' => $content,
-            'inReplyTo' => $status->in_reply_to_id ? $status->parent()->url() : null,
+            'inReplyTo' => $status->inReplyToUri(),
             'published' => $status->created_at->toAtomString(),
             'url' => $status->url(),
             'attributedTo' => $status->profile->permalink(),
@@ -81,10 +83,11 @@ class Question extends Fractal\TransformerAbstract
             'attachment' => [],
             'tag' => $tags,
             'commentsEnabled' => (bool) ! $status->comments_disabled,
+            'interactionPolicy' => QuoteService::interactionPolicy($status),
             'capabilities' => [
                 'announce' => 'https://www.w3.org/ns/activitystreams#Public',
                 'like' => 'https://www.w3.org/ns/activitystreams#Public',
-                'reply' => $status->comments_disabled == true ? '[]' : 'https://www.w3.org/ns/activitystreams#Public',
+                'reply' => $status->comments_disabled == true ? [] : 'https://www.w3.org/ns/activitystreams#Public',
             ],
             'location' => $status->place_id ? [
                 'type' => 'Place',

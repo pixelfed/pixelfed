@@ -70,7 +70,7 @@ class Nodeinfo
         return $res;
     }
 
-    public static function wellKnown()
+    public static function wellKnown(): array
     {
         return [
             'links' => [

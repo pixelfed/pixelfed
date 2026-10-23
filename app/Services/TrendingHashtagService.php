@@ -11,7 +11,7 @@ class TrendingHashtagService
 {
     const CACHE_KEY = 'api:discover:v1.1:trending:hashtags';
 
-    public static function key($k = null)
+    public static function key($k = null): string
     {
         return self::CACHE_KEY.$k;
     }
@@ -63,6 +63,7 @@ class TrendingHashtagService
         $skipIds = array_merge(self::getBannedHashtags(), self::getNonTrendingHashtags(), self::getNsfwHashtags());
 
         return Cache::remember(self::CACHE_KEY, config('trending.hashtags.ttl'), function () use ($minId, $skipIds) {
+            // @phpstan-ignore-next-line
             $trending = StatusHashtag::select('hashtag_id', DB::raw('count(*) as total'))
                 ->whereNotIn('hashtag_id', $skipIds)
                 ->where('id', '>', $minId)
@@ -83,6 +84,7 @@ class TrendingHashtagService
 
                 return [
                     'id' => $h->hashtag_id,
+                    // @phpstan-ignore-next-line
                     'total' => $h->total,
                     'name' => '#'.$hashtag->name,
                     'hashtag' => $hashtag->name,

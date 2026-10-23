@@ -39,7 +39,7 @@ trait AdminInstanceController
     {
         $instance = Instance::findOrFail($id);
 
-        return view('admin.instances.show', compact('instance'));
+        return view('admin.instances.show', ['instance' => $instance]);
     }
 
     public function instanceEdit(Request $request, $id)
@@ -242,7 +242,7 @@ trait AdminInstanceController
 
         $instance = Instance::findOrFail($request->input('id'));
         $instance->user_count = Profile::whereDomain($instance->domain)->count();
-        $instance->status_count = Profile::whereDomain($instance->domain)->leftJoin('statuses', 'profiles.id', '=', 'statuses.profile_id')->count();
+        $instance->status_count = Profile::whereDomain($instance->domain)->leftJoin('statuses', 'profiles.id', '=', 'statuses.profile_id')->count('statuses.id');
         $instance->save();
 
         return new AdminInstance($instance);
@@ -278,7 +278,7 @@ trait AdminInstanceController
         }, 'pixelfed-instances-mod.json');
     }
 
-    public function importBackup(Request $request)
+    public function importBackup(Request $request): array
     {
         $this->validate($request, [
             'banned' => 'sometimes|array',

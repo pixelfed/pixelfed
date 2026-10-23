@@ -124,6 +124,6 @@ class GroupsTopicController extends Controller
         $gid = $group->id;
         abort_if(! $group->isMember($pid), 403, 'Not a member of group.');
 
-        return view('groups.topic-feed', compact('gid', 'tag'));
+        return view('groups.topic-feed', ['gid' => $gid, 'tag' => $tag]);
     }
 }

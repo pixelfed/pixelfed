@@ -55,7 +55,18 @@ class AutospamPretrainPipeline implements ShouldQueue
                 $classifier->learn($status->caption, 'spam');
             });
 
-        Storage::put(AutospamService::MODEL_SPAM_PATH, $classifier->export());
+        $export = $classifier->export();
+
+        // If every sampled status was deleted or had a null caption the model
+        // learned nothing, and an empty model makes Classifier::most() return
+        // null (crashing AutospamService::check() on every new post). Skip
+        // saving so the previous, valid model stays in place.
+        $decoded = json_decode($export, true);
+        if (empty($decoded['documents']['spam'])) {
+            return;
+        }
+
+        Storage::put(AutospamService::MODEL_SPAM_PATH, $export);
 
         AutospamUpdateCachedDataPipeline::dispatch()->delay(5);
     }

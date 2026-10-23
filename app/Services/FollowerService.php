@@ -25,7 +25,9 @@ class FollowerService
 
     const FOLLOWERS_INTER_KEY = 'pf:services:follow:followers:inter:id:';
 
-    const FOLLOWERS_MUTUALS_KEY = 'pf:services:follow:mutuals:';
+    const FOLLOWERS_MUTUALS_KEY = 'pf:services:follow:mutuals:v2:';
+
+    const MUTUALS_DM_MAX_PAGES = 5;
 
     public static function add($actor, $target, $refresh = true)
     {
@@ -132,7 +134,7 @@ class FollowerService
 
     public static function follows(string $actor, string $target, $quickCheck = false)
     {
-        if ($actor == $target) {
+        if ($actor === $target) {
             return false;
         }
 
@@ -144,12 +146,11 @@ class FollowerService
             self::cacheSyncCheck($target, 'followers');
 
             return (bool) Redis::zScore(self::FOLLOWERS_KEY.$target, $actor);
-        } else {
-            self::cacheSyncCheck($target, 'followers');
-            self::cacheSyncCheck($actor, 'following');
-
-            return Follower::whereProfileId($actor)->whereFollowingId($target)->exists();
         }
+        self::cacheSyncCheck($target, 'followers');
+        self::cacheSyncCheck($actor, 'following');
+
+        return Follower::whereProfileId($actor)->whereFollowingId($target)->exists();
     }
 
     public static function cacheSyncCheck($id, $scope = 'followers')
@@ -166,7 +167,6 @@ class FollowerService
             }
             FollowServiceWarmCache::dispatch($id)->onQueue('low');
         }
-
     }
 
     public static function audience($profile, $scope = null)
@@ -280,70 +280,87 @@ class FollowerService
             Redis::expire($key, 3600);
 
             return $ids;
-        } else {
-            Redis::expire($key, 3600);
-
-            return [];
         }
+        Redis::expire($key, 3600);
+
+        return [];
+    }
+
+    protected static function warmMutuals($profileId): string
+    {
+        $mutualsKey = self::FOLLOWERS_MUTUALS_KEY.$profileId;
+
+        $ttl = Redis::ttl($mutualsKey);
+        if ($ttl === -2 || $ttl < 300) {
+            Redis::zinterstore($mutualsKey, [
+                self::FOLLOWING_KEY.$profileId,
+                self::FOLLOWERS_KEY.$profileId,
+            ], ['aggregate' => 'max']);
+            Redis::expire($mutualsKey, 7200);
+        }
+
+        return $mutualsKey;
     }
 
     /**
-     * Get mutual followers for DM suggestions using Redis set intersection
-     * This is extremely fast as it operates entirely in Redis memory
+     * Get mutual followers for DM suggestions, newest mutuals first.
+     * Pagination is capped internally at MUTUALS_DM_MAX_PAGES pages.
      *
      * @param  int  $profileId
      * @param  int  $limit
-     * @param  int|null  $cursor
-     * @return array
+     * @param  int|null  $cursor  Profile id of the last item seen
      */
-    public static function getMutualsForDM($profileId, $limit = 20, $cursor = null)
+    public static function getMutualsForDM($profileId, $limit = 20, $cursor = null): array
     {
+        $empty = [
+            'data' => [],
+            'has_more' => false,
+            'next_cursor' => null,
+            'total_count' => 0,
+        ];
+
         $acct = AccountService::get($profileId, true);
         if (! $acct || ! isset($acct['id'])) {
-            return [
-                'data' => [],
-                'has_more' => false,
-                'next_cursor' => null,
-                'total_count' => 0,
-            ];
+            return $empty;
         }
 
         self::cacheSyncCheck($profileId, 'followers');
         self::cacheSyncCheck($profileId, 'following');
 
-        $followingKey = self::FOLLOWING_KEY.$profileId;
-        $followersKey = self::FOLLOWERS_KEY.$profileId;
-        $mutualsKey = self::FOLLOWERS_MUTUALS_KEY.$profileId;
-
-        $ttl = Redis::ttl($mutualsKey);
-        if ($ttl === -2 || $ttl < 300) {
-            Redis::zinterstore($mutualsKey, [$followingKey, $followersKey]);
-            Redis::expire($mutualsKey, 7200);
-        }
+        $mutualsKey = self::warmMutuals($profileId);
+        $totalCount = Redis::zcard($mutualsKey);
 
         $start = 0;
 
         if ($cursor) {
-            $cursorRank = Redis::zrank($mutualsKey, $cursor);
-            if ($cursorRank !== false) {
+            $cursorRank = Redis::zrevrank($mutualsKey, $cursor);
+            if (is_int($cursorRank)) {
                 $start = $cursorRank + 1;
             }
         }
 
-        $mutuals = Redis::zrange($mutualsKey, $start, $start + $limit);
+        $maxItems = self::MUTUALS_DM_MAX_PAGES * $limit;
 
-        $hasMore = count($mutuals) > $limit;
-        if ($hasMore) {
-            $mutuals = array_slice($mutuals, 0, $limit);
+        if ($start >= $maxItems) {
+            $empty['total_count'] = $totalCount;
+
+            return $empty;
         }
 
-        $nextCursor = $hasMore && ! empty($mutuals) ? end($mutuals) : null;
+        $end = min($start + $limit, $maxItems);
+
+        $mutuals = Redis::zrevrange($mutualsKey, $start, $end);
+
+        $hasMore = count($mutuals) > $limit && ($start + $limit) < $maxItems;
+        $mutuals = array_slice($mutuals, 0, $limit);
+
+        $nextCursor = $hasMore && ! empty($mutuals) ? (int) end($mutuals) : null;
 
         return [
             'data' => array_map('intval', $mutuals),
             'has_more' => $hasMore,
-            'next_cursor' => $nextCursor ? (int) $nextCursor : null,
-            'total_count' => Redis::zcard($mutualsKey),
+            'next_cursor' => $nextCursor,
+            'total_count' => $totalCount,
         ];
     }
 
@@ -372,36 +389,17 @@ class FollowerService
             }
         }
 
-        return [
-            'data' => $orderedProfiles,
-            'has_more' => $mutuals['has_more'],
-            'next_cursor' => $mutuals['next_cursor'],
-            'total_count' => $mutuals['total_count'],
-        ];
+        $mutuals['data'] = $orderedProfiles;
+
+        return $mutuals;
     }
 
-    /**
-     * Get mutual count efficiently using Redis intersection
-     *
-     * @param  int  $profileId
-     * @return int
-     */
     public static function getMutualCount($profileId)
     {
         self::cacheSyncCheck($profileId, 'followers');
         self::cacheSyncCheck($profileId, 'following');
 
-        $followingKey = self::FOLLOWING_KEY.$profileId;
-        $followersKey = self::FOLLOWERS_KEY.$profileId;
-        $mutualsKey = self::FOLLOWERS_MUTUALS_KEY.$profileId;
-
-        $ttl = Redis::ttl($mutualsKey);
-        if ($ttl === -2 || $ttl < 300) {
-            Redis::zinterstore($mutualsKey, [$followingKey, $followersKey]);
-            Redis::expire($mutualsKey, 7200);
-        }
-
-        return Redis::zcard($mutualsKey);
+        return Redis::zcard(self::warmMutuals($profileId));
     }
 
     public static function delCache($id)

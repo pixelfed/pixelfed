@@ -63,7 +63,7 @@ class GroupController extends GroupFederationController
             return $this->showGroupObject($group);
         }
 
-        return view('layouts.spa', compact('id', 'path'));
+        return view('layouts.spa', ['id' => $id, 'path' => $path]);
     }
 
     public function showStatus(Request $request, $gid, $sid)
@@ -84,7 +84,7 @@ class GroupController extends GroupFederationController
         $gp = GroupPost::whereGroupId($gid)
             ->findOrFail($sid);
 
-        return view('layouts.spa', compact('group', 'gp'));
+        return view('layouts.spa', ['group' => $group, 'gp' => $gp]);
     }
 
     public function getGroup(Request $request, $id): JsonResponse
@@ -131,7 +131,7 @@ class GroupController extends GroupFederationController
         abort_if(! $group->isMember($pid), 404);
         abort_if(! in_array($group->selfRole($pid), ['founder', 'admin']), 404);
 
-        return view('groups.settings', compact('group'));
+        return view('groups.settings', ['group' => $group]);
     }
 
     public function joinGroup(Request $request, $id)
@@ -325,6 +325,7 @@ class GroupController extends GroupFederationController
 
         $type = $request->input('type');
         $item = $request->input('item');
+        $res = null;
 
         switch ($type) {
             case 'instance':
@@ -626,7 +627,7 @@ class GroupController extends GroupFederationController
         abort(404, 'Not yet implemented');
         $group = Group::findOrFail($id);
 
-        return view('groups.invite', compact('group'));
+        return view('groups.invite', ['group' => $group]);
     }
 
     public function groupShortLinkRedirect(Request $request, $hid): RedirectResponse
@@ -644,7 +645,7 @@ class GroupController extends GroupFederationController
         $group = GroupService::get($id);
         abort_if(! $group, 404);
 
-        return view('groups.invite-claim', compact('group'));
+        return view('groups.invite-claim', ['group' => $group]);
     }
 
     public function groupMemberInviteCheck(Request $request, $id): JsonResponse

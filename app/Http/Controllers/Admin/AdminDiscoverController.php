@@ -15,7 +15,7 @@ trait AdminDiscoverController
     {
         $categories = DiscoverCategory::orderByDesc('id')->paginate(10);
 
-        return view('admin.discover.home', compact('categories'));
+        return view('admin.discover.home', ['categories' => $categories]);
     }
 
     public function discoverCreateCategory()
@@ -51,7 +51,7 @@ trait AdminDiscoverController
     {
         $category = DiscoverCategory::findOrFail($id);
 
-        return view('admin.discover.show', compact('category'));
+        return view('admin.discover.show', ['category' => $category]);
     }
 
     public function discoverCategoryUpdate(Request $request, $id)

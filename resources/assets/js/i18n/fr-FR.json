@@ -277,6 +277,7 @@
             "partial_word": "Partie du mot",
             "duplicate_not_allowed": "Les doublons de mots-cl\u00e9s ne sont pas autoris\u00e9s",
             "filter_action": "Action du filtre",
+            "hide_media_blur": "Flouter les m\u00e9dias",
             "show_warning": "Afficher un avertissement avant d'afficher le contenu",
             "hide_content_completely": "Cacher le contenu compl\u00e8tement",
             "apply_filters_to": "Appliquer les filtres \u00e0",
