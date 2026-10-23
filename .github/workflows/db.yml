@@ -23,7 +23,7 @@ on:
       - synchronize
 
 env:
-  EXTRA_PHP_EXTENSIONS: intl bcmath zip pcntl exif curl gd pdo_pgsql pdo_mysql pdo_sqlite ffi
+  EXTRA_PHP_EXTENSIONS: intl bcmath zip pcntl exif curl gd pdo_pgsql pdo_mysql pdo_sqlite ffi redis
   DOCKER_PHP_EXTENSION_INSTALLER_VERSION: 2.9.24
   COMPOSER_VERSION: 2.9.2
   MARIADB_VERSION: 11.8

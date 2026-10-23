@@ -7,6 +7,7 @@
 # (patch/minor within the same major), so behaviour stays that of the pinned release.
 #
 # Usage: go-tools.sh <output dir>   (needs FOREGO_VERSION, DOTTIE_VERSION, GOMPLATE_VERSION)
+# shellcheck disable=SC2154 # FOREGO_VERSION, DOTTIE_VERSION, GOMPLATE_VERSION come from the build env
 set -ex -o errexit -o nounset -o pipefail
 
 out="${1:?output dir}"
