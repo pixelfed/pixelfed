@@ -75,7 +75,7 @@ jobs:
       # See: https://docs.github.com/en/actions/using-jobs/using-a-matrix-for-your-jobs
       matrix:
         php_version:
-          - 8.4
+          - 8.5
         debian_release:
           - trixie
         target_runtime:
@@ -129,7 +129,7 @@ jobs:
       # ! NOTE: no [login] or [push] will happen to Docker Hub until this secret is set!
       HAS_DOCKER_HUB_CONFIGURED: ${{ secrets.DOCKER_HUB_TOKEN != '' }}
 
-      PREFERRED_PHP_VERSION: 8.4
+      PREFERRED_PHP_VERSION: 8.5
 
       PREFERRED_TARGET_RUNTIME: nginx
 

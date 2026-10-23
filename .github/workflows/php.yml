@@ -38,7 +38,7 @@ jobs:
       # See: https://docs.github.com/en/actions/using-jobs/using-a-matrix-for-your-jobs
       matrix:
         php_version:
-          - 8.4
+          - 8.5
 
     container:
       image: php:${{ matrix.php_version }}-cli
@@ -147,7 +147,7 @@ jobs:
       # See: https://docs.github.com/en/actions/using-jobs/using-a-matrix-for-your-jobs
       matrix:
         php_version:
-          - 8.4
+          - 8.5
 
     container:
       image: php:${{ matrix.php_version }}-cli

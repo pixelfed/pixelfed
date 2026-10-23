@@ -65,7 +65,7 @@ ARG RUNTIME_GID=33 # often called 'www-data'
 # See: https://hub.docker.com/_/php/tags
 #
 # renovate: datasource=docker depName=php versioning=semver-coerced
-ARG PHP_VERSION="8.4"
+ARG PHP_VERSION="8.5"
 
 # See: https://github.com/docker-library/docs/blob/master/php/README.md#image-variants
 ARG PHP_BASE_TYPE="fpm"
