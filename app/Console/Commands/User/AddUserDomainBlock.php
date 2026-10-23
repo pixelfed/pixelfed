@@ -5,6 +5,7 @@ namespace App\Console\Commands\User;
 use App\Models\DefaultDomainBlock;
 use App\Models\User;
 use App\Models\UserDomainBlock;
+use App\Services\UserFilterService;
 use Illuminate\Console\Command;
 
 use function Laravel\Prompts\confirm;
@@ -101,9 +102,13 @@ class AddUserDomainBlock extends Command
             return;
         }
 
-        UserDomainBlock::updateOrCreate([
+        $block = UserDomainBlock::updateOrCreate([
             'profile_id' => $user->profile_id,
             'domain' => $domain,
         ]);
+
+        if ($block->wasRecentlyCreated) {
+            UserFilterService::domainBlocks($user->profile_id, true);
+        }
     }
 }

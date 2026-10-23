@@ -18,7 +18,7 @@ return [
     'username' => 'Nama Pengguna',
     'confirm-password' => 'Konfirmasi Kata Sandi',
 
-    'age' => 'Saya berumur 16 tahun keatas',
+    'age' => ''.(int) config('pixelfed.min_registration_age', 16).'',
     'terms' => 'Dengan mendaftar, anda menyetujui <a href="'.route('site.terms').'" class="font-weight-bold text-dark">Ketentuan Pengguna</a> dan <a href="'.route('site.privacy').'" class="font-weight-bold text-dark">Kebijakan Privasi</a>.',
 
     'emailAddress' => 'Alamat E-mail',

@@ -41,7 +41,7 @@ final class BackupToCloud extends Command
     {
         $localDisk = Storage::disk('local');
         $cloudDisk = Storage::disk('backup');
-        $backupDestination = new BackupDestination($localDisk, '', 'local');
+        $backupDestination = new BackupDestination($localDisk, config('backup.backup.name'), 'local');
 
         if (
             empty(config('filesystems.disks.backup.key')) ||

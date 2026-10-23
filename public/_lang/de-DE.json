@@ -88,7 +88,16 @@
         "post": "Beitrag",
         "story": "Story",
         "noneFound": "Keine Benachrichtigungen vorhanden",
-        "youRecent": "Du zuletzt"
+        "youRecent": "Du zuletzt",
+        "hasUnlisted": "wurde ausgetragen",
+        "cannotDisplay": "Wir k\u00f6nnen diese Benachrichtigung derzeit nicht anzeigen.",
+        "followRequest": "Folgen anfragen",
+        "filteringResults": "Das Filtern der Ergebnisse enth\u00e4lt m\u00f6glicherweise nicht \u00e4ltere Benachrichtigungen",
+        "mentions": "Erw\u00e4hnung",
+        "mentionsDescription": "Antwortete auf deinen Beitrag und erw\u00e4hnte dich",
+        "likes": "\"Gef\u00e4llt mir\"-Angabe",
+        "likesDescription": "Konzen welche deinen Post geliket haben",
+        "followers": "Folgende"
     },
     "post": {
         "shareToFollowers": "Mit Folgenden teilen",

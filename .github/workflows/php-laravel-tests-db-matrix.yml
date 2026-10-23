@@ -59,7 +59,7 @@ jobs:
           --health-retries 5
 
       mysql:
-        image: mysql:8.5
+        image: mysql:9
         env:
           MYSQL_ROOT_PASSWORD: pixelfed
           MYSQL_DATABASE: pixelfed_test
@@ -74,7 +74,7 @@ jobs:
           --health-retries 10
 
       mariadb:
-        image: mariadb:11.4
+        image: mariadb:12.3
         env:
           MARIADB_ROOT_PASSWORD: pixelfed
           MARIADB_DATABASE: pixelfed_test
@@ -89,7 +89,7 @@ jobs:
           --health-retries 10
 
       postgres:
-        image: postgres:16
+        image: postgres:18
         env:
           POSTGRES_DB: pixelfed_test
           POSTGRES_USER: pixelfed
@@ -106,13 +106,13 @@ jobs:
 
     steps:
       - name: Checkout code
-        uses: actions/checkout@v7
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
 
       - name: Install libvips
         run: sudo apt-get update && sudo apt-get install -y --no-install-recommends libvips42
 
       - name: Setup PHP
-        uses: shivammathur/setup-php@v2
+        uses: shivammathur/setup-php@eb7c497e18156a6bbabfef1d3a82760b9eda3962 # v2
         with:
           php-version: '8.5'
           # ffi is required by jcupitt/vips (the vips driver's FFI binding).
@@ -121,7 +121,7 @@ jobs:
           ini-values: memory_limit=512M, ffi.enable=true
 
       - name: Cache Composer dependencies
-        uses: actions/cache@v6
+        uses: actions/cache@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6
         with:
           path: vendor
           key: composer-8.5-${{ hashFiles('composer.lock') }}

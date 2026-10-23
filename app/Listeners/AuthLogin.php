@@ -6,6 +6,7 @@ use App\Jobs\AvatarPipeline\CreateAvatar;
 use App\Models\Profile;
 use App\Models\UserDevice;
 use App\Models\UserSetting;
+use App\Util\Localization\Localization;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Str;
 
@@ -138,6 +139,6 @@ class AuthLogin
 
     protected function userLanguage($user)
     {
-        session()->put('locale', $user->language ?? config('app.locale'));
+        session()->put('locale', Localization::normalizeLocale($user->language ?? config('app.locale')));
     }
 }

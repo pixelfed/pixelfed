@@ -18,7 +18,7 @@ return [
     'username' => 'Käyttäjätunnus',
     'confirm-password' => 'Vahvista salasana',
 
-    'age' => 'Olen vähintään 16-vuotias',
+    'age' => 'Olen vähintään '.(int) config('pixelfed.min_registration_age', 16).' vuotta vanha',
     'terms' => 'Rekisteröitymällä hyväksyt meidän <a href="'.route('site.terms').'" class="font-weight-bold text-dark">Käyttöehdot</a> ja <a href="'.route('site.privacy').'" class="font-weight-bold text-dark">Tietosuojakäytännön</a>.',
 
     'emailAddress' => 'Sähköpostiosoite',

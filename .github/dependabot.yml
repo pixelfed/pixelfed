@@ -2,7 +2,7 @@ version: 2
 updates:
   - package-ecosystem: "composer"
     directory: "/"
-    target-branch: "staging"
+    target-branch: "develop"
     schedule:
       interval: "weekly"
       day: "monday"
@@ -16,7 +16,7 @@ updates:
 
   # - package-ecosystem: "npm"
   #   directory: "/"
-  #   target-branch: "staging"
+  #   target-branch: "develop"
   #   schedule:
   #     interval: "weekly"
   #     day: "monday"

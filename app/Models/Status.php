@@ -389,7 +389,17 @@ class Status extends Model
             return null;
         }
 
-        return $parent->object_url ?: $parent->url();
+        if ($parent->object_url) {
+            return $parent->object_url;
+        }
+
+        // Remote parents without an object id must not emit a permalink as
+        // inReplyTo. Local parents have no uri and resolve to their own id.
+        if ($parent->uri) {
+            return null;
+        }
+
+        return $parent->url();
     }
 
     public function conversation()

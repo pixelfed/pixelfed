@@ -3,6 +3,7 @@
 namespace App\Jobs\AdminPipeline;
 
 use App\Jobs\StatusPipeline\RemoteStatusDelete;
+use App\Models\Avatar;
 use App\Models\Follower;
 use App\Models\Instance;
 use App\Models\Status;
@@ -126,7 +127,10 @@ class AdminProfileActionPipeline implements ShouldQueue
                 $res['icon']['mediaType'],
                 $res['icon']['url']) && $res['icon']['type'] == 'Image'
         ) {
-            if (in_array($res['icon']['mediaType'], ['image/jpeg', 'image/png'])) {
+            if (
+                in_array($res['icon']['mediaType'], ['image/jpeg', 'image/png', 'image/webp']) &&
+                Avatar::isStorableRemoteUrl($res['icon']['url'])
+            ) {
                 $profile->avatar->remote_url = $res['icon']['url'];
                 $profile->push();
                 MediaStorageService::avatar($profile->avatar);

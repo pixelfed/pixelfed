@@ -5,6 +5,7 @@ namespace App\Services;
 use App\Util\ActivityPub\Helpers;
 use Illuminate\Http\Client\ConnectionException;
 use Illuminate\Http\Client\RequestException;
+use Illuminate\Http\Client\Response;
 use Illuminate\Support\Facades\Http;
 use League\Uri\BaseUri;
 use Psr\Http\Message\ResponseInterface;
@@ -125,29 +126,15 @@ class SecureMediaFetchService
             }
 
             try {
-                $res = Http::withOptions([
-                    'allow_redirects' => false,
-                    'sink' => null,
-                    'curl' => [
-                        CURLOPT_RESOLVE => [
-                            $this->buildResolveEntry($host, (int) $port, $ips),
-                        ],
-                        CURLOPT_FRESH_CONNECT => true,
-                        CURLOPT_FORBID_REUSE => true,
-                        CURLOPT_PROTOCOLS => CURLPROTO_HTTPS,
-                        CURLOPT_REDIR_PROTOCOLS => CURLPROTO_HTTPS,
-                    ],
-                    'on_headers' => function (ResponseInterface $response) use ($maxBytes) {
-                        $length = $response->getHeaderLine('Content-Length');
-                        if ($length !== '' && ctype_digit($length) && (int) $length > $maxBytes) {
-                            throw new \RuntimeException('Remote media exceeds maximum size');
-                        }
-                    },
-                ])
-                    ->withHeaders($headers)
-                    ->timeout(self::TIMEOUT)
-                    ->connectTimeout(self::CONNECT_TIMEOUT)
-                    ->{$method}($currentUrl);
+                $res = $this->send($method, $currentUrl, $host, (int) $port, $ips, $headers, $maxBytes);
+
+                if ($method === 'head' && $this->shouldProbe($res)) {
+                    // Buffered (non-stream) 1-byte range probe: streaming can't
+                    // carry the CURLOPT_RESOLVE pin under Guzzle 8's stream
+                    // handler, and a single byte is safe to buffer. The byte
+                    // cap is still enforced up front by the on_headers callback.
+                    $res = $this->send('get', $currentUrl, $host, (int) $port, $ips, array_merge($headers, ['Range' => 'bytes=0-0']), $maxBytes);
+                }
             } catch (RequestException|ConnectionException|\Throwable) {
                 return false;
             }
@@ -175,10 +162,7 @@ class SecureMediaFetchService
             }
 
             $mime = $this->normalizeMime($res->header('Content-Type'));
-            $declaredLength = $res->header('Content-Length');
-            $declaredLength = ($declaredLength !== null && ctype_digit((string) $declaredLength))
-                ? (int) $declaredLength
-                : null;
+            $declaredLength = $this->declaredLength($res);
 
             if ($method === 'head') {
                 if ($declaredLength === null || $mime === null) {
@@ -214,6 +198,78 @@ class SecureMediaFetchService
         }
 
         return false;
+    }
+
+    protected function send(string $method, string $url, string $host, int $port, array $ips, array $headers, int $maxBytes): Response
+    {
+        return Http::withOptions($this->requestOptions($host, $port, $ips, $maxBytes))
+            ->withHeaders($headers)
+            ->timeout(self::TIMEOUT)
+            ->connectTimeout(self::CONNECT_TIMEOUT)
+            ->{$method}($url);
+    }
+
+    /**
+     * Build the client options for a single hop. The scheme is restricted to
+     * https via Guzzle's native 'protocols' option (accepted by the curl
+     * handler, unlike the CURLOPT_PROTOCOLS curl constant), redirects stay
+     * disabled so every hop is re-validated, and the connection is pinned to
+     * the already-validated IPs through CURLOPT_RESOLVE. Responses are
+     * buffered (never streamed) so the curl handler, which is the only one
+     * that honours the CURLOPT_RESOLVE pin under Guzzle 8, is always used.
+     */
+    protected function requestOptions(string $host, int $port, array $ips, int $maxBytes): array
+    {
+        return [
+            'allow_redirects' => false,
+            'protocols' => ['https'],
+            'sink' => null,
+            'stream' => false,
+            'curl' => [
+                CURLOPT_RESOLVE => [
+                    $this->buildResolveEntry($host, $port, $ips),
+                ],
+                CURLOPT_FRESH_CONNECT => true,
+                CURLOPT_FORBID_REUSE => true,
+            ],
+            'on_headers' => function (ResponseInterface $response) use ($maxBytes) {
+                $length = $response->getHeaderLine('Content-Length');
+                if ($length !== '' && ctype_digit($length) && (int) $length > $maxBytes) {
+                    throw new \RuntimeException('Remote media exceeds maximum size');
+                }
+            },
+        ];
+    }
+
+    protected function shouldProbe(Response $res): bool
+    {
+        if (in_array($res->status(), [403, 405, 501], true)) {
+            return true;
+        }
+
+        if (! $res->successful()) {
+            return false;
+        }
+
+        return $this->declaredLength($res) === null
+            || $this->normalizeMime($res->header('Content-Type')) === null;
+    }
+
+    protected function declaredLength(Response $res): ?int
+    {
+        if ($res->status() === 206) {
+            $range = trim((string) $res->header('Content-Range'));
+
+            if (preg_match('#^bytes\s+\d+-\d+/(\d+)$#i', $range, $matches)) {
+                return (int) $matches[1];
+            }
+
+            return null;
+        }
+
+        $length = (string) $res->header('Content-Length');
+
+        return ctype_digit($length) ? (int) $length : null;
     }
 
     protected function buildResolveEntry(string $host, int $port, array $ips): string

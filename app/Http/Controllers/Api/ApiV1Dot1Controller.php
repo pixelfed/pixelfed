@@ -58,6 +58,7 @@ use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Str;
 use Illuminate\Validation\Rule;
 use Laravel\Passport\RefreshToken;
+use Laravel\Passport\Token;
 use League\Fractal;
 use League\Fractal\Serializer\ArraySerializer;
 
@@ -554,7 +555,8 @@ class ApiV1Dot1Controller extends Controller
         $filter = $request->input('filter', 'all');
         $limit = (int) $request->input('limit', 10);
         $legacy = ! $request->has('filter');
-        $currentId = $request->user()->token()->id;
+        $accessToken = $request->user()->token();
+        $currentId = $accessToken instanceof Token ? $accessToken->id : null;
 
         $query = $user->tokens()
             ->with('client')
@@ -619,7 +621,9 @@ class ApiV1Dot1Controller extends Controller
             abort_if(BouncerService::checkIp($request->ip()), 404);
         }
 
-        $currentId = $request->user()->token()->id;
+        $accessToken = $request->user()->token();
+        $currentId = $accessToken instanceof Token ? $accessToken->id : null;
+
         $token = $user->tokens()->with('client')->whereKey($id)->first();
         abort_if(! $token, 404);
         abort_if($token->id === $currentId, 422, 'You cannot revoke the current session. Sign out instead.');

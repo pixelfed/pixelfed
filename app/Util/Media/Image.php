@@ -214,6 +214,15 @@ class Image
             $img = $this->imageManager->decodeBinary($fileContents);
             $img = $img->orient();
 
+            // carry the source ICC color profile across the re-encode so wide-gamut
+            // uploads (Display P3, RAW exports) are not desaturated.
+            $iccProfile = null;
+            try {
+                $iccProfile = $img->profile();
+            } catch (\Throwable $e) {
+                $iccProfile = null;
+            }
+
             $ratio = $this->getAspect($img->width(), $img->height(), $thumbnail);
             $aspect = $ratio['dimensions'];
             $orientation = $ratio['orientation'];
@@ -266,6 +275,17 @@ class Image
             }
 
             $converted = $this->setBaseName($path, $thumbnail, $outputExtension);
+
+            if ($iccProfile !== null) {
+                try {
+                    $img = $img->setProfile($iccProfile);
+                } catch (\Throwable $e) {
+                    if (config('app.dev_log')) {
+                        Log::info('ICC profile re-apply failed: '.$e->getMessage());
+                    }
+                }
+            }
+
             $encoded = $encoder->encode($img);
 
             if ($localFs) {
@@ -289,12 +309,14 @@ class Image
                 $media->mime = 'image/'.$outputExtension;
             }
 
+            $media->save();
+
             // Remove the file we just superseded when the new output landed at a
             // different path (extension change / thumbnail regeneration), so the
-            // old file is not orphaned in the media directory.
+            // old file is not orphaned in the media directory. Done after save so
+            // a failed save never leaves the row pointing at deleted bytes; a
+            // leftover orphan after a rare post-save crash is harmless.
             $this->deleteSupersededFile($previousPath, $converted['path'], $localFs);
-
-            $media->save();
 
             if ($thumbnail) {
                 $this->generateBlurhash($media, $encoded->toString());

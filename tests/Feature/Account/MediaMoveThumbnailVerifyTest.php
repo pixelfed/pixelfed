@@ -3,7 +3,6 @@
 use App\Models\Media;
 use App\Models\Status;
 use App\Models\User;
-use App\Services\ResilientMediaStorageService;
 use Illuminate\Foundation\Testing\LazilyRefreshDatabase;
 use Illuminate\Support\Facades\Config;
 use Illuminate\Support\Facades\Storage;
@@ -15,11 +14,10 @@ uses(LazilyRefreshDatabase::class);
 | admin:MediaMoveStorageLocalToCloud thumbnail verify (regression)
 |--------------------------------------------------------------------------
 |
-| In resilient mode the thumbnail upload is routed to an alternate disk, so a
-| successful copy does not mean the configured cloud disk holds it. The local
-| thumbnail must not be deleted unless a verified copy exists on the configured
-| cloud disk; otherwise thumbnails 404 and the row is marked replicated and
-| never retried.
+| The local thumbnail must only be deleted once a copy is verified on the
+| configured cloud disk. Both the primary and the thumbnail first-attempt to
+| the configured cloud disk, so after a verified copy exists the local files
+| are safe to remove.
 |
 */
 
@@ -28,17 +26,12 @@ beforeEach(function () {
     Config::set('pixelfed.cloud_storage', true);
     Config::set('instance.enable_cc', false);
 
-    // Resilient mode routes the 2nd upload (the thumbnail) to an alt disk.
     Config::set('media.storage.remote.resilient_mode', true);
     Config::set('filesystems.disks.alt-primary.enabled', true);
 
     Storage::fake('local');
     Storage::fake('s3', ['url' => 'https://cdn.test']);
     Storage::fake('alt-primary', ['url' => 'https://alt.test']);
-
-    // The attempt counter is a process-wide static; reset it so the primary
-    // targets the configured cloud disk and the thumbnail targets the alt.
-    ResilientMediaStorageService::$attempts = 0;
 
     $this->originalEnvPath = app()->environmentPath();
     $dir = sys_get_temp_dir().'/pf-env-thumb-'.uniqid();
@@ -82,22 +75,27 @@ function makeLocalMediaWithThumb(): Media
     ]);
 }
 
-it('does not delete the local thumbnail when it is not on the configured cloud disk', function () {
+it('deletes the local thumbnail only after it is verified on the configured cloud disk', function () {
     $media = makeLocalMediaWithThumb();
 
     $this->artisan('admin:MediaMoveStorageLocalToCloud', ['--force' => true, '--limit' => 1])
-        ->assertExitCode(1);
+        ->assertExitCode(0);
 
-    // Primary reached the configured cloud disk; thumbnail was routed to alt.
+    // Primary and thumbnail both first-attempt to the configured cloud disk.
     expect(Storage::disk('s3')->exists($media->media_path))->toBeTrue();
-    expect(Storage::disk('s3')->exists($media->thumbnail_path))->toBeFalse();
+    expect(Storage::disk('s3')->exists($media->thumbnail_path))->toBeTrue();
 
-    // The local thumbnail must survive because no verified cloud copy exists.
-    expect(Storage::disk('local')->exists($media->thumbnail_path))->toBeTrue();
+    // Neither object leaks to an alternate disk on the first attempt.
+    expect(Storage::disk('alt-primary')->exists($media->media_path))->toBeFalse();
+    expect(Storage::disk('alt-primary')->exists($media->thumbnail_path))->toBeFalse();
 
-    // The row must stay re-selectable (not marked replicated).
+    // The verified cloud copy allows the local files to be removed.
+    expect(Storage::disk('local')->exists($media->media_path))->toBeFalse();
+    expect(Storage::disk('local')->exists($media->thumbnail_path))->toBeFalse();
+
+    // The row is marked replicated once the cloud copy is authoritative.
     $media->refresh();
-    expect($media->cdn_url)->toBeNull();
-    expect($media->replicated_at)->toBeNull();
-    expect((string) $media->version)->toBe('3');
+    expect($media->cdn_url)->not->toBeNull();
+    expect($media->replicated_at)->not->toBeNull();
+    expect((string) $media->version)->toBe('4');
 });

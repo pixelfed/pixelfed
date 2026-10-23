@@ -91,6 +91,29 @@ it('deletes the superseded thumbnail when regeneration changes its extension', f
     expect($disk->exists($staleThumb))->toBeFalse();
 });
 
+it('keeps the superseded thumbnail when the db save fails', function () {
+    $media = seedPngMediaWithStaleThumb();
+    $staleThumb = $media->thumbnail_path;
+    $disk = Storage::disk('s3');
+
+    expect($disk->exists($staleThumb))->toBeTrue();
+
+    // Force the persist step to blow up after the new file is written but
+    // before the row commits. The superseded file must survive so the row
+    // never points at deleted bytes.
+    Media::saving(function () {
+        throw new RuntimeException('forced save failure');
+    });
+
+    try {
+        (new Image)->resizeThumbnail($media);
+
+        expect($disk->exists($staleThumb))->toBeTrue();
+    } finally {
+        Media::flushEventListeners();
+    }
+});
+
 it('keeps the thumbnail when regeneration writes to the same path', function () {
     $user = User::factory()->create();
     $user->refresh();

@@ -14,6 +14,7 @@ use Illuminate\Contracts\View\View;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Str;
 
@@ -84,6 +85,7 @@ class AdminCuratedRegisterController extends Controller
     {
         $record = CuratedRegister::findOrFail($id);
 
+        /** @var Collection<int, array<string, mixed>> $res */
         $res = collect([
             [
                 'id' => 1,
@@ -109,7 +111,8 @@ class AdminCuratedRegisterController extends Controller
         $activities = CuratedRegisterActivity::whereRegisterId($record->id)->get();
 
         $idx = 4;
-        $userResponses = collect([]);
+        /** @var Collection<int, CuratedRegisterActivity> $userResponses */
+        $userResponses = collect();
 
         foreach ($activities as $activity) {
             $idx++;

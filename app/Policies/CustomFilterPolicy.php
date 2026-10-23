@@ -28,7 +28,7 @@ class CustomFilterPolicy
      */
     public function create(User $user): bool
     {
-        return CustomFilter::whereProfileId($user->profile_id)->count() <= 100;
+        return CustomFilter::whereProfileId($user->profile_id)->unexpired()->count() <= 100;
     }
 
     /**

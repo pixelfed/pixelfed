@@ -319,7 +319,7 @@ return [
             'partial_word' => '',
             'duplicate_not_allowed' => '',
             'filter_action' => '',
-            'hide_media_blur' => '',
+            'hide_media_blur' => 'Làm mờ phương tiện',
             'show_warning' => '',
             'hide_content_completely' => '',
             'apply_filters_to' => '',

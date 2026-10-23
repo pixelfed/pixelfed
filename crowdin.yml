@@ -2,6 +2,8 @@ project_id_env: CROWDIN_PROJECT_ID
 api_token_env: CROWDIN_PERSONAL_TOKEN
 base_path: '.'
 preserve_hierarchy: true
+commit_message: "Localization update"
+append_commit_message: false # Disable "ci skip".
 
 # Map Crowdin's non-standard locale codes to clean folder names. Avoids the
 # en-PT ↔ English (Portugal) BCP-47 collision and the fake tlh-AA region.

@@ -201,7 +201,6 @@ return [
         ],
 
         'cache' => [
-            // GLITCH MODIFIED: honour REDIS_SCHEME/REDIS_PATH like the other connections (sockets, TLS)
             'scheme' => env('REDIS_SCHEME', 'tcp'),
             'path' => env('REDIS_PATH'),
             'url' => env('REDIS_URL'),

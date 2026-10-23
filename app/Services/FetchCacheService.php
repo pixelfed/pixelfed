@@ -49,6 +49,7 @@ class FetchCacheService
 
         $options = [
             'allow_redirects' => false,
+            'protocols' => ['https'],
             'curl' => [
                 CURLOPT_RESOLVE => [
                     $host.':'.((int) $port).':'.implode(',', array_map(
@@ -58,8 +59,6 @@ class FetchCacheService
                 ],
                 CURLOPT_FRESH_CONNECT => true,
                 CURLOPT_FORBID_REUSE => true,
-                CURLOPT_PROTOCOLS => CURLPROTO_HTTPS,
-                CURLOPT_REDIR_PROTOCOLS => CURLPROTO_HTTPS,
             ],
         ];
 

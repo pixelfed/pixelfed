@@ -56,6 +56,8 @@ class StatusController extends Controller
 
         $this->guardStatusVisibility($request, $user, $status);
 
+        abort_unless($status->in_reply_to_id ? $status->parent() : true, 404);
+
         if ($request->wantsJson() && (bool) config_cache('federation.activitypub.enabled')) {
             return $this->showActivityPub($request, $status);
         }

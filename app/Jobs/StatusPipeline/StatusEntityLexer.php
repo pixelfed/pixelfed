@@ -130,11 +130,22 @@ class StatusEntityLexer implements ShouldQueue
             DB::transaction(function () use ($status, $tag) {
                 $slug = Str::slug($tag, '-', false);
 
-                $hashtag = Hashtag::firstOrCreate([
-                    'slug' => $slug,
-                ], [
-                    'name' => $tag,
-                ]);
+                if ($slug === '') {
+                    return;
+                }
+
+                // Resolve a slug that does not collide with a different name,
+                // so two distinct tags sharing a base slug keep separate rows.
+                $baseSlug = $slug;
+                $counter = 1;
+                while (Hashtag::where('slug', $slug)->where('name', '!=', $tag)->exists()) {
+                    $slug = $baseSlug.'-'.$counter++;
+                }
+
+                $hashtag = Hashtag::firstOrCreate(
+                    ['name' => $tag],
+                    ['slug' => $slug],
+                );
 
                 StatusHashtag::firstOrCreate(
                     [
@@ -181,12 +192,10 @@ class StatusEntityLexer implements ShouldQueue
         $status = $this->status;
         StatusService::refresh($status->id);
 
-        if (config('exp.cached_home_timeline')) {
-            if ($status->in_reply_to_id === null &&
-                in_array($status->scope, ['public', 'unlisted', 'private'])
-            ) {
-                FeedInsertPipeline::dispatch($status->id, $status->profile_id)->onQueue('feed');
-            }
+        if ($status->in_reply_to_id === null &&
+            in_array($status->scope, ['public', 'unlisted', 'private'])
+        ) {
+            FeedInsertPipeline::dispatch($status->id, $status->profile_id)->onQueue('feed');
         }
         $this->deliver();
     }

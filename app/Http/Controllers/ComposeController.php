@@ -595,7 +595,7 @@ class ComposeController extends Controller
         $status = new Status;
         $mimes = [];
         $place = $request->input('place');
-        $cw = $request->input('cw');
+        $cw = $profile->cw == true ? true : $request->boolean('cw');
         $tagged = $request->input('tagged');
         $optimize_media = (bool) $request->input('optimize_media');
 
@@ -607,15 +607,11 @@ class ComposeController extends Controller
             if ($m->profile_id !== $profile->id || $m->status_id || DirectMessageService::isMessageMedia($m->id)) {
                 abort(403, 'Invalid media id');
             }
-            $m->filter_class = in_array($media['filter_class'], Filter::classes()) ? $media['filter_class'] : null;
+            $m->filter_class = isset($media['filter_class']) && in_array($media['filter_class'], Filter::classes()) ? $media['filter_class'] : null;
             $m->license = $license;
             $m->caption = isset($media['alt']) ? strip_tags($media['alt']) : null;
             $m->order = isset($media['cursor']) && is_int($media['cursor']) ? (int) $media['cursor'] : $k;
-
-            if ($cw == true || $profile->cw == true) {
-                $m->is_nsfw = $cw;
-                $status->is_nsfw = $cw;
-            }
+            $m->is_nsfw = $cw;
             $m->save();
             $attachments[] = $m;
             array_push($mimes, $m->mime);
@@ -629,7 +625,7 @@ class ComposeController extends Controller
             abort(400, __('exception.compose.invalid.album'));
         }
 
-        if ($place && is_array($place)) {
+        if ($place && is_array($place) && isset($place['id'])) {
             $status->place_id = $place['id'];
             PlaceService::clearStatusesByPlaceId($place['id']);
         }
@@ -661,14 +657,16 @@ class ComposeController extends Controller
 
         $visibility = $profile->unlisted == true && $visibility == 'public' ? 'unlisted' : $visibility;
         $visibility = $profile->is_private ? 'private' : $visibility;
-        $cw = $profile->cw == true ? true : $cw;
         $status->is_nsfw = $cw;
         $status->visibility = $visibility;
         $status->scope = $visibility;
         $status->type = $mediaType;
         $status->save();
 
-        foreach ($tagged as $tg) {
+        foreach ((array) $tagged as $tg) {
+            if (! is_array($tg) || ! isset($tg['id'], $tg['name'])) {
+                continue;
+            }
             $mt = new MediaTag;
             $mt->status_id = $status->id;
             $mt->media_id = $status->media->first()->id;
@@ -750,14 +748,14 @@ class ComposeController extends Controller
         $visibility = $request->input('visibility');
         $status = new Status;
         $place = $request->input('place');
-        $cw = $request->input('cw');
+        $cw = $profile->cw == true ? true : $request->boolean('cw');
         $tagged = $request->input('tagged');
         // Empty string is valid whether `caption`/`rendered` are nullable or
         // NOT NULL (they are NOT NULL on MySQL/MariaDB in practice), so use it
         // regardless of driver rather than inserting null.
         $defaultCaption = '';
 
-        if ($place && is_array($place)) {
+        if ($place && is_array($place) && isset($place['id'])) {
             $status->place_id = $place['id'];
         }
 
@@ -770,7 +768,6 @@ class ComposeController extends Controller
         $status->profile_id = $profile->id;
         $entities = [];
         $visibility = $profile->unlisted == true && $visibility == 'public' ? 'unlisted' : $visibility;
-        $cw = $profile->cw == true ? true : $cw;
         $status->is_nsfw = $cw;
         $status->visibility = $visibility;
         $status->scope = $visibility;
@@ -785,7 +782,10 @@ class ComposeController extends Controller
         ], $entities), JSON_UNESCAPED_SLASHES);
         $status->save();
 
-        foreach ($tagged as $tg) {
+        foreach ((array) $tagged as $tg) {
+            if (! is_array($tg) || ! isset($tg['id'], $tg['name'])) {
+                continue;
+            }
             $mt = new MediaTag;
             $mt->status_id = $status->id;
             $mt->media_id = $status->media->first()->id;

@@ -21,6 +21,8 @@ return [
         'delivery' => [
             'timeout' => env('ACTIVITYPUB_DELIVERY_TIMEOUT', 30),
             'concurrency' => env('ACTIVITYPUB_DELIVERY_CONCURRENCY', 10),
+            'queue' => env('ACTIVITYPUB_DELIVERY_QUEUE', 'deliver'),
+            'chunk_size' => env('ACTIVITYPUB_DELIVERY_CHUNK_SIZE', 50),
             'logger' => [
                 'enabled' => env('AP_LOGGER_ENABLED', false),
                 'driver' => 'log',

@@ -1,7 +1,7 @@
 name: pixelfed
 type: laravel
 docroot: public
-php_version: "8.4"
+php_version: "8.5"
 webserver_type: nginx-fpm
 disable_settings_management: true
 webimage_extra_packages: [

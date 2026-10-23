@@ -5,6 +5,7 @@ namespace App\Transformer\ActivityPub;
 use App\Models\Status;
 use App\Services\MediaService;
 use App\Util\Lexer\Autolink;
+use App\Util\Media\License;
 use League\Fractal;
 
 class StatusTransformer extends Fractal\TransformerAbstract
@@ -24,6 +25,7 @@ class StatusTransformer extends Fractal\TransformerAbstract
                     'featured' => [
                         'https://pixelfed.org/ns#featured' => ['@type' => '@id'],
                     ],
+                    ...License::NOTE_CONTEXT_TERMS,
                 ],
             ],
             'id' => $status->url(),
@@ -42,6 +44,7 @@ class StatusTransformer extends Fractal\TransformerAbstract
             ],
             'sensitive' => (bool) $status->is_nsfw,
             'attachment' => MediaService::activitypub($status->id),
+            ...MediaService::noteLicense($status->id),
             'tag' => [],
             'location' => $status->place_id ? [
                 'type' => 'Place',

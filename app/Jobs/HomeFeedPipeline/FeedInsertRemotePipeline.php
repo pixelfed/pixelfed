@@ -69,7 +69,7 @@ class FeedInsertRemotePipeline implements ShouldBeUniqueUntilProcessing, ShouldQ
      */
     public function middleware(): array
     {
-        return [(new WithoutOverlapping("hts:feed:insert:remote:sid:{$this->sid}"))->shared()->dontRelease()];
+        return [(new WithoutOverlapping("hts:feed:insert:remote:sid:{$this->sid}"))->shared()->expireAfter($this->timeout)->dontRelease()];
     }
 
     /**
@@ -154,7 +154,7 @@ class FeedInsertRemotePipeline implements ShouldBeUniqueUntilProcessing, ShouldQ
             $filterableIds[] = $status['reblog']['account']['id'];
         }
 
-        $filters = UserFilter::whereFilterableType(Profile::class)
+        $filters = UserFilter::whereIn('filterable_type', ['App\Profile', Profile::class])
             ->whereIn('filterable_id', array_unique($filterableIds))
             ->whereIn('filter_type', ['mute', 'block'])
             ->pluck('user_id')
@@ -167,8 +167,14 @@ class FeedInsertRemotePipeline implements ShouldBeUniqueUntilProcessing, ShouldQ
         $skipIds = array_unique(array_values($skipIds));
 
         foreach ($ids as $id) {
-            if (! in_array($id, $skipIds)) {
+            if (in_array($id, $skipIds)) {
+                continue;
+            }
+
+            if (HomeTimelineService::cacheKeyExists($id)) {
                 HomeTimelineService::add($id, $sid);
+            } else {
+                HomeTimelineService::clearEmptyWarmed($id);
             }
         }
     }

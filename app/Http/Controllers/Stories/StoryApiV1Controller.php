@@ -17,6 +17,7 @@ use App\Services\DirectMessageService;
 use App\Services\MediaPathService;
 use App\Services\StoryIndexService;
 use App\Services\StoryService;
+use App\Services\StoryViewService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Arr;
@@ -665,24 +666,13 @@ class StoryApiV1Controller extends Controller
         $following = Follower::whereProfileId($pid)->whereFollowingId($story->profile_id)->exists();
         abort_if(! $following, 403, 'Invalid permission');
 
-        $v = StoryView::firstOrCreate([
-            'story_id' => $id,
-            'profile_id' => $pid,
-        ]);
+        $recorded = app(StoryViewService::class)->record($story, (int) $pid);
 
-        $index = app(StoryIndexService::class);
-        $index->markSeen($pid, $story->profile_id, $story->id, $story->created_at);
-
-        if ($v->wasRecentlyCreated) {
-
-            Story::findOrFail($story->id)->increment('view_count');
-
-            if ($story->local == false) {
-                StoryViewDeliver::dispatch($story, $authed)->onQueue('story');
-            }
-            Cache::forget('stories:recent:by_id:'.$pid);
-            StoryService::addSeen($pid, $story->id);
+        if ($recorded && $story->local == false) {
+            StoryViewDeliver::dispatch($story, $authed)->onQueue('story');
         }
+
+        Cache::forget(self::RECENT_KEY.$pid);
 
         return ['code' => 200];
     }

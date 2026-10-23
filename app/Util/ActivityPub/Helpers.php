@@ -19,12 +19,14 @@ use App\Services\AccountService;
 use App\Services\ActivityPubDeliveryService;
 use App\Services\ActivityPubFetchService;
 use App\Services\DomainService;
+use App\Services\FetchCacheService;
 use App\Services\FollowersSyncService;
 use App\Services\InstanceService;
 use App\Services\MediaPathService;
 use App\Services\NetworkTimelineService;
 use App\Services\SanitizeService;
 use App\Services\UserFilterService;
+use App\Services\WebfingerService;
 use App\Util\Media\License;
 use Carbon\Carbon;
 use Illuminate\Database\UniqueConstraintViolationException;
@@ -1735,7 +1737,6 @@ class Helpers
     public static function handleStatusPostProcessing(Status $status, int $profileId, string $url): void
     {
         if (
-            config('instance.timeline.network.cached') &&
             self::isEligibleForNetwork($status) &&
             ! FeedInsertRemotePipeline::isTooOld($status->created_at)
         ) {
@@ -1765,6 +1766,7 @@ class Helpers
     {
         return $status->in_reply_to_id === null &&
             $status->reblog_of_id === null &&
+            $status->scope === 'public' &&
             in_array($status->type, ['photo', 'photo:album', 'video', 'video:album', 'photo:video:album']) &&
             $status->created_at->gt(now()->subHours(config('instance.timeline.network.max_hours_old'))) &&
             (config('instance.hide_nsfw_on_public_feeds') ? ! $status->is_nsfw : true);
@@ -1922,9 +1924,17 @@ class Helpers
         $storagePath = MediaPathService::get($profile, 2);
         $allowedTypes = explode(',', config_cache('pixelfed.media_types'));
 
+        // FEP-6757: a license on the Note applies to attachments that do not declare their own.
+        $object = isset($data['object']) && is_array($data['object']) ? $data['object'] : $data;
+        $noteLicense = $object['license'] ?? null;
+
         foreach ($attachments as $key => $media) {
             if (! self::isValidAttachment($media, $allowedTypes)) {
                 continue;
+            }
+
+            if ($noteLicense !== null && ! isset($media['license'])) {
+                $media['license'] = $noteLicense;
             }
 
             $mediaModel = self::createMediaAttachment($media, $status, $key);
@@ -2043,7 +2053,8 @@ class Helpers
         }
 
         if (isset($data['license'])) {
-            $media->license = License::nameToId($data['license']);
+            $license = License::fromActivityPub($data['license']);
+            $media->license = $license === null ? null : (string) $license;
         }
     }
 
@@ -2158,7 +2169,8 @@ class Helpers
         }
 
         if (isset($data['license'])) {
-            $media->license = License::nameToId($data['license']);
+            $license = License::fromActivityPub($data['license']);
+            $media->license = $license === null ? null : (string) $license;
         }
     }
 
@@ -2254,21 +2266,79 @@ class Helpers
             return null;
         }
 
-        $webfinger = "@{$username}@{$domain}";
+        [$handleUser, $handleDomain] = self::verifiedHandle($username, $domain, $res['id']);
+        $webfinger = Purify::clean("@{$handleUser}@{$handleDomain}");
+
         $instance = self::getOrCreateInstance($domain);
         $movedToPid = $movedToCheck ? null : self::handleMovedTo($res);
+        $data = self::buildProfileData($res, $webfinger, $movedToPid);
 
-        $profile = Profile::updateOrCreate(
-            [
-                'domain' => strtolower($domain),
-                'username' => Purify::clean($webfinger),
-            ],
-            self::buildProfileData($res, $webfinger, $movedToPid)
-        );
+        $profile = Profile::whereRemoteUrl($res['id'])->first();
+
+        if ($profile && self::handleTaken($profile, $domain, $webfinger)) {
+            $webfinger = $profile->username;
+            $data['webfinger'] = $webfinger;
+        }
+
+        if ($profile) {
+            $profile->forceFill(['domain' => strtolower($domain), 'username' => $webfinger] + $data)->save();
+            AccountService::del($profile->id);
+        } else {
+            $profile = Profile::updateOrCreate(
+                [
+                    'domain' => strtolower($domain),
+                    'username' => $webfinger,
+                ],
+                $data
+            );
+        }
 
         self::handleProfileAvatar($profile);
 
         return $profile;
+    }
+
+    public static function verifiedHandle(string $username, string $actorHost, string $actorId): array
+    {
+        $fallback = [$username, $actorHost];
+        $key = 'pf:helpers:verified-handle:'.hash('sha256', $actorId.'|'.$username);
+
+        return Cache::remember($key, now()->addHours(12), function () use ($username, $actorHost, $actorId, $fallback) {
+            $record = FetchCacheService::getJson("https://{$actorHost}/.well-known/webfinger?resource=acct:{$username}@{$actorHost}");
+            $subject = is_array($record) && is_string($record['subject'] ?? null) ? $record['subject'] : null;
+
+            if (! $subject || ! preg_match('/^acct:([^@\s\/]+)@([^@\s\/]+)$/i', $subject, $m)) {
+                return $fallback;
+            }
+
+            $handleUser = $m[1];
+            $handleDomain = strtolower(rtrim($m[2], '.'));
+
+            if ($handleDomain === strtolower($actorHost)) {
+                return $fallback;
+            }
+
+            if (
+                ! ctype_alnum(str_replace(['_', '.', '-'], '', $handleUser))
+                || self::isLocalDomain($handleDomain)
+                || self::isHostBanned($handleDomain)
+            ) {
+                return $fallback;
+            }
+
+            $link = WebfingerService::rawGet("@{$handleUser}@{$handleDomain}");
+
+            return $link === $actorId ? [$handleUser, $handleDomain] : $fallback;
+        });
+    }
+
+    protected static function handleTaken(Profile $profile, string $domain, string $webfinger): bool
+    {
+        return $profile->username !== $webfinger
+            && Profile::where('domain', strtolower($domain))
+                ->where('username', $webfinger)
+                ->whereKeyNot($profile->id)
+                ->exists();
     }
 
     /**

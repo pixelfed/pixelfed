@@ -31,7 +31,7 @@ class HashtagFollow extends Model
 {
     protected $guarded = [];
 
-    const MAX_LIMIT = 25;
+    const MAX_LIMIT = 100;
 
     public function hashtag(): BelongsTo
     {

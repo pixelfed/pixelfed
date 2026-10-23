@@ -3,6 +3,7 @@
 namespace App\Jobs\HomeFeedPipeline;
 
 use App\Models\Hashtag;
+use App\Services\FollowerService;
 use App\Services\HashtagFollowService;
 use App\Services\HomeTimelineService;
 use App\Services\StatusService;
@@ -53,7 +54,7 @@ class HashtagRemoveFanoutPipeline implements ShouldBeUniqueUntilProcessing, Shou
      */
     public function middleware(): array
     {
-        return [(new WithoutOverlapping("hfp:hashtag:fanout:remove:{$this->hid}:{$this->sid}"))->shared()->dontRelease()];
+        return [(new WithoutOverlapping("hfp:hashtag:fanout:remove:{$this->hid}:{$this->sid}"))->shared()->expireAfter($this->timeout)->dontRelease()];
     }
 
     /**
@@ -87,25 +88,20 @@ class HashtagRemoveFanoutPipeline implements ShouldBeUniqueUntilProcessing, Shou
             return;
         }
 
-        $status = StatusService::get($sid, false);
-
-        if (! $status || ! isset($status['account']) || ! isset($status['account']['id'])) {
-            Log::info("HashtagRemoveFanoutPipeline: Status {$sid} not found or invalid, skipping job");
-
-            return;
-        }
-
-        if (! in_array($status['pf_type'], ['photo', 'photo:album', 'video', 'video:album', 'photo:video:album'])) {
-            return;
-        }
-
         $ids = HashtagFollowService::getPidByHid($hid);
 
         if (! $ids || ! count($ids)) {
             return;
         }
 
+        $status = StatusService::get($sid, false);
+        $authorId = $status['account']['id'] ?? null;
+
         foreach ($ids as $id) {
+            if ($authorId !== null && FollowerService::follows((string) $id, (string) $authorId)) {
+                continue;
+            }
+
             HomeTimelineService::rem($id, $sid);
         }
     }

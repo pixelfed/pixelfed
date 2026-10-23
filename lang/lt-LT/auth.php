@@ -18,7 +18,7 @@ return [
     'username' => '',
     'confirm-password' => '',
 
-    'age' => 'Esu bent 16 metų',
+    'age' => 'Man bent '.(int) config('pixelfed.min_registration_age', 16).' m.',
     'terms' => ''.route('site.terms').''.route('site.privacy').'',
 
     'emailAddress' => 'El. pašto adresas',

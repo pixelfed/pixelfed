@@ -18,7 +18,7 @@ return [
     'username' => '',
     'confirm-password' => '',
 
-    'age' => '',
+    'age' => ''.(int) config('pixelfed.min_registration_age', 16).'',
     'terms' => ''.route('site.terms').''.route('site.privacy').'',
 
     'emailAddress' => '',

@@ -13,5 +13,8 @@
     },
     "site": {
         "privacy": "Privacy Creed"
+    },
+    "navmenu": {
+        "createStory": "Spill Yarn"
     }
 }

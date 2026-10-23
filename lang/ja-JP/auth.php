@@ -18,7 +18,7 @@ return [
     'username' => 'アカウント',
     'confirm-password' => 'パスワード（確認用）',
 
-    'age' => '私は16歳以上です。',
+    'age' => ''.(int) config('pixelfed.min_registration_age', 16).'',
     'terms' => 'アカウントを作成することで、<a href="'.route('site.terms').'" class="font-weight-bold text-dark">利用規約</a>と<a href="'.route('site.privacy').'" class="font-weight-bold text-dark">プライバシーポリシー</a>に同意したものと見なします。',
 
     'emailAddress' => 'メールアドレス',

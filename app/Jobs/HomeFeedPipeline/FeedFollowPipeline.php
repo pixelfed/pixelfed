@@ -53,7 +53,7 @@ class FeedFollowPipeline implements ShouldBeUniqueUntilProcessing, ShouldQueue
      */
     public function middleware(): array
     {
-        return [(new WithoutOverlapping("hts:feed:insert:follows:aid:{$this->actorId}:fid:{$this->followingId}"))->shared()->dontRelease()];
+        return [(new WithoutOverlapping("hts:feed:insert:follows:aid:{$this->actorId}:fid:{$this->followingId}"))->shared()->expireAfter($this->timeout)->dontRelease()];
     }
 
     /**
@@ -116,6 +116,15 @@ class FeedFollowPipeline implements ShouldBeUniqueUntilProcessing, ShouldQueue
             ->orderByDesc('id')
             ->limit(HomeTimelineService::FOLLOWER_FEED_POST_LIMIT)
             ->pluck('id');
+
+        if (! HomeTimelineService::cacheKeyExists($actorId)) {
+            // A new follow is the action most likely to turn an empty feed
+            // into a full one, so the empty record has to go even though
+            // there is no feed here to backfill into.
+            HomeTimelineService::clearEmptyWarmed($actorId);
+
+            return;
+        }
 
         foreach ($ids as $id) {
             HomeTimelineService::add($actorId, $id);

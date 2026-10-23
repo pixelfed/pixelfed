@@ -2,27 +2,27 @@
 
 return [
 
-    'helpcenter' => '',
-    'whatsnew' => '',
+    'helpcenter' => 'Ionad na cobharach',
+    'whatsnew' => 'Na tha ùr',
 
-    'gettingStarted' => '',
-    'sharingMedia' => '',
-    'profile' => '',
-    'stories' => '',
-    'hashtags' => '',
-    'discover' => '',
-    'directMessages' => '',
-    'timelines' => '',
-    'embed' => '',
+    'gettingStarted' => 'Toiseach-tòiseachaidh',
+    'sharingMedia' => 'Co-roinneadh mheadhanan',
+    'profile' => 'Pròifil',
+    'stories' => 'Sgeulan',
+    'hashtags' => 'Tagaichean hais',
+    'discover' => 'Rùraich',
+    'directMessages' => 'Teachdaireachdan dìreach',
+    'timelines' => 'Loidhnichean-ama',
+    'embed' => 'Leabaich',
 
-    'communityGuidelines' => '',
-    'whatIsTheFediverse' => '',
-    'controllingVisibility' => '',
-    'blockingAccounts' => '',
-    'safetyTips' => '',
-    'reportSomething' => '',
-    'dataPolicy' => '',
+    'communityGuidelines' => 'Riaghailtean na coimhearsnachd',
+    'whatIsTheFediverse' => 'Dè th’ ann an co-shaoghal?',
+    'controllingVisibility' => 'Stiùireadh na faicsinneachd',
+    'blockingAccounts' => 'Bacadh chunntasan',
+    'safetyTips' => 'Gliocasan mun t-sàbhailteachd',
+    'reportSomething' => 'Dèanadh gearan mu rud',
+    'dataPolicy' => 'Poileasaidh dàta',
 
-    'taggingPeople' => '',
+    'taggingPeople' => 'Tagadh dhaoine',
 
 ];

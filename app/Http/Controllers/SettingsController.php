@@ -372,6 +372,8 @@ class SettingsController extends Controller
             $setting->compose_settings = $compose;
             $setting->save();
             Cache::forget('profile:compose:settings:'.$request->user()->id);
+            AccountService::forgetAccountSettings($request->user()->profile_id);
+            AccountService::del($request->user()->profile_id);
         }
 
         if ($sync) {
