@@ -21,8 +21,9 @@ return [
     |
     */
 
-    // GLITCH MODIFIED: default to gd (upstream: vips, which needs libvips + PHP FFI on the host)
-    'driver' => env('IMAGE_DRIVER', 'gd'),
+    // GLITCH MODIFIED: default to gd (upstream: vips, which needs libvips + PHP FFI on the host).
+    // The Docker image ships both and sets DOCKER_IMAGE_DRIVER=vips; IMAGE_DRIVER in .env still wins.
+    'driver' => env('IMAGE_DRIVER', env('DOCKER_IMAGE_DRIVER', 'gd')),
 
     /*
     |--------------------------------------------------------------------------

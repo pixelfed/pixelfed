@@ -310,6 +310,10 @@ ARG PIXELFED_VERSION
 
 ENV PIXELFED_VERSION=${PIXELFED_VERSION}
 
+# Image driver fallback for config/image.php when IMAGE_DRIVER is not set. Not IMAGE_DRIVER itself:
+# a real env var would override IMAGE_DRIVER from .env. libvips + FFI ship in this image.
+ENV DOCKER_IMAGE_DRIVER=vips
+
 USER root
 
 COPY --link --from=go-tools /out/forego /out/dottie /out/gomplate /usr/local/bin/
