@@ -3,8 +3,6 @@
 namespace App\Models;
 
 use App\HasSnowflakePrimary;
-use App\Profile;
-use App\Status;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
@@ -19,15 +17,7 @@ class GroupPost extends Model
      */
     public $incrementing = false;
 
-    protected $fillable = [
-        'remote_url',
-        'group_id',
-        'profile_id',
-        'type',
-        'caption',
-        'visibility',
-        'is_nsfw',
-    ];
+    protected $guarded = [];
 
     public function mediaPath()
     {

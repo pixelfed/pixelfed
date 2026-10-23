@@ -1,0 +1,17 @@
+{
+    "common": {
+        "comment": "Yammer",
+        "bookmark": "Treasure",
+        "cancel": "Abandon Ship",
+        "errorMsg": "Somethin' went wrong. Please try again later.",
+        "oops": "Shiver me timbers!",
+        "next": "Onward",
+        "clickHere": "click thar",
+        "sensitiveContentWarning": "Dis post may contain sensitive content",
+        "javascript": "Please enable javascript to view this booty.",
+        "continue": "Carry On"
+    },
+    "site": {
+        "privacy": "Privacy Creed"
+    }
+}

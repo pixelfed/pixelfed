@@ -2,9 +2,9 @@
 
 namespace App\Http\Controllers\Admin;
 
-use App\Media;
-use App\MediaBlocklist;
-use App\Profile;
+use App\Models\Media;
+use App\Models\MediaBlocklist;
+use App\Models\Profile;
 use Illuminate\Http\Request;
 use Illuminate\Validation\Rule;
 

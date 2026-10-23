@@ -44,9 +44,9 @@ return [
     */
 
     'argon' => [
-        'memory'  => env('ARGON_MEM', 1024),
+        'memory' => env('ARGON_MEM', 1024),
         'threads' => env('ARGON_THREADS', 2),
-        'time'    => env('ARGON_TIME', 2),
+        'time' => env('ARGON_TIME', 2),
     ],
 
 ];

@@ -65,7 +65,7 @@
                                     {{ $template->name }}
                                 </td>
                                 <td class="align-middle">
-                                    {{ str_limit($template->content, 80) }}
+                                    {{ Str::limit($template->content, 80) }}
                                 </td>
                                 <td class="align-middle">
                                     {{ $template->is_active ? '✅' : '❌' }}

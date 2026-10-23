@@ -38,7 +38,7 @@
                                 class="form-control form-control-lg"
                                 placeholder="What should everyone call you?"
                                 minlength="2"
-u                                maxlength="30"
+                                maxlength="30"
                                 v-model="form.username" />
 
                             <p v-if="errors.username" class="form-text text-danger">
@@ -368,11 +368,15 @@ u                                maxlength="30"
             },
 
             validateEmail() {
-                if(!this.form.email || !this.form.email.length) {
+                const email = this.form?.email?.trim();
+
+                if (!email || email.length > 254) {
                     return false;
                 }
 
-                return /^[a-zA-Z]+[a-zA-Z0-9_.-]+@[a-zA-Z0-9_.-]+[a-zA-Z]$/i.test(this.form.email);
+                const pattern = /^[a-zA-Z0-9.!#$%&'*+\/=?^_`{|}~-]+@[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?(?:\.[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?)+$/;
+
+                return pattern.test(email);
             },
 
             handleRegistration() {
@@ -473,6 +477,19 @@ u                                maxlength="30"
 
                 .form-control {
                     color: #fff;
+                    background-color: #1c1c1e;
+                    border-color: var(--dropdown-item-hover-color) !important;
+
+                    &::placeholder {
+                        color: var(--muted);
+                    }
+
+                    &:focus {
+                        color: #fff;
+                        background-color: #1c1c1e;
+                        border-color: #8E54E9 !important;
+                        box-shadow: 0 0 0 0.2rem rgba(142, 84, 233, 0.25);
+                    }
                 }
 
                 .admin-message {

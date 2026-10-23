@@ -2,19 +2,21 @@
 
 namespace App\Jobs\StatusPipeline;
 
-use App\Media;
+use App\Models\Media;
+use App\Models\ModLog;
+use App\Models\Profile;
+use App\Models\Status;
 use App\Models\StatusEdit;
-use App\ModLog;
-use App\Profile;
+use App\Services\MediaService;
 use App\Services\SanitizeService;
+use App\Services\SecureMediaFetchService;
 use App\Services\StatusService;
-use App\Status;
+use App\Util\ActivityPub\Helpers;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
-use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Log;
 use Purify;
 
@@ -110,39 +112,74 @@ class StatusRemoteUpdatePipeline implements ShouldQueue
             return;
         }
 
+        // Pass 1: validate every replacement attachment (URL + hardened HEAD +
+        // served-MIME) and collect the survivors. Do NOT touch the existing
+        // media yet, so a transient fetch/validation failure can't destroy it.
+        $validated = [];
+        $nm->each(function ($n, $key) use (&$validated) {
+            // Validate the attacker-controlled attachment URL before issuing any
+            // server-side request. This rejects http://, IP-literal, and
+            // (with DNS checks) private-resolving hosts, closing the SSRF sink.
+            $url = Helpers::validateUrl($n['url']);
+            if (! $url) {
+                return;
+            }
+
+            // Hardened HEAD: validate + resolve public IPs + pin the connection
+            // (CURLOPT_RESOLVE) + re-validate every redirect hop + byte cap.
+            // Matches the SSRF hardening applied to every other remote-media sink.
+            $res = SecureMediaFetchService::head($url);
+            if ($res === false) {
+                return;
+            }
+
+            if (! in_array($res['mime'], explode(',', config_cache('pixelfed.media_types')))) {
+                return;
+            }
+
+            $validated[] = ['n' => $n, 'key' => $key, 'url' => $url, 'res' => $res];
+        });
+
+        // If the sender supplied attachments but none survived validation while
+        // the status previously had media, abort instead of orphaning what we
+        // cannot replace (silent media loss). A genuine removal sends an empty
+        // attachment array, which the pre-filter turns into an empty $nm; that
+        // still reaches the orphan below so the media is cleared as intended.
+        if (empty($validated) && $ogm->count() && ! empty($activity['attachment'])) {
+            return;
+        }
+
+        // Pass 2: safe to detach existing media now — either we have validated
+        // replacements to write, or the sender genuinely removed all media.
         Media::whereProfileId($status->profile_id)
             ->whereStatusId($status->id)
             ->update([
                 'status_id' => null,
             ]);
 
-        $nm->each(function ($n, $key) use ($status) {
-            $res = Http::withOptions(['allow_redirects' => false])->retry(3, 100, throw: false)->head($n['url']);
-
-            if (! $res->successful()) {
-                return;
-            }
-
-            if (! in_array($res->header('content-type'), explode(',', config_cache('pixelfed.media_types')))) {
-                return;
-            }
+        foreach ($validated as $v) {
+            $n = $v['n'];
+            $url = $v['url'];
+            $res = $v['res'];
 
             $m = new Media;
             $m->status_id = $status->id;
             $m->profile_id = $status->profile_id;
             $m->remote_media = true;
-            $m->media_path = $n['url'];
-            $m->mime = $res->header('content-type');
-            $m->size = $res->hasHeader('content-length') ? $res->header('content-length') : null;
+            $m->media_path = $url;
+            $m->mime = $res['mime'];
+            $m->size = $res['length'] ?? null;
             $m->caption = isset($n['name']) && ! empty($n['name']) ? Purify::clean($n['name']) : null;
-            $m->remote_url = $n['url'];
+            $m->remote_url = $url;
             $m->blurhash = isset($n['blurhash']) && (strlen($n['blurhash']) < 50) ? $n['blurhash'] : null;
             $m->width = isset($n['width']) && ! empty($n['width']) ? $n['width'] : null;
             $m->height = isset($n['height']) && ! empty($n['height']) ? $n['height'] : null;
             $m->skip_optimize = true;
-            $m->order = $key + 1;
+            $m->order = $v['key'] + 1;
             $m->save();
-        });
+        }
+
+        MediaService::del($status->id);
     }
 
     protected function updateImmediateAttributes($status, $activity)

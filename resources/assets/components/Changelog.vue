@@ -86,6 +86,7 @@
 
 					<div class="pb-3">
 						<p class="lead">Older</p>
+						<!-- GLITCH MODIFIED: glitch changelog URL -->
 						<p>To view the full list of changes, view the project changelog <a href="https://raw.githubusercontent.com/pixelfed-glitch/pixelfed/develop/CHANGELOG.md">here</a>.</p>
 					</div>
 				</div>

@@ -2,7 +2,7 @@
 
 namespace App\Util\ActivityPub;
 
-use Illuminate\Support\Facades\Http;
+use App\Services\ActivityPubFetchService;
 
 class DiscoverActor
 {
@@ -17,17 +17,20 @@ class DiscoverActor
 
     public function fetch()
     {
-        $res = Http::withHeaders([
-            'Accept' => 'application/ld+json; profile="https://www.w3.org/ns/activitystreams"',
-            'User-Agent' => 'PixelfedBot - https://pixelfed.org',
-        ])->get($this->url);
-        $this->response = $res->body();
+        // SSRF-hardened: route through the validated, IP-pinned,
+        // redirect-revalidating ActivityPub fetch path instead of a raw
+        // Http::get on an unvalidated URL.
+        $this->response = ActivityPubFetchService::get($this->url) ?: null;
 
         return $this;
     }
 
     public function getResponse()
     {
+        if (! $this->response) {
+            return null;
+        }
+
         return json_decode($this->response, true);
     }
 

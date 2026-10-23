@@ -34,7 +34,7 @@
 		</div>
 		<div class="px-4 py-5 my-5 text-center">
 			<a href="/">
-				<img class="d-block mx-auto mb-4" src="/img/pixelfed-icon-color.svg" alt="" width="72" height="57">
+				<img class="d-block mx-auto mb-4" src="{{ config('app.logo') }}" alt="" width="72" height="57">
 			</a>
 			
 			<h1 class="display-4 font-weight-bold py-3">{{ config_cache('about.title') ?? __('site.photo_sharing_for_everyone') }}</h1>

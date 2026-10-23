@@ -2,8 +2,9 @@
 
 namespace App\Jobs\MediaPipeline;
 
-use App\Media;
+use App\Models\Media;
 use App\Services\Media\MediaHlsService;
+use App\Services\UserStorageService;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldBeUniqueUntilProcessing;
 use Illuminate\Contracts\Queue\ShouldQueue;
@@ -71,11 +72,42 @@ class MediaDeletePipeline implements ShouldBeUniqueUntilProcessing, ShouldQueue
             return 1;
         }
 
+        // Verify media is still orphaned before deleting
+        if ($media->status_id !== null) {
+            Log::info('MediaDeletePipeline: Media is attached to a status, skipping deletion', [
+                'media_id' => $media->id,
+                'status_id' => $media->status_id,
+                'profile_id' => $media->profile_id,
+                'user_id' => $media->user_id,
+                'mime' => $media->mime,
+                'size' => $media->size,
+                'order' => $media->order,
+                'media_path' => $media->media_path,
+                'thumbnail_path' => $media->thumbnail_path,
+                'hls_path' => $media->hls_path,
+                'remote_media' => (bool) $media->remote_media,
+                'created_at' => $media->created_at?->toDateTimeString(),
+                'updated_at' => $media->updated_at?->toDateTimeString(),
+            ]);
+
+            return 1;
+        }
+
+        $ownerUserId = $media->user_id;
+        $ownerMediaSize = (int) $media->size;
         $path = $media->media_path;
         $thumb = $media->thumbnail_path;
 
         if (! $path) {
-            Log::info("MediaDeletePipeline: Media {$media->id} has no path, skipping deletion");
+            Log::info('MediaDeletePipeline: Media has no path, skipping deletion', [
+                'media_id' => $media->id,
+                'status_id' => $media->status_id,
+                'profile_id' => $media->profile_id,
+                'user_id' => $media->user_id,
+                'mime' => $media->mime,
+                'thumbnail_path' => $media->thumbnail_path,
+                'hls_path' => $media->hls_path,
+            ]);
 
             return 1;
         }
@@ -117,8 +149,19 @@ class MediaDeletePipeline implements ShouldBeUniqueUntilProcessing, ShouldQueue
             }
 
             $media->delete();
+
+            if ($ownerUserId) {
+                UserStorageService::decrementStorageUsed($ownerUserId, $ownerMediaSize);
+            }
         } catch (\Exception $e) {
-            Log::warning("MediaDeletePipeline: Failed to delete media {$media->id}: ".$e->getMessage());
+            Log::warning('MediaDeletePipeline: Failed to delete media', [
+                'media_id' => $media->id,
+                'status_id' => $media->status_id,
+                'media_path' => $path,
+                'thumbnail_path' => $thumb,
+                'hls_path' => $media->hls_path,
+                'error' => $e->getMessage(),
+            ]);
             throw $e;
         }
 

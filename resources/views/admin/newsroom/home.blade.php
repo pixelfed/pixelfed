@@ -47,8 +47,8 @@
                             </td>
                             <td class="font-weight-bold">
                                 <div>
-                                  <p class="mb-0 font-weight-bold">{{str_limit($news->title, 50)}}</p>
-                                  {{-- <p class="mb-0 small">{{str_limit($news->summary, 80)}}</p> --}}
+                                  <p class="mb-0 font-weight-bold">{{Str::limit($news->title, 50)}}</p>
+                                  {{-- <p class="mb-0 small">{{Str::limit($news->summary, 80)}}</p> --}}
                                 </div>
                             </td>
                             <td class="text-muted">

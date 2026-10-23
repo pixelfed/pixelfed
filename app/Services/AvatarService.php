@@ -2,15 +2,15 @@
 
 namespace App\Services;
 
-use App\Avatar;
 use App\Jobs\AvatarPipeline\AvatarStorageLargePurge;
-use App\Profile;
-use Cache;
+use App\Models\Avatar;
+use App\Models\Profile;
 use Exception;
+use Illuminate\Support\Facades\Cache;
+use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
 use League\Flysystem\UnableToCheckDirectoryExistence;
 use League\Flysystem\UnableToRetrieveMetadata;
-use Storage;
 
 class AvatarService
 {
@@ -117,7 +117,7 @@ class AvatarService
             return;
         }
 
-        $curFile = Str::of($avatar->cdn_url)->explode('/')->last();
+        $curFile = Str::afterLast($avatar->cdn_url, '/');
 
         $files = $files->filter(function ($f) use ($curFile) {
             return ! $curFile || ! str_ends_with($f, $curFile);

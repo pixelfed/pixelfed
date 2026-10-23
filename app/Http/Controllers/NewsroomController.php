@@ -2,17 +2,18 @@
 
 namespace App\Http\Controllers;
 
-use App\Newsroom;
-use Auth;
+use App\Models\Newsroom;
+use Illuminate\Contracts\View\View;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Redis;
 use Illuminate\Support\Str;
 
 class NewsroomController extends Controller
 {
-    public function index(Request $request)
+    public function index(Request $request): View
     {
-        if (Auth::check()) {
+        if ($request->user() !== null) {
             $posts = Newsroom::whereNotNull('published_at')->latest()->paginate(9);
         } else {
             $posts = Newsroom::whereNotNull('published_at')
@@ -24,7 +25,7 @@ class NewsroomController extends Controller
         return view('site.news.home', compact('posts'));
     }
 
-    public function show(Request $request, $year, $month, $slug)
+    public function show(Request $request, $year, $month, $slug): View
     {
         $post = Newsroom::whereNotNull('published_at')
             ->whereSlug($slug)
@@ -36,7 +37,7 @@ class NewsroomController extends Controller
         return view('site.news.post.show', compact('post'));
     }
 
-    public function search(Request $request)
+    public function search(Request $request): void
     {
         abort(404);
         $this->validate($request, [
@@ -44,16 +45,16 @@ class NewsroomController extends Controller
         ]);
     }
 
-    public function archive(Request $request)
+    public function archive(Request $request): View
     {
         abort(404);
 
         return view('site.news.archive.index');
     }
 
-    public function timelineApi(Request $request)
+    public function timelineApi(Request $request): JsonResponse
     {
-        abort_if(! Auth::check(), 404);
+        abort_if(! $request->user(), 404);
 
         $key = 'newsroom:read:profileid:'.$request->user()->profile_id;
         $read = Redis::smembers($key);
@@ -77,9 +78,9 @@ class NewsroomController extends Controller
         return response()->json($posts, 200, [], JSON_PRETTY_PRINT);
     }
 
-    public function markAsRead(Request $request)
+    public function markAsRead(Request $request): JsonResponse
     {
-        abort_if(! Auth::check(), 404);
+        abort_if(! $request->user(), 404);
 
         $this->validate($request, [
             'id' => 'required|integer|min:1',

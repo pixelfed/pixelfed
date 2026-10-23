@@ -5,10 +5,11 @@ namespace App\Http\Resources;
 use App\Services\AccountService;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
+use Illuminate\Support\Carbon;
 
 /**
  * @property int $profile_id
- * @property \Illuminate\Support\Carbon $created_at
+ * @property Carbon $created_at
  */
 class StoryView extends JsonResource
 {

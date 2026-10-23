@@ -2,7 +2,7 @@
 
 namespace App\Transformer\Api;
 
-use App\DirectMessage;
+use App\Models\DirectMessage;
 use League\Fractal;
 
 class DirectMessageTransformer extends Fractal\TransformerAbstract

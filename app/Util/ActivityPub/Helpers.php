@@ -2,16 +2,18 @@
 
 namespace App\Util\ActivityPub;
 
-use App\Instance;
 use App\Jobs\AvatarPipeline\RemoteAvatarFetch;
 use App\Jobs\HomeFeedPipeline\FeedInsertRemotePipeline;
+use App\Jobs\InstancePipeline\FetchNodeinfoPipeline;
 use App\Jobs\MediaPipeline\MediaStoragePipeline;
 use App\Jobs\StatusPipeline\StatusReplyPipeline;
 use App\Jobs\StatusPipeline\StatusTagsPipeline;
-use App\Media;
+use App\Models\Instance;
+use App\Models\Media;
 use App\Models\ModeratedProfile;
 use App\Models\Poll;
-use App\Profile;
+use App\Models\Profile;
+use App\Models\Status;
 use App\Services\Account\AccountStatService;
 use App\Services\ActivityPubDeliveryService;
 use App\Services\ActivityPubFetchService;
@@ -21,15 +23,14 @@ use App\Services\MediaPathService;
 use App\Services\NetworkTimelineService;
 use App\Services\SanitizeService;
 use App\Services\UserFilterService;
-use App\Status;
 use App\Util\Media\License;
-use Cache;
 use Carbon\Carbon;
+use Illuminate\Database\UniqueConstraintViolationException;
+use Illuminate\Support\Facades\Cache;
+use Illuminate\Support\Facades\Validator;
 use Illuminate\Validation\Rule;
-use League\Uri\Exceptions\UriException;
 use League\Uri\Uri;
 use Purify;
-use Validator;
 
 class Helpers
 {
@@ -40,6 +41,21 @@ class Helpers
     private const URL_CACHE_PREFIX = 'helpers:url:';
 
     private const FETCH_CACHE_TTL = 15;
+
+    private const MAX_URL_LENGTH = 4096;
+
+    private const DNS_TTL_POSITIVE = 86400;
+
+    private const DNS_TTL_NEGATIVE = 300;
+
+    /**
+     * Maximum number of ancestors a single status fetch may walk up an
+     * inReplyTo chain. Without a bound, a remote server that always answers
+     * with another inReplyTo can hold a worker indefinitely, one outbound
+     * fetch and one statuses row per hop. Anything deeper than this is not
+     * rendered in the UI anyway.
+     */
+    private const MAX_REPLY_DEPTH = 5;
 
     private const LOCALHOST_DOMAINS = [
         'localhost',
@@ -77,17 +93,18 @@ class Helpers
             $data = ['object' => $data];
         }
 
-        $activity = $data['object'];
         $mimeTypes = explode(',', config_cache('pixelfed.media_types'));
         $mediaTypes = in_array('video/mp4', $mimeTypes) ?
             ['Document', 'Image', 'Video'] :
             ['Document', 'Image'];
 
-        if (! isset($activity['attachment']) || empty($activity['attachment'])) {
+        $attachments = self::getAttachments($data);
+
+        if (empty($attachments)) {
             return false;
         }
 
-        return Validator::make($activity['attachment'], [
+        return Validator::make($attachments, [
             '*.type' => ['required', 'string', Rule::in($mediaTypes)],
             '*.url' => 'required|url',
             '*.mediaType' => ['required', 'string', Rule::in($mimeTypes)],
@@ -156,47 +173,82 @@ class Helpers
     }
 
     /**
-     * Validate URL with various security and format checks
+     * Validate a URL that may be used for federation.
      */
-    public static function validateUrl(?string $url, bool $disableDNSCheck = false, bool $forceBanCheck = false): string|bool
-    {
-        if (! $normalizedUrl = self::normalizeUrl($url)) {
+    public static function validateUrl(
+        mixed $url,
+        bool $disableDNSCheck = false,
+        bool $forceBanCheck = false
+    ): string|bool {
+        $url = self::normalizeUrl($url);
+
+        if (! $url) {
             return false;
         }
 
         try {
-            $uri = Uri::new($normalizedUrl);
-
-            if (! self::isValidUri($uri)) {
-                return false;
-            }
-
-            $host = $uri->getHost();
-            if (! self::isValidHost($host)) {
-                return false;
-            }
-
-            if (! $disableDNSCheck && ! self::passesSecurityChecks($host, $disableDNSCheck, $forceBanCheck)) {
-                return false;
-            }
-
-            return $uri->toString();
-
-        } catch (UriException $e) {
+            $uri = Uri::new($url);
+        } catch (\Throwable $e) {
             return false;
         }
+
+        if (! self::isValidUri($uri)) {
+            return false;
+        }
+
+        $host = self::normalizeHost($uri->getHost());
+
+        if (! $host) {
+            return false;
+        }
+
+        try {
+            $uri = $uri->withHost($host);
+        } catch (\Throwable $e) {
+            return false;
+        }
+
+        if ($forceBanCheck || self::shouldCheckBans()) {
+            if (self::isHostBanned($host)) {
+                return false;
+            }
+        }
+
+        if (empty(self::resolvePublicIps($host))) {
+            return false;
+        }
+
+        return $uri->toString();
     }
 
     /**
      * Normalize URL input
      */
-    public static function normalizeUrl(?string $url): ?string
+    public static function normalizeUrl(mixed $url): ?string
     {
-        if (is_array($url) && ! empty($url)) {
-            $url = $url[0];
+        if (is_array($url)) {
+            $url = $url[0] ?? null;
         }
 
-        return (! $url || strlen($url) === 0) ? null : $url;
+        if (! is_string($url)) {
+            return null;
+        }
+
+        $url = trim($url);
+
+        if ($url === '' || strlen($url) > 4096) {
+            return null;
+        }
+
+        if (preg_match('/[\x00-\x20\x7f]/', $url)) {
+            return null;
+        }
+
+        if (str_contains($url, '\\')) {
+            return null;
+        }
+
+        return $url;
     }
 
     /**
@@ -204,7 +256,138 @@ class Helpers
      */
     public static function isValidUri(Uri $uri): bool
     {
-        return $uri && $uri->getScheme() === 'https';
+        if (! $uri) {
+            return false;
+        }
+
+        if (strtolower((string) $uri->getScheme()) !== 'https') {
+            return false;
+        }
+
+        if (! $uri->getHost()) {
+            return false;
+        }
+
+        $userInfo = $uri->getUserInfo();
+
+        if ($userInfo !== null && $userInfo !== '') {
+            return false;
+        }
+
+        $port = $uri->getPort();
+
+        if ($port !== null && ($port < 1 || $port > 65535)) {
+            return false;
+        }
+
+        return true;
+    }
+
+    public static function normalizeHost(?string $host): ?string
+    {
+        if (! is_string($host) || $host === '') {
+            return null;
+        }
+
+        $host = strtolower(rtrim($host, '.'));
+
+        if ($host === '' || strlen($host) > 253) {
+            return null;
+        }
+
+        if (filter_var($host, FILTER_VALIDATE_IP) !== false) {
+            return null;
+        }
+
+        if (preg_match('/[^\x00-\x7f]/', $host)) {
+            if (! function_exists('idn_to_ascii')) {
+                return null;
+            }
+
+            $host = idn_to_ascii(
+                $host,
+                IDNA_DEFAULT,
+                INTL_IDNA_VARIANT_UTS46
+            );
+
+            if (! $host) {
+                return null;
+            }
+
+            $host = strtolower(rtrim($host, '.'));
+        }
+
+        if (! filter_var(
+            $host,
+            FILTER_VALIDATE_DOMAIN,
+            FILTER_FLAG_HOSTNAME
+        )) {
+            return null;
+        }
+
+        if (! str_contains($host, '.')) {
+            return null;
+        }
+
+        if (in_array($host, self::LOCALHOST_DOMAINS, true)) {
+            return null;
+        }
+
+        return $host;
+    }
+
+    private static function lookupPublicIps(string $host): array
+    {
+        $records = @dns_get_record($host.'.', DNS_A | DNS_AAAA);
+
+        if (! is_array($records) || $records === []) {
+            return [];
+        }
+
+        $ips = [];
+
+        foreach ($records as $record) {
+            $ip = $record['ip'] ?? $record['ipv6'] ?? null;
+
+            if (! is_string($ip) || $ip === '' || isset($ips[$ip])) {
+                continue;
+            }
+
+            if (! self::isPublicIp($ip)) {
+                return [];
+            }
+
+            $ips[$ip] = true;
+        }
+
+        return array_keys($ips);
+    }
+
+    public static function resolvePublicIps(string $host): array
+    {
+        $host = self::normalizeHost($host);
+
+        if (! $host) {
+            return [];
+        }
+
+        $key = self::URL_CACHE_PREFIX.'public-ips:'.hash('xxh128', $host);
+
+        $cached = Cache::get($key);
+
+        if (is_array($cached)) {
+            return $cached;
+        }
+
+        $ips = self::lookupPublicIps($host);
+
+        Cache::put(
+            $key,
+            $ips,
+            $ips === [] ? self::DNS_TTL_NEGATIVE : self::DNS_TTL_POSITIVE
+        );
+
+        return $ips;
     }
 
     /**
@@ -229,6 +412,15 @@ class Helpers
         }
 
         return true;
+    }
+
+    public static function isPublicIp(string $ip): bool
+    {
+        return filter_var(
+            $ip,
+            FILTER_VALIDATE_IP,
+            FILTER_FLAG_GLOBAL_RANGE
+        ) !== false;
     }
 
     /**
@@ -256,8 +448,7 @@ class Helpers
      */
     public static function shouldCheckDNS(): bool
     {
-        return app()->environment() === 'production' &&
-               (bool) config('security.url.verify_dns');
+        return app()->environment() === 'production';
     }
 
     /**
@@ -286,9 +477,14 @@ class Helpers
      */
     public static function isHostBanned(string $host): bool
     {
-        $bannedInstances = InstanceService::getBannedDomains();
+        $host = strtolower(rtrim($host, '.'));
 
-        return in_array($host, $bannedInstances);
+        $bannedInstances = array_map(
+            fn ($domain) => strtolower(rtrim($domain, '.')),
+            InstanceService::getBannedDomains()
+        );
+
+        return in_array($host, $bannedInstances, true);
     }
 
     /**
@@ -372,7 +568,7 @@ class Helpers
     {
         try {
             $date = Carbon::parse($timestamp);
-            $now = Carbon::now();
+            $now = now();
             $tenYearsAgo = $now->copy()->subYears(20);
             $isMoreThanTenYearsOld = $date->lt($tenYearsAgo);
             $tomorrow = $now->copy()->addDay();
@@ -386,8 +582,13 @@ class Helpers
 
     /**
      * Fetch or create a status from URL
+     *
+     * $depth counts how many inReplyTo hops we are from the status that
+     * started this resolution. Every recursive call passes $depth + 1 so the
+     * walk terminates at MAX_REPLY_DEPTH regardless of what the remote
+     * server keeps answering.
      */
-    public static function statusFirstOrFetch(string $url, bool $replyTo = false): ?Status
+    public static function statusFirstOrFetch(string $url, bool $replyTo = false, int $depth = 0): ?Status
     {
         if (! $validUrl = self::validateUrl($url)) {
             return null;
@@ -397,7 +598,14 @@ class Helpers
             return $status;
         }
 
-        return self::createStatusFromUrl($url, $replyTo);
+        // Bound how far up an inReplyTo chain a single fetch may walk.
+        // Checked after the DB lookup so a reply to an already-known
+        // status still links even at the limit, but we never fetch past it.
+        if ($depth > self::MAX_REPLY_DEPTH) {
+            return null;
+        }
+
+        return self::createStatusFromUrl($url, $replyTo, $depth);
     }
 
     /**
@@ -425,7 +633,7 @@ class Helpers
     /**
      * Create a new status from ActivityPub data
      */
-    public static function createStatusFromUrl(string $url, bool $replyTo): ?Status
+    public static function createStatusFromUrl(string $url, bool $replyTo, int $depth = 0): ?Status
     {
         $res = self::fetchFromUrl($url);
 
@@ -451,7 +659,7 @@ class Helpers
             return null;
         }
 
-        $reply_to = self::getReplyToId($activity, $profile, $replyTo);
+        $reply_to = self::getReplyToId($activity, $profile, $replyTo, $depth);
         $scope = self::getScope($activity, $url);
         $cw = self::getSensitive($activity, $url);
 
@@ -468,7 +676,7 @@ class Helpers
             );
         }
 
-        return self::storeStatus($url, $profile, $res);
+        return self::storeStatus($url, $profile, $res, $depth);
     }
 
     /**
@@ -477,10 +685,10 @@ class Helpers
     public static function isValidStatusData(?array $res): bool
     {
         return $res &&
-               ! empty($res) &&
-               ! isset($res['error']) &&
-               isset($res['@context']) &&
-               isset($res['published']);
+            ! empty($res) &&
+            ! isset($res['error']) &&
+            isset($res['@context']) &&
+            isset($res['published']);
     }
 
     /**
@@ -548,28 +756,89 @@ class Helpers
      */
     public static function validateStatusUrls(string $url, array $activity): bool
     {
-        $id = isset($activity['id']) ?
-            self::pluckval($activity['id']) :
-            self::pluckval($url);
+        $id = self::extractActivityPubUrl(
+            $activity['id'] ?? $url
+        );
+
+        if (! $id) {
+            return false;
+        }
 
         $idDomain = parse_url($id, PHP_URL_HOST);
         $urlDomain = parse_url($url, PHP_URL_HOST);
 
-        return $idDomain && $urlDomain;
+        if (! is_string($idDomain) || ! is_string($urlDomain)) {
+            return false;
+        }
+
+        if (strcasecmp($idDomain, $urlDomain) !== 0) {
+            return false;
+        }
+
+        $attributedTo = $activity['attributedTo']
+            ?? $activity['object']['attributedTo']
+            ?? null;
+
+        if ($attributedTo !== null) {
+            $author = self::extractActivityPubUrl($attributedTo);
+
+            if (! $author) {
+                return false;
+            }
+
+            $authorDomain = parse_url($author, PHP_URL_HOST);
+
+            if (
+                ! is_string($authorDomain) ||
+                strcasecmp($idDomain, $authorDomain) !== 0
+            ) {
+                return false;
+            }
+        }
+
+        return true;
+    }
+
+    private static function extractActivityPubUrl($value): ?string
+    {
+        $value = self::pluckval($value);
+
+        if (is_string($value)) {
+            return $value !== '' ? $value : null;
+        }
+
+        if (is_array($value)) {
+            foreach ($value as $item) {
+                $item = self::pluckval($item);
+
+                if (is_string($item) && $item !== '') {
+                    return $item;
+                }
+
+                if (is_array($item) && isset($item['id']) && is_string($item['id'])) {
+                    return $item['id'];
+                }
+            }
+        }
+
+        return null;
     }
 
     /**
      * Get reply-to status ID
+     *
+     * Resolves (and fetches if needed) the parent referenced by
+     * object.inReplyTo, one hop deeper than the caller.
      */
-    public static function getReplyToId(array $activity, Profile $profile, bool $replyTo): ?int
+    public static function getReplyToId(array $activity, Profile $profile, bool $replyTo, int $depth = 0): ?int
     {
-        $inReplyTo = $activity['object']['inReplyTo'] ?? null;
+        $inReplyTo = self::pluckval($activity['object']['inReplyTo'] ?? null);
 
-        if (! $inReplyTo && ! $replyTo) {
+        if (! is_string($inReplyTo) || $inReplyTo === '') {
             return null;
         }
 
-        $reply = self::statusFirstOrFetch(self::pluckval($inReplyTo), false);
+        $reply = self::statusFirstOrFetch($inReplyTo, false, $depth + 1);
 
         if (! $reply) {
             return null;
@@ -583,18 +852,31 @@ class Helpers
     /**
      * Store a new regular status
      */
-    public static function storeStatus(string $url, Profile $profile, array $activity): Status
+    public static function storeStatus(string $url, Profile $profile, array $activity, int $depth = 0): Status
     {
         $id = self::getStatusId($activity, $url);
         $url = self::getStatusUrl($activity, $id);
 
         if ((! isset($activity['type']) ||
-             in_array($activity['type'], ['Create', 'Note'])) &&
-            ! self::validateStatusDomains($id, $url)) {
-            throw new \Exception('Invalid status domains');
+                in_array($activity['type'], ['Create', 'Note'])) &&
+            ! self::validateStatusDomains($id, $url)
+        ) {
+            throw new \Exception(json_encode([
+                'message' => 'Invalid status domains',
+                'checked' => [
+                    'id' => $id,
+                    'id_host' => parse_url($id, PHP_URL_HOST),
+                    'id_valid_url' => self::validateUrl($id),
+                    'url' => $url,
+                    'url_host' => parse_url($url, PHP_URL_HOST),
+                    'url_valid_url' => self::validateUrl($url),
+                ],
+                'expected' => 'id host and url host to be valid and match (case-insensitive)',
+                'payload' => $activity,
+            ]));
         }
 
-        $reply_to = self::getReplyTo($activity);
+        $reply_to = self::getReplyTo($activity, $depth);
         $ts = self::pluckval($activity['published']);
         $scope = self::getScope($activity, $url);
         $commentsDisabled = isset($activity['commentsEnabled']) ? (bool) $activity['commentsEnabled'] == false : false;
@@ -649,7 +931,14 @@ class Helpers
      */
     public static function validateStatusDomains(string $id, string $url): bool
     {
-        return self::validateUrl($id) && self::validateUrl($url);
+        if (! self::validateUrl($id) || ! self::validateUrl($url)) {
+            return false;
+        }
+
+        $idDomain = parse_url($id, PHP_URL_HOST);
+        $urlDomain = parse_url($url, PHP_URL_HOST);
+
+        return $idDomain && $urlDomain && strtolower($idDomain) === strtolower($urlDomain);
     }
 
     /**
@@ -698,7 +987,8 @@ class Helpers
      */
     public static function handleStatusPostProcessing(Status $status, int $profileId, string $url): void
     {
-        if (config('instance.timeline.network.cached') &&
+        if (
+            config('instance.timeline.network.cached') &&
             self::isEligibleForNetwork($status)
         ) {
             $urlDomain = parse_url($url, PHP_URL_HOST);
@@ -711,7 +1001,8 @@ class Helpers
 
         AccountStatService::incrementPostCount($profileId);
 
-        if ($status->in_reply_to_id === null &&
+        if (
+            $status->in_reply_to_id === null &&
             in_array($status->type, ['photo', 'photo:album', 'video', 'video:album', 'photo:video:album'])
         ) {
             FeedInsertRemotePipeline::dispatch($status->id, $profileId)
@@ -725,10 +1016,10 @@ class Helpers
     public static function isEligibleForNetwork(Status $status): bool
     {
         return $status->in_reply_to_id === null &&
-               $status->reblog_of_id === null &&
-               in_array($status->type, ['photo', 'photo:album', 'video', 'video:album', 'photo:video:album']) &&
-               $status->created_at->gt(now()->subHours(config('instance.timeline.network.max_hours_old'))) &&
-               (config('instance.hide_nsfw_on_public_feeds') ? ! $status->is_nsfw : true);
+            $status->reblog_of_id === null &&
+            in_array($status->type, ['photo', 'photo:album', 'video', 'video:album', 'photo:video:album']) &&
+            $status->created_at->gt(now()->subHours(config('instance.timeline.network.max_hours_old'))) &&
+            (config('instance.hide_nsfw_on_public_feeds') ? ! $status->is_nsfw : true);
     }
 
     /**
@@ -759,23 +1050,22 @@ class Helpers
         return $cw;
     }
 
-    public static function getReplyTo($activity)
+    /**
+     * Resolve the parent status id for an object's inReplyTo, one hop deeper
+     * than the caller. Shares the same depth bound as getReplyToId so the
+     * storeStatus path cannot restart the walk from zero.
+     */
+    public static function getReplyTo($activity, int $depth = 0)
     {
-        $reply_to = null;
-        $inReplyTo = isset($activity['inReplyTo']) && ! empty($activity['inReplyTo']) ?
+        $inReplyTo = ! empty($activity['inReplyTo']) ?
             self::pluckval($activity['inReplyTo']) :
-            false;
+            null;
 
-        if ($inReplyTo) {
-            $reply_to = self::statusFirstOrFetch($inReplyTo);
-            if ($reply_to) {
-                $reply_to = optional($reply_to)->id;
-            }
-        } else {
-            $reply_to = null;
+        if (! is_string($inReplyTo) || $inReplyTo === '') {
+            return null;
         }
 
-        return $reply_to;
+        return self::statusFirstOrFetch($inReplyTo, false, $depth + 1)?->id;
     }
 
     public static function getScope($activity, $url)
@@ -890,7 +1180,9 @@ class Helpers
             }
 
             $mediaModel = self::createMediaAttachment($media, $status, $key);
-            self::handleMediaStorage($mediaModel);
+            if ($mediaModel) {
+                self::handleMediaStorage($mediaModel);
+            }
         }
 
         $status->viewType();
@@ -901,9 +1193,25 @@ class Helpers
      */
     public static function getAttachments(array $data): array
     {
-        return isset($data['object']) ?
-            $data['object']['attachment'] :
-            $data['attachment'];
+        $object = isset($data['object']) ?
+            $data['object'] :
+            $data;
+
+        if (
+            ! is_array($object) ||
+            ! isset($object['attachment']) ||
+            empty($object['attachment']) ||
+            ! is_array($object['attachment'])
+        ) {
+            return [];
+        }
+
+        // JSON-LD compaction can collapse a single-item attachment array into a
+        // bare object. Normalize both shapes to a list so callers can iterate
+        // uniformly (pixelfed#6588).
+        return array_is_list($object['attachment']) ?
+            $object['attachment'] :
+            [$object['attachment']];
     }
 
     /**
@@ -915,20 +1223,39 @@ class Helpers
         $url = $media['url'];
 
         return in_array($type, $allowedTypes) &&
-               self::validateUrl($url);
+            self::validateUrl($url);
     }
 
     /**
-     * Create media attachment record
+     * Create media attachment record.
+     *
+     * Idempotent on the (status_id, media_path) unique key: if a row already
+     * exists (e.g. a re-fetch, an Announce racing another inbox job, or a
+     * duplicate url within one activity's attachments) the existing row is
+     * returned instead of triggering a duplicate-key violation.
+     *
+     * @return Media|null the newly created model, or null when the attachment
+     *                    already existed (so the caller can skip re-storage)
      */
-    public static function createMediaAttachment(array $media, Status $status, int $key): Media
+    public static function createMediaAttachment(array $media, Status $status, int $key): ?Media
     {
+        // Fast path: already imported for this status.
+        if (Media::whereStatusId($status->id)->whereMediaPath($media['url'])->exists()) {
+            return null;
+        }
+
         $mediaModel = new Media;
 
         self::setBasicMediaAttributes($mediaModel, $media, $status, $key);
         self::setOptionalMediaAttributes($mediaModel, $media);
 
-        $mediaModel->save();
+        try {
+            $mediaModel->save();
+        } catch (UniqueConstraintViolationException $e) {
+            // Lost a race with a concurrent inbox job that inserted the same
+            // (status_id, media_path). Treat as already-imported.
+            return null;
+        }
 
         return $mediaModel;
     }
@@ -1133,11 +1460,20 @@ class Helpers
     {
         $profile = Profile::whereRemoteUrl($url)->first();
 
-        if ($profile && ! self::needsFetch($profile)) {
+        if (! $profile) {
+            return self::profileUpdateOrCreate($url);
+        }
+
+        if (! self::needsFetch($profile)) {
             return $profile;
         }
 
-        return self::profileUpdateOrCreate($url);
+        // Attempt a refresh, but fall back to the existing profile if it fails
+        // (network/validation error). Discarding a known-good profile here
+        // caused null dereferences in downstream activity handlers.
+        $refreshed = self::profileUpdateOrCreate($url);
+
+        return $refreshed ?? $profile;
     }
 
     /**
@@ -1146,7 +1482,7 @@ class Helpers
     public static function needsFetch(?Profile $profile): bool
     {
         return ! $profile?->last_fetched_at ||
-               $profile->last_fetched_at->lt(now()->subHours(24));
+            $profile->last_fetched_at->lt(now()->subHours(24));
     }
 
     /**
@@ -1200,7 +1536,29 @@ class Helpers
         $urlDomain = parse_url($url, PHP_URL_HOST);
         $domain = parse_url($res['id'], PHP_URL_HOST);
 
-        return strtolower($urlDomain) === strtolower($domain);
+        if (strtolower($urlDomain) !== strtolower($domain)) {
+            return false;
+        }
+
+        // The actor's key_id (publicKey.id) must live on the same host as the
+        // actor id. Without this, a remote actor could advertise a publicKey.id
+        // pointing at a victim's keyId URI, planting a poisoned
+        // key_id -> attacker-public-key binding in the unique profiles.key_id
+        // column. This mirrors the same-host check UpdatePersonValidator already
+        // enforces on the Update pipeline.
+        if (isset($res['publicKey']['id'])) {
+            if (! self::validateUrl($res['publicKey']['id'])) {
+                return false;
+            }
+
+            $keyDomain = parse_url($res['publicKey']['id'], PHP_URL_HOST);
+
+            if (strtolower($keyDomain) !== strtolower($domain)) {
+                return false;
+            }
+        }
+
+        return true;
     }
 
     /**
@@ -1235,7 +1593,7 @@ class Helpers
         $instance = Instance::updateOrCreate(['domain' => $domain]);
 
         if ($instance->wasRecentlyCreated) {
-            \App\Jobs\InstancePipeline\FetchNodeinfoPipeline::dispatch($instance)
+            FetchNodeinfoPipeline::dispatch($instance)
                 ->onQueue('low');
         }
 
@@ -1282,7 +1640,8 @@ class Helpers
      */
     public static function handleProfileAvatar(Profile $profile): void
     {
-        if (! $profile->last_fetched_at ||
+        if (
+            ! $profile->last_fetched_at ||
             $profile->last_fetched_at->lt(now()->subMonths(3))
         ) {
             RemoteAvatarFetch::dispatch($profile);
@@ -1294,6 +1653,10 @@ class Helpers
 
     public static function profileFetch($url): ?Profile
     {
+        if ($url === null) {
+            return null;
+        }
+
         return self::profileFirstOrNew($url);
     }
 

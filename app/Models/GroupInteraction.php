@@ -9,7 +9,10 @@ class GroupInteraction extends Model
 {
     use HasFactory;
 
-    protected $casts = [
-        'metadata' => 'array',
-    ];
+    protected function casts(): array
+    {
+        return [
+            'metadata' => 'array',
+        ];
+    }
 }

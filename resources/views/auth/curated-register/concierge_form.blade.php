@@ -5,7 +5,7 @@
     <div class="row justify-content-center align-items-center">
         <div class="col-12 col-md-7">
             <div class="logo">
-                <img src="/img/pixelfed-icon-color.svg" width="40" height="40" alt="Pixelfed Logo">
+                <img src="{{ config('app.logo') }}" width="40" height="40" alt="Pixelfed Logo">
                 <p class="font-weight-bold mb-0">Pixelfed</p>
             </div>
 
@@ -47,11 +47,7 @@
                         <span id="charCount" class="text-white">0</span>/<span>1000</span>
                     </div>
                 </div>
-                @if($showCaptcha)
-                <div class="d-flex justify-content-center my-3">
-                    {!! Captcha::display() !!}
-                </div>
-                @endif
+                <x-captcha :show="$showCaptcha" />
                 <div class="text-center">
                     <button class="btn btn-primary font-weight-bold rounded-pill px-5">Submit my response</button>
                 </div>

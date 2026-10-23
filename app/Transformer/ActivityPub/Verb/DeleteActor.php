@@ -2,22 +2,24 @@
 
 namespace App\Transformer\ActivityPub\Verb;
 
-use App\Profile;
+use App\Models\Profile;
 use League\Fractal;
 
 class DeleteActor extends Fractal\TransformerAbstract
 {
     public function transform(Profile $profile)
     {
+        $actorId = $profile->permalink();
+
         return [
             '@context' => 'https://www.w3.org/ns/activitystreams',
-            'id' => $profile->permalink('#delete'),
+            'id' => $actorId.'#delete',
             'type' => 'Delete',
-            'actor' => $profile->permalink(),
-            'to' => [
-                'https://www.w3.org/ns/activitystreams#Public',
+            'actor' => $actorId,
+            'object' => [
+                'id' => $actorId,
+                'type' => 'Person',
             ],
-            'object' => $profile->permalink(),
         ];
     }
 }

@@ -2,7 +2,7 @@
 
 namespace App\Services;
 
-use App\Mention;
+use App\Models\Mention;
 
 class StatusMentionService
 {

@@ -1,5 +1,5 @@
 @php
-$id = str_random(14);
+$id = Str::random(14);
 @endphp
 <h1 class="text-center">Before you continue.</h1>
 @if(config_cache('app.rules') && strlen(config_cache('app.rules')) > 5)
@@ -7,7 +7,7 @@ $id = str_random(14);
 
 @include('auth.curated-register.partials.server-rules')
 @else
-<p class="lead text-center mt-4"><span class="opacity-5">The admins have not specified any community rules, however we suggest youreview the</span> <a href="/site/terms" target="_blank" class="text-white font-weight-bold">Terms of Use</a> <span class="opacity-5">and</span> <a href="/site/privacy" target="_blank" class="text-white font-weight-bold">Privacy Policy</a>.</p>
+<p class="lead text-center mt-4"><span class="opacity-5">The admins have not specified any community rules, however we suggest you review the</span> <a href="/site/terms" target="_blank" class="text-white font-weight-bold">Terms of Use</a> <span class="opacity-5">and</span> <a href="/site/privacy" target="_blank" class="text-white font-weight-bold">Privacy Policy</a>.</p>
 @endif
 
 <div class="action-btns">

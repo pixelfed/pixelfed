@@ -51,6 +51,14 @@
 			      </div>
 			    </div>
 			    <div class="form-group row">
+			      <div class="col-sm-9 offset-sm-3">
+			        <div class="form-check">
+			          <input type="checkbox" class="form-check-input" id="revokeSessions" name="revoke_sessions" value="1">
+			          <label class="form-check-label font-weight-bold" for="revokeSessions">Revoke and log-out all existing sessions</label>
+			        </div>
+			      </div>
+			    </div>
+			    <div class="form-group row">
 			      <div class="col-12 text-right">
 			        <button type="submit" class="btn btn-primary font-weight-bold py-0 px-5">{{__('settings.submit')}}</button>
 			      </div>

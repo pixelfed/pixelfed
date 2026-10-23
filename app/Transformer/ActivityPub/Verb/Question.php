@@ -2,7 +2,7 @@
 
 namespace App\Transformer\ActivityPub\Verb;
 
-use App\Status;
+use App\Models\Status;
 use App\Util\Lexer\Autolink;
 use Illuminate\Support\Str;
 use League\Fractal;

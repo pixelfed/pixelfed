@@ -2,12 +2,12 @@
 
 namespace App\Services;
 
-use App\Hashtag;
-use App\Profile;
-use App\Status;
+use App\Models\Hashtag;
+use App\Models\Profile;
+use App\Models\Status;
 use App\Transformer\Api\AccountTransformer;
 use App\Util\ActivityPub\Helpers;
-use DB;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Str;
 use League\Fractal;
 use League\Fractal\Serializer\ArraySerializer;
@@ -99,7 +99,7 @@ class SearchApiV2Service
                 )
             );
         }
-        $operator = config('database.default') === 'pgsql' ? 'ilike' : 'like';
+        $operator = db_is_pgsql() ? 'ilike' : 'like';
         $results = Profile::select('username', 'id', 'followers_count', 'domain')
             ->where('username', $operator, $query)
             ->orWhere('webfinger', $operator, $webfingerQuery)
@@ -132,7 +132,7 @@ class SearchApiV2Service
         $query = Str::startsWith($q, '#') ? substr($q, 1) : $q;
         $query = $query.'%';
 
-        if (config('database.default') === 'pgsql') {
+        if (db_is_pgsql()) {
             $baseQuery = Hashtag::query()
                 ->where('name', 'ilike', $query)
                 ->where('is_banned', false)
@@ -236,11 +236,16 @@ class SearchApiV2Service
                 return $this->resolveLocalProfile();
             }
         } else {
-            if (! Helpers::validateUrl($query) && strpos($query, '@') == -1) {
+            if (! Helpers::validateUrl($query) && strpos($query, '@') === false) {
                 return $default;
             }
 
-            if (! Str::startsWith($query, 'http') && Str::substrCount($query, '@') == 1 && strpos($query, '@') !== 0) {
+            if (
+                ! Str::startsWith($query, 'http') &&
+                Str::substrCount($query, '@') == 1 &&
+                strpos($query, '@') !== false &&
+                strpos($query, '@') !== 0
+            ) {
                 try {
                     $res = WebfingerService::lookup('@'.$query, $mastodonMode);
                 } catch (\Exception $e) {

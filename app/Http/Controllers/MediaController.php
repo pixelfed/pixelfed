@@ -2,22 +2,23 @@
 
 namespace App\Http\Controllers;
 
-use App\Media;
+use App\Models\Media;
+use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 
 class MediaController extends Controller
 {
-    public function index(Request $request)
+    public function index(Request $request): void
     {
         abort(404);
     }
 
-    public function composeUpdate(Request $request, $id)
+    public function composeUpdate(Request $request, $id): void
     {
         abort(400, 'Endpoint deprecated');
     }
 
-    public function fallbackRedirect(Request $request, $pid, $mhash, $uhash, $f)
+    public function fallbackRedirect(Request $request, $pid, $mhash, $uhash, $f): RedirectResponse
     {
         if (! (bool) config_cache('pixelfed.cloud_storage')) {
             return redirect('/storage/no-preview.png', 302);

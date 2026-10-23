@@ -3,6 +3,7 @@
 namespace App\Transformer\Api;
 
 use App\Models\CustomEmoji;
+use App\Models\Status;
 use App\Services\AccountService;
 use App\Services\HashidService;
 use App\Services\LikeService;
@@ -10,10 +11,8 @@ use App\Services\MediaService;
 use App\Services\MediaTagService;
 use App\Services\PollService;
 use App\Services\StatusHashtagService;
-use App\Services\StatusLabelService;
 use App\Services\StatusMentionService;
 use App\Services\StatusService;
-use App\Status;
 use App\Util\Lexer\Autolink;
 use League\Fractal;
 
@@ -62,7 +61,6 @@ class StatusStatelessTransformer extends Fractal\TransformerAbstract
             'place' => $status->place,
             'local' => (bool) $status->local,
             'taggedPeople' => $taggedPeople,
-            'label' => StatusLabelService::get($status),
             'liked_by' => LikeService::likedBy($status),
             'media_attachments' => MediaService::get($status->id),
             'account' => AccountService::get($status->profile_id, true),

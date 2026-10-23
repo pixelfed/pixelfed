@@ -2,7 +2,7 @@
 
 namespace App\Transformer\Api;
 
-use App\Instance;
+use App\Models\Instance;
 use League\Fractal;
 
 class InstanceTransformer extends Fractal\TransformerAbstract

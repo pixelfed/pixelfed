@@ -5,9 +5,7 @@ namespace App\Services;
 use App\Models\GroupComment;
 use App\Models\GroupPost;
 use App\Transformer\Api\GroupPostTransformer;
-use Cache;
-use League\Fractal;
-use League\Fractal\Serializer\ArraySerializer;
+use Illuminate\Support\Facades\Cache;
 
 class GroupPostService
 {
@@ -32,10 +30,7 @@ class GroupPostService
                 return null;
             }
 
-            $fractal = new Fractal\Manager;
-            $fractal->setSerializer(new ArraySerializer);
-            $resource = new Fractal\Resource\Item($gp, new GroupPostTransformer);
-            $res = $fractal->createData($resource)->toArray();
+            $res = FractalService::item($gp, new GroupPostTransformer);
 
             $res['pf_type'] = $gp['type'];
             $res['url'] = $gp->url();

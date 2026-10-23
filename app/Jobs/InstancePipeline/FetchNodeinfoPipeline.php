@@ -2,8 +2,8 @@
 
 namespace App\Jobs\InstancePipeline;
 
-use App\Instance;
-use App\Profile;
+use App\Models\Instance;
+use App\Models\Profile;
 use App\Services\NodeinfoService;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldBeUniqueUntilProcessing;

@@ -3,18 +3,18 @@
 namespace App\Http\Controllers;
 
 use App\Models\ConfigCache;
+use App\Models\User;
 use App\Services\AccountService;
 use App\Services\InstanceService;
 use App\Services\StatusService;
-use App\User;
-use Cache;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
-use Illuminate\Support\Str;
-use Storage;
+use Illuminate\Support\Facades\Cache;
+use Illuminate\Support\Facades\Storage;
 
 class PixelfedDirectoryController extends Controller
 {
-    public function get(Request $request)
+    public function get(Request $request): JsonResponse
     {
         if (! $request->filled('sk')) {
             abort(404);
@@ -88,20 +88,17 @@ class PixelfedDirectoryController extends Controller
         $curatedOnboarding = (bool) config_cache('instance.curated_registration.enabled');
         $res['curated_onboarding'] = $curatedOnboarding;
 
-        $oauthEnabled = ConfigCache::whereK('pixelfed.oauth_enabled')->first();
-        if ($oauthEnabled) {
-            $keys = (file_exists(storage_path('oauth-public.key')) || config_cache('passport.public_key')) &&
-                (file_exists(storage_path('oauth-private.key')) || config_cache('passport.private_key'));
-            $res['oauth_enabled'] = (bool) $oauthEnabled && $keys;
-        }
+        // Cast the stored config value (not the ConfigCache model, which as an
+        // object always casts to true) so these flags reflect the admin's
+        // settings, matching AdminDirectoryController::buildListing().
+        $res['oauth_enabled'] = (bool) config_cache('pixelfed.oauth_enabled') &&
+            (file_exists(storage_path('oauth-public.key')) || config_cache('passport.public_key')) &&
+            (file_exists(storage_path('oauth-private.key')) || config_cache('passport.private_key'));
 
-        $activityPubEnabled = ConfigCache::whereK('federation.activitypub.enabled')->first();
-        if ($activityPubEnabled) {
-            $res['activitypub_enabled'] = (bool) $activityPubEnabled;
-        }
+        $res['activitypub_enabled'] = (bool) config_cache('federation.activitypub.enabled');
 
         $res['feature_config'] = [
-            'media_types' => Str::of(config_cache('pixelfed.media_types'))->explode(','),
+            'media_types' => explode(',', config_cache('pixelfed.media_types')),
             'image_quality' => config_cache('pixelfed.image_quality'),
             'optimize_image' => (bool) config_cache('pixelfed.optimize_image'),
             'max_photo_size' => config_cache('pixelfed.max_photo_size'),
@@ -143,7 +140,8 @@ class PixelfedDirectoryController extends Controller
 
         $statusesCount = InstanceService::totalLocalStatuses();
         $usersCount = Cache::remember('api:nodeinfo:users', 43200, function () {
-            return UUser::whereNull('status')->count(); # Only get null status - these are the "active" users
+            // GLITCH MODIFIED: count only active users (null status)
+            return User::whereNull('status')->count(); # Only get null status - these are the "active" users
         });
         $res['stats'] = [
             'user_count' => (int) $usersCount,

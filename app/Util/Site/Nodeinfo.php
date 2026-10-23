@@ -2,8 +2,8 @@
 
 namespace App\Util\Site;
 
+use App\Models\User;
 use App\Services\InstanceService;
-use App\User;
 use Illuminate\Support\Facades\Cache;
 
 class Nodeinfo
@@ -15,24 +15,29 @@ class Nodeinfo
             $activeMonth = self::activeUsersMonthly();
 
             $users = Cache::remember('api:nodeinfo:users', 43200, function () {
+                // GLITCH MODIFIED: count only active users (null status)
                 return User::whereNull('status')->count(); # Only get null status - these are the "active" users
             });
 
+            // GLITCH MODIFIED START: optional "real" post count (GLITCH_LANDING_REALSTATCOUNT)
             if ((bool) config('instance.glitch.real_stat_count') == true) {
                 $postCount = InstanceService::totalRealLocalStatuses();
             } else {
+            // GLITCH MODIFIED END
                 $postCount = InstanceService::totalLocalStatuses();
             }
-    
-            $features = ['features' => \App\Util\Site\Config::get()['features']];
+
+            $features = ['features' => Config::get()['features']];
             unset($features['features']['hls']);
 
             return [
                 'metadata' => [
                     'nodeName' => config_cache('app.name'),
                     'software' => [
+                        // GLITCH MODIFIED START: glitch homepage/repo
                         'homepage'  => 'https://pixelfed-glitch.github.io/docs',
                         'repo'      => 'https://github.com/pixelfed-glitch/pixelfed',
+                        // GLITCH MODIFIED END
                     ],
                     'config' => $features,
                 ],
@@ -48,6 +53,7 @@ class Nodeinfo
                     'version' => config('pixelfed.version'),
                 ],
                 'usage' => [
+                    // GLITCH MODIFIED: "real" post count switch
                     'localPosts' => (int) $postCount,
                     'localComments' => 0,
                     'users' => [

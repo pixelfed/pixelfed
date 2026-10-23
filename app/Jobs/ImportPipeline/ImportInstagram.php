@@ -2,20 +2,20 @@
 
 namespace App\Jobs\ImportPipeline;
 
-use App\ImportData;
-use App\ImportJob;
 use App\Jobs\ImageOptimizePipeline\ImageOptimize;
-use App\Media;
-use App\Profile;
-use App\Status;
+use App\Models\ImportData;
+use App\Models\ImportJob;
+use App\Models\Media;
+use App\Models\Profile;
+use App\Models\Status;
 use Carbon\Carbon;
-use DB;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Filesystem\Filesystem;
 use Illuminate\Foundation\Bus\Dispatchable;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
+use Illuminate\Support\Facades\DB;
 
 class ImportInstagram implements ShouldQueue
 {
@@ -51,9 +51,27 @@ class ImportInstagram implements ShouldQueue
             return;
         }
 
-        $job = ImportJob::findOrFail($this->import->id);
-        $profile = Profile::findOrFail($job->profile_id);
+        $job = ImportJob::find($this->import->id);
+        if (! $job) {
+            return;
+        }
+
+        // The profile may have been soft-deleted (e.g. account deletion) after
+        // this job was queued. findOrFail would throw inside handle() and the
+        // job would retry until it lands in failed_jobs; drop it cleanly instead.
+        $profile = Profile::find($job->profile_id);
+        if (! $profile) {
+            $job->delete();
+
+            return;
+        }
+
         $user = $profile->user;
+        if (! $user) {
+            $job->delete();
+
+            return;
+        }
         $json = $job->mediaJson();
         $collection = array_reverse($json['photos']);
         $files = $job->files;
@@ -67,7 +85,7 @@ class ImportInstagram implements ShouldQueue
                 $min = Carbon::create(2010, 10, 6, 0, 0, 0);
                 $taken_at = Carbon::parse($import['taken_at']);
                 if (! $min->lt($taken_at)) {
-                    $taken_at = Carbon::now();
+                    $taken_at = now();
                 }
             } catch (\Exception $e) {
 
@@ -121,7 +139,7 @@ class ImportInstagram implements ShouldQueue
             });
         }
 
-        $job->completed_at = Carbon::now();
+        $job->completed_at = now();
         $job->save();
     }
 }

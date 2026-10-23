@@ -11,6 +11,7 @@
                 </div>
             </div>
             <div class="row">
+                {{-- GLITCH MODIFIED: narrower cards to fit the extra "Local posts" card --}}
                 <div class="col-xl-2 col-md-2">
                     <div class="card card-stats">
                         <div class="card-body">
@@ -18,7 +19,7 @@
                                 <div class="col">
                                     <h5 class="card-title text-uppercase text-muted mb-0">Total posts</h5>
                                     <span class="h2 font-weight-bold mb-0">{{$data['statuses']}}</span>
-                                </div>                     
+                                </div>
                                 <div class="col-auto">
                                     <div class="icon icon-shape bg-gradient-primary text-white rounded-circle shadow">
                                         <i class="ni ni-image"></i>
@@ -32,6 +33,7 @@
                         </div>
                     </div>
                 </div>
+                {{-- GLITCH MODIFIED START: "Local posts" card (real post count) --}}
                 <div class="col-xl-2 col-md-2">
                     <div class="card card-stats">
                         <div class="card-body">
@@ -39,7 +41,7 @@
                                 <div class="col">
                                     <h5 class="card-title text-uppercase text-muted mb-0">Local posts</h5>
                                     <span class="h2 font-weight-bold mb-0">{{$data['real_statuses']}}</span>
-                                </div>                     
+                                </div>
                                 <div class="col-auto">
                                     <div class="icon icon-shape bg-gradient-primary text-white rounded-circle shadow">
                                         <i class="ni ni-image"></i>
@@ -52,7 +54,9 @@
                             </p>
                         </div>
                     </div>
-                </div>                
+                </div>
+                {{-- GLITCH MODIFIED END --}}
+                {{-- GLITCH MODIFIED: narrower cards to fit the extra "Local posts" card --}}
                 <div class="col-xl-2 col-md-2">
                     <div class="card card-stats">
                         <div class="card-body">
@@ -74,6 +78,7 @@
                         </div>
                     </div>
                 </div>
+                {{-- GLITCH MODIFIED: narrower cards to fit the extra "Local posts" card --}}
                 <div class="col-xl-2 col-md-2">
                     <div class="card card-stats">
                         <div class="card-body">
@@ -95,6 +100,7 @@
                         </div>
                     </div>
                 </div>
+                {{-- GLITCH MODIFIED: narrower cards to fit the extra "Local posts" card --}}
                 <div class="col-xl-2 col-md-2">
                     <div class="card card-stats">
                         <div class="card-body">

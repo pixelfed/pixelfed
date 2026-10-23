@@ -2,21 +2,32 @@
 
 namespace App\Http\Controllers;
 
-use App\Follower;
 use App\Http\Resources\ImportStatus;
+use App\Models\Follower;
 use App\Models\ImportPost;
+use App\Models\User;
 use App\Services\ImportService;
-use App\User;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
+use Illuminate\Http\UploadedFile;
+use Illuminate\Support\Facades\Log;
 
 class ImportPostController extends Controller
 {
+    public const ALLOWED_EXTENSIONS = [
+        'image/jpeg' => ['jpg', 'jpeg'],
+        'image/jpg' => ['jpg', 'jpeg'],
+        'image/png' => ['png'],
+        'image/webp' => ['webp'],
+        'video/mp4' => ['mp4'],
+    ];
+
     public function __construct()
     {
         $this->middleware('auth');
     }
 
-    public function getConfig(Request $request)
+    public function getConfig(Request $request): array
     {
         return [
             'enabled' => config('import.instagram.enabled'),
@@ -41,7 +52,7 @@ class ImportPostController extends Controller
         ];
     }
 
-    public function getProcessingCount(Request $request)
+    public function getProcessingCount(Request $request): JsonResponse
     {
         abort_unless(config('import.instagram.enabled'), 404);
 
@@ -61,7 +72,7 @@ class ImportPostController extends Controller
         ]);
     }
 
-    public function getImportedFiles(Request $request)
+    public function getImportedFiles(Request $request): JsonResponse
     {
         abort_unless(config('import.instagram.enabled'), 404);
 
@@ -95,7 +106,7 @@ class ImportPostController extends Controller
         return preg_replace($groupedHashtagRegex, '$0 ', $val);
     }
 
-    public function store(Request $request)
+    public function store(Request $request): array
     {
         abort_unless(config('import.instagram.enabled'), 404);
         $this->checkPermissions($request);
@@ -147,9 +158,9 @@ class ImportPostController extends Controller
                     ];
                 })->toArray();
 
-                $ip->caption = $c->count() > 1 ?
+                $ip->caption = strip_tags($c->count() > 1 ?
                     $this->formatHashtags($file['title'] ?? '') :
-                    $this->formatHashtags($ip->media[0]['title'] ?? '');
+                    $this->formatHashtags($ip->media[0]['title'] ?? ''));
 
                 $originalFilename = last(explode('/', $ip->media[0]['uri'] ?? ''));
                 $ip->filename = $this->sanitizeFilename($originalFilename);
@@ -162,8 +173,7 @@ class ImportPostController extends Controller
                 })->toArray();
 
                 $creationTimestamp = $c->count() > 1 ?
-                    ($file['creation_timestamp'] ?? null) :
-                    ($media[0]['creation_timestamp'] ?? null);
+                    ($file['creation_timestamp'] ?? null) : ($media[0]['creation_timestamp'] ?? null);
 
                 if ($creationTimestamp) {
                     $ip->creation_date = now()->parse($creationTimestamp);
@@ -184,7 +194,7 @@ class ImportPostController extends Controller
                 ImportService::getPostCount($pid, true);
             } catch (\Exception $e) {
                 $errors[] = $e->getMessage();
-                \Log::error('Import error: '.$e->getMessage());
+                Log::error('Import error: '.$e->getMessage());
 
                 continue;
             }
@@ -197,7 +207,7 @@ class ImportPostController extends Controller
         ];
     }
 
-    public function storeMedia(Request $request)
+    public function storeMedia(Request $request): array
     {
         abort_unless(config('import.instagram.enabled'), 404);
 
@@ -222,6 +232,20 @@ class ImportPostController extends Controller
                 'file',
                 $mimes,
                 'max:'.config_cache('pixelfed.max_photo_size'),
+                function ($attribute, $value, $fail) {
+                    if (! $value instanceof UploadedFile) {
+                        $fail('The '.$attribute.' must be a file.');
+
+                        return;
+                    }
+
+                    $mime = $value->getMimeType();
+                    $ext = strtolower($value->getClientOriginalExtension());
+
+                    if (! in_array($ext, self::ALLOWED_EXTENSIONS[$mime] ?? [], true)) {
+                        $fail('The '.$attribute.' extension does not match its content.');
+                    }
+                },
             ],
         ]);
 
@@ -245,7 +269,7 @@ class ImportPostController extends Controller
         ];
     }
 
-    private function determinePostType($exts)
+    private function determinePostType($exts): string
     {
         if ($exts->count() > 1) {
             if ($exts->contains('mp4')) {
@@ -274,7 +298,7 @@ class ImportPostController extends Controller
         }
     }
 
-    private function sanitizeFilename($filename)
+    private function sanitizeFilename($filename): string
     {
         $parts = explode('.', $filename);
         $extension = array_pop($parts);
@@ -285,7 +309,7 @@ class ImportPostController extends Controller
         return $safeFilename.'.'.$extension;
     }
 
-    protected function checkPermissions($request, $abortOnFail = true)
+    protected function checkPermissions($request, $abortOnFail = true): bool
     {
         $user = $request->user();
 
@@ -297,7 +321,7 @@ class ImportPostController extends Controller
             if (! $abortOnFail) {
                 return true;
             } else {
-                return;
+                return true;
             }
         }
 
@@ -395,5 +419,7 @@ class ImportPostController extends Controller
         if (! $abortOnFail) {
             return true;
         }
+
+        return true;
     }
 }

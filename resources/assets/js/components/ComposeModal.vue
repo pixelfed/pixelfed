@@ -1249,6 +1249,21 @@ export default {
                             self.page = 2;
                         break;
 
+                        case 422:
+                            let validationMsg = '';
+                            if (e.response.data && e.response.data.errors) {
+                                let errors = e.response.data.errors;
+                                let messages = Object.values(errors).flat();
+                                validationMsg = (fileInfo.file.name ? fileInfo.file.name + ':\n' : '') + messages.join('\n');
+                            } else if (e.response.data && e.response.data.message) {
+                                validationMsg = (fileInfo.file.name ? fileInfo.file.name + ': ' : '') + e.response.data.message;
+                            } else {
+                                validationMsg = 'A validation error occurred.';
+                            }
+                            swal('Upload Failed', validationMsg, 'error');
+                            self.page = 2;
+                        break;
+
                         case 451:
                             swal('Banned Content', 'This content has been banned and cannot be uploaded.', 'error');
                             self.page = 2;
@@ -1265,7 +1280,11 @@ export default {
                         break;
 
                         default:
-                            swal('Oops, something went wrong!', 'An unexpected error occurred.', 'error');
+                            let defaultMsg = 'An unexpected error occurred.';
+                            if (e.response && e.response.data && e.response.data.message) {
+                                defaultMsg = (fileInfo.file.name ? fileInfo.file.name + ': ' : '') + e.response.data.message;
+                            }
+                            swal('Oops, something went wrong!', defaultMsg, 'error');
                             self.page = 2;
                         break;
                     }

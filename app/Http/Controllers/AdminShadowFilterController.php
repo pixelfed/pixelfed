@@ -3,7 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\AdminShadowFilter;
-use App\Profile;
+use App\Models\Profile;
 use App\Services\AccountService;
 use App\Services\AdminShadowFilterService;
 use Illuminate\Http\Request;
@@ -12,7 +12,7 @@ class AdminShadowFilterController extends Controller
 {
     public function __construct()
     {
-        $this->middleware(['auth', 'admin']);
+        $this->middleware(['auth', 'admin', 'dangerzone']);
     }
 
     public function home(Request $request)
@@ -37,7 +37,7 @@ class AdminShadowFilterController extends Controller
                     ->pluck('id')
                     ->toArray();
 
-                return $q->where('item_type', 'App\Profile')->whereIn('item_id', $ids);
+                return $q->whereIn('item_type', ['App\Profile', Profile::class])->whereIn('item_id', $ids);
             })
             ->latest()
             ->paginate(10)

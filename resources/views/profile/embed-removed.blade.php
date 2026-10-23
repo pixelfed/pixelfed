@@ -40,7 +40,7 @@
 	<div class="embed-card border">
 		<div class="card status-card-embed card-md-rounded-0 card-body shadow-none rounded-0">
 			<div class="text-center p-5">
-				<img src="/img/pixelfed-icon-color.svg" width="40px" height="40px">
+				<img src="{{ config('app.logo') }}" width="40px" height="40px">
 				<p class="h2 py-3 font-weight-bold">Pixelfed</p>
 				<p style="font-size:14px;font-weight: 500;" class="px-2 py-4">Cannot display profile embed, it may be deleted or set to private.</p>
 				<p><a href="{{config('app.url')}}" class="font-weight-bold" target="_blank">Visit Pixelfed</a></p>

@@ -1,54 +1,52 @@
 <?php
 
+use App\Jobs\InstancePipeline\InstanceCrawlPipeline;
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
-use App\Jobs\InstancePipeline\InstanceCrawlPipeline;
 
 class AddSoftwareColumnToInstancesTable extends Migration
 {
-	/**
-	 * Run the migrations.
-	 *
-	 * @return void
-	 */
-	public function up()
-	{
-		Schema::table('instances', function (Blueprint $table) {
-			$table->string('software')->nullable()->index();
-			$table->unsignedInteger('user_count')->nullable();
-			$table->unsignedInteger('status_count')->nullable();
-			$table->timestamp('last_crawled_at')->nullable();
-		});
+    /**
+     * Run the migrations.
+     *
+     * @return void
+     */
+    public function up()
+    {
+        Schema::table('instances', function (Blueprint $table) {
+            $table->string('software')->nullable()->index();
+            $table->unsignedInteger('user_count')->nullable();
+            $table->unsignedInteger('status_count')->nullable();
+            $table->timestamp('last_crawled_at')->nullable();
+        });
 
-		$this->runPostMigration();
-	}
+        $this->runPostMigration();
+    }
 
-	/**
-	 * Reverse the migrations.
-	 *
-	 * @return void
-	 */
-	public function down()
-	{
-		Schema::table('instances', function (Blueprint $table) {
-			$table->dropColumn('software');
-			$table->dropColumn('user_count');
-			$table->dropColumn('status_count');
-			$table->dropColumn('last_crawled_at');
-		});
-	}
+    /**
+     * Reverse the migrations.
+     *
+     * @return void
+     */
+    public function down()
+    {
+        Schema::table('instances', function (Blueprint $table) {
+            $table->dropColumn('software');
+            $table->dropColumn('user_count');
+            $table->dropColumn('status_count');
+            $table->dropColumn('last_crawled_at');
+        });
+    }
 
-	protected function runPostMigration()
-	{
-		$type = config('database.default');
-        switch($type)
-        {
-            case 'sqlite':
-                break;
-            default:
-				InstanceCrawlPipeline::dispatch();
-                break;
+    protected function runPostMigration()
+    {
+        // GLITCH MODIFIED START: skip crawl dispatch on sqlite (tests)
+        if (config('database.default') === 'sqlite') {
+            return;
         }
-	}
+        // GLITCH MODIFIED END
+
+        InstanceCrawlPipeline::dispatch();
+    }
 }

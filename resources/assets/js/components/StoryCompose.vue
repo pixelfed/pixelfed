@@ -10,7 +10,7 @@
 			<!-- LANDING -->
 			<div v-if="page == 'landing'" class="card card-body bg-transparent border-0 shadow-none d-flex justify-content-center" style="height: 90vh;">
 				<div class="text-center flex-fill pt-3">
-					<img class="mb-2" src="/img/pixelfed-icon-color.svg" width="70" height="70">
+					<img class="mb-2" :src="config.logo" width="70" height="70">
 					<p class="lead text-lighter font-weight-light mb-0">Stories</p>
 				</div>
 				<div class="flex-fill py-4">
@@ -93,7 +93,7 @@
 
 			<div v-else-if="page == 'error'" class="card card-body bg-transparent border-0 shadow-none d-flex justify-content-center align-items-center" style="height: 90vh;">
 				<div class="text-center flex-fill pt-3">
-					<img class="mb-2" src="/img/pixelfed-icon-color.svg" width="70" height="70">
+					<img class="mb-2" :src="config.logo" width="70" height="70">
 					<p class="lead text-lighter font-weight-light mb-0">Stories</p>
 				</div>
 				<div class="flex-fill text-center">
@@ -119,7 +119,7 @@
 
 			<div v-else-if="page == 'preview'" class="card card-body bg-transparent border-0 shadow-none d-flex justify-content-center align-items-center" style="height: 90vh;">
 				<div class="text-center flex-fill pt-3">
-					<img class="mb-2" src="/img/pixelfed-icon-color.svg" width="70" height="70">
+					<img class="mb-2" :src="config.logo" width="70" height="70">
 					<p class="lead text-lighter font-weight-light mb-0">Stories</p>
 				</div>
 				<div class="flex-fill">
@@ -204,7 +204,7 @@
 
 			<div v-else-if="page == 'createPoll'" class="card card-body bg-transparent border-0 shadow-none d-flex justify-content-center" style="height: 90vh;">
 				<div class="text-center pt-3">
-					<img class="mb-2" src="/img/pixelfed-icon-color.svg" width="70" height="70">
+					<img class="mb-2" :src="config.logo" width="70" height="70">
 					<p class="lead text-lighter font-weight-light mb-0">Stories</p>
 				</div>
 				<div class="flex-fill mt-3">
@@ -395,10 +395,12 @@
 						return;
 					}
 					let type = io.type;
+					// GLITCH MODIFIED START: stories accept all configured MEDIA_TYPES
 					let acceptedMimes = self.config.uploader.media_types.split(',');
 					let validated = $.inArray(type, acceptedMimes);
 					if(validated == -1) {
 						swal('Invalid File Type', 'The file you are trying to add is not a valid mime type. Please upload a '+self.config.uploader.media_types+' only.', 'error');
+					// GLITCH MODIFIED END
 						self.uploading = false;
 						self.page = 'error';
 						return;

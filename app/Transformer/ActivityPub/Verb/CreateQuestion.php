@@ -2,7 +2,7 @@
 
 namespace App\Transformer\ActivityPub\Verb;
 
-use App\Status;
+use App\Models\Status;
 use League\Fractal;
 
 class CreateQuestion extends Fractal\TransformerAbstract

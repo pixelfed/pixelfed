@@ -1,12 +1,15 @@
 <?php
 
 return [
+    // GLITCH MODIFIED START: glitch-only settings
     'glitch' => [
         'real_stat_count' => env('GLITCH_LANDING_REALSTATCOUNT', false),
     ],
+    // GLITCH MODIFIED END
 
     'force_https_urls' => env('FORCE_HTTPS_URLS', true),
 
+    // GLITCH MODIFIED: branding
     'description' => env('INSTANCE_DESCRIPTION', 'Pixelfed Glitch - Photo sharing for everyone'),
 
     'contact' => [
@@ -16,9 +19,6 @@ return [
 
     'discover' => [
         'public' => env('INSTANCE_DISCOVER_PUBLIC', false),
-        'loops' => [
-            'enabled' => env('EXP_LOOPS', false),
-        ],
         'tags' => [
             'is_public' => env('INSTANCE_PUBLIC_HASHTAGS', false),
         ],
@@ -71,11 +71,13 @@ return [
 
     'stories' => [
         'enabled' => env('STORIES_ENABLED', false),
+        // GLITCH MODIFIED START: story duration limits (STORIES_DURATION_*)
         'duration' => [
             'min' => env('STORIES_DURATION_MIN', 3),
             'preferred' => env('STORIES_DURATION_PREFERRED', 10),
             'max' => env('STORIES_DURATION_MAX', 500),
         ]
+        // GLITCH MODIFIED END
     ],
 
     'restricted' => [
@@ -86,18 +88,7 @@ return [
     'oauth' => [
         'token_expiration' => env('OAUTH_TOKEN_DAYS', 365),
         'refresh_expiration' => env('OAUTH_REFRESH_DAYS', 400),
-        'pat' => [
-            'enabled' => env('OAUTH_PAT_ENABLED', false),
-            'id' => env('OAUTH_PAT_ID'),
-        ],
-    ],
-
-    'label' => [
-        'covid' => [
-            'enabled' => env('ENABLE_COVID_LABEL', true),
-            'url' => env('COVID_LABEL_URL', 'https://www.who.int/emergencies/diseases/novel-coronavirus-2019/advice-for-public'),
-            'org' => env('COVID_LABEL_ORG', 'visit the WHO website'),
-        ],
+        'pat_enabled' => env('OAUTH_PAT_ENABLED', false),
     ],
 
     'enable_cc' => env('ENABLE_CONFIG_CACHE', true),
@@ -174,8 +165,6 @@ return [
 
         'resend_confirmation_limit' => env('INSTANCE_CUR_REG_RESEND_LIMIT', 5),
 
-        'captcha_enabled' => env('INSTANCE_CUR_REG_CAPTCHA', env('CAPTCHA_ENABLED', false)),
-
         'state' => [
             'fallback_on_closed_reg' => true,
             'only_enabled_on_closed_reg' => env('INSTANCE_CUR_REG_STATE_ONLY_ON_CLOSED', true),
@@ -187,6 +176,8 @@ return [
                     'enabled' => env('INSTANCE_CUR_REG_NOTIFY_ADMIN_ON_VERIFY', false),
                     'bundle' => env('INSTANCE_CUR_REG_NOTIFY_ADMIN_ON_VERIFY_BUNDLE', false),
                     'max_per_day' => env('INSTANCE_CUR_REG_NOTIFY_ADMIN_ON_VERIFY_MPD', 10),
+                    // Set to a CSV of admin usernames like 'admin,dansup,test'
+                    'to_usernames' => env('INSTANCE_CUR_REG_NOTIFY_ADMIN_TO_USERNAMES'),
                     'cc_addresses' => env('INSTANCE_CUR_REG_NOTIFY_ADMIN_ON_VERIFY_CC'),
                 ],
                 'on_user_response' => env('INSTANCE_CUR_REG_NOTIFY_ADMIN_ON_USER_RESPONSE', false),

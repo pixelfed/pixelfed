@@ -1,5 +1,7 @@
 <?php
 
+use Illuminate\Support\Facades\Broadcast;
+
 /*
 |--------------------------------------------------------------------------
 | Broadcast Channels
@@ -20,5 +22,5 @@ Broadcast::channel('live.chat.{id}', function ($user, $id) {
 }, ['guards' => ['web', 'api']]);
 
 Broadcast::channel('live.presence.{id}', function ($user, $id) {
-    return [ $user->profile_id ];
+    return [$user->profile_id];
 }, ['guards' => ['web', 'api']]);

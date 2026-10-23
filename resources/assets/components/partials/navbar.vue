@@ -2,7 +2,7 @@
     <nav class="metro-nav navbar navbar-expand navbar-light navbar-laravel sticky-top shadow-none py-1">
         <div class="container-fluid">
                 <a class="navbar-brand d-flex align-items-center" href="/i/web" title="Logo">
-                    <img src="/img/pixelfed-icon-color.svg" height="30px" class="px-2" loading="eager" alt="Pixelfed logo">
+                    <img :src="config.logo" height="30px" class="px-2" loading="eager" alt="Pixelfed logo">
                     <span class="font-weight-bold mb-0 d-none d-sm-block" style="font-size:20px;">
                         {{ brandName }}
                     </span>
@@ -384,6 +384,7 @@
                 user: window._sharedData.user,
                 profileLayoutModel: 'grid',
                 hasLocalTimeline: true,
+                config: window.App.config,
                 hasNetworkTimeline: false
             }
         },

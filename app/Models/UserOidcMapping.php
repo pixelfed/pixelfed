@@ -2,7 +2,6 @@
 
 namespace App\Models;
 
-use App\User;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
@@ -12,10 +11,7 @@ class UserOidcMapping extends Model
 
     public $timestamps = true;
 
-    protected $fillable = [
-        'user_id',
-        'oidc_id',
-    ];
+    protected $guarded = [];
 
     public function user()
     {

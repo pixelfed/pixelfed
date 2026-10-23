@@ -3,12 +3,12 @@
 namespace App\Jobs\MovePipeline;
 
 use App\Util\ActivityPub\HttpSignature;
-use GuzzleHttp\Client;
-use GuzzleHttp\Exception\ClientException;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Queue\Queueable;
+use Illuminate\Http\Client\ConnectionException;
 use Illuminate\Queue\Middleware\ThrottlesExceptions;
 use Illuminate\Queue\Middleware\WithoutOverlapping;
+use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Log;
 
 class MoveSendUndoFollowPipeline implements ShouldQueue
@@ -119,21 +119,22 @@ class MoveSendUndoFollowPipeline implements ShouldQueue
 
         $keyId = $permalink.'#main-key';
         $payload = json_encode($activity);
-        $headers = HttpSignature::signRaw($follower->private_key, $keyId, $targetInbox, $activity, $addlHeaders);
+        $curlHeaders = HttpSignature::signRaw($follower->private_key, $keyId, $targetInbox, $activity, $addlHeaders);
 
-        $client = new Client([
-            'timeout' => config('federation.activitypub.delivery.timeout'),
-        ]);
+        $headers = [];
+        foreach ($curlHeaders as $header) {
+            $parts = explode(': ', $header, 2);
+            if (count($parts) === 2) {
+                $headers[$parts[0]] = $parts[1];
+            }
+        }
 
         try {
-            $client->post($targetInbox, [
-                'curl' => [
-                    CURLOPT_HTTPHEADER => $headers,
-                    CURLOPT_POSTFIELDS => $payload,
-                    CURLOPT_HEADER => true,
-                ],
-            ]);
-        } catch (ClientException $e) {
+            Http::withHeaders($headers)
+                ->timeout(config('federation.activitypub.delivery.timeout'))
+                ->withBody($payload, 'application/ld+json; profile="https://www.w3.org/ns/activitystreams"')
+                ->post($targetInbox);
+        } catch (ConnectionException $e) {
 
         }
     }

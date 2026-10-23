@@ -2,17 +2,18 @@
 
 namespace App\Http\Controllers;
 
-use App\Collection;
-use App\CollectionItem;
-use App\Hashtag;
 use App\Jobs\ImageOptimizePipeline\ImageOptimize;
 use App\Jobs\StatusPipeline\NewStatusPipeline;
 use App\Jobs\VideoPipeline\VideoThumbnail;
-use App\Media;
-use App\MediaTag;
+use App\Models\Collection;
+use App\Models\CollectionItem;
+use App\Models\Hashtag;
+use App\Models\Media;
+use App\Models\MediaTag;
+use App\Models\Notification;
 use App\Models\Poll;
-use App\Notification;
-use App\Profile;
+use App\Models\Profile;
+use App\Models\Status;
 use App\Services\AccountService;
 use App\Services\CollectionService;
 use App\Services\MediaBlocklistService;
@@ -21,17 +22,18 @@ use App\Services\MediaStorageService;
 use App\Services\MediaTagService;
 use App\Services\PlaceService;
 use App\Services\SnowflakeService;
+use App\Services\UserFilterService;
 use App\Services\UserRoleService;
 use App\Services\UserStorageService;
-use App\Status;
 use App\Transformer\Api\MediaTransformer;
-use App\UserFilter;
 use App\Util\Media\Filter;
 use App\Util\Media\License;
-use Auth;
-use Cache;
-use DB;
+use Illuminate\Contracts\View\View;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Cache;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Str;
 use League\Fractal;
 use League\Fractal\Serializer\ArraySerializer;
@@ -47,12 +49,12 @@ class ComposeController extends Controller
         $this->fractal->setSerializer(new ArraySerializer);
     }
 
-    public function show(Request $request)
+    public function show(Request $request): View
     {
         return view('status.compose');
     }
 
-    public function mediaUpload(Request $request)
+    public function mediaUpload(Request $request): JsonResponse
     {
         abort_if(! $request->user(), 403);
 
@@ -105,12 +107,15 @@ class ComposeController extends Controller
 
         abort_if(in_array($photo->getMimeType(), $mimes) == false, 400, 'Invalid media format');
 
+        // Check the blocklist against the temp upload BEFORE storing, so a
+        // blocked upload never leaves an orphaned file on disk (media:gc only
+        // reaps files that have a Media row).
+        $hash = \hash_file('sha256', $photo->getRealPath());
+        abort_if(MediaBlocklistService::exists($hash) == true, 451);
+
+        $mime = $photo->getMimeType();
         $storagePath = MediaPathService::get($user, 2);
         $path = $photo->storePublicly($storagePath);
-        $hash = \hash_file('sha256', $photo);
-        $mime = $photo->getMimeType();
-
-        abort_if(MediaBlocklistService::exists($hash) == true, 451);
 
         $media = new Media;
         $media->status_id = null;
@@ -148,9 +153,7 @@ class ComposeController extends Controller
                 break;
         }
 
-        $user->storage_used = (int) $updatedAccountSize;
-        $user->storage_used_updated_at = now();
-        $user->save();
+        UserStorageService::increaseStorageUsed($user->id, $fileSize);
 
         Cache::forget($limitKey);
         $resource = new Fractal\Resource\Item($media, new MediaTransformer);
@@ -165,16 +168,14 @@ class ComposeController extends Controller
     {
         $this->validate($request, [
             'id' => 'required',
-            'file' => function () {
-                return [
-                    'required',
-                    'mimetypes:'.config_cache('pixelfed.media_types'),
-                    'max:'.config_cache('pixelfed.max_photo_size'),
-                ];
-            },
+            'file' => [
+                'required',
+                'mimetypes:'.config_cache('pixelfed.media_types'),
+                'max:'.config_cache('pixelfed.max_photo_size'),
+            ],
         ]);
 
-        $user = Auth::user();
+        $user = $request->user();
         abort_if($user->has_roles && ! UserRoleService::can('can-post', $user->id), 403, 'Invalid permissions for this action');
 
         $limitKey = 'compose:rate-limit:media-updates:'.$user->id;
@@ -212,7 +213,7 @@ class ComposeController extends Controller
         return $res;
     }
 
-    public function mediaDelete(Request $request)
+    public function mediaDelete(Request $request): JsonResponse
     {
         abort_if(! $request->user(), 403);
 
@@ -251,7 +252,7 @@ class ComposeController extends Controller
 
         $q = $request->input('q');
 
-        $cleanQuery = Str::of($q)->startsWith('@') ? Str::substr($q, 1) : $q;
+        $cleanQuery = Str::startsWith($q, '@') ? Str::substr($q, 1) : $q;
 
         if (strlen($cleanQuery) < 2) {
             return [];
@@ -262,14 +263,9 @@ class ComposeController extends Controller
 
         abort_if($user->has_roles && ! UserRoleService::can('can-post', $user->id), 403, 'Invalid permissions for this action');
 
-        $blocked = UserFilter::whereFilterableType('App\Profile')
-            ->whereFilterType('block')
-            ->whereFilterableId($request->user()->profile_id)
-            ->pluck('user_id');
+        $blocked = UserFilterService::searchExcludedProfileIds($request->user()->profile_id);
 
-        $blocked->push($request->user()->profile_id);
-
-        $operator = config('database.default') === 'pgsql' ? 'ilike' : 'like';
+        $operator = db_is_pgsql() ? 'ilike' : 'like';
         $results = Profile::select([
             'profiles.id',
             'profiles.domain',
@@ -304,7 +300,7 @@ class ComposeController extends Controller
         return $results;
     }
 
-    public function searchUntag(Request $request)
+    public function searchUntag(Request $request): array
     {
         abort_if(! $request->user(), 403);
 
@@ -328,7 +324,7 @@ class ComposeController extends Controller
         if (! $tag) {
             return [];
         }
-        Notification::whereItemType('App\MediaTag')
+        Notification::whereItemType(MediaTag::class)
             ->whereItemId($tag->id)
             ->whereProfileId($profile_id)
             ->whereAction('tagged')
@@ -348,11 +344,17 @@ class ComposeController extends Controller
         abort_if($request->user()->has_roles && ! UserRoleService::can('can-post', $request->user()->id), 403, 'Invalid permissions for this action');
         $pid = $request->user()->profile_id;
         abort_if(! $pid, 400);
-        $q = e($request->input('q'));
+
+        $raw = e($request->input('q'));
+
+        $country = null;
+        if (str_contains($raw, ',')) {
+            [$raw, $country] = array_map('trim', explode(',', $raw, 2));
+        }
 
         $popular = Cache::remember('pf:search:location:v1:popular', 1209600, function () {
             $minId = SnowflakeService::byDate(now()->subDays(290));
-            if (config('database.default') == 'pgsql') {
+            if (db_is_pgsql()) {
                 return Status::selectRaw('id, place_id, count(place_id) as pc')
                     ->whereNotNull('place_id')
                     ->where('id', '>', $minId)
@@ -390,14 +392,20 @@ class ComposeController extends Controller
                     ];
                 });
         });
-        $q = '%'.$q.'%';
-        $wildcard = config('database.default') === 'pgsql' ? 'ilike' : 'like';
 
-        $places = DB::table('places')
-            ->where('name', $wildcard, $q)
-            ->limit((strlen($q) > 5 ? 360 : 30))
+        $wildcard = db_is_pgsql() ? 'ilike' : 'like';
+        $q = '%'.$raw.'%';
+
+        $placesQuery = DB::table('places')->where('name', $wildcard, $q);
+
+        if ($country) {
+            $placesQuery->where('country', $wildcard, '%'.$country.'%');
+        }
+
+        $places = $placesQuery
+            ->limit((strlen($raw) > 5 ? 360 : 30))
             ->get()
-            ->sortByDesc(function ($place, $key) use ($popular) {
+            ->sortByDesc(function ($place) use ($popular) {
                 return $popular->filter(function ($p) use ($place) {
                     return $p['id'] == $place->id;
                 })->map(function ($p) use ($place) {
@@ -436,20 +444,16 @@ class ComposeController extends Controller
 
         $q = $request->input('q');
 
-        $cleanQuery = Str::of($q)->startsWith('@') ? Str::substr($q, 1) : $q;
+        $cleanQuery = Str::startsWith($q, '@') ? Str::substr($q, 1) : $q;
 
         if (strlen($cleanQuery) < 2) {
             return [];
         }
 
-        $blocked = UserFilter::whereFilterableType('App\Profile')
-            ->whereFilterType('block')
-            ->whereFilterableId($request->user()->profile_id)
-            ->pluck('user_id')
-            ->push($request->user()->profile_id);
+        $blocked = UserFilterService::searchExcludedProfileIds($request->user()->profile_id);
 
         $currentUserId = $request->user()->profile_id;
-        $operator = config('database.default') === 'pgsql' ? 'ilike' : 'like';
+        $operator = db_is_pgsql() ? 'ilike' : 'like';
 
         $results = Profile::select([
             'profiles.id',
@@ -664,7 +668,7 @@ class ComposeController extends Controller
                     $count = $collection->items()->count();
                     CollectionItem::firstOrCreate([
                         'collection_id' => $collection->id,
-                        'object_type' => 'App\Status',
+                        'object_type' => Status::class,
                         'object_id' => $status->id,
                     ], [
                         'order' => $count,
@@ -726,7 +730,10 @@ class ComposeController extends Controller
         $place = $request->input('place');
         $cw = $request->input('cw');
         $tagged = $request->input('tagged');
-        $defaultCaption = (config_cache('database.default') === 'mysql' || config_cache('database.default') === 'mariadb') ? null : "";
+        // Empty string is valid whether `caption`/`rendered` are nullable or
+        // NOT NULL (they are NOT NULL on MySQL/MariaDB in practice), so use it
+        // regardless of driver rather than inserting null.
+        $defaultCaption = '';
 
         if ($place && is_array($place)) {
             $status->place_id = $place['id'];
@@ -778,7 +785,7 @@ class ComposeController extends Controller
         return $status->url();
     }
 
-    public function mediaProcessingCheck(Request $request)
+    public function mediaProcessingCheck(Request $request): array
     {
         $this->validate($request, [
             'id' => 'required|integer|min:1',
@@ -815,7 +822,7 @@ class ComposeController extends Controller
         ];
     }
 
-    public function composeSettings(Request $request)
+    public function composeSettings(Request $request): JsonResponse
     {
         $uid = $request->user()->id;
         abort_if($request->user()->has_roles && ! UserRoleService::can('can-post', $request->user()->id), 403, 'Invalid permissions for this action');
@@ -845,7 +852,7 @@ class ComposeController extends Controller
         return response()->json($res, 200, [], JSON_UNESCAPED_SLASHES);
     }
 
-    public function createPoll(Request $request)
+    public function createPoll(Request $request): array
     {
         $this->validate($request, [
             'caption' => 'nullable|string|max:'.config_cache('pixelfed.max_caption_length'),

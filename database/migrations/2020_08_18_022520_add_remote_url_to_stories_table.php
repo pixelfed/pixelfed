@@ -36,10 +36,10 @@ class AddRemoteUrlToStoriesTable extends Migration
     public function down()
     {
         Schema::table('stories', function (Blueprint $table) {
-            $table->dropColumn(['remote_url','media_url','is_archived','name']);
+            $table->dropColumn(['remote_url', 'media_url', 'is_archived', 'name']);
         });
         Schema::table('media', function (Blueprint $table) {
-            $table->dropColumn(['blurhash','srcset','width','height']);
+            $table->dropColumn(['blurhash', 'srcset', 'width', 'height']);
         });
     }
 }

@@ -1,5 +1,7 @@
 <?php
 
+// GLITCH MODIFIED: fork-only migration, statuses.caption/rendered nullable (fixes Postgres not-null errors)
+
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;

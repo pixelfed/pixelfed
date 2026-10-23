@@ -1,0 +1,372 @@
+[
+    {
+        "code": "af-ZA",
+        "name": "Afrikaans (South Africa)",
+        "nativeName": "Afrikaans (Suid-Afrika)"
+    },
+    {
+        "code": "sq-AL",
+        "name": "Albanian (Albania)",
+        "nativeName": "shqip (Shqipëri)"
+    },
+    {
+        "code": "ar-SA",
+        "name": "Arabic (Saudi Arabia)",
+        "nativeName": "العربية (المملكة العربية السعودية)"
+    },
+    {
+        "code": "hy-AM",
+        "name": "Armenian (Armenia)",
+        "nativeName": "հայերեն (Հայաստան)"
+    },
+    {
+        "code": "bn-BD",
+        "name": "Bangla (Bangladesh)",
+        "nativeName": "বাংলা (বাংলাদেশ)"
+    },
+    {
+        "code": "eu-ES",
+        "name": "Basque (Spain)",
+        "nativeName": "euskara (Espainia)"
+    },
+    {
+        "code": "bs-BA",
+        "name": "Bosnian (Bosnia & Herzegovina)",
+        "nativeName": "bosanski (Bosna i Hercegovina)"
+    },
+    {
+        "code": "bg-BG",
+        "name": "Bulgarian (Bulgaria)",
+        "nativeName": "български (България)"
+    },
+    {
+        "code": "ca-ES",
+        "name": "Catalan (Spain)",
+        "nativeName": "català (Espanya)"
+    },
+    {
+        "code": "ckb-IR",
+        "name": "Central Kurdish (Iran)",
+        "nativeName": "کوردیی ناوەندی (ئێران)"
+    },
+    {
+        "code": "zh-CN",
+        "name": "Chinese (China)",
+        "nativeName": "中文（中国）"
+    },
+    {
+        "code": "zh-TW",
+        "name": "Chinese (Taiwan)",
+        "nativeName": "中文（台灣）"
+    },
+    {
+        "code": "syc-SY",
+        "name": "Classical Syriac (Syria)",
+        "nativeName": "Classical Syriac (Syria)"
+    },
+    {
+        "code": "hr-HR",
+        "name": "Croatian (Croatia)",
+        "nativeName": "hrvatski (Hrvatska)"
+    },
+    {
+        "code": "cs-CZ",
+        "name": "Czech (Czechia)",
+        "nativeName": "čeština (Česko)"
+    },
+    {
+        "code": "da-DK",
+        "name": "Danish (Denmark)",
+        "nativeName": "dansk (Danmark)"
+    },
+    {
+        "code": "nl-NL",
+        "name": "Dutch (Netherlands)",
+        "nativeName": "Nederlands (Nederland)"
+    },
+    {
+        "code": "en-US",
+        "name": "English (United States)",
+        "nativeName": "English (United States)"
+    },
+    {
+        "code": "eo-UY",
+        "name": "Esperanto (Uruguay)",
+        "nativeName": "Esperanto (Urugvajo)"
+    },
+    {
+        "code": "fil-PH",
+        "name": "Filipino (Philippines)",
+        "nativeName": "Filipino (Pilipinas)"
+    },
+    {
+        "code": "fi-FI",
+        "name": "Finnish (Finland)",
+        "nativeName": "suomi (Suomi)"
+    },
+    {
+        "code": "fr-FR",
+        "name": "French (France)",
+        "nativeName": "français (France)"
+    },
+    {
+        "code": "gl-ES",
+        "name": "Galician (Spain)",
+        "nativeName": "galego (España)"
+    },
+    {
+        "code": "de-DE",
+        "name": "German (Germany)",
+        "nativeName": "Deutsch (Deutschland)"
+    },
+    {
+        "code": "el-GR",
+        "name": "Greek (Greece)",
+        "nativeName": "Ελληνικά (Ελλάδα)"
+    },
+    {
+        "code": "he-IL",
+        "name": "Hebrew (Israel)",
+        "nativeName": "עברית (ישראל)"
+    },
+    {
+        "code": "hi-IN",
+        "name": "Hindi (India)",
+        "nativeName": "हिन्दी (भारत)"
+    },
+    {
+        "code": "hu-HU",
+        "name": "Hungarian (Hungary)",
+        "nativeName": "magyar (Magyarország)"
+    },
+    {
+        "code": "is-IS",
+        "name": "Icelandic (Iceland)",
+        "nativeName": "íslenska (Ísland)"
+    },
+    {
+        "code": "id-ID",
+        "name": "Indonesian (Indonesia)",
+        "nativeName": "Indonesia (Indonesia)"
+    },
+    {
+        "code": "ga-IE",
+        "name": "Irish (Ireland)",
+        "nativeName": "Gaeilge (Éire)"
+    },
+    {
+        "code": "it-IT",
+        "name": "Italian (Italy)",
+        "nativeName": "italiano (Italia)"
+    },
+    {
+        "code": "ja-JP",
+        "name": "Japanese (Japan)",
+        "nativeName": "日本語 (日本)"
+    },
+    {
+        "code": "tlh",
+        "name": "Klingon",
+        "nativeName": "tlhIngan Hol"
+    },
+    {
+        "code": "ko-KR",
+        "name": "Korean (South Korea)",
+        "nativeName": "한국어(대한민국)"
+    },
+    {
+        "code": "ku-TR",
+        "name": "Kurdish (Türkiye)",
+        "nativeName": "kurdî (kurmancî) (Türkiye)"
+    },
+    {
+        "code": "lo-LA",
+        "name": "Lao (Laos)",
+        "nativeName": "ລາວ (ລາວ)"
+    },
+    {
+        "code": "la-LA",
+        "name": "Latin (Laos)",
+        "nativeName": "Latin (Laos)"
+    },
+    {
+        "code": "lv-LV",
+        "name": "Latvian (Latvia)",
+        "nativeName": "latviešu (Latvija)"
+    },
+    {
+        "code": "lt-LT",
+        "name": "Lithuanian (Lithuania)",
+        "nativeName": "lietuvių (Lietuva)"
+    },
+    {
+        "code": "lb-LU",
+        "name": "Luxembourgish (Luxembourg)",
+        "nativeName": "Lëtzebuergesch (Lëtzebuerg)"
+    },
+    {
+        "code": "mk-MK",
+        "name": "Macedonian (North Macedonia)",
+        "nativeName": "македонски (Северна Македонија)"
+    },
+    {
+        "code": "ms-MY",
+        "name": "Malay (Malaysia)",
+        "nativeName": "Melayu (Malaysia)"
+    },
+    {
+        "code": "me-ME",
+        "name": "me (Montenegro)",
+        "nativeName": "me (Montenegro)"
+    },
+    {
+        "code": "mn-MN",
+        "name": "Mongolian (Mongolia)",
+        "nativeName": "монгол (Монгол)"
+    },
+    {
+        "code": "ne-NP",
+        "name": "Nepali (Nepal)",
+        "nativeName": "नेपाली (नेपाल)"
+    },
+    {
+        "code": "no-NO",
+        "name": "Norwegian (Norway)",
+        "nativeName": "norsk (Norge)"
+    },
+    {
+        "code": "oc-FR",
+        "name": "Occitan (France)",
+        "nativeName": "occitan (França)"
+    },
+    {
+        "code": "ps-AF",
+        "name": "Pashto (Afghanistan)",
+        "nativeName": "پښتو (افغانستان)"
+    },
+    {
+        "code": "fa-IR",
+        "name": "Persian (Iran)",
+        "nativeName": "فارسی (ایران)"
+    },
+    {
+        "code": "en-x-pirate",
+        "name": "Pirate (English)",
+        "nativeName": "Pirate (English)"
+    },
+    {
+        "code": "pl-PL",
+        "name": "Polish (Poland)",
+        "nativeName": "polski (Polska)"
+    },
+    {
+        "code": "pt-PT",
+        "name": "Portuguese (Portugal)",
+        "nativeName": "português (Portugal)"
+    },
+    {
+        "code": "pa-IN",
+        "name": "Punjabi (India)",
+        "nativeName": "ਪੰਜਾਬੀ (ਭਾਰਤ)"
+    },
+    {
+        "code": "ro-RO",
+        "name": "Romanian (Romania)",
+        "nativeName": "română (România)"
+    },
+    {
+        "code": "ru-RU",
+        "name": "Russian (Russia)",
+        "nativeName": "русский (Россия)"
+    },
+    {
+        "code": "sc-IT",
+        "name": "Sardinian (Italy)",
+        "nativeName": "sardu (Itàlia)"
+    },
+    {
+        "code": "sco-GB",
+        "name": "Scots (United Kingdom)",
+        "nativeName": "Scots (United Kingdom)"
+    },
+    {
+        "code": "gd-GB",
+        "name": "Scottish Gaelic (United Kingdom)",
+        "nativeName": "Gàidhlig (An Rìoghachd Aonaichte)"
+    },
+    {
+        "code": "sr-CS",
+        "name": "Serbian (Serbia)",
+        "nativeName": "српски (Србија)"
+    },
+    {
+        "code": "sr-SP",
+        "name": "Serbian (SP)",
+        "nativeName": "српски (SP)"
+    },
+    {
+        "code": "sk-SK",
+        "name": "Slovak (Slovakia)",
+        "nativeName": "slovenčina (Slovensko)"
+    },
+    {
+        "code": "sl-SI",
+        "name": "Slovenian (Slovenia)",
+        "nativeName": "slovenščina (Slovenija)"
+    },
+    {
+        "code": "es-ES",
+        "name": "Spanish (Spain)",
+        "nativeName": "español (España)"
+    },
+    {
+        "code": "sv-SE",
+        "name": "Swedish (Sweden)",
+        "nativeName": "svenska (Sverige)"
+    },
+    {
+        "code": "ta-IN",
+        "name": "Tamil (India)",
+        "nativeName": "தமிழ் (இந்தியா)"
+    },
+    {
+        "code": "th-TH",
+        "name": "Thai (Thailand)",
+        "nativeName": "ไทย (ไทย)"
+    },
+    {
+        "code": "bo-BT",
+        "name": "Tibetan (Bhutan)",
+        "nativeName": "བོད་སྐད་ (BT)"
+    },
+    {
+        "code": "tr-TR",
+        "name": "Turkish (Türkiye)",
+        "nativeName": "Türkçe (Türkiye)"
+    },
+    {
+        "code": "uk-UA",
+        "name": "Ukrainian (Ukraine)",
+        "nativeName": "українська (Україна)"
+    },
+    {
+        "code": "ug-CN",
+        "name": "Uyghur (China)",
+        "nativeName": "ئۇيغۇرچە (جۇڭگو)"
+    },
+    {
+        "code": "vec-IT",
+        "name": "Venetian (Italy)",
+        "nativeName": "veneto (Italia)"
+    },
+    {
+        "code": "vi-VN",
+        "name": "Vietnamese (Vietnam)",
+        "nativeName": "Tiếng Việt (Việt Nam)"
+    },
+    {
+        "code": "cy-GB",
+        "name": "Welsh (United Kingdom)",
+        "nativeName": "Cymraeg (Y Deyrnas Unedig)"
+    }
+]

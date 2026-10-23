@@ -8,7 +8,7 @@
 <hr>
 @if((bool) config_cache('pixelfed.oauth_enabled') == true)
 	<passport-authorized-clients></passport-authorized-clients>
-	<passport-personal-access-tokens></passport-personal-access-tokens>
+	<passport-personal-access-tokens :pat-enabled="{{ config_cache('instance.oauth.pat_enabled') ? 'true' : 'false' }}"></passport-personal-access-tokens>
 @else
 	<p class="lead">OAuth has not been enabled on this instance.</p>
 @endif

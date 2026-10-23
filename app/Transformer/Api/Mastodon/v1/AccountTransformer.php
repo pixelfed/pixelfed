@@ -2,7 +2,8 @@
 
 namespace App\Transformer\Api\Mastodon\v1;
 
-use App\Profile;
+use App\Models\Profile;
+use Illuminate\Support\Facades\Cache;
 use League\Fractal;
 
 class AccountTransformer extends Fractal\TransformerAbstract
@@ -12,7 +13,7 @@ class AccountTransformer extends Fractal\TransformerAbstract
         $local = $profile->domain == null;
         $username = $local ? $profile->username : explode('@', substr($profile->username, 1))[0];
 
-        return [
+        $res = [
             'id' => (string) $profile->id,
             'username' => $username,
             'acct' => $username,
@@ -29,10 +30,36 @@ class AccountTransformer extends Fractal\TransformerAbstract
             'followers_count' => (int) $profile->followerCount(),
             'following_count' => (int) $profile->followingCount(),
             'statuses_count' => (int) $profile->statusCount(),
-            'last_status_at' => optional($profile->last_status_at)->toJSON(),
+            'last_status_at' => $profile->last_status_at?->toJSON(),
             'emojis' => [],
-            'moved' => null,
+            'moved' => $this->resolveMoved($profile),
             'fields' => [],
         ];
+
+        return $res;
+    }
+
+    protected function resolveMoved(Profile $profile): ?array
+    {
+        $targetId = $profile->moved_to_profile_id;
+
+        if (! $targetId || (string) $targetId === (string) $profile->id) {
+            return null;
+        }
+
+        return Cache::remember('pf:acct-trans:moved:'.$targetId, 3600, function () use ($targetId) {
+            $target = Profile::find($targetId);
+            if (! $target) {
+                return null;
+            }
+
+            $targetLocal = $target->user_id && $target->private_key != null;
+
+            return [
+                'id' => (string) $target->id,
+                'acct' => $targetLocal ? $target->username : substr($target->username, 1),
+                'avatar' => $target->avatarUrl(),
+            ];
+        });
     }
 }

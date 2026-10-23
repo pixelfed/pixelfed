@@ -2,14 +2,18 @@
 
 namespace App\Http\Controllers;
 
-use App\AccountLog;
-use App\Follower;
-use App\Like;
-use App\Status;
-use App\StatusHashtag;
-use Auth;
+use App\Models\AccountLog;
+use App\Models\Follower;
+use App\Models\Like;
+use App\Models\Status;
+use App\Models\StatusHashtag;
+use App\Models\User;
+use Illuminate\Contracts\View\View;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Cache;
+use Illuminate\Support\Facades\DB;
 
 class SeasonalController extends Controller
 {
@@ -18,20 +22,20 @@ class SeasonalController extends Controller
         $this->middleware('auth');
     }
 
-    public function yearInReview()
+    public function yearInReview(): View
     {
         abort_if(now()->gt('2021-03-01 00:00:00'), 404);
-        abort_if(config('database.default') !== 'mysql' && config('database.default') !== 'mariadb', 404);
+        abort_if(! db_is_mysql_maria(), 404);
 
         $profile = Auth::user()->profile;
 
         return view('account.yir', compact('profile'));
     }
 
-    public function getData(Request $request)
+    public function getData(Request $request): JsonResponse
     {
         abort_if(now()->gt('2021-03-01 00:00:00'), 404);
-        abort_if(config('database.default') !== 'mysql' && config('database.default') !== 'mariadb', 404);
+        abort_if(! db_is_mysql_maria(), 404);
 
         $uid = $request->user()->id;
         $pid = $request->user()->profile_id;
@@ -47,21 +51,25 @@ class SeasonalController extends Controller
         $shared = Cache::remember($siteKey, $siteTtl, function () use ($epochStart, $epochEnd) {
             return [
                 'average' => [
-                    'posts' => round(Status::selectRaw('*, count(profile_id) as count')
-                        ->whereNull('uri')
-                        ->whereIn('type', ['photo', 'photo:album', 'video', 'video:album', 'photo:video:album'])
-                        ->where('created_at', '>', $epochStart)
-                        ->where('created_at', '<', $epochEnd)
-                        ->groupBy('profile_id')
-                        ->pluck('count')
-                        ->avg()),
+                    'posts' => round((float) DB::query()->fromSub(
+                        Status::query()
+                            ->whereNull('uri')
+                            ->whereIn('type', ['photo', 'photo:album', 'video', 'video:album', 'photo:video:album'])
+                            ->where('created_at', '>', $epochStart)
+                            ->where('created_at', '<', $epochEnd)
+                            ->groupBy('profile_id')
+                            ->selectRaw('count(*) as count'),
+                        'per_profile'
+                    )->avg('count')),
 
-                    'likes' => round(Like::selectRaw('*, count(profile_id) as count')
-                        ->where('created_at', '>', $epochStart)
-                        ->where('created_at', '<', $epochEnd)
-                        ->groupBy('profile_id')
-                        ->pluck('count')
-                        ->avg()),
+                    'likes' => round((float) DB::query()->fromSub(
+                        Like::query()
+                            ->where('created_at', '>', $epochStart)
+                            ->where('created_at', '<', $epochEnd)
+                            ->groupBy('profile_id')
+                            ->selectRaw('count(*) as count'),
+                        'per_profile'
+                    )->avg('count')),
                 ],
 
                 'popular' => [
@@ -216,16 +224,16 @@ class SeasonalController extends Controller
         return response()->json(array_merge($res, $shared));
     }
 
-    public function store(Request $request)
+    public function store(Request $request): JsonResponse
     {
         abort_if(now()->gt('2021-03-01 00:00:00'), 404);
-        abort_if(config('database.default') !== 'mysql' && config('database.default') !== 'mariadb', 404);
+        abort_if(! db_is_mysql_maria(), 404);
 
         $user = $request->user();
 
         $log = AccountLog::firstOrCreate([
             [
-                'item_type' => 'App\User',
+                'item_type' => User::class,
                 'item_id' => $user->id,
                 'user_id' => $user->id,
                 'action' => 'seasonal.my2020.view',

@@ -2,12 +2,12 @@
 
 namespace App\Http\Controllers\Groups;
 
-use App\Follower;
 use App\Http\Controllers\Controller;
+use App\Models\Follower;
 use App\Models\Group;
 use App\Models\GroupInvitation;
 use App\Models\GroupMember;
-use App\Profile;
+use App\Models\Profile;
 use App\Services\AccountService;
 use App\Services\Groups\GroupActivityPubService;
 use App\Services\GroupService;
@@ -22,7 +22,7 @@ class GroupsSearchController extends Controller
         $this->middleware('auth');
     }
 
-    public function inviteFriendsToGroup(Request $request)
+    public function inviteFriendsToGroup(Request $request): array
     {
         abort_if(! $request->user(), 404);
         $this->validate($request, [
@@ -42,24 +42,27 @@ class GroupsSearchController extends Controller
             'Invite limit reached'
         );
 
-        $profiles = collect($uid)
-            ->map(function ($u) {
-                return Profile::find($u);
-            })
-            ->filter(function ($u) use ($pid) {
-                return $u &&
-                    $u->id != $pid &&
-                    isset($u->id) &&
-                    Follower::whereFollowingId($pid)
-                        ->whereProfileId($u->id)
-                        ->exists();
-            })
-            ->filter(function ($u) use ($group, $pid) {
-                return GroupInvitation::whereGroupId($group->id)
-                    ->whereFromProfileId($pid)
-                    ->whereToProfileId($u->id)
-                    ->exists() == false;
-            })
+        $candidateIds = collect($uid)
+            ->filter(fn ($u) => $u != $pid)
+            ->unique()
+            ->values();
+
+        $profiles = Profile::whereIn('id', $candidateIds)->get();
+
+        $followedIds = Follower::whereFollowingId($pid)
+            ->whereIn('profile_id', $profiles->pluck('id'))
+            ->pluck('profile_id')
+            ->all();
+
+        $alreadyInvitedIds = GroupInvitation::whereGroupId($group->id)
+            ->whereFromProfileId($pid)
+            ->whereIn('to_profile_id', $profiles->pluck('id'))
+            ->pluck('to_profile_id')
+            ->all();
+
+        $profiles
+            ->filter(fn ($u) => in_array($u->id, $followedIds))
+            ->filter(fn ($u) => ! in_array($u->id, $alreadyInvitedIds))
             ->each(function ($u) use ($gid, $pid) {
                 $gi = new GroupInvitation;
                 $gi->group_id = $gid;
@@ -184,7 +187,7 @@ class GroupsSearchController extends Controller
         return $res;
     }
 
-    public function searchAddRecent(Request $request)
+    public function searchAddRecent(Request $request): int
     {
         $this->validate($request, [
             'q' => 'required|min:2|max:40',

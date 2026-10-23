@@ -8,9 +8,10 @@ use App\Models\GroupInteraction;
 use App\Models\GroupLimit;
 use App\Models\GroupMember;
 use App\Models\GroupPost;
-use App\Profile;
+use App\Models\Profile;
 use App\Util\ActivityPub\Helpers;
-use Cache;
+use Illuminate\Support\Facades\Cache;
+use Illuminate\Support\Str;
 use Purify;
 
 class GroupService
@@ -40,7 +41,7 @@ class GroupService
                     'id' => (string) $group->id,
                     'name' => $group->name,
                     'description' => $group->description,
-                    'short_description' => str_limit(strip_tags($group->description), 120),
+                    'short_description' => Str::limit(strip_tags($group->description), 120),
                     'category' => self::categoryById($group->category_id),
                     'local' => (bool) $group->local,
                     'url' => $group->url(),

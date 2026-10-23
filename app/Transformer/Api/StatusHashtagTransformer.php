@@ -2,7 +2,7 @@
 
 namespace App\Transformer\Api;
 
-use App\StatusHashtag;
+use App\Models\StatusHashtag;
 use League\Fractal;
 
 class StatusHashtagTransformer extends Fractal\TransformerAbstract

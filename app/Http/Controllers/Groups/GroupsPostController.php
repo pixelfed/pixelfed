@@ -8,18 +8,20 @@ use App\Jobs\GroupsPipeline\ImageS3UploadPipeline;
 use App\Jobs\GroupsPipeline\NewPostPipeline;
 use App\Jobs\StatusPipeline\StatusDelete;
 use App\Jobs\VideoPipeline\VideoThumbnail;
-use App\Media;
 use App\Models\Group;
 use App\Models\GroupLike;
 use App\Models\GroupMedia;
 use App\Models\GroupPost;
-use App\Profile;
+use App\Models\Media;
+use App\Models\Profile;
 use App\Services\Groups\GroupFeedService;
 use App\Services\Groups\GroupMediaService;
 use App\Services\Groups\GroupPostService;
 use App\Services\Groups\GroupsLikeService;
 use App\Services\GroupService;
 use App\Services\PollService;
+use Illuminate\Http\JsonResponse;
+use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Bus;
 use Illuminate\Support\Facades\Cache;
@@ -41,6 +43,7 @@ class GroupsPostController extends Controller
 
         $group = Group::findOrFail($request->input('group_id'));
         $pid = $request->user()->profile_id;
+        abort_if(! $group->isMember($pid), 403, 'Not a member of group.');
         $caption = $request->input('caption');
         $type = $request->input('type', 'text');
 
@@ -136,7 +139,7 @@ class GroupsPostController extends Controller
             $gp->id
         );
 
-        $s = GroupPostService::get($status->group_id, $status->id);
+        $s = GroupPostService::get($gp->group_id, $gp->id);
         GroupFeedService::add($group->id, $gp->id);
         Cache::forget('groups:self:feed:'.$pid);
 
@@ -154,7 +157,7 @@ class GroupsPostController extends Controller
         return $s;
     }
 
-    public function deletePost(Request $request)
+    public function deletePost(Request $request): JsonResponse|RedirectResponse
     {
         abort_if(! $request->user(), 403);
 
@@ -168,9 +171,9 @@ class GroupsPostController extends Controller
         $group = Group::findOrFail($gid);
         abort_if(! $group->isMember($pid), 403, 'Not a member of group.');
 
-        $gp = GroupPost::whereGroupId($status->group_id)->findOrFail($request->input('id'));
+        $gp = GroupPost::whereGroupId($group->id)->findOrFail($request->input('id'));
         abort_if($gp->profile_id != $pid && $group->profile_id != $pid, 403);
-        $cached = GroupPostService::get($status->group_id, $status->id);
+        $cached = GroupPostService::get($gp->group_id, $gp->id);
 
         if ($cached) {
             $cached = collect($cached)->filter(function ($r, $k) {
@@ -186,12 +189,12 @@ class GroupsPostController extends Controller
         }
 
         GroupService::log(
-            $status->group_id,
+            $gp->group_id,
             $request->user()->profile_id,
             'group:status:deleted',
             [
                 'type' => $gp->type,
-                'status_id' => $status->id,
+                'status_id' => $gp->id,
                 'original' => $cached,
             ],
             GroupPost::class,
@@ -232,8 +235,8 @@ class GroupsPostController extends Controller
         //  $u->save();
         // }
 
-        if ($status->in_reply_to_id) {
-            $parent = GroupPost::find($status->in_reply_to_id);
+        if ($gp->in_reply_to_id) {
+            $parent = GroupPost::find($gp->in_reply_to_id);
             if ($parent) {
                 $parent->reply_count = GroupPost::whereInReplyToId($parent->id)->count();
                 $parent->save();
@@ -243,9 +246,9 @@ class GroupsPostController extends Controller
 
         GroupPostService::del($group->id, $gp->id);
         GroupFeedService::del($group->id, $gp->id);
-        if ($status->profile_id == $user->profile->id || $user->is_admin == true) {
-            // Cache::forget('profile:status_count:'.$status->profile_id);
-            StatusDelete::dispatch($status);
+        if ($gp->profile_id == $user->profile->id || $user->is_admin == true) {
+            // Cache::forget('profile:status_count:'.$gp->profile_id);
+            StatusDelete::dispatch($gp);
         }
 
         if ($request->wantsJson()) {
@@ -371,7 +374,7 @@ class GroupsPostController extends Controller
         return $response;
     }
 
-    public function getGroupMedia(Request $request)
+    public function getGroupMedia(Request $request): JsonResponse
     {
         $this->validate($request, [
             'gid' => 'required',

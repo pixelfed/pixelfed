@@ -3,11 +3,10 @@
 namespace App\Jobs\VideoPipeline;
 
 use App\Jobs\MediaPipeline\MediaStoragePipeline;
-use App\Media;
+use App\Models\Media;
 use App\Services\MediaService;
 use App\Services\StatusService;
 use App\Util\Media\Blurhash;
-use Cache;
 use FFMpeg;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldBeUniqueUntilProcessing;
@@ -16,6 +15,8 @@ use Illuminate\Foundation\Bus\Dispatchable;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\Middleware\WithoutOverlapping;
 use Illuminate\Queue\SerializesModels;
+use Illuminate\Support\Facades\Cache;
+use Illuminate\Support\Facades\Log;
 
 class VideoThumbnail implements ShouldBeUniqueUntilProcessing, ShouldQueue
 {
@@ -97,17 +98,36 @@ class VideoThumbnail implements ShouldBeUniqueUntilProcessing, ShouldQueue
             $media->thumbnail_path = $save;
             $media->save();
 
-            $blurhash = Blurhash::generate($media);
-            if ($blurhash) {
-                $media->blurhash = $blurhash;
-                $media->save();
+            // Isolated from the thumbnail work on purpose. The blurhash is decorative;
+            // MediaStoragePipeline at the end of this method is not, and until now any
+            // failure here skipped it, leaving the video on local disk forever with no
+            // failed_jobs row to show for it (pixelfed#2652).
+            try {
+                $blurhash = Blurhash::generate($media);
+                if ($blurhash) {
+                    $media->blurhash = $blurhash;
+                    $media->save();
+                }
+            } catch (\Throwable $e) {
+                // \Throwable, not \Exception: the failure this guard exists for is a
+                // memory_limit exhaustion, which surfaces as \Error (or a fatal), not
+                // \Exception. Catching only \Exception here would let the very case
+                // that strands the video (pixelfed#2652) slip through and skip the
+                // MediaStoragePipeline dispatch below.
+                if (config('app.dev_log')) {
+                    Log::error('Video blurhash generation failed: '.$e->getMessage());
+                }
             }
 
             if (config('media.hls.enabled')) {
                 VideoHlsPipeline::dispatch($media)->onQueue('mmo');
             }
         } catch (\Exception $e) {
+            if (config('app.dev_log')) {
+                Log::error('Video thumbnail generation failed: '.$e->getMessage());
+            }
 
+            throw $e;
         }
 
         if ($media->status_id) {

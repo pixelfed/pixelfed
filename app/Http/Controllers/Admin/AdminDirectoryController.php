@@ -4,13 +4,13 @@ namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\PixelfedDirectoryController;
 use App\Models\ConfigCache;
+use App\Models\Status;
+use App\Models\User;
 use App\Services\AccountService;
 use App\Services\ConfigCacheService;
 use App\Services\StatusService;
-use App\Status;
-use App\User;
-use Cache;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Validator;
@@ -74,7 +74,7 @@ trait AdminDirectoryController
         $res['activitypub_enabled'] = (bool) config_cache('federation.activitypub.enabled');
 
         $res['feature_config'] = [
-            'media_types' => Str::of(config_cache('pixelfed.media_types'))->explode(','),
+            'media_types' => explode(',', config_cache('pixelfed.media_types')),
             'image_quality' => config_cache('pixelfed.image_quality'),
             'optimize_image' => (bool) config_cache('pixelfed.optimize_image'),
             'max_photo_size' => config_cache('pixelfed.max_photo_size'),
@@ -101,7 +101,8 @@ trait AdminDirectoryController
             'media_types' => [
                 'required',
                 function ($attribute, $value, $fail) {
-                    if (! in_array('image/jpeg', $value->toArray()) || ! in_array('image/png', $value->toArray())) {
+                    $types = is_array($value) ? $value : collect($value)->toArray();
+                    if (! in_array('image/jpeg', $types) || ! in_array('image/png', $types)) {
                         $fail('You must enable image/jpeg and image/png support.');
                     }
                 },
@@ -132,7 +133,7 @@ trait AdminDirectoryController
         $res['synced'] = config_cache('pixelfed.directory.is_synced') ?? false;
         $res['latest_response'] = config_cache('pixelfed.directory.latest_response') ?? null;
 
-        $path = base_path('resources/lang');
+        $path = lang_path();
         $langs = collect([]);
 
         foreach (new \DirectoryIterator($path) as $io) {
@@ -249,7 +250,7 @@ trait AdminDirectoryController
             'curated_onboarding' => (bool) config_cache('instance.curated_registration.enabled'),
             'activitypub_enabled' => config_cache('federation.activitypub.enabled'),
             'oauth_enabled' => (bool) config_cache('pixelfed.oauth_enabled'),
-            'media_types' => Str::of(config_cache('pixelfed.media_types'))->explode(','),
+            'media_types' => explode(',', config_cache('pixelfed.media_types')),
             'image_quality' => config_cache('pixelfed.image_quality'),
             'optimize_image' => config_cache('pixelfed.optimize_image'),
             'max_photo_size' => config_cache('pixelfed.max_photo_size'),
@@ -269,7 +270,8 @@ trait AdminDirectoryController
             'media_types' => [
                 'required',
                 function ($attribute, $value, $fail) {
-                    if (! in_array('image/jpeg', $value->toArray()) || ! in_array('image/png', $value->toArray())) {
+                    $types = is_array($value) ? $value : collect($value)->toArray();
+                    if (! in_array('image/jpeg', $types) || ! in_array('image/png', $types)) {
                         $fail('You must enable image/jpeg and image/png support.');
                     }
                 },

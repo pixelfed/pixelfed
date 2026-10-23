@@ -23,7 +23,7 @@
             @if(Auth::user()->email_verified_at)
             <span class="text-success">{{__('settings.email.verified')}}</span> {{Auth::user()->email_verified_at->diffForHumans()}}
             @else
-            <span class="text-danger">{{__('settings.email.unverified')}}</span> {{__('settings.email.you_need_to')}} <a href="/i/verify-email">{{__('settings.email.verify_your_email')}}</a>.
+            <span class="text-danger">{{__('settings.email.unverified')}}</span> {{__('settings.email.you_need_to')}} <button type="submit" form="email-verification-resend" class="btn btn-link p-0 border-0 align-baseline font-weight-bold">{{__('settings.email.verify_your_email')}}</button>.
             @endif
         </p>
     </div>
@@ -33,4 +33,9 @@
         </div>
     </div>
 </form>
+@unless(Auth::user()->email_verified_at)
+<form id="email-verification-resend" method="post" action="{{route('settings.email.resend')}}" class="d-none">
+    @csrf
+</form>
+@endunless
 @endsection

@@ -15,16 +15,16 @@ return [
         'app' => env('APP_DOMAIN'),
     ],
 
-	/*
-	|--------------------------------------------------------------------------
-	| Pixelfed Version
-	|--------------------------------------------------------------------------
-	|
-	| This value is the version of your Pixelfed instance.
-	|
-	*/
-	'git_version' => exec('git describe --tags | sed -En "s/v(.*)-glitch/\1+glitch/p"'),
-	'version' => env('PIXELFED_VERSION', !empty($git_version) ? $git_version : '0.12.6+glitch.1.12.2?'),
+    /*
+    |--------------------------------------------------------------------------
+    | Pixelfed Version
+    |--------------------------------------------------------------------------
+    |
+    | This value is the version of your Pixelfed instance.
+    |
+    */
+    // GLITCH MODIFIED: glitch version string, set by CI via PIXELFED_VERSION
+    'version' => env('PIXELFED_VERSION', '0.13.0+glitch.1.13.0?'),
 
     /*
     |--------------------------------------------------------------------------
@@ -243,7 +243,8 @@ return [
 
     'max_collection_length' => (int) env('PF_MAX_COLLECTION_LENGTH', 100),
 
-    'media_types' => env('MEDIA_TYPES', 'image/jpeg,image/jpg,image/png,image/webp,image/gif,image/avif,image/heic,video/mp4,video/mov'),
+    // GLITCH MODIFIED: wider default media types (.mov is video/quicktime)
+    'media_types' => env('MEDIA_TYPES', 'image/jpeg,image/jpg,image/png,image/webp,image/gif,image/avif,image/heic,video/mp4,video/quicktime'),
 
     'enforce_account_limit' => env('LIMIT_ACCOUNT_SIZE', true),
 

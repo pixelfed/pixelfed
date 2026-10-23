@@ -2,17 +2,16 @@
 
 namespace App\Observers;
 
-use App\Follower;
 use App\Jobs\AvatarPipeline\CreateAvatar;
 use App\Jobs\FollowPipeline\FollowPipeline;
 use App\Models\DefaultDomainBlock;
+use App\Models\Follower;
+use App\Models\Profile;
+use App\Models\User;
 use App\Models\UserDomainBlock;
-use App\Models\UserNotify;
-use App\Profile;
+use App\Models\UserSetting;
 use App\Services\FollowerService;
-use App\User;
-use App\UserSetting;
-use DB;
+use Illuminate\Support\Facades\DB;
 
 class UserObserver
 {
@@ -94,6 +93,11 @@ class UserObserver
                 $user = User::findOrFail($user->id);
                 $user->profile_id = $profile->id;
                 $user->save();
+
+                // UserNotify::updateOrCreate([
+                //     'profile_id' => $profile->id,
+                //     'user_id' => $user->id,
+                // ]);
 
                 CreateAvatar::dispatch($profile);
             });

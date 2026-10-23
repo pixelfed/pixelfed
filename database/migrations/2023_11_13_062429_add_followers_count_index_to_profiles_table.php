@@ -12,10 +12,10 @@ return new class extends Migration
     public function up(): void
     {
         Schema::table('profiles', function (Blueprint $table) {
-           $table->index('followers_count', 'profiles_followers_count_index');
-           $table->index('following_count', 'profiles_following_count_index');
-           $table->index('status_count', 'profiles_status_count_index');
-           $table->index('is_private', 'profiles_is_private_index');
+            $table->index('followers_count', 'profiles_followers_count_index');
+            $table->index('following_count', 'profiles_following_count_index');
+            $table->index('status_count', 'profiles_status_count_index');
+            $table->index('is_private', 'profiles_is_private_index');
         });
     }
 

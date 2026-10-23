@@ -2,8 +2,8 @@
 
 namespace App\Services;
 
-use App\Hashtag;
-use App\HashtagFollow;
+use App\Models\Hashtag;
+use App\Models\HashtagFollow;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Redis;
 

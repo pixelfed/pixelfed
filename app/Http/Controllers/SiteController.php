@@ -2,36 +2,39 @@
 
 namespace App\Http\Controllers;
 
-use App\Page;
-use App\Profile;
+use App\Http\Controllers\Concerns\ManagesCachedPages;
+use App\Models\Page;
+use App\Models\Profile;
+use App\Models\User;
 use App\Services\FollowerService;
 use App\Services\StatusService;
-use App\User;
 use App\Util\ActivityPub\Helpers;
 use App\Util\Localization\Localization;
-use Auth;
-use Cache;
+use Illuminate\Contracts\View\View;
+use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Str;
-use View;
 
 class SiteController extends Controller
 {
+    use ManagesCachedPages;
+
     public function home(Request $request)
     {
-        if (Auth::check()) {
+        if ($request->user() !== null) {
             return $this->homeTimeline($request);
         } else {
             return $this->homeGuest();
         }
     }
 
-    public function homeGuest()
+    public function homeGuest(): View
     {
         return view('site.index');
     }
 
-    public function homeTimeline(Request $request)
+    public function homeTimeline(Request $request): RedirectResponse|View
     {
         if ($request->has('force_old_ui')) {
             return view('timeline.home', ['layout' => 'feed']);
@@ -40,7 +43,7 @@ class SiteController extends Controller
         return redirect('/i/web');
     }
 
-    public function changeLocale(Request $request, $locale)
+    public function changeLocale(Request $request, $locale): RedirectResponse
     {
         // todo: add other locales after pushing new l10n strings
         $locales = Localization::languages();
@@ -58,8 +61,14 @@ class SiteController extends Controller
 
     public function about()
     {
-        return Cache::remember('site.about_v2', now()->addMinutes(15), function () {
-            $user_count = number_format(User::whereNull('status')->count()); # Only get null status - these are the "active" users);
+        // Scope the cache key by locale: the rendered view contains many
+        // translated site.* strings, so a single shared key would let one
+        // locale's render be served to visitors of other locales.
+        $cacheKey = 'site.about_v2:'.app()->getLocale();
+
+        return Cache::remember($cacheKey, now()->addMinutes(15), function () {
+            // GLITCH MODIFIED: count only active users (null status)
+            $user_count = number_format(User::whereNull('status')->count()); # Only get null status - these are the "active" users
             $post_count = number_format(StatusService::totalLocalStatuses());
             $rules = config_cache('app.rules') ? json_decode(config_cache('app.rules'), true) : null;
 
@@ -67,44 +76,44 @@ class SiteController extends Controller
         });
     }
 
-    public function language()
+    public function language(): View
     {
         return view('site.language');
     }
 
     public function communityGuidelines(Request $request)
     {
-        return Cache::remember('site:help:community-guidelines', now()->addDays(120), function () {
+        // Scope by locale: the rendered layout contains translated strings,
+        // so a shared key would leak one locale's render to other locales.
+        $cacheKey = 'site:help:community-guidelines:'.app()->getLocale();
+
+        return Cache::remember($cacheKey, now()->addMinutes(15), function () {
             $slug = '/site/kb/community-guidelines';
             $page = Page::whereSlug($slug)->whereActive(true)->first();
 
-            return View::make('site.help.community-guidelines')->with(compact('page'))->render();
+            return view('site.help.community-guidelines', compact('page'))->render();
         });
     }
 
     public function privacy(Request $request)
     {
         $page = Cache::remember('site:privacy', now()->addDays(120), function () {
-            $slug = '/site/privacy';
-
-            return Page::whereSlug($slug)->whereActive(true)->first();
+            return $this->cachedPage('/site/privacy');
         });
 
-        return View::make('site.privacy')->with(compact('page'))->render();
+        return view('site.privacy', compact('page'))->render();
     }
 
     public function terms(Request $request)
     {
         $page = Cache::remember('site:terms', now()->addDays(120), function () {
-            $slug = '/site/terms';
-
-            return Page::whereSlug($slug)->whereActive(true)->first();
+            return $this->cachedPage('/site/terms');
         });
 
-        return View::make('site.terms')->with(compact('page'))->render();
+        return view('site.terms', compact('page'))->render();
     }
 
-    public function redirectUrl(Request $request)
+    public function redirectUrl(Request $request): View
     {
         abort_if(! $request->user(), 404);
         $this->validate($request, [
@@ -116,7 +125,7 @@ class SiteController extends Controller
         return view('site.redirect', compact('url'));
     }
 
-    public function followIntent(Request $request)
+    public function followIntent(Request $request): View
     {
         $this->validate($request, [
             'user' => 'string|min:1|max:30|exists:users,username',
@@ -129,7 +138,7 @@ class SiteController extends Controller
         return view('site.intents.follow', compact('profile', 'user', 'following'));
     }
 
-    public function legacyProfileRedirect(Request $request, $username)
+    public function legacyProfileRedirect(Request $request, $username): RedirectResponse
     {
         $username = Str::contains($username, '@') ? '@'.$username : $username;
         if (str_contains($username, '@')) {
@@ -152,7 +161,7 @@ class SiteController extends Controller
         return redirect($url);
     }
 
-    public function legacyWebfingerRedirect(Request $request, $username, $domain)
+    public function legacyWebfingerRedirect(Request $request, $username, $domain): RedirectResponse
     {
         $un = '@'.$username.'@'.$domain;
         $profile = Profile::whereUsername($un)
@@ -170,16 +179,14 @@ class SiteController extends Controller
     public function legalNotice(Request $request)
     {
         $page = Cache::remember('site:legal-notice', now()->addDays(120), function () {
-            $slug = '/site/legal-notice';
-
-            return Page::whereSlug($slug)->whereActive(true)->first();
+            return $this->cachedPage('/site/legal-notice');
         });
         abort_if(! $page, 404);
 
-        return View::make('site.legal-notice')->with(compact('page'))->render();
+        return view('site.legal-notice', compact('page'))->render();
     }
 
-    public function curatedOnboarding(Request $request)
+    public function curatedOnboarding(Request $request): RedirectResponse|View
     {
         if ($request->user()) {
             return redirect('/i/web');

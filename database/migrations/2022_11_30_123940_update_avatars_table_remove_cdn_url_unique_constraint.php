@@ -15,7 +15,9 @@ return new class extends Migration
     {
         Schema::table('avatars', function (Blueprint $table) {
             $indexes = Schema::getIndexes('avatars');
-            $indexesFound = collect($indexes)->map(function($i) { return $i['name']; })->toArray();
+            $indexesFound = collect($indexes)->map(function ($i) {
+                return $i['name'];
+            })->toArray();
             if (in_array('avatars_cdn_url_unique', $indexesFound)) {
                 $table->dropUnique('avatars_cdn_url_unique');
             }

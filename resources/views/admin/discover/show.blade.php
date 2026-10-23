@@ -181,7 +181,7 @@ $(document).ready(function() {
 <style type="text/css">
 /*
  * bootstrap-tagsinput v0.8.0
- *
+ * 
  */
 
 .bootstrap-tagsinput {

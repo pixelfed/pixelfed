@@ -3,13 +3,18 @@
 namespace App\Http\Controllers\Auth;
 
 use App\Http\Controllers\Controller;
+use App\Models\User;
+use App\Rules\ValidUsername;
 use App\Services\BouncerService;
 use App\Services\EmailService;
-use App\User;
-use App\Util\Lexer\RestrictedNames;
+use App\Services\EmailVerificationService;
+use App\Services\PendingLoginService;
 use Illuminate\Auth\Events\Registered;
+use Illuminate\Contracts\View\View;
 use Illuminate\Foundation\Auth\RegistersUsers;
+use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
+use Illuminate\Http\Response;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Validator;
 use Purify;
@@ -46,13 +51,6 @@ class RegisterController extends Controller
         $this->middleware('guest');
     }
 
-    public function getRegisterToken()
-    {
-        return \Cache::remember('pf:register:rt', 900, function () {
-            return str_random(40);
-        });
-    }
-
     /**
      * Get a validator for an incoming registration request.
      *
@@ -61,9 +59,13 @@ class RegisterController extends Controller
      */
     public function validator(array $data)
     {
-        if (config('database.default') == 'pgsql') {
-            $data['username'] = strtolower($data['username']);
-            $data['email'] = strtolower($data['email']);
+        if (db_is_pgsql()) {
+            if (isset($data['username'])) {
+                $data['username'] = strtolower($data['username']);
+            }
+            if (isset($data['email'])) {
+                $data['email'] = strtolower($data['email']);
+            }
         }
 
         $usernameRules = [
@@ -71,41 +73,7 @@ class RegisterController extends Controller
             'min:2',
             'max:30',
             'unique:users',
-            function ($attribute, $value, $fail) {
-                $dash = substr_count($value, '-');
-                $underscore = substr_count($value, '_');
-                $period = substr_count($value, '.');
-
-                if (ends_with($value, ['.php', '.js', '.css'])) {
-                    return $fail('Username is invalid.');
-                }
-
-                if (($dash + $underscore + $period) > 1) {
-                    return $fail('Username is invalid. Can only contain one dash (-), period (.) or underscore (_).');
-                }
-
-                if (! ctype_alnum($value[0])) {
-                    return $fail('Username is invalid. Must start with a letter or number.');
-                }
-
-                if (! ctype_alnum($value[strlen($value) - 1])) {
-                    return $fail('Username is invalid. Must end with a letter or number.');
-                }
-
-                $val = str_replace(['_', '.', '-'], '', $value);
-                if (! ctype_alnum($val)) {
-                    return $fail('Username is invalid. Username must be alpha-numeric and may contain dashes (-), periods (.) and underscores (_).');
-                }
-
-                if (! preg_match('/[a-zA-Z]/', $value)) {
-                    return $fail('Username is invalid. Must contain at least one alphabetical character.');
-                }
-
-                $restricted = RestrictedNames::get();
-                if (in_array(strtolower($value), array_map('strtolower', $restricted))) {
-                    return $fail('Username cannot be used.');
-                }
-            },
+            new ValidUsername,
         ];
 
         $emailRules = [
@@ -122,26 +90,16 @@ class RegisterController extends Controller
             },
         ];
 
-        $rt = [
-            'required',
-            function ($attribute, $value, $fail) {
-                if ($value !== $this->getRegisterToken()) {
-                    return $fail('Something went wrong');
-                }
-            },
-        ];
-
         $rules = [
             'agecheck' => 'required|accepted',
-            'rt' => $rt,
             'name' => 'nullable|string|max:'.config('pixelfed.max_name_length'),
             'username' => $usernameRules,
             'email' => $emailRules,
             'password' => 'required|string|min:'.config('pixelfed.min_password_length').'|confirmed',
         ];
 
-        if ((bool) config_cache('captcha.enabled') && (bool) config_cache('captcha.active.register')) {
-            $rules['h-captcha-response'] = 'required|captcha';
+        if (app('captcha.manager')->activeOn('register')) {
+            $rules[app('captcha.manager')->active()->responseField()] = 'required|captcha_verify';
         }
 
         return Validator::make($data, $rules);
@@ -151,13 +109,17 @@ class RegisterController extends Controller
      * Create a new user instance after a valid registration.
      *
      *
-     * @return \App\User
+     * @return User
      */
     public function create(array $data)
     {
-        if (config('database.default') == 'pgsql') {
-            $data['username'] = strtolower($data['username']);
-            $data['email'] = strtolower($data['email']);
+        if (db_is_pgsql()) {
+            if (isset($data['username'])) {
+                $data['username'] = strtolower($data['username']);
+            }
+            if (isset($data['email'])) {
+                $data['email'] = strtolower($data['email']);
+            }
         }
 
         return User::create([
@@ -172,9 +134,9 @@ class RegisterController extends Controller
     /**
      * Show the application registration form.
      *
-     * @return \Illuminate\Http\Response
+     * @return Response
      */
-    public function showRegistrationForm()
+    public function showRegistrationForm(): RedirectResponse|View
     {
         if ((bool) config_cache('pixelfed.open_registration')) {
             if (config('pixelfed.bouncer.cloud_ips.ban_signups')) {
@@ -186,10 +148,11 @@ class RegisterController extends Controller
                 $count = User::where(function ($q) {
                     return $q->whereNull('status')->orWhereNotIn('status', ['deleted', 'delete']);
                 })->count();
-                if ($limit <= $count) {
+                // A falsy max_users means "no limit" (matches register() and the
+                // help view). Guard on $limit so 0/null/'' does not redirect.
+                if ($limit && $limit <= $count) {
                     return redirect(route('help.instance-max-users-limit'));
                 }
-                abort_if($limit <= $count, 404);
 
                 return view('auth.register');
             } else {
@@ -207,7 +170,11 @@ class RegisterController extends Controller
     /**
      * Handle a registration request for the application.
      *
-     * @return \Illuminate\Http\Response
+     * When email verification is enforced the new account gets no session.
+     * It is parked on the login verify step, same as an unverified login,
+     * and only gets a session once the confirm link is opened.
+     *
+     * @return Response
      */
     public function register(Request $request)
     {
@@ -232,6 +199,13 @@ class RegisterController extends Controller
         $this->validator($request->all())->validate();
 
         event(new Registered($user = $this->create($request->all())));
+
+        if ((bool) config('pixelfed.enforce_email_verification') && is_null($user->email_verified_at)) {
+            PendingLoginService::start($request, $user, false, PendingLoginService::STEP_VERIFY);
+            EmailVerificationService::send($user);
+
+            return redirect()->route('login', ['step' => PendingLoginService::STEP_VERIFY]);
+        }
 
         $this->guard()->login($user);
 

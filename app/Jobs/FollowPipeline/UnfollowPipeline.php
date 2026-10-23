@@ -2,20 +2,20 @@
 
 namespace App\Jobs\FollowPipeline;
 
-use App\Follower;
-use App\FollowRequest;
 use App\Jobs\HomeFeedPipeline\FeedUnfollowPipeline;
-use App\Notification;
-use App\Profile;
+use App\Models\Follower;
+use App\Models\FollowRequest;
+use App\Models\Notification;
+use App\Models\Profile;
 use App\Services\AccountService;
 use App\Services\FollowerService;
 use App\Services\NotificationService;
-use Cache;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
+use Illuminate\Support\Facades\Cache;
 
 class UnfollowPipeline implements ShouldQueue
 {
@@ -95,7 +95,7 @@ class UnfollowPipeline implements ShouldQueue
                 ->whereAction('follow')
                 ->whereActorId($actor)
                 ->whereItemId($target)
-                ->whereItemType('App\Profile')
+                ->whereItemType(Profile::class)
                 ->get()
                 ->each(function ($n) {
                     NotificationService::del($n->profile_id, $n->id);

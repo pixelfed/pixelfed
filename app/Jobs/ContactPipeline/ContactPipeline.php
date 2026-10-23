@@ -2,15 +2,15 @@
 
 namespace App\Jobs\ContactPipeline;
 
-use App\Contact;
 use App\Mail\ContactAdmin;
+use App\Models\Contact;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
 use Illuminate\Support\Facades\Log;
-use Mail;
+use Illuminate\Support\Facades\Mail;
 
 class ContactPipeline implements ShouldQueue
 {

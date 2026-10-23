@@ -2,8 +2,8 @@
 
 namespace App\Jobs\StoryPipeline;
 
-use App\Status;
-use App\Story;
+use App\Models\Status;
+use App\Models\Story;
 use App\Util\ActivityPub\Helpers;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;

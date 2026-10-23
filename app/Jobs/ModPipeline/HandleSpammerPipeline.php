@@ -2,15 +2,15 @@
 
 namespace App\Jobs\ModPipeline;
 
-use App\Profile;
+use App\Models\Profile;
+use App\Models\Status;
 use App\Services\StatusService;
-use App\Status;
-use Cache;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
+use Illuminate\Support\Facades\Cache;
 
 class HandleSpammerPipeline implements ShouldQueue
 {

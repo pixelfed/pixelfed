@@ -7,8 +7,10 @@ use App\Models\ProfileMigration;
 use App\Services\AccountService;
 use App\Services\WebfingerService;
 use App\Util\Lexer\Nickname;
-use Cache;
+use Illuminate\Contracts\View\View;
+use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Cache;
 
 class ProfileAliasController extends Controller
 {
@@ -17,14 +19,14 @@ class ProfileAliasController extends Controller
         $this->middleware('auth');
     }
 
-    public function index(Request $request)
+    public function index(Request $request): View
     {
         $aliases = $request->user()->profile->aliases;
 
         return view('settings.aliases.index', compact('aliases'));
     }
 
-    public function store(Request $request)
+    public function store(Request $request): RedirectResponse
     {
         $this->validate($request, [
             'acct' => 'required',
@@ -64,7 +66,7 @@ class ProfileAliasController extends Controller
         return back()->with('status', 'Successfully added alias!');
     }
 
-    public function delete(Request $request)
+    public function delete(Request $request): RedirectResponse
     {
         $this->validate($request, [
             'acct' => 'required',

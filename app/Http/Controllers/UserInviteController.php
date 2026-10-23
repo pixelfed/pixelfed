@@ -3,27 +3,30 @@
 namespace App\Http\Controllers;
 
 use App\Mail\UserInviteMail;
+use App\Models\User;
+use App\Models\UserInvite;
 use App\Services\EmailService;
-use App\User;
-use App\UserInvite;
-use Auth;
+use Illuminate\Contracts\View\View;
+use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Mail;
+use Illuminate\Support\Str;
 
 class UserInviteController extends Controller
 {
-    public function create(Request $request)
+    public function create(Request $request): View
     {
         abort_if(! config('pixelfed.user_invites.enabled'), 404);
-        abort_unless(Auth::check(), 403);
+        abort_unless($request->user() !== null, 403);
 
         return view('settings.invites.create');
     }
 
-    public function show(Request $request)
+    public function show(Request $request): View
     {
         abort_if(! config('pixelfed.user_invites.enabled'), 404);
-        abort_unless(Auth::check(), 403);
+        abort_unless($request->user() !== null, 403);
         $invites = UserInvite::whereUserId(Auth::id())->paginate(10);
         $limit = config('pixelfed.user_invites.limit.total');
         $used = UserInvite::whereUserId(Auth::id())->count();
@@ -31,10 +34,10 @@ class UserInviteController extends Controller
         return view('settings.invites.home', compact('invites', 'limit', 'used'));
     }
 
-    public function store(Request $request)
+    public function store(Request $request): RedirectResponse
     {
         abort_if(! config('pixelfed.user_invites.enabled'), 404);
-        abort_unless(Auth::check(), 403);
+        abort_unless($request->user() !== null, 403);
         $this->validate($request, [
             'email' => 'required|email|unique:users|unique:user_invites',
             'message' => 'nullable|string|max:500',
@@ -52,11 +55,11 @@ class UserInviteController extends Controller
 
         $invite = new UserInvite;
         $invite->user_id = Auth::id();
-        $invite->profile_id = Auth::user()->profile_id;
+        $invite->profile_id = $request->user()->profile_id;
         $invite->email = $email;
         $invite->message = $request->input('message');
-        $invite->key = str_random(random_int(6, 9)).'_'.str_random(random_int(14, 20)).'_'.str_random(random_int(32, 64));
-        $invite->token = str_random(random_int(32, 69));
+        $invite->key = Str::random(random_int(6, 9)).'_'.Str::random(random_int(14, 20)).'_'.Str::random(random_int(32, 64));
+        $invite->token = Str::random(random_int(32, 69));
         $invite->save();
 
         // Mail::to($email)->send(new UserInviteMail($invite));
@@ -64,7 +67,7 @@ class UserInviteController extends Controller
         return redirect(route('settings.invites'));
     }
 
-    public function redeem(Request $request, $key, $token)
+    public function redeem(Request $request, $key, $token): View
     {
         abort_if(! config('pixelfed.user_invites.enabled'), 404);
         // if($request->user()) {
@@ -82,7 +85,7 @@ class UserInviteController extends Controller
         // ], 200, [], JSON_PRETTY_PRINT|JSON_UNESCAPED_SLASHES);
     }
 
-    public function redeemVerify(Request $request, $key, $token)
+    public function redeemVerify(Request $request, $key, $token): RedirectResponse
     {
         abort_if(! config('pixelfed.user_invites.enabled'), 404);
         // if($request->user()) {
@@ -107,7 +110,7 @@ class UserInviteController extends Controller
         return redirect('/i/invite/verified');
     }
 
-    public function verified(Request $request)
+    public function verified(Request $request): View
     {
         abort_if(! config('pixelfed.user_invites.enabled'), 404);
         // if($request->user()) {

@@ -2,8 +2,9 @@
 
 namespace App\Http\Controllers;
 
-use App\Circle;
-use Auth;
+use App\Models\Circle;
+use Illuminate\Contracts\View\View;
+use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Validation\Rule;
 
@@ -14,21 +15,21 @@ class CircleController extends Controller
         $this->middleware('auth');
     }
 
-    public function home(Request $request)
+    public function home(Request $request): View
     {
-        $circles = Circle::whereProfileId(Auth::user()->profile->id)
+        $circles = Circle::whereProfileId($request->user()->profile->id)
             ->orderByDesc('created_at')
             ->paginate(10);
 
         return view('account.circles.home', compact('circles'));
     }
 
-    public function create(Request $request)
+    public function create(Request $request): View
     {
         return view('account.circles.create');
     }
 
-    public function store(Request $request)
+    public function store(Request $request): RedirectResponse
     {
         $this->validate($request, [
             'name' => 'required|string|min:1',
@@ -46,7 +47,7 @@ class CircleController extends Controller
         ]);
 
         $circle = Circle::firstOrCreate([
-            'profile_id' => Auth::user()->profile->id,
+            'profile_id' => $request->user()->profile->id,
             'name' => $request->input('name'),
         ], [
             'description' => $request->input('description'),
@@ -57,7 +58,7 @@ class CircleController extends Controller
         return redirect(route('account.circles'));
     }
 
-    public function show(Request $request, $id)
+    public function show(Request $request, $id): View
     {
         $circle = Circle::findOrFail($id);
 

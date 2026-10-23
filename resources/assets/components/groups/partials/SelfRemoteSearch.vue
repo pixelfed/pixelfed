@@ -25,6 +25,7 @@
 						<li class="font-weight-bold">Some remote groups are not supported*</li>
 						<li>Read and comply with group rules defined by group admins</li>
 						<li>Use the full <span class="font-weight-bold">Group URL</span> including <code>https://</code></li>
+						<!-- GLITCH MODIFIED: typo fix -->
 						<li>Joining private groups requires manual approval from group admins, you will receive a notification when your membership is approved</li>
 						<li>Inviting people to remote groups is not supported yet</li>
 						<li>Your group membership may be terminated at any time by group admins</li>

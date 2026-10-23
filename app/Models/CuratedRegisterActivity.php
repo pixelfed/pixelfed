@@ -11,11 +11,14 @@ class CuratedRegisterActivity extends Model
 
     protected $guarded = [];
 
-    protected $casts = [
-        'metadata' => 'array',
-        'admin_notified_at' => 'datetime',
-        'action_taken_at' => 'datetime',
-    ];
+    protected function casts(): array
+    {
+        return [
+            'metadata' => 'array',
+            'admin_notified_at' => 'datetime',
+            'action_taken_at' => 'datetime',
+        ];
+    }
 
     public function application()
     {

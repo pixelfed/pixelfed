@@ -3,7 +3,7 @@
 namespace App\Policies;
 
 use App\Models\CustomFilter;
-use App\User;
+use App\Models\User;
 
 class CustomFilterPolicy
 {

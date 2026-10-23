@@ -2,8 +2,8 @@
 
 namespace App\Jobs\AvatarPipeline;
 
-use App\Avatar;
-use App\Profile;
+use App\Models\Avatar;
+use App\Models\Profile;
 use App\Services\MediaStorageService;
 use App\Util\ActivityPub\Helpers;
 use Illuminate\Bus\Queueable;
@@ -30,6 +30,7 @@ class RemoteAvatarFetch implements ShouldQueue
      *
      * @var int
      */
+    // GLITCH MODIFIED: retry remote avatar fetches (upstream: 1)
     public $tries = 3; // Retry this action, it can often fail due to network issues
 
     public $timeout = 300;

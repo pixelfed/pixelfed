@@ -24,9 +24,12 @@ class Portfolio extends Model
         'profile_source',
     ];
 
-    protected $casts = [
-        'metadata' => 'json',
-    ];
+    protected function casts(): array
+    {
+        return [
+            'metadata' => 'json',
+        ];
+    }
 
     public function url($suffix = '')
     {

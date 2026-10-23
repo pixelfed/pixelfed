@@ -2,7 +2,7 @@
 
 namespace App\Transformer\Api;
 
-use App\Media;
+use App\Models\Media;
 use League\Fractal;
 
 class MediaDraftTransformer extends Fractal\TransformerAbstract

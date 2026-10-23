@@ -217,6 +217,7 @@ jobs:
             PHP_VERSION=${{ matrix.php_version }}
             PHP_BASE_TYPE=${{ matrix.php_base }}
             PIXELFED_VERSION=${{ steps.pixelfed_version.outputs.PIXELFED_VERSION }}
+            APT_UPGRADE_CACHEBUST=${{ github.run_id }}
           cache-from: type=gha,scope=-${{ matrix.target_runtime }}-${{ matrix.php_base }}-${{ matrix.php_version }}-${{ matrix.debian_release }}
           cache-to: type=gha,mode=max,scope=-${{ matrix.target_runtime }}-${{ matrix.php_base }}-${{ matrix.php_version }}-${{ matrix.debian_release }}
 

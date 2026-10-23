@@ -2,13 +2,13 @@
 
 namespace App\Services;
 
+use App\Models\Profile;
+use App\Models\Status;
+use App\Models\User;
 use App\Models\UserDomainBlock;
-use App\Profile;
-use App\Status;
+use App\Models\UserSetting;
 use App\Transformer\Api\AccountTransformer;
-use App\User;
-use App\UserSetting;
-use Cache;
+use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Str;
 use League\Fractal;
@@ -61,7 +61,8 @@ class AccountService
             $account['location'],
             $account['note_text'],
             $account['pronouns'],
-            $account['website']
+            $account['website'],
+            $account['has_story'],
         );
 
         $account['avatar_static'] = $account['avatar'];
@@ -118,7 +119,7 @@ class AccountService
     {
         $key = self::CACHE_PF_ACCT_SETTINGS_KEY.$pid;
 
-        return Cache::remember($key, 14400, function () use ($pid) {
+        return Cache::remember($key, 604800, function () use ($pid) {
             $user = User::with('profile')->whereProfileId($pid)->whereNull('status')->first();
             if (! $user) {
                 return [];
@@ -126,12 +127,15 @@ class AccountService
 
             $settings = $user->settings;
             $other = array_merge(self::defaultSettings()['other'], $settings->other ?? []);
+            $compose = array_merge(self::defaultSettings()['compose_settings'], $settings->compose_settings ?? []);
 
             return [
                 'reduce_motion' => (bool) $settings->reduce_motion,
                 'high_contrast_mode' => (bool) $settings->high_contrast_mode,
                 'video_autoplay' => (bool) $settings->video_autoplay,
-                'media_descriptions' => (bool) $settings->media_descriptions,
+                'media_descriptions' => (bool) $compose['media_descriptions'],
+                'default_scope' => (string) $compose['default_scope'],
+                'default_license' => (int) $compose['default_license'],
                 'crawlable' => (bool) $settings->crawlable,
                 'show_profile_follower_count' => (bool) $settings->show_profile_follower_count,
                 'show_profile_following_count' => (bool) $settings->show_profile_following_count,
@@ -219,15 +223,16 @@ class AccountService
         $key = self::CACHE_KEY.'u2id:'.hash('sha256', $username);
 
         return Cache::remember($key, 14400, function () use ($username) {
-            $s = Str::of($username);
-            if ($s->contains('@') && ! $s->startsWith('@')) {
+            if (Str::contains($username, '@') && ! Str::startsWith($username, '@')) {
                 $username = "@{$username}";
             }
+            // GLITCH MODIFIED START: allow login/lookup with full @user@this-domain handle
             if(preg_match('/^@([^@]+)@'.preg_quote(config('pixelfed.domain.app')).'$/i', $username, $matches)) {
                 # The username is the fully qualified @user@example.com and the pixelfed site is example.com
                 # Normalize this username to just user
                 $username = $matches[1];
             }
+            // GLITCH MODIFIED END
 
             $profile = DB::table('profiles')
                 ->whereUsername($username)
@@ -326,6 +331,11 @@ class AccountService
         } else {
             return $formatter->format($num);
         }
+    }
+
+    public static function getUserIdFromProfileId($profileId): ?int
+    {
+        return Profile::whereKey($profileId)->value('user_id');
     }
 
     public static function getMetaDescription($id)

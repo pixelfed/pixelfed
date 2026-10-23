@@ -1,8 +1,8 @@
 <?php
 
-use Illuminate\Support\Facades\Schema;
-use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Database\Migrations\Migration;
+use Illuminate\Database\Schema\Blueprint;
+use Illuminate\Support\Facades\Schema;
 
 class UpdateFollowerTableAddRemoteFlags extends Migration
 {
@@ -27,7 +27,7 @@ class UpdateFollowerTableAddRemoteFlags extends Migration
     public function down()
     {
         Schema::table('followers', function (Blueprint $table) {
-            $table->dropColumn(['local_profile','local_following']);
+            $table->dropColumn(['local_profile', 'local_following']);
         });
     }
 }

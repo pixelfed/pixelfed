@@ -5,8 +5,10 @@ namespace App\Http\Controllers\Auth;
 use App\Http\Controllers\Controller;
 use App\Services\BouncerService;
 use Illuminate\Foundation\Auth\SendsPasswordResetEmails;
+use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Validation\ValidationException;
+use Illuminate\View\View;
 
 class ForgotPasswordController extends Controller
 {
@@ -35,10 +37,8 @@ class ForgotPasswordController extends Controller
 
     /**
      * Display the form to request a password reset link.
-     *
-     * @return \Illuminate\View\View
      */
-    public function showLinkRequestForm()
+    public function showLinkRequestForm(): View
     {
         if (config('pixelfed.bouncer.cloud_ips.ban_logins')) {
             abort_if(BouncerService::checkIp(request()->ip()), 404);
@@ -51,10 +51,8 @@ class ForgotPasswordController extends Controller
 
     /**
      * Validate the email for the given request.
-     *
-     * @return void
      */
-    public function validateEmail(Request $request)
+    public function validateEmail(Request $request): void
     {
         if (config('pixelfed.bouncer.cloud_ips.ban_logins')) {
             abort_if(BouncerService::checkIp($request->ip()), 404);
@@ -62,31 +60,28 @@ class ForgotPasswordController extends Controller
 
         usleep(random_int(100000, 3000000));
 
-        if ((bool) config_cache('captcha.enabled')) {
-            $rules = [
-                'email' => 'required|email',
-                'h-captcha-response' => 'required|captcha',
-            ];
-        } else {
-            $rules = [
-                'email' => 'required|email',
-            ];
+        $rules = [
+            'email' => 'required|email',
+        ];
+        $messages = [];
+
+        if (app('captcha.manager')->activeOn('forgot_password')) {
+            $captchaField = app('captcha.manager')->active()->responseField();
+            $rules[$captchaField] = 'required|captcha_verify';
+            $messages[$captchaField] = 'Failed to validate the captcha.';
         }
 
-        $request->validate($rules, [
-            'h-captcha-response' => 'Failed to validate the captcha.',
-        ]);
+        $request->validate($rules, $messages);
     }
 
     /**
      * Get the response for a failed password reset link.
      *
      * @param  string  $response
-     * @return \Illuminate\Http\RedirectResponse
      *
-     * @throws \Illuminate\Validation\ValidationException
+     * @throws ValidationException
      */
-    public function sendResetLinkFailedResponse(Request $request, $response)
+    public function sendResetLinkFailedResponse(Request $request, $response): RedirectResponse
     {
         if ($request->wantsJson()) {
             throw ValidationException::withMessages([

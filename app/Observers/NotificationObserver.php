@@ -2,7 +2,7 @@
 
 namespace App\Observers;
 
-use App\Notification;
+use App\Models\Notification;
 use App\Services\NotificationService;
 
 class NotificationObserver

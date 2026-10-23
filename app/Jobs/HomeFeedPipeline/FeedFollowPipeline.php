@@ -2,9 +2,9 @@
 
 namespace App\Jobs\HomeFeedPipeline;
 
+use App\Models\Status;
 use App\Services\HomeTimelineService;
 use App\Services\SnowflakeService;
-use App\Status;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldBeUniqueUntilProcessing;
 use Illuminate\Contracts\Queue\ShouldQueue;

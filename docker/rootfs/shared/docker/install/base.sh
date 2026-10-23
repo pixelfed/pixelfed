@@ -23,7 +23,7 @@ packages+=(
     gnupg1
     gosu
     locales
-    locales-all
+    # no locales-all (~230MB): PHP runs in the C/POSIX locale; translations come from lang/ and ICU
     lsb-release
     moreutils
     nano
@@ -42,10 +42,7 @@ packages+=(
     pngquant
 )
 
-# Video Processing
-packages+=(
-    ffmpeg
-)
+# Video Processing: static ffmpeg/ffprobe are copied in from mwader/static-ffmpeg (see docker/Dockerfile)
 
 # Database
 packages+=(

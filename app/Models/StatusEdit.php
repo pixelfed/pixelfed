@@ -9,11 +9,14 @@ class StatusEdit extends Model
 {
     use HasFactory;
 
-    protected $casts = [
-        'ordered_media_attachment_ids' => 'array',
-        'media_descriptions' => 'array',
-        'poll_options' => 'array',
-    ];
-
     protected $guarded = [];
+
+    protected function casts(): array
+    {
+        return [
+            'ordered_media_attachment_ids' => 'array',
+            'media_descriptions' => 'array',
+            'poll_options' => 'array',
+        ];
+    }
 }

@@ -9,12 +9,16 @@ use Tests\TestCase;
 class NoteAttachmentTest extends TestCase
 {
     protected array $pixelfed;
+
     protected array $pleroma;
+
     protected array $mastodon;
+
     protected array $invalidType;
+
     protected array $invalidMime;
 
-    public function setUp(): void
+    protected function setUp(): void
     {
         parent::setUp();
 
@@ -26,6 +30,7 @@ class NoteAttachmentTest extends TestCase
 
         $this->invalidType = json_decode('{"id":"https://mastodon.social/users/dansup/statuses/100889802384218791/activity","type":"Create","actor":"https://mastodon.social/users/dansup","published":"2018-10-13T18:43:33Z","to":["https://www.w3.org/ns/activitystreams#Public"],"cc":["https://mastodon.social/users/dansup/followers"],"object":{"id":"https://mastodon.social/users/dansup/statuses/100889802384218791","type":"Note","summary":null,"inReplyTo":null,"published":"2018-10-13T18:43:33Z","url":"https://mastodon.social/@dansup/100889802384218791","attributedTo":"https://mastodon.social/users/dansup","to":["https://www.w3.org/ns/activitystreams#Public"],"cc":["https://mastodon.social/users/dansup/followers"],"sensitive":false,"atomUri":"https://mastodon.social/users/dansup/statuses/100889802384218791","inReplyToAtomUri":null,"conversation":"tag:mastodon.social,2018-10-13:objectId=59103420:objectType=Conversation","content":"<p>Good Morning! <a href=\"https://mastodon.social/tags/coffee\" class=\"mention hashtag\" rel=\"tag\">#<span>coffee</span></a></p>","contentMap":{"en":"<p>Good Morning! <a href=\"https://mastodon.social/tags/coffee\" class=\"mention hashtag\" rel=\"tag\">#<span>coffee</span></a></p>"},"attachment":[{"type":"NotDocument","mediaType":"image/jpeg","url":"https://files.mastodon.social/media_attachments/files/007/110/573/original/96a196885a77c9a4.jpg","name":null}],"tag":[{"type":"Hashtag","href":"https://mastodon.social/tags/coffee","name":"#coffee"}]}}', true, 9);
 
+        // GLITCH MODIFIED: invalid mime fixture uses image/svg+xml, since image/webp is in the fork's default MEDIA_TYPES
         $this->invalidMime = json_decode('{"id":"https://mastodon.social/users/dansup/statuses/100889802384218791/activity","type":"Create","actor":"https://mastodon.social/users/dansup","published":"2018-10-13T18:43:33Z","to":["https://www.w3.org/ns/activitystreams#Public"],"cc":["https://mastodon.social/users/dansup/followers"],"object":{"id":"https://mastodon.social/users/dansup/statuses/100889802384218791","type":"Note","summary":null,"inReplyTo":null,"published":"2018-10-13T18:43:33Z","url":"https://mastodon.social/@dansup/100889802384218791","attributedTo":"https://mastodon.social/users/dansup","to":["https://www.w3.org/ns/activitystreams#Public"],"cc":["https://mastodon.social/users/dansup/followers"],"sensitive":false,"atomUri":"https://mastodon.social/users/dansup/statuses/100889802384218791","inReplyToAtomUri":null,"conversation":"tag:mastodon.social,2018-10-13:objectId=59103420:objectType=Conversation","content":"<p>Good Morning! <a href=\"https://mastodon.social/tags/coffee\" class=\"mention hashtag\" rel=\"tag\">#<span>coffee</span></a></p>","contentMap":{"en":"<p>Good Morning! <a href=\"https://mastodon.social/tags/coffee\" class=\"mention hashtag\" rel=\"tag\">#<span>coffee</span></a></p>"},"attachment":[{"type":"Document","mediaType":"image/svg+xml","url":"https://files.mastodon.social/media_attachments/files/007/110/573/original/96a196885a77c9a4.jpg","name":null}],"tag":[{"type":"Hashtag","href":"https://mastodon.social/tags/coffee","name":"#coffee"}]}}', true, 9);
     }
 
@@ -44,17 +49,142 @@ class NoteAttachmentTest extends TestCase
     }
 
     #[Test]
-    public function invalidAttachmentType()
+    public function invalid_attachment_type()
     {
         $valid = Helpers::verifyAttachments($this->invalidType);
         $this->assertFalse($valid);
     }
 
     #[Test]
-    public function invalidMimeType()
+    public function invalid_mime_type()
     {
         $valid = Helpers::verifyAttachments($this->invalidMime);
         $this->assertFalse($valid);
     }
-}
 
+    // --- Compacted (single JSON-LD object instead of a one-item array) attachments (#6588) ---
+
+    #[Test]
+    public function compacted_create_note_attachment()
+    {
+        $activity = $this->mastodon;
+        $activity['object']['attachment'] = $activity['object']['attachment'][0];
+
+        $valid = Helpers::verifyAttachments($activity);
+        $this->assertTrue($valid);
+    }
+
+    #[Test]
+    public function compacted_bare_note_attachment()
+    {
+        $activity = $this->pixelfed;
+        $activity['attachment'] = $activity['attachment'][0];
+
+        $valid = Helpers::verifyAttachments($activity);
+        $this->assertTrue($valid);
+    }
+
+    #[Test]
+    public function compacted_invalid_attachment_type()
+    {
+        $activity = $this->invalidType;
+        $activity['object']['attachment'] = $activity['object']['attachment'][0];
+
+        $valid = Helpers::verifyAttachments($activity);
+        $this->assertFalse($valid);
+    }
+
+    #[Test]
+    public function compacted_invalid_mime_type()
+    {
+        $activity = $this->invalidMime;
+        $activity['object']['attachment'] = $activity['object']['attachment'][0];
+
+        $valid = Helpers::verifyAttachments($activity);
+        $this->assertFalse($valid);
+    }
+
+    #[Test]
+    public function get_attachments_returns_list_for_compacted_attachment()
+    {
+        $activity = $this->mastodon;
+        $activity['object']['attachment'] = $activity['object']['attachment'][0];
+
+        $attachments = Helpers::getAttachments($activity);
+
+        $this->assertCount(1, $attachments);
+        $this->assertSame('Document', $attachments[0]['type']);
+    }
+
+    // --- Additional edge cases ---
+
+    #[Test]
+    public function get_attachments_preserves_list_form()
+    {
+        // A normal array-form attachment list must pass through unchanged.
+        $attachments = Helpers::getAttachments($this->pleroma);
+
+        $this->assertCount(2, $attachments);
+        $this->assertSame('Document', $attachments[0]['type']);
+        $this->assertSame('Document', $attachments[1]['type']);
+    }
+
+    #[Test]
+    public function get_attachments_returns_empty_for_bare_input()
+    {
+        // Bare Note (no "object" wrapper) with a compacted attachment normalizes to one item.
+        $activity = $this->pixelfed;
+        $activity['attachment'] = $activity['attachment'][0];
+
+        $attachments = Helpers::getAttachments($activity);
+
+        $this->assertCount(1, $attachments);
+        $this->assertSame('Image', $attachments[0]['type']);
+    }
+
+    #[Test]
+    public function get_attachments_returns_empty_when_missing()
+    {
+        $activity = $this->mastodon;
+        unset($activity['object']['attachment']);
+
+        $this->assertSame([], Helpers::getAttachments($activity));
+    }
+
+    #[Test]
+    public function get_attachments_returns_empty_when_empty_array()
+    {
+        $activity = $this->mastodon;
+        $activity['object']['attachment'] = [];
+
+        $this->assertSame([], Helpers::getAttachments($activity));
+    }
+
+    #[Test]
+    public function get_attachments_returns_empty_for_scalar_attachment()
+    {
+        // A non-array attachment (e.g. a bare URL string) must not blow up.
+        $activity = $this->mastodon;
+        $activity['object']['attachment'] = 'https://example.org/not-an-object.jpg';
+
+        $this->assertSame([], Helpers::getAttachments($activity));
+    }
+
+    #[Test]
+    public function verify_attachments_false_for_missing_attachment()
+    {
+        $activity = $this->mastodon;
+        unset($activity['object']['attachment']);
+
+        $this->assertFalse(Helpers::verifyAttachments($activity));
+    }
+
+    #[Test]
+    public function verify_attachments_false_for_scalar_attachment()
+    {
+        $activity = $this->mastodon;
+        $activity['object']['attachment'] = 'https://example.org/not-an-object.jpg';
+
+        $this->assertFalse(Helpers::verifyAttachments($activity));
+    }
+}

@@ -325,6 +325,7 @@
 
                 this.isFetchingMore = true;
 
+                // GLITCH MODIFIED START: photos_reblogs_only option sent to the home timeline API
                 let url = this.baseApi + this.getScope();
                 let params = {
                     max_id: this.max_id,
@@ -342,6 +343,7 @@
                         url = this.baseApi + `public`;
                         break;
                 }
+                // GLITCH MODIFIED END
 
                 axios.get(url, {
                     params: params

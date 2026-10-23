@@ -2,15 +2,15 @@
 
 namespace App\Jobs\ImageOptimizePipeline;
 
-use App\Media;
+use App\Models\Media;
 use App\Util\Media\Image;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
-use Log;
-use Storage;
+use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Storage;
 
 class ImageResize implements ShouldQueue
 {

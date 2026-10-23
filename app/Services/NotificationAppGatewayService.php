@@ -2,9 +2,9 @@
 
 namespace App\Services;
 
-use Cache;
 use Exception;
 use Illuminate\Http\Client\RequestException;
+use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Http;
 
 class NotificationAppGatewayService
@@ -37,6 +37,8 @@ class NotificationAppGatewayService
         $endpoint = 'https://'.config('instance.notifications.nag.endpoint').'/api/v1/instance-check?domain='.config('pixelfed.domain.app');
         try {
             $res = Http::withHeaders(['X-PIXELFED-API' => 1])
+                ->connectTimeout(5)
+                ->timeout(10)
                 ->retry(3, 500)
                 ->throw()
                 ->get($endpoint);
@@ -109,6 +111,8 @@ class NotificationAppGatewayService
         try {
             $response = Http::withToken($apiKey)
                 ->withHeaders(['X-PIXELFED-API' => 1])
+                ->connectTimeout(5)
+                ->timeout(10)
                 ->post($url, [
                     'token' => $userToken,
                     'type' => $type,

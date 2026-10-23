@@ -2,7 +2,7 @@
 
 namespace App\Transformer\Api;
 
-use App\StoryItem;
+use App\Models\StoryItem;
 use League\Fractal;
 
 class StoryItemTransformer extends Fractal\TransformerAbstract
@@ -12,6 +12,7 @@ class StoryItemTransformer extends Fractal\TransformerAbstract
         return [
             'id' => (string) $item->id,
             'type' => $item->type,
+            // GLITCH MODIFIED: use the story's own duration (upstream hardcodes 10)
             'length' => $item->duration,
             'src' => $item->url(),
             'preview' => null,

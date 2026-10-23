@@ -11,7 +11,10 @@ class UserEmailForgot extends Model
 
     protected $guarded = [];
 
-    protected $casts = [
-        'email_sent_at' => 'datetime',
-    ];
+    protected function casts(): array
+    {
+        return [
+            'email_sent_at' => 'datetime',
+        ];
+    }
 }

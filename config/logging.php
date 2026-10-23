@@ -54,6 +54,7 @@ return [
 
         'stack' => [
             'driver' => 'stack',
+            // GLITCH MODIFIED: keep pre-0.13 default log file (upstream default: daily)
             'channels' => explode(',', (string) env('LOG_STACK', 'single')),
             'ignore_exceptions' => false,
         ],
@@ -76,7 +77,7 @@ return [
         'slack' => [
             'driver' => 'slack',
             'url' => env('LOG_SLACK_WEBHOOK_URL'),
-            'username' => env('LOG_SLACK_USERNAME', 'Laravel Log'),
+            'username' => env('LOG_SLACK_USERNAME', env('APP_NAME', 'Laravel')),
             'emoji' => env('LOG_SLACK_EMOJI', ':boom:'),
             'level' => env('LOG_LEVEL', 'critical'),
             'replace_placeholders' => true,
@@ -102,6 +103,9 @@ return [
                 'stream' => 'php://stderr',
             ],
             'formatter' => env('LOG_STDERR_FORMATTER'),
+            'with' => [
+                'stream' => 'php://stderr',
+            ],
             'processors' => [PsrLogMessageProcessor::class],
         ],
 
@@ -125,6 +129,13 @@ return [
 
         'emergency' => [
             'path' => storage_path('logs/laravel.log'),
+        ],
+
+        'media' => [
+            'driver' => 'single',
+            'bubble' => false,
+            'path' => storage_path('logs/media.log'),
+            'level' => 'debug',
         ],
 
     ],

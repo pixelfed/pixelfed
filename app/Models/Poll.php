@@ -17,11 +17,14 @@ class Poll extends Model
      */
     public $incrementing = false;
 
-    protected $casts = [
-        'poll_options' => 'array',
-        'cached_tallies' => 'array',
-        'expires_at' => 'datetime',
-    ];
+    protected function casts(): array
+    {
+        return [
+            'poll_options' => 'array',
+            'cached_tallies' => 'array',
+            'expires_at' => 'datetime',
+        ];
+    }
 
     public function votes()
     {

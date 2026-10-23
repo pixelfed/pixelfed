@@ -2,9 +2,9 @@
 
 namespace App\Transformer\ActivityPub;
 
+use App\Models\Status;
 use App\Services\MediaService;
 use App\Services\StatusService;
-use App\Status;
 use App\Util\Lexer\Autolink;
 use League\Fractal;
 

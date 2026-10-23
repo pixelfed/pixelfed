@@ -17,10 +17,12 @@
 	<meta property="og:type" content="website" />
 	<meta property="og:url" content="{{request()->url()}}" />
 	<meta property="og:image" content="{{ config_cache('app.banner_image') ?? url('storage/headers/default.jpg')}}" />
+	{{-- GLITCH MODIFIED START: branding --}}
 	<meta property="og:description" content="{{ config_cache('app.short_description') ?? 'Decentralized photo sharing social media Powered by Pixelfed Glitch' }}" />
 	<meta name="description" content="{{ config_cache('app.short_description') ?? 'Decentralized photo sharing social media Powered by Pixelfed Glitch' }}" />
 	<meta name="twitter:title" content="{{ config_cache('app.name', 'pixelfed') }}" />
     <meta name="twitter:description" content="{{ config_cache('app.short_description') ?? 'Decentralized photo sharing social media Powered by Pixelfed Glitch' }}" />
+	{{-- GLITCH MODIFIED END --}}
     <meta name="twitter:image" content="{{ config_cache('app.banner_image') ?? url('storage/headers/default.jpg')}}" />
     <meta name="twitter:card" content="summary_large_image" />
 
@@ -41,7 +43,7 @@
 			<noscript>
 				<div class="container">
 					<h1 class="pt-5 text-center">Pixelfed</h1>
-					<p class="pt-2 text-center lead">Please enable javascript to view this content.</p>
+					<p class="pt-2 text-center lead">{{__('web.common.javascript')}}</p>
 				</div>
 			</noscript>
 			<navbar></navbar>

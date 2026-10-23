@@ -7,15 +7,17 @@ use App\Jobs\HomeFeedPipeline\FeedRemoveDomainPipeline;
 use App\Jobs\ProfilePipeline\ProfilePurgeFollowersByDomain;
 use App\Jobs\ProfilePipeline\ProfilePurgeNotificationsByDomain;
 use App\Models\UserDomainBlock;
+use App\Services\FeaturedCollectionService;
 use App\Services\UserFilterService;
 use App\Util\ActivityPub\Helpers;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Bus;
 use Illuminate\Support\Facades\Cache;
 
 class DomainBlockController extends Controller
 {
-    public function json($res, $code = 200, $headers = [])
+    public function json($res, $code = 200, $headers = []): JsonResponse
     {
         return response()->json($res, $code, $headers, JSON_UNESCAPED_SLASHES);
     }
@@ -93,6 +95,7 @@ class DomainBlockController extends Controller
 
             Cache::forget('profile:following:'.$pid);
             UserFilterService::domainBlocks($pid, true);
+            FeaturedCollectionService::revokeForDomain($pid, $domain);
         }
 
         return $this->json([]);

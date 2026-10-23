@@ -2,15 +2,17 @@
 
 namespace App\Http\Controllers;
 
-use App\Hashtag;
-use App\Place;
-use App\Profile;
+use App\Models\Hashtag;
+use App\Models\Place;
+use App\Models\Profile;
+use App\Models\Status;
 use App\Services\WebfingerService;
-use App\Status;
 use App\Util\ActivityPub\Helpers;
 use App\Util\Lexer\Autolink;
-use Auth;
+use Illuminate\Contracts\View\View;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Str;
 
@@ -29,7 +31,16 @@ class SearchController extends Controller
         $this->middleware('auth');
     }
 
-    public function searchAPI(Request $request)
+    /**
+     * Case-insensitive LIKE operator. PostgreSQL's LIKE is case-sensitive, so
+     * use ILIKE there to match MySQL's default case-insensitive behaviour.
+     */
+    protected function likeOperator(): string
+    {
+        return db_is_pgsql() ? 'ilike' : 'like';
+    }
+
+    public function searchAPI(Request $request): JsonResponse
     {
         $this->validate($request, [
             'q' => 'required|string|min:3|max:120',
@@ -77,7 +88,7 @@ class SearchController extends Controller
         return response()->json($this->tokens, 200, [], JSON_PRETTY_PRINT);
     }
 
-    protected function getPosts()
+    protected function getPosts(): void
     {
         $tag = $this->term;
         $hash = hash('sha256', $tag);
@@ -107,7 +118,7 @@ class SearchController extends Controller
                 ->whereNull('in_reply_to_id')
                 ->whereNull('reblog_of_id')
                 ->whereProfileId(Auth::user()->profile_id)
-                ->where('caption', 'like', '%'.$tag.'%')
+                ->where('caption', $this->likeOperator(), '%'.$tag.'%')
                 ->latest()
                 ->limit(10)
                 ->get();
@@ -130,7 +141,7 @@ class SearchController extends Controller
         }
     }
 
-    protected function getHashtags()
+    protected function getHashtags(): void
     {
         $tag = $this->term;
         $key = $this->cacheKey.'hashtags:'.$this->hash;
@@ -138,7 +149,7 @@ class SearchController extends Controller
         $tokens = Cache::remember($key, $ttl, function () use ($tag) {
             $htag = Str::startsWith($tag, '#') == true ? mb_substr($tag, 1) : $tag;
             $hashtags = Hashtag::select('id', 'name', 'slug')
-                ->where('slug', 'like', '%'.$htag.'%')
+                ->where('slug', $this->likeOperator(), '%'.$htag.'%')
                 ->whereHas('posts')
                 ->limit(20)
                 ->get();
@@ -160,7 +171,7 @@ class SearchController extends Controller
         $this->tokens['hashtags'] = $tokens;
     }
 
-    protected function getPlaces()
+    protected function getPlaces(): void
     {
         $tag = $this->term;
         // $key = $this->cacheKey . 'places:' . $this->hash;
@@ -168,7 +179,7 @@ class SearchController extends Controller
         // $tokens = Cache::remember($key, $ttl, function() use($tag) {
         $htag = Str::contains($tag, ',') == true ? explode(',', $tag) : [$tag];
         $hashtags = Place::select('id', 'name', 'slug', 'country')
-            ->where('name', 'like', '%'.$htag[0].'%')
+            ->where('name', $this->likeOperator(), '%'.$htag[0].'%')
             ->paginate(20);
         $tags = [];
         if ($hashtags->count() > 0) {
@@ -195,7 +206,7 @@ class SearchController extends Controller
         ];
     }
 
-    protected function getProfiles()
+    protected function getProfiles(): void
     {
         $tag = $this->term;
         $remoteKey = $this->cacheKey.'profiles:remote:'.$this->hash;
@@ -240,7 +251,7 @@ class SearchController extends Controller
                 }
                 $users = Profile::select('status', 'domain', 'username', 'name', 'id')
                     ->whereNull('status')
-                    ->where('username', 'like', '%'.$tag.'%')
+                    ->where('username', $this->likeOperator(), '%'.$tag.'%')
                     ->limit(20)
                     ->orderBy('domain')
                     ->get();
@@ -271,7 +282,7 @@ class SearchController extends Controller
         }
     }
 
-    public function results(Request $request)
+    public function results(Request $request): View
     {
         $this->validate($request, [
             'q' => 'required|string|min:1',
@@ -280,7 +291,7 @@ class SearchController extends Controller
         return view('search.results');
     }
 
-    protected function webfingerSearch()
+    protected function webfingerSearch(): void
     {
         $wfs = WebfingerService::lookup($this->term);
 
@@ -308,7 +319,7 @@ class SearchController extends Controller
 
     }
 
-    protected function remotePostLookup()
+    protected function remotePostLookup(): void
     {
         $tag = $this->term;
         $hash = hash('sha256', $tag);
@@ -366,7 +377,7 @@ class SearchController extends Controller
         }
     }
 
-    protected function remoteLookupSearch()
+    protected function remoteLookupSearch(): void
     {
         if (! Helpers::validateUrl($this->term)) {
             return;

@@ -2,20 +2,20 @@
 
 namespace App\Services;
 
-use App\Avatar;
-use App\Contact;
-use App\FailedJob;
-use App\Instance;
-use App\Media;
-use App\Profile;
-use App\Report;
-use App\Status;
-use App\User;
+use App\Models\Avatar;
+use App\Models\Contact;
+use App\Models\FailedJob;
+use App\Models\Instance;
+use App\Models\Media;
+use App\Models\Profile;
+use App\Models\Report;
+use App\Models\Status;
+use App\Models\User;
 use App\Util\Lexer\PrettyNumber;
-use Cache;
 use DateInterval;
 use DatePeriod;
-use DB;
+use Illuminate\Support\Facades\Cache;
+use Illuminate\Support\Facades\DB;
 
 class AdminStatsService
 {
@@ -75,7 +75,7 @@ class AdminStatsService
 
     protected static function recentData()
     {
-        $day = config('database.default') == 'pgsql' ? 'DATE_PART(\'day\',' : 'day(';
+        $day = db_is_pgsql() ? 'DATE_PART(\'day\',' : 'day(';
         $ttl = now()->addMinutes(15);
 
         return Cache::remember('admin:dashboard:home:data:v0:15min', $ttl, function () {
@@ -83,7 +83,7 @@ class AdminStatsService
                 'contact' => PrettyNumber::convert(Contact::whereNull('read_at')->count()),
                 'contact_monthly' => PrettyNumber::convert(Contact::whereNull('read_at')->where('created_at', '>', now()->subMonth())->count()),
                 'reports' => PrettyNumber::convert(Report::whereNull('admin_seen')->count()),
-                'reports_monthly' => PrettyNumber::convert(Report::whereNull('admin_seen')->where('created_at', '>', now()->subMonth())->count()),
+                'reports_monthly' => PrettyNumber::convert(Report::where('created_at', '>', now()->subMonth())->count()),
             ];
         });
     }
@@ -94,11 +94,13 @@ class AdminStatsService
 
         return Cache::remember('admin:dashboard:home:data:v0:24hr', $ttl, function () {
             return [
-                'failedjobs' => PrettyNumber::convert(FailedJob::where('failed_at', '>=', \Carbon\Carbon::now()->subDay())->count()),
+                'failedjobs' => PrettyNumber::convert(FailedJob::where('failed_at', '>=', now()->subDay())->count()),
                 'statuses' => PrettyNumber::convert(intval(StatusService::totalLocalStatuses())),
+                // GLITCH MODIFIED: "real" post count
                 'real_statuses' => PrettyNumber::convert(intval(StatusService::totalRealLocalStatuses())),
                 'statuses_monthly' => PrettyNumber::convert(Status::where('created_at', '>', now()->subMonth())->count()),
-                'real_statuses_monthly' => PrettyNumber::convert(Status::where('url', '=', 'null')->where('created_at', '>', now()->subMonth())->where('reblog_of_id', '=', 'null')->where('in_reply_to_id', '=', 'null')->count()),
+                // GLITCH MODIFIED: "real" post count (monthly)
+                'real_statuses_monthly' => PrettyNumber::convert(Status::whereNull(['url', 'reblog_of_id', 'in_reply_to_id', 'deleted_at'])->where('local', true)->where('created_at', '>', now()->subMonth())->count()),
                 'profiles' => PrettyNumber::convert(Profile::count()),
                 'users' => PrettyNumber::convert(User::whereNull('status')->count()),
                 'users_monthly' => PrettyNumber::convert(User::where('created_at', '>', now()->subMonth())->whereNull('status')->count()),
@@ -116,6 +118,7 @@ class AdminStatsService
         return Cache::remember('admin:dashboard:home:data-summary:v0:24hr', $ttl, function () {
             return [
                 'statuses' => PrettyNumber::convert(intval(StatusService::totalLocalStatuses())),
+                // GLITCH MODIFIED: "real" post count
                 'real_statuses' => PrettyNumber::convert(intval(StatusService::totalRealLocalStatuses())),
                 'profiles' => PrettyNumber::convert(Profile::count()),
                 'users' => PrettyNumber::convert(User::whereNull('status')->count()),
@@ -129,7 +132,7 @@ class AdminStatsService
         $ttl = now()->addHours(12);
 
         return Cache::remember('admin:dashboard:home:data-postsGraph:v0.1:24hr', $ttl, function () {
-            $gb = config('database.default') == 'pgsql' ? ['statuses.id', 'created_at'] : DB::raw('Date(created_at)');
+            $gb = db_is_pgsql() ? ['statuses.id', 'created_at'] : DB::raw('Date(created_at)');
             $s = Status::selectRaw('Date(created_at) as date, count(statuses.id) as count')
                 ->where('created_at', '>=', now()->subWeek())
                 ->groupBy($gb)

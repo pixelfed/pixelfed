@@ -4,10 +4,10 @@ namespace App\Observers;
 
 use App\Jobs\HomeFeedPipeline\HashtagInsertFanoutPipeline;
 use App\Jobs\HomeFeedPipeline\HashtagRemoveFanoutPipeline;
+use App\Models\StatusHashtag;
 use App\Services\StatusHashtagService;
-use App\StatusHashtag;
-use DB;
 use Illuminate\Contracts\Events\ShouldHandleEventsAfterCommit;
+use Illuminate\Support\Facades\DB;
 
 class StatusHashtagObserver implements ShouldHandleEventsAfterCommit
 {

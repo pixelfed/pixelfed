@@ -9,11 +9,12 @@ class CuratedRegisterTemplate extends Model
 {
     use HasFactory;
 
-    protected $fillable = [
-        'name', 'description', 'content', 'is_active', 'order',
-    ];
+    protected $guarded = [];
 
-    protected $casts = [
-        'is_active' => 'boolean',
-    ];
+    protected function casts(): array
+    {
+        return [
+            'is_active' => 'boolean',
+        ];
+    }
 }

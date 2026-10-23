@@ -9,13 +9,13 @@ class GroupLimit extends Model
 {
     use HasFactory;
 
-    protected $casts = [
-        'limits' => 'json',
-        'metadata' => 'json',
-    ];
+    protected $guarded = [];
 
-    protected $fillable = [
-        'profile_id',
-        'group_id',
-    ];
+    protected function casts(): array
+    {
+        return [
+            'limits' => 'json',
+            'metadata' => 'json',
+        ];
+    }
 }

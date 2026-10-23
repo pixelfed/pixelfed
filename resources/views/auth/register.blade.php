@@ -10,7 +10,7 @@
                 <div class="card-body">
                     <form method="POST" action="{{ route('register') }}" class="px-md-3">
                         @csrf
-                        <input type="hidden" name="rt" value="{{ (new \App\Http\Controllers\Auth\RegisterController())->getRegisterToken() }}">
+                        @honeypot
                         <div class="form-group row">
                             <div class="col-md-12">
                                 <label class="small font-weight-bold text-lighter">{{ __('auth.name') }}</label>
@@ -81,11 +81,7 @@
                             </div>
                         </div>
 
-                        @if((bool) config_cache('captcha.enabled') && (bool) config_cache('captcha.active.register'))
-                        <div class="d-flex justify-content-center my-3">
-                            {!! Captcha::display() !!}
-                        </div>
-                        @endif
+                        <x-captcha surface="register" />
 
                         <p class="small">{!! __('auth.terms') !!}</p>
 

@@ -3,11 +3,12 @@
 namespace App\Http\Controllers;
 
 use App\Models\InstanceActor;
-use Cache;
+use Illuminate\Http\Response;
+use Illuminate\Support\Facades\Cache;
 
 class InstanceActorController extends Controller
 {
-    public function profile()
+    public function profile(): Response
     {
         $res = Cache::rememberForever(InstanceActor::PROFILE_KEY, function () {
             $res = (new InstanceActor)->first()->getActor();
@@ -18,9 +19,9 @@ class InstanceActorController extends Controller
         return response($res)->header('Content-Type', 'application/activity+json');
     }
 
-    public function inbox() {}
+    public function inbox(): void {}
 
-    public function outbox()
+    public function outbox(): Response
     {
         $res = json_encode([
             '@context' => [

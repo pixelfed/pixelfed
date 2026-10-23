@@ -6,6 +6,7 @@ use App\Services\AccountService;
 use App\Services\StatusService;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
+use Illuminate\Support\Carbon;
 
 /**
  * @property int $id
@@ -14,8 +15,8 @@ use Illuminate\Http\Resources\Json\JsonResource;
  * @property array|null $status_ids
  * @property string|null $comment
  * @property array|null $report_meta
- * @property \Illuminate\Support\Carbon|null $created_at
- * @property \Illuminate\Support\Carbon|null $action_taken_at
+ * @property Carbon|null $created_at
+ * @property Carbon|null $action_taken_at
  */
 class AdminRemoteReport extends JsonResource
 {
@@ -50,8 +51,8 @@ class AdminRemoteReport extends JsonResource
             'statuses' => $statuses,
             'message' => $this->comment,
             'report_meta' => $this->report_meta,
-            'created_at' => optional($this->created_at)->format('c'),
-            'action_taken_at' => optional($this->action_taken_at)->format('c'),
+            'created_at' => $this->created_at?->format('c'),
+            'action_taken_at' => $this->action_taken_at?->format('c'),
         ];
 
         return $res;

@@ -21,7 +21,7 @@
 									<a v-else :href="'/'+thread.username" class="text-decoration-none text-muted">&commat;{{thread.username}}</a>
 								</p>
 							</div>
-						</div>
+						</div>   
 					</span>
 					<span><a href="#" class="text-muted" @click.prevent="showOptions()"><i class="fas fa-cog fa-lg"></i></a></span>
 				</div>
@@ -37,11 +37,12 @@
 							<button v-if="!loadingMessages" class="btn btn-primary font-weight-bold rounded-pill btn-sm px-3" @click="loadOlderMessages()">Load Older Messages</button>
 							<button v-else class="btn btn-primary font-weight-bold rounded-pill btn-sm px-3" disabled>Loading...</button>
 						</p>
-					</li>
+					</li> 
 					<li v-for="(convo, index) in thread.messages" class="list-group-item border-0 chat-msg cursor-pointer" @click="openCtxMenu(convo, index)">
 						<div v-if="!convo.isAuthor" class="media d-inline-flex mb-0">
 							<img v-if="!hideAvatars" class="mr-3 mt-2 rounded-circle img-thumbnail" :src="thread.avatar" alt="avatar" width="32" onerror="this.onerror=null;this.src='/storage/avatars/default.jpg';">
 							<div class="media-body">
+								<!-- GLITCH MODIFIED START: DM message body as stacked divs (media, story media + reaction/comment bubble, text); fixes invalid <p> nesting -->
 								<div v-if="convo.type == 'photo'" class="p-0">
 									<img :src="convo.media" class="shadow" width="140" style="border-radius:20px;" onerror="this.onerror=null;this.src='/storage/no-preview.png';">
 								</div>
@@ -102,10 +103,12 @@
                                     <p v-if="!hideTimestamps" class="small text-muted font-weight-bold d-flex align-items-center justify-content-start" data-timestamp="timestamp"> <span v-if="convo.hidden" class="mr-2 small" title="Filtered Message" data-toggle="tooltip" data-placement="bottom"><i class="fas fa-lock"></i></span> {{convo.timeAgo}}</p>
                                     <p v-else>&nbsp;</p>
                                 </div>
+                                <!-- GLITCH MODIFIED END -->
 							</div>
 						</div>
 						<div v-else class="media d-inline-flex float-right mb-0 mr-2">
 							<div class="media-body">
+								<!-- GLITCH MODIFIED START: DM message body as stacked divs (media, story media + reaction/comment bubble, text); fixes invalid <p> nesting -->
 								<div v-if="convo.type == 'photo'" class="p-0">
 									<img :src="convo.media" class="shadow" width="140" style="border-radius:20px;" onerror="this.onerror=null;this.src='/storage/no-preview.png';">
 								</div>
@@ -167,6 +170,7 @@
                                     </p>
                                     <p v-else>&nbsp;</p>
                                 </div>
+                                <!-- GLITCH MODIFIED END -->
 							</div>
 							<img v-if="!hideAvatars" class="ml-3 mt-2 rounded-circle img-thumbnail" :src="profile.avatar" alt="avatar" width="32" onerror="this.onerror=null;this.src='/storage/avatars/default.jpg';">
 						</div>
@@ -310,6 +314,7 @@
 	.pill-to {
 		background:#EDF2F7;
 		font-weight: 500;
+		/* GLITCH MODIFIED: drop !important so grouping rules can override corners */
 		border-radius: 20px;
 		padding-left: 1rem;
 		padding-right: 1rem;
@@ -324,6 +329,7 @@
 		/*background: #53d769;*/
 		background: linear-gradient(135deg, #2EA2F4 0%, #0B93F6 100%) !important;
 		font-weight: 500;
+		/* GLITCH MODIFIED: drop !important so grouping rules can override corners */
 		border-radius: 20px;
 		padding-left: 1rem;
 		padding-right: 1rem;
@@ -332,6 +338,7 @@
 		margin-left: 3rem;
 		margin-bottom: 0.25rem;
 	}
+    /* GLITCH MODIFIED START: DM bubble grouping: stacked parts of one message share corners */
     .dm-chat-message > .isAuthor .media-body > * {
         justify-content: flex-end;
         display: flex;
@@ -364,6 +371,7 @@
     .dm-chat-message > :not(.isAuthor) .media-body > *:not(:first-child) .media-embed {
         border-top-left-radius: 0px !important;
     }
+    /* GLITCH MODIFIED END */
 	.chat-msg:hover {
 		background: #f7fbfd;
 	}

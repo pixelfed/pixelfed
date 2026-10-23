@@ -2,7 +2,7 @@
 
 namespace App\Services\Federation;
 
-use App\Profile;
+use App\Models\Profile;
 use App\Util\ActivityPub\Helpers;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Redis;

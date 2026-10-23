@@ -2,7 +2,7 @@
 
 namespace App\Services;
 
-use App\Status;
+use App\Models\Status;
 use Illuminate\Support\Facades\Redis;
 
 class PublicTimelineService
@@ -79,11 +79,17 @@ class PublicTimelineService
 
                 continue;
             }
+
+            if (! data_get($s, 'account.id')) {
+                self::rem($postId);
+
+                continue;
+            }
+
             if ($s['account']['id'] == $profileId) {
                 self::rem($postId);
             }
         }
-
     }
 
     public static function warmCache($force = false, $limit = 100)

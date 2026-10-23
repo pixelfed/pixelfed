@@ -12,20 +12,18 @@ return new class extends Migration
     public function up(): void
     {
         Schema::table('notifications', function (Blueprint $table) {
-        	if(Schema::hasColumn('notifications', 'message')) {
-            	$table->dropColumn('message');
-        	}
+            if (Schema::hasColumn('notifications', 'message')) {
+                $table->dropColumn('message');
+            }
 
-        	if(Schema::hasColumn('notifications', 'rendered')) {
-            	$table->dropColumn('rendered');
-        	}
+            if (Schema::hasColumn('notifications', 'rendered')) {
+                $table->dropColumn('rendered');
+            }
         });
     }
 
     /**
      * Reverse the migrations.
      */
-    public function down(): void
-    {
-    }
+    public function down(): void {}
 };

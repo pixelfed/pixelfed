@@ -18,11 +18,7 @@
             value="{{ request()->session()->get('cur-reg.form-email') }}"
             required>
     </div>
-    @if(config('instance.curated_registration.captcha_enabled'))
-    <div class="d-flex justify-content-center my-3">
-        {!! Captcha::display() !!}
-    </div>
-    @endif
+    <x-captcha surface="curated_register" />
     <div class="mt-3 pt-4">
         <button class="btn btn-primary rounded-pill font-weight-bold btn-block">My email is correct</button>
     </div>

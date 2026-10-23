@@ -9,9 +9,9 @@
 
 namespace App\Util\Lexer;
 
+use App\Models\Status;
 use App\Services\AutolinkService;
 use App\Services\TrendingHashtagService;
-use App\Status;
 
 /**
  * Twitter Extractor Class.
@@ -314,7 +314,10 @@ class Extractor extends Regex
      * @param  string  $tweet  The tweet to extract.
      * @return array The cashtag elements in the tweet.
      */
-    public function extractCashtagsWithIndices($tweet = null) {}
+    public function extractCashtagsWithIndices($tweet = null)
+    {
+        return [];
+    }
 
     /**
      * Extracts all the URLs and the indices they occur at from the tweet.

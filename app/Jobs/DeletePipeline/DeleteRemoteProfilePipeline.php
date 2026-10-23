@@ -2,26 +2,26 @@
 
 namespace App\Jobs\DeletePipeline;
 
-use App\Avatar;
-use App\DirectMessage;
-use App\Follower;
-use App\FollowRequest;
 use App\Jobs\StatusPipeline\RemoteStatusDelete;
-use App\Like;
-use App\Media;
-use App\MediaTag;
-use App\Mention;
+use App\Models\Avatar;
 use App\Models\Conversation;
+use App\Models\DirectMessage;
+use App\Models\Follower;
+use App\Models\FollowRequest;
+use App\Models\Like;
+use App\Models\Media;
+use App\Models\MediaTag;
+use App\Models\Mention;
+use App\Models\Notification;
 use App\Models\Poll;
 use App\Models\PollVote;
-use App\Notification;
-use App\Profile;
-use App\Report;
+use App\Models\Profile;
+use App\Models\Report;
+use App\Models\Status;
+use App\Models\Story;
+use App\Models\StoryView;
+use App\Models\UserFilter;
 use App\Services\AccountService;
-use App\Status;
-use App\Story;
-use App\StoryView;
-use App\UserFilter;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
@@ -109,17 +109,16 @@ class DeleteRemoteProfilePipeline implements ShouldQueue
 
         // Delete Story Views + Stories
         StoryView::whereProfileId($pid)->delete();
-        $stories = Story::whereProfileId($pid)->get();
-        foreach ($stories as $story) {
+        Story::whereProfileId($pid)->cursor()->each(function ($story) {
             $path = storage_path('app/'.$story->path);
             if (is_file($path)) {
                 unlink($path);
             }
             $story->forceDelete();
-        }
+        });
 
         // Delete mutes/blocks
-        UserFilter::whereFilterableType('App\Profile')->whereFilterableId($pid)->delete();
+        UserFilter::whereFilterableType(Profile::class)->whereFilterableId($pid)->delete();
 
         // Delete mentions
         Mention::whereProfileId($pid)->forceDelete();
@@ -134,7 +133,7 @@ class DeleteRemoteProfilePipeline implements ShouldQueue
             });
 
         // Delete reports
-        Report::whereProfileId($profile->id)->orWhere('reported_profile_id')->forceDelete();
+        Report::whereProfileId($pid)->orWhere('reported_profile_id', $pid)->forceDelete();
 
         // Delete profile
         Profile::findOrFail($profile->id)->delete();

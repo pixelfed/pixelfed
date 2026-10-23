@@ -3,13 +3,15 @@
 namespace App\Jobs\LikePipeline;
 
 use App\Jobs\PushNotificationPipeline\LikePushNotifyPipeline;
-use App\Like;
-use App\Notification;
+use App\Models\Like;
+use App\Models\Status;
+use App\Models\User;
+use App\Services\FractalService;
 use App\Services\NotificationAppGatewayService;
+use App\Services\NotificationService;
 use App\Services\PushNotificationService;
 use App\Services\StatusService;
 use App\Transformer\ActivityPub\Verb\Like as LikeTransformer;
-use App\User;
 use App\Util\ActivityPub\Helpers;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
@@ -18,8 +20,6 @@ use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\Middleware\WithoutOverlapping;
 use Illuminate\Queue\SerializesModels;
 use Illuminate\Support\Facades\DB;
-use League\Fractal;
-use League\Fractal\Serializer\ArraySerializer;
 
 class LikePipeline implements ShouldQueue
 {
@@ -81,14 +81,8 @@ class LikePipeline implements ShouldQueue
 
         if ($status->uri === null && $status->object_url === null && $status->url === null) {
             DB::transaction(function () use ($status, $actor) {
-                $notification = Notification::firstOrCreate(
-                    [
-                        'profile_id' => $status->profile_id,
-                        'actor_id' => $actor->id,
-                        'action' => 'like',
-                        'item_id' => $status->id,
-                        'item_type' => 'App\Status',
-                    ]
+                $notification = NotificationService::firstOrCreateNotification(
+                    $status->profile_id, $actor->id, 'like', $status->id, Status::class
                 );
 
                 if ($notification->wasRecentlyCreated) {
@@ -123,10 +117,7 @@ class LikePipeline implements ShouldQueue
         $status = $like->status;
         $actor = $like->actor;
 
-        $fractal = new Fractal\Manager;
-        $fractal->setSerializer(new ArraySerializer);
-        $resource = new Fractal\Resource\Item($like, new LikeTransformer);
-        $activity = $fractal->createData($resource)->toArray();
+        $activity = FractalService::item($like, new LikeTransformer);
 
         $url = $status->profile->sharedInbox ?? $status->profile->inbox_url;
 

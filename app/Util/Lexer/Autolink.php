@@ -738,7 +738,7 @@ class Autolink extends Regex
 
         if ($this->autolinkActiveUsersOnly == true) {
             if (! AutolinkService::mentionedUsernameExists($screen_name)) {
-                return Str::of($screen_name)->startsWith('@') ? $screen_name : "@{$screen_name}";
+                return Str::startsWith($screen_name, '@') ? $screen_name : "@{$screen_name}";
             }
         }
 

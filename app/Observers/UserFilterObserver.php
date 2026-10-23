@@ -4,8 +4,10 @@ namespace App\Observers;
 
 use App\Jobs\HomeFeedPipeline\FeedFollowPipeline;
 use App\Jobs\HomeFeedPipeline\FeedUnfollowPipeline;
+use App\Models\Profile;
+use App\Models\UserFilter;
+use App\Services\FeaturedCollectionService;
 use App\Services\UserFilterService;
-use App\UserFilter;
 
 class UserFilterObserver
 {
@@ -68,7 +70,7 @@ class UserFilterObserver
 
     protected function filterCreate(UserFilter $userFilter)
     {
-        if ($userFilter->filterable_type !== 'App\Profile') {
+        if ($userFilter->filterable_type !== Profile::class) {
             return;
         }
 
@@ -81,13 +83,15 @@ class UserFilterObserver
             case 'block':
                 UserFilterService::block($userFilter->user_id, $userFilter->filterable_id);
                 FeedUnfollowPipeline::dispatch($userFilter->user_id, $userFilter->filterable_id)->onQueue('feed');
+                // user_id is the blocking profile id, filterable_id the blocked profile
+                FeaturedCollectionService::revokeForActor($userFilter->user_id, $userFilter->filterable_id);
                 break;
         }
     }
 
     protected function filterDelete(UserFilter $userFilter)
     {
-        if ($userFilter->filterable_type !== 'App\Profile') {
+        if ($userFilter->filterable_type !== Profile::class) {
             return;
         }
 

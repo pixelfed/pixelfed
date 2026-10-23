@@ -9,9 +9,12 @@ class RemoteReport extends Model
 {
     use HasFactory;
 
-    protected $casts = [
-        'status_ids' => 'array',
-        'action_taken_meta' => 'array',
-        'report_meta' => 'array',
-    ];
+    protected function casts(): array
+    {
+        return [
+            'status_ids' => 'array',
+            'action_taken_meta' => 'array',
+            'report_meta' => 'array',
+        ];
+    }
 }

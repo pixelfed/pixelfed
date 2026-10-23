@@ -2,21 +2,23 @@
 
 namespace App\Http\Controllers\Settings;
 
-use App\Follower;
-use App\Profile;
+use App\Jobs\HomeFeedPipeline\FeedUnfollowPipeline;
+use App\Models\FeatureAuthorization;
+use App\Models\Follower;
+use App\Models\Profile;
+use App\Models\UserFilter;
 use App\Services\AccountService;
+use App\Services\FeaturedCollectionService;
 use App\Services\RelationshipService;
-use App\UserFilter;
-use Auth;
-use Cache;
-use DB;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Cache;
+use Illuminate\Support\Facades\DB;
 
 trait PrivacySettings
 {
-    public function privacy()
+    public function privacy(Request $request)
     {
-        $user = Auth::user();
+        $user = $request->user();
         $settings = $user->settings;
         $profile = $user->profile;
         $is_private = $profile->is_private;
@@ -86,7 +88,6 @@ trait PrivacySettings
                     $settings->{$field} = false;
                 }
             } elseif ($field == 'indexable') {
-
             } else {
                 if ($form == 'on') {
                     $settings->{$field} = true;
@@ -97,6 +98,15 @@ trait PrivacySettings
             $settings->save();
         }
         $pid = $profile->id;
+
+        $canFeature = $request->input('can_feature');
+        if (in_array($canFeature, FeaturedCollectionService::POLICIES, true) && $canFeature !== $settings->can_feature) {
+            $settings->can_feature = $canFeature;
+            $settings->save();
+            FeatureAuthorization::whereProfileId($pid)->revoked()->delete();
+            FeaturedCollectionService::forgetPolicy($pid);
+        }
+
         Cache::forget('profile:settings:'.$pid);
         Cache::forget('user:account:id:'.$profile->user_id);
         Cache::forget('profile:follower_count:'.$pid);
@@ -114,9 +124,9 @@ trait PrivacySettings
         return redirect(route('settings.privacy'))->with('status', 'Settings successfully updated!');
     }
 
-    public function mutedUsers()
+    public function mutedUsers(Request $request)
     {
-        $pid = Auth::user()->profile->id;
+        $pid = $request->user()->profile->id;
         $ids = (new UserFilter)->mutedUserIds($pid);
         $users = Profile::whereIn('id', $ids)->simplePaginate(15);
 
@@ -129,11 +139,11 @@ trait PrivacySettings
             'profile_id' => 'required|integer|min:1',
         ]);
         $fid = $request->input('profile_id');
-        $pid = Auth::user()->profile->id;
+        $pid = $request->user()->profile->id;
         DB::transaction(function () use ($fid, $pid) {
             $filter = UserFilter::whereUserId($pid)
                 ->whereFilterableId($fid)
-                ->whereFilterableType('App\Profile')
+                ->whereFilterableType(Profile::class)
                 ->whereFilterType('mute')
                 ->firstOrFail();
             $filter->delete();
@@ -143,9 +153,36 @@ trait PrivacySettings
         return redirect()->back();
     }
 
-    public function blockedUsers()
+    public function featuredCollections(Request $request)
     {
-        $pid = Auth::user()->profile->id;
+        $pid = $request->user()->profile->id;
+        $collections = FeatureAuthorization::whereProfileId($pid)
+            ->approved()
+            ->with('actor')
+            ->orderByDesc('created_at')
+            ->simplePaginate(15);
+
+        return view('settings.privacy.featured-collections', compact('collections'));
+    }
+
+    public function featuredCollectionsRemove(Request $request)
+    {
+        $this->validate($request, [
+            'id' => 'required|integer|min:1',
+        ]);
+        $pid = $request->user()->profile->id;
+        $auth = FeatureAuthorization::whereProfileId($pid)
+            ->approved()
+            ->findOrFail($request->input('id'));
+
+        FeaturedCollectionService::revoke($auth);
+
+        return redirect()->back()->with('status', 'You have been removed from the collection.');
+    }
+
+    public function blockedUsers(Request $request)
+    {
+        $pid = $request->user()->profile->id;
         $ids = (new UserFilter)->blockedUserIds($pid);
         $users = Profile::whereIn('id', $ids)->simplePaginate(15);
 
@@ -158,11 +195,11 @@ trait PrivacySettings
             'profile_id' => 'required|integer|min:1',
         ]);
         $fid = $request->input('profile_id');
-        $pid = Auth::user()->profile->id;
+        $pid = $request->user()->profile->id;
         DB::transaction(function () use ($fid, $pid) {
             $filter = UserFilter::whereUserId($pid)
                 ->whereFilterableId($fid)
-                ->whereFilterableType('App\Profile')
+                ->whereFilterableType(Profile::class)
                 ->whereFilterType('block')
                 ->firstOrFail();
             $filter->delete();
@@ -210,8 +247,8 @@ trait PrivacySettings
         $duration = $request->input('duration');
         // $newRequests = $request->input('newrequests');
 
-        $profile = Auth::user()->profile;
-        $settings = Auth::user()->settings;
+        $profile = $request->user()->profile;
+        $settings = $request->user()->settings;
 
         if ($mode !== 'keep-all') {
             switch ($mode) {
@@ -226,6 +263,12 @@ trait PrivacySettings
                     break;
 
                 case 'remove-all':
+                    Follower::whereFollowingId($profile->id)
+                        ->chunkById(100, function ($followers) {
+                            foreach ($followers as $follower) {
+                                FeedUnfollowPipeline::dispatch($follower->profile_id, $follower->following_id)->onQueue('feed');
+                            }
+                        });
                     Follower::whereFollowingId($profile->id)->delete();
                     break;
 
@@ -235,6 +278,9 @@ trait PrivacySettings
             }
         }
         $profile->is_private = true;
+        // Clear directory listing when going private so the profile can't leak
+        // into the public directory (which lists is_suggestable profiles).
+        $profile->is_suggestable = false;
         $settings->show_guests = false;
         $settings->show_discover = false;
         $settings->save();

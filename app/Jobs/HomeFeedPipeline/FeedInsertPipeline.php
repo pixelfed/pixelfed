@@ -2,11 +2,12 @@
 
 namespace App\Jobs\HomeFeedPipeline;
 
+use App\Models\Profile;
 use App\Models\UserDomainBlock;
+use App\Models\UserFilter;
 use App\Services\FollowerService;
 use App\Services\HomeTimelineService;
 use App\Services\StatusService;
-use App\UserFilter;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldBeUniqueUntilProcessing;
 use Illuminate\Contracts\Queue\ShouldQueue;
@@ -94,7 +95,7 @@ class FeedInsertPipeline implements ShouldBeUniqueUntilProcessing, ShouldQueue
             return;
         }
 
-        if (! in_array($status['pf_type'], ['photo', 'photo:album', 'video', 'video:album', 'photo:video:album'])) {
+        if (! in_array($status['pf_type'], ['photo', 'photo:album', 'video', 'video:album', 'photo:video:album', 'share'])) {
             Log::info("FeedInsertPipeline: Status {$sid} type {$status['pf_type']} not supported, skipping job");
 
             return;
@@ -115,7 +116,7 @@ class FeedInsertPipeline implements ShouldBeUniqueUntilProcessing, ShouldQueue
             $skipIds = UserDomainBlock::where('domain', $domain)->pluck('profile_id')->toArray();
         }
 
-        $filters = UserFilter::whereFilterableType('App\Profile')
+        $filters = UserFilter::whereFilterableType(Profile::class)
             ->whereFilterableId($status['account']['id'])
             ->whereIn('filter_type', ['mute', 'block'])
             ->pluck('user_id')

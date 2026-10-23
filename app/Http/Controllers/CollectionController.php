@@ -2,22 +2,22 @@
 
 namespace App\Http\Controllers;
 
-use App\Collection;
-use App\CollectionItem;
+use App\Models\Collection;
+use App\Models\CollectionItem;
+use App\Models\Status;
 use App\Services\AccountService;
 use App\Services\CollectionService;
 use App\Services\FollowerService;
 use App\Services\StatusService;
-use App\Status;
-use Auth;
+use Illuminate\Contracts\View\View;
 use Illuminate\Http\Request;
 
 class CollectionController extends Controller
 {
-    public function create(Request $request)
+    public function create(Request $request): View
     {
-        abort_if(! Auth::check(), 403);
-        $profile = Auth::user()->profile;
+        abort_if(! $request->user(), 403);
+        $profile = $request->user()->profile;
 
         $collection = Collection::firstOrCreate([
             'profile_id' => $profile->id,
@@ -29,7 +29,7 @@ class CollectionController extends Controller
         return view('collection.create', compact('collection'));
     }
 
-    public function show(Request $request, $id)
+    public function show(Request $request, $id): View
     {
         $user = $request->user();
         $collection = CollectionService::getCollection($id);
@@ -47,20 +47,17 @@ class CollectionController extends Controller
         return view('collection.show', compact('collection'));
     }
 
-    public function index(Request $request)
-    {
-        abort_if(! Auth::check(), 403);
-
-        return $request->all();
-    }
-
     public function store(Request $request, $id)
     {
         abort_if(! $request->user(), 403);
         $this->validate($request, [
             'title' => 'nullable|max:50',
             'description' => 'nullable|max:500',
-            'visibility' => 'nullable|string|in:public,private,draft',
+            // visibility is a NOT NULL column; require it here (matching publish())
+            // so an omitted value is rejected with 422 instead of writing null,
+            // which crashes on strict DBs and stores '' (permanent invisibility)
+            // on non-strict MySQL.
+            'visibility' => 'required|alpha|in:public,private,draft',
         ]);
 
         $pid = $request->user()->profile_id;
@@ -83,7 +80,7 @@ class CollectionController extends Controller
             'description' => 'nullable|max:500',
             'visibility' => 'required|alpha|in:public,private,draft',
         ]);
-        $profile = Auth::user()->profile;
+        $profile = $request->user()->profile;
         $collection = Collection::whereProfileId($profile->id)->findOrFail($id);
         if ($collection->items()->count() == 0) {
             abort(404);
@@ -155,7 +152,7 @@ class CollectionController extends Controller
 
         $item = CollectionItem::firstOrCreate([
             'collection_id' => $collection->id,
-            'object_type' => 'App\Status',
+            'object_type' => Status::class,
             'object_id' => $status->id,
         ], [
             'order' => $count,
@@ -270,7 +267,7 @@ class CollectionController extends Controller
             });
     }
 
-    public function deleteId(Request $request)
+    public function deleteId(Request $request): int
     {
         abort_if(! $request->user(), 403);
         $this->validate($request, [
@@ -294,7 +291,7 @@ class CollectionController extends Controller
             ->findOrFail($postId);
 
         $item = CollectionItem::whereCollectionId($collection->id)
-            ->whereObjectType('App\Status')
+            ->whereObjectType(Status::class)
             ->whereObjectId($status->id)
             ->firstOrFail();
 

@@ -8,9 +8,9 @@ use PHPUnit\Framework\TestCase;
 
 class StoryValidationTest extends TestCase
 {
-	public $activity;
+    public $activity;
 
-    public function setUp(): void
+    protected function setUp(): void
     {
         parent::setUp();
 
@@ -18,13 +18,13 @@ class StoryValidationTest extends TestCase
     }
 
     #[Test]
-    public function schemaTest()
+    public function schema_test()
     {
         $this->assertTrue(StoryValidator::validate($this->activity));
     }
 
     #[Test]
-    public function invalidContext()
+    public function invalid_context()
     {
         $activity = $this->activity;
         unset($activity['@context']);
@@ -33,7 +33,7 @@ class StoryValidationTest extends TestCase
     }
 
     #[Test]
-    public function missingContext()
+    public function missing_context()
     {
         $activity = $this->activity;
         unset($activity['@context']);
@@ -41,7 +41,7 @@ class StoryValidationTest extends TestCase
     }
 
     #[Test]
-    public function missingId()
+    public function missing_id()
     {
         $activity = $this->activity;
         unset($activity['id']);
@@ -49,7 +49,7 @@ class StoryValidationTest extends TestCase
     }
 
     #[Test]
-    public function missingType()
+    public function missing_type()
     {
         $activity = $this->activity;
         unset($activity['type']);
@@ -57,7 +57,7 @@ class StoryValidationTest extends TestCase
     }
 
     #[Test]
-    public function invalidType()
+    public function invalid_type()
     {
         $activity = $this->activity;
         $activity['type'] = 'Store';
@@ -65,7 +65,7 @@ class StoryValidationTest extends TestCase
     }
 
     #[Test]
-    public function missingTo()
+    public function missing_to()
     {
         $activity = $this->activity;
         unset($activity['to']);
@@ -73,7 +73,7 @@ class StoryValidationTest extends TestCase
     }
 
     #[Test]
-    public function missingTimestamps()
+    public function missing_timestamps()
     {
         $activity = $this->activity;
         unset($activity['published']);

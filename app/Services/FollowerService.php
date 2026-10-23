@@ -2,11 +2,11 @@
 
 namespace App\Services;
 
-use App\Follower;
 use App\Jobs\FollowPipeline\FollowServiceWarmCache;
-use App\Profile;
-use Cache;
-use DB;
+use App\Models\Follower;
+use App\Models\Profile;
+use Illuminate\Support\Facades\Cache;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Redis;
 
 class FollowerService
@@ -77,6 +77,23 @@ class FollowerService
         self::cacheSyncCheck($id, 'following');
 
         return Redis::zrevrange(self::FOLLOWING_KEY.$id, $start, $stop);
+    }
+
+    /**
+     * Return the profile ids a profile follows, including the profile's own
+     * id, as an array. Cached under the 'profile:following:{pid}' key, which
+     * is invalidated by add()/remove().
+     *
+     * @return array<int, int>
+     */
+    public static function getFollowingIds($pid)
+    {
+        return Cache::remember('profile:following:'.$pid, 1209600, function () use ($pid) {
+            return Follower::whereProfileId($pid)
+                ->pluck('following_id')
+                ->push($pid)
+                ->toArray();
+        });
     }
 
     public static function followersPaginate($id, $page = 1, $limit = 10)
@@ -259,8 +276,13 @@ class FollowerService
         $key = self::FOLLOWERS_INTER_KEY.$actorId.':'.$profileId;
         $res = Redis::zinterstore($key, [$actorKey, $profileKey]);
         if ($res) {
-            return Redis::zrange($key, 0, -1);
+            $ids = Redis::zrange($key, 0, -1);
+            Redis::expire($key, 3600);
+
+            return $ids;
         } else {
+            Redis::expire($key, 3600);
+
             return [];
         }
     }

@@ -7,6 +7,7 @@
             <img v-if="!convo.isAuthor && !hideAvatars" class="mr-3 shadow msg-avatar" :src="thread.avatar" alt="avatar" width="50" onerror="this.onerror=null;this.src='/storage/avatars/default.jpg';">
 
             <div class="media-body">
+                <!-- GLITCH MODIFIED START: DM message body as stacked divs (media, story media + reaction/comment bubble, text); fixes invalid <p> nesting -->
                 <div v-if="convo.type == 'photo'" class="p-0">
                     <img
                         :src="convo.media"
@@ -93,6 +94,7 @@
                         </button>
                     </p>
                 </div>
+                <!-- GLITCH MODIFIED END -->
             </div>
 
             <img v-if="convo.isAuthor && !hideAvatars" class="ml-3 shadow msg-avatar" :src="profile.avatar" alt="avatar" width="50" onerror="this.onerror=null;this.src='/storage/avatars/default.jpg';">
@@ -205,6 +207,7 @@
     .pill-to {
         background: var(--bg-light);
         font-weight: 500;
+        /* GLITCH MODIFIED: drop !important so grouping rules can override corners */
         border-radius: 20px;
         padding-left: 1rem;
         padding-right: 1rem;
@@ -218,6 +221,7 @@
         text-align: right !important;
         background: linear-gradient(135deg, #2EA2F4 0%, #0B93F6 100%) !important;
         font-weight: 500;
+        /* GLITCH MODIFIED: drop !important so grouping rules can override corners */
         border-radius: 20px;
         padding-left: 1rem;
         padding-right: 1rem;
@@ -227,6 +231,7 @@
         margin-bottom: 0.25rem;
     }
 
+    /* GLITCH MODIFIED START: DM bubble grouping: stacked parts of one message share corners */
     .dm-chat-message > .isAuthor .media-body > * {
         justify-content: flex-end;
         display: flex;
@@ -267,6 +272,7 @@
     .dm-chat-message > :not(.isAuthor) .media-body > *:not(:first-child) .media-embed {
         border-top-left-radius: 0px !important;
     }
+    /* GLITCH MODIFIED END */
 
     .chat-smsg:hover {
         background: var(--light-hover-bg);
@@ -283,6 +289,7 @@
     }
     .emoji-msg {
         font-size: 4rem !important;
+        /* GLITCH MODIFIED: emoji message line-height */
         line-height: 4.2rem !important;
     }
     .larger-text {
@@ -300,6 +307,7 @@
                 text-align: right !important;
                 background: linear-gradient(135deg, #2EA2F4 0%, #0B93F6 100%) !important;
                 font-weight: 500;
+                /* GLITCH MODIFIED: drop !important so grouping rules can override corners */
                 border-radius: 20px;
                 padding-left: 1rem;
                 padding-right: 1rem;

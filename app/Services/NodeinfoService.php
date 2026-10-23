@@ -5,6 +5,7 @@ namespace App\Services;
 use Illuminate\Http\Client\ConnectionException;
 use Illuminate\Http\Client\RequestException;
 use Illuminate\Support\Facades\Http;
+use Illuminate\Support\Facades\Log;
 
 class NodeinfoService
 {
@@ -48,8 +49,15 @@ class NodeinfoService
         if (is_array($json['links'])) {
             if (isset($json['links']['href'])) {
                 $href = $json['links']['href'];
-            } else {
+            } elseif (isset($json['links'][0]['href'])) {
                 $href = $json['links'][0]['href'];
+            } else {
+                Log::debug('NodeinfoService: malformed links array', [
+                    'domain' => $domain,
+                    'links' => $json['links'],
+                ]);
+
+                return false;
             }
         } else {
             return false;

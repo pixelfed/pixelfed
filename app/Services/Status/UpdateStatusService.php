@@ -2,13 +2,13 @@
 
 namespace App\Services\Status;
 
-use App\Media;
+use App\Models\Media;
+use App\Models\ModLog;
+use App\Models\Status;
 use App\Models\StatusEdit;
-use App\ModLog;
 use App\Services\MediaService;
 use App\Services\MediaStorageService;
 use App\Services\StatusService;
-use App\Status;
 use Purify;
 
 class UpdateStatusService
@@ -65,8 +65,6 @@ class UpdateStatusService
         if (isset($attributes['status'])) {
             $cleaned = Purify::clean($attributes['status']);
             $status->caption = $cleaned;
-        } else {
-            $status->caption = null;
         }
         if (isset($attributes['sensitive'])) {
             if ($status->is_nsfw != (bool) $attributes['sensitive'] &&
@@ -84,8 +82,6 @@ class UpdateStatusService
         }
         if (isset($attributes['spoiler_text'])) {
             $status->cw_summary = Purify::clean($attributes['spoiler_text']);
-        } else {
-            $status->cw_summary = null;
         }
         if (isset($attributes['location'])) {
             if (isset($attributes['location']['id'])) {
@@ -119,8 +115,8 @@ class UpdateStatusService
 
     public static function createEdit(Status $status, $attributes)
     {
-        $cleaned = isset($attributes['status']) ? Purify::clean($attributes['status']) : null;
-        $spoiler_text = isset($attributes['spoiler_text']) ? Purify::clean($attributes['spoiler_text']) : null;
+        $cleaned = isset($attributes['status']) ? Purify::clean($attributes['status']) : $status->caption;
+        $spoiler_text = isset($attributes['spoiler_text']) ? Purify::clean($attributes['spoiler_text']) : $status->cw_summary;
         $sensitive = isset($attributes['sensitive']) ? $attributes['sensitive'] : null;
         $mids = $status->media()->count() ? $status->media()->orderBy('order')->pluck('id')->toArray() : null;
         StatusEdit::create([

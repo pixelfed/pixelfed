@@ -1,4 +1,79 @@
-commit_message: '[ci skip]'
+project_id_env: CROWDIN_PROJECT_ID
+api_token_env: CROWDIN_PERSONAL_TOKEN
+base_path: '.'
+preserve_hierarchy: true
+
+# Map Crowdin's non-standard locale codes to clean folder names. Avoids the
+# en-PT ↔ English (Portugal) BCP-47 collision and the fake tlh-AA region.
+# Applied per file entry below via the *locale_mapping anchor.
+#   en-PT (Pirate English) -> en-x-pirate  (BCP-47 private-use subtag)
+#   tlh-AA (Klingon)        -> tlh          (tlh is valid BCP-47; AA is a fake region)
+
 files:
-  - source: /resources/lang/en/web.php
-    translation: /resources/lang/%two_letters_code%/web.php
+  - source: /lang/en-US/auth.php
+    translation: /lang/%locale%/auth.php
+    skip_untranslated_strings: true
+    languages_mapping: &locale_mapping
+      locale:
+        en-PT: en-x-pirate
+        tlh-AA: tlh
+
+  - source: /lang/en-US/exception.php
+    translation: /lang/%locale%/exception.php
+    skip_untranslated_strings: true
+    languages_mapping: *locale_mapping
+
+  - source: /lang/en-US/helpcenter.php
+    translation: /lang/%locale%/helpcenter.php
+    skip_untranslated_strings: true
+    languages_mapping: *locale_mapping
+
+  - source: /lang/en-US/navmenu.php
+    translation: /lang/%locale%/navmenu.php
+    skip_untranslated_strings: true
+    languages_mapping: *locale_mapping
+
+  - source: /lang/en-US/notification.php
+    translation: /lang/%locale%/notification.php
+    skip_untranslated_strings: true
+    languages_mapping: *locale_mapping
+
+  # - source: /lang/en-US/pagination.php
+  #   translation: /lang/%locale%/pagination.php
+  #   skip_untranslated_strings: true
+  #   languages_mapping: *locale_mapping
+
+  - source: /lang/en-US/passwords.php
+    translation: /lang/%locale%/passwords.php
+    skip_untranslated_strings: true
+    languages_mapping: *locale_mapping
+
+  - source: /lang/en-US/profile.php
+    translation: /lang/%locale%/profile.php
+    skip_untranslated_strings: true
+    languages_mapping: *locale_mapping
+
+  - source: /lang/en-US/settings.php
+    translation: /lang/%locale%/settings.php
+    skip_untranslated_strings: true
+    languages_mapping: *locale_mapping
+
+  - source: /lang/en-US/site.php
+    translation: /lang/%locale%/site.php
+    skip_untranslated_strings: true
+    languages_mapping: *locale_mapping
+
+  - source: /lang/en-US/timeline.php
+    translation: /lang/%locale%/timeline.php
+    skip_untranslated_strings: true
+    languages_mapping: *locale_mapping
+
+  # - source: /lang/en-US/validation.php
+  #   translation: /lang/%locale%/validation.php
+  #   skip_untranslated_strings: true
+  #   languages_mapping: *locale_mapping
+
+  - source: /lang/en-US/web.php
+    translation: /lang/%locale%/web.php
+    skip_untranslated_strings: true
+    languages_mapping: *locale_mapping

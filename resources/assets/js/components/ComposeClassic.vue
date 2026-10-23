@@ -352,7 +352,18 @@ export default {
 					}).catch(function(e) {
 						self.uploading = false;
 						io.value = null;
-						swal('Oops, something went wrong!', 'An unexpected error occurred.', 'error');
+						let errorMsg = 'An unexpected error occurred.';
+						if (e.response && e.response.status === 422 && e.response.data) {
+							if (e.response.data.errors) {
+								let messages = Object.values(e.response.data.errors).flat();
+								errorMsg = messages.join('\n');
+							} else if (e.response.data.message) {
+								errorMsg = e.response.data.message;
+							}
+						} else if (e.response && e.response.data && e.response.data.message) {
+							errorMsg = e.response.data.message;
+						}
+						swal('Upload Failed', errorMsg, 'error');
 					});
 					io.value = null;
 					self.uploadProgress = 0;

@@ -15,13 +15,49 @@
     <meta name="apple-mobile-web-app-capable" content="yes">
     <link rel="shortcut icon" type="image/png" href="/img/favicon.png?v=2">
     <link rel="apple-touch-icon" type="image/png" href="/img/favicon.png?v=2">
-    <style type="text/css">hr,p{margin-bottom:1rem}.small,body{font-weight:400}.card,body{display:flex}*,::after,::before{box-sizing:border-box}p{margin-top:0}a{color:#2c78bf;text-decoration:none;background-color:transparent}a:hover{color:#1e5181;text-decoration:underline}img{vertical-align:middle;border-style:none}hr{box-sizing:content-box;height:0;overflow:visible;margin-top:1rem;border:0;border-top:1px solid rgba(0,0,0,.1)}.small{font-size:.875em}.card{position:relative;flex-direction:column;min-width:0;word-wrap:break-word;background-color:#fff;background-clip:border-box;border:1px solid rgba(0,0,0,.125);border-radius:.25rem}.card-body{flex:1 1 auto;min-height:1px;padding:1.25rem}.card-footer,.card-header{padding:.75rem 1.25rem;background-color:#fff}.card-header{margin-bottom:0;border-bottom:1px solid rgba(0,0,0,.125)}.card-header:first-child{border-radius:calc(.25rem - 1px) calc(.25rem - 1px) 0 0}.card-footer{border-top:1px solid rgba(0,0,0,.125)}.card-footer:last-child{border-radius:0 0 calc(.25rem - 1px) calc(.25rem - 1px)}.bg-white{background-color:#fff!important}.border{border:1px solid #dee2e6!important}.d-inline-flex{display:inline-flex!important}.justify-content-between{justify-content:space-between!important}.align-items-center{align-items:center!important}.my-0{margin-top:0!important}.mb-0,.my-0{margin-bottom:0!important}.mb-2{margin-bottom:.5rem!important}.pr-1{padding-right:.25rem!important}.pl-2{padding-left:.5rem!important}.text-uppercase{text-transform:uppercase!important}.font-weight-bold{font-weight:700!important}a.text-dark:focus,a.text-dark:hover{color:#000!important}a.text-muted:focus,a.text-muted:hover{color:#454b50!important}.text-muted{color:#6c757d!important}@media print{*,::after,::before{text-shadow:none!important;box-shadow:none!important}a:not(.btn){text-decoration:underline}img{page-break-inside:avoid}p{orphans:3;widows:3}body{min-width:992px!important}}body{margin:0;font-size:.9rem;line-height:1.6;color:#212529;text-align:left;background-color:rgba(247,251,253,.4705882353);min-height:100vh;flex-flow:column;font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif}.text-dark{color:#212529!important}@media (max-width:576px){.card-md-rounded-0{border-width:1px 0;border-radius:0!important}}.card{box-shadow:0 2px 6px 0 hsla(0,0%,0%,.2);border:none}.status-card-embed{box-shadow:none;border-radius:4px;overflow:hidden}body.embed-card{background:#fff!important;margin:0;padding-bottom:0}.avatar{border-radius:100%}image-carousel{display:block;position:relative;width:100%;overflow:hidden}image-carousel img{width:100%;display:none}image-carousel img.active{display:block}.carousel-buttons{position:absolute;top:50%;width:100%;display:flex;justify-content:space-between;transform:translateY(-50%);pointer-events:none}.carousel-button{display:flex;justify-content:center;align-items:center;width:40px;height:40px;background:#fff;color:#000;border:1px solid #ccc;border-radius:100%;padding:10px;margin:5px;cursor:none;pointer-events:none;opacity:0;z-index:2;transition:opacity .1s ease-out}.carousel-button.active{cursor:pointer;pointer-events:all}image-carousel:hover .carousel-button.active{opacity:1;transition:opacity .3s ease-out}.carousel-button.prev{align-self:flex-start}.carousel-button.next{align-self:flex-end}.carousel-indicators{position:absolute;bottom:10px;width:100%;display:flex;justify-content:center}.carousel-indicator{background:rgba(0,0,0,.5);border-radius:50%;width:10px;height:10px;margin:0 5px;cursor:pointer;transition:background .1s ease-out}.carousel-indicator.active{background:#fff}
+    <style type="text/css">
+    :root {
+        --dark: #000;
+        --body-bg: rgba(243,244,246,1);
+        --body-color: #212529;
+        --primary: #3B82F6;
+        --card-bg: #fff;
+    }
+    @media (prefers-color-scheme: dark) {
+        :root {
+            --dark: #fff;
+            --body-bg: #000;
+            --body-color: #9ca3af;
+            --card-bg: #161618;
+        }
+    }
+    .force-light-mode {
+        --dark: #000;
+        --body-bg: rgba(243,244,246,1);
+        --body-color: #212529;
+        --primary: #3B82F6;
+        --card-bg: #fff;
+    }
+
+    .force-dark-mode {
+        --dark: #fff;
+        --body-bg: #000;
+        --body-color: #9ca3af;
+        --card-bg: #161618;
+    }
+    hr,p{margin-bottom:1rem}.small,body{font-weight:400}.card,body{display:flex}*,::after,::before{box-sizing:border-box}p{margin-top:0}a{color:#2c78bf;text-decoration:none;background-color:transparent}a:hover{color:var(--primary);text-decoration:underline}img{vertical-align:middle;border-style:none}hr{box-sizing:content-box;height:0;overflow:visible;margin-top:1rem;border:0;border-top:1px solid rgba(0,0,0,.1)}.small{font-size:.875em}.card{position:relative;flex-direction:column;min-width:0;word-wrap:break-word;background-color:var(--card-bg);background-clip:border-box;border:1px solid rgba(0,0,0,.125);border-radius:.25rem}.card-body{flex:1 1 auto;min-height:1px;padding:1.25rem;background-color:var(--card-bg)}.card-footer,.card-header{padding:.75rem 1.25rem;background-color:var(--card-bg)}.card-header{margin-bottom:0;border-bottom:1px solid rgba(0,0,0,.125)}.card-header:first-child{border-radius:calc(.25rem - 1px) calc(.25rem - 1px) 0 0}.card-footer{border-top:1px solid rgba(0,0,0,.125)}.card-footer:last-child{border-radius:0 0 calc(.25rem - 1px) calc(.25rem - 1px)}.border{border:1px solid var(--card-bg)!important}.d-inline-flex{display:inline-flex!important}.justify-content-between{justify-content:space-between!important}.align-items-center{align-items:center!important}.my-0{margin-top:0!important}.mb-0,.my-0{margin-bottom:0!important}.mb-2{margin-bottom:.5rem!important}.pr-1{padding-right:.25rem!important}.pl-2{padding-left:.5rem!important}.text-uppercase{text-transform:uppercase!important}.font-weight-bold{font-weight:700!important}a.text-dark:focus,a.text-dark:hover{color:var(--dark)!important}a.text-muted:focus,a.text-muted:hover{color:var(--dark)!important}.text-muted{color:#6c757d!important}@media print{*,::after,::before{text-shadow:none!important;box-shadow:none!important}a:not(.btn){text-decoration:underline}img{page-break-inside:avoid}p{orphans:3;widows:3}body{min-width:992px!important}}body{margin:0;font-size:.9rem;line-height:1.6;color:var(--body-color);text-align:left;background-color:rgba(247,251,253,.4705882353);min-height:100vh;flex-flow:column;font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif}.text-dark{color:var(--body-color)!important}@media (max-width:576px){.card-md-rounded-0{border-width:1px 0;border-radius:0!important}}.card{box-shadow:0 2px 6px 0 hsla(0,0%,0%,.2);border:none}.status-card-embed{box-shadow:none;border-radius:4px;overflow:hidden}body.embed-card{background:var(--card-bg)!important;margin:0;padding-bottom:0}.avatar{border-radius:100%}image-carousel{display:block;position:relative;width:100%;overflow:hidden}image-carousel img{width:100%;display:none}image-carousel img.active{display:block}.carousel-buttons{position:absolute;top:50%;width:100%;display:flex;justify-content:space-between;transform:translateY(-50%);pointer-events:none}.carousel-button{display:flex;justify-content:center;align-items:center;width:40px;height:40px;background:#fff;color:#000;border:1px solid #ccc;border-radius:100%;padding:10px;margin:5px;cursor:none;pointer-events:none;opacity:0;z-index:2;transition:opacity .1s ease-out}.carousel-button.active{cursor:pointer;pointer-events:all}image-carousel:hover .carousel-button.active{opacity:1;transition:opacity .3s ease-out}.carousel-button.prev{align-self:flex-start}.carousel-button.next{align-self:flex-end}.carousel-indicators{position:absolute;bottom:10px;width:100%;display:flex;justify-content:center}.carousel-indicator{background:rgba(0,0,0,.5);border-radius:50%;width:10px;height:10px;margin:0 5px;cursor:pointer;transition:background .1s ease-out}.carousel-indicator.active{background:#fff}
     </style>
 </head>
-<body class="bg-white">
+<body class="
+@if(request('ui-mode') === 'light')
+    force-light-mode
+@elseif(request('ui-mode') === 'dark')
+    force-dark-mode
+@endif
+">
     <div class="embed-card">
         <div class="card status-card-embed card-md-rounded-0 border">
-            <div class="card-header d-inline-flex align-items-center bg-white">
+            <div class="card-header d-inline-flex align-items-center">
                 <img src="{{$status['account']['avatar']}}" width="32" height="32" class="avatar" onerror="this.onerror=null;this.src='/storage/avatars/default.jpg';">
                 <a class="username font-weight-bold pl-2 text-dark" target="_blank" rel="ugc" href="{{$status['account']['url']}}">
                     {{$status['account']['username']}}
@@ -58,7 +94,7 @@
                 </div>
             </div>
             @endif
-            <div class="card-footer bg-white d-inline-flex justify-content-between align-items-center">
+            <div class="card-footer d-inline-flex justify-content-between align-items-center">
                 <div class="timestamp">
                     <p class="small text-uppercase mb-0">
                         <a href="{{$status['url']}}" class="text-muted" target="_blank" rel="ugc">
@@ -68,7 +104,7 @@
                 </div>
                 <div>
                     <a class="small font-weight-bold text-muted pr-1" href="{{config('app.url')}}" target="_blank">{{config('pixelfed.domain.app')}}</a>
-                    <img src="/img/pixelfed-icon-color.svg" width="26" height="26" />
+                    <img src="{{ config('app.logo') }}" width="26" height="26" />
                 </div>
             </div>
         </div>
