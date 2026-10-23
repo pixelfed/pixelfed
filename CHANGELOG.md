@@ -1,5 +1,10 @@
 # Release Notes
 
+## [v0.12.6-glitch.1.12.2](https://github.com/pixelfed-glitch/pixelfed/compare/v0.12.6-glitch.1.12.0...v0.12.6-glitch.1.12.1)
+
+### Glitch Updates
+- Docker images rebuilt to include the PHP Vulnerability fixes for CVE-2026-109618 and CVE-2026-109619 (#73) ([ed6c65d](https://github.com/pixelfed-glitch/pixelfed/commit/ed6c65d))
+
 ## [v0.12.6-glitch.1.12.1](https://github.com/pixelfed-glitch/pixelfed/compare/v0.12.6-glitch.1.12.0...v0.12.6-glitch.1.12.1)
 
 ### Glitch Updates
