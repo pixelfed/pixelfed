@@ -46,6 +46,15 @@ jobs:
           - postgres
         db_version:
           - latest
+        exclude:
+          - db_type: mysql
+            db_version: latest
+        include:
+          # MySQL 9.6+ rejects md5() in generated columns, which Laravel Pulse uses for [key_hash].
+          # Pin to the 8.4 LTS until Pulse supports newer MySQL (https://github.com/laravel/pulse/pull/478).
+          - php_version: 8.5
+            db_type: mysql
+            db_version: "8.4"
 
     container:
       image: php:${{ matrix.php_version }}-cli
@@ -168,7 +177,9 @@ jobs:
 
       - name: Setup Environment
         run: |
-          cp .env.testing .env
+          # Move rather than copy: with [APP_ENV=testing], [config:cache] also reads [.env.testing],
+          # whose sqlite [DB_*] and [REDIS_HOST=127.0.0.1] would override the values set below.
+          mv .env.testing .env
 
           dottie set DB_CONNECTION=${{ matrix.db_type == 'postgres' && 'pgsql' || (matrix.db_type == 'mysql' && 'mysql' || 'mariadb') }}
           dottie set DB_HOST=db

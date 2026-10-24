@@ -202,7 +202,9 @@ jobs:
             type=semver,pattern={{version}},prefix=${{ matrix.target_runtime }}-${{ matrix.php_version }}-
             type=ref,event=pr,prefix=${{ matrix.target_runtime }}-${{ matrix.php_version }}-pr-
         env:
-          DOCKER_METADATA_ANNOTATIONS_LEVELS: manifest,index
+          # The [docker] exporter used by [load] rejects index annotations on a single-platform image,
+          # so fork PRs only get manifest-level annotations.
+          DOCKER_METADATA_ANNOTATIONS_LEVELS: ${{ env.IS_FORK_PR == 'true' && 'manifest' || 'manifest,index' }}
 
       - name: Build and push Docker image
         uses: docker/build-push-action@v6
