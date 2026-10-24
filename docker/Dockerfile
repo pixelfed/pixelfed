@@ -100,7 +100,8 @@ ARG NGINX_GPGKEY_PATH="/usr/share/keyrings/nginx-archive-keyring.gpg"
 # Used to copy some docker-entrypoint files for [nginx-runtime]
 #
 # NOTE: Docker will *not* pull this image unless it's referenced (via build target)
-FROM public.ecr.aws/nginx/nginx:${NGINX_VERSION} AS nginx-image
+# GLITCH MODIFIED: Docker Hub pull-through mirror, avoids ECR Public rate limits (upstream: nginx)
+FROM mirror.gcr.io/library/nginx:${NGINX_VERSION} AS nginx-image
 
 # Go helper binaries, built from their pinned release tags (see install/go-tools.sh):
 #   forego   - Procfile runner, PID 1 for the nginx runtime   https://github.com/nginx-proxy/forego
