@@ -2,20 +2,17 @@
 
 namespace App\Jobs\StoryPipeline;
 
+use App\Models\Story;
+use App\Services\ActivityPubDeliveryService;
 use App\Services\FollowerService;
+use App\Services\FractalService;
 use App\Services\StoryService;
-use App\Story;
 use App\Transformer\ActivityPub\Verb\CreateStory;
-use App\Util\ActivityPub\HttpSignature;
-use GuzzleHttp\Client;
-use GuzzleHttp\Pool;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
-use League\Fractal;
-use League\Fractal\Serializer\ArraySerializer;
 
 class StoryFanout implements ShouldQueue
 {
@@ -59,49 +56,11 @@ class StoryFanout implements ShouldQueue
         $audience = FollowerService::softwareAudience($story->profile_id, 'pixelfed');
 
         if (empty($audience)) {
-            // Return on profiles with no remote followers
             return;
         }
 
-        $fractal = new Fractal\Manager;
-        $fractal->setSerializer(new ArraySerializer);
-        $resource = new Fractal\Resource\Item($story, new CreateStory);
-        $activity = $fractal->createData($resource)->toArray();
+        $activity = FractalService::item($story, new CreateStory);
 
-        $payload = json_encode($activity);
-
-        $client = new Client([
-            'timeout' => config('federation.activitypub.delivery.timeout'),
-        ]);
-
-        $requests = function ($audience) use ($client, $activity, $profile, $payload) {
-            foreach ($audience as $url) {
-                $version = config('pixelfed.version');
-                $appUrl = config('app.url');
-                $headers = HttpSignature::sign($profile, $url, $activity, [
-                    'Content-Type' => 'application/ld+json; profile="https://www.w3.org/ns/activitystreams"',
-                    'User-Agent' => "(Pixelfed/{$version}; +{$appUrl})",
-                ]);
-                yield function () use ($client, $url, $headers, $payload) {
-                    return $client->postAsync($url, [
-                        'curl' => [
-                            CURLOPT_HTTPHEADER => $headers,
-                            CURLOPT_POSTFIELDS => $payload,
-                            CURLOPT_HEADER => true,
-                        ],
-                    ]);
-                };
-            }
-        };
-
-        $pool = new Pool($client, $requests($audience), [
-            'concurrency' => config('federation.activitypub.delivery.concurrency'),
-            'fulfilled' => function ($response, $index) {},
-            'rejected' => function ($reason, $index) {},
-        ]);
-
-        $promise = $pool->promise();
-
-        $promise->wait();
+        ActivityPubDeliveryService::pool($profile, $audience, $activity);
     }
 }

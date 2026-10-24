@@ -2,12 +2,12 @@
 
 namespace App\Transformer\ActivityPub\Verb;
 
-use App\FollowRequest;
+use App\Models\FollowRequest;
 use League\Fractal;
 
 class AcceptFollow extends Fractal\TransformerAbstract
 {
-    public function transform(FollowRequest $follow)
+    public function transform(FollowRequest $follow): array
     {
         return [
             '@context' => 'https://www.w3.org/ns/activitystreams',

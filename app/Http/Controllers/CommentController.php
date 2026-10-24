@@ -4,27 +4,28 @@ namespace App\Http\Controllers;
 
 use App\Jobs\CommentPipeline\CommentPipeline;
 use App\Jobs\StatusPipeline\NewStatusPipeline;
+use App\Models\Profile;
+use App\Models\Status;
+use App\Models\UserFilter;
+use App\Services\FollowerService;
 use App\Services\StatusService;
-use App\Status;
 use App\Transformer\Api\StatusTransformer;
-use App\UserFilter;
-use Auth;
-use DB;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 use League\Fractal;
 use League\Fractal\Serializer\ArraySerializer;
 use Purify;
 
 class CommentController extends Controller
 {
-    public function showAll(Request $request, $username, int $id)
+    public function showAll(Request $request, $username, int $id): void
     {
         abort(404);
     }
 
     public function store(Request $request)
     {
-        if (Auth::check() === false) {
+        if (! $request->user()) {
             abort(403);
         }
         $this->validate($request, [
@@ -36,26 +37,44 @@ class CommentController extends Controller
         $statusId = $request->input('item');
         $nsfw = $request->input('sensitive', false);
 
-        $user = Auth::user();
+        $user = $request->user();
         $profile = $user->profile;
         $status = Status::findOrFail($statusId);
 
-        if ($status->comments_disabled == true) {
-            return;
+        abort_if($status->comments_disabled == true, 404);
+        abort_if($status->scope === 'direct', 404);
+
+        if ($status->scope === 'private' && $status->profile_id !== $profile->id) {
+            abort_if(! FollowerService::follows($profile->id, $status->profile_id), 404);
         }
 
         $filtered = UserFilter::whereUserId($status->profile_id)
-            ->whereFilterableType('App\Profile')
+            ->whereIn('filterable_type', ['App\Profile', Profile::class])
             ->whereIn('filter_type', ['block'])
             ->whereFilterableId($profile->id)
             ->exists();
 
         if ($filtered == true) {
-            return;
+            return null;
         }
 
         $reply = DB::transaction(function () use ($comment, $status, $profile, $nsfw) {
-            $scope = $profile->is_private == true ? 'private' : 'public';
+            // Determine the replier's preferred scope
+            $replierScope = $profile->is_private == true ? 'private' : 'public';
+
+            // Enforce that reply cannot be more visible than parent
+            $parentScope = $status->scope ?? $status->visibility;
+
+            // Apply visibility constraint: reply should be at most as visible as parent
+            if ($parentScope === 'private' || $parentScope === 'direct') {
+                $scope = 'private';
+            } elseif ($parentScope === 'unlisted') {
+                $scope = $replierScope === 'private' ? 'private' : 'unlisted';
+            } else {
+                // Parent is public, use replier's preference
+                $scope = $replierScope;
+            }
+
             $reply = new Status;
             $reply->profile_id = $profile->id;
             $reply->is_nsfw = $nsfw;
@@ -79,7 +98,8 @@ class CommentController extends Controller
             $fractal->setSerializer(new ArraySerializer);
             $entity = new Fractal\Resource\Item($reply, new StatusTransformer);
             $entity = $fractal->createData($entity)->toArray();
-            $response = [
+
+            return [
                 'code' => 200,
                 'msg' => 'Comment saved',
                 'username' => $profile->username,
@@ -88,10 +108,8 @@ class CommentController extends Controller
                 'comment' => $reply->caption,
                 'entity' => $entity,
             ];
-        } else {
-            $response = redirect($status->url());
         }
 
-        return $response;
+        return redirect($status->url());
     }
 }

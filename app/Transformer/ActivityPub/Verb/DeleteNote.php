@@ -2,12 +2,12 @@
 
 namespace App\Transformer\ActivityPub\Verb;
 
-use App\Status;
+use App\Models\Status;
 use League\Fractal;
 
 class DeleteNote extends Fractal\TransformerAbstract
 {
-    public function transform(Status $status)
+    public function transform(Status $status): array
     {
         return [
             '@context' => 'https://www.w3.org/ns/activitystreams',

@@ -18,33 +18,50 @@ class FetchCacheService
         $ar = $allowRedirects ? 'ar1:' : 'ar0';
         $key = self::CACHE_KEY.sha1($url).':'.$vc.$ar.$ttl;
         if (Cache::has($key)) {
-            return false;
+            return Cache::get($key);
         }
 
         if ($verifyCheck) {
-            if (! Helpers::validateUrl($url)) {
+            $validated = Helpers::validateUrl($url);
+            if (! $validated) {
                 Cache::put($key, 1, $ttl);
 
                 return false;
             }
+            $url = $validated;
         }
 
         $headers = [
             'User-Agent' => '(Pixelfed/'.config('pixelfed.version').'; +'.config('app.url').')',
         ];
 
-        if ($allowRedirects) {
-            $options = [
-                'allow_redirects' => [
-                    'max' => 2,
-                    'strict' => true,
-                ],
-            ];
-        } else {
-            $options = [
-                'allow_redirects' => false,
-            ];
+        // SSRF-hardening: resolve the host and pin the connection to a
+        // validated public IP. Auto-redirects are disabled so a remote host
+        // cannot steer the request into an internal address on a later hop.
+        $host = parse_url($url, PHP_URL_HOST);
+        $port = parse_url($url, PHP_URL_PORT) ?: 443;
+        $ips = $host ? Helpers::resolvePublicIps($host) : [];
+        if ($ips === []) {
+            Cache::put($key, 1, $ttl);
+
+            return false;
         }
+
+        $options = [
+            'allow_redirects' => false,
+            'protocols' => ['https'],
+            'curl' => [
+                CURLOPT_RESOLVE => [
+                    $host.':'.((int) $port).':'.implode(',', array_map(
+                        fn ($ip) => str_contains($ip, ':') ? '['.$ip.']' : $ip,
+                        $ips
+                    )),
+                ],
+                CURLOPT_FRESH_CONNECT => true,
+                CURLOPT_FORBID_REUSE => true,
+            ],
+        ];
+
         try {
             $res = Http::withOptions($options)
                 ->retry(3, function (int $attempt, $exception) {
@@ -54,15 +71,7 @@ class FetchCacheService
                 ->withHeaders($headers)
                 ->timeout(40)
                 ->get($url);
-        } catch (RequestException $e) {
-            Cache::put($key, 1, $ttl);
-
-            return false;
-        } catch (ConnectionException $e) {
-            Cache::put($key, 1, $ttl);
-
-            return false;
-        } catch (\Exception $e) {
+        } catch (RequestException|ConnectionException|\Exception) {
             Cache::put($key, 1, $ttl);
 
             return false;
@@ -74,6 +83,9 @@ class FetchCacheService
             return false;
         }
 
-        return $res->json();
+        $result = $res->json();
+        Cache::put($key, $result, $ttl);
+
+        return $result;
     }
 }

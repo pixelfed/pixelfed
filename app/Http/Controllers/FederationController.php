@@ -5,19 +5,29 @@ namespace App\Http\Controllers;
 use App\Jobs\InboxPipeline\DeleteWorker;
 use App\Jobs\InboxPipeline\InboxValidator;
 use App\Jobs\InboxPipeline\InboxWorker;
-use App\Profile;
+use App\Models\DmMessage;
+use App\Models\FeatureAuthorization;
+use App\Models\Profile;
+use App\Models\QuoteAuthorization;
+use App\Models\Status;
 use App\Services\AccountService;
+use App\Services\ActivityPubSignedFetchService;
+use App\Services\BlockSyncService;
+use App\Services\FeaturedCollectionService;
+use App\Services\FollowersSyncService;
 use App\Services\InstanceService;
-use App\Status;
+use App\Services\QuoteService;
 use App\Util\Lexer\Nickname;
 use App\Util\Site\Nodeinfo;
 use App\Util\Webfinger\Webfinger;
-use Cache;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
+use Illuminate\Http\Response;
+use Illuminate\Support\Facades\Cache;
 
 class FederationController extends Controller
 {
-    public function nodeinfoWellKnown()
+    public function nodeinfoWellKnown(): JsonResponse
     {
         abort_if(! config('federation.nodeinfo.enabled'), 404);
 
@@ -25,7 +35,7 @@ class FederationController extends Controller
             ->header('Access-Control-Allow-Origin', '*');
     }
 
-    public function nodeinfo()
+    public function nodeinfo(): JsonResponse
     {
         abort_if(! config('federation.nodeinfo.enabled'), 404);
 
@@ -33,9 +43,10 @@ class FederationController extends Controller
             ->header('Access-Control-Allow-Origin', '*');
     }
 
-    public function webfinger(Request $request)
+    public function webfinger(Request $request): JsonResponse|Response
     {
-        if (! config('federation.webfinger.enabled') ||
+        if (
+            ! config('federation.webfinger.enabled') ||
             ! $request->has('resource') ||
             ! $request->filled('resource')
         ) {
@@ -73,7 +84,8 @@ class FederationController extends Controller
                 ],
             ];
 
-            return response()->json($res, 200, [], JSON_UNESCAPED_SLASHES);
+            return response()->json($res, 200, [], JSON_UNESCAPED_SLASHES)
+                ->header('Access-Control-Allow-Origin', '*');
         }
 
         if (str_starts_with($resource, 'https://')) {
@@ -88,7 +100,8 @@ class FederationController extends Controller
                 }
                 $key = 'federation:webfinger:sha256:url-username:'.$username;
                 if ($cached = Cache::get($key)) {
-                    return response()->json($cached, 200, [], JSON_UNESCAPED_SLASHES);
+                    return response()->json($cached, 200, [], JSON_UNESCAPED_SLASHES)
+                        ->header('Access-Control-Allow-Origin', '*');
                 }
                 $profile = Profile::whereUsername($username)->first();
                 if (! $profile || $profile->status !== null || $profile->domain) {
@@ -99,16 +112,17 @@ class FederationController extends Controller
 
                 return response()->json($webfinger, 200, [], JSON_UNESCAPED_SLASHES)
                     ->header('Access-Control-Allow-Origin', '*');
-            } else {
-                return response('', 400);
             }
+
+            return response('', 400);
         }
         $hash = hash('sha256', $resource);
         $key = 'federation:webfinger:sha256:'.$hash;
         if ($cached = Cache::get($key)) {
-            return response()->json($cached, 200, [], JSON_UNESCAPED_SLASHES);
+            return response()->json($cached, 200, [], JSON_UNESCAPED_SLASHES)
+                ->header('Access-Control-Allow-Origin', '*');
         }
-        if (strpos($resource, $domain) == false) {
+        if (! str_contains($resource, $domain)) {
             return response('', 400);
         }
         $parsed = Nickname::normalizeProfileUrl($resource);
@@ -127,7 +141,7 @@ class FederationController extends Controller
             ->header('Access-Control-Allow-Origin', '*');
     }
 
-    public function hostMeta(Request $request)
+    public function hostMeta(Request $request): Response
     {
         abort_if(! config('federation.webfinger.enabled'), 404);
 
@@ -159,7 +173,7 @@ class FederationController extends Controller
         return response(json_encode($res, JSON_UNESCAPED_SLASHES))->header('Content-Type', 'application/activity+json');
     }
 
-    public function userInbox(Request $request, $username)
+    public function userInbox(Request $request, $username): void
     {
         abort_if(! (bool) config_cache('federation.activitypub.enabled'), 404);
         abort_if(! config('federation.activitypub.inbox'), 404);
@@ -177,42 +191,67 @@ class FederationController extends Controller
         if (in_array($domain, InstanceService::getBannedDomains())) {
             return;
         }
-
         if (isset($obj['type']) && $obj['type'] === 'Delete') {
             if (isset($obj['object']) && isset($obj['object']['type']) && isset($obj['object']['id'])) {
                 if ($obj['object']['type'] === 'Person') {
                     if (Profile::whereRemoteUrl($obj['object']['id'])->exists()) {
-                        dispatch(new DeleteWorker($headers, $payload))->onQueue('inbox');
+                        dispatch(new DeleteWorker($headers, $payload, $request->getPathInfo()))->onQueue('inbox');
 
                         return;
                     }
                 }
 
                 if ($obj['object']['type'] === 'Tombstone') {
-                    if (Status::whereObjectUrl($obj['object']['id'])->exists()) {
-                        dispatch(new DeleteWorker($headers, $payload))->onQueue('delete');
+                    if ($this->isKnownTombstone($obj['object']['id'])) {
+                        dispatch(new DeleteWorker($headers, $payload, $request->getPathInfo()))->onQueue('delete');
 
                         return;
                     }
                 }
 
                 if ($obj['object']['type'] === 'Story') {
-                    dispatch(new DeleteWorker($headers, $payload))->onQueue('story');
+                    dispatch(new DeleteWorker($headers, $payload, $request->getPathInfo()))->onQueue('story');
 
                     return;
                 }
             }
 
+            if (
+                is_string($obj['object'] ?? null)
+                && $obj['object'] === ($obj['actor'] ?? null)
+                && Profile::whereRemoteUrl($obj['object'])->exists()
+            ) {
+                dispatch(new DeleteWorker($headers, $payload, $request->getPathInfo()))->onQueue('inbox');
+
+                return;
+            }
+
             return;
-        } elseif (isset($obj['type']) && in_array($obj['type'], ['Follow', 'Accept'])) {
+        }
+
+        if (isset($obj['type']) && in_array($obj['type'], ['Follow', 'Accept'])) {
             dispatch(new InboxValidator($username, $headers, $payload))->onQueue('follow');
         } else {
             dispatch(new InboxValidator($username, $headers, $payload))->onQueue('high');
         }
-
     }
 
-    public function sharedInbox(Request $request)
+    /**
+     * Deletes are dropped at the door unless they are for something this
+     * server has. A direct message is not a status, so it has to be looked
+     * for separately or its Delete never reaches the inbox worker.
+     */
+    protected function isKnownTombstone(mixed $id): bool
+    {
+        if (! is_string($id) || $id === '') {
+            return false;
+        }
+
+        return Status::whereObjectUrl($id)->exists()
+            || DmMessage::whereObjectUri($id)->exists();
+    }
+
+    public function sharedInbox(Request $request): void
     {
         abort_if(! (bool) config_cache('federation.activitypub.enabled'), 404);
         abort_if(! config('federation.activitypub.sharedInbox'), 404);
@@ -233,7 +272,6 @@ class FederationController extends Controller
         if (in_array($domain, InstanceService::getBannedDomains())) {
             return;
         }
-
         if (isset($obj['type']) && $obj['type'] === 'Delete') {
             if (isset($obj['object']) && isset($obj['object']['type']) && isset($obj['object']['id'])) {
                 if ($obj['object']['type'] === 'Person') {
@@ -245,7 +283,7 @@ class FederationController extends Controller
                 }
 
                 if ($obj['object']['type'] === 'Tombstone') {
-                    if (Status::whereObjectUrl($obj['object']['id'])->exists()) {
+                    if ($this->isKnownTombstone($obj['object']['id'])) {
                         dispatch(new DeleteWorker($headers, $payload))->onQueue('delete');
 
                         return;
@@ -259,16 +297,27 @@ class FederationController extends Controller
                 }
             }
 
+            if (
+                is_string($obj['object'] ?? null)
+                && $obj['object'] === ($obj['actor'] ?? null)
+                && Profile::whereRemoteUrl($obj['object'])->exists()
+            ) {
+                dispatch(new DeleteWorker($headers, $payload))->onQueue('inbox');
+
+                return;
+            }
+
             return;
-        } elseif (isset($obj['type']) && in_array($obj['type'], ['Follow', 'Accept'])) {
+        }
+
+        if (isset($obj['type']) && in_array($obj['type'], ['Follow', 'Accept'])) {
             dispatch(new InboxWorker($headers, $payload))->onQueue('follow');
         } else {
             dispatch(new InboxWorker($headers, $payload))->onQueue('shared');
         }
-
     }
 
-    public function userFollowing(Request $request, $username)
+    public function userFollowing(Request $request, $username): JsonResponse
     {
         abort_if(! (bool) config_cache('federation.activitypub.enabled'), 404);
 
@@ -286,7 +335,7 @@ class FederationController extends Controller
         return response()->json($obj)->header('Content-Type', 'application/activity+json');
     }
 
-    public function userFollowers(Request $request, $username)
+    public function userFollowers(Request $request, $username): JsonResponse
     {
         abort_if(! (bool) config_cache('federation.activitypub.enabled'), 404);
         $id = AccountService::usernameToId($username);
@@ -301,5 +350,139 @@ class FederationController extends Controller
         ];
 
         return response()->json($obj)->header('Content-Type', 'application/activity+json');
+    }
+
+    /**
+     * FEP-8fcf: partial followers collection of a local actor, limited to the
+     * followers hosted by the instance that signed the request.
+     */
+    public function userFollowersSynchronization(Request $request, $username): JsonResponse
+    {
+        abort_if(! (bool) config_cache('federation.activitypub.enabled'), 404);
+        abort_if(! FollowersSyncService::enabled(), 404);
+
+        $profile = Profile::whereNull('domain')
+            ->whereNull('status')
+            ->whereUsername($username)
+            ->first();
+        abort_if(! $profile, 404);
+
+        $signer = ActivityPubSignedFetchService::verify($request);
+        abort_if(! $signer, 401);
+
+        $authority = FollowersSyncService::authority($signer->remote_url);
+        abort_if(! $authority, 401);
+
+        $items = FollowersSyncService::partialFollowers($profile, $authority);
+
+        $res = [
+            '@context' => 'https://www.w3.org/ns/activitystreams',
+            'id' => $profile->permalink('/followers_synchronization'),
+            'type' => 'OrderedCollection',
+            'totalItems' => count($items),
+            'orderedItems' => $items,
+        ];
+
+        return response()
+            ->json($res, 200, [], JSON_UNESCAPED_SLASHES)
+            ->header('Content-Type', 'application/activity+json')
+            ->header('Cache-Control', 'private, no-store');
+    }
+
+    public function blockSynchronization(Request $request): Response|JsonResponse
+    {
+        abort_if(! BlockSyncService::disclosing(), 404);
+        $signer = ActivityPubSignedFetchService::verify($request);
+        abort_if(! $signer, 401);
+        $authority = FollowersSyncService::authority($signer->remote_url);
+        abort_if(! $authority, 401);
+        abort_if(! BlockSyncService::isDisclosedPeer($authority), 403);
+
+        $pairs = BlockSyncService::disclosedPairs($authority);
+        $digest = BlockSyncService::digest($pairs);
+        $etag = '"'.$digest.'"';
+
+        $headers = [
+            'Cache-Control' => 'private, no-store',
+            'ETag' => $etag,
+        ];
+
+        $ifNoneMatch = array_map(
+            fn (string $tag) => preg_replace('#^W/#', '', trim($tag)),
+            explode(',', (string) $request->headers->get('If-None-Match', ''))
+        );
+
+        if (in_array($etag, $ifNoneMatch, true)) {
+            return response('', 304, $headers);
+        }
+
+        $res = [
+            '@context' => [
+                'https://www.w3.org/ns/activitystreams',
+                [
+                    'blockSynchronizationDigest' => BlockSyncService::DIGEST_CONTEXT_TERM,
+                ],
+            ],
+            'id' => BlockSyncService::endpointUrl(),
+            'type' => 'OrderedCollection',
+            'totalItems' => count($pairs),
+            'blockSynchronizationDigest' => $digest,
+            'orderedItems' => array_map(fn (array $pair) => [
+                'type' => 'Block',
+                'actor' => $pair['actor'],
+                'object' => $pair['object'],
+            ], $pairs),
+        ];
+
+        return response()
+            ->json($res, 200, $headers, JSON_UNESCAPED_SLASHES)
+            ->header('Content-Type', 'application/activity+json');
+    }
+
+    public function userFeatureAuthorization(Request $request, $username, $id): JsonResponse
+    {
+        abort_if(! (bool) config_cache('federation.activitypub.enabled'), 404);
+        abort_if(! ctype_digit((string) $id), 404);
+
+        $pid = AccountService::usernameToId($username);
+        abort_if(! $pid, 404);
+
+        $auth = FeatureAuthorization::with('profile')
+            ->whereProfileId($pid)
+            ->find((int) $id);
+
+        abort_if(! $auth || ! $auth->profile || $auth->profile->domain !== null, 404);
+        abort_if($auth->isRevoked(), 410);
+
+        return response()
+            ->json(FeaturedCollectionService::stampObject($auth), 200, [], JSON_UNESCAPED_SLASHES)
+            ->header('Content-Type', 'application/activity+json');
+    }
+
+    /**
+     * FEP-044f QuoteAuthorization stamp.
+     *
+     * Stamps are only ever issued for public and unlisted posts and carry
+     * nothing but ids, so they are publicly dereferenceable.
+     */
+    public function userQuoteAuthorization(Request $request, $username, $id): JsonResponse
+    {
+        abort_if(! (bool) config_cache('federation.activitypub.enabled'), 404);
+        abort_if(! ctype_digit((string) $id), 404);
+
+        $pid = AccountService::usernameToId($username);
+        abort_if(! $pid, 404);
+
+        $auth = QuoteAuthorization::with(['profile', 'status'])
+            ->whereProfileId($pid)
+            ->find((int) $id);
+
+        abort_if(! $auth || ! $auth->profile || $auth->profile->domain !== null, 404);
+        abort_if(! $auth->status || ! QuoteService::isQuotable($auth->status), 404);
+        abort_if($auth->isRevoked(), 410);
+
+        return response()
+            ->json(QuoteService::stampObject($auth), 200, [], JSON_UNESCAPED_SLASHES)
+            ->header('Content-Type', 'application/activity+json');
     }
 }

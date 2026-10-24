@@ -3,10 +3,11 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
+use Illuminate\Http\Response;
 
 class HealthCheckController extends Controller
 {
-    public function get(Request $request)
+    public function get(Request $request): Response
     {
         return response('OK')->withHeaders([
             'Content-Type' => 'text/plain',

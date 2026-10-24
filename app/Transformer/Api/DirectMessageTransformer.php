@@ -2,12 +2,12 @@
 
 namespace App\Transformer\Api;
 
-use App\DirectMessage;
+use App\Models\DirectMessage;
 use League\Fractal;
 
 class DirectMessageTransformer extends Fractal\TransformerAbstract
 {
-    public function transform(DirectMessage $dm)
+    public function transform(DirectMessage $dm): array
     {
         return [
             'id' => $dm->id,

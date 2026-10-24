@@ -2,19 +2,19 @@
 
 namespace App\Http\Controllers\Import;
 
-use App\ImportData;
-use App\ImportJob;
 use App\Jobs\ImportPipeline\ImportInstagram;
-use Auth;
-use DB;
+use App\Models\ImportData;
+use App\Models\ImportJob;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Str;
 
 trait Instagram
 {
     public function instagram()
     {
-        if ((bool) config_cache('pixelfed.import.instagram.enabled') != true) {
+        if ((bool) config_cache('pixelfed.import.instagram.enabled') !== true) {
             abort(404, 'Feature not enabled');
         }
 
@@ -23,10 +23,10 @@ trait Instagram
 
     public function instagramStart(Request $request)
     {
-        if ((bool) config_cache('pixelfed.import.instagram.enabled') != true) {
+        if ((bool) config_cache('pixelfed.import.instagram.enabled') !== true) {
             abort(404, 'Feature not enabled');
         }
-        $completed = ImportJob::whereProfileId(Auth::user()->profile->id)
+        $completed = ImportJob::whereProfileId($request->user()->profile->id)
             ->whereService('instagram')
             ->whereNotNull('completed_at')
             ->exists();
@@ -40,10 +40,10 @@ trait Instagram
 
     protected function instagramRedirectOrNew()
     {
-        if ((bool) config_cache('pixelfed.import.instagram.enabled') != true) {
+        if ((bool) config_cache('pixelfed.import.instagram.enabled') !== true) {
             abort(404, 'Feature not enabled');
         }
-        $profile = Auth::user()->profile;
+        $profile = request()->user()->profile;
         $exists = ImportJob::whereProfileId($profile->id)
             ->whereService('instagram')
             ->whereNull('completed_at')
@@ -67,22 +67,22 @@ trait Instagram
 
     public function instagramStepOne(Request $request, $uuid)
     {
-        if ((bool) config_cache('pixelfed.import.instagram.enabled') != true) {
+        if ((bool) config_cache('pixelfed.import.instagram.enabled') !== true) {
             abort(404, 'Feature not enabled');
         }
-        $profile = Auth::user()->profile;
+        $profile = $request->user()->profile;
         $job = ImportJob::whereProfileId($profile->id)
             ->whereNull('completed_at')
             ->whereUuid($uuid)
             ->whereStage(1)
             ->firstOrFail();
 
-        return view('settings.import.instagram.step-one', compact('profile', 'job'));
+        return view('settings.import.instagram.step-one', ['profile' => $profile, 'job' => $job]);
     }
 
     public function instagramStepOneStore(Request $request, $uuid)
     {
-        if ((bool) config_cache('pixelfed.import.instagram.enabled') != true) {
+        if ((bool) config_cache('pixelfed.import.instagram.enabled') !== true) {
             abort(404, 'Feature not enabled');
         }
         $max = 'max:'.config('pixelfed.import.instagram.limits.size');
@@ -92,7 +92,7 @@ trait Instagram
         ]);
         $media = $request->file('media');
 
-        $profile = Auth::user()->profile;
+        $profile = $request->user()->profile;
         $job = ImportJob::whereProfileId($profile->id)
             ->whereNull('completed_at')
             ->whereUuid($uuid)
@@ -128,28 +128,28 @@ trait Instagram
 
     public function instagramStepTwo(Request $request, $uuid)
     {
-        if ((bool) config_cache('pixelfed.import.instagram.enabled') != true) {
+        if ((bool) config_cache('pixelfed.import.instagram.enabled') !== true) {
             abort(404, 'Feature not enabled');
         }
-        $profile = Auth::user()->profile;
+        $profile = $request->user()->profile;
         $job = ImportJob::whereProfileId($profile->id)
             ->whereNull('completed_at')
             ->whereUuid($uuid)
             ->whereStage(2)
             ->firstOrFail();
 
-        return view('settings.import.instagram.step-two', compact('profile', 'job'));
+        return view('settings.import.instagram.step-two', ['profile' => $profile, 'job' => $job]);
     }
 
     public function instagramStepTwoStore(Request $request, $uuid)
     {
-        if ((bool) config_cache('pixelfed.import.instagram.enabled') != true) {
+        if ((bool) config_cache('pixelfed.import.instagram.enabled') !== true) {
             abort(404, 'Feature not enabled');
         }
         $this->validate($request, [
             'media' => 'required|file|max:1000',
         ]);
-        $profile = Auth::user()->profile;
+        $profile = $request->user()->profile;
         $job = ImportJob::whereProfileId($profile->id)
             ->whereNull('completed_at')
             ->whereUuid($uuid)
@@ -172,10 +172,10 @@ trait Instagram
 
     public function instagramStepThree(Request $request, $uuid)
     {
-        if ((bool) config_cache('pixelfed.import.instagram.enabled') != true) {
+        if ((bool) config_cache('pixelfed.import.instagram.enabled') !== true) {
             abort(404, 'Feature not enabled');
         }
-        $profile = Auth::user()->profile;
+        $profile = $request->user()->profile;
         $job = ImportJob::whereProfileId($profile->id)
             ->whereService('instagram')
             ->whereNull('completed_at')
@@ -183,15 +183,15 @@ trait Instagram
             ->whereStage(3)
             ->firstOrFail();
 
-        return view('settings.import.instagram.step-three', compact('profile', 'job'));
+        return view('settings.import.instagram.step-three', ['profile' => $profile, 'job' => $job]);
     }
 
     public function instagramStepThreeStore(Request $request, $uuid)
     {
-        if ((bool) config_cache('pixelfed.import.instagram.enabled') != true) {
+        if ((bool) config_cache('pixelfed.import.instagram.enabled') !== true) {
             abort(404, 'Feature not enabled');
         }
-        $profile = Auth::user()->profile;
+        $profile = $request->user()->profile;
 
         try {
             $import = ImportJob::whereProfileId($profile->id)
@@ -202,7 +202,7 @@ trait Instagram
                 ->firstOrFail();
             ImportInstagram::dispatch($import);
         } catch (\Exception $e) {
-            \Log::info($e);
+            Log::info($e);
         }
 
         return redirect(route('settings'))->with(['status' => 'Import successful! It may take a few minutes to finish.']);

@@ -2,11 +2,15 @@
 
 namespace App\Http\Resources;
 
+use App\Models\DmMessage;
+use App\Models\Status;
+use App\Models\Story;
 use App\Services\AccountService;
+use App\Services\DirectMessagePayloadService;
 use App\Services\StatusService;
-use App\Story;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
+use Illuminate\Support\Carbon;
 
 /**
  * @property int $id
@@ -16,8 +20,8 @@ use Illuminate\Http\Resources\Json\JsonResource;
  * @property string $object_type
  * @property int $reported_profile_id
  * @property string|null $message
- * @property \Illuminate\Support\Carbon|null $admin_seen
- * @property \Illuminate\Support\Carbon $created_at
+ * @property Carbon|null $admin_seen
+ * @property Carbon $created_at
  */
 class AdminReport extends JsonResource
 {
@@ -41,11 +45,18 @@ class AdminReport extends JsonResource
             'created_at' => $this->created_at,
         ];
 
-        if ($this->object_id && $this->object_type === 'App\Status') {
+        if ($this->object_id && in_array($this->object_type, [Status::class, 'App\Status'])) {
             $res['status'] = StatusService::get($this->object_id, false);
         }
 
-        if ($this->object_id && $this->object_type === 'App\Story') {
+        if ($this->object_id && $this->object_type === DmMessage::class) {
+            $message = DmMessage::withTrashed()->with('media')->find($this->object_id);
+            if ($message) {
+                $res['direct_message'] = app(DirectMessagePayloadService::class)->message($message, (int) $this->profile_id);
+            }
+        }
+
+        if ($this->object_id && in_array($this->object_type, [Story::class, 'App\Story'])) {
             $story = Story::find($this->object_id);
             if ($story) {
                 $res['story'] = $story->toAdminEntity();

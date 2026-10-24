@@ -3,12 +3,17 @@
 namespace App\Http\Controllers;
 
 use App\Jobs\ReportPipeline\ReportNotifyAdminViaEmail;
+use App\Models\DmConversationParticipant;
+use App\Models\DmMessage;
 use App\Models\Group;
-use App\Profile;
-use App\Report;
-use App\Status;
-use Auth;
+use App\Models\Profile;
+use App\Models\Report;
+use App\Models\Status;
+use Illuminate\Contracts\View\View;
+use Illuminate\Http\JsonResponse;
+use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 
 class ReportController extends Controller
 {
@@ -19,7 +24,7 @@ class ReportController extends Controller
         $this->middleware('auth');
     }
 
-    public function showForm(Request $request)
+    public function showForm(Request $request): View
     {
         $this->validate($request, [
             'type' => 'required|alpha_dash|in:comment,group,post,user',
@@ -52,62 +57,62 @@ class ReportController extends Controller
         return view('report.form');
     }
 
-    public function notInterestedForm(Request $request)
+    public function notInterestedForm(Request $request): View
     {
         return view('report.not-interested');
     }
 
-    public function spamForm(Request $request)
+    public function spamForm(Request $request): View
     {
         return view('report.spam');
     }
 
-    public function spamCommentForm(Request $request)
+    public function spamCommentForm(Request $request): View
     {
         return view('report.spam.comment');
     }
 
-    public function spamPostForm(Request $request)
+    public function spamPostForm(Request $request): View
     {
         return view('report.spam.post');
     }
 
-    public function spamProfileForm(Request $request)
+    public function spamProfileForm(Request $request): View
     {
         return view('report.spam.profile');
     }
 
-    public function sensitiveCommentForm(Request $request)
+    public function sensitiveCommentForm(Request $request): View
     {
         return view('report.sensitive.comment');
     }
 
-    public function sensitivePostForm(Request $request)
+    public function sensitivePostForm(Request $request): View
     {
         return view('report.sensitive.post');
     }
 
-    public function sensitiveProfileForm(Request $request)
+    public function sensitiveProfileForm(Request $request): View
     {
         return view('report.sensitive.profile');
     }
 
-    public function abusiveCommentForm(Request $request)
+    public function abusiveCommentForm(Request $request): View
     {
         return view('report.abusive.comment');
     }
 
-    public function abusivePostForm(Request $request)
+    public function abusivePostForm(Request $request): View
     {
         return view('report.abusive.post');
     }
 
-    public function abusiveProfileForm(Request $request)
+    public function abusiveProfileForm(Request $request): View
     {
         return view('report.abusive.profile');
     }
 
-    public function formStore(Request $request)
+    public function formStore(Request $request): JsonResponse|RedirectResponse
     {
         $this->validate($request, [
             'report' => 'required|alpha_dash',
@@ -116,7 +121,7 @@ class ReportController extends Controller
             'msg' => 'nullable|string|max:150',
         ]);
 
-        $profile = Auth::user()->profile;
+        $profile = $request->user()->profile;
         $reportType = $request->input('report');
         $object_id = $request->input('id');
         $object_type = $request->input('type');
@@ -139,20 +144,37 @@ class ReportController extends Controller
         if (! in_array($reportType, $types)) {
             if ($request->wantsJson()) {
                 return abort(400, 'Invalid report type');
-            } else {
-                return redirect('/timeline')->with('error', 'Invalid report type');
             }
+
+            return redirect('/timeline')->with('error', 'Invalid report type');
         }
 
         $rpid = null;
 
         switch ($object_type) {
             case 'post':
-                $object = Status::findOrFail($object_id);
-                $object_type = 'App\Status';
+            case 'comment':
+                $object = Status::find($object_id);
+
+                // Direct messages are reported from the thread view as a
+                // post. They are no longer statuses, so look there next.
+                if (! $object) {
+                    $object = DmMessage::findOrFail($object_id);
+
+                    $isParticipant = DmConversationParticipant::where('conversation_id', $object->conversation_id)
+                        ->where('profile_id', $profile->id)
+                        ->exists();
+
+                    abort_if(! $isParticipant, 404);
+
+                    $object_type = DmMessage::class;
+                } else {
+                    $object_type = Status::class;
+                }
+
                 $exists = Report::whereUserId(Auth::id())
                     ->whereObjectId($object->id)
-                    ->whereObjectType('App\Status')
+                    ->whereObjectType($object_type)
                     ->count();
 
                 $rpid = $object->profile_id;
@@ -160,20 +182,20 @@ class ReportController extends Controller
 
             case 'user':
                 $object = Profile::findOrFail($object_id);
-                $object_type = 'App\Profile';
+                $object_type = Profile::class;
                 $exists = Report::whereUserId(Auth::id())
                     ->whereObjectId($object->id)
-                    ->whereObjectType('App\Profile')
+                    ->whereObjectType(Profile::class)
                     ->count();
                 $rpid = $object->id;
                 break;
 
             case 'group':
                 $object = Group::findOrFail($object_id);
-                $object_type = 'App\Models\Group';
+                $object_type = Group::class;
                 $exists = Report::whereUserId(Auth::id())
                     ->whereObjectId($object->id)
-                    ->whereObjectType('App\Models\Group')
+                    ->whereObjectType(Group::class)
                     ->count();
                 $rpid = $object->profile_id;
                 break;
@@ -181,25 +203,25 @@ class ReportController extends Controller
             default:
                 if ($request->wantsJson()) {
                     return abort(400, 'Invalid report type');
-                } else {
-                    return redirect('/timeline')->with('error', 'Invalid report type');
                 }
+
+                return redirect('/timeline')->with('error', 'Invalid report type');
         }
 
         if ($exists !== 0) {
             if ($request->wantsJson()) {
                 return response()->json(200);
-            } else {
-                return redirect('/timeline')->with('error', 'You have already reported this!');
             }
+
+            return redirect('/timeline')->with('error', 'You have already reported this!');
         }
 
         if ($object->profile_id == $profile->id) {
             if ($request->wantsJson()) {
                 return response()->json(200);
-            } else {
-                return redirect('/timeline')->with('error', 'You cannot report your own content!');
             }
+
+            return redirect('/timeline')->with('error', 'You cannot report your own content!');
         }
 
         $report = new Report;
@@ -218,8 +240,8 @@ class ReportController extends Controller
 
         if ($request->wantsJson()) {
             return response()->json(200);
-        } else {
-            return redirect('/timeline')->with('status', 'Report successfully sent!');
         }
+
+        return redirect('/timeline')->with('status', 'Report successfully sent!');
     }
 }

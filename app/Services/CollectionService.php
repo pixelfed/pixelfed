@@ -2,8 +2,8 @@
 
 namespace App\Services;
 
-use App\Collection;
-use App\CollectionItem;
+use App\Models\Collection;
+use App\Models\CollectionItem;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Redis;
 

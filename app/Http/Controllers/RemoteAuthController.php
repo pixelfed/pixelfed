@@ -3,15 +3,18 @@
 namespace App\Http\Controllers;
 
 use App\Models\RemoteAuth;
-use App\Rules\PixelfedUsername;
+use App\Models\User;
+use App\Rules\ValidUsername;
 use App\Services\Account\RemoteAuthService;
 use App\Services\EmailService;
 use App\Services\MediaStorageService;
 use App\Services\SanitizeService;
-use App\User;
 use App\Util\ActivityPub\Helpers;
-use App\Util\Lexer\RestrictedNames;
 use Illuminate\Auth\Events\Registered;
+use Illuminate\Contracts\View\View;
+use Illuminate\Http\Client\RequestException;
+use Illuminate\Http\JsonResponse;
+use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
@@ -21,7 +24,7 @@ use Purify;
 
 class RemoteAuthController extends Controller
 {
-    public function start(Request $request)
+    public function start(Request $request): RedirectResponse|View
     {
         abort_unless((
             config_cache('pixelfed.open_registration') &&
@@ -37,7 +40,7 @@ class RemoteAuthController extends Controller
         return view('auth.remote.start');
     }
 
-    public function startRedirect(Request $request)
+    public function startRedirect(Request $request): RedirectResponse
     {
         return redirect('/login');
     }
@@ -62,7 +65,8 @@ class RemoteAuthController extends Controller
             return response()->json($res);
         }
 
-        if (config('remote-auth.mastodon.domains.custom') &&
+        if (
+            config('remote-auth.mastodon.domains.custom') &&
             ! config('remote-auth.mastodon.domains.only_default') &&
             strlen(config('remote-auth.mastodon.domains.custom')) > 3 &&
             strpos(config('remote-auth.mastodon.domains.custom'), '.') > -1
@@ -82,7 +86,7 @@ class RemoteAuthController extends Controller
         return response()->json($res);
     }
 
-    public function redirect(Request $request)
+    public function redirect(Request $request): JsonResponse
     {
         abort_unless((
             config_cache('pixelfed.open_registration') &&
@@ -183,7 +187,7 @@ class RemoteAuthController extends Controller
         return response()->json($res);
     }
 
-    public function preflight(Request $request)
+    public function preflight(Request $request): RedirectResponse
     {
         abort_unless((
             config_cache('pixelfed.open_registration') &&
@@ -200,7 +204,7 @@ class RemoteAuthController extends Controller
         return redirect()->away($request->session()->pull('oauth_redirect_to'));
     }
 
-    public function handleCallback(Request $request)
+    public function handleCallback(Request $request): RedirectResponse
     {
         abort_unless((
             config_cache('pixelfed.open_registration') &&
@@ -217,7 +221,7 @@ class RemoteAuthController extends Controller
             $state = $request->session()->pull('state');
 
             throw_unless(
-                strlen($state) > 0 && $state === $request->state,
+                (string) $state !== '' && $state === $request->state,
                 InvalidArgumentException::class,
                 'Invalid state value.'
             );
@@ -238,7 +242,7 @@ class RemoteAuthController extends Controller
         return redirect('/login');
     }
 
-    public function onboarding(Request $request)
+    public function onboarding(Request $request): RedirectResponse|View
     {
         abort_unless((
             config_cache('pixelfed.open_registration') &&
@@ -254,7 +258,7 @@ class RemoteAuthController extends Controller
         return view('auth.remote.onboarding');
     }
 
-    public function sessionCheck(Request $request)
+    public function sessionCheck(Request $request): JsonResponse
     {
         abort_unless((
             config_cache('pixelfed.open_registration') &&
@@ -305,7 +309,7 @@ class RemoteAuthController extends Controller
         ]);
     }
 
-    public function sessionGetMastodonData(Request $request)
+    public function sessionGetMastodonData(Request $request): JsonResponse
     {
         abort_unless((
             config_cache('pixelfed.open_registration') &&
@@ -322,6 +326,7 @@ class RemoteAuthController extends Controller
         $token = $request->session()->get('oauth_remote_session_token');
 
         $res = RemoteAuthService::getVerifyCredentials($domain, $token);
+        abort_if(! $res || ! isset($res['acct']), 403, 'Invalid credentials');
         $res['_webfinger'] = strtolower('@'.$res['acct'].'@'.$domain);
         $res['_domain'] = strtolower($domain);
         $request->session()->put('oauth_remasto_id', $res['id']);
@@ -343,7 +348,7 @@ class RemoteAuthController extends Controller
         return response()->json($res);
     }
 
-    public function sessionValidateUsername(Request $request)
+    public function sessionValidateUsername(Request $request): JsonResponse
     {
         abort_unless((
             config_cache('pixelfed.open_registration') &&
@@ -361,7 +366,7 @@ class RemoteAuthController extends Controller
                 'required',
                 'min:2',
                 'max:30',
-                new PixelfedUsername,
+                new ValidUsername,
             ],
         ]);
         $username = strtolower($request->input('username'));
@@ -375,7 +380,7 @@ class RemoteAuthController extends Controller
         ]);
     }
 
-    public function sessionValidateEmail(Request $request)
+    public function sessionValidateEmail(Request $request): JsonResponse
     {
         abort_unless((
             config_cache('pixelfed.open_registration') &&
@@ -407,7 +412,7 @@ class RemoteAuthController extends Controller
         ]);
     }
 
-    public function sessionGetMastodonFollowers(Request $request)
+    public function sessionGetMastodonFollowers(Request $request): JsonResponse
     {
         abort_unless((
             config_cache('pixelfed.open_registration') &&
@@ -433,7 +438,7 @@ class RemoteAuthController extends Controller
             ]);
         }
 
-        $res = collect($res)->filter(fn ($acct) => Helpers::validateUrl($acct['url']))->values()->toArray();
+        $res = collect($res)->filter(fn ($acct): string|bool => Helpers::validateUrl($acct['url']))->values()->toArray();
 
         return response()->json([
             'code' => 200,
@@ -441,7 +446,7 @@ class RemoteAuthController extends Controller
         ]);
     }
 
-    public function handleSubmit(Request $request)
+    public function handleSubmit(Request $request): array
     {
         abort_unless((
             config_cache('pixelfed.open_registration') &&
@@ -463,37 +468,7 @@ class RemoteAuthController extends Controller
                 'min:2',
                 'max:30',
                 'unique:users,username',
-                function ($attribute, $value, $fail) {
-                    $dash = substr_count($value, '-');
-                    $underscore = substr_count($value, '_');
-                    $period = substr_count($value, '.');
-
-                    if (ends_with($value, ['.php', '.js', '.css'])) {
-                        return $fail('Username is invalid.');
-                    }
-
-                    if (($dash + $underscore + $period) > 1) {
-                        return $fail('Username is invalid. Can only contain one dash (-), period (.) or underscore (_).');
-                    }
-
-                    if (! ctype_alnum($value[0])) {
-                        return $fail('Username is invalid. Must start with a letter or number.');
-                    }
-
-                    if (! ctype_alnum($value[strlen($value) - 1])) {
-                        return $fail('Username is invalid. Must end with a letter or number.');
-                    }
-
-                    $val = str_replace(['_', '.', '-'], '', $value);
-                    if (! ctype_alnum($val)) {
-                        return $fail('Username is invalid. Username must be alpha-numeric and may contain dashes (-), periods (.) and underscores (_).');
-                    }
-
-                    $restricted = RestrictedNames::get();
-                    if (in_array(strtolower($value), array_map('strtolower', $restricted))) {
-                        return $fail('Username cannot be used.');
-                    }
-                },
+                new ValidUsername,
             ],
             'password' => 'required|string|min:8|confirmed',
             'name' => 'nullable|max:30',
@@ -526,7 +501,7 @@ class RemoteAuthController extends Controller
         ];
     }
 
-    public function storeBio(Request $request)
+    public function storeBio(Request $request): array
     {
         abort_unless((
             config_cache('pixelfed.open_registration') &&
@@ -541,7 +516,7 @@ class RemoteAuthController extends Controller
         abort_unless($request->session()->exists('oauth_remasto_id'), 403);
 
         $this->validate($request, [
-            'bio' => 'required|nullable|max:500',
+            'bio' => 'present|nullable|max:500',
         ]);
 
         $profile = $request->user()->profile;
@@ -551,7 +526,7 @@ class RemoteAuthController extends Controller
         return [200];
     }
 
-    public function accountToId(Request $request)
+    public function accountToId(Request $request): array
     {
         abort_unless((
             config_cache('pixelfed.open_registration') &&
@@ -570,36 +545,33 @@ class RemoteAuthController extends Controller
         ]);
 
         $account = $request->input('account');
-        abort_unless(substr(strtolower($account), 0, 8) === 'https://', 404);
+        abort_unless(str_starts_with(strtolower($account), 'https://'), 404);
 
         $host = strtolower(config('pixelfed.domain.app'));
         $domain = strtolower(parse_url($account, PHP_URL_HOST));
 
-        if ($domain == $host) {
-            $username = Str::of($account)->explode('/')->last();
+        if ($domain === $host) {
+            $username = Str::afterLast($account, '/');
             $user = User::where('username', $username)->first();
             if ($user) {
                 return ['id' => (string) $user->profile_id];
-            } else {
-                return [];
             }
-        } else {
-            try {
-                $profile = Helpers::profileFetch($account);
-                if ($profile) {
-                    return ['id' => (string) $profile->id];
-                } else {
-                    return [];
-                }
-            } catch (\GuzzleHttp\Exception\RequestException $e) {
-                return;
-            } catch (\Exception $e) {
-                return [];
+
+            return [];
+        }
+        try {
+            $profile = Helpers::profileFetch($account);
+            if ($profile) {
+                return ['id' => (string) $profile->id];
             }
+
+            return [];
+        } catch (RequestException|\Exception) {
+            return [];
         }
     }
 
-    public function storeAvatar(Request $request)
+    public function storeAvatar(Request $request): array
     {
         abort_unless((
             config_cache('pixelfed.open_registration') &&
@@ -622,12 +594,12 @@ class RemoteAuthController extends Controller
         $avatar->remote_url = $request->input('avatar_url');
         $avatar->save();
 
-        MediaStorageService::avatar($avatar, (bool) config_cache('pixelfed.cloud_storage') == false);
+        MediaStorageService::avatar($avatar, (bool) config_cache('pixelfed.cloud_storage') === false);
 
         return [200];
     }
 
-    public function finishUp(Request $request)
+    public function finishUp(Request $request): array
     {
         abort_unless((
             config_cache('pixelfed.open_registration') &&
@@ -650,7 +622,7 @@ class RemoteAuthController extends Controller
         return [200];
     }
 
-    public function handleLogin(Request $request)
+    public function handleLogin(Request $request): array
     {
         abort_unless((
             config_cache('pixelfed.open_registration') &&

@@ -3,11 +3,12 @@
 namespace App\Http\Controllers;
 
 use App\Util\ActivityPub\Helpers;
+use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 
 class AuthorizeInteractionController extends Controller
 {
-    public function get(Request $request)
+    public function get(Request $request): RedirectResponse
     {
         $request->validate([
             'uri' => 'required|url',
@@ -15,11 +16,17 @@ class AuthorizeInteractionController extends Controller
 
         abort_unless((bool) config_cache('federation.activitypub.enabled'), 404);
 
-        $uri = Helpers::validateUrl($request->input('uri'), true);
+        $uri = Helpers::validateUrl($request->input('uri'));
         abort_unless($uri, 404);
 
         if (! $request->user()) {
-            return redirect('/login?next='.urlencode($uri));
+            // Store the current Pixelfed URL so Laravel's redirect()->intended()
+            // returns here after login. The `next` query param was never
+            // consumed by the login flow, so the remote-follow interaction was
+            // lost after authenticating.
+            $request->session()->put('url.intended', $request->fullUrl());
+
+            return redirect('/login');
         }
 
         $status = Helpers::statusFetch($uri);

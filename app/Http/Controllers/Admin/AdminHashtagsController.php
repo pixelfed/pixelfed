@@ -2,10 +2,10 @@
 
 namespace App\Http\Controllers\Admin;
 
-use App\Hashtag;
 use App\Http\Resources\AdminHashtag;
+use App\Models\Hashtag;
+use App\Models\StatusHashtag;
 use App\Services\TrendingHashtagService;
-use App\StatusHashtag;
 use Illuminate\Http\Request;
 
 trait AdminHashtagsController
@@ -38,7 +38,8 @@ trait AdminHashtagsController
             ->when($action, function ($q, $action) {
                 if ($action === 'banned') {
                     return $q->whereIsBanned(true);
-                } elseif ($action === 'nsfw') {
+                }
+                if ($action === 'nsfw') {
                     return $q->whereIsNsfw(true);
                 }
             })
@@ -91,7 +92,7 @@ trait AdminHashtagsController
         return new AdminHashtag($hashtag);
     }
 
-    public function hashtagsClearTrendingCache(Request $request)
+    public function hashtagsClearTrendingCache(Request $request): array
     {
         TrendingHashtagService::refresh();
 

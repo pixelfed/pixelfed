@@ -2,11 +2,10 @@
 
 namespace App\Jobs\ProfilePipeline;
 
-use App\Follower;
-use App\Profile;
+use App\Models\Follower;
+use App\Models\Profile;
 use App\Services\AccountService;
 use App\Services\FollowerService;
-use DB;
 use Illuminate\Bus\Batchable;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldBeUniqueUntilProcessing;
@@ -15,6 +14,7 @@ use Illuminate\Foundation\Bus\Dispatchable;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\Middleware\WithoutOverlapping;
 use Illuminate\Queue\SerializesModels;
+use Illuminate\Support\Facades\DB;
 
 class ProfilePurgeFollowersByDomain implements ShouldBeUniqueUntilProcessing, ShouldQueue
 {

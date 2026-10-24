@@ -2,7 +2,7 @@
 
 namespace App\Services;
 
-use App\Status;
+use App\Models\Status;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Redis;
 use Illuminate\Support\Lottery;
@@ -30,12 +30,11 @@ class ReblogService
         if (! Redis::zcard(self::CACHE_KEY.$profileId)) {
             if (Cache::has(self::CACHE_SKIP_KEY.$profileId)) {
                 return false;
-            } else {
-                self::warmCache($profileId);
-                sleep(1);
-
-                return self::getFromRedis($profileId, $statusId);
             }
+            self::warmCache($profileId);
+            sleep(1);
+
+            return self::getFromRedis($profileId, $statusId);
         }
 
         $minId = SnowflakeService::byDate(now()->subMonths(12));
@@ -62,12 +61,11 @@ class ReblogService
         if (! Redis::zcard(self::CACHE_KEY.$profileId)) {
             if (Cache::has(self::CACHE_SKIP_KEY.$profileId)) {
                 return false;
-            } else {
-                self::warmCache($profileId);
-                sleep(1);
-
-                return self::getFromDatabase($profileId, $statusId);
             }
+            self::warmCache($profileId);
+            sleep(1);
+
+            return self::getFromDatabase($profileId, $statusId);
         }
 
         return Redis::zscore(self::CACHE_KEY.$profileId, $statusId) != null;

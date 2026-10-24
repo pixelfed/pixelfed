@@ -2,9 +2,9 @@
 
 namespace App\Services;
 
-use App\MediaTag;
-use App\Notification;
-use Cache;
+use App\Models\MediaTag;
+use App\Models\Notification;
+use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Redis;
 
 class MediaTagService
@@ -78,7 +78,7 @@ class MediaTagService
         $n->profile_id = $tag->profile_id;
         $n->actor_id = $p->id;
         $n->item_id = $tag->id;
-        $n->item_type = 'App\MediaTag';
+        $n->item_type = MediaTag::class;
         $n->action = 'tagged';
         $n->save();
 

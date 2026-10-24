@@ -29,12 +29,12 @@ trait User
         return 500;
     }
 
-    public function getMaxLikesPerHourAttribute()
+    public function getMaxLikesPerHourAttribute(): int
     {
         return $this->isTrustedAccount() ? 120 : 10;
     }
 
-    public function getMaxLikesPerDayAttribute()
+    public function getMaxLikesPerDayAttribute(): int
     {
         return $this->isTrustedAccount() ? 200 : 20;
     }

@@ -23,7 +23,7 @@
       <form method="post">
         @csrf
         <div class="custom-control custom-switch mb-3">
-          <input type="checkbox" class="custom-control-input" id="confirm-check">
+          <input type="checkbox" class="custom-control-input" id="confirm-check" name="confirm">
           <label class="custom-control-label font-weight-bold" for="confirm-check">I confirm that this action is not reversible, and will result in the permanent deletion of my account.</label>
         </div>
         <button type="submit" class="btn btn-danger font-weight-bold py-0 delete-btn" disabled="">Permanently delete my account</button>

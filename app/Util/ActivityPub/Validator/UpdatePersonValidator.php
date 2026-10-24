@@ -3,8 +3,8 @@
 namespace App\Util\ActivityPub\Validator;
 
 use Closure;
+use Illuminate\Support\Facades\Validator;
 use Illuminate\Validation\Rule;
-use Validator;
 
 class UpdatePersonValidator
 {
@@ -55,9 +55,9 @@ class UpdatePersonValidator
                     self::sameHost($attribute, $value, $fail, $payload['actor']);
                 },
             ],
-            'object.summary' => 'required|string|nullable',
+            'object.summary' => 'present|string|nullable',
             'object.preferredUsername' => 'required|string',
-            'object.name' => 'required|string|nullable',
+            'object.name' => 'present|string|nullable',
             'object.inbox' => [
                 'required',
                 'url',
@@ -90,7 +90,7 @@ class UpdatePersonValidator
             'object.icon' => 'sometimes|nullable',
             'object.icon.type' => 'sometimes|required_with:object.icon.url,object.icon.mediaType|in:Image',
             'object.icon.url' => 'sometimes|required_with:object.icon.type,object.icon.mediaType|url',
-            'object.icon.mediaType' => 'sometimes|required_with:object.icon.url,object.icon.type|in:image/jpeg,image/png,image/jpg',
+            'object.icon.mediaType' => 'sometimes|required_with:object.icon.url,object.icon.type|in:image/jpeg,image/png,image/jpg,image/gif,image/webp',
             'object.endpoints' => 'sometimes',
             'object.endpoints.sharedInbox' => [
                 'sometimes',

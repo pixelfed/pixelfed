@@ -2,12 +2,12 @@
 
 namespace App\Transformer\Api\Mastodon\v1;
 
-use App\Profile;
+use App\Models\Profile;
 use League\Fractal;
 
 class MentionTransformer extends Fractal\TransformerAbstract
 {
-    public function transform(Profile $profile)
+    public function transform(Profile $profile): array
     {
         $local = $profile->domain == null;
         $username = $local ? $profile->username : explode('@', substr($profile->username, 1))[0];

@@ -4,8 +4,12 @@ namespace App\Observers;
 
 use App\Jobs\HomeFeedPipeline\FeedFollowPipeline;
 use App\Jobs\HomeFeedPipeline\FeedUnfollowPipeline;
+use App\Models\Profile;
+use App\Models\UserFilter;
+use App\Services\BlockSyncService;
+use App\Services\FeaturedCollectionService;
+use App\Services\QuoteService;
 use App\Services\UserFilterService;
-use App\UserFilter;
 
 class UserFilterObserver
 {
@@ -33,7 +37,9 @@ class UserFilterObserver
      */
     public function updated(UserFilter $userFilter)
     {
-        $this->filterCreate($userFilter);
+        // Not a new block: re-running the federation side would toggle the
+        // pair out of the FEP-070c digest and send a duplicate Block.
+        $this->filterCreate($userFilter, false);
     }
 
     /**
@@ -66,9 +72,9 @@ class UserFilterObserver
         $this->filterDelete($userFilter);
     }
 
-    protected function filterCreate(UserFilter $userFilter)
+    protected function filterCreate(UserFilter $userFilter, bool $federate = true)
     {
-        if ($userFilter->filterable_type !== 'App\Profile') {
+        if (! in_array($userFilter->filterable_type, ['App\Profile', Profile::class], true)) {
             return;
         }
 
@@ -80,14 +86,26 @@ class UserFilterObserver
 
             case 'block':
                 UserFilterService::block($userFilter->user_id, $userFilter->filterable_id);
+
+                if ($this->isRemoteBlocker($userFilter)) {
+                    FeedUnfollowPipeline::dispatch($userFilter->filterable_id, $userFilter->user_id)->onQueue('feed');
+                    break;
+                }
+
                 FeedUnfollowPipeline::dispatch($userFilter->user_id, $userFilter->filterable_id)->onQueue('feed');
+                // user_id is the blocking profile id, filterable_id the blocked profile
+                FeaturedCollectionService::revokeForActor($userFilter->user_id, $userFilter->filterable_id);
+                QuoteService::revokeForActor($userFilter->user_id, $userFilter->filterable_id);
+                if ($federate) {
+                    BlockSyncService::localBlockChanged($userFilter, true);
+                }
                 break;
         }
     }
 
     protected function filterDelete(UserFilter $userFilter)
     {
-        if ($userFilter->filterable_type !== 'App\Profile') {
+        if (! in_array($userFilter->filterable_type, ['App\Profile', Profile::class], true)) {
             return;
         }
 
@@ -99,8 +117,22 @@ class UserFilterObserver
 
             case 'block':
                 UserFilterService::unblock($userFilter->user_id, $userFilter->filterable_id);
+
+                if ($this->isRemoteBlocker($userFilter)) {
+                    break;
+                }
+
                 FeedFollowPipeline::dispatch($userFilter->user_id, $userFilter->filterable_id)->onQueue('feed');
+                BlockSyncService::localBlockChanged($userFilter, false);
                 break;
         }
+    }
+
+    protected function isRemoteBlocker(UserFilter $userFilter): bool
+    {
+        return Profile::withTrashed()
+            ->whereKey($userFilter->user_id)
+            ->whereNotNull('domain')
+            ->exists();
     }
 }

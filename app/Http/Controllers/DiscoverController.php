@@ -2,9 +2,10 @@
 
 namespace App\Http\Controllers;
 
-use App\Hashtag;
-use App\Instance;
-use App\Like;
+use App\Models\Hashtag;
+use App\Models\Instance;
+use App\Models\Like;
+use App\Models\Status;
 use App\Services\AccountService;
 use App\Services\AdminShadowFilterService;
 use App\Services\BookmarkService;
@@ -19,27 +20,28 @@ use App\Services\StatusHashtagService;
 use App\Services\StatusService;
 use App\Services\TrendingHashtagService;
 use App\Services\UserFilterService;
-use App\Status;
-use Auth;
-use Cache;
-use DB;
+use Illuminate\Contracts\View\View;
+use Illuminate\Http\JsonResponse;
+use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Cache;
+use Illuminate\Support\Facades\DB;
 
 class DiscoverController extends Controller
 {
-    public function home(Request $request)
+    public function home(Request $request): View
     {
-        abort_if(! Auth::check() && config('instance.discover.public') == false, 403);
+        abort_if(! $request->user() && config('instance.discover.public') == false, 403);
 
         return view('discover.home');
     }
 
-    public function showTags(Request $request, $hashtag)
+    public function showTags(Request $request, $hashtag): RedirectResponse|View
     {
         if ($request->user()) {
             return redirect('/i/web/hashtag/'.$hashtag.'?src=pd');
         }
-        abort_if(! config('instance.discover.tags.is_public') && ! Auth::check(), 403);
+        abort_if(! config('instance.discover.tags.is_public') && ! $request->user(), 403);
 
         $tag = Hashtag::whereName($hashtag)
             ->orWhere('slug', $hashtag)
@@ -47,7 +49,7 @@ class DiscoverController extends Controller
             ->firstOrFail();
         $tagCount = $tag->cached_count ?? 0;
 
-        return view('discover.tags.show', compact('tag', 'tagCount'));
+        return view('discover.tags.show', ['tag' => $tag, 'tagCount' => $tagCount]);
     }
 
     public function getHashtags(Request $request)
@@ -61,10 +63,13 @@ class DiscoverController extends Controller
         ]);
 
         $page = $request->input('page') ?? '1';
-        $end = $page > 1 ? $page * 9 : (($page * 9) + 9);
+        // Standard fixed-page-size offset. The previous formula yielded 18 for
+        // both page 1 and page 2 (identical results, and the freshest 18 rows
+        // unreachable); this gives 0, 9, 18, ... for 9-per-page paging.
+        $end = ($page - 1) * 9;
         $tag = $request->input('hashtag');
 
-        if (config('database.default') === 'pgsql') {
+        if (db_is_pgsql()) {
             $hashtag = Hashtag::where('name', 'ilike', $tag)->firstOrFail();
         } else {
             $hashtag = Hashtag::whereName($tag)->firstOrFail();
@@ -127,17 +132,17 @@ class DiscoverController extends Controller
         return $res;
     }
 
-    public function profilesDirectory(Request $request)
+    public function profilesDirectory(Request $request): RedirectResponse
     {
         return redirect('/')->with('statusRedirect', 'The Profile Directory is unavailable at this time.');
     }
 
-    public function profilesDirectoryApi(Request $request)
+    public function profilesDirectoryApi(Request $request): array
     {
         return ['error' => 'Temporarily unavailable.'];
     }
 
-    public function trendingApi(Request $request)
+    public function trendingApi(Request $request): JsonResponse
     {
         abort_if(config('instance.discover.public') == false && ! $request->user(), 403);
 
@@ -180,7 +185,7 @@ class DiscoverController extends Controller
                 ->pluck('id');
         });
 
-        $filtered = Auth::check() ? UserFilterService::filters(Auth::user()->profile_id) : [];
+        $filtered = $request->user() !== null ? UserFilterService::filters($request->user()->profile_id) : [];
 
         $res = $ids->map(function ($s) {
             return StatusService::get($s);
@@ -203,7 +208,7 @@ class DiscoverController extends Controller
         return $res;
     }
 
-    public function trendingPlaces(Request $request)
+    public function trendingPlaces(Request $request): array
     {
         return [];
     }
@@ -214,6 +219,7 @@ class DiscoverController extends Controller
         $pid = $request->user()->profile_id;
         abort_if(! $this->config()['memories']['enabled'], 404);
         $type = $request->input('type') ?? 'posts';
+        $res = collect();
 
         switch ($type) {
             case 'posts':
@@ -361,7 +367,7 @@ class DiscoverController extends Controller
                 $len = strlen($v);
                 $pos = strpos($v, '.');
                 $domain = trim($v);
-                if ($pos == false || $pos == ($len + 1)) {
+                if ($pos == false || $pos === $len + 1) {
                     return false;
                 }
                 if (! Instance::whereDomain($domain)->exists()) {
@@ -379,7 +385,7 @@ class DiscoverController extends Controller
         return $res;
     }
 
-    public function discoverAccountsPopular(Request $request)
+    public function discoverAccountsPopular(Request $request): JsonResponse
     {
         abort_if(! $request->user(), 403);
 

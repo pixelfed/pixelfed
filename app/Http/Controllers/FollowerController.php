@@ -12,12 +12,12 @@ class FollowerController extends Controller
         $this->middleware('auth');
     }
 
-    public function store(Request $request)
+    public function store(Request $request): void
     {
         abort(422, 'Deprecated API Endpoint, use /api/v1/accounts/{id}/follow or /api/v1/accounts/{id}/unfollow instead.');
     }
 
-    public function sendFollow($user, $target)
+    public function sendFollow($user, $target): void
     {
         if ($target->domain == null || $user->domain != null) {
             return;
@@ -25,7 +25,7 @@ class FollowerController extends Controller
 
         $payload = [
             '@context' => 'https://www.w3.org/ns/activitystreams',
-            'id' => $user->permalink('#follow/'.$target->id),
+            'id' => $user->permalink('#follows/'.$target->id),
             'type' => 'Follow',
             'actor' => $user->permalink(),
             'object' => $target->permalink(),
@@ -36,7 +36,7 @@ class FollowerController extends Controller
         Helpers::sendSignedObject($user, $inbox, $payload);
     }
 
-    public function sendUndoFollow($user, $target)
+    public function sendUndoFollow($user, $target): void
     {
         if ($target->domain == null || $user->domain != null) {
             return;

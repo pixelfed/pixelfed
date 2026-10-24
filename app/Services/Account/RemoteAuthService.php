@@ -38,11 +38,7 @@ class RemoteAuthService
             if (! $res->ok()) {
                 return false;
             }
-        } catch (RequestException $e) {
-            return false;
-        } catch (ConnectionException $e) {
-            return false;
-        } catch (\Exception $e) {
+        } catch (RequestException|ConnectionException|\Exception) {
             return false;
         }
 
@@ -71,14 +67,19 @@ class RemoteAuthService
         }
 
         $url = 'https://'.$domain.'/oauth/token';
-        $res = Http::asForm()->post($url, [
-            'code' => $code,
-            'grant_type' => 'authorization_code',
-            'client_id' => $raw->client_id,
-            'client_secret' => $raw->client_secret,
-            'redirect_uri' => $raw->redirect_uri,
-            'scope' => 'read',
-        ]);
+
+        try {
+            $res = Http::asForm()->timeout(20)->retry(3, 750)->post($url, [
+                'code' => $code,
+                'grant_type' => 'authorization_code',
+                'client_id' => $raw->client_id,
+                'client_secret' => $raw->client_secret,
+                'redirect_uri' => $raw->redirect_uri,
+                'scope' => 'read',
+            ]);
+        } catch (RequestException|ConnectionException|\Exception) {
+            return false;
+        }
 
         return $res;
     }
@@ -92,7 +93,14 @@ class RemoteAuthService
 
         $url = 'https://'.$domain.'/api/v1/accounts/verify_credentials';
 
-        $res = Http::withToken($code)->get($url);
+        try {
+            $res = Http::withToken($code)->timeout(20)->retry(3, 750)->get($url);
+            if (! $res->ok()) {
+                return false;
+            }
+        } catch (RequestException|ConnectionException|\Exception) {
+            return false;
+        }
 
         return $res->json();
     }
@@ -108,7 +116,14 @@ class RemoteAuthService
         $key = self::CACHE_KEY.'get-following:code:'.substr($code, 0, 16).substr($code, -5).':domain:'.$domain.':id:'.$id;
 
         return Cache::remember($key, 3600, function () use ($url, $code) {
-            $res = Http::withToken($code)->get($url);
+            try {
+                $res = Http::withToken($code)->timeout(20)->retry(3, 750)->get($url);
+                if (! $res->ok()) {
+                    return false;
+                }
+            } catch (RequestException|ConnectionException|\Exception) {
+                return false;
+            }
 
             return $res->json();
         });
@@ -126,20 +141,20 @@ class RemoteAuthService
                 if (! $res->ok()) {
                     return false;
                 }
-            } catch (RequestException $e) {
-                return false;
-            } catch (ConnectionException $e) {
-                return false;
-            } catch (\Exception $e) {
+
+                $json = $res->json();
+
+                // Check the presence of the `compatible` KEY (not values) and
+                // fail closed when the body is not decodable JSON. in_array()
+                // searches values and throws a TypeError on a null body.
+                if (! $json || ! isset($json['compatible'])) {
+                    return false;
+                }
+
+                return $json['compatible'];
+            } catch (RequestException|ConnectionException|\Exception) {
                 return false;
             }
-            $json = $res->json();
-
-            if (! in_array('compatible', $json)) {
-                return false;
-            }
-
-            return $res['compatible'];
         });
     }
 
@@ -150,11 +165,7 @@ class RemoteAuthService
             if (! $res->ok()) {
                 return false;
             }
-        } catch (RequestException $e) {
-            return false;
-        } catch (ConnectionException $e) {
-            return false;
-        } catch (\Exception $e) {
+        } catch (RequestException|ConnectionException|\Exception) {
             return false;
         }
         $json = $res->json();
@@ -167,9 +178,11 @@ class RemoteAuthService
 
     public static function submitToBeagle($ow, $ou, $dw, $du)
     {
+        // GLITCH MODIFIED START: respect PF_INSTANCE_USE_BEAGLE_API when submitting to beagle
         if ((bool) config('instance.discover.beagle_api') == false) {
             return;
         }
+        // GLITCH MODIFIED END
 
         try {
             $url = 'https://beagle.pixelfed.net/api/v1/raa/submit';
@@ -183,11 +196,7 @@ class RemoteAuthService
             if (! $res->ok()) {
                 return;
             }
-        } catch (RequestException $e) {
-            return;
-        } catch (ConnectionException $e) {
-            return;
-        } catch (\Exception $e) {
+        } catch (RequestException|ConnectionException|\Exception) {
             return;
         }
 

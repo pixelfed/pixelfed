@@ -27,7 +27,7 @@ class StreamEnd implements ShouldBroadcast
     /**
      * Get the channels the event should broadcast on.
      *
-     * @return \Illuminate\Broadcasting\Channel|array
+     * @return Channel|array
      */
     public function broadcastOn()
     {
@@ -39,7 +39,7 @@ class StreamEnd implements ShouldBroadcast
         return 'stream.end';
     }
 
-    public function broadcastWith()
+    public function broadcastWith(): array
     {
         return ['ts' => time()];
     }

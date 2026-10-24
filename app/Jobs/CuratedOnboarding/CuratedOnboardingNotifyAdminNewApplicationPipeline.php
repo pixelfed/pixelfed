@@ -4,7 +4,7 @@ namespace App\Jobs\CuratedOnboarding;
 
 use App\Mail\CuratedRegisterNotifyAdmin;
 use App\Models\CuratedRegister;
-use App\User;
+use App\Models\User;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
@@ -18,7 +18,9 @@ class CuratedOnboardingNotifyAdminNewApplicationPipeline implements ShouldQueue
 {
     use Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
 
-    public $cr;
+    public bool $deleteWhenMissingModels = true;
+
+    protected $cr;
 
     /**
      * Create a new job instance.
@@ -65,11 +67,33 @@ class CuratedOnboardingNotifyAdminNewApplicationPipeline implements ShouldQueue
     protected function handleUnbundled()
     {
         $cr = $this->cr;
-        if ($aid = config_cache('instance.admin.pid')) {
-            $admin = User::whereProfileId($aid)->first();
-            if ($admin && $admin->email) {
+
+        $adminUsernames = config('instance.curated_registration.notify.admin.on_verify_email.to_usernames');
+        $ccAddresses = config('instance.curated_registration.notify.admin.on_verify_email.cc_addresses');
+
+        $ccEmails = ! empty($ccAddresses) ? array_filter(array_map('trim', explode(',', $ccAddresses))) : [];
+
+        // If specific admin usernames are configured, notify only those admins.
+        // Otherwise, fall back to notifying all admin users.
+        if (! empty($adminUsernames)) {
+            $usernames = array_filter(array_map('trim', explode(',', $adminUsernames)));
+            $admins = User::where('is_admin', true)->whereIn('username', $usernames)->get();
+        } else {
+            $admins = User::where('is_admin', true)->get();
+        }
+
+        if ($admins->isEmpty() && empty($ccEmails)) {
+            return;
+        }
+
+        foreach ($admins as $admin) {
+            if ($admin->email) {
                 Mail::to($admin->email)->send(new CuratedRegisterNotifyAdmin($cr));
             }
+        }
+
+        if ($ccEmails) {
+            Mail::to($ccEmails)->send(new CuratedRegisterNotifyAdmin($cr));
         }
     }
 }

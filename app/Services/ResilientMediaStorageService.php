@@ -8,13 +8,11 @@ use GuzzleHttp\Exception\ClientException;
 use GuzzleHttp\Exception\ConnectException;
 use Illuminate\Http\File;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Storage;
 use League\Flysystem\UnableToWriteFile;
-use Storage;
 
 class ResilientMediaStorageService
 {
-    public static $attempts = 0;
-
     public static function store($storagePath, $path, $name)
     {
         return (bool) config_cache('pixelfed.cloud_storage') && (bool) config('media.storage.remote.resilient_mode') ?
@@ -35,19 +33,16 @@ class ResilientMediaStorageService
 
     public static function handleResilientStore($storagePath, $path, $name)
     {
-        $attempts = 0;
-
-        return retry(4, function () use ($storagePath, $path, $name) {
-            self::$attempts++;
+        return retry(4, function (int $attempt) use ($storagePath, $path, $name) {
             usleep(100000);
-            $baseDisk = self::$attempts > 1 ? self::getAltDriver() : config('filesystems.cloud');
+            $baseDisk = $attempt > 1 ? self::getAltDriver() : config('filesystems.cloud');
             try {
                 $disk = Storage::disk($baseDisk);
                 $file = $disk->putFileAs($storagePath, new File($path), $name, 'public');
 
                 return $disk->url($file);
             } catch (S3Exception|ClientException|ConnectException|UnableToWriteFile|Exception $e) {
-                Log::warning("ResilientMediaStorageService: Failed to handle Resilient Store {$file} : ".$e->getMessage());
+                Log::warning('ResilientMediaStorageService: Failed to handle Resilient Store : '.$e->getMessage());
                 throw $e;
             }
         }, function (int $attempt, Exception $exception) {
@@ -64,7 +59,7 @@ class ResilientMediaStorageService
         if (config('filesystems.disks.alt-secondary.enabled')) {
             $drivers[] = 'alt-secondary';
         }
-        if (empty($drivers)) {
+        if ($drivers === []) {
             return false;
         }
         $key = array_rand($drivers, 1);

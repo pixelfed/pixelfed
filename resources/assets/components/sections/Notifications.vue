@@ -40,7 +40,7 @@
 									v-if="n.type === 'autospam.warning'"
 									class="mr-2 rounded-circle shadow-sm p-1"
 									style="border: 2px solid var(--danger)"
-									src="/img/pixelfed-icon-color.svg"
+									:src="config.logo"
 									width="32"
 									height="32"
 									/>
@@ -167,10 +167,12 @@
 
 						<div v-else>
 							<intersect v-if="hasLoaded && canLoadMore" @enter="enterIntersect">
-								<placeholder small style="margin-top: -6px" />
-								<placeholder small/>
-								<placeholder small/>
-								<placeholder small/>
+								<div>
+									<placeholder small style="margin-top: -6px" />
+									<placeholder small/>
+									<placeholder small/>
+									<placeholder small/>
+								</div>
 							</intersect>
 
 							<div v-else class="d-block" style="height: 10px;">
@@ -208,6 +210,7 @@
 				isRefreshing: false,
 				hasLoaded: false,
 				isEmpty: false,
+				config: window.App.config,
 				retryTimeout: undefined,
 				retryAttempts: 0
 			}

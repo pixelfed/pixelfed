@@ -2,19 +2,20 @@
 
 namespace App\Http\Controllers\Admin;
 
-use App\AccountInterstitial;
 use App\Http\Resources\AdminSpamReport;
 use App\Jobs\AutospamPipeline\AutospamPretrainNonSpamPipeline;
 use App\Jobs\AutospamPipeline\AutospamPretrainPipeline;
 use App\Jobs\AutospamPipeline\AutospamUpdateCachedDataPipeline;
+use App\Models\AccountInterstitial;
 use App\Models\AutospamCustomTokens;
-use App\Profile;
+use App\Models\Profile;
+use App\Models\Status;
 use App\Services\AccountService;
 use App\Services\AutospamService;
 use App\Services\ConfigCacheService;
-use Cache;
-use DB;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Cache;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Storage;
 
 trait AdminAutospamController
@@ -24,7 +25,7 @@ trait AdminAutospamController
         return view('admin.autospam.home');
     }
 
-    public function getAutospamConfigApi(Request $request)
+    public function getAutospamConfigApi(Request $request): array
     {
         $open = Cache::remember('admin-dash:reports:spam-count', 3600, function () {
             return AccountInterstitial::whereType('post.autospam')->whereNull('appeal_handled_at')->count();
@@ -35,8 +36,9 @@ trait AdminAutospamController
         });
 
         $thisWeek = Cache::remember('admin-dash:reports:spam-count-stats-this-week ', 86400, function () {
-            $sr = config('database.default') == 'pgsql' ? "to_char(created_at, 'MM-YYYY')" : "DATE_FORMAT(created_at, '%m-%Y')";
-            $gb = config('database.default') == 'pgsql' ? [DB::raw($sr)] : DB::raw($sr);
+            $isPgsql = db_is_pgsql();
+            $sr = $isPgsql ? "to_char(created_at, 'MM-YYYY')" : "DATE_FORMAT(created_at, '%m-%Y')";
+            $gb = $isPgsql ? [DB::raw($sr)] : DB::raw($sr);
             $s = AccountInterstitial::select(
                 DB::raw('count(id) as count'),
                 DB::raw($sr.' as month_year')
@@ -45,11 +47,13 @@ trait AdminAutospamController
                 ->groupBy($gb)
                 ->get()
                 ->map(function ($s) {
+                    // @phpstan-ignore-next-line
                     $dt = now()->parse('01-'.$s->month_year);
 
                     return [
                         'id' => $dt->format('Ym'),
                         'x' => $dt->format('M Y'),
+                        // @phpstan-ignore-next-line
                         'y' => $s->count,
                     ];
                 })
@@ -93,8 +97,8 @@ trait AdminAutospamController
             'files' => $files,
             'open' => $open,
             'closed' => $closed,
-            'graph' => collect($thisWeek)->map(fn ($s) => $s['y'])->values(),
-            'graphLabels' => collect($thisWeek)->map(fn ($s) => $s['x'])->values(),
+            'graph' => collect($thisWeek)->map(fn ($s): mixed => $s['y'])->values(),
+            'graphLabels' => collect($thisWeek)->map(fn ($s): mixed => $s['x'])->values(),
         ];
     }
 
@@ -112,9 +116,9 @@ trait AdminAutospamController
         return $appeals;
     }
 
-    public function postAutospamTrainSpamApi(Request $request)
+    public function postAutospamTrainSpamApi(Request $request): array
     {
-        $aiCount = AccountInterstitial::whereItemType('App\Status')
+        $aiCount = AccountInterstitial::whereItemType(Status::class)
             ->whereIsSpam(true)
             ->count();
         abort_if($aiCount < 100, 422, 'You don\'t have enough data to pre-train against.');
@@ -227,7 +231,7 @@ trait AdminAutospamController
         return Storage::download(AutospamService::MODEL_SPAM_PATH);
     }
 
-    public function enableAutospamApi(Request $request)
+    public function enableAutospamApi(Request $request): array
     {
         ConfigCacheService::put('autospam.nlp.enabled', true);
         Cache::forget(AutospamService::CHCKD_CACHE_KEY);
@@ -235,7 +239,7 @@ trait AdminAutospamController
         return ['msg' => 'Success'];
     }
 
-    public function disableAutospamApi(Request $request)
+    public function disableAutospamApi(Request $request): array
     {
         ConfigCacheService::put('autospam.nlp.enabled', false);
         Cache::forget(AutospamService::CHCKD_CACHE_KEY);

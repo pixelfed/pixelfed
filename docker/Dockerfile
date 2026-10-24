@@ -13,17 +13,17 @@ ARG NGINX_VERSION="1.29.4"
 # See: https://github.com/ddollar/forego
 #
 # renovate: datasource=docker depName=nginxproxy/forego
-ARG FOREGO_VERSION="0.18.4"
+ARG FOREGO_VERSION="0.18.8"
 
 # See: https://github.com/hairyhenderson/gomplate
 #
 # renovate: datasource=github-releases depName=hairyhenderson/gomplate
-ARG GOMPLATE_VERSION="4.3.3"
+ARG GOMPLATE_VERSION="5.2.0"
 
 # See: https://github.com/jippi/dottie
 #
 # renovate: datasource=docker depName=ghcr.io/jippi/dottie
-ARG DOTTIE_VERSION="v0.16.0"
+ARG DOTTIE_VERSION="v1.3.0"
 
 # See: https://github.com/composer/composer
 #
@@ -40,6 +40,21 @@ ARG MARIADB_CLIENT_VERSION="11.8"
 # renovate: datasource=docker depName=ghcr.io/jippi/dottie
 ARG POSTGRESQL_CLIENT_VERSION="17"
 
+# Go toolchain for building forego/dottie/gomplate (see the go-tools stage). Keep on the latest patch
+# release: rebuilding with it is what fixes the stdlib CVEs in those binaries.
+#
+# renovate: datasource=docker depName=golang
+ARG GOLANG_VERSION="1.27.3"
+
+# Static ffmpeg/ffprobe (replaces Debian's ffmpeg package, whose libavdevice/libplacebo dependencies
+# pull in ~360MB of audio, X11/GPU and Vulkan libraries a server never uses).
+# Security fixes come from bumping this tag, not from apt.
+#
+# See: https://github.com/wader/static-ffmpeg
+#
+# renovate: datasource=docker depName=mwader/static-ffmpeg
+ARG FFMPEG_VERSION="9.0.2-1"
+
 ARG RUNTIME_UID=33 # often called 'www-data'
 ARG RUNTIME_GID=33 # often called 'www-data'
 
@@ -50,7 +65,7 @@ ARG RUNTIME_GID=33 # often called 'www-data'
 # See: https://hub.docker.com/_/php/tags
 #
 # renovate: datasource=docker depName=php versioning=semver-coerced
-ARG PHP_VERSION="8.4"
+ARG PHP_VERSION="8.5"
 
 # See: https://github.com/docker-library/docs/blob/master/php/README.md#image-variants
 ARG PHP_BASE_TYPE="fpm"
@@ -87,26 +102,41 @@ ARG NGINX_GPGKEY_PATH="/usr/share/keyrings/nginx-archive-keyring.gpg"
 # NOTE: Docker will *not* pull this image unless it's referenced (via build target)
 FROM public.ecr.aws/nginx/nginx:${NGINX_VERSION} AS nginx-image
 
-# Forego is a Procfile "runner" that makes it trivial to run multiple
-# processes under a simple init / PID 1 process.
-#
-# NOTE: Docker will *not* pull this image unless it's referenced (via build target)
-#
-# See: https://github.com/nginx-proxy/forego
-FROM ghcr.io/nginx-proxy/forego:${FOREGO_VERSION}-debian AS forego-image
+# Go helper binaries, built from their pinned release tags (see install/go-tools.sh):
+#   forego   - Procfile runner, PID 1 for the nginx runtime   https://github.com/nginx-proxy/forego
+#   dottie   - .env validation                                  https://github.com/jippi/dottie
+#   gomplate - config templating in the entrypoint             https://github.com/hairyhenderson/gomplate
+# Built with a current Go and patched golang.org/x/* (etc.) modules, because the upstream release
+# binaries lag behind Go security releases. Cross-compiled on the build platform.
+FROM --platform=${BUILDPLATFORM} docker.io/library/golang:${GOLANG_VERSION}-${PHP_DEBIAN_RELEASE} AS go-tools
 
-# Dottie makes working with .env files easier and safer
+ARG FOREGO_VERSION
+ARG DOTTIE_VERSION
+ARG GOMPLATE_VERSION
+ARG TARGETOS
+ARG TARGETARCH
+
+ENV GOOS=${TARGETOS}
+ENV GOARCH=${TARGETARCH}
+
+COPY docker/rootfs/shared/docker/install/go-tools.sh /go-tools.sh
+
+RUN --mount=type=cache,id=pixelfed-go-mod,target=/go/pkg/mod \
+    --mount=type=cache,id=pixelfed-go-build-${TARGETARCH},target=/root/.cache/go-build \
+    FOREGO_VERSION=${FOREGO_VERSION} DOTTIE_VERSION=${DOTTIE_VERSION} GOMPLATE_VERSION=${GOMPLATE_VERSION} \
+    /go-tools.sh /out
+
+# Static ffmpeg + ffprobe binaries
 #
 # NOTE: Docker will *not* pull this image unless it's referenced (via build target)
-#
-# See: https://github.com/jippi/dottie
-FROM ghcr.io/jippi/dottie:${DOTTIE_VERSION} AS dottie-image
+FROM docker.io/mwader/static-ffmpeg:${FFMPEG_VERSION} AS ffmpeg-image
 
 #######################################################
 # Base image
 #######################################################
 
-FROM debian:${PHP_DEBIAN_RELEASE} AS base
+# -slim: same Debian, without docs/man pages/translations (and dpkg skips them for later installs too)
+FROM docker.io/library/debian:${PHP_DEBIAN_RELEASE}-slim AS base
 
 ENV DEBIAN_FRONTEND="noninteractive"
 
@@ -254,16 +284,15 @@ ARG PHP_VERSION
 ARG RUNTIME_UID
 ARG RUNTIME_GID
 
-# Install composer dependencies
+# Install composer dependencies (production only: no test/lint tooling in the image)
 # NOTE: we skip the autoloader generation here since we don't have all files available (yet)
+# NOTE: --no-scripts because composer.json hooks call `php artisan`, which does not exist until the
+#       source is copied in below; package discovery still runs at `composer dump-autoload` later
 RUN --mount=type=cache,id=pixelfed-composer-${PHP_VERSION},uid=${RUNTIME_UID},gid=${RUNTIME_GID},sharing=locked,target=/cache/composer \
     --mount=type=bind,source=composer.json,target=/var/www/composer.json \
     --mount=type=bind,source=composer.lock,target=/var/www/composer.lock \
     set -ex \
-    && composer install --prefer-dist --no-autoloader --ignore-platform-reqs
-
-# Copy all other files over
-COPY --chown=${RUNTIME_UID}:${RUNTIME_GID} . /var/www/
+    && composer install --prefer-dist --no-autoloader --no-scripts --no-dev --ignore-platform-reqs
 
 #######################################################
 # Runtime: base
@@ -281,33 +310,53 @@ ARG PIXELFED_VERSION
 
 ENV PIXELFED_VERSION=${PIXELFED_VERSION}
 
-ARG TARGETARCH
-ARG TARGETOS
-ARG GOMPLATE_VERSION
+# Image driver fallback for config/image.php when IMAGE_DRIVER is not set. Not IMAGE_DRIVER itself:
+# a real env var would override IMAGE_DRIVER from .env. libvips + FFI ship in this image.
+ENV DOCKER_IMAGE_DRIVER=vips
 
 USER root
 
-COPY --link --from=forego-image /usr/local/bin/forego /usr/local/bin/forego
-COPY --link --from=dottie-image /usr/local/bin/dottie /usr/local/bin/dottie
-
-# Fetch gomplate
+COPY --link --from=go-tools /out/forego /out/dottie /out/gomplate /usr/local/bin/
+COPY --link --from=ffmpeg-image /ffmpeg /ffprobe /usr/local/bin/
 RUN set -ex \
-    && wget \
-        --quiet \
-        -O /usr/local/bin/gomplate \
-        https://github.com/hairyhenderson/gomplate/releases/download/v${GOMPLATE_VERSION}/gomplate_${TARGETOS}-${TARGETARCH} \
-    && chmod +x /usr/local/bin/gomplate \
-    && /usr/local/bin/gomplate --version
+    && gomplate --version \
+    && ffmpeg -hide_banner -version | head -n1
+
+# Apply pending Debian security/bug-fix updates on every build (see install/patch.sh).
+# The package install layer in [base] is cached for as long as base.sh is unchanged, so its own
+# `apt-get upgrade` can be months old. Pass a changing APT_UPGRADE_CACHEBUST (CI uses the run id)
+# to force this layer to re-run; it sits before the app files so app-only changes don't re-run it.
+ARG PHP_VERSION
+ARG PHP_DEBIAN_RELEASE
+ARG TARGETPLATFORM
+ARG APT_UPGRADE_CACHEBUST=""
+COPY docker/rootfs/shared/docker/install/patch.sh /docker/install/patch.sh
+RUN --mount=type=cache,id=pixelfed-apt-${PHP_VERSION}-${PHP_DEBIAN_RELEASE}-${TARGETPLATFORM},target=/var/lib/apt \
+    --mount=type=cache,id=pixelfed-apt-cache-${PHP_VERSION}-${PHP_DEBIAN_RELEASE}-${TARGETPLATFORM},target=/var/cache/apt \
+    echo "apt upgrade cachebust: ${APT_UPGRADE_CACHEBUST}" \
+    && /docker/install/patch.sh
+
+# Keep Laravel's package/service manifests inside the image instead of bootstrap/cache/.
+# Deployments often mount a volume over bootstrap/cache; a packages.php written there by another image
+# version then registers providers this image does not have (e.g. dev-only Telescope -> fatal error).
+ENV APP_PACKAGES_CACHE=/var/www/bootstrap/image-cache/packages.php
+ENV APP_SERVICES_CACHE=/var/www/bootstrap/image-cache/services.php
 
 #! Changing user to runtime user
 USER ${RUNTIME_UID}:${RUNTIME_GID}
 
-COPY --link --from=composer-and-src --chown=${RUNTIME_UID}:${RUNTIME_GID} /var/www /var/www
+# vendor/ and the app source are separate layers: vendor only changes with composer.lock, so a
+# code-only change re-pushes/re-pulls the small source layer instead of vendor + source together
+COPY --link --from=composer-and-src --chown=${RUNTIME_UID}:${RUNTIME_GID} /var/www/vendor /var/www/vendor
+COPY --link --chown=${RUNTIME_UID}:${RUNTIME_GID} . /var/www/
 COPY --link --from=frontend-build --chown=${RUNTIME_UID}:${RUNTIME_GID} /var/www/public /var/www/public
 
 # Generate optimized autoloader now that we have all files around
+# (its post-autoload-dump hook runs package:discover, writing $APP_PACKAGES_CACHE)
 RUN set -ex \
-    && ENABLE_CONFIG_CACHE=false composer dump-autoload --optimize
+    && mkdir -p /var/www/bootstrap/image-cache \
+    && ENABLE_CONFIG_CACHE=false composer dump-autoload --optimize --no-dev \
+    && test -s "$APP_PACKAGES_CACHE"
 
 # for detail why storage is copied this way, pls refer to https://github.com/pixelfed/pixelfed/pull/2137#discussion_r434468862
 RUN set -ex \

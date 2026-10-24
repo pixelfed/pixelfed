@@ -1,0 +1,327 @@
+<?php
+
+namespace App\Services;
+
+use App\Util\ActivityPub\Helpers;
+use Illuminate\Http\Client\ConnectionException;
+use Illuminate\Http\Client\RequestException;
+use Illuminate\Http\Client\Response;
+use Illuminate\Support\Facades\Http;
+use League\Uri\BaseUri;
+use Psr\Http\Message\ResponseInterface;
+
+/**
+ * SSRF-hardened fetcher for remote media (avatars, attachments).
+ *
+ * Unlike a bare Guzzle client or file_get_contents(), this service:
+ *   - validates the URL (https-only, no userinfo, normalized host);
+ *   - resolves the host and refuses any non-global (private/reserved/
+ *     link-local) IP, closing the metadata.google.internal style bypass
+ *     where a public-looking hostname resolves into a reserved range;
+ *   - pins the connection to the already-validated IPs via CURLOPT_RESOLVE
+ *     so the address we validated is the address we connect to (no
+ *     TOCTOU / DNS-rebinding window);
+ *   - never lets the HTTP client follow redirects automatically, instead
+ *     re-validating and re-resolving every hop;
+ *   - enforces a hard byte cap.
+ */
+class SecureMediaFetchService
+{
+    private const int MAX_REDIRECTS = 2;
+
+    private const int CONNECT_TIMEOUT = 5;
+
+    private const int TIMEOUT = 15;
+
+    /**
+     * Perform a HEAD request through the pinned, validated path.
+     *
+     * @return array{length:int,mime:string}|false
+     */
+    public static function head(string $url, ?int $maxBytes = null)
+    {
+        $maxBytes = $maxBytes ?? self::defaultMaxBytes();
+
+        return (new self)->request($url, 'head', $maxBytes);
+    }
+
+    /**
+     * Download up to $maxBytes of the resource through the pinned,
+     * validated path. Returns the raw body string, or false.
+     *
+     * @return string|false
+     */
+    public static function get(string $url, ?int $maxBytes = null, ?int $expectedLength = null, array $headers = [])
+    {
+        $maxBytes = $maxBytes ?? self::defaultMaxBytes();
+        $result = (new self)->request($url, 'get', $maxBytes, $expectedLength, $headers);
+
+        if (! is_array($result)) {
+            return false;
+        }
+
+        return $result['body'] ?? false;
+    }
+
+    /**
+     * Shared request loop: validate -> resolve public IPs -> pin -> issue
+     * request with redirects disabled -> re-validate each hop.
+     *
+     * @return array|false For 'head': ['length'=>int,'mime'=>string].
+     *                     For 'get': ['body'=>string,'length'=>int,'mime'=>string].
+     */
+    protected function request(string $url, string $method, int $maxBytes, ?int $expectedLength = null, array $extraHeaders = [])
+    {
+        $currentUrl = $url;
+
+        // Host of the original request. Caller-supplied headers (e.g. an
+        // Authorization bearer token) are only sent to this host and are
+        // stripped on any cross-origin redirect hop, mirroring Guzzle's
+        // RedirectMiddleware credential-stripping behaviour. Captured from
+        // the first validated hop so the comparison uses the same host
+        // normalization (case, trailing dot, IDN punycode) as every hop.
+        $originHost = null;
+
+        for ($redirects = 0; $redirects <= self::MAX_REDIRECTS; $redirects++) {
+            $currentUrl = Helpers::validateUrl($currentUrl);
+
+            if (! $currentUrl) {
+                return false;
+            }
+
+            $host = parse_url($currentUrl, PHP_URL_HOST);
+            $scheme = parse_url($currentUrl, PHP_URL_SCHEME);
+            $port = parse_url($currentUrl, PHP_URL_PORT) ?: 443;
+
+            if (! $host || strtolower((string) $scheme) !== 'https') {
+                return false;
+            }
+
+            // validateUrl() already rebuilt the url with a normalized host,
+            // but normalize again so the origin comparison is defensive and
+            // uses identical case/trailing-dot/punycode rules on every hop.
+            $host = Helpers::normalizeHostLoose($host);
+
+            if (! $host) {
+                return false;
+            }
+
+            if ($originHost === null) {
+                $originHost = $host;
+            }
+
+            // Only forward caller headers when the current hop is the same host
+            // as the original request; drop them across origins.
+            $headers = ['User-Agent' => self::userAgent()];
+            if (! empty($extraHeaders) && $host === $originHost) {
+                $headers = array_merge($extraHeaders, $headers);
+            }
+
+            // Resolve the host and reject if ANY resolved address is
+            // non-global. Fail-closed: empty means unresolved or private.
+            $ips = Helpers::resolvePublicIps($host);
+
+            if (empty($ips)) {
+                return false;
+            }
+
+            try {
+                $res = $this->send($method, $currentUrl, $host, (int) $port, $ips, $headers, $maxBytes);
+
+                if ($method === 'head' && $this->shouldProbe($res)) {
+                    // Buffered (non-stream) 1-byte range probe: streaming can't
+                    // carry the CURLOPT_RESOLVE pin under Guzzle 8's stream
+                    // handler, and a single byte is safe to buffer. The byte
+                    // cap is still enforced up front by the on_headers callback.
+                    $res = $this->send('get', $currentUrl, $host, (int) $port, $ips, array_merge($headers, ['Range' => 'bytes=0-0']), $maxBytes);
+                }
+            } catch (RequestException|ConnectionException|\Throwable) {
+                return false;
+            }
+
+            // Manual redirect handling: re-validate + re-resolve the next hop.
+            if (in_array($res->status(), [301, 302, 303, 307, 308], true)) {
+                if ($redirects >= self::MAX_REDIRECTS) {
+                    return false;
+                }
+                $location = $res->header('Location');
+                if (! $location) {
+                    return false;
+                }
+                $nextUrl = $this->resolveRedirect($currentUrl, $location);
+                if (! $nextUrl) {
+                    return false;
+                }
+                $currentUrl = $nextUrl;
+
+                continue;
+            }
+
+            if (! $res->successful()) {
+                return false;
+            }
+
+            $mime = $this->normalizeMime($res->header('Content-Type'));
+            $declaredLength = $this->declaredLength($res);
+
+            if ($method === 'head') {
+                if ($declaredLength === null || $mime === null) {
+                    return false;
+                }
+                if ($declaredLength < 10 || $declaredLength > $maxBytes) {
+                    return false;
+                }
+
+                return ['length' => $declaredLength, 'mime' => $mime];
+            }
+
+            // GET: enforce the cap against the actual body we received.
+            $body = $res->body();
+            $len = strlen($body);
+
+            if ($len === 0 || $len > $maxBytes) {
+                return false;
+            }
+
+            if ($expectedLength !== null && $len < $expectedLength) {
+                // Received less than the HEAD promised; treat as truncated.
+                // Still return what we have, capped, but never more than asked.
+                $body = substr($body, 0, $expectedLength);
+                $len = strlen($body);
+            }
+
+            return [
+                'body' => $body,
+                'length' => $len,
+                'mime' => $mime ?? ($declaredLength !== null ? $mime : null),
+            ];
+        }
+
+        return false;
+    }
+
+    protected function send(string $method, string $url, string $host, int $port, array $ips, array $headers, int $maxBytes): Response
+    {
+        return Http::withOptions($this->requestOptions($host, $port, $ips, $maxBytes))
+            ->withHeaders($headers)
+            ->timeout(self::TIMEOUT)
+            ->connectTimeout(self::CONNECT_TIMEOUT)
+            ->{$method}($url);
+    }
+
+    /**
+     * Build the client options for a single hop. The scheme is restricted to
+     * https via Guzzle's native 'protocols' option (accepted by the curl
+     * handler, unlike the CURLOPT_PROTOCOLS curl constant), redirects stay
+     * disabled so every hop is re-validated, and the connection is pinned to
+     * the already-validated IPs through CURLOPT_RESOLVE. Responses are
+     * buffered (never streamed) so the curl handler, which is the only one
+     * that honours the CURLOPT_RESOLVE pin under Guzzle 8, is always used.
+     */
+    protected function requestOptions(string $host, int $port, array $ips, int $maxBytes): array
+    {
+        return [
+            'allow_redirects' => false,
+            'protocols' => ['https'],
+            'sink' => null,
+            'stream' => false,
+            'curl' => [
+                CURLOPT_RESOLVE => [
+                    $this->buildResolveEntry($host, $port, $ips),
+                ],
+                CURLOPT_FRESH_CONNECT => true,
+                CURLOPT_FORBID_REUSE => true,
+            ],
+            'on_headers' => function (ResponseInterface $response) use ($maxBytes) {
+                $length = $response->getHeaderLine('Content-Length');
+                if ($length !== '' && ctype_digit($length) && (int) $length > $maxBytes) {
+                    throw new \RuntimeException('Remote media exceeds maximum size');
+                }
+            },
+        ];
+    }
+
+    protected function shouldProbe(Response $res): bool
+    {
+        if (in_array($res->status(), [403, 405, 501], true)) {
+            return true;
+        }
+
+        if (! $res->successful()) {
+            return false;
+        }
+
+        return $this->declaredLength($res) === null
+            || $this->normalizeMime($res->header('Content-Type')) === null;
+    }
+
+    protected function declaredLength(Response $res): ?int
+    {
+        if ($res->status() === 206) {
+            $range = trim((string) $res->header('Content-Range'));
+
+            if (preg_match('#^bytes\s+\d+-\d+/(\d+)$#i', $range, $matches)) {
+                return (int) $matches[1];
+            }
+
+            return null;
+        }
+
+        $length = (string) $res->header('Content-Length');
+
+        return ctype_digit($length) ? (int) $length : null;
+    }
+
+    protected function buildResolveEntry(string $host, int $port, array $ips): string
+    {
+        $addresses = array_map(function ($ip) {
+            return str_contains($ip, ':') ? '['.$ip.']' : $ip;
+        }, $ips);
+
+        return $host.':'.$port.':'.implode(',', $addresses);
+    }
+
+    protected function resolveRedirect(string $baseUrl, string $location): ?string
+    {
+        $location = trim($location);
+
+        if ($location === '' || preg_match('/[\x00-\x20\x7f]/', $location)) {
+            return null;
+        }
+
+        try {
+            $resolved = (string) BaseUri::from($baseUrl)->resolve($location);
+
+            return Helpers::validateUrl($resolved) ? $resolved : null;
+        } catch (\Throwable) {
+            return null;
+        }
+    }
+
+    protected function normalizeMime(?string $contentType): ?string
+    {
+        if (! $contentType) {
+            return null;
+        }
+
+        $mime = strtolower(trim(explode(';', $contentType)[0]));
+
+        return $mime === '' ? null : $mime;
+    }
+
+    protected static function defaultMaxBytes(): int
+    {
+        // Cap on the larger of avatar/photo config limits (kB -> bytes),
+        // with a sane fallback.
+        $photo = (int) config_cache('pixelfed.max_photo_size');
+        $avatar = (int) config('pixelfed.max_avatar_size');
+        $maxKb = max($photo, $avatar, 1000);
+
+        return $maxKb * 1000;
+    }
+
+    protected static function userAgent(): string
+    {
+        return 'PixelFedBot/1.0.0 (Pixelfed/'.config('pixelfed.version').'; +'.config('app.url').')';
+    }
+}

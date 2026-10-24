@@ -4,7 +4,7 @@ namespace App\Http\Controllers\Api\V1\Admin;
 
 use App\Http\Controllers\Api\ApiController;
 use App\Http\Resources\MastoApi\Admin\DomainBlockResource;
-use App\Instance;
+use App\Models\Instance;
 use App\Services\InstanceService;
 use Illuminate\Http\Request;
 use Illuminate\Validation\Rule;

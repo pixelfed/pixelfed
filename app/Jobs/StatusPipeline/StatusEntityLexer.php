@@ -2,28 +2,30 @@
 
 namespace App\Jobs\StatusPipeline;
 
-use App\Hashtag;
 use App\Jobs\HomeFeedPipeline\FeedInsertPipeline;
 use App\Jobs\MentionPipeline\MentionPipeline;
-use App\Mention;
-use App\Profile;
+use App\Models\Hashtag;
+use App\Models\Mention;
+use App\Models\Profile;
+use App\Models\Status;
+use App\Models\StatusHashtag;
+use App\Services\Account\AccountStatService;
 use App\Services\AdminShadowFilterService;
 use App\Services\PublicTimelineService;
 use App\Services\StatusService;
 use App\Services\UserFilterService;
-use App\Status;
-use App\StatusHashtag;
 use App\Util\Lexer\Autolink;
 use App\Util\Lexer\Extractor;
 use App\Util\Sentiment\Bouncer;
-use Cache;
-use DB;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
+use Illuminate\Support\Facades\Cache;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Str;
 
 class StatusEntityLexer implements ShouldQueue
 {
@@ -82,7 +84,7 @@ class StatusEntityLexer implements ShouldQueue
             return;
         }
 
-        if (in_array($status->type, ['photo', 'photo:album', 'video', 'video:album', 'photo:video:album'])) {
+        if (in_array($status->type, AccountStatService::COUNTABLE_STATUS_TYPES)) {
             $profile->status_count = $profile->status_count + 1;
             $profile->save();
         }
@@ -90,6 +92,8 @@ class StatusEntityLexer implements ShouldQueue
         if ($profile->no_autolink == false) {
             $this->parseEntities();
         }
+
+        $this->fanout();
     }
 
     public function parseEntities()
@@ -124,13 +128,24 @@ class StatusEntityLexer implements ShouldQueue
                 continue;
             }
             DB::transaction(function () use ($status, $tag) {
-                $slug = str_slug($tag, '-', false);
+                $slug = Str::slug($tag, '-', false);
 
-                $hashtag = Hashtag::firstOrCreate([
-                    'slug' => $slug,
-                ], [
-                    'name' => $tag,
-                ]);
+                if ($slug === '') {
+                    return;
+                }
+
+                // Resolve a slug that does not collide with a different name,
+                // so two distinct tags sharing a base slug keep separate rows.
+                $baseSlug = $slug;
+                $counter = 1;
+                while (Hashtag::where('slug', $slug)->where('name', '!=', $tag)->exists()) {
+                    $slug = $baseSlug.'-'.$counter++;
+                }
+
+                $hashtag = Hashtag::firstOrCreate(
+                    ['name' => $tag],
+                    ['slug' => $slug],
+                );
 
                 StatusHashtag::firstOrCreate(
                     [
@@ -170,7 +185,6 @@ class StatusEntityLexer implements ShouldQueue
                 MentionPipeline::dispatch($status, $m);
             });
         }
-        $this->fanout();
     }
 
     public function fanout()
@@ -178,12 +192,10 @@ class StatusEntityLexer implements ShouldQueue
         $status = $this->status;
         StatusService::refresh($status->id);
 
-        if (config('exp.cached_home_timeline')) {
-            if ($status->in_reply_to_id === null &&
-                in_array($status->scope, ['public', 'unlisted', 'private'])
-            ) {
-                FeedInsertPipeline::dispatch($status->id, $status->profile_id)->onQueue('feed');
-            }
+        if ($status->in_reply_to_id === null &&
+            in_array($status->scope, ['public', 'unlisted', 'private'])
+        ) {
+            FeedInsertPipeline::dispatch($status->id, $status->profile_id)->onQueue('feed');
         }
         $this->deliver();
     }
@@ -217,7 +229,7 @@ class StatusEntityLexer implements ShouldQueue
             }
         }
 
-        if ((bool) config_cache('federation.activitypub.enabled') == true && config('app.env') == 'production') {
+        if ((bool) config_cache('federation.activitypub.enabled') === true && config('app.env') == 'production') {
             StatusActivityPubDeliver::dispatch($status);
         }
     }

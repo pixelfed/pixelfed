@@ -2,7 +2,7 @@
 
 namespace App\Services;
 
-use App\Mention;
+use App\Models\Mention;
 
 class StatusMentionService
 {
@@ -11,7 +11,7 @@ class StatusMentionService
         return Mention::whereStatusId($id)
             ->get()
             ->map(function ($mention) {
-                return AccountService::get($mention->profile_id);
+                return AccountService::get($mention->profile_id, true);
             })->filter(function ($mention) {
                 return $mention;
             })

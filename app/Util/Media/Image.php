@@ -2,14 +2,14 @@
 
 namespace App\Util\Media;
 
-use App\Media;
+use App\Models\Media;
 use App\Services\StatusService;
-use Cache;
+use Illuminate\Support\Facades\Cache;
+use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Storage;
 use Intervention\Image\Encoders\JpegEncoder;
 use Intervention\Image\Encoders\PngEncoder;
 use Intervention\Image\Encoders\WebpEncoder;
-use Log;
-use Storage;
 
 class Image
 {
@@ -54,7 +54,7 @@ class Image
         $this->imageManager = ImageDriverManager::createImageManager();
     }
 
-    public function orientations()
+    public function orientations(): array
     {
         return [
             'square' => [
@@ -72,7 +72,7 @@ class Image
         ];
     }
 
-    public function getAspect($width, $height, $isThumbnail)
+    public function getAspect($width, $height, $isThumbnail): array
     {
         if ($isThumbnail) {
             return [
@@ -122,6 +122,15 @@ class Image
         if (! in_array($media->mime, $this->acceptedMimes)) {
             return;
         }
+
+        // The file this transform is about to supersede. When the output
+        // extension differs from what is currently stored (e.g. heic/avif -> jpg,
+        // or a thumbnail regenerated to a new extension), the new file lands at
+        // a different name and the old one would be orphaned in the media
+        // directory. Capture it now so we can delete it after a successful
+        // write. For the base image this is media_path; for a thumbnail it is
+        // the existing thumbnail_path.
+        $previousPath = $thumbnail ? $media->thumbnail_path : $media->media_path;
 
         try {
             $fileContents = null;
@@ -202,7 +211,17 @@ class Image
                 }
             }
 
-            $img = $this->imageManager->read($fileContents);
+            $img = $this->imageManager->decodeBinary($fileContents);
+            $img = $img->orient();
+
+            // carry the source ICC color profile across the re-encode so wide-gamut
+            // uploads (Display P3, RAW exports) are not desaturated.
+            $iccProfile = null;
+            try {
+                $iccProfile = $img->profile();
+            } catch (\Throwable $e) {
+                $iccProfile = null;
+            }
 
             $ratio = $this->getAspect($img->width(), $img->height(), $thumbnail);
             $aspect = $ratio['dimensions'];
@@ -256,6 +275,17 @@ class Image
             }
 
             $converted = $this->setBaseName($path, $thumbnail, $outputExtension);
+
+            if ($iccProfile !== null) {
+                try {
+                    $img = $img->setProfile($iccProfile);
+                } catch (\Throwable $e) {
+                    if (config('app.dev_log')) {
+                        Log::info('ICC profile re-apply failed: '.$e->getMessage());
+                    }
+                }
+            }
+
             $encoded = $encoder->encode($img);
 
             if ($localFs) {
@@ -281,8 +311,15 @@ class Image
 
             $media->save();
 
+            // Remove the file we just superseded when the new output landed at a
+            // different path (extension change / thumbnail regeneration), so the
+            // old file is not orphaned in the media directory. Done after save so
+            // a failed save never leaves the row pointing at deleted bytes; a
+            // leftover orphan after a rare post-save crash is harmless.
+            $this->deleteSupersededFile($previousPath, $converted['path'], $localFs);
+
             if ($thumbnail) {
-                $this->generateBlurhash($media);
+                $this->generateBlurhash($media, $encoded->toString());
             }
 
             if ($media->status_id) {
@@ -291,45 +328,84 @@ class Image
                 StatusService::del($media->status_id);
             }
 
+        } catch (\Throwable $e) {
+            // Always logged, never gated behind dev_log: when this fails the
+            // untouched original upload keeps being served at full size, and
+            // nothing else in the app surfaces that.
+            Log::error(sprintf(
+                'MediaResizeException: could not %s media id %s (%s) [%s]: %s',
+                $thumbnail ? 'thumbnail' : 'resize',
+                $media->id,
+                $media->mime,
+                $e::class,
+                $e->getMessage()
+            ));
+        }
+    }
+
+    /**
+     * Delete a previous file that a transform has just replaced, but only when
+     * the new output landed at a different path (so we never delete the file we
+     * just wrote). No-op when there was no previous path or it is unchanged.
+     */
+    protected function deleteSupersededFile(?string $previousPath, string $newPath, bool $localFs): void
+    {
+        if (! $previousPath || $previousPath === $newPath) {
+            return;
+        }
+
+        try {
+            if ($localFs) {
+                $full = storage_path('app/'.$previousPath);
+                if (is_file($full)) {
+                    @unlink($full);
+                }
+            } else {
+                $disk = Storage::disk($this->defaultDisk);
+                if ($disk->exists($previousPath)) {
+                    $disk->delete($previousPath);
+                }
+            }
         } catch (\Exception $e) {
-            $media->processed_at = now();
-            $media->save();
             if (config('app.dev_log')) {
-                Log::info('MediaResizeException: '.$e->getMessage().' | Could not process media id: '.$media->id);
+                Log::info('Superseded media cleanup failed: '.$e->getMessage());
             }
         }
     }
 
-    public function setBaseName($basePath, $thumbnail, $extension)
+    public function setBaseName($basePath, $thumbnail, $extension): array
     {
-        $path = explode('.', $basePath);
-        $name = ($thumbnail == true) ? $path[0].'_thumb' : $path[0];
-        $basePath = "{$name}.{$extension}";
+        $pathInfo = pathinfo($basePath);
+        $dir = isset($pathInfo['dirname']) && $pathInfo['dirname'] !== '.' ? $pathInfo['dirname'].'/' : '';
+        $filename = $pathInfo['filename'];
+        $name = ($thumbnail == true) ? $filename.'_thumb' : $filename;
+        $basePath = $dir.$name.'.'.$extension;
 
         return ['path' => $basePath, 'png' => false];
     }
 
-    protected function generateBlurhash($media)
+    /**
+     * Hash the thumbnail that was just encoded. The bytes are already in memory,
+     * so they are hashed directly instead of being read back from disk (or pulled
+     * back down from cloud storage into a temp file) a moment after being written.
+     */
+    protected function generateBlurhash($media, ?string $contents = null)
     {
         try {
-            if ($this->defaultDisk === 'local') {
-                $thumbnailPath = storage_path('app/'.$media->thumbnail_path);
-                $blurhash = Blurhash::generate($media, $thumbnailPath);
-            } else {
-                $tempFile = tempnam(sys_get_temp_dir(), 'blurhash_');
-                $contents = Storage::disk($this->defaultDisk)->get($media->thumbnail_path);
-                file_put_contents($tempFile, $contents);
-
-                $blurhash = Blurhash::generate($media, $tempFile);
-
-                unlink($tempFile);
+            if ($contents === null) {
+                $contents = $this->defaultDisk === 'local'
+                    ? file_get_contents(storage_path('app/'.$media->thumbnail_path))
+                    : Storage::disk($this->defaultDisk)->get($media->thumbnail_path);
             }
 
-            if ($blurhash) {
-                $media->blurhash = $blurhash;
-                $media->save();
-            }
-        } catch (\Exception $e) {
+            $blurhash = $contents ? Blurhash::fromBinary($contents) : null;
+
+            $media->blurhash = $blurhash ?? Blurhash::DEFAULT_HASH;
+            $media->save();
+        } catch (\Throwable $e) {
+            // \Throwable, not \Exception: the blurhash is decorative and must never
+            // fail the thumbnail job, which still has to mark the media as processed
+            // and dispatch ImageUpdate.
             if (config('app.dev_log')) {
                 Log::info('Blurhash generation failed: '.$e->getMessage());
             }

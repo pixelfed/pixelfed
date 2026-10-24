@@ -29,7 +29,7 @@
                 </div>
                 <div>
                     <a class="small font-weight-bold text-muted pr-1" href="{{config('app.url')}}" target="_blank">{{config('pixelfed.domain.app')}}</a>
-                    <img src="/img/pixelfed-icon-color.svg" width="26" height="26">
+                    <img src="{{ config('app.logo') }}" width="26" height="26">
                 </div>
             </div>
             <div class="card-body pb-1">

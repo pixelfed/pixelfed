@@ -11,6 +11,7 @@
 				</div>
 			</div>
 			<div v-if="loaded.stats" class="row">
+				{{-- GLITCH MODIFIED: narrower cards to fit the extra "Local posts" card --}}
 				<div class="col-xl-3 col-md-4">
 					<div class="card card-stats">
 						<div class="card-body">
@@ -28,6 +29,7 @@
 						</div>
 					</div>
 				</div>
+				{{-- GLITCH MODIFIED START: "Local posts" card (real post count) --}}
 				<div class="col-xl-3 col-md-4">
 					<div class="card card-stats">
 						<div class="card-body">
@@ -45,6 +47,8 @@
 						</div>
 					</div>
 				</div>
+				{{-- GLITCH MODIFIED END --}}
+				{{-- GLITCH MODIFIED: narrower cards to fit the extra "Local posts" card --}}
 				<div class="col-xl-3 col-md-4">
 					<div class="card card-stats">
 						<div class="card-body">
@@ -62,6 +66,7 @@
 						</div>
 					</div>
 				</div>
+				{{-- GLITCH MODIFIED: narrower cards to fit the extra "Local posts" card --}}
 				<div class="col-xl-3 col-md-4">
 					<div class="card card-stats">
 						<div class="card-body">
@@ -79,6 +84,7 @@
 						</div>
 					</div>
 				</div>
+				{{-- GLITCH MODIFIED: narrower cards to fit the extra "Local posts" card --}}
 				<div class="col-xl-3 col-md-4">
 					<div class="card card-stats">
 						<div class="card-body">

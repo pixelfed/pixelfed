@@ -180,6 +180,7 @@
 			<div>
 				You can archive your posts which prevents anyone from interacting or viewing it.
 				<br />
+				{{-- GLITCH MODIFIED: typo fix --}}
 				<strong class="text-danger">Archived posts cannot be deleted or otherwise interacted with. You may not receive interactions (comments, likes, shares) from other servers while a post is archived.</strong>
 				<br />
 			</div>

@@ -2,32 +2,30 @@
 
 namespace App\Http\Controllers;
 
-use App\Page;
-use Cache;
+use App\Http\Controllers\Concerns\ManagesCachedPages;
 use Illuminate\Http\Request;
-use View;
+use Illuminate\Support\Facades\Cache;
+use Illuminate\Support\Facades\View;
 
 class MobileController extends Controller
 {
+    use ManagesCachedPages;
+
     public function terms(Request $request)
     {
         $page = Cache::remember('site:terms', now()->addDays(120), function () {
-            $slug = '/site/terms';
-
-            return Page::whereSlug($slug)->whereActive(true)->first();
+            return $this->cachedPage('/site/terms');
         });
 
-        return View::make('mobile.terms')->with(compact('page'))->render();
+        return View::make('mobile.terms')->with(['page' => $page])->render();
     }
 
     public function privacy(Request $request)
     {
         $page = Cache::remember('site:privacy', now()->addDays(120), function () {
-            $slug = '/site/privacy';
-
-            return Page::whereSlug($slug)->whereActive(true)->first();
+            return $this->cachedPage('/site/privacy');
         });
 
-        return View::make('mobile.privacy')->with(compact('page'))->render();
+        return View::make('mobile.privacy')->with(['page' => $page])->render();
     }
 }

@@ -2,12 +2,11 @@
 
 namespace App\Services;
 
-use App\Media;
+use App\Models\Media;
 use App\Transformer\Api\MediaTransformer;
-use Cache;
+use App\Util\Media\License;
 use Illuminate\Support\Arr;
-use League\Fractal;
-use League\Fractal\Serializer\ArraySerializer;
+use Illuminate\Support\Facades\Cache;
 
 class MediaService
 {
@@ -20,11 +19,8 @@ class MediaService
             if (! $media) {
                 return [];
             }
-            $fractal = new Fractal\Manager;
-            $fractal->setSerializer(new ArraySerializer);
-            $resource = new Fractal\Resource\Collection($media, new MediaTransformer);
 
-            return $fractal->createData($resource)->toArray();
+            return FractalService::collection($media, new MediaTransformer);
         });
     }
 
@@ -80,7 +76,7 @@ class MediaService
             $original = Arr::get($s, 'meta.original', []);
             $mime = $s['mime'] === 'image/jpg' ? 'image/jpeg' : $s['mime'];
 
-            return [
+            $res = [
                 'type' => 'Document',
                 'mediaType' => $mime,
                 'url' => $s['url'],
@@ -90,6 +86,42 @@ class MediaService
                 'width' => $original['width'] ?? null,
                 'height' => $original['height'] ?? null,
             ];
+
+            $license = License::uriForId(Arr::get($s, 'license.id'));
+            if ($license) {
+                $res['license'] = $license;
+            }
+
+            return $res;
         });
+    }
+
+    /**
+     * FEP-6757 license for the Note itself.
+     *
+     * Only set when every attachment shares the same license, otherwise the
+     * per-attachment licenses are the source of truth.
+     *
+     * @return array{license?: string}
+     */
+    public static function noteLicense($statusId): array
+    {
+        $media = self::get($statusId);
+        if (! $media) {
+            return [];
+        }
+
+        $uris = collect($media)
+            ->map(fn ($m) => License::uriForId(Arr::get($m, 'license.id')))
+            ->unique()
+            ->values();
+
+        $uri = $uris->first();
+
+        if ($uris->count() !== 1 || $uri === null) {
+            return [];
+        }
+
+        return ['license' => $uri];
     }
 }

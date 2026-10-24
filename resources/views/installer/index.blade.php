@@ -58,13 +58,14 @@
 					<div class="col-12">
 						<p class="text-center py-3">
 							<a href="/installer">
-								<img src="/img/pixelfed-icon-color.svg" width="60" height="60">
+								<img src="{{ config('app.logo') }}" width="60" height="60">
 							</a>
 						</p>
 
 						<router-view></router-view>
 
 						<p class="d-flex justify-content-between text-white pt-2 px-2">
+							{{-- GLITCH MODIFIED: glitch docs URL --}}
 							<a class="font-weight-bold text-white" href="https://pixelfed-glitch.github.io/docs/running-pixelfed/installation.html" target="_blank">Help</a>
 							<span class="font-weight-bold">v{{config('pixelfed.version')}}</span>
 						</p>

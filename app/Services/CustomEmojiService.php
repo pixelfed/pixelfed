@@ -11,9 +11,20 @@ use Illuminate\Support\Facades\Storage;
 
 class CustomEmojiService
 {
+    /**
+     * Allowed image mime types for imported custom emoji.
+     */
+    public const ALLOWED_MIME_TYPES = [
+        'image/jpeg',
+        'image/jpg',
+        'image/png',
+        'image/gif',
+        'image/webp',
+    ];
+
     public static function get($shortcode)
     {
-        if ((bool) config_cache('federation.custom_emoji.enabled') == false) {
+        if ((bool) config_cache('federation.custom_emoji.enabled') === false) {
             return;
         }
 
@@ -22,11 +33,12 @@ class CustomEmojiService
 
     public static function import($url, $id = false)
     {
-        if ((bool) config_cache('federation.custom_emoji.enabled') == false) {
+        if ((bool) config_cache('federation.custom_emoji.enabled') === false) {
             return;
         }
 
-        if (Helpers::validateUrl($url) == false) {
+        $url = Helpers::validateUrl($url);
+        if ($url == false) {
             return;
         }
 
@@ -35,11 +47,36 @@ class CustomEmojiService
             return;
         }
 
-        try {
-            $res = Http::acceptJson()->get($url);
-        } catch (RequestException $e) {
+        // SSRF-hardened JSON fetch: resolve + pin the host to a validated
+        // public IP and refuse redirects so the emoji-document request cannot
+        // be steered into internal addresses.
+        $host = parse_url($url, PHP_URL_HOST);
+        $port = parse_url($url, PHP_URL_PORT) ?: 443;
+        $ips = $host ? Helpers::resolvePublicIps($host) : [];
+        if ($ips === []) {
             return;
-        } catch (\Exception $e) {
+        }
+
+        try {
+            $res = Http::acceptJson()
+                ->withOptions([
+                    'allow_redirects' => false,
+                    'protocols' => ['https'],
+                    'curl' => [
+                        CURLOPT_RESOLVE => [
+                            $host.':'.((int) $port).':'.implode(',', array_map(
+                                fn ($ip) => str_contains($ip, ':') ? '['.$ip.']' : $ip,
+                                $ips
+                            )),
+                        ],
+                        CURLOPT_FRESH_CONNECT => true,
+                        CURLOPT_FORBID_REUSE => true,
+                    ],
+                ])
+                ->timeout(15)
+                ->connectTimeout(5)
+                ->get($url);
+        } catch (RequestException|\Exception) {
             return;
         }
 
@@ -56,8 +93,12 @@ class CustomEmojiService
                 ! isset($json['icon']['url']) ||
                 ! isset($json['icon']['type']) ||
                 $json['icon']['type'] !== 'Image' ||
-                ! in_array($json['icon']['mediaType'], ['image/jpeg', 'image/png', 'image/jpg'])
+                ! in_array($json['icon']['mediaType'], self::ALLOWED_MIME_TYPES, true)
             ) {
+                return;
+            }
+
+            if (Helpers::validateUrl($json['icon']['url']) == false) {
                 return;
             }
 
@@ -65,7 +106,17 @@ class CustomEmojiService
                 return;
             }
 
-            $emoji = CustomEmoji::firstOrCreate([
+            // The (shortcode, domain) collision key is derived from the
+            // document's declared id, so its host must match the URL we
+            // actually fetched. Otherwise a peer could serve a document from
+            // its own host declaring a victim (shortcode, host) and hijack /
+            // clobber the victim's cached emoji. Host-only (not byte equality)
+            // so a legit id whose path differs from the fetch URL still passes.
+            if (strcasecmp((string) parse_url($json['id'], PHP_URL_HOST), (string) parse_url($url, PHP_URL_HOST)) !== 0) {
+                return;
+            }
+
+            $emoji = CustomEmoji::updateOrCreate([
                 'shortcode' => $json['name'],
                 'domain' => parse_url($json['id'], PHP_URL_HOST),
             ], [
@@ -73,17 +124,39 @@ class CustomEmojiService
                 'image_remote_url' => $json['icon']['url'],
             ]);
 
-            if ($emoji->wasRecentlyCreated == false) {
-                if (Storage::exists('public/'.$emoji->media_path)) {
-                    Storage::delete('public/'.$emoji->media_path);
-                }
-            }
-
             $ext = '.'.last(explode('/', $json['icon']['mediaType']));
-            $dest = storage_path('app/public/emoji/').$emoji->id.$ext;
-            copy($json['icon']['url'], $dest);
-            $emoji->media_path = 'emoji/'.$emoji->id.$ext;
-            $emoji->save();
+            $mediaPath = 'emoji/'.$emoji->id.$ext;
+
+            try {
+                // SSRF-hardened: validated URL, resolved+pinned public IP,
+                // no internal redirects, size-capped.
+                $maxSize = (int) config('federation.custom_emoji.max_size');
+                $body = SecureMediaFetchService::get($json['icon']['url'], $maxSize > 0 ? $maxSize : null);
+
+                if ($body === false) {
+                    // Download failed: keep the previous working media rather
+                    // than deleting it up-front, so the emoji keeps rendering.
+                    return;
+                }
+
+                // Store the new bytes first, persist media_path, and only then
+                // delete the previous file if the path changed.
+                $oldPath = ($emoji->media_path && $emoji->media_path !== $mediaPath)
+                    ? $emoji->media_path
+                    : null;
+
+                Storage::put('public/'.$mediaPath, $body);
+
+                $emoji->media_path = $mediaPath;
+                $emoji->save();
+
+                if ($oldPath && Storage::exists('public/'.$oldPath)) {
+                    Storage::delete('public/'.$oldPath);
+                }
+            } catch (\Exception) {
+                // Download failed
+                return;
+            }
 
             $name = str_replace(':', '', $json['name']);
             Cache::forget('pf:custom_emoji');
@@ -93,44 +166,98 @@ class CustomEmojiService
             }
 
             return;
-        } else {
-            return;
         }
     }
 
     public static function headCheck($url)
     {
+        $maxSize = (int) config('federation.custom_emoji.max_size');
+        // SSRF-hardened HEAD: validated URL, resolved+pinned public IP, no
+        // internal redirects.
+        $head = SecureMediaFetchService::head($url, $maxSize > 0 ? $maxSize : null);
+
+        if (! $head) {
+            return false;
+        }
+
+        if (! in_array($head['mime'], self::ALLOWED_MIME_TYPES, true)) {
+            return false;
+        }
+
+        return $maxSize <= 0 || $head['length'] <= $maxSize;
+    }
+
+    /**
+     * Re-download a remote custom emoji's media from its origin
+     * (image_remote_url) and store it locally under public/{media_path}.
+     *
+     * Used by admin:resyncemoji to repair emoji whose local file is missing
+     * or corrupt. Only remote emoji (those with an origin URL) can be resynced.
+     *
+     * @return string one of: resynced|skipped|failed
+     */
+    public static function resync(CustomEmoji $emoji): string
+    {
+        if ((bool) config_cache('federation.custom_emoji.enabled') === false) {
+            return 'skipped';
+        }
+
+        // Only remote emoji have an origin URL to re-fetch from.
+        if (empty($emoji->image_remote_url)) {
+            return 'skipped';
+        }
+
+        $url = Helpers::validateUrl($emoji->image_remote_url);
+        if ($url == false) {
+            return 'skipped';
+        }
+
+        if (! self::headCheck($url)) {
+            return 'failed';
+        }
+
+        // Preserve the existing media_path when present; otherwise derive one
+        // from the emoji id and the origin URL's extension.
+        $mediaPath = $emoji->media_path;
+        if (! $mediaPath) {
+            $ext = pathinfo(parse_url($url, PHP_URL_PATH) ?? '', PATHINFO_EXTENSION);
+            $ext = $ext ? '.'.strtolower($ext) : '.png';
+            $mediaPath = 'emoji/'.$emoji->id.$ext;
+        }
+
         try {
-            $res = Http::head($url);
-        } catch (RequestException $e) {
-            return false;
-        } catch (\Exception $e) {
-            return false;
+            $maxSize = (int) config('federation.custom_emoji.max_size');
+            $body = SecureMediaFetchService::get($url, $maxSize > 0 ? $maxSize : null);
+
+            if ($body === false) {
+                return 'failed';
+            }
+
+            if (Storage::exists('public/'.$mediaPath)) {
+                Storage::delete('public/'.$mediaPath);
+            }
+
+            Storage::put('public/'.$mediaPath, $body);
+
+            if ($emoji->media_path !== $mediaPath) {
+                $emoji->media_path = $mediaPath;
+                $emoji->save();
+            }
+        } catch (\Throwable) {
+            return 'failed';
         }
 
-        if (! $res->successful()) {
-            return false;
-        }
+        $name = str_replace(':', '', (string) $emoji->shortcode);
+        Cache::forget('pf:custom_emoji');
+        Cache::forget('pf:custom_emoji:'.$name);
 
-        $type = $res->header('content-type');
-        $length = $res->header('content-length');
-
-        if (
-            ! $type ||
-            ! $length ||
-            ! in_array($type, ['image/jpeg', 'image/png', 'image/jpg']) ||
-            $length > config('federation.custom_emoji.max_size')
-        ) {
-            return false;
-        }
-
-        return true;
+        return 'resynced';
     }
 
     public static function all()
     {
         return Cache::rememberForever('pf:custom_emoji', function () {
-            $pgsql = config('database.default') === 'pgsql';
+            $pgsql = db_is_pgsql();
 
             return CustomEmoji::when(! $pgsql, function ($q, $pgsql) {
                 return $q->groupBy('shortcode');

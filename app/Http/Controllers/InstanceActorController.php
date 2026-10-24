@@ -3,11 +3,13 @@
 namespace App\Http\Controllers;
 
 use App\Models\InstanceActor;
-use Cache;
+use App\Services\BlockSyncService;
+use Illuminate\Http\Response;
+use Illuminate\Support\Facades\Cache;
 
 class InstanceActorController extends Controller
 {
-    public function profile()
+    public function profile(): Response
     {
         $res = Cache::rememberForever(InstanceActor::PROFILE_KEY, function () {
             $res = (new InstanceActor)->first()->getActor();
@@ -15,12 +17,20 @@ class InstanceActorController extends Controller
             return json_encode($res, JSON_UNESCAPED_SLASHES);
         });
 
+        if (BlockSyncService::disclosing()) {
+            $actor = json_decode((string) $res, true);
+
+            if (is_array($actor)) {
+                $res = json_encode(BlockSyncService::decorateInstanceActor($actor), JSON_UNESCAPED_SLASHES) ?: $res;
+            }
+        }
+
         return response($res)->header('Content-Type', 'application/activity+json');
     }
 
-    public function inbox() {}
+    public function inbox(): void {}
 
-    public function outbox()
+    public function outbox(): Response
     {
         $res = json_encode([
             '@context' => [

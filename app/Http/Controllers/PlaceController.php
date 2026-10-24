@@ -2,9 +2,10 @@
 
 namespace App\Http\Controllers;
 
-use App\Place;
+use App\Models\Place;
 use App\Services\PlaceService;
 use App\Services\StatusService;
+use Illuminate\Contracts\View\View;
 use Illuminate\Http\Request;
 
 class PlaceController extends Controller
@@ -16,7 +17,7 @@ class PlaceController extends Controller
         $this->middleware('auth');
     }
 
-    public function show(Request $request, int $id, $slug)
+    public function show(Request $request, int $id, $slug): View
     {
         abort_if($id < 1 || $id > 128800, 404);
 
@@ -30,26 +31,32 @@ class PlaceController extends Controller
             return $item && count($item['media_attachments'][0]);
         })->take(108)->values();
 
-        return view('discover.places.show', compact('place', 'posts'));
+        return view('discover.places.show', ['place' => $place, 'posts' => $posts]);
     }
 
-    public function directoryHome(Request $request)
+    public function directoryHome(Request $request): View
     {
         $places = Place::select('country')
             ->distinct('country')
             ->simplePaginate(48);
 
-        return view('discover.places.directory.home', compact('places'));
+        return view('discover.places.directory.home', ['places' => $places]);
     }
 
-    public function directoryCities(Request $request, $country)
+    public function directoryCities(Request $request, $country): View
     {
-        $country = ucfirst(urldecode($country));
-        $places = Place::whereCountry($country)
+        $country = urldecode($country);
+        $operator = db_is_pgsql() ? 'ilike' : '=';
+
+        $places = Place::where('country', $operator, $country)
             ->orderBy('name', 'asc')
             ->distinct('name')
             ->simplePaginate(48);
 
-        return view('discover.places.directory.cities', compact('places'));
+        if ($places->isEmpty()) {
+            abort(404, 'Country not found');
+        }
+
+        return view('discover.places.directory.cities', ['places' => $places]);
     }
 }

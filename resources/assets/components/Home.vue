@@ -41,6 +41,7 @@
 
                                         <div>
                                             <h1 class="h3 font-weight-bold text-light mb-1">Software Update Check Failed</h1>
+                                            <!-- GLITCH MODIFIED: glitch releases URL -->
                                             <p class="mb-1 text-white" style="font-size:18px;line-height: 1.2;">We attempted to check if there is a new version available, however we encountered an error. <a href="https://github.com/pixelfed-glitch/pixelfed/releases" class="text-white font-weight-bold" style="text-decoration: underline;" target="_blank">Click here</a> to view the latest releases.</p>
                                             <p class="mb-0 text-white small">You can set <code class="text-white">INSTANCE_SOFTWARE_UPDATE_DISABLE_FAILED_WARNING=true</code> to remove this warning.</p>
                                             <p class="mb-0 text-white small" style="opacity:.7">Current version: {{ updateInfo?.current ?? 'Unknown' }}</p>

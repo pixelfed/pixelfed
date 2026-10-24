@@ -2,21 +2,22 @@
 
 namespace App\Jobs\FollowPipeline;
 
-use App\Follower;
 use App\Jobs\PushNotificationPipeline\FollowPushNotifyPipeline;
-use App\Notification;
+use App\Models\Follower;
+use App\Models\Profile;
+use App\Models\User;
 use App\Services\AccountService;
 use App\Services\FollowerService;
 use App\Services\NotificationAppGatewayService;
+use App\Services\NotificationService;
 use App\Services\PushNotificationService;
-use App\User;
-use Cache;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
-use Log;
+use Illuminate\Support\Facades\Cache;
+use Illuminate\Support\Facades\Log;
 
 class FollowPipeline implements ShouldQueue
 {
@@ -56,10 +57,6 @@ class FollowPipeline implements ShouldQueue
             return;
         }
 
-        if ($target->domain || ! $target->private_key) {
-            return;
-        }
-
         Cache::forget('profile:following:'.$actor->id);
         Cache::forget('profile:following:'.$target->id);
 
@@ -70,20 +67,14 @@ class FollowPipeline implements ShouldQueue
         $actor->save();
         AccountService::del($actor->id);
 
-        $count = Follower::whereFollowingId($target->id)->count();
-        $target->followers_count = $count;
-        $target->save();
-        AccountService::del($target->id);
-
         if ($target->user_id && $target->domain === null) {
+            $count = Follower::whereFollowingId($target->id)->count();
+            $target->followers_count = $count;
+            $target->save();
+            AccountService::del($target->id);
+
             try {
-                $notification = new Notification;
-                $notification->profile_id = $target->id;
-                $notification->actor_id = $actor->id;
-                $notification->action = 'follow';
-                $notification->item_id = $target->id;
-                $notification->item_type = "App\Profile";
-                $notification->save();
+                NotificationService::createNotification($target->id, $actor->id, 'follow', $target->id, Profile::class);
             } catch (\Exception $e) {
                 Log::error($e);
             }

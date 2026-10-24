@@ -1,9 +1,7 @@
 <?php
 
+use App\Models\StatusHashtag;
 use Illuminate\Database\Migrations\Migration;
-use Illuminate\Database\Schema\Blueprint;
-use Illuminate\Support\Facades\Schema;
-use App\StatusHashtag;
 
 return new class extends Migration
 {

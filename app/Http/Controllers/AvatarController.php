@@ -2,27 +2,30 @@
 
 namespace App\Http\Controllers;
 
-use App\Avatar;
 use App\Jobs\AvatarPipeline\AvatarOptimize;
-use Auth;
-use Cache;
+use App\Models\Avatar;
+use Illuminate\Http\JsonResponse;
+use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Cache;
+use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Str;
 
 class AvatarController extends Controller
 {
     public function __construct()
     {
-        return $this->middleware('auth');
+        $this->middleware('auth');
     }
 
-    public function store(Request $request)
+    public function store(Request $request): RedirectResponse
     {
         $this->validate($request, [
             'avatar' => 'required|mimetypes:image/jpeg,image/jpg,image/png|max:'.config('pixelfed.max_avatar_size'),
         ]);
 
         try {
-            $user = Auth::user();
+            $user = $request->user();
             $profile = $user->profile;
             $file = $request->file('avatar');
             $path = $this->getPath($user, $file);
@@ -32,7 +35,7 @@ class AvatarController extends Controller
             $loc = $request->file('avatar')->storePubliclyAs($public, $name);
 
             $avatar = Avatar::firstOrNew(['profile_id' => $profile->id]);
-            $currentAvatar = $avatar->recentlyCreated ? null : storage_path('app/'.$profile->avatar->media_path);
+            $currentAvatar = $avatar->wasRecentlyCreated ? null : storage_path('app/'.$profile->avatar->media_path);
             $avatar->media_path = "$public/$name";
             $avatar->change_count = ++$avatar->change_count;
             $avatar->last_processed_at = null;
@@ -42,12 +45,20 @@ class AvatarController extends Controller
             Cache::forget('user:account:id:'.$user->id);
             AvatarOptimize::dispatch($user->profile, $currentAvatar);
         } catch (\Exception $e) {
+            Log::error('AvatarController@store failed: '.$e->getMessage(), [
+                'user_id' => $request->user()?->id,
+                'exception' => $e,
+            ]);
+
+            return redirect()->back()->withErrors([
+                'avatar' => 'There was an error updating your avatar. Please try again.',
+            ]);
         }
 
         return redirect()->back()->with('status', 'Avatar updated successfully. It may take a few minutes to update across the site.');
     }
 
-    public function getPath($user, $file)
+    public function getPath($user, $file): array
     {
         $basePath = storage_path('app/public/avatars');
         $this->checkDir($basePath);
@@ -56,52 +67,53 @@ class AvatarController extends Controller
         $path = $this->buildPath($id);
         $dir = storage_path('app/'.$path);
         $this->checkDir($dir);
-        $name = str_random(20).'_avatar.'.$file->guessExtension();
+        $name = Str::random(20).'_avatar.'.$file->guessExtension();
         $res = ['root' => 'storage/app/'.$path, 'name' => $name, 'storage' => $path];
 
         return $res;
     }
 
-    public function checkDir($path)
+    public function checkDir($path): void
     {
         if (! is_dir($path)) {
             mkdir($path);
         }
     }
 
-    public function buildPath($id)
+    public function buildPath($id): string
     {
         $padded = str_pad($id, 19, 0, STR_PAD_LEFT);
         $parts = str_split($padded, 3);
+        $avatarpath = '';
         foreach ($parts as $k => $part) {
-            if ($k == 0) {
+            if ($k === 0) {
                 $prefix = storage_path('app/public/avatars/'.$parts[0]);
                 $this->checkDir($prefix);
             }
-            if ($k == 1) {
+            if ($k === 1) {
                 $prefix = storage_path('app/public/avatars/'.$parts[0].'/'.$parts[1]);
                 $this->checkDir($prefix);
             }
-            if ($k == 2) {
+            if ($k === 2) {
                 $prefix = storage_path('app/public/avatars/'.$parts[0].'/'.$parts[1].'/'.$parts[2]);
                 $this->checkDir($prefix);
             }
-            if ($k == 3) {
+            if ($k === 3) {
                 $avatarpath = 'public/avatars/'.$parts[0].'/'.$parts[1].'/'.$parts[2].'/'.$parts[3];
                 $prefix = storage_path('app/'.$avatarpath);
                 $this->checkDir($prefix);
             }
-            if ($k == 4) {
+            if ($k === 4) {
                 $avatarpath = 'public/avatars/'.$parts[0].'/'.$parts[1].'/'.$parts[2].'/'.$parts[3].'/'.$parts[4];
                 $prefix = storage_path('app/'.$avatarpath);
                 $this->checkDir($prefix);
             }
-            if ($k == 5) {
+            if ($k === 5) {
                 $avatarpath = 'public/avatars/'.$parts[0].'/'.$parts[1].'/'.$parts[2].'/'.$parts[3].'/'.$parts[4].'/'.$parts[5];
                 $prefix = storage_path('app/'.$avatarpath);
                 $this->checkDir($prefix);
             }
-            if ($k == 6) {
+            if ($k === 6) {
                 $avatarpath = 'public/avatars/'.$parts[0].'/'.$parts[1].'/'.$parts[2].'/'.$parts[3].'/'.$parts[4].'/'.$parts[5].'/'.$parts[6];
                 $prefix = storage_path('app/'.$avatarpath);
                 $this->checkDir($prefix);
@@ -111,20 +123,24 @@ class AvatarController extends Controller
         return $avatarpath;
     }
 
-    public function deleteAvatar(Request $request)
+    public function deleteAvatar(Request $request): JsonResponse
     {
-        $user = Auth::user();
+        $user = $request->user();
         $profile = $user->profile;
 
         $avatar = $profile->avatar;
 
-        if ($avatar->media_path == 'public/avatars/default.png' ||
+        if (
+            $avatar->media_path == 'public/avatars/default.png' ||
             $avatar->media_path == 'public/avatars/default.jpg'
         ) {
-            return;
+            return response()->json(200);
         }
 
-        if (is_file(storage_path('app/'.$avatar->media_path))) {
+        $oldPath = $avatar->media_path;
+        $oldFullPath = storage_path('app/'.$oldPath);
+
+        if (is_file($oldFullPath)) {
             @unlink(storage_path('app/'.$avatar->media_path));
         }
 

@@ -6,6 +6,7 @@
   <h3 class="font-weight-bold">{{__('helpcenter.directMessages')}}</h3>
 </div>
 <hr>
+{{-- GLITCH MODIFIED: typo fix --}}
 <p class="lead ">Send and receive direct messages from other profiles.</p>
 <hr>
 <p>
@@ -41,18 +42,19 @@
     </div>
   </div>
 </p>
-{{-- <p>
+{{-- <p> 
   <a class="text-dark font-weight-bold" data-toggle="collapse" href="#collapse2" role="button" aria-expanded="false" aria-controls="collapse2">
     <i class="fas fa-chevron-down mr-2"></i>
+    {{-- GLITCH MODIFIED: typo fix --}}
     How do I manage messages I've received with Pixelfed Direct?
   </a>
   <div class="collapse" id="collapse2">
     <div>
-
+      
     </div>
   </div>
 </p> --}}
-<p>
+<p> 
   <a class="text-dark font-weight-bold" data-toggle="collapse" href="#collapse3" role="button" aria-expanded="false" aria-controls="collapse3">
     <i class="fas fa-chevron-down mr-2"></i>
     How do I unsend a message I've sent using Pixelfed Direct?
@@ -63,7 +65,7 @@
     </div>
   </div>
 </p>
-<p>
+<p> 
   <a class="text-dark font-weight-bold" data-toggle="collapse" href="#collapse4" role="button" aria-expanded="false" aria-controls="collapse4">
     <i class="fas fa-chevron-down mr-2"></i>
     Can I use Pixelfed Direct to send messages to people I’m not following?
@@ -74,9 +76,10 @@
     </div>
   </div>
 </p>
-<p>
+<p> 
   <a class="text-dark font-weight-bold" data-toggle="collapse" href="#collapse5" role="button" aria-expanded="false" aria-controls="collapse5">
     <i class="fas fa-chevron-down mr-2"></i>
+    {{-- GLITCH MODIFIED: typo fix --}}
     How do I report content that I've received in a Pixelfed Direct message?
   </a>
   <div class="collapse" id="collapse5">

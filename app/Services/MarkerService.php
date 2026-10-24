@@ -2,7 +2,7 @@
 
 namespace App\Services;
 
-use Cache;
+use Illuminate\Support\Facades\Cache;
 
 class MarkerService
 {
@@ -13,7 +13,7 @@ class MarkerService
         return Cache::get(self::CACHE_KEY.$timeline.':'.$profileId);
     }
 
-    public static function set($profileId, $timeline = 'home', $entityId = false)
+    public static function set($profileId, $timeline = 'home', $entityId = false): array
     {
         $existing = self::get($profileId, $timeline);
         $key = self::CACHE_KEY.$timeline.':'.$profileId;

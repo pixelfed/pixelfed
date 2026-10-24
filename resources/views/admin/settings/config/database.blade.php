@@ -5,6 +5,7 @@
   <div class="col-sm-9">
     <select class="form-control" disabled>
       <option {{config('database.default') == 'mysql' ? 'selected=""':''}}>MySQL</option>
+      {{-- GLITCH MODIFIED: MariaDB as its own driver --}}
       <option {{config('database.default') == 'mariadb' ? 'selected=""':''}}>MariaDB</option>
       <option {{config('database.default') == 'pgsql' ? 'selected=""':''}}>Postgres</option>
       <option {{config('database.default') == 'sqlite' ? 'selected=""':''}}>SQLite</option>

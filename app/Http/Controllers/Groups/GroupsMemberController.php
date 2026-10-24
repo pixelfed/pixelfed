@@ -13,11 +13,12 @@ use App\Services\FollowerService;
 use App\Services\Groups\GroupAccountService;
 use App\Services\Groups\GroupHashtagService;
 use App\Services\GroupService;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 
 class GroupsMemberController extends Controller
 {
-    public function getGroupMembers(Request $request)
+    public function getGroupMembers(Request $request): JsonResponse
     {
         $this->validate($request, [
             'gid' => 'required',
@@ -100,7 +101,7 @@ class GroupsMemberController extends Controller
         return $request->all();
     }
 
-    public function getGroupMember(Request $request)
+    public function getGroupMember(Request $request): JsonResponse
     {
         $this->validate($request, [
             'gid' => 'required',

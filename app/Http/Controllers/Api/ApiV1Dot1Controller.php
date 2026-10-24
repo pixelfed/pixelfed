@@ -2,9 +2,6 @@
 
 namespace App\Http\Controllers\Api;
 
-use App\AccountLog;
-use App\EmailVerification;
-use App\Follower;
 use App\Http\Controllers\Controller;
 use App\Http\Controllers\StatusController;
 use App\Http\Resources\StatusStateless;
@@ -16,11 +13,22 @@ use App\Jobs\StatusPipeline\StatusDelete;
 use App\Jobs\VideoPipeline\VideoThumbnail;
 use App\Mail\ConfirmAppEmail;
 use App\Mail\PasswordChange;
-use App\Media;
-use App\Place;
-use App\Profile;
-use App\Report;
+use App\Models\AccountLog;
+use App\Models\DmConversationParticipant;
+use App\Models\DmMessage;
+use App\Models\EmailVerification;
+use App\Models\Follower;
+use App\Models\Media;
+use App\Models\Place;
+use App\Models\Profile;
+use App\Models\Report;
+use App\Models\Status;
+use App\Models\StatusArchived;
+use App\Models\Story;
+use App\Models\User;
+use App\Models\UserSetting;
 use App\Rules\ExpoPushTokenRule;
+use App\Rules\ValidUsername;
 use App\Services\AccountService;
 use App\Services\BouncerService;
 use App\Services\EmailService;
@@ -34,28 +42,41 @@ use App\Services\PublicTimelineService;
 use App\Services\PushNotificationService;
 use App\Services\SanitizeService;
 use App\Services\StatusService;
+use App\Services\UserAgentService;
 use App\Services\UserRoleService;
 use App\Services\UserStorageService;
-use App\Status;
-use App\StatusArchived;
-use App\Story;
-use App\User;
-use App\UserSetting;
-use App\Util\Lexer\RestrictedNames;
-use Cache;
-use DB;
+use App\Transformer\Api\AccountTransformer;
+use Illuminate\Http\JsonResponse;
+use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Cache;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\RateLimiter;
+use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Str;
-use Jenssegers\Agent\Agent;
+use Illuminate\Validation\Rule;
+use Laravel\Passport\RefreshToken;
+use Laravel\Passport\Token;
 use League\Fractal;
 use League\Fractal\Serializer\ArraySerializer;
-use Mail;
 
 class ApiV1Dot1Controller extends Controller
 {
     protected $fractal;
+
+    const REPORT_TYPES = [
+        'spam',
+        'sensitive',
+        'abusive',
+        'underage',
+        'violence',
+        'copyright',
+        'impersonation',
+        'scam',
+        'terrorism',
+    ];
 
     public function __construct()
     {
@@ -63,12 +84,12 @@ class ApiV1Dot1Controller extends Controller
         $this->fractal->setSerializer(new ArraySerializer);
     }
 
-    public function json($res, $code = 200, $headers = [])
+    public function json($res, $code = 200, $headers = []): JsonResponse
     {
         return response()->json($res, $code, $headers, JSON_UNESCAPED_SLASHES);
     }
 
-    public function error($msg, $code = 400, $extra = [], $headers = [])
+    public function error($msg, $code = 400, $extra = [], $headers = []): JsonResponse
     {
         $res = [
             'msg' => $msg,
@@ -90,121 +111,131 @@ class ApiV1Dot1Controller extends Controller
             abort_if(BouncerService::checkIp($request->ip()), 404);
         }
 
-        $report_type = $request->input('report_type');
-        $object_id = $request->input('object_id');
-        $object_type = $request->input('object_type');
+        $validator = Validator::make($request->all(), [
+            'report_type' => ['required', 'string', Rule::in(self::REPORT_TYPES)],
+            'object_id' => ['required', 'integer', 'min:1'],
+            'object_type' => ['required', 'string', Rule::in(['post', 'user', 'story', 'direct_message'])],
+            'message' => ['nullable', 'string'],
+        ]);
 
-        $types = [
-            'spam',
-            'sensitive',
-            'abusive',
-            'underage',
-            'violence',
-            'copyright',
-            'impersonation',
-            'scam',
-            'terrorism',
-        ];
-
-        if (! $report_type || ! $object_id || ! $object_type) {
+        if ($validator->fails()) {
             return $this->error('Invalid or missing parameters', 400, ['error_code' => 'ERROR_INVALID_PARAMS']);
         }
 
-        if (! in_array($report_type, $types)) {
-            return $this->error('Invalid report type', 400, ['error_code' => 'ERROR_TYPE_INVALID']);
+        $reportType = $request->input('report_type');
+        $objectId = $request->input('object_id');
+        $objectType = $request->input('object_type');
+
+        $message = $this->sanitizeReportMessage($request->input('message'));
+
+        if ($message === false) {
+            return $this->error('Message is too long', 400, ['error_code' => 'ERROR_MESSAGE_TOO_LONG']);
         }
 
-        if ($object_type === 'user' && $object_id == $user->profile_id) {
+        // Older clients report a direct message as a post, using the id the
+        // thread endpoint gave them
+        if ($objectType === 'post' && ! Status::whereKey($objectId)->exists()) {
+            $objectType = 'direct_message';
+        }
+
+        [$object, $modelClass, $reportedProfileId] = match ($objectType) {
+            'post' => [$post = Status::find($objectId), Status::class, $post?->profile_id],
+            'direct_message' => [$dm = $this->reportableDirectMessage($user->profile_id, $objectId), DmMessage::class, $dm?->profile_id],
+            'user' => [$profile = Profile::find($objectId), Profile::class, $profile?->id],
+            'story' => [$story = Story::whereActive(true)->find($objectId), Story::class, $story?->profile_id],
+            default => [null, null, null],
+        };
+
+        if (! $object) {
+            return $this->error('Invalid object id', 400, ['error_code' => 'ERROR_INVALID_OBJECT_ID']);
+        }
+
+        if ($objectType === 'story') {
+            $follows = Follower::whereProfileId($user->profile_id)
+                ->whereFollowingId($object->profile_id)
+                ->exists();
+
+            if (! $follows) {
+                return $this->error('Invalid object id', 400, ['error_code' => 'ERROR_INVALID_OBJECT_ID']);
+            }
+        }
+
+        if ($reportedProfileId == $user->profile_id) {
             return $this->error('Cannot self report', 400, ['error_code' => 'ERROR_NO_SELF_REPORTS']);
         }
 
-        $rpid = null;
+        $exists = Report::whereUserId($user->id)
+            ->whereObjectId($object->id)
+            ->whereObjectType($modelClass)
+            ->exists();
 
-        switch ($object_type) {
-            case 'post':
-                $object = Status::find($object_id);
-                if (! $object) {
-                    return $this->error('Invalid object id', 400, ['error_code' => 'ERROR_INVALID_OBJECT_ID']);
-                }
-                $object_type = 'App\Status';
-                $exists = Report::whereUserId($user->id)
-                    ->whereObjectId($object->id)
-                    ->whereObjectType('App\Status')
-                    ->count();
-
-                $rpid = $object->profile_id;
-                break;
-
-            case 'user':
-                $object = Profile::find($object_id);
-                if (! $object) {
-                    return $this->error('Invalid object id', 400, ['error_code' => 'ERROR_INVALID_OBJECT_ID']);
-                }
-                $object_type = 'App\Profile';
-                $exists = Report::whereUserId($user->id)
-                    ->whereObjectId($object->id)
-                    ->whereObjectType('App\Profile')
-                    ->count();
-                $rpid = $object->id;
-                break;
-
-            case 'story':
-                $object = Story::whereActive(true)->find($object_id);
-                if (! $object) {
-                    return $this->error('Invalid object id', 400, ['error_code' => 'ERROR_INVALID_OBJECT_ID']);
-                }
-                if ($object->profile_id == $user->profile_id) {
-                    return $this->error('Cannot self report', 400, ['error_code' => 'ERROR_NO_SELF_REPORTS']);
-                }
-                if (! Follower::whereProfileId($user->profile_id)->whereFollowingId($object->profile_id)->exists()) {
-                    return $this->error('Invalid object id', 400, ['error_code' => 'ERROR_INVALID_OBJECT_ID']);
-                }
-                $object_type = 'App\Story';
-                $exists = Report::whereUserId($user->id)
-                    ->whereObjectId($object->id)
-                    ->whereObjectType('App\Story')
-                    ->count();
-
-                $rpid = $object->profile_id;
-                break;
-
-            default:
-                return $this->error('Invalid report type', 400, ['error_code' => 'ERROR_REPORT_OBJECT_TYPE_INVALID']);
-        }
-
-        if ($exists !== 0) {
+        if ($exists) {
             return $this->error('Duplicate report', 400, ['error_code' => 'ERROR_REPORT_DUPLICATE']);
-        }
-
-        if ($object->profile_id == $user->profile_id) {
-            return $this->error('Cannot self report', 400, ['error_code' => 'ERROR_NO_SELF_REPORTS']);
         }
 
         $report = new Report;
         $report->profile_id = $user->profile_id;
         $report->user_id = $user->id;
         $report->object_id = $object->id;
-        $report->object_type = $object_type;
-        $report->reported_profile_id = $rpid;
-        $report->type = $report_type;
+        $report->object_type = $modelClass;
+        $report->reported_profile_id = $reportedProfileId;
+        $report->type = $reportType;
+        $report->message = $message;
         $report->save();
 
         if (config('instance.reports.email.enabled')) {
             ReportNotifyAdminViaEmail::dispatch($report)->onQueue('default');
         }
 
-        $res = [
+        return $this->json([
             'msg' => 'Successfully sent report',
             'code' => 200,
-        ];
+        ]);
+    }
 
-        return $this->json($res);
+    /**
+     * A direct message can only be reported by someone who is in the
+     * conversation it was sent to.
+     */
+    protected function reportableDirectMessage(int $profileId, $messageId): ?DmMessage
+    {
+        $message = DmMessage::find($messageId);
+
+        if (! $message) {
+            return null;
+        }
+
+        $isParticipant = DmConversationParticipant::where('conversation_id', $message->conversation_id)
+            ->where('profile_id', $profileId)
+            ->exists();
+
+        return $isParticipant ? $message : null;
+    }
+
+    protected function sanitizeReportMessage(?string $message): string|false|null
+    {
+        if (! $message) {
+            return null;
+        }
+
+        $clean = preg_replace('/[\x00-\x08\x0B\x0C\x0E-\x1F\x7F\x{200B}-\x{200F}\x{FEFF}]/u', '', $message);
+        $clean = trim(preg_replace('/\s+/u', ' ', $clean));
+
+        if ($clean === '') {
+            return null;
+        }
+
+        if (strlen($clean) > 255) {
+            return false;
+        }
+
+        return $clean;
     }
 
     /**
      * DELETE /api/v1.1/accounts/avatar
      *
-     * @return \App\Transformer\Api\AccountTransformer
+     * @return AccountTransformer
      */
     public function deleteAvatar(Request $request)
     {
@@ -220,7 +251,8 @@ class ApiV1Dot1Controller extends Controller
 
         $avatar = $user->profile->avatar;
 
-        if ($avatar->media_path == 'public/avatars/default.png' ||
+        if (
+            $avatar->media_path == 'public/avatars/default.png' ||
             $avatar->media_path == 'public/avatars/default.jpg'
         ) {
             return AccountService::get($user->profile_id);
@@ -244,8 +276,6 @@ class ApiV1Dot1Controller extends Controller
 
     /**
      * GET /api/v1.1/accounts/{id}/posts
-     *
-     * @return \App\Transformer\Api\StatusTransformer
      */
     public function accountPosts(Request $request, $id)
     {
@@ -285,13 +315,11 @@ class ApiV1Dot1Controller extends Controller
 
     /**
      * POST /api/v1.1/accounts/change-password
-     *
-     * @return \App\Transformer\Api\AccountTransformer
      */
     public function accountChangePassword(Request $request)
     {
         abort_if(! $request->user() || ! $request->user()->token(), 403);
-        abort_unless($request->user()->tokenCan('write'), 403);
+        abort_unless($request->user()->tokenCan('security:write'), 403);
 
         $user = $request->user();
         abort_if($user->status != null, 403);
@@ -303,19 +331,38 @@ class ApiV1Dot1Controller extends Controller
             'current_password' => 'bail|required|current_password',
             'new_password' => 'required|min:'.config('pixelfed.min_password_length', 8),
             'confirm_password' => 'required|same:new_password',
+            'revoke_other_sessions' => 'sometimes|boolean',
         ], [
-            'current_password' => 'The password you entered is incorrect',
+            'current_password.current_password' => 'The password you entered is incorrect',
         ]);
+
+        $revokeOthers = $request->boolean('revoke_other_sessions');
+        $currentId = $request->user()->token()->id;
 
         $user->password = bcrypt($request->input('new_password'));
         $user->save();
 
+        $revoked = 0;
+        if ($revokeOthers) {
+            $ids = $user->tokens()
+                ->whereKeyNot($currentId)
+                ->where('revoked', false)
+                ->pluck('id');
+
+            if ($ids->isNotEmpty()) {
+                $revoked = $user->tokens()->whereIn('id', $ids)->update(['revoked' => true]);
+                RefreshToken::whereIn('access_token_id', $ids)->update(['revoked' => true]);
+            }
+        }
+
         $log = new AccountLog;
         $log->user_id = $user->id;
         $log->item_id = $user->id;
-        $log->item_type = 'App\User';
+        $log->item_type = User::class;
         $log->action = 'account.edit.password';
-        $log->message = 'Password changed';
+        $log->message = $revokeOthers
+            ? "Password changed, {$revoked} other session(s) signed out"
+            : 'Password changed';
         $log->link = null;
         $log->ip_address = $request->ip();
         $log->user_agent = $request->userAgent();
@@ -328,41 +375,58 @@ class ApiV1Dot1Controller extends Controller
 
     /**
      * GET /api/v1.1/accounts/login-activity
-     *
-     * @return array
      */
     public function accountLoginActivity(Request $request)
     {
-        abort_if(! $request->user() || ! $request->user()->token(), 403);
-        abort_unless($request->user()->tokenCan('read'), 403);
-
         $user = $request->user();
-        abort_if($user->status != null, 403);
+
+        abort_if(! $user || ! $user->token(), 403);
+        abort_unless($user->tokenCan('read'), 403);
+        abort_if($user->status !== null, 403);
+
         if (config('pixelfed.bouncer.cloud_ips.ban_signups')) {
             abort_if(BouncerService::checkIp($request->ip()), 404);
         }
-        $agent = new Agent;
-        $currentIp = $request->ip();
 
-        $activity = AccountLog::whereUserId($user->id)
-            ->whereAction('auth.login')
-            ->orderBy('created_at', 'desc')
-            ->groupBy('ip_address')
+        $currentIp = $request->ip();
+        $cutoff = now()->subYear();
+
+        $latestLoginIds = AccountLog::query()
+            ->selectRaw('MAX(id)')
+            ->where('user_id', $user->id)
+            ->where('action', 'auth.login')
+            ->where('created_at', '>=', $cutoff)
+            ->groupBy('ip_address');
+
+        $activity = AccountLog::query()
+            ->select([
+                'id',
+                'action',
+                'ip_address',
+                'user_agent',
+                'created_at',
+            ])
+            ->whereIn('id', $latestLoginIds)
+            ->orderByDesc('created_at')
             ->limit(10)
             ->get()
-            ->map(function ($item) use ($agent, $currentIp) {
+            ->map(function (AccountLog $item) use ($currentIp) {
+                $agent = new UserAgentService;
                 $agent->setUserAgent($item->user_agent);
 
                 return [
                     'id' => $item->id,
                     'action' => $item->action,
                     'ip' => $item->ip_address,
-                    'ip_current' => $item->ip_address === $currentIp,
+                    'ip_current' => hash_equals(
+                        (string) $item->ip_address,
+                        (string) $currentIp
+                    ),
                     'is_mobile' => $agent->isMobile(),
                     'device' => $agent->device(),
                     'browser' => $agent->browser(),
                     'platform' => $agent->platform(),
-                    'created_at' => $item->created_at->format('c'),
+                    'created_at' => $item->created_at->toISOString(),
                 ];
             });
 
@@ -371,13 +435,11 @@ class ApiV1Dot1Controller extends Controller
 
     /**
      * GET /api/v1.1/accounts/two-factor
-     *
-     * @return array
      */
     public function accountTwoFactor(Request $request)
     {
         abort_if(! $request->user() || ! $request->user()->token(), 403);
-        abort_unless($request->user()->tokenCan('read'), 403);
+        abort_unless($request->user()->tokenCan('security:read'), 403);
 
         $user = $request->user();
         abort_if($user->status != null, 403);
@@ -396,13 +458,11 @@ class ApiV1Dot1Controller extends Controller
 
     /**
      * GET /api/v1.1/accounts/emails-from-pixelfed
-     *
-     * @return array
      */
     public function accountEmailsFromPixelfed(Request $request)
     {
         abort_if(! $request->user() || ! $request->user()->token(), 403);
-        abort_unless($request->user()->tokenCan('read'), 403);
+        abort_unless($request->user()->tokenCan('security:read'), 403);
 
         $user = $request->user();
         abort_if($user->status != null, 403);
@@ -473,13 +533,11 @@ class ApiV1Dot1Controller extends Controller
 
     /**
      * GET /api/v1.1/accounts/apps-and-applications
-     *
-     * @return array
      */
     public function accountApps(Request $request)
     {
         abort_if(! $request->user() || ! $request->user()->token(), 403);
-        abort_unless($request->user()->tokenCan('read'), 403);
+        abort_unless($request->user()->tokenCan('security:read'), 403);
 
         $user = $request->user();
         abort_if($user->status != null, 403);
@@ -488,22 +546,108 @@ class ApiV1Dot1Controller extends Controller
             abort_if(BouncerService::checkIp($request->ip()), 404);
         }
 
-        $res = $user->tokens->sortByDesc('created_at')->take(10)->map(function ($token, $key) use ($request) {
-            return [
-                'id' => $token->id,
-                'current_session' => $request->user()->token()->id == $token->id,
-                'name' => $token->client->name,
-                'scopes' => $token->scopes,
-                'revoked' => $token->revoked,
-                'created_at' => str_replace('@', 'at', now()->parse($token->created_at)->format('M j, Y @ g:i:s A')),
-                'expires_at' => str_replace('@', 'at', now()->parse($token->expires_at)->format('M j, Y @ g:i:s A')),
-            ];
-        });
+        $this->validate($request, [
+            'filter' => 'sometimes|in:active,revoked,all',
+            'limit' => 'sometimes|integer|min:1|max:40',
+            'cursor' => 'sometimes|string',
+        ]);
 
-        return $this->json($res);
+        $filter = $request->input('filter', 'all');
+        $limit = (int) $request->input('limit', 10);
+        $legacy = ! $request->has('filter');
+        $accessToken = $request->user()->token();
+        $currentId = $accessToken instanceof Token ? $accessToken->id : null;
+
+        $query = $user->tokens()
+            ->with('client')
+            ->orderByDesc('created_at')
+            ->orderByDesc('id');
+
+        if ($filter === 'active') {
+            $query->where('revoked', false)
+                ->where(function ($q) {
+                    $q->whereNull('expires_at')->orWhere('expires_at', '>', now());
+                });
+        } elseif ($filter === 'revoked') {
+            $query->where(function ($q) {
+                $q->where('revoked', true)->orWhere('expires_at', '<=', now());
+            });
+        }
+
+        $tokens = $query->cursorPaginate($limit)->withQueryString();
+
+        $res = collect($tokens->items())
+            ->map(fn ($token) => $this->appToken($token, $currentId, $legacy))
+            ->values();
+
+        $headers = [];
+        if ($tokens->hasMorePages()) {
+            $headers['Link'] = '<'.$tokens->nextPageUrl().'>; rel="next"';
+        }
+
+        return response()->json($res, 200, $headers, JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE);
     }
 
-    public function inAppRegistrationPreFlightCheck(Request $request)
+    protected function appToken($token, $currentId, $legacy = false): array
+    {
+        $expired = $token->expires_at && $token->expires_at->isPast();
+        $status = $token->revoked ? 'revoked' : ($expired ? 'expired' : 'active');
+        $fmt = fn ($date): string|array|null => $date ? str_replace('@', 'at', $date->format('M j, Y @ g:i:s A')) : null;
+
+        return [
+            'id' => $token->id,
+            'current_session' => $token->id === $currentId,
+            'name' => $token->client?->name ?? 'Unknown app',
+            'scopes' => $token->scopes ?? [],
+            'revoked' => (bool) $token->revoked,
+            'status' => $status,
+            'created_at' => $legacy ? $fmt($token->created_at) : $token->created_at?->toIso8601String(),
+            'expires_at' => $legacy ? $fmt($token->expires_at) : $token->expires_at?->toIso8601String(),
+        ];
+    }
+
+    /**
+     * POST /api/v1.1/accounts/apps-and-applications/{id}/revoke
+     */
+    public function accountAppRevoke(Request $request, $id)
+    {
+        abort_if(! $request->user() || ! $request->user()->token(), 403);
+        abort_unless($request->user()->tokenCan('security:write'), 403);
+
+        $user = $request->user();
+        abort_if($user->status != null, 403);
+
+        if (config('pixelfed.bouncer.cloud_ips.ban_signups')) {
+            abort_if(BouncerService::checkIp($request->ip()), 404);
+        }
+
+        $accessToken = $request->user()->token();
+        $currentId = $accessToken instanceof Token ? $accessToken->id : null;
+
+        $token = $user->tokens()->with('client')->whereKey($id)->first();
+        abort_if(! $token, 404);
+        abort_if($token->id === $currentId, 422, 'You cannot revoke the current session. Sign out instead.');
+
+        if (! $token->revoked) {
+            $token->revoke();
+            RefreshToken::whereAccessTokenId($token->id)->update(['revoked' => true]);
+
+            $log = new AccountLog;
+            $log->user_id = $user->id;
+            $log->item_id = $user->id;
+            $log->item_type = User::class;
+            $log->action = 'account.apps.revoke';
+            $log->message = 'Revoked app access: '.$token->client?->name;
+            $log->link = null;
+            $log->ip_address = $request->ip();
+            $log->user_agent = $request->userAgent();
+            $log->save();
+        }
+
+        return $this->json($this->appToken($token, $currentId));
+    }
+
+    public function inAppRegistrationPreFlightCheck(Request $request): array
     {
         return [
             'open' => (bool) config_cache('pixelfed.open_registration'),
@@ -511,7 +655,7 @@ class ApiV1Dot1Controller extends Controller
         ];
     }
 
-    public function inAppRegistration(Request $request)
+    public function inAppRegistration(Request $request): JsonResponse
     {
         abort_if($request->user(), 404);
         abort_unless((bool) config_cache('pixelfed.open_registration'), 404);
@@ -521,7 +665,7 @@ class ApiV1Dot1Controller extends Controller
             abort_if(BouncerService::checkIp($request->ip()), 404);
         }
 
-        $rl = RateLimiter::attempt('pf:apiv1.1:iar:'.$request->ip(), config('pixelfed.app_registration_rate_limit_attempts', 3), function () {}, config('pixelfed.app_registration_rate_limit_decay', 1800));
+        $rl = RateLimiter::attempt('pf:apiv1.1:iar:'.$request->ip(), (int) config_cache('pixelfed.app_registration_rate_limit_attempts'), function () {}, (int) config_cache('pixelfed.app_registration_rate_limit_decay'));
         abort_if(! $rl, 400, 'Too many requests');
 
         $this->validate($request, [
@@ -543,37 +687,7 @@ class ApiV1Dot1Controller extends Controller
                 'min:2',
                 'max:30',
                 'unique:users',
-                function ($attribute, $value, $fail) {
-                    $dash = substr_count($value, '-');
-                    $underscore = substr_count($value, '_');
-                    $period = substr_count($value, '.');
-
-                    if (ends_with($value, ['.php', '.js', '.css'])) {
-                        return $fail('Username is invalid.');
-                    }
-
-                    if (($dash + $underscore + $period) > 1) {
-                        return $fail('Username is invalid. Can only contain one dash (-), period (.) or underscore (_).');
-                    }
-
-                    if (! ctype_alnum($value[0])) {
-                        return $fail('Username is invalid. Must start with a letter or number.');
-                    }
-
-                    if (! ctype_alnum($value[strlen($value) - 1])) {
-                        return $fail('Username is invalid. Must end with a letter or number.');
-                    }
-
-                    $val = str_replace(['_', '.', '-'], '', $value);
-                    if (! ctype_alnum($val)) {
-                        return $fail('Username is invalid. Username must be alpha-numeric and may contain dashes (-), periods (.) and underscores (_).');
-                    }
-
-                    $restricted = RestrictedNames::get();
-                    if (in_array(strtolower($value), array_map('strtolower', $restricted))) {
-                        return $fail('Username cannot be used.');
-                    }
-                },
+                new ValidUsername,
             ],
             'password' => 'required|string|min:8',
         ]);
@@ -582,7 +696,7 @@ class ApiV1Dot1Controller extends Controller
         $username = $request->input('username');
         $password = $request->input('password');
 
-        if (config('database.default') == 'pgsql') {
+        if (db_is_pgsql()) {
             $username = strtolower($username);
             $email = strtolower($email);
         }
@@ -620,7 +734,7 @@ class ApiV1Dot1Controller extends Controller
         ]);
     }
 
-    public function inAppRegistrationEmailRedirect(Request $request)
+    public function inAppRegistrationEmailRedirect(Request $request): RedirectResponse
     {
         $this->validate($request, [
             'ut' => 'required',
@@ -641,7 +755,7 @@ class ApiV1Dot1Controller extends Controller
         return redirect()->away($url);
     }
 
-    public function inAppRegistrationConfirm(Request $request)
+    public function inAppRegistrationConfirm(Request $request): JsonResponse
     {
         abort_if($request->user(), 404);
         abort_unless((bool) config_cache('pixelfed.open_registration'), 404);
@@ -684,7 +798,7 @@ class ApiV1Dot1Controller extends Controller
         ]);
     }
 
-    public function archive(Request $request, $id)
+    public function archive(Request $request, $id): array
     {
         abort_if(! $request->user() || ! $request->user()->token(), 403);
         abort_unless($request->user()->tokenCan('write'), 403);
@@ -717,7 +831,7 @@ class ApiV1Dot1Controller extends Controller
         return [200];
     }
 
-    public function unarchive(Request $request, $id)
+    public function unarchive(Request $request, $id): array
     {
         abort_if(! $request->user() || ! $request->user()->token(), 403);
         abort_unless($request->user()->tokenCan('write'), 403);
@@ -766,7 +880,7 @@ class ApiV1Dot1Controller extends Controller
         return StatusStateless::collection($statuses);
     }
 
-    public function placesById(Request $request, $id, $slug)
+    public function placesById(Request $request, $id, $slug): array
     {
         abort_if(! $request->user() || ! $request->user()->token(), 403);
         abort_unless($request->user()->tokenCan('read'), 403);
@@ -801,7 +915,8 @@ class ApiV1Dot1Controller extends Controller
                 'lat' => $place->lat,
                 'long' => $place->long,
             ],
-            'posts' => $posts];
+            'posts' => $posts,
+        ];
     }
 
     public function moderatePost(Request $request, $id)
@@ -929,7 +1044,7 @@ class ApiV1Dot1Controller extends Controller
         return $settings->other;
     }
 
-    public function setWebSettings(Request $request)
+    public function setWebSettings(Request $request): array
     {
         abort_if(! $request->user() || ! $request->user()->token(), 403);
         abort_unless($request->user()->tokenCan('write'), 403);
@@ -1031,7 +1146,7 @@ class ApiV1Dot1Controller extends Controller
             $parts = explode('@', $pre);
             $username = $parts[0];
         }
-        $accountId = AccountService::usernameToId($username, true);
+        $accountId = AccountService::usernameToId($username);
         if (! $accountId) {
             return [];
         }
@@ -1193,9 +1308,6 @@ class ApiV1Dot1Controller extends Controller
 
     /**
      * POST /api/v1.1/status/create
-     *
-     *
-     * @return StatusTransformer
      */
     public function statusCreate(Request $request)
     {
@@ -1254,7 +1366,7 @@ class ApiV1Dot1Controller extends Controller
         abort_if($accountSize === -1, 403, 'Invalid request.');
         $updatedAccountSize = (int) $accountSize + (int) $sizeInKbs;
 
-        if ((bool) config_cache('pixelfed.enforce_account_limit') == true) {
+        if ((bool) config_cache('pixelfed.enforce_account_limit') === true) {
             $limit = (int) config_cache('pixelfed.max_account_size');
             if ($updatedAccountSize >= $limit) {
                 abort(403, 'Account size limit reached.');
@@ -1262,13 +1374,19 @@ class ApiV1Dot1Controller extends Controller
         }
 
         $mimes = explode(',', config_cache('pixelfed.media_types'));
-        if (in_array($photo->getMimeType(), $mimes) == false) {
+        if (in_array($photo->getMimeType(), $mimes) === false) {
             abort(403, 'Invalid or unsupported mime type.');
         }
 
+        if ($user->last_active_at == null) {
+            return [];
+        }
+
+        $hash = \hash_file('sha256', $photo->getRealPath());
+        abort_if(MediaBlocklistService::exists($hash) == true, 451);
+
         $storagePath = MediaPathService::get($user, 2);
         $path = $photo->storePublicly($storagePath);
-        $hash = \hash_file('sha256', $photo);
         $license = null;
         $mime = $photo->getMimeType();
 
@@ -1282,17 +1400,11 @@ class ApiV1Dot1Controller extends Controller
             }
         }
 
-        abort_if(MediaBlocklistService::exists($hash) == true, 451);
-
         $visibility = $profile->is_private ? 'private' : (
             $profile->unlisted == true &&
             $request->input('visibility', 'public') == 'public' ?
             'unlisted' :
             $request->input('visibility', 'public'));
-
-        if ($user->last_active_at == null) {
-            return [];
-        }
         $defaultCaption = '';
         $cleanedStatus = app(SanitizeService::class)->html($request->input('status', ''));
         $content = $request->filled('status') ? strip_tags($cleanedStatus) : $defaultCaption;
@@ -1346,9 +1458,7 @@ class ApiV1Dot1Controller extends Controller
                 break;
         }
 
-        $user->storage_used = (int) $updatedAccountSize;
-        $user->storage_used_updated_at = now();
-        $user->save();
+        UserStorageService::increaseStorageUsed($user->id, $fileSize);
 
         NewStatusPipeline::dispatch($status);
 
@@ -1368,7 +1478,7 @@ class ApiV1Dot1Controller extends Controller
         return $this->json($res);
     }
 
-    public function nagState(Request $request)
+    public function nagState(Request $request): array
     {
         abort_unless((bool) config_cache('pixelfed.oauth_enabled'), 404);
 

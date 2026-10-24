@@ -81,11 +81,11 @@
                         </td>
                         @endif
                         <td class="align-middle">
-                            {{ str_limit($record->reason_to_join, 100) }}
+                            {{ Str::limit($record->reason_to_join, 100) }}
                         </td>
                         <td class="align-middle">
                             <p class="mb-0">
-                                {{ str_limit(\Illuminate\Support\Str::mask($record->email, '*', 5, 10), 10) }}
+                                {{ Str::limit(\Illuminate\Support\Str::mask($record->email, '*', 5, 10), 10) }}
                             </p>
                         </td>
                         <td class="align-middle">{{ $record->created_at->diffForHumans() }}</td>
@@ -302,7 +302,7 @@
         } else if(type === 'approve-all') {
             return axios.post(`/i/admin/api/curated-onboarding/show/${id}/approve`)
         } else if(type === 'request-info') {
-            axios.post(`/i/admin/api/curated-onboarding/show/${id}/message/send`, {
+            return axios.post(`/i/admin/api/curated-onboarding/show/${id}/message/send`, {
                 message: msg
             })
         }

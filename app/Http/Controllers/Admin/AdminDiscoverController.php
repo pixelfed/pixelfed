@@ -2,11 +2,12 @@
 
 namespace App\Http\Controllers\Admin;
 
-use App\DiscoverCategory;
-use App\DiscoverCategoryHashtag;
-use App\Hashtag;
-use App\Media;
+use App\Models\DiscoverCategory;
+use App\Models\DiscoverCategoryHashtag;
+use App\Models\Hashtag;
+use App\Models\Media;
 use Illuminate\Http\Request;
+use Illuminate\Support\Str;
 
 trait AdminDiscoverController
 {
@@ -14,7 +15,7 @@ trait AdminDiscoverController
     {
         $categories = DiscoverCategory::orderByDesc('id')->paginate(10);
 
-        return view('admin.discover.home', compact('categories'));
+        return view('admin.discover.home', ['categories' => $categories]);
     }
 
     public function discoverCreateCategory()
@@ -31,7 +32,7 @@ trait AdminDiscoverController
         ]);
 
         $name = $request->input('name');
-        $slug = str_slug($name);
+        $slug = Str::slug($name);
         $active = $request->input('active');
         $media = (int) $request->input('media');
 
@@ -50,7 +51,7 @@ trait AdminDiscoverController
     {
         $category = DiscoverCategory::findOrFail($id);
 
-        return view('admin.discover.show', compact('category'));
+        return view('admin.discover.show', ['category' => $category]);
     }
 
     public function discoverCategoryUpdate(Request $request, $id)
@@ -62,7 +63,7 @@ trait AdminDiscoverController
             'hashtags' => 'nullable|string',
         ]);
         $name = $request->input('name');
-        $slug = str_slug($name);
+        $slug = Str::slug($name);
         $active = $request->input('active');
         $media = (int) $request->input('media');
         $media = Media::findOrFail($media);

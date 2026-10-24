@@ -2,7 +2,7 @@
 
 namespace App\Transformer\ActivityPub;
 
-use App\Profile;
+use App\Models\Profile;
 use App\Transformer\ActivityPub\Verb\CreateNote;
 use League\Fractal;
 
@@ -10,7 +10,7 @@ class ProfileOutbox extends Fractal\TransformerAbstract
 {
     protected $defaultIncludes = ['orderedItems'];
 
-    public function transform(Profile $profile)
+    public function transform(Profile $profile): array
     {
         $count = $profile->statuses()->whereHas('media')->count();
 

@@ -4,13 +4,14 @@ namespace App\Http\Resources\MastoApi\Admin;
 
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
+use Illuminate\Support\Carbon;
 
 /**
  * @property int $id
  * @property string $domain
  * @property bool $banned
  * @property bool $unlisted
- * @property \Illuminate\Support\Carbon $updated_at
+ * @property Carbon $updated_at
  * @property array|null $notes
  * @property string|null $limit_reason
  */
@@ -43,7 +44,7 @@ class DomainBlockResource extends JsonResource
             // We don't have data for these fields
             'reject_media' => false,
             'reject_reports' => false,
-            'private_comment' => $this->notes ? implode('; ', $this->notes) : null,
+            'private_comment' => $this->notes ? (is_array($this->notes) ? implode('; ', $this->notes) : (string) $this->notes) : null,
             'public_comment' => $this->limit_reason,
             'obfuscate' => false,
         ];

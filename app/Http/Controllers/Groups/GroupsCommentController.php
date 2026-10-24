@@ -18,13 +18,15 @@ use App\Services\Groups\GroupPostService;
 use App\Services\Groups\GroupsLikeService;
 use App\Services\GroupService;
 use App\Util\Lexer\Autolink;
+use Illuminate\Http\JsonResponse;
+use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Cache;
 use Purify;
 
 class GroupsCommentController extends Controller
 {
-    public function getComments(Request $request)
+    public function getComments(Request $request): array
     {
         $this->validate($request, [
             'gid' => 'required',
@@ -33,7 +35,7 @@ class GroupsCommentController extends Controller
             'limit' => 'nullable|integer|min:3|max:10',
         ]);
 
-        $pid = optional($request->user())->profile_id;
+        $pid = $request->user()?->profile_id;
         $gid = $request->input('gid');
         $sid = $request->input('sid');
         $cid = $request->has('cid') && $request->filled('cid') ? $request->input('cid') : false;
@@ -194,6 +196,8 @@ class GroupsCommentController extends Controller
         ImageResizePipeline::dispatchSync($media);
         ImageS3UploadPipeline::dispatchSync($media);
 
+        NewCommentPipeline::dispatch($parent, $status)->onQueue('groups');
+
         // $gp = new GroupPost;
         // $gp->group_id = $group->id;
         // $gp->profile_id = $pid;
@@ -233,7 +237,7 @@ class GroupsCommentController extends Controller
         return $s;
     }
 
-    public function deleteComment(Request $request)
+    public function deleteComment(Request $request): JsonResponse|RedirectResponse
     {
         abort_if(! $request->user(), 403);
 
@@ -269,12 +273,12 @@ class GroupsCommentController extends Controller
 
         if ($request->wantsJson()) {
             return response()->json(['Status successfully deleted.']);
-        } else {
-            return redirect('/groups/feed');
         }
+
+        return redirect('/groups/feed');
     }
 
-    public function likePost(Request $request)
+    public function likePost(Request $request): array
     {
         $this->validate($request, [
             'gid' => 'required',
@@ -324,7 +328,7 @@ class GroupsCommentController extends Controller
         return $response;
     }
 
-    public function unlikePost(Request $request)
+    public function unlikePost(Request $request): array
     {
         $this->validate($request, [
             'gid' => 'required',

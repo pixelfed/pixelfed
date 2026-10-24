@@ -5,7 +5,7 @@
     "license": "AGPL-3.0-only",
     "type": "project",
     "require": {
-        "php": "^8.3|^8.4",
+        "php": "^8.4|^8.5",
         "ext-bcmath": "*",
         "ext-ctype": "*",
         "ext-curl": "*",
@@ -13,58 +13,57 @@
         "ext-json": "*",
         "ext-mbstring": "*",
         "ext-openssl": "*",
+        "ext-redis": "*",
         "bacon/bacon-qr-code": "^3.0",
-        "brick/math": "^0.14",
-        "buzz/laravel-h-captcha": "^1.0.4",
-        "endroid/qr-code": "^6.0",
-        "guzzlehttp/guzzle": "^7.10",
-        "intervention/image-laravel": "^1.5",
-        "intervention/image-driver-vips": "^1.0",
-        "jenssegers/agent": "^2.6",
+        "brick/math": "^1.0",
+        "guzzlehttp/guzzle": "^8.0",
+        "intervention/image-driver-vips": "^4.1",
+        "intervention/image-laravel": "^4.1",
         "laravel-notification-channels/expo": "^2.0.0",
-        "laravel-notification-channels/webpush": "^10.2",
-        "laravel/framework": "^12.0",
-        "laravel/helpers": "^1.1",
+        "laravel-notification-channels/webpush": "^13.0",
+        "laravel/framework": "^13.0",
         "laravel/horizon": "^5.0",
-        "laravel/passport": "^12.0",
-        "laravel/pulse": "^1.3",
-        "laravel/tinker": "^2.9",
+        "laravel/passport": "^13.4.4",
+        "laravel/pulse": "^1.8",
+        "laravel/sanctum": "^4.3",
+        "laravel/tinker": "^3.0",
         "laravel/ui": "^4.2",
         "league/flysystem-aws-s3-v3": "^3.0",
         "league/iso3166": "^2.1|^4.0",
         "league/oauth2-client": "^2.8",
         "league/uri": "^7.4",
-        "nesbot/carbon": "^3.10",
+        "matomo/device-detector": "^6.5",
         "pbmedia/laravel-ffmpeg": "^8.0",
-        "phpseclib/phpseclib": "~3.0",
+        "phpseclib/phpseclib": "^4.0",
         "pixelfed/fractal": "^0.18.0",
         "pixelfed/laravel-snowflake": "^2.0",
         "pragmarx/google2fa": "^9.0",
         "predis/predis": "^3.2",
         "pusher/pusher-php-server": "^7.2",
-        "resend/resend-php": "^0.13.0",
-        "spatie/laravel-backup": "^9.2.9",
+        "resend/resend-php": "^1.14",
+        "spatie/laravel-backup": "^10.0",
+        "spatie/laravel-honeypot": "^4.7",
         "spatie/laravel-image-optimizer": "^1.8.2",
         "stevebauman/purify": "^6.2.0",
-        "symfony/http-client": "^7.3",
-        "symfony/http-foundation": "7.3.7",
-        "symfony/mailgun-mailer": "^7.3"
+        "symfony/http-client": "^8.0",
+        "symfony/http-foundation": "^8.0.0",
+        "symfony/mailgun-mailer": "^8.0"
     },
     "require-dev": {
+        "barryvdh/laravel-ide-helper": "^3.7",
         "fakerphp/faker": "^1.23",
+        "larastan/larastan": "^3.0",
         "laravel/pint": "^1.13",
         "laravel/telescope": "^5.5",
         "mockery/mockery": "^1.6",
         "nunomaduro/collision": "^8.8",
-        "pestphp/pest": "^4.0"
+        "pestphp/pest": "^5.0"
     },
     "autoload": {
-        "classmap": [
-            "database/seeds",
-            "database/factories"
-        ],
         "psr-4": {
-            "App\\": "app/"
+            "App\\": "app/",
+            "Database\\Factories\\": "database/factories/",
+            "Database\\Seeders\\": "database/seeders/"
         },
         "files": [
             "app/helpers.php"
@@ -92,13 +91,35 @@
         "post-create-project-cmd": [
             "@php artisan key:generate --ansi"
         ],
+        "post-install-cmd": [
+            "@php artisan app:composer-post-install-command"
+        ],
         "post-update-cmd": [
-            "@php artisan vendor:publish --tag=laravel-assets --ansi --force"
+            "@php artisan vendor:publish --tag=laravel-assets --ansi --force",
+            "@php artisan app:composer-post-install-command"
         ],
         "post-autoload-dump": [
             "Illuminate\\Foundation\\ComposerScripts::postAutoloadDump",
             "@php artisan package:discover --ansi"
+        ],
+        "analyse": "./vendor/bin/phpstan analyse --memory-limit=512M",
+        "test": [
+            "docker compose -f docker-compose.test.yml up -d --wait",
+            "./vendor/bin/pest --compact",
+            "docker compose -f docker-compose.test.yml down"
+        ],
+        "test:filter": "./vendor/bin/pest --compact --filter",
+        "test:quick": "./vendor/bin/pest --compact",
+        "lint": "./vendor/bin/pint",
+        "lint:test": "./vendor/bin/pint --test",
+        "translate": [
+            "@php artisan i18n:export"
+        ],
+        "build": [
+            "npm ci",
+            "npm run production"
         ]
+
     },
     "config": {
         "preferred-install": "dist",

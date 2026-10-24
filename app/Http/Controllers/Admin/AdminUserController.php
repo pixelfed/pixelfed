@@ -4,13 +4,13 @@ namespace App\Http\Controllers\Admin;
 
 use App\Jobs\DeletePipeline\DeleteAccountPipeline;
 use App\Mail\AdminMessage;
-use App\ModLog;
-use App\Profile;
+use App\Models\ModLog;
+use App\Models\Profile;
+use App\Models\User;
 use App\Services\AccountService;
 use App\Services\ModLogService;
-use App\User;
-use Cache;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Mail;
 
 trait AdminUserController
@@ -71,7 +71,7 @@ trait AdminUserController
                 return $u;
             });
 
-        return view('admin.users.home', compact('users', 'pagination', 'search', 'col', 'dir', 'limit', 'trashed'));
+        return view('admin.users.home', ['users' => $users, 'pagination' => $pagination, 'search' => $search, 'col' => $col, 'dir' => $dir, 'limit' => $limit, 'trashed' => $trashed]);
     }
 
     public function userShow(Request $request, $id)
@@ -79,7 +79,7 @@ trait AdminUserController
         $user = User::findOrFail($id);
         $profile = $user->profile;
 
-        return view('admin.users.show', compact('user', 'profile'));
+        return view('admin.users.show', ['user' => $user, 'profile' => $profile]);
     }
 
     public function userEdit(Request $request, $id)
@@ -87,11 +87,15 @@ trait AdminUserController
         $user = User::findOrFail($id);
         $profile = $user->profile;
 
-        return view('admin.users.edit', compact('user', 'profile'));
+        return view('admin.users.edit', ['user' => $user, 'profile' => $profile]);
     }
 
     public function userEditSubmit(Request $request, $id)
     {
+        $this->validate($request, [
+            'website' => 'nullable|url|max:120',
+        ]);
+
         $user = User::findOrFail($id);
         $profile = $user->profile;
         $changed = false;
@@ -126,7 +130,7 @@ trait AdminUserController
             $changed = true;
         }
 
-        if ($changed == true) {
+        if ($changed === true) {
             ModLogService::boot()
                 ->objectUid($user->id)
                 ->objectId($user->id)
@@ -151,7 +155,7 @@ trait AdminUserController
         $profile = $user->profile;
         $logs = $user->accountLog()->orderByDesc('created_at')->paginate(10);
 
-        return view('admin.users.activity', compact('user', 'profile', 'logs'));
+        return view('admin.users.activity', ['user' => $user, 'profile' => $profile, 'logs' => $logs]);
     }
 
     public function userMessage(Request $request, $id)
@@ -159,7 +163,7 @@ trait AdminUserController
         $user = User::findOrFail($id);
         $profile = $user->profile;
 
-        return view('admin.users.message', compact('user', 'profile'));
+        return view('admin.users.message', ['user' => $user, 'profile' => $profile]);
     }
 
     public function userMessageSend(Request $request, $id)
@@ -191,7 +195,7 @@ trait AdminUserController
         $user = User::findOrFail($id);
         $profile = $user->profile;
 
-        return view('admin.users.modtools', compact('user', 'profile'));
+        return view('admin.users.modtools', ['user' => $user, 'profile' => $profile]);
     }
 
     public function userModLogs(Request $request, $id)
@@ -202,7 +206,7 @@ trait AdminUserController
             ->orderByDesc('created_at')
             ->simplePaginate(10);
 
-        return view('admin.users.modlogs', compact('user', 'profile', 'logs'));
+        return view('admin.users.modlogs', ['user' => $user, 'profile' => $profile, 'logs' => $logs]);
     }
 
     public function userModLogsMessage(Request $request, $id)
@@ -230,7 +234,7 @@ trait AdminUserController
         $user = User::findOrFail($id);
         $profile = $user->profile;
 
-        return view('admin.users.delete', compact('user', 'profile'));
+        return view('admin.users.delete', ['user' => $user, 'profile' => $profile]);
     }
 
     public function userDeleteProcess(Request $request, $id)
@@ -289,6 +293,7 @@ trait AdminUserController
             abort_if($profile->user_id < $mid, 403);
         }
 
+        $msg = 'Success!';
         switch ($action) {
             case 'cw':
                 $profile->cw = ! $profile->cw;

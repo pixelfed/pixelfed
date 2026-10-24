@@ -2,8 +2,8 @@
 
 namespace App\Services;
 
-use App\Story;
-use App\StoryView;
+use App\Models\Story;
+use App\Models\StoryView;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Redis;
 use Illuminate\Support\Facades\Storage;
@@ -35,9 +35,7 @@ class StoryService
 
     public static function getById($id)
     {
-        return Cache::remember(self::STORY_KEY.'by-id:id-'.$id, 3600, function () use ($id) {
-            return Story::find($id);
-        });
+        return Story::find($id);
     }
 
     public static function delById($id)
@@ -47,24 +45,51 @@ class StoryService
 
     public static function getStories($id, $pid = null)
     {
-        return Story::whereProfileId($id)
+        $stories = Story::whereProfileId($id)
+            ->where('active', true)
+            ->where('expires_at', '>', now())
             ->latest()
-            ->get()
-            ->map(function ($s) use ($pid) {
+            ->get();
+
+        if ($stories->isEmpty()) {
+            return [];
+        }
+
+        $seen = $pid
+            ? self::seenLookup((int) $pid, (int) $id, $stories->pluck('id')->all())
+            : [];
+
+        return $stories
+            ->map(function ($s) use ($seen) {
                 return [
                     'id' => (string) $s->id,
                     'type' => $s->type,
-                    'duration' => 10,
-                    'seen' => in_array($pid, self::views($s->id)),
+                    // GLITCH MODIFIED: use the story's own duration (upstream hardcodes 10)
+                    'duration' => $s->duration ?? 10,
+                    'seen' => isset($seen[$s->id]),
                     'created_at' => $s->created_at->toAtomString(),
                     'expires_at' => $s->expires_at->toAtomString(),
                     'media' => url(Storage::url($s->path)),
                     'can_reply' => (bool) $s->can_reply,
                     'can_react' => (bool) $s->can_react,
-                    'poll' => $s->type == 'poll' ? PollService::storyPoll($s->id) : null,
+                    'poll' => null,
                 ];
             })
             ->toArray();
+    }
+
+    private static function seenLookup(int $viewerId, int $authorId, array $storyIds): array
+    {
+        $seen = app(StoryIndexService::class)->seenStoryIds($viewerId, $authorId);
+
+        if (empty($seen)) {
+            $seen = StoryView::whereProfileId($viewerId)
+                ->whereIn('story_id', $storyIds)
+                ->pluck('story_id')
+                ->all();
+        }
+
+        return array_flip($seen);
     }
 
     public static function views($id)
@@ -76,6 +101,10 @@ class StoryService
 
     public static function hasSeen($pid, $sid)
     {
+        if (app(StoryIndexService::class)->hasSeen((int) $pid, (int) $sid)) {
+            return true;
+        }
+
         $key = self::STORY_KEY.'seen:'.$pid.':'.$sid;
 
         return Cache::remember($key, 3600, function () use ($pid, $sid) {
@@ -87,17 +116,26 @@ class StoryService
 
     public static function latest($pid)
     {
+        $id = app(StoryIndexService::class)->latestStoryId((int) $pid);
+        if ($id) {
+            return $id;
+        }
+
         return Cache::remember(self::STORY_KEY.'latest:pid-'.$pid, 3600, function () use ($pid) {
-            return Story::whereProfileId($pid)
+            $story = Story::whereProfileId($pid)
+                ->where('active', true)
+                ->where('expires_at', '>', now())
                 ->latest()
-                ->first()
-                ->id;
+                ->first();
+
+            return $story ? $story->id : null;
         });
     }
 
     public static function delLatest($pid)
     {
         Cache::forget(self::STORY_KEY.'latest:pid-'.$pid);
+        AccountService::del($pid);
 
         return Cache::forget('pf:stories:recent-self:'.$pid);
     }
@@ -126,7 +164,7 @@ class StoryService
                     'sum' => (int) Story::sum('size'),
                     'average' => (int) Story::avg('size'),
                 ],
-                'avg_spu' => $total ? (int) ($total / Story::groupBy('profile_id')->pluck('profile_id')->count()) : 'N/A',
+                'avg_spu' => $total ? (int) ($total / Story::distinct()->count('profile_id')) : 'N/A',
                 'avg_duration' => (int) floor(Story::avg('duration')),
                 'avg_type' => $total ? Story::selectRaw('type, count(id) as count')->groupBy('type')->orderByDesc('count')->first()->type : 'N/A',
             ];
@@ -150,20 +188,22 @@ class StoryService
         return Redis::srem('pf:stories:rotate-queue', $id);
     }
 
-    public static function reactIncrement($storyId, $profileId)
+    public static function reactIncrement($storyId, $profileId): int
     {
         $key = 'pf:stories:react-counter:storyid-'.$storyId.':profileid-'.$profileId;
-        if (Redis::get($key) == null) {
-            Redis::setex($key, 86400, 1);
-        } else {
-            return Redis::incr($key);
+
+        $count = (int) Redis::incr($key);
+        if ($count === 1) {
+            Redis::expire($key, 86400);
         }
+
+        return $count;
     }
 
-    public static function reactCounter($storyId, $profileId)
+    public static function reactCounter($storyId, $profileId): int
     {
         $key = 'pf:stories:react-counter:storyid-'.$storyId.':profileid-'.$profileId;
 
-        return (int) Redis::get($key) ?? 0;
+        return (int) (Redis::get($key) ?? 0);
     }
 }

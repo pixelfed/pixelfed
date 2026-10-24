@@ -3,9 +3,10 @@
 namespace App\Services;
 
 use App\Models\ImportPost;
-use Cache;
-use DB;
+use Carbon\Carbon;
 use Illuminate\Database\QueryException;
+use Illuminate\Support\Facades\Cache;
+use Illuminate\Support\Facades\DB;
 
 class ImportService
 {
@@ -73,7 +74,7 @@ class ImportService
                 }
                 throw $e;
             } catch (\Exception $e) {
-                if (strpos($e->getMessage(), 'Could not find valid next date') !== false) {
+                if (str_contains($e->getMessage(), 'Could not find valid next date')) {
                     return null;
                 }
                 throw $e;
@@ -168,7 +169,7 @@ class ImportService
 
                 throw $e;
             } catch (\Exception $e) {
-                if (strpos($e->getMessage(), 'Could not find valid next date') !== false) {
+                if (str_contains($e->getMessage(), 'Could not find valid next date')) {
                     return null;
                 }
                 throw $e;
@@ -237,7 +238,7 @@ class ImportService
         }, 3);
     }
 
-    public static function getPostCount($profileId, $refresh = false)
+    public static function getPostCount($profileId, $refresh = false): int
     {
         $key = self::CACHE_KEY.'totalPostCountByProfileId:'.$profileId;
         if ($refresh) {
@@ -249,7 +250,7 @@ class ImportService
         }));
     }
 
-    public static function getAttempts($profileId)
+    public static function getAttempts($profileId): int
     {
         $key = self::CACHE_KEY.'attemptsByProfileId:'.$profileId;
 
@@ -282,7 +283,7 @@ class ImportService
             return ImportPost::whereProfileId($profileId)
                 ->get()
                 ->filter(function ($ip) {
-                    return StatusService::get($ip->status_id) == null;
+                    return StatusService::get($ip->status_id) != null;
                 })
                 ->map(function ($ip) {
                     return collect($ip->media)->map(function ($m) {
@@ -303,7 +304,7 @@ class ImportService
     {
         try {
             $fullYear = $year < 50 ? 2000 + $year : 1900 + $year;
-            $date = \Carbon\Carbon::createFromDate($fullYear, $month, $day);
+            $date = Carbon::createFromDate($fullYear, $month, $day);
             $nextDay = $date->addDay();
 
             $nextYear2Digit = (int) $nextDay->format('y');
@@ -313,7 +314,7 @@ class ImportService
                 $nextDay->month,
                 $nextDay->day,
             ];
-        } catch (\Exception $e) {
+        } catch (\Exception) {
             return [null, null, null];
         }
     }

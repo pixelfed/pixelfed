@@ -2,9 +2,9 @@
 
 namespace App\Jobs\AutospamPipeline;
 
-use App\AccountInterstitial;
+use App\Models\AccountInterstitial;
+use App\Models\Status;
 use App\Services\AutospamService;
-use App\Status;
 use App\Util\Lexer\Classifier;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
@@ -34,7 +34,7 @@ class AutospamPretrainPipeline implements ShouldQueue
     {
         $classifier = $this->classifier;
 
-        $aiCount = AccountInterstitial::whereItemType('App\Status')
+        $aiCount = AccountInterstitial::whereItemType(Status::class)
             ->whereIsSpam(true)
             ->count();
 
@@ -42,7 +42,7 @@ class AutospamPretrainPipeline implements ShouldQueue
             return;
         }
 
-        AccountInterstitial::whereItemType('App\Status')
+        AccountInterstitial::whereItemType(Status::class)
             ->whereIsSpam(true)
             ->inRandomOrder()
             ->take(config('autospam.nlp.spam_sample_limit'))
@@ -55,7 +55,18 @@ class AutospamPretrainPipeline implements ShouldQueue
                 $classifier->learn($status->caption, 'spam');
             });
 
-        Storage::put(AutospamService::MODEL_SPAM_PATH, $classifier->export());
+        $export = $classifier->export();
+
+        // If every sampled status was deleted or had a null caption the model
+        // learned nothing, and an empty model makes Classifier::most() return
+        // null (crashing AutospamService::check() on every new post). Skip
+        // saving so the previous, valid model stays in place.
+        $decoded = json_decode($export, true);
+        if (empty($decoded['documents']['spam'])) {
+            return;
+        }
+
+        Storage::put(AutospamService::MODEL_SPAM_PATH, $export);
 
         AutospamUpdateCachedDataPipeline::dispatch()->delay(5);
     }

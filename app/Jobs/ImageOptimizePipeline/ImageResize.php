@@ -2,15 +2,15 @@
 
 namespace App\Jobs\ImageOptimizePipeline;
 
-use App\Media;
+use App\Models\Media;
 use App\Util\Media\Image;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
-use Log;
-use Storage;
+use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Storage;
 
 class ImageResize implements ShouldQueue
 {
@@ -62,14 +62,28 @@ class ImageResize implements ShouldQueue
 
         if ($localFs) {
             $path = storage_path('app/'.$media->media_path);
-            if (! is_file($path) || $media->skip_optimize) {
+            if (! is_file($path)) {
+                // Source is gone, so mark the row to stop the hourly catch-up
+                // from re-queueing it forever instead of silently returning.
+                Log::error("ImageResize: media {$media->id} source file missing at {$media->media_path}, cannot process");
+                $media->skip_optimize = true;
+                $media->save();
+
                 return;
             }
         } else {
             $disk = Storage::disk(config('filesystems.default'));
-            if (! $disk->exists($media->media_path) || $media->skip_optimize) {
+            if (! $disk->exists($media->media_path)) {
+                Log::error("ImageResize: media {$media->id} source file missing at {$media->media_path}, cannot process");
+                $media->skip_optimize = true;
+                $media->save();
+
                 return;
             }
+        }
+
+        if ($media->skip_optimize) {
+            return;
         }
 
         if ((bool) config_cache('pixelfed.optimize_image') === false) {
@@ -81,10 +95,8 @@ class ImageResize implements ShouldQueue
         try {
             $img = new Image;
             $img->resizeImage($media);
-        } catch (\Exception $e) {
-            if (config('app.dev_log')) {
-                Log::error('Image resize failed: '.$e->getMessage());
-            }
+        } catch (\Throwable $e) {
+            Log::error("ImageResize: media {$media->id} was not resized [".$e::class.']: '.$e->getMessage());
         }
 
         ImageThumbnail::dispatch($media)->onQueue('mmo');

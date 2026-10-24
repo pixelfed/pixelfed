@@ -1,0 +1,163 @@
+<?php
+
+namespace App\Util\ActivityPub\Inbox;
+
+use App\Models\Notification;
+use App\Models\Profile;
+use App\Services\AccountService;
+use App\Services\UserFilterService;
+use App\Util\ActivityPub\Helpers;
+use App\Util\ActivityPub\HttpSignature;
+use Illuminate\Support\Facades\Cache;
+
+trait InboxHelpers
+{
+    /**
+     * Validate an actor URL and fetch/create the corresponding Profile.
+     * Returns null if the URL is invalid or the profile cannot be resolved.
+     */
+    public function validateAndFetchActor(string $actorUrl): ?Profile
+    {
+        if (! Helpers::validateUrl($actorUrl)) {
+            return null;
+        }
+
+        return Helpers::profileFetch($actorUrl);
+    }
+
+    /**
+     * The known profile that owns the key this request was signed with.
+     * The inbox validators already verified the signature against that key.
+     */
+    public function signingProfile(): ?Profile
+    {
+        $signature = $this->headers['signature'] ?? null;
+
+        if (is_array($signature)) {
+            $signature = $signature[0] ?? null;
+        }
+
+        if (! is_string($signature) || $signature === '') {
+            return null;
+        }
+
+        $data = HttpSignature::parseSignatureHeader($signature);
+
+        if (isset($data['error']) || empty($data['keyId'])) {
+            return null;
+        }
+
+        $keyId = Helpers::validateUrl($data['keyId']);
+
+        if (! $keyId) {
+            return null;
+        }
+
+        return Profile::whereKeyId($keyId)->first();
+    }
+
+    /**
+     * Check if a profile has blocked the given domain.
+     */
+    public function isDomainBlocked(int $profileId, ?string $domain): bool
+    {
+        if (! $domain) {
+            return false;
+        }
+
+        return AccountService::blocksDomain($profileId, $domain) === true;
+    }
+
+    /**
+     * Check if a profile has blocked a specific actor via user filters.
+     */
+    public function isUserBlocked(int $profileId, int $actorId): bool
+    {
+        $blocks = UserFilterService::blocks($profileId);
+
+        return $blocks && in_array($actorId, $blocks);
+    }
+
+    /**
+     * Delete notifications matching the given criteria.
+     *
+     * @param  array<string, mixed>  $criteria  Column => value pairs for the query.
+     */
+    public function deleteNotifications(array $criteria): void
+    {
+        $query = Notification::query();
+
+        foreach ($criteria as $column => $value) {
+            $query->where($column, $value);
+        }
+
+        $query->get()->each(function ($notification) {
+            $notification->forceDelete();
+        });
+    }
+
+    /**
+     * Clear cached profile follower/following counts for the given profile IDs.
+     */
+    public function clearProfileCache(int ...$profileIds): void
+    {
+        foreach ($profileIds as $id) {
+            Cache::forget('profile:follower_count:'.$id);
+            Cache::forget('profile:following_count:'.$id);
+            Cache::forget('profile:following:'.$id);
+            Cache::forget('profile:followers:'.$id);
+        }
+    }
+
+    /**
+     * Strip a trailing '/activity' suffix from a URL.
+     */
+    public function stripActivitySuffix(string $url): string
+    {
+        if (str_ends_with($url, '/activity')) {
+            return substr($url, 0, -9);
+        }
+
+        return $url;
+    }
+
+    /**
+     * Verify that the host of two URLs match (e.g. actor and object belong to same origin).
+     *
+     * Hosts are compared case-insensitively: RFC 3986 §3.2.2 defines the host
+     * as case-insensitive and parse_url preserves the original case, so a peer
+     * that emits its actor id and activity id with different host casing (both
+     * valid) must still be treated as the same origin.
+     */
+    public function hostsMatch(string $url1, string $url2): bool
+    {
+        return strtolower((string) parse_url($url1, PHP_URL_HOST))
+            === strtolower((string) parse_url($url2, PHP_URL_HOST));
+    }
+
+    /**
+     * Ensure payload has all required keys, returning false if any are missing.
+     *
+     * @param  array<int, string>  $keys
+     */
+    public function payloadHasKeys(array $keys): bool
+    {
+        foreach ($keys as $key) {
+            if (! isset($this->payload[$key])) {
+                return false;
+            }
+        }
+
+        return true;
+    }
+
+    /**
+     * Invalidate AccountService cache for the given profile IDs.
+     */
+    public function clearAccountCache(int ...$profileIds): void
+    {
+        foreach ($profileIds as $id) {
+            AccountService::del($id);
+        }
+    }
+}

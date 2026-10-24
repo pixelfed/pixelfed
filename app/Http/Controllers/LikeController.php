@@ -4,12 +4,12 @@ namespace App\Http\Controllers;
 
 use App\Jobs\LikePipeline\LikePipeline;
 use App\Jobs\LikePipeline\UnlikePipeline;
-use App\Like;
+use App\Models\Like;
+use App\Models\Status;
 use App\Services\StatusService;
-use App\Status;
-use Auth;
-use Cache;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Cache;
 
 class LikeController extends Controller
 {
@@ -55,7 +55,7 @@ class LikeController extends Controller
                     'video',
                     'video:album',
                     'photo:video:album',
-                ]) == false;
+                ]) === false;
                 $like->save();
                 $status->save();
                 LikePipeline::dispatch($like)->onQueue('feed');
@@ -66,11 +66,9 @@ class LikeController extends Controller
         StatusService::refresh($status->id);
 
         if ($request->ajax()) {
-            $response = ['code' => 200, 'msg' => 'Like saved', 'count' => 0];
-        } else {
-            $response = redirect($status->url());
+            return ['code' => 200, 'msg' => 'Like saved', 'count' => 0];
         }
 
-        return $response;
+        return redirect($status->url());
     }
 }

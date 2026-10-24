@@ -10,8 +10,8 @@
         @foreach(App\Util\Localization\Localization::languages() as $lang)
         <div class="col-12 col-md-4 mb-2">
           <a href="/i/lang/{{$lang}}" class="{{$current == $lang ? 'font-weight-bold text-primary' : 'text-muted'}} pr-3 b-3">
-            {{locale_get_display_language($lang, $lang)}} 
-            <span class="small text-lighter">({{locale_get_display_language($lang, 'en')}})</span>
+            {{locale_get_display_name($lang, $lang)}} 
+            <span class="small text-lighter">({{locale_get_display_name($lang, 'en')}})</span>
           </a>
         </div>
         @endforeach

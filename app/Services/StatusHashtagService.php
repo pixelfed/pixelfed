@@ -2,12 +2,10 @@
 
 namespace App\Services;
 
-use App\Hashtag;
-use App\Status;
-use App\StatusHashtag;
+use App\Models\Hashtag;
+use App\Models\Status;
+use App\Models\StatusHashtag;
 use App\Transformer\Api\HashtagTransformer;
-use League\Fractal;
-use League\Fractal\Serializer\ArraySerializer;
 
 class StatusHashtagService
 {
@@ -28,14 +26,22 @@ class StatusHashtagService
             ->latest()
             ->take(9)
             ->pluck('status_id')
-            ->map(function ($i, $k) use ($id) {
+            ->map(function ($i) use ($id) {
                 return self::getStatus($i, $id);
             })
             ->filter(function ($i) use ($filtered) {
-                return isset($i['status']) &&
-                ! empty($i['status']) && ! in_array($i['status']['account']['id'], $filtered) &&
-                isset($i['status']['media_attachments']) &&
-                ! empty($i['status']['media_attachments']);
+                $status = $i['status'] ?? null;
+                $accountId = $status['account']['id'] ?? null;
+
+                if (empty($status) || ! $accountId) {
+                    return false;
+                }
+
+                if (! empty($filtered) && in_array($accountId, $filtered)) {
+                    return false;
+                }
+
+                return ! empty($status['media_attachments']);
             })
             ->values();
     }
@@ -77,7 +83,7 @@ class StatusHashtagService
         return $cc->cached_count ?? 0;
     }
 
-    public static function getStatus($statusId, $hashtagId)
+    public static function getStatus($statusId, $hashtagId): array
     {
         return ['status' => StatusService::get($statusId)];
     }
@@ -89,10 +95,6 @@ class StatusHashtagService
             return [];
         }
 
-        $fractal = new Fractal\Manager;
-        $fractal->setSerializer(new ArraySerializer);
-        $resource = new Fractal\Resource\Collection($status->hashtags, new HashtagTransformer);
-
-        return $fractal->createData($resource)->toArray();
+        return FractalService::collection($status->hashtags, new HashtagTransformer);
     }
 }

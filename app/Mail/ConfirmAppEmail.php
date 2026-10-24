@@ -30,7 +30,7 @@ class ConfirmAppEmail extends Mailable
     /**
      * Get the message envelope.
      *
-     * @return \Illuminate\Mail\Mailables\Envelope
+     * @return Envelope
      */
     public function envelope()
     {
@@ -42,7 +42,7 @@ class ConfirmAppEmail extends Mailable
     /**
      * Get the message content definition.
      *
-     * @return \Illuminate\Mail\Mailables\Content
+     * @return Content
      */
     public function content()
     {
@@ -57,10 +57,8 @@ class ConfirmAppEmail extends Mailable
 
     /**
      * Get the attachments for the message.
-     *
-     * @return array
      */
-    public function attachments()
+    public function attachments(): array
     {
         return [];
     }

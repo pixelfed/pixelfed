@@ -7,8 +7,8 @@
         <p class="text-muted small">Last Updated: Sept 28, 2022</p>
         <div class="card shadow-none">
             <div class="card-body text-justify">
-                @if($page && $page->content)
-                {!! $page->content !!}
+                @if($page && $page['content'])
+                {!! $page['content'] !!}
                 @else
                 <div class="terms">
                     <h5 class="font-weight-bold">1. Terms</h5>

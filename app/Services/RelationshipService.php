@@ -2,9 +2,10 @@
 
 namespace App\Services;
 
-use App\Follower;
-use App\FollowRequest;
-use App\UserFilter;
+use App\Models\Follower;
+use App\Models\FollowRequest;
+use App\Models\Profile;
+use App\Models\UserFilter;
 use Illuminate\Support\Facades\Cache;
 
 class RelationshipService
@@ -29,12 +30,12 @@ class RelationshipService
                 'following' => Follower::whereProfileId($aid)->whereFollowingId($tid)->exists(),
                 'followed_by' => Follower::whereProfileId($tid)->whereFollowingId($aid)->exists(),
                 'blocking' => UserFilter::whereUserId($aid)
-                    ->whereFilterableType('App\Profile')
+                    ->whereIn('filterable_type', ['App\Profile', Profile::class])
                     ->whereFilterableId($tid)
                     ->whereFilterType('block')
                     ->exists(),
                 'muting' => UserFilter::whereUserId($aid)
-                    ->whereFilterableType('App\Profile')
+                    ->whereIn('filterable_type', ['App\Profile', Profile::class])
                     ->whereFilterableId($tid)
                     ->whereFilterType('mute')
                     ->exists(),
@@ -60,6 +61,8 @@ class RelationshipService
     {
         Cache::forget('pf:services:follower:audience:'.$aid);
         Cache::forget('pf:services:follower:audience:'.$tid);
+        FollowersSyncService::forgetOutboundDigests($aid);
+        FollowersSyncService::forgetOutboundDigests($tid);
         self::delete($tid, $aid);
         self::delete($aid, $tid);
         self::get($tid, $aid);
@@ -71,11 +74,13 @@ class RelationshipService
     {
         Cache::forget('pf:services:follower:audience:'.$aid);
         Cache::forget('pf:services:follower:audience:'.$tid);
+        FollowersSyncService::forgetOutboundDigests($aid);
+        FollowersSyncService::forgetOutboundDigests($tid);
         self::delete($tid, $aid);
         self::delete($aid, $tid);
     }
 
-    public static function defaultRelation($tid)
+    public static function defaultRelation($tid): array
     {
         return [
             'id' => (string) $tid,
@@ -91,7 +96,7 @@ class RelationshipService
         ];
     }
 
-    protected static function key($suffix)
+    protected static function key($suffix): string
     {
         return self::CACHE_KEY.$suffix;
     }

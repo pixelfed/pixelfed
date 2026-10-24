@@ -15,16 +15,16 @@ return [
         'app' => env('APP_DOMAIN'),
     ],
 
-	/*
-	|--------------------------------------------------------------------------
-	| Pixelfed Version
-	|--------------------------------------------------------------------------
-	|
-	| This value is the version of your Pixelfed instance.
-	|
-	*/
-	'git_version' => exec('git describe --tags | sed -En "s/v(.*)-glitch/\1+glitch/p"'),
-	'version' => env('PIXELFED_VERSION', !empty($git_version) ? $git_version : '0.12.6+glitch.1.12.2?'),
+    /*
+    |--------------------------------------------------------------------------
+    | Pixelfed Version
+    |--------------------------------------------------------------------------
+    |
+    | This value is the version of your Pixelfed instance.
+    |
+    */
+    // GLITCH MODIFIED: glitch version string, set by CI via PIXELFED_VERSION
+    'version' => env('PIXELFED_VERSION', '0.15.2+glitch.1.13.0?'),
 
     /*
     |--------------------------------------------------------------------------
@@ -129,6 +129,18 @@ return [
     |
     */
     'min_password_length' => env('MIN_PASSWORD_LENGTH', 8),
+
+    /*
+    |--------------------------------------------------------------------------
+    | Minimum registration age
+    |--------------------------------------------------------------------------
+    |
+    | The minimum age (in years) a user must be to register an account. This
+    | lets instance admins comply with the legislation of their jurisdiction.
+    | Defaults to 16.
+    |
+    */
+    'min_registration_age' => (int) env('PF_MIN_REGISTRATION_AGE', 16),
 
     /*
     |--------------------------------------------------------------------------
@@ -243,7 +255,8 @@ return [
 
     'max_collection_length' => (int) env('PF_MAX_COLLECTION_LENGTH', 100),
 
-    'media_types' => env('MEDIA_TYPES', 'image/jpeg,image/jpg,image/png,image/webp,image/gif,image/avif,image/heic,video/mp4,video/mov'),
+    // GLITCH MODIFIED: wider default media types (.mov is video/quicktime)
+    'media_types' => env('MEDIA_TYPES', 'image/jpeg,image/jpg,image/png,image/webp,image/gif,image/avif,image/heic,video/mp4,video/quicktime'),
 
     'enforce_account_limit' => env('LIMIT_ACCOUNT_SIZE', true),
 

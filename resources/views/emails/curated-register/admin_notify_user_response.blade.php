@@ -6,7 +6,7 @@ Hello,
 You have a new response from a curated onboarding application from **{{$activity->application->email}}**.
 
 <x-mail::panel>
-<p style="white-space: pre-wrap;">{!! $activity->message !!}</p>
+<p style="white-space: pre-wrap;">{!! nl2br(e($activity->message)) !!}</p>
 </x-mail::panel>
 
 <x-mail::button :url="$activity->adminReviewUrl()" color="success">

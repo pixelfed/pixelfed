@@ -3,11 +3,10 @@
 namespace App\Jobs\VideoPipeline;
 
 use App\Jobs\MediaPipeline\MediaStoragePipeline;
-use App\Media;
+use App\Models\Media;
 use App\Services\MediaService;
 use App\Services\StatusService;
 use App\Util\Media\Blurhash;
-use Cache;
 use FFMpeg;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldBeUniqueUntilProcessing;
@@ -16,6 +15,8 @@ use Illuminate\Foundation\Bus\Dispatchable;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\Middleware\WithoutOverlapping;
 use Illuminate\Queue\SerializesModels;
+use Illuminate\Support\Facades\Cache;
+use Illuminate\Support\Facades\Log;
 
 class VideoThumbnail implements ShouldBeUniqueUntilProcessing, ShouldQueue
 {
@@ -82,32 +83,50 @@ class VideoThumbnail implements ShouldBeUniqueUntilProcessing, ShouldQueue
         $base = $media->media_path;
         $path = explode('/', $base);
         $name = last($path);
+
+        // Thumbnail extraction is best-effort. A failure here must never abort the
+        // job, otherwise handle() returns before the MediaStoragePipeline dispatch
+        // below and the video is stranded on local disk with no cdn_url. A clip
+        // shorter than a second also can't be seeked to 1s, so fall back to frame 0.
         try {
             $t = explode('.', $name);
             $t = $t[0].'_thumb.jpeg';
             $i = count($path) - 1;
             $path[$i] = $t;
             $save = implode('/', $path);
-            $video = FFMpeg::open($base)
-                ->getFrameFromSeconds(1)
+
+            $video = FFMpeg::open($base);
+            $seconds = $video->getDurationInSeconds() < 1 ? 0 : 1;
+            $video->getFrameFromSeconds($seconds)
                 ->export()
                 ->toDisk('local')
                 ->save($save);
 
             $media->thumbnail_path = $save;
             $media->save();
+        } catch (\Throwable $e) {
+            // \Throwable, not \Exception: a memory_limit exhaustion surfaces as
+            // \Error, and catching only \Exception here would let it strand the
+            // video by skipping the storage dispatch below (pixelfed#2652).
+            if (config('app.dev_log')) {
+                Log::error('Video thumbnail generation failed: '.$e->getMessage());
+            }
+        }
 
+        try {
             $blurhash = Blurhash::generate($media);
             if ($blurhash) {
                 $media->blurhash = $blurhash;
                 $media->save();
             }
-
-            if (config('media.hls.enabled')) {
-                VideoHlsPipeline::dispatch($media)->onQueue('mmo');
+        } catch (\Throwable $e) {
+            if (config('app.dev_log')) {
+                Log::error('Video blurhash generation failed: '.$e->getMessage());
             }
-        } catch (\Exception $e) {
+        }
 
+        if (config('media.hls.enabled')) {
+            VideoHlsPipeline::dispatch($media)->onQueue('mmo');
         }
 
         if ($media->status_id) {

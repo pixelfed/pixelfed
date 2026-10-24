@@ -2,8 +2,8 @@
 
 namespace App\Jobs\AvatarPipeline;
 
-use App\Avatar;
-use App\Profile;
+use App\Models\Avatar;
+use App\Models\Profile;
 use App\Services\MediaStorageService;
 use App\Util\ActivityPub\Helpers;
 use Illuminate\Bus\Queueable;
@@ -30,6 +30,7 @@ class RemoteAvatarFetch implements ShouldQueue
      *
      * @var int
      */
+    // GLITCH MODIFIED: retry remote avatar fetches (upstream: 1)
     public $tries = 3; // Retry this action, it can often fail due to network issues
 
     public $timeout = 300;
@@ -55,12 +56,12 @@ class RemoteAvatarFetch implements ShouldQueue
     {
         $profile = $this->profile;
 
-        if ((bool) config_cache('pixelfed.cloud_storage') == false && (bool) config_cache('federation.avatars.store_local') == false) {
-            return 1;
+        if ((bool) config_cache('pixelfed.cloud_storage') === false && (bool) config_cache('federation.avatars.store_local') === false) {
+            return;
         }
 
         if ($profile->domain == null || $profile->private_key) {
-            return 1;
+            return;
         }
 
         $avatar = Avatar::whereProfileId($profile->id)->first();
@@ -80,22 +81,22 @@ class RemoteAvatarFetch implements ShouldQueue
         $person = Helpers::fetchFromUrl($profile->remote_url);
 
         if (! $person || ! isset($person['@context'])) {
-            return 1;
+            return;
         }
 
         if (! isset($person['icon']) ||
             ! isset($person['icon']['type']) ||
             ! isset($person['icon']['url'])
         ) {
-            return 1;
+            return;
         }
 
         if ($person['icon']['type'] !== 'Image') {
-            return 1;
+            return;
         }
 
-        if (! Helpers::validateUrl($person['icon']['url'])) {
-            return 1;
+        if (! Avatar::isStorableRemoteUrl($person['icon']['url'])) {
+            return;
         }
 
         $icon = $person['icon'];
@@ -103,8 +104,6 @@ class RemoteAvatarFetch implements ShouldQueue
         $avatar->remote_url = $icon['url'];
         $avatar->save();
 
-        MediaStorageService::avatar($avatar, (bool) config_cache('pixelfed.cloud_storage') == false, true);
-
-        return 1;
+        MediaStorageService::avatar($avatar, (bool) config_cache('pixelfed.cloud_storage') === false, true);
     }
 }

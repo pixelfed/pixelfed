@@ -2,7 +2,7 @@
 
 namespace App\Mail;
 
-use App\EmailVerification;
+use App\Models\EmailVerification;
 use Illuminate\Bus\Queueable;
 use Illuminate\Mail\Mailable;
 use Illuminate\Queue\SerializesModels;

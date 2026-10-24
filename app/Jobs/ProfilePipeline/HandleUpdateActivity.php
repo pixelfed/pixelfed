@@ -3,17 +3,16 @@
 namespace App\Jobs\ProfilePipeline;
 
 use App\Jobs\AvatarPipeline\RemoteAvatarFetchFromUrl;
-use App\Profile;
+use App\Models\Profile;
 use App\Services\SanitizeService;
 use App\Util\Lexer\Autolink;
-use Cache;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
+use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Log;
-use Purify;
 
 class HandleUpdateActivity implements ShouldQueue
 {
@@ -38,15 +37,22 @@ class HandleUpdateActivity implements ShouldQueue
     {
         $payload = $this->payload;
 
-        // Verify payload exists
-        if (! $payload) {
-            Log::info('HandleUpdateActivity: Payload not provided, skipping job');
+        if (! is_array($payload) || ! isset($payload['actor']) || ! is_string($payload['actor'])) {
+            Log::info('HandleUpdateActivity: Invalid payload or missing actor, skipping job');
 
             return;
         }
 
-        if (! $payload || ! isset($payload['actor'])) {
-            Log::info('HandleUpdateActivity: Invalid payload or missing actor, skipping job');
+        if (! isset($payload['object']) || ! is_array($payload['object'])) {
+            Log::info('HandleUpdateActivity: Missing or invalid object, skipping job');
+
+            return;
+        }
+
+        $object = $payload['object'];
+
+        if (! isset($object['id']) || $object['id'] !== $payload['actor']) {
+            Log::info('HandleUpdateActivity: Object id does not match actor, skipping job');
 
             return;
         }
@@ -57,44 +63,73 @@ class HandleUpdateActivity implements ShouldQueue
             return;
         }
 
-        $sharedInbox = isset($payload['object']['endpoints']['sharedInbox']) ? $payload['object']['endpoints']['sharedInbox'] : null;
-        if ($profile->sharedInbox !== $sharedInbox) {
-            $profile->sharedInbox = $sharedInbox;
+        $sharedInbox = $object['endpoints']['sharedInbox'] ?? null;
+        $profile->sharedInbox = is_string($sharedInbox) ? $sharedInbox : null;
+
+        $publicKey = $object['publicKey']['publicKeyPem'] ?? null;
+        if (is_string($publicKey) && $publicKey !== '') {
+            $profile->public_key = $publicKey;
         }
 
-        if ($profile->public_key !== $payload['object']['publicKey']['publicKeyPem']) {
-            $profile->public_key = $payload['object']['publicKey']['publicKeyPem'];
-        }
-
-        if ($profile->bio !== $payload['object']['summary']) {
-            $len = strlen(strip_tags($payload['object']['summary']));
-            if ($len) {
-                if ($len > 500) {
-                    $updated = strip_tags($payload['object']['summary']);
-                    $updated = substr($updated, 0, config('pixelfed.max_bio_length'));
-                    $profile->bio = Autolink::create()->autolink($updated);
-                } else {
-                    $profile->bio = app(SanitizeService::class)->html($payload['object']['summary']);
-                }
-            } else {
-                $profile->bio = null;
-            }
-        }
-
-        if ($profile->name !== $payload['object']['name']) {
-            $profile->name = Purify::clean(substr($payload['object']['name'], 0, config('pixelfed.max_name_length')));
-        }
+        $profile->bio = $this->cleanBio($object['summary'] ?? null);
+        $profile->name = $this->cleanName($object['name'] ?? null);
 
         if ($profile->isDirty()) {
             $profile->save();
         }
 
-        if (isset($payload['object']['icon']) && isset($payload['object']['icon']['url'])) {
-            RemoteAvatarFetchFromUrl::dispatch($profile, $payload['object']['icon']['url'])->onQueue('low');
+        $iconUrl = $object['icon']['url'] ?? null;
+        if (is_string($iconUrl) && $iconUrl !== '') {
+            RemoteAvatarFetchFromUrl::dispatch($profile, $iconUrl)->onQueue('low');
         } else {
-            $profile->avatar->update(['remote_url' => null]);
+            if ($profile->avatar) {
+                $profile->avatar->update(['remote_url' => null]);
+            }
             Cache::forget('avatar:'.$profile->id);
         }
+    }
 
+    protected function cleanBio($summary): ?string
+    {
+        if (! is_string($summary)) {
+            return null;
+        }
+
+        $text = trim(strip_tags($summary));
+
+        if ($text === '') {
+            return null;
+        }
+
+        if (mb_strlen($text) > 500) {
+            $text = mb_substr($text, 0, (int) config('pixelfed.max_bio_length'));
+            $summary = Autolink::create()->autolink($text);
+        }
+
+        $clean = app(SanitizeService::class)->html($summary);
+
+        return is_string($clean) && trim($clean) !== '' ? $clean : null;
+    }
+
+    protected function cleanName($name): ?string
+    {
+        if (! is_string($name)) {
+            return null;
+        }
+
+        $i = 0;
+        do {
+            $prev = $name;
+            $name = html_entity_decode($name, ENT_QUOTES | ENT_HTML5, 'UTF-8');
+        } while ($name !== $prev && ++$i < 5);
+
+        $name = strip_tags($name);
+
+        $name = str_replace(['<', '>'], '', $name);
+        $name = preg_replace('/[\x00-\x1F\x7F]/u', '', $name) ?? '';
+
+        $name = trim(mb_substr($name, 0, (int) config('pixelfed.max_name_length')));
+
+        return $name !== '' ? $name : null;
     }
 }

@@ -2,9 +2,10 @@
 
 namespace App\Http\Resources\Admin;
 
-use App\Profile;
+use App\Models\Profile;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
+use Illuminate\Support\Carbon;
 
 /**
  * @property int $id
@@ -18,7 +19,7 @@ use Illuminate\Http\Resources\Json\JsonResource;
  * @property bool $is_noautolink
  * @property bool $is_nodms
  * @property bool $is_notrending
- * @property \Illuminate\Support\Carbon $created_at
+ * @property Carbon $created_at
  */
 class AdminModeratedProfileResource extends JsonResource
 {

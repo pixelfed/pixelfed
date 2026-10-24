@@ -2,12 +2,12 @@
 
 namespace App\Transformer\Api;
 
-use App\Media;
+use App\Models\Media;
 use League\Fractal;
 
 class MediaDraftTransformer extends Fractal\TransformerAbstract
 {
-    public function transform(Media $media)
+    public function transform(Media $media): array
     {
         return [
             'id' => (string) $media->id,

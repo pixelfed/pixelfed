@@ -57,28 +57,33 @@ $(document).ready(function() {
 		.then((value) => {
 			if(value == true) {
 				swal({
-					title: 'Are you really sure?',
-					text: 'Are you really sure you want to remove this two-factor authentication device from your account?',
+					title: 'Confirm your 2FA code',
+					text: 'Enter a current 2FA code or a backup code to confirm removal:',
+					content: 'input',
 					icon: 'warning',
-					button: {
-						text: 'Confirm Removal',
-						className: 'btn-danger'
+					buttons: {
+						cancel: true,
+						confirm: {
+							text: 'Confirm Removal',
+							className: 'btn-danger'
+						}
 					}
 				})
-				.then((value) => {
-					if(value == true) {
+				.then((code) => {
+					if(code) {
 						axios.post('/settings/security/2fa/edit', {
-							action: 'remove'
+							action: 'remove',
+							code: code
 						})
 						.then(function(res) {
 							window.location.href = '/settings/security';
 						})
-						.catch(function(res) {
-							swal(
-								'Oops!',
-								'Something went wrong. Please try again.',
-								'error'
-							);
+						.catch(function(err) {
+							let msg = 'Something went wrong. Please try again.';
+							if(err.response && err.response.status === 403) {
+								msg = 'Invalid 2FA code. Please try again.';
+							}
+							swal('Oops!', msg, 'error');
 						})
 					}
 				});

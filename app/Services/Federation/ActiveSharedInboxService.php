@@ -2,7 +2,7 @@
 
 namespace App\Services\Federation;
 
-use App\Profile;
+use App\Models\Profile;
 use App\Util\ActivityPub\Helpers;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Redis;
@@ -139,28 +139,26 @@ class ActiveSharedInboxService
             $res = Storage::get(self::CACHE_FILE_NAME);
             if (! $res) {
                 return false;
-            } else {
-                $res = json_decode($res, true);
-                if (! $res || isset($res['version'], $res['data'], $res['created'], $res['updated'])) {
-                    if (now()->parse($res['updated'])->lt(now()->subMonths(6))) {
-                        return false;
-                    } else {
-                        if ($res['version'] === self::CACHE_FILE_VERSION) {
-                            return $res;
-                        } else {
-                            return false;
-                        }
-                    }
-                } else {
+            }
+            $res = json_decode($res, true);
+            if (! $res || isset($res['version'], $res['data'], $res['created'], $res['updated'])) {
+                if (now()->parse($res['updated'])->lt(now()->subMonths(6))) {
                     return false;
                 }
+                if ($res['version'] === self::CACHE_FILE_VERSION) {
+                    return $res;
+                }
+
+                return false;
             }
+
+            return false;
         }
 
         return false;
     }
 
-    public static function transformCacheFileData($res)
+    public static function transformCacheFileData($res): array
     {
         return [
             'id' => 'pixelfed/storage/app/'.self::CACHE_FILE_NAME,

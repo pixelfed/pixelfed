@@ -2,8 +2,8 @@
 
 namespace App\Jobs\AvatarPipeline;
 
-use App\Avatar;
-use App\Profile;
+use App\Models\Avatar;
+use App\Models\Profile;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldBeUniqueUntilProcessing;
 use Illuminate\Contracts\Queue\ShouldQueue;

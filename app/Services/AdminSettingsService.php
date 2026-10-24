@@ -2,13 +2,13 @@
 
 namespace App\Services;
 
+use App\Models\User;
 use App\Services\Internal\BeagleService;
-use App\User;
 use Illuminate\Support\Str;
 
 class AdminSettingsService
 {
-    public static function getAll()
+    public static function getAll(): array
     {
         return [
             'features' => self::getFeatures(),
@@ -25,7 +25,7 @@ class AdminSettingsService
         ];
     }
 
-    public static function getFeatures()
+    public static function getFeatures(): array
     {
         $cloud_storage = (bool) config_cache('pixelfed.cloud_storage');
         $cloud_disk = config('filesystems.cloud');
@@ -47,7 +47,7 @@ class AdminSettingsService
         ];
     }
 
-    public static function getLanding()
+    public static function getLanding(): array
     {
         $availableAdmins = User::whereIsAdmin(true)->get();
         $currentAdmin = config_cache('instance.admin.pid');
@@ -60,7 +60,7 @@ class AdminSettingsService
         ];
     }
 
-    public static function getBranding()
+    public static function getBranding(): array
     {
         return [
             'name' => config_cache('app.name'),
@@ -69,7 +69,7 @@ class AdminSettingsService
         ];
     }
 
-    public static function getMedia()
+    public static function getMedia(): array
     {
         return [
             'max_photo_size' => config_cache('pixelfed.max_photo_size'),
@@ -91,7 +91,7 @@ class AdminSettingsService
         return BeagleService::getDefaultRules();
     }
 
-    public static function getUsers()
+    public static function getUsers(): array
     {
         $autoFollow = config_cache('account.autofollow_usernames');
         if (strlen($autoFollow) >= 2) {
@@ -112,7 +112,7 @@ class AdminSettingsService
         ];
     }
 
-    public static function getPosts()
+    public static function getPosts(): array
     {
         return [
             'max_caption_length' => config_cache('pixelfed.max_caption_length'),
@@ -120,7 +120,7 @@ class AdminSettingsService
         ];
     }
 
-    public static function getPlatform()
+    public static function getPlatform(): array
     {
         return [
             'allow_app_registration' => (bool) config_cache('pixelfed.allow_app_registration'),
@@ -131,15 +131,41 @@ class AdminSettingsService
             'allow_post_embeds' => (bool) config_cache('instance.embed.post'),
             'allow_profile_embeds' => (bool) config_cache('instance.embed.profile'),
             'captcha_enabled' => (bool) config_cache('captcha.enabled'),
+            'captcha_driver' => config_cache('captcha.driver') ?: config('captcha.driver', 'hcaptcha'),
             'captcha_on_login' => (bool) config_cache('captcha.active.login'),
             'captcha_on_register' => (bool) config_cache('captcha.active.register'),
-            'captcha_secret' => Str::of(config_cache('captcha.secret'))->mask('*', 4, -4),
-            'captcha_sitekey' => Str::of(config_cache('captcha.sitekey'))->mask('*', 4, -4),
+            'captcha_on_forgot_password' => (bool) config_cache('captcha.active.forgot_password'),
+            'captcha_on_password_reset' => (bool) config_cache('captcha.active.password_reset'),
+            'captcha_on_forgot_email' => (bool) config_cache('captcha.active.forgot_email'),
+            'captcha_on_curated_register' => (bool) config_cache('captcha.active.curated_register'),
+            'captcha_hcaptcha_secret' => self::maskSecret(config_cache('captcha.hcaptcha.secret')),
+            'captcha_hcaptcha_sitekey' => config_cache('captcha.hcaptcha.sitekey'),
+            'captcha_turnstile_secret' => self::maskSecret(config_cache('captcha.turnstile.secret')),
+            'captcha_turnstile_sitekey' => config_cache('captcha.turnstile.sitekey'),
+            'captcha_cap_endpoint' => config_cache('captcha.cap.endpoint'),
+            'captcha_cap_sitekey' => config_cache('captcha.cap.sitekey'),
+            'captcha_cap_secret' => self::maskSecret(config_cache('captcha.cap.secret')),
             'custom_emoji_enabled' => (bool) config_cache('federation.custom_emoji.enabled'),
         ];
     }
 
-    public static function getStorage()
+    /**
+     * Mask a secret value for display, tolerating null/empty values.
+     */
+    protected static function maskSecret($value): ?string
+    {
+        if (empty($value)) {
+            return $value === null ? null : (string) $value;
+        }
+
+        if (strlen((string) $value) < 8) {
+            return str_repeat('*', strlen((string) $value));
+        }
+
+        return Str::mask((string) $value, '*', 4, -4);
+    }
+
+    public static function getStorage(): array
     {
         $cloud_storage = (bool) config_cache('pixelfed.cloud_storage');
         $cloud_disk = config('filesystems.cloud');
@@ -148,8 +174,8 @@ class AdminSettingsService
         $pkey = 'filesystems.disks.'.$cloud_disk.'.';
         $disk = [
             'driver' => $cloud_disk,
-            'key' => Str::of(config_cache($pkey.'key'))->mask('*', 0, -2),
-            'secret' => Str::of(config_cache($pkey.'secret'))->mask('*', 0, -2),
+            'key' => Str::mask(config_cache($pkey.'key'), '*', 0, -2),
+            'secret' => Str::mask(config_cache($pkey.'secret'), '*', 0, -2),
             'region' => config_cache($pkey.'region'),
             'bucket' => config_cache($pkey.'bucket'),
             'visibility' => config_cache($pkey.'visibility'),
@@ -166,7 +192,10 @@ class AdminSettingsService
         ];
     }
 
-    public static function getCuratedOnboarding()
+    /**
+     * @return mixed[]
+     */
+    public static function getCuratedOnboarding(): array
     {
         $openReg = (bool) config_cache('pixelfed.open_registration');
         $curOnboarding = (bool) config_cache('instance.curated_registration.enabled');
@@ -179,7 +208,6 @@ class AdminSettingsService
         $res = [
             'enabled' => (bool) config_cache('instance.curated_registration.enabled'),
             'resend_confirmation_limit' => config_cache('instance.curated_registration.resend_confirmation_limit'),
-            'captcha_enabled' => config_cache('instance.curated_registration.captcha_enabled'),
             'state' => config_cache('instance.curated_registration.state'),
             'notify' => config_cache('instance.curated_registration.notify'),
         ];

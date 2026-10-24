@@ -3,16 +3,16 @@
 namespace App\Jobs\ImageOptimizePipeline;
 
 use App\Jobs\MediaPipeline\MediaStoragePipeline;
-use App\Media;
+use App\Models\Media;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
+use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
 use ImageOptimizer;
-use Log;
-use Storage;
 
 class ImageUpdate implements ShouldQueue
 {
@@ -22,6 +22,7 @@ class ImageUpdate implements ShouldQueue
 
     protected $protectedMimes = [
         'image/jpeg',
+        'image/jpg',
         'image/png',
         'image/webp',
         'image/avif',
@@ -65,17 +66,27 @@ class ImageUpdate implements ShouldQueue
             $path = storage_path('app/'.$media->media_path);
             $thumbPath = storage_path('app/'.$media->thumbnail_path);
             if (! is_file($path)) {
+                // Source is gone, so mark the row to stop the hourly catch-up
+                // from re-queueing it forever instead of silently returning.
+                Log::error("ImageUpdate: media {$media->id} source file missing at {$media->media_path}, cannot process");
+                $media->skip_optimize = true;
+                $media->save();
+
                 return;
             }
             $mediaPath = $path;
         } else {
             if (! $disk->exists($media->media_path)) {
+                Log::error("ImageUpdate: media {$media->id} source file missing at {$media->media_path}, cannot process");
+                $media->skip_optimize = true;
+                $media->save();
+
                 return;
             }
         }
 
         if ((bool) config_cache('pixelfed.optimize_image') && $localFs) {
-            if (in_array($media->mime, $this->protectedMimes) == true) {
+            if (in_array($media->mime, $this->protectedMimes) === true) {
                 try {
                     $thumbPath = storage_path('app/'.$media->thumbnail_path);
                     if (file_exists($thumbPath)) {
@@ -93,7 +104,7 @@ class ImageUpdate implements ShouldQueue
                 }
             }
         } elseif ((bool) config_cache('pixelfed.optimize_image') && ! $localFs) {
-            if (in_array($media->mime, $this->protectedMimes) == true) {
+            if (in_array($media->mime, $this->protectedMimes) === true) {
                 $this->optimizeRemoteImages($media, $disk);
             }
         }
@@ -124,9 +135,9 @@ class ImageUpdate implements ShouldQueue
 
         if ($localFs) {
             return filesize(storage_path('app/'.$path)) ?? 0;
-        } else {
-            return $disk->size($path) ?? 0;
         }
+
+        return $disk->size($path) ?? 0;
     }
 
     /**

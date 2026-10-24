@@ -2,16 +2,16 @@
 
 namespace App\Transformer\Api\Mastodon\v1;
 
+use App\Models\Status;
 use App\Services\MediaService;
 use App\Services\ProfileService;
 use App\Services\StatusHashtagService;
-use App\Status;
 use App\Util\Lexer\Autolink;
 use League\Fractal;
 
 class StatusTransformer extends Fractal\TransformerAbstract
 {
-    public function transform(Status $status)
+    public function transform(Status $status): array
     {
         $content = $status->caption ? nl2br(Autolink::create()->autolink($status->caption)) : '';
 

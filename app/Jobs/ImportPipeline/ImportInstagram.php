@@ -2,20 +2,21 @@
 
 namespace App\Jobs\ImportPipeline;
 
-use App\ImportData;
-use App\ImportJob;
 use App\Jobs\ImageOptimizePipeline\ImageOptimize;
-use App\Media;
-use App\Profile;
-use App\Status;
+use App\Models\ImportData;
+use App\Models\ImportJob;
+use App\Models\Media;
+use App\Models\Profile;
+use App\Models\Status;
 use Carbon\Carbon;
-use DB;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Filesystem\Filesystem;
 use Illuminate\Foundation\Bus\Dispatchable;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
 
 class ImportInstagram implements ShouldQueue
 {
@@ -51,9 +52,27 @@ class ImportInstagram implements ShouldQueue
             return;
         }
 
-        $job = ImportJob::findOrFail($this->import->id);
-        $profile = Profile::findOrFail($job->profile_id);
+        $job = ImportJob::find($this->import->id);
+        if (! $job) {
+            return;
+        }
+
+        // The profile may have been soft-deleted (e.g. account deletion) after
+        // this job was queued. findOrFail would throw inside handle() and the
+        // job would retry until it lands in failed_jobs; drop it cleanly instead.
+        $profile = Profile::find($job->profile_id);
+        if (! $profile) {
+            $job->delete();
+
+            return;
+        }
+
         $user = $profile->user;
+        if (! $user) {
+            $job->delete();
+
+            return;
+        }
         $json = $job->mediaJson();
         $collection = array_reverse($json['photos']);
         $files = $job->files;
@@ -63,13 +82,14 @@ class ImportInstagram implements ShouldQueue
 
         foreach ($collection as $import) {
             $caption = $import['caption'];
+            $taken_at = now();
             try {
                 $min = Carbon::create(2010, 10, 6, 0, 0, 0);
                 $taken_at = Carbon::parse($import['taken_at']);
                 if (! $min->lt($taken_at)) {
-                    $taken_at = Carbon::now();
+                    $taken_at = now();
                 }
-            } catch (\Exception $e) {
+            } catch (\Exception) {
 
             }
             $filename = last(explode('/', $import['path']));
@@ -77,7 +97,19 @@ class ImportInstagram implements ShouldQueue
                 ->whereOriginalName($filename)
                 ->first();
 
-            if (empty($importData) || is_file(storage_path("app/$importData->path")) == false) {
+            if (empty($importData)) {
+                continue;
+            }
+
+            $originalPath = storage_path("app/$importData->path");
+
+            if (is_file($originalPath) === false) {
+                Log::warning('ImportInstagram: source file missing, skipping', [
+                    'job_id' => $job->id,
+                    'original_name' => $filename,
+                    'path' => $importData->path,
+                ]);
+
                 continue;
             }
 
@@ -88,6 +120,7 @@ class ImportInstagram implements ShouldQueue
                 $status = new Status;
                 $status->profile_id = $profile->id;
                 $status->caption = strip_tags($caption);
+                $status->rendered = '';
                 $status->is_nsfw = false;
                 $status->type = 'photo';
                 $status->scope = 'unlisted';
@@ -102,7 +135,9 @@ class ImportInstagram implements ShouldQueue
                     mkdir(storage_path($dir), 0755, true);
                 }
                 $newPath = "$dir/$filename";
-                $fs->move($path, storage_path($newPath));
+                // Copy, not move: the source must survive until the DB
+                // transaction commits so a rolled-back attempt stays retryable.
+                $fs->copy($path, storage_path($newPath));
                 $path = $newPath;
                 $hash = \hash_file('sha256', storage_path($path));
                 $media = new Media;
@@ -119,9 +154,13 @@ class ImportInstagram implements ShouldQueue
                 $media->save();
                 ImageOptimize::dispatch($media);
             });
+
+            // Commit succeeded, so the original source is no longer the only
+            // copy and can be removed.
+            $fs->delete($originalPath);
         }
 
-        $job->completed_at = Carbon::now();
+        $job->completed_at = now();
         $job->save();
     }
 }

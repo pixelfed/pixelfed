@@ -2,7 +2,6 @@
 
 namespace App\Http\Controllers;
 
-use App\Contact;
 use App\Http\Controllers\Admin\AdminAutospamController;
 use App\Http\Controllers\Admin\AdminDirectoryController;
 use App\Http\Controllers\Admin\AdminDiscoverController;
@@ -12,27 +11,33 @@ use App\Http\Controllers\Admin\AdminMediaController;
 use App\Http\Controllers\Admin\AdminReportController;
 use App\Http\Controllers\Admin\AdminSettingsController;
 use App\Http\Controllers\Admin\AdminUserController;
-use App\Instance;
+use App\Http\Resources\AdminProfile;
 use App\Jobs\AdminPipeline\AdminProfileActionPipeline;
 use App\Mail\AdminMessageResponse;
+use App\Models\Contact;
 use App\Models\CustomEmoji;
-use App\Newsroom;
-use App\OauthClient;
-use App\Profile;
+use App\Models\Instance;
+use App\Models\Newsroom;
+use App\Models\OauthClient;
+use App\Models\Profile;
+use App\Models\Status;
+use App\Models\Story;
+use App\Models\User;
 use App\Services\AccountService;
 use App\Services\AdminStatsService;
 use App\Services\ConfigCacheService;
 use App\Services\StatusService;
 use App\Services\StoryService;
-use App\Status;
-use App\Story;
-use App\User;
-use Cache;
-use DB;
+use Illuminate\Contracts\View\View;
+use Illuminate\Http\JsonResponse;
+use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Cache;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Mail;
+use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Str;
 use Illuminate\Validation\Rule;
-use Mail;
-use Storage;
 
 class AdminController extends Controller
 {
@@ -51,21 +56,19 @@ class AdminController extends Controller
     public function __construct()
     {
         $this->middleware('admin');
-        $this->middleware('dangerzone');
-        $this->middleware('twofactor');
     }
 
-    public function home()
+    public function home(): View
     {
         return view('admin.home');
     }
 
-    public function customCss()
+    public function customCss(): View
     {
         return view('admin.settings.customcss');
     }
 
-    public function saveCustomCss(Request $request)
+    public function saveCustomCss(Request $request): View
     {
         $this->validate($request, [
             'css' => 'sometimes|max:5000',
@@ -77,11 +80,11 @@ class AdminController extends Controller
         return view('admin.settings.customcss');
     }
 
-    public function stats()
+    public function stats(): View
     {
         $data = AdminStatsService::get();
 
-        return view('admin.stats', compact('data'));
+        return view('admin.stats', ['data' => $data]);
     }
 
     public function getStats()
@@ -89,7 +92,7 @@ class AdminController extends Controller
         return AdminStatsService::summary();
     }
 
-    public function getAccounts()
+    public function getAccounts(): array
     {
         $users = User::orderByDesc('id')->cursorPaginate(10);
 
@@ -118,7 +121,7 @@ class AdminController extends Controller
         return $res;
     }
 
-    public function getPosts()
+    public function getPosts(): array
     {
         $posts = DB::table('statuses')
             ->orderByDesc('id')
@@ -144,7 +147,7 @@ class AdminController extends Controller
         return Instance::orderByDesc('id')->cursorPaginate(10);
     }
 
-    public function statuses(Request $request)
+    public function statuses(Request $request): View
     {
         $statuses = Status::orderBy('id', 'desc')->cursorPaginate(10);
         $data = $statuses->map(function ($status) {
@@ -155,17 +158,17 @@ class AdminController extends Controller
             })
             ->toArray();
 
-        return view('admin.statuses.home', compact('statuses', 'data'));
+        return view('admin.statuses.home', ['statuses' => $statuses, 'data' => $data]);
     }
 
-    public function showStatus(Request $request, $id)
+    public function showStatus(Request $request, $id): View
     {
         $status = Status::findOrFail($id);
 
-        return view('admin.statuses.show', compact('status'));
+        return view('admin.statuses.show', ['status' => $status]);
     }
 
-    public function profiles(Request $request)
+    public function profiles(Request $request): View
     {
         $this->validate($request, [
             'search' => 'nullable|string|max:250',
@@ -194,18 +197,18 @@ class AdminController extends Controller
             })->orderByDesc('id')
             ->simplePaginate($limit);
 
-        return view('admin.profiles.home', compact('profiles'));
+        return view('admin.profiles.home', ['profiles' => $profiles]);
     }
 
-    public function profileShow(Request $request, $id)
+    public function profileShow(Request $request, $id): View
     {
         $profile = Profile::findOrFail($id);
         $user = $profile->user;
 
-        return view('admin.profiles.edit', compact('profile', 'user'));
+        return view('admin.profiles.edit', ['profile' => $profile, 'user' => $user]);
     }
 
-    public function appsHome(Request $request)
+    public function appsHome(Request $request): View
     {
         $filter = $request->input('filter');
         if ($filter == 'revoked') {
@@ -221,10 +224,10 @@ class AdminController extends Controller
                 ->paginate(10);
         }
 
-        return view('admin.apps.home', compact('apps'));
+        return view('admin.apps.home', ['apps' => $apps]);
     }
 
-    public function messagesHome(Request $request)
+    public function messagesHome(Request $request): View
     {
         $this->validate($request, [
             'sort' => 'sometimes|string|in:all,open,closed',
@@ -243,10 +246,10 @@ class AdminController extends Controller
             ->paginate(10)
             ->withQueryString();
 
-        return view('admin.messages.home', compact('messages', 'sort'));
+        return view('admin.messages.home', ['messages' => $messages, 'sort' => $sort]);
     }
 
-    public function messagesShow(Request $request, $id)
+    public function messagesShow(Request $request, $id): RedirectResponse|View
     {
         $message = Contact::findOrFail($id);
         $user = User::whereNull('status')->find($message->user_id);
@@ -257,10 +260,10 @@ class AdminController extends Controller
             return redirect('/i/admin/messages/home')->with('status', 'Redirected from message sent from a deleted account');
         }
 
-        return view('admin.messages.show', compact('message'));
+        return view('admin.messages.show', ['message' => $message]);
     }
 
-    public function messagesReply(Request $request, $id)
+    public function messagesReply(Request $request, $id): RedirectResponse
     {
         $this->validate($request, [
             'message' => 'required|string|min:1|max:500',
@@ -335,26 +338,26 @@ class AdminController extends Controller
         return ['status' => 200];
     }
 
-    public function newsroomHome(Request $request)
+    public function newsroomHome(Request $request): View
     {
         $newsroom = Newsroom::latest()->paginate(10);
 
-        return view('admin.newsroom.home', compact('newsroom'));
+        return view('admin.newsroom.home', ['newsroom' => $newsroom]);
     }
 
-    public function newsroomCreate(Request $request)
+    public function newsroomCreate(Request $request): View
     {
         return view('admin.newsroom.create');
     }
 
-    public function newsroomEdit(Request $request, $id)
+    public function newsroomEdit(Request $request, $id): View
     {
         $news = Newsroom::findOrFail($id);
 
-        return view('admin.newsroom.edit', compact('news'));
+        return view('admin.newsroom.edit', ['news' => $news]);
     }
 
-    public function newsroomDelete(Request $request, $id)
+    public function newsroomDelete(Request $request, $id): RedirectResponse
     {
         $news = Newsroom::findOrFail($id);
         $news->delete();
@@ -362,7 +365,7 @@ class AdminController extends Controller
         return redirect('/i/admin/newsroom');
     }
 
-    public function newsroomUpdate(Request $request, $id)
+    public function newsroomUpdate(Request $request, $id): RedirectResponse
     {
         $this->validate($request, [
             'title' => 'required|string|min:1|max:100',
@@ -371,9 +374,9 @@ class AdminController extends Controller
         ]);
         $changed = false;
         $changedFields = [];
-        $slug = str_slug($request->input('title'));
+        $slug = Str::slug($request->input('title'));
         if (Newsroom::whereSlug($slug)->exists()) {
-            $slug = $slug.'-'.str_random(4);
+            $slug = $slug.'-'.Str::random(4);
         }
         $news = Newsroom::findOrFail($id);
         $fields = [
@@ -391,7 +394,7 @@ class AdminController extends Controller
             switch ($type) {
                 case 'string':
                     if ($request->{$field} != $news->{$field}) {
-                        if ($field == 'title') {
+                        if ($field === 'title') {
                             $news->slug = $slug;
                         }
                         $news->{$field} = $request->{$field};
@@ -411,13 +414,12 @@ class AdminController extends Controller
                 case 'published':
                     $state = $request->{$field} == 'on' ? true : false;
                     $published = $news->published_at != null;
-                    if ($state != $published) {
+                    if ($state !== $published) {
                         $news->published_at = $state ? now() : null;
                         $changed = true;
                         array_push($changedFields, $field);
                     }
                     break;
-
             }
         }
 
@@ -429,7 +431,7 @@ class AdminController extends Controller
         return redirect($redirect);
     }
 
-    public function newsroomStore(Request $request)
+    public function newsroomStore(Request $request): RedirectResponse
     {
         $this->validate($request, [
             'title' => 'required|string|min:1|max:100',
@@ -438,9 +440,9 @@ class AdminController extends Controller
         ]);
         $changed = false;
         $changedFields = [];
-        $slug = str_slug($request->input('title'));
+        $slug = Str::slug($request->input('title'));
         if (Newsroom::whereSlug($slug)->exists()) {
-            $slug = $slug.'-'.str_random(4);
+            $slug = $slug.'-'.Str::random(4);
         }
         $news = new Newsroom;
         $fields = [
@@ -457,10 +459,12 @@ class AdminController extends Controller
         foreach ($fields as $field => $type) {
             switch ($type) {
                 case 'string':
+                    // @phpstan-ignore-next-line
                     if ($request->{$field} != $news->{$field}) {
-                        if ($field == 'title') {
+                        if ($field === 'title') {
                             $news->slug = $slug;
                         }
+                        // @phpstan-ignore-next-line
                         $news->{$field} = $request->{$field};
                         $changed = true;
                         array_push($changedFields, $field);
@@ -469,7 +473,9 @@ class AdminController extends Controller
 
                 case 'boolean':
                     $state = $request->{$field} == 'on' ? true : false;
+                    // @phpstan-ignore-next-line
                     if ($state != $news->{$field}) {
+                        // @phpstan-ignore-next-line
                         $news->{$field} = $state;
                         $changed = true;
                         array_push($changedFields, $field);
@@ -478,13 +484,12 @@ class AdminController extends Controller
                 case 'published':
                     $state = $request->{$field} == 'on' ? true : false;
                     $published = $news->published_at != null;
-                    if ($state != $published) {
+                    if ($state !== $published) {
                         $news->published_at = $state ? now() : null;
                         $changed = true;
                         array_push($changedFields, $field);
                     }
                     break;
-
             }
         }
 
@@ -496,12 +501,12 @@ class AdminController extends Controller
         return redirect($redirect);
     }
 
-    public function diagnosticsHome(Request $request)
+    public function diagnosticsHome(Request $request): View
     {
         return view('admin.diagnostics.home');
     }
 
-    public function diagnosticsDecrypt(Request $request)
+    public function diagnosticsDecrypt(Request $request): JsonResponse
     {
         $this->validate($request, [
             'payload' => 'required',
@@ -510,7 +515,7 @@ class AdminController extends Controller
         $key = 'exception_report:';
         $decrypted = decrypt($request->input('payload'));
 
-        if (! starts_with($decrypted, $key)) {
+        if (! str_starts_with($decrypted, $key)) {
             abort(403, 'Can only decrypt error diagnostics');
         }
 
@@ -521,15 +526,15 @@ class AdminController extends Controller
         return response()->json($res);
     }
 
-    public function stories(Request $request)
+    public function stories(Request $request): View
     {
         $stories = Story::with('profile')->latest()->paginate(10);
         $stats = StoryService::adminStats();
 
-        return view('admin.stories.home', compact('stories', 'stats'));
+        return view('admin.stories.home', ['stories' => $stories, 'stats' => $stats]);
     }
 
-    public function customEmojiHome(Request $request)
+    public function customEmojiHome(Request $request): RedirectResponse|View
     {
         if (! (bool) config_cache('federation.custom_emoji.enabled')) {
             return view('admin.custom-emoji.not-enabled');
@@ -551,24 +556,29 @@ class AdminController extends Controller
             return redirect(route('admin.custom-emoji'));
         }
 
-        $pg = config('database.default') == 'pgsql';
+        $pg = db_is_pgsql();
 
         $emojis = CustomEmoji::when($sort, function ($query, $sort) use ($request, $pg) {
             if ($sort == 'all') {
                 if ($pg) {
                     return $query->latest();
-                } else {
-                    return $query->groupBy('shortcode')->latest();
                 }
-            } elseif ($sort == 'local') {
+
+                return $query->groupBy('shortcode')->latest();
+            }
+            if ($sort == 'local') {
                 return $query->latest()->where('domain', '=', config('pixelfed.domain.app'));
-            } elseif ($sort == 'remote') {
+            }
+            if ($sort == 'remote') {
                 return $query->latest()->where('domain', '!=', config('pixelfed.domain.app'));
-            } elseif ($sort == 'duplicates') {
-                return $query->latest()->groupBy('shortcode')->havingRaw('count(*) > 1');
-            } elseif ($sort == 'disabled') {
+            }
+            if ($sort == 'duplicates') {
+                return $query->latest()->duplicateShortcodes();
+            }
+            if ($sort == 'disabled') {
                 return $query->latest()->whereDisabled(true);
-            } elseif ($sort == 'search') {
+            }
+            if ($sort == 'search') {
                 $q = $query
                     ->latest()
                     ->where('shortcode', 'like', '%'.$request->input('q').'%')
@@ -593,18 +603,18 @@ class AdminController extends Controller
             ];
 
             if ($pg) {
-                $res['duplicate'] = CustomEmoji::select('shortcode')->groupBy('shortcode')->havingRaw('count(*) > 1')->count();
+                $res['duplicate'] = CustomEmoji::select('shortcode')->duplicateShortcodes()->count();
             } else {
-                $res['duplicate'] = CustomEmoji::groupBy('shortcode')->havingRaw('count(*) > 1')->count();
+                $res['duplicate'] = CustomEmoji::duplicateShortcodes()->count();
             }
 
             return $res;
         });
 
-        return view('admin.custom-emoji.home', compact('emojis', 'sort', 'stats'));
+        return view('admin.custom-emoji.home', ['emojis' => $emojis, 'sort' => $sort, 'stats' => $stats]);
     }
 
-    public function customEmojiToggleActive(Request $request, $id)
+    public function customEmojiToggleActive(Request $request, $id): RedirectResponse
     {
         abort_unless((bool) config_cache('federation.custom_emoji.enabled'), 404);
         $emoji = CustomEmoji::findOrFail($id);
@@ -612,18 +622,19 @@ class AdminController extends Controller
         $emoji->save();
         $key = CustomEmoji::CACHE_KEY.str_replace(':', '', $emoji->shortcode);
         Cache::forget($key);
+        Cache::forget('pf:custom_emoji');
 
         return redirect()->back();
     }
 
-    public function customEmojiAdd(Request $request)
+    public function customEmojiAdd(Request $request): View
     {
         abort_unless((bool) config_cache('federation.custom_emoji.enabled'), 404);
 
         return view('admin.custom-emoji.add');
     }
 
-    public function customEmojiStore(Request $request)
+    public function customEmojiStore(Request $request): RedirectResponse
     {
         abort_unless((bool) config_cache('federation.custom_emoji.enabled'), 404);
         $this->validate($request, [
@@ -655,32 +666,33 @@ class AdminController extends Controller
         return redirect(route('admin.custom-emoji'));
     }
 
-    public function customEmojiDelete(Request $request, $id)
+    public function customEmojiDelete(Request $request, $id): RedirectResponse
     {
         abort_unless((bool) config_cache('federation.custom_emoji.enabled'), 404);
         $emoji = CustomEmoji::findOrFail($id);
         Storage::delete("public/{$emoji->media_path}");
         Cache::forget('pf:custom_emoji');
+        Cache::forget(CustomEmoji::CACHE_KEY.str_replace(':', '', $emoji->shortcode));
         $emoji->delete();
 
         return redirect(route('admin.custom-emoji'));
     }
 
-    public function customEmojiShowDuplicates(Request $request, $id)
+    public function customEmojiShowDuplicates(Request $request, $id): View
     {
         abort_unless((bool) config_cache('federation.custom_emoji.enabled'), 404);
         $emoji = CustomEmoji::orderBy('id')->whereDisabled(false)->whereShortcode($id)->firstOrFail();
         $emojis = CustomEmoji::whereShortcode($id)->where('id', '!=', $emoji->id)->cursorPaginate(10);
 
-        return view('admin.custom-emoji.duplicates', compact('emoji', 'emojis'));
+        return view('admin.custom-emoji.duplicates', ['emoji' => $emoji, 'emojis' => $emojis]);
     }
 
-    public function rolesHome(Request $request)
+    public function rolesHome(Request $request): View
     {
         return view('admin.roles.index');
     }
 
-    public function rolesBrowse(Request $request)
+    public function rolesBrowse(Request $request): View
     {
         return view('admin.roles.browse');
     }
@@ -696,15 +708,18 @@ class AdminController extends Controller
             ->when($filter, function ($q, $filter) {
                 if ($filter === 'cw') {
                     return $q->where('cw', true);
-                } elseif ($filter === 'unlisted') {
-                    return $q->where('unlisted', true);
-                } elseif ($filter === 'banned') {
-                    return $q->where('status', 'banned');
-                } elseif ($filter === 'newest') {
-                    return $q->orderByDesc('id');
-                } else {
-                    return $q;
                 }
+                if ($filter === 'unlisted') {
+                    return $q->where('unlisted', true);
+                }
+                if ($filter === 'banned') {
+                    return $q->where('status', 'banned');
+                }
+                if ($filter === 'newest') {
+                    return $q->orderByDesc('id');
+                }
+
+                return $q;
             })
             ->cursorPaginate(10)
             ->withQueryString();
@@ -712,7 +727,7 @@ class AdminController extends Controller
         return AdminProfile::collection($res);
     }
 
-    public function profilesHandleAction(Request $request)
+    public function profilesHandleAction(Request $request): array
     {
         $this->validate($request, [
             'id' => 'required|exists:profiles',

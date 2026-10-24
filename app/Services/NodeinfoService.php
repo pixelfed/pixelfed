@@ -5,6 +5,7 @@ namespace App\Services;
 use Illuminate\Http\Client\ConnectionException;
 use Illuminate\Http\Client\RequestException;
 use Illuminate\Support\Facades\Http;
+use Illuminate\Support\Facades\Log;
 
 class NodeinfoService
 {
@@ -27,11 +28,7 @@ class NodeinfoService
                 ->withHeaders($headers)
                 ->timeout(5)
                 ->get($wk);
-        } catch (RequestException $e) {
-            return false;
-        } catch (ConnectionException $e) {
-            return false;
-        } catch (\Exception $e) {
+        } catch (RequestException|ConnectionException|\Exception $e) {
             return false;
         }
 
@@ -48,8 +45,15 @@ class NodeinfoService
         if (is_array($json['links'])) {
             if (isset($json['links']['href'])) {
                 $href = $json['links']['href'];
-            } else {
+            } elseif (isset($json['links'][0]['href'])) {
                 $href = $json['links'][0]['href'];
+            } else {
+                Log::debug('NodeinfoService: malformed links array', [
+                    'domain' => $domain,
+                    'links' => $json['links'],
+                ]);
+
+                return false;
             }
         } else {
             return false;
@@ -69,11 +73,7 @@ class NodeinfoService
                 ->withHeaders($headers)
                 ->timeout(5)
                 ->get($href);
-        } catch (RequestException $e) {
-            return false;
-        } catch (ConnectionException $e) {
-            return false;
-        } catch (\Exception $e) {
+        } catch (RequestException|ConnectionException|\Exception) {
             return false;
         }
 

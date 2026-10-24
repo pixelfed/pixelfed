@@ -2,7 +2,6 @@
 
 namespace App\Http\Controllers\Settings;
 
-use Auth;
 use Illuminate\Http\Request;
 
 trait RelationshipSettings
@@ -14,7 +13,8 @@ trait RelationshipSettings
         ]);
 
         $mode = $request->input('mode') ?? 'followers';
-        $profile = Auth::user()->profile;
+        $profile = $request->user()->profile;
+        $data = null;
 
         switch ($mode) {
             case 'following':
@@ -30,6 +30,6 @@ trait RelationshipSettings
                 break;
         }
 
-        return view('settings.relationships.home', compact('profile', 'mode', 'data'));
+        return view('settings.relationships.home', ['profile' => $profile, 'mode' => $mode, 'data' => $data]);
     }
 }

@@ -204,10 +204,7 @@
                     return;
                 };
             }
-            if(window.App.config.ab.hasOwnProperty('cached_home_timeline')) {
-                const cht = window.App.config.ab.cached_home_timeline == true;
-                this.baseApi = cht ? '/api/v1/timelines/' : '/api/v1/timelines/';
-            }
+            this.baseApi = '/api/v1/timelines/';
             this.fetchSettings();
         },
 
@@ -296,7 +293,7 @@
                         return;
                     }
                     this.ids = ids;
-                    this.max_id = Math.min(...ids);
+                    this.max_id = ids[ids.length - 1];
                     this.feed = res.data;
 
                     if(res.data.length < 4) {
@@ -325,6 +322,7 @@
 
                 this.isFetchingMore = true;
 
+                // GLITCH MODIFIED START: photos_reblogs_only option sent to the home timeline API
                 let url = this.baseApi + this.getScope();
                 let params = {
                     max_id: this.max_id,
@@ -342,6 +340,7 @@
                         url = this.baseApi + `public`;
                         break;
                 }
+                // GLITCH MODIFIED END
 
                 axios.get(url, {
                     params: params
@@ -352,11 +351,11 @@
                         this.isFetchingMore = false;
                     }
                     setTimeout(() => {
+                        if(res.data.length) {
+                            this.max_id = res.data[res.data.length - 1].id;
+                        }
                         res.data.forEach(p => {
                             if(this.ids.indexOf(p.id) == -1) {
-                                if(this.max_id > p.id) {
-                                    this.max_id = p.id;
-                                }
                                 this.ids.push(p.id);
                                 this.feed.push(p);
                                 if(p && p.hasOwnProperty('relationship')) {

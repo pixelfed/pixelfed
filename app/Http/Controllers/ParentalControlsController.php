@@ -5,17 +5,20 @@ namespace App\Http\Controllers;
 use App\Http\Controllers\Auth\RegisterController;
 use App\Jobs\ParentalControlsPipeline\DispatchChildInvitePipeline;
 use App\Models\ParentalControls;
+use App\Models\Profile;
+use App\Models\User;
 use App\Models\UserRoles;
-use App\Profile;
 use App\Services\UserRoleService;
-use App\User;
 use Illuminate\Auth\Events\Registered;
+use Illuminate\Contracts\View\View;
+use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Str;
 
 class ParentalControlsController extends Controller
 {
-    public function authPreflight($request, $maxUserCheck = false, $authCheck = true)
+    public function authPreflight($request, $maxUserCheck = false, $authCheck = true): void
     {
         if ($authCheck) {
             abort_unless($request->user(), 404);
@@ -38,31 +41,31 @@ class ParentalControlsController extends Controller
         }
     }
 
-    public function index(Request $request)
+    public function index(Request $request): View
     {
         $this->authPreflight($request);
         $children = ParentalControls::whereParentId($request->user()->id)->latest()->paginate(5);
 
-        return view('settings.parental-controls.index', compact('children'));
+        return view('settings.parental-controls.index', ['children' => $children]);
     }
 
-    public function add(Request $request)
+    public function add(Request $request): View
     {
         $this->authPreflight($request, true);
 
         return view('settings.parental-controls.add');
     }
 
-    public function view(Request $request, $id)
+    public function view(Request $request, $id): View
     {
         $this->authPreflight($request);
         $uid = $request->user()->id;
         $pc = ParentalControls::whereParentId($uid)->findOrFail($id);
 
-        return view('settings.parental-controls.manage', compact('pc'));
+        return view('settings.parental-controls.manage', ['pc' => $pc]);
     }
 
-    public function update(Request $request, $id)
+    public function update(Request $request, $id): RedirectResponse
     {
         $this->authPreflight($request);
         $uid = $request->user()->id;
@@ -82,7 +85,7 @@ class ParentalControlsController extends Controller
         return redirect($pc->manageUrl().'?permissions');
     }
 
-    public function store(Request $request)
+    public function store(Request $request): RedirectResponse
     {
         $this->authPreflight($request, true);
         $this->validate($request, [
@@ -94,7 +97,7 @@ class ParentalControlsController extends Controller
         $pc = new ParentalControls;
         $pc->parent_id = $request->user()->id;
         $pc->email = $request->input('email');
-        $pc->verify_code = str_random(32);
+        $pc->verify_code = Str::random(32);
         $pc->permissions = $state;
         $pc->save();
 
@@ -103,13 +106,13 @@ class ParentalControlsController extends Controller
         return redirect($pc->manageUrl());
     }
 
-    public function inviteRegister(Request $request, $id, $code)
+    public function inviteRegister(Request $request, $id, $code): View
     {
         if ($request->user()) {
             $title = 'You cannot complete this action on this device.';
             $body = 'Please log out or use a different device or browser to complete the invitation registration.';
 
-            return view('errors.custom', compact('title', 'body'));
+            return view('errors.custom', ['title' => $title, 'body' => $body]);
         }
 
         $this->authPreflight($request, true, false);
@@ -117,16 +120,16 @@ class ParentalControlsController extends Controller
         $pc = ParentalControls::whereRaw('verify_code = BINARY ?', $code)->whereNull(['email_verified_at', 'child_id'])->findOrFail($id);
         abort_unless(User::whereId($pc->parent_id)->exists(), 404);
 
-        return view('settings.parental-controls.invite-register-form', compact('pc'));
+        return view('settings.parental-controls.invite-register-form', ['pc' => $pc]);
     }
 
-    public function inviteRegisterStore(Request $request, $id, $code)
+    public function inviteRegisterStore(Request $request, $id, $code): RedirectResponse|View
     {
         if ($request->user()) {
             $title = 'You cannot complete this action on this device.';
             $body = 'Please log out or use a different device or browser to complete the invitation registration.';
 
-            return view('errors.custom', compact('title', 'body'));
+            return view('errors.custom', ['title' => $title, 'body' => $body]);
         }
 
         $this->authPreflight($request, true, false);
@@ -165,17 +168,17 @@ class ParentalControlsController extends Controller
         return redirect('/i/web');
     }
 
-    public function cancelInvite(Request $request, $id)
+    public function cancelInvite(Request $request, $id): View
     {
         $this->authPreflight($request);
         $pc = ParentalControls::whereParentId($request->user()->id)
             ->whereNull(['email_verified_at', 'child_id'])
             ->findOrFail($id);
 
-        return view('settings.parental-controls.delete-invite', compact('pc'));
+        return view('settings.parental-controls.delete-invite', ['pc' => $pc]);
     }
 
-    public function cancelInviteHandle(Request $request, $id)
+    public function cancelInviteHandle(Request $request, $id): RedirectResponse
     {
         $this->authPreflight($request);
         $pc = ParentalControls::whereParentId($request->user()->id)
@@ -187,17 +190,17 @@ class ParentalControlsController extends Controller
         return redirect('/settings/parental-controls');
     }
 
-    public function stopManaging(Request $request, $id)
+    public function stopManaging(Request $request, $id): View
     {
         $this->authPreflight($request);
         $pc = ParentalControls::whereParentId($request->user()->id)
             ->whereNotNull(['email_verified_at', 'child_id'])
             ->findOrFail($id);
 
-        return view('settings.parental-controls.stop-managing', compact('pc'));
+        return view('settings.parental-controls.stop-managing', ['pc' => $pc]);
     }
 
-    public function stopManagingHandle(Request $request, $id)
+    public function stopManagingHandle(Request $request, $id): RedirectResponse
     {
         $this->authPreflight($request);
         $pc = ParentalControls::whereParentId($request->user()->id)
@@ -212,7 +215,7 @@ class ParentalControlsController extends Controller
         return redirect('/settings/parental-controls');
     }
 
-    protected function requestFormFields($request)
+    protected function requestFormFields($request): array
     {
         $state = [];
         $fields = [

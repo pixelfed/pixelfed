@@ -2,57 +2,63 @@
 
 namespace App\Jobs\DeletePipeline;
 
-use App\AccountInterstitial;
-use App\AccountLog;
-use App\Bookmark;
-use App\Collection;
-use App\Contact;
-use App\DirectMessage;
-use App\EmailVerification;
-use App\Follower;
-use App\FollowRequest;
-use App\HashtagFollow;
+use App\Jobs\Federation\FanoutAccountDeleteActivity;
 use App\Jobs\StatusPipeline\StatusDelete;
-use App\Like;
-use App\MediaTag;
-use App\Mention;
+use App\Models\AccountInterstitial;
+use App\Models\AccountLog;
+use App\Models\Bookmark;
+use App\Models\Collection;
+use App\Models\Contact;
 use App\Models\Conversation;
 use App\Models\CustomFilter;
+use App\Models\DirectMessage;
+use App\Models\EmailVerification;
+use App\Models\FeatureAuthorization;
+use App\Models\Follower;
+use App\Models\FollowRequest;
+use App\Models\HashtagFollow;
 use App\Models\ImportPost;
+use App\Models\Like;
+use App\Models\MediaTag;
+use App\Models\Mention;
+use App\Models\Notification;
+use App\Models\OauthClient;
 use App\Models\Poll;
 use App\Models\PollVote;
 use App\Models\Portfolio;
+use App\Models\Profile;
 use App\Models\ProfileAlias;
 use App\Models\ProfileMigration;
+use App\Models\ProfileSponsor;
+use App\Models\QuoteAuthorization;
 use App\Models\RemoteAuth;
 use App\Models\RemoteReport;
+use App\Models\Report;
+use App\Models\Status;
+use App\Models\StatusArchived;
+use App\Models\StatusEdit;
+use App\Models\StatusHashtag;
+use App\Models\StatusView;
+use App\Models\Story;
+use App\Models\StoryView;
+use App\Models\User;
+use App\Models\UserDevice;
+use App\Models\UserFilter;
 use App\Models\UserPronoun;
-use App\Notification;
-use App\OauthClient;
-use App\Profile;
-use App\ProfileSponsor;
-use App\Report;
+use App\Models\UserSetting;
+use App\Services\AccountRevocationService;
 use App\Services\AccountService;
+use App\Services\DirectMessageService;
 use App\Services\FollowerService;
 use App\Services\PublicTimelineService;
-use App\Status;
-use App\StatusArchived;
-use App\StatusHashtag;
-use App\StatusView;
-use App\Story;
-use App\StoryView;
-use App\User;
-use App\UserDevice;
-use App\UserFilter;
-use App\UserSetting;
-use DB;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
-use Storage;
+use Illuminate\Support\Facades\Storage;
 
 class DeleteAccountPipeline implements ShouldQueue
 {
@@ -93,6 +99,7 @@ class DeleteAccountPipeline implements ShouldQueue
 
         $profile = $user->profile;
         $id = $user->profile_id;
+        AccountRevocationService::revokeAll($user);
         $cloudStorageEnabled = (bool) config_cache('pixelfed.cloud_storage');
         $cloudDisk = config('filesystems.cloud');
 
@@ -118,7 +125,13 @@ class DeleteAccountPipeline implements ShouldQueue
             }
         }
 
-        Status::whereProfileId($id)->chunk(50, function ($statuses) {
+        // chunkById, not chunk: StatusDelete soft-deletes the rows it is
+        // handed, so OFFSET paging would skip half the set as the live rows
+        // shift under it. Keyset paging on the monotonic id is stable.
+        // chunkById, not chunk: StatusDelete soft-deletes the rows it is
+        // handed, so OFFSET paging would skip half the set as the live rows
+        // shift under it. Keyset paging on the monotonic id is stable.
+        Status::whereProfileId($id)->chunkById(50, function ($statuses) {
             foreach ($statuses as $status) {
                 StatusDelete::dispatch($status);
             }
@@ -130,6 +143,10 @@ class DeleteAccountPipeline implements ShouldQueue
 
         StatusView::whereProfileId($id)->delete();
 
+        // Purge edit history (prior caption/CW versions). status_edits has no
+        // FK/cascade and StatusEdit has no SoftDeletes, so this is a hard delete.
+        StatusEdit::whereProfileId($id)->delete();
+
         ProfileAlias::whereProfileId($id)->delete();
 
         ProfileMigration::whereProfileId($id)->delete();
@@ -138,7 +155,7 @@ class DeleteAccountPipeline implements ShouldQueue
 
         RemoteAuth::whereUserId($user->id)->delete();
 
-        AccountLog::whereItemType('App\User')->whereItemId($user->id)->forceDelete();
+        AccountLog::whereItemType(User::class)->whereItemId($user->id)->forceDelete();
 
         AccountInterstitial::whereUserId($user->id)->delete();
 
@@ -155,9 +172,12 @@ class DeleteAccountPipeline implements ShouldQueue
         MediaTag::whereProfileId($id)->delete();
         Bookmark::whereProfileId($id)->forceDelete();
         EmailVerification::whereUserId($user->id)->forceDelete();
-        StatusHashtag::whereProfileId($id)->delete();
+        // Model-based delete so StatusHashtagObserver::deleted() runs and
+        // decrements hashtags.cached_count (a query-builder delete bypasses it).
+        StatusHashtag::whereProfileId($id)->get()->each->delete();
         DirectMessage::whereFromId($id)->orWhere('to_id', $id)->delete();
         Conversation::whereFromId($id)->orWhere('to_id', $id)->delete();
+        app(DirectMessageService::class)->purgeProfile($id);
         StatusArchived::whereProfileId($id)->delete();
         UserPronoun::whereProfileId($id)->delete();
         FollowRequest::whereFollowingId($id)
@@ -174,17 +194,18 @@ class DeleteAccountPipeline implements ShouldQueue
         Mention::whereProfileId($id)->forceDelete();
 
         StoryView::whereProfileId($id)->delete();
-        $stories = Story::whereProfileId($id)->get();
-        foreach ($stories as $story) {
+        Story::whereProfileId($id)->cursor()->each(function ($story) {
             $path = storage_path('app/'.$story->path);
             if (is_file($path)) {
                 unlink($path);
             }
             $story->forceDelete();
-        }
+        });
 
         UserDevice::whereUserId($user->id)->forceDelete();
-        UserFilter::whereUserId($user->id)->forceDelete();
+        UserFilter::whereUserId($id)->forceDelete();
+        FeatureAuthorization::whereProfileId($id)->delete();
+        QuoteAuthorization::whereProfileId($id)->delete();
         UserSetting::whereUserId($user->id)->forceDelete();
 
         Mention::whereProfileId($id)->forceDelete();
@@ -192,11 +213,10 @@ class DeleteAccountPipeline implements ShouldQueue
             ->orWhere('actor_id', $id)
             ->forceDelete();
 
-        $collections = Collection::whereProfileId($id)->get();
-        foreach ($collections as $collection) {
+        Collection::whereProfileId($id)->cursor()->each(function ($collection) {
             $collection->items()->delete();
             $collection->delete();
-        }
+        });
         Contact::whereUserId($user->id)->delete();
         HashtagFollow::whereUserId($user->id)->delete();
         OauthClient::whereUserId($user->id)->delete();
@@ -205,10 +225,15 @@ class DeleteAccountPipeline implements ShouldQueue
         ProfileSponsor::whereProfileId($id)->delete();
 
         Report::whereUserId($user->id)->forceDelete();
-        PublicTimelineService::warmCache(true, 400);
+        PublicTimelineService::deleteByProfileId($id);
         $this->deleteUserColumns($user);
         AccountService::del($user->profile_id);
         Profile::whereUserId($user->id)->delete();
+
+        // Last, so remote servers only hear about it once the account is
+        // really gone here. Every path that deletes a local account runs
+        // this pipeline, so they all federate from this one place.
+        FanoutAccountDeleteActivity::dispatch((int) $id)->onQueue('delete');
     }
 
     protected function deleteUserColumns($user)

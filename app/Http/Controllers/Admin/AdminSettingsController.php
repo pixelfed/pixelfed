@@ -4,18 +4,18 @@ namespace App\Http\Controllers\Admin;
 
 use App\Models\ConfigCache;
 use App\Models\InstanceActor;
-use App\Page;
-use App\Profile;
+use App\Models\Page;
+use App\Models\Profile;
+use App\Models\User;
 use App\Services\AccountService;
 use App\Services\AdminSettingsService;
 use App\Services\ConfigCacheService;
 use App\Services\FilesystemService;
-use App\User;
 use App\Util\Site\Config;
-use Artisan;
-use Cache;
-use DB;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Artisan;
+use Illuminate\Support\Facades\Cache;
+use Illuminate\Support\Facades\DB;
 
 trait AdminSettingsController
 {
@@ -39,21 +39,7 @@ trait AdminSettingsController
         $regState = $openReg ? 'open' : ($curOnboarding ? 'filtered' : 'closed');
         $accountMigration = (bool) config_cache('federation.migration');
 
-        return view('admin.settings.home', compact(
-            'jpeg',
-            'png',
-            'gif',
-            'mp4',
-            'webp',
-            'rules',
-            'cloud_storage',
-            'cloud_disk',
-            'cloud_ready',
-            'availableAdmins',
-            'currentAdmin',
-            'regState',
-            'accountMigration'
-        ));
+        return view('admin.settings.home', ['jpeg' => $jpeg, 'png' => $png, 'gif' => $gif, 'mp4' => $mp4, 'webp' => $webp, 'rules' => $rules, 'cloud_storage' => $cloud_storage, 'cloud_disk' => $cloud_disk, 'cloud_ready' => $cloud_ready, 'availableAdmins' => $availableAdmins, 'currentAdmin' => $currentAdmin, 'regState' => $regState, 'accountMigration' => $accountMigration]);
     }
 
     public function settingsHomeStore(Request $request)
@@ -190,11 +176,11 @@ trait AdminSettingsController
         foreach ($bools as $key => $value) {
             $active = $request->input($key) == 'on';
 
-            if ($key == 'activitypub' && $active && ! InstanceActor::exists()) {
+            if ($key === 'activitypub' && $active && ! InstanceActor::exists()) {
                 Artisan::call('instance:actor');
             }
 
-            if ($key == 'mobile_apis' &&
+            if ($key === 'mobile_apis' &&
                 $active &&
                 ! file_exists(storage_path('oauth-public.key')) &&
                 ! config_cache('passport.public_key') &&
@@ -249,7 +235,7 @@ trait AdminSettingsController
         $path = storage_path('app/'.config('app.name'));
         $files = is_dir($path) ? new \DirectoryIterator($path) : [];
 
-        return view('admin.settings.backups', compact('files'));
+        return view('admin.settings.backups', ['files' => $files]);
     }
 
     public function settingsMaintenance(Request $request)
@@ -261,7 +247,7 @@ trait AdminSettingsController
     {
         $storage = [];
 
-        return view('admin.settings.storage', compact('storage'));
+        return view('admin.settings.storage', ['storage' => $storage]);
     }
 
     public function settingsFeatures(Request $request)
@@ -273,7 +259,7 @@ trait AdminSettingsController
     {
         $pages = Page::orderByDesc('updated_at')->paginate(10);
 
-        return view('admin.pages.home', compact('pages'));
+        return view('admin.pages.home', ['pages' => $pages]);
     }
 
     public function settingsPageEdit(Request $request)
@@ -299,20 +285,13 @@ trait AdminSettingsController
                 break;
 
             case 'mysql':
-                $exp = DB::raw('select version()');
-                $expQuery = $exp->getValue(DB::connection()->getQueryGrammar());
-                $sys['database'] = [
-                    'name' => 'MySQL',
-                    'version' => DB::select($expQuery)[0]->{'version()'},
-                ];
-                break;
-
             case 'mariadb':
                 $exp = DB::raw('select version()');
                 $expQuery = $exp->getValue(DB::connection()->getQueryGrammar());
+                $version = DB::select($expQuery)[0]->{'version()'};
                 $sys['database'] = [
-                    'name' => 'MariaDB',
-                    'version' => DB::select($expQuery)[0]->{'version()'},
+                    'name' => stripos($version, 'mariadb') !== false ? 'MariaDB' : 'MySQL',
+                    'version' => $version,
                 ];
                 break;
 
@@ -324,7 +303,7 @@ trait AdminSettingsController
                 break;
         }
 
-        return view('admin.settings.system', compact('sys'));
+        return view('admin.settings.system', ['sys' => $sys]);
     }
 
     public function settingsApiFetch(Request $request)
@@ -394,15 +373,14 @@ trait AdminSettingsController
 
         if (! $rules) {
             return [];
-        } else {
-            $json = json_decode($rules, true);
-            $idx = array_search($val, $json);
-            if ($idx !== false) {
-                unset($json[$idx]);
-                $json = array_values($json);
-            }
-            ConfigCacheService::put('app.rules', json_encode(array_values($json)));
         }
+        $json = json_decode($rules, true);
+        $idx = array_search($val, $json);
+        if ($idx !== false) {
+            unset($json[$idx]);
+            $json = array_values($json);
+        }
+        ConfigCacheService::put('app.rules', json_encode(array_values($json)));
 
         Cache::forget('api:v1:instance-data:rules');
         Cache::forget('api:v1:instance-data-response-v1');
@@ -418,9 +396,8 @@ trait AdminSettingsController
 
         if (! $rules) {
             return [];
-        } else {
-            ConfigCacheService::put('app.rules', json_encode([]));
         }
+        ConfigCacheService::put('app.rules', json_encode([]));
 
         Cache::forget('api:v1:instance-data:rules');
         Cache::forget('api:v1:instance-data-response-v1');
@@ -526,7 +503,6 @@ trait AdminSettingsController
 
             default:
                 abort(404);
-                break;
         }
     }
 
@@ -556,9 +532,8 @@ trait AdminSettingsController
                 $cloud_ready = ! empty(config('filesystems.disks.'.$cloud_disk.'.key')) && ! empty(config('filesystems.disks.'.$cloud_disk.'.secret'));
                 if (! $cloud_ready) {
                     return redirect()->back()->withErrors(['cloud_storage' => 'Must configure cloud storage before enabling!']);
-                } else {
-                    ConfigCacheService::put('pixelfed.cloud_storage', true);
                 }
+                ConfigCacheService::put('pixelfed.cloud_storage', true);
             }
         }
         ConfigCacheService::put('federation.activitypub.authorized_fetch', $request->boolean('authorized_fetch'));
@@ -612,7 +587,8 @@ trait AdminSettingsController
         $mediaTypes = $request->input('media_types');
         $mediaArray = explode(',', $mediaTypes);
         foreach ($mediaArray as $mediaType) {
-            if (! in_array($mediaType, ['image/jpeg', 'image/png', 'image/gif', 'image/webp', 'image/avif', 'image/heic', 'video/mp4', 'video/mov'])) {
+            // GLITCH MODIFIED: accept video/quicktime, the real .mov mime type (video/mov kept for already-saved settings)
+            if (! in_array($mediaType, ['image/jpeg', 'image/png', 'image/gif', 'image/webp', 'image/avif', 'image/heic', 'video/mp4', 'video/quicktime', 'video/mov'])) {
                 return redirect()->back()->withErrors(['media_types' => 'Invalid media type']);
             }
         }
@@ -654,7 +630,7 @@ trait AdminSettingsController
         return $request->all();
     }
 
-    public function settingsApiUpdatePostsType($request)
+    public function settingsApiUpdatePostsType($request): array
     {
         $this->validate($request, [
             'max_caption_length' => 'required|integer|min:5|max:10000',
@@ -675,7 +651,7 @@ trait AdminSettingsController
         return $res;
     }
 
-    public function settingsApiUpdatePlatformType($request)
+    public function settingsApiUpdatePlatformType($request): array
     {
         $this->validate($request, [
             'allow_app_registration' => 'required',
@@ -686,10 +662,13 @@ trait AdminSettingsController
             'allow_post_embeds' => 'required',
             'allow_profile_embeds' => 'required',
             'captcha_enabled' => 'required',
+            'captcha_driver' => 'nullable|in:hcaptcha,turnstile,cap',
             'captcha_on_login' => 'required_if_accepted:captcha_enabled',
             'captcha_on_register' => 'required_if_accepted:captcha_enabled',
-            'captcha_secret' => 'required_if_accepted:captcha_enabled',
-            'captcha_sitekey' => 'required_if_accepted:captcha_enabled',
+            // Provider credentials are optional here (masked values are sent on
+            // re-save); the save logic below only writes fresh, non-masked values.
+            'captcha_hcaptcha_secret' => 'nullable|string',
+            'captcha_hcaptcha_sitekey' => 'nullable|string',
             'custom_emoji_enabled' => 'required',
         ]);
 
@@ -703,17 +682,51 @@ trait AdminSettingsController
         ConfigCacheService::put('federation.custom_emoji.enabled', $request->boolean('custom_emoji_enabled'));
         $captcha = $request->boolean('captcha_enabled');
         if ($captcha) {
-            $secret = $request->input('captcha_secret');
-            $sitekey = $request->input('captcha_sitekey');
-            if (config_cache('captcha.secret') != $secret && strpos($secret, '*') === false) {
-                ConfigCacheService::put('captcha.secret', $secret);
+            // Persist the selected provider (defaults to hcaptcha).
+            $driver = $request->input('captcha_driver', 'hcaptcha');
+            if (! in_array($driver, ['hcaptcha', 'turnstile', 'cap'], true)) {
+                $driver = 'hcaptcha';
             }
-            if (config_cache('captcha.sitekey') != $sitekey && strpos($sitekey, '*') === false) {
-                ConfigCacheService::put('captcha.sitekey', $sitekey);
+            ConfigCacheService::put('captcha.driver', $driver);
+
+            // Only overwrite a secret/credential when a fresh (non-masked,
+            // non-empty) value is submitted. Masked values contain '*'.
+            $putIfChanged = function (string $key, ?string $value): void {
+                if ($value === null || $value === '' || str_contains($value, '*')) {
+                    return;
+                }
+                if (config_cache($key) != $value) {
+                    ConfigCacheService::put($key, $value);
+                }
+            };
+
+            // hCaptcha credentials. Persist to the canonical captcha.hcaptcha.*
+            // keys. CaptchaServiceProvider hydrates the top-level captcha.secret
+            // / captcha.sitekey that the buzz/laravel-h-captcha package reads.
+            $putIfChanged('captcha.hcaptcha.secret', $request->input('captcha_hcaptcha_secret'));
+            $putIfChanged('captcha.hcaptcha.sitekey', $request->input('captcha_hcaptcha_sitekey'));
+
+            // Turnstile credentials (sitekey is public, store as-is when present)
+            $putIfChanged('captcha.turnstile.secret', $request->input('captcha_turnstile_secret'));
+            if ($request->filled('captcha_turnstile_sitekey')) {
+                ConfigCacheService::put('captcha.turnstile.sitekey', $request->input('captcha_turnstile_sitekey'));
             }
+
+            // Cap credentials (endpoint + sitekey are public, store as-is)
+            $putIfChanged('captcha.cap.secret', $request->input('captcha_cap_secret'));
+            if ($request->filled('captcha_cap_endpoint')) {
+                ConfigCacheService::put('captcha.cap.endpoint', $request->input('captcha_cap_endpoint'));
+            }
+            if ($request->filled('captcha_cap_sitekey')) {
+                ConfigCacheService::put('captcha.cap.sitekey', $request->input('captcha_cap_sitekey'));
+            }
+
             ConfigCacheService::put('captcha.active.login', $request->boolean('captcha_on_login'));
             ConfigCacheService::put('captcha.active.register', $request->boolean('captcha_on_register'));
-            ConfigCacheService::put('captcha.triggers.login.enabled', $request->boolean('captcha_on_login'));
+            ConfigCacheService::put('captcha.active.forgot_password', $request->boolean('captcha_on_forgot_password'));
+            ConfigCacheService::put('captcha.active.password_reset', $request->boolean('captcha_on_password_reset'));
+            ConfigCacheService::put('captcha.active.forgot_email', $request->boolean('captcha_on_forgot_email'));
+            ConfigCacheService::put('captcha.active.curated_register', $request->boolean('captcha_on_curated_register'));
             ConfigCacheService::put('captcha.enabled', true);
         } else {
             ConfigCacheService::put('captcha.enabled', false);
@@ -727,10 +740,20 @@ trait AdminSettingsController
             'allow_post_embeds' => $request->boolean('allow_post_embeds'),
             'allow_profile_embeds' => $request->boolean('allow_profile_embeds'),
             'captcha_enabled' => $request->boolean('captcha_enabled'),
+            'captcha_driver' => $request->input('captcha_driver', 'hcaptcha'),
             'captcha_on_login' => $request->boolean('captcha_on_login'),
             'captcha_on_register' => $request->boolean('captcha_on_register'),
-            'captcha_secret' => $request->input('captcha_secret'),
-            'captcha_sitekey' => $request->input('captcha_sitekey'),
+            'captcha_on_forgot_password' => $request->boolean('captcha_on_forgot_password'),
+            'captcha_on_password_reset' => $request->boolean('captcha_on_password_reset'),
+            'captcha_on_forgot_email' => $request->boolean('captcha_on_forgot_email'),
+            'captcha_on_curated_register' => $request->boolean('captcha_on_curated_register'),
+            'captcha_hcaptcha_secret' => $request->input('captcha_hcaptcha_secret'),
+            'captcha_hcaptcha_sitekey' => $request->input('captcha_hcaptcha_sitekey'),
+            'captcha_turnstile_secret' => $request->input('captcha_turnstile_secret'),
+            'captcha_turnstile_sitekey' => $request->input('captcha_turnstile_sitekey'),
+            'captcha_cap_endpoint' => $request->input('captcha_cap_endpoint'),
+            'captcha_cap_sitekey' => $request->input('captcha_cap_sitekey'),
+            'captcha_cap_secret' => $request->input('captcha_cap_secret'),
             'custom_emoji_enabled' => $request->boolean('custom_emoji_enabled'),
         ];
         Cache::forget('api:v1:instance-data:rules');
@@ -771,7 +794,7 @@ trait AdminSettingsController
                 } else {
                     $names = $adminAutofollowAccounts;
                 }
-                if (! $names || count($names) == 0) {
+                if (! $names || count($names) === 0) {
                     return response()->json(['message' => 'You need to assign autofollow accounts before you can enable it.'], 400);
                 }
                 if (count($names) > 5) {
@@ -825,10 +848,16 @@ trait AdminSettingsController
             'disk_config.url' => 'nullable',
         ]);
 
-        ConfigCacheService::put('pixelfed.cloud_storage', $request->input('primary_disk') === 'cloud');
+        $primaryDisk = $request->input('primary_disk');
         $res = [
-            'primary_disk' => $request->input('primary_disk'),
+            'primary_disk' => $primaryDisk,
         ];
+
+        // Switching to local storage never needs credential verification.
+        if ($primaryDisk === 'local') {
+            ConfigCacheService::put('pixelfed.cloud_storage', false);
+        }
+
         if ($request->has('update_disk')) {
             $res['disk_config'] = $request->input('disk_config');
             $changes = [];
@@ -842,12 +871,12 @@ trait AdminSettingsController
             $visibility = $request->input('disk_config.visibility');
             $url = $request->input('disk_config.url');
             $endpoint = $request->input('disk_config.endpoint');
-            if (strpos($key, '*') === false && $key != config_cache($dkey.'key')) {
+            if (! str_contains($key, '*') && $key != config_cache($dkey.'key')) {
                 array_push($changes, 'key');
             } else {
                 $ckey = config_cache($dkey.'key');
             }
-            if (strpos($secret, '*') === false && $secret != config_cache($dkey.'secret')) {
+            if (! str_contains($secret, '*') && $secret != config_cache($dkey.'secret')) {
                 array_push($changes, 'secret');
             } else {
                 $csecret = config_cache($dkey.'secret');
@@ -889,6 +918,26 @@ trait AdminSettingsController
             }
             $res['changes'] = json_encode($changes);
         }
+
+        // Only flip cloud_storage on AFTER any credential verification has
+        // passed, and only when the cloud disk the driver actually uses is
+        // configured. Mirrors settingsApiUpdateHomeType's cloud_ready guard so
+        // the pipeline is never routed to an unverified cloud disk.
+        if ($primaryDisk === 'cloud') {
+            $cloudDisk = config('filesystems.cloud');
+            $cloudReady = ! empty(config('filesystems.disks.'.$cloudDisk.'.key'))
+                && ! empty(config('filesystems.disks.'.$cloudDisk.'.secret'));
+
+            if (! $cloudReady) {
+                return response()->json([
+                    'error' => true,
+                    'message' => 'Must configure cloud storage before enabling!',
+                ], 400);
+            }
+
+            ConfigCacheService::put('pixelfed.cloud_storage', true);
+        }
+
         Cache::forget('api:v1:instance-data:rules');
         Cache::forget('api:v1:instance-data-response-v1');
         Cache::forget('api:v2:instance-data-response-v2');

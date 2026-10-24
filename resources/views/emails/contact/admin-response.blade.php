@@ -4,7 +4,7 @@ Hello **&commat;{{$contact->user->username}}**,
 You contacted the admin team of {{config('pixelfed.domain.app')}} with the following inquiry:
 
 <x-mail::panel>
-<i>{{str_limit($contact->message, 80)}}</i>
+<i>{{Str::limit($contact->message, 80)}}</i>
 </x-mail::panel>
 
 <x-mail::button :url="$url" color="primary">

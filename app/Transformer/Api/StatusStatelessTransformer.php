@@ -3,6 +3,7 @@
 namespace App\Transformer\Api;
 
 use App\Models\CustomEmoji;
+use App\Models\Status;
 use App\Services\AccountService;
 use App\Services\HashidService;
 use App\Services\LikeService;
@@ -10,20 +11,21 @@ use App\Services\MediaService;
 use App\Services\MediaTagService;
 use App\Services\PollService;
 use App\Services\StatusHashtagService;
-use App\Services\StatusLabelService;
 use App\Services\StatusMentionService;
 use App\Services\StatusService;
-use App\Status;
 use App\Util\Lexer\Autolink;
 use League\Fractal;
 
 class StatusStatelessTransformer extends Fractal\TransformerAbstract
 {
-    public function transform(Status $status)
+    public function transform(Status $status): array
     {
         $taggedPeople = MediaTagService::get($status->id);
         $poll = $status->type === 'poll' ? PollService::get($status->id) : null;
-        $rendered = $status->caption ? nl2br(Autolink::create()->autolink($status->caption)) : '';
+        // Remote posts keep the HTML they arrived with, so the link targets survive
+        $rendered = $status->local || ! $status->rendered
+            ? ($status->caption ? nl2br(Autolink::create()->autolink($status->caption)) : '')
+            : $status->rendered;
 
         return [
             '_v' => 1,
@@ -34,7 +36,7 @@ class StatusStatelessTransformer extends Fractal\TransformerAbstract
             'url' => $status->url(),
             'in_reply_to_id' => $status->in_reply_to_id ? (string) $status->in_reply_to_id : null,
             'in_reply_to_account_id' => $status->in_reply_to_profile_id ? (string) $status->in_reply_to_profile_id : null,
-            'reblog' => $status->reblog_of_id ? StatusService::get($status->reblog_of_id, false) : null,
+            'reblog' => $status->reblog_of_id ? StatusService::get($status->reblog_of_id, true) : null,
             'content' => $rendered,
             'content_text' => $status->caption,
             'created_at' => str_replace('+00:00', 'Z', $status->created_at->format(DATE_RFC3339_EXTENDED)),
@@ -62,7 +64,6 @@ class StatusStatelessTransformer extends Fractal\TransformerAbstract
             'place' => $status->place,
             'local' => (bool) $status->local,
             'taggedPeople' => $taggedPeople,
-            'label' => StatusLabelService::get($status),
             'liked_by' => LikeService::likedBy($status),
             'media_attachments' => MediaService::get($status->id),
             'account' => AccountService::get($status->profile_id, true),

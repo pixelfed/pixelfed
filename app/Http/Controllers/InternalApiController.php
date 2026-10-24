@@ -2,24 +2,26 @@
 
 namespace App\Http\Controllers;
 
-use App\AccountInterstitial;
-use App\Bookmark;
-use App\DirectMessage;
-use App\DiscoverCategory;
-use App\Follower;
 use App\Jobs\ModPipeline\HandleSpammerPipeline;
-use App\Profile;
+use App\Models\AccountInterstitial;
+use App\Models\Bookmark;
+use App\Models\DirectMessage;
+use App\Models\DiscoverCategory;
+use App\Models\Profile;
+use App\Models\Status;
+use App\Models\User;
 use App\Services\BookmarkService;
 use App\Services\DiscoverService;
+use App\Services\FollowerService;
 use App\Services\ModLogService;
+use App\Services\NetworkTimelineService;
 use App\Services\PublicTimelineService;
-use App\Services\StatusService;
+use App\Services\StatusService; // StatusMediaContainerTransformer,
 use App\Services\UserFilterService;
-use App\Status; // StatusMediaContainerTransformer,
 use App\Transformer\Api\StatusTransformer;
-use App\User;
-use Auth;
-use Cache;
+use Illuminate\Contracts\View\View;
+use Illuminate\Http\JsonResponse;
+use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Redis;
 use Illuminate\Validation\Rule;
@@ -38,15 +40,15 @@ class InternalApiController extends Controller
     }
 
     // deprecated v2 compose api
-    public function compose(Request $request)
+    public function compose(Request $request): RedirectResponse
     {
         return redirect('/');
     }
 
     // deprecated
-    public function discover(Request $request) {}
+    public function discover(Request $request): void {}
 
-    public function discoverPosts(Request $request)
+    public function discoverPosts(Request $request): JsonResponse
     {
         $pid = $request->user()->profile_id;
         $filters = UserFilterService::filters($pid);
@@ -63,12 +65,12 @@ class InternalApiController extends Controller
             ->take(12)
             ->values();
 
-        return response()->json(compact('posts'));
+        return response()->json(['posts' => $posts]);
     }
 
-    public function directMessage(Request $request, $profileId, $threadId)
+    public function directMessage(Request $request, $profileId, $threadId): JsonResponse
     {
-        $profile = Auth::user()->profile;
+        $profile = $request->user()->profile;
 
         if ($profileId != $profile->id) {
             abort(403);
@@ -83,29 +85,41 @@ class InternalApiController extends Controller
             ->orderBy('created_at', 'asc')
             ->paginate(30);
 
-        return response()->json(compact('msg', 'profile', 'thread'), 200, [], JSON_PRETTY_PRINT);
+        return response()->json(['msg' => $msg, 'profile' => $profile, 'thread' => $thread], 200, [], JSON_PRETTY_PRINT);
     }
 
-    public function statusReplies(Request $request, int $id)
+    public function statusReplies(Request $request, int $id): JsonResponse
     {
         $this->validate($request, [
             'limit' => 'nullable|int|min:1|max:6',
         ]);
+        $user = $request->user();
         $parent = Status::whereScope('public')->findOrFail($id);
         $limit = $request->input('limit') ?? 3;
         $children = Status::whereInReplyToId($parent->id)
             ->orderBy('created_at', 'desc')
-            ->take($limit)
-            ->get();
+            ->take($limit * 3)
+            ->get()
+            ->filter(function ($s) use ($user) {
+                if (in_array($s->scope, ['public', 'unlisted'])) {
+                    return true;
+                }
+                if ($s->scope === 'private') {
+                    return $user && ($s->profile_id === $user->profile_id
+                        || FollowerService::follows($user->profile_id, $s->profile_id));
+                }
+
+                return false;
+            })->take($limit);
         $resource = new Fractal\Resource\Collection($children, new StatusTransformer);
         $res = $this->fractal->createData($resource)->toArray();
 
         return response()->json($res);
     }
 
-    public function stories(Request $request) {}
+    public function stories(Request $request): void {}
 
-    public function discoverCategories(Request $request)
+    public function discoverCategories(Request $request): JsonResponse
     {
         $categories = DiscoverCategory::whereActive(true)->orderBy('order')->take(10)->get();
         $res = $categories->map(function ($item) {
@@ -119,9 +133,9 @@ class InternalApiController extends Controller
         return response()->json($res);
     }
 
-    public function modAction(Request $request)
+    public function modAction(Request $request): array
     {
-        abort_unless(Auth::user()->is_admin, 400);
+        abort_unless($request->user()->is_admin, 400);
         $this->validate($request, [
             'action' => [
                 'required',
@@ -154,7 +168,7 @@ class InternalApiController extends Controller
                 $status->is_nsfw = true;
                 $status->save();
                 ModLogService::boot()
-                    ->user(Auth::user())
+                    ->user($request->user())
                     ->objectUid($status->profile->user_id)
                     ->objectId($status->id)
                     ->objectType('App\Status::class')
@@ -167,31 +181,7 @@ class InternalApiController extends Controller
                     ->save();
 
                 if ($status->uri == null) {
-                    $media = $status->media;
-                    $ai = new AccountInterstitial;
-                    $ai->user_id = $status->profile->user_id;
-                    $ai->type = 'post.cw';
-                    $ai->view = 'account.moderation.post.cw';
-                    $ai->item_type = 'App\Status';
-                    $ai->item_id = $status->id;
-                    $ai->has_media = (bool) $media->count();
-                    $ai->blurhash = $media->count() ? $media->first()->blurhash : null;
-                    $ai->meta = json_encode([
-                        'caption' => $status->caption,
-                        'created_at' => $status->created_at,
-                        'type' => $status->type,
-                        'url' => $status->url(),
-                        'is_nsfw' => $status->is_nsfw,
-                        'scope' => $status->scope,
-                        'reblog' => $status->reblog_of_id,
-                        'likes_count' => $status->likes_count,
-                        'reblogs_count' => $status->reblogs_count,
-                    ]);
-                    $ai->save();
-
-                    $u = $status->profile->user;
-                    $u->has_interstitial = true;
-                    $u->save();
+                    AccountInterstitial::createFromStatus($status, 'post.cw', 'account.moderation.post.cw');
                 }
                 break;
 
@@ -199,7 +189,7 @@ class InternalApiController extends Controller
                 $status->is_nsfw = false;
                 $status->save();
                 ModLogService::boot()
-                    ->user(Auth::user())
+                    ->user($request->user())
                     ->objectUid($status->profile->user_id)
                     ->objectId($status->id)
                     ->objectType('App\Status::class')
@@ -211,21 +201,31 @@ class InternalApiController extends Controller
                     ->accessLevel('admin')
                     ->save();
                 if ($status->uri == null) {
-                    $ai = AccountInterstitial::whereUserId($status->profile->user_id)
+                    AccountInterstitial::whereUserId($status->profile->user_id)
                         ->whereType('post.cw')
                         ->whereItemId($status->id)
-                        ->whereItemType('App\Status')
-                        ->first();
-                    $ai->delete();
+                        ->whereItemType(Status::class)
+                        ->delete();
                 }
-                break;
+
+                StatusService::del($status->id);
+
+                if ($status->scope === 'public' && $status->in_reply_to_id == null && $status->reblog_of_id == null) {
+                    if ($status->uri) {
+                        NetworkTimelineService::add($status->id);
+                    } else {
+                        PublicTimelineService::add($status->id);
+                    }
+                }
+
+                return ['msg' => 200];
 
             case 'unlist':
                 $status->scope = $status->visibility = 'unlisted';
                 $status->save();
                 PublicTimelineService::del($status->id);
                 ModLogService::boot()
-                    ->user(Auth::user())
+                    ->user($request->user())
                     ->objectUid($status->profile->user_id)
                     ->objectId($status->id)
                     ->objectType('App\Status::class')
@@ -238,38 +238,14 @@ class InternalApiController extends Controller
                     ->save();
 
                 if ($status->uri == null) {
-                    $media = $status->media;
-                    $ai = new AccountInterstitial;
-                    $ai->user_id = $status->profile->user_id;
-                    $ai->type = 'post.unlist';
-                    $ai->view = 'account.moderation.post.unlist';
-                    $ai->item_type = 'App\Status';
-                    $ai->item_id = $status->id;
-                    $ai->has_media = (bool) $media->count();
-                    $ai->blurhash = $media->count() ? $media->first()->blurhash : null;
-                    $ai->meta = json_encode([
-                        'caption' => $status->caption,
-                        'created_at' => $status->created_at,
-                        'type' => $status->type,
-                        'url' => $status->url(),
-                        'is_nsfw' => $status->is_nsfw,
-                        'scope' => $status->scope,
-                        'reblog' => $status->reblog_of_id,
-                        'likes_count' => $status->likes_count,
-                        'reblogs_count' => $status->reblogs_count,
-                    ]);
-                    $ai->save();
-
-                    $u = $status->profile->user;
-                    $u->has_interstitial = true;
-                    $u->save();
+                    AccountInterstitial::createFromStatus($status, 'post.unlist', 'account.moderation.post.unlist');
                 }
                 break;
 
             case 'spammer':
                 HandleSpammerPipeline::dispatch($status->profile);
                 ModLogService::boot()
-                    ->user(Auth::user())
+                    ->user($request->user())
                     ->objectUid($status->profile->user_id)
                     ->objectId($status->id)
                     ->objectType('App\User::class')
@@ -288,12 +264,12 @@ class InternalApiController extends Controller
         return ['msg' => 200];
     }
 
-    public function composePost(Request $request)
+    public function composePost(Request $request): void
     {
         abort(400, 'Endpoint deprecated');
     }
 
-    public function bookmarks(Request $request)
+    public function bookmarks(Request $request): JsonResponse
     {
         $pid = $request->user()->profile_id;
         $res = Bookmark::whereProfileId($pid)
@@ -320,7 +296,7 @@ class InternalApiController extends Controller
         return response()->json($res);
     }
 
-    public function accountStatuses(Request $request, $id)
+    public function accountStatuses(Request $request, $id): JsonResponse
     {
         $this->validate($request, [
             'only_media' => 'nullable',
@@ -342,25 +318,17 @@ class InternalApiController extends Controller
             ['photo', 'photo:album', 'video', 'video:album', 'share', 'reply'];
 
         if ($profile->is_private) {
-            if (! Auth::check()) {
+            if (! $request->user()) {
                 return response()->json([]);
             }
-            $pid = Auth::user()->profile->id;
-            $following = Cache::remember('profile:following:'.$pid, now()->addMinutes(1440), function () use ($pid) {
-                $following = Follower::whereProfileId($pid)->pluck('following_id');
-
-                return $following->push($pid)->toArray();
-            });
-            $visibility = in_array($profile->id, $following) == true ? ['public', 'unlisted', 'private'] : [];
+            $pid = $request->user()->profile->id;
+            $following = FollowerService::getFollowingIds($pid);
+            $visibility = in_array($profile->id, $following) === true ? ['public', 'unlisted', 'private'] : [];
         } else {
-            if (Auth::check()) {
-                $pid = Auth::user()->profile->id;
-                $following = Cache::remember('profile:following:'.$pid, now()->addMinutes(1440), function () use ($pid) {
-                    $following = Follower::whereProfileId($pid)->pluck('following_id');
-
-                    return $following->push($pid)->toArray();
-                });
-                $visibility = in_array($profile->id, $following) == true ? ['public', 'unlisted', 'private'] : ['public', 'unlisted'];
+            if ($request->user() !== null) {
+                $pid = $request->user()->profile->id;
+                $following = FollowerService::getFollowingIds($pid);
+                $visibility = in_array($profile->id, $following) === true ? ['public', 'unlisted', 'private'] : ['public', 'unlisted'];
             } else {
                 $visibility = ['public', 'unlisted'];
             }
@@ -372,6 +340,7 @@ class InternalApiController extends Controller
             'id',
             'uri',
             'caption',
+            'rendered',
             'profile_id',
             'type',
             'in_reply_to_id',
@@ -397,25 +366,25 @@ class InternalApiController extends Controller
         return response()->json($res);
     }
 
-    public function remoteProfile(Request $request, $id)
+    public function remoteProfile(Request $request, $id): RedirectResponse
     {
         return redirect('/i/web/profile/'.$id);
     }
 
-    public function remoteStatus(Request $request, $profileId, $statusId)
+    public function remoteStatus(Request $request, $profileId, $statusId): RedirectResponse
     {
         return redirect('/i/web/post/'.$statusId);
     }
 
-    public function requestEmailVerification(Request $request)
+    public function requestEmailVerification(Request $request): View
     {
         $pid = $request->user()->profile_id;
         $exists = Redis::sismember('email:manual', $pid);
 
-        return view('account.email.request_verification', compact('exists'));
+        return view('account.email.request_verification', ['exists' => $exists]);
     }
 
-    public function requestEmailVerificationStore(Request $request)
+    public function requestEmailVerificationStore(Request $request): RedirectResponse
     {
         $pid = $request->user()->profile_id;
         Redis::sadd('email:manual', $pid);

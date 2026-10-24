@@ -5,24 +5,22 @@ namespace App\Http\Controllers\OAuth;
 use Illuminate\Http\Request;
 use Laravel\Passport\Http\Controllers\ApproveAuthorizationController;
 use League\OAuth2\Server\Exception\OAuthServerException;
-use Nyholm\Psr7\Response as Psr7Response;
+use League\OAuth2\Server\RequestTypes\AuthorizationRequest;
+use Psr\Http\Message\ResponseInterface;
+use Symfony\Component\HttpFoundation\Response;
 
 class OobAuthorizationController extends ApproveAuthorizationController
 {
     /**
      * Approve the authorization request.
-     *
-     * @return \Illuminate\Http\Response
      */
-    public function approve(Request $request)
+    public function approve(Request $request, ResponseInterface $psrResponse): Response
     {
-        $this->assertValidAuthToken($request);
-
         $authRequest = $this->getAuthRequestFromSession($request);
         $authRequest->setAuthorizationApproved(true);
 
-        return $this->withErrorHandling(function () use ($authRequest) {
-            $response = $this->server->completeAuthorizationRequest($authRequest, new Psr7Response);
+        return $this->withErrorHandling(function () use ($authRequest, $psrResponse) {
+            $response = $this->server->completeAuthorizationRequest($authRequest, $psrResponse);
 
             if ($this->isOutOfBandRequest($authRequest)) {
                 $code = $this->extractAuthorizationCode($response);
@@ -34,27 +32,45 @@ class OobAuthorizationController extends ApproveAuthorizationController
             }
 
             return $this->convertResponse($response);
-        });
+        }, $authRequest->getGrantTypeId() === 'implicit');
     }
 
     /**
      * Check if the request is an out-of-band OAuth request.
      *
-     * @param  \League\OAuth2\Server\RequestTypes\AuthorizationRequest  $authRequest
+     * @param  AuthorizationRequest  $authRequest
      * @return bool
      */
     protected function isOutOfBandRequest($authRequest)
     {
-        return $authRequest->getRedirectUri() === 'urn:ietf:wg:oauth:2.0:oob';
+        $redirectUri = $authRequest->getRedirectUri();
+
+        if ($redirectUri === 'urn:ietf:wg:oauth:2.0:oob') {
+            return true;
+        }
+
+        // RFC 6749 §3.1.2.3 permits a client with a single registered redirect
+        // URI to omit redirect_uri on the authorize request, in which case the
+        // league server leaves the auth request's redirect URI null. Fall back
+        // to the client's registered redirect URIs to still detect an OOB-only
+        // client. Passport's client entity types getRedirectUri() as string|array.
+        if ($redirectUri === null) {
+            $registered = $authRequest->getClient()->getRedirectUri();
+            $registered = is_array($registered) ? $registered : [$registered];
+
+            return count($registered) === 1 && $registered[0] === 'urn:ietf:wg:oauth:2.0:oob';
+        }
+
+        return false;
     }
 
     /**
      * Extract the authorization code from the PSR-7 response.
      *
-     * @param  \Psr\Http\Message\ResponseInterface  $response
+     * @param  ResponseInterface  $response
      * @return string
      *
-     * @throws \League\OAuth2\Server\Exception\OAuthServerException
+     * @throws OAuthServerException
      */
     protected function extractAuthorizationCode($response)
     {
@@ -71,30 +87,5 @@ class OobAuthorizationController extends ApproveAuthorizationController
         }
 
         return $params['code'];
-    }
-
-    /**
-     * Handle OAuth errors for both redirect and OOB flows.
-     *
-     * @param  \Closure  $callback
-     * @return \Illuminate\Http\Response
-     */
-    protected function withErrorHandling($callback)
-    {
-        try {
-            return $callback();
-        } catch (OAuthServerException $e) {
-            if ($this->isOutOfBandRequest($this->getAuthRequestFromSession(request()))) {
-                return response()->json([
-                    'error' => $e->getErrorType(),
-                    'message' => $e->getMessage(),
-                    'hint' => $e->getHint(),
-                ], $e->getHttpStatusCode());
-            }
-
-            return $this->convertResponse(
-                $e->generateHttpResponse(new Psr7Response)
-            );
-        }
     }
 }

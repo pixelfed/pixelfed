@@ -2,8 +2,8 @@
 
 namespace App\Transformer\Api\Mastodon\v1;
 
-use App\Notification;
-use App\Status;
+use App\Models\Notification;
+use App\Models\Status;
 use League\Fractal;
 
 class NotificationTransformer extends Fractal\TransformerAbstract
@@ -13,7 +13,7 @@ class NotificationTransformer extends Fractal\TransformerAbstract
         'status',
     ];
 
-    public function transform(Notification $notification)
+    public function transform(Notification $notification): array
     {
         return [
             'id' => (string) $notification->id,
@@ -30,19 +30,18 @@ class NotificationTransformer extends Fractal\TransformerAbstract
     public function includeStatus(Notification $notification)
     {
         $item = $notification;
-        if ($item->item_id && $item->item_type == 'App\Status') {
+        if ($item->item_id && in_array($item->item_type, ['App\Status', Status::class])) {
             $status = Status::with('media')->find($item->item_id);
             if ($status) {
                 return $this->item($status, new StatusTransformer);
-            } else {
-                return;
             }
-        } else {
+
             return;
         }
+
     }
 
-    public function replaceTypeVerb($verb)
+    public function replaceTypeVerb($verb): string
     {
         $verbs = [
             'dm' => 'direct',

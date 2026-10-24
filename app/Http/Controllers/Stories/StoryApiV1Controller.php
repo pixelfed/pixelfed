@@ -2,27 +2,28 @@
 
 namespace App\Http\Controllers\Stories;
 
-use App\DirectMessage;
-use App\Follower;
 use App\Http\Controllers\Controller;
 use App\Http\Resources\StoryView as StoryViewResource;
 use App\Jobs\StoryPipeline\StoryDelete;
 use App\Jobs\StoryPipeline\StoryFanout;
 use App\Jobs\StoryPipeline\StoryReplyDeliver;
 use App\Jobs\StoryPipeline\StoryViewDeliver;
-use App\Models\Conversation;
-use App\Notification;
+use App\Models\Follower;
+use App\Models\Status;
+use App\Models\Story;
+use App\Models\StoryView;
 use App\Services\AccountService;
+use App\Services\DirectMessageService;
 use App\Services\MediaPathService;
 use App\Services\StoryIndexService;
 use App\Services\StoryService;
-use App\Status;
-use App\Story;
-use App\StoryView;
+use App\Services\StoryViewService;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Arr;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
 use Illuminate\Validation\Rule;
@@ -35,17 +36,18 @@ class StoryApiV1Controller extends Controller
 
     const RECENT_TTL = 300;
 
-    public function carousel(Request $request)
+    public function carousel(Request $request): JsonResponse
     {
         abort_if(! (bool) config_cache('instance.stories.enabled') || ! $request->user(), 404);
         $pid = $request->user()->profile_id;
 
-        if (config('database.default') == 'pgsql') {
+        if (db_is_pgsql()) {
             $s = Cache::remember(self::RECENT_KEY.$pid, self::RECENT_TTL, function () use ($pid) {
                 return Story::select('stories.*', 'followers.following_id')
                     ->leftJoin('followers', 'followers.following_id', 'stories.profile_id')
                     ->where('followers.profile_id', $pid)
                     ->where('stories.active', true)
+                    ->get()
                     ->map(function ($s) {
                         $r = new \StdClass;
                         $r->id = $s->id;
@@ -88,6 +90,14 @@ class StoryApiV1Controller extends Controller
             ->groupBy('pid')
             ->map(function ($item) use ($pid) {
                 $profile = AccountService::get($item[0]['pid'], true);
+                $latest = StoryService::latest($profile['id']);
+
+                // No latest story (e.g. just expired): drop the author rather
+                // than ranking them seen=false off a null/deleted id.
+                if (! $latest) {
+                    return null;
+                }
+
                 $url = $profile['local'] ? url("/stories/{$profile['username']}") :
                     url("/i/rs/{$profile['id']}");
 
@@ -103,9 +113,10 @@ class StoryApiV1Controller extends Controller
                     ],
                     'nodes' => $item,
                     'url' => $url,
-                    'seen' => StoryService::hasSeen($pid, StoryService::latest($profile['id'])),
+                    'seen' => StoryService::hasSeen($pid, $latest),
                 ];
             })
+            ->filter()
             ->sortBy('seen')
             ->values();
 
@@ -147,17 +158,18 @@ class StoryApiV1Controller extends Controller
         return response()->json($res, 200, [], JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES);
     }
 
-    public function selfCarousel(Request $request)
+    public function selfCarousel(Request $request): JsonResponse
     {
         abort_if(! (bool) config_cache('instance.stories.enabled') || ! $request->user(), 404);
         $pid = $request->user()->profile_id;
 
-        if (config('database.default') == 'pgsql') {
+        if (db_is_pgsql()) {
             $s = Cache::remember(self::RECENT_KEY.$pid, self::RECENT_TTL, function () use ($pid) {
                 return Story::select('stories.*', 'followers.following_id')
                     ->leftJoin('followers', 'followers.following_id', 'stories.profile_id')
                     ->where('followers.profile_id', $pid)
                     ->where('stories.active', true)
+                    ->get()
                     ->map(function ($s) {
                         $r = new \StdClass;
                         $r->id = $s->id;
@@ -200,6 +212,14 @@ class StoryApiV1Controller extends Controller
             ->groupBy('pid')
             ->map(function ($item) use ($pid) {
                 $profile = AccountService::get($item[0]['pid'], true);
+                $latest = StoryService::latest($profile['id']);
+
+                // No latest story (e.g. just expired): drop the author rather
+                // than ranking them seen=false off a null/deleted id.
+                if (! $latest) {
+                    return null;
+                }
+
                 $url = $profile['local'] ? url("/stories/{$profile['username']}") :
                     url("/i/rs/{$profile['id']}");
 
@@ -215,9 +235,10 @@ class StoryApiV1Controller extends Controller
                     ],
                     'nodes' => $item,
                     'url' => $url,
-                    'seen' => StoryService::hasSeen($pid, StoryService::latest($profile['id'])),
+                    'seen' => StoryService::hasSeen($pid, $latest),
                 ];
             })
+            ->filter()
             ->sortBy('seen')
             ->values();
 
@@ -259,18 +280,16 @@ class StoryApiV1Controller extends Controller
         return response()->json($res, 200, [], JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES);
     }
 
-    public function add(Request $request)
+    public function add(Request $request): array
     {
         abort_if(! (bool) config_cache('instance.stories.enabled') || ! $request->user(), 404);
 
         $this->validate($request, [
-            'file' => function () {
-                return [
-                    'required',
-                    'mimetypes:image/jpeg,image/jpg,image/png,video/mp4',
-                    'max:'.config_cache('pixelfed.max_photo_size'),
-                ];
-            },
+            'file' => [
+                'required',
+                'mimetypes:image/jpeg,image/jpg,image/png,video/mp4',
+                'max:'.config_cache('pixelfed.max_photo_size'),
+            ],
             'duration' => 'sometimes|integer|min:0|max:30',
         ]);
 
@@ -296,7 +315,7 @@ class StoryApiV1Controller extends Controller
         $story->path = $path;
         $story->local = true;
         $story->size = $photo->getSize();
-        $story->bearcap_token = str_random(64);
+        $story->bearcap_token = Str::random(64);
         $story->expires_at = now()->addMinutes(1440);
         $story->save();
 
@@ -313,7 +332,7 @@ class StoryApiV1Controller extends Controller
         return $res;
     }
 
-    public function publish(Request $request)
+    public function publish(Request $request): array
     {
         abort_if(! (bool) config_cache('instance.stories.enabled') || ! $request->user(), 404);
 
@@ -348,7 +367,7 @@ class StoryApiV1Controller extends Controller
         ];
     }
 
-    public function carouselNext(Request $request)
+    public function carouselNext(Request $request): JsonResponse
     {
         abort_if(! (bool) config_cache('instance.stories.enabled') || ! $request->user(), 404);
         $pid = (int) $request->user()->profile_id;
@@ -379,7 +398,7 @@ class StoryApiV1Controller extends Controller
         );
     }
 
-    public function publishNext(Request $request)
+    public function publishNext(Request $request): JsonResponse
     {
         abort_if(! (bool) config_cache('instance.stories.enabled') || ! $request->user(), 404);
 
@@ -431,8 +450,17 @@ class StoryApiV1Controller extends Controller
             $path = $this->storeMedia($photo, $user);
 
             $allowedOverlayFields = [
-                'absoluteScale', 'absoluteX', 'absoluteY', 'color',
-                'content', 'fontSize', 'rotation', 'scale', 'x', 'y', 'type',
+                'absoluteScale',
+                'absoluteX',
+                'absoluteY',
+                'color',
+                'content',
+                'fontSize',
+                'rotation',
+                'scale',
+                'x',
+                'y',
+                'type',
             ];
 
             $filteredOverlays = [];
@@ -493,7 +521,7 @@ class StoryApiV1Controller extends Controller
                                 $parsedUrl = parse_url($content);
                                 if (! in_array($parsedUrl['scheme'] ?? '', ['https'])) {
                                     throw ValidationException::withMessages([
-                                        "overlays.{$index}.content" => 'Only HTTP and HTTPS URLs are allowed.',
+                                        "overlays.{$index}.content" => 'Only HTTPS URLs are allowed.',
                                     ]);
                                 }
                                 break;
@@ -540,10 +568,13 @@ class StoryApiV1Controller extends Controller
             ];
 
             return response()->json($res);
+        } catch (ValidationException $e) {
+            DB::rollback();
 
+            throw $e;
         } catch (\Exception $e) {
             DB::rollback();
-            \Log::error('Story creation failed', [
+            Log::error('Story creation failed', [
                 'user_id' => $user->id,
                 'error' => $e->getMessage(),
             ]);
@@ -556,7 +587,7 @@ class StoryApiV1Controller extends Controller
         }
     }
 
-    public function mentionAutocomplete(Request $request)
+    public function mentionAutocomplete(Request $request): JsonResponse
     {
         abort_if(! (bool) config_cache('instance.stories.enabled') || ! $request->user(), 404);
 
@@ -584,7 +615,6 @@ class StoryApiV1Controller extends Controller
                 if ($item && $item->id) {
                     return AccountService::get($item->id, true);
                 }
-
             })
             ->filter()
             ->values();
@@ -592,7 +622,7 @@ class StoryApiV1Controller extends Controller
         return response()->json($rows);
     }
 
-    public function delete(Request $request, $id)
+    public function delete(Request $request, $id): array
     {
         abort_if(! (bool) config_cache('instance.stories.enabled') || ! $request->user(), 404);
 
@@ -614,7 +644,7 @@ class StoryApiV1Controller extends Controller
         ];
     }
 
-    public function viewed(Request $request)
+    public function viewed(Request $request): array
     {
         abort_if(! (bool) config_cache('instance.stories.enabled') || ! $request->user(), 404);
 
@@ -636,29 +666,18 @@ class StoryApiV1Controller extends Controller
         $following = Follower::whereProfileId($pid)->whereFollowingId($story->profile_id)->exists();
         abort_if(! $following, 403, 'Invalid permission');
 
-        $v = StoryView::firstOrCreate([
-            'story_id' => $id,
-            'profile_id' => $pid,
-        ]);
+        $recorded = app(StoryViewService::class)->record($story, (int) $pid);
 
-        $index = app(StoryIndexService::class);
-        $index->markSeen($pid, $story->profile_id, $story->id, $story->created_at);
-
-        if ($v->wasRecentlyCreated) {
-
-            Story::findOrFail($story->id)->increment('view_count');
-
-            if ($story->local == false) {
-                StoryViewDeliver::dispatch($story, $authed)->onQueue('story');
-            }
-            Cache::forget('stories:recent:by_id:'.$pid);
-            StoryService::addSeen($pid, $story->id);
+        if ($recorded && $story->local == false) {
+            StoryViewDeliver::dispatch($story, $authed)->onQueue('story');
         }
+
+        Cache::forget(self::RECENT_KEY.$pid);
 
         return ['code' => 200];
     }
 
-    public function comment(Request $request)
+    public function comment(Request $request): array
     {
         abort_if(! (bool) config_cache('instance.stories.enabled') || ! $request->user(), 404);
         $this->validate($request, [
@@ -668,8 +687,12 @@ class StoryApiV1Controller extends Controller
         $pid = $request->user()->profile_id;
         $text = $request->input('caption');
 
-        $story = Story::findOrFail($request->input('sid'));
+        $story = Story::whereActive(true)->findOrFail($request->input('sid'));
+        abort_if(now()->gt($story->expires_at), 404);
 
+        $following = Follower::whereProfileId($pid)->whereFollowingId($story->profile_id)->exists();
+        abort_if(! $following, 403, 'Invalid permission');
+        abort_if(in_array($pid, $story->profile->blockedIds()->toArray()), 403); // Reject if the story author has blocked the commenter.
         abort_if(! $story->can_reply, 422);
 
         $status = new Status;
@@ -684,42 +707,24 @@ class StoryApiV1Controller extends Controller
         ]);
         $status->save();
 
-        $dm = new DirectMessage;
-        $dm->to_id = $story->profile_id;
-        $dm->from_id = $pid;
-        $dm->type = 'story:comment';
-        $dm->status_id = $status->id;
-        $dm->meta = json_encode([
-            'story_username' => $story->profile->username,
-            'story_actor_username' => $request->user()->username,
-            'story_id' => $story->id,
-            'story_media_url' => url(Storage::url($story->path)),
-            'caption' => $text,
-        ]);
-        $dm->save();
-
-        Conversation::updateOrInsert(
+        // Shows up in the conversation with the story author, who is
+        // notified when they are on this server
+        app(DirectMessageService::class)->storeStoryMessage(
+            $request->user()->profile,
+            $story->profile,
+            'story:comment',
+            $text,
             [
-                'to_id' => $story->profile_id,
-                'from_id' => $pid,
+                'story_username' => $story->profile->username,
+                'story_actor_username' => $request->user()->username,
+                'story_id' => $story->id,
+                'story_media_url' => url(Storage::url($story->path)),
+                'caption' => $text,
             ],
-            [
-                'type' => 'story:comment',
-                'status_id' => $status->id,
-                'dm_id' => $dm->id,
-                'is_hidden' => false,
-            ]
+            $status->id
         );
 
-        if ($story->local) {
-            $n = new Notification;
-            $n->profile_id = $dm->to_id;
-            $n->actor_id = $dm->from_id;
-            $n->item_id = $dm->id;
-            $n->item_type = 'App\DirectMessage';
-            $n->action = 'story:comment';
-            $n->save();
-        } else {
+        if (! $story->local) {
             StoryReplyDeliver::dispatch($story, $status)->onQueue('story');
         }
 
@@ -736,10 +741,8 @@ class StoryApiV1Controller extends Controller
             'image/jpeg',
             'image/png',
             'video/mp4',
-        ]) == false) {
+        ]) === false) {
             abort(400, 'Invalid media type');
-
-            return;
         }
 
         $storagePath = MediaPathService::story($user->profile);

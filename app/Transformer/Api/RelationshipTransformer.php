@@ -2,15 +2,15 @@
 
 namespace App\Transformer\Api;
 
-use App\FollowRequest;
+use App\Models\FollowRequest;
+use App\Models\Profile;
 use App\Models\UserDomainBlock;
-use App\Profile;
-use Auth;
+use Illuminate\Support\Facades\Auth;
 use League\Fractal;
 
 class RelationshipTransformer extends Fractal\TransformerAbstract
 {
-    public function transform(Profile $profile)
+    public function transform(Profile $profile): array
     {
         $auth = Auth::check();
         if (! $auth) {

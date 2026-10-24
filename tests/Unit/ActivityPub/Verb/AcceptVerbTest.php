@@ -9,10 +9,12 @@ use Tests\TestCase;
 class AcceptVerbTest extends TestCase
 {
     protected array $validAccept;
+
     protected array $invalidAccept;
+
     protected array $mastodonAccept;
 
-    public function setUp(): void
+    protected function setUp(): void
     {
         parent::setUp();
 
@@ -25,8 +27,8 @@ class AcceptVerbTest extends TestCase
                 'id' => 'https://example.net/u/bob#follows/bb27f601-ddb9-4567-8f16-023d90605ca9',
                 'type' => 'Follow',
                 'actor' => 'https://example.net/u/bob',
-                'object' => 'https://example.org/u/alice'
-            ]
+                'object' => 'https://example.org/u/alice',
+            ],
         ];
 
         $this->invalidAccept = [
@@ -38,8 +40,8 @@ class AcceptVerbTest extends TestCase
                 'id' => 'https://example.net/u/bob#follows/bb27f601-ddb9-4567-8f16-023d90605ca9',
                 'type' => 'Follow',
                 'actor' => 'https://example.net/u/bob',
-                'object' => 'https://example.org/u/alice'
-            ]
+                'object' => 'https://example.org/u/alice',
+            ],
         ];
 
         $this->mastodonAccept = [

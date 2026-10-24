@@ -3,10 +3,11 @@
 namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
+use Illuminate\Http\JsonResponse;
 
 class ApiController extends Controller
 {
-    public function json($res, $headers = [], $code = 200)
+    public function json($res, $headers = [], $code = 200): JsonResponse
     {
         return response()->json($res, $code, $this->filterHeaders($headers), JSON_UNESCAPED_SLASHES);
     }

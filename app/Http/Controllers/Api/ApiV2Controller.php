@@ -6,21 +6,27 @@ use App\Http\Controllers\Controller;
 use App\Jobs\ImageOptimizePipeline\ImageOptimize;
 use App\Jobs\MediaPipeline\MediaDeletePipeline;
 use App\Jobs\VideoPipeline\VideoThumbnail;
-use App\Media;
+use App\Models\Media;
+use App\Models\User;
+use App\Models\UserSetting;
 use App\Services\AccountService;
 use App\Services\InstanceService;
+use App\Services\LikeService;
 use App\Services\MediaBlocklistService;
 use App\Services\MediaPathService;
+use App\Services\ReblogService;
 use App\Services\SearchApiV2Service;
+use App\Services\StatusService;
+use App\Services\UserFilterService;
 use App\Services\UserRoleService;
 use App\Services\UserStorageService;
 use App\Transformer\Api\Mastodon\v1\MediaTransformer;
-use App\User;
-use App\UserSetting;
 use App\Util\Media\Filter;
 use App\Util\Site\Nodeinfo;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Cache;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Storage;
 use League\Fractal;
 use League\Fractal\Serializer\ArraySerializer;
@@ -29,12 +35,12 @@ class ApiV2Controller extends Controller
 {
     const PF_API_ENTITY_KEY = '_pe';
 
-    public function json($res, $code = 200, $headers = [])
+    public function json($res, $code = 200, $headers = []): JsonResponse
     {
         return response()->json($res, $code, $headers, JSON_UNESCAPED_SLASHES);
     }
 
-    public function instance(Request $request)
+    public function instance(Request $request): JsonResponse
     {
         $contact = Cache::remember('api:v1:instance-data:contact', 604800, function () {
             if (config_cache('instance.admin.pid')) {
@@ -66,6 +72,7 @@ class ApiV2Controller extends Controller
                 'domain' => config('pixelfed.domain.app'),
                 'title' => config_cache('app.name'),
                 'version' => '3.5.3 (compatible; Pixelfed '.config('pixelfed.version').')',
+                // GLITCH MODIFIED: glitch repo URL
                 'source_url' => 'https://github.com/pixelfed-glitch/pixelfed',
                 'description' => config_cache('app.short_description'),
                 'usage' => [
@@ -92,6 +99,14 @@ class ApiV2Controller extends Controller
                     ],
                     'accounts' => [
                         'max_featured_tags' => 0,
+                    ],
+                    'direct_messages' => [
+                        'max_characters' => (int) config('dm.max_message_length'),
+                        'max_media_attachments' => (int) config('dm.max_media'),
+                        'group_chats' => [
+                            'enabled' => (bool) config('dm.groups.enabled'),
+                            'max_participants' => (int) config('dm.groups.max_participants'),
+                        ],
                     ],
                     'statuses' => [
                         'max_characters' => (int) config_cache('pixelfed.max_caption_length'),
@@ -138,9 +153,6 @@ class ApiV2Controller extends Controller
 
     /**
      * GET /api/v2/search
-     *
-     *
-     * @return array
      */
     public function search(Request $request)
     {
@@ -175,9 +187,6 @@ class ApiV2Controller extends Controller
 
     /**
      * GET /api/v2/streaming/config
-     *
-     *
-     * @return object
      */
     public function getWebsocketConfig()
     {
@@ -191,9 +200,6 @@ class ApiV2Controller extends Controller
 
     /**
      * POST /api/v2/media
-     *
-     *
-     * @return MediaTransformer
      */
     public function mediaUploadV2(Request $request)
     {
@@ -218,6 +224,7 @@ class ApiV2Controller extends Controller
         ]);
 
         $user = $request->user();
+        abort_if($user->has_roles && ! UserRoleService::can('can-post', $user->id), 403, 'Invalid permissions for this action');
 
         if ($user->last_active_at == null) {
             return [];
@@ -245,7 +252,7 @@ class ApiV2Controller extends Controller
         $sizeInKbs = (int) ceil($fileSize / 1000);
         $updatedAccountSize = (int) $accountSize + (int) $sizeInKbs;
 
-        if ((bool) config_cache('pixelfed.enforce_account_limit') == true) {
+        if ((bool) config_cache('pixelfed.enforce_account_limit') === true) {
             $limit = (int) config_cache('pixelfed.max_account_size');
             if ($updatedAccountSize >= $limit) {
                 abort(403, 'Account size limit reached.');
@@ -256,13 +263,18 @@ class ApiV2Controller extends Controller
         $filterName = in_array($request->input('filter_name'), Filter::names()) ? $request->input('filter_name') : null;
 
         $mimes = explode(',', config_cache('pixelfed.media_types'));
-        if (in_array($photo->getMimeType(), $mimes) == false) {
+        if (in_array($photo->getMimeType(), $mimes) === false) {
             abort(403, 'Invalid or unsupported mime type.');
         }
 
+        // Check the blocklist against the temp upload BEFORE storing, so a
+        // blocked upload never leaves an orphaned file on disk (media:gc only
+        // reaps files that have a Media row).
+        $hash = \hash_file('sha256', $photo->getRealPath());
+        abort_if(MediaBlocklistService::exists($hash) == true, 451);
+
         $storagePath = MediaPathService::get($user, 2);
         $path = $photo->storePublicly($storagePath);
-        $hash = \hash_file('sha256', $photo);
         $license = null;
         $mime = $photo->getMimeType();
 
@@ -275,8 +287,6 @@ class ApiV2Controller extends Controller
                 $license = $compose['default_license'];
             }
         }
-
-        abort_if(MediaBlocklistService::exists($hash) == true, 451);
 
         if ($request->has('replace_id')) {
             $rpid = $request->input('replace_id');
@@ -325,9 +335,7 @@ class ApiV2Controller extends Controller
                 break;
         }
 
-        $user->storage_used = (int) $updatedAccountSize;
-        $user->storage_used_updated_at = now();
-        $user->save();
+        UserStorageService::increaseStorageUsed($user->id, $fileSize);
 
         Cache::forget($limitKey);
         $fractal = new Fractal\Manager;
@@ -352,7 +360,7 @@ class ApiV2Controller extends Controller
 
         $user = $request->user();
         $pid = $user->profile_id;
-        $status = StatusService::getMastodon($id, false);
+        $status = StatusService::getMastodon($id, false, $pid);
         $pe = $request->has(self::PF_API_ENTITY_KEY);
 
         if (! $status || ! isset($status['account'])) {
@@ -365,28 +373,15 @@ class ApiV2Controller extends Controller
             abort_if(in_array($domain, InstanceService::getBannedDomains()), 404);
         }
 
-        // Visibility check
-        if (intval($status['account']['id']) !== intval($user->profile_id)) {
-            if ($status['visibility'] == 'private') {
-                if (! FollowerService::follows($user->profile_id, $status['account']['id'])) {
-                    return response('', 404);
-                }
-            } else {
-                if (! in_array($status['visibility'], ['public', 'unlisted'])) {
-                    return response('', 404);
-                }
-            }
-        }
-
         // Get request parameters
-        $limit = min((int) $request->get('limit', 20), 40); // Max 40 items
-        $maxId = $request->get('max_id');
-        $minId = $request->get('min_id');
-        $sinceId = $request->get('since_id');
-        $ancestorsLimit = min((int) $request->get('ancestors_limit', 10), 20); // Max 20 ancestors
+        $limit = min((int) $request->input('limit', 20), 40); // Max 40 items
+        $maxId = $request->input('max_id');
+        $minId = $request->input('min_id');
+        $sinceId = $request->input('since_id');
+        $ancestorsLimit = min((int) $request->input('ancestors_limit', 10), 20); // Max 20 ancestors
 
         $ancestors = $this->getAncestors($id, $ancestorsLimit, $pe, $pid);
-        $descendants = $this->getDescendantsPaginated($id, $limit, $maxId, $minId, $sinceId, $pe, $pid);
+        $descendants = $this->getDescendantsPaginated($status, $limit, $maxId, $minId, $sinceId, $pe, $pid);
 
         $res = [
             'ancestors' => $ancestors['data'],
@@ -403,7 +398,7 @@ class ApiV2Controller extends Controller
      * Get ancestors (parent posts) with depth limit
      * Optimized for existing indexes
      */
-    private function getAncestors($statusId, $limit, $pe, $pid)
+    private function getAncestors($statusId, $limit, $pe, $pid): array
     {
         $ancestors = [];
         $currentId = $statusId;
@@ -431,8 +426,8 @@ class ApiV2Controller extends Controller
             // Filter at application level (more efficient than SQL NOT IN on large tables)
             if (! in_array($parent->profile_id, $filters)) {
                 $parentStatus = $pe ?
-                    StatusService::get($parent->id, false) :
-                    StatusService::getMastodon($parent->id, false);
+                    StatusService::get($parent->id, false, false, $pid) :
+                    StatusService::getMastodon($parent->id, false, $pid);
 
                 if ($parentStatus && isset($parentStatus['account'])) {
                     // Add interaction status
@@ -454,13 +449,19 @@ class ApiV2Controller extends Controller
      * Get descendants (replies) with efficient cursor pagination
      * Optimized for existing indexes: statuses_in_reply_to_id_index
      */
-    private function getDescendantsPaginated($statusId, $limit, $maxId, $minId, $sinceId, $pe, $pid)
+    private function getDescendantsPaginated($parent, $limit, $maxId, $minId, $sinceId, $pe, $pid): array
     {
+        $statusId = $parent['id'];
+        $parentOwnerId = $parent['account']['id'];
+        $parentScope = $parent['visibility'];
+
         // Build efficient query using existing indexes
         // Uses statuses_in_reply_to_id_index for fast filtering
         $query = DB::table('statuses')
-            ->select(['id', 'profile_id'])
+            ->select(['id', 'profile_id', 'scope', 'local'])
             ->where('in_reply_to_id', $statusId)
+            ->whereNull('deleted_at')
+            ->whereIn('scope', ['public', 'unlisted', 'private'])
             ->orderBy('id', 'desc'); // Snowflake IDs are chronologically ordered
 
         // Apply cursor pagination
@@ -488,9 +489,20 @@ class ApiV2Controller extends Controller
         $filters = UserFilterService::filters($pid);
 
         // Transform and filter results
-        $descendants = $results->map(function ($row) use ($pe, $pid, $filters) {
+        $descendants = $results->map(function ($row) use ($pe, $pid, $filters, $parentOwnerId, $parentScope) {
             // Skip if user is filtered (post-processing is more efficient here)
             if (in_array($row->profile_id, $filters)) {
+                return null;
+            }
+
+            if (! StatusService::isReplyVisibleTo(
+                $row->profile_id,
+                $row->scope,
+                $row->local,
+                $parentOwnerId,
+                $parentScope,
+                $pid
+            )) {
                 return null;
             }
 
@@ -509,20 +521,17 @@ class ApiV2Controller extends Controller
             return $status;
         })->filter()->values();
 
-        // If we filtered out results and don't have enough, we might need more
-        // This is a trade-off: either multiple queries or over-fetching
-        $actualHasMore = $hasMore || ($results->count() === $limit && $descendants->count() < $limit);
-
-        // Build pagination info
+        // Cursors come from the raw rows, not the filtered ones, so a page
+        // where every reply was hidden from this viewer still paginates
         $pagination = [];
 
-        if ($descendants->isNotEmpty()) {
-            $pagination['max_id'] = $descendants->last()['id'];
-            $pagination['min_id'] = $descendants->first()['id'];
-            $pagination['has_more'] = $actualHasMore;
+        if ($results->isNotEmpty()) {
+            $pagination['max_id'] = (string) $results->last()->id;
+            $pagination['min_id'] = (string) $results->first()->id;
+            $pagination['has_more'] = $hasMore;
 
             // Generate next/prev URLs if applicable
-            if ($actualHasMore) {
+            if ($hasMore) {
                 $pagination['next_url'] = route('api.v2.status.context', $statusId).
                     '?'.http_build_query(['max_id' => $pagination['max_id'], 'limit' => $limit]);
             }
@@ -537,7 +546,7 @@ class ApiV2Controller extends Controller
     /**
      * Alternative method using Laravel's cursor pagination (if you prefer)
      */
-    private function getDescendantsCursorPaginated($statusId, $limit, $cursor, $pe, $pid)
+    private function getDescendantsCursorPaginated($statusId, $limit, $cursor, $pe, $pid): array
     {
         $filters = UserFilterService::filters($pid);
 
@@ -590,19 +599,17 @@ class ApiV2Controller extends Controller
         $pe = $request->has(self::PF_API_ENTITY_KEY);
 
         // Validate status exists and user can view it
-        $status = StatusService::getMastodon($id, false);
+        $status = StatusService::getMastodon($id, false, $pid);
         if (! $status || ! isset($status['account'])) {
             return response('', 404);
         }
 
-        // Same visibility checks as above...
+        $limit = min((int) $request->input('limit', 20), 40);
+        $maxId = $request->input('max_id');
+        $minId = $request->input('min_id');
+        $sinceId = $request->input('since_id');
 
-        $limit = min((int) $request->get('limit', 20), 40);
-        $maxId = $request->get('max_id');
-        $minId = $request->get('min_id');
-        $sinceId = $request->get('since_id');
-
-        $descendants = $this->getDescendantsPaginated($id, $limit, $maxId, $minId, $sinceId, $pe, $pid);
+        $descendants = $this->getDescendantsPaginated($status, $limit, $maxId, $minId, $sinceId, $pe, $pid);
 
         return $this->json($descendants);
     }
@@ -622,12 +629,12 @@ class ApiV2Controller extends Controller
         $pe = $request->has(self::PF_API_ENTITY_KEY);
 
         // Validate status exists and user can view it
-        $status = StatusService::getMastodon($id, false);
+        $status = StatusService::getMastodon($id, false, $pid);
         if (! $status || ! isset($status['account'])) {
             return response('', 404);
         }
 
-        $limit = min((int) $request->get('limit', 10), 20);
+        $limit = min((int) $request->input('limit', 10), 20);
         $ancestors = $this->getAncestors($id, $limit, $pe, $pid);
 
         return $this->json($ancestors);

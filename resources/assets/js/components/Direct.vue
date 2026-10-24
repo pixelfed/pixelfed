@@ -41,7 +41,7 @@
 								</p>
 								<p class="text-muted mb-0" style="font-size:13px;font-weight: 500;">
 									<span>
-										<i class="far fa-comment text-primary"></i>
+										<i class="far fa-comment text-primary"></i> 
 									</span>
 									<span class="pl-1 pr-3">
 										Received
@@ -77,7 +77,7 @@
 								</p>
 								<p class="text-muted mb-0" style="font-size:13px;font-weight: 500;">
 									<span>
-										<i class="far fa-paper-plane text-primary"></i>
+										<i class="far fa-paper-plane text-primary"></i> 
 									</span>
 									<span class="pl-1 pr-3">
 										Delivered
@@ -113,7 +113,7 @@
 								</p>
 								<p class="text-muted mb-0" style="font-size:13px;font-weight: 500;">
 									<span>
-										<i class="fas fa-shield-alt" style="color:#fd9426"></i>
+										<i class="fas fa-shield-alt" style="color:#fd9426"></i> 
 									</span>
 									<span class="pl-1 pr-3">
 										Filtered
@@ -157,7 +157,7 @@
 				<div class="card-body d-flex align-items-center justify-content-center" style="height: 60vh;">
 					<div>
 						<p class="mb-0 font-weight-bold">Select Recipient</p>
-						<autocomplete
+						<autocomplete 
 							:search="composeSearch"
 							:disabled="composeLoading"
 							placeholder="@dansup"
@@ -183,8 +183,8 @@
 import Autocomplete from '@trevoreyre/autocomplete-vue'
 import '@trevoreyre/autocomplete-vue/dist/style.css'
 export default {
-	components: {
-		Autocomplete
+	components: { 
+		Autocomplete 
 	},
 	data() {
 		return {
@@ -281,7 +281,7 @@ export default {
 					})
 					.then(res => {
 						self.loaded = true;
-						self.threads = res.data;
+						self.threads = res.data
 						self.messages.sent = res.data;
 					});
 				}
@@ -295,7 +295,7 @@ export default {
 						})
 						.then(res => {
 							self.loaded = true;
-							self.threads = res.data;
+							self.threads = res.data
 							self.messages.filtered = res.data;
 						});
 					}
@@ -338,7 +338,7 @@ export default {
 				})
 				.then(res => {
 					self.loaded = true;
-					this.threads = res.data;
+					this.threads = res.data
 					this.messages.inbox = res.data;
 				});
 			}
@@ -352,7 +352,7 @@ export default {
 				})
 				.then(res => {
 					self.loaded = true;
-					this.threads = res.data;
+					this.threads = res.data
 					this.messages.sent = res.data;
 				});
 			}
@@ -366,7 +366,7 @@ export default {
 				})
 				.then(res => {
 					self.loaded = true;
-					this.threads = res.data;
+					this.threads = res.data
 					this.messages.filtered = res.data;
 				});
 			}

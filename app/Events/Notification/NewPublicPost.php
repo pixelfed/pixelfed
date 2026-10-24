@@ -2,7 +2,7 @@
 
 namespace App\Events\Notification;
 
-use App\Status;
+use App\Models\Status;
 use App\Transformer\Api\StatusTransformer;
 use Illuminate\Broadcasting\Channel;
 use Illuminate\Broadcasting\InteractsWithSockets;
@@ -17,6 +17,8 @@ class NewPublicPost implements ShouldBroadcastNow
 
     protected $status;
 
+    protected $fractal;
+
     /**
      * Create a new event instance.
      *
@@ -25,6 +27,7 @@ class NewPublicPost implements ShouldBroadcastNow
     public function __construct(Status $status)
     {
         $this->status = $status;
+        $this->fractal = new Fractal\Manager;
     }
 
     public function broadcastAs()
@@ -37,7 +40,7 @@ class NewPublicPost implements ShouldBroadcastNow
         return new Channel('firehost.public');
     }
 
-    public function broadcastWith()
+    public function broadcastWith(): array
     {
         $resource = new Fractal\Resource\Item($this->status, new StatusTransformer);
         $res = $this->fractal->createData($resource)->toArray();

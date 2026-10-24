@@ -3,15 +3,17 @@
 namespace App\Transformer\ActivityPub\Verb;
 
 use App\Models\CustomEmoji;
+use App\Models\Status;
 use App\Services\MediaService;
-use App\Status;
+use App\Services\QuoteService;
 use App\Util\Lexer\Autolink;
+use App\Util\Media\License;
 use Illuminate\Support\Str;
 use League\Fractal;
 
 class CreateNote extends Fractal\TransformerAbstract
 {
-    public function transform(Status $status)
+    public function transform(Status $status): array
     {
         $mentions = $status->mentions->map(function ($mention) {
             $webfinger = $mention->emailUrl();
@@ -27,7 +29,7 @@ class CreateNote extends Fractal\TransformerAbstract
         })->toArray();
 
         if ($status->in_reply_to_id != null) {
-            $parent = $status->parent()->profile;
+            $parent = $status->parent()?->profile;
             if ($parent) {
                 $webfinger = $parent->emailUrl();
                 $name = Str::startsWith($webfinger, '@') ?
@@ -38,7 +40,7 @@ class CreateNote extends Fractal\TransformerAbstract
                     'href' => $parent->permalink(),
                     'name' => $name,
                 ];
-                $mentions = array_merge($reply, $mentions);
+                array_push($mentions, $reply);
             }
         }
 
@@ -87,6 +89,8 @@ class CreateNote extends Fractal\TransformerAbstract
                     'toot' => 'http://joinmastodon.org/ns#',
                     'Emoji' => 'toot:Emoji',
                     'blurhash' => 'toot:blurhash',
+                    ...QuoteService::NOTE_CONTEXT_TERMS,
+                    ...License::NOTE_CONTEXT_TERMS,
                 ],
             ],
             'id' => $status->permalink(),
@@ -100,7 +104,7 @@ class CreateNote extends Fractal\TransformerAbstract
                 'type' => 'Note',
                 'summary' => $status->is_nsfw ? $status->cw_summary : null,
                 'content' => $content,
-                'inReplyTo' => $status->in_reply_to_id ? $status->parent()->url() : null,
+                'inReplyTo' => $status->inReplyToUri(),
                 'published' => $status->created_at->toAtomString(),
                 'url' => $status->url(),
                 'attributedTo' => $status->profile->permalink(),
@@ -108,12 +112,14 @@ class CreateNote extends Fractal\TransformerAbstract
                 'cc' => $status->scopeToAudience('cc'),
                 'sensitive' => (bool) $status->is_nsfw,
                 'attachment' => MediaService::activitypub($status->id, true),
+                ...MediaService::noteLicense($status->id),
                 'tag' => $tags,
                 'commentsEnabled' => (bool) ! $status->comments_disabled,
+                'interactionPolicy' => QuoteService::interactionPolicy($status),
                 'capabilities' => [
                     'announce' => 'https://www.w3.org/ns/activitystreams#Public',
                     'like' => 'https://www.w3.org/ns/activitystreams#Public',
-                    'reply' => $status->comments_disabled == true ? '[]' : 'https://www.w3.org/ns/activitystreams#Public',
+                    'reply' => $status->comments_disabled == true ? [] : 'https://www.w3.org/ns/activitystreams#Public',
                 ],
                 'location' => $status->place_id ? [
                     'type' => 'Place',

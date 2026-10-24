@@ -10,12 +10,12 @@ use App\Services\GroupFeedService;
 use App\Services\GroupPostService;
 use App\Util\Lexer\Autolink;
 use App\Util\Lexer\Extractor;
-use DB;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
+use Illuminate\Support\Facades\DB;
 
 class NewCommentPipeline implements ShouldQueue
 {
@@ -57,16 +57,16 @@ class NewCommentPipeline implements ShouldQueue
         $status = $this->status;
         $parent = $this->parent;
         $profile = $this->status->profile;
-        $parentClass = get_class($parent);
+        $parentClass = $parent::class;
         $groupId = $status->group_id;
         $postId = $status->id;
 
-        if ($parentClass === 'App\Models\GroupPost') {
+        if ($parentClass === GroupPost::class) {
             $parent->reply_count = GroupPostService::getCommentCount($parent->id, false);
             $parent->save();
-            GroupPostService::del($groupId, $postId);
-            GroupFeedService::del($groupId, $postId);
-        } elseif ($parentClass === 'App\Models\GroupComment') {
+            GroupPostService::del($groupId, $parent->id);
+            GroupFeedService::del($groupId, $parent->id);
+        } elseif ($parentClass === GroupComment::class) {
             $gp = GroupPost::whereId($parent->status_id)->firstOrFail();
             if ($gp->group_id !== $status->group_id) {
                 return;

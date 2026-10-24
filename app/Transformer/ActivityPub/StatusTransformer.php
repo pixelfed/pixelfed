@@ -2,26 +2,19 @@
 
 namespace App\Transformer\ActivityPub;
 
+use App\Models\Status;
 use App\Services\MediaService;
-use App\Services\StatusService;
-use App\Status;
 use App\Util\Lexer\Autolink;
+use App\Util\Media\License;
 use League\Fractal;
 
 class StatusTransformer extends Fractal\TransformerAbstract
 {
-    public function transform(Status $status)
+    public function transform(Status $status): array
     {
         $content = $status->caption ? nl2br(Autolink::create()->autolink($status->caption)) : '';
 
-        $inReplyTo = null;
-
-        if ($status->in_reply_to_id) {
-            $reply = StatusService::get($status->in_reply_to_id, true);
-            if ($reply && isset($reply['url'])) {
-                $inReplyTo = $reply['url'];
-            }
-        }
+        $inReplyTo = $status->inReplyToUri();
 
         return [
             '@context' => [
@@ -32,6 +25,7 @@ class StatusTransformer extends Fractal\TransformerAbstract
                     'featured' => [
                         'https://pixelfed.org/ns#featured' => ['@type' => '@id'],
                     ],
+                    ...License::NOTE_CONTEXT_TERMS,
                 ],
             ],
             'id' => $status->url(),
@@ -50,6 +44,7 @@ class StatusTransformer extends Fractal\TransformerAbstract
             ],
             'sensitive' => (bool) $status->is_nsfw,
             'attachment' => MediaService::activitypub($status->id),
+            ...MediaService::noteLicense($status->id),
             'tag' => [],
             'location' => $status->place_id ? [
                 'type' => 'Place',

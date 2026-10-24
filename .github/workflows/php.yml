@@ -23,7 +23,7 @@ on:
       - synchronize
 
 env:
-  EXTRA_PHP_EXTENSIONS: intl bcmath zip pcntl exif curl gd pdo_pgsql pdo_mysql pdo_sqlite ffi
+  EXTRA_PHP_EXTENSIONS: intl bcmath zip pcntl exif curl gd pdo_pgsql pdo_mysql pdo_sqlite ffi redis
   DOCKER_PHP_EXTENSION_INSTALLER_VERSION: 2.9.24
   COMPOSER_VERSION: 2.9.2
 
@@ -38,7 +38,7 @@ jobs:
       # See: https://docs.github.com/en/actions/using-jobs/using-a-matrix-for-your-jobs
       matrix:
         php_version:
-          - 8.4
+          - 8.5
 
     container:
       image: php:${{ matrix.php_version }}-cli
@@ -110,14 +110,20 @@ jobs:
 
       - name: Setup Environment
         run: |
-          cp .env.testing .env
+          # Move rather than copy: [--env=testing] also reads [.env.testing],
+          # whose [REDIS_HOST=127.0.0.1] would override the [redis] service host set below.
+          # Laravel falls back to [.env] when [.env.testing] is missing.
+          mv .env.testing .env
 
           dottie set REDIS_HOST=redis
 
-      - run: php artisan config:cache
+      # No [config:cache] here: a cached config makes the tests ignore the env overrides in phpunit.xml
+      # (array cache, Pulse off, ...) and run against the shared Redis service instead.
       - run: php artisan route:clear
       - run: php artisan storage:link
       - run: php artisan key:generate
+      # Passport needs signing keys for any API request, including the unauthenticated ones
+      - run: php artisan passport:keys --force
 
       - name: Prepare SQLite database
         run: |
@@ -147,7 +153,7 @@ jobs:
       # See: https://docs.github.com/en/actions/using-jobs/using-a-matrix-for-your-jobs
       matrix:
         php_version:
-          - 8.4
+          - 8.5
 
     container:
       image: php:${{ matrix.php_version }}-cli

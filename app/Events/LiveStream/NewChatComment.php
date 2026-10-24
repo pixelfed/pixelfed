@@ -31,7 +31,7 @@ class NewChatComment implements ShouldBroadcast
     /**
      * Get the channels the event should broadcast on.
      *
-     * @return \Illuminate\Broadcasting\Channel|array
+     * @return Channel|array
      */
     public function broadcastOn()
     {
@@ -43,7 +43,7 @@ class NewChatComment implements ShouldBroadcast
         return 'chat.new-message';
     }
 
-    public function broadcastWith()
+    public function broadcastWith(): array
     {
         return ['msg' => $this->chatmsg];
     }

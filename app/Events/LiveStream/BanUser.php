@@ -31,7 +31,7 @@ class BanUser implements ShouldBroadcast
     /**
      * Get the channels the event should broadcast on.
      *
-     * @return \Illuminate\Broadcasting\Channel|array
+     * @return Channel|array
      */
     public function broadcastOn()
     {
@@ -43,7 +43,7 @@ class BanUser implements ShouldBroadcast
         return 'chat.ban-user';
     }
 
-    public function broadcastWith()
+    public function broadcastWith(): array
     {
         return ['id' => $this->profileId];
     }

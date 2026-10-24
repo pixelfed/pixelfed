@@ -2,13 +2,15 @@
 
 namespace App\Transformer\ActivityPub;
 
-use App\Profile;
+use App\Models\Profile;
 use App\Services\AccountService;
+use App\Services\FeaturedCollectionService;
+use App\Util\Media\License;
 use League\Fractal;
 
 class ProfileTransformer extends Fractal\TransformerAbstract
 {
-    public function transform(Profile $profile)
+    public function transform(Profile $profile): array
     {
         $res = [
             '@context' => [
@@ -27,6 +29,24 @@ class ProfileTransformer extends Fractal\TransformerAbstract
                     ],
                     'indexable' => 'toot:indexable',
                     'suspended' => 'toot:suspended',
+                    'gts' => 'https://gotosocial.org/ns#',
+                    'interactionPolicy' => [
+                        '@id' => 'gts:interactionPolicy',
+                        '@type' => '@id',
+                    ],
+                    'canFeature' => [
+                        '@id' => 'https://w3id.org/fep/7aa9#canFeature',
+                        '@type' => '@id',
+                    ],
+                    'automaticApproval' => [
+                        '@id' => 'gts:automaticApproval',
+                        '@type' => '@id',
+                    ],
+                    'manualApproval' => [
+                        '@id' => 'gts:manualApproval',
+                        '@type' => '@id',
+                    ],
+                    ...License::ACTOR_CONTEXT_TERMS,
                 ],
             ],
             'id' => $profile->permalink(),
@@ -75,8 +95,28 @@ class ProfileTransformer extends Fractal\TransformerAbstract
                     $res['movedTo'] = $movedTo['url'];
                 }
             }
+
+            $res['interactionPolicy'] = FeaturedCollectionService::interactionPolicy($profile);
+
+            $preferredLicense = $this->preferredLicense($profile);
+            if ($preferredLicense) {
+                $res['preferredLicense'] = $preferredLicense;
+            }
         }
 
         return $res;
+    }
+
+    /**
+     * FEP-6757 preferred license, from the account's default media license.
+     *
+     * Omitted when the default is all rights reserved.
+     */
+    protected function preferredLicense(Profile $profile): ?string
+    {
+        $settings = AccountService::getAccountSettings($profile->id);
+        $id = (int) ($settings['default_license'] ?? 1);
+
+        return $id > 1 ? License::uriForId($id) : null;
     }
 }

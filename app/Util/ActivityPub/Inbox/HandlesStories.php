@@ -1,0 +1,203 @@
+<?php
+
+namespace App\Util\ActivityPub\Inbox;
+
+use App\Jobs\StoryPipeline\StoryFetch;
+use App\Models\Status;
+use App\Models\Story;
+use App\Services\DirectMessageService;
+use App\Services\FollowerService;
+use App\Services\SanitizeService;
+use App\Services\StoryViewService;
+use App\Util\ActivityPub\Helpers;
+use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Str;
+
+trait HandlesStories
+{
+    public function handleAddActivity(): void
+    {
+        if (! $this->payloadHasKeys(['actor', 'object'])) {
+            return;
+        }
+
+        $actor = $this->payload['actor'];
+        $obj = $this->payload['object'];
+
+        if (! Helpers::validateUrl($actor)) {
+            return;
+        }
+
+        if (! isset($obj['type'])) {
+            return;
+        }
+
+        if ($obj['type'] === 'Story') {
+            StoryFetch::dispatch($this->payload);
+        }
+    }
+
+    public function handleViewActivity(): void
+    {
+        if (! $this->payloadHasKeys(['actor', 'object'])) {
+            return;
+        }
+
+        $actor = $this->payload['actor'];
+        $obj = $this->payload['object'];
+
+        if (! Helpers::validateUrl($actor)) {
+            return;
+        }
+
+        if (! $obj || ! is_array($obj)) {
+            return;
+        }
+
+        if (! isset($obj['type']) || ! isset($obj['object']) || $obj['type'] != 'Story') {
+            return;
+        }
+
+        if (! Helpers::validateLocalUrl($obj['object'])) {
+            return;
+        }
+
+        $profile = Helpers::profileFetch($actor);
+        $storyId = Str::afterLast($obj['object'], '/');
+
+        $story = Story::whereActive(true)
+            ->whereLocal(true)
+            ->find($storyId);
+
+        if (! $story) {
+            return;
+        }
+
+        if ($this->isDomainBlocked($story->profile_id, $profile->domain)) {
+            return;
+        }
+
+        if (! FollowerService::follows($profile->id, $story->profile_id)) {
+            return;
+        }
+
+        app(StoryViewService::class)->record($story, (int) $profile->id);
+    }
+
+    public function handleStoryReactionActivity(): void
+    {
+        $this->handleStoryInteraction('story:reaction', 'story:react');
+    }
+
+    public function handleStoryReplyActivity(): void
+    {
+        $this->handleStoryInteraction('story:reply', 'story:comment');
+    }
+
+    /**
+     * Shared handler for story reactions and replies.
+     *
+     * @param  string  $statusType  The status type (story:reaction or story:reply)
+     * @param  string  $dmType  The DM type (story:react or story:comment)
+     */
+    protected function handleStoryInteraction(string $statusType, string $dmType): void
+    {
+        if (! $this->payloadHasKeys(['actor', 'id', 'inReplyTo', 'content'])) {
+            return;
+        }
+
+        $id = $this->payload['id'];
+        $actor = $this->payload['actor'];
+        $storyUrl = $this->payload['inReplyTo'];
+        $to = $this->payload['to'];
+        $text = app(SanitizeService::class)->html($this->payload['content']);
+
+        if (! $this->hostsMatch($id, $actor)) {
+            return;
+        }
+
+        if (! Helpers::validateUrl($id) || ! Helpers::validateUrl($actor)) {
+            return;
+        }
+
+        if (! Helpers::validateLocalUrl($storyUrl)) {
+            return;
+        }
+
+        if (! Helpers::validateLocalUrl($to)) {
+            return;
+        }
+
+        // Dedup against the canonical (suffix-stripped) form that is actually
+        // stored, so a redelivered activity is recognized instead of racing the
+        // unique index on statuses.object_url / statuses.uri.
+        $url = $this->stripActivitySuffix($id);
+
+        if (Status::whereObjectUrl($url)->exists()) {
+            return;
+        }
+
+        $storyId = Str::afterLast($storyUrl, '/');
+        $targetProfile = Helpers::profileFetch($to);
+
+        $story = Story::whereProfileId($targetProfile->id)->find($storyId);
+
+        if (! $story) {
+            return;
+        }
+
+        if ($statusType === 'story:reply') {
+            if ($story->can_reply == false) {
+                return;
+            }
+        } elseif ($story->can_react == false) {
+            return;
+        }
+
+        $actorProfile = Helpers::profileFetch($actor);
+
+        if ($this->isDomainBlocked($targetProfile->id, $actorProfile->domain)) {
+            return;
+        }
+
+        if (! FollowerService::follows($actorProfile->id, $targetProfile->id)) {
+            return;
+        }
+
+        $entitiesKey = $statusType === 'story:reaction' ? 'reaction' : 'caption';
+        $metaKey = $statusType === 'story:reaction' ? 'reaction' : 'caption';
+
+        $status = new Status;
+        $status->profile_id = $actorProfile->id;
+        $status->type = $statusType;
+        $status->url = $url;
+        $status->uri = $url;
+        $status->object_url = $url;
+        $status->caption = $text;
+        $status->rendered = '';
+        $status->scope = 'direct';
+        $status->visibility = 'direct';
+        $status->in_reply_to_profile_id = $story->profile_id;
+        $status->entities = json_encode([
+            'story_id' => $story->id,
+            $entitiesKey => $text,
+        ]);
+        $status->save();
+
+        app(DirectMessageService::class)->storeStoryMessage(
+            $actorProfile,
+            $targetProfile,
+            $dmType,
+            $text,
+            [
+                'story_username' => $targetProfile->username,
+                'story_actor_username' => $actorProfile->username,
+                'story_id' => $story->id,
+                'story_media_url' => url(Storage::url($story->path)),
+                $metaKey => $text,
+            ],
+            $status->id,
+            $url
+        );
+    }
+}

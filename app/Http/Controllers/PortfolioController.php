@@ -3,13 +3,15 @@
 namespace App\Http\Controllers;
 
 use App\Models\Portfolio;
+use App\Models\Status;
+use App\Models\User;
 use App\Services\AccountService;
 use App\Services\StatusService;
-use App\Status;
-use App\User;
-use Cache;
-use DB;
+use Illuminate\Contracts\View\View;
+use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Cache;
+use Illuminate\Support\Facades\DB;
 
 class PortfolioController extends Controller
 {
@@ -19,12 +21,12 @@ class PortfolioController extends Controller
 
     const RECENT_FEED_KEY = 'pf:portfolio:recent-feed:';
 
-    public function index(Request $request)
+    public function index(Request $request): View
     {
         return view('portfolio.index');
     }
 
-    public function show(Request $request, $username)
+    public function show(Request $request, $username): RedirectResponse|View
     {
         $user = User::whereUsername($username)->first();
 
@@ -51,10 +53,10 @@ class PortfolioController extends Controller
             return view('portfolio.404');
         }
 
-        return view('portfolio.show', compact('user', 'portfolio'));
+        return view('portfolio.show', ['user' => $user, 'portfolio' => $portfolio]);
     }
 
-    public function showPost(Request $request, $username, $id)
+    public function showPost(Request $request, $username, $id): View
     {
         $authed = $request->user();
         $post = StatusService::get($id);
@@ -74,10 +76,10 @@ class PortfolioController extends Controller
             return view('portfolio.404');
         }
 
-        return view('portfolio.show_post', compact('user', 'post', 'authed'));
+        return view('portfolio.show_post', ['user' => $user, 'post' => $post, 'authed' => $authed]);
     }
 
-    public function myRedirect(Request $request)
+    public function myRedirect(Request $request): RedirectResponse
     {
         abort_if(! $request->user(), 404);
 
@@ -98,7 +100,7 @@ class PortfolioController extends Controller
         return redirect($url);
     }
 
-    public function settings(Request $request)
+    public function settings(Request $request): RedirectResponse|View
     {
         if (! $request->user()) {
             return redirect(route('home'));
@@ -113,10 +115,10 @@ class PortfolioController extends Controller
             $portfolio->save();
         }
 
-        return view('portfolio.settings', compact('portfolio'));
+        return view('portfolio.settings', ['portfolio' => $portfolio]);
     }
 
-    public function store(Request $request)
+    public function store(Request $request): RedirectResponse
     {
         abort_unless($request->user(), 404);
 
@@ -146,7 +148,7 @@ class PortfolioController extends Controller
         $portfolio->show_bio = $request->input('show_bio') === 'on';
         $portfolio->profile_layout = $request->input('layout');
         $portfolio->profile_container = $request->input('layout_container');
-        $portfolio->metadata = $metadata;
+        $portfolio->metadata = null;
         $portfolio->save();
 
         return redirect('/'.$request->user()->username);
@@ -190,9 +192,9 @@ class PortfolioController extends Controller
 
         if ($portfolio->metadata && isset($portfolio->metadata['feed_order']) && $portfolio->metadata['feed_order'] === 'recent') {
             return $feed->reverse()->values();
-        } else {
-            return $feed->values();
         }
+
+        return $feed->values();
     }
 
     protected function getRecentFeed($id)
@@ -201,6 +203,7 @@ class PortfolioController extends Controller
             return DB::table('media')
                 ->whereProfileId($id)
                 ->whereNotNull('status_id')
+                ->selectRaw('status_id, MAX(id) as id')
                 ->groupBy('status_id')
                 ->orderByDesc('id')
                 ->take(50)
@@ -265,7 +268,10 @@ class PortfolioController extends Controller
         })->first();
     }
 
-    public function getAccountSettings(Request $request)
+    /**
+     * @return mixed[]
+     */
+    public function getAccountSettings(Request $request): array
     {
         $this->validate($request, [
             'id' => 'required|integer',
@@ -319,7 +325,7 @@ class PortfolioController extends Controller
         return $res;
     }
 
-    public function storeSettings(Request $request)
+    public function storeSettings(Request $request): int
     {
         abort_if(! $request->user(), 403);
 
@@ -520,7 +526,7 @@ class PortfolioController extends Controller
         $now = date('D, d M Y H:i:s ').'GMT';
 
         return response()
-            ->view('portfolio.rss_feed', compact('account', 'now', 'feed', 'portfolioUrl'), 200)
+            ->view('portfolio.rss_feed', ['account' => $account, 'now' => $now, 'feed' => $feed, 'portfolioUrl' => $portfolioUrl], 200)
             ->header('Content-Type', 'text/xml');
         // Dead return response($feed)->withHeaders(['Content-Type' => 'text/xml']);
     }

@@ -35,7 +35,7 @@ class Blurhash
         $scale = 1 / ($width * $height);
         for ($y = 0; $y < $components_y; $y++) {
             for ($x = 0; $x < $components_x; $x++) {
-                $normalisation = $x == 0 && $y == 0 ? 1 : 2;
+                $normalisation = $x === 0 && $y === 0 ? 1 : 2;
                 $r = $g = $b = 0;
                 for ($i = 0; $i < $width; $i++) {
                     for ($j = 0; $j < $height; $j++) {

@@ -4,11 +4,11 @@ namespace App\Http\Controllers\Admin;
 
 use App\Http\Resources\AdminInstance;
 use App\Http\Resources\AdminProfile;
-use App\Instance;
-use App\Profile;
+use App\Models\Instance;
+use App\Models\Profile;
 use App\Services\InstanceService;
-use Cache;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Cache;
 use Illuminate\Validation\Rule;
 
 trait AdminInstanceController
@@ -39,7 +39,7 @@ trait AdminInstanceController
     {
         $instance = Instance::findOrFail($id);
 
-        return view('admin.instances.show', compact('instance'));
+        return view('admin.instances.show', ['instance' => $instance]);
     }
 
     public function instanceEdit(Request $request, $id)
@@ -197,8 +197,15 @@ trait AdminInstanceController
             'banned',
             'auto_cw',
             'unlisted',
-            'notes',
         ]));
+
+        // notes is stored as an array to match the model cast and the
+        // domain-block API, so normalize the submitted string before saving
+        if ($request->has('notes')) {
+            $notes = $request->input('notes');
+            $instance->notes = filled($notes) ? [$notes] : null;
+            $instance->save();
+        }
 
         InstanceService::refresh();
 
@@ -226,7 +233,8 @@ trait AdminInstanceController
         $instance->auto_cw = $request->input('auto_cw');
         $instance->unlisted = $request->input('unlisted');
         $instance->manually_added = true;
-        $instance->notes = $request->input('notes');
+        $notes = $request->input('notes');
+        $instance->notes = filled($notes) ? [$notes] : null;
         $instance->save();
 
         InstanceService::refresh();
@@ -242,7 +250,7 @@ trait AdminInstanceController
 
         $instance = Instance::findOrFail($request->input('id'));
         $instance->user_count = Profile::whereDomain($instance->domain)->count();
-        $instance->status_count = Profile::whereDomain($instance->domain)->leftJoin('statuses', 'profiles.id', '=', 'statuses.profile_id')->count();
+        $instance->status_count = Profile::whereDomain($instance->domain)->leftJoin('statuses', 'profiles.id', '=', 'statuses.profile_id')->count('statuses.id');
         $instance->save();
 
         return new AdminInstance($instance);
@@ -278,7 +286,7 @@ trait AdminInstanceController
         }, 'pixelfed-instances-mod.json');
     }
 
-    public function importBackup(Request $request)
+    public function importBackup(Request $request): array
     {
         $this->validate($request, [
             'banned' => 'sometimes|array',

@@ -15,7 +15,9 @@ class RemoveOldCompoundIndexFromStatusesTable extends Migration
     {
         Schema::table('statuses', function (Blueprint $table) {
             $indexes = Schema::getIndexes('statuses');
-            $indexesFound = collect($indexes)->map(function($i) { return $i['name']; })->toArray();
+            $indexesFound = collect($indexes)->map(function ($i) {
+                return $i['name'];
+            })->toArray();
             if (in_array('statuses_in_reply_to_id_reblog_of_id_index', $indexesFound)) {
                 $table->dropIndex('statuses_in_reply_to_id_reblog_of_id_index');
             }

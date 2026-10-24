@@ -5,7 +5,7 @@
     <div class="row justify-content-center align-items-center">
         <div class="col-12 col-md-7">
             <div class="logo">
-                <img src="/img/pixelfed-icon-color.svg" width="40" height="40" alt="Pixelfed Logo">
+                <img src="{{ config('app.logo') }}" width="40" height="40" alt="Pixelfed Logo">
                 <p class="font-weight-bold mb-0">Pixelfed</p>
             </div>
 
@@ -33,11 +33,7 @@
                         placeholder="Your email address"
                         required />
                 </div>
-                @if(config('instance.curated_registration.captcha_enabled'))
-                <div class="d-flex justify-content-center my-3">
-                    {!! Captcha::display() !!}
-                </div>
-                @endif
+                <x-captcha surface="curated_register" />
                 <div class="d-flex justify-content-center">
                     <button class="btn btn-primary font-weight-bold rounded-pill px-5">Verify</button>
                 </div>

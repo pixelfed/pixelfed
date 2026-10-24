@@ -3,8 +3,8 @@
 namespace App\Jobs\ImportPipeline;
 
 use App\Jobs\VideoPipeline\VideoThumbnailToCloudPipeline;
-use App\Media;
 use App\Models\ImportPost;
+use App\Models\Media;
 use App\Services\MediaStorageService;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldBeUniqueUntilProcessing;
@@ -93,32 +93,46 @@ class ImportMediaToCloudPipeline implements ShouldBeUniqueUntilProcessing, Shoul
             return;
         }
 
+        $allSucceeded = true;
+
         foreach ($media as $mediaPart) {
-            $this->handleMedia($mediaPart);
+            if (! $this->handleMedia($mediaPart)) {
+                $allSucceeded = false;
+            }
+        }
+
+        if ($allSucceeded) {
+            $importPost = ImportPost::find($ip->id);
+            if ($importPost) {
+                $importPost->uploaded_to_s3 = true;
+                $importPost->save();
+            }
         }
     }
 
     protected function handleMedia($media)
     {
+        // Skip media already uploaded to cloud storage
+        if ($media->cdn_url) {
+            return true;
+        }
+
         $ip = $this->importPost;
 
         $importPost = ImportPost::find($ip->id);
 
         if (! $importPost) {
-            return;
+            return false;
         }
 
         $res = MediaStorageService::move($media);
 
-        $importPost->uploaded_to_s3 = true;
-        $importPost->save();
-
         if (! $res) {
-            return;
+            return false;
         }
 
         if ($res === 'invalid file') {
-            return;
+            return false;
         }
 
         if ($res === 'success') {
@@ -127,6 +141,10 @@ class ImportMediaToCloudPipeline implements ShouldBeUniqueUntilProcessing, Shoul
             } else {
                 Storage::disk('local')->delete($media->media_path);
             }
+
+            return true;
         }
+
+        return false;
     }
 }

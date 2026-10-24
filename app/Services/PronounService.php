@@ -3,7 +3,7 @@
 namespace App\Services;
 
 use App\Models\UserPronoun;
-use Cache;
+use Illuminate\Support\Facades\Cache;
 
 class PronounService
 {
@@ -55,7 +55,7 @@ class PronounService
         AccountService::del($id);
     }
 
-    public static function pronouns()
+    public static function pronouns(): array
     {
         return [
             'co',

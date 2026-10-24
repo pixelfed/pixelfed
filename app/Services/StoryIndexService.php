@@ -2,6 +2,7 @@
 
 namespace App\Services;
 
+use Carbon\Carbon;
 use Illuminate\Support\Arr;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
@@ -12,7 +13,7 @@ class StoryIndexService
 {
     public const STORY_TTL = 86400;
 
-    private const REBUILD_LOCK_TTL = 300;
+    private const int REBUILD_LOCK_TTL = 300;
 
     private function authorKey($authorId)
     {
@@ -174,8 +175,31 @@ class StoryIndexService
         $type = $story->type;
         $path = $story->path;
 
+        // The author key must live as long as the LONGEST-lived active story,
+        // not whichever story is indexed last. rebuildIndex() reindexes an
+        // author's stories newest-first, so the oldest (shortest-lived) story
+        // is indexed last; a plain expire() would shorten the key's TTL and
+        // drop the author from the index while newer stories are still live.
+        // Read the current TTL up front (outside the pipeline) and only ever
+        // extend, mirroring markSeen().
+        $authorKeyTtl = (int) ($ttl + 3600);
+        $currentAuthorTtl = $this->redisInt(fn () => Redis::ttl($this->authorKey($author)));
+        if ($currentAuthorTtl > $authorKeyTtl) {
+            $authorKeyTtl = $currentAuthorTtl;
+        }
+
         Redis::pipeline(function ($pipe) use (
-            $author, $sid, $score, $ttl, $duration, $overlays, $viewCount, $createdIso, $type, $path
+            $author,
+            $sid,
+            $score,
+            $ttl,
+            $authorKeyTtl,
+            $duration,
+            $overlays,
+            $viewCount,
+            $createdIso,
+            $type,
+            $path
         ) {
             $keyStory = $this->storyKey($sid);
             $keyAuth = $this->authorKey($author);
@@ -196,7 +220,7 @@ class StoryIndexService
                 $pipe->zadd($keyAuth, $score, $sid);
             }
             $pipe->sadd('story:active_authors', $author);
-            $pipe->expire($keyAuth, (int) ($ttl + 3600));
+            $pipe->expire($keyAuth, $authorKeyTtl);
         });
     }
 
@@ -234,6 +258,51 @@ class StoryIndexService
         Redis::expire($key, $finalTtl);
     }
 
+    public function incrementViewCount(string|int $storyId, int $by = 1): void
+    {
+        $key = $this->storyKey($storyId);
+
+        if (! $this->redisBool(fn () => Redis::exists($key))) {
+            return;
+        }
+
+        Redis::hincrby($key, 'view_count', $by);
+
+        if (! $this->redisBool(fn () => Redis::hexists($key, 'id'))) {
+            Redis::del($key);
+        }
+    }
+
+    /**
+     * Keep the cached following set in sync when a follow is created.
+     * Only touches the key if it already exists; otherwise the next carousel
+     * fetch hydrates from SQL and picks up the new follow anyway.
+     */
+    public function addFollowing(int $followerId, int $followingId): void
+    {
+        $key = "following:{$followerId}";
+
+        if (! Redis::exists($key)) {
+            return;
+        }
+
+        Redis::sadd($key, (string) $followingId);
+    }
+
+    /**
+     * Keep the cached following set in sync when a follow is removed.
+     */
+    public function removeFollowing(int $followerId, int $followingId): void
+    {
+        $key = "following:{$followerId}";
+
+        if (! Redis::exists($key)) {
+            return;
+        }
+
+        Redis::srem($key, (string) $followingId);
+    }
+
     public function rebuildIndex(): array
     {
         $lockKey = $this->rebuildLockKey();
@@ -255,9 +324,8 @@ class StoryIndexService
             DB::table('stories')
                 ->where('active', true)
                 ->where('expires_at', '>', now())
-                ->orderBy('profile_id')
-                ->orderBy('created_at', 'desc')
-                ->chunk(500, function ($stories) use (&$stats) {
+                ->orderBy('id')
+                ->chunkById(500, function ($stories) use (&$stats) {
                     foreach ($stories as $story) {
                         try {
                             $storyObj = (object) [
@@ -285,7 +353,7 @@ class StoryIndexService
                             }
                         }
                     }
-                });
+                }, 'id');
 
             $cutoffDate = now()->subHours(48);
 
@@ -295,6 +363,7 @@ class StoryIndexService
                 ->where('stories.active', true)
                 ->where('stories.expires_at', '>', now())
                 ->select(
+                    'story_views.id',
                     'story_views.profile_id as viewer_id',
                     'story_views.story_id',
                     'stories.profile_id as author_id',
@@ -302,7 +371,7 @@ class StoryIndexService
                     'story_views.created_at as view_created_at'
                 )
                 ->orderBy('story_views.id')
-                ->chunk(1000, function ($views) use (&$stats) {
+                ->chunkById(1000, function ($views) use (&$stats) {
                     foreach ($views as $view) {
                         try {
                             $this->markSeen(
@@ -323,14 +392,13 @@ class StoryIndexService
                             }
                         }
                     }
-                });
+                }, 'story_views.id', 'id');
 
             return [
                 'status' => 'success',
                 'message' => 'Story index and seen data rebuilt successfully',
                 'stats' => $stats,
             ];
-
         } finally {
             Redis::del($lockKey);
         }
@@ -338,12 +406,27 @@ class StoryIndexService
 
     private function clearStoryCache(): void
     {
+        $lockKey = $this->rebuildLockKey();
+        $prefix = (string) config('database.redis.options.prefix');
+
         $storyKeys = $this->redisArray(fn () => Redis::keys('story:*'));
-        $storyKeys = array_filter($storyKeys, function ($key) {
-            return ! str_contains($key, 'following:');
+        $storyKeys = array_filter($storyKeys, function ($key) use ($lockKey) {
+            // Never delete follower carousels or the rebuild mutex itself, or we
+            // release the lock rebuildIndex() is holding.
+            return ! str_contains($key, 'following:')
+                && ! str_contains($key, $lockKey);
         });
 
         if (! empty($storyKeys)) {
+            // Redis::keys() returns prefixed key names, but Redis::del() re-adds
+            // the prefix. Strip it so del() targets the real keys instead of a
+            // double-prefixed no-op.
+            if ($prefix !== '') {
+                $storyKeys = array_map(function ($key) use ($prefix) {
+                    return str_starts_with($key, $prefix) ? substr($key, strlen($prefix)) : $key;
+                }, $storyKeys);
+            }
+
             $chunks = array_chunk($storyKeys, 1000);
             foreach ($chunks as $chunk) {
                 Redis::del(...$chunk);
@@ -418,7 +501,7 @@ class StoryIndexService
                         }
                     }
                 } else {
-                    $authorIds = array_filter($active, fn ($aid) => $this->redisBool(fn () => Redis::sismember("following:{$pid}", $aid)));
+                    $authorIds = array_filter($active, fn ($aid): bool => $this->redisBool(fn () => Redis::sismember("following:{$pid}", $aid)));
                 }
             }
         } else {
@@ -521,7 +604,7 @@ class StoryIndexService
                 'is_author' => $isAuthor,
                 'stories' => collect($storyItems)->sortBy('id')->values()->all(),
                 'url' => $url,
-                'hasViewed' => collect($storyItems)->every(fn ($s) => $s['viewed'] === true),
+                'hasViewed' => collect($storyItems)->every(fn ($s): bool => $s['viewed'] === true),
                 '_latest_ts' => $authorLatestTs[$aid] ?? 0,
             ];
         }
@@ -552,7 +635,7 @@ class StoryIndexService
         $following = DB::table('followers')
             ->where('profile_id', $viewerId)
             ->pluck('following_id')
-            ->map(fn ($id) => (string) $id)
+            ->map(fn ($id): string => (string) $id)
             ->toArray();
 
         $authorIds = array_merge([(string) $viewerId], $following);
@@ -615,7 +698,7 @@ class StoryIndexService
                 'stories' => collect($storyItems)->sortBy('id')->values()->all(),
                 'url' => $url,
                 'hasViewed' => false,
-                '_latest_ts' => \Carbon\Carbon::parse($profileStories->first()->created_at)->timestamp,
+                '_latest_ts' => Carbon::parse($profileStories->first()->created_at)->timestamp,
             ];
         }
 
@@ -647,7 +730,7 @@ class StoryIndexService
             ->orderBy('id')
             ->chunk(1000, function ($followers) use ($followingKey, &$hasResults) {
                 $hasResults = true;
-                $ids = $followers->map(fn ($f) => (string) $f->following_id)->all();
+                $ids = $followers->map(fn ($f): string => (string) $f->following_id)->all();
                 if (! empty($ids)) {
                     Redis::sadd($followingKey, ...$ids);
                 }
@@ -656,7 +739,6 @@ class StoryIndexService
         if (! $hasResults) {
             Redis::pipeline(function ($pipe) use ($followingKey) {
                 $pipe->sadd($followingKey, '__empty__');
-                $pipe->srem($followingKey, '__empty__');
                 $pipe->expire($followingKey, 3600);
             });
         } else {
@@ -667,5 +749,61 @@ class StoryIndexService
     private function withScoresOpt()
     {
         return config('database.redis.client') === 'predis' ? ['withscores' => true] : true;
+    }
+
+    public function hasActiveStory(int $profileId): bool
+    {
+        return $this->activeStoryCount($profileId) > 0;
+    }
+
+    public function activeStoryCount(int $profileId): int
+    {
+        $min = '('.(time() - self::STORY_TTL);
+
+        return $this->redisInt(fn () => Redis::zcount($this->authorKey($profileId), $min, '+inf'));
+    }
+
+    /**
+     * Newest live story id for an author, or null. Same window as above.
+     */
+    public function latestStoryId(int $profileId): ?int
+    {
+        $min = '('.(time() - self::STORY_TTL);
+
+        $ids = $this->redisArray(fn () => Redis::zrevrangebyscore(
+            $this->authorKey($profileId),
+            '+inf',
+            $min,
+            ['limit' => [0, 1]]
+        ));
+
+        return $ids ? (int) $ids[0] : null;
+    }
+
+    /**
+     * Story ids the viewer has seen from this author. Empty if nothing is
+     * recorded (or the seen key already expired with the stories).
+     */
+    public function seenStoryIds(int $viewerId, int $authorId): array
+    {
+        return $this->redisArray(fn () => Redis::smembers($this->seenKey($viewerId, $authorId)));
+    }
+
+    /**
+     * True when the index positively knows the viewer saw this story.
+     * False means "not recorded here", not "definitely unseen".
+     */
+    public function hasSeen(int $viewerId, int $storyId): bool
+    {
+        $authorId = Redis::hget($this->storyKey($storyId), 'profile_id');
+
+        if (! $authorId) {
+            return false;
+        }
+
+        return $this->redisBool(fn () => Redis::sismember(
+            $this->seenKey($viewerId, (int) $authorId),
+            (string) $storyId
+        ));
     }
 }

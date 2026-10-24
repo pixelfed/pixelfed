@@ -2,13 +2,13 @@
 
 namespace App\Transformer\ActivityPub\Verb;
 
-use App\Story;
+use App\Models\Story;
+use Illuminate\Support\Facades\Storage;
 use League\Fractal;
-use Storage;
 
 class StoryVerb extends Fractal\TransformerAbstract
 {
-    public function transform(Story $story)
+    public function transform(Story $story): array
     {
         $type = $story->type == 'photo' ? 'Image' :
             ($story->type == 'video' ? 'Video' :

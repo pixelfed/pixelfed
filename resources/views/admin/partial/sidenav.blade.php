@@ -2,7 +2,7 @@
 	<div class="scrollbar-inner">
 		<div class="sidenav-header  align-items-center">
 			<a class="navbar-brand" href="/i/web">
-				<img src="/img/pixelfed-icon-color.svg" class="navbar-brand-img">
+				<img src="{{ config('app.logo') }}" class="navbar-brand-img">
 			</a>
 		</div>
 		<div class="navbar-inner">
@@ -146,11 +146,20 @@
                     </li>
 
 					<li class="nav-item">
-						<a class="nav-link" href="/horizon">
+						<a class="nav-link" href="/admin/horizon">
 							<i class="ni ni-bold-right text-primary"></i>
 							<span class="nav-link-text">Horizon</span>
 						</a>
 					</li>
+
+					@if(config('pulse.enabled'))
+					<li class="nav-item">
+						<a class="nav-link" href="/{{ config('pulse.path', 'admin/pulse') }}">
+							<i class="ni ni-bold-right text-primary"></i>
+							<span class="nav-link-text">Pulse</span>
+						</a>
+					</li>
+					@endif
 
 
 					<li class="nav-item">

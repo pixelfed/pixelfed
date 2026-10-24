@@ -35,7 +35,7 @@ class UserRoleService
         return array_keys(self::defaultRoles());
     }
 
-    public static function defaultRoles()
+    public static function defaultRoles(): array
     {
         return [
             'account-force-private' => true,
@@ -77,7 +77,7 @@ class UserRoleService
         return $roleData;
     }
 
-    public static function roleData()
+    public static function roleData(): array
     {
         return [
             'account-force-private' => [
@@ -152,7 +152,7 @@ class UserRoleService
         ];
     }
 
-    public static function mapInvite($id, $data = [])
+    public static function mapInvite($id, $data = []): array
     {
         $roles = self::get($id);
 
@@ -193,7 +193,10 @@ class UserRoleService
         return $map;
     }
 
-    public static function mapActions($id, $data = [])
+    /**
+     * @return mixed[]
+     */
+    public static function mapActions($id, $data = []): array
     {
         $res = [];
         $map = [

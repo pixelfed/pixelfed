@@ -2,21 +2,18 @@
 
 namespace App\Jobs\StatusPipeline;
 
-use App\Profile;
-use App\Status;
+use App\Models\Profile;
+use App\Models\Status;
+use App\Services\ActivityPubFanoutService;
+use App\Services\FractalService;
 use App\Transformer\ActivityPub\Verb\CreateNote;
 use App\Transformer\ActivityPub\Verb\CreateQuestion;
-use App\Util\ActivityPub\HttpSignature;
-use GuzzleHttp\Client;
-use GuzzleHttp\Pool;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
-use League\Fractal;
-use League\Fractal\Serializer\ArraySerializer;
-use Log;
+use Illuminate\Support\Facades\Log;
 
 class StatusActivityPubDeliver implements ShouldQueue
 {
@@ -100,7 +97,7 @@ class StatusActivityPubDeliver implements ShouldQueue
 
         $audience = array_values(array_unique(array_merge($audience, $mentions, $parentInbox)));
 
-        if (empty($audience) || ! in_array($status->scope, ['public', 'unlisted', 'private'])) {
+        if ($audience === [] || ! in_array($status->scope, ['public', 'unlisted', 'private'])) {
             // Return on profiles with no remote followers
             return;
         }
@@ -115,49 +112,19 @@ class StatusActivityPubDeliver implements ShouldQueue
                 break;
         }
 
-        $fractal = new Fractal\Manager;
-        $fractal->setSerializer(new ArraySerializer);
-        $resource = new Fractal\Resource\Item($status, $activitypubObject);
-        $activity = $fractal->createData($resource)->toArray();
+        $activity = FractalService::item($status, $activitypubObject);
 
-        $payload = json_encode($activity);
-
-        $client = new Client([
-            'timeout' => config('federation.activitypub.delivery.timeout'),
-        ]);
-
-        $version = config('pixelfed.version');
-        $appUrl = config('app.url');
-        $userAgent = "(Pixelfed/{$version}; +{$appUrl})";
-
-        $requests = function ($audience) use ($client, $activity, $profile, $payload, $userAgent) {
-            foreach ($audience as $url) {
-                $headers = HttpSignature::sign($profile, $url, $activity, [
-                    'Content-Type' => 'application/ld+json; profile="https://www.w3.org/ns/activitystreams"',
-                    'User-Agent' => $userAgent,
-                ]);
-                yield function () use ($client, $url, $headers, $payload) {
-                    return $client->postAsync($url, [
-                        'curl' => [
-                            CURLOPT_HTTPHEADER => $headers,
-                            CURLOPT_POSTFIELDS => $payload,
-                            CURLOPT_HEADER => true,
-                            CURLOPT_SSL_VERIFYPEER => true,
-                            CURLOPT_SSL_VERIFYHOST => false,
-                        ],
-                    ]);
-                };
-            }
-        };
-
-        $pool = new Pool($client, $requests($audience), [
-            'concurrency' => config('federation.activitypub.delivery.concurrency'),
-            'fulfilled' => function ($response, $index) {},
-            'rejected' => function ($reason, $index) {},
-        ]);
-
-        $promise = $pool->promise();
-
-        $promise->wait();
+        /*
+         * FEP-8fcf: followers-only posts rely on the receiving server's copy
+         * of our followers collection for access control, so they carry a
+         * Collection-Synchronization header that lets it detect drift.
+         */
+        ActivityPubFanoutService::dispatch(
+            $profile,
+            $activity,
+            $audience,
+            $status->scope === 'private',
+            (int) $status->id
+        );
     }
 }

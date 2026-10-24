@@ -2,22 +2,22 @@
 
 namespace App\Jobs\StatusPipeline;
 
-use App\Hashtag;
 use App\Jobs\MentionPipeline\MentionPipeline;
-use App\Mention;
+use App\Models\Hashtag;
+use App\Models\Mention;
+use App\Models\StatusHashtag;
 use App\Services\AccountService;
 use App\Services\CustomEmojiService;
 use App\Services\StatusService;
 use App\Services\TrendingHashtagService;
-use App\StatusHashtag;
 use App\Util\ActivityPub\Helpers;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
-use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Str;
 
 class StatusTagsPipeline implements ShouldQueue
 {
@@ -81,7 +81,7 @@ class StatusTagsPipeline implements ShouldQueue
             return $tag && $tag['type'] == 'Hashtag' && isset($tag['href'], $tag['name']);
         })
             ->map(function ($tag) use ($status) {
-                $name = substr($tag['name'], 0, 1) == '#' ?
+                $name = str_starts_with($tag['name'], '#') ?
                     substr($tag['name'], 1) : $tag['name'];
 
                 $banned = TrendingHashtagService::getBannedHashtagNames();
@@ -92,57 +92,23 @@ class StatusTagsPipeline implements ShouldQueue
                     }
                 }
 
-                if (config('database.default') === 'pgsql') {
-                    $hashtag = DB::transaction(function () use ($name) {
-                        $baseSlug = str_slug($name, '-', false);
-                        $slug = $baseSlug;
-                        $counter = 1;
-
-                        $existing = Hashtag::where('name', $name)
-                            ->lockForUpdate()
-                            ->first();
-
-                        if ($existing) {
-                            if ($existing->slug !== $slug) {
-                                while (Hashtag::where('slug', $slug)
-                                    ->where('name', '!=', $name)
-                                    ->exists()) {
-                                    $slug = $baseSlug.'-'.$counter++;
-                                }
-                                $existing->slug = $slug;
-                                $existing->save();
-                            }
-
-                            return $existing;
-                        }
-
-                        while (Hashtag::where('slug', $slug)->exists()) {
-                            $slug = $baseSlug.'-'.$counter++;
-                        }
-
-                        return Hashtag::create([
-                            'name' => $name,
-                            'slug' => $slug,
-                        ]);
-                    });
-                } else {
-                    $hashtag = DB::transaction(function () use ($name) {
-                        $baseSlug = str_slug($name, '-', false);
-                        $slug = $baseSlug;
-                        $counter = 1;
-
-                        while (Hashtag::where('slug', $slug)
-                            ->where('name', '!=', $name)
-                            ->exists()) {
-                            $slug = $baseSlug.'-'.$counter++;
-                        }
-
-                        return Hashtag::updateOrCreate(
-                            ['name' => $name],
-                            ['slug' => $slug]
-                        );
-                    });
+                // Resolve a slug that does not collide with a *different* name,
+                // so two distinct names sharing a base slug keep separate rows.
+                $baseSlug = Str::slug($name, '-', false);
+                $slug = $baseSlug;
+                $counter = 1;
+                while (Hashtag::where('slug', $slug)->where('name', '!=', $name)->exists()) {
+                    $slug = $baseSlug.'-'.$counter++;
                 }
+
+                // Keyed on the unique `name` column: firstOrCreate -> createOrFirst
+                // catches the unique-constraint violation and re-selects, so two
+                // workers racing the same brand-new hashtag resolve to one row
+                // instead of throwing (SQLSTATE 23505 on pgsql, 1062 on mysql).
+                $hashtag = Hashtag::firstOrCreate(
+                    ['name' => $name],
+                    ['slug' => $slug],
+                );
 
                 StatusHashtag::firstOrCreate([
                     'status_id' => $status->id,
@@ -157,7 +123,7 @@ class StatusTagsPipeline implements ShouldQueue
             return $tag &&
                 $tag['type'] == 'Mention' &&
                 isset($tag['href']) &&
-                substr($tag['href'], 0, 8) === 'https://';
+                str_starts_with($tag['href'], 'https://');
         })
             ->map(function ($tag) use ($status) {
                 if (Helpers::validateLocalUrl($tag['href'])) {

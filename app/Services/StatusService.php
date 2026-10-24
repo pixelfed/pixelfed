@@ -2,7 +2,8 @@
 
 namespace App\Services;
 
-use App\Status;
+use App\Models\Like;
+use App\Models\Status;
 use App\Transformer\Api\StatusStatelessTransformer;
 use Illuminate\Support\Facades\Cache;
 use League\Fractal;
@@ -14,51 +15,118 @@ class StatusService
 
     const MAX_PINNED = 3;
 
-    public static function key($id, $publicOnly = true)
+    public static function key($id, $publicOnly = true): string
     {
         $p = $publicOnly ? 'pub:' : 'all:';
 
         return self::CACHE_KEY.$p.$id;
     }
 
-    public static function get($id, $publicOnly = true, $mastodonMode = false)
-    {
+    public static function get(
+        $id,
+        $publicOnly = true,
+        $mastodonMode = false,
+        $viewerProfileId = null
+    ) {
         $res = Cache::remember(self::key($id, $publicOnly), 21600, function () use ($id, $publicOnly) {
             if ($publicOnly) {
                 $status = Status::whereScope('public')->find($id);
             } else {
-                $status = Status::whereIn('scope', ['public', 'private', 'unlisted', 'group'])->find($id);
+                $status = Status::whereIn('scope', [
+                    'public',
+                    'private',
+                    'unlisted',
+                    'group',
+                ])->find($id);
             }
+
             if (! $status) {
                 return null;
             }
+
             $fractal = new Fractal\Manager;
             $fractal->setSerializer(new ArraySerializer);
-            $resource = new Fractal\Resource\Item($status, new StatusStatelessTransformer);
+
+            $resource = new Fractal\Resource\Item(
+                $status,
+                new StatusStatelessTransformer
+            );
+
             $res = $fractal->createData($resource)->toArray();
-            $res['_pid'] = isset($res['account']) && isset($res['account']['id']) ? $res['account']['id'] : null;
+
+            $res['_pid'] = isset($res['account'], $res['account']['id'])
+                ? $res['account']['id']
+                : null;
+
             if (isset($res['_pid'])) {
                 unset($res['account']);
             }
 
             return $res;
         });
-        if ($res && isset($res['_pid'])) {
-            $res['account'] = $mastodonMode === true ? AccountService::getMastodon($res['_pid'], true) : AccountService::get($res['_pid'], true);
+
+        if (! $res) {
+            return null;
+        }
+
+        if ($viewerProfileId !== null) {
+            $ownerProfileId = $res['_pid'] ?? null;
+            $visibility = $res['visibility'] ?? null;
+            $addressee = $res['in_reply_to_account_id'] ?? null;
+
+            $isAddressee = $visibility === 'private' &&
+                $addressee &&
+                (int) $addressee === (int) $viewerProfileId;
+
+            if (! $isAddressee && ! self::isVisibleTo(
+                $ownerProfileId,
+                $visibility,
+                $viewerProfileId
+            )) {
+                return null;
+            }
+        }
+
+        if (isset($res['_pid'])) {
+            $res['account'] = $mastodonMode === true
+                ? AccountService::getMastodon($res['_pid'], true)
+                : AccountService::get($res['_pid'], true);
+
             unset($res['_pid']);
+        }
+
+        // Legacy _pe clients that don't resolve `reblog` would render a boost
+        // as an empty card, so lift the shared content up. Never touch
+        // `account`: the top-level account is always the booster.
+        if (
+            ! $mastodonMode
+            && request()->has('_pe')
+            && ! request()->filled('include_reblogs')
+            && ! empty($res['reblog'])
+        ) {
+            foreach (['content', 'content_text', 'emojis', 'media_attachments', 'sensitive', 'spoiler_text'] as $key) {
+                if (array_key_exists($key, $res['reblog'])) {
+                    $res[$key] = $res['reblog'][$key];
+                }
+            }
         }
 
         return $res;
     }
 
-    public static function getMastodon($id, $publicOnly = true)
-    {
-        $status = self::get($id, $publicOnly, true);
-        if (! $status) {
-            return null;
-        }
+    public static function getMastodon(
+        $id,
+        $publicOnly = true,
+        $viewerProfileId = null
+    ) {
+        $status = self::get(
+            $id,
+            $publicOnly,
+            true,
+            $viewerProfileId
+        );
 
-        if (! isset($status['account'])) {
+        if (! $status || ! isset($status['account'])) {
             return null;
         }
 
@@ -68,12 +136,26 @@ class StatusService
             return $status;
         }
 
+        // The shared status nests under `reblog` and needs Mastodon field names too
+        if (! empty($status['reblog'])) {
+            if (isset($status['reblog']['account']['id'])) {
+                $status['reblog']['account'] = AccountService::getMastodon(
+                    $status['reblog']['account']['id'],
+                    true
+                );
+            }
+
+            $status['reblog']['replies_count'] = $status['reblog']['reply_count'] ?? 0;
+            $status['reblog']['favourited'] = false;
+            $status['reblog']['muted'] = false;
+            $status['reblog']['reblogged'] = false;
+        }
+
         unset(
             $status['_v'],
             $status['comments_disabled'],
             $status['content_text'],
             $status['gid'],
-            $status['label'],
             $status['liked_by'],
             $status['local'],
             $status['parent'],
@@ -94,6 +176,7 @@ class StatusService
             $status['account']['website'],
             $status['media_attachments'],
         );
+
         $status['account']['avatar_static'] = $status['account']['avatar'];
         $status['account']['bot'] = false;
         $status['account']['emojis'] = [];
@@ -102,14 +185,123 @@ class StatusService
         $status['account']['header_static'] = url('/storage/headers/missing.png');
         $status['account']['last_status_at'] = null;
 
-        $status['media_attachments'] = array_values(MediaService::getMastodon($status['id']));
+        $status['media_attachments'] = array_values(
+            MediaService::getMastodon($status['id'])
+        );
+
+        $status['favourited'] = false;
         $status['muted'] = false;
         $status['reblogged'] = false;
 
         return $status;
     }
 
-    public static function getState($id, $pid)
+    /**
+     * Determine whether a status with the given visibility can be
+     * returned to a viewer.
+     */
+    public static function isVisibleTo(
+        $ownerProfileId,
+        $visibility,
+        $viewerProfileId
+    ) {
+        if (! $ownerProfileId || ! $visibility || ! $viewerProfileId) {
+            return false;
+        }
+
+        $ownerProfileId = (int) $ownerProfileId;
+        $viewerProfileId = (int) $viewerProfileId;
+
+        if ($ownerProfileId === $viewerProfileId) {
+            return true;
+        }
+
+        switch ($visibility) {
+            case 'public':
+            case 'unlisted':
+                return true;
+
+            case 'private':
+                return FollowerService::follows(
+                    $viewerProfileId,
+                    $ownerProfileId
+                );
+
+            case 'group':
+            default:
+                return false;
+        }
+    }
+
+    public static function isReplyVisibleTo(
+        $replyOwnerProfileId,
+        $replyScope,
+        $replyIsLocal,
+        $parentOwnerProfileId,
+        $parentScope,
+        $viewerProfileId
+    ): bool {
+        if (! $replyOwnerProfileId || ! $viewerProfileId) {
+            return false;
+        }
+
+        if (in_array($replyScope, ['public', 'unlisted'], true)) {
+            return true;
+        }
+
+        if ($replyScope !== 'private') {
+            return false;
+        }
+
+        $replyOwnerProfileId = (int) $replyOwnerProfileId;
+        $viewerProfileId = (int) $viewerProfileId;
+
+        if (
+            $replyOwnerProfileId === $viewerProfileId ||
+            (int) $parentOwnerProfileId === $viewerProfileId
+        ) {
+            return true;
+        }
+
+        if ($parentScope === 'private' && $replyIsLocal) {
+            return true;
+        }
+
+        return (bool) FollowerService::follows(
+            (string) $viewerProfileId,
+            (string) $replyOwnerProfileId
+        );
+    }
+
+    public static function clampReplyVisibility(
+        $replyVisibility,
+        $parentVisibility
+    ): string {
+        if ($parentVisibility === 'group') {
+            return 'group';
+        }
+
+        $levels = [
+            'private' => 0,
+            'unlisted' => 1,
+            'public' => 2,
+        ];
+
+        if (
+            ! isset($levels[$replyVisibility]) ||
+            ! isset($levels[$parentVisibility])
+        ) {
+            return 'private';
+        }
+
+        if ($levels[$replyVisibility] > $levels[$parentVisibility]) {
+            return $parentVisibility;
+        }
+
+        return $replyVisibility;
+    }
+
+    public static function getState($id, $pid): array
     {
         $status = self::get($id, false);
 
@@ -147,11 +339,7 @@ class StatusService
             return null;
         }
 
-        $fractal = new Fractal\Manager;
-        $fractal->setSerializer(new ArraySerializer);
-        $resource = new Fractal\Resource\Item($status, new StatusStatelessTransformer);
-
-        return $fractal->createData($resource)->toArray();
+        return FractalService::item($status, new StatusStatelessTransformer);
     }
 
     public static function del($id, $purge = false)
@@ -200,10 +388,12 @@ class StatusService
         return InstanceService::totalLocalStatuses();
     }
 
+    // GLITCH MODIFIED START: "real" post count
     public static function totalRealLocalStatuses()
     {
         return InstanceService::totalRealLocalStatuses();
     }    
+    // GLITCH MODIFIED END
 
     public static function isPinned($id)
     {
@@ -215,7 +405,7 @@ class StatusService
         return Status::whereProfileId($pid)->whereNotNull('pinned_order')->count();
     }
 
-    public static function markPin($id)
+    public static function markPin($id): array
     {
         $status = Status::find($id);
 
@@ -288,5 +478,93 @@ class StatusService
         self::refresh($id);
 
         return true;
+    }
+
+    /**
+     * Canonical source-of-truth like count for a status.
+     */
+    public static function recalculateLikeCount($id): int
+    {
+        return (int) Like::whereStatusId($id)->count();
+    }
+
+    /**
+     * Canonical source-of-truth boost/reblog count for a status.
+     */
+    public static function recalculateReblogCount($id): int
+    {
+        return (int) Status::whereReblogOfId($id)->count();
+    }
+
+    /**
+     * Canonical source-of-truth reply/comment count for a status.
+     */
+    public static function recalculateReplyCount($id): int
+    {
+        return (int) Status::whereInReplyToId($id)->count();
+    }
+
+    /**
+     * Reconcile a status's cached count columns (likes_count, reblogs_count,
+     * reply_count) against source-of-truth tables. Only writes and busts the
+     * cache when a column actually drifted.
+     *
+     * @param  array<int, string>  $only  Restrict to a subset of
+     *                                    ['likes','boosts','comments'].
+     * @return array<string, array{cached:int,live:int,drifted:bool}>
+     *                                                                Per-metric before/after summary.
+     */
+    public static function reconcileStatusCounts($status, array $only = ['likes', 'boosts', 'comments']): array
+    {
+        if (! $status instanceof Status) {
+            $status = Status::find($status);
+        }
+
+        if (! $status) {
+            return [];
+        }
+
+        $summary = [];
+        $changed = false;
+
+        if (in_array('likes', $only, true)) {
+            $cached = (int) $status->likes_count;
+            $live = self::recalculateLikeCount($status->id);
+            $drift = $cached !== $live;
+            if ($drift) {
+                $status->likes_count = $live;
+                $changed = true;
+            }
+            $summary['likes'] = ['cached' => $cached, 'live' => $live, 'drifted' => $drift];
+        }
+
+        if (in_array('boosts', $only, true)) {
+            $cached = (int) $status->reblogs_count;
+            $live = self::recalculateReblogCount($status->id);
+            $drift = $cached !== $live;
+            if ($drift) {
+                $status->reblogs_count = $live;
+                $changed = true;
+            }
+            $summary['boosts'] = ['cached' => $cached, 'live' => $live, 'drifted' => $drift];
+        }
+
+        if (in_array('comments', $only, true)) {
+            $cached = (int) $status->reply_count;
+            $live = self::recalculateReplyCount($status->id);
+            $drift = $cached !== $live;
+            if ($drift) {
+                $status->reply_count = $live;
+                $changed = true;
+            }
+            $summary['comments'] = ['cached' => $cached, 'live' => $live, 'drifted' => $drift];
+        }
+
+        if ($changed) {
+            $status->save();
+            self::del($status->id, true);
+        }
+
+        return $summary;
     }
 }

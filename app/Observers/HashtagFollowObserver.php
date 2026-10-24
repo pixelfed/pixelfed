@@ -2,7 +2,7 @@
 
 namespace App\Observers;
 
-use App\HashtagFollow;
+use App\Models\HashtagFollow;
 use App\Services\HashtagFollowService;
 use Illuminate\Contracts\Events\ShouldHandleEventsAfterCommit;
 

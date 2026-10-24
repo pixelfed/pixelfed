@@ -13,7 +13,17 @@ class BouncerService
         $knownCloudCidrs = Cache::rememberForever('pf:bouncer-service:check-ip:known-cloud-cidrs', function () {
             $file = Storage::get('bouncer/all.json');
 
-            return json_decode($file, true);
+            if ($file === null) {
+                return [];
+            }
+
+            $decoded = json_decode($file, true);
+
+            if ($decoded === null || ! is_array($decoded)) {
+                return [];
+            }
+
+            return $decoded;
         });
 
         return IpUtils::checkIp($ip, $knownCloudCidrs);

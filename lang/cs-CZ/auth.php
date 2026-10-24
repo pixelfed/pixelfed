@@ -1,0 +1,35 @@
+<?php
+
+return [
+
+    'verifyYourEmailAddress' => ' - Ověřte svoji emailovou adresu',
+    'loginTitle' => 'Přihlášení k účtu',
+    'failed' => 'Tyto přihlašovací údaje se neshodují s našemi záznamy.',
+    'throttle' => 'Příliš mnoho pokusů o přihlášení. Prosím zkuste to znovu za :seconds sekund.',
+    'password' => 'Heslo',
+    'remember' => 'Pamatuj si mě',
+    'forgot' => 'Zapomenuté heslo',
+    'login' => 'Přihlášení',
+
+    'register' => 'Registrovat',
+    'reset' => 'Obnovení hesla',
+
+    'name' => 'Jméno',
+    'username' => 'Uživatelské jméno',
+    'confirm-password' => 'Potvrdit heslo',
+
+    'age' => ''.(int) config('pixelfed.min_registration_age', 16).'',
+    'terms' => 'Registrací souhlasíte s našimi <a href="'.route('site.terms').'" class="font-weight-bold text-dark">Podmínkami použití</a> a <a href="'.route('site.privacy').'" class="font-weight-bold text-dark">Zásady ochrany osobních údajů</a>',
+
+    'emailAddress' => 'E-mailová adresa',
+    'email' => 'E-mail',
+    'forgotEmail' => 'Zapomenutý e-mail',
+
+    'registerTitle' => 'Registrovat nový účet',
+
+    'sendReset' => 'Poslat odkaz na obnovení hesla',
+    'backLogin' => 'Zpět k přihlášení',
+
+    'signInMastodon' => 'Přihlásit se přes Mastodon',
+
+];

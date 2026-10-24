@@ -4,17 +4,16 @@ namespace App\Services\Groups;
 
 use App\Models\Group;
 use App\Models\GroupPost;
+use App\Services\FractalService;
 use App\Transformer\Api\GroupPostTransformer;
-use Cache;
 use Illuminate\Http\Request;
-use League\Fractal;
-use League\Fractal\Serializer\ArraySerializer;
+use Illuminate\Support\Facades\Cache;
 
 class GroupPostService
 {
     const CACHE_KEY = 'pf:services:groups:post:';
 
-    public static function key($gid, $pid)
+    public static function key($gid, $pid): string
     {
         return self::CACHE_KEY.$gid.':'.$pid;
     }
@@ -28,10 +27,7 @@ class GroupPostService
                 return null;
             }
 
-            $fractal = new Fractal\Manager;
-            $fractal->setSerializer(new ArraySerializer);
-            $resource = new Fractal\Resource\Item($gp, new GroupPostTransformer);
-            $res = $fractal->createData($resource)->toArray();
+            $res = FractalService::item($gp, new GroupPostTransformer);
 
             $res['pf_type'] = $gp['type'];
             $res['url'] = $gp->url();
@@ -53,7 +49,7 @@ class GroupPostService
     {
         $gid = $request->input('gid');
         $sid = $request->input('sid');
-        $pid = optional($request->user())->profile_id ?? false;
+        $pid = $request->user()?->profile_id ?? false;
 
         $group = Group::findOrFail($gid);
 

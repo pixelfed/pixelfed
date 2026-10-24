@@ -2,7 +2,7 @@
 
 namespace App\Services;
 
-use App\User;
+use App\Models\User;
 use App\Util\Site\Nodeinfo;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Str;
@@ -14,12 +14,15 @@ class LandingService
         $activeMonth = Nodeinfo::activeUsersMonthly();
 
         $totalUsers = Cache::remember('api:nodeinfo:users', 43200, function () {
+            // GLITCH MODIFIED: count only active users (null status)
             return User::whereNull('status')->count(); # Only get null status - these are the "active" users
         });
 
+        // GLITCH MODIFIED START: optional "real" post count (GLITCH_LANDING_REALSTATCOUNT)
         if ((bool) config('instance.glitch.real_stat_count') == true) {
             $postCount = InstanceService::totalRealLocalStatuses();
         } else {
+        // GLITCH MODIFIED END
             $postCount = InstanceService::totalLocalStatuses();
         }
 
@@ -60,6 +63,7 @@ class LandingService
             'open_registration' => (bool) $openReg,
             'curated_onboarding' => (bool) config_cache('instance.curated_registration.enabled'),
             'version' => config('pixelfed.version'),
+            'logo' => config('app.logo'),
             'about' => [
                 'banner_image' => config_cache('app.banner_image') ?? url('/storage/headers/default.jpg'),
                 'short_description' => config_cache('app.short_description'),

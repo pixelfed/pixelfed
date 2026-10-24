@@ -16,7 +16,7 @@
 				<div class="d-flex d-md-none align-items-center justify-content-between card-header bg-white w-100">
 					<div class="d-flex">
 						<div class="status-avatar mr-2" @click="redirect(statusProfileUrl)">
-							<img :src="statusAvatar" width="24px" height="24px" style="border-radius:12px;" class="cursor-pointer">
+							<img :src="statusAvatar" width="24px" height="24px" style="border-radius:12px;" class="cursor-pointer" :alt="`${statusUsername}'s avatar`">
 						</div>
 						<div class="username">
 							<span class="username-link font-weight-bold text-dark cursor-pointer" @click="redirect(statusProfileUrl)">{{ statusUsername }}</span>
@@ -82,7 +82,7 @@
 						<div class="d-md-flex d-none align-items-center justify-content-between card-header py-3 bg-white">
 							<div class="d-flex align-items-center status-username text-truncate">
 								<div class="status-avatar mr-2" @click="redirect(statusProfileUrl)">
-									<img :src="statusAvatar" width="24px" height="24px" style="border-radius:12px;" class="cursor-pointer">
+									<img :src="statusAvatar" width="24px" height="24px" style="border-radius:12px;" class="cursor-pointer" :alt="`${statusUsername}'s avatar`">
 								</div>
 								<div class="username">
 									<span class="username-link font-weight-bold text-dark cursor-pointer" @click="redirect(statusProfileUrl)">{{ statusUsername }}</span>

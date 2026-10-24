@@ -2,17 +2,17 @@
 
 namespace App\Jobs\StatusPipeline;
 
-use App\Notification;
+use App\Models\Notification;
+use App\Models\Status;
 use App\Services\NotificationService;
 use App\Services\StatusService;
-use App\Status;
-use Cache;
-use DB;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
+use Illuminate\Support\Facades\Cache;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 
 class StatusReplyPipeline implements ShouldQueue
@@ -55,78 +55,60 @@ class StatusReplyPipeline implements ShouldQueue
         if (! $status) {
             Log::info('StatusReplyPipeline: Status no longer exists, skipping job');
 
-            return 1;
+            return;
         }
 
         // Verify status is a reply
         if (! $status->in_reply_to_id) {
             Log::info("StatusReplyPipeline: Status {$status->id} is not a reply, skipping job");
 
-            return 1;
+            return;
         }
 
         $actor = $status->profile;
         if (! $actor) {
             Log::info("StatusReplyPipeline: Actor profile no longer exists for status {$status->id}, skipping job");
 
-            return 1;
+            return;
         }
 
         $reply = Status::find($status->in_reply_to_id);
         if (! $reply) {
             Log::info("StatusReplyPipeline: Reply status {$status->in_reply_to_id} no longer exists for status {$status->id}, skipping job");
 
-            return 1;
+            return;
         }
 
         $target = $reply->profile;
         if (! $target) {
             Log::info("StatusReplyPipeline: Target profile no longer exists for reply {$reply->id}, skipping job");
 
-            return 1;
+            return;
         }
 
-        $exists = Notification::whereProfileId($target->id)
-            ->whereActorId($actor->id)
-            ->whereIn('action', ['mention', 'comment'])
-            ->whereItemId($status->id)
-            ->whereItemType('App\Status')
-            ->count();
-
-        if ($actor->id === $target || $exists !== 0) {
-            return 1;
-        }
-
-        if (config('database.default') === 'mysql' || config('database.default') === 'mariadb') {
-            // todo: refactor
-            // $exp = DB::raw("select id, in_reply_to_id from statuses, (select @pv := :kid) initialisation where id > @pv and find_in_set(in_reply_to_id, @pv) > 0 and @pv := concat(@pv, ',', id)");
-            // $expQuery = $exp->getValue(DB::connection()->getQueryGrammar());
-            // $count = DB::select($expQuery, [ 'kid' => $reply->id ]);
-            // $reply->reply_count = count($count);
-            $reply->reply_count = $reply->reply_count + 1;
-            $reply->save();
-        } else {
-            $reply->reply_count = $reply->reply_count + 1;
-            $reply->save();
-        }
+        Status::whereId($reply->id)->update([
+            'reply_count' => DB::raw('COALESCE(reply_count, 0) + 1'),
+        ]);
 
         StatusService::del($reply->id);
         StatusService::del($status->id);
         Cache::forget('status:replies:all:'.$reply->id);
         Cache::forget('status:replies:all:'.$status->id);
 
+        $exists = Notification::whereProfileId($target->id)
+            ->whereActorId($actor->id)
+            ->whereIn('action', ['mention', 'comment'])
+            ->whereItemId($status->id)
+            ->whereItemType(Status::class)
+            ->count();
+
+        if ($actor->id === $target->id || $exists !== 0) {
+            return;
+        }
+
         if ($target->user_id && $target->domain === null) {
             DB::transaction(function () use ($target, $actor, $status) {
-                $notification = new Notification;
-                $notification->profile_id = $target->id;
-                $notification->actor_id = $actor->id;
-                $notification->action = 'comment';
-                $notification->item_id = $status->id;
-                $notification->item_type = "App\Status";
-                $notification->save();
-
-                NotificationService::setNotification($notification);
-                NotificationService::set($notification->profile_id, $notification->id);
+                NotificationService::createNotification($target->id, $actor->id, 'comment', $status->id, Status::class);
             });
         }
 
@@ -138,7 +120,5 @@ class StatusReplyPipeline implements ShouldQueue
         } else {
             Cache::forget('status:replies:all:'.$reply->id);
         }
-
-        return 1;
     }
 }

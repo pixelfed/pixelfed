@@ -8,16 +8,17 @@ use App\Models\GroupInteraction;
 use App\Models\GroupLimit;
 use App\Models\GroupMember;
 use App\Models\GroupPost;
-use App\Profile;
+use App\Models\Profile;
 use App\Util\ActivityPub\Helpers;
-use Cache;
+use Illuminate\Support\Facades\Cache;
+use Illuminate\Support\Str;
 use Purify;
 
 class GroupService
 {
     const CACHE_KEY = 'pf:services:groups:';
 
-    protected static function key($name)
+    protected static function key($name): string
     {
         return self::CACHE_KEY.$name;
     }
@@ -40,7 +41,7 @@ class GroupService
                     'id' => (string) $group->id,
                     'name' => $group->name,
                     'description' => $group->description,
-                    'short_description' => str_limit(strip_tags($group->description), 120),
+                    'short_description' => Str::limit(strip_tags($group->description), 120),
                     'category' => self::categoryById($group->category_id),
                     'local' => (bool) $group->local,
                     'url' => $group->url(),
@@ -123,7 +124,7 @@ class GroupService
         });
     }
 
-    public static function config()
+    public static function config(): array
     {
         return [
             'enabled' => config('exp.gps') ?? false,
@@ -263,9 +264,9 @@ class GroupService
         $limits = self::getInteractionLimits($gid, $pid);
         if ($limits) {
             return (bool) $limits['limits']['can_post'];
-        } else {
-            return true;
         }
+
+        return true;
     }
 
     public static function canComment($gid, $pid)
@@ -273,9 +274,9 @@ class GroupService
         $limits = self::getInteractionLimits($gid, $pid);
         if ($limits) {
             return (bool) $limits['limits']['can_comment'];
-        } else {
-            return true;
         }
+
+        return true;
     }
 
     public static function canLike($gid, $pid)
@@ -283,9 +284,9 @@ class GroupService
         $limits = self::getInteractionLimits($gid, $pid);
         if ($limits) {
             return (bool) $limits['limits']['can_like'];
-        } else {
-            return true;
         }
+
+        return true;
     }
 
     public static function categories($onlyActive = true)
@@ -331,7 +332,7 @@ class GroupService
         });
     }
 
-    public static function mutualGroups($cid = false, $pid = false, $exclude = [])
+    public static function mutualGroups($cid = false, $pid = false, $exclude = []): array
     {
         if (! $cid || ! $pid) {
             return [

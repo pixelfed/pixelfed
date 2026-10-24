@@ -16,7 +16,7 @@
 <script type="text/javascript">
 	 window.history.replaceState({}, document.title, '/i/redirect');
 		setTimeout(function() {
-		window.location.href = '{{$url}}';
+		window.location.href = {{ Js::from($url) }};
 	 }, 1500);
 </script>
 @endpush

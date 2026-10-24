@@ -2,8 +2,8 @@
 
 namespace App\Jobs\AutospamPipeline;
 
+use App\Models\Status;
 use App\Services\AutospamService;
-use App\Status;
 use App\Util\Lexer\Classifier;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;

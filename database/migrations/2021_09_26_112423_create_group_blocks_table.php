@@ -16,14 +16,14 @@ class CreateGroupBlocksTable extends Migration
         Schema::create('group_blocks', function (Blueprint $table) {
             $table->bigIncrements('id');
             $table->bigInteger('group_id')->unsigned()->index();
-			$table->bigInteger('admin_id')->unsigned()->nullable();
-			$table->bigInteger('profile_id')->nullable()->unsigned()->index();
-			$table->bigInteger('instance_id')->nullable()->unsigned()->index();
-			$table->string('name')->nullable()->index();
-			$table->string('reason')->nullable();
-			$table->boolean('is_user')->index();
-			$table->boolean('moderated')->default(false)->index();
-			$table->unique(['group_id', 'profile_id', 'instance_id']);
+            $table->bigInteger('admin_id')->unsigned()->nullable();
+            $table->bigInteger('profile_id')->nullable()->unsigned()->index();
+            $table->bigInteger('instance_id')->nullable()->unsigned()->index();
+            $table->string('name')->nullable()->index();
+            $table->string('reason')->nullable();
+            $table->boolean('is_user')->index();
+            $table->boolean('moderated')->default(false)->index();
+            $table->unique(['group_id', 'profile_id', 'instance_id']);
             $table->timestamps();
         });
     }
