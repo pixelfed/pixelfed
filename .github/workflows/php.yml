@@ -110,17 +110,20 @@ jobs:
 
       - name: Setup Environment
         run: |
-          # Move rather than copy: [--env=testing] and [config:cache] also read [.env.testing],
+          # Move rather than copy: [--env=testing] also reads [.env.testing],
           # whose [REDIS_HOST=127.0.0.1] would override the [redis] service host set below.
           # Laravel falls back to [.env] when [.env.testing] is missing.
           mv .env.testing .env
 
           dottie set REDIS_HOST=redis
 
-      - run: php artisan config:cache
+      # No [config:cache] here: a cached config makes the tests ignore the env overrides in phpunit.xml
+      # (array cache, Pulse off, ...) and run against the shared Redis service instead.
       - run: php artisan route:clear
       - run: php artisan storage:link
       - run: php artisan key:generate
+      # Passport needs signing keys for any API request, including the unauthenticated ones
+      - run: php artisan passport:keys --force
 
       - name: Prepare SQLite database
         run: |

@@ -24,7 +24,7 @@ return [
     |
     */
     // GLITCH MODIFIED: glitch version string, set by CI via PIXELFED_VERSION
-    'version' => env('PIXELFED_VERSION', '0.15.2+glitch.1.15.0?'),
+    'version' => env('PIXELFED_VERSION', '0.15.2+glitch.1.13.0?'),
 
     /*
     |--------------------------------------------------------------------------

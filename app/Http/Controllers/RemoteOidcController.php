@@ -96,7 +96,8 @@ class RemoteOidcController extends Controller
             'email' => [
                 'required',
                 'string',
-                'email:strict,filter_unicode,dns,spoof',
+                // GLITCH MODIFIED: no DNS lookup under test, it makes the OIDC tests flaky (upstream: always dns)
+                app()->environment() === 'testing' ? 'email:strict,filter_unicode,spoof' : 'email:strict,filter_unicode,dns,spoof',
                 'max:255',
                 'unique:users',
                 new EmailNotBanned,

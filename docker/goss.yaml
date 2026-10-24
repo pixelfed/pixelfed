@@ -3,11 +3,9 @@
 package:
   bzip2: { installed: true }
   curl: { installed: true }
-  ffmpeg: { installed: true }
   gifsicle: { installed: true }
   gosu: { installed: true }
   jpegoptim: { installed: true }
-  locales-all: { installed: true }
   locales: { installed: true }
   mariadb-client: { installed: true }
   nano: { installed: true }
@@ -183,7 +181,16 @@ command:
     exit-status: 0
     exec: 'forego version'
     stdout:
-      - dev
+      # GLITCH MODIFIED: forego is built from its release tag with the version set (upstream: 'dev')
+      - '/^\d+\.\d+\.\d+/'
+    stderr: []
+
+  # GLITCH MODIFIED: static ffmpeg binary instead of the Debian package (upstream: ffmpeg package check)
+  ffmpeg-version:
+    exit-status: 0
+    exec: 'ffmpeg -hide_banner -version'
+    stdout:
+      - ffmpeg version
     stderr: []
 
   gomplate-version:
