@@ -133,6 +133,10 @@ jobs:
 
       PREFERRED_TARGET_RUNTIME: nginx
 
+      # Pull requests from forks get a read-only [GITHUB_TOKEN], so registry pushes are denied.
+      # For those, build amd64 only and load the image locally so the tests can still run.
+      IS_FORK_PR: ${{ github.event_name == 'pull_request' && github.event.pull_request.head.repo.full_name != github.repository }}
+
     steps:
       - name: Checkout Code
         uses: actions/checkout@v6
@@ -206,13 +210,14 @@ jobs:
           context: .
           file: docker/Dockerfile
           target: ${{ matrix.target_runtime }}-runtime
-          platforms: linux/amd64,linux/arm64
+          platforms: ${{ env.IS_FORK_PR == 'true' && 'linux/amd64' || 'linux/amd64,linux/arm64' }}
           builder: ${{ steps.buildx.outputs.name }}
           tags: ${{ steps.meta.outputs.tags }}
           annotations: ${{ steps.meta.outputs.annotations }}
-          push: true
-          sbom: true
-          provenance: true
+          push: ${{ env.IS_FORK_PR != 'true' }}
+          load: ${{ env.IS_FORK_PR == 'true' }}
+          sbom: ${{ env.IS_FORK_PR != 'true' }}
+          provenance: ${{ env.IS_FORK_PR != 'true' }}
           build-args: |
             PHP_VERSION=${{ matrix.php_version }}
             PHP_BASE_TYPE=${{ matrix.php_base }}
