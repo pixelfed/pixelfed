@@ -218,22 +218,23 @@ class HttpSignature
     }
 
     /**
-     * Parse a legacy Signature HTTP header.
-     *
+     * Cheaply check that a legacy Signature header has the parameters needed
+     * to verify it, without resolving the keyId host.
+     */
+    public static function hasSignatureParameters(string $signature): bool
+    {
+        $signatureData = self::extractSignatureParameters($signature);
+
+        return filter_var($signatureData['keyId'] ?? null, FILTER_VALIDATE_URL) !== false
+            && trim($signatureData['headers'] ?? '') !== ''
+            && trim($signatureData['signature'] ?? '') !== '';
+    }
+
+    /**
      * @return array<string, string>
      */
-    public static function parseSignatureHeader(string $signature): array
+    protected static function extractSignatureParameters(string $signature): array
     {
-        $signature = trim($signature);
-
-        if ($signature === '') {
-            return [
-                'error' => 'Signature header is empty.',
-            ];
-        }
-
-        $signatureData = [];
-
         /*
          * Signature headers normally look like:
          *
@@ -252,9 +253,31 @@ class HttpSignature
             PREG_SET_ORDER
         );
 
+        $signatureData = [];
+
         foreach ($matches as $match) {
             $signatureData[$match[1]] = $match[2];
         }
+
+        return $signatureData;
+    }
+
+    /**
+     * Parse a legacy Signature HTTP header.
+     *
+     * @return array<string, string>
+     */
+    public static function parseSignatureHeader(string $signature): array
+    {
+        $signature = trim($signature);
+
+        if ($signature === '') {
+            return [
+                'error' => 'Signature header is empty.',
+            ];
+        }
+
+        $signatureData = self::extractSignatureParameters($signature);
 
         if (! isset($signatureData['keyId'])) {
             return [
