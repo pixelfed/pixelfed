@@ -10,6 +10,7 @@ use App\Services\QuoteService;
 use App\Services\Status\UpdateStatusService;
 use App\Services\StatusService;
 use App\Util\Lexer\Autolink;
+use App\Util\Lexer\Markdown;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Cache;
 
@@ -81,7 +82,7 @@ class StatusEditController extends Controller
             $caption = nl2br(strip_tags(str_replace('</p>', "\n", $edit->caption)));
 
             return [
-                'content' => Autolink::create()->autolink($caption),
+                'content' => Markdown::inline(Autolink::create()->autolink($caption)),
                 'spoiler_text' => $edit->spoiler_text,
                 'sensitive' => (bool) $edit->is_nsfw,
                 'created_at' => str_replace('+00:00', 'Z', $edit->created_at->format(DATE_RFC3339_EXTENDED)),

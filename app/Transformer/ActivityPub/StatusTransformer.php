@@ -5,6 +5,7 @@ namespace App\Transformer\ActivityPub;
 use App\Models\Status;
 use App\Services\MediaService;
 use App\Util\Lexer\Autolink;
+use App\Util\Lexer\Markdown;
 use App\Util\Media\License;
 use League\Fractal;
 
@@ -12,7 +13,7 @@ class StatusTransformer extends Fractal\TransformerAbstract
 {
     public function transform(Status $status): array
     {
-        $content = $status->caption ? nl2br(Autolink::create()->autolink($status->caption)) : '';
+        $content = $status->caption ? nl2br(Markdown::inline(Autolink::create()->autolink($status->caption))) : '';
 
         $inReplyTo = $status->inReplyToUri();
 

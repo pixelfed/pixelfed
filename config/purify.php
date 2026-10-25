@@ -45,7 +45,7 @@ return [
             'HTML.Doctype' => 'HTML 4.01 Transitional',
 
             'HTML.Allowed' => env('RESTRICT_HTML_TYPES', true) ?
-            'a[href|title|rel|class],p[class],span[class],br' :
+            'a[href|title|rel|class],p[class],span[class],strong,em,br' :
             'a[href|title|rel|class],p[class],span[class],strong,em,del,b,i,s,strike,h1,h2,h3,h4,h5,h6,ul,ol,li,br',
 
             'HTML.ForbiddenElements' => '',

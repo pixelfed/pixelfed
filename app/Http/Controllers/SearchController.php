@@ -9,6 +9,7 @@ use App\Models\Status;
 use App\Services\WebfingerService;
 use App\Util\ActivityPub\Helpers;
 use App\Util\Lexer\Autolink;
+use App\Util\Lexer\Markdown;
 use Illuminate\Contracts\View\View;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
@@ -342,7 +343,7 @@ class SearchController extends Controller
             }
             // Remote posts keep the HTML they arrived with, so the link targets survive
             $content = $item->local || ! $item->rendered
-                ? ($item->caption ? Autolink::create()->autolink($item->caption) : null)
+                ? ($item->caption ? Markdown::inline(Autolink::create()->autolink($item->caption)) : null)
                 : $item->rendered;
             $this->tokens['posts'] = [[
                 'count' => 0,
@@ -369,7 +370,7 @@ class SearchController extends Controller
             }
             // Remote posts keep the HTML they arrived with, so the link targets survive
             $content = $item->local || ! $item->rendered
-                ? ($item->caption ? Autolink::create()->autolink($item->caption) : null)
+                ? ($item->caption ? Markdown::inline(Autolink::create()->autolink($item->caption)) : null)
                 : $item->rendered;
             $this->tokens['posts'] = [[
                 'count' => 0,

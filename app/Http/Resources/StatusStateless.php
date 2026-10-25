@@ -13,6 +13,7 @@ use App\Services\PollService;
 use App\Services\StatusHashtagService;
 use App\Services\StatusMentionService;
 use App\Util\Lexer\Autolink;
+use App\Util\Lexer\Markdown;
 use Illuminate\Contracts\Support\Arrayable;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
@@ -33,7 +34,7 @@ class StatusStateless extends JsonResource
         $status = $this;
         $taggedPeople = MediaTagService::get($status->id);
         $poll = $status->type === 'poll' ? PollService::get($status->id) : null;
-        $autoLink = $status->caption ? Autolink::create()->autolink($status->caption) : null;
+        $autoLink = $status->caption ? Markdown::inline(Autolink::create()->autolink($status->caption)) : null;
 
         return [
             '_v' => 1,

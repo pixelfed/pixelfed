@@ -7,6 +7,7 @@ use App\Models\Status;
 use App\Services\MediaService;
 use App\Services\QuoteService;
 use App\Util\Lexer\Autolink;
+use App\Util\Lexer\Markdown;
 use App\Util\Media\License;
 use Illuminate\Support\Str;
 use League\Fractal;
@@ -56,7 +57,7 @@ class UpdateNote extends Fractal\TransformerAbstract
         $emoji = array_merge($emojis, $mentions);
         $tags = array_merge($emoji, $hashtags);
 
-        $content = $status->caption ? nl2br(Autolink::create()->autolink($status->caption)) : '';
+        $content = $status->caption ? nl2br(Markdown::inline(Autolink::create()->autolink($status->caption))) : '';
         $latestEdit = $status->edits()->latest()->first();
 
         return [

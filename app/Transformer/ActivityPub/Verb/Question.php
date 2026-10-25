@@ -5,6 +5,7 @@ namespace App\Transformer\ActivityPub\Verb;
 use App\Models\Status;
 use App\Services\QuoteService;
 use App\Util\Lexer\Autolink;
+use App\Util\Lexer\Markdown;
 use Illuminate\Support\Str;
 use League\Fractal;
 
@@ -33,7 +34,7 @@ class Question extends Fractal\TransformerAbstract
             ];
         })->toArray();
         $tags = array_merge($mentions, $hashtags);
-        $content = $status->caption ? Autolink::create()->autolink($status->caption) : null;
+        $content = $status->caption ? Markdown::inline(Autolink::create()->autolink($status->caption)) : null;
 
         return [
             '@context' => [

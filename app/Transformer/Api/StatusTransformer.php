@@ -15,6 +15,7 @@ use App\Services\StatusHashtagService;
 use App\Services\StatusMentionService;
 use App\Services\StatusService;
 use App\Util\Lexer\Autolink;
+use App\Util\Lexer\Markdown;
 use League\Fractal;
 
 class StatusTransformer extends Fractal\TransformerAbstract
@@ -26,7 +27,7 @@ class StatusTransformer extends Fractal\TransformerAbstract
         $poll = $status->type === 'poll' ? PollService::get($status->id, $pid) : null;
         // Remote posts keep the HTML they arrived with, so the link targets survive
         $content = $status->local || ! $status->rendered
-            ? ($status->caption ? nl2br(Autolink::create()->autolink($status->caption)) : '')
+            ? ($status->caption ? nl2br(Markdown::inline(Autolink::create()->autolink($status->caption))) : '')
             : $status->rendered;
 
         return [
