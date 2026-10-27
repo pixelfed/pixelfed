@@ -2,27 +2,27 @@
 
 return [
 
-    'helpcenter' => '',
-    'whatsnew' => '',
+    'helpcenter' => 'Trung tâm hỗ trợ',
+    'whatsnew' => 'Có gì mới',
 
-    'gettingStarted' => '',
-    'sharingMedia' => '',
-    'profile' => '',
-    'stories' => '',
-    'hashtags' => '',
-    'discover' => '',
-    'directMessages' => '',
-    'timelines' => '',
-    'embed' => '',
+    'gettingStarted' => 'Bắt đầu thôi!',
+    'sharingMedia' => 'Chia sẻ media',
+    'profile' => 'Hồ sơ',
+    'stories' => 'Câu chuyện',
+    'hashtags' => 'Thẻ',
+    'discover' => 'Khám phá',
+    'directMessages' => 'Tin nhắn',
+    'timelines' => 'Dòng thời gian',
+    'embed' => 'Nhúng',
 
-    'communityGuidelines' => '',
-    'whatIsTheFediverse' => '',
-    'controllingVisibility' => '',
-    'blockingAccounts' => '',
-    'safetyTips' => '',
-    'reportSomething' => '',
-    'dataPolicy' => '',
+    'communityGuidelines' => 'Nguyên tắc cộng đồng',
+    'whatIsTheFediverse' => 'Fediverse là gì?',
+    'controllingVisibility' => 'Kiểm soát tầm hiện diện',
+    'blockingAccounts' => 'Tài khoản bị chặn',
+    'safetyTips' => 'Cẩm nang an toàn',
+    'reportSomething' => 'Báo cáo',
+    'dataPolicy' => 'Chính sách dữ liệu',
 
-    'taggingPeople' => '',
+    'taggingPeople' => 'Người được nhắc tới',
 
 ];
