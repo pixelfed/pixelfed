@@ -2273,7 +2273,7 @@ class Helpers
         $movedToPid = $movedToCheck ? null : self::handleMovedTo($res);
         $data = self::buildProfileData($res, $webfinger, $movedToPid);
 
-        $profile = Profile::whereRemoteUrl($res['id'])->first();
+        $profile = self::findProfileForActor($res);
 
         if ($profile && self::handleTaken($profile, $domain, $webfinger)) {
             $webfinger = $profile->username;
@@ -2281,6 +2281,15 @@ class Helpers
         }
 
         if ($profile) {
+            if ($profile->trashed()) {
+                // The actor is live again, so bring the tombstoned row back
+                // instead of inserting a duplicate. Its relations were purged
+                // by DeleteRemoteProfilePipeline; resetting last_fetched_at
+                // makes handleProfileAvatar fetch the avatar again.
+                $profile->restore();
+                $data += ['status' => null, 'last_fetched_at' => null];
+            }
+
             $profile->forceFill(['domain' => strtolower($domain), 'username' => $webfinger] + $data)->save();
             AccountService::del($profile->id);
         } else {
@@ -2296,6 +2305,37 @@ class Helpers
         self::handleProfileAvatar($profile);
 
         return $profile;
+    }
+
+    /**
+     * Find the row that already represents this actor, including a
+     * soft-deleted one.
+     *
+     * DeleteRemoteProfilePipeline soft-deletes remote profiles, which leaves
+     * their remote_url and key_id in the table behind the SoftDeletes scope.
+     * When the actor comes back (Bridgy Fed users toggle bridging on and off)
+     * the scoped lookups miss the tombstone, and the fresh insert violates the
+     * unique profiles.key_id index, so the activity is never processed.
+     *
+     * A trashed row is also matched on key_id alone: a Bluesky handle change
+     * moves the (domain, username) pair, but the key id stays with the actor
+     * and isValidProfileData already pins it to the actor's host.
+     */
+    protected static function findProfileForActor(array $res): ?Profile
+    {
+        $profile = Profile::whereRemoteUrl($res['id'])->first();
+
+        if ($profile) {
+            return $profile;
+        }
+
+        $profile = Profile::onlyTrashed()->whereRemoteUrl($res['id'])->first();
+
+        if ($profile || ! isset($res['publicKey']['id'])) {
+            return $profile;
+        }
+
+        return Profile::onlyTrashed()->whereKeyId($res['publicKey']['id'])->first();
     }
 
     public static function verifiedHandle(string $username, string $actorHost, string $actorId): array
@@ -2334,8 +2374,11 @@ class Helpers
 
     protected static function handleTaken(Profile $profile, string $domain, string $webfinger): bool
     {
+        // withTrashed: a soft-deleted row still occupies the unique
+        // (domain, username) pair, so moving onto its handle would fail too.
         return $profile->username !== $webfinger
-            && Profile::where('domain', strtolower($domain))
+            && Profile::withTrashed()
+                ->where('domain', strtolower($domain))
                 ->where('username', $webfinger)
                 ->whereKeyNot($profile->id)
                 ->exists();
