@@ -38,6 +38,17 @@ class UserStorageService
         return $updatedAt->lt(now()->subHours(self::STALE_AFTER_HOURS));
     }
 
+    protected static function persist(User $user): void
+    {
+        $user->timestamps = false;
+
+        try {
+            $user->save();
+        } finally {
+            $user->timestamps = true;
+        }
+    }
+
     public static function get($id): int
     {
         $user = User::find($id);
@@ -50,7 +61,7 @@ class UserStorageService
             $updatedVal = self::calculateStorageUsed($id);
             $user->storage_used = $updatedVal;
             $user->storage_used_updated_at = now();
-            $user->save();
+            self::persist($user);
 
             return (int) $user->storage_used;
         }
@@ -72,7 +83,7 @@ class UserStorageService
         $updatedVal = (int) floor(Media::whereUserId($id)->sum('size') / 1000);
         $user->storage_used = $updatedVal;
         $user->storage_used_updated_at = now();
-        $user->save();
+        self::persist($user);
 
         return $updatedVal;
     }
@@ -112,7 +123,7 @@ class UserStorageService
 
         $user->storage_used = $updatedVal;
         $user->storage_used_updated_at = now();
-        $user->save();
+        self::persist($user);
 
         return $updatedVal;
     }
@@ -152,7 +163,7 @@ class UserStorageService
 
         $user->storage_used = $updatedVal;
         $user->storage_used_updated_at = now();
-        $user->save();
+        self::persist($user);
 
         return $updatedVal;
     }
