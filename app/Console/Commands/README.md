@@ -100,6 +100,7 @@ These are primarily invoked by the scheduler (see `bootstrap/app.php`) rather th
 | `app:import-upload-clean-storage`          | Delete import storage directories for non-active users. |
 | `app:import-upload-garbage-collection`     | Garbage-collect skipped Instagram import posts.         |
 | `app:import-upload-media-to-cloud-storage` | Migrate imported Instagram media to S3 (`--limit`).     |
+| `app:instance-update-active-users`         | Recalculate MAU / half-year active user counts.         |
 | `app:instance-update-total-local-posts`    | Update the total local post count.                      |
 | `media:gc`                                 | Delete media uploads not attached to any active status. |
 | `app:notification-epoch-update`            | Update the notification epoch.                          |
