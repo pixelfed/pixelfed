@@ -1531,7 +1531,8 @@
                     "type": "tidelift"
                 }
             ],
-            "time": "2026-10-17T23:57:19+00:00"
+            "time": "2026-10-17T23:57:19+00:00",
+            "published-time": "2026-10-17T23:57:53+00:00"
         },
         {
             "name": "guzzlehttp/uri-template",
@@ -5968,7 +5969,8 @@
             "support": {
                 "source": "https://github.com/php-fig/http-client"
             },
-            "time": "2023-09-23T14:17:50+00:00"
+            "time": "2023-09-23T14:17:50+00:00",
+            "published-time": "2023-09-23T14:18:12+00:00"
         },
         {
             "name": "psr/http-factory",
@@ -6023,7 +6025,8 @@
             "support": {
                 "source": "https://github.com/php-fig/http-factory"
             },
-            "time": "2024-04-15T12:06:14+00:00"
+            "time": "2024-04-15T12:06:14+00:00",
+            "published-time": "2024-05-10T07:32:19+00:00"
         },
         {
             "name": "psr/http-message",
@@ -6076,7 +6079,8 @@
             "support": {
                 "source": "https://github.com/php-fig/http-message/tree/2.0"
             },
-            "time": "2023-04-04T09:54:51+00:00"
+            "time": "2023-04-04T09:54:51+00:00",
+            "published-time": "2023-04-04T09:55:35+00:00"
         },
         {
             "name": "psr/http-server-handler",
@@ -6590,16 +6594,16 @@
         },
         {
             "name": "resend/resend-php",
-            "version": "v1.17.0",
+            "version": "v1.18.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/resend/resend-php.git",
-                "reference": "33b1083251a839dd5f6ae6e3fce6bf8c19734f96"
+                "reference": "f615aaa9bde31a0235dd2f9856cbbea63bf14ac9"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/resend/resend-php/zipball/33b1083251a839dd5f6ae6e3fce6bf8c19734f96",
-                "reference": "33b1083251a839dd5f6ae6e3fce6bf8c19734f96",
+                "url": "https://api.github.com/repos/resend/resend-php/zipball/f615aaa9bde31a0235dd2f9856cbbea63bf14ac9",
+                "reference": "f615aaa9bde31a0235dd2f9856cbbea63bf14ac9",
                 "shasum": ""
             },
             "require": {
@@ -6643,9 +6647,10 @@
             ],
             "support": {
                 "issues": "https://github.com/resend/resend-php/issues",
-                "source": "https://github.com/resend/resend-php/tree/v1.17.0"
+                "source": "https://github.com/resend/resend-php/tree/v1.18.0"
             },
-            "time": "2026-10-20T03:25:21+00:00"
+            "time": "2026-11-02T05:00:42+00:00",
+            "published-time": "2026-11-02T05:03:19+00:00"
         },
         {
             "name": "spatie/db-dumper",
@@ -7942,7 +7947,8 @@
                     "type": "tidelift"
                 }
             ],
-            "time": "2026-06-05T06:23:12+00:00"
+            "time": "2026-06-05T06:23:12+00:00",
+            "published-time": "2026-06-27T21:46:34+00:00"
         },
         {
             "name": "symfony/error-handler",
@@ -9527,7 +9533,8 @@
                     "type": "tidelift"
                 }
             ],
-            "time": "2026-09-25T15:50:05+00:00"
+            "time": "2026-09-25T15:50:05+00:00",
+            "published-time": "2026-09-30T10:23:35+00:00"
         },
         {
             "name": "symfony/polyfill-php82",
@@ -9607,7 +9614,8 @@
                     "type": "tidelift"
                 }
             ],
-            "time": "2026-09-25T15:50:05+00:00"
+            "time": "2026-09-25T15:50:05+00:00",
+            "published-time": "2026-09-30T10:23:32+00:00"
         },
         {
             "name": "symfony/polyfill-php83",
@@ -15121,5 +15129,5 @@
         "ext-redis": "*"
     },
     "platform-dev": {},
-    "plugin-api-version": "2.9.0"
+    "plugin-api-version": "2.11.0"
 }
