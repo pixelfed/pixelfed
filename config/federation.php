@@ -117,11 +117,20 @@ return [
          * the network.
          *
          * Hosts that positively resolve into non-global address space are
-         * rejected regardless of this setting, and ip literals, single label
+         * rejected regardless of this setting (unless the address is in
+         * allowed_private_addresses below), and ip literals, single label
          * hosts and the loopback names are refused before resolution is ever
          * attempted.
          */
         'allow_unresolved' => env('AP_ALLOW_UNRESOLVED_HOSTS', true),
+
+        /*
+         * Non-global address ranges that federation is allowed to reach.
+         * Comma separated ips or CIDR ranges, ipv4 and ipv6:
+         *
+         *   AP_ALLOWED_PRIVATE_ADDRESSES="192.168.1.0/24,10.8.0.5,fd00:1234::/48"
+         */
+        'allowed_private_addresses' => env('AP_ALLOWED_PRIVATE_ADDRESSES', ''),
 
     ],
 ];
