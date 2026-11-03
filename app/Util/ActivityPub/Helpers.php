@@ -35,6 +35,7 @@ use Illuminate\Support\Facades\Validator;
 use Illuminate\Validation\Rule;
 use League\Uri\Uri;
 use Purify;
+use Symfony\Component\HttpFoundation\IpUtils;
 
 class Helpers
 {
@@ -92,7 +93,9 @@ class Helpers
      * UNRESOLVED  no A/AAAA records came back from any resolution path.
      *             Ambiguous, see lookupHostIps().
      * PRIVATE_IP  the host positively resolves into non-global address
-     *             space. This is the SSRF signal and is never allowed.
+     *             space outside the ranges an admin has explicitly allowed
+     *             (federation.url_validation.allowed_private_addresses).
+     *             This is the SSRF signal.
      */
     public const string URL_OK = 'ok';
 
@@ -130,6 +133,23 @@ class Helpers
      * rendered in the UI anyway.
      */
     private const int MAX_REPLY_DEPTH = 5;
+
+    private const array NEVER_ALLOWED_PRIVATE_RANGES = [
+        '0.0.0.0/8',
+        '255.255.255.255/32',
+        '169.254.169.254/32',
+        '::/128',
+        'fd00:ec2::254/128',
+    ];
+
+    private const int MIN_ALLOWED_PREFIX_V4 = 8;
+
+    private const int MIN_ALLOWED_PREFIX_V6 = 7;
+
+    /**
+     * @var array{raw: ?string, ranges: array<int, string>}
+     */
+    private static array $allowedPrivateRangesMemo = ['raw' => null, 'ranges' => []];
 
     private const array LOCALHOST_DOMAINS = [
         'localhost',
@@ -325,7 +345,8 @@ class Helpers
         $resolved = self::resolveHostIps($host);
 
         // A host that positively resolves into non-global address space is
-        // refused no matter what. This is the check that actually does work.
+        // refused unless every such address is inside a range the admin has
+        // explicitly allowed. This is the check that actually does work.
         if ($resolved['state'] === self::URL_PRIVATE_IP) {
             return self::urlResult(null, self::URL_PRIVATE_IP);
         }
@@ -608,7 +629,8 @@ class Helpers
      * whose res_* functions PHP cannot use (musl/Alpine images, where
      * dns_get_record() fails for every host while getaddrinfo works fine).
      * A record that resolves into non-global address space is unambiguous.
-     * Only the second is a reason to refuse the url outright.
+     * Only the second is a reason to refuse the url outright, and only when
+     * that address is not in an admin allowed private range.
      *
      * @return array{state: string, ips: array<int, string>}
      */
@@ -628,7 +650,7 @@ class Helpers
                     continue;
                 }
 
-                if (! self::isPublicIp($ip)) {
+                if (! self::isFederatableIp($ip)) {
                     return ['state' => self::URL_PRIVATE_IP, 'ips' => []];
                 }
 
@@ -656,7 +678,7 @@ class Helpers
                 continue;
             }
 
-            if (! self::isPublicIp($ip)) {
+            if (! self::isFederatableIp($ip)) {
                 return ['state' => self::URL_PRIVATE_IP, 'ips' => []];
             }
 
@@ -681,10 +703,9 @@ class Helpers
             return ['state' => self::URL_HOST, 'ips' => []];
         }
 
-        // v2: the cached value used to be a bare list of ips. Anything that
-        // does not carry a state is a stale entry from that shape and is
-        // looked up again.
-        $key = self::URL_CACHE_PREFIX.'public-ips:v2:'.hash('xxh128', $host);
+        $key = self::URL_CACHE_PREFIX.'public-ips:v2:'
+            .self::allowedPrivateRangesFingerprint()
+            .hash('xxh128', $host);
 
         $cached = Cache::get($key);
 
@@ -706,7 +727,7 @@ class Helpers
     }
 
     /**
-     * Resolved public addresses for a host, or an empty array.
+     * Resolved federatable addresses for a host, or an empty array.
      *
      * Kept for callers that only want the addresses. Note that an empty
      * result no longer means the host is unusable, see resolveHostIps().
@@ -733,6 +754,140 @@ class Helpers
             FILTER_VALIDATE_IP,
             FILTER_FLAG_GLOBAL_RANGE
         ) !== false;
+    }
+
+    public static function isFederatableIp(string $ip): bool
+    {
+        return self::isPublicIp($ip) || self::isAllowedPrivateIp($ip);
+    }
+
+    public static function isAllowedPrivateIp(string $ip): bool
+    {
+        if (filter_var($ip, FILTER_VALIDATE_IP) === false) {
+            return false;
+        }
+
+        $isV6 = filter_var($ip, FILTER_VALIDATE_IP, FILTER_FLAG_IPV6) !== false;
+
+        $ranges = self::rangesOfFamily(self::allowedPrivateRanges(), $isV6);
+
+        if ($ranges === []) {
+            return false;
+        }
+
+        $never = self::rangesOfFamily(self::NEVER_ALLOWED_PRIVATE_RANGES, $isV6);
+
+        if ($never !== [] && IpUtils::checkIp($ip, $never)) {
+            return false;
+        }
+
+        return IpUtils::checkIp($ip, $ranges);
+    }
+
+    /**
+     * @param  array<int, string>  $ranges
+     * @return array<int, string>
+     */
+    private static function rangesOfFamily(array $ranges, bool $v6): array
+    {
+        return array_values(array_filter(
+            $ranges,
+            fn (string $range) => str_contains($range, ':') === $v6
+        ));
+    }
+
+    public static function allowedPrivateRanges(): array
+    {
+        $raw = config('federation.url_validation.allowed_private_addresses', '');
+
+        if (is_array($raw)) {
+            $raw = implode(',', array_filter($raw, 'is_string'));
+        }
+
+        if (! is_string($raw) || trim($raw) === '') {
+            return [];
+        }
+
+        $raw = trim($raw);
+
+        if (self::$allowedPrivateRangesMemo['raw'] === $raw) {
+            return self::$allowedPrivateRangesMemo['ranges'];
+        }
+
+        $ranges = [];
+
+        foreach (explode(',', $raw) as $entry) {
+            $range = self::normalizeAllowedPrivateRange($entry);
+
+            if ($range !== null) {
+                $ranges[$range] = true;
+            }
+        }
+
+        $ranges = array_keys($ranges);
+        sort($ranges);
+
+        self::$allowedPrivateRangesMemo = ['raw' => $raw, 'ranges' => $ranges];
+
+        return $ranges;
+    }
+
+    private static function allowedPrivateRangesFingerprint(): string
+    {
+        $ranges = self::allowedPrivateRanges();
+
+        if ($ranges === []) {
+            return '';
+        }
+
+        return 'ap-'.hash('xxh128', implode(',', $ranges)).':';
+    }
+
+    private static function normalizeAllowedPrivateRange(string $entry): ?string
+    {
+        $entry = trim($entry);
+
+        if ($entry === '') {
+            return null;
+        }
+
+        $parts = explode('/', $entry);
+
+        if (count($parts) > 2) {
+            return null;
+        }
+
+        $ip = trim($parts[0], " \t[]");
+
+        if (filter_var($ip, FILTER_VALIDATE_IP) === false) {
+            return null;
+        }
+
+        $isV6 = filter_var($ip, FILTER_VALIDATE_IP, FILTER_FLAG_IPV6) !== false;
+        $maxPrefix = $isV6 ? 128 : 32;
+        $minPrefix = $isV6 ? self::MIN_ALLOWED_PREFIX_V6 : self::MIN_ALLOWED_PREFIX_V4;
+
+        if (count($parts) === 2) {
+            $prefix = trim($parts[1]);
+
+            if ($prefix === '' || ! ctype_digit($prefix)) {
+                return null;
+            }
+
+            $prefix = (int) $prefix;
+        } else {
+            $prefix = $maxPrefix;
+        }
+
+        if ($prefix < $minPrefix || $prefix > $maxPrefix) {
+            return null;
+        }
+
+        if (self::isPublicIp($ip)) {
+            return null;
+        }
+
+        return $ip.'/'.$prefix;
     }
 
     /**
