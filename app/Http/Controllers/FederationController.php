@@ -17,6 +17,7 @@ use App\Services\FeaturedCollectionService;
 use App\Services\FollowersSyncService;
 use App\Services\InstanceService;
 use App\Services\QuoteService;
+use App\Util\ActivityPub\HttpSignature;
 use App\Util\Lexer\Nickname;
 use App\Util\Site\Nodeinfo;
 use App\Util\Webfinger\Webfinger;
@@ -177,6 +178,7 @@ class FederationController extends Controller
     {
         abort_if(! (bool) config_cache('federation.activitypub.enabled'), 404);
         abort_if(! config('federation.activitypub.inbox'), 404);
+        abort_if(! $this->hasParsableSignature($request), 401);
 
         $headers = $request->headers->all();
         $payload = $request->getContent();
@@ -251,10 +253,22 @@ class FederationController extends Controller
             || DmMessage::whereObjectUri($id)->exists();
     }
 
+    protected function hasParsableSignature(Request $request): bool
+    {
+        $signature = $request->header('signature');
+
+        if (! $signature || ! $request->header('date')) {
+            return false;
+        }
+
+        return HttpSignature::hasSignatureParameters($signature);
+    }
+
     public function sharedInbox(Request $request): void
     {
         abort_if(! (bool) config_cache('federation.activitypub.enabled'), 404);
         abort_if(! config('federation.activitypub.sharedInbox'), 404);
+        abort_if(! $this->hasParsableSignature($request), 401);
 
         $headers = $request->headers->all();
         $payload = $request->getContent();
