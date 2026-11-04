@@ -18,8 +18,8 @@ return [
     'username' => 'Nickname',
     'confirm-password' => 'Passwort bestätigen',
 
-    'age' => ''.(int) config('pixelfed.min_registration_age', 16).'',
-    'terms' => ''.route('site.terms').''.route('site.privacy').'',
+    'age' => 'Ich bin mindestens'.(int) config('pixelfed.min_registration_age', 16).' Jahre alt',
+    'terms' => 'Mit der Anmeldung akzeptierst du unsere <a href="'.route('site.terms').'" class="font-weight-fold text-dark">Nutzungsbedingungen</a> und <a href="'.route('site.privacy').'" class="font-weight-fold text-dark">Datenschutzerklärung</a>.',
 
     'emailAddress' => 'E-Mail-Adresse',
     'email' => 'E-Mail',
