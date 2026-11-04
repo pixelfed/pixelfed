@@ -24,8 +24,8 @@ class StatusAudienceService
         $audience = $profile->getAudienceInbox();
 
         $mentions = $status->mentions
-            ->filter(fn($m) => $m->domain !== null)
-            ->map(fn($m) => $m->sharedInbox ?? $m->inbox_url)
+            ->filter(fn ($m) => $m->domain !== null)
+            ->map(fn ($m) => $m->sharedInbox ?? $m->inbox_url)
             ->values()
             ->toArray();
 
@@ -41,7 +41,7 @@ class StatusAudienceService
 
         return array_values(array_unique(array_filter(
             array_merge($audience, $mentions, $parentInbox),
-            fn($inbox) => is_string($inbox) && trim($inbox) !== ''
+            fn ($inbox) => is_string($inbox) && trim($inbox) !== ''
         )));
     }
 }
