@@ -2,10 +2,10 @@
 
 namespace App\Jobs\StatusPipeline;
 
-use App\Models\Profile;
 use App\Models\Status;
 use App\Services\ActivityPubFanoutService;
 use App\Services\FractalService;
+use App\Services\Status\StatusAudienceService;
 use App\Transformer\ActivityPub\Verb\CreateNote;
 use App\Transformer\ActivityPub\Verb\CreateQuestion;
 use Illuminate\Bus\Queueable;
@@ -72,30 +72,7 @@ class StatusActivityPubDeliver implements ShouldQueue
             return;
         }
 
-        $audience = $status->profile->getAudienceInbox();
-
-        $parentInbox = [];
-
-        $mentions = $status->mentions
-            ->filter(function ($f) {
-                return $f->domain !== null;
-            })
-            ->values()
-            ->map(function ($m) {
-                return $m->sharedInbox ?? $m->inbox_url;
-            })
-            ->toArray();
-
-        if ($status->in_reply_to_profile_id) {
-            $parent = Profile::find($status->in_reply_to_profile_id);
-            if ($parent && $parent->domain !== null) {
-                $parentInbox = [
-                    $parent->sharedInbox ?? $parent->inbox_url,
-                ];
-            }
-        }
-
-        $audience = array_values(array_unique(array_merge($audience, $mentions, $parentInbox)));
+        $audience = StatusAudienceService::inboxes($status, $profile);
 
         if ($audience === [] || ! in_array($status->scope, ['public', 'unlisted', 'private'])) {
             // Return on profiles with no remote followers
