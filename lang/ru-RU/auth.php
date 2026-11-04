@@ -18,7 +18,7 @@ return [
     'username' => 'Имя пользователя',
     'confirm-password' => 'Подтвердите пароль',
 
-    'age' => ''.(int) config('pixelfed.min_registration_age', 16).'',
+    'age' => 'По крайней мере мне '.(int) config('pixelfed.min_registration_age', 16).' лет',
     'terms' => 'Зарегистрировавшись, вы соглашаетесь с нашими <a href="'.route('site.terms').'" class="font-weight-bold text-dark">Условиями использования</a> и <a href="'.route('site.privacy').'" class="font-weight-bold text-dark">Политикой конфиденциальности</a>.',
 
     'emailAddress' => 'Адрес электронной почты',

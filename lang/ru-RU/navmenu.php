@@ -7,7 +7,7 @@ return [
     'network' => 'Глобальная',
     'discover' => 'Discover',
     'viewMyProfile' => 'Мой профиль',
-    'myProfile' => '',
+    'myProfile' => 'Мой профиль',
     'myTimeline' => 'Моя лента',
     'publicTimeline' => 'Глобальная лента',
     'remoteFollow' => 'Remote Follow',
@@ -15,5 +15,5 @@ return [
     'admin' => 'Администрация',
     'logout' => 'Выйти',
     'directMessages' => 'Личные сообщения',
-    'composePost' => '',
+    'composePost' => 'Выложить пост',
 ];
