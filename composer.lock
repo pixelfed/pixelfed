@@ -5657,16 +5657,16 @@
         },
         {
             "name": "predis/predis",
-            "version": "v3.7.0",
+            "version": "v3.7.1",
             "source": {
                 "type": "git",
                 "url": "https://github.com/predis/predis.git",
-                "reference": "4d91f3b08a60c3bacc2afbd8dc41724559b7626a"
+                "reference": "2496e6d91ba4e137b47a6b802dc7e088ebf31df4"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/predis/predis/zipball/4d91f3b08a60c3bacc2afbd8dc41724559b7626a",
-                "reference": "4d91f3b08a60c3bacc2afbd8dc41724559b7626a",
+                "url": "https://api.github.com/repos/predis/predis/zipball/2496e6d91ba4e137b47a6b802dc7e088ebf31df4",
+                "reference": "2496e6d91ba4e137b47a6b802dc7e088ebf31df4",
                 "shasum": ""
             },
             "require": {
@@ -5708,7 +5708,7 @@
             ],
             "support": {
                 "issues": "https://github.com/predis/predis/issues",
-                "source": "https://github.com/predis/predis/tree/v3.7.0"
+                "source": "https://github.com/predis/predis/tree/v3.7.1"
             },
             "funding": [
                 {
@@ -5716,7 +5716,8 @@
                     "type": "github"
                 }
             ],
-            "time": "2026-10-08T16:46:04+00:00"
+            "time": "2026-11-03T17:55:20+00:00",
+            "published-time": "2026-11-03T17:56:07+00:00"
         },
         {
             "name": "psr/cache",
@@ -6076,7 +6077,8 @@
             "support": {
                 "source": "https://github.com/php-fig/http-message/tree/2.0"
             },
-            "time": "2023-04-04T09:54:51+00:00"
+            "time": "2023-04-04T09:54:51+00:00",
+            "published-time": "2023-04-04T09:55:35+00:00"
         },
         {
             "name": "psr/http-server-handler",
@@ -15121,5 +15123,5 @@
         "ext-redis": "*"
     },
     "platform-dev": {},
-    "plugin-api-version": "2.9.0"
+    "plugin-api-version": "2.11.0"
 }
