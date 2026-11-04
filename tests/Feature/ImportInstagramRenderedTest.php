@@ -86,7 +86,9 @@ afterEach(function () {
     }
     $pub = storage_path('app/public/m');
     if (is_dir($pub)) {
-        exec('rm -rf '.escapeshellarg($pub));
+        foreach (glob($pub.'/*', GLOB_ONLYDIR) as $hashDir) {
+            exec('rm -rf '.escapeshellarg($hashDir));
+        }
     }
 });
 

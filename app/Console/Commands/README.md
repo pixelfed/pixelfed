@@ -47,6 +47,7 @@ full argument and option list.
 | `ap:update-actors`                      | Send Update Actor activities to known remote servers (`--force`).                                                                                                                                                   |
 | `video:thumbnail`                       | Generate missing video thumbnails.                                                                                                                                                                                  |
 | `storage:maintenance`                   | Sweep stale `remcache` temp files and prune empty directories left by the media/story/avatar/import flows. Quiet by default (`-v` for detail); supports `--hours`, `--only` (`remcache`,`empty-dirs`), `--dry-run`. |
+| `statuses:remove-remote`                | Hard delete remote statuses fetched more than `--days` (default 90) ago that no local account interacted with, plus their side rows (likes, mentions, hashtags, media, polls). Supports `--dry-run`, `--skip-media`, `--limit`, `--sleep`, `--start-id`. |
 
 ## Dev
 

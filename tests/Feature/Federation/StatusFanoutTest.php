@@ -4,10 +4,12 @@ use App\Jobs\Federation\DeliverActivityChunk;
 use App\Jobs\Federation\DeliverStatusDeleteActivity;
 use App\Jobs\StatusPipeline\StatusDelete;
 use App\Models\Follower;
+use App\Models\Mention;
 use App\Models\Profile;
 use App\Models\Status;
 use App\Models\User;
 use App\Services\ActivityPubFanoutService;
+use App\Services\Status\StatusAudienceService;
 use Illuminate\Foundation\Testing\LazilyRefreshDatabase;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Queue;
@@ -213,4 +215,100 @@ it('deletes the status locally before queueing the federated delete', function (
     );
 
     Queue::assertNotPushed(DeliverActivityChunk::class);
+});
+
+it('delivers the delete to the remote author being replied to', function () {
+    Queue::fake();
+    config(['federation.activitypub.enabled' => true]);
+
+    $profile = fanoutLocalProfile();
+
+    $parentAuthor = Profile::factory()->remote()->create([
+        'inbox_url' => 'https://vernissage.example/actors/anna/inbox',
+        'sharedInbox' => 'https://vernissage.example/shared/inbox',
+    ]);
+
+    $status = Status::factory()->create([
+        'profile_id' => $profile->id,
+        'type' => 'reply',
+        'in_reply_to_profile_id' => $parentAuthor->id,
+    ]);
+
+    (new StatusDelete($status))->handle();
+
+    Queue::assertPushedOn(
+        'high',
+        DeliverStatusDeleteActivity::class,
+        fn (DeliverStatusDeleteActivity $job) => $job->inboxes() === ['https://vernissage.example/shared/inbox']
+            && ($job->activity()['type'] ?? null) === 'Delete'
+    );
+});
+
+it('delivers the delete to mentioned remote accounts', function () {
+    Queue::fake();
+    config(['federation.activitypub.enabled' => true]);
+
+    $profile = fanoutLocalProfile();
+
+    $mentioned = Profile::factory()->remote()->create([
+        'inbox_url' => 'https://vernissage.example/actors/bob/inbox',
+        'sharedInbox' => null,
+    ]);
+
+    $status = Status::factory()->create(['profile_id' => $profile->id, 'type' => 'photo']);
+
+    Mention::create([
+        'status_id' => $status->id,
+        'profile_id' => $mentioned->id,
+        'local' => false,
+    ]);
+
+    (new StatusDelete($status))->handle();
+
+    Queue::assertPushedOn(
+        'high',
+        DeliverStatusDeleteActivity::class,
+        fn (DeliverStatusDeleteActivity $job) => $job->inboxes() === ['https://vernissage.example/actors/bob/inbox']
+    );
+});
+
+it('uses the same audience for create and delete', function () {
+    $profile = fanoutLocalProfile();
+
+    $follower = Profile::factory()->remote()->create([
+        'inbox_url' => 'https://a.example/users/f/inbox',
+        'sharedInbox' => 'https://a.example/inbox',
+    ]);
+    Follower::create([
+        'profile_id' => $follower->id,
+        'following_id' => $profile->id,
+        'local_profile' => false,
+    ]);
+
+    $parentAuthor = Profile::factory()->remote()->create([
+        'inbox_url' => 'https://b.example/users/p/inbox',
+        'sharedInbox' => 'https://b.example/inbox',
+    ]);
+
+    $mentioned = Profile::factory()->remote()->create([
+        'inbox_url' => 'https://a.example/users/m/inbox',
+        'sharedInbox' => 'https://a.example/inbox',
+    ]);
+
+    $status = Status::factory()->create([
+        'profile_id' => $profile->id,
+        'type' => 'reply',
+        'in_reply_to_profile_id' => $parentAuthor->id,
+    ]);
+
+    Mention::create([
+        'status_id' => $status->id,
+        'profile_id' => $mentioned->id,
+        'local' => false,
+    ]);
+
+    $inboxes = StatusAudienceService::inboxes($status->fresh(), $profile);
+    sort($inboxes);
+
+    expect($inboxes)->toBe(['https://a.example/inbox', 'https://b.example/inbox']);
 });
