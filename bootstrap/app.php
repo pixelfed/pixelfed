@@ -6,6 +6,7 @@ use App\Http\Middleware\Api\Admin as ApiAdmin;
 use App\Http\Middleware\FrameGuard;
 use App\Http\Middleware\GrantFirstPartyToken;
 use App\Http\Middleware\Localization;
+use App\Http\Middleware\RegistrationIpGuard;
 use App\Http\Middleware\RedirectIfAuthenticated;
 use App\Http\Middleware\RestrictedAccess;
 use App\Services\PendingLoginService;
@@ -133,6 +134,7 @@ return Application::configure(basePath: dirname(__DIR__))
             'scopes' => CheckToken::class,
             'scope' => CheckTokenForAnyScope::class,
             'restricted' => RestrictedAccess::class,
+            'registration.ip' => RegistrationIpGuard::class,
         ]);
     })
     ->withSchedule(function (Schedule $schedule) {
