@@ -3,6 +3,7 @@
 namespace App\Transformer\Api;
 
 use App\Models\Media;
+use App\Services\ContentCredentials\ContentCredentialService;
 use Illuminate\Support\Facades\Storage;
 use League\Fractal;
 
@@ -27,6 +28,7 @@ class MediaTransformer extends Fractal\TransformerAbstract
             'filter_class' => $media->version == 1 ? $media->filter_class : null,
             'mime' => $media->mime,
             'blurhash' => $media->blurhash ?? 'U4Rfzst8?bt7ogayj[j[~pfQ9Goe%Mj[WBay',
+            'content_credentials' => ContentCredentialService::forApi($media->contentCredential),
         ];
 
         if ((bool) config('media.hls.enabled')) {

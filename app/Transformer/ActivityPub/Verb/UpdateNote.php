@@ -4,6 +4,7 @@ namespace App\Transformer\ActivityPub\Verb;
 
 use App\Models\CustomEmoji;
 use App\Models\Status;
+use App\Services\ContentCredentials\ContentCredentialService;
 use App\Services\MediaService;
 use App\Services\QuoteService;
 use App\Util\Lexer\Autolink;
@@ -92,6 +93,7 @@ class UpdateNote extends Fractal\TransformerAbstract
                     'Emoji' => 'toot:Emoji',
                     ...QuoteService::NOTE_CONTEXT_TERMS,
                     ...License::NOTE_CONTEXT_TERMS,
+                    ...ContentCredentialService::NOTE_CONTEXT_TERMS,
                 ],
             ],
             'id' => $status->permalink('#updates/'.$latestEdit->id),
