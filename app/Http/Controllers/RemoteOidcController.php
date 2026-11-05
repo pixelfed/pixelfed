@@ -5,8 +5,10 @@ namespace App\Http\Controllers;
 use App\Models\User;
 use App\Models\UserOidcMapping;
 use App\Rules\EmailNotBanned;
+use App\Rules\NotRegistrationBlocked;
 use App\Rules\ValidUsername;
 use App\Services\EmailService;
+use App\Services\RegistrationBlockService;
 use App\Services\UserOidcService;
 use Illuminate\Auth\Events\Registered;
 use Illuminate\Http\RedirectResponse;
@@ -71,6 +73,7 @@ class RemoteOidcController extends Controller
         }
 
         abort_if(EmailService::isBanned($userInfoData['email']), 400, 'Banned email.');
+        abort_if(RegistrationBlockService::ipBlocked($request->ip()), 403, RegistrationBlockService::IP_MESSAGE);
 
         $user = $this->createUser([
             'username' => $this->ensure_valid_username($userInfoData[config('remote-auth.oidc.field_username')]),
@@ -100,6 +103,7 @@ class RemoteOidcController extends Controller
                 'max:255',
                 'unique:users',
                 new EmailNotBanned,
+                new NotRegistrationBlocked('email'),
             ],
             'username' => [
                 'required',
@@ -107,6 +111,7 @@ class RemoteOidcController extends Controller
                 'max:30',
                 'unique:users,username',
                 new ValidUsername,
+                new NotRegistrationBlocked('username'),
             ],
             'name' => 'nullable|max:30',
         ]);
