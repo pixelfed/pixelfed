@@ -7,6 +7,7 @@ use App\Jobs\CuratedOnboarding\CuratedOnboardingNotifyAdminUserResponsePipeline;
 use App\Mail\CuratedRegisterConfirmEmail;
 use App\Models\CuratedRegister;
 use App\Models\CuratedRegisterActivity;
+use App\Rules\NotRegistrationBlocked;
 use App\Rules\ValidUsername;
 use App\Services\EmailService;
 use Illuminate\Contracts\View\View;
@@ -390,6 +391,7 @@ class CuratedRegisterController extends Controller
                 'unique:curated_registers',
                 'unique:users',
                 new ValidUsername,
+                new NotRegistrationBlocked('username'),
             ],
             'email' => [
                 'required',
@@ -404,6 +406,7 @@ class CuratedRegisterController extends Controller
                         return $fail('Email is invalid.');
                     }
                 },
+                new NotRegistrationBlocked('email'),
             ],
             'password' => 'required|min:8',
             'password_confirmation' => 'required|same:password',
@@ -430,6 +433,7 @@ class CuratedRegisterController extends Controller
                         return $fail('Email is invalid.');
                     }
                 },
+                new NotRegistrationBlocked('email'),
             ],
         ]);
         $cr = new CuratedRegister;
