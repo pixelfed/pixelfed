@@ -231,6 +231,8 @@ Route::prefix('api')->group(function () use ($middleware) {
             Route::get('registration_blocks', [RegistrationBlocksController::class, 'index'])->middleware($middleware);
             Route::post('registration_blocks', [RegistrationBlocksController::class, 'create'])->middleware($middleware);
             Route::post('registration_blocks/test', [RegistrationBlocksController::class, 'test'])->middleware($middleware);
+            Route::get('registration_blocks/export', [RegistrationBlocksController::class, 'export'])->middleware($middleware);
+            Route::post('registration_blocks/import', [RegistrationBlocksController::class, 'import'])->middleware($middleware);
             Route::get('registration_blocks/{id}', [RegistrationBlocksController::class, 'show'])->middleware($middleware)->whereNumber('id');
             Route::put('registration_blocks/{id}', [RegistrationBlocksController::class, 'update'])->middleware($middleware)->whereNumber('id');
             Route::delete('registration_blocks/{id}', [RegistrationBlocksController::class, 'delete'])->middleware($middleware)->whereNumber('id');

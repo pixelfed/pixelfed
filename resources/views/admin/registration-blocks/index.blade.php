@@ -35,6 +35,30 @@
         </div>
         @endif
 
+        @if (session('import_result'))
+        @php($ir = session('import_result'))
+        <div class="col-12">
+            <div class="alert {{ $ir['dry_run'] ? 'alert-info' : 'alert-success' }}">
+                <p class="font-weight-bold mb-1">
+                    {{ $ir['dry_run'] ? 'Dry run, nothing was saved.' : 'Import finished.' }}
+                    {{ number_format($ir['added']) }} {{ $ir['dry_run'] ? 'would be added' : 'added' }},
+                    {{ number_format($ir['existing']) }} already blocked,
+                    {{ number_format($ir['expired']) }} expired,
+                    {{ number_format($ir['filtered']) }} other types,
+                    {{ count($ir['invalid']) }} invalid,
+                    {{ count($ir['broad']) }} too broad.
+                </p>
+                @if (count($ir['invalid']) || count($ir['broad']))
+                <ul class="mb-0 pl-3 small">
+                    @foreach (array_merge($ir['broad'], $ir['invalid']) as $line)
+                    <li>{{ $line }}</li>
+                    @endforeach
+                </ul>
+                @endif
+            </div>
+        </div>
+        @endif
+
         <div class="col-12 col-xl-8 mb-4">
             <ul class="nav nav-pills mb-3">
                 @foreach (['all' => 'All', 'ip' => 'IP', 'email' => 'Email', 'email_domain' => 'Email domain', 'username' => 'Username'] as $key => $label)
@@ -129,7 +153,7 @@
 
         <div class="col-12 col-xl-4">
             <div class="card mb-4">
-                <div class="card-header font-weight-bold">Add blocks</div>
+                <div class="card-header font-weight-bold" id="add-blocks">Add blocks</div>
                 <div class="card-body">
                     <form method="post" action="/i/admin/registration-blocks">
                         @csrf
@@ -155,14 +179,14 @@
 
                         <div class="form-group">
                             <label class="small font-weight-bold" for="rb-patterns">Patterns, one per line</label>
-                            <textarea class="form-control text-monospace" id="rb-patterns" name="patterns" rows="5" style="font-size: 13px;">{{ old('patterns') }}</textarea>
+                            <textarea class="form-control text-monospace" id="rb-patterns" name="patterns" rows="5" style="font-size: 13px;">{{ old('patterns', $prefill['pattern']) }}</textarea>
                             <small class="form-text text-muted" id="rb-help"></small>
                         </div>
 
                         <div class="form-row">
                             <div class="form-group col-7">
                                 <label class="small font-weight-bold" for="rb-note">Note</label>
-                                <input type="text" class="form-control" id="rb-note" name="note" maxlength="490" value="{{ old('note') }}" placeholder="Only admins see this">
+                                <input type="text" class="form-control" id="rb-note" name="note" maxlength="490" value="{{ old('note', $prefill['note']) }}" placeholder="Only admins see this">
                             </div>
                             <div class="form-group col-5">
                                 <label class="small font-weight-bold" for="rb-expires">Expires</label>
@@ -175,6 +199,90 @@
                         </div>
 
                         <button type="submit" class="btn btn-primary btn-block font-weight-bold">Add blocks</button>
+                    </form>
+                </div>
+            </div>
+
+            <div class="card mb-4">
+                <div class="card-header font-weight-bold">Export</div>
+                <div class="card-body">
+                    <form method="get" action="/i/admin/registration-blocks/export">
+                        <label class="small font-weight-bold d-block">Include</label>
+                        <div class="mb-2">
+                            @foreach (['ip' => 'IPs', 'email' => 'Emails', 'email_domain' => 'Email domains', 'username' => 'Usernames'] as $key => $label)
+                            <div class="custom-control custom-checkbox custom-control-inline">
+                                <input type="checkbox" class="custom-control-input" id="ex-{{ $key }}" name="types[]" value="{{ $key }}" checked>
+                                <label class="custom-control-label small" for="ex-{{ $key }}">{{ $label }}</label>
+                            </div>
+                            @endforeach
+                        </div>
+                        <div class="custom-control custom-checkbox">
+                            <input type="checkbox" class="custom-control-input" id="ex-notes" name="notes" value="1">
+                            <label class="custom-control-label small" for="ex-notes">Include admin notes</label>
+                        </div>
+                        <div class="custom-control custom-checkbox mb-3">
+                            <input type="checkbox" class="custom-control-input" id="ex-inactive" name="inactive" value="1">
+                            <label class="custom-control-label small" for="ex-inactive">Include disabled and expired blocks</label>
+                        </div>
+                        <div class="form-row">
+                            <div class="col-5">
+                                <select class="custom-select" name="format">
+                                    <option value="json">JSON</option>
+                                    <option value="csv">CSV</option>
+                                </select>
+                            </div>
+                            <div class="col-7">
+                                <button type="submit" class="btn btn-outline-primary btn-block font-weight-bold">Download</button>
+                            </div>
+                        </div>
+                        <p class="small text-muted mt-2 mb-0">Exports include email addresses and IPs. Only share them with admins you trust.</p>
+                    </form>
+                </div>
+            </div>
+
+            <div class="card mb-4">
+                <div class="card-header font-weight-bold">Import</div>
+                <div class="card-body">
+                    <form method="post" action="/i/admin/registration-blocks/import" enctype="multipart/form-data">
+                        @csrf
+                        <div class="form-group">
+                            <label class="small font-weight-bold" for="im-file">File (JSON or CSV)</label>
+                            <input type="file" class="form-control-file" id="im-file" name="file" accept=".json,.csv,application/json,text/csv">
+                        </div>
+                        <div class="form-group">
+                            <label class="small font-weight-bold" for="im-contents">Or paste an export</label>
+                            <textarea class="form-control text-monospace" id="im-contents" name="contents" rows="3" style="font-size: 12px;">{{ old('contents') }}</textarea>
+                        </div>
+                        <label class="small font-weight-bold d-block">Import</label>
+                        <div class="mb-2">
+                            @foreach (['ip' => 'IPs', 'email' => 'Emails', 'email_domain' => 'Email domains', 'username' => 'Usernames'] as $key => $label)
+                            <div class="custom-control custom-checkbox custom-control-inline">
+                                <input type="checkbox" class="custom-control-input" id="im-{{ $key }}" name="types[]" value="{{ $key }}" {{ in_array($key, old('types', ['ip', 'email', 'email_domain', 'username'])) ? 'checked' : '' }}>
+                                <label class="custom-control-label small" for="im-{{ $key }}">{{ $label }}</label>
+                            </div>
+                            @endforeach
+                        </div>
+                        <div class="form-row">
+                            <div class="form-group col-7">
+                                <label class="small font-weight-bold" for="im-note">Note</label>
+                                <input type="text" class="form-control" id="im-note" name="import_note" maxlength="490" value="{{ old('import_note') }}" placeholder="From the file">
+                            </div>
+                            <div class="form-group col-5">
+                                <label class="small font-weight-bold" for="im-expires">Expires</label>
+                                <select class="custom-select" id="im-expires" name="expires">
+                                    <option value="file" {{ old('expires', 'file') === 'file' ? 'selected' : '' }}>From file</option>
+                                    @foreach ($expiryOptions as $key => $label)
+                                    <option value="{{ $key }}" {{ old('expires') === $key ? 'selected' : '' }}>{{ $label }}</option>
+                                    @endforeach
+                                </select>
+                            </div>
+                        </div>
+                        <div class="custom-control custom-checkbox mb-3">
+                            <input type="checkbox" class="custom-control-input" id="im-dry" name="dry_run" value="1" checked>
+                            <label class="custom-control-label small" for="im-dry">Dry run, show what would be added</label>
+                        </div>
+                        <button type="submit" class="btn btn-outline-primary btn-block font-weight-bold">Import</button>
+                        <p class="small text-muted mt-2 mb-0">Rules you already have are left alone. Rules that would block common addresses or usernames are skipped.</p>
                     </form>
                 </div>
             </div>

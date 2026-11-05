@@ -4,13 +4,16 @@ namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
 use App\Models\RegistrationBlock;
+use App\Services\RegistrationBlockExchangeService;
 use App\Services\RegistrationBlockService;
 use Illuminate\Contracts\View\View;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Str;
 use Illuminate\Validation\Rule;
 use InvalidArgumentException;
+use Symfony\Component\HttpFoundation\Response;
 
 class AdminRegistrationBlockController extends Controller
 {
@@ -34,6 +37,8 @@ class AdminRegistrationBlockController extends Controller
             'type' => ['nullable', Rule::in(array_merge(['all'], RegistrationBlockService::TYPES))],
             'status' => ['nullable', Rule::in(['all', 'active', 'expired', 'disabled'])],
             'q' => 'nullable|string|max:255',
+            'pattern' => 'nullable|string|max:255',
+            'note' => 'nullable|string|max:490',
         ]);
 
         $type = $request->input('type', 'all');
@@ -68,6 +73,10 @@ class AdminRegistrationBlockController extends Controller
             'status' => $status,
             'q' => $q,
             'expiryOptions' => self::EXPIRY_OPTIONS,
+            'prefill' => [
+                'pattern' => $request->input('pattern'),
+                'note' => $request->input('note'),
+            ],
         ]);
     }
 
@@ -162,5 +171,83 @@ class AdminRegistrationBlockController extends Controller
             'blocked' => $match !== null,
             'rule' => $match,
         ]);
+    }
+
+    public function export(Request $request): Response
+    {
+        $this->validate($request, [
+            'format' => ['nullable', Rule::in(RegistrationBlockExchangeService::FORMATS)],
+            'types' => 'nullable|array',
+            'types.*' => [Rule::in(RegistrationBlockService::TYPES)],
+            'notes' => 'nullable|boolean',
+            'inactive' => 'nullable|boolean',
+        ]);
+
+        $format = $request->input('format', 'json');
+        $payload = RegistrationBlockExchangeService::export(
+            (array) $request->input('types', RegistrationBlockService::TYPES),
+            $request->boolean('notes'),
+            $request->boolean('inactive')
+        );
+
+        $body = $format === 'csv'
+            ? RegistrationBlockExchangeService::toCsv($payload)
+            : RegistrationBlockExchangeService::toJson($payload);
+
+        return response($body, 200, [
+            'Content-Type' => $format === 'csv' ? 'text/csv; charset=UTF-8' : 'application/json',
+            'Content-Disposition' => 'attachment; filename="'.RegistrationBlockExchangeService::filename($format).'"',
+            'Cache-Control' => 'no-store',
+        ]);
+    }
+
+    public function import(Request $request): RedirectResponse
+    {
+        $this->validate($request, [
+            'file' => 'nullable|file|max:2048',
+            'contents' => 'nullable|string|max:2000000',
+            'types' => 'required|array|min:1',
+            'types.*' => [Rule::in(RegistrationBlockService::TYPES)],
+            'expires' => ['required', Rule::in(array_merge(['file'], array_keys(self::EXPIRY_OPTIONS)))],
+            'import_note' => 'nullable|string|max:490',
+            'dry_run' => 'nullable|boolean',
+        ]);
+
+        $contents = $request->hasFile('file')
+            ? (string) file_get_contents($request->file('file')->getRealPath())
+            : (string) $request->input('contents');
+
+        $format = null;
+        if ($request->hasFile('file')) {
+            $ext = strtolower((string) $request->file('file')->getClientOriginalExtension());
+            $format = in_array($ext, RegistrationBlockExchangeService::FORMATS, true) ? $ext : null;
+        }
+
+        try {
+            $rows = RegistrationBlockExchangeService::parse($contents, $format);
+        } catch (InvalidArgumentException $e) {
+            return back()->withInput($request->except('file'))->withErrors(['import' => $e->getMessage()]);
+        }
+
+        $result = RegistrationBlockExchangeService::import($rows, [
+            'types' => (array) $request->input('types'),
+            'expires' => $request->input('expires') === 'file'
+                ? false
+                : RegistrationBlockService::parseDuration($request->input('expires')),
+            'note' => $request->input('import_note'),
+            'dry_run' => $request->boolean('dry_run'),
+            'created_by' => $request->user()->id,
+        ]);
+
+        $result['invalid'] = array_slice($result['invalid'], 0, 25);
+        $result['broad'] = array_slice($result['broad'], 0, 25);
+
+        $redirect = redirect()->route('admin.registration-blocks')->with('import_result', $result);
+
+        if ($result['dry_run']) {
+            return $redirect->withInput($request->except('file'));
+        }
+
+        return $redirect->with('status', 'Imported '.$result['added'].' '.Str::plural('block', $result['added']).'.');
     }
 }

@@ -4,6 +4,7 @@ namespace App\Console\Commands\Admin;
 
 use App\Models\RegistrationBlock;
 use App\Models\User;
+use App\Services\RegistrationBlockExchangeService;
 use App\Services\RegistrationBlockService;
 use Illuminate\Console\Command;
 use InvalidArgumentException;
@@ -11,12 +12,16 @@ use InvalidArgumentException;
 class RegistrationBlocksCommand extends Command
 {
     protected $signature = 'admin:registration-blocks
-        {action : list, add, remove, test or scan}
-        {args?* : add: <type> <pattern>, remove: <id>}
+        {action : list, add, remove, test, scan, export or import}
+        {args?* : add: <type> <pattern>, remove: <id>, export: [path], import: <path>}
         {--match=exact : exact, wildcard or regex (add)}
-        {--note= : Admin note (add)}
-        {--expires= : Duration like 12h, 7d or 4w (add)}
-        {--type= : Filter by ip, email, email_domain or username (list, scan)}
+        {--note= : Admin note (add), or a note for every imported block (import)}
+        {--expires= : Duration like 12h, 7d or 4w (add, import). Import keeps the expiry from the file when omitted, use never to clear it}
+        {--type= : Filter by ip, email, email_domain or username, comma separated for export and import (list, scan, export, import)}
+        {--format= : json or csv, detected from the path when omitted (export, import)}
+        {--include-notes : Include admin notes in the export (export)}
+        {--include-inactive : Include disabled and expired blocks (export)}
+        {--dry-run : Report what would be imported without saving (import)}
         {--ip= : IP to test (test)}
         {--email= : Email to test (test)}
         {--username= : Username to test (test)}
@@ -33,13 +38,15 @@ class RegistrationBlocksCommand extends Command
             'remove' => $this->removeBlock(),
             'test' => $this->testBlock(),
             'scan' => $this->scanAccounts(),
+            'export' => $this->exportBlocks(),
+            'import' => $this->importBlocks(),
             default => $this->invalidAction(),
         };
     }
 
     protected function invalidAction(): int
     {
-        $this->error('Unknown action. Use list, add, remove, test or scan.');
+        $this->error('Unknown action. Use list, add, remove, test, scan, export or import.');
 
         return self::FAILURE;
     }
@@ -205,6 +212,120 @@ class RegistrationBlocksCommand extends Command
 
         $this->table(['ID', 'Username', 'Email', 'Signup IP', 'Status', 'Created', 'Rule'], $matches);
         $this->warn(count($matches).' matching accounts. Nothing was changed.');
+
+        return self::SUCCESS;
+    }
+
+    /**
+     * @return string[]
+     */
+    protected function typesOption(): array
+    {
+        $types = array_filter(array_map('trim', explode(',', (string) $this->option('type'))));
+
+        return $types ? array_values(array_intersect($types, RegistrationBlockService::TYPES)) : RegistrationBlockService::TYPES;
+    }
+
+    protected function formatFor(?string $path): ?string
+    {
+        $format = $this->option('format');
+
+        if ($format) {
+            return in_array($format, RegistrationBlockExchangeService::FORMATS, true) ? $format : null;
+        }
+
+        $ext = $path ? strtolower(pathinfo($path, PATHINFO_EXTENSION)) : '';
+
+        return in_array($ext, RegistrationBlockExchangeService::FORMATS, true) ? $ext : null;
+    }
+
+    protected function exportBlocks(): int
+    {
+        $path = $this->argument('args')[0] ?? null;
+        $format = $this->formatFor($path) ?? 'json';
+        $types = $this->typesOption();
+
+        if (! count($types)) {
+            $this->error('Unknown --type, use ip, email, email_domain or username.');
+
+            return self::FAILURE;
+        }
+
+        $payload = RegistrationBlockExchangeService::export(
+            $types,
+            (bool) $this->option('include-notes'),
+            (bool) $this->option('include-inactive')
+        );
+
+        $body = $format === 'csv'
+            ? RegistrationBlockExchangeService::toCsv($payload)
+            : RegistrationBlockExchangeService::toJson($payload);
+
+        if ($path === null) {
+            $this->output->write($body);
+
+            return self::SUCCESS;
+        }
+
+        if (@file_put_contents($path, $body) === false) {
+            $this->error("Could not write to {$path}");
+
+            return self::FAILURE;
+        }
+
+        $this->info("Exported {$payload['count']} blocks to {$path}");
+
+        return self::SUCCESS;
+    }
+
+    protected function importBlocks(): int
+    {
+        $path = $this->argument('args')[0] ?? null;
+
+        if (! $path || ! is_readable($path)) {
+            $this->error('Usage: admin:registration-blocks import <path> [--type=] [--expires=] [--note=] [--dry-run]');
+
+            return self::FAILURE;
+        }
+
+        try {
+            $rows = RegistrationBlockExchangeService::parse((string) file_get_contents($path), $this->formatFor($path));
+            $expires = $this->option('expires') === null
+                ? false
+                : RegistrationBlockService::parseDuration($this->option('expires'));
+        } catch (InvalidArgumentException $e) {
+            $this->error($e->getMessage());
+
+            return self::FAILURE;
+        }
+
+        $result = RegistrationBlockExchangeService::import($rows, [
+            'types' => $this->typesOption(),
+            'expires' => $expires,
+            'note' => $this->option('note'),
+            'dry_run' => (bool) $this->option('dry-run'),
+        ]);
+
+        foreach ($result['invalid'] as $line) {
+            $this->line("<fg=red>invalid</> {$line}");
+        }
+
+        foreach ($result['broad'] as $line) {
+            $this->line("<fg=yellow>skipped</> {$line}");
+        }
+
+        $this->table(['Added', 'Already blocked', 'Expired', 'Other types', 'Invalid', 'Too broad'], [[
+            $result['added'],
+            $result['existing'],
+            $result['expired'],
+            $result['filtered'],
+            count($result['invalid']),
+            count($result['broad']),
+        ]]);
+
+        if ($result['dry_run']) {
+            $this->warn('Dry run, nothing was saved.');
+        }
 
         return self::SUCCESS;
     }
