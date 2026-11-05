@@ -4,6 +4,7 @@ namespace App\Jobs\ImageOptimizePipeline;
 
 use App\Jobs\MediaPipeline\MediaStoragePipeline;
 use App\Models\Media;
+use App\Services\ContentCredentials\ContentCredentialService;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
@@ -85,6 +86,8 @@ class ImageUpdate implements ShouldQueue
             }
         }
 
+        $optimizeMain = ! $media->skip_optimize && ! ContentCredentialService::isInstanceSigned($media);
+
         if ((bool) config_cache('pixelfed.optimize_image') && $localFs) {
             if (in_array($media->mime, $this->protectedMimes) === true) {
                 try {
@@ -93,7 +96,7 @@ class ImageUpdate implements ShouldQueue
                         ImageOptimizer::optimize($thumbPath);
                     }
 
-                    if (! $media->skip_optimize) {
+                    if ($optimizeMain) {
                         $mediaPath = storage_path('app/'.$media->media_path);
                         ImageOptimizer::optimize($mediaPath);
                     }
@@ -105,7 +108,7 @@ class ImageUpdate implements ShouldQueue
             }
         } elseif ((bool) config_cache('pixelfed.optimize_image') && ! $localFs) {
             if (in_array($media->mime, $this->protectedMimes) === true) {
-                $this->optimizeRemoteImages($media, $disk);
+                $this->optimizeRemoteImages($media, $disk, $optimizeMain);
             }
         }
 
@@ -143,7 +146,7 @@ class ImageUpdate implements ShouldQueue
     /**
      * Optimize images stored on remote storage (S3, etc)
      */
-    protected function optimizeRemoteImages($media, $disk)
+    protected function optimizeRemoteImages($media, $disk, bool $optimizeMain = true)
     {
         try {
             $tempDir = sys_get_temp_dir().'/pixelfed_optimize_'.Str::random(18);
@@ -160,7 +163,7 @@ class ImageUpdate implements ShouldQueue
                 unlink($tempThumb);
             }
 
-            if (! $media->skip_optimize) {
+            if ($optimizeMain) {
                 $tempMedia = $tempDir.'/media_'.basename($media->media_path);
                 $mediaContents = $disk->get($media->media_path);
                 file_put_contents($tempMedia, $mediaContents);

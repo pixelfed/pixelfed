@@ -7,6 +7,7 @@ use App\Models\ModLog;
 use App\Models\Profile;
 use App\Models\Status;
 use App\Models\StatusEdit;
+use App\Services\ContentCredentials\ContentCredentialService;
 use App\Services\MediaService;
 use App\Services\SanitizeService;
 use App\Services\SecureMediaFetchService;
@@ -180,6 +181,8 @@ class StatusRemoteUpdatePipeline implements ShouldQueue
             $m->skip_optimize = true;
             $m->order = $v['key'] + 1;
             $m->save();
+
+            ContentCredentialService::storeRemote($m, $n);
         }
 
         MediaService::del($status->id);

@@ -3,6 +3,7 @@
 namespace App\Jobs\MediaPipeline;
 
 use App\Models\Media;
+use App\Services\ContentCredentials\ContentCredentialService;
 use App\Services\Media\MediaHlsService;
 use App\Services\UserStorageService;
 use Illuminate\Bus\Queueable;
@@ -148,6 +149,7 @@ class MediaDeletePipeline implements ShouldBeUniqueUntilProcessing, ShouldQueue
                 }
             }
 
+            ContentCredentialService::delete($media);
             $media->delete();
 
             if ($ownerUserId) {
