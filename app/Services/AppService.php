@@ -2,6 +2,7 @@
 
 namespace App\Services;
 
+use App\Services\ContentCredentials\ContentCredentialService;
 use Illuminate\Support\Str;
 
 class AppService
@@ -21,6 +22,11 @@ class AppService
                 'timelines' => [
                     'local' => true,
                     'network' => (bool) config('federation.network_timeline'),
+                ],
+                'content_credentials' => [
+                    'enabled' => ContentCredentialService::enabled(),
+                    'signing' => ContentCredentialService::signingEnabled(),
+                    'ai_labels' => (bool) config('c2pa.ai_label'),
                 ],
             ],
             'limits' => [
