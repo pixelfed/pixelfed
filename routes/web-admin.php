@@ -136,6 +136,8 @@ Route::domain(config('pixelfed.domain.admin'))->prefix('i/admin')->middleware(['
     Route::get('registration-blocks', [AdminRegistrationBlockController::class, 'index'])->name('admin.registration-blocks');
     Route::post('registration-blocks', [AdminRegistrationBlockController::class, 'store']);
     Route::post('registration-blocks/test', [AdminRegistrationBlockController::class, 'test']);
+    Route::get('registration-blocks/export', [AdminRegistrationBlockController::class, 'export'])->name('admin.registration-blocks.export');
+    Route::post('registration-blocks/import', [AdminRegistrationBlockController::class, 'import'])->name('admin.registration-blocks.import');
     Route::post('registration-blocks/{id}/toggle', [AdminRegistrationBlockController::class, 'toggle'])->whereNumber('id');
     Route::delete('registration-blocks/{id}', [AdminRegistrationBlockController::class, 'destroy'])->whereNumber('id');
 

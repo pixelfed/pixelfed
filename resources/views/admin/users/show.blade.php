@@ -87,6 +87,22 @@
                     <p class="details-list-item-value text-truncate" title="{{$user->email}}">{{$user->email}}</p>
                 </div>
 
+                <div class="list-group-item details-list-item">
+                    <p class="details-list-item-title">signup ip</p>
+                    @if($user->app_register_ip)
+                    <p class="details-list-item-value text-truncate" title="{{$user->app_register_ip}}">
+                        <span class="text-monospace">{{$user->app_register_ip}}</span>
+                        @if($signupIpBlock)
+                        <span class="badge badge-danger ml-1" title="Blocked by {{$signupIpBlock['pattern']}}">blocked</span>
+                        @else
+                        <a href="/i/admin/registration-blocks?{{ http_build_query(['type' => 'ip', 'status' => 'all', 'pattern' => $user->app_register_ip, 'note' => 'Signup IP of @'.$user->username]) }}#add-blocks" class="small font-weight-bold ml-1">Block</a>
+                        @endif
+                    </p>
+                    @else
+                    <p class="details-list-item-value text-muted">Not recorded</p>
+                    @endif
+                </div>
+
                 @if($profile->website)
                 <div class="list-group-item details-list-item">
                     <p class="details-list-item-title">website</p>

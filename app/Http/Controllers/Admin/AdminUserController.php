@@ -9,6 +9,7 @@ use App\Models\Profile;
 use App\Models\User;
 use App\Services\AccountService;
 use App\Services\ModLogService;
+use App\Services\RegistrationBlockService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Mail;
@@ -78,8 +79,15 @@ trait AdminUserController
     {
         $user = User::findOrFail($id);
         $profile = $user->profile;
+        $signupIpBlock = $user->app_register_ip
+            ? RegistrationBlockService::check(ip: $user->app_register_ip, record: false)
+            : null;
 
-        return view('admin.users.show', ['user' => $user, 'profile' => $profile]);
+        return view('admin.users.show', [
+            'user' => $user,
+            'profile' => $profile,
+            'signupIpBlock' => $signupIpBlock,
+        ]);
     }
 
     public function userEdit(Request $request, $id)
