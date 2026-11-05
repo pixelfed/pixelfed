@@ -36,6 +36,7 @@ full argument and option list.
 | `app:delete-remote-profile`             | Delete a remote profile.                                                                                                                                                                                            |
 | `import:cities`                         | Import the cities dataset into the database.                                                                                                                                                                        |
 | `import:emojis`                         | Import custom emojis from a `tar.gz` archive (supports `--prefix`/`--suffix`).                                                                                                                                      |
+| `c2pa:generate-signer`                  | Create an instance CA and ES256 signing certificate for Content Credentials (C2PA). |
 | `app:instance-manager`                  | Manage federated instances.                                                                                                                                                                                         |
 | `unstable:MediaMoveStorageCloudToCloud` | Cold-migrate media from an old S3 bucket to the current cloud bucket, verifying each copy.                                                                                                                          |
 | `unstable:MediaMoveStorageCloudToLocal` | Migrate cloud media back to local storage (download, verify, rewrite URLs, optionally delete cloud copy).                                                                                                           |
@@ -129,6 +130,7 @@ Read-only inspectors for troubleshooting. They do not modify data.
 
 | Command          | Description                                                                                                 |
 | ---------------- | ----------------------------------------------------------------------------------------------------------- |
+| `c2pa:status`    | Show the Content Credentials (C2PA) driver, trust anchors, signer certificate and stored counts.             |
 | `status:post`    | Show detailed metadata for a post and its media, including stored vs expected media URLs.                   |
 | `status:profile` | Show detailed metadata for a local or remote profile (federation-aware).                                    |
 | `status:user`    | Show detailed diagnostics for a user account (login & password reset), with recent account logs (`--logs`). |

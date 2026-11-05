@@ -3,6 +3,7 @@
 namespace App\Transformer\ActivityPub;
 
 use App\Models\Status;
+use App\Services\ContentCredentials\ContentCredentialService;
 use App\Services\MediaService;
 use App\Util\Lexer\Autolink;
 use App\Util\Media\License;
@@ -26,6 +27,7 @@ class StatusTransformer extends Fractal\TransformerAbstract
                         'https://pixelfed.org/ns#featured' => ['@type' => '@id'],
                     ],
                     ...License::NOTE_CONTEXT_TERMS,
+                    ...ContentCredentialService::NOTE_CONTEXT_TERMS,
                 ],
             ],
             'id' => $status->url(),

@@ -5,6 +5,7 @@ namespace App\Models;
 use App\Util\Media\License;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\Storage;
@@ -115,6 +116,11 @@ class Media extends Model
     public function status(): BelongsTo
     {
         return $this->belongsTo(Status::class);
+    }
+
+    public function contentCredential(): HasOne
+    {
+        return $this->hasOne(MediaContentCredential::class);
     }
 
     /**

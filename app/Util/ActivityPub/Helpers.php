@@ -18,6 +18,7 @@ use App\Services\Account\AccountStatService;
 use App\Services\AccountService;
 use App\Services\ActivityPubDeliveryService;
 use App\Services\ActivityPubFetchService;
+use App\Services\ContentCredentials\ContentCredentialService;
 use App\Services\DomainService;
 use App\Services\FetchCacheService;
 use App\Services\FollowersSyncService;
@@ -2170,6 +2171,8 @@ class Helpers
             return null;
         }
 
+        ContentCredentialService::storeRemote($mediaModel, $media);
+
         return $mediaModel;
     }
 
@@ -2271,6 +2274,8 @@ class Helpers
         $mediaModel = new Media;
         self::setMediaAttributes($mediaModel, $media, $status, $order);
         $mediaModel->save();
+
+        ContentCredentialService::storeRemote($mediaModel, $media);
 
         return $mediaModel;
     }

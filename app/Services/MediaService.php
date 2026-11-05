@@ -3,6 +3,7 @@
 namespace App\Services;
 
 use App\Models\Media;
+use App\Services\ContentCredentials\ContentCredentialService;
 use App\Transformer\Api\MediaTransformer;
 use App\Util\Media\License;
 use Illuminate\Support\Arr;
@@ -15,7 +16,7 @@ class MediaService
     public static function get($statusId)
     {
         return Cache::remember(self::CACHE_KEY.$statusId, 21600, function () use ($statusId) {
-            $media = Media::whereStatusId($statusId)->orderBy('order')->get();
+            $media = Media::with('contentCredential')->whereStatusId($statusId)->orderBy('order')->get();
             if (! $media) {
                 return [];
             }
@@ -92,7 +93,7 @@ class MediaService
                 $res['license'] = $license;
             }
 
-            return $res;
+            return [...$res, ...ContentCredentialService::activityPubProperties($s)];
         });
     }
 

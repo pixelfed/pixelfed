@@ -9,6 +9,9 @@ parameters:
         - app/
         - routes/
 
+    scanFiles:
+        - phpstan/stubs/ext-c2pa.php
+
     excludePaths:
         - bootstrap/cache/*
         - storage/
