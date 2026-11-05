@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\AdminInvite;
 use App\Models\User;
+use App\Rules\NotRegistrationBlocked;
 use App\Rules\ValidUsername;
 use App\Services\EmailService;
 use App\Services\EmailVerificationService;
@@ -70,6 +71,7 @@ class AdminInviteController extends Controller
             'max:30',
             'unique:users',
             new ValidUsername,
+            new NotRegistrationBlocked('username'),
         ];
 
         $rules = ['username' => $usernameRules];
@@ -106,6 +108,7 @@ class AdminInviteController extends Controller
                     return $fail('Email is invalid.');
                 }
             },
+            new NotRegistrationBlocked('email'),
         ];
 
         $rules = ['email' => $emailRules];
@@ -128,6 +131,7 @@ class AdminInviteController extends Controller
                 'max:30',
                 'unique:users',
                 new ValidUsername,
+                new NotRegistrationBlocked('username'),
             ],
             'name' => 'nullable|string|max:'.config('pixelfed.max_name_length'),
             'email' => [
@@ -142,6 +146,7 @@ class AdminInviteController extends Controller
                         return $fail('Email is invalid.');
                     }
                 },
+                new NotRegistrationBlocked('email'),
             ],
             'password' => 'required|string|min:'.config('pixelfed.min_password_length'),
             'password_confirm' => 'required',
@@ -158,6 +163,7 @@ class AdminInviteController extends Controller
             'username' => $request->input('username'),
             'email' => $request->input('email'),
             'password' => Hash::make($request->input('password')),
+            'app_register_ip' => $request->ip(),
         ])));
 
         sleep(5);
