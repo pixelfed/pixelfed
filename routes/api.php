@@ -7,6 +7,7 @@ use App\Http\Controllers\Api\ApiV1Dot1Controller;
 use App\Http\Controllers\Api\ApiV2Controller;
 use App\Http\Controllers\Api\ApiV2Dot1Controller;
 use App\Http\Controllers\Api\V1\Admin\DomainBlocksController;
+use App\Http\Controllers\Api\V1\Admin\RegistrationBlocksController;
 use App\Http\Controllers\Api\V1\DomainBlockController;
 use App\Http\Controllers\Api\V1\TagsController;
 use App\Http\Controllers\ApiController;
@@ -60,7 +61,7 @@ Route::redirect('.well-known/change-password', '/settings/password');
 Route::get('api/nodeinfo/2.0.json', [FederationController::class, 'nodeinfo']);
 Route::get('api/service/health-check', [HealthCheckController::class, 'get']);
 Route::post('api/auth/app-code-verify', [AppRegisterController::class, 'verifyCode'])->middleware('throttle:app-code-verify');
-Route::post('api/auth/onboarding', [AppRegisterController::class, 'onboarding'])->middleware('throttle:app-code-verify');
+Route::post('api/auth/onboarding', [AppRegisterController::class, 'onboarding'])->middleware(['throttle:app-code-verify', 'registration.ip']);
 Route::get('storage/m/_v2/{pid}/{mhash}/{uhash}/{f}', [MediaController::class, 'fallbackRedirect']);
 
 Route::prefix('api/v0/groups')->middleware($middleware)->group(function () {
@@ -226,6 +227,13 @@ Route::prefix('api')->group(function () use ($middleware) {
             Route::get('domain_blocks/{id}', [DomainBlocksController::class, 'show'])->middleware($middleware);
             Route::put('domain_blocks/{id}', [DomainBlocksController::class, 'update'])->middleware($middleware);
             Route::delete('domain_blocks/{id}', [DomainBlocksController::class, 'delete'])->middleware($middleware);
+
+            Route::get('registration_blocks', [RegistrationBlocksController::class, 'index'])->middleware($middleware);
+            Route::post('registration_blocks', [RegistrationBlocksController::class, 'create'])->middleware($middleware);
+            Route::post('registration_blocks/test', [RegistrationBlocksController::class, 'test'])->middleware($middleware);
+            Route::get('registration_blocks/{id}', [RegistrationBlocksController::class, 'show'])->middleware($middleware)->whereNumber('id');
+            Route::put('registration_blocks/{id}', [RegistrationBlocksController::class, 'update'])->middleware($middleware)->whereNumber('id');
+            Route::delete('registration_blocks/{id}', [RegistrationBlocksController::class, 'delete'])->middleware($middleware)->whereNumber('id');
         })->middleware($middleware);
     });
 
@@ -334,8 +342,8 @@ Route::prefix('api')->group(function () use ($middleware) {
 
         Route::prefix('auth')->group(function () {
             Route::get('iarpfc', [ApiV1Dot1Controller::class, 'inAppRegistrationPreFlightCheck']);
-            Route::post('iar', [ApiV1Dot1Controller::class, 'inAppRegistration']);
-            Route::post('iarc', [ApiV1Dot1Controller::class, 'inAppRegistrationConfirm']);
+            Route::post('iar', [ApiV1Dot1Controller::class, 'inAppRegistration'])->middleware('registration.ip');
+            Route::post('iarc', [ApiV1Dot1Controller::class, 'inAppRegistrationConfirm'])->middleware('registration.ip');
             Route::get('iarer', [ApiV1Dot1Controller::class, 'inAppRegistrationEmailRedirect']);
 
             Route::post('invite/admin/verify', [AdminInviteController::class, 'apiVerifyCheck'])->middleware('throttle:20,120');

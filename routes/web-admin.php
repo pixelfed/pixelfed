@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\Admin\AdminRegistrationBlockController;
 use App\Http\Controllers\Admin\AdminUserInviteController;
 use App\Http\Controllers\AdminController;
 use App\Http\Controllers\AdminCuratedRegisterController;
@@ -131,6 +132,12 @@ Route::domain(config('pixelfed.domain.admin'))->prefix('i/admin')->middleware(['
     Route::get('asf/edit/{id}', [AdminShadowFilterController::class, 'edit']);
     Route::post('asf/edit/{id}', [AdminShadowFilterController::class, 'storeEdit']);
     Route::post('asf/create', [AdminShadowFilterController::class, 'store']);
+
+    Route::get('registration-blocks', [AdminRegistrationBlockController::class, 'index'])->name('admin.registration-blocks');
+    Route::post('registration-blocks', [AdminRegistrationBlockController::class, 'store']);
+    Route::post('registration-blocks/test', [AdminRegistrationBlockController::class, 'test']);
+    Route::post('registration-blocks/{id}/toggle', [AdminRegistrationBlockController::class, 'toggle'])->whereNumber('id');
+    Route::delete('registration-blocks/{id}', [AdminRegistrationBlockController::class, 'destroy'])->whereNumber('id');
 
     Route::redirect('curated-onboarding/', 'curated-onboarding/home');
     Route::get('curated-onboarding/home', [AdminCuratedRegisterController::class, 'index'])->name('admin.curated-onboarding');

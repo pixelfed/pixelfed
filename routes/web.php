@@ -66,8 +66,8 @@ Route::domain(config('pixelfed.domain.app'))->middleware(['localization'])->grou
     Route::get('web/explore', [LandingController::class, 'exploreRedirect']);
     Route::get('authorize_interaction', [AuthorizeInteractionController::class, 'get']);
 
-    Route::get('register', [RegisterController::class, 'showRegistrationForm'])->name('register');
-    Route::post('register', [RegisterController::class, 'register'])->middleware(ProtectAgainstSpam::class);
+    Route::get('register', [RegisterController::class, 'showRegistrationForm'])->name('register')->middleware('registration.ip');
+    Route::post('register', [RegisterController::class, 'register'])->middleware([ProtectAgainstSpam::class, 'registration.ip']);
 
     Route::get('login', [LoginController::class, 'showLoginForm'])->name('login');
     Route::post('login', [LoginController::class, 'login']);
@@ -99,7 +99,7 @@ Route::domain(config('pixelfed.domain.app'))->middleware(['localization'])->grou
     Route::post('auth/raw/mastodon/s/username-check', [RemoteAuthController::class, 'sessionValidateUsername']);
     Route::post('auth/raw/mastodon/s/email-check', [RemoteAuthController::class, 'sessionValidateEmail']);
     Route::post('auth/raw/mastodon/s/following', [RemoteAuthController::class, 'sessionGetMastodonFollowers']);
-    Route::post('auth/raw/mastodon/s/submit', [RemoteAuthController::class, 'handleSubmit']);
+    Route::post('auth/raw/mastodon/s/submit', [RemoteAuthController::class, 'handleSubmit'])->middleware('registration.ip');
     Route::post('auth/raw/mastodon/s/store-bio', [RemoteAuthController::class, 'storeBio']);
     Route::post('auth/raw/mastodon/s/store-avatar', [RemoteAuthController::class, 'storeAvatar']);
     Route::post('auth/raw/mastodon/s/account-to-id', [RemoteAuthController::class, 'accountToId']);
@@ -109,7 +109,7 @@ Route::domain(config('pixelfed.domain.app'))->middleware(['localization'])->grou
     Route::post('auth/pci/{id}/{code}', [ParentalControlsController::class, 'inviteRegisterStore'])->middleware(ProtectAgainstSpam::class);
 
     Route::get('auth/sign_up', [SiteController::class, 'curatedOnboarding'])->name('auth.curated-onboarding');
-    Route::post('auth/sign_up', [CuratedRegisterController::class, 'proceed']);
+    Route::post('auth/sign_up', [CuratedRegisterController::class, 'proceed'])->middleware('registration.ip');
     Route::get('auth/sign_up/concierge/response-sent', [CuratedRegisterController::class, 'conciergeResponseSent']);
     Route::get('auth/sign_up/concierge', [CuratedRegisterController::class, 'concierge']);
     Route::post('auth/sign_up/concierge', [CuratedRegisterController::class, 'conciergeStore']);
@@ -186,10 +186,10 @@ Route::domain(config('pixelfed.domain.app'))->middleware(['localization'])->grou
     Route::get('discover/places/{id}/{slug}', [PlaceController::class, 'show']);
     Route::get('discover/location/country/{country}', [PlaceController::class, 'directoryCities']);
 
-    Route::get('/i/app-email-verify', [AppRegisterController::class, 'index']);
-    Route::post('/i/app-email-verify', [AppRegisterController::class, 'store'])->middleware('throttle:app-signup');
+    Route::get('/i/app-email-verify', [AppRegisterController::class, 'index'])->middleware('registration.ip');
+    Route::post('/i/app-email-verify', [AppRegisterController::class, 'store'])->middleware(['throttle:app-signup', 'registration.ip']);
     Route::get('/i/app-email-resend', [AppRegisterController::class, 'resendVerification']);
-    Route::post('/i/app-email-resend', [AppRegisterController::class, 'resendVerificationStore'])->middleware('throttle:app-code-resend');
+    Route::post('/i/app-email-resend', [AppRegisterController::class, 'resendVerificationStore'])->middleware(['throttle:app-code-resend', 'registration.ip']);
 
     Route::prefix('i')->group(function () {
         Route::redirect('/', '/');
@@ -498,7 +498,7 @@ Route::domain(config('pixelfed.domain.app'))->middleware(['localization'])->grou
     });
 
     Route::get('auth/invite/a/{code}', [AdminInviteController::class, 'index']);
-    Route::post('api/v1.1/auth/invite/admin/re', [AdminInviteController::class, 'apiRegister'])->middleware('throttle:5,1440');
+    Route::post('api/v1.1/auth/invite/admin/re', [AdminInviteController::class, 'apiRegister'])->middleware(['throttle:5,1440', 'registration.ip']);
 
     Route::redirect('groups/', '/groups/home');
     Route::redirect('groups/home', '/groups/feed');
