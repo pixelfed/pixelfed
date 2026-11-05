@@ -4,10 +4,13 @@ namespace App\Http\Controllers;
 
 use App\Models\RemoteAuth;
 use App\Models\User;
+use App\Rules\EmailNotBanned;
+use App\Rules\NotRegistrationBlocked;
 use App\Rules\ValidUsername;
 use App\Services\Account\RemoteAuthService;
 use App\Services\EmailService;
 use App\Services\MediaStorageService;
+use App\Services\RegistrationBlockService;
 use App\Services\SanitizeService;
 use App\Util\ActivityPub\Helpers;
 use Illuminate\Auth\Events\Registered;
@@ -367,6 +370,7 @@ class RemoteAuthController extends Controller
                 'min:2',
                 'max:30',
                 new ValidUsername,
+                new NotRegistrationBlocked('username'),
             ],
         ]);
         $username = strtolower($request->input('username'));
@@ -401,7 +405,7 @@ class RemoteAuthController extends Controller
         ]);
 
         $email = $request->input('email');
-        $banned = EmailService::isBanned($email);
+        $banned = EmailService::isBanned($email) || RegistrationBlockService::emailBlocked($email, false);
         $exists = User::where('email', $email)->exists();
 
         return response()->json([
@@ -462,13 +466,19 @@ class RemoteAuthController extends Controller
         abort_unless($request->session()->exists('oauth_masto_raid'), 403);
 
         $this->validate($request, [
-            'email' => 'required|email:strict,filter_unicode,dns,spoof',
+            'email' => [
+                'required',
+                'email:strict,filter_unicode,dns,spoof',
+                new EmailNotBanned,
+                new NotRegistrationBlocked('email'),
+            ],
             'username' => [
                 'required',
                 'min:2',
                 'max:30',
                 'unique:users,username',
                 new ValidUsername,
+                new NotRegistrationBlocked('username'),
             ],
             'password' => 'required|string|min:8|confirmed',
             'name' => 'nullable|max:30',

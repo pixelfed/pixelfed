@@ -6,6 +6,8 @@ use App\Auth\AppRegisterTokenFactory;
 use App\Mail\InAppRegisterEmailVerify;
 use App\Models\AppRegister;
 use App\Models\User;
+use App\Rules\EmailNotBanned;
+use App\Rules\NotRegistrationBlocked;
 use App\Rules\ValidUsername;
 use App\Services\AccountService;
 use Illuminate\Contracts\View\View;
@@ -77,7 +79,14 @@ class AppRegisterController extends Controller
         $redirectUri = $this->resolveRedirectUri($request);
 
         $rules = [
-            'email' => 'required|email:rfc,dns,spoof,strict|unique:users,email|unique:app_registers,email',
+            'email' => [
+                'required',
+                'email:rfc,dns,spoof,strict',
+                'unique:users,email',
+                'unique:app_registers,email',
+                new EmailNotBanned,
+                new NotRegistrationBlocked('email'),
+            ],
         ];
 
         if (app('captcha.manager')->activeOn('register')) {
@@ -185,7 +194,14 @@ class AppRegisterController extends Controller
         $redirectUri = $this->resolveRedirectUri($request);
 
         $rules = [
-            'email' => 'required|email:rfc,dns,spoof,strict|unique:users,email|exists:app_registers,email',
+            'email' => [
+                'required',
+                'email:rfc,dns,spoof,strict',
+                'unique:users,email',
+                'exists:app_registers,email',
+                new EmailNotBanned,
+                new NotRegistrationBlocked('email'),
+            ],
         ];
 
         if (app('captcha.manager')->activeOn('register')) {
@@ -250,7 +266,14 @@ class AppRegisterController extends Controller
         $this->normalizeRegistrationInput($request);
 
         $this->validate($request, [
-            'email' => 'required|email:rfc,dns,spoof,strict|unique:users,email|exists:app_registers,email',
+            'email' => [
+                'required',
+                'email:rfc,dns,spoof,strict',
+                'unique:users,email',
+                'exists:app_registers,email',
+                new EmailNotBanned,
+                new NotRegistrationBlocked('email'),
+            ],
             'verify_code' => ['required', 'digits:6', 'numeric'],
             'username' => $this->validateUsernameRule(),
             'name' => 'nullable|string|max:'.config('pixelfed.max_name_length'),
@@ -422,6 +445,7 @@ class AppRegisterController extends Controller
             'max:30',
             'unique:users',
             new ValidUsername,
+            new NotRegistrationBlocked('username'),
         ];
     }
 
