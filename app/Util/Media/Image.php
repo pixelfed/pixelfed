@@ -3,6 +3,7 @@
 namespace App\Util\Media;
 
 use App\Models\Media;
+use App\Services\ContentCredentials\ContentCredentialService;
 use App\Services\StatusService;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Log;
@@ -211,6 +212,12 @@ class Image
                 }
             }
 
+            $sourceMime = $media->mime;
+            $credentials = null;
+            if (! $thumbnail || (bool) config_cache('pixelfed.optimize_image') === false) {
+                $credentials = ContentCredentialService::inspect($media, $fileContents);
+            }
+
             $img = $this->imageManager->decodeBinary($fileContents);
             $img = $img->orient();
 
@@ -287,14 +294,32 @@ class Image
             }
 
             $encoded = $encoder->encode($img);
+            $output = $encoded->toString();
+
+            if (! $thumbnail) {
+                $signed = ContentCredentialService::signDerivative(
+                    $media,
+                    $credentials,
+                    $output,
+                    'image/'.($outputExtension === 'jpg' ? 'jpeg' : $outputExtension),
+                    basename($converted['path']),
+                    $fileContents,
+                    $sourceMime,
+                    $img->width() !== $ratio['width_original'] || $img->height() !== $ratio['height_original'],
+                );
+
+                if ($signed !== null) {
+                    $output = $signed;
+                }
+            }
 
             if ($localFs) {
                 $newPath = storage_path('app/'.$converted['path']);
-                file_put_contents($newPath, $encoded->toString());
+                file_put_contents($newPath, $output);
             } else {
                 Storage::disk($this->defaultDisk)->put(
                     $converted['path'],
-                    $encoded->toString()
+                    $output
                 );
             }
 
@@ -319,7 +344,7 @@ class Image
             $this->deleteSupersededFile($previousPath, $converted['path'], $localFs);
 
             if ($thumbnail) {
-                $this->generateBlurhash($media, $encoded->toString());
+                $this->generateBlurhash($media, $output);
             }
 
             if ($media->status_id) {
