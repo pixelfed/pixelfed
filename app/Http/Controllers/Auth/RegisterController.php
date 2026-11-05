@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Auth;
 
 use App\Http\Controllers\Controller;
 use App\Models\User;
+use App\Rules\NotRegistrationBlocked;
 use App\Rules\ValidUsername;
 use App\Services\BouncerService;
 use App\Services\EmailService;
@@ -73,6 +74,7 @@ class RegisterController extends Controller
             'max:30',
             'unique:users',
             new ValidUsername,
+            new NotRegistrationBlocked('username'),
         ];
 
         $emailRules = [
@@ -87,6 +89,7 @@ class RegisterController extends Controller
                     return $fail('Email is invalid.');
                 }
             },
+            new NotRegistrationBlocked('email'),
         ];
 
         $rules = [
