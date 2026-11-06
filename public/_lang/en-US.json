@@ -361,6 +361,15 @@
         },
         "discover_accounts": "Discover accounts and people",
         "nothing_to_show": "Nothing to show yet! Check back later.",
-        "explore_trending": "Explore trending posts"
+        "explore_trending": "Explore trending posts",
+        "create_account": "Create account",
+        "active_this_month": "active this month",
+        "run_by": "Run by",
+        "recently_on": "Recently on {name}",
+        "explore_all": "Explore all",
+        "no_rules": "This server has not published any rules yet.",
+        "up_to_n_photos": "Up to {num} photos per post",
+        "max_file_size": "{size} max file size",
+        "contact": "Contact"
     }
 }
