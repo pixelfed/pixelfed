@@ -3,6 +3,7 @@
 namespace App\Services;
 
 use App\Models\RegistrationBlock;
+use App\Models\User;
 use Carbon\CarbonInterface;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\DB;
@@ -426,5 +427,39 @@ class RegistrationBlockService
                 ]);
         } catch (Throwable) {
         }
+    }
+
+    public static function blockAccount(User $user, bool $blockUsername = false, ?int $createdBy = null): array
+    {
+        $ip = self::signupIp($user);
+
+        if ($ip === null) {
+            throw new InvalidArgumentException('No signup IP was recorded for this account.');
+        }
+
+        $blocked = [];
+
+        if (! self::check(ip: $ip, record: false)) {
+            self::store('ip', 'exact', $ip, 'Signup IP of @'.$user->username.', deleted from moderation', null, $createdBy);
+            $blocked[] = 'ip';
+        }
+
+        if ($blockUsername && ! self::check(username: $user->username, record: false)) {
+            self::store('username', 'exact', $user->username, 'Username of @'.$user->username.', deleted from moderation', null, $createdBy);
+            $blocked[] = 'username';
+        }
+
+        return [
+            'ip' => $ip,
+            'username' => $user->username,
+            'blocked' => $blocked,
+        ];
+    }
+
+    public static function signupIp(User $user): ?string
+    {
+        $ip = $user->app_register_ip;
+
+        return is_string($ip) && filter_var($ip, FILTER_VALIDATE_IP) ? $ip : null;
     }
 }
