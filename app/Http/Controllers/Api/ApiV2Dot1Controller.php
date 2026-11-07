@@ -29,7 +29,9 @@ class ApiV2Dot1Controller extends Controller
      */
     public function getConfig(Request $request)
     {
-        return $this->json(app(AppService::class)->getConfig());
+        return $this->json(app(AppService::class)->getConfig(), 200, [
+            'Access-Control-Allow-Origin' => '*',
+        ]);
     }
 
     /**
