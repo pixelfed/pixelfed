@@ -25,8 +25,10 @@ use App\Services\ModLogService;
 use App\Services\NetworkTimelineService;
 use App\Services\NotificationService;
 use App\Services\PublicTimelineService;
+use App\Services\RegistrationBlockService;
 use App\Services\StatusService;
 use App\Util\ActivityPub\Helpers;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\DB;
@@ -706,11 +708,16 @@ trait AdminReportController
             'object_id' => 'required',
             'object_type' => 'required',
             'id' => 'required',
-            'action' => 'required|in:ignore,nsfw,unlist,private,delete,delete-all',
+            'action' => 'required|in:ignore,nsfw,unlist,private,delete,delete-all,block-ip-delete,block-username-ip-delete',
             'action_type' => 'required|in:post,profile,story',
         ]);
 
         $report = Report::whereObjectId($request->input('object_id'))->findOrFail($request->input('id'));
+
+        if (in_array($request->input('action'), ['block-ip-delete', 'block-username-ip-delete'], true)) {
+            return $this->reportsBlockAndDelete($request, $report, $request->input('action') === 'block-username-ip-delete');
+        }
+
         if ($request->input('action_type') === 'profile') {
             return $this->reportsHandleProfileAction($report, $request->input('action'));
         }
@@ -723,6 +730,65 @@ trait AdminReportController
         }
 
         return $report;
+    }
+
+    protected function reportsBlockAndDelete(Request $request, Report $report, bool $blockUsername): JsonResponse
+    {
+        if (! config('pixelfed.account_deletion')) {
+            return response()->json(['error' => 'Account deletion is disabled on this server.'], 422);
+        }
+
+        $profile = $this->reportsResolveReportedProfile($report);
+        $user = $profile?->user_id ? $profile->user : null;
+
+        if ($error = $this->blockAndDeleteError($user, $profile)) {
+            return response()->json(['error' => $error], 422);
+        }
+
+        $result = RegistrationBlockService::blockAccount($user, $blockUsername, $request->user()->id);
+        $this->logBlockAndDelete($request->user(), $user, $result, $blockUsername);
+        $this->reportsDeleteProfile($report, $profile);
+
+        return response()->json($result);
+    }
+
+    protected function blockAndDeleteError(?User $user, ?Profile $profile = null): ?string
+    {
+        if (! $user || ($profile && $profile->domain !== null)) {
+            return 'Only local accounts can be blocked and deleted.';
+        }
+
+        if ($user->is_admin) {
+            return 'You cannot delete admin accounts.';
+        }
+
+        if (in_array($user->status, ['delete', 'deleted'], true)) {
+            return 'This account is already being deleted.';
+        }
+
+        if (RegistrationBlockService::signupIp($user) === null) {
+            return 'No signup IP was recorded for this account. Use Delete Account instead.';
+        }
+
+        return null;
+    }
+
+    protected function logBlockAndDelete(User $admin, User $user, array $result, bool $blockUsername): void
+    {
+        ModLogService::boot()
+            ->objectUid($user->id)
+            ->objectId($user->id)
+            ->objectType('App\Models\User::class')
+            ->user($admin)
+            ->action('admin.user.registration_block')
+            ->metadata([
+                'action' => $blockUsername ? 'block_username_ip_delete' : 'block_ip_delete',
+                'ip' => $result['ip'],
+                'username' => $result['username'],
+                'blocked' => $result['blocked'],
+            ])
+            ->accessLevel('admin')
+            ->save();
     }
 
     protected function reportsHandleStoryAction($report, $action)
@@ -1000,86 +1066,101 @@ trait AdminReportController
                     abort(404);
                 }
 
-                $profile = null;
-                if (in_array($report->object_type, ['App\Profile', Profile::class])) {
-                    $profile = Profile::find($report->object_id);
-                } elseif (in_array($report->object_type, ['App\Status', Status::class])) {
-                    $status = Status::find($report->object_id);
-                    if (! $status) {
-                        return [200];
-                    }
-                    $profile = Profile::find($status->profile_id);
-                }
+                $profile = $this->reportsResolveReportedProfile($report);
 
                 if (! $profile) {
                     return null;
                 }
 
-                abort_if($profile->user && $profile->user->is_admin, 400, 'Cannot delete an admin account.');
-
-                $ts = now()->addMonth();
-
-                if ($profile->remote_url) {
-                    ModeratedProfile::updateOrCreate([
-                        'profile_url' => $profile->remote_url,
-                        'profile_id' => $profile->id,
-                    ], [
-                        'is_banned' => true,
-                        'domain' => $profile->domain,
-                    ]);
-                }
-
-                if ($profile->user_id) {
-                    $user = $profile->user;
-                    abort_if($user->is_admin, 403, 'You cannot delete admin accounts.');
-                    $user->status = 'delete';
-                    $user->delete_after = $ts;
-                    $user->save();
-                }
-
-                $profile->status = 'delete';
-                $profile->delete_after = $ts;
-                $profile->save();
-
-                ModLogService::boot()
-                    ->objectUid($profile->id)
-                    ->objectId($profile->id)
-                    ->objectType('App\Models\Profile::class')
-                    ->user(request()->user())
-                    ->action('admin.user.delete')
-                    ->accessLevel('admin')
-                    ->save();
-
-                Report::whereObjectId($report->object_id)
-                    ->whereObjectType($report->object_type)
-                    ->update([
-                        'admin_seen' => now(),
-                    ]);
-
-                if ($profile->user_id) {
-                    DB::table('oauth_access_tokens')->whereUserId($user->id)->delete();
-                    DB::table('oauth_auth_codes')->whereUserId($user->id)->delete();
-                    $user->email = $user->id;
-                    $user->password = '';
-                    $user->status = 'delete';
-                    $user->save();
-                    $profile->status = 'delete';
-                    $profile->delete_after = now()->addMonth();
-                    $profile->save();
-                    AccountService::del($profile->id);
-                    DeleteAccountPipeline::dispatch($user)->onQueue('high');
-                } else {
-                    $profile->status = 'delete';
-                    $profile->delete_after = now()->addMonth();
-                    $profile->save();
-                    AccountService::del($profile->id);
-                    DeleteRemoteProfilePipeline::dispatch($profile)->onQueue('high');
-                }
+                $this->reportsDeleteProfile($report, $profile);
 
                 return [200];
         }
 
         return null;
+    }
+
+    /**
+     * The account a report is about. Story reports resolve through
+     * reported_profile_id, so Delete Account works on them too.
+     */
+    protected function reportsResolveReportedProfile($report): ?Profile
+    {
+        if (in_array($report->object_type, ['App\Profile', Profile::class])) {
+            return Profile::find($report->object_id);
+        }
+
+        if (in_array($report->object_type, ['App\Status', Status::class])) {
+            $status = Status::find($report->object_id);
+
+            return $status ? Profile::find($status->profile_id) : Profile::find($report->reported_profile_id);
+        }
+
+        return $report->reported_profile_id ? Profile::find($report->reported_profile_id) : null;
+    }
+
+    protected function reportsDeleteProfile($report, Profile $profile): void
+    {
+        abort_if($profile->user && $profile->user->is_admin, 400, 'Cannot delete an admin account.');
+
+        $ts = now()->addMonth();
+
+        if ($profile->remote_url) {
+            ModeratedProfile::updateOrCreate([
+                'profile_url' => $profile->remote_url,
+                'profile_id' => $profile->id,
+            ], [
+                'is_banned' => true,
+                'domain' => $profile->domain,
+            ]);
+        }
+
+        if ($profile->user_id) {
+            $user = $profile->user;
+            abort_if($user->is_admin, 403, 'You cannot delete admin accounts.');
+            $user->status = 'delete';
+            $user->delete_after = $ts;
+            $user->save();
+        }
+
+        $profile->status = 'delete';
+        $profile->delete_after = $ts;
+        $profile->save();
+
+        ModLogService::boot()
+            ->objectUid($profile->id)
+            ->objectId($profile->id)
+            ->objectType('App\Models\Profile::class')
+            ->user(request()->user())
+            ->action('admin.user.delete')
+            ->accessLevel('admin')
+            ->save();
+
+        Report::whereObjectId($report->object_id)
+            ->whereObjectType($report->object_type)
+            ->update([
+                'admin_seen' => now(),
+            ]);
+
+        if ($profile->user_id) {
+            DB::table('oauth_access_tokens')->whereUserId($user->id)->delete();
+            DB::table('oauth_auth_codes')->whereUserId($user->id)->delete();
+            $user->email = $user->id;
+            $user->password = '';
+            $user->status = 'delete';
+            $user->save();
+            $profile->status = 'delete';
+            $profile->delete_after = now()->addMonth();
+            $profile->save();
+            AccountService::del($profile->id);
+            DeleteAccountPipeline::dispatch($user)->onQueue('high');
+        } else {
+            $profile->status = 'delete';
+            $profile->delete_after = now()->addMonth();
+            $profile->save();
+            AccountService::del($profile->id);
+            DeleteRemoteProfilePipeline::dispatch($profile)->onQueue('high');
+        }
     }
 
     protected function reportsHandleStatusAction($report, $action)
@@ -1255,17 +1336,17 @@ trait AdminReportController
         return $appeals;
     }
 
-    public function reportsApiSpamHandle(Request $request): array
+    public function reportsApiSpamHandle(Request $request): array|JsonResponse
     {
         $this->validate($request, [
             'id' => 'required',
-            'action' => 'required|in:mark-read,mark-not-spam,mark-all-read,mark-all-not-spam,delete-profile',
+            'action' => 'required|in:mark-read,mark-not-spam,mark-all-read,mark-all-not-spam,delete-profile,block-ip-delete-profile,block-username-ip-delete-profile',
         ]);
 
         $action = $request->input('action');
 
         abort_if(
-            $action === 'delete-profile' &&
+            in_array($action, ['delete-profile', 'block-ip-delete-profile', 'block-username-ip-delete-profile'], true) &&
                 ! config('pixelfed.account_deletion'),
             404,
             "Cannot delete profile, account_deletion is disabled.\n\n Set `ACCOUNT_DELETION=true` in .env and re-cache config."
@@ -1276,10 +1357,28 @@ trait AdminReportController
             ->whereNull('appeal_handled_at')
             ->findOrFail($request->input('id'));
 
+        $blockResult = null;
+
+        if (in_array($action, ['block-ip-delete-profile', 'block-username-ip-delete-profile'], true)) {
+            $blockUsername = $action === 'block-username-ip-delete-profile';
+
+            if ($error = $this->blockAndDeleteError($report->user, $report->user?->profile)) {
+                return response()->json(['error' => $error], 422);
+            }
+
+            $blockResult = RegistrationBlockService::blockAccount($report->user, $blockUsername, $request->user()->id);
+            $this->logBlockAndDelete($request->user(), $report->user, $blockResult, $blockUsername);
+            $action = 'delete-profile';
+        }
+
         $this->reportsHandleSpamAction($report, $action);
         Cache::forget('admin-dash:reports:spam-count');
         Cache::forget('pf:bouncer_v0:exemption_by_pid:'.$report->user->profile_id);
         Cache::forget('pf:bouncer_v0:recent_by_pid:'.$report->user->profile_id);
+
+        if ($blockResult !== null) {
+            return response()->json(array_merge($blockResult, ['action' => $request->input('action')]));
+        }
 
         return [$action, $report];
     }
