@@ -641,6 +641,13 @@
                             @click="handleAction('profile', 'delete')">
                             Delete Profile
                         </button>
+                        <div v-if="viewingReport.reported && viewingReport.reported.id && !viewingReport.reported.is_admin && viewingReport.reported.local"
+                            class="d-flex flex-row mt-2" style="gap:0.3rem;">
+                            <button type="button" class="btn btn-outline-danger btn-block btn-sm rounded-pill mt-0"
+                                @click="handleAction('profile', 'block-ip-delete')">Block IP + Delete</button>
+                            <button type="button" class="btn btn-outline-danger btn-block btn-sm rounded-pill mt-0"
+                                @click="handleAction('profile', 'block-username-ip-delete')">Block Username + IP + Delete</button>
+                        </div>
                     </div>
 
                     <div
@@ -677,6 +684,12 @@
                                 <button class="btn btn-outline-danger btn-block btn-sm rounded-pill mt-0"
                                     @click="handleAction('profile', 'delete')">Delete Account</button>
                             </div>
+                            <div v-if="viewingReport.reported.local" class="d-flex flex-row mt-2" style="gap:0.3rem;">
+                                <button type="button" class="btn btn-outline-danger btn-block btn-sm rounded-pill mt-0"
+                                    @click="handleAction('profile', 'block-ip-delete')">Block IP + Delete</button>
+                                <button type="button" class="btn btn-outline-danger btn-block btn-sm rounded-pill mt-0"
+                                    @click="handleAction('profile', 'block-username-ip-delete')">Block Username + IP + Delete</button>
+                            </div>
                         </div>
                     </div>
 
@@ -699,6 +712,12 @@
                             <div class="d-flex flex-row mt-2" style="gap:0.3rem;">
                                 <button class="btn btn-outline-danger btn-sm btn-block rounded-pill mt-0"
                                     @click="handleAction('profile', 'delete')">Delete Account</button>
+                            </div>
+                            <div v-if="viewingReport.reported.local" class="d-flex flex-row mt-2" style="gap:0.3rem;">
+                                <button type="button" class="btn btn-outline-danger btn-block btn-sm rounded-pill mt-0"
+                                    @click="handleAction('profile', 'block-ip-delete')">Block IP + Delete</button>
+                                <button type="button" class="btn btn-outline-danger btn-block btn-sm rounded-pill mt-0"
+                                    @click="handleAction('profile', 'block-username-ip-delete')">Block Username + IP + Delete</button>
                             </div>
                         </div>
                     </div>
@@ -807,6 +826,13 @@
                                     @click="handleSpamAction('delete-profile')">
                                     Delete Account
                                 </button>
+                            </div>
+                            <div v-if="viewingSpamReport && viewingSpamReport.status && viewingSpamReport.status.account && viewingSpamReport.status.account.local && !viewingSpamReport.status.account.is_admin"
+                                class="d-flex flex-row mt-2" style="gap:0.3rem;">
+                                <button type="button" class="btn btn-outline-danger btn-block btn-sm rounded-pill mt-0"
+                                    @click="handleSpamAction('block-ip-delete-profile')">Block IP + Delete</button>
+                                <button type="button" class="btn btn-outline-danger btn-block btn-sm rounded-pill mt-0"
+                                    @click="handleSpamAction('block-username-ip-delete-profile')">Block Username + IP + Delete</button>
                             </div>
                         </div>
                     </div>
@@ -1258,6 +1284,9 @@ export default {
                 action: action,
                 action_type: type
             })
+                .then(res => {
+                    this.blockDeleteSuccess(res);
+                })
                 .catch(err => {
                     swal('Error', err.response.data.error, 'error');
                 })
@@ -1292,6 +1321,14 @@ export default {
 
                     case 'delete':
                         return 'Are you sure you want to delete this profile?';
+                        break;
+
+                    case 'block-ip-delete':
+                        return this.blockDeleteLabel(false, this.viewingReport && this.viewingReport.reported);
+                        break;
+
+                    case 'block-username-ip-delete':
+                        return this.blockDeleteLabel(true, this.viewingReport && this.viewingReport.reported);
                         break;
                 }
             } else if (type === 'post') {
@@ -1377,7 +1414,34 @@ export default {
                 case 'delete-profile':
                     return 'Are you sure you want to delete this profile?';
                     break;
+
+                case 'block-ip-delete-profile':
+                    return this.blockDeleteLabel(false, this.viewingSpamReport && this.viewingSpamReport.status && this.viewingSpamReport.status.account);
+                    break;
+
+                case 'block-username-ip-delete-profile':
+                    return this.blockDeleteLabel(true, this.viewingSpamReport && this.viewingSpamReport.status && this.viewingSpamReport.status.account);
+                    break;
             }
+        },
+
+        blockDeleteLabel(blockUsername, account) {
+            const name = account && account.username ? '@' + account.username : 'this account';
+            const blocks = blockUsername ? `the username ${name} and their signup IP` : `${name}'s signup IP`;
+
+            return `This blocks ${blocks} from registering again, then permanently deletes ${name} and all of their posts.\n\nThis cannot be undone. Continue?`;
+        },
+
+        blockDeleteSuccess(res) {
+            if (!res || !res.data || !res.data.ip) {
+                return;
+            }
+
+            const added = res.data.blocked && res.data.blocked.length
+                ? 'Added blocks: ' + res.data.blocked.join(', ') + '.'
+                : 'Existing blocks already covered this account.';
+
+            swal('Blocked and deleted', `@${res.data.username} was deleted and signups from ${res.data.ip} are blocked. ${added}`, 'success');
         },
 
         handleSpamAction(action) {
@@ -1395,6 +1459,9 @@ export default {
                 id: this.viewingSpamReport.id,
                 action: action,
             })
+                .then(res => {
+                    this.blockDeleteSuccess(res);
+                })
                 .catch(err => {
                     swal('Error', err.response.data.error, 'error');
                 })
