@@ -29,12 +29,12 @@ jobs:
       # Psalm 6.5.0 crashes on PHP 8.5: its internals call the now-deprecated
       # SplObjectStorage::attach(), and Psalm's error handler escalates the
       # deprecation to a fatal error before it can analyze anything. Run the
-      # analyzer on 8.4 until Psalm ships a PHP 8.5-compatible release. This only
+      # analyzer on 8.5 until Psalm ships a PHP 8.5-compatible release. This only
       # affects the PHP that runs Psalm; it still analyzes the same source.
       - name: Setup PHP
         uses: shivammathur/setup-php@eb7c497e18156a6bbabfef1d3a82760b9eda3962 # v2
         with:
-          php-version: '8.4'
+          php-version: '8.5'
           extensions: mbstring, pdo_sqlite, bcmath, intl
           coverage: none
 
@@ -42,8 +42,8 @@ jobs:
         uses: actions/cache@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6
         with:
           path: vendor
-          key: composer-8.4-${{ hashFiles('composer.lock') }}
-          restore-keys: composer-8.4-
+          key: composer-8.5-${{ hashFiles('composer.lock') }}
+          restore-keys: composer-8.5-
 
       - name: Install Composer dependencies
         run: composer install --no-interaction --no-progress --prefer-dist
