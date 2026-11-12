@@ -12,6 +12,7 @@ use App\Jobs\StatusPipeline\RemoteStatusDelete;
 use App\Jobs\StatusPipeline\StatusDelete;
 use App\Jobs\StoryPipeline\StoryDelete;
 use App\Models\AccountInterstitial;
+use App\Models\DmMessage;
 use App\Models\ModeratedProfile;
 use App\Models\Notification;
 use App\Models\Profile;
@@ -28,6 +29,7 @@ use App\Services\PublicTimelineService;
 use App\Services\RegistrationBlockService;
 use App\Services\StatusService;
 use App\Util\ActivityPub\Helpers;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Cache;
@@ -789,6 +791,116 @@ trait AdminReportController
             ])
             ->accessLevel('admin')
             ->save();
+    }
+
+    public function reportsApiCloseByReporter(Request $request): JsonResponse
+    {
+        $this->validate($request, [
+            'id' => 'required|integer|min:1',
+        ]);
+
+        $report = Report::findOrFail($request->input('id'));
+
+        $closed = Report::where('profile_id', $report->profile_id)
+            ->whereNull('admin_seen')
+            ->update(['admin_seen' => now()]);
+
+        if ($closed && $report->user_id) {
+            ModLogService::boot()
+                ->objectUid($report->user_id)
+                ->objectId($report->user_id)
+                ->objectType('App\Models\User::class')
+                ->user($request->user())
+                ->action('admin.report.close_by_reporter')
+                ->metadata(['closed' => $closed])
+                ->accessLevel('admin')
+                ->save();
+        }
+
+        $reporter = AccountService::get($report->profile_id, true);
+
+        return response()->json([
+            'closed' => $closed,
+            'reporter' => $reporter['acct'] ?? null,
+        ]);
+    }
+
+    public function reportsApiCleanupPreview(Request $request): JsonResponse
+    {
+        return response()->json([
+            'count' => $this->reportsInvalidQuery()->count(),
+        ]);
+    }
+
+    public function reportsApiCleanup(Request $request): JsonResponse
+    {
+        $closed = $this->reportsInvalidQuery()->update(['admin_seen' => now()]);
+
+        return response()->json([
+            'closed' => $closed,
+        ]);
+    }
+
+    protected function reportsInvalidQuery(): Builder
+    {
+        $accountGone = function (string $column) {
+            return function ($q) use ($column) {
+                $q->whereNotExists(function ($p) use ($column) {
+                    $p->selectRaw('1')
+                        ->from('profiles')
+                        ->whereColumn('profiles.id', $column)
+                        ->whereNull('profiles.deleted_at')
+                        ->where(function ($s) {
+                            $s->whereNull('profiles.status')
+                                ->orWhereNotIn('profiles.status', ['delete', 'deleted', 'suspended']);
+                        });
+                })
+                    ->orWhereExists(function ($m) use ($column) {
+                        $m->selectRaw('1')
+                            ->from('moderated_profiles')
+                            ->whereColumn('moderated_profiles.profile_id', $column)
+                            ->where('moderated_profiles.is_banned', true);
+                    })
+                    ->orWhereExists(function ($i) use ($column) {
+                        $i->selectRaw('1')
+                            ->from('profiles')
+                            ->join('instances', 'instances.domain', '=', 'profiles.domain')
+                            ->whereColumn('profiles.id', $column)
+                            ->where('instances.banned', true);
+                    });
+            };
+        };
+
+        $objectGone = function (string $table, bool $softDeletes) {
+            return function ($q) use ($table, $softDeletes) {
+                $q->whereNotExists(function ($o) use ($table, $softDeletes) {
+                    $o->selectRaw('1')
+                        ->from($table)
+                        ->whereColumn("{$table}.id", 'reports.object_id')
+                        ->when($softDeletes, fn ($w) => $w->whereNull("{$table}.deleted_at"));
+                });
+            };
+        };
+
+        return Report::query()
+            ->whereNull('admin_seen')
+            ->where(function ($q) use ($accountGone, $objectGone) {
+                $q->where(function ($w) use ($accountGone) {
+                    $w->whereNotNull('reported_profile_id')->where($accountGone('reports.reported_profile_id'));
+                })
+                    ->orWhere(function ($w) use ($accountGone) {
+                        $w->whereIn('object_type', [Profile::class, 'App\Profile'])->where($accountGone('reports.object_id'));
+                    })
+                    ->orWhere(function ($w) use ($objectGone) {
+                        $w->whereIn('object_type', [Status::class, 'App\Status'])->where($objectGone('statuses', true));
+                    })
+                    ->orWhere(function ($w) use ($objectGone) {
+                        $w->whereIn('object_type', [Story::class, 'App\Story'])->where($objectGone('stories', false));
+                    })
+                    ->orWhere(function ($w) use ($objectGone) {
+                        $w->where('object_type', DmMessage::class)->where($objectGone('dm_messages', false));
+                    });
+            });
     }
 
     protected function reportsHandleStoryAction($report, $action)

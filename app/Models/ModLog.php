@@ -74,6 +74,10 @@ class ModLog extends Model
                 $msg = 'Deleted Account';
                 break;
 
+            case 'admin.report.close_by_reporter':
+                $msg = 'Closed Reports';
+                break;
+
             default:
                 $msg = 'Unknown action';
                 break;
