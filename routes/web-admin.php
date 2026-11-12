@@ -66,6 +66,7 @@ Route::domain(config('pixelfed.domain.admin'))->prefix('i/admin')->middleware(['
     Route::post('users/modlogs/{id}/delete', [AdminController::class, 'userModLogDelete']);
     Route::get('users/delete/{id}', [AdminController::class, 'userDelete']);
     Route::post('users/delete/{id}', [AdminController::class, 'userDeleteProcess']);
+    Route::post('users/block-delete/{id}', [AdminController::class, 'userBlockDeleteProcess'])->whereNumber('id');
     Route::post('users/moderation/update', [AdminController::class, 'userModerate']);
     Route::get('users/invites', [AdminUserInviteController::class, 'index'])->name('admin.users.invites.index');
     Route::get('users/invites/create', [AdminUserInviteController::class, 'create'])->name('admin.users.invites.create');
