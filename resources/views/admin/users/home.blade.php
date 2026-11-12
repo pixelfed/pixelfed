@@ -27,7 +27,7 @@
                             <i class="fas fa-search text-muted"></i>
                         </span>
                     </div>
-                    <input class="form-control border-left-0 pl-2" name="q" placeholder="Search by username..." value="{{request()->input('q')}}">
+                    <input class="form-control border-left-0 pl-2" name="q" placeholder="Username, bio: or website:" title="Search by username, or use bio:t.me or website:*t.me* (* is a wildcard)" value="{{request()->input('q')}}">
                     <div class="input-group-append">
                         <button type="submit" class="btn btn-primary">
                             Search

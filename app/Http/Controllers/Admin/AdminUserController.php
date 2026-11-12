@@ -10,6 +10,8 @@ use App\Models\User;
 use App\Services\AccountService;
 use App\Services\ModLogService;
 use App\Services\RegistrationBlockService;
+use App\Util\Database\DatabaseDriver;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Cache;
@@ -55,13 +57,15 @@ trait AdminUserController
         $users = User::select('id', 'username', 'status', 'profile_id', 'is_admin', 'email', 'app_register_ip')
             ->orderBy($col, $dir)
             ->when($search, function ($q, $search) {
-                return $q->where('username', 'like', "%{$search}%");
+                return $this->usersApplySearch($q, $search);
             })
             ->when($offset > 0, function ($q) use ($offset, $limit) {
                 return $q->offset($offset * $limit);
             })
             ->when($trashed, function ($q) {
-                return $q->where('status', 'deleted')->orWhereNotNull('delete_after');
+                return $q->where(function ($w) {
+                    $w->where('status', 'deleted')->orWhereNotNull('delete_after');
+                });
             }, function ($q) {
                 return $q->whereNull('status')->whereNull('delete_after');
             })
@@ -74,6 +78,40 @@ trait AdminUserController
             });
 
         return view('admin.users.home', ['users' => $users, 'pagination' => $pagination, 'search' => $search, 'col' => $col, 'dir' => $dir, 'limit' => $limit, 'trashed' => $trashed]);
+    }
+
+    protected function usersApplySearch(Builder $query, string $search): Builder
+    {
+        $field = null;
+
+        foreach (['bio', 'website'] as $prefix) {
+            if (stripos($search, $prefix.':') === 0) {
+                $field = $prefix;
+                break;
+            }
+        }
+
+        if (! $field) {
+            return $query->where('username', 'like', "%{$search}%");
+        }
+
+        $term = trim(substr($search, strlen($field) + 1));
+        $hasWildcard = str_contains($term, '*');
+        $pattern = strtr($term, ['!' => '!!', '%' => '!%', '_' => '!_', '*' => '%']);
+
+        if ($field === 'bio' && ! $hasWildcard) {
+            $pattern = '%'.$pattern.'%';
+        }
+
+        $operator = DatabaseDriver::isPgsql() ? 'ILIKE' : 'LIKE';
+
+        return $query->whereExists(function ($sub) use ($field, $operator, $pattern) {
+            $sub->selectRaw('1')
+                ->from('profiles')
+                ->whereColumn('profiles.id', 'users.profile_id')
+                ->whereNull('profiles.domain')
+                ->whereRaw("profiles.{$field} {$operator} ? ESCAPE '!'", [$pattern]);
+        });
     }
 
     public function userShow(Request $request, $id)
