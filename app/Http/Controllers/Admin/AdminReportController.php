@@ -1788,8 +1788,11 @@ trait AdminReportController
     {
         $this->validate($request, [
             'id' => 'required|integer|exists:remote_reports,id',
+            'ban' => 'sometimes|boolean',
         ]);
 
+        $ban = $request->boolean('ban');
+        $action = $ban ? 'block-username-ip-delete' : 'delete-account';
         $report = RemoteReport::findOrFail($request->input('id'));
         $profile = $report->account_id ? Profile::find($report->account_id) : null;
         $user = $profile && $profile->user_id && $profile->domain === null ? $profile->user : null;
@@ -1806,12 +1809,22 @@ trait AdminReportController
             return response()->json(['error' => 'This account is already being deleted.'], 422);
         }
 
+        if ($ban) {
+            if (! config('pixelfed.account_deletion')) {
+                return response()->json(['error' => 'Account deletion is disabled on this server.'], 422);
+            }
+
+            if ($error = $this->blockAndDeleteError($user, $profile)) {
+                return response()->json(['error' => $error], 422);
+            }
+        }
+
         $closedRemote = RemoteReport::whereNull('action_taken_at')
             ->where('account_id', $profile->id)
             ->update([
                 'action_taken_at' => now(),
                 'action_taken_by_account_id' => $request->user()->profile_id,
-                'action_taken_meta' => json_encode(['action' => 'delete-account']),
+                'action_taken_meta' => json_encode(['action' => $action]),
             ]);
 
         $closedLocal = Report::whereNull('admin_seen')
@@ -1825,6 +1838,12 @@ trait AdminReportController
             ->update(['admin_seen' => now()]);
 
         $username = $user->username;
+        $blocked = null;
+
+        if ($ban) {
+            $blocked = RegistrationBlockService::blockAccount($user, true, $request->user()->id);
+            $this->logBlockAndDelete($request->user(), $user, $blocked, true);
+        }
 
         $this->reportsDeleteLocalAccount($request->user(), $user, $profile);
 
@@ -1835,7 +1854,7 @@ trait AdminReportController
             ->objectType('App\Models\RemoteReport::class')
             ->action('admin.report.moderate')
             ->metadata([
-                'action' => 'delete-account',
+                'action' => $action,
                 'closed_remote' => $closedRemote,
                 'closed_local' => $closedLocal,
                 'duration_active' => now()->parse($report->created_at)->diffForHumans(),
@@ -1847,6 +1866,8 @@ trait AdminReportController
             'username' => $username,
             'closed_remote' => $closedRemote,
             'closed_local' => $closedLocal,
+            'ip' => $blocked['ip'] ?? null,
+            'blocked' => $blocked['blocked'] ?? [],
         ]);
     }
 
