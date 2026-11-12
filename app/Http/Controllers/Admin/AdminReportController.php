@@ -1784,6 +1784,103 @@ trait AdminReportController
         return [200];
     }
 
+    public function reportsApiRemoteDeleteAccount(Request $request): JsonResponse
+    {
+        $this->validate($request, [
+            'id' => 'required|integer|exists:remote_reports,id',
+        ]);
+
+        $report = RemoteReport::findOrFail($request->input('id'));
+        $profile = $report->account_id ? Profile::find($report->account_id) : null;
+        $user = $profile && $profile->user_id && $profile->domain === null ? $profile->user : null;
+
+        if (! $user) {
+            return response()->json(['error' => 'The reported account is not a local account.'], 422);
+        }
+
+        if ($user->is_admin) {
+            return response()->json(['error' => 'You cannot delete admin accounts.'], 422);
+        }
+
+        if (in_array($user->status, ['delete', 'deleted'], true) || in_array($profile->status, ['delete', 'deleted'], true)) {
+            return response()->json(['error' => 'This account is already being deleted.'], 422);
+        }
+
+        $closedRemote = RemoteReport::whereNull('action_taken_at')
+            ->where('account_id', $profile->id)
+            ->update([
+                'action_taken_at' => now(),
+                'action_taken_by_account_id' => $request->user()->profile_id,
+                'action_taken_meta' => json_encode(['action' => 'delete-account']),
+            ]);
+
+        $closedLocal = Report::whereNull('admin_seen')
+            ->where(function ($q) use ($profile) {
+                $q->where('reported_profile_id', $profile->id)
+                    ->orWhere(function ($w) use ($profile) {
+                        $w->whereIn('object_type', [Profile::class, 'App\Profile'])
+                            ->where('object_id', $profile->id);
+                    });
+            })
+            ->update(['admin_seen' => now()]);
+
+        $username = $user->username;
+
+        $this->reportsDeleteLocalAccount($request->user(), $user, $profile);
+
+        ModLogService::boot()
+            ->user($request->user())
+            ->objectUid($user->id)
+            ->objectId($report->id)
+            ->objectType('App\Models\RemoteReport::class')
+            ->action('admin.report.moderate')
+            ->metadata([
+                'action' => 'delete-account',
+                'closed_remote' => $closedRemote,
+                'closed_local' => $closedLocal,
+                'duration_active' => now()->parse($report->created_at)->diffForHumans(),
+            ])
+            ->accessLevel('admin')
+            ->save();
+
+        return response()->json([
+            'username' => $username,
+            'closed_remote' => $closedRemote,
+            'closed_local' => $closedLocal,
+        ]);
+    }
+
+    protected function reportsDeleteLocalAccount(User $admin, User $user, Profile $profile): void
+    {
+        $ts = now()->addMonth();
+
+        DB::table('oauth_access_tokens')->whereUserId($user->id)->delete();
+        DB::table('oauth_auth_codes')->whereUserId($user->id)->delete();
+
+        $user->email = $user->id;
+        $user->password = '';
+        $user->status = 'delete';
+        $user->delete_after = $ts;
+        $user->save();
+
+        $profile->status = 'delete';
+        $profile->delete_after = $ts;
+        $profile->save();
+
+        ModLogService::boot()
+            ->objectUid($user->id)
+            ->objectId($user->id)
+            ->objectType('App\Models\User::class')
+            ->user($admin)
+            ->action('admin.user.delete')
+            ->accessLevel('admin')
+            ->save();
+
+        AccountService::del($profile->id);
+        Cache::forget('profiles:private');
+        DeleteAccountPipeline::dispatch($user)->onQueue('high');
+    }
+
     public function getModeratedProfiles(Request $request)
     {
         $this->validate($request, [

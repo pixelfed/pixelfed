@@ -168,6 +168,18 @@
                             </button>
                         </div>
                     </template>
+
+                    <template v-if="model && model.reported && model.reported.local && !model.reported.is_admin">
+                        <hr class="mt-3 mb-1">
+                        <button
+                            type="button"
+                            class="btn btn-outline-danger btn-block btn-sm rounded-pill mt-2"
+                            style="word-break: break-all;"
+                            :disabled="deleting"
+                            @click="deleteReportedAccount()">
+                            Delete <strong>&commat;{{ model.reported.username }}</strong> + close all reports against them
+                        </button>
+                    </template>
                 </div>
             </div>
         </template>
@@ -208,6 +220,7 @@
             return {
                 isLoading: true,
                 isOpen: false,
+                deleting: false,
                 actions: [
                     'mark-read',
                     'cw-posts',
@@ -264,6 +277,46 @@
                     hour: 'numeric',
                     minute: 'numeric'
                 }).format(date);
+            },
+
+            deleteReportedAccount() {
+                const username = '@' + this.model.reported.username;
+
+                swal({
+                    title: 'Delete Account',
+                    text: `Delete ${username} and all of their posts, and close every open local and remote report against them?\n\nThis cannot be undone.`,
+                    icon: 'warning',
+                    buttons: true,
+                    dangerMode: true,
+                }).then(res => {
+                    if (res !== true) {
+                        return;
+                    }
+
+                    this.deleting = true;
+
+                    axios.post('/i/admin/api/reports/remote/delete-account', {
+                        id: this.model.id,
+                    })
+                    .then(res => {
+                        const remote = res.data.closed_remote;
+                        const local = res.data.closed_local;
+                        swal(
+                            'Account deleted',
+                            `@${res.data.username} was deleted. Closed ${remote} remote report${remote === 1 ? '' : 's'} and ${local} local report${local === 1 ? '' : 's'}.`,
+                            'success'
+                        );
+                        this.$emit('refresh');
+                        this.$emit('close');
+                    })
+                    .catch(err => {
+                        const data = err && err.response && err.response.data;
+                        swal('Error', (data && (data.error || data.message)) || 'Something went wrong, please try again.', 'error');
+                    })
+                    .finally(() => {
+                        this.deleting = false;
+                    });
+                });
             },
 
             handleAction(action) {

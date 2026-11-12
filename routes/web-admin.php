@@ -192,6 +192,7 @@ Route::domain(config('pixelfed.domain.admin'))->prefix('i/admin')->middleware(['
         Route::get('reports/all', [AdminController::class, 'reportsApiAll']);
         Route::get('reports/remote', [AdminController::class, 'reportsApiRemote']);
         Route::post('reports/remote/handle', [AdminController::class, 'reportsApiRemoteHandle']);
+        Route::post('reports/remote/delete-account', [AdminController::class, 'reportsApiRemoteDeleteAccount']);
         Route::get('reports/get/{id}', [AdminController::class, 'reportsApiGet']);
         Route::post('reports/handle', [AdminController::class, 'reportsApiHandle']);
         Route::post('reports/close-by-reporter', [AdminController::class, 'reportsApiCloseByReporter']);
