@@ -59,7 +59,7 @@
         <div v-else class="m-n2 m-lg-4">
             <div class="container-fluid mt-4">
                 <div class="row mb-3 justify-content-between">
-                    <div class="col-12">
+                    <div class="col-12 d-flex flex-wrap justify-content-between align-items-center" style="gap:0.5rem;">
                         <ul class="nav nav-pills">
                             <li class="nav-item">
                                 <a :class="['nav-link d-flex align-items-center', { active: tabIndex == 0 }]" href="#"
@@ -126,6 +126,14 @@
                                 </a>
                             </li>
                         </ul>
+
+                        <button v-if="tabIndex === 0 && stats.open" type="button"
+                            class="btn btn-outline-primary btn-sm rounded-pill font-weight-bold"
+                            :disabled="cleaningUp" @click="cleanupReports($event)">
+                            <b-spinner v-if="cleaningUp" small class="mr-1" />
+                            <i v-else class="fas fa-broom mr-1"></i>
+                            Clean up invalid reports
+                        </button>
                     </div>
                 </div>
 
@@ -721,6 +729,12 @@
                             </div>
                         </div>
                     </div>
+
+                    <hr class="mt-3 mb-2">
+                    <button type="button" class="btn btn-outline-secondary btn-block btn-sm rounded-pill"
+                        @click="closeReporterReports($event)">
+                        Close all reports by {{ reporterLabel(viewingReport) }}
+                    </button>
                 </div>
             </template>
         </b-modal>
@@ -1052,6 +1066,7 @@ export default {
             moderatedProfilesSearchInput: undefined,
             modModalData: undefined,
             modModalModel: {},
+            cleaningUp: false,
         }
     },
 
@@ -1298,6 +1313,91 @@ export default {
                         this.fetchStats();
                     }, 1000);
                 })
+        },
+
+        reporterLabel(report) {
+            return report && report.reporter && report.reporter.acct ? '@' + report.reporter.acct : 'this reporter';
+        },
+
+        requestError(err) {
+            const data = err && err.response && err.response.data;
+            return (data && (data.error || data.message)) || 'Something went wrong, please try again.';
+        },
+
+        closeReporterReports(e) {
+            e.currentTarget.blur();
+
+            const label = this.reporterLabel(this.viewingReport);
+
+            if (!window.confirm(`Close all open reports made by ${label}? They will move to Closed Reports.`)) {
+                return;
+            }
+
+            this.viewingReportLoading = true;
+
+            axios.post('/i/admin/api/reports/close-by-reporter', {
+                id: this.viewingReport.id
+            })
+                .then(res => {
+                    const closed = res.data.closed;
+                    swal('Reports closed', `Closed ${closed} report${closed === 1 ? '' : 's'} by ${label}.`, 'success');
+                })
+                .catch(err => {
+                    swal('Error', this.requestError(err), 'error');
+                })
+                .finally(() => {
+                    this.viewingReportLoading = false;
+                    this.viewingReport = false;
+                    this.showReportModal = false;
+                    this.fetchStats();
+                });
+        },
+
+        async cleanupReports(e) {
+            e.currentTarget.blur();
+
+            if (this.cleaningUp) {
+                return;
+            }
+
+            this.cleaningUp = true;
+
+            try {
+                const preview = await axios.get('/i/admin/api/reports/cleanup');
+                const count = preview.data.count;
+
+                if (!count) {
+                    swal('Nothing to clean up', 'Every open report points to an active account and content that still exists.', 'success');
+                    return;
+                }
+
+                const confirmed = await swal({
+                    title: 'Clean up reports',
+                    text: `Close ${count} open report${count === 1 ? '' : 's'} where the reported account was deleted or suspended, or the reported content was deleted?\n\nThey will move to Closed Reports.`,
+                    icon: 'warning',
+                    buttons: {
+                        cancel: 'Cancel',
+                        confirm: {
+                            text: `Close ${count} report${count === 1 ? '' : 's'}`,
+                            value: true
+                        }
+                    }
+                });
+
+                if (!confirmed) {
+                    return;
+                }
+
+                const res = await axios.post('/i/admin/api/reports/cleanup');
+                const closed = res.data.closed;
+
+                swal('Cleaned up', `Closed ${closed} invalid report${closed === 1 ? '' : 's'}.`, 'success');
+                this.fetchStats();
+            } catch (err) {
+                swal('Error', this.requestError(err), 'error');
+            } finally {
+                this.cleaningUp = false;
+            }
         },
 
         getActionLabel(type, action) {
