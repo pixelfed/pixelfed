@@ -2,7 +2,7 @@
 
 ## [Unreleased](https://github.com/pixelfed/pixelfed/compare/v0.15.0...dev)
 
--   in progress
+-   in progress.
 
 ## [v0.14.3 (2026-09-22)](https://github.com/pixelfed/pixelfed/compare/v0.14.3...dev)
 

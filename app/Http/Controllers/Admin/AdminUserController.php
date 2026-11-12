@@ -10,6 +10,7 @@ use App\Models\User;
 use App\Services\AccountService;
 use App\Services\ModLogService;
 use App\Services\RegistrationBlockService;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Mail;
@@ -259,6 +260,40 @@ trait AdminUserController
             abort_if($user->id < $mid, 403);
         }
 
+        $this->userMarkForDeletion($request->user(), $user, $profile);
+
+        $msg = "Successfully deleted {$user->username}!";
+        $request->session()->flash('status', $msg);
+
+        return redirect('/i/admin/users/list');
+    }
+
+    public function userBlockDeleteProcess(Request $request, $id): JsonResponse
+    {
+        if (! config('pixelfed.account_deletion')) {
+            return response()->json(['error' => 'Account deletion is disabled on this server.'], 422);
+        }
+
+        $user = User::findOrFail($id);
+        $profile = $user->profile;
+
+        if (! $profile) {
+            return response()->json(['error' => 'This account has no profile.'], 422);
+        }
+
+        if ($error = $this->blockAndDeleteError($user, $profile)) {
+            return response()->json(['error' => $error], 422);
+        }
+
+        $result = RegistrationBlockService::blockAccount($user, true, $request->user()->id);
+        $this->logBlockAndDelete($request->user(), $user, $result, true);
+        $this->userMarkForDeletion($request->user(), $user, $profile);
+
+        return response()->json($result);
+    }
+
+    protected function userMarkForDeletion(User $admin, User $user, Profile $profile): void
+    {
         $ts = now()->addMonth();
         $user->status = 'delete';
         $profile->status = 'delete';
@@ -271,18 +306,13 @@ trait AdminUserController
             ->objectUid($user->id)
             ->objectId($user->id)
             ->objectType('App\User::class')
-            ->user($request->user())
+            ->user($admin)
             ->action('admin.user.delete')
             ->accessLevel('admin')
             ->save();
 
         Cache::forget('profiles:private');
         DeleteAccountPipeline::dispatch($user);
-
-        $msg = "Successfully deleted {$user->username}!";
-        $request->session()->flash('status', $msg);
-
-        return redirect('/i/admin/users/list');
     }
 
     public function userModerate(Request $request)
