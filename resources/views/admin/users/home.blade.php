@@ -10,11 +10,11 @@
             <p class="text-muted mb-0">Manage and moderate user accounts</p>
         </div>
         <div class="col-md-6">
-                <div class="d-flex justify-content-md-end mb-4">
-                    <a href="{{ route('admin.users.invites.index') }}" class="btn btn-secondary" title="Invites">
-                        <span class="font-weight-bold">Invites</span>
-                    </a>
-                </div>
+            <div class="d-flex justify-content-md-end mb-4">
+                <a href="{{ route('admin.users.invites.index') }}" class="btn btn-secondary" title="Invites">
+                    <span class="font-weight-bold">Invites</span>
+                </a>
+            </div>
             <form method="get" class="d-flex justify-content-md-end">
                 <input type="hidden" name="a" value="search">
                 @if(request()->has('col'))<input type="hidden" name="col" value="{{request()->query('col')}}">@endif
@@ -44,13 +44,13 @@
                 <div class="col-md-8">
                     <div class="d-flex flex-wrap align-items-center" style="gap:2rem;">
                         <div class="mr-4 mb-2 mb-md-0 d-flex align-items-center">
-                                <label for="limitSelect" class="text-muted small mb-0 mr-2">Show:</label>
-                                <select id="limitSelect" class="custom-select custom-select-sm" style="width: auto;" onchange="changeLimit(this.value)">
-                                    <option value="10" {{$limit == 10 ? 'selected' : ''}}>10</option>
-                                    <option value="25" {{$limit == 25 ? 'selected' : ''}}>25</option>
-                                    <option value="50" {{$limit == 50 ? 'selected' : ''}}>50</option>
-                                    <option value="100" {{$limit == 100 ? 'selected' : ''}}>100</option>
-                                </select>
+                            <label for="limitSelect" class="text-muted small mb-0 mr-2">Show:</label>
+                            <select id="limitSelect" class="custom-select custom-select-sm" style="width: auto;" onchange="changeLimit(this.value)">
+                                <option value="10" {{$limit == 10 ? 'selected' : ''}}>10</option>
+                                <option value="25" {{$limit == 25 ? 'selected' : ''}}>25</option>
+                                <option value="50" {{$limit == 50 ? 'selected' : ''}}>50</option>
+                                <option value="100" {{$limit == 100 ? 'selected' : ''}}>100</option>
+                            </select>
                         </div>
 
                         <div class="custom-control custom-switch ml-5 mb-2 mb-md-0">
@@ -63,7 +63,7 @@
 
                         <div class="custom-control custom-switch ml-4 mb-2 mb-md-0 flex">
                             <input type="checkbox" class="custom-control-input" id="showEmailToggle"
-                                   onchange="toggleEmail(this.checked)">
+                                onchange="toggleEmail(this.checked)">
                             <label class="custom-control-label text-muted text-xs pt-1" for="showEmailToggle">
                                 Show Email
                             </label>
@@ -71,7 +71,7 @@
 
                         <div class="custom-control custom-switch ml-4 mb-2 mb-md-0">
                             <input type="checkbox" class="custom-control-input" id="showIpToggle"
-                                   onchange="toggleIp(this.checked)">
+                                onchange="toggleIp(this.checked)">
                             <label class="custom-control-label text-muted text-xs pt-1" for="showIpToggle">
                                 Show IP
                             </label>
@@ -80,14 +80,18 @@
                 </div>
 
                 <div class="col-md-4">
-                    <div id="selectedActions" class="d-flex justify-content-md-end align-items-center" style="display: none !important;">
-                        <div class="badge badge-primary mr-2 px-3 py-2">
+                    <div id="selectedActions" class="d-none flex-wrap justify-content-md-end align-items-center" style="gap: 0.5rem;">
+                        <div class="badge badge-primary px-3 py-2">
                             <i class="fas fa-check-circle mr-1"></i>
                             <span id="selectedCount">0</span> selected
                         </div>
                         <button class="btn btn-danger btn-sm" onclick="deleteSelected()">
                             <i class="fas fa-trash mr-1"></i>
                             Delete Selected
+                        </button>
+                        <button class="btn btn-outline-danger btn-sm" onclick="blockDeleteSelected()">
+                            <i class="fas fa-ban mr-1"></i>
+                            Delete + Ban IP + Username
                         </button>
                     </div>
                 </div>
@@ -136,152 +140,160 @@
                 </thead>
                 <tbody>
                     @forelse($users as $key => $user)
-                        @if(str_starts_with($user->status, 'delete'))
-                        <tr class="user-row deleted-row">
-                            <td class="align-middle">
-                                <div class="custom-control custom-checkbox">
-                                    <input type="checkbox" class="custom-control-input" disabled>
-                                    <label class="custom-control-label"></label>
+                    @if(str_starts_with($user->status, 'delete'))
+                    <tr class="user-row deleted-row">
+                        <td class="align-middle">
+                            <div class="custom-control custom-checkbox">
+                                <input type="checkbox" class="custom-control-input" disabled>
+                                <label class="custom-control-label"></label>
+                            </div>
+                        </td>
+                        <td class="align-middle">
+                            <span class="badge badge-outline-danger">{{$user->id}}</span>
+                        </td>
+                        <td class="align-middle">
+                            <div class="d-flex align-items-center">
+                                <div class="avatar-wrapper mr-3">
+                                    <img src="/storage/avatars/default.jpg" width="32" height="32" class="rounded-circle border" />
                                 </div>
-                            </td>
-                            <td class="align-middle">
-                                <span class="badge badge-outline-danger">{{$user->id}}</span>
-                            </td>
-                            <td class="align-middle">
+                                <div>
+                                    <div class="font-weight-bold text-danger">{{$user->username}}</div>
+                                    <small class="text-muted">Account deleted</small>
+                                </div>
+                            </div>
+                        </td>
+                        <td class="text-center text-muted align-middle">—</td>
+                        <td class="text-center text-muted align-middle">—</td>
+                        <td class="text-center text-muted align-middle">—</td>
+                        <td class="text-center align-middle">
+                            <span class="badge badge-danger">
+                                <i class="fas fa-trash-alt mr-1"></i>
+                                Deleted
+                            </span>
+                        </td>
+                    </tr>
+                    @else
+                    <tr class="user-row">
+                        <td class="text-center align-middle">
+                            <div class="custom-control custom-checkbox">
+                                <input type="checkbox" id="user_{{$key}}" class="custom-control-input action-check"
+                                    data-id="{{$user->id}}" data-username="{{$user->username}}" data-has-ip="{{$user->app_register_ip ? '1' : '0'}}">
+                                <label class="custom-control-label" for="user_{{$key}}"></label>
+                            </div>
+                        </td>
+                        <td class="text-center align-middle">
+                            <a href="/i/admin/users/show/{{$user->id}}">
+                                <span class="badge badge-outline-primary">{{$user->id}}</span>
+                            </a>
+                        </td>
+                        <td class="">
+                            <div class="text-center align-middle">
                                 <div class="d-flex align-items-center">
-                                    <div class="avatar-wrapper mr-3">
-                                        <img src="/storage/avatars/default.jpg" width="32" height="32" class="rounded-circle border" />
-                                    </div>
+                                    <a href="/{{$user->account['username']}}" class="font-weight-bold" target="_blank">
+                                        <div class="avatar-wrapper mr-3">
+                                            @if($user->account)
+                                            <img src="{{$user->account['avatar']}}" width="32" height="32" class="rounded-circle border"
+                                                onerror="this.src='/storage/avatars/default.jpg';this.onerror=null;" />
+                                            <div class="avatar-status bg-success"></div>
+                                            @else
+                                            <img src="/storage/avatars/default.jpg" width="32" height="32" class="rounded-circle border" />
+                                            <div class="avatar-status bg-secondary"></div>
+                                            @endif
+                                        </div>
+                                    </a>
                                     <div>
-                                        <div class="font-weight-bold text-danger">{{$user->username}}</div>
-                                        <small class="text-muted">Account deleted</small>
-                                    </div>
-                                </div>
-                            </td>
-                            <td class="text-center text-muted align-middle">—</td>
-                            <td class="text-center text-muted align-middle">—</td>
-                            <td class="text-center text-muted align-middle">—</td>
-                            <td class="text-center align-middle">
-                                <span class="badge badge-danger">
-                                    <i class="fas fa-trash-alt mr-1"></i>
-                                    Deleted
-                                </span>
-                            </td>
-                        </tr>
-                        @else
-                        <tr class="user-row">
-                            <td class="text-center align-middle">
-                                <div class="custom-control custom-checkbox">
-                                    <input type="checkbox" id="user_{{$key}}" class="custom-control-input action-check"
-                                        data-id="{{$user->id}}" data-username="{{$user->username}}">
-                                    <label class="custom-control-label" for="user_{{$key}}"></label>
-                                </div>
-                            </td>
-                            <td class="text-center align-middle">
-                                <a href="/i/admin/users/show/{{$user->id}}">
-                                    <span class="badge badge-outline-primary">{{$user->id}}</span>
-                                </a>
-                            </td>
-                            <td class="">
-                                <div class="text-center align-middle">
-                                    <div class="d-flex align-items-center">
-                                        <a href="/{{$user->account['username']}}" class="font-weight-bold" target="_blank">
-                                            <div class="avatar-wrapper mr-3">
-                                                @if($user->account)
-                                                <img src="{{$user->account['avatar']}}" width="32" height="32" class="rounded-circle border"
-                                                    onerror="this.src='/storage/avatars/default.jpg';this.onerror=null;" />
-                                                <div class="avatar-status bg-success"></div>
-                                                @else
-                                                <img src="/storage/avatars/default.jpg" width="32" height="32" class="rounded-circle border" />
-                                                <div class="avatar-status bg-secondary"></div>
+                                        <div class="d-flex">
+                                            <div class="font-weight-bold">
+                                                {{$user->username}}
+                                                @if($user->is_admin)
+                                                <span class="badge badge-danger badge-xs ml-1">
+                                                    <i class="fas fa-crown mr-1"></i>Admin
+                                                </span>
                                                 @endif
                                             </div>
-                                        </a>
-                                        <div>
-                                            <div class="d-flex">
-                                                <div class="font-weight-bold">
-                                                    {{$user->username}}
-                                                    @if($user->is_admin)
-                                                    <span class="badge badge-danger badge-xs ml-1">
-                                                        <i class="fas fa-crown mr-1"></i>Admin
-                                                    </span>
-                                                    @endif
-                                                </div>
-                                            </div>
-
-
-                                            <small class="text-muted">
-                                                {{ Str::limit(strip_tags($user->profile->bio))}}
-                                            </small>
-                                            <small class="text-warning">
-                                                {{ parse_url($user->profile->website, PHP_URL_HOST) }}
-                                            </small>
                                         </div>
+
+
+                                        <small class="text-muted">
+                                            {{ Str::limit(strip_tags($user->profile->bio))}}
+                                        </small>
+                                        <small class="text-warning">
+                                            {{ parse_url($user->profile->website, PHP_URL_HOST) }}
+                                        </small>
                                     </div>
                                 </div>
-                                <div class="user-meta mt-1 d-block">
-                                        @if($user->email)
-                                            <small class="text-muted user-email d-none">
-                                                {{$user->email}}
-                                            </small>
-                                        @endif
+                            </div>
+                            <div class="user-meta mt-1 d-block">
+                                @if($user->email)
+                                <small class="text-muted user-email d-none">
+                                    {{$user->email}}
+                                </small>
+                                @endif
 
-                                        @if($user->app_register_ip)
-                                            <small class="text-muted user-ip d-none">
-                                                {{$user->app_register_ip}}
-                                            </small>
-                                        @endif
-                                </div>
-                            </td>
+                                @if($user->app_register_ip)
+                                <small class="text-muted user-ip d-none">
+                                    {{$user->app_register_ip}}
+                                </small>
+                                @endif
+                            </div>
+                        </td>
 
-                            <td class="text-center align-middle">
-                                <a href="/i/web/profile/{{$user->account['id']}}" class="font-weight-bold" target="_blank">
-                                    {{$user->account['statuses_count'] ?? 0}}
+                        <td class="text-center align-middle">
+                            <a href="/i/web/profile/{{$user->account['id']}}" class="font-weight-bold" target="_blank">
+                                {{$user->account['statuses_count'] ?? 0}}
+                            </a>
+                        </td>
+                        <td class="text-center align-middle">
+                            <a href="/i/web/profile/{{$user->account['id']}}/followers" class="font-weight-bold" target="_blank">
+                                {{$user->account['followers_count'] ?? 0}}
+                            </a>
+                        </td>
+                        <td class="text-center align-middle">
+                            <a href="/i/web/profile/{{$user->account['id']}}/following" class="font-weight-bold" target="_blank">
+                                {{$user->account['following_count'] ?? 0}}
+                            </a>
+                        </td>
+                        <td class="align-middle text-center">
+                            <div class="btn-group btn-group-sm action-buttons" role="group">
+                                <a href="/i/admin/users/modtools/{{$user->id}}" class="btn btn-outline-warning btn-sm"
+                                    title="Moderation Tools" data-toggle="tooltip">
+                                    <i class="fas fa-tools"></i>
+                                    <span class="font-weight-bold">Moderate</span>
                                 </a>
-                            </td>
-                            <td class="text-center align-middle">
-                                <a href="/i/web/profile/{{$user->account['id']}}/followers" class="font-weight-bold" target="_blank">
-                                    {{$user->account['followers_count'] ?? 0}}
-                                </a>
-                            </td>
-                            <td class="text-center align-middle">
-                                <a href="/i/web/profile/{{$user->account['id']}}/following" class="font-weight-bold" target="_blank">
-                                    {{$user->account['following_count'] ?? 0}}
-                                </a>
-                            </td>
-                            <td class="align-middle text-center">
-                                <div class="btn-group btn-group-sm action-buttons" role="group">
-                                    <a href="/i/admin/users/modtools/{{$user->id}}" class="btn btn-outline-warning btn-sm"
-                                        title="Moderation Tools" data-toggle="tooltip">
-                                        <i class="fas fa-tools"></i>
-                                        <span class="font-weight-bold">Moderate</span>
-                                    </a>
-                                    @if($user->status !== 'deleted' && !$user->is_admin)
-                                    <button class="btn btn-outline-danger btn-sm"
-                                        title="Delete Account" data-toggle="tooltip" onclick="deleteAccount({{$user->id}})">
-                                        <i class="fas fa-trash"></i>
-                                    </button>
-                                    @endif
-                                </div>
-                            </td>
-                        </tr>
-                        @endif
+                                @if($user->status !== 'deleted' && !$user->is_admin)
+                                <button class="btn btn-outline-danger btn-sm"
+                                    title="Delete Account" data-toggle="tooltip" onclick="deleteAccount({{$user->id}})">
+                                    <i class="fas fa-trash"></i>
+                                </button>
+                                @if($user->app_register_ip)
+                                <button class="btn btn-outline-danger btn-sm"
+                                    title="Delete + Ban IP + Username" data-toggle="tooltip"
+                                    data-user-id="{{$user->id}}" data-username="{{$user->username}}"
+                                    onclick="blockDeleteAccount(this)">
+                                    <i class="fas fa-ban"></i>
+                                </button>
+                                @endif
+                                @endif
+                            </div>
+                        </td>
+                    </tr>
+                    @endif
                     @empty
-                        <tr>
-                            <td colspan="7" class="text-center py-5">
-                                <div class="text-muted">
-                                    <i class="fas fa-users fa-3x mb-3 d-block"></i>
-                                    <h5>No users found</h5>
-                                    <p class="mb-0">
-                                        @if(request()->input('q'))
-                                            Try adjusting your search criteria
-                                        @else
-                                            No users match the current filters
-                                        @endif
-                                    </p>
-                                </div>
-                            </td>
-                        </tr>
+                    <tr>
+                        <td colspan="7" class="text-center py-5">
+                            <div class="text-muted">
+                                <i class="fas fa-users fa-3x mb-3 d-block"></i>
+                                <h5>No users found</h5>
+                                <p class="mb-0">
+                                    @if(request()->input('q'))
+                                    Try adjusting your search criteria
+                                    @else
+                                    No users match the current filters
+                                    @endif
+                                </p>
+                            </div>
+                        </td>
+                    </tr>
                     @endforelse
                 </tbody>
             </table>
@@ -330,16 +342,18 @@
     .user-row {
         transition: all 0.2s ease;
     }
+
     .user-row:hover {
         background-color: rgba(0, 123, 255, 0.05);
         transform: translateY(-1px);
-        box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
     }
 
     .deleted-row {
         opacity: 0.6;
         background-color: rgba(220, 53, 69, 0.05);
     }
+
     .deleted-row:hover {
         background-color: rgba(220, 53, 69, 0.1);
     }
@@ -353,6 +367,7 @@
         opacity: 0.7;
         transition: opacity 0.2s ease;
     }
+
     .user-row:hover .action-buttons {
         opacity: 1;
     }
@@ -366,8 +381,9 @@
         border-radius: 0.25rem;
         transition: background-color 0.2s ease;
     }
+
     .sort-header:hover {
-        background-color: rgba(0,0,0,0.05);
+        background-color: rgba(0, 0, 0, 0.05);
         text-decoration: none !important;
     }
 
@@ -376,6 +392,7 @@
         border: 1px solid #007bff;
         background-color: transparent;
     }
+
     .badge-outline-danger {
         color: #dc3545;
         border: 1px solid #dc3545;
@@ -386,7 +403,7 @@
         border-radius: 0.5rem;
     }
 
-    .custom-control-input:checked ~ .custom-control-label::before {
+    .custom-control-input:checked~.custom-control-label::before {
         background-color: #007bff;
         border-color: #007bff;
     }
@@ -395,9 +412,11 @@
         .btn-group-sm .btn {
             padding: 0.25rem 0.4rem;
         }
+
         .action-buttons .btn {
             margin-bottom: 2px;
         }
+
         .user-row:hover {
             transform: none;
             box-shadow: none;
@@ -414,8 +433,15 @@
     }
 
     @keyframes fadeIn {
-        from { opacity: 0; transform: scale(0.8); }
-        to { opacity: 1; transform: scale(1); }
+        from {
+            opacity: 0;
+            transform: scale(0.8);
+        }
+
+        to {
+            opacity: 1;
+            transform: scale(1);
+        }
     }
 </style>
 @endpush
@@ -502,22 +528,20 @@
             const selectedActions = document.getElementById('selectedActions');
             const selectedCountSpan = document.getElementById('selectedCount');
 
-            if (selectedCount > 0) {
-                selectedActions.style.display = 'flex';
-                selectedCountSpan.textContent = selectedCount;
-            } else {
-                selectedActions.style.display = 'none';
-            }
+            selectedCountSpan.textContent = selectedCount;
+            selectedActions.classList.toggle('d-flex', selectedCount > 0);
+            selectedActions.classList.toggle('d-none', selectedCount === 0);
         },
 
         getSelectedUserData() {
             const selectedData = [];
             this.selectedUsers.forEach(userId => {
-                const checkbox = document.querySelector(`[data-id="${userId}"]`);
+                const checkbox = document.querySelector(`.action-check[data-id="${userId}"]`);
                 if (checkbox) {
                     selectedData.push({
                         id: userId,
-                        username: checkbox.dataset.username
+                        username: checkbox.dataset.username,
+                        hasIp: checkbox.dataset.hasIp === '1'
                     });
                 }
             });
@@ -538,10 +562,12 @@
     $(document).ready(function() {
         $('[data-toggle="tooltip"]').tooltip();
 
-        $('.human-size').each(function(d,a) {
+        $('.human-size').each(function(d, a) {
             let el = $(a);
             let size = el.data('bytes');
-            el.text(filesize(size, {round: 0}));
+            el.text(filesize(size, {
+                round: 0
+            }));
         });
 
         userSelectionManager.init();
@@ -551,46 +577,46 @@
         event.preventDefault();
 
         swal({
-            title: 'Delete Account',
-            text: "Are you sure you want to delete this account? This action cannot be undone.",
-            icon: 'warning',
-            dangerMode: true,
-            buttons: {
-                cancel: {
-                    text: "Cancel",
-                    value: false,
-                    visible: true,
-                },
-                delete: {
-                    text: "Delete",
-                    value: "delete",
-                    className: "btn-danger"
+                title: 'Delete Account',
+                text: "Are you sure you want to delete this account? This action cannot be undone.",
+                icon: 'warning',
+                dangerMode: true,
+                buttons: {
+                    cancel: {
+                        text: "Cancel",
+                        value: false,
+                        visible: true,
+                    },
+                    delete: {
+                        text: "Delete",
+                        value: "delete",
+                        className: "btn-danger"
+                    }
                 }
-            }
-        })
-        .then((willDelete) => {
-            if (willDelete === 'delete') {
-                swal({
-                    title: 'Deleting...',
-                    text: 'Please wait while we delete the account.',
-                    icon: 'info',
-                    buttons: false,
-                    closeOnClickOutside: false,
-                    closeOnEsc: false
-                });
-
-                axios.post('/i/admin/users/delete/' + id)
-                .then(res => {
-                    swal('Success!', 'Account has been deleted successfully.', 'success')
-                    .then(() => {
-                        window.location.reload();
+            })
+            .then((willDelete) => {
+                if (willDelete === 'delete') {
+                    swal({
+                        title: 'Deleting...',
+                        text: 'Please wait while we delete the account.',
+                        icon: 'info',
+                        buttons: false,
+                        closeOnClickOutside: false,
+                        closeOnEsc: false
                     });
-                })
-                .catch(err => {
-                    swal('Error!', 'Failed to delete account. Please try again.', 'error');
-                });
-            }
-        });
+
+                    axios.post('/i/admin/users/delete/' + id)
+                        .then(res => {
+                            swal('Success!', 'Account has been deleted successfully.', 'success')
+                                .then(() => {
+                                    window.location.reload();
+                                });
+                        })
+                        .catch(err => {
+                            swal('Error!', 'Failed to delete account. Please try again.', 'error');
+                        });
+                }
+            });
     }
 
     function changeLimit(limit) {
@@ -645,8 +671,129 @@
         const ids = selectedData.map(user => user.id);
 
         swal({
-            title: 'Bulk Delete Confirmation',
-            text: `Are you sure you want to delete ${ids.length} account(s)?\n\nUsernames:\n${usernames.join('\n')}`,
+                title: 'Bulk Delete Confirmation',
+                text: `Are you sure you want to delete ${ids.length} account(s)?\n\nUsernames:\n${usernames.join('\n')}`,
+                icon: 'warning',
+                dangerMode: true,
+                buttons: {
+                    cancel: {
+                        text: "Cancel",
+                        value: false,
+                        visible: true,
+                    },
+                    delete: {
+                        text: `Delete ${ids.length} Account(s)`,
+                        value: "delete",
+                        className: "btn-danger"
+                    }
+                }
+            })
+            .then(async (res) => {
+                if (res === 'delete') {
+                    swal({
+                        title: 'Processing Deletion',
+                        text: `Deleting ${ids.length} accounts... Please wait.`,
+                        icon: 'info',
+                        buttons: false,
+                        closeOnClickOutside: false,
+                        closeOnEsc: false
+                    });
+
+                    try {
+                        await Promise.all(ids.map(id => deleteAccountById(id)));
+
+                        swal({
+                            title: 'Success!',
+                            text: `Successfully deleted ${ids.length} account(s).`,
+                            icon: 'success',
+                            timer: 2000
+                        });
+
+                        setTimeout(() => {
+                            window.location.reload();
+                        }, 2000);
+                    } catch (error) {
+                        swal('Error!', 'Some accounts could not be deleted. Please try again.', 'error');
+                    }
+                }
+            });
+    }
+
+    async function deleteAccountById(id) {
+        return axios.post('/i/admin/users/delete/' + id);
+    }
+
+    function blockDeleteAccount(el) {
+        const id = el.dataset.userId;
+        const username = el.dataset.username;
+
+        swal({
+                title: 'Delete + Ban',
+                text: `Delete ${username} and block their signup IP and username from registering again? This action cannot be undone.`,
+                icon: 'warning',
+                dangerMode: true,
+                buttons: {
+                    cancel: {
+                        text: "Cancel",
+                        value: false,
+                        visible: true,
+                    },
+                    delete: {
+                        text: "Delete + Ban",
+                        value: "delete",
+                        className: "btn-danger"
+                    }
+                }
+            })
+            .then((val) => {
+                if (val !== 'delete') {
+                    return;
+                }
+
+                swal({
+                    title: 'Deleting...',
+                    text: 'Blocking the signup IP and username, then deleting the account.',
+                    icon: 'info',
+                    buttons: false,
+                    closeOnClickOutside: false,
+                    closeOnEsc: false
+                });
+
+                blockDeleteAccountById(id)
+                    .then(data => {
+                        const added = (data.blocked || []).map(type => type === 'ip' ? `IP ${data.ip}` : `username ${data.username}`);
+                        const text = added.length ?
+                            `Account deleted. Added block rules for ${added.join(' and ')}.` :
+                            'Account deleted. Its IP and username were already blocked.';
+
+                        swal('Success!', text, 'success')
+                            .then(() => {
+                                window.location.reload();
+                            });
+                    })
+                    .catch(err => {
+                        swal('Error!', requestError(err), 'error');
+                    });
+            });
+    }
+
+    async function blockDeleteSelected() {
+        const selectedData = userSelectionManager.getSelectedUserData();
+
+        if (selectedData.length === 0) {
+            swal('No Selection', 'Please select at least one account to delete.', 'warning');
+            return;
+        }
+
+        const usernames = selectedData.map(user => user.username);
+        const missingIp = selectedData.filter(user => !user.hasIp).length;
+        const skipNote = missingIp ?
+            `\n\n${missingIp} account(s) have no recorded signup IP and will be skipped.` :
+            '';
+
+        const res = await swal({
+            title: 'Delete + Ban Confirmation',
+            text: `Delete ${selectedData.length} account(s) and block their signup IP and username from registering again?\n\nUsernames:\n${usernames.join('\n')}${skipNote}`,
             icon: 'warning',
             dangerMode: true,
             buttons: {
@@ -656,45 +803,92 @@
                     visible: true,
                 },
                 delete: {
-                    text: `Delete ${ids.length} Account(s)`,
+                    text: `Delete + Ban ${selectedData.length} Account(s)`,
                     value: "delete",
                     className: "btn-danger"
                 }
             }
-        })
-        .then(async (res) => {
-            if(res === 'delete') {
-                swal({
-                    title: 'Processing Deletion',
-                    text: `Deleting ${ids.length} accounts... Please wait.`,
-                    icon: 'info',
-                    buttons: false,
-                    closeOnClickOutside: false,
-                    closeOnEsc: false
+        });
+
+        if (res !== 'delete') {
+            return;
+        }
+
+        swal({
+            title: 'Processing Deletion',
+            text: `Blocking signup IPs and usernames, then deleting ${selectedData.length} account(s)... Please wait.`,
+            icon: 'info',
+            buttons: false,
+            closeOnClickOutside: false,
+            closeOnEsc: false
+        });
+
+        const results = await Promise.allSettled(selectedData.map(user => blockDeleteAccountById(user.id)));
+        const failed = [];
+        let rules = 0;
+
+        results.forEach((result, i) => {
+            if (result.status === 'fulfilled') {
+                rules += (result.value.blocked || []).length;
+            } else {
+                failed.push({
+                    username: selectedData[i].username,
+                    error: requestError(result.reason)
                 });
-
-                try {
-                    await Promise.all(ids.map(id => deleteAccountById(id)));
-
-                    swal({
-                        title: 'Success!',
-                        text: `Successfully deleted ${ids.length} account(s).`,
-                        icon: 'success',
-                        timer: 2000
-                    });
-
-                    setTimeout(() => {
-                        window.location.reload();
-                    }, 2000);
-                } catch (error) {
-                    swal('Error!', 'Some accounts could not be deleted. Please try again.', 'error');
-                }
             }
         });
+
+        const deleted = selectedData.length - failed.length;
+        const content = document.createElement('div');
+        const summary = document.createElement('p');
+        summary.textContent = `Deleted ${deleted} account(s) and added ${rules} new block rule(s).`;
+        content.appendChild(summary);
+
+        if (failed.length) {
+            const heading = document.createElement('p');
+            heading.className = 'font-weight-bold text-danger mt-3 mb-2';
+            heading.textContent = `${failed.length} skipped:`;
+
+            const list = document.createElement('ul');
+            list.className = 'list-group text-left';
+            failed.forEach(f => {
+                const item = document.createElement('li');
+                const name = document.createElement('span');
+                const reason = document.createElement('span');
+                item.className = 'list-group-item small';
+                name.className = 'font-weight-bold mr-1';
+                name.textContent = f.username;
+                reason.className = 'text-muted';
+                reason.textContent = f.error;
+                item.append(name, reason);
+                list.appendChild(item);
+            });
+
+            content.append(heading, list);
+        }
+
+        swal({
+                title: failed.length ? (deleted ? 'Partially Complete' : 'Nothing Deleted') : 'Success!',
+                content: content,
+                icon: failed.length ? 'warning' : 'success'
+            })
+            .then(() => {
+                if (deleted > 0) {
+                    window.location.reload();
+                }
+            });
     }
 
-    async function deleteAccountById(id) {
-        return axios.post('/i/admin/users/delete/' + id);
+    function blockDeleteAccountById(id) {
+        return axios.post('/i/admin/users/block-delete/' + id).then(res => res.data);
+    }
+
+    function requestError(err) {
+        const res = err && err.response;
+        if (res && res.data && (res.data.error || res.data.message)) {
+            return res.data.error || res.data.message;
+        }
+        return res ? `Request failed (${res.status})` : 'Network error';
     }
 </script>
 @endpush
