@@ -53,14 +53,19 @@
                     </thead>
                     <tbody>
                         @foreach($filters as $filter)
+                        @php($account = $filter->account())
                         <tr>
                             <td><a href="/i/admin/asf/edit/{{$filter->id}}">{{ $filter->id }}</a></td>
                             <td>
                                 <div class="d-flex align-items-center" style="gap: 1rem;">
 
-                                <img src="{{ $filter->account()['avatar'] }}" class="rounded-circle" width="30" height="30" onerror="this.src='/storage/avatars/default.jpg';this.onerror=null;" />
+                                <img src="{{ $account['avatar'] ?? '/storage/avatars/default.jpg' }}" class="rounded-circle" width="30" height="30" onerror="this.src='/storage/avatars/default.jpg';this.onerror=null;" />
                                 <p class="font-weight-bold mb-0">
-                                    &commat;{{ $filter->account()['acct'] }}
+                                    @if($account)
+                                    &commat;{{ $account['acct'] }}
+                                    @else
+                                    <span class="text-muted">Unavailable account ({{ $filter->item_id }})</span>
+                                    @endif
                                 </p>
                                 </div>
                             </td>
