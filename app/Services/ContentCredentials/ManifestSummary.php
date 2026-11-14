@@ -48,7 +48,7 @@ final class ManifestSummary
             'seen' => [],
         ];
 
-        self::walk($manifests, $active, 0, $redact, $walk);
+        self::walk($manifests, $active, 0, $redact, $walk, true);
 
         $dst = match (true) {
             $walk['generated'] => 'trainedAlgorithmicMedia',
@@ -76,13 +76,26 @@ final class ManifestSummary
         );
     }
 
-    protected static function walk(array $manifests, string $label, int $depth, array $redact, array &$walk): void
+    /**
+     * The parent chain (the active manifest, then each parentOf ingredient in
+     * turn) decides whether the asset itself was created by an AI model.
+     * Other ingredients, such as componentOf parts placed into the asset, can
+     * only make it AI modified: a photo with one generated element placed into
+     * it is not AI generated.
+     */
+    protected static function walk(array $manifests, string $label, int $depth, array $redact, array &$walk, bool $parentChain): void
     {
-        if ($depth > self::MAX_DEPTH || isset($walk['seen'][$label]) || ! is_array($manifests[$label] ?? null)) {
+        if ($depth > self::MAX_DEPTH || ! is_array($manifests[$label] ?? null)) {
             return;
         }
 
-        $walk['seen'][$label] = true;
+        // A manifest first reached outside the parent chain is walked again if
+        // the chain reaches it later, since only the chain can set 'created'.
+        if (isset($walk['seen'][$label]) && ($walk['seen'][$label] || ! $parentChain)) {
+            return;
+        }
+
+        $walk['seen'][$label] = $parentChain;
         $manifest = $manifests[$label];
 
         $thumbnails = [$manifest['thumbnail']['identifier'] ?? null];
@@ -131,11 +144,11 @@ final class ManifestSummary
                     continue;
                 }
 
-                if ($name === 'c2pa.created') {
+                if ($parentChain && $name === 'c2pa.created') {
                     $walk['created'] ??= $term;
                 }
 
-                if ($name === 'c2pa.created' && $term === 'trainedAlgorithmicMedia') {
+                if ($parentChain && $name === 'c2pa.created' && $term === 'trainedAlgorithmicMedia') {
                     $walk['generated'] = true;
                 } elseif (DigitalSourceType::isAi($term)) {
                     $walk['modified'] = true;
@@ -143,16 +156,22 @@ final class ManifestSummary
             }
         }
 
-        foreach (($manifest['ingredients'] ?? []) as $ingredient) {
-            if (! is_array($ingredient)) {
-                continue;
-            }
+        $ingredients = array_filter($manifest['ingredients'] ?? [], 'is_array');
 
+        // Walk parentOf ingredients first so the chain claims shared manifests.
+        usort($ingredients, fn (array $a, array $b) => self::isParent($b) <=> self::isParent($a));
+
+        foreach ($ingredients as $ingredient) {
             $child = $ingredient['active_manifest'] ?? $ingredient['manifest'] ?? null;
             if (is_string($child)) {
-                self::walk($manifests, $child, $depth + 1, $redact, $walk);
+                self::walk($manifests, $child, $depth + 1, $redact, $walk, $parentChain && self::isParent($ingredient));
             }
         }
+    }
+
+    protected static function isParent(array $ingredient): bool
+    {
+        return ($ingredient['relationship'] ?? null) === 'parentOf';
     }
 
     protected static function state(array $store): string

@@ -305,7 +305,6 @@ class Image
                     basename($converted['path']),
                     $fileContents,
                     $sourceMime,
-                    $img->width() !== $ratio['width_original'] || $img->height() !== $ratio['height_original'],
                 );
 
                 if ($signed !== null) {
