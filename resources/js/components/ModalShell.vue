@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { onBeforeUnmount, onMounted, ref } from 'vue'
+import { useModalStack } from '@/composables/useModalStack'
 
 withDefaults(
   defineProps<{
@@ -18,24 +19,25 @@ const emit = defineEmits<{
 }>()
 
 const dialog = ref<HTMLElement | null>(null)
+const stack = useModalStack()
 let restore: HTMLElement | null = null
 
 function onKeydown(event: KeyboardEvent) {
-  if (event.key === 'Escape') {
+  if (event.key === 'Escape' && stack.isTop()) {
     emit('close')
   }
 }
 
 onMounted(() => {
   restore = document.activeElement instanceof HTMLElement ? document.activeElement : null
-  document.documentElement.style.overflow = 'hidden'
+  stack.push()
   window.addEventListener('keydown', onKeydown)
   dialog.value?.focus()
 })
 
 onBeforeUnmount(() => {
   window.removeEventListener('keydown', onKeydown)
-  document.documentElement.style.overflow = ''
+  stack.pop()
   restore?.focus()
 })
 </script>
