@@ -26,8 +26,6 @@ use App\Jobs\StatusPipeline\StatusDelete;
 use App\Jobs\VideoPipeline\VideoThumbnail;
 use App\Models\Avatar;
 use App\Models\Bookmark;
-use App\Models\Collection;
-use App\Models\CollectionItem;
 use App\Models\CustomFilter;
 use App\Models\DmConversation;
 use App\Models\DmConversationParticipant;
@@ -4022,7 +4020,8 @@ class ApiV1Controller extends Controller
             'visibility' => 'string|in:private,unlisted,public,direct',
             'spoiler_text' => 'sometimes|max:140',
             'place_id' => 'sometimes|integer|min:1|max:128769',
-            'collection_ids' => 'sometimes|array|max:3',
+            'collection_ids' => 'sometimes|array|max:'.CollectionService::MAX_COLLECTIONS_PER_POST,
+            'collection_ids.*' => 'integer|min:1',
             'comments_disabled' => 'sometimes|boolean',
             'quote_approval_policy' => 'sometimes|nullable|string|in:public,followers,nobody',
             '_pe' => 'sometimes',
@@ -4084,7 +4083,8 @@ class ApiV1Controller extends Controller
             'visibility' => 'string|in:private,unlisted,public,direct',
             'spoiler_text' => 'sometimes|max:140',
             'place_id' => 'sometimes|integer|min:1|max:128769',
-            'collection_ids' => 'sometimes|array|max:3',
+            'collection_ids' => 'sometimes|array|max:'.CollectionService::MAX_COLLECTIONS_PER_POST,
+            'collection_ids.*' => 'integer|min:1',
             'comments_disabled' => 'sometimes|boolean',
             'quote_approval_policy' => 'sometimes|nullable|string|in:public,followers,nobody',
             '_pe' => 'sometimes',
@@ -4277,28 +4277,8 @@ class ApiV1Controller extends Controller
             CommentPipeline::dispatch($parent, $status);
         }
 
-        if ($request->has('collection_ids') && $ids) {
-            $collections = Collection::whereProfileId($user->profile_id)
-                ->find($request->input('collection_ids'))
-                ->each(function ($collection) use ($status) {
-                    $count = $collection->items()->count();
-                    $item = CollectionItem::firstOrCreate([
-                        'collection_id' => $collection->id,
-                        'object_type' => Status::class,
-                        'object_id' => $status->id,
-                    ], [
-                        'order' => $count,
-                    ]);
-
-                    CollectionService::addItem(
-                        $collection->id,
-                        $status->id,
-                        $count
-                    );
-                    $collection->updated_at = now();
-                    $collection->save();
-                    CollectionService::setCollection($collection->id, $collection);
-                });
+        if ($request->filled('collection_ids') && $ids) {
+            CollectionService::addStatusToCollections($status, $profile, (array) $request->input('collection_ids'));
         }
 
         $res = $pe ? StatusService::get($status->id, false) : StatusService::getMastodon($status->id, false);

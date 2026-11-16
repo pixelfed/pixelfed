@@ -78,7 +78,7 @@ trait HandlesDeletes
         match ($type) {
             'Person' => $this->handleDeletePerson($actor),
             'Tombstone' => $this->handleDeleteTombstone($actor, $id),
-            'Story' => $this->handleDeleteStory($id),
+            'Story' => $this->handleDeleteStory($actor, $id),
             default => null,
         };
     }
@@ -143,9 +143,17 @@ trait HandlesDeletes
         RemoteStatusDelete::dispatch($status)->onQueue('high');
     }
 
-    protected function handleDeleteStory(string $objectId): void
+    protected function handleDeleteStory(string $actorUrl, string $objectId): void
     {
-        $story = Story::whereObjectId($objectId)->first();
+        $profile = Profile::whereRemoteUrl($actorUrl)->first();
+
+        if (! $profile || $profile->private_key != null) {
+            return;
+        }
+
+        $story = Story::whereObjectId($objectId)
+            ->whereProfileId($profile->id)
+            ->first();
 
         if ($story) {
             StoryExpire::dispatch($story)->onQueue('story');

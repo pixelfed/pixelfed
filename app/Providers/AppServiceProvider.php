@@ -154,6 +154,19 @@ class AppServiceProvider extends ServiceProvider
             ];
         });
 
+        RateLimiter::for('app-registration-confirm', function (Request $request) {
+            $email = $request->input('email');
+
+            $emailKey = is_string($email) && trim($email) !== ''
+                ? hash('sha256', strtolower(trim($email)))
+                : 'missing';
+
+            return [
+                Limit::perHour(20)->by('app-registration-confirm:ip:'.$request->ip()),
+                Limit::perHour(10)->by('app-registration-confirm:email:'.$emailKey),
+            ];
+        });
+
         RateLimiter::for('app-code-resend', function (Request $request) {
             return Limit::perHour(10)->by($request->ip());
         });

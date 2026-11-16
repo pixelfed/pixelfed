@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Federation\ActivityBuilders\FollowActivityBuilder;
 use App\Util\ActivityPub\Helpers;
 use Illuminate\Http\Request;
 
@@ -23,13 +24,7 @@ class FollowerController extends Controller
             return;
         }
 
-        $payload = [
-            '@context' => 'https://www.w3.org/ns/activitystreams',
-            'id' => $user->permalink('#follows/'.$target->id),
-            'type' => 'Follow',
-            'actor' => $user->permalink(),
-            'object' => $target->permalink(),
-        ];
+        $payload = (new FollowActivityBuilder)->build($user, $target);
 
         $inbox = $target->sharedInbox ?? $target->inbox_url;
 
@@ -42,18 +37,7 @@ class FollowerController extends Controller
             return;
         }
 
-        $payload = [
-            '@context' => 'https://www.w3.org/ns/activitystreams',
-            'id' => $user->permalink('#follow/'.$target->id.'/undo'),
-            'type' => 'Undo',
-            'actor' => $user->permalink(),
-            'object' => [
-                'id' => $user->permalink('#follows/'.$target->id),
-                'actor' => $user->permalink(),
-                'object' => $target->permalink(),
-                'type' => 'Follow',
-            ],
-        ];
+        $payload = (new FollowActivityBuilder)->buildUndo($user, $target);
 
         $inbox = $target->sharedInbox ?? $target->inbox_url;
 

@@ -5,8 +5,6 @@ namespace App\Http\Controllers;
 use App\Jobs\ImageOptimizePipeline\ImageOptimize;
 use App\Jobs\StatusPipeline\NewStatusPipeline;
 use App\Jobs\VideoPipeline\VideoThumbnail;
-use App\Models\Collection;
-use App\Models\CollectionItem;
 use App\Models\Hashtag;
 use App\Models\Media;
 use App\Models\MediaTag;
@@ -550,7 +548,8 @@ class ComposeController extends Controller
             'comments_disabled' => 'nullable',
             'tagged' => 'nullable',
             'license' => 'nullable|integer|min:1|max:16',
-            'collections' => 'sometimes|array|min:1|max:5',
+            'collections' => 'sometimes|array|min:1|max:'.CollectionService::MAX_COLLECTIONS_PER_POST,
+            'collections.*' => 'integer|min:1',
             'spoiler_text' => 'nullable|string|max:140',
             'quote_approval_policy' => 'sometimes|nullable|string|in:public,followers,nobody',
             // 'optimize_media' => 'nullable'
@@ -682,28 +681,7 @@ class ComposeController extends Controller
         }
 
         if ($request->filled('collections')) {
-            $collections = Collection::whereProfileId($profile->id)
-                ->find($request->input('collections'))
-                ->each(function ($collection) use ($status) {
-                    $count = $collection->items()->count();
-                    CollectionItem::firstOrCreate([
-                        'collection_id' => $collection->id,
-                        'object_type' => Status::class,
-                        'object_id' => $status->id,
-                    ], [
-                        'order' => $count,
-                    ]);
-
-                    CollectionService::addItem(
-                        $collection->id,
-                        $status->id,
-                        $count
-                    );
-
-                    $collection->updated_at = now();
-                    $collection->save();
-                    CollectionService::setCollection($collection->id, $collection);
-                });
+            CollectionService::addStatusToCollections($status, $profile, (array) $request->input('collections'));
         }
 
         Cache::forget('user:account:id:'.$profile->user_id);

@@ -41,6 +41,21 @@ class Collection extends Model
 {
     use HasSnowflakePrimary;
 
+    public const SORT_OLDEST = 'oldest';
+
+    public const SORT_RECENT = 'recent';
+
+    public const SORTS = [
+        self::SORT_OLDEST,
+        self::SORT_RECENT,
+    ];
+
+    public const VISIBILITIES = [
+        'public',
+        'private',
+        'draft',
+    ];
+
     /**
      * Indicates if the IDs are auto-incrementing.
      *
@@ -72,6 +87,11 @@ class Collection extends Model
             'id',
             'object_id'
         );
+    }
+
+    public function removals()
+    {
+        return $this->hasMany(CollectionItemRemoval::class);
     }
 
     public function url()

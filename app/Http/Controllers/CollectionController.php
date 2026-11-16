@@ -101,6 +101,7 @@ class CollectionController extends Controller
 
         $collection = Collection::whereProfileId($user->profile_id)->findOrFail($id);
         $collection->items()->delete();
+        $collection->removals()->delete();
         $collection->delete();
 
         CollectionService::deleteCollection($id);
@@ -140,7 +141,7 @@ class CollectionController extends Controller
                 });
         }
 
-        $max = config('pixelfed.max_collection_length');
+        $max = CollectionService::maxItems();
         if ($count >= $max) {
             abort(400, 'You can only add '.$max.' posts per collection');
         }
@@ -212,7 +213,7 @@ class CollectionController extends Controller
         $end = $start + 10;
         $items = CollectionService::getItems($id, $start, $end);
 
-        return collect($items)
+        $statuses = collect($items)
             ->map(function ($id) {
                 return StatusService::get($id, false);
             })
@@ -220,6 +221,12 @@ class CollectionController extends Controller
                 return $item && ($item['visibility'] == 'public' || $item['visibility'] == 'unlisted') && isset($item['account'], $item['media_attachments']);
             })
             ->values();
+
+        return collect(CollectionService::filterVisible(
+            $statuses,
+            (int) $collection['pid'],
+            $user ? (int) $user->profile_id : null
+        ))->values();
     }
 
     public function getUserCollections(Request $request, int $id)

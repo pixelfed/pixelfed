@@ -29,7 +29,7 @@ class UserEmailForgotController extends Controller
     public function store(Request $request)
     {
         $rules = [
-            'username' => 'required|min:2|max:30|exists:users',
+            'username' => 'required|string|min:2|max:30|exists:users',
         ];
 
         $messages = [

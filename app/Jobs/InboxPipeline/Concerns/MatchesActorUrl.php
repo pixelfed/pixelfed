@@ -2,6 +2,8 @@
 
 namespace App\Jobs\InboxPipeline\Concerns;
 
+use App\Util\ActivityPub\Helpers;
+
 /**
  * Matches the key owner against the actor an activity claims to be from.
  *
@@ -23,6 +25,16 @@ trait MatchesActorUrl
         $b = self::normalizeUrl($b);
 
         return $a !== null && $b !== null && $a === $b;
+    }
+
+    protected static function actorUrl($val)
+    {
+        $val = Helpers::pluckval($val);
+        if (is_array($val)) {
+            $val = $val['id'] ?? null;
+        }
+
+        return is_string($val) && $val !== '' ? $val : null;
     }
 
     protected static function normalizeUrl($url)

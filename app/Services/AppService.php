@@ -23,6 +23,10 @@ class AppService
                     'local' => true,
                     'network' => (bool) config('federation.network_timeline'),
                 ],
+                'collections' => [
+                    'api_version' => '1.2',
+                    'add_others_posts' => true,
+                ],
                 'content_credentials' => [
                     'enabled' => ContentCredentialService::enabled(),
                     'signing' => ContentCredentialService::signingEnabled(),
@@ -37,7 +41,8 @@ class AppService
                     'min_password_length' => (int) config('pixelfed.min_password_length'),
                 ],
                 'collections' => [
-                    'max_collection_length' => (int) config_cache('pixelfed.max_collection_length'),
+                    'max_collection_length' => CollectionService::maxItems(),
+                    'max_collections_per_post' => CollectionService::MAX_COLLECTIONS_PER_POST,
                 ],
                 'direct_messages' => [
                     'max_characters' => (int) config('dm.max_message_length'),
