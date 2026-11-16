@@ -44,18 +44,18 @@ class CollectionsController extends Controller
         $this->validatePage($request);
 
         $account = AccountService::get($id, true);
-        abort_if(! $account || ! isset($account['id']), 404);
+        abort_if(! $account || ! isset($account['id']), 404, 'Record not found');
 
         $ownerId = (int) $account['id'];
         $pid = (int) $user->profile_id;
         $query = Collection::whereProfileId($ownerId);
 
         if ($ownerId !== $pid) {
-            abort_if(CollectionService::blocks($ownerId, $pid), 404);
+            abort_if(CollectionService::blocks($ownerId, $pid), 404, 'Record not found');
 
             $follows = (bool) FollowerService::follows((string) $pid, (string) $ownerId);
 
-            abort_if(! empty($account['locked']) && ! $follows && ! $user->is_admin, 404);
+            abort_if(! empty($account['locked']) && ! $follows && ! $user->is_admin, 404, 'Record not found');
 
             $query->whereIn('visibility', $follows ? ['public', 'private'] : ['public'])
                 ->whereNotNull('published_at');
@@ -113,7 +113,7 @@ class CollectionsController extends Controller
         $collection = $this->findViewable($id, $user);
 
         $res = CollectionService::toApi($collection, (int) $user->profile_id);
-        abort_if(! $res, 404);
+        abort_if(! $res, 404, 'Record not found');
 
         return response()->json($res);
     }
@@ -260,7 +260,7 @@ class CollectionsController extends Controller
         $user = $this->authorizeRequest($request, 'write');
         $collection = $this->findOwned($id, $user);
 
-        abort_unless(CollectionService::removeStatus($collection, (int) $statusId), 404);
+        abort_unless(CollectionService::removeStatus($collection, (int) $statusId), 404, 'Record not found');
 
         return response()->json([
             'removed' => (string) $statusId,
@@ -428,8 +428,8 @@ class CollectionsController extends Controller
         $status = $this->findOwnStatus($id, $user);
 
         $collection = Collection::where('profile_id', '!=', $status->profile_id)->find($collectionId);
-        abort_unless($collection, 404);
-        abort_unless(CollectionItem::whereCollectionId($collection->id)->whereObjectId($status->id)->exists(), 404);
+        abort_unless($collection, 404, 'Record not found');
+        abort_unless(CollectionItem::whereCollectionId($collection->id)->whereObjectId($status->id)->exists(), 404, 'Record not found');
 
         CollectionService::removeByAuthor($collection, $status);
 
@@ -524,47 +524,48 @@ class CollectionsController extends Controller
 
     protected function findOwned($id, User $user): Collection
     {
-        abort_unless(is_numeric($id), 404);
+        abort_unless(is_numeric($id), 404, 'Record not found');
 
         $collection = Collection::whereProfileId($user->profile_id)->find($id);
-        abort_unless($collection, 404);
+        abort_unless($collection, 404, 'Record not found');
 
         return $collection;
     }
 
     protected function findViewable($id, User $user): Collection
     {
-        abort_unless(is_numeric($id), 404);
+        abort_unless(is_numeric($id), 404, 'Record not found');
 
         $collection = Collection::find($id);
-        abort_unless($collection && CollectionService::canView($collection, $user), 404);
+        abort_unless($collection && CollectionService::canView($collection, $user), 404, 'Record not found');
 
         return $collection;
     }
 
     protected function findVisibleStatus($id, User $user): Status
     {
-        abort_unless(is_numeric($id), 404);
+        abort_unless(is_numeric($id), 404, 'Record not found');
 
         $status = Status::find($id);
         $pid = (int) $user->profile_id;
 
         abort_unless(
             $status && StatusService::isVisibleTo($status->profile_id, $status->scope, $pid),
-            404
+            404,
+            'Record not found'
         );
 
-        abort_if((int) $status->profile_id !== $pid && CollectionService::blocks((int) $status->profile_id, $pid), 404);
+        abort_if((int) $status->profile_id !== $pid && CollectionService::blocks((int) $status->profile_id, $pid), 404, 'Record not found');
 
         return $status;
     }
 
     protected function findOwnStatus($id, User $user): Status
     {
-        abort_unless(is_numeric($id), 404);
+        abort_unless(is_numeric($id), 404, 'Record not found');
 
         $status = Status::whereProfileId($user->profile_id)->find($id);
-        abort_unless($status, 404);
+        abort_unless($status, 404, 'Record not found');
 
         return $status;
     }
