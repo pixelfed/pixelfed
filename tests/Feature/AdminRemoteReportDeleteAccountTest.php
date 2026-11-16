@@ -2,10 +2,10 @@
 
 use App\Jobs\DeletePipeline\DeleteAccountPipeline;
 use App\Models\Profile;
+use App\Models\RegistrationBlock;
 use App\Models\RemoteReport;
 use App\Models\Report;
 use App\Models\Status;
-use App\Models\RegistrationBlock;
 use App\Models\User;
 use App\Services\RegistrationBlockService;
 use Illuminate\Foundation\Testing\LazilyRefreshDatabase;
