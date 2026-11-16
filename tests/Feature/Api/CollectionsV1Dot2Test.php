@@ -166,7 +166,9 @@ describe('creating and editing', function () {
         $collection = v12Collection($owner);
         Passport::actingAs($other, ['read', 'write']);
 
-        $this->patchJson("/api/v1.2/collections/{$collection->id}", ['title' => 'Mine now'])->assertNotFound();
+        $this->patchJson("/api/v1.2/collections/{$collection->id}", ['title' => 'Mine now'])
+            ->assertNotFound()
+            ->assertJsonPath('error', 'Record not found');
         $this->deleteJson("/api/v1.2/collections/{$collection->id}")->assertNotFound();
     });
 
