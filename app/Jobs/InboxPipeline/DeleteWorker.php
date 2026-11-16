@@ -3,6 +3,7 @@
 namespace App\Jobs\InboxPipeline;
 
 use App\Jobs\DeletePipeline\DeleteRemoteProfilePipeline;
+use App\Jobs\InboxPipeline\Concerns\MatchesActorUrl;
 use App\Models\Profile;
 use App\Util\ActivityPub\Helpers;
 use App\Util\ActivityPub\HttpSignature;
@@ -15,7 +16,7 @@ use Illuminate\Support\Facades\Log;
 
 class DeleteWorker implements ShouldQueue
 {
-    use Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
+    use Dispatchable, InteractsWithQueue, MatchesActorUrl, Queueable, SerializesModels;
 
     protected $headers;
 
@@ -144,6 +145,9 @@ class DeleteWorker implements ShouldQueue
         ) {
             return false;
         }
+        if (! isset($bodyDecoded['id'], $bodyDecoded['actor'])) {
+            return false;
+        }
         $signatureData = HttpSignature::parseSignatureHeader($signature);
 
         if (! isset($signatureData['keyId'], $signatureData['signature'], $signatureData['headers']) || isset($signatureData['error'])) {
@@ -152,9 +156,14 @@ class DeleteWorker implements ShouldQueue
 
         $keyId = Helpers::validateUrl($signatureData['keyId']);
         $id = Helpers::validateUrl($bodyDecoded['id']);
+        $claimedActor = self::actorUrl($bodyDecoded['actor']);
+        $claimedActor = $claimedActor ? Helpers::validateUrl($claimedActor) : null;
+        if (! $keyId || ! $id || ! $claimedActor) {
+            return false;
+        }
         $keyDomain = parse_url($keyId, PHP_URL_HOST);
         $idDomain = parse_url($id, PHP_URL_HOST);
-        $actorDomain = parse_url($bodyDecoded['actor'] ?? '', PHP_URL_HOST);
+        $actorDomain = parse_url($claimedActor, PHP_URL_HOST);
         if (
             isset($bodyDecoded['object'])
             && is_array($bodyDecoded['object'])
@@ -178,22 +187,17 @@ class DeleteWorker implements ShouldQueue
         ) {
             return false;
         }
-        $actor = Profile::whereKeyId($keyId)->first();
-        if (! $actor) {
-            $actorUrl = is_array($bodyDecoded['actor']) ? $bodyDecoded['actor'][0] : $bodyDecoded['actor'];
-            $actor = Helpers::profileFirstOrNew($actorUrl);
+        $signer = Profile::whereKeyId($keyId)->first();
+        if (! $signer) {
+            $signer = Helpers::profileFirstOrNew($claimedActor);
         }
-        if (! $actor) {
+        if (! $signer) {
             return false;
         }
-        // Rebind: the profile resolved by keyId must belong to the keyId host.
-        // This rejects a poisoned or stale row whose remote_url host differs
-        // from the request's keyId host, so a planted key_id -> attacker key
-        // binding cannot authenticate.
-        if (parse_url($actor->remote_url, PHP_URL_HOST) !== $keyDomain) {
+        if (! self::sameActorUrl($signer->remote_url, $claimedActor)) {
             return false;
         }
-        $pkey = openssl_pkey_get_public($actor->public_key);
+        $pkey = openssl_pkey_get_public($signer->public_key);
         if (! $pkey) {
             return false;
         }
