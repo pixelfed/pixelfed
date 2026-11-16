@@ -179,17 +179,4 @@ class InboxWorker implements ShouldQueue
 
         return false;
     }
-
-    /**
-     * Extract an actor URL from a string, a {"id": ...} object, or a list.
-     */
-    protected static function actorUrl($val)
-    {
-        $val = Helpers::pluckval($val);
-        if (is_array($val)) {
-            $val = $val['id'] ?? null;
-        }
-
-        return is_string($val) && $val !== '' ? $val : null;
-    }
 }
