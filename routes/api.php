@@ -346,7 +346,7 @@ Route::prefix('api')->group(function () use ($middleware) {
         Route::prefix('auth')->group(function () {
             Route::get('iarpfc', [ApiV1Dot1Controller::class, 'inAppRegistrationPreFlightCheck']);
             Route::post('iar', [ApiV1Dot1Controller::class, 'inAppRegistration'])->middleware('registration.ip');
-            Route::post('iarc', [ApiV1Dot1Controller::class, 'inAppRegistrationConfirm'])->middleware('registration.ip');
+            Route::post('iarc', [ApiV1Dot1Controller::class, 'inAppRegistrationConfirm'])->middleware(['throttle:app-registration-confirm', 'registration.ip']);
             Route::get('iarer', [ApiV1Dot1Controller::class, 'inAppRegistrationEmailRedirect']);
 
             Route::post('invite/admin/verify', [AdminInviteController::class, 'apiVerifyCheck'])->middleware('throttle:20,120');
