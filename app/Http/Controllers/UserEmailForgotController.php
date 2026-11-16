@@ -10,6 +10,7 @@ use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Mail;
+use Illuminate\Support\Sleep;
 
 class UserEmailForgotController extends Controller
 {
@@ -43,7 +44,7 @@ class UserEmailForgotController extends Controller
         }
 
         $randomDelay = random_int(500000, 2000000);
-        usleep($randomDelay);
+        Sleep::usleep($randomDelay);
 
         $this->validate($request, $rules, $messages);
         $check = self::checkLimits();

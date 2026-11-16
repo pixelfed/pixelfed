@@ -16,6 +16,7 @@ use Illuminate\Queue\SerializesModels;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Sleep;
 
 class VideoHlsPipeline implements ShouldBeUniqueUntilProcessing, ShouldQueue
 {
@@ -137,7 +138,7 @@ class VideoHlsPipeline implements ShouldBeUniqueUntilProcessing, ShouldQueue
             $media->save();
 
             MediaService::del($media->status_id);
-            usleep(50000);
+            Sleep::usleep(50000);
             StatusService::del($media->status_id);
         } finally {
             // Only remove the copy this job pulled down, never a file that was

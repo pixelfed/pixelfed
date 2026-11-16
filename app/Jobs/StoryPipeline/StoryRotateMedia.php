@@ -13,6 +13,7 @@ use Illuminate\Queue\SerializesModels;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Sleep;
 use Illuminate\Support\Str;
 use Throwable;
 
@@ -156,7 +157,7 @@ class StoryRotateMedia implements ShouldQueue
 
             $index->removeStory($story->id, $story->profile_id);
 
-            usleep(random_int(100000, 500000));
+            Sleep::usleep(random_int(100000, 500000));
 
             $index->indexStory($story);
 

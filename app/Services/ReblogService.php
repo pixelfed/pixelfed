@@ -6,6 +6,7 @@ use App\Models\Status;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Redis;
 use Illuminate\Support\Lottery;
+use Illuminate\Support\Sleep;
 
 class ReblogService
 {
@@ -32,7 +33,7 @@ class ReblogService
                 return false;
             }
             self::warmCache($profileId);
-            sleep(1);
+            Sleep::sleep(1);
 
             return self::getFromRedis($profileId, $statusId);
         }
@@ -51,7 +52,7 @@ class ReblogService
         }
 
         self::warmCache($profileId);
-        sleep(1);
+        Sleep::sleep(1);
 
         return self::getFromDatabase($profileId, $statusId);
     }
@@ -63,7 +64,7 @@ class ReblogService
                 return false;
             }
             self::warmCache($profileId);
-            sleep(1);
+            Sleep::sleep(1);
 
             return self::getFromDatabase($profileId, $statusId);
         }

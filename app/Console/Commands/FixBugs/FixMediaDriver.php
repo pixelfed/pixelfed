@@ -7,6 +7,7 @@ use App\Jobs\MediaPipeline\MediaFixLocalFilesystemCleanupPipeline;
 use App\Models\Media;
 use Illuminate\Console\Command;
 use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Sleep;
 use League\Flysystem\MountManager;
 
 class FixMediaDriver extends Command
@@ -88,12 +89,12 @@ class FixMediaDriver extends Command
                         's3://'.$media->media_path,
                         'local://'.$media->media_path
                     );
-                    sleep(1);
+                    Sleep::sleep(1);
                     if (empty($media->original_sha256)) {
                         $hash = \hash_file('sha256', Storage::disk('local')->path($media->media_path));
                         $media->original_sha256 = $hash;
                         $media->save();
-                        sleep(1);
+                        Sleep::sleep(1);
                     }
                     if (
                         $media->mime &&
@@ -105,7 +106,7 @@ class FixMediaDriver extends Command
                         ])
                     ) {
                         ImageOptimize::dispatch($media);
-                        sleep(3);
+                        Sleep::sleep(3);
                     }
                 } else {
                     $media->cdn_url = $cloud->url($media->media_path);

@@ -7,26 +7,11 @@ use App\Models\Media;
 use App\Models\Status;
 use App\Models\User;
 use Illuminate\Foundation\Testing\LazilyRefreshDatabase;
+use Illuminate\Support\Facades\File;
 use Illuminate\Support\Facades\Queue;
 use Illuminate\Support\Str;
 
 uses(LazilyRefreshDatabase::class);
-
-/*
-|--------------------------------------------------------------------------
-| ImportInstagram retry safety
-|--------------------------------------------------------------------------
-|
-| The job copies the source file inside the DB transaction and deletes the
-| original only after the transaction commits. If a write fails and the
-| transaction rolls back, the source must still exist so a retry can
-| re-process the photo.
-|
-| With the old destructive move, case (1) fails: the source is gone after a
-| rolled-back attempt. With copy-then-delete-after-commit it survives, and
-| case (2) proves a retry then completes and cleans up the source.
-|
-*/
 
 beforeEach(function () {
     config(['pixelfed.import.instagram.enabled' => true]);
@@ -36,14 +21,13 @@ beforeEach(function () {
 afterEach(function () {
     Media::flushEventListeners();
 
-    $dir = storage_path('app/imports');
-    if (is_dir($dir)) {
-        exec('rm -rf '.escapeshellarg($dir));
+    foreach (ImportJob::pluck('media_json') as $mediaJson) {
+        File::deleteDirectory(storage_path('app/'.dirname($mediaJson)));
     }
-    $pub = storage_path('app/public/m');
-    if (is_dir($pub)) {
-        foreach (glob($pub.'/*', GLOB_ONLYDIR) as $hashDir) {
-            exec('rm -rf '.escapeshellarg($hashDir));
+    foreach (ImportData::pluck('original_name') as $name) {
+        foreach (glob(storage_path('app/public/m/*/*/'.$name)) ?: [] as $file) {
+            File::delete($file);
+            @rmdir(dirname($file));
         }
     }
 });
@@ -108,7 +92,6 @@ it('keeps the source file and writes no rows when the transaction rolls back', f
     try {
         (new ImportInstagram($job))->handle();
     } catch (RuntimeException $e) {
-        // expected: the forced failure propagates out of the transaction
     }
 
     expect(is_file($sourcePath))->toBeTrue()

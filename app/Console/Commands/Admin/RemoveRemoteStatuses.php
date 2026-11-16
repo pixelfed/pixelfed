@@ -5,6 +5,7 @@ namespace App\Console\Commands\Admin;
 use App\Services\Status\RemoteStatusPurgeService;
 use Illuminate\Console\Command;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Sleep;
 
 class RemoveRemoteStatuses extends Command
 {
@@ -96,7 +97,7 @@ class RemoveRemoteStatuses extends Command
             }
 
             if ($sleepMs > 0 && $result['deleted'] > 0) {
-                usleep($sleepMs * 1000);
+                Sleep::usleep($sleepMs * 1000);
             }
         }
 

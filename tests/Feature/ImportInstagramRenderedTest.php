@@ -6,33 +6,17 @@ use App\Models\ImportJob;
 use App\Models\Status;
 use App\Models\User;
 use Illuminate\Foundation\Testing\LazilyRefreshDatabase;
+use Illuminate\Support\Facades\File;
 use Illuminate\Support\Facades\Queue;
 use Illuminate\Support\Str;
 
 uses(LazilyRefreshDatabase::class);
-
-/*
-|--------------------------------------------------------------------------
-| ImportInstagram persists statuses (rendered NOT NULL)
-|--------------------------------------------------------------------------
-|
-| statuses.rendered is TEXT NOT NULL. ImportInstagram created a Status without
-| assigning rendered, so on strict DBs (SQLite/MariaDB/MySQL DB_STRICT=true)
-| the INSERT was rejected and the import imported nothing. It must set rendered
-| like every other Status writer.
-|
-*/
 
 beforeEach(function () {
     config(['pixelfed.import.instagram.enabled' => true]);
     Queue::fake(); // don't run ImageOptimize
 });
 
-/**
- * Build an ImportJob for a single photo with a real media.json + source file
- * and a matching ImportData row on disk, so ImportInstagram::handle() reaches
- * the Status insert.
- */
 function setupImportJobForSinglePhoto(User $user, string $filename): ImportJob
 {
     $uuid = (string) Str::uuid();
@@ -42,11 +26,9 @@ function setupImportJobForSinglePhoto(User $user, string $filename): ImportJob
         mkdir($mediaDir, 0755, true);
     }
 
-    // The source media file the job will move.
     $sourceRel = $base.'/'.$filename;
     file_put_contents(storage_path('app/'.$sourceRel), 'FAKEJPEGBYTES');
 
-    // media.json describing one photo.
     $mediaJsonRel = $base.'/media.json';
     file_put_contents(storage_path('app/'.$mediaJsonRel), json_encode([
         'photos' => [
@@ -79,15 +61,13 @@ function setupImportJobForSinglePhoto(User $user, string $filename): ImportJob
 }
 
 afterEach(function () {
-    // Best-effort cleanup of any files created under the import dir.
-    $dir = storage_path('app/imports');
-    if (is_dir($dir)) {
-        exec('rm -rf '.escapeshellarg($dir));
+    foreach (ImportJob::pluck('media_json') as $mediaJson) {
+        File::deleteDirectory(storage_path('app/'.dirname($mediaJson)));
     }
-    $pub = storage_path('app/public/m');
-    if (is_dir($pub)) {
-        foreach (glob($pub.'/*', GLOB_ONLYDIR) as $hashDir) {
-            exec('rm -rf '.escapeshellarg($hashDir));
+    foreach (ImportData::pluck('original_name') as $name) {
+        foreach (glob(storage_path('app/public/m/*/*/'.$name)) ?: [] as $file) {
+            File::delete($file);
+            @rmdir(dirname($file));
         }
     }
 });

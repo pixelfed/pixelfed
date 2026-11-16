@@ -17,6 +17,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Validator;
+use Illuminate\Support\Sleep;
 use Purify;
 
 class AdminInviteController extends Controller
@@ -167,7 +168,7 @@ class AdminInviteController extends Controller
             'app_register_ip' => $request->ip(),
         ])));
 
-        sleep(5);
+        Sleep::sleep(5);
 
         $invite->used_by = array_merge($invite->used_by ?? [], [[
             'user_id' => $user->id,

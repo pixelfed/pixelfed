@@ -9,6 +9,7 @@ use Illuminate\Foundation\Auth\ResetsPasswords;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Password;
+use Illuminate\Support\Sleep;
 use Illuminate\Support\Str;
 use Illuminate\Validation\Rules;
 use Illuminate\Validation\ValidationException;
@@ -51,7 +52,7 @@ class ResetPasswordController extends Controller
      */
     protected function rules(): array
     {
-        usleep(random_int(100000, 3000000));
+        Sleep::usleep(random_int(100000, 3000000));
 
         $rules = [
             'token' => 'required',
@@ -92,7 +93,7 @@ class ResetPasswordController extends Controller
             abort_if(BouncerService::checkIp($request->ip()), 404);
         }
 
-        usleep(random_int(100000, 300000));
+        Sleep::usleep(random_int(100000, 300000));
 
         $token = $request->route()->parameter('token');
 

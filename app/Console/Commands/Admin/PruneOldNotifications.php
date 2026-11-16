@@ -4,6 +4,7 @@ namespace App\Console\Commands\Admin;
 
 use Illuminate\Console\Command;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Sleep;
 
 class PruneOldNotifications extends Command
 {
@@ -39,7 +40,7 @@ class PruneOldNotifications extends Command
             $this->line("Deleted {$deleted} rows ({$total} total)");
 
             if ($deleted > 0) {
-                usleep(100_000);
+                Sleep::usleep(100_000);
             }
         } while ($deleted === $batch);
 

@@ -5,6 +5,7 @@ use App\Models\DirectMessage;
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
+use Illuminate\Support\Sleep;
 
 class CreateConversationsTable extends Migration
 {
@@ -31,7 +32,7 @@ class CreateConversationsTable extends Migration
             $table->timestamps();
         });
 
-        sleep(10);
+        Sleep::sleep(10);
 
         if (DirectMessage::count()) {
 

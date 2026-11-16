@@ -15,6 +15,7 @@ use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Sleep;
 use League\Flysystem\UnableToWriteFile;
 
 class ImageS3UploadPipeline implements ShouldQueue
@@ -86,7 +87,7 @@ class ImageS3UploadPipeline implements ShouldQueue
     protected function handleResilientStore($storagePath, $path, $name)
     {
         return retry(4, function (int $attempt) use ($storagePath, $path, $name) {
-            usleep(100000);
+            Sleep::usleep(100000);
             $baseDisk = $attempt > 1 ? $this->getAltDriver() : config('filesystems.cloud');
             try {
                 $disk = Storage::disk($baseDisk);

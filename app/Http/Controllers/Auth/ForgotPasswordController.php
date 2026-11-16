@@ -7,6 +7,7 @@ use App\Services\BouncerService;
 use Illuminate\Foundation\Auth\SendsPasswordResetEmails;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Sleep;
 use Illuminate\Validation\ValidationException;
 use Illuminate\View\View;
 
@@ -44,7 +45,7 @@ class ForgotPasswordController extends Controller
             abort_if(BouncerService::checkIp(request()->ip()), 404);
         }
 
-        usleep(random_int(100000, 300000));
+        Sleep::usleep(random_int(100000, 300000));
 
         return view('auth.passwords.email');
     }
@@ -58,7 +59,7 @@ class ForgotPasswordController extends Controller
             abort_if(BouncerService::checkIp($request->ip()), 404);
         }
 
-        usleep(random_int(100000, 3000000));
+        Sleep::usleep(random_int(100000, 3000000));
 
         $rules = [
             'email' => 'required|email',

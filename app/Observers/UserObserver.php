@@ -11,6 +11,7 @@ use App\Models\User;
 use App\Models\UserDomainBlock;
 use App\Models\UserSetting;
 use App\Services\FollowerService;
+use App\Util\ActivityPub\KeyPair;
 use Illuminate\Support\Facades\DB;
 
 class UserObserver
@@ -95,18 +96,10 @@ class UserObserver
                 $profile->user_id = $user->id;
                 $profile->username = $user->username;
                 $profile->name = $user->name;
-                $pkiConfig = [
-                    'digest_alg' => 'sha512',
-                    'private_key_bits' => 2048,
-                    'private_key_type' => OPENSSL_KEYTYPE_RSA,
-                ];
-                $pki = openssl_pkey_new($pkiConfig);
-                openssl_pkey_export($pki, $pki_private);
-                $pki_public = openssl_pkey_get_details($pki);
-                $pki_public = $pki_public['key'];
+                $keyPair = KeyPair::generate();
 
-                $profile->private_key = $pki_private;
-                $profile->public_key = $pki_public;
+                $profile->private_key = $keyPair['private'];
+                $profile->public_key = $keyPair['public'];
                 $profile->save();
                 $this->applyDefaultDomainBlocks($user);
 
