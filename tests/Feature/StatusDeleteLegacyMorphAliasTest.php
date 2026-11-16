@@ -101,7 +101,7 @@ it('deletes both legacy and modern collection items on status delete', function 
     ]);
 
     $modern = CollectionItem::create([
-        'collection_id' => 1,
+        'collection_id' => 2,
         'object_type' => Status::class,
         'object_id' => $status->id,
         'order' => 2,
