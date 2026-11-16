@@ -6,6 +6,7 @@ use App\Jobs\MediaPipeline\MediaDeletePipeline;
 use App\Models\AccountInterstitial;
 use App\Models\Bookmark;
 use App\Models\CollectionItem;
+use App\Models\CollectionItemRemoval;
 use App\Models\DirectMessage;
 use App\Models\Like;
 use App\Models\Media;
@@ -138,6 +139,7 @@ class RemoteStatusDelete implements ShouldBeUniqueUntilProcessing, ShouldQueue
                 CollectionService::removeItem($col->collection_id, $col->object_id);
                 $col->delete();
             });
+        CollectionItemRemoval::whereStatusId($status->id)->delete();
         $dmIds = DirectMessage::whereStatusId($status->id)->pluck('id');
         if ($dmIds->isNotEmpty()) {
             Notification::whereIn('item_type', ['App\DirectMessage', DirectMessage::class])
