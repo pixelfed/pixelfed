@@ -296,8 +296,8 @@ class CuratedRegisterController extends Controller
         }
         $this->preCheck(true);
         $rules = [
-            'sid' => 'required',
-            'code' => 'required',
+            'sid' => 'required|integer',
+            'code' => 'required|string|max:255',
         ];
         $messages = [];
         if ($this->curatedCaptchaEnabled()) {
