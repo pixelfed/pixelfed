@@ -11,6 +11,7 @@ use App\Services\StatusService;
 use App\Util\ActivityPub\Helpers;
 use Illuminate\Console\Command;
 use Illuminate\Support\Facades\Cache;
+use Illuminate\Support\Sleep;
 
 /**
  * Repairs remote replies that were stored as top-level statuses.
@@ -100,7 +101,7 @@ class FixOrphanedReplies extends Command
                     $this->check($status, $fix, $prune);
 
                     if ($delay) {
-                        usleep($delay * 1000);
+                        Sleep::usleep($delay * 1000);
                     }
                 }
 

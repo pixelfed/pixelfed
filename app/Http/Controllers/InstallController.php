@@ -7,6 +7,7 @@ use Illuminate\Contracts\View\View;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
 use Illuminate\Support\Facades\Artisan;
+use Illuminate\Support\Sleep;
 
 class InstallController extends Controller
 {
@@ -164,13 +165,13 @@ class InstallController extends Controller
             $this->updateConfig('IMAGE_QUALITY=80', 'IMAGE_QUALITY='.$request->input('image_quality'));
         }
 
-        sleep(1);
+        Sleep::sleep(1);
         Artisan::call('config:cache');
-        sleep(1);
+        Sleep::sleep(1);
         Artisan::call('key:generate --force');
-        sleep(1);
+        Sleep::sleep(1);
         Artisan::call('migrate --force');
-        sleep(1);
+        Sleep::sleep(1);
         Artisan::call('config:cache');
 
         if ($request->has('features.activitypub') && $request->input('features.activitypub') == true) {
@@ -198,7 +199,7 @@ class InstallController extends Controller
             $u = $f;
             $u .= $value.PHP_EOL;
         }
-        sleep(1);
+        Sleep::sleep(1);
         file_put_contents(base_path('.env'), $u);
     }
 

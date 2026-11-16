@@ -14,6 +14,7 @@ use Illuminate\Contracts\View\View;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Sleep;
 use Illuminate\Support\Str;
 
 class ParentalControlsController extends Controller
@@ -143,16 +144,16 @@ class ParentalControlsController extends Controller
         $valid = $validator->validate();
         abort_if(! $valid, 404);
         event(new Registered($user = (new RegisterController)->create($fields)));
-        sleep(5);
+        Sleep::sleep(5);
         $user->has_roles = true;
         $user->parent_id = $pc->parent_id;
         if (config('instance.parental_controls.limits.auto_verify_email')) {
             $user->email_verified_at = now();
             $user->save();
-            sleep(3);
+            Sleep::sleep(3);
         } else {
             $user->save();
-            sleep(3);
+            Sleep::sleep(3);
         }
         $ur = UserRoles::updateOrCreate([
             'user_id' => $user->id,
@@ -162,7 +163,7 @@ class ParentalControlsController extends Controller
         $pc->email_verified_at = now();
         $pc->child_id = $user->id;
         $pc->save();
-        sleep(2);
+        Sleep::sleep(2);
         Auth::guard()->login($user);
 
         return redirect('/i/web');

@@ -7,6 +7,7 @@ use App\Models\Avatar;
 use Illuminate\Console\Command;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Sleep;
 
 class AvatarStorageDeepClean extends Command
 {
@@ -79,7 +80,7 @@ class AvatarStorageDeepClean extends Command
         $bar = $this->output->createProgressBar($count);
 
         foreach (Avatar::whereNotNull('cdn_url')->where('is_remote', true)->where('id', '>', $start)->lazyById(10, 'id') as $avatar) {
-            usleep(random_int(50, 1000));
+            Sleep::usleep(random_int(50, 1000));
             $this->counter++;
             $this->handleAvatar($avatar);
             $bar->advance();

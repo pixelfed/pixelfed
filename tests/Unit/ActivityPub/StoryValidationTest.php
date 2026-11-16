@@ -4,7 +4,7 @@ namespace Tests\Unit\ActivityPub;
 
 use App\Util\ActivityPub\Validator\StoryValidator;
 use PHPUnit\Framework\Attributes\Test;
-use PHPUnit\Framework\TestCase;
+use Tests\TestCase;
 
 class StoryValidationTest extends TestCase
 {

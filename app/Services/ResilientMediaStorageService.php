@@ -9,6 +9,7 @@ use GuzzleHttp\Exception\ConnectException;
 use Illuminate\Http\File;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Sleep;
 use League\Flysystem\UnableToWriteFile;
 
 class ResilientMediaStorageService
@@ -34,7 +35,7 @@ class ResilientMediaStorageService
     public static function handleResilientStore($storagePath, $path, $name)
     {
         return retry(4, function (int $attempt) use ($storagePath, $path, $name) {
-            usleep(100000);
+            Sleep::usleep(100000);
             $baseDisk = $attempt > 1 ? self::getAltDriver() : config('filesystems.cloud');
             try {
                 $disk = Storage::disk($baseDisk);

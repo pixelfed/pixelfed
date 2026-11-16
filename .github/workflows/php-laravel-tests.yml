@@ -53,7 +53,7 @@ jobs:
           # ffi is required by jcupitt/vips (the vips driver's FFI binding).
           extensions: dom, curl, libxml, mbstring, zip, pcntl, pdo, sqlite, pdo_sqlite, bcmath, intl, gd, exif, iconv, redis, ffi
           coverage: none
-          ini-values: memory_limit=512M, ffi.enable=true
+          ini-values: memory_limit=512M, ffi.enable=true, opcache.enable_cli=1
 
       - name: Get Composer cache dir
         id: composer-cache
@@ -81,9 +81,11 @@ jobs:
             file_put_contents('storage/oauth-private.key', \$private);
             file_put_contents('storage/oauth-public.key', \$public);
           "
+          chmod 600 storage/oauth-private.key
+          chmod 660 storage/oauth-public.key
 
       - name: Run tests
-        run: vendor/bin/pest --compact
+        run: vendor/bin/pest --compact --parallel
         env:
           REDIS_HOST: 127.0.0.1
           REDIS_PORT: 6379

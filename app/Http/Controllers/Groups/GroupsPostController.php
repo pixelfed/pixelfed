@@ -25,6 +25,7 @@ use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Bus;
 use Illuminate\Support\Facades\Cache;
+use Illuminate\Support\Sleep;
 
 class GroupsPostController extends Controller
 {
@@ -124,7 +125,7 @@ class GroupsPostController extends Controller
             $media->save();
 
             VideoThumbnail::dispatch($media);
-            sleep(15);
+            Sleep::sleep(15);
         }
 
         GroupService::log(

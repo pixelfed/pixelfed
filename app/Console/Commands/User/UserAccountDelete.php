@@ -7,6 +7,7 @@ use App\Models\User;
 use App\Services\AccountDeleteFederationService;
 use App\Services\AccountRevocationService;
 use Illuminate\Console\Command;
+use Illuminate\Support\Sleep;
 use RuntimeException;
 
 use function Laravel\Prompts\confirm;
@@ -145,7 +146,7 @@ class UserAccountDelete extends Command
                     $results['retry_exhausted'] += $batch['retryable'];
                     $resolved += count($batch['retryable']);
                 } elseif ($pending !== []) {
-                    usleep(100_000);
+                    Sleep::usleep(100_000);
                 }
             }
 

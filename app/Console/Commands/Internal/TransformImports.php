@@ -13,6 +13,7 @@ use Illuminate\Console\Command;
 use Illuminate\Database\QueryException;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Sleep;
 use Illuminate\Support\Str;
 
 class TransformImports extends Command
@@ -231,7 +232,7 @@ class TransformImports extends Command
                         break;
                     } catch (QueryException $e) {
                         if ($e->getCode() === '23000' && $attempt < $maxAttempts) {
-                            usleep(random_int(100, 1000));
+                            Sleep::usleep(random_int(100, 1000));
 
                             continue;
                         }

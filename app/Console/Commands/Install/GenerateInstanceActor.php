@@ -3,6 +3,7 @@
 namespace App\Console\Commands\Install;
 
 use App\Models\InstanceActor;
+use App\Util\ActivityPub\KeyPair;
 use Illuminate\Console\Command;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Schema;
@@ -44,19 +45,11 @@ class GenerateInstanceActor extends Command
             return null;
         }
 
-        $pkiConfig = [
-            'digest_alg' => 'sha512',
-            'private_key_bits' => 2048,
-            'private_key_type' => OPENSSL_KEYTYPE_RSA,
-        ];
-        $pki = openssl_pkey_new($pkiConfig);
-        openssl_pkey_export($pki, $pki_private);
-        $pki_public = openssl_pkey_get_details($pki);
-        $pki_public = $pki_public['key'];
+        $keyPair = KeyPair::generate();
 
         $actor = new InstanceActor;
-        $actor->public_key = $pki_public;
-        $actor->private_key = $pki_private;
+        $actor->public_key = $keyPair['public'];
+        $actor->private_key = $keyPair['private'];
         $actor->save();
 
         Cache::rememberForever(InstanceActor::PKI_PUBLIC, function () use ($actor) {

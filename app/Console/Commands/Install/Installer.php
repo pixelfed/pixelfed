@@ -6,6 +6,7 @@ use Illuminate\Console\Command;
 use Illuminate\Foundation\Bootstrap\LoadEnvironmentVariables;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Redis;
+use Illuminate\Support\Sleep;
 use PDO;
 
 class Installer extends Command
@@ -454,7 +455,7 @@ class Installer extends Command
         $confirm = $this->choice('Do you want to run the database migrations?', ['Yes', 'No'], 0);
 
         if ($confirm === 'Yes') {
-            sleep(3);
+            Sleep::sleep(3);
 
             // Clear any cached config
             $this->call('config:clear');

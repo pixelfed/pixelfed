@@ -7,6 +7,7 @@ use Carbon\Carbon;
 use Illuminate\Database\QueryException;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Sleep;
 
 class ImportService
 {
@@ -68,7 +69,7 @@ class ImportService
                 }, 3);
             } catch (QueryException $e) {
                 if ($e->getCode() === '40001') {
-                    usleep(random_int(1000, 10000));
+                    Sleep::usleep(random_int(1000, 10000));
 
                     continue;
                 }
@@ -156,13 +157,13 @@ class ImportService
                 }, 3);
             } catch (QueryException $e) {
                 if ($e->getCode() === '40001') {
-                    usleep(random_int(1000, 10000));
+                    Sleep::usleep(random_int(1000, 10000));
 
                     continue;
                 }
 
                 if ($e->getCode() === '23000') {
-                    usleep(random_int(100, 1000));
+                    Sleep::usleep(random_int(100, 1000));
 
                     continue;
                 }
