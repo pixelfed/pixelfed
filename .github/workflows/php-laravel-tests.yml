@@ -81,6 +81,8 @@ jobs:
             file_put_contents('storage/oauth-private.key', \$private);
             file_put_contents('storage/oauth-public.key', \$public);
           "
+          chmod 600 storage/oauth-private.key
+          chmod 660 storage/oauth-public.key
 
       - name: Run tests
         run: vendor/bin/pest --compact --parallel

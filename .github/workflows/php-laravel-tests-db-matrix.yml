@@ -114,7 +114,7 @@ jobs:
       - name: Setup PHP
         uses: shivammathur/setup-php@eb7c497e18156a6bbabfef1d3a82760b9eda3962 # v2
         with:
-          php-version: '8.5'
+          php-version: "8.5"
           # ffi is required by jcupitt/vips (the vips driver's FFI binding).
           extensions: dom, curl, libxml, mbstring, zip, pcntl, pdo, sqlite, pdo_sqlite, mysql, pdo_mysql, pgsql, pdo_pgsql, bcmath, intl, gd, exif, iconv, redis, ffi
           coverage: none
@@ -144,6 +144,8 @@ jobs:
             file_put_contents('storage/oauth-private.key', \$private);
             file_put_contents('storage/oauth-public.key', \$public);
           " || true
+          chmod 600 storage/oauth-private.key || true
+          chmod 660 storage/oauth-public.key || true
 
       - name: Run tests against ${{ matrix.db }}
         continue-on-error: true
