@@ -10,6 +10,7 @@ use App\Http\Controllers\Api\V1\Admin\DomainBlocksController;
 use App\Http\Controllers\Api\V1\Admin\RegistrationBlocksController;
 use App\Http\Controllers\Api\V1\DomainBlockController;
 use App\Http\Controllers\Api\V1\TagsController;
+use App\Http\Controllers\Api\V1Dot2\CollectionsController;
 use App\Http\Controllers\ApiController;
 use App\Http\Controllers\AppRegisterController;
 use App\Http\Controllers\CollectionController;
@@ -375,6 +376,27 @@ Route::prefix('api')->group(function () use ($middleware) {
             Route::get('carousel', [StoryApiV1Controller::class, 'carouselNext'])->middleware($middleware);
             Route::get('mention-autocomplete', [StoryApiV1Controller::class, 'mentionAutocomplete'])->middleware($middleware);
         });
+
+        Route::prefix('collections')->group(function () use ($middleware) {
+            Route::get('self', [CollectionsController::class, 'mine'])->middleware($middleware);
+            Route::get('settings', [CollectionsController::class, 'settings'])->middleware($middleware);
+            Route::put('settings', [CollectionsController::class, 'updateSettings'])->middleware($middleware);
+            Route::post('/', [CollectionsController::class, 'store'])->middleware($middleware);
+            Route::get('{id}', [CollectionsController::class, 'show'])->middleware($middleware)->whereNumber('id');
+            Route::match(['put', 'patch'], '{id}', [CollectionsController::class, 'update'])->middleware($middleware)->whereNumber('id');
+            Route::delete('{id}', [CollectionsController::class, 'destroy'])->middleware($middleware)->whereNumber('id');
+            Route::get('{id}/items', [CollectionsController::class, 'items'])->middleware($middleware)->whereNumber('id');
+            Route::post('{id}/items', [CollectionsController::class, 'addItems'])->middleware($middleware)->whereNumber('id');
+            Route::delete('{id}/items/{statusId}', [CollectionsController::class, 'removeItem'])->middleware($middleware)->whereNumber(['id', 'statusId']);
+        });
+
+        Route::get('accounts/{id}/collections', [CollectionsController::class, 'accountCollections'])->middleware($middleware)->whereNumber('id');
+
+        Route::get('statuses/{id}/collections', [CollectionsController::class, 'statusCollections'])->middleware($middleware)->whereNumber('id');
+        Route::post('statuses/{id}/collections', [CollectionsController::class, 'updateStatusCollections'])->middleware($middleware)->whereNumber('id');
+        Route::get('statuses/{id}/collected_by', [CollectionsController::class, 'collectedBy'])->middleware($middleware)->whereNumber('id');
+        Route::delete('statuses/{id}/collected_by', [CollectionsController::class, 'removeFromAllCollections'])->middleware($middleware)->whereNumber('id');
+        Route::delete('statuses/{id}/collected_by/{collectionId}', [CollectionsController::class, 'removeFromCollection'])->middleware($middleware)->whereNumber(['id', 'collectionId']);
     });
 
     Route::prefix('v2.1')->group(function () use ($middleware) {
