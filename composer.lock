@@ -12648,16 +12648,16 @@
         },
         {
             "name": "pestphp/pest",
-            "version": "v5.3.6",
+            "version": "v5.3.7",
             "source": {
                 "type": "git",
                 "url": "https://github.com/pestphp/pest.git",
-                "reference": "848c740a44e5994e524f35ce9d4345bacf0dec74"
+                "reference": "ff1292102caee679da7294b239b434e93db5cf42"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/pestphp/pest/zipball/848c740a44e5994e524f35ce9d4345bacf0dec74",
-                "reference": "848c740a44e5994e524f35ce9d4345bacf0dec74",
+                "url": "https://api.github.com/repos/pestphp/pest/zipball/ff1292102caee679da7294b239b434e93db5cf42",
+                "reference": "ff1292102caee679da7294b239b434e93db5cf42",
                 "shasum": ""
             },
             "require": {
@@ -12685,6 +12685,7 @@
                 "pestphp/pest-plugin-phpstan": "^5.3.1",
                 "pestphp/pest-plugin-rector": "^5.0.6",
                 "pestphp/pest-plugin-type-coverage": "^5.1.0",
+                "phpstan/phpstan": "^2.3.5 <2.3.6",
                 "psy/psysh": "^0.12.24"
             },
             "bin": [
@@ -12752,7 +12753,7 @@
             ],
             "support": {
                 "issues": "https://github.com/pestphp/pest/issues",
-                "source": "https://github.com/pestphp/pest/tree/v5.3.6"
+                "source": "https://github.com/pestphp/pest/tree/v5.3.7"
             },
             "funding": [
                 {
@@ -12764,8 +12765,8 @@
                     "type": "github"
                 }
             ],
-            "time": "2026-11-14T21:14:48+00:00",
-            "published-time": "2026-11-14T21:21:17+00:00"
+            "time": "2026-11-16T17:50:56+00:00",
+            "published-time": "2026-11-16T17:51:27+00:00"
         },
         {
             "name": "pestphp/pest-plugin",
