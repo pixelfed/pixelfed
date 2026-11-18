@@ -165,12 +165,8 @@ class PublicApiController extends Controller
         $status = Status::whereProfileId($profile->id)->whereCommentsDisabled(false)->findOrFail($postId);
         $this->scopeCheck($profile, $status);
 
-        if ($request->user() !== null) {
-            $p = $request->user()->profile;
-            $scope = $p->id == $status->profile_id || FollowerService::follows($p->id, $profile->id) ? ['public', 'private', 'unlisted'] : ['public', 'unlisted'];
-        } else {
-            $scope = ['public', 'unlisted'];
-        }
+        $pid = $request->user()?->profile_id;
+        $scope = $pid ? ['public', 'private', 'unlisted'] : ['public', 'unlisted'];
 
         $replies = collect();
         if ($request->filled('min_id') || $request->filled('max_id')) {
@@ -199,6 +195,23 @@ class PublicApiController extends Controller
                 ->select('id', 'caption', 'rendered', 'local', 'visibility', 'scope', 'is_nsfw', 'profile_id', 'in_reply_to_id', 'type', 'reply_count', 'created_at')
                 ->orderBy('id', 'desc')
                 ->paginate($limit);
+        }
+
+        if ($pid) {
+            $filters = UserFilterService::filters($pid);
+            $replies->setCollection(
+                $replies->getCollection()->filter(function ($reply) use ($filters, $status, $pid) {
+                    return ! in_array($reply->profile_id, $filters) &&
+                        StatusService::isReplyVisibleTo(
+                            $reply->profile_id,
+                            $reply->scope,
+                            $reply->local,
+                            $status->profile_id,
+                            $status->scope,
+                            $pid
+                        );
+                })->values()
+            );
         }
 
         $resource = new Fractal\Resource\Collection($replies, new StatusStatelessTransformer, 'data');
