@@ -117,3 +117,88 @@ it('hides replies from accounts the viewer blocks', function () {
 
     expect($ids)->not->toContain((string) $publicReply->id);
 });
+
+it('hides replies from accounts that block the viewer', function () {
+    $publicReply = Status::factory()->create([
+        'profile_id' => $this->replier->profile_id,
+        'in_reply_to_id' => $this->post->id,
+        'in_reply_to_profile_id' => $this->author->profile_id,
+    ]);
+
+    UserFilter::create([
+        'user_id' => $this->replier->profile_id,
+        'filterable_id' => $this->viewer->profile_id,
+        'filterable_type' => Profile::class,
+        'filter_type' => 'block',
+    ]);
+    UserFilterService::block($this->replier->profile_id, $this->viewer->profile_id);
+
+    $ids = commentsVisibilityReplyIds($this->actingAs($this->viewer)->getJson($this->url));
+
+    expect($ids)->not->toContain((string) $publicReply->id);
+});
+
+it('fills a page when hidden replies are interleaved with visible ones', function () {
+    commentsVisibilityFollow($this->viewer, $this->author);
+
+    $replies = collect(range(1, 11))->map(fn () => Status::factory()->create([
+        'profile_id' => $this->replier->profile_id,
+        'in_reply_to_id' => $this->post->id,
+        'in_reply_to_profile_id' => $this->author->profile_id,
+    ]))->sortByDesc('id')->values();
+
+    $visible = [];
+    foreach ($replies as $i => $reply) {
+        if ($i % 2) {
+            $visible[] = (string) $reply->id;
+        } else {
+            $reply->update(['scope' => 'private', 'visibility' => 'private']);
+        }
+    }
+
+    $response = $this->actingAs($this->viewer)->getJson($this->url.'?limit=5')->assertOk();
+
+    expect($response->json('data'))->toHaveCount(5)
+        ->and(collect($response->json('data'))->pluck('id')->all())->toBe($visible)
+        ->and($response->json('meta.pagination.total'))->toBe(5);
+});
+
+it('shows local followers-only replies on a private post to its followers', function () {
+    commentsVisibilityFollow($this->viewer, $this->author);
+
+    $privatePost = Status::factory()->private()->create([
+        'profile_id' => $this->author->profile_id,
+    ]);
+    $localReply = Status::factory()->private()->create([
+        'profile_id' => $this->replier->profile_id,
+        'in_reply_to_id' => $privatePost->id,
+        'in_reply_to_profile_id' => $this->author->profile_id,
+    ]);
+    $remoteReply = Status::factory()->private()->create([
+        'profile_id' => Profile::factory()->remote()->create()->id,
+        'in_reply_to_id' => $privatePost->id,
+        'in_reply_to_profile_id' => $this->author->profile_id,
+        'local' => false,
+    ]);
+
+    $ids = commentsVisibilityReplyIds(
+        $this->actingAs($this->viewer)->getJson("/api/v2/comments/{$this->author->profile_id}/status/{$privatePost->id}")
+    );
+
+    expect($ids)->toContain((string) $localReply->id)
+        ->not->toContain((string) $remoteReply->id);
+});
+
+it('applies both min_id and max_id when both are sent', function () {
+    $ids = collect(range(1, 5))->map(fn () => (string) Status::factory()->create([
+        'profile_id' => $this->replier->profile_id,
+        'in_reply_to_id' => $this->post->id,
+        'in_reply_to_profile_id' => $this->author->profile_id,
+    ])->id)->sort()->values();
+
+    $returned = commentsVisibilityReplyIds(
+        $this->getJson($this->url.'?min_id='.$ids[1].'&max_id='.$ids[3])
+    );
+
+    expect($returned)->toBe([$ids[3], $ids[2], $ids[1]]);
+});
