@@ -112,8 +112,9 @@ function fsyncInProduction(callable $fn): mixed
     }
 }
 
-function fsyncSignedGetHeaders(string $privateKey, string $keyId, string $path, string $host = 'pixelfed.test'): array
+function fsyncSignedGetHeaders(string $privateKey, string $keyId, string $path, ?string $host = null): array
 {
+    $host ??= parse_url(config('app.url'), PHP_URL_HOST);
     $date = now()->toRfc7231String();
 
     openssl_sign(
