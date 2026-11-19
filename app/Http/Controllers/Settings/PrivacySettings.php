@@ -9,6 +9,7 @@ use App\Models\Profile;
 use App\Models\QuoteAuthorization;
 use App\Models\UserFilter;
 use App\Services\AccountService;
+use App\Services\CollectionService;
 use App\Services\FeaturedCollectionService;
 use App\Services\FollowerService;
 use App\Services\QuoteService;
@@ -123,6 +124,13 @@ trait PrivacySettings
             $settings->can_quote = $canQuote;
             $settings->save();
             QuoteService::forgetPolicy($pid);
+        }
+
+        $canCollect = $request->input('can_collect');
+        if (in_array($canCollect, CollectionService::POLICIES, true) && $canCollect !== $settings->can_collect) {
+            $settings->can_collect = $canCollect;
+            $settings->save();
+            CollectionService::forgetCollectPolicy($pid);
         }
 
         Cache::forget('profile:settings:'.$pid);
