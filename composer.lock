@@ -6855,16 +6855,16 @@
         },
         {
             "name": "spatie/laravel-backup",
-            "version": "10.4.0",
+            "version": "10.5.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/spatie/laravel-backup.git",
-                "reference": "f5622c47d8aada2542c28a7612d832357d2e8979"
+                "reference": "bfec9d8a6d07ec11694b17c593ee2375b8a53245"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/spatie/laravel-backup/zipball/f5622c47d8aada2542c28a7612d832357d2e8979",
-                "reference": "f5622c47d8aada2542c28a7612d832357d2e8979",
+                "url": "https://api.github.com/repos/spatie/laravel-backup/zipball/bfec9d8a6d07ec11694b17c593ee2375b8a53245",
+                "reference": "bfec9d8a6d07ec11694b17c593ee2375b8a53245",
                 "shasum": ""
             },
             "require": {
@@ -6939,7 +6939,7 @@
             ],
             "support": {
                 "issues": "https://github.com/spatie/laravel-backup/issues",
-                "source": "https://github.com/spatie/laravel-backup/tree/10.4.0"
+                "source": "https://github.com/spatie/laravel-backup/tree/10.5.0"
             },
             "funding": [
                 {
@@ -6951,8 +6951,8 @@
                     "type": "other"
                 }
             ],
-            "time": "2026-11-06T11:04:53+00:00",
-            "published-time": "2026-11-06T11:14:09+00:00"
+            "time": "2026-11-18T16:20:46+00:00",
+            "published-time": "2026-11-18T16:21:06+00:00"
         },
         {
             "name": "spatie/laravel-honeypot",
