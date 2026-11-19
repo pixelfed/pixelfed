@@ -2,8 +2,10 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Follower;
 use App\Models\Profile;
 use App\Models\Status;
+use App\Models\UserFilter;
 use App\Services\AccountService;
 use App\Services\BookmarkService;
 use App\Services\FollowerService;
@@ -165,47 +167,61 @@ class PublicApiController extends Controller
         $status = Status::whereProfileId($profile->id)->whereCommentsDisabled(false)->findOrFail($postId);
         $this->scopeCheck($profile, $status);
 
-        if ($request->user() !== null) {
-            $p = $request->user()->profile;
-            $scope = $p->id == $status->profile_id || FollowerService::follows($p->id, $profile->id) ? ['public', 'private', 'unlisted'] : ['public', 'unlisted'];
+        $pid = $request->user()?->profile_id;
+
+        $query = Status::whereInReplyToId($status->id)
+            ->whereNull('reblog_of_id')
+            ->select('id', 'caption', 'rendered', 'local', 'visibility', 'scope', 'is_nsfw', 'profile_id', 'in_reply_to_id', 'type', 'reply_count', 'created_at')
+            ->when($request->filled('min_id'), fn ($q) => $q->where('id', '>=', $request->min_id))
+            ->when($request->filled('max_id'), fn ($q) => $q->where('id', '<=', $request->max_id));
+
+        if ($pid) {
+            $this->scopeRepliesForViewer($query, $status, (int) $pid);
         } else {
-            $scope = ['public', 'unlisted'];
+            $query->whereIn('scope', ['public', 'unlisted']);
         }
 
-        $replies = collect();
-        if ($request->filled('min_id') || $request->filled('max_id')) {
-            if ($request->filled('min_id')) {
-                $replies = $status->comments()
-                    ->whereNull('reblog_of_id')
-                    ->whereIn('scope', $scope)
-                    ->select('id', 'caption', 'rendered', 'local', 'visibility', 'scope', 'is_nsfw', 'profile_id', 'in_reply_to_id', 'type', 'reply_count', 'created_at')
-                    ->where('id', '>=', $request->min_id)
-                    ->orderBy('id', 'desc')
-                    ->paginate($limit);
-            }
-            if ($request->filled('max_id')) {
-                $replies = $status->comments()
-                    ->whereNull('reblog_of_id')
-                    ->whereIn('scope', $scope)
-                    ->select('id', 'caption', 'rendered', 'local', 'visibility', 'scope', 'is_nsfw', 'profile_id', 'in_reply_to_id', 'type', 'reply_count', 'created_at')
-                    ->where('id', '<=', $request->max_id)
-                    ->orderBy('id', 'desc')
-                    ->paginate($limit);
-            }
-        } else {
-            $replies = Status::whereInReplyToId($status->id)
-                ->whereNull('reblog_of_id')
-                ->whereIn('scope', $scope)
-                ->select('id', 'caption', 'rendered', 'local', 'visibility', 'scope', 'is_nsfw', 'profile_id', 'in_reply_to_id', 'type', 'reply_count', 'created_at')
-                ->orderBy('id', 'desc')
-                ->paginate($limit);
-        }
+        $replies = $query->orderBy('id', 'desc')->paginate($limit);
 
         $resource = new Fractal\Resource\Collection($replies, new StatusStatelessTransformer, 'data');
         $resource->setPaginator(new IlluminatePaginatorAdapter($replies));
         $res = $this->fractal->createData($resource)->toArray();
 
         return response()->json($res, 200, [], JSON_PRETTY_PRINT);
+    }
+
+    /**
+     * Mirrors StatusService::isReplyVisibleTo in SQL so pagination only
+     * counts replies the viewer is allowed to see.
+     */
+    protected function scopeRepliesForViewer($query, Status $parent, int $pid): void
+    {
+        $query->where(function ($q) use ($parent, $pid) {
+            $q->whereIn('scope', ['public', 'unlisted'])
+                ->orWhere(function ($q) use ($parent, $pid) {
+                    $q->where('scope', 'private');
+
+                    if ((int) $parent->profile_id === $pid) {
+                        return;
+                    }
+
+                    $q->where(function ($q) use ($parent, $pid) {
+                        $q->where('profile_id', $pid)
+                            ->when($parent->scope === 'private', fn ($q) => $q->orWhere('local', true))
+                            ->orWhereIn('profile_id', Follower::select('following_id')->where('profile_id', $pid));
+                    });
+                });
+        });
+
+        $filters = UserFilterService::filters($pid);
+        if (! empty($filters)) {
+            $query->whereNotIn('profile_id', $filters);
+        }
+
+        $query->whereNotIn('profile_id', UserFilter::select('user_id')
+            ->whereIn('filterable_type', ['App\Profile', Profile::class])
+            ->where('filter_type', 'block')
+            ->where('filterable_id', $pid));
     }
 
     protected function scopeCheck(Profile $profile, Status $status): void
