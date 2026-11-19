@@ -4,6 +4,7 @@ namespace App\Transformer\ActivityPub;
 
 use App\Models\Profile;
 use App\Services\AccountService;
+use App\Services\CollectionService;
 use App\Services\FeaturedCollectionService;
 use App\Util\Media\License;
 use League\Fractal;
@@ -36,6 +37,11 @@ class ProfileTransformer extends Fractal\TransformerAbstract
                     ],
                     'canFeature' => [
                         '@id' => 'https://w3id.org/fep/7aa9#canFeature',
+                        '@type' => '@id',
+                    ],
+                    'pixelfed' => 'http://pixelfed.org/ns#',
+                    'canCollect' => [
+                        '@id' => 'pixelfed:canCollect',
                         '@type' => '@id',
                     ],
                     'automaticApproval' => [
@@ -96,7 +102,10 @@ class ProfileTransformer extends Fractal\TransformerAbstract
                 }
             }
 
-            $res['interactionPolicy'] = FeaturedCollectionService::interactionPolicy($profile);
+            $res['interactionPolicy'] = [
+                ...FeaturedCollectionService::interactionPolicy($profile),
+                ...CollectionService::interactionPolicy($profile),
+            ];
 
             $preferredLicense = $this->preferredLicense($profile);
             if ($preferredLicense) {

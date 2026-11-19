@@ -4,6 +4,7 @@ namespace App\Observers;
 
 use App\Models\Profile;
 use App\Services\AccountService;
+use App\Services\CollectionService;
 
 class ProfileObserver
 {
@@ -32,6 +33,10 @@ class ProfileObserver
     public function updated(Profile $profile)
     {
         AccountService::del($profile->id);
+
+        if ($profile->wasChanged('can_collect')) {
+            CollectionService::forgetCollectPolicy((int) $profile->id);
+        }
     }
 
     /**

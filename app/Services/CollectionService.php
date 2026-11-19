@@ -29,6 +29,8 @@ class CollectionService
 
     public const POLICY_NOBODY = 'nobody';
 
+    public const AS_PUBLIC = 'https://www.w3.org/ns/activitystreams#Public';
+
     public const POLICIES = [
         self::POLICY_EVERYONE,
         self::POLICY_FOLLOWERS,
@@ -209,17 +211,71 @@ class CollectionService
             function () use ($profileId) {
                 $profile = Profile::find($profileId);
 
-                if (! $profile || $profile->domain !== null) {
+                if (! $profile) {
                     return self::POLICY_EVERYONE;
                 }
 
-                $policy = $profile->user?->settings?->can_collect;
+                $policy = $profile->domain !== null
+                    ? $profile->can_collect
+                    : $profile->user?->settings?->can_collect;
 
                 return in_array($policy, self::POLICIES, true)
                     ? $policy
                     : self::POLICY_EVERYONE;
             }
         );
+    }
+
+    public static function interactionPolicy(Profile $profile): array
+    {
+        $uri = match (self::collectPolicy((int) $profile->id)) {
+            self::POLICY_EVERYONE => self::AS_PUBLIC,
+            self::POLICY_FOLLOWERS => $profile->permalink('/followers'),
+            default => $profile->permalink(),
+        };
+
+        return [
+            'canCollect' => [
+                'automaticApproval' => [$uri],
+            ],
+        ];
+    }
+
+    public static function policyFromActor(array $actor): ?string
+    {
+        $policy = $actor['interactionPolicy']['canCollect'] ?? null;
+
+        if (! is_array($policy)) {
+            return null;
+        }
+
+        $automatic = $policy['automaticApproval'] ?? [];
+
+        if (! is_array($automatic) || ! array_is_list($automatic)) {
+            $automatic = [$automatic];
+        }
+
+        $uris = [];
+
+        foreach ($automatic as $value) {
+            $value = is_array($value) ? ($value['id'] ?? null) : $value;
+
+            if (is_string($value) && $value !== '') {
+                $uris[] = $value;
+            }
+        }
+
+        if (array_intersect($uris, [self::AS_PUBLIC, 'as:Public', 'Public']) !== []) {
+            return self::POLICY_EVERYONE;
+        }
+
+        $followers = FollowersSyncService::followersUrlFromActor($actor);
+
+        if ($followers && in_array($followers, $uris, true)) {
+            return self::POLICY_FOLLOWERS;
+        }
+
+        return self::POLICY_NOBODY;
     }
 
     public static function forgetCollectPolicy(int $profileId): void
@@ -262,6 +318,10 @@ class CollectionService
 
         if (! $author || $author->status !== null) {
             return 'This post is not available.';
+        }
+
+        if ($author->domain !== null) {
+            $author = app(RemoteActorRefresher::class)->fresh($author);
         }
 
         if (self::blocksEither((int) $author->id, (int) $collector->id)) {
