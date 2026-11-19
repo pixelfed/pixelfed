@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Api\V1Dot2;
 
 use App\Exceptions\CollectionException;
 use App\Http\Controllers\Controller;
+use App\Jobs\ProfilePipeline\FederateActorUpdate;
 use App\Models\Collection;
 use App\Models\CollectionItem;
 use App\Models\CollectionItemRemoval;
@@ -477,10 +478,16 @@ class CollectionsController extends Controller
         ]);
 
         $settings = UserSetting::firstOrCreate(['user_id' => $user->id]);
-        $settings->can_collect = $request->input('can_collect');
-        $settings->save();
+        $policy = $request->input('can_collect');
 
-        CollectionService::forgetCollectPolicy((int) $user->profile_id);
+        if (($settings->can_collect ?? CollectionService::POLICY_EVERYONE) !== $policy) {
+            $settings->can_collect = $policy;
+            $settings->save();
+
+            CollectionService::forgetCollectPolicy((int) $user->profile_id);
+            AccountService::del((int) $user->profile_id);
+            FederateActorUpdate::dispatch((int) $user->profile_id)->onQueue('low');
+        }
 
         return response()->json($this->formatSettings($user));
     }

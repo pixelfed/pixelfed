@@ -18,6 +18,7 @@ use App\Services\Account\AccountStatService;
 use App\Services\AccountService;
 use App\Services\ActivityPubDeliveryService;
 use App\Services\ActivityPubFetchService;
+use App\Services\CollectionService;
 use App\Services\ContentCredentials\ContentCredentialService;
 use App\Services\DomainService;
 use App\Services\FetchCacheService;
@@ -2614,6 +2615,7 @@ class Helpers
             'indexable' => isset($res['indexable']) ? (bool) $res['indexable'] : false,
             'moved_to_profile_id' => $movedToPid,
             'is_private' => isset($res['manuallyApprovesFollowers']) ? (bool) $res['manuallyApprovesFollowers'] : true,
+            'can_collect' => CollectionService::policyFromActor($res),
         ];
     }
 

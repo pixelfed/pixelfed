@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Settings;
 
 use App\Jobs\HomeFeedPipeline\FeedUnfollowPipeline;
+use App\Jobs\ProfilePipeline\FederateActorUpdate;
 use App\Models\FeatureAuthorization;
 use App\Models\Follower;
 use App\Models\Profile;
@@ -131,6 +132,8 @@ trait PrivacySettings
             $settings->can_collect = $canCollect;
             $settings->save();
             CollectionService::forgetCollectPolicy($pid);
+            AccountService::del($pid);
+            FederateActorUpdate::dispatch($pid)->onQueue('low');
         }
 
         Cache::forget('profile:settings:'.$pid);

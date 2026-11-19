@@ -4,6 +4,7 @@ namespace App\Jobs\ProfilePipeline;
 
 use App\Jobs\AvatarPipeline\RemoteAvatarFetchFromUrl;
 use App\Models\Profile;
+use App\Services\CollectionService;
 use App\Services\SanitizeService;
 use App\Util\Lexer\Autolink;
 use Illuminate\Bus\Queueable;
@@ -73,6 +74,7 @@ class HandleUpdateActivity implements ShouldQueue
 
         $profile->bio = $this->cleanBio($object['summary'] ?? null);
         $profile->name = $this->cleanName($object['name'] ?? null);
+        $profile->can_collect = CollectionService::policyFromActor($object);
 
         if ($profile->isDirty()) {
             $profile->save();
