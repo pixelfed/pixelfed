@@ -1,4 +1,4 @@
-FROM serversideup/php:8.6-frankenphp AS ffmpeg
+FROM serversideup/php:8.5-frankenphp AS ffmpeg
 
 # ffmpeg version to compile, change with [--build-arg FFMPEG_VERSION="9.0.2"]
 # renovate: datasource=github-tags depName=FFmpeg/FFmpeg extractVersion=^n(?<version>\d+\.\d+(\.\d+)?)$
@@ -77,7 +77,7 @@ RUN ./configure \
     make install
 
 # libvips builder — compile from source for a current release with full AVIF/HEIC support.
-FROM serversideup/php:8.6-frankenphp AS vips
+FROM serversideup/php:8.5-frankenphp AS vips
 
 # libvips version to compile, change with [--build-arg VIPS_VERSION="8.18.6"]
 # renovate: datasource=github-releases depName=libvips packageName=libvips/libvips
@@ -167,7 +167,7 @@ RUN echo "/usr/local/vips/lib" > /etc/ld.so.conf.d/vips.conf && ldconfig \
     && /usr/local/vips/bin/vips list | grep -i jxl
 
 # PHP base image — FrankenPHP (includes Caddy built-in)
-FROM serversideup/php:8.6-frankenphp
+FROM serversideup/php:8.5-frankenphp
 
 ARG RUNTIME_UID=33
 ARG RUNTIME_GID=33
