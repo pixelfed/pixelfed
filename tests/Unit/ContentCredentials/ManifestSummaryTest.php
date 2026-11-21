@@ -82,6 +82,70 @@ class ManifestSummaryTest extends TestCase
     }
 
     #[Test]
+    public function ai_component_placed_into_a_photo_is_ai_modified(): void
+    {
+        $store = $this->store([
+            'urn:c2pa:edit' => [
+                'assertions' => [$this->actions([
+                    ['action' => 'c2pa.opened'],
+                    ['action' => 'c2pa.placed'],
+                ])],
+                'ingredients' => [
+                    ['relationship' => 'componentOf', 'active_manifest' => 'urn:c2pa:gen'],
+                    ['relationship' => 'parentOf', 'active_manifest' => 'urn:c2pa:camera'],
+                ],
+            ],
+            'urn:c2pa:gen' => [
+                'assertions' => [$this->actions([
+                    ['action' => 'c2pa.created', 'digitalSourceType' => 'http://cv.iptc.org/newscodes/digitalsourcetype/trainedAlgorithmicMedia'],
+                ])],
+            ],
+            'urn:c2pa:camera' => [
+                'assertions' => [$this->actions([
+                    ['action' => 'c2pa.created', 'digitalSourceType' => 'http://cv.iptc.org/newscodes/digitalsourcetype/digitalCapture'],
+                ])],
+            ],
+        ], 'urn:c2pa:edit');
+
+        $summary = ManifestSummary::fromStore($store);
+
+        $this->assertSame('compositeWithTrainedAlgorithmicMedia', $summary->digitalSourceType);
+        $this->assertSame('ai_modified', $summary->aiLabel);
+    }
+
+    #[Test]
+    public function source_type_comes_from_the_parent_not_a_component(): void
+    {
+        $store = $this->store([
+            'urn:c2pa:edit' => [
+                'assertions' => [$this->actions([
+                    ['action' => 'c2pa.opened'],
+                    ['action' => 'c2pa.placed'],
+                ])],
+                'ingredients' => [
+                    ['relationship' => 'componentOf', 'active_manifest' => 'urn:c2pa:art'],
+                    ['relationship' => 'parentOf', 'active_manifest' => 'urn:c2pa:camera'],
+                ],
+            ],
+            'urn:c2pa:art' => [
+                'assertions' => [$this->actions([
+                    ['action' => 'c2pa.created', 'digitalSourceType' => 'http://cv.iptc.org/newscodes/digitalsourcetype/digitalArt'],
+                ])],
+            ],
+            'urn:c2pa:camera' => [
+                'assertions' => [$this->actions([
+                    ['action' => 'c2pa.created', 'digitalSourceType' => 'http://cv.iptc.org/newscodes/digitalsourcetype/digitalCapture'],
+                ])],
+            ],
+        ], 'urn:c2pa:edit');
+
+        $summary = ManifestSummary::fromStore($store);
+
+        $this->assertSame('digitalCapture', $summary->digitalSourceType);
+        $this->assertNull($summary->aiLabel);
+    }
+
+    #[Test]
     public function camera_capture_has_no_label(): void
     {
         $store = $this->store([

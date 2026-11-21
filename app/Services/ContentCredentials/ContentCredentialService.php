@@ -93,7 +93,6 @@ class ContentCredentialService
         string $title,
         string $original,
         string $originalMime,
-        bool $resized,
     ): ?string {
         if ($media->remote_media || ! self::signingEnabled()) {
             return null;
@@ -127,15 +126,13 @@ class ContentCredentialService
             return null;
         }
 
-        $agent = ['name' => 'Pixelfed', 'version' => (string) config('pixelfed.version')];
-        $actions = [];
-        if ($resized) {
-            $actions[] = ['action' => 'c2pa.resized', 'softwareAgent' => $agent];
-        }
-        if ($derivativeMime !== $originalMime) {
-            $actions[] = ['action' => 'c2pa.converted', 'softwareAgent' => $agent];
-        }
-        $actions[] = ['action' => 'c2pa.transcoded', 'softwareAgent' => $agent];
+        // c2pa.transcoded covers resolution scaling and format changes. Recording
+        // it alone keeps the C2PA signal that nothing editorial changed, which
+        // c2pa.resized (a perceptible transformation) would lose.
+        $actions = [[
+            'action' => 'c2pa.transcoded',
+            'softwareAgent' => ['name' => 'Pixelfed', 'version' => (string) config('pixelfed.version')],
+        ]];
 
         $redactions = array_map(
             fn (array $a) => "self#jumbf=/c2pa/{$a['manifest']}/c2pa.assertions/{$a['label']}",
