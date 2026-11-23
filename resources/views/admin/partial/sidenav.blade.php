@@ -64,6 +64,13 @@
                         </a>
                     </li>
 
+                    <li class="nav-item">
+                        <a class="nav-link {{request()->is('*admin/ip-data*')?'active':''}}" href="{{route('admin.ip-data')}}">
+                            <i class="ni ni-bold-right text-primary"></i>
+                            <span class="nav-link-text">IP Data</span>
+                        </a>
+                    </li>
+
                     @if((bool) config_cache('instance.curated_registration.enabled'))
                     <li class="nav-item">
                         <a class="nav-link {{request()->is('*admin/curated-onboarding*')?'active':''}}" href="{{route('admin.curated-onboarding')}}">

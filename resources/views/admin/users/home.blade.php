@@ -27,7 +27,7 @@
                             <i class="fas fa-search text-muted"></i>
                         </span>
                     </div>
-                    <input class="form-control border-left-0 pl-2" name="q" placeholder="Username, bio: or website:" title="Search by username, or use bio:t.me or website:*t.me* (* is a wildcard)" value="{{request()->input('q')}}">
+                    <input class="form-control border-left-0 pl-2" name="q" placeholder="Username, or a filter like asn:14061" title="Search by username, or use bio:t.me, website:*t.me* (* is a wildcard), asn:14061, country:VN or ip:203.0.113.7" value="{{request()->input('q')}}">
                     <div class="input-group-append">
                         <button type="submit" class="btn btn-primary">
                             Search
@@ -124,13 +124,16 @@
                                 <i class="fas fa-sort{{$col == 'username' ? '-' . ($dir == 'asc' ? 'up' : 'down') : ''}} ml-1 text-muted"></i>
                             </a>
                         </th>
-                        <th scope="col" class="border-top-0 text-center" width="100px">
+                        <th scope="col" class="border-top-0 px-2" width="150px">
+                            <span class="font-weight-bold text-muted">Signup network</span>
+                        </th>
+                        <th scope="col" class="border-top-0 text-center" width="90px">
                             <span class="font-weight-bold text-muted">Posts</span>
                         </th>
-                        <th scope="col" class="border-top-0 text-center" width="100px">
+                        <th scope="col" class="border-top-0 text-center" width="90px">
                             <span class="font-weight-bold text-muted">Followers</span>
                         </th>
-                        <th scope="col" class="border-top-0 text-center" width="100px">
+                        <th scope="col" class="border-top-0 text-center" width="90px">
                             <span class="font-weight-bold text-muted">Following</span>
                         </th>
                         <th scope="col" class="border-top-0 text-center" width="200px">
@@ -161,6 +164,9 @@
                                     <small class="text-muted">Account deleted</small>
                                 </div>
                             </div>
+                        </td>
+                        <td class="align-middle px-2">
+                            @include('admin.ip-data.partial.network', ['ip' => $user->app_register_ip, 'network' => $networks[$user->id] ?? null, 'available' => $ipDataAvailable])
                         </td>
                         <td class="text-center text-muted align-middle">—</td>
                         <td class="text-center text-muted align-middle">—</td>
@@ -238,6 +244,9 @@
                             </div>
                         </td>
 
+                        <td class="align-middle px-2">
+                            @include('admin.ip-data.partial.network', ['ip' => $user->app_register_ip, 'network' => $networks[$user->id] ?? null, 'available' => $ipDataAvailable])
+                        </td>
                         <td class="text-center align-middle">
                             <a href="/i/web/profile/{{$user->account['id']}}" class="font-weight-bold" target="_blank">
                                 {{$user->account['statuses_count'] ?? 0}}
@@ -280,7 +289,7 @@
                     @endif
                     @empty
                     <tr>
-                        <td colspan="7" class="text-center py-5">
+                        <td colspan="8" class="text-center py-5">
                             <div class="text-muted">
                                 <i class="fas fa-users fa-3x mb-3 d-block"></i>
                                 <h5>No users found</h5>
@@ -304,6 +313,9 @@
             <div class="d-flex justify-content-between align-items-center">
                 <div class="text-muted small">
                     Showing {{$users->count()}} results
+                    @if($ipDataAvailable)
+                    <span class="ml-2">IP address data powered by <a href="https://iplocate.io" rel="noopener">IPLocate.io</a></span>
+                    @endif
                 </div>
                 <nav aria-label="User pagination">
                     <ul class="pagination pagination-sm mb-0">

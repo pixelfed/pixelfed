@@ -8,7 +8,7 @@
             <div class="row align-items-center py-4">
                 <div class="col-lg-8 col-12">
                     <p class="display-1 text-white d-inline-block mb-0">Registration Blocks</p>
-                    <p class="text-white mb-0">Stop new accounts by IP or range, email address, email domain or username. Existing accounts are not affected.</p>
+                    <p class="text-white mb-0">Stop new accounts by IP or range, network (ASN), country, email address, email domain or username. Existing accounts are not affected.</p>
                 </div>
             </div>
         </div>
@@ -61,7 +61,7 @@
 
         <div class="col-12 col-xl-8 mb-4">
             <ul class="nav nav-pills mb-3">
-                @foreach (['all' => 'All', 'ip' => 'IP', 'email' => 'Email', 'email_domain' => 'Email domain', 'username' => 'Username'] as $key => $label)
+                @foreach (['all' => 'All', 'ip' => 'IP', 'email' => 'Email', 'email_domain' => 'Email domain', 'username' => 'Username', 'asn' => 'ASN', 'country' => 'Country'] as $key => $label)
                 <li class="nav-item">
                     <a class="nav-link {{ $type === $key ? 'active' : '' }}" href="?{{ http_build_query(['type' => $key, 'status' => $status, 'q' => $q]) }}">
                         {{ $label }}
@@ -101,14 +101,17 @@
                             @forelse ($blocks as $block)
                             <tr>
                                 <td style="max-width: 320px;">
-                                    <code class="text-dark text-break">{{ $block->pattern }}</code>
+                                    <code class="text-dark text-break">{{ $block->type === 'asn' ? 'AS'.$block->pattern : $block->pattern }}</code>
+                                    @if (in_array($block->type, ['asn', 'country']) && isset($labels[$block->type][$block->type === 'asn' ? (int) $block->pattern : $block->pattern]))
+                                    <span class="small text-dark font-weight-bold ml-1">{{ $labels[$block->type][$block->type === 'asn' ? (int) $block->pattern : $block->pattern] }}</span>
+                                    @endif
                                     @if ($block->note)
                                     <div class="small text-muted text-wrap">{{ $block->note }}</div>
                                     @endif
                                 </td>
                                 <td>
                                     <span class="font-weight-bold">{{ str_replace('_', ' ', $block->type) }}</span>
-                                    @if ($block->type !== 'ip')
+                                    @if (! in_array($block->type, \App\Services\RegistrationBlockService::EXACT_TYPES))
                                     <div class="small text-muted">{{ $block->match_type }}</div>
                                     @endif
                                 </td>
@@ -165,6 +168,8 @@
                                     <option value="email" {{ old('type', $type) === 'email' ? 'selected' : '' }}>Email address</option>
                                     <option value="email_domain" {{ old('type', $type) === 'email_domain' ? 'selected' : '' }}>Email domain</option>
                                     <option value="username" {{ old('type', $type) === 'username' ? 'selected' : '' }}>Username</option>
+                                    <option value="asn" {{ old('type', $type) === 'asn' ? 'selected' : '' }}>Network (ASN)</option>
+                                    <option value="country" {{ old('type', $type) === 'country' ? 'selected' : '' }}>Country</option>
                                 </select>
                             </div>
                             <div class="form-group col-6" id="rb-match-group">
@@ -181,6 +186,9 @@
                             <label class="small font-weight-bold" for="rb-patterns">Patterns, one per line</label>
                             <textarea class="form-control text-monospace" id="rb-patterns" name="patterns" rows="5" style="font-size: 13px;">{{ old('patterns', $prefill['pattern']) }}</textarea>
                             <small class="form-text text-muted" id="rb-help"></small>
+                            @if (! $ipDataAvailable)
+                            <small class="form-text text-warning d-none" id="rb-ipdata">ASN and country blocks need IP data. Import it on the <a href="{{ route('admin.ip-data') }}">IP Data</a> page, until then these blocks do nothing.</small>
+                            @endif
                         </div>
 
                         <div class="form-row">
@@ -209,7 +217,7 @@
                     <form method="get" action="/i/admin/registration-blocks/export">
                         <label class="small font-weight-bold d-block">Include</label>
                         <div class="mb-2">
-                            @foreach (['ip' => 'IPs', 'email' => 'Emails', 'email_domain' => 'Email domains', 'username' => 'Usernames'] as $key => $label)
+                            @foreach (['ip' => 'IPs', 'email' => 'Emails', 'email_domain' => 'Email domains', 'username' => 'Usernames', 'asn' => 'ASNs', 'country' => 'Countries'] as $key => $label)
                             <div class="custom-control custom-checkbox custom-control-inline">
                                 <input type="checkbox" class="custom-control-input" id="ex-{{ $key }}" name="types[]" value="{{ $key }}" checked>
                                 <label class="custom-control-label small" for="ex-{{ $key }}">{{ $label }}</label>
@@ -255,9 +263,9 @@
                         </div>
                         <label class="small font-weight-bold d-block">Import</label>
                         <div class="mb-2">
-                            @foreach (['ip' => 'IPs', 'email' => 'Emails', 'email_domain' => 'Email domains', 'username' => 'Usernames'] as $key => $label)
+                            @foreach (['ip' => 'IPs', 'email' => 'Emails', 'email_domain' => 'Email domains', 'username' => 'Usernames', 'asn' => 'ASNs', 'country' => 'Countries'] as $key => $label)
                             <div class="custom-control custom-checkbox custom-control-inline">
-                                <input type="checkbox" class="custom-control-input" id="im-{{ $key }}" name="types[]" value="{{ $key }}" {{ in_array($key, old('types', ['ip', 'email', 'email_domain', 'username'])) ? 'checked' : '' }}>
+                                <input type="checkbox" class="custom-control-input" id="im-{{ $key }}" name="types[]" value="{{ $key }}" {{ in_array($key, old('types', ['ip', 'email', 'email_domain', 'username', 'asn'])) ? 'checked' : '' }}>
                                 <label class="custom-control-label small" for="im-{{ $key }}">{{ $label }}</label>
                             </div>
                             @endforeach
@@ -282,7 +290,7 @@
                             <label class="custom-control-label small" for="im-dry">Dry run, show what would be added</label>
                         </div>
                         <button type="submit" class="btn btn-outline-primary btn-block font-weight-bold">Import</button>
-                        <p class="small text-muted mt-2 mb-0">Rules you already have are left alone. Rules that would block common addresses or usernames are skipped.</p>
+                        <p class="small text-muted mt-2 mb-0">Rules you already have are left alone. Rules that would block common addresses or usernames are skipped. Country blocks are off by default, since they block everyone in that country.</p>
                     </form>
                 </div>
             </div>
@@ -295,11 +303,18 @@
                         @if ($tr['blocked'])
                         <div class="alert alert-danger small">
                             <strong>Blocked</strong> by {{ str_replace('_', ' ', $tr['rule']['type']) }} rule
-                            <code class="text-white">{{ $tr['rule']['pattern'] }}</code>
-                            @if ($tr['rule']['type'] !== 'ip')({{ $tr['rule']['match_type'] }})@endif
+                            <code class="text-white">{{ $tr['rule']['type'] === 'asn' ? 'AS'.$tr['rule']['pattern'] : $tr['rule']['pattern'] }}</code>
+                            @if (! in_array($tr['rule']['type'], \App\Services\RegistrationBlockService::EXACT_TYPES))({{ $tr['rule']['match_type'] }})@endif
                         </div>
                         @else
                         <div class="alert alert-success small"><strong>Allowed.</strong> No active block matches.</div>
+                        @endif
+                        @if (! empty($tr['network']))
+                        <p class="small mb-3">
+                            <span class="text-muted">Network:</span>
+                            @if ($tr['network']['country'])<span class="badge badge-secondary">{{ $tr['network']['country']['code'] }}</span> {{ $tr['network']['country']['name'] }}@endif
+                            @if ($tr['network']['asn'])<span class="ml-1 font-weight-bold">AS{{ $tr['network']['asn']['number'] }}</span> {{ $tr['network']['asn']['org'] ?: $tr['network']['asn']['name'] }}@endif
+                        </p>
                         @endif
                     @endif
                     <form method="post" action="/i/admin/registration-blocks/test">
@@ -345,16 +360,22 @@
             exact: 'Separators are ignored, so freecoins also blocks free_coins',
             wildcard: 'Examples: *casino*, *crypto*, seo-*',
             regex: 'Example: ^[a-z]+[0-9]{5,}$'
-        }
+        },
+        asn: 'ASNs, with or without the AS prefix. Blocks every network the ASN announces. Examples: AS14061, 16276',
+        country: 'Two letter country codes. Blocks every signup from that country. Example: VN'
     };
+    var exact = ['ip', 'asn', 'country'];
+    var ipData = document.getElementById('rb-ipdata');
     var type = document.getElementById('rb-type');
     var match = document.getElementById('rb-match');
     var group = document.getElementById('rb-match-group');
     var out = document.getElementById('rb-help');
     function update() {
         var t = type.value;
-        group.style.visibility = t === 'ip' ? 'hidden' : 'visible';
-        out.textContent = t === 'ip' ? help.ip : help[t][match.value];
+        var isExact = exact.indexOf(t) !== -1;
+        group.style.visibility = isExact ? 'hidden' : 'visible';
+        out.textContent = isExact ? help[t] : help[t][match.value];
+        if (ipData) { ipData.classList.toggle('d-none', t !== 'asn' && t !== 'country'); }
     }
     type.addEventListener('change', update);
     match.addEventListener('change', update);
