@@ -11,11 +11,19 @@ use App\Models\User;
 use App\Models\UserDomainBlock;
 use App\Models\UserSetting;
 use App\Services\FollowerService;
+use App\Services\IpDataService;
 use App\Util\ActivityPub\KeyPair;
 use Illuminate\Support\Facades\DB;
 
 class UserObserver
 {
+    public function saving(User $user): void
+    {
+        if ($user->isDirty('app_register_ip')) {
+            IpDataService::stamp($user);
+        }
+    }
+
     /**
      * Handle the notification "created" event.
      */

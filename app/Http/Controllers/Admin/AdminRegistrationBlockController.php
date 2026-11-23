@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
 use App\Models\RegistrationBlock;
+use App\Services\IpDataService;
 use App\Services\RegistrationBlockExchangeService;
 use App\Services\RegistrationBlockService;
 use Illuminate\Contracts\View\View;
@@ -66,9 +67,17 @@ class AdminRegistrationBlockController extends Controller
             ->pluck('total', 'type')
             ->toArray();
 
+        $pageBlocks = collect($blocks->items());
+        $labels = [
+            'asn' => IpDataService::asnLabels($pageBlocks->where('type', 'asn')->pluck('pattern')->all()),
+            'country' => IpDataService::countryLabels($pageBlocks->where('type', 'country')->pluck('pattern')->all()),
+        ];
+
         return view('admin.registration-blocks.index', [
             'blocks' => $blocks,
             'counts' => $counts,
+            'labels' => $labels,
+            'ipDataAvailable' => IpDataService::available(),
             'type' => $type,
             'status' => $status,
             'q' => $q,
@@ -170,6 +179,7 @@ class AdminRegistrationBlockController extends Controller
         return back()->withInput()->with('test_result', [
             'blocked' => $match !== null,
             'rule' => $match,
+            'network' => $ip !== null ? IpDataService::lookup($ip) : null,
         ]);
     }
 

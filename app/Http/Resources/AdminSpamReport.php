@@ -3,6 +3,8 @@
 namespace App\Http\Resources;
 
 use App\Models\Status;
+use App\Models\User;
+use App\Services\IpDataService;
 use App\Services\StatusService;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
@@ -29,9 +31,18 @@ class AdminSpamReport extends JsonResource
             'id' => $this->id,
             'type' => $this->type,
             'status' => null,
+            'account_network' => null,
             'read_at' => $this->read_at,
             'created_at' => $this->created_at,
         ];
+
+        $userId = $this->resource->user_id ?? null;
+
+        if ($userId) {
+            $res['account_network'] = IpDataService::forUser(
+                User::query()->find($userId, ['id', 'app_register_ip', 'signup_country', 'signup_asn'])
+            );
+        }
 
         if ($this->item_id && $this->item_type === Status::class) {
             $res['status'] = StatusService::get($this->item_id, false);
