@@ -8,6 +8,7 @@ use App\Models\User;
 use App\Services\BouncerService;
 use App\Services\EmailVerificationService;
 use App\Services\PendingLoginService;
+use App\Services\RegistrationBlockService;
 use Illuminate\Contracts\View\View;
 use Illuminate\Foundation\Auth\AuthenticatesUsers;
 use Illuminate\Http\RedirectResponse;
@@ -116,6 +117,8 @@ class LoginController extends Controller
             $this->incrementLoginAttempts($request);
             $this->sendFailedLoginResponse($request);
         }
+
+        $this->ensureNetworkAllowed($request, $user);
 
         $provider = $this->guard()->getProvider();
 
@@ -397,6 +400,8 @@ class LoginController extends Controller
             ]);
         }
 
+        $this->ensureNetworkAllowed($request, $user, false);
+
         if ($this->requiresEmailVerification($user)) {
             PendingLoginService::start(
                 $request,
@@ -439,6 +444,30 @@ class LoginController extends Controller
             ],
             true
         );
+    }
+
+    protected function ensureNetworkAllowed(Request $request, User $user, bool $record = true): void
+    {
+        $rule = RegistrationBlockService::loginCheck($request->ip(), $user, $record);
+
+        if ($rule === null) {
+            return;
+        }
+
+        PendingLoginService::clear($request);
+
+        if ($record) {
+            $this->log(
+                $request,
+                $user,
+                'auth.login.network_blocked',
+                'Sign in blocked by registration block #'.$rule['id']
+            );
+        }
+
+        throw ValidationException::withMessages([
+            $this->username() => [__(RegistrationBlockService::LOGIN_MESSAGE)],
+        ]);
     }
 
     protected function requiresEmailVerification(User $user): bool

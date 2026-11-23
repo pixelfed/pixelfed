@@ -8,7 +8,7 @@
             <div class="row align-items-center py-4">
                 <div class="col-lg-8 col-12">
                     <p class="display-1 text-white d-inline-block mb-0">Registration Blocks</p>
-                    <p class="text-white mb-0">Stop new accounts by IP or range, network (ASN), country, email address, email domain or username. Existing accounts are not affected.</p>
+                    <p class="text-white mb-0">Stop new accounts by IP or range, network (ASN), country, email address, email domain or username. Existing accounts are not affected, unless an IP, ASN or country block is set to block sign ins too.</p>
                 </div>
             </div>
         </div>
@@ -103,7 +103,7 @@
                                 <td style="max-width: 320px;">
                                     <code class="text-dark text-break">{{ $block->type === 'asn' ? 'AS'.$block->pattern : $block->pattern }}</code>
                                     @if (in_array($block->type, ['asn', 'country']) && isset($labels[$block->type][$block->type === 'asn' ? (int) $block->pattern : $block->pattern]))
-                                    <span class="small text-dark font-weight-bold ml-1">{{ $labels[$block->type][$block->type === 'asn' ? (int) $block->pattern : $block->pattern] }}</span>
+                                    <div class="small text-dark font-weight-bold text-wrap">{{ $labels[$block->type][$block->type === 'asn' ? (int) $block->pattern : $block->pattern] }}</div>
                                     @endif
                                     @if ($block->note)
                                     <div class="small text-muted text-wrap">{{ $block->note }}</div>
@@ -113,6 +113,17 @@
                                     <span class="font-weight-bold">{{ str_replace('_', ' ', $block->type) }}</span>
                                     @if (! in_array($block->type, \App\Services\RegistrationBlockService::EXACT_TYPES))
                                     <div class="small text-muted">{{ $block->match_type }}</div>
+                                    @endif
+                                    @if (in_array($block->type, \App\Services\RegistrationBlockService::LOGIN_TYPES))
+                                    <form method="post" action="/i/admin/registration-blocks/{{ $block->id }}/logins" class="mt-1" @if (! $block->block_logins) onsubmit="return window.confirm('Also block sign ins from this network? Existing accounts on it will not be able to sign in, except admins.')" @endif>
+                                        @csrf
+                                        @if ($block->block_logins)
+                                        <span class="badge badge-danger">sign ins too</span>
+                                        <div><button type="submit" class="btn btn-link btn-sm p-0 small">Allow sign ins</button></div>
+                                        @else
+                                        <button type="submit" class="btn btn-link btn-sm p-0 small">Block sign ins</button>
+                                        @endif
+                                    </form>
                                     @endif
                                 </td>
                                 <td>
@@ -204,6 +215,14 @@
                                     @endforeach
                                 </select>
                             </div>
+                        </div>
+
+                        <div class="form-group" id="rb-logins-group">
+                            <div class="custom-control custom-checkbox">
+                                <input type="checkbox" class="custom-control-input" id="rb-logins" name="block_logins" value="1" {{ old('block_logins', $prefill['block_logins']) ? 'checked' : '' }}>
+                                <label class="custom-control-label small font-weight-bold" for="rb-logins">Also block sign ins</label>
+                            </div>
+                            <small class="form-text text-muted">Existing accounts on this network can not sign in. Admins always can.</small>
                         </div>
 
                         <button type="submit" class="btn btn-primary btn-block font-weight-bold">Add blocks</button>
@@ -309,6 +328,11 @@
                         @else
                         <div class="alert alert-success small"><strong>Allowed.</strong> No active block matches.</div>
                         @endif
+                        @if (! empty($tr['login_rule']))
+                        <p class="small text-danger font-weight-bold mb-2">Sign ins from this IP are blocked by rule <code>{{ $tr['login_rule']['type'] === 'asn' ? 'AS'.$tr['login_rule']['pattern'] : $tr['login_rule']['pattern'] }}</code>, except for admins.</p>
+                        @elseif (old('test_ip'))
+                        <p class="small text-muted mb-2">Sign ins from this IP are allowed.</p>
+                        @endif
                         @if (! empty($tr['network']))
                         <p class="small mb-3">
                             <span class="text-muted">Network:</span>
@@ -366,6 +390,7 @@
     };
     var exact = ['ip', 'asn', 'country'];
     var ipData = document.getElementById('rb-ipdata');
+    var loginsGroup = document.getElementById('rb-logins-group');
     var type = document.getElementById('rb-type');
     var match = document.getElementById('rb-match');
     var group = document.getElementById('rb-match-group');
@@ -376,6 +401,7 @@
         group.style.visibility = isExact ? 'hidden' : 'visible';
         out.textContent = isExact ? help[t] : help[t][match.value];
         if (ipData) { ipData.classList.toggle('d-none', t !== 'asn' && t !== 'country'); }
+        if (loginsGroup) { loginsGroup.classList.toggle('d-none', !isExact); }
     }
     type.addEventListener('change', update);
     match.addEventListener('change', update);

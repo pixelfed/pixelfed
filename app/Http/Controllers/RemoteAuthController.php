@@ -653,6 +653,7 @@ class RemoteAuthController extends Controller
 
         $user = User::findOrFail($ra->user_id);
         abort_if($user->is_admin || $user->status != null, 422, 'Invalid auth action');
+        abort_if(RegistrationBlockService::loginBlocked($request->ip(), $user), 403, RegistrationBlockService::LOGIN_MESSAGE);
         Auth::loginUsingId($ra->user_id);
 
         return [200];

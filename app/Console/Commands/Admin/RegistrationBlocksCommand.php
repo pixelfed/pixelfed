@@ -15,6 +15,7 @@ class RegistrationBlocksCommand extends Command
         {action : list, add, remove, test, scan, export or import}
         {args?* : add: <type> <pattern>, remove: <id>, export: [path], import: <path>}
         {--match=exact : exact, wildcard or regex (add)}
+        {--logins : Also block sign ins from this IP, range, ASN or country, admins are never blocked (add)}
         {--note= : Admin note (add), or a note for every imported block (import)}
         {--expires= : Duration like 12h, 7d or 4w (add, import). Import keeps the expiry from the file when omitted, use never to clear it}
         {--type= : Filter by ip, email, email_domain, username, asn or country, comma separated for export and import (list, scan, export, import)}
@@ -64,6 +65,7 @@ class RegistrationBlocksCommand extends Command
                 $b->type,
                 in_array($b->type, RegistrationBlockService::EXACT_TYPES, true) ? '' : $b->match_type,
                 $b->pattern,
+                $b->block_logins ? 'signups, sign ins' : 'signups',
                 $b->status(),
                 $b->hits,
                 $b->expires_at?->toDateTimeString() ?? 'never',
@@ -76,7 +78,7 @@ class RegistrationBlocksCommand extends Command
             return self::SUCCESS;
         }
 
-        $this->table(['ID', 'Type', 'Match', 'Pattern', 'Status', 'Hits', 'Expires', 'Note'], $rows->all());
+        $this->table(['ID', 'Type', 'Match', 'Pattern', 'Blocks', 'Status', 'Hits', 'Expires', 'Note'], $rows->all());
 
         return self::SUCCESS;
     }
@@ -86,7 +88,7 @@ class RegistrationBlocksCommand extends Command
         $args = $this->argument('args');
 
         if (count($args) < 2) {
-            $this->error('Usage: admin:registration-blocks add <ip|email|email_domain|username|asn|country> <pattern> [--match=] [--note=] [--expires=]');
+            $this->error('Usage: admin:registration-blocks add <ip|email|email_domain|username|asn|country> <pattern> [--match=] [--note=] [--expires=] [--logins]');
 
             return self::FAILURE;
         }
@@ -99,7 +101,9 @@ class RegistrationBlocksCommand extends Command
                 (string) $this->option('match'),
                 $pattern,
                 $this->option('note'),
-                RegistrationBlockService::parseDuration($this->option('expires'))
+                RegistrationBlockService::parseDuration($this->option('expires')),
+                null,
+                $this->option('logins') ? true : null
             );
         } catch (InvalidArgumentException $e) {
             $this->error($e->getMessage());
@@ -107,7 +111,11 @@ class RegistrationBlocksCommand extends Command
             return self::FAILURE;
         }
 
-        $this->info("Saved block #{$block->id}: {$block->type} {$block->match_type} {$block->pattern}");
+        if ($this->option('logins') && ! $block->block_logins) {
+            $this->warn('Only IP, ASN and country blocks can block sign ins, this one only blocks signups.');
+        }
+
+        $this->info("Saved block #{$block->id}: {$block->type} {$block->match_type} {$block->pattern}".($block->block_logins ? ', sign ins blocked too' : ''));
 
         return self::SUCCESS;
     }
@@ -140,11 +148,19 @@ class RegistrationBlocksCommand extends Command
 
         if (! $match) {
             $this->info('Allowed. No active block matches.');
-
-            return self::SUCCESS;
+        } else {
+            $this->warn("Blocked by #{$match['id']}: {$match['type']} {$match['match_type']} {$match['pattern']}");
         }
 
-        $this->warn("Blocked by #{$match['id']}: {$match['type']} {$match['match_type']} {$match['pattern']}");
+        if ($this->option('ip')) {
+            $login = RegistrationBlockService::loginCheck($this->option('ip'), null, false);
+
+            if ($login) {
+                $this->warn("Sign ins blocked by #{$login['id']}: {$login['type']} {$login['pattern']}");
+            } else {
+                $this->info('Sign ins allowed.');
+            }
+        }
 
         return self::SUCCESS;
     }

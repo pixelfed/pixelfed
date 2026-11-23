@@ -38,6 +38,7 @@ class RegistrationBlock extends Model
     {
         return [
             'is_active' => 'boolean',
+            'block_logins' => 'boolean',
             'expires_at' => 'datetime',
             'last_hit_at' => 'datetime',
             'hits' => 'integer',
@@ -95,6 +96,7 @@ class RegistrationBlock extends Model
             'note' => $this->note,
             'status' => $this->status(),
             'is_active' => (bool) $this->is_active,
+            'block_logins' => (bool) $this->block_logins,
             'expires_at' => $this->expires_at?->toIso8601String(),
             'hits' => (int) $this->hits,
             'last_hit_at' => $this->last_hit_at?->toIso8601String(),
