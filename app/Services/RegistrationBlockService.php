@@ -16,7 +16,11 @@ class RegistrationBlockService
 {
     public const string CACHE_KEY = 'pf:registration-blocks:rules:v1';
 
-    public const array TYPES = ['ip', 'email', 'email_domain', 'username'];
+    public const array TYPES = ['ip', 'email', 'email_domain', 'username', 'asn', 'country'];
+
+    public const array EXACT_TYPES = ['ip', 'asn', 'country'];
+
+    public const array NETWORK_TYPES = ['asn', 'country'];
 
     public const array MATCH_TYPES = ['exact', 'wildcard', 'regex'];
 
@@ -100,9 +104,10 @@ class RegistrationBlockService
      * @param  array<int, array{id: int, type: string, match_type: string, pattern: string, expires_at?: int|null}>  $rules
      * @return array{id: int, type: string, match_type: string, pattern: string, expires_at: int|null}|null
      */
-    public static function find(array $rules, ?string $ip = null, ?string $email = null, ?string $username = null): ?array
+    public static function find(array $rules, ?string $ip = null, ?string $email = null, ?string $username = null, ?array $network = null): ?array
     {
         $now = time();
+        $networkResolved = $network !== null;
         $ip = is_string($ip) && $ip !== '' ? trim($ip) : null;
         $emails = is_string($email) && $email !== '' ? self::emailVariants($email) : [];
         $domain = count($emails) ? Str::afterLast($emails[0], '@') : null;
@@ -114,6 +119,11 @@ class RegistrationBlockService
                 continue;
             }
 
+            if (! $networkResolved && in_array($rule['type'], self::NETWORK_TYPES, true)) {
+                $network = $ip !== null ? IpDataService::signupNetwork($ip) : null;
+                $networkResolved = true;
+            }
+
             $hit = match ($rule['type']) {
                 'ip' => $ip !== null && self::ipMatches($ip, $rule['pattern']),
                 'email' => $rule['match_type'] === 'exact'
@@ -121,6 +131,8 @@ class RegistrationBlockService
                     : self::anyMatches($emails, $rule['match_type'], $rule['pattern']),
                 'email_domain' => $domain !== null && self::domainMatches($domain, $rule['match_type'], $rule['pattern']),
                 'username' => self::anyMatches($usernames, $rule['match_type'], $rule['pattern']),
+                'asn' => isset($network['asn']) && (string) $network['asn'] === $rule['pattern'],
+                'country' => isset($network['country']) && strtoupper((string) $network['country']) === $rule['pattern'],
                 default => false,
             };
 
@@ -278,6 +290,14 @@ class RegistrationBlockService
             return self::isValidIpOrCidr($pattern) ? null : 'Enter an IP address or CIDR range, like 203.0.113.7 or 203.0.113.0/24.';
         }
 
+        if ($type === 'asn') {
+            return self::normalizeAsn($pattern) !== null ? null : 'Enter an ASN like AS14061 or 14061.';
+        }
+
+        if ($type === 'country') {
+            return preg_match('/^[A-Za-z]{2}$/', $pattern) ? null : 'Enter a two letter country code like VN.';
+        }
+
         if (! in_array($matchType, self::MATCH_TYPES, true)) {
             return 'Unknown match type.';
         }
@@ -311,6 +331,16 @@ class RegistrationBlockService
     {
         $pattern = trim($pattern);
 
+        if ($type === 'asn') {
+            $asn = self::normalizeAsn($pattern);
+
+            return $asn !== null ? (string) $asn : $pattern;
+        }
+
+        if ($type === 'country') {
+            return strtoupper($pattern);
+        }
+
         if ($type === 'ip' || $matchType === 'regex') {
             return $pattern;
         }
@@ -333,7 +363,7 @@ class RegistrationBlockService
         ?CarbonInterface $expiresAt = null,
         ?int $createdBy = null
     ): RegistrationBlock {
-        $matchType = $type === 'ip' ? 'exact' : $matchType;
+        $matchType = in_array($type, self::EXACT_TYPES, true) ? 'exact' : $matchType;
 
         $error = self::validatePattern($type, $matchType, $pattern);
         if ($error !== null) {
@@ -385,6 +415,23 @@ class RegistrationBlockService
             'd' => now()->addDays($amount),
             default => now()->addWeeks($amount),
         };
+    }
+
+    public static function normalizeAsn(string $value): ?int
+    {
+        $value = trim($value);
+
+        if (stripos($value, 'as') === 0) {
+            $value = trim(substr($value, 2));
+        }
+
+        if ($value === '' || ! ctype_digit($value) || strlen($value) > 10) {
+            return null;
+        }
+
+        $asn = (int) $value;
+
+        return $asn >= 1 && $asn <= 4294967295 ? $asn : null;
     }
 
     public static function isValidIpOrCidr(string $value): bool

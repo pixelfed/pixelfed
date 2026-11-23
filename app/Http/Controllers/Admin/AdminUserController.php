@@ -8,6 +8,7 @@ use App\Models\ModLog;
 use App\Models\Profile;
 use App\Models\User;
 use App\Services\AccountService;
+use App\Services\IpDataService;
 use App\Services\ModLogService;
 use App\Services\RegistrationBlockService;
 use App\Util\Database\DatabaseDriver;
@@ -54,7 +55,7 @@ trait AdminUserController
             'query' => $queryString,
         ];
 
-        $users = User::select('id', 'username', 'status', 'profile_id', 'is_admin', 'email', 'app_register_ip')
+        $users = User::select('id', 'username', 'status', 'profile_id', 'is_admin', 'email', 'app_register_ip', 'signup_country', 'signup_asn')
             ->orderBy($col, $dir)
             ->when($search, function ($q, $search) {
                 return $this->usersApplySearch($q, $search);
@@ -77,11 +78,38 @@ trait AdminUserController
                 return $u;
             });
 
-        return view('admin.users.home', ['users' => $users, 'pagination' => $pagination, 'search' => $search, 'col' => $col, 'dir' => $dir, 'limit' => $limit, 'trashed' => $trashed]);
+        $ipDataAvailable = IpDataService::available();
+        $lookups = $ipDataAvailable ? IpDataService::lookupMany($users->pluck('app_register_ip')->filter()->all()) : [];
+        $networks = $users->mapWithKeys(fn ($u) => [
+            $u->id => ($u->app_register_ip ? ($lookups[$u->app_register_ip] ?? null) : null)
+                ?? IpDataService::fromStamp($u->signup_country, $u->signup_asn !== null ? (int) $u->signup_asn : null, $u->app_register_ip),
+        ])->all();
+
+        return view('admin.users.home', [
+            'users' => $users,
+            'pagination' => $pagination,
+            'search' => $search,
+            'col' => $col,
+            'dir' => $dir,
+            'limit' => $limit,
+            'trashed' => $trashed,
+            'networks' => $networks,
+            'ipDataAvailable' => $ipDataAvailable,
+        ]);
     }
 
     protected function usersApplySearch(Builder $query, string $search): Builder
     {
+        if (preg_match('/^(asn|country|ip):\s*(\S+)$/i', trim($search), $m)) {
+            $value = trim($m[2]);
+
+            return match (strtolower($m[1])) {
+                'asn' => $query->where('signup_asn', RegistrationBlockService::normalizeAsn($value) ?? 0),
+                'country' => $query->where('signup_country', strtoupper(substr($value, 0, 2))),
+                default => $query->where('app_register_ip', $value),
+            };
+        }
+
         $field = null;
 
         foreach (['bio', 'website'] as $prefix) {
@@ -121,11 +149,26 @@ trait AdminUserController
         $signupIpBlock = $user->app_register_ip
             ? RegistrationBlockService::check(ip: $user->app_register_ip, record: false)
             : null;
+        $sameIp = $user->app_register_ip
+            ? User::query()
+                ->where('app_register_ip', $user->app_register_ip)
+                ->where('id', '!=', $user->id)
+                ->orderByDesc('id')
+                ->limit(10)
+                ->get(['id', 'username', 'status', 'delete_after', 'profile_id', 'created_at'])
+            : collect();
+        $sameIpCount = $sameIp->count() < 10
+            ? $sameIp->count()
+            : User::query()->where('app_register_ip', $user->app_register_ip)->where('id', '!=', $user->id)->count();
 
         return view('admin.users.show', [
             'user' => $user,
             'profile' => $profile,
             'signupIpBlock' => $signupIpBlock,
+            'network' => IpDataService::forUser($user),
+            'ipDataAvailable' => IpDataService::available(),
+            'sameIp' => $sameIp,
+            'sameIpCount' => $sameIpCount,
         ]);
     }
 

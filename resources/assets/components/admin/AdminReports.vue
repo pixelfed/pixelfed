@@ -176,6 +176,12 @@
                                                     <span>·</span>
                                                     <span>Joined {{ timeAgo(report.reported.created_at) }}</span>
                                                 </div>
+                                                <div v-if="report.reported_network" class="d-flex align-items-center small text-muted mb-0" style="gap: 0.4rem;">
+                                                    <span v-if="report.reported_network.country" class="badge badge-secondary">{{ report.reported_network.country.code }}</span>
+                                                    <span v-if="report.reported_network.asn" class="font-weight-bold text-white">AS{{ report.reported_network.asn.number }}</span>
+                                                    <span v-if="report.reported_network.asn" class="text-truncate" style="max-width: 180px;">{{ report.reported_network.asn.org || report.reported_network.asn.name }}</span>
+                                                </div>
+                                                <div v-else-if="report.reported_local === false" class="small text-muted mb-0">Remote account, no signup IP</div>
                                             </div>
                                         </div>
                                     </a>
@@ -273,6 +279,11 @@
                                                         <span>Joined {{ timeAgo(report.status.account.created_at)
                                                             }}</span>
                                                     </div>
+                                                    <div v-if="report.account_network" class="d-flex align-items-center small text-muted mb-0" style="gap: 0.4rem;">
+                                                        <span v-if="report.account_network.country" class="badge badge-secondary">{{ report.account_network.country.code }}</span>
+                                                        <span v-if="report.account_network.asn" class="font-weight-bold text-white">AS{{ report.account_network.asn.number }}</span>
+                                                        <span v-if="report.account_network.asn" class="text-truncate" style="max-width: 180px;">{{ report.account_network.asn.org || report.account_network.asn.name }}</span>
+                                                    </div>
                                                 </div>
                                             </div>
                                         </a>
@@ -350,6 +361,11 @@
                                                     <span>{{ report.reported.followers_count }} Followers</span>
                                                     <span>·</span>
                                                     <span>Joined {{ timeAgo(report.reported.created_at) }}</span>
+                                                </div>
+                                                <div v-if="report.reported_network" class="d-flex align-items-center small text-muted mb-0" style="gap: 0.4rem;">
+                                                    <span v-if="report.reported_network.country" class="badge badge-secondary">{{ report.reported_network.country.code }}</span>
+                                                    <span v-if="report.reported_network.asn" class="font-weight-bold text-white">AS{{ report.reported_network.asn.number }}</span>
+                                                    <span v-if="report.reported_network.asn" class="text-truncate" style="max-width: 180px;">{{ report.reported_network.asn.org || report.reported_network.asn.name }}</span>
                                                 </div>
                                             </div>
                                         </div>

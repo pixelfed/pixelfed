@@ -119,6 +119,11 @@
                                     <div v-else>
                                         <div v-text="item.username" class="font-weight-bold">Loading...</div>
                                         <div v-if="item.note_text" v-text="renderNote(item.note_text)" class="note">Loading...</div>
+                                        <div v-if="item.signup_network" class="small text-muted text-truncate" style="max-width: 220px;">
+                                            <span v-if="item.signup_network.country" class="badge badge-secondary mr-1" v-text="item.signup_network.country.code"></span>
+                                            <span v-if="item.signup_network.asn" class="font-weight-bold text-primary" v-text="'AS' + item.signup_network.asn.number"></span>
+                                            <span v-if="item.signup_network.asn" v-text="item.signup_network.asn.org || item.signup_network.asn.name"></span>
+                                        </div>
                                     </div>
                                 </a>
                             </template>
@@ -167,6 +172,26 @@
                     </button>
                 </div>
             </template>
+
+            <div class="card" v-pre>
+                <div class="card-body py-3">
+                    <div class="text-uppercase small font-weight-bold text-muted mb-2">IP Data</div>
+                    @foreach (['country' => 'Country', 'asn' => 'ASN'] as $ipDataType => $ipDataLabel)
+                    @php($ipDataSet = $ipData[$ipDataType])
+                    <div class="d-flex justify-content-between small mb-1">
+                        <span>{{ $ipDataLabel }}</span>
+                        @if ($ipDataSet['running'])
+                        <span class="font-weight-bold text-info">Importing, {{ $ipDataSet['running']->progress() }}%</span>
+                        @elseif ($ipDataSet['active'])
+                        <span class="font-weight-bold text-success">Updated {{ $ipDataSet['active']->activated_at?->diffForHumans() }}</span>
+                        @else
+                        <span class="font-weight-bold text-muted">Not loaded</span>
+                        @endif
+                    </div>
+                    @endforeach
+                    <a href="{{ route('admin.ip-data') }}" class="small font-weight-bold">Manage IP Data</a>
+                </div>
+            </div>
         </div>
 
         <div class="col-md-4">

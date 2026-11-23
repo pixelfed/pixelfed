@@ -17,7 +17,7 @@ class RegistrationBlocksCommand extends Command
         {--match=exact : exact, wildcard or regex (add)}
         {--note= : Admin note (add), or a note for every imported block (import)}
         {--expires= : Duration like 12h, 7d or 4w (add, import). Import keeps the expiry from the file when omitted, use never to clear it}
-        {--type= : Filter by ip, email, email_domain or username, comma separated for export and import (list, scan, export, import)}
+        {--type= : Filter by ip, email, email_domain, username, asn or country, comma separated for export and import (list, scan, export, import)}
         {--format= : json or csv, detected from the path when omitted (export, import)}
         {--include-notes : Include admin notes in the export (export)}
         {--include-inactive : Include disabled and expired blocks (export)}
@@ -28,7 +28,7 @@ class RegistrationBlocksCommand extends Command
         {--days=30 : Only scan accounts created in the last N days, 0 for all (scan)}
         {--limit=500 : Stop scanning after this many matches (scan)}';
 
-    protected $description = 'Manage registration blocks by IP, email, email domain or username, and scan existing accounts against them';
+    protected $description = 'Manage registration blocks by IP, email, email domain, username, ASN or country, and scan existing accounts against them';
 
     public function handle(): int
     {
@@ -62,7 +62,7 @@ class RegistrationBlocksCommand extends Command
             ->map(fn (RegistrationBlock $b) => [
                 $b->id,
                 $b->type,
-                $b->type === 'ip' ? '' : $b->match_type,
+                in_array($b->type, RegistrationBlockService::EXACT_TYPES, true) ? '' : $b->match_type,
                 $b->pattern,
                 $b->status(),
                 $b->hits,
@@ -86,7 +86,7 @@ class RegistrationBlocksCommand extends Command
         $args = $this->argument('args');
 
         if (count($args) < 2) {
-            $this->error('Usage: admin:registration-blocks add <ip|email|email_domain|username> <pattern> [--match=] [--note=] [--expires=]');
+            $this->error('Usage: admin:registration-blocks add <ip|email|email_domain|username|asn|country> <pattern> [--match=] [--note=] [--expires=]');
 
             return self::FAILURE;
         }
@@ -176,11 +176,14 @@ class RegistrationBlocksCommand extends Command
         User::query()
             ->where(fn ($q) => $q->whereNull('status')->orWhereNotIn('status', ['deleted', 'delete']))
             ->when($days > 0, fn ($q) => $q->where('created_at', '>=', now()->subDays($days)))
-            ->select(['id', 'username', 'email', 'app_register_ip', 'status', 'created_at'])
+            ->select(['id', 'username', 'email', 'app_register_ip', 'signup_country', 'signup_asn', 'status', 'created_at'])
             ->chunkById(1000, function ($users) use ($rules, $limit, &$matches, &$scanned) {
                 foreach ($users as $user) {
                     $scanned++;
-                    $rule = RegistrationBlockService::find($rules, $user->app_register_ip, $user->email, $user->username);
+                    $network = $user->signup_asn !== null || $user->signup_country !== null
+                        ? ['asn' => $user->signup_asn !== null ? (int) $user->signup_asn : null, 'country' => $user->signup_country]
+                        : null;
+                    $rule = RegistrationBlockService::find($rules, $user->app_register_ip, $user->email, $user->username, $network);
 
                     if ($rule) {
                         $matches[] = [

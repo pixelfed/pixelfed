@@ -26,6 +26,7 @@ use App\Models\User;
 use App\Services\AccountService;
 use App\Services\AdminStatsService;
 use App\Services\ConfigCacheService;
+use App\Services\IpDataService;
 use App\Services\StatusService;
 use App\Services\StoryService;
 use Illuminate\Contracts\View\View;
@@ -60,7 +61,7 @@ class AdminController extends Controller
 
     public function home(): View
     {
-        return view('admin.home');
+        return view('admin.home', ['ipData' => IpDataService::datasets()]);
     }
 
     public function customCss(): View
@@ -95,10 +96,11 @@ class AdminController extends Controller
     public function getAccounts(): array
     {
         $users = User::orderByDesc('id')->cursorPaginate(10);
+        $networks = IpDataService::lookupMany(collect($users->items())->pluck('app_register_ip')->filter()->all());
 
         $res = [
             'next_page_url' => $users->nextPageUrl(),
-            'data' => $users->map(function ($user) {
+            'data' => $users->map(function ($user) use ($networks) {
                 $account = AccountService::get($user->profile_id, true);
                 if (! $account) {
                     return [
@@ -110,6 +112,8 @@ class AdminController extends Controller
                     ];
                 }
                 $account['user_id'] = $user->id;
+                $account['signup_network'] = ($user->app_register_ip ? ($networks[$user->app_register_ip] ?? null) : null)
+                    ?? IpDataService::fromStamp($user->signup_country, $user->signup_asn !== null ? (int) $user->signup_asn : null, $user->app_register_ip);
 
                 return $account;
             })

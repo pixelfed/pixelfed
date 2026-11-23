@@ -2,7 +2,9 @@
 
 namespace App\Http\Resources;
 
+use App\Models\User;
 use App\Services\AccountService;
+use App\Services\IpDataService;
 use App\Services\StatusService;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
@@ -47,6 +49,9 @@ class AdminRemoteReport extends JsonResource
             'id' => $this->id,
             'instance' => $instance,
             'reported' => AccountService::get($this->account_id, true),
+            'reported_network' => $this->account_id
+                ? IpDataService::forUser(User::query()->where('profile_id', $this->account_id)->first(['id', 'app_register_ip', 'signup_country', 'signup_asn']))
+                : null,
             'status_ids' => $this->status_ids,
             'statuses' => $statuses,
             'message' => $this->comment,

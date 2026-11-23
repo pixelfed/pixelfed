@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\Admin\AdminIpDataController;
 use App\Http\Controllers\Admin\AdminRegistrationBlockController;
 use App\Http\Controllers\Admin\AdminUserInviteController;
 use App\Http\Controllers\AdminController;
@@ -141,6 +142,11 @@ Route::domain(config('pixelfed.domain.admin'))->prefix('i/admin')->middleware(['
     Route::post('registration-blocks/import', [AdminRegistrationBlockController::class, 'import'])->name('admin.registration-blocks.import');
     Route::post('registration-blocks/{id}/toggle', [AdminRegistrationBlockController::class, 'toggle'])->whereNumber('id');
     Route::delete('registration-blocks/{id}', [AdminRegistrationBlockController::class, 'destroy'])->whereNumber('id');
+
+    Route::get('ip-data', [AdminIpDataController::class, 'index'])->name('admin.ip-data');
+    Route::post('ip-data/upload', [AdminIpDataController::class, 'upload'])->name('admin.ip-data.upload');
+    Route::get('ip-data/status', [AdminIpDataController::class, 'status'])->name('admin.ip-data.status');
+    Route::post('ip-data/{id}/cancel', [AdminIpDataController::class, 'cancel'])->whereNumber('id');
 
     Route::redirect('curated-onboarding/', 'curated-onboarding/home');
     Route::get('curated-onboarding/home', [AdminCuratedRegisterController::class, 'index'])->name('admin.curated-onboarding');

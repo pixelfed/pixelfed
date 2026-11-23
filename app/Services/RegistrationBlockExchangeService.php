@@ -59,7 +59,7 @@ class RegistrationBlockExchangeService
             ->map(function (RegistrationBlock $b) use ($includeNotes, $includeInactive): array {
                 $row = [
                     'type' => $b->type,
-                    'match_type' => $b->type === 'ip' ? 'exact' : $b->match_type,
+                    'match_type' => in_array($b->type, RegistrationBlockService::EXACT_TYPES, true) ? 'exact' : $b->match_type,
                     'pattern' => $b->pattern,
                 ];
 
@@ -274,7 +274,7 @@ class RegistrationBlockExchangeService
         foreach ($rows as $i => $row) {
             $line = $i + 1;
             $type = $row['type'];
-            $matchType = $type === 'ip' ? 'exact' : $row['match_type'];
+            $matchType = in_array($type, RegistrationBlockService::EXACT_TYPES, true) ? 'exact' : $row['match_type'];
             $label = "#{$line} ".($type ?: '?').' '.Str::limit($row['pattern'], 80);
 
             if ($type !== '' && in_array($type, RegistrationBlockService::TYPES, true) && ! in_array($type, $types, true)) {

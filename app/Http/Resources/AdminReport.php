@@ -5,8 +5,10 @@ namespace App\Http\Resources;
 use App\Models\DmMessage;
 use App\Models\Status;
 use App\Models\Story;
+use App\Models\User;
 use App\Services\AccountService;
 use App\Services\DirectMessagePayloadService;
+use App\Services\IpDataService;
 use App\Services\StatusService;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
@@ -39,11 +41,24 @@ class AdminReport extends JsonResource
             'object_id' => (string) $this->object_id,
             'object_type' => $this->object_type,
             'reported' => AccountService::get($this->reported_profile_id, true),
+            'reported_network' => null,
+            'reported_local' => false,
             'status' => null,
             'reporter_message' => $this->message,
             'admin_seen_at' => $this->admin_seen,
             'created_at' => $this->created_at,
         ];
+
+        if ($this->reported_profile_id) {
+            $reportedUser = User::query()
+                ->where('profile_id', $this->reported_profile_id)
+                ->first(['id', 'app_register_ip', 'signup_country', 'signup_asn']);
+
+            if ($reportedUser) {
+                $res['reported_local'] = true;
+                $res['reported_network'] = IpDataService::forUser($reportedUser);
+            }
+        }
 
         if ($this->object_id && in_array($this->object_type, [Status::class, 'App\Status'])) {
             $res['status'] = StatusService::get($this->object_id, false);
