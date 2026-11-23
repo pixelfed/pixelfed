@@ -61,6 +61,12 @@ class RemoteOidcController extends Controller
 
         $mappedUser = UserOidcMapping::where('oidc_id', $userInfoId)->first();
         if ($mappedUser) {
+            abort_if(
+                RegistrationBlockService::loginBlocked($request->ip(), $mappedUser->user),
+                403,
+                RegistrationBlockService::LOGIN_MESSAGE
+            );
+
             $this->guarder()->login($mappedUser->user);
 
             // OIDC accounts have a random, unknowable password, so they can

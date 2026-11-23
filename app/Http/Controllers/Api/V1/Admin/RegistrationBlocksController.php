@@ -67,6 +67,7 @@ class RegistrationBlocksController extends ApiController
             'pattern' => 'required|string|max:255',
             'note' => 'sometimes|nullable|string|max:490',
             'expires_in' => 'sometimes|nullable|integer|min:60|max:31536000',
+            'block_logins' => 'sometimes|boolean',
         ]);
 
         $expiresAt = $request->filled('expires_in') ? now()->addSeconds((int) $request->input('expires_in')) : null;
@@ -78,7 +79,8 @@ class RegistrationBlocksController extends ApiController
                 $request->input('pattern'),
                 $request->input('note'),
                 $expiresAt,
-                $request->user()->id
+                $request->user()->id,
+                $request->has('block_logins') ? $request->boolean('block_logins') : null
             );
         } catch (InvalidArgumentException $e) {
             return $this->json(['error' => $e->getMessage()], [], 422);
@@ -91,6 +93,7 @@ class RegistrationBlocksController extends ApiController
     {
         $this->validate($request, [
             'is_active' => 'sometimes|boolean',
+            'block_logins' => 'sometimes|boolean',
             'note' => 'sometimes|nullable|string|max:490',
             'expires_in' => 'sometimes|nullable|integer|min:0|max:31536000',
         ]);
@@ -103,6 +106,14 @@ class RegistrationBlocksController extends ApiController
 
         if ($request->has('is_active')) {
             $block->is_active = $request->boolean('is_active');
+        }
+
+        if ($request->has('block_logins')) {
+            if ($request->boolean('block_logins') && ! in_array($block->type, RegistrationBlockService::LOGIN_TYPES, true)) {
+                return $this->json(['error' => 'Only ip, asn and country blocks can block sign ins.'], [], 422);
+            }
+
+            $block->block_logins = $request->boolean('block_logins');
         }
 
         if ($request->has('note')) {
@@ -148,9 +159,15 @@ class RegistrationBlocksController extends ApiController
             false
         );
 
+        $loginMatch = $request->filled('ip')
+            ? RegistrationBlockService::loginCheck($request->input('ip'), null, false)
+            : null;
+
         return $this->json([
             'blocked' => $match !== null,
             'rule' => $match ? RegistrationBlock::find($match['id'])?->toApi() : null,
+            'login_blocked' => $loginMatch !== null,
+            'login_rule' => $loginMatch ? RegistrationBlock::find($loginMatch['id'])?->toApi() : null,
         ]);
     }
 

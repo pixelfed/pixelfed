@@ -14,7 +14,7 @@ use Throwable;
 
 class RegistrationBlockService
 {
-    public const string CACHE_KEY = 'pf:registration-blocks:rules:v1';
+    public const string CACHE_KEY = 'pf:registration-blocks:rules:v2';
 
     public const array TYPES = ['ip', 'email', 'email_domain', 'username', 'asn', 'country'];
 
@@ -22,9 +22,13 @@ class RegistrationBlockService
 
     public const array NETWORK_TYPES = ['asn', 'country'];
 
+    public const array LOGIN_TYPES = ['ip', 'asn', 'country'];
+
     public const array MATCH_TYPES = ['exact', 'wildcard', 'regex'];
 
     public const string IP_MESSAGE = 'Sign ups are not available from your network.';
+
+    public const string LOGIN_MESSAGE = 'Signing in is not available from your network.';
 
     public const string EMAIL_MESSAGE = 'This email address can not be used to sign up.';
 
@@ -35,7 +39,7 @@ class RegistrationBlockService
     private const array GMAIL_DOMAINS = ['gmail.com', 'googlemail.com'];
 
     /**
-     * @return array<int, array{id: int, type: string, match_type: string, pattern: string, expires_at: int|null}>
+     * @return array<int, array{id: int, type: string, match_type: string, pattern: string, expires_at: int|null, block_logins: bool}>
      */
     public static function rules(): array
     {
@@ -43,13 +47,14 @@ class RegistrationBlockService
             return RegistrationBlock::query()
                 ->enforced()
                 ->orderBy('id')
-                ->get(['id', 'type', 'match_type', 'pattern', 'expires_at'])
+                ->get(['id', 'type', 'match_type', 'pattern', 'expires_at', 'block_logins'])
                 ->map(fn (RegistrationBlock $rule): array => [
                     'id' => (int) $rule->id,
                     'type' => (string) $rule->type,
                     'match_type' => (string) $rule->match_type,
                     'pattern' => (string) $rule->pattern,
                     'expires_at' => $rule->expires_at?->getTimestamp(),
+                    'block_logins' => (bool) $rule->block_logins,
                 ])
                 ->values()
                 ->all();
@@ -59,6 +64,40 @@ class RegistrationBlockService
     public static function flush(): void
     {
         Cache::forget(self::CACHE_KEY);
+    }
+
+    public static function loginRules(): array
+    {
+        return array_values(array_filter(
+            self::rules(),
+            fn (array $rule): bool => ($rule['block_logins'] ?? false) && in_array($rule['type'], self::LOGIN_TYPES, true)
+        ));
+    }
+
+    public static function loginCheck(?string $ip, ?User $user = null, bool $record = true): ?array
+    {
+        if ($ip === null || $ip === '' || ($user !== null && $user->is_admin)) {
+            return null;
+        }
+
+        $rules = self::loginRules();
+
+        if (! count($rules)) {
+            return null;
+        }
+
+        $match = self::find($rules, ip: $ip);
+
+        if ($match && $record) {
+            self::recordHit($match['id']);
+        }
+
+        return $match;
+    }
+
+    public static function loginBlocked(?string $ip, ?User $user = null, bool $record = true): bool
+    {
+        return self::loginCheck($ip, $user, $record) !== null;
     }
 
     public static function ipBlocked(?string $ip, bool $record = true): bool
@@ -361,7 +400,8 @@ class RegistrationBlockService
         string $pattern,
         ?string $note = null,
         ?CarbonInterface $expiresAt = null,
-        ?int $createdBy = null
+        ?int $createdBy = null,
+        ?bool $blockLogins = null
     ): RegistrationBlock {
         $matchType = in_array($type, self::EXACT_TYPES, true) ? 'exact' : $matchType;
 
@@ -383,6 +423,8 @@ class RegistrationBlockService
         $block->expires_at = $expiresAt;
         $block->note = $note ?? $block->note;
         $block->created_by = $block->created_by ?? $createdBy;
+        $block->block_logins = in_array($type, self::LOGIN_TYPES, true)
+            && ($blockLogins ?? (bool) $block->block_logins);
         $block->save();
 
         return $block;

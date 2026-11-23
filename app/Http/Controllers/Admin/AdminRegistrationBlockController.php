@@ -40,6 +40,7 @@ class AdminRegistrationBlockController extends Controller
             'q' => 'nullable|string|max:255',
             'pattern' => 'nullable|string|max:255',
             'note' => 'nullable|string|max:490',
+            'logins' => 'nullable|boolean',
         ]);
 
         $type = $request->input('type', 'all');
@@ -85,6 +86,7 @@ class AdminRegistrationBlockController extends Controller
             'prefill' => [
                 'pattern' => $request->input('pattern'),
                 'note' => $request->input('note'),
+                'block_logins' => $request->boolean('logins'),
             ],
         ]);
     }
@@ -97,6 +99,7 @@ class AdminRegistrationBlockController extends Controller
             'patterns' => 'required|string|max:20000',
             'note' => 'nullable|string|max:490',
             'expires' => ['required', Rule::in(array_keys(self::EXPIRY_OPTIONS))],
+            'block_logins' => 'nullable|boolean',
         ]);
 
         $lines = collect(preg_split('/\r\n|\r|\n/', (string) $request->input('patterns')))
@@ -122,7 +125,8 @@ class AdminRegistrationBlockController extends Controller
                     $line,
                     $request->input('note'),
                     $expiresAt,
-                    $request->user()->id
+                    $request->user()->id,
+                    $request->boolean('block_logins')
                 );
                 $added++;
             } catch (InvalidArgumentException $e) {
@@ -149,6 +153,20 @@ class AdminRegistrationBlockController extends Controller
         $block->save();
 
         return back()->with('status', $block->is_active ? 'Block enabled.' : 'Block disabled.');
+    }
+
+    public function toggleLogins(Request $request, int $id): RedirectResponse
+    {
+        $block = RegistrationBlock::findOrFail($id);
+
+        if (! in_array($block->type, RegistrationBlockService::LOGIN_TYPES, true)) {
+            return back()->withErrors(['patterns' => 'Only IP, ASN and country blocks can block sign ins.']);
+        }
+
+        $block->block_logins = ! $block->block_logins;
+        $block->save();
+
+        return back()->with('status', $block->block_logins ? 'Sign ins from this network are now blocked too.' : 'Sign ins from this network are allowed again.');
     }
 
     public function destroy(Request $request, int $id): RedirectResponse
@@ -179,6 +197,7 @@ class AdminRegistrationBlockController extends Controller
         return back()->withInput()->with('test_result', [
             'blocked' => $match !== null,
             'rule' => $match,
+            'login_rule' => $ip !== null ? RegistrationBlockService::loginCheck($ip, null, false) : null,
             'network' => $ip !== null ? IpDataService::lookup($ip) : null,
         ]);
     }
