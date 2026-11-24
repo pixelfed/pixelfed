@@ -9,6 +9,7 @@ use App\Models\Profile;
 use App\Util\ActivityPub\Helpers;
 use App\Util\ActivityPub\HttpSignature;
 use Closure;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Http\Client\Pool;
 use Illuminate\Http\Client\Response;
 use Illuminate\Support\Collection;
@@ -134,10 +135,7 @@ class AccountDeleteFederationService
      */
     public function audience(): Collection
     {
-        return Instance::query()
-            ->whereNotNull('shared_inbox')
-            ->whereNotNull('nodeinfo_last_fetched')
-            ->where('nodeinfo_last_fetched', '>', now()->subDays(self::AUDIENCE_WINDOW_DAYS))
+        return $this->liveInstances()
             ->toBase()
             ->distinct()
             ->orderBy('shared_inbox')
@@ -145,6 +143,48 @@ class AccountDeleteFederationService
             ->filter(fn ($inbox): bool => is_string($inbox) && trim($inbox) !== '')
             ->unique()
             ->values();
+    }
+
+    public function reachable(array $inboxes): array
+    {
+        $inboxes = array_values(array_unique(array_filter(
+            $inboxes,
+            fn ($inbox): bool => is_string($inbox) && trim($inbox) !== ''
+        )));
+
+        if ($inboxes === []) {
+            return [];
+        }
+
+        $live = [];
+
+        foreach (array_chunk($inboxes, 500) as $chunk) {
+            foreach ($this->liveInstances()->whereIn('shared_inbox', $chunk)->toBase()->pluck('shared_inbox') as $inbox) {
+                $live[$inbox] = true;
+            }
+        }
+
+        return array_values(array_filter(
+            $inboxes,
+            fn (string $inbox): bool => isset($live[$inbox])
+        ));
+    }
+
+    private function liveInstances(): Builder
+    {
+        $now = now();
+
+        return Instance::query()
+            ->whereNotNull('shared_inbox')
+            ->where('nodeinfo_last_fetched', '>', $now->copy()->subDays(self::AUDIENCE_WINDOW_DAYS))
+            ->where('nodeinfo_timeout', false)
+            ->where('banned', false)
+            ->whereNull('delivery_failed_at')
+            ->where(function (Builder $query) use ($now) {
+                $query->where('delivery_timeout', false)
+                    ->orWhereNull('delivery_next_after')
+                    ->orWhere('delivery_next_after', '<=', $now);
+            });
     }
 
     /**
