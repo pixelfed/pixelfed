@@ -28,7 +28,8 @@ return [
                 'driver' => 'log',
             ],
             'failure_threshold' => env('AP_DELIVERY_FAILURE_THRESHOLD', 5),
-            'max_backoff' => env('AP_DELIVERY_MAX_BACKOFF', 604800),
+            'max_backoff' => env('AP_DELIVERY_MAX_BACKOFF', 86400),
+            'fail_after_days' => env('AP_DELIVERY_FAIL_AFTER_DAYS', 7),
         ],
 
         'ingest' => [

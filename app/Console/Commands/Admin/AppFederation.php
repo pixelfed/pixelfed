@@ -1312,11 +1312,23 @@ class AppFederation extends Command
             return;
         }
 
+        if (! Schema::hasColumn('instances', 'delivery_failed_at')) {
+            $this->problem(
+                'instances.delivery_failed_at column is missing',
+                'hosts that stay down are never marked failed',
+                'php artisan migrate'
+            );
+
+            return;
+        }
+
         $total = Instance::count();
         $banned = Instance::whereBanned(true)->count();
         $failing = Instance::where('delivery_failures', '>', 0)->count();
+        $failed = Instance::whereNotNull('delivery_failed_at')->count();
 
-        $backedOff = Instance::where('delivery_timeout', true)
+        $backedOff = Instance::whereNull('delivery_failed_at')
+            ->where('delivery_timeout', true)
             ->where('delivery_next_after', '>', now())
             ->count();
 
@@ -1327,7 +1339,15 @@ class AppFederation extends Command
         } else {
             $this->note(
                 'Hosts with delivery failures',
-                number_format($failing).' failing, '.number_format($backedOff).' currently skipped (backoff)'
+                number_format($failing).' failing, '.number_format($backedOff).' currently skipped (open), '.number_format($failed).' failed'
+            );
+        }
+
+        if ($total > 0 && $failed / $total >= 0.25 && $failed >= 20) {
+            $this->caution(
+                round($failed / $total * 100).'% of known hosts are marked failed',
+                null,
+                'If this server could not reach the network for a week, clear them with php artisan app:delivery-hosts reset-failed'
             );
         }
 
@@ -1344,7 +1364,7 @@ class AppFederation extends Command
         $worst = Instance::where('delivery_failures', '>', 0)
             ->orderByDesc('delivery_failures')
             ->limit(15)
-            ->get(['domain', 'software', 'delivery_failures', 'delivery_timeout', 'delivery_next_after']);
+            ->get(['domain', 'software', 'delivery_failures', 'delivery_timeout', 'delivery_next_after', 'delivery_down_since', 'delivery_failed_at']);
 
         if ($worst->isNotEmpty()) {
             $profiles = Profile::whereIn('domain', $worst->pluck('domain'))
@@ -1354,19 +1374,23 @@ class AppFederation extends Command
 
             $this->renderTable(
                 'failing_hosts',
-                ['Host', 'Software', 'Failures', 'Skipped until', 'Known profiles'],
+                ['Host', 'Software', 'State', 'Failures', 'Down since', 'Skipped until', 'Known profiles'],
                 $worst->map(fn (Instance $instance): array => [
                     $instance->domain,
                     $instance->software ?? '-',
+                    DeliveryHostService::state($instance),
                     $instance->delivery_failures,
-                    $instance->delivery_timeout && $instance->delivery_next_after?->isFuture()
-                        ? $instance->delivery_next_after->toDateTimeString().' ('.$instance->delivery_next_after->diffForHumans().')'
-                        : '-',
+                    $instance->delivery_down_since?->toDateTimeString() ?? '-',
+                    $instance->delivery_failed_at
+                        ? 'failed '.$instance->delivery_failed_at->diffForHumans()
+                        : ($instance->delivery_timeout && $instance->delivery_next_after?->isFuture()
+                            ? $instance->delivery_next_after->toDateTimeString().' ('.$instance->delivery_next_after->diffForHumans().')'
+                            : '-'),
                     $profiles[$instance->domain] ?? 0,
                 ])->all()
             );
 
-            $this->note('Clear a host manually', 'App\Services\DeliveryHostService::reset("example.com") in tinker');
+            $this->note('Clear a host manually', 'php artisan app:delivery-hosts reset example.com');
         }
 
         $this->checkAudience();
@@ -1682,8 +1706,10 @@ class AppFederation extends Command
         if (DeliveryHostService::isUnavailable($host)) {
             $this->caution(
                 'Deliveries to '.$host.' are currently skipped',
-                'in backoff until '.($instance?->delivery_next_after?->toDateTimeString() ?? 'unknown'),
-                'Clear it with App\Services\DeliveryHostService::reset("'.$host.'") once the host is healthy.'
+                $instance?->delivery_failed_at
+                    ? 'marked failed '.$instance->delivery_failed_at->toDateTimeString().', down since '.($instance->delivery_down_since?->toDateTimeString() ?? 'unknown')
+                    : 'in backoff until '.($instance?->delivery_next_after?->toDateTimeString() ?? 'unknown'),
+                'Clear it with php artisan app:delivery-hosts reset '.$host.' once the host is healthy.'
             );
         }
 

@@ -21,11 +21,31 @@ use Throwable;
  *
  * Config keys:
  *   federation.activitypub.delivery.failure_threshold   default 5
- *   federation.activitypub.delivery.max_backoff         seconds, default 7 days
+ *   federation.activitypub.delivery.max_backoff         seconds, default 24 hours
  */
 class DeliveryHostService
 {
-    private const string CACHE_KEY = 'pf:services:delivery:hosts';
+    public const string REASON_FAILED = 'host_failed';
+
+    public const string STATE_CLOSED = 'closed';
+
+    public const string STATE_FAILING = 'failing';
+
+    public const string STATE_OPEN = 'open';
+
+    public const string STATE_HALF_OPEN = 'half_open';
+
+    public const string STATE_FAILED = 'failed';
+
+    private const string CACHE_KEY = 'pf:services:delivery:hosts:v2';
+
+    private const string PROBE_KEY = 'pf:services:delivery:probe:';
+
+    private const string REVIVE_KEY = 'pf:services:delivery:revive:';
+
+    private const int REVIVE_COOLDOWN = 86400;
+
+    private const int FAILED = -1;
 
     private const int CACHE_TTL = 300;
 
@@ -65,9 +85,29 @@ class DeliveryHostService
 
     public static function isUnavailable(string $domain): bool
     {
-        $next = self::flagged()[strtolower($domain)] ?? null;
+        return self::skipping(self::flagged()[strtolower($domain)] ?? null, self::now());
+    }
 
-        return $next !== null && $next > time();
+    public static function isFailed(string $domain): bool
+    {
+        return (self::flagged()[strtolower($domain)] ?? null) === self::FAILED;
+    }
+
+    public static function allows(string $domain): bool
+    {
+        $domain = strtolower($domain);
+
+        $next = self::flagged()[$domain] ?? null;
+
+        if ($next === null) {
+            return true;
+        }
+
+        if (self::skipping($next, self::now())) {
+            return false;
+        }
+
+        return self::acquireProbe($domain);
     }
 
     /**
@@ -77,12 +117,12 @@ class DeliveryHostService
      */
     public static function unavailable(): array
     {
-        $now = time();
+        $now = self::now();
 
         return array_keys(
             array_filter(
                 self::flagged(),
-                fn (?int $next): bool => $next !== null && $next > $now
+                fn (?int $next): bool => self::skipping($next, $now)
             )
         );
     }
@@ -99,6 +139,8 @@ class DeliveryHostService
     {
         $kept = [];
 
+        $gate = [];
+
         foreach ($inboxes as $index => $inbox) {
             if (! is_string($inbox) || trim($inbox) === '') {
                 continue;
@@ -106,8 +148,12 @@ class DeliveryHostService
 
             $domain = self::domain($inbox);
 
-            if ($domain && self::isUnavailable($domain)) {
-                continue;
+            if ($domain) {
+                $gate[$domain] ??= self::allows($domain);
+
+                if (! $gate[$domain]) {
+                    continue;
+                }
             }
 
             $kept[$index] = $inbox;
@@ -133,6 +179,10 @@ class DeliveryHostService
         }
 
         foreach ($domains as $domain) {
+            if (self::isFailed($domain)) {
+                continue;
+            }
+
             self::applyFailure($domain);
         }
 
@@ -168,6 +218,29 @@ class DeliveryHostService
         self::clear(array_values($domains));
     }
 
+    public static function recordInbound(mixed $actor): void
+    {
+        if (is_array($actor)) {
+            $actor = $actor['id'] ?? null;
+        }
+
+        $domain = is_string($actor) ? self::domain($actor) : null;
+
+        if (! $domain || ! self::isFailed($domain)) {
+            return;
+        }
+
+        try {
+            if (! Cache::add(self::REVIVE_KEY.$domain, 1, self::REVIVE_COOLDOWN)) {
+                return;
+            }
+        } catch (Throwable) {
+            return;
+        }
+
+        self::revive($domain);
+    }
+
     /**
      * Clear a host's failure state manually (admin / tinker).
      */
@@ -182,6 +255,55 @@ class DeliveryHostService
         self::clear(array_values($domains));
     }
 
+    public static function resetFailed(): int
+    {
+        $domains = Instance::query()
+            ->whereNotNull('delivery_failed_at')
+            ->pluck('domain')
+            ->map(fn (string $domain): string => strtolower($domain))
+            ->unique()
+            ->values()
+            ->all();
+
+        foreach (array_chunk($domains, 500) as $chunk) {
+            self::clear($chunk);
+        }
+
+        return count($domains);
+    }
+
+    public static function state(Instance $instance): string
+    {
+        if ($instance->delivery_failed_at !== null) {
+            return self::STATE_FAILED;
+        }
+
+        if ($instance->delivery_timeout && $instance->delivery_next_after !== null) {
+            return $instance->delivery_next_after->isFuture()
+                ? self::STATE_OPEN
+                : self::STATE_HALF_OPEN;
+        }
+
+        if ((int) $instance->delivery_failures > 0) {
+            return self::STATE_FAILING;
+        }
+
+        return self::STATE_CLOSED;
+    }
+
+    public static function describe(Instance $instance): array
+    {
+        $state = self::state($instance);
+
+        return [
+            'state' => $state,
+            'failures' => (int) $instance->delivery_failures,
+            'down_since' => $instance->delivery_down_since,
+            'next_attempt_at' => $state === self::STATE_OPEN ? $instance->delivery_next_after : null,
+            'failed_at' => $instance->delivery_failed_at,
+        ];
+    }
+
     /**
      * @param  array<int, string>  $domains
      */
@@ -194,6 +316,8 @@ class DeliveryHostService
                     'delivery_failures' => 0,
                     'delivery_timeout' => false,
                     'delivery_next_after' => null,
+                    'delivery_down_since' => null,
+                    'delivery_failed_at' => null,
                 ]);
         } catch (Throwable $e) {
             Log::warning('Unable to clear delivery failures', [
@@ -203,7 +327,44 @@ class DeliveryHostService
             ]);
         }
 
+        foreach ($domains as $domain) {
+            self::forget(self::PROBE_KEY.$domain);
+            self::forget(self::REVIVE_KEY.$domain);
+        }
+
         self::flush();
+    }
+
+    private static function revive(string $domain): void
+    {
+        try {
+            $revived = Instance::query()
+                ->where('domain', $domain)
+                ->whereNotNull('delivery_failed_at')
+                ->update([
+                    'delivery_failed_at' => null,
+                    'delivery_timeout' => true,
+                    'delivery_next_after' => Carbon::now(),
+                ]);
+        } catch (Throwable $e) {
+            Log::warning('Unable to revive delivery host', [
+                'domain' => $domain,
+                'exception' => $e::class,
+                'error' => $e->getMessage(),
+            ]);
+
+            return;
+        }
+
+        self::forget(self::PROBE_KEY.$domain);
+
+        self::flush();
+
+        if ($revived > 0) {
+            Log::info('ActivityPub delivery host revived by inbound activity', [
+                'domain' => $domain,
+            ]);
+        }
     }
 
     private static function applyFailure(string $domain): void
@@ -221,6 +382,10 @@ class DeliveryHostService
                 $instance->save();
             }
 
+            if ($instance->delivery_failed_at !== null) {
+                return;
+            }
+
             $instance->increment('delivery_failures');
 
             $failures = (int) $instance->delivery_failures;
@@ -230,12 +395,32 @@ class DeliveryHostService
                 return;
             }
 
-            $instance->forceFill([
-                'delivery_timeout' => true,
-                'delivery_next_after' => Carbon::now()->addSeconds(
+            $now = Carbon::now();
+            $since = $instance->delivery_down_since ?? $now;
+            $updates = ['delivery_timeout' => true];
+
+            if ($instance->delivery_down_since === null) {
+                $updates['delivery_down_since'] = $now;
+            }
+
+            if ($since->lte($now->copy()->subDays(self::failAfterDays()))) {
+                $updates['delivery_failed_at'] = $now;
+                $updates['delivery_next_after'] = null;
+            } else {
+                $updates['delivery_next_after'] = $now->copy()->addSeconds(
                     self::backoff($failures - $threshold)
-                ),
-            ])->save();
+                );
+            }
+
+            $instance->forceFill($updates)->save();
+
+            if (isset($updates['delivery_failed_at'])) {
+                Log::warning('ActivityPub delivery host marked failed', [
+                    'domain' => $domain,
+                    'failures' => $failures,
+                    'down_since' => $since->toIso8601String(),
+                ]);
+            }
         } catch (Throwable $e) {
             Log::warning('Unable to record delivery failure', [
                 'domain' => $domain,
@@ -247,21 +432,24 @@ class DeliveryHostService
 
     /**
      * Domains with a non-zero failure count, mapped to the unix timestamp
-     * after which delivery may be retried, or null while still under the
-     * threshold.
+     * after which delivery may be retried, null while still under the
+     * threshold, or FAILED once the host has been marked failed.
      *
      * @return array<string, int|null>
      */
     private static function flagged(): array
     {
+        $now = self::now();
+
         if (
             self::$memo !== null
-            && (time() - self::$memoAt) < self::MEMO_TTL
+            && $now >= self::$memoAt
+            && ($now - self::$memoAt) < self::MEMO_TTL
         ) {
             return self::$memo;
         }
 
-        self::$memoAt = time();
+        self::$memoAt = $now;
 
         try {
             return self::$memo = Cache::remember(
@@ -269,16 +457,22 @@ class DeliveryHostService
                 self::CACHE_TTL,
                 function () {
                     return Instance::query()
-                        ->where('delivery_failures', '>', 0)
+                        ->where(function ($query) {
+                            $query->where('delivery_failures', '>', 0)
+                                ->orWhereNotNull('delivery_failed_at');
+                        })
                         ->get([
                             'domain',
                             'delivery_timeout',
                             'delivery_next_after',
+                            'delivery_failed_at',
                         ])
                         ->mapWithKeys(function ($instance) {
                             $next = null;
 
-                            if (
+                            if ($instance->delivery_failed_at) {
+                                $next = self::FAILED;
+                            } elseif (
                                 $instance->delivery_timeout
                                 && $instance->delivery_next_after
                             ) {
@@ -312,7 +506,49 @@ class DeliveryHostService
         self::$memo = null;
         self::$memoAt = 0;
 
-        Cache::forget(self::CACHE_KEY);
+        self::forget(self::CACHE_KEY);
+    }
+
+    private static function now(): int
+    {
+        return Carbon::now()->getTimestamp();
+    }
+
+    private static function skipping(?int $next, int $now): bool
+    {
+        return $next === self::FAILED || ($next !== null && $next > $now);
+    }
+
+    private static function acquireProbe(string $domain): bool
+    {
+        try {
+            return Cache::add(self::PROBE_KEY.$domain, 1, self::probeTtl());
+        } catch (Throwable) {
+            return true;
+        }
+    }
+
+    private static function forget(string $key): void
+    {
+        try {
+            Cache::forget($key);
+        } catch (Throwable) {
+        }
+    }
+
+    private static function probeTtl(): int
+    {
+        return max(1, (int) config('federation.activitypub.delivery.timeout', 30))
+            + self::MEMO_TTL
+            + 30;
+    }
+
+    private static function failAfterDays(): int
+    {
+        return max(
+            1,
+            (int) config('federation.activitypub.delivery.fail_after_days', 7)
+        );
     }
 
     /**
@@ -356,7 +592,7 @@ class DeliveryHostService
     {
         $max = max(
             self::BASE_BACKOFF,
-            (int) config('federation.activitypub.delivery.max_backoff', 604800)
+            (int) config('federation.activitypub.delivery.max_backoff', 86400)
         );
 
         $exponent = min(max($excess, 0), self::MAX_BACKOFF_EXPONENT);

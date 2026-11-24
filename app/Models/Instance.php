@@ -37,6 +37,8 @@ use Illuminate\Support\Carbon;
  * @property string|null $shared_inbox
  * @property int|null $allowlisted
  * @property int $delivery_failures
+ * @property Carbon|null $delivery_down_since
+ * @property Carbon|null $delivery_failed_at
  * @property string|null $block_sync_url
  * @property-read Collection<int, Media> $media
  * @property-read int|null $media_count
@@ -62,6 +64,8 @@ use Illuminate\Support\Carbon;
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Instance whereBanned($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Instance whereBaseDomain($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Instance whereCreatedAt($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Instance whereDeliveryDownSince($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Instance whereDeliveryFailedAt($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Instance whereDeliveryFailures($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Instance whereDeliveryNextAfter($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Instance whereDeliveryTimeout($value)
@@ -98,6 +102,8 @@ class Instance extends Model
             'notes' => 'array',
             'nodeinfo_last_fetched' => 'datetime',
             'delivery_next_after' => 'datetime',
+            'delivery_down_since' => 'datetime',
+            'delivery_failed_at' => 'datetime',
             'nodeinfo_next_after' => 'datetime',
         ];
     }

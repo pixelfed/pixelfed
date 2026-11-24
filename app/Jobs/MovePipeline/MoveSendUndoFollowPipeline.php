@@ -2,13 +2,13 @@
 
 namespace App\Jobs\MovePipeline;
 
-use App\Util\ActivityPub\HttpSignature;
+use App\Exceptions\InvalidDeliveryDestinationException;
+use App\Models\Profile;
+use App\Services\ActivityPubDeliveryService;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Queue\Queueable;
-use Illuminate\Http\Client\ConnectionException;
 use Illuminate\Queue\Middleware\ThrottlesExceptions;
 use Illuminate\Queue\Middleware\WithoutOverlapping;
-use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Log;
 
 class MoveSendUndoFollowPipeline implements ShouldQueue
@@ -95,14 +95,21 @@ class MoveSendUndoFollowPipeline implements ShouldQueue
             return;
         }
 
+        if (! is_string($targetInbox) || trim($targetInbox) === '') {
+            Log::info('MoveSendUndoFollowPipeline: Target inbox is missing, skipping job');
+
+            return;
+        }
+
+        $profile = Profile::whereNull('domain')->whereNull('status')->find($follower->id);
+
+        if (! $profile || ! $profile->private_key) {
+            Log::info('MoveSendUndoFollowPipeline: Follower profile is not deliverable, skipping job');
+
+            return;
+        }
+
         $permalink = 'https://'.config('pixelfed.domain.app').'/users/'.$follower->username;
-        $version = config('pixelfed.version');
-        $appUrl = config('app.url');
-        $userAgent = "(Pixelfed/{$version}; +{$appUrl})";
-        $addlHeaders = [
-            'Content-Type' => 'application/ld+json; profile="https://www.w3.org/ns/activitystreams"',
-            'User-Agent' => $userAgent,
-        ];
 
         $activity = [
             '@context' => 'https://www.w3.org/ns/activitystreams',
@@ -117,25 +124,18 @@ class MoveSendUndoFollowPipeline implements ShouldQueue
             ],
         ];
 
-        $keyId = $permalink.'#main-key';
-        $payload = json_encode($activity);
-        $curlHeaders = HttpSignature::signRaw($follower->private_key, $keyId, $targetInbox, $activity, $addlHeaders);
-
-        $headers = [];
-        foreach ($curlHeaders as $header) {
-            $parts = explode(': ', $header, 2);
-            if (count($parts) === 2) {
-                $headers[$parts[0]] = $parts[1];
-            }
-        }
-
         try {
-            Http::withHeaders($headers)
-                ->timeout(config('federation.activitypub.delivery.timeout'))
-                ->withBody($payload, 'application/ld+json; profile="https://www.w3.org/ns/activitystreams"')
-                ->post($targetInbox);
-        } catch (ConnectionException) {
-
+            ActivityPubDeliveryService::queue()
+                ->from($profile)
+                ->to($targetInbox)
+                ->payload($activity)
+                ->send();
+        } catch (InvalidDeliveryDestinationException $e) {
+            Log::info('MoveSendUndoFollowPipeline: Invalid target inbox, skipping job', [
+                'profile_id' => $profile->id,
+                'inbox' => $targetInbox,
+                'reason' => $e->reason,
+            ]);
         }
     }
 }

@@ -2,6 +2,7 @@
 
 namespace App\Http\Resources;
 
+use App\Services\DeliveryHostService;
 use Illuminate\Contracts\Support\Arrayable;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
@@ -47,6 +48,7 @@ class AdminInstance extends JsonResource
             'base_domain' => $this->base_domain,
             'ban_subdomains' => $this->ban_subdomains,
             'actors_last_synced_at' => $this->actors_last_synced_at,
+            'delivery' => DeliveryHostService::describe($this->resource),
             'created_at' => $this->created_at,
         ];
     }

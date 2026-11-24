@@ -63,7 +63,7 @@ class ActivityPubDeliveryService
 
     public function send(): void
     {
-        $this->queueDelivery();
+        $this->queueDelivery(false);
     }
 
     /**
@@ -72,11 +72,11 @@ class ActivityPubDeliveryService
      * remote: delivery is skipped outside production, the host is marked
      * unavailable, or the connection failed.
      *
-     * @throws InvalidDeliveryDestinationException when the inbox URL fails validation
+     * @throws InvalidDeliveryDestinationException when the inbox URL fails validation or the host has failed
      */
     public function deliver(): ?Response
     {
-        return $this->queueDelivery();
+        return $this->queueDelivery(true);
     }
 
     /**
@@ -84,7 +84,7 @@ class ActivityPubDeliveryService
      *
      * @throws InvalidDeliveryDestinationException when the inbox URL fails validation
      */
-    protected function queueDelivery(): ?Response
+    protected function queueDelivery(bool $throwWhenHostFailed = false): ?Response
     {
         if (! $this->sender) {
             throw new InvalidArgumentException('Missing ActivityPub sender.');
@@ -126,7 +126,14 @@ class ActivityPubDeliveryService
             return null;
         }
 
-        if ($domain && DeliveryHostService::isUnavailable($domain)) {
+        if ($domain && ! DeliveryHostService::allows($domain)) {
+            if ($throwWhenHostFailed && DeliveryHostService::isFailed($domain)) {
+                throw new InvalidDeliveryDestinationException(
+                    'ActivityPub destination host has failed: '.$domain,
+                    DeliveryHostService::REASON_FAILED
+                );
+            }
+
             Log::info('Skipped ActivityPub delivery to unavailable host', [
                 'profile_id' => $this->sender->id,
                 'url' => $url,
@@ -324,6 +331,8 @@ class ActivityPubDeliveryService
 
         $hostSuccesses = [];
 
+        $gate = [];
+
         foreach ($audience as $index => $destination) {
             $domain = null;
 
@@ -337,10 +346,14 @@ class ActivityPubDeliveryService
 
                 $domain = DeliveryHostService::domain($destination);
 
-                if ($domain && DeliveryHostService::isUnavailable($domain)) {
-                    $result['skipped']++;
+                if ($domain) {
+                    $gate[$domain] ??= DeliveryHostService::allows($domain);
 
-                    continue;
+                    if (! $gate[$domain]) {
+                        $result['skipped']++;
+
+                        continue;
+                    }
                 }
 
                 $destinationResult = self::validateDestination($destination);

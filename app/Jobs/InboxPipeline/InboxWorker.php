@@ -6,6 +6,7 @@ use App\Jobs\InboxPipeline\Concerns\MatchesActorUrl;
 use App\Jobs\InboxPipeline\Concerns\RetriesWhenActorUnavailable;
 use App\Models\Profile;
 use App\Services\BlockSyncService;
+use App\Services\DeliveryHostService;
 use App\Services\FollowersSyncService;
 use App\Util\ActivityPub\Helpers;
 use App\Util\ActivityPub\HttpSignature;
@@ -75,6 +76,8 @@ class InboxWorker implements ShouldQueue
 
             // FEP-070c: compare the sender's block digest with our copy
             BlockSyncService::handleInboundHeaders($headers);
+
+            DeliveryHostService::recordInbound($payload['actor'] ?? null);
 
             ActivityHandler::dispatch($headers, $profile, $payload)->onQueue('shared');
 

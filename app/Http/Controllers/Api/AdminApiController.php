@@ -22,6 +22,7 @@ use App\Services\Account\AccountStatService;
 use App\Services\AccountService;
 use App\Services\AdminStatsService;
 use App\Services\ConfigCacheService;
+use App\Services\DeliveryHostService;
 use App\Services\InstanceService;
 use App\Services\ModLogService;
 use App\Services\NetworkTimelineService;
@@ -720,7 +721,7 @@ class AdminApiController extends Controller
             'q' => 'sometimes',
             'sort' => 'sometimes|in:asc,desc',
             'sort_by' => 'sometimes|in:id,status_count,user_count,domain',
-            'filter' => 'sometimes|in:all,unlisted,auto_cw,banned',
+            'filter' => 'sometimes|in:all,unlisted,auto_cw,banned,delivery_failed,delivery_open',
         ]);
 
         $q = $request->input('q');
@@ -734,6 +735,16 @@ class AdminApiController extends Controller
             ->when($filter, function ($query, $filter) {
                 if ($filter === 'all') {
                     return $query;
+                }
+
+                if ($filter === 'delivery_failed') {
+                    return $query->whereNotNull('delivery_failed_at');
+                }
+
+                if ($filter === 'delivery_open') {
+                    return $query->whereNull('delivery_failed_at')
+                        ->where('delivery_timeout', true)
+                        ->whereNotNull('delivery_next_after');
                 }
 
                 return $query->where($filter, true);
@@ -806,6 +817,24 @@ class AdminApiController extends Controller
         $instance->save();
 
         return new AdminInstance($instance);
+    }
+
+    public function resetInstanceDelivery(Request $request)
+    {
+        abort_if(! $request->user() || ! $request->user()->token(), 404);
+
+        abort_unless($request->user()->is_admin == 1, 404);
+        abort_unless($request->user()->tokenCan('admin:write'), 404);
+
+        $this->validate($request, [
+            'id' => 'required',
+        ]);
+
+        $instance = Instance::findOrFail($request->input('id'));
+
+        DeliveryHostService::reset($instance->domain);
+
+        return new AdminInstance($instance->fresh());
     }
 
     public function getAllStats(Request $request)
