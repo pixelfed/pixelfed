@@ -9,7 +9,11 @@ class Accept
 {
     public static function validate($payload)
     {
-        $valid = Validator::make($payload, [
+        if (! is_array($payload)) {
+            return false;
+        }
+
+        $rules = [
             '@context' => 'required',
             'id' => 'required|string',
             'type' => [
@@ -17,16 +21,30 @@ class Accept
                 Rule::in(['Accept']),
             ],
             'actor' => 'required|url',
-            'object' => 'required',
-            'object.id' => 'required|url',
-            'object.type' => [
+        ];
+
+        $object = $payload['object'] ?? null;
+
+        if (is_string($object)) {
+            $rules['object'] = 'required|url';
+        } elseif (is_array($object) && ! isset($object['actor']) && ! isset($object['object'])) {
+            $rules['object'] = 'required|array';
+            $rules['object.id'] = 'required|url';
+            $rules['object.type'] = [
                 'required',
                 Rule::in(['Follow']),
-            ],
-            'object.actor' => 'required|url',
-            'object.object' => 'required|url|same:actor',
-        ])->passes();
+            ];
+        } else {
+            $rules['object'] = 'required';
+            $rules['object.id'] = 'required|url';
+            $rules['object.type'] = [
+                'required',
+                Rule::in(['Follow']),
+            ];
+            $rules['object.actor'] = 'required|url';
+            $rules['object.object'] = 'required|url|same:actor';
+        }
 
-        return $valid;
+        return Validator::make($payload, $rules)->passes();
     }
 }

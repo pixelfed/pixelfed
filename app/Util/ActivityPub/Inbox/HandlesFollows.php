@@ -5,6 +5,7 @@ namespace App\Util\ActivityPub\Inbox;
 use App\Jobs\FollowPipeline\FollowPipeline;
 use App\Models\Follower;
 use App\Models\FollowRequest;
+use App\Models\Profile;
 use App\Services\FollowerService;
 use App\Services\RelationshipService;
 use App\Util\ActivityPub\Helpers;
@@ -104,16 +105,29 @@ trait HandlesFollows
 
     public function handleAcceptActivity(): void
     {
-        $actor = $this->payload['object']['actor'];
-        $obj = $this->payload['object']['object'];
-        $type = $this->payload['object']['type'];
+        $object = $this->payload['object'] ?? null;
 
-        if ($type !== 'Follow') {
+        if (is_array($object) && (isset($object['actor']) || isset($object['object']))) {
+            $this->handleAcceptEmbeddedFollow($object);
+
             return;
         }
 
-        $actor = Helpers::validateLocalUrl($actor);
-        $target = Helpers::validateUrl($obj);
+        $this->handleAcceptFollowReference(is_array($object) ? ($object['id'] ?? null) : $object);
+    }
+
+    protected function handleAcceptEmbeddedFollow(array $object): void
+    {
+        if (($object['type'] ?? null) !== 'Follow') {
+            return;
+        }
+
+        if (! is_string($object['actor'] ?? null) || ! is_string($object['object'] ?? null)) {
+            return;
+        }
+
+        $actor = Helpers::validateLocalUrl($object['actor']);
+        $target = Helpers::validateUrl($object['object']);
 
         if (! $actor || ! $target) {
             return;
@@ -126,6 +140,49 @@ trait HandlesFollows
             return;
         }
 
+        $this->acceptFollowRequest($actor, $target);
+    }
+
+    protected function handleAcceptFollowReference(mixed $followId): void
+    {
+        if (! is_string($followId) || ! Helpers::validateLocalUrl($followId)) {
+            return;
+        }
+
+        $path = parse_url($followId, PHP_URL_PATH);
+        $fragment = parse_url($followId, PHP_URL_FRAGMENT);
+
+        if (
+            ! is_string($path)
+            || ! is_string($fragment)
+            || ! preg_match('#/users/([^/]+)$#', $path, $username)
+            || ! preg_match('#^follows/(\d+)$#', $fragment, $targetId)
+        ) {
+            return;
+        }
+
+        $actor = Profile::whereNull('domain')
+            ->whereNull('status')
+            ->whereUsername(rawurldecode($username[1]))
+            ->first();
+
+        $target = Profile::whereNotNull('domain')->find($targetId[1]);
+
+        if (! $actor || ! $target || ! is_string($this->payload['actor'] ?? null)) {
+            return;
+        }
+
+        $acceptor = $this->validateAndFetchActor($this->payload['actor']);
+
+        if (! $acceptor || (string) $acceptor->id !== (string) $target->id) {
+            return;
+        }
+
+        $this->acceptFollowRequest($actor, $target);
+    }
+
+    protected function acceptFollowRequest(Profile $actor, Profile $target): void
+    {
         if ($this->isDomainBlocked($target->id, $actor->domain)) {
             return;
         }
