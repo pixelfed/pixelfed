@@ -25,6 +25,19 @@ trait InboxHelpers
         return Helpers::profileFetch($actorUrl);
     }
 
+    public function objectId(mixed $value): ?string
+    {
+        if (is_array($value) && array_is_list($value)) {
+            $value = $value[0] ?? null;
+        }
+
+        if (is_array($value)) {
+            $value = $value['id'] ?? null;
+        }
+
+        return is_string($value) && trim($value) !== '' ? $value : null;
+    }
+
     /**
      * The known profile that owns the key this request was signed with.
      * The inbox validators already verified the signature against that key.

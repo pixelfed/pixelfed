@@ -42,19 +42,17 @@ trait HandlesUndos
 
     protected function handleUndoAnnounce(Profile $profile, array $obj): void
     {
-        if (is_array($obj) && isset($obj['object'])) {
-            $obj = $obj['object'];
-        }
+        $objectUrl = $this->objectId($obj['object'] ?? null);
 
-        if (! is_string($obj)) {
+        if (! $objectUrl) {
             return;
         }
 
-        if (Helpers::validateLocalUrl($obj)) {
-            $parsedId = last(explode('/', $obj));
+        if (Helpers::validateLocalUrl($objectUrl)) {
+            $parsedId = last(explode('/', $objectUrl));
             $status = Status::find($parsedId);
         } else {
-            $status = Status::whereUri($obj)->first();
+            $status = Status::whereUri($objectUrl)->first();
         }
 
         if (! $status) {
@@ -65,16 +63,24 @@ trait HandlesUndos
             return;
         }
 
-        Status::whereProfileId($profile->id)
+        $reblogIds = Status::whereProfileId($profile->id)
             ->whereReblogOfId($status->id)
-            ->forceDelete();
+            ->pluck('id');
 
-        if ($status->reblogs_count) {
-            $status->reblogs_count -= 1;
-            $status->saveQuietly();
+        if ($reblogIds->isNotEmpty()) {
+            Status::whereIn('id', $reblogIds)->forceDelete();
+
+            foreach ($reblogIds as $reblogId) {
+                ReblogService::removePostReblog($status->profile_id, $reblogId);
+            }
+
+            if ($status->reblogs_count > 0) {
+                $status->reblogs_count = max(0, $status->reblogs_count - $reblogIds->count());
+                $status->saveQuietly();
+            }
+
+            StatusService::del($status->id);
         }
-
-        ReblogService::removePostReblog($profile->id, $status->id);
 
         $this->deleteNotifications([
             'profile_id' => $status->profile_id,
@@ -87,7 +93,13 @@ trait HandlesUndos
 
     protected function handleUndoFollow(Profile $profile, array $obj): void
     {
-        $following = $this->validateAndFetchActor($obj['object']);
+        $target = $this->objectId($obj['object'] ?? null);
+
+        if (! $target) {
+            return;
+        }
+
+        $following = $this->validateAndFetchActor($target);
 
         if (! $following) {
             return;
