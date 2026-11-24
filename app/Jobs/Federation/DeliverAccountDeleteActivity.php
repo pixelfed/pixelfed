@@ -94,7 +94,13 @@ class DeliverAccountDeleteActivity implements ShouldQueue
             return;
         }
 
-        $result = $service->deliver($profile, $prepared, $this->inboxes);
+        $inboxes = $service->reachable($this->inboxes);
+
+        if ($inboxes === []) {
+            return;
+        }
+
+        $result = $service->deliver($profile, $prepared, $inboxes);
 
         $pending = array_keys($result['retryable']);
 
