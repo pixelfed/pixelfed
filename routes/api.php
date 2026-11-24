@@ -443,6 +443,7 @@ Route::prefix('api')->group(function () use ($middleware) {
         Route::get('instances/get', [AdminApiController::class, 'getInstance'])->middleware($middleware);
         Route::post('instances/moderate', [AdminApiController::class, 'moderateInstance'])->middleware($middleware);
         Route::post('instances/refresh-stats', [AdminApiController::class, 'refreshInstanceStats'])->middleware($middleware);
+        Route::post('instances/delivery-reset', [AdminApiController::class, 'resetInstanceDelivery'])->middleware($middleware);
         Route::get('instance/stats', [AdminApiController::class, 'getAllStats'])->middleware($middleware);
         Route::get('posts/list', [AdminApiController::class, 'getPosts'])->middleware($middleware);
         Route::get('posts/get', [AdminApiController::class, 'getPost'])->middleware($middleware);

@@ -187,6 +187,7 @@ Route::domain(config('pixelfed.domain.admin'))->prefix('i/admin')->middleware(['
         Route::post('instances/create', [AdminController::class, 'postInstanceCreateNewApi']);
         Route::post('instances/delete', [AdminController::class, 'postInstanceDeleteApi']);
         Route::post('instances/refresh-stats', [AdminController::class, 'postInstanceRefreshStatsApi']);
+        Route::post('instances/delivery-reset', [AdminController::class, 'postInstanceDeliveryResetApi']);
         Route::get('instances/download-backup', [AdminController::class, 'downloadBackup']);
         Route::post('instances/import-data', [AdminController::class, 'importBackup']);
         Route::get('reports/moderated-profiles', [AdminController::class, 'getModeratedProfiles']);
