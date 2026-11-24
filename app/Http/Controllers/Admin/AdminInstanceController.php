@@ -6,6 +6,7 @@ use App\Http\Resources\AdminInstance;
 use App\Http\Resources\AdminProfile;
 use App\Models\Instance;
 use App\Models\Profile;
+use App\Services\DeliveryHostService;
 use App\Services\InstanceService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Cache;
@@ -120,6 +121,8 @@ trait AdminInstanceController
                     'popular_statuses',
                     'new',
                     'all',
+                    'delivery_failed',
+                    'delivery_open',
                 ]),
             ],
             'sort' => [
@@ -155,6 +158,14 @@ trait AdminInstanceController
                 }
                 if ($filter == 'banned') {
                     return $q->whereBanned(true);
+                }
+                if ($filter == 'delivery_failed') {
+                    return $q->whereNotNull('delivery_failed_at');
+                }
+                if ($filter == 'delivery_open') {
+                    return $q->whereNull('delivery_failed_at')
+                        ->where('delivery_timeout', true)
+                        ->whereNotNull('delivery_next_after');
                 }
                 if ($filter == 'new') {
                     return $q->orderByDesc('id');
@@ -254,6 +265,19 @@ trait AdminInstanceController
         $instance->save();
 
         return new AdminInstance($instance);
+    }
+
+    public function postInstanceDeliveryResetApi(Request $request)
+    {
+        $this->validate($request, [
+            'id' => 'required',
+        ]);
+
+        $instance = Instance::findOrFail($request->input('id'));
+
+        DeliveryHostService::reset($instance->domain);
+
+        return new AdminInstance($instance->fresh());
     }
 
     public function postInstanceDeleteApi(Request $request)
