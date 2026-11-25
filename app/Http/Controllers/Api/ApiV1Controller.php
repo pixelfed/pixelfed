@@ -13,11 +13,11 @@ use App\Jobs\FollowPipeline\FollowPipeline;
 use App\Jobs\FollowPipeline\FollowRejectPipeline;
 use App\Jobs\FollowPipeline\UnfollowPipeline;
 use App\Jobs\HomeFeedPipeline\FeedWarmCachePipeline;
-use App\Jobs\ImageOptimizePipeline\ImageOptimize;
 use App\Jobs\LikePipeline\LikePipeline;
 use App\Jobs\LikePipeline\UnlikePipeline;
 use App\Jobs\MediaPipeline\MediaDeletePipeline;
 use App\Jobs\MediaPipeline\MediaSyncLicensePipeline;
+use App\Jobs\MediaPipeline\ProcessImage;
 use App\Jobs\NotificationPipeline\NotificationWarmUserCache;
 use App\Jobs\SharePipeline\SharePipeline;
 use App\Jobs\SharePipeline\UndoSharePipeline;
@@ -2262,7 +2262,7 @@ class ApiV1Controller extends Controller
             case 'image/webp':
             case 'image/heic':
             case 'image/avif':
-                ImageOptimize::dispatch($media)->onQueue('mmo');
+                ProcessImage::dispatch($media);
                 break;
 
             case 'video/mp4':
@@ -2501,7 +2501,7 @@ class ApiV1Controller extends Controller
             case 'image/webp':
             case 'image/heic':
             case 'image/avif':
-                ImageOptimize::dispatch($media)->onQueue('mmo');
+                ProcessImage::dispatch($media);
                 break;
 
             case 'video/mp4':

@@ -2,7 +2,7 @@
 
 namespace App\Http\Controllers;
 
-use App\Jobs\ImageOptimizePipeline\ImageOptimize;
+use App\Jobs\MediaPipeline\ProcessImage;
 use App\Jobs\StatusPipeline\NewStatusPipeline;
 use App\Jobs\VideoPipeline\VideoThumbnail;
 use App\Models\Hashtag;
@@ -140,7 +140,7 @@ class ComposeController extends Controller
             case 'image/webp':
             case 'image/heic':
             case 'image/avif':
-                ImageOptimize::dispatch($media)->onQueue('mmo');
+                ProcessImage::dispatch($media);
                 break;
 
             case 'video/mp4':
@@ -216,7 +216,7 @@ class ComposeController extends Controller
         $res = [
             'url' => $media->url().'?v='.time(),
         ];
-        ImageOptimize::dispatch($media)->onQueue('mmo');
+        ProcessImage::dispatch($media, force: true);
         Cache::forget($limitKey);
         UserStorageService::recalculateUpdateStorageUsed($request->user()->id);
 

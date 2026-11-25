@@ -22,6 +22,7 @@ class MediaStoragePipeline implements ShouldQueue
     public function __construct(Media $media)
     {
         $this->media = $media;
+        $this->onQueue('media-store');
     }
 
     public function handle()
