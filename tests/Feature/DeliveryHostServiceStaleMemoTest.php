@@ -26,7 +26,7 @@ uses(LazilyRefreshDatabase::class);
 */
 
 // Must match DeliveryHostService::CACHE_KEY (private).
-const DELIVERY_HOSTS_CACHE_KEY = 'pf:services:delivery:hosts';
+const DELIVERY_HOSTS_CACHE_KEY = 'pf:services:delivery:hosts:v2';
 
 /**
  * Mimic a different worker recording a failure: bump the DB counter and drop

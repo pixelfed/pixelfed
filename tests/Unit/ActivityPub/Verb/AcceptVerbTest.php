@@ -97,4 +97,55 @@ class AcceptVerbTest extends TestCase
     {
         $this->assertTrue(Accept::validate($this->mastodonAccept));
     }
+
+    #[Test]
+    public function accept_with_follow_id_reference()
+    {
+        $payload = $this->validAccept;
+        $payload['object'] = 'https://example.net/u/bob#follows/1030577900215394306';
+
+        $this->assertTrue(Accept::validate($payload));
+    }
+
+    #[Test]
+    public function accept_with_embedded_follow_id_only()
+    {
+        $payload = $this->validAccept;
+        $payload['object'] = [
+            'id' => 'https://example.net/u/bob#follows/1030577900215394306',
+            'type' => 'Follow',
+        ];
+
+        $this->assertTrue(Accept::validate($payload));
+    }
+
+    #[Test]
+    public function accept_with_non_url_object()
+    {
+        $payload = $this->validAccept;
+        $payload['object'] = 'not a url';
+
+        $this->assertFalse(Accept::validate($payload));
+    }
+
+    #[Test]
+    public function accept_with_embedded_reference_to_non_follow()
+    {
+        $payload = $this->validAccept;
+        $payload['object'] = [
+            'id' => 'https://example.net/u/bob#likes/1',
+            'type' => 'Like',
+        ];
+
+        $this->assertFalse(Accept::validate($payload));
+    }
+
+    #[Test]
+    public function accept_with_embedded_follow_of_someone_else()
+    {
+        $payload = $this->validAccept;
+        $payload['object']['object'] = 'https://example.org/u/carol';
+
+        $this->assertFalse(Accept::validate($payload));
+    }
 }

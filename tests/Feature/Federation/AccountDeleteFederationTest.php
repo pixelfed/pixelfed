@@ -155,6 +155,51 @@ describe('AccountDeleteFederationService::audience()', function () {
         expect(app(AccountDeleteFederationService::class)->audience()->all())
             ->toBe(['https://fresh.example/inbox']);
     });
+
+    it('only includes hosts that are up', function () {
+        accountDeleteInstance('fresh.example');
+        accountDeleteInstance('halfopen.example', [
+            'delivery_failures' => 5,
+            'delivery_timeout' => true,
+            'delivery_next_after' => now()->subMinute(),
+        ]);
+        accountDeleteInstance('nodeinfo-down.example', ['nodeinfo_timeout' => true]);
+        accountDeleteInstance('banned.example', ['banned' => true]);
+        accountDeleteInstance('open.example', [
+            'delivery_failures' => 5,
+            'delivery_timeout' => true,
+            'delivery_next_after' => now()->addHour(),
+        ]);
+        accountDeleteInstance('failed.example', [
+            'delivery_failures' => 9,
+            'delivery_timeout' => true,
+            'delivery_failed_at' => now()->subDay(),
+        ]);
+
+        expect(app(AccountDeleteFederationService::class)->audience()->all())
+            ->toBe(['https://fresh.example/inbox', 'https://halfopen.example/inbox']);
+    });
+});
+
+describe('AccountDeleteFederationService::reachable()', function () {
+    it('keeps only inboxes of hosts that are still up', function () {
+        accountDeleteInstance('ok.example');
+        accountDeleteInstance('nodeinfo-down.example', ['nodeinfo_timeout' => true]);
+        accountDeleteInstance('failed.example', [
+            'delivery_failures' => 9,
+            'delivery_timeout' => true,
+            'delivery_failed_at' => now()->subDay(),
+        ]);
+
+        expect(app(AccountDeleteFederationService::class)->reachable([
+            'https://ok.example/inbox',
+            'https://nodeinfo-down.example/inbox',
+            'https://failed.example/inbox',
+            'https://unknown.example/inbox',
+            'https://ok.example/inbox',
+            '',
+        ]))->toBe(['https://ok.example/inbox']);
+    });
 });
 
 describe('AccountDeleteFederationService::deliver()', function () {
@@ -322,6 +367,10 @@ describe('DeliverAccountDeleteActivity', function () {
         $profile = accountDeleteProfile();
         accountDeleteResolve(['ok.example', 'gone.example', 'busy.example']);
 
+        foreach (['ok.example', 'gone.example', 'busy.example'] as $domain) {
+            accountDeleteInstance($domain);
+        }
+
         Queue::fake();
 
         accountDeleteInProduction(fn () => (new DeliverAccountDeleteActivity($profile->id, [
@@ -345,6 +394,7 @@ describe('DeliverAccountDeleteActivity', function () {
 
         $profile = accountDeleteProfile();
         accountDeleteResolve(['busy.example']);
+        accountDeleteInstance('busy.example');
 
         Queue::fake();
 
@@ -357,6 +407,49 @@ describe('DeliverAccountDeleteActivity', function () {
         ))->handle(app(AccountDeleteFederationService::class)));
 
         Http::assertSentCount(1);
+        Queue::assertNothingPushed();
+    });
+
+    it('skips queued inboxes whose host went down after the fanout', function () {
+        Http::fake(['*' => Http::response('', 202)]);
+
+        $profile = accountDeleteProfile();
+        accountDeleteResolve(['ok.example', 'down.example', 'failed.example']);
+
+        accountDeleteInstance('ok.example');
+        accountDeleteInstance('down.example', ['nodeinfo_timeout' => true]);
+        accountDeleteInstance('failed.example', [
+            'delivery_failures' => 9,
+            'delivery_timeout' => true,
+            'delivery_failed_at' => now()->subDay(),
+        ]);
+
+        Queue::fake();
+
+        accountDeleteInProduction(fn () => (new DeliverAccountDeleteActivity($profile->id, [
+            'https://ok.example/inbox',
+            'https://down.example/inbox',
+            'https://failed.example/inbox',
+        ]))->handle(app(AccountDeleteFederationService::class)));
+
+        Http::assertSentCount(1);
+        Http::assertSent(fn ($request) => $request->url() === 'https://ok.example/inbox');
+        Queue::assertNothingPushed();
+    });
+
+    it('sends nothing when every queued host is down', function () {
+        Http::fake();
+
+        $profile = accountDeleteProfile();
+        accountDeleteInstance('down.example', ['nodeinfo_timeout' => true]);
+
+        Queue::fake();
+
+        accountDeleteInProduction(fn () => (new DeliverAccountDeleteActivity($profile->id, [
+            'https://down.example/inbox',
+        ]))->handle(app(AccountDeleteFederationService::class)));
+
+        Http::assertNothingSent();
         Queue::assertNothingPushed();
     });
 
