@@ -1,8 +1,9 @@
 <?php
 
+use App\Jobs\MediaPipeline\ProcessImage;
 use App\Models\Media;
 use App\Models\User;
-use App\Util\Media\Image;
+use App\Services\Media\ImageProcessor;
 use App\Util\Media\ImageDriverManager;
 use Illuminate\Foundation\Testing\LazilyRefreshDatabase;
 use Illuminate\Support\Facades\Config;
@@ -80,7 +81,7 @@ it('deletes the superseded thumbnail when regeneration changes its extension', f
 
     expect($disk->exists($staleThumb))->toBeTrue();
 
-    (new Image)->resizeThumbnail($media);
+    (new ProcessImage($media, ImageProcessor::MODE_THUMBNAIL))->handle();
     $media->refresh();
 
     // thumbnail_path now points at the freshly generated file (png output).
@@ -106,7 +107,8 @@ it('keeps the superseded thumbnail when the db save fails', function () {
     });
 
     try {
-        (new Image)->resizeThumbnail($media);
+        expect(fn () => (new ProcessImage($media, ImageProcessor::MODE_THUMBNAIL))->handle())
+            ->toThrow(RuntimeException::class, 'forced save failure');
 
         expect($disk->exists($staleThumb))->toBeTrue();
     } finally {
@@ -138,7 +140,7 @@ it('keeps the thumbnail when regeneration writes to the same path', function () 
         'order' => 0,
     ]);
 
-    (new Image)->resizeThumbnail($media);
+    (new ProcessImage($media, ImageProcessor::MODE_THUMBNAIL))->handle();
     $media->refresh();
 
     // photo_thumb.png is generated and present.
