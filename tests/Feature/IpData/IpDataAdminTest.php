@@ -5,36 +5,70 @@ use App\Models\IpDataset;
 use App\Models\User;
 use App\Services\IpDataImportService;
 use App\Services\RegistrationBlockService;
+use Illuminate\Filesystem\Filesystem;
 use Illuminate\Foundation\Testing\LazilyRefreshDatabase;
 use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Queue;
+use Illuminate\Support\Str;
 
 uses(LazilyRefreshDatabase::class);
 
 beforeEach(function () {
     Queue::fake();
     Cache::flush();
+
+    $this->ipdStorage = sys_get_temp_dir().'/pf-ipd-admin-'.Str::random(16);
+    mkdir($this->ipdStorage, 0755, true);
+    $this->app->useStoragePath($this->ipdStorage);
+});
+
+afterEach(function () {
+    (new Filesystem)->deleteDirectory($this->ipdStorage);
 });
 
 function ipdAdmin(): User
 {
-    $user = User::factory()->create(['is_admin' => true]);
-    $user->refresh();
+    return User::factory()->create(['is_admin' => true])->refresh();
+}
 
-    return $user;
+function ipdAdminCsv(string $contents): string
+{
+    $dir = storage_path('ipd-sources');
+
+    if (! is_dir($dir)) {
+        mkdir($dir, 0755, true);
+    }
+
+    $path = $dir.'/'.Str::random(16).'.csv';
+    file_put_contents($path, $contents);
+
+    return $path;
+}
+
+function ipdAdminFinish(IpDataset $dataset): IpDataset
+{
+    $slices = 0;
+
+    while (! IpDataImportService::importSlice($dataset)) {
+        if (++$slices > 100) {
+            throw new RuntimeException("Import of dataset {$dataset->id} did not finish.");
+        }
+    }
+
+    return $dataset->refresh();
 }
 
 function ipdAdminImport(string $contents): IpDataset
 {
-    $path = tempnam(sys_get_temp_dir(), 'ipd').'.csv';
-    file_put_contents($path, $contents);
-    $dataset = IpDataImportService::stageLocal($path, dispatch: false);
+    $dataset = ipdAdminFinish(IpDataImportService::stageLocal(ipdAdminCsv($contents), dispatch: false));
 
-    while (! IpDataImportService::importSlice($dataset)) {
-    }
+    expect($dataset->status)->toBe(
+        IpDataset::STATUS_ACTIVE,
+        "Import of {$dataset->source_name} ended as {$dataset->status}: {$dataset->error}"
+    );
 
-    return $dataset->refresh();
+    return $dataset;
 }
 
 function ipdAdminData(): void
@@ -69,47 +103,38 @@ it('shows datasets, lookups and top signup networks', function () {
 it('accepts a chunked upload and queues the import', function () {
     $csv = "network,continent_code,country_code,country_name\n203.0.113.0/24,NA,US,United States\n198.51.100.0/24,AS,VN,Vietnam\n";
     $half = intdiv(strlen($csv), 2);
-    $id = str_repeat('a', 32);
     $admin = ipdAdmin();
 
-    $this->actingAs($admin)->post('/i/admin/ip-data/upload', [
-        'upload_id' => $id,
-        'offset' => 0,
+    $send = fn (int $offset, string $bytes, bool $final) => $this->actingAs($admin)->post('/i/admin/ip-data/upload', [
+        'upload_id' => str_repeat('a', 32),
+        'offset' => $offset,
         'total' => strlen($csv),
         'name' => 'ip-to-country.csv',
-        'final' => 0,
-        'chunk' => UploadedFile::fake()->createWithContent('chunk', substr($csv, 0, $half)),
-    ])->assertOk()->assertJson(['received' => $half]);
+        'final' => $final ? 1 : 0,
+        'chunk' => UploadedFile::fake()->createWithContent('chunk', $bytes),
+    ]);
 
-    $this->actingAs($admin)->post('/i/admin/ip-data/upload', [
-        'upload_id' => $id,
-        'offset' => $half + 10,
-        'total' => strlen($csv),
-        'name' => 'ip-to-country.csv',
-        'final' => 1,
-        'chunk' => UploadedFile::fake()->createWithContent('chunk', substr($csv, $half)),
-    ])->assertStatus(409)->assertJson(['expected_offset' => $half]);
+    $send(0, substr($csv, 0, $half), false)
+        ->assertOk()
+        ->assertJson(['received' => $half]);
 
-    $response = $this->actingAs($admin)->post('/i/admin/ip-data/upload', [
-        'upload_id' => $id,
-        'offset' => $half,
-        'total' => strlen($csv),
-        'name' => 'ip-to-country.csv',
-        'final' => 1,
-        'chunk' => UploadedFile::fake()->createWithContent('chunk', substr($csv, $half)),
-    ])->assertOk();
+    $send($half + 10, substr($csv, $half), true)
+        ->assertStatus(409)
+        ->assertJson(['expected_offset' => $half]);
+
+    $response = $send($half, substr($csv, $half), true)->assertOk();
 
     expect($response->json('dataset.type'))->toBe('country');
     expect($response->json('dataset.status'))->toBe('pending');
     Queue::assertPushed(ImportIpDataset::class);
 
     $dataset = IpDataset::findOrFail((int) $response->json('dataset.id'));
-    expect($dataset->created_by)->toBe($admin->id);
+    expect((int) $dataset->created_by)->toBe($admin->id);
 
-    while (! IpDataImportService::importSlice($dataset)) {
-    }
+    $dataset = ipdAdminFinish($dataset);
 
-    expect($dataset->fresh()->rows_imported)->toBe(2);
+    expect($dataset->status)->toBe('active');
+    expect($dataset->rows_imported)->toBe(2);
 
     $this->actingAs($admin)->getJson('/i/admin/ip-data/status')->assertOk()->assertJson(['running' => false]);
 });
@@ -123,12 +148,17 @@ it('rejects uploads that are not csv or zip files', function () {
         'final' => 1,
         'chunk' => UploadedFile::fake()->createWithContent('chunk', '<?php'),
     ])->assertStatus(422);
+
+    expect(IpDataset::count())->toBe(0);
 });
 
 it('lets admins cancel a running import', function () {
-    $path = tempnam(sys_get_temp_dir(), 'ipd').'.csv';
-    file_put_contents($path, "network,continent_code,country_code,country_name\n203.0.113.0/24,NA,US,United States\n");
-    $dataset = IpDataImportService::stageLocal($path, dispatch: false);
+    $dataset = IpDataImportService::stageLocal(
+        ipdAdminCsv("network,continent_code,country_code,country_name\n203.0.113.0/24,NA,US,United States\n"),
+        dispatch: false
+    );
+
+    expect($dataset->status)->toBe('pending');
 
     $this->actingAs(ipdAdmin())
         ->post('/i/admin/ip-data/'.$dataset->id.'/cancel')
@@ -142,7 +172,7 @@ it('filters users by asn, country and ip', function () {
     $match = User::factory()->create(['username' => 'seoboost', 'app_register_ip' => '203.0.113.42']);
     User::factory()->create(['username' => 'minalens', 'app_register_ip' => '198.51.100.7']);
 
-    expect($match->fresh()->signup_asn)->toBe(14061);
+    expect((int) $match->fresh()->signup_asn)->toBe(14061);
 
     $admin = ipdAdmin();
 
@@ -178,11 +208,18 @@ it('adds signup networks to the dashboard accounts api', function () {
     $data = $this->actingAs(ipdAdmin())->getJson('/i/admin/api/accounts')->assertOk()->json('data');
     $withNetwork = collect($data)->firstWhere('signup_network', '!=', null);
 
+    expect($withNetwork)->not->toBeNull();
     expect($withNetwork['signup_network']['asn']['number'])->toBe(14061);
     expect($withNetwork['signup_network']['country']['code'])->toBe('US');
 });
 
 it('blocks signups by asn and country through the registration guard', function () {
+    config([
+        'pixelfed.open_registration' => true,
+        'pixelfed.max_users' => 1000,
+        'instance.enable_cc' => false,
+    ]);
+
     ipdAdminData();
 
     expect(RegistrationBlockService::ipBlocked('203.0.113.42', false))->toBeFalse();
@@ -194,6 +231,6 @@ it('blocks signups by asn and country through the registration guard', function 
     RegistrationBlockService::store('country', 'wildcard', 'us');
     expect(RegistrationBlockService::check(ip: '203.0.113.42', record: false)['type'])->toBe('asn');
 
-    $this->get('/register')->assertStatus(200);
-    $this->withServerVariables(['REMOTE_ADDR' => '203.0.113.42'])->get('/register')->assertStatus(403);
+    $this->get('/register')->assertOk();
+    $this->withServerVariables(['REMOTE_ADDR' => '203.0.113.42'])->get('/register')->assertForbidden();
 });

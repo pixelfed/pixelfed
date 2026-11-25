@@ -2,7 +2,7 @@
 
 namespace App\Jobs\ImportPipeline;
 
-use App\Jobs\ImageOptimizePipeline\ImageOptimize;
+use App\Jobs\MediaPipeline\ProcessImage;
 use App\Models\ImportData;
 use App\Models\ImportJob;
 use App\Models\Media;
@@ -152,7 +152,7 @@ class ImportInstagram implements ShouldQueue
                 $media->filter_name = null;
                 $media->order = 1;
                 $media->save();
-                ImageOptimize::dispatch($media);
+                ProcessImage::dispatch($media);
             });
 
             // Commit succeeded, so the original source is no longer the only

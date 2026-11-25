@@ -2,8 +2,8 @@
 
 namespace App\Console\Commands\FixBugs;
 
-use App\Jobs\ImageOptimizePipeline\ImageOptimize;
 use App\Jobs\MediaPipeline\MediaFixLocalFilesystemCleanupPipeline;
+use App\Jobs\MediaPipeline\ProcessImage;
 use App\Models\Media;
 use Illuminate\Console\Command;
 use Illuminate\Support\Facades\Storage;
@@ -105,7 +105,7 @@ class FixMediaDriver extends Command
                             'image/webp',
                         ])
                     ) {
-                        ImageOptimize::dispatch($media);
+                        ProcessImage::dispatch($media, force: true);
                         Sleep::sleep(3);
                     }
                 } else {

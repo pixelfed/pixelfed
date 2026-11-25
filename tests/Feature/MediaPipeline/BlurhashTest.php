@@ -1,11 +1,12 @@
 <?php
 
+use App\Jobs\MediaPipeline\ProcessImage;
 use App\Models\Media;
 use App\Models\User;
+use App\Services\Media\ImageProcessor;
 use App\Util\Blurhash\Base83;
 use App\Util\Blurhash\Color;
 use App\Util\Media\Blurhash;
-use App\Util\Media\Image;
 use App\Util\Media\ImageDriverManager;
 use Illuminate\Foundation\Testing\LazilyRefreshDatabase;
 use Illuminate\Support\Facades\Config;
@@ -194,7 +195,7 @@ it('stores a blurhash when a thumbnail is generated', function () {
         'order' => 0,
     ]);
 
-    (new Image)->resizeThumbnail($media);
+    (new ProcessImage($media, ImageProcessor::MODE_THUMBNAIL))->handle();
     $media->refresh();
 
     expect($media->thumbnail_path)->toBe('public/m/_v2/'.$pid.'/ee/ff/photo_thumb.png');

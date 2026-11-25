@@ -6,6 +6,7 @@ use App\Models\Media;
 use App\Util\Blurhash\Blurhash as BlurhashEngine;
 use GdImage;
 use Imagick;
+use Intervention\Image\Interfaces\ImageInterface;
 use Jcupitt\Vips\BandFormat;
 use Jcupitt\Vips\Image as VipsImage;
 use Jcupitt\Vips\Interpretation;
@@ -89,15 +90,37 @@ class Blurhash
                     continue;
                 }
 
-                $blurhash = BlurhashEngine::encode($pixels, self::COMPONENTS_X, self::COMPONENTS_Y);
-
-                return strlen($blurhash) > 191 ? null : $blurhash;
+                return self::encode($pixels);
             } catch (Throwable $e) {
                 continue;
             }
         }
 
         return null;
+    }
+
+    public static function fromImage(ImageInterface $image): ?string
+    {
+        try {
+            $sample = clone $image;
+
+            if ($sample->isAnimated()) {
+                $sample->removeAnimation();
+            }
+
+            $pixels = self::pixelsFromImage($sample);
+
+            return $pixels ? self::encode($pixels) : null;
+        } catch (Throwable $e) {
+            return null;
+        }
+    }
+
+    protected static function encode(array $pixels): ?string
+    {
+        $blurhash = BlurhashEngine::encode($pixels, self::COMPONENTS_X, self::COMPONENTS_Y);
+
+        return strlen($blurhash) > 191 ? null : $blurhash;
     }
 
     protected static function candidateDrivers(): array
@@ -119,6 +142,11 @@ class Blurhash
             'decodeAnimation' => false,
         ], $driver)->decodeBinary($contents);
 
+        return self::pixelsFromImage($image);
+    }
+
+    protected static function pixelsFromImage(ImageInterface $image): array
+    {
         $image = $image->scaleDown(self::SAMPLE_MAX, self::SAMPLE_MAX);
 
         // Transparent pixels have to be composited onto the background before they

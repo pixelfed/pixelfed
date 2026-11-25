@@ -2,15 +2,14 @@
 
 namespace App\Jobs\ImageOptimizePipeline;
 
+use App\Jobs\MediaPipeline\ProcessImage;
 use App\Models\Media;
-use App\Util\Media\Image;
+use App\Services\Media\ImageProcessor;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
-use Illuminate\Support\Facades\Log;
-use Illuminate\Support\Facades\Storage;
 
 class ImageThumbnail implements ShouldQueue
 {
@@ -18,72 +17,15 @@ class ImageThumbnail implements ShouldQueue
 
     protected $media;
 
-    /**
-     * Delete the job if its models no longer exist.
-     *
-     * @var bool
-     */
     public $deleteWhenMissingModels = true;
 
-    /**
-     * Create a new job instance.
-     *
-     * @return void
-     */
     public function __construct(Media $media)
     {
         $this->media = $media;
     }
 
-    /**
-     * Execute the job.
-     *
-     * @return void
-     */
-    public function handle()
+    public function handle(): void
     {
-        $media = $this->media;
-        if (! $media) {
-            return;
-        }
-
-        $localFs = config('filesystems.default') === 'local';
-
-        if ($localFs) {
-            $path = storage_path('app/'.$media->media_path);
-            if (! is_file($path)) {
-                // Source is gone, so mark the row to stop the hourly catch-up
-                // from re-queueing it forever instead of silently returning.
-                Log::error("ImageThumbnail: media {$media->id} source file missing at {$media->media_path}, cannot process");
-                $media->skip_optimize = true;
-                $media->save();
-
-                return;
-            }
-        } else {
-            $disk = Storage::disk(config('filesystems.default'));
-            if (! $disk->exists($media->media_path)) {
-                Log::error("ImageThumbnail: media {$media->id} source file missing at {$media->media_path}, cannot process");
-                $media->skip_optimize = true;
-                $media->save();
-
-                return;
-            }
-        }
-
-        try {
-            $img = new Image;
-            $img->resizeThumbnail($media);
-        } catch (\Throwable $e) {
-            // Keep going: returning here left the media without processed_at and
-            // never dispatched ImageUpdate, so it never reached cloud storage and
-            // its status never federated.
-            Log::error("ImageThumbnail: media {$media->id} has no thumbnail [".$e::class.']: '.$e->getMessage());
-        }
-
-        $media->processed_at = now();
-        $media->save();
-
-        ImageUpdate::dispatch($media)->onQueue('mmo');
+        ProcessImage::dispatch($this->media, ImageProcessor::MODE_THUMBNAIL);
     }
 }

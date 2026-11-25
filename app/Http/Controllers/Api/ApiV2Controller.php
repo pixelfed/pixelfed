@@ -3,8 +3,8 @@
 namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
-use App\Jobs\ImageOptimizePipeline\ImageOptimize;
 use App\Jobs\MediaPipeline\MediaDeletePipeline;
+use App\Jobs\MediaPipeline\ProcessImage;
 use App\Jobs\VideoPipeline\VideoThumbnail;
 use App\Models\Media;
 use App\Models\User;
@@ -326,7 +326,7 @@ class ApiV2Controller extends Controller
             case 'image/webp':
             case 'image/heic':
             case 'image/avif':
-                ImageOptimize::dispatch($media)->onQueue('mmo');
+                ProcessImage::dispatch($media);
                 break;
 
             case 'video/mp4':

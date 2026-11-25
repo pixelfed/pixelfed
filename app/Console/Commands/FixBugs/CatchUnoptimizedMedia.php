@@ -2,7 +2,7 @@
 
 namespace App\Console\Commands\FixBugs;
 
-use App\Jobs\ImageOptimizePipeline\ImageOptimize;
+use App\Jobs\MediaPipeline\ProcessImage;
 use App\Models\Media;
 use Illuminate\Console\Command;
 
@@ -48,7 +48,7 @@ class CatchUnoptimizedMedia extends Command
                 continue;
             }
 
-            ImageOptimize::dispatch($media);
+            ProcessImage::dispatch($media);
         }
 
         $this->info("Queued {$medias->count()} media candidates.");

@@ -108,6 +108,7 @@ return [
         'redis:deliver' => 60,
         'redis:story' => 30,
         'redis:mmo' => 30,
+        'redis:media-store' => 30,
         'redis:intbg' => 30,
         'redis:adelete' => 30,
         'redis:groups' => 30,
@@ -269,6 +270,21 @@ return [
             'timeout' => env('HORIZON_SUPERVISOR_TIMEOUT', 300),
         ],
 
+        'supervisor-media-store' => [
+            'connection' => 'redis',
+            'queue' => ['media-store'],
+            'balance' => env('HORIZON_MEDIA_BALANCE_STRATEGY', 'auto'),
+            'autoScalingStrategy' => 'time',
+            'balanceMaxShift' => 1,
+            'balanceCooldown' => 3,
+            'minProcesses' => env('HORIZON_MEDIA_MIN_PROCESSES', 2),
+            'maxProcesses' => env('HORIZON_MEDIA_STORE_MAX_PROCESSES', 4),
+            'memory' => env('HORIZON_SUPERVISOR_MEMORY', 64),
+            'tries' => env('HORIZON_SUPERVISOR_TRIES', 3),
+            'nice' => env('HORIZON_SUPERVISOR_NICE', 0),
+            'timeout' => env('HORIZON_SUPERVISOR_TIMEOUT', 300),
+        ],
+
         'supervisor-background' => [
             'connection' => 'redis',
             'queue' => ['low', 'delete', 'adelete', 'move', 'intbg'],
@@ -295,6 +311,7 @@ return [
             'supervisor-fanout' => ['maxProcesses' => 2],
             'supervisor-deliver' => ['maxProcesses' => 2],
             'supervisor-media' => ['maxProcesses' => 2],
+            'supervisor-media-store' => ['maxProcesses' => 2],
             'supervisor-background' => ['maxProcesses' => 2],
         ],
     ],

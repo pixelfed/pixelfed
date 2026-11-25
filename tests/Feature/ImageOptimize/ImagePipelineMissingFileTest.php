@@ -1,8 +1,7 @@
 <?php
 
-use App\Jobs\ImageOptimizePipeline\ImageOptimize;
-use App\Jobs\ImageOptimizePipeline\ImageThumbnail;
-use App\Jobs\ImageOptimizePipeline\ImageUpdate;
+use App\Jobs\MediaPipeline\MediaStoragePipeline;
+use App\Jobs\MediaPipeline\ProcessImage;
 use App\Models\Media;
 use App\Models\User;
 use Illuminate\Foundation\Testing\LazilyRefreshDatabase;
@@ -50,11 +49,11 @@ function seedStrandedImageMedia(): Media
 
 it('marks and logs a stranded row instead of silently returning', function () {
     Log::spy();
-    Bus::fake([ImageUpdate::class]);
+    Bus::fake([MediaStoragePipeline::class]);
 
     $media = seedStrandedImageMedia();
 
-    expect(fn () => (new ImageThumbnail($media))->handle())->not->toThrow(Throwable::class);
+    expect(fn () => (new ProcessImage($media))->handle())->not->toThrow(Throwable::class);
 
     $media->refresh();
 
@@ -65,13 +64,13 @@ it('marks and logs a stranded row instead of silently returning', function () {
         ->withArgs(fn ($message) => str_contains($message, "media {$media->id} source file missing"))
         ->once();
 
-    Bus::assertNotDispatched(ImageUpdate::class);
+    Bus::assertNotDispatched(MediaStoragePipeline::class);
 });
 
 it('stops the media:optimize catch-up from re-queueing a stranded row', function () {
     $media = seedStrandedImageMedia();
 
-    (new ImageThumbnail($media))->handle();
+    (new ProcessImage($media))->handle();
     $media->refresh();
 
     // The row still matches the catch-up selection query by column, so it is
@@ -88,8 +87,8 @@ it('stops the media:optimize catch-up from re-queueing a stranded row', function
 
     expect($stillMatchesQuery)->toBeTrue();
 
-    Bus::fake([ImageOptimize::class]);
+    Bus::fake([ProcessImage::class]);
     Artisan::call('media:optimize');
 
-    Bus::assertNotDispatched(ImageOptimize::class);
+    Bus::assertNotDispatched(ProcessImage::class);
 });

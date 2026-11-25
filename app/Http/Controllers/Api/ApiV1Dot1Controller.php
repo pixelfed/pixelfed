@@ -5,7 +5,7 @@ namespace App\Http\Controllers\Api;
 use App\Http\Controllers\Controller;
 use App\Http\Controllers\StatusController;
 use App\Http\Resources\StatusStateless;
-use App\Jobs\ImageOptimizePipeline\ImageOptimize;
+use App\Jobs\MediaPipeline\ProcessImage;
 use App\Jobs\ReportPipeline\ReportNotifyAdminViaEmail;
 use App\Jobs\StatusPipeline\NewStatusPipeline;
 use App\Jobs\StatusPipeline\RemoteStatusDelete;
@@ -1477,7 +1477,7 @@ class ApiV1Dot1Controller extends Controller
             case 'image/webp':
             case 'image/heic':
             case 'image/avif':
-                ImageOptimize::dispatch($media)->onQueue('mmo');
+                ProcessImage::dispatch($media);
                 break;
 
             case 'video/mp4':

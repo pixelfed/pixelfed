@@ -2,8 +2,9 @@
 
 namespace App\Console\Commands\Admin;
 
-use App\Jobs\ImageOptimizePipeline\ImageThumbnail;
+use App\Jobs\MediaPipeline\ProcessImage;
 use App\Models\Media;
+use App\Services\Media\ImageProcessor;
 use Illuminate\Console\Command;
 use Illuminate\Support\Facades\DB;
 
@@ -44,7 +45,7 @@ class RegenerateThumbnails extends Command
             Media::whereIn('mime', ['image/jpeg', 'image/png', 'image/jpg'])
                 ->chunk(50, function ($medias) {
                     foreach ($medias as $media) {
-                        ImageThumbnail::dispatch($media);
+                        ProcessImage::dispatch($media, ImageProcessor::MODE_THUMBNAIL);
                     }
                 });
         });
