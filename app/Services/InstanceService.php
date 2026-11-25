@@ -3,6 +3,7 @@
 namespace App\Services;
 
 use App\Models\Instance;
+use App\Support\MemoryLimit;
 use App\Util\Media\Blurhash;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\DB;
@@ -28,7 +29,7 @@ class InstanceService
 
     public function __construct()
     {
-        ini_set('memory_limit', config('pixelfed.memory_limit', '1024M'));
+        MemoryLimit::raise(config('pixelfed.memory_limit', '1024M'));
     }
 
     public static function getByDomain($domain)

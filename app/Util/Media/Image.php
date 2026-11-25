@@ -5,6 +5,7 @@ namespace App\Util\Media;
 use App\Models\Media;
 use App\Services\ContentCredentials\ContentCredentialService;
 use App\Services\StatusService;
+use App\Support\MemoryLimit;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Storage;
@@ -39,7 +40,7 @@ class Image
 
     public function __construct()
     {
-        ini_set('memory_limit', config('pixelfed.memory_limit', '1024M'));
+        MemoryLimit::raise(config('pixelfed.memory_limit', '1024M'));
 
         $this->square = $this->orientations()['square'];
         $this->landscape = $this->orientations()['landscape'];

@@ -3,6 +3,7 @@
 namespace App\Console\Commands\Admin;
 
 use App\Models\Place;
+use App\Support\MemoryLimit;
 use Illuminate\Console\Command;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Str;
@@ -75,7 +76,7 @@ class ImportCities extends Command
      */
     public function handle()
     {
-        ini_set('memory_limit', '256M');
+        MemoryLimit::raise('256M');
         $path = storage_path('app/cities.json');
 
         if (hash_file('sha512', $path) !== self::CHECKSUM) {
