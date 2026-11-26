@@ -1,0 +1,47 @@
+name: PHP - Config Schema
+
+on:
+  push:
+    branches: [staging, dev, unstable]
+  pull_request:
+    branches: [dev]
+
+jobs:
+  config-schema:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v7
+
+      - name: Setup PHP
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: '8.5'
+          extensions: dom, curl, libxml, mbstring, zip, pcntl, pdo, sqlite, pdo_sqlite, bcmath, intl, gd, exif, iconv
+          coverage: none
+
+      - name: Cache Composer dependencies
+        uses: actions/cache@v6
+        with:
+          path: vendor
+          key: composer-8.5-${{ hashFiles('composer.lock') }}
+          restore-keys: composer-8.5-
+
+      - name: Install Composer dependencies
+        run: composer install --no-interaction --no-progress --prefer-dist
+
+      - name: Prepare environment
+        run: |
+          cp .env.testing .env
+          php artisan key:generate
+
+      - name: Check config schema is up to date
+        run: |
+          php artisan config:schema --pretty --output=/tmp/schema-check.json
+          if ! diff -q pixelfed-config.schema.json /tmp/schema-check.json > /dev/null 2>&1; then
+            echo "::error::pixelfed-config.schema.json is out of date."
+            echo "Run 'php artisan config:schema --pretty --output=pixelfed-config.schema.json' and commit the result."
+            diff pixelfed-config.schema.json /tmp/schema-check.json
+            exit 1
+          fi
