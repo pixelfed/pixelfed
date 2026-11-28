@@ -685,7 +685,7 @@ class StoryApiV1Controller extends Controller
             'caption' => 'required|string',
         ]);
         $pid = $request->user()->profile_id;
-        $text = $request->input('caption');
+        $text = strip_tags($request->input('caption'));
 
         $story = Story::whereActive(true)->findOrFail($request->input('sid'));
         abort_if(now()->gt($story->expires_at), 404);
@@ -699,6 +699,7 @@ class StoryApiV1Controller extends Controller
         $status->type = 'story:reply';
         $status->profile_id = $pid;
         $status->caption = $text;
+        $status->rendered = '';
         $status->scope = 'direct';
         $status->visibility = 'direct';
         $status->in_reply_to_profile_id = $story->profile_id;

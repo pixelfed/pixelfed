@@ -29,7 +29,7 @@
 	<script type="text/javascript">
 		window._sharedData = {
 			curUser: {},
-			user: {!! json_encode(\App\Services\ProfileService::get(request()->user()->profile_id)) !!},
+           user: {!! json_encode(\App\Services\ProfileService::get(request()->user()->profile_id), JSON_HEX_TAG | JSON_HEX_AMP) !!},
 			version: 0
 		};
 		window.App = {

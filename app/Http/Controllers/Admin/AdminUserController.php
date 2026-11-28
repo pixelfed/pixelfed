@@ -12,11 +12,13 @@ use App\Services\IpDataService;
 use App\Services\ModLogService;
 use App\Services\RegistrationBlockService;
 use App\Util\Database\DatabaseDriver;
+use App\Util\Lexer\Autolink;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Mail;
+use Stevebauman\Purify\Facades\Purify;
 
 trait AdminUserController
 {
@@ -211,7 +213,9 @@ trait AdminUserController
         }
         if ($request->input('bio') != $profile->bio) {
             $fields['bio'] = ['old' => $user->bio, 'new' => $request->input('bio')];
-            $profile->bio = $request->input('bio');
+            $profile->bio = $request->filled('bio')
+                ? Autolink::create()->autolink(strip_tags(Purify::clean($request->input('bio'))))
+                : null;
             $changed = true;
         }
         if ($request->input('website') != $profile->website) {

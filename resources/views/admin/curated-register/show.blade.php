@@ -30,7 +30,7 @@
 <div class="m-n2 m-lg-4">
     <div class="container-fluid mt-4">
         <div class="row">
-            <div class="col-12 col-md-4">
+            <div class="col-12 col-md-4" v-pre>
                 <div class="card border">
                     <div class="card-header font-weight-bold bg-gradient-primary text-center text-white py-2">Details</div>
                     <div class="list-group list-group-flush">
