@@ -488,7 +488,7 @@ class StoryComposeController extends Controller
             'reaction' => 'required|string',
         ]);
         $pid = $request->user()->profile_id;
-        $text = $request->input('reaction');
+        $text = strip_tags($request->input('reaction'));
         $user = $request->user();
         abort_if($user->has_roles && ! UserRoleService::can('can-use-stories', $user->id), 403, 'Invalid permissions for this action');
         $story = Story::findOrFail($request->input('sid'));
@@ -506,6 +506,7 @@ class StoryComposeController extends Controller
         $status->profile_id = $pid;
         $status->type = 'story:reaction';
         $status->caption = $text;
+        $status->rendered = '';
         $status->scope = 'direct';
         $status->visibility = 'direct';
         $status->in_reply_to_profile_id = $story->profile_id;
@@ -554,7 +555,7 @@ class StoryComposeController extends Controller
             'caption' => 'required|string',
         ]);
         $pid = $request->user()->profile_id;
-        $text = $request->input('caption');
+        $text = strip_tags($request->input('caption'));
         $user = $request->user();
         abort_if($user->has_roles && ! UserRoleService::can('can-use-stories', $user->id), 403, 'Invalid permissions for this action');
         $story = Story::findOrFail($request->input('sid'));
@@ -571,6 +572,7 @@ class StoryComposeController extends Controller
         $status->type = 'story:reply';
         $status->profile_id = $pid;
         $status->caption = $text;
+        $status->rendered = '';
         $status->scope = 'direct';
         $status->visibility = 'direct';
         $status->in_reply_to_profile_id = $story->profile_id;

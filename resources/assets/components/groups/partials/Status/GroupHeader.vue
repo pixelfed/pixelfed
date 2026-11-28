@@ -129,6 +129,8 @@
 </template>
 
 <script>
+    import { escapeHtml } from './../../../../js/util/html.js';
+
     export default {
         props: {
             group: {
@@ -190,15 +192,15 @@
 
             statusCardUsernameFormat(status) {
                 if(status.account.local == true) {
-                    return status.account.username;
+                    return escapeHtml(status.account.username);
                 }
 
                 let fmt = window.App.config.username.remote.format;
-                let txt = window.App.config.username.remote.custom;
-                let usr = status.account.username;
+                let txt = escapeHtml(window.App.config.username.remote.custom);
+                let usr = escapeHtml(status.account.username);
                 let dom = document.createElement('a');
                 dom.href = status.account.url;
-                dom = dom.hostname;
+                dom = escapeHtml(dom.hostname);
 
                 switch(fmt) {
                     case '@':

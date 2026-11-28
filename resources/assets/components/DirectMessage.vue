@@ -224,7 +224,7 @@
 								<div class="media-body">
 									<p
 										class="display-name"
-										v-html="conversationProfile.display_name"
+                                       v-html="getDisplayName(conversationProfile)"
 										@click="gotoProfile(conversationProfile)"
 										>
 									</p>
@@ -277,6 +277,7 @@
 	import Intersect from 'vue-intersect'
 	import ProfileCard from './partials/profile/ProfileHoverCard.vue';
 	import Message from './partials/direct/Message.vue';
+   import { renderDisplayName } from './../js/util/html.js';
 
 	export default {
 		props: ['accountId'],
@@ -691,6 +692,10 @@
 			gotoProfile(profile) {
 				this.$router.push(`/i/web/profile/${profile.id}`);
 			},
+
+           getDisplayName(profile) {
+               return renderDisplayName(profile.display_name || profile.username);
+           },
 
 			togglePrivacyWarning() {
 				console.log('clicked toggle privacy warning');

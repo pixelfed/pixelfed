@@ -116,6 +116,7 @@
     import Autocomplete from '@trevoreyre/autocomplete-vue'
     import '@trevoreyre/autocomplete-vue/dist/style.css';
     import { parseLinkHeader } from '@web3-storage/parse-link-header';
+    import { escapeHtml, htmlToText } from './../js/util/html.js';
 
     export default {
         components: {
@@ -252,14 +253,13 @@
                     res += '<i class="far fa-reply-all fa-flip-both"></i> ';
                 }
 
-                let content = status.content;
-                let text = content.replace(/(<([^>]+)>)/gi, "");
+                let text = htmlToText(status.content);
 
                 if(text.length > len) {
-                    return res + text.slice(0, len) + '...';
+                    return res + escapeHtml(text.slice(0, len)) + '...';
                 }
 
-                return res + text;
+                return res + escapeHtml(text);
             },
 
             openCompose() {

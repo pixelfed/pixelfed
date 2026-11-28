@@ -9,7 +9,7 @@
 
 	<meta name="mobile-web-app-capable" content="yes">
 
-	<title>{!! $title ?? config_cache('app.name') !!}</title>
+   <title>{{ $title ?? config_cache('app.name') }}</title>
 
 	<meta property="og:site_name" content="{{ config_cache('app.name', 'pixelfed') }}">
 	<meta property="og:title" content="{{ $title ?? config_cache('app.name', 'pixelfed') }}">

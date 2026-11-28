@@ -28,7 +28,7 @@
                   <div class="media-body">
                     <span class="font-weight-bold" v-pre>{{$gp->profile->username}}</span>
                     <div class="">
-                      <p class="w-100 text-break" v-pre>{!!$gp->caption!!}</p>
+                      <p class="w-100 text-break" v-pre>{!! \Stevebauman\Purify\Facades\Purify::clean((string) $gp->caption) !!}</p>
                     </div>
                     <div class="mb-0 small">
                       <a href="{{$gp->url()}}" class="text-muted">
@@ -66,7 +66,7 @@
                   <div class="media-body">
                     <span class="font-weight-bold" v-pre>{{$parent->profile->username}}</span>
                     <div class="">
-                      <p class="w-100 text-break" v-pre>{!!$parent->caption!!}</p>
+                      <p class="w-100 text-break" v-pre>{!! \Stevebauman\Purify\Facades\Purify::clean((string) $parent->caption) !!}</p>
                     </div>
                     <div class="mb-0 small">
                       <a href="{{$parent->url()}}" class="text-muted">
@@ -94,7 +94,7 @@
               <img class="mr-3 rounded-circle img-thumbnail" src="{{$status->profile->avatarUrl()}}" width="60px" onerror="this.onerror=null;this.src='/storage/avatars/default.png?v=0';">
               <div class="media-body">
                 <h5 class="mt-0 font-weight-bold" v-pre>{{$status->profile->username}}</h5>
-                <p class="" v-pre>{!! $status->caption !!}</p>
+                <p class="" v-pre>{!! \Stevebauman\Purify\Facades\Purify::clean((string) $status->caption) !!}</p>
                 <div class="mb-0 small">
                   <a href="{{$status->url()}}" class="text-muted">
                     {{$status->created_at->diffForHumans()}}
@@ -108,7 +108,7 @@
             <img class="mr-3 rounded-circle img-thumbnail" src="{{$status->profile->avatarUrl()}}" width="60px" onerror="this.onerror=null;this.src='/storage/avatars/default.png?v=0';">
             <div class="media-body">
               <h5 class="mt-0 font-weight-bold" v-pre>{{$status->profile->username}}</h5>
-              <p class="" v-pre>{!! $status->caption !!}</p>
+              <p class="" v-pre>{!! \Stevebauman\Purify\Facades\Purify::clean((string) $status->caption) !!}</p>
               <div class="mb-0 small">
                 <a href="{{$status->url()}}" class="text-muted">
                   {{$status->created_at->diffForHumans()}}

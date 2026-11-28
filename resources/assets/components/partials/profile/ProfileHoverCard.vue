@@ -85,6 +85,7 @@
 <script type="text/javascript">
 	import ReadMore from './../post/ReadMore.vue';
 	import { mapGetters } from 'vuex';
+   import { renderDisplayName } from './../../../js/util/html.js';
 
 	export default {
 		props: {
@@ -134,26 +135,8 @@
 
 		methods: {
 			getDisplayName() {
-				let self = this;
 				let profile = this.profile;
-				let dn = profile.display_name;
-				if(!dn) {
-					return profile.username;
-				}
-
-				if(dn.includes(':')) {
-					let re = /(<a?)?:\w+:(\d{18}>)?/g;
-					let un = dn.replaceAll(re, function(em) {
-						let shortcode = em.slice(1, em.length - 1);
-						let emoji = self.getCustomEmoji.filter(e => {
-							return e.shortcode == shortcode;
-						});
-						return emoji.length ? `<img draggable="false" class="emojione custom-emoji" alt="${emoji[0].shortcode}" title="${emoji[0].shortcode}" src="${emoji[0].url}" data-original="${emoji[0].url}" data-static="${emoji[0].static_url}" width="16" height="16" onerror="this.onerror=null;this.src='/storage/emoji/missing.png';" />`: em;
-					});
-					return un;
-				} else {
-					return dn;
-				}
+               return renderDisplayName(profile.display_name || profile.username, this.getCustomEmoji);
 			},
 
 			getUsername() {
